@@ -1,0 +1,224 @@
+#include "ags_toolbar_callbacks.h"
+
+#include "../ags_editor.h"
+
+#include <math.h>
+
+gboolean
+ags_toolbar_destroy_callback(GtkObject *object, AgsToolbar *toolbar)
+{
+  ags_toolbar_destroy(object);
+
+  return(FALSE);
+}
+
+void
+ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+  ags_toolbar_show(widget);
+}
+
+void
+ags_toolbar_edit_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
+void
+ags_toolbar_clear_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
+void
+ags_toolbar_copy_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
+void
+ags_toolbar_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
+void
+ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
+void
+ags_toolbar_select_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
+void
+ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
+{
+  AgsEditor *editor;
+  GtkWidget *widget;
+  GtkAdjustment *adjustment;
+  double zoom, zoom_old;
+  guint history;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
+  widget = (GtkWidget *) editor->drawing_area;
+  adjustment = GTK_RANGE(editor->hscrollbar)->adjustment;
+
+  history = gtk_option_menu_get_history(option);
+
+  zoom = exp2(4.0 - (double) history);
+  zoom_old = exp2(4.0 - (double) toolbar->zoom_history);
+
+  toolbar->zoom_history = history;
+
+  /* reset viewport */
+  editor->flags |= AGS_EDITOR_RESET_HSCROLLBAR;
+  editor->map_width = (guint) ((double) editor->map_width / zoom_old * zoom);
+
+  if(editor->map_width > widget->allocation.width){
+    editor->width = widget->allocation.width;
+
+    //    gtk_adjustment_set_upper(adjustment, (double) (editor->map_width - editor->width));
+    adjustment->upper = (double) (editor->map_width - editor->width);
+
+    if(adjustment->value > adjustment->upper)
+      gtk_adjustment_set_value(adjustment, adjustment->upper);
+  }else{
+    editor->width = editor->map_width;
+
+    //    gtk_adjustment_set_upper(adjustment, 0.0);
+    adjustment->upper = 0.0;
+    gtk_adjustment_set_value(adjustment, 0.0);
+  }
+
+  editor->flags &= (~AGS_EDITOR_RESET_HSCROLLBAR);
+
+  /* reset AgsEditorControlCurrent */
+  editor->control_current.control_width = (guint) ((double) editor->control_current.control_width / zoom_old * zoom);
+
+  if(editor->map_width > editor->width){
+    editor->control_current.x0 = ((guint) round(adjustment->value) % editor->control_current.control_width);
+
+    if(editor->control_current.x0 != 0)
+      editor->control_current.x0 = editor->control_current.control_width - editor->control_current.x0;
+
+    editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
+
+    editor->control_current.nth_x = (guint) ceil(adjustment->value / (double) editor->control_current.control_width);
+  }else{
+    editor->control_current.x0 = 0;
+    editor->control_current.x1 = 0;
+
+    editor->control_current.nth_x = 0;
+  }
+
+  /* reset AgsEditorControlUnit */
+  editor->control_unit.control_width = editor->control_unit.control_width / zoom_old * zoom;
+
+  if(editor->map_width > editor->width){
+    editor->control_unit.x0 = ((guint) round(adjustment->value) % editor->control_unit.control_width);
+
+    if(editor->control_unit.x0 != 0)
+      editor->control_unit.x0 = editor->control_unit.control_width - editor->control_unit.x0;
+
+    editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
+
+    editor->control_unit.nth_x = (guint) ceil(adjustment->value / (double) editor->control_unit.control_width);
+    editor->control_unit.stop_x = (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
+  }else{
+    editor->control_unit.x0 = 0;
+    editor->control_unit.x1 = 0;
+
+    editor->control_unit.nth_x = 0;
+    editor->control_unit.stop_x = editor->control_unit.control_width * editor->control_unit.control_count;
+  }
+
+  /* refresh display */
+  ags_editor_draw_segment(editor);
+  ags_editor_draw_notation(editor);
+}
+
+void
+ags_toolbar_tic_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
+{
+  AgsEditor *editor;
+  GtkWidget *widget;
+  GtkAdjustment *adjustment;
+  double tic, tic_old;
+  guint history;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
+  widget = (GtkWidget *) editor->drawing_area;
+
+  history = gtk_option_menu_get_history(option);
+
+  tic = exp2((double) history - 4.0);
+  tic_old = exp2((double) toolbar->tic_history - 4.0);
+
+  toolbar->tic_history = history;
+
+  /* reset viewport */
+  editor->flags |= AGS_EDITOR_RESET_HSCROLLBAR;
+  editor->map_width = (guint) ((double) editor->map_width / tic_old * tic);
+  adjustment = GTK_RANGE(editor->hscrollbar)->adjustment;
+
+  if(editor->map_width > widget->allocation.width){
+    editor->width = widget->allocation.width;
+
+    //    gtk_adjustment_set_upper(adjustment, (double) (editor->map_width - editor->width));
+    adjustment->upper = (double) (editor->map_width - editor->width);
+
+    if(adjustment->value > adjustment->upper)
+      gtk_adjustment_set_value(adjustment, adjustment->upper);
+  }else{
+    editor->width = editor->map_width;
+
+    //    gtk_adjustment_set_upper(adjustment, 0.0);
+    adjustment->upper = 0.0;
+    gtk_adjustment_set_value(adjustment, 0.0);
+  }
+
+  editor->flags &= (~AGS_EDITOR_RESET_HSCROLLBAR);
+
+  /* reset AgsEditorControlCurrent */
+  editor->control_current.control_count = (guint) ((double) editor->control_current.control_count / tic_old * tic);
+
+  if(editor->map_width > editor->width){
+    // x0 is unchanged
+    editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
+
+    editor->control_current.nth_x = (guint) ceil(adjustment->value / (double) editor->control_current.control_width);
+  }else{
+    // x0 is unchanged
+    editor->control_current.x1 = 0;
+
+    editor->control_current.nth_x = 0;
+  }
+
+  /* reset AgsEditorControlUnit */
+  if(editor->map_width > editor->width){
+    // x0 is unchanged
+    editor->control_unit.x1 = (editor->width - editor->control_current.x0) % editor->control_unit.control_width;
+
+    editor->control_unit.nth_x = (guint) ceil(adjustment->value / (double) editor->control_unit.control_width);
+    editor->control_unit.stop_x = (editor->width - editor->control_current.x0 - editor->control_current.x1) / editor->control_unit.control_width;
+  }else{
+    // x0 is unchanged
+    editor->control_current.x1 = 0;
+
+    editor->control_unit.nth_x = 0;
+    editor->control_unit.stop_x = editor->control_unit.control_width * editor->control_unit.control_count;
+  }
+
+  /* refresh display */
+  ags_editor_draw_segment(editor);
+  ags_editor_draw_notation(editor);
+}
+
+void
+ags_toolbar_mode_default_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
+void
+ags_toolbar_mode_group_channels_callback(GtkWidget *widget, AgsToolbar *toolbar)
+{
+}
+
