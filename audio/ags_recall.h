@@ -1,0 +1,98 @@
+#ifndef __AGS_RECALL_H__
+#define __AGS_RECALL_H__
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include "../object/ags_connectable.h"
+
+#include "ags_recall_id.h"
+
+#define AGS_TYPE_RECALL                (ags_recall_get_type())
+#define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
+#define AGS_RECALL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL, AgsRecallClass))
+#define AGS_IS_RECALL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RECALL))
+#define AGS_IS_RECALL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL))
+#define AGS_RECALL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL, AgsRecallClass))
+
+typedef struct _AgsRecall AgsRecall;
+typedef struct _AgsRecallClass AgsRecallClass;
+
+typedef enum{
+  AGS_RECALL_RUN_INITIALIZED    = 1,
+  AGS_RECALL_TEMPLATE           = 1 << 1, // if a sequencer's AgsOutput->recall is called all AgsRecalls with this flag has to be duplicated
+  AGS_RECALL_DONE               = 1 << 2,
+  AGS_RECALL_CANCEL             = 1 << 3,
+  AGS_RECALL_REMOVE             = 1 << 4,
+  AGS_RECALL_HIDE               = 1 << 5,
+  AGS_RECALL_PROPAGATE_DONE     = 1 << 6, // see ags_recall_real_remove
+}AgsRecallFlags;
+
+struct _AgsRecall
+{
+  GObject object;
+
+  guint flags;
+
+  char *name;
+  AgsRecallID *recall_id;
+
+  GObject *parent;
+  GList *child;
+};
+
+struct _AgsRecallClass
+{
+  GObjectClass object;
+
+  void (*run_init_pre)(AgsRecall *recall);
+  void (*run_init_inter)(AgsRecall *recall);
+  void (*run_init_post)(AgsRecall *recall);
+
+  void (*run_pre)(AgsRecall *recall);
+  void (*run_inter)(AgsRecall *recall);
+  void (*run_post)(AgsRecall *recall);
+
+  void (*done)(AgsRecall *recall);
+  void (*loop)(AgsRecall *recall);
+
+  void (*cancel)(AgsRecall *recall); 
+  void (*remove)(AgsRecall *recall);
+
+  AgsRecall* (*duplicate)(AgsRecall *recall, AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
+  void (*notify_run)(AgsRecall *recall);
+};
+
+void ags_recall_connect(AgsConnectable *connectable);
+
+void ags_recall_run_init_pre(AgsRecall *recall);
+void ags_recall_run_init_inter(AgsRecall *recall);
+void ags_recall_run_init_post(AgsRecall *recall);
+
+void ags_recall_run_pre(AgsRecall *recall);
+void ags_recall_run_inter(AgsRecall *recall);
+void ags_recall_run_post(AgsRecall *recall);
+
+void ags_recall_done(AgsRecall *recall);
+void ags_recall_loop(AgsRecall *recall);
+
+void ags_recall_cancel(AgsRecall *recall);
+void ags_recall_remove(AgsRecall *recall);
+
+AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+void ags_recall_notify_run(AgsRecall *recall);
+
+void ags_recall_check_cancel(AgsRecall *recall);
+void ags_recall_child_check_remove(AgsRecall *recall);
+
+void ags_recall_set_effect(AgsRecall *recall, char *effect);
+GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect);
+
+GList* ags_recall_find_type(GList *recall, GType type);
+GList* ags_recall_find_type_with_group_id(GList *recall, GType type, guint group_id);
+
+void ags_recall_run_init(AgsRecall *recall, guint stage);
+
+AgsRecall* ags_recall_new();
+
+#endif /*__AGS_RECALL_H__*/
