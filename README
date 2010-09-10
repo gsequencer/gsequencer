@@ -1,0 +1,54 @@
+joel@weedlight.ch
+
+TODO:
+- AgsCopyPattern implementation in AgsDrum and AgsMatrix doesn't have correct abort code, perhaps see AgsDelay
+- remove recalls after the 3 stages were executed in ags_channel_recursive_play
+- take care of owner (AgsRecallID) in AgsAudioSignal
+- don't make AgsDelay use AgsDevouts counter
+- destroy AgsRecalls and AgsAudioSignals
+- implement cancel signal in AgsRecalls
+- update retrieving of AgsDelay in recalls, recalls should duplicate AgsDelays in contrast plays work fine
+- modify ags_audio_set_audio_channels and ags_audio_set_pads so that it updates parent AgsChannel's first_recycling and last_recycling
+- ags_channel_set_link must be modified that it works with playing AgsChannels
+- ags_machine_link_editor_callbacks.c replace code in callbacks with ags_machine_link_editor_reset_input and ags_machine_link_editor_reset_output
+- ags_matrix.c shrink the GtkDrawingArea in ags_matrix_set_pads if there are less than eight input pads
+- update notation after resizing audio channels
+- remove ags_editor_reset and move code to callback functions
+- ags_editor.c implement machine_changed signal
+- ags_audio.c add protection against multiple pads on AgsChannel's with AGS_AUDIO_ASYNC and without AgsAudioSignal on AgsOutput
+
+NEW CODE (not well tested yet):
+- ags_copy_pattern_shared_channel
+- ags_copy_pattern_shared_audio_run
+- ags_copy_pattern_shared_audio
+- ags_delay_shared_audio_run
+- ags_delay_shared_audio
+- ags_recall_shared_channel
+- ags_recall_shared_audio
+- ags_recall_shared
+- ags_copy_audio_signal.c
+- ags_copy_recycling.c
+- ags_copy_channel.c
+
+BUGS:
+- ags_recall_volume causes the AgsAudioSignal to quiet down: check wheter it has been fixed through uninitialized AgsDevout->audio bug fix
+- ags_audio_set_audio_channels do proper set_async_link: believed to be fixed
+- ags_editor_index_callback crashes: believed to be fixed
+- application crashes while running an AgsSynth linked with an AgsMatrix, when AgsOscillator has different length
+
+WARNING:
+- ags_copy_pattern should be used only once by an AgsAudio because in ags_copy_pattern_duplicate detection of AgsCopyPatternSharedAudioRun can't handle more than one
+
+DEPRECATED:
+- ags_play_pattern.c
+- ags_garbage_collector.c
+
+NOTES:
+- AgsRecallID gives every stream an identification and makes it possible to stop a single of multiple AgsRecalls that are possible. Imagine an AgsAudio object is played and a child of it, too. A child of the child is also played and so on.
+
+
+RELEASE NOTES:
+
+ags_0.3.9.6:
+	- AgsStreamLock removed
+	- ags_garbage_collector removed
