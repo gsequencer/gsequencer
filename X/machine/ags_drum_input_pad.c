@@ -16,6 +16,8 @@ void ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
 
+static gpointer ags_drum_input_pad_parent_class = NULL;
+
 GType
 ags_drum_input_pad_get_type()
 {
@@ -46,6 +48,8 @@ void
 ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad)
 {
   AgsPadClass *pad;
+
+  ags_drum_input_pad_parent_class = g_type_class_peek_parent(drum_input_pad);
 
   pad = (AgsPadClass *) drum_input_pad;
 
@@ -110,7 +114,8 @@ ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
   AgsDrumInputPad *drum_input_pad;
   AgsDelay *delay;
 
-  ags_pad_real_resize_lines(pad, audio_channels, audio_channels_old);
+  AGS_PAD_CLASS(ags_drum_input_pad_parent_class)->resize_lines(pad, line_type,
+							       audio_channels, audio_channels_old);
 
   drum_input_pad = (AgsDrumInputPad *) pad;
   delay = AGS_DELAY(ags_recall_find_by_effect(AGS_AUDIO(pad->channel->audio)->play, NULL, (char *) g_type_name(AGS_TYPE_DELAY))->data);

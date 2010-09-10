@@ -174,7 +174,7 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 {
   g_return_if_fail(AGS_IS_PAD(pad));
 
-  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
+  fprintf(stdout, "ags_pad_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
   g_object_ref((GObject *) pad);
   g_signal_emit(G_OBJECT(pad),

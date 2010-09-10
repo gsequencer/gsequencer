@@ -23,6 +23,8 @@ void ags_drum_output_pad_connect(AgsDrumOutputPad *drum_output_pad);
 void ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
 
+static gpointer ags_drum_output_pad_parent_class = NULL;
+
 GType
 ags_drum_output_pad_get_type()
 {
@@ -49,6 +51,8 @@ void
 ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad)
 {
   AgsPadClass *pad;
+
+  ags_drum_output_pad_parent_class = g_type_class_peek_parent(drum_output_pad);
 
   pad = (AgsPadClass *) drum_output_pad;
 
@@ -85,7 +89,8 @@ ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
   GList *list_line, *recall_shared;
   guint stop;
 
-  ags_pad_real_resize_lines(pad, audio_channels, audio_channels_old);
+  AGS_PAD_CLASS(ags_drum_output_pad_parent_class)->resize_lines(pad, line_type,
+								audio_channels, audio_channels_old);
 
   if(audio_channels > audio_channels_old){
     drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_DRUM);
