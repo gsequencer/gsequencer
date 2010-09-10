@@ -42,7 +42,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 
   copy_pattern_shared_audio->devout = window->devout;
 
-  copy_pattern_shared_audio->stream_length = (guint64)matrix->length_spin->adjustment->value * (guint64)(delay_shared_audio->delay + 1) + 1;
+  copy_pattern_shared_audio->stream_length = (guint)matrix->length_spin->adjustment->value * (guint)(delay_shared_audio->delay + 1) + 1;
 
   fprintf(stdout, "ags_matrix_parent_set_callback: delay_shared_audio->delay = %d\n\0", delay_shared_audio->delay);
 }

@@ -60,7 +60,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 
   copy_pattern_shared_audio->devout = window->devout;
 
-  copy_pattern_shared_audio->stream_length = (guint64)drum->length_spin->adjustment->value * (guint64)(delay_shared_audio->delay + 1) + 1;
+  copy_pattern_shared_audio->stream_length = (guint)drum->length_spin->adjustment->value * (guint)(delay_shared_audio->delay + 1) + 1;
 
   fprintf(stdout, "ags_drum_parent_set_callback: delay_shared_audio->delay = %d\n\0", delay_shared_audio->delay);
 }
@@ -96,7 +96,7 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
 
   drum->delay_shared_audio->delay = delay_value;
 
-  drum->copy_pattern_shared_audio->stream_length = (guint64)drum->length_spin->adjustment->value * (guint64)(delay_value + 1) + 1;
+  drum->copy_pattern_shared_audio->stream_length = (guint)drum->length_spin->adjustment->value * (guint)(delay_value + 1) + 1;
 
   channel = drum->machine.audio->output;
 

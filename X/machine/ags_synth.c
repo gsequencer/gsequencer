@@ -319,7 +319,7 @@ ags_synth_update(AgsSynth *synth)
 
     attack0 = (guint) ceil((double)attack / (double)devout->buffer_size);
     attack1 = (guint) floor((double)attack / (double)devout->buffer_size);
-    attack = attack % (guint64) devout->buffer_size;
+    attack = attack % (guint) devout->buffer_size;
 
     /* write to input */
     audio_signal = ags_audio_signal_get_template(input->first_recycling->audio_signal);

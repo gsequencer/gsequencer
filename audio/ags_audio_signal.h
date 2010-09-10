@@ -33,8 +33,8 @@ struct _AgsAudioSignal
   GObject *recycling;
   GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal
 
-  guint64 length;
-  guint64 last_frame; // the last frame at stream_end
+  guint length;
+  guint last_frame; // the last frame at stream_end
 
   GList *stream_beginning;
   GList *stream_current;
@@ -64,7 +64,7 @@ AgsAttack* ags_attack_get_from_devout_attack(GObject *devout);
 void ags_audio_signal_connect(AgsAudioSignal *audio_signal);
 
 void ags_audio_signal_add_stream(AgsAudioSignal *audio_signal);
-void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint64 length);
+void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 
 void ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels,
 					    short *source, guint schannels, guint size);

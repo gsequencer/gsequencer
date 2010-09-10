@@ -304,9 +304,9 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
 
     note = &(editor->control.note);
     note->flags = AGS_NOTE_GUI;
-    note->x[0] = (guint64) (tic * note_x) + (tic * offset_x);
-    note->x[1] = (guint64) note->x[0] + 1;
-    note->y = (guint64) note_y + offset_y;
+    note->x[0] = (guint) (tic * note_x) + (tic * offset_x);
+    note->x[1] = (guint) note->x[0] + 1;
+    note->y = (guint) note_y + offset_y;
 
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
   }
@@ -358,7 +358,7 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
       note_x = 0;
     }
 
-    note->x[1] = (guint64) (tic * (note_x)) + (tic * offset_x);
+    note->x[1] = (guint) (tic * (note_x)) + (tic * offset_x);
 
     list_notation = machine->audio->notation;
 

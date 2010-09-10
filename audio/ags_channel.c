@@ -674,12 +674,12 @@ ags_channel_recycling_changed(AgsChannel *channel,
 }
 
 void
-ags_channel_resize_audio_signal(AgsChannel *channel, guint64 size)
+ags_channel_resize_audio_signal(AgsChannel *channel, guint size)
 {
   AgsAudioSignal *audio_signal;
   GList *list_recall_id;
   GList *list_audio_signal;
-  guint64 size_old;
+  guint size_old;
 
   audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
   size_old = audio_signal->length;

@@ -89,7 +89,7 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 				   AgsRecycling *new_start_region, AgsRecycling *new_end_region);
 
-void ags_channel_resize_audio_signal(AgsChannel *channel, guint64 size);
+void ags_channel_resize_audio_signal(AgsChannel *channel, guint size);
 
 void ags_channel_recall_id_set_stage(AgsChannel *output, guint group_id, guint stage, gboolean ommit_own_channel);
 void ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboolean do_recall);

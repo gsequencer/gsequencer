@@ -191,7 +191,7 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 {
   AgsAudioSignal *audio_signal;
   GList *stream, *list;
-  guint64 stop;
+  guint stop;
   guint i, j, k, i_stop;
 
   stop = (guint) ceil((double)(audio_file->frames) / (double)(audio_file->devout->buffer_size));

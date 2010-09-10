@@ -24,23 +24,27 @@ static guint pad_signals[LAST_SIGNAL];
 GType
 ags_pad_get_type(void)
 {
-  static GType pad_type = 0;
+  static GType ags_type_pad = 0;
 
-  if (!pad_type){
-    static const GtkTypeInfo pad_info = {
-      "AgsPad\0",
-      sizeof(AgsPad), /* base_init */
-      sizeof(AgsPadClass), /* base_finalize */
-      (GtkClassInitFunc) ags_pad_class_init,
-      (GtkObjectInitFunc) ags_pad_init,
+  if(!ags_type_pad){
+    static const GTypeInfo ags_pad_info = {
+      sizeof(AgsPadClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_pad_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsPad),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_pad_init,
     };
-    pad_type = gtk_type_unique (GTK_TYPE_VBOX, &pad_info);
+
+    ags_type_pad = g_type_register_static(GTK_TYPE_VBOX,
+					  "AgsPad\0", &ags_pad_info,
+					  0);
   }
 
-  return (pad_type);
+  return(ags_type_pad);
 }
 
 void

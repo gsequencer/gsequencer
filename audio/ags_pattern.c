@@ -84,7 +84,7 @@ ags_pattern_connect(AgsPattern *pattern)
 }
 
 AgsPattern*
-ags_pattern_get_by_offset(GList *list, guint64 offset)
+ags_pattern_get_by_offset(GList *list, guint offset)
 {
   if(list == NULL)
     return(NULL);

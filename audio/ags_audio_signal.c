@@ -182,9 +182,9 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
  *  be carefull with shrinking
  */
 void
-ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint64 length)
+ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 {
-  guint64 i;
+  guint i;
 
   if(audio_signal->length < length){
     GList *start, *stream, *end_old;

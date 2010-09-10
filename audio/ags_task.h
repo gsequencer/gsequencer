@@ -19,7 +19,7 @@ struct _AgsTask
   char *name;
   gpointer data;
 
-  guint64 start;
+  guint start;
 };
 
 struct _AgsTaskClass

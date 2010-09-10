@@ -23,7 +23,7 @@ struct _AgsPattern
   guint dim[3];
   guint ***pattern;
 
-  guint64 offset;
+  guint offset;
 };
 
 struct _AgsPatternClass
@@ -33,7 +33,7 @@ struct _AgsPatternClass
 
 void ags_pattern_connect(AgsPattern *pattern);
 
-AgsPattern* ags_pattern_get_by_offset(GList *list, guint64 offset);
+AgsPattern* ags_pattern_get_by_offset(GList *list, guint offset);
 
 void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint lenght);
 
