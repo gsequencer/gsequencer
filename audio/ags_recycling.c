@@ -18,7 +18,7 @@ void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 					 AgsAudioSignal *audio_signal);
 void ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 							  AgsAudioSignal *audio_signal,
-							  guint64 frame_count);
+							  guint frame_count);
 
 void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 					    AgsAudioSignal *audio_signal);
@@ -85,9 +85,9 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecyclingClass, add_audio_signal_with_frame_count),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__OBJECT_UINT64,
+		 g_cclosure_user_marshal_VOID__OBJECT_UINT,
 		 G_TYPE_NONE, 2,
-		 G_TYPE_OBJECT, G_TYPE_UINT64);
+		 G_TYPE_OBJECT, G_TYPE_UINT);
 
 
   recycling_signals[REMOVE_AUDIO_SIGNAL] =
@@ -180,7 +180,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 void
 ags_recycling_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 						AgsAudioSignal *audio_signal,
-						guint64 frame_count)
+						guint frame_count)
 {
   g_return_if_fail(AGS_IS_RECYCLING(recycling));
 
@@ -194,11 +194,11 @@ ags_recycling_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 void
 ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 						     AgsAudioSignal *audio_signal,
-						     guint64 frame_count)
+						     guint frame_count)
 {
   AgsAudioSignal *template;
   GList *stream, *template_stream;
-  guint64 i, template_i, j, k;
+  guint i, template_i, j, k;
 
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
@@ -206,7 +206,7 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   audio_signal->recycling = (GObject *) recycling;
 
-  ags_audio_signal_stream_resize(audio_signal, (guint64) ceil((double) frame_count / (double) AGS_DEVOUT(audio_signal->devout)->buffer_size));
+  ags_audio_signal_stream_resize(audio_signal, (guint) ceil((double) frame_count / (double) AGS_DEVOUT(audio_signal->devout)->buffer_size));
   
   if(template->length == 0)
     return;

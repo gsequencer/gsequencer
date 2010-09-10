@@ -50,9 +50,9 @@ ags_pad_class_init(AgsPadClass *pad)
 
   pad_signals[RESIZE_LINES] =
     g_signal_new("resize_lines\0",
-		 G_TYPE_FROM_CLASS (pad),
+		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsPadClass, resize_lines),
+		 G_STRUCT_OFFSET(AgsPadClass, resize_lines),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
@@ -169,6 +169,8 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old)
 {
   g_return_if_fail(AGS_IS_PAD(pad));
+
+  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
   g_object_ref((GObject *) pad);
   g_signal_emit(G_OBJECT(pad),

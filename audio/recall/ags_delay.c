@@ -84,7 +84,7 @@ ags_delay_finalize(GObject *gobject)
 void
 ags_delay_connect(AgsDelay *delay)
 {
-  ags_recall_connect((AgsRecall *) delay);
+  //  ags_recall_connect((AgsRecall *) delay);
 
   g_signal_connect((GObject *) delay, "run_inter\0",
 		   G_CALLBACK(ags_delay_run_inter), NULL);

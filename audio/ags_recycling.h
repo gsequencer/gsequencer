@@ -44,7 +44,7 @@ struct _AgsRecyclingClass
 			   AgsAudioSignal *audio_signal);
   void (*add_audio_signal_with_frame_count)(AgsRecycling *recycling,
 					    AgsAudioSignal *audio_signal,
-					    guint64 frame_count);
+					    guint frame_count);
   void (*remove_audio_signal)(AgsRecycling *recycling,
 			      AgsAudioSignal *audio_signal);
 };
@@ -55,7 +55,7 @@ void ags_recycling_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal);
 void ags_recycling_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 						     AgsAudioSignal *audio_signal,
-						     guint64 frame_count);
+						     guint frame_count);
 
 void ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 				       AgsAudioSignal *audio_signal);

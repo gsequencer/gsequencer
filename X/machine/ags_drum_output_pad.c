@@ -20,7 +20,8 @@ void ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad);
 void ags_drum_output_pad_destroy(GtkObject *object);
 void ags_drum_output_pad_connect(AgsDrumOutputPad *drum_output_pad);
 
-void ags_drum_output_pad_resize_lines(AgsPad *pad, guint audio_channels, guint audio_channels_old);
+void ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
+				      guint audio_channels, guint audio_channels_old);
 
 GType
 ags_drum_output_pad_get_type()
@@ -71,7 +72,7 @@ ags_drum_output_pad_connect(AgsDrumOutputPad *drum_output_pad)
 }
 
 void
-ags_drum_output_pad_resize_lines(AgsPad *pad,
+ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
 				 guint audio_channels, guint audio_channels_old)
 {
   AgsDrum *drum;
