@@ -13,7 +13,8 @@ void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_destroy(GtkObject *object);
 void ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad);
 
-void ags_drum_input_pad_resize_lines(AgsPad *pad, guint audio_channels, guint audio_channels_old);
+void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
+				     guint audio_channels, guint audio_channels_old);
 
 GType
 ags_drum_input_pad_get_type()
@@ -33,7 +34,7 @@ ags_drum_input_pad_get_type()
       (GInstanceInitFunc) ags_drum_input_pad_init,
     };
 
-    ags_type_drum_input_pad = g_type_register_static(AGS_TYPE_MACHINE,
+    ags_type_drum_input_pad = g_type_register_static(AGS_TYPE_PAD,
 						     "AgsDrumInputPad\0", &ags_drum_input_pad_info,
 						     0);
   }
@@ -103,7 +104,8 @@ ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad)
 }
 
 void
-ags_drum_input_pad_resize_lines(AgsPad *pad, guint audio_channels, guint audio_channels_old)
+ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
+				guint audio_channels, guint audio_channels_old)
 {
   AgsDrumInputPad *drum_input_pad;
   AgsDelay *delay;

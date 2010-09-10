@@ -27,6 +27,7 @@ enum{
   LAST_SIGNAL,
 };
 
+static gpointer ags_audio_parent_class = NULL;
 static guint audio_signals[LAST_SIGNAL];
 
 GType
@@ -59,6 +60,8 @@ void
 ags_audio_class_init(AgsAudioClass *audio)
 {
   GObjectClass *gobject;
+
+  ags_audio_parent_class = g_type_class_peek_parent(audio);
 
   gobject = (GObjectClass *) audio;
 
@@ -185,6 +188,9 @@ ags_audio_finalize(GObject *gobject)
 
     list = list_next;
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_parent_class)->finalize(gobject);
 }
 
 void

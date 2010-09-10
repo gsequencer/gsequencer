@@ -6,36 +6,73 @@
 GType ags_line_get_type(void);
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_init(AgsLine *line);
+void ags_line_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec);
+void ags_line_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec);
 void ags_line_connect(AgsLine *line);
 void ags_line_destroy(GtkObject *object);
 void ags_line_show(GtkWidget *widget);
 
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+};
+
+static gpointer ags_line_parent_class = NULL;
+
 GType
 ags_line_get_type(void)
 {
-  static GType line_type = 0;
+  static GType ags_type_line = 0;
 
-  if (!line_type){
-    static const GtkTypeInfo line_info = {
-      "AgsLine\0",
-      sizeof(AgsLine), /* base_init */
-      sizeof(AgsLineClass), /* base_finalize */
-      (GtkClassInitFunc) ags_line_class_init,
-      (GtkObjectInitFunc) ags_line_init,
+  if(!ags_type_line){
+    static const GTypeInfo ags_line_info = {
+      sizeof(AgsLineClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_line_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsLine),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_line_init,
     };
 
-    line_type = gtk_ (GTK_TYPE_MENU_ITEM, &line_info);
+    ags_type_line = g_type_register_static(GTK_TYPE_MENU_ITEM,
+					   "AgsLine\0", &ags_line_info,
+					   0);
   }
 
-  return (line_type);
+  return(ags_type_line);
 }
 
 void
 ags_line_class_init(AgsLineClass *line)
 {
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  ags_line_parent_class = g_type_class_peek_parent(line);
+
+  gobject = G_OBJECT_CLASS(line);
+
+  gobject->set_property = ags_line_set_property;
+  gobject->get_property = ags_line_get_property;
+
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel it is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+				  
 }
 
 void
@@ -59,6 +96,56 @@ ags_line_init(AgsLine *line)
 }
 
 void
+ags_line_set_property(GObject *gobject,
+		      guint prop_id,
+		      const GValue *value,
+		      GParamSpec *param_spec)
+{
+  AgsLine *line;
+
+  fprintf(stdout, "ags_line_set_property\n\0");
+
+  line = AGS_LINE(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      line->channel = channel;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_line_get_property(GObject *gobject,
+		      guint prop_id,
+		      GValue *value,
+		      GParamSpec *param_spec)
+{
+  AgsLine *line;
+
+  fprintf(stdout, "ags_line_get_property\n\0");
+
+  line = AGS_LINE(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    g_value_set_object(value, line->channel);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_line_connect(AgsLine *line)
 {
   g_signal_connect((GObject *) line, "destroy\0",
@@ -71,19 +158,23 @@ ags_line_connect(AgsLine *line)
 void
 ags_line_destroy(GtkObject *object)
 {
+  /* empty */
 }
 
 void
 ags_line_show(GtkWidget *widget)
 {
+  /* empty */
 }
 
 AgsLine*
-ags_line_new()
+ags_line_new(AgsChannel *channel)
 {
   AgsLine *line;
 
-  line = (AgsLine *) g_object_new(AGS_TYPE_LINE, NULL);
-  
+  line = (AgsLine *) g_object_new(AGS_TYPE_LINE,
+				  "channel", channel,
+				  NULL);
+
   return(line);
 }

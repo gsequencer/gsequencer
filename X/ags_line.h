@@ -39,6 +39,6 @@ struct _AgsLineMember
   guint control;
 };
 
-AgsLine* ags_line_new();
+AgsLine* ags_line_new(AgsChannel *channel);
 
 #endif /*__AGS_LINE_H__*/

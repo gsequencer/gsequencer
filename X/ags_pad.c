@@ -112,6 +112,7 @@ ags_pad_connect(AgsPad *pad)
 void
 ags_pad_destroy(GtkObject *object)
 {
+  /* empty */
 }
 
 void
@@ -135,13 +136,18 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   AgsChannel *channel;
   guint i;
 
+  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
+
   if(audio_channels > audio_channels_old){
     //    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
     channel = ags_channel_nth(pad->channel, audio_channels_old);
 
     for(i = audio_channels_old; i < audio_channels; i++){
-      line = ags_line_new();
-      line->channel = channel;
+      fprintf(stdout, "  loop\n\0");
+
+      line = g_object_new(line_type,
+			  "channel\0", channel,
+			  NULL);
       channel->line_widget = (GtkWidget *) line;
       gtk_menu_shell_insert((GtkMenuShell *) pad->option->menu, (GtkWidget *) line, i);
 

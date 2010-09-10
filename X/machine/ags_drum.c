@@ -2,6 +2,7 @@
 #include "ags_drum_callbacks.h"
 
 #include "ags_drum_input_pad.h"
+#include "ags_drum_input_line.h"
 #include "ags_drum_output_pad.h"
 
 #include "../ags_window.h"
@@ -390,8 +391,12 @@ ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels)
       if(audio_channels_old == 0){
       /* create AgsPad's if necessary */
 	drum_input_pad = ags_drum_input_pad_new(channel);
-	gtk_box_pack_start((GtkBox *) drum->input_pad, (GtkWidget *) drum_input_pad, FALSE, FALSE, 0);
-	AGS_PAD_GET_CLASS(drum_input_pad)->resize_lines((AgsPad *) drum_input_pad, AGS_AUDIO(channel->audio)->audio_channels, 0);
+	gtk_box_pack_start((GtkBox *) drum->input_pad,
+			   (GtkWidget *) drum_input_pad,
+			   FALSE, FALSE,
+			   0);
+	ags_pad_resize_lines((AgsPad *) drum_input_pad, AGS_TYPE_DRUM_INPUT_LINE,
+			     AGS_AUDIO(channel->audio)->audio_channels, 0);
 	gtk_option_menu_set_history(drum_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
@@ -401,7 +406,8 @@ ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels)
       }else{
 	drum_input_pad = AGS_DRUM_INPUT_PAD(list_input_pad->data);
 
-	AGS_PAD_GET_CLASS(drum_input_pad)->resize_lines((AgsPad *) drum_input_pad, audio_channels, audio_channels_old);
+	ags_pad_resize_lines((AgsPad *) drum_input_pad, AGS_TYPE_DRUM_INPUT_LINE,
+			     audio_channels, audio_channels_old);
       }
 
       channel = channel->next_pad;
@@ -418,8 +424,12 @@ ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels)
       if(audio_channels_old == 0){
 	/* create AgsPad's if necessary */
 	drum_output_pad = ags_drum_output_pad_new(channel);
-	gtk_box_pack_start((GtkBox *) drum->output_pad, (GtkWidget *) drum_output_pad, FALSE, FALSE, 0);
-	AGS_PAD_GET_CLASS(drum_output_pad)->resize_lines((AgsPad *) drum_output_pad, AGS_AUDIO(channel->audio)->audio_channels, 0);
+	gtk_box_pack_start((GtkBox *) drum->output_pad,
+			   (GtkWidget *) drum_output_pad,
+			   FALSE, FALSE,
+			   0);
+	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_INPUT_LINE,
+			     AGS_AUDIO(channel->audio)->audio_channels, 0);
 	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
@@ -429,7 +439,8 @@ ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels)
       }else{
 	drum_output_pad = AGS_DRUM_OUTPUT_PAD(list_output_pad->data);
 
-	AGS_PAD_GET_CLASS(drum_output_pad)->resize_lines((AgsPad *) drum_output_pad, audio_channels, audio_channels_old);
+	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_INPUT_LINE,
+			     audio_channels, audio_channels_old);
       }
 
       channel = channel->next_pad;
@@ -581,7 +592,8 @@ ags_drum_set_pads(AgsAudio *audio, GType type, guint pads)
       for(i = pads_old; i < audio->output_pads; i++){
 	drum_output_pad = ags_drum_output_pad_new(channel);
 	gtk_box_pack_start((GtkBox *) drum->output_pad, (GtkWidget *) drum_output_pad, FALSE, FALSE, 0);
-	AGS_PAD_GET_CLASS(drum_output_pad)->resize_lines((AgsPad *) drum_output_pad, AGS_AUDIO(channel->audio)->audio_channels, 0);
+	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_INPUT_LINE,
+			     AGS_AUDIO(channel->audio)->audio_channels, 0);
 	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){

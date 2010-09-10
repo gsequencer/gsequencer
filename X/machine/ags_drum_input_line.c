@@ -14,6 +14,14 @@
 GType ags_drum_input_line_get_type();
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
+void ags_drum_input_line_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_drum_input_line_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
 void ags_drum_input_line_destroy(GtkObject *object);
 void ags_drum_input_line_connect(AgsDrumInputLine *drum_input_line);
 
@@ -35,7 +43,7 @@ ags_drum_input_line_get_type()
       (GInstanceInitFunc) ags_drum_input_line_init,
     };
 
-    ags_type_drum_input_line = g_type_register_static(AGS_TYPE_MACHINE,
+    ags_type_drum_input_line = g_type_register_static(AGS_TYPE_LINE,
 						      "AgsDrumInputLine\0", &ags_drum_input_line_info,
 						      0);
   }
@@ -46,9 +54,14 @@ ags_drum_input_line_get_type()
 void
 ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line)
 {
+  GObjectClass *gobject;
   AgsLineClass *line;
+  GParamSpec *param_spec;
 
-  line = (AgsLineClass *) drum_input_line;
+  gobject = G_OBJECT_CLASS(line);
+
+  gobject->set_property = ags_drum_input_line_set_property;
+  gobject->get_property = ags_drum_input_line_get_property;
 }
 
 void
@@ -67,6 +80,24 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 		   1, 2,
 		   GTK_EXPAND, GTK_EXPAND,
 		   0, 0);
+}
+
+void
+ags_drum_input_line_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  fprintf(stdout, "ags_drum_input_line_set_property\n\0");
+}
+
+void
+ags_drum_input_line_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  fprintf(stdout, "ags_drum_input_line_get_property\n\0");
 }
 
 void
