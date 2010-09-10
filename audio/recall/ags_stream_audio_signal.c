@@ -68,7 +68,7 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 void
 ags_stream_audio_signal_connect(AgsStreamAudioSignal *stream_audio_signal)
 {
-  ags_recall_connect(AGS_RECALL(stream_audio_signal));
+  //  ags_recall_connect(AGS_RECALL(stream_audio_signal));
 
   g_signal_connect((GObject *) stream_audio_signal, "run_inter\0",
 		   G_CALLBACK(ags_stream_audio_signal_run_inter), NULL);

@@ -90,7 +90,7 @@ ags_stream_recycling_finalize(GObject *gobject)
 void
 ags_stream_recycling_connect(AgsStreamRecycling *stream_recycling)
 {
-  ags_recall_connect(AGS_RECALL(stream_recycling));
+  //  ags_recall_connect(AGS_RECALL(stream_recycling));
 
   g_signal_connect((GObject *) stream_recycling, "run_init_inter\0",
 		   G_CALLBACK(ags_stream_recycling_run_init_inter), NULL);

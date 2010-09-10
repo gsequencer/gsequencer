@@ -92,7 +92,7 @@ ags_play_notation_finalize(GObject *gobject)
 void
 ags_play_notation_connect(AgsPlayNotation *play_notation)
 {
-  ags_recall_connect((AgsRecall *) play_notation);
+  //  ags_recall_connect((AgsRecall *) play_notation);
 
   g_signal_connect((GObject *) play_notation, "run_pre\0",
 		   G_CALLBACK(ags_play_notation_pre), NULL);

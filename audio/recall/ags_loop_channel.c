@@ -67,7 +67,7 @@ ags_loop_channel_finalize(GObject *gobject)
 void
 ags_loop_channel_connect(AgsLoopChannel *loop_channel)
 {
-  ags_recall_connect(AGS_RECALL(loop_channel));
+  //  ags_recall_connect(AGS_RECALL(loop_channel));
 
   g_signal_connect((GObject *) loop_channel, "run_pre\0",
 		   G_CALLBACK(ags_loop_channel_run_pre), NULL);

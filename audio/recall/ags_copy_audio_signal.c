@@ -84,7 +84,7 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 void
 ags_copy_audio_signal_connect(AgsCopyAudioSignal *copy_audio_signal)
 {
-  ags_recall_connect(AGS_RECALL(copy_audio_signal));
+  //  ags_recall_connect(AGS_RECALL(copy_audio_signal));
 
   g_signal_connect((GObject *) copy_audio_signal, "run_inter\0",
 		   G_CALLBACK(ags_copy_audio_signal_run_inter), NULL);

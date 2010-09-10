@@ -99,7 +99,7 @@ ags_play_recycling_finalize(GObject *gobject)
 void
 ags_play_recycling_connect(AgsPlayRecycling *play_recycling)
 {
-  ags_recall_connect(AGS_RECALL(play_recycling));
+  //  ags_recall_connect(AGS_RECALL(play_recycling));
 
   g_signal_connect((GObject *) play_recycling, "run_init_inter\0",
 		   G_CALLBACK(ags_play_recycling_run_init_inter), NULL);

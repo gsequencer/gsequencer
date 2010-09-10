@@ -59,7 +59,7 @@ short* ags_stream_alloc(guint buffer_size);
 AgsAttack* ags_attack_alloc(guint first_start, guint first_length,
 			    guint second_start, guint second_length);
 AgsAttack* ags_attack_duplicate(AgsAttack *attack);
-AgsAttack* ags_attack_get_from_devout_attack(GObject *devout);
+AgsAttack* ags_attack_get_from_devout(GObject *devout);
 
 void ags_audio_signal_connect(AgsAudioSignal *audio_signal);
 

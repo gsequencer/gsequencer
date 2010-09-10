@@ -87,7 +87,7 @@ ags_stream_channel_finalize(GObject *gobject)
 void
 ags_stream_channel_connect(AgsStreamChannel *stream_channel)
 {
-  ags_recall_connect(AGS_RECALL(stream_channel));
+  //  ags_recall_connect(AGS_RECALL(stream_channel));
 
   g_signal_connect((GObject *) stream_channel, "run_init_pre\0",
 		   G_CALLBACK(ags_stream_channel_run_init_pre), NULL);

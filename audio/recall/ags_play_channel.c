@@ -101,7 +101,7 @@ ags_play_channel_finalize(GObject *gobject)
 void
 ags_play_channel_connect(AgsPlayChannel *play_channel)
 {
-  ags_recall_connect((AgsRecall *) play_channel);
+  //  ags_recall_connect((AgsRecall *) play_channel);
 
   g_signal_connect((GObject *) play_channel, "run_init_pre\0",
 		   G_CALLBACK(ags_play_channel_run_init_pre), NULL);

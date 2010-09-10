@@ -70,7 +70,7 @@ ags_play_audio_file_finalize(GObject *gobject)
 void
 ags_play_audio_file_connect(AgsPlayAudioFile *play_audio_file)
 {
-  ags_recall_connect(AGS_RECALL(play_audio_file));
+  //  ags_recall_connect(AGS_RECALL(play_audio_file));
 
   g_signal_connect((GObject *) play_audio_file, "run_inter\0",
 		   G_CALLBACK(ags_play_audio_file), NULL);

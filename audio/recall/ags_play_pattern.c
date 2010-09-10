@@ -80,7 +80,7 @@ ags_play_pattern_finalize(GObject *gobject)
 void
 ags_play_pattern_connect(AgsPlayPattern *play_pattern)
 {
-  ags_recall_connect(AGS_RECALL(play_pattern));
+  //  ags_recall_connect(AGS_RECALL(play_pattern));
 }
 
 void

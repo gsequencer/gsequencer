@@ -107,7 +107,7 @@ ags_copy_channel_finalize(GObject *gobject)
 void
 ags_copy_channel_connect(AgsCopyChannel *copy_channel)
 {
-  ags_recall_connect(AGS_RECALL(copy_channel));
+  //  ags_recall_connect(AGS_RECALL(copy_channel));
 
   g_signal_connect((GObject *) copy_channel, "run_init_pre\0",
 		   G_CALLBACK(ags_copy_channel_run_init_pre), NULL);

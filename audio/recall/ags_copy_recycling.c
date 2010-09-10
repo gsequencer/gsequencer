@@ -115,7 +115,7 @@ ags_copy_recycling_finalize(GObject *gobject)
 void
 ags_copy_recycling_connect(AgsCopyRecycling *copy_recycling)
 {
-  ags_recall_connect(AGS_RECALL(copy_recycling));
+  //  ags_recall_connect(AGS_RECALL(copy_recycling));
 
   g_signal_connect((GObject *) copy_recycling, "run_init_inter\0",
 		   G_CALLBACK(ags_copy_recycling_run_init_inter), NULL);

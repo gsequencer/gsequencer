@@ -88,7 +88,7 @@ ags_play_note_finalize(GObject *gobject)
 void
 ags_play_note_connect(AgsPlayNote *play_note)
 {
-  ags_recall_connect(AGS_RECALL(play_note));
+  //  ags_recall_connect(AGS_RECALL(play_note));
 
   g_signal_connect((GObject *) play_note, "run_inter\0",
 		   G_CALLBACK(ags_play_note), NULL);
