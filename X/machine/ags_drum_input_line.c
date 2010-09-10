@@ -62,7 +62,7 @@ ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line)
 
   ags_drum_input_line_parent_class = g_type_class_peek_parent(drum_input_line);
 
-  gobject = G_OBJECT_CLASS(line);
+  gobject = G_OBJECT_CLASS(drum_input_line);
 
   gobject->set_property = ags_drum_input_line_set_property;
   gobject->get_property = ags_drum_input_line_get_property;
