@@ -4,6 +4,7 @@
 #include "ags_drum_input_pad.h"
 #include "ags_drum_input_line.h"
 #include "ags_drum_output_pad.h"
+#include "ags_drum_output_line.h"
 
 #include "../ags_window.h"
 #include "../ags_menu_bar.h"
@@ -428,7 +429,7 @@ ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels)
 			   (GtkWidget *) drum_output_pad,
 			   FALSE, FALSE,
 			   0);
-	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_INPUT_LINE,
+	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_OUTPUT_LINE,
 			     AGS_AUDIO(channel->audio)->audio_channels, 0);
 	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 
@@ -592,7 +593,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type, guint pads)
       for(i = pads_old; i < audio->output_pads; i++){
 	drum_output_pad = ags_drum_output_pad_new(channel);
 	gtk_box_pack_start((GtkBox *) drum->output_pad, (GtkWidget *) drum_output_pad, FALSE, FALSE, 0);
-	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_INPUT_LINE,
+	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_OUTPUT_LINE,
 			     AGS_AUDIO(channel->audio)->audio_channels, 0);
 	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 

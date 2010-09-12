@@ -65,6 +65,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
   GtkVScale *scale;
 
+  drum_input_line->flags = 0;
+
   scale = (GtkVScale *) gtk_vscale_new_with_range(0.0, 1.25, 0.025);
   gtk_range_set_value((GtkRange *) scale, 0.8);
   gtk_range_set_inverted((GtkRange *) scale, TRUE);
@@ -91,7 +93,15 @@ ags_drum_input_line_connect(AgsDrumInputLine *drum_input_line)
 void
 ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
+  AgsDrumInputLine *drum_input_line;
+
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
+
+  drum_input_line = AGS_DRUM_INPUT_LINE(line);
+
+  if(line->channel != NULL){
+    drum_input_line->flags &= (~AGS_DRUM_INPUT_LINE_MAPPED_RECALL);
+  }
 
   if(channel != NULL){
     channel->pattern = g_list_alloc();

@@ -91,6 +91,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
 void
 ags_drum_input_pad_destroy(GtkObject *object)
 {
+  /* empty */
 }
 
 void
@@ -113,58 +114,18 @@ void
 ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 {
   AGS_PAD_CLASS(ags_drum_input_pad_parent_class)->set_channel(pad, channel);
+
+  /* empty */
 }
 
 void
 ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				guint audio_channels, guint audio_channels_old)
 {
-  AgsDrumInputPad *drum_input_pad;
-  AgsDelay *delay;
-
   AGS_PAD_CLASS(ags_drum_input_pad_parent_class)->resize_lines(pad, line_type,
 							       audio_channels, audio_channels_old);
 
-  drum_input_pad = (AgsDrumInputPad *) pad;
-  delay = AGS_DELAY(ags_recall_find_by_effect(AGS_AUDIO(pad->channel->audio)->play, NULL, (char *) g_type_name(AGS_TYPE_DELAY))->data);
-
-  if(audio_channels > audio_channels_old){
-    AgsWindow *window;
-    AgsDrum *drum;
-    AgsAudio *audio;
-    AgsLine *line;
-    GtkMenu *menu;
-    AgsChannel *channel;
-    GList *list_line;
-    guint i;
-
-    drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_DRUM);
-    audio = drum->machine.audio;
-    window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
-
-    channel = pad->channel;
-    channel = ags_channel_nth(channel, audio_channels_old);
-
-    //    delay->recall_ref += (audio_channels - audio_channels_old);
-
-    list_line = gtk_container_get_children((GtkContainer *) pad->option->menu);
-    list_line = g_list_nth(list_line, audio_channels_old);
-
-    while(list_line != NULL){
-      line = AGS_LINE(list_line->data);
-
-
-
-
-
-      channel = channel->next;
-      list_line = list_line->next;
-    }
-
-
-  }else{
-    //    delay->recall_ref -= (audio_channels_old - audio_channels);
-  }
+  /* empty */
 }
 
 AgsDrumInputPad*

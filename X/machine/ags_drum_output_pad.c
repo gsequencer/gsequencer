@@ -83,6 +83,8 @@ void
 ags_drum_output_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 {
   AGS_PAD_CLASS(ags_drum_output_pad_parent_class)->set_channel(pad, channel);
+
+  /* empty */
 }
 
 void
