@@ -1,14 +1,13 @@
 #include "ags_drum_output_line.h"
+#include "ags_drum_output_line_callbacks.h"
 
 #include "../ags_window.h"
 
 #include "ags_drum.h"
 
-#include "../../audio/recall/ags_delay.h"
+#include "../../audio/recall/ags_delay_shared_audio.h"
 #include "../../audio/recall/ags_play_volume.h"
-#include "../../audio/recall/ags_play_channel.h"
 #include "../../audio/recall/ags_recall_volume.h"
-#include "../../audio/recall/ags_copy_pattern.h"
 
 GType ags_drum_output_line_get_type();
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
@@ -62,8 +61,9 @@ ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line)
 void
 ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line)
 {
-  GtkVScale *scale;
-
+  g_signal_connect_after((GObject *) drum_output_line, "parent_set\0",
+			 G_CALLBACK(ags_drum_output_line_parent_set_callback), NULL);
+  
   drum_output_line->flags = 0;
 }
 
@@ -81,6 +81,31 @@ void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
+
+  if(channel != NULL){
+    AgsDrum *drum;
+    AgsAudioSignal *audio_signal;
+    AgsDelaySharedAudio *delay_shared_audio;
+    GList *recall_shared;
+    guint stop;
+
+    drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_DRUM);
+
+    if(drum != NULL){
+      recall_shared = ags_recall_shared_find_type(AGS_AUDIO(channel->audio)->recall_shared,
+						  AGS_TYPE_DELAY_SHARED_AUDIO);
+      
+      if(recall_shared != NULL){
+	delay_shared_audio = (AgsDelaySharedAudio *) recall_shared->data;
+	stop = ((guint) drum->length_spin->adjustment->value) * (delay_shared_audio->delay + 1);
+      }
+    }else{
+      stop = 1;
+    }
+    
+    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+    ags_audio_signal_stream_resize(audio_signal, stop);
+  }
 }
 
 void

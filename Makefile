@@ -24,7 +24,7 @@ AGS_EDITOR_CALLBACK_OBJECTS = $(AGS_DIR)X/editor/ags_toolbar_callbacks.o $(AGS_D
 
 AGS_MACHINE_OBJECTS = $(AGS_DIR)X/machine/ags_panel.o $(AGS_DIR)X/machine/ags_mixer.o $(AGS_DIR)X/machine/ags_drum.o $(AGS_DIR)X/machine/ags_drum_output_pad.o $(AGS_DIR)X/machine/ags_drum_input_pad.o $(AGS_DIR)X/machine/ags_drum_output_line.o $(AGS_DIR)X/machine/ags_drum_input_line.o $(AGS_DIR)X/machine/ags_matrix.o $(AGS_DIR)X/machine/ags_synth.o $(AGS_DIR)X/machine/ags_oscillator.o $(AGS_DIR)X/machine/ags_ffplayer.o
 
-AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_DIR)X/machine/ags_mixer_callbacks.o $(AGS_DIR)X/machine/ags_drum_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_line_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_pad_callbacks.o $(AGS_DIR)X/machine/ags_matrix_callbacks.o $(AGS_DIR)X/machine/ags_synth_callbacks.o $(AGS_DIR)X/machine/ags_oscillator_callbacks.o $(AGS_DIR)X/machine/ags_ffplayer_callbacks.o
+AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_DIR)X/machine/ags_mixer_callbacks.o $(AGS_DIR)X/machine/ags_drum_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_line_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_line_callbacks.o $(AGS_DIR)X/machine/ags_matrix_callbacks.o $(AGS_DIR)X/machine/ags_synth_callbacks.o $(AGS_DIR)X/machine/ags_oscillator_callbacks.o $(AGS_DIR)X/machine/ags_ffplayer_callbacks.o
 
 AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_marshal.o
 
