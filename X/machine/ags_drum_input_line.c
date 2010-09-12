@@ -14,16 +14,10 @@
 GType ags_drum_input_line_get_type();
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_drum_input_line_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
 void ags_drum_input_line_destroy(GtkObject *object);
 void ags_drum_input_line_connect(AgsDrumInputLine *drum_input_line);
+
+void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 static gpointer ags_drum_input_line_parent_class = NULL;
 
@@ -56,16 +50,14 @@ ags_drum_input_line_get_type()
 void
 ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line)
 {
-  GObjectClass *gobject;
   AgsLineClass *line;
-  GParamSpec *param_spec;
 
   ags_drum_input_line_parent_class = g_type_class_peek_parent(drum_input_line);
 
-  gobject = G_OBJECT_CLASS(drum_input_line);
+  /* AgsLineClass */
+  line = AGS_LINE_CLASS(drum_input_line);
 
-  gobject->set_property = ags_drum_input_line_set_property;
-  gobject->get_property = ags_drum_input_line_get_property;
+  line->set_channel = ags_drum_input_line_set_channel;
 }
 
 void
@@ -87,34 +79,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 }
 
 void
-ags_drum_input_line_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec)
-{
-  G_OBJECT_CLASS(ags_drum_input_line_parent_class)->set_property(gobject,
-								 prop_id,
-								 value,
-								 param_spec);
-
-  fprintf(stdout, "ags_drum_input_line_set_property\n\0");
-}
-
-void
-ags_drum_input_line_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec)
-{
-  G_OBJECT_CLASS(ags_drum_input_line_parent_class)->get_property(gobject,
-								 prop_id,
-								 value,
-								 param_spec);
-
-  fprintf(stdout, "ags_drum_input_line_get_property\n\0");
-}
-
-void
 ags_drum_input_line_destroy(GtkObject *object)
 {
 }
@@ -122,6 +86,18 @@ ags_drum_input_line_destroy(GtkObject *object)
 void
 ags_drum_input_line_connect(AgsDrumInputLine *drum_input_line)
 {
+}
+
+void
+ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
+{
+  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
+
+  if(channel != NULL){
+    channel->pattern = g_list_alloc();
+    channel->pattern->data = (gpointer) ags_pattern_new();
+    ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
+  }
 }
 
 void
@@ -198,15 +174,9 @@ ags_drum_input_line_new(AgsChannel *channel)
 {
   AgsDrumInputLine *drum_input_line;
 
-  drum_input_line = (AgsDrumInputLine *) g_object_new(AGS_TYPE_DRUM_INPUT_LINE, NULL);
-
-  drum_input_line->line.channel = channel;
-
-  if(channel != NULL){
-    channel->pattern = g_list_alloc();
-    channel->pattern->data = (gpointer) ags_pattern_new();
-    ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
-  }
+  drum_input_line = (AgsDrumInputLine *) g_object_new(AGS_TYPE_DRUM_INPUT_LINE,
+						      "channel\0", channel,
+						      NULL);
 
   return(drum_input_line);
 }

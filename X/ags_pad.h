@@ -36,13 +36,17 @@ struct _AgsPadClass
 {
   GtkVBoxClass vbox;
 
+  void (*set_channel)(AgsPad *pad, AgsChannel *channel);
+
   void (*resize_lines)(AgsPad *pad, GType line_type,
 		       guint audio_channels, guint audio_channels_old);
 };
 
+void ags_pad_set_channel(AgsPad *pad, AgsChannel *channel);
+
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old);
 
-AgsPad* ags_pad_new();
+AgsPad* ags_pad_new(AgsChannel *channel);
 
 #endif /*__AGS_PAD_H__*/

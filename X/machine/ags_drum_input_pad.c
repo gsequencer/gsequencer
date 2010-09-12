@@ -13,6 +13,7 @@ void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_destroy(GtkObject *object);
 void ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad);
 
+void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
 
@@ -53,6 +54,7 @@ ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad)
 
   pad = (AgsPadClass *) drum_input_pad;
 
+  pad->set_channel = ags_drum_input_pad_set_channel;
   pad->resize_lines = ags_drum_input_pad_resize_lines;
 }
 
@@ -105,6 +107,12 @@ ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad)
 
   g_signal_connect(G_OBJECT(drum_input_pad->edit), "clicked\0",
 		   G_CALLBACK(ags_drum_input_pad_edit_callback), (gpointer) drum_input_pad);
+}
+
+void
+ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel)
+{
+  AGS_PAD_CLASS(ags_drum_input_pad_parent_class)->set_channel(pad, channel);
 }
 
 void
@@ -164,9 +172,9 @@ ags_drum_input_pad_new(AgsChannel *channel)
 {
   AgsDrumInputPad *drum_input_pad;
 
-  drum_input_pad = (AgsDrumInputPad *) g_object_new(AGS_TYPE_DRUM_INPUT_PAD, NULL);
-
-  drum_input_pad->pad.channel = channel;
+  drum_input_pad = (AgsDrumInputPad *) g_object_new(AGS_TYPE_DRUM_INPUT_PAD,
+						    "channel\0", channel,
+						    NULL);
 
   return(drum_input_pad);
 }

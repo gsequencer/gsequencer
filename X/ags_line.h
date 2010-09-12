@@ -31,6 +31,8 @@ struct _AgsLine
 struct _AgsLineClass
 {
   GtkMenuItemClass item;
+
+  void (*set_channel)(AgsLine *line, AgsChannel *channel);
 };
 
 struct _AgsLineMember
@@ -38,6 +40,8 @@ struct _AgsLineMember
   AgsRecall *recall;
   guint control;
 };
+
+void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 AgsLine* ags_line_new(AgsChannel *channel);
 

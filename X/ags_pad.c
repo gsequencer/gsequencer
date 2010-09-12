@@ -7,18 +7,34 @@
 GType ags_pad_get_type(void);
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_init(AgsPad *pad);
+void ags_pad_set_property(GObject *gobject,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec);
+void ags_pad_get_property(GObject *gobject,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec);
 void ags_pad_connect(AgsPad *pad);
 void ags_pad_destroy(GtkObject *object);
 void ags_pad_show(GtkWidget *widget);
 
+void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			       guint audio_channels, guint audio_channels_old);
 
 enum{
+  SET_CHANNEL,
   RESIZE_LINES,
   LAST_SIGNAL,
 };
 
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+};
+
+static gpointer ags_pad_parent_class = NULL;
 static guint pad_signals[LAST_SIGNAL];
 
 GType
@@ -50,7 +66,39 @@ ags_pad_get_type(void)
 void
 ags_pad_class_init(AgsPadClass *pad)
 {
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  ags_pad_parent_class = g_type_class_peek_parent(pad);
+
+  /* GObjectClass */
+  gobject = G_OBJECT_CLASS(pad);
+
+  gobject->set_property = ags_pad_set_property;
+  gobject->get_property = ags_pad_get_property;
+
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel it is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);				  
+
+  /* AgsPadClass */
+  pad->set_channel = ags_pad_real_set_channel;
   pad->resize_lines = ags_pad_real_resize_lines;
+
+  pad_signals[SET_CHANNEL] =
+    g_signal_new("set_channel\0",
+		 G_TYPE_FROM_CLASS(pad),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPadClass, set_channel),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 
   pad_signals[RESIZE_LINES] =
     g_signal_new("resize_lines\0",
@@ -89,6 +137,52 @@ ags_pad_init(AgsPad *pad)
 
   pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("S\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->solo, FALSE, FALSE, 0);
+}
+
+void
+ags_pad_set_property(GObject *gobject,
+		     guint prop_id,
+		     const GValue *value,
+		     GParamSpec *param_spec)
+{
+  AgsPad *pad;
+
+  pad = AGS_PAD(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      ags_pad_set_channel(pad, channel);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_pad_get_property(GObject *gobject,
+		     guint prop_id,
+		     GValue *value,
+		     GParamSpec *param_spec)
+{
+  AgsPad *pad;
+
+  pad = AGS_PAD(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    g_value_set_object(value, pad->channel);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -132,6 +226,24 @@ ags_pad_show(GtkWidget *widget)
 }
 
 void
+ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
+{
+  pad->channel = channel;
+}
+
+void
+ags_pad_set_channel(AgsPad *pad, AgsChannel *channel)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  g_object_ref((GObject *) pad);
+  g_signal_emit(G_OBJECT(pad),
+		pad_signals[SET_CHANNEL], 0,
+		channel);
+  g_object_unref((GObject *) pad);
+}
+
+void
 ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old)
 {
@@ -150,21 +262,23 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
       fprintf(stdout, "  loop\n\0");
 
       line = g_object_new(line_type,
-			  "channel\0", channel,
+      			  "channel\0", channel,
 			  NULL);
       channel->line_widget = (GtkWidget *) line;
-      gtk_menu_shell_insert((GtkMenuShell *) pad->option->menu, (GtkWidget *) line, i);
+      gtk_menu_shell_insert((GtkMenuShell *) pad->option->menu,
+			    (GtkWidget *) line, i);
 
       channel = channel->next;
     }
 
-    if(audio_channels_old == 0)
-      pad->selected_line = (AgsLine *) gtk_container_get_children((GtkContainer *) pad->option->menu)->data;
+    if(audio_channels_old == 0){
+      pad->selected_line = AGS_LINE(gtk_container_get_children((GtkContainer *) pad->option->menu)->data);
 
     //    if(machine != NULL && GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
       //     gtk_widget_show_all((GtkWidget *) line);
       //      ags_line_connect(line);
     //    }
+    }
   }else if(audio_channels < audio_channels_old){
   }
 }
@@ -185,7 +299,7 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 }
 
 AgsPad*
-ags_pad_new()
+ags_pad_new(AgsChannel *channel)
 {
   AgsPad *pad;
 

@@ -18,12 +18,20 @@ void ags_line_connect(AgsLine *line);
 void ags_line_destroy(GtkObject *object);
 void ags_line_show(GtkWidget *widget);
 
+void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
+
+enum{
+  SET_CHANNEL,
+  LAST_SIGNAL,
+};
+
 enum{
   PROP_0,
   PROP_CHANNEL,
 };
 
 static gpointer ags_line_parent_class = NULL;
+static guint line_signals[LAST_SIGNAL];
 
 GType
 ags_line_get_type(void)
@@ -59,6 +67,7 @@ ags_line_class_init(AgsLineClass *line)
 
   ags_line_parent_class = g_type_class_peek_parent(line);
 
+  /* GObjectClass */
   gobject = G_OBJECT_CLASS(line);
 
   gobject->set_property = ags_line_set_property;
@@ -72,7 +81,19 @@ ags_line_class_init(AgsLineClass *line)
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,
 				  param_spec);
-				  
+
+  /* AgsLineClass*/
+  line->set_channel = ags_line_real_set_channel;
+
+  line_signals[SET_CHANNEL] =
+    g_signal_new("set_channel\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, set_channel),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -103,8 +124,6 @@ ags_line_set_property(GObject *gobject,
 {
   AgsLine *line;
 
-  fprintf(stdout, "ags_line_set_property\n\0");
-
   line = AGS_LINE(gobject);
 
   switch(prop_id){
@@ -130,8 +149,6 @@ ags_line_get_property(GObject *gobject,
 		      GParamSpec *param_spec)
 {
   AgsLine *line;
-
-  fprintf(stdout, "ags_line_get_property\n\0");
 
   line = AGS_LINE(gobject);
 
@@ -165,6 +182,24 @@ void
 ags_line_show(GtkWidget *widget)
 {
   /* empty */
+}
+
+void
+ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
+{
+  line->channel = channel;
+}
+
+void
+ags_line_set_channel(AgsLine *line, AgsChannel *channel)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[SET_CHANNEL], 0,
+		channel);
+  g_object_unref((GObject *) line);
 }
 
 AgsLine*
