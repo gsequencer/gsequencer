@@ -8,7 +8,7 @@
 
 GType ags_recall_get_type();
 void ags_recall_class_init(AgsRecallClass *recall_class);
-void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable_interface);
+void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_init(AgsRecall *recall);
 void ags_recall_finalize(GObject *recall);
 
@@ -219,9 +219,9 @@ ags_recall_class_init(AgsRecallClass *recall)
 }
 
 void
-ags_recall_connectable_interface_init(AgsConnectableInterface *connectable_interface)
+ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable_interface->connect = ags_recall_connect;
+  connectable->connect = ags_recall_connect;
 }
 
 void
@@ -261,6 +261,7 @@ ags_recall_finalize(GObject *gobject)
 void
 ags_recall_connect(AgsConnectable *connectable)
 {
+  /* empty */
 }
 
 void

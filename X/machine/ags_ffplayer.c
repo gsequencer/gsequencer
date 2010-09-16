@@ -14,9 +14,12 @@ void ags_ffplayer_connect(AgsFFPlayer *ffplayer);
 void ags_ffplayer_destroy(GtkObject *object);
 void ags_ffplayer_show(GtkWidget *widget);
 
-void ags_ffplayer_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_ffplayer_set_pads(AgsAudio *audio, GType type, guint pads);
-void ags_ffplayer_set_lines(AgsAudio *audio, GType type, guint lines);
+void ags_ffplayer_set_audio_channels(AgsAudio *audio,
+				     guint audio_channels, guint audio_channels_old,
+				     gpointer data);
+void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
+			   guint pads, guint pads_old,
+			   gpointer data);
 
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
@@ -69,6 +72,11 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   g_signal_connect_after((GObject *) ffplayer, "parent_set\0",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
+  ffplayer->machine.audio->flags |= (AGS_AUDIO_INPUT_HAS_RECYCLING |
+				     AGS_AUDIO_INPUT_TAKES_FILE |
+				     AGS_AUDIO_SYNC |
+				     AGS_AUDIO_HAS_NOTATION);
+
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) ffplayer))->data, (GtkWidget *) table);
 
@@ -104,13 +112,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
   gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hscrollbar, FALSE, FALSE, 0);
-
-
-  AGS_AUDIO_GET_CLASS(ffplayer->machine.audio)->set_audio_channels = ags_ffplayer_set_audio_channels;
-  AGS_AUDIO_GET_CLASS(ffplayer->machine.audio)->set_pads = ags_ffplayer_set_pads;
-  AGS_AUDIO_GET_CLASS(ffplayer->machine.audio)->set_lines = ags_ffplayer_set_lines;
-
-  ffplayer->machine.audio->flags |= (AGS_AUDIO_INPUT_HAS_RECYCLING | AGS_AUDIO_INPUT_TAKES_FILE | AGS_AUDIO_SYNC | AGS_AUDIO_HAS_NOTATION);
 }
 
 void
@@ -132,6 +133,13 @@ ags_ffplayer_connect(AgsFFPlayer *ffplayer)
 
   g_signal_connect((GObject *) ffplayer->hadjustment, "value_changed\0",
 		   G_CALLBACK(ags_ffplayer_hscrollbar_value_changed), (gpointer) ffplayer);
+
+  /* AgsAudio */
+  g_signal_connect(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
+		   G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
+
+  g_signal_connect(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
+		   G_CALLBACK(ags_ffplayer_set_pads), NULL);
 }
 
 void
@@ -145,21 +153,19 @@ ags_ffplayer_show(GtkWidget *widget)
 }
 
 void
-ags_ffplayer_set_audio_channels(AgsAudio *audio, guint audio_channels)
+ags_ffplayer_set_audio_channels(AgsAudio *audio,
+				guint audio_channels, guint audio_channels_old,
+				gpointer data)
 {
-  ags_audio_real_set_audio_channels(audio, audio_channels);
+  /* empty */
 }
 
 void
-ags_ffplayer_set_pads(AgsAudio *audio, GType type, guint pads)
+ags_ffplayer_set_pads(AgsAudio *audio, GType type,
+		      guint pads, guint pads_old,
+		      gpointer data)
 {
-  ags_audio_real_set_pads(audio, type, pads);
-}
-
-void
-ags_ffplayer_set_lines(AgsAudio *audio, GType type, guint lines)
-{
-  ags_audio_real_set_lines(audio, type, lines);
+  /* empty */
 }
 
 void

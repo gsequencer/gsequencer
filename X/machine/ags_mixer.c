@@ -19,9 +19,12 @@ void ags_mixer_connect(AgsMixer *mixer);
 void ags_mixer_destroy(GtkObject *object);
 void ags_mixer_show(GtkWidget *widget);
 
-void ags_mixer_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_mixer_set_pads(AgsAudio *audio, GType type, guint pads);
-void ags_mixer_set_lines(AgsAudio *audio, GType type, guint lines);
+void ags_mixer_set_audio_channels(AgsAudio *audio,
+				  guint audio_channels, guint audio_channels_old,
+				  gpointer data);
+void ags_mixer_set_pads(AgsAudio *audio, GType type,
+			guint pads, guint pads_old,
+			gpointer data);
 
 extern void ags_file_read_mixer(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_mixer(AgsFile *file, AgsMachine *machine);
@@ -76,15 +79,11 @@ ags_mixer_init(AgsMixer *mixer)
   mixer->machine.input = (GtkContainer *) mixer->pad;
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->pad);
 
-  AGS_AUDIO_GET_CLASS(mixer->machine.audio)->set_audio_channels = ags_mixer_set_audio_channels;
-  AGS_AUDIO_GET_CLASS(mixer->machine.audio)->set_pads = ags_mixer_set_pads;
-  AGS_AUDIO_GET_CLASS(mixer->machine.audio)->set_lines = ags_mixer_set_lines;
-
   mixer->machine.audio->flags |= (AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC);
 
-  mixer->machine.audio->audio_channels = 2;
-  AGS_AUDIO_GET_CLASS(mixer->machine.audio)->set_pads(mixer->machine.audio, AGS_TYPE_OUTPUT, 1);
-  AGS_AUDIO_GET_CLASS(mixer->machine.audio)->set_pads(mixer->machine.audio, AGS_TYPE_INPUT, 8);
+  //  mixer->machine.audio->audio_channels = 2;
+  //  ags_audio_set_pads(mixer->machine.audio, AGS_TYPE_OUTPUT, 1);
+  //  ags_audio_set_pads(mixer->machine.audio, AGS_TYPE_INPUT, 8);
 }
 
 void
@@ -97,13 +96,20 @@ ags_mixer_connect(AgsMixer *mixer)
   g_signal_connect((GObject *) mixer, "destroy\0",
 		   G_CALLBACK(ags_mixer_destroy_callback), (gpointer) mixer);
 
-  list = gtk_container_get_children((GtkContainer *) mixer->pad);
+  //  list = gtk_container_get_children((GtkContainer *) mixer->pad);
 
-  while(list != NULL){
-    ags_pad_connect((AgsPad *) list->data);
+  //  while(list != NULL){
+  //    ags_pad_connect((AgsPad *) list->data);
+  //
+  //    list = list->next;
+  //  }
 
-    list = list->next;
-  }
+  /* AgsAudio */
+  g_signal_connect(G_OBJECT(mixer->machine.audio), "set_audio_channels\0",
+		   G_CALLBACK(ags_mixer_set_audio_channels), NULL);
+
+  g_signal_connect(G_OBJECT(mixer->machine.audio), "set_pads\0",
+		   G_CALLBACK(ags_mixer_set_pads), NULL);
 }
 
 void
@@ -117,26 +123,20 @@ ags_mixer_show(GtkWidget *widget)
 }
 
 void
-ags_mixer_set_audio_channels(AgsAudio *audio, guint audio_channels)
+ags_mixer_set_audio_channels(AgsAudio *audio,
+			     guint audio_channels, guint audio_channels_old,
+			     gpointer data)
 {
 
   AgsMixer *mixer;
   GtkVScale *scale;
   GList *list0;
-  guint old_audio_channels;
   guint i;
 
-  old_audio_channels = audio_channels;
-
-  if(audio_channels == old_audio_channels)
-    return;
-
-  ags_audio_real_set_audio_channels(audio, audio_channels);
-
-  mixer = (AgsMixer *) audio->machine;
+  mixer = AGS_MIXER(audio->machine);
   list0 = gtk_container_get_children((GtkContainer *) mixer->pad);
 
-  if(old_audio_channels < audio_channels){
+  if(audio_channels_old < audio_channels){
     AgsLine *line;
     AgsChannel *channel;
     AgsRecall *recall;
@@ -144,9 +144,9 @@ ags_mixer_set_audio_channels(AgsAudio *audio, guint audio_channels)
     channel = audio->input;
 
     while(list0 != NULL){
-      channel = ags_channel_nth(channel, old_audio_channels);
+      channel = ags_channel_nth(channel, audio_channels_old);
 
-      for(i = old_audio_channels; i < audio_channels; i++){
+      for(i = audio_channels_old; i < audio_channels; i++){
 	line = ags_line_new(channel);
 	gtk_menu_shell_insert((GtkMenuShell *) AGS_PAD(list0->data)->option->menu, (GtkWidget *) line, i);
 
@@ -184,9 +184,9 @@ ags_mixer_set_audio_channels(AgsAudio *audio, guint audio_channels)
     GList *list1;
 
     while(list0 != NULL){
-      list0 = g_list_nth(list0, old_audio_channels -1);
+      list0 = g_list_nth(list0, audio_channels_old -1);
 
-      for(i = audio_channels; i < old_audio_channels; i++){
+      for(i = audio_channels; i < audio_channels_old; i++){
 	list1 = list0->next;
 
 	gtk_widget_destroy((GtkWidget *) list0->data);
@@ -198,38 +198,31 @@ ags_mixer_set_audio_channels(AgsAudio *audio, guint audio_channels)
 }
 
 void
-ags_mixer_set_pads(AgsAudio *audio, GType type, guint pads)
+ags_mixer_set_pads(AgsAudio *audio, GType type,
+		   guint pads, guint pads_old,
+		   gpointer data)
 {
   GtkVScale *scale;
-  guint old_pads;
-
-  old_pads = (type == AGS_TYPE_OUTPUT) ? audio->output_pads: audio->input_pads;
-
-  if(pads == old_pads)
-    return;
-
-  ags_audio_real_set_pads(audio, type, pads);
 
   if(type == AGS_TYPE_INPUT){
     AgsMixer *mixer = (AgsMixer *) audio->machine;
     AgsPad *pad;
 
-    if(old_pads < pads){
+    if(pads_old < pads){
       AgsLine *line;
       AgsChannel *channel;
       AgsRecall *recall;
       GtkMenu *menu;
       guint i, j;
 
-      channel = ags_channel_nth(mixer->machine.audio->input, old_pads);
-      i = old_pads;
+      channel = ags_channel_nth(mixer->machine.audio->input, pads_old);
+      i = pads_old;
       goto ags_mixer_set_pads0;
   
       for(; i < pads; i++){
       ags_mixer_set_pads0:
 
-	pad = ags_pad_new();
-	pad->channel = channel;
+	pad = ags_pad_new(channel);
 	menu = (GtkMenu *) pad->option->menu;
 
 	for(j = 0; j < mixer->machine.audio->audio_channels; j++){
@@ -280,12 +273,6 @@ ags_mixer_set_pads(AgsAudio *audio, GType type, guint pads)
       }
     }
   }
-}
-
-void
-ags_mixer_set_lines(AgsAudio *audio, GType type, guint lines)
-{
-  ags_audio_real_set_lines(audio, type, lines);
 }
 
 AgsMixer*

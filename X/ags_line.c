@@ -133,7 +133,7 @@ ags_line_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      line->channel = channel;
+      ags_line_set_channel(line, channel);
     }
     break;
   default:

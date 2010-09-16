@@ -31,9 +31,12 @@ void ags_drum_connect(AgsDrum *drum);
 void ags_drum_destroy(GtkObject *drum);
 void ags_drum_show(GtkWidget *widget);
 
-void ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_drum_set_pads(AgsAudio *audio, GType type, guint pads);
-void ags_drum_set_lines(AgsAudio *audio, GType type, guint lines);
+void ags_drum_set_audio_channels(AgsAudio *audio,
+				 guint audio_channels, guint audio_channels_old,
+				 gpointer data);
+void ags_drum_set_pads(AgsAudio *audio, GType type,
+		       guint pads, guint pads_old,
+		       gpointer data);
 
 extern void ags_file_read_drum(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_drum(AgsFile *file, AgsMachine *machine);
@@ -89,11 +92,12 @@ ags_drum_init(AgsDrum *drum)
   g_signal_connect_after((GObject *) drum, "parent_set\0",
 			 G_CALLBACK(ags_drum_parent_set_callback), (gpointer) drum);
 
-  AGS_AUDIO_GET_CLASS(drum->machine.audio)->set_audio_channels = ags_drum_set_audio_channels;
-  AGS_AUDIO_GET_CLASS(drum->machine.audio)->set_pads = ags_drum_set_pads;
-  AGS_AUDIO_GET_CLASS(drum->machine.audio)->set_lines = ags_drum_set_lines;
 
-  drum->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_INPUT_HAS_RECYCLING | AGS_AUDIO_INPUT_TAKES_FILE | AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC);
+  drum->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+				 AGS_AUDIO_INPUT_HAS_RECYCLING |
+				 AGS_AUDIO_INPUT_TAKES_FILE |
+				 AGS_AUDIO_SYNC |
+				 AGS_AUDIO_ASYNC);
 
   drum->flags = 0;
 
@@ -276,25 +280,25 @@ ags_drum_connect(AgsDrum *drum)
   g_signal_connect((GObject *) drum, "show\0",
 		   G_CALLBACK(ags_drum_show_callback), (gpointer) drum);
 
-  list0 = gtk_container_get_children((GtkContainer *) drum->input_pad);
+  //  list0 = gtk_container_get_children((GtkContainer *) drum->input_pad);
 
-  while(list0 != NULL){
-    drum_input_pad = AGS_DRUM_INPUT_PAD(list0->data);
+  //  while(list0 != NULL){
+  //    drum_input_pad = AGS_DRUM_INPUT_PAD(list0->data);
+  //
+  //    ags_drum_input_pad_connect(drum_input_pad);
+  //
+  //    list0 = list0->next;
+  //  }
 
-    ags_drum_input_pad_connect(drum_input_pad);
+  //  list0 = gtk_container_get_children((GtkContainer *) drum->output_pad);
 
-    list0 = list0->next;
-  }
-
-  list0 = gtk_container_get_children((GtkContainer *) drum->output_pad);
-
-  while(list0 != NULL){
-    drum_output_pad = AGS_DRUM_OUTPUT_PAD(list0->data);
-
-    ags_drum_output_pad_connect(drum_output_pad);
-
-    list0 = list0->next;
-  }
+  //  while(list0 != NULL){
+  //    drum_output_pad = AGS_DRUM_OUTPUT_PAD(list0->data);
+  //
+  //    ags_drum_output_pad_connect(drum_output_pad);
+  //
+  //    list0 = list0->next;
+  //  }
 
   g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
@@ -342,6 +346,13 @@ ags_drum_connect(AgsDrum *drum)
 		   
     list0 = list0->next;
   }
+
+  /* AgsAudio */
+  g_signal_connect(G_OBJECT(drum->machine.audio), "set_audio_channels\0",
+		   G_CALLBACK(ags_drum_set_audio_channels), NULL);
+
+  g_signal_connect(G_OBJECT(drum->machine.audio), "set_pads\0",
+		   G_CALLBACK(ags_drum_set_pads), NULL);
 }
 
 void
@@ -362,19 +373,13 @@ ags_drum_show(GtkWidget *widget)
 }
 
 void
-ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels)
+ags_drum_set_audio_channels(AgsAudio *audio,
+			    guint audio_channels, guint audio_channels_old,
+			    gpointer data)
 {
   AgsDrum *drum;
-  guint audio_channels_old;
   GList *list_output_pad, *list_output_pad_next, *list_input_pad, *list_input_pad_next;
   guint i, j;
-
-  audio_channels_old = audio->audio_channels;
-
-  if(audio_channels == audio_channels_old)
-    return;
-
-  ags_audio_real_set_audio_channels(audio, audio_channels);
 
   drum = (AgsDrum *) audio->machine;
 
@@ -508,23 +513,14 @@ ags_drum_set_audio_channels(AgsAudio *audio, guint audio_channels)
 }
 
 void
-ags_drum_set_pads(AgsAudio *audio, GType type, guint pads)
+ags_drum_set_pads(AgsAudio *audio, GType type,
+		  guint pads, guint pads_old,
+		  gpointer data)
 {
   AgsDrum *drum;
   AgsChannel *channel;
   GList *list, *list_next;
-  guint pads_old;
   guint i, j;
-
-  pads_old = (type == AGS_TYPE_OUTPUT) ? audio->output_pads: audio->input_pads;
-
-  if(pads == pads_old)
-    return;
-
-  ags_audio_real_set_pads(audio, type, pads);
-
-  if(audio->audio_channels == 0)
-    return;
 
   drum = (AgsDrum *) audio->machine;
 
@@ -588,6 +584,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type, guint pads)
     AgsDrumOutputPad *drum_output_pad;
 
     if(pads_old < pads){
+      /* create AgsDrumOutputPad */
       channel = ags_channel_nth(audio->output, pads_old * audio->audio_channels);
 
       for(i = pads_old; i < audio->output_pads; i++){
@@ -605,27 +602,30 @@ ags_drum_set_pads(AgsAudio *audio, GType type, guint pads)
 
 	channel = channel->next_pad;
       }
+
+      /* update recalls in AgsDrumInputPads */
+      list = gtk_container_get_children(GTK_CONTAINER(drum->input_pad));
+
+      for(i = 0; i < audio->input_pads; i++){
+
+
+	list = list->next;
+      }
     }else if(pads_old > pads){
       /* destroy AgsPad's */
-      list = gtk_container_get_children((GtkContainer *) drum->output_pad);
+      list = gtk_container_get_children(GTK_CONTAINER(drum->output_pad));
       list = g_list_nth(list, pads);
 
       while(list != NULL){
 	list_next = list->next;
 
-	gtk_widget_destroy((GtkWidget *) list->data);
+	gtk_widget_destroy(GTK_WIDGET(list->data));
 
 	list = list_next;
       }
     }
   }
   
-}
-
-void
-ags_drum_set_lines(AgsAudio *audio, GType type, guint lines)
-{
-  ags_audio_real_set_lines(audio, type, lines);
 }
 
 void

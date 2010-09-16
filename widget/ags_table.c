@@ -41,11 +41,15 @@ ags_table_init(AgsTable *table)
 }
 
 AgsTable*
-ags_table_new()
+ags_table_new(guint row, guint columns, gboolean homogeneous)
 {
   AgsTable *table;
 
-  table = (AgsTable *) g_object_new(AGS_TYPE_TABLE, NULL);
+  table = (AgsTable *) g_object_new(AGS_TYPE_TABLE,
+				    "n-rows\0", row,
+				    "n-columns\0", columns,
+				    "homogeneous\0", homogeneous,
+				    NULL);
   
   return(table);
 }

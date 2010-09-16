@@ -332,12 +332,12 @@ ags_file_read_audio(AgsFile *file, AgsAudio *audio)
   prop[0] = xmlGetProp(file->current, "output_pads\0");
 
   if(prop[0] != NULL)
-    AGS_AUDIO_GET_CLASS(audio)->set_pads(audio, AGS_TYPE_OUTPUT, atoi(prop[0]));
+    ags_audio_set_pads(audio, AGS_TYPE_OUTPUT, atoi(prop[0]));
 
   prop[0] = xmlGetProp(file->current, "input_pads\0");
   
   if(prop[0] != NULL)
-    AGS_AUDIO_GET_CLASS(audio)->set_pads(audio, AGS_TYPE_INPUT, atoi(prop[0]));
+    ags_audio_set_pads(audio, AGS_TYPE_INPUT, atoi(prop[0]));
   
   node = file->current;
   file->current = node->children;

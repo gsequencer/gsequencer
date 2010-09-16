@@ -19,12 +19,14 @@ typedef struct _AgsMenuClass AgsMenuClass;
 
 struct _AgsMenu
 {
-  AgsTable table;
+  GtkWindow window;
+
+  AgsTable *table;
 };
 
 struct _AgsMenuClass
 {
-  AgsTableClass table;
+  GtkWindowClass window;
 };
 
 AgsMenu* ags_menu_new();

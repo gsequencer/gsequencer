@@ -252,14 +252,14 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   AgsChannel *channel;
   guint i;
 
-  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
+  //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
   if(audio_channels > audio_channels_old){
     //    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
     channel = ags_channel_nth(pad->channel, audio_channels_old);
 
     for(i = audio_channels_old; i < audio_channels; i++){
-      fprintf(stdout, "  loop\n\0");
+      //      fprintf(stdout, "  loop\n\0");
 
       line = g_object_new(line_type,
       			  "channel\0", channel,
@@ -288,7 +288,7 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 {
   g_return_if_fail(AGS_IS_PAD(pad));
 
-  fprintf(stdout, "ags_pad_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
+  //  fprintf(stdout, "ags_pad_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
   g_object_ref((GObject *) pad);
   g_signal_emit(G_OBJECT(pad),

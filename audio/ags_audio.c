@@ -16,9 +16,11 @@ void ags_audio_class_init(AgsAudioClass *audio_class);
 void ags_audio_init(AgsAudio *audio);
 void ags_audio_finalize(GObject *gobject);
 
-void ags_audio_real_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_audio_real_set_pads(AgsAudio *audio, GType type, guint channels);
-void ags_audio_real_set_lines(AgsAudio *audio, GType type, guint lines);
+void ags_audio_real_set_audio_channels(AgsAudio *audio,
+				       guint audio_channels, guint audio_channels_old);
+void ags_audio_real_set_pads(AgsAudio *audio,
+			     GType type,
+			     guint channels, guint channels_old);
 
 enum{
   SET_AUDIO_CHANNELS,
@@ -69,7 +71,6 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   audio->set_audio_channels = ags_audio_real_set_audio_channels;
   audio->set_pads = ags_audio_real_set_pads;
-  audio->set_lines = ags_audio_real_set_lines;
 
   audio_signals[SET_AUDIO_CHANNELS] = 
     g_signal_new("set_audio_channels\0",
@@ -77,9 +78,9 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_audio_channels),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT, G_TYPE_UINT);
 
   audio_signals[SET_PADS] = 
     g_signal_new("set_pads\0",
@@ -87,19 +88,10 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_pads),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT,
-		 G_TYPE_NONE, 2,
-		 G_TYPE_ULONG, G_TYPE_UINT);
-
-  audio_signals[SET_LINES] = 
-    g_signal_new("set_lines\0",
-		 G_TYPE_FROM_CLASS(audio),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsAudioClass, set_lines),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT,
-		 G_TYPE_NONE, 2,
-		 G_TYPE_ULONG, G_TYPE_UINT);
+		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_ULONG,
+		 G_TYPE_UINT, G_TYPE_UINT);
 }
 
 void
@@ -202,7 +194,8 @@ ags_audio_connect(AgsAudio *audio)
  * AgsInput has to be allocated first
  */
 void
-ags_audio_real_set_audio_channels(AgsAudio *audio, guint audio_channels)
+ags_audio_real_set_audio_channels(AgsAudio *audio,
+				  guint audio_channels, guint audio_channels_old)
 {
   AgsChannel *channel, *input, *input_pad_last;
   AgsRecycling *recycling;
@@ -803,7 +796,7 @@ ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_AUDIO_CHANNELS], 0,
-		audio_channels);
+		audio_channels, audio->audio_channels);
   g_object_unref((GObject *) audio);
 }
 
@@ -811,11 +804,12 @@ ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
  * AgsInput has to be allocated first
  */
 void
-ags_audio_real_set_pads(AgsAudio *audio, GType type, guint pads)
+ags_audio_real_set_pads(AgsAudio *audio,
+			GType type,
+			guint pads, guint pads_old)
 {
   AgsChannel *start, *channel, *prev_pad, *input, *input_pad_last;
   AgsRecycling *recycling;
-  guint pads_old;
   guint i, j;
   gboolean alloc_recycling, link_recycling, set_sync_link, update_async_link, set_async_link;
   void ags_audio_set_pads_grow_one(){
@@ -1196,35 +1190,15 @@ ags_audio_real_set_pads(AgsAudio *audio, GType type, guint pads)
 void
 ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
 {
+  guint pads_old;
+
   g_return_if_fail(AGS_IS_AUDIO(audio));
 
   g_object_ref((GObject *) audio);
+  pads_old = (type == AGS_TYPE_OUTPUT) ? audio->output_pads: audio->input_pads;
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_PADS], 0,
-		type, pads);
-  g_object_unref((GObject *) audio);
-}
-
-void
-ags_audio_real_set_lines(AgsAudio *audio, GType type, guint lines)
-{
-  if(lines != 0 && lines % audio->audio_channels != 0){
-    fprintf(stderr, "_ags_audio_set_lines: invalid count of lines\n\0");
-    return;
-  }
-
-  AGS_AUDIO_GET_CLASS(audio)->set_pads(audio, type, lines / audio->audio_channels);
-}
-
-void
-ags_audio_set_lines(AgsAudio *audio, GType type, guint lines)
-{
-  g_return_if_fail(AGS_IS_AUDIO(audio));
-
-  g_object_ref((GObject *) audio);
-  g_signal_emit(G_OBJECT(audio),
-		audio_signals[SET_LINES], 0,
-		type, lines);
+		type, pads, pads_old);
   g_object_unref((GObject *) audio);
 }
 

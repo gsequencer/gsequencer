@@ -205,7 +205,8 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
     if(create->toggle_button.active && filenames != NULL){
       list_length = g_slist_length(filenames);
 
-      AGS_AUDIO_GET_CLASS((AgsAudio *) drum->machine.audio)->set_pads((AgsAudio *) drum->machine.audio, AGS_TYPE_INPUT, list_length + AGS_AUDIO(drum->machine.audio)->input_pads);
+      ags_audio_set_pads((AgsAudio *) drum->machine.audio, AGS_TYPE_INPUT,
+			 list_length + AGS_AUDIO(drum->machine.audio)->input_pads);
       channel = ags_channel_nth(AGS_AUDIO(drum->machine.audio)->input, (AGS_AUDIO(drum->machine.audio)->input_pads - list_length) * AGS_AUDIO(drum->machine.audio)->audio_channels);
       pad_list = g_list_nth(gtk_container_get_children((GtkContainer *) drum->input_pad), AGS_AUDIO(drum->machine.audio)->input_pads - list_length);
 

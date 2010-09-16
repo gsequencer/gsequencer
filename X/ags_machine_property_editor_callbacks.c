@@ -64,7 +64,7 @@ ags_machine_property_editor_add_input_callback(AgsMachineEditor *machine_editor,
   guint pad, nth;
 
   pad = machine_editor->machine->audio->input_pads;
-  AGS_AUDIO_GET_CLASS(machine_editor->machine->audio)->set_pads(machine_editor->machine->audio, AGS_TYPE_INPUT, pad + 1);
+  ags_audio_set_pads(machine_editor->machine->audio, AGS_TYPE_INPUT, pad + 1);
 
   nth = machine_editor->machine->audio->input_lines - machine_editor->machine->audio->audio_channels;
 
@@ -86,7 +86,7 @@ ags_machine_property_editor_add_output_callback(AgsMachineEditor *machine_editor
   guint pad, nth;
 
   pad = machine_editor->machine->audio->output_pads;
-  AGS_AUDIO_GET_CLASS(machine_editor->machine->audio)->set_pads(machine_editor->machine->audio, AGS_TYPE_OUTPUT, pad + 1);
+  ags_audio_set_pads(machine_editor->machine->audio, AGS_TYPE_OUTPUT, pad + 1);
 
   nth = machine_editor->machine->audio->output_lines - machine_editor->machine->audio->audio_channels;
 
@@ -113,7 +113,7 @@ ags_machine_property_editor_remove_input_callback(AgsMachineEditor *machine_edit
   if(pads > 0){
     pads -= 1;
 
-    AGS_AUDIO_GET_CLASS(machine_editor->machine->audio)->set_pads(machine_editor->machine->audio, AGS_TYPE_INPUT, pads);
+    ags_audio_set_pads(machine_editor->machine->audio, AGS_TYPE_INPUT, pads);
 
     list = gtk_container_get_children((GtkContainer *) machine_property_editor);
     list = g_list_last(list);
@@ -134,7 +134,7 @@ ags_machine_property_editor_remove_output_callback(AgsMachineEditor *machine_edi
   if(pads > 0){
     pads -= 1;
 
-    AGS_AUDIO_GET_CLASS(machine_editor->machine->audio)->set_pads(machine_editor->machine->audio, AGS_TYPE_OUTPUT, pads);
+    ags_audio_set_pads(machine_editor->machine->audio, AGS_TYPE_OUTPUT, pads);
 
     list = gtk_container_get_children((GtkContainer *) machine_property_editor);
     list = g_list_last(list);

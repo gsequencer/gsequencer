@@ -107,6 +107,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     channel->pattern = g_list_alloc();
     channel->pattern->data = (gpointer) ags_pattern_new();
     ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
+
+    ags_drum_input_line_map_recall(drum_input_line, 0);
   }
 }
 
@@ -115,6 +117,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			       guint output_pad_start)
 {
   AgsDrum *drum;
+  AgsLine *line;
   AgsAudio *audio;
   AgsChannel *source, *destination;
   AgsPlayVolume *play_volume;
@@ -126,10 +129,19 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsCopyPatternSharedChannel *copy_pattern_shared_channel;
   guint i;
 
-  drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) drum_input_line, AGS_TYPE_DRUM));
-  audio = drum->machine.audio;
+  fprintf(stdout, "ags_drum_input_line_map_recall\n\0");
+
+  line = AGS_LINE(drum_input_line);
+
+  audio = AGS_AUDIO(line->channel->audio);
+
+  drum = AGS_DRUM(audio->machine);
+
+  source = line->channel;
 
   if((AGS_DRUM_INPUT_LINE_MAPPED_RECALL & (drum_input_line->flags)) == 0){
+    drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;
+
     /* AgsPlayChannel */
     play_channel = ags_play_channel_new(source,
 					AGS_DEVOUT(audio->devout));

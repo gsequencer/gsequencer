@@ -73,16 +73,17 @@ struct _AgsAudioClass
 {
   GObjectClass object;
 
-  void (*set_audio_channels)(AgsAudio *audio, guint audio_channels);
-  void (*set_pads)(AgsAudio *audio, GType type, guint pads);
-  void (*set_lines)(AgsAudio *audio, GType type, guint lines);
+  void (*set_audio_channels)(AgsAudio *audio,
+			     guint audio_channels, guint audio_channels_old);
+  void (*set_pads)(AgsAudio *audio,
+		   GType type,
+		   guint pads, guint pads_old);
 };
 
 void ags_audio_connect(AgsAudio *audio);
 
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_audio_set_pads(AgsAudio *audio, GType type, guint channels);
-void ags_audio_set_lines(AgsAudio *audio, GType type, guint lines);
+void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 
 void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);

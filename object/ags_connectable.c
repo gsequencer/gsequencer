@@ -6,7 +6,7 @@ GType ags_connectable_get_type();
 void ags_connectable_class_init(AgsConnectableInterface *interface);
 
 GType
-ags_connectable_get_type(void)
+ags_connectable_get_type()
 {
   static GType ags_type_connectable = 0;
 

@@ -4,8 +4,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../../object/ags_connectable.h"
-
 #include "../ags_recall.h"
 
 #include "ags_copy_pattern_shared_audio.h"
@@ -35,8 +33,6 @@ struct _AgsCopyPatternClass
 {
   AgsRecallClass recall;
 };
-
-void ags_copy_pattern_connect(AgsConnectable *connectable);
 
 AgsCopyPattern* ags_copy_pattern_new(AgsCopyPatternSharedAudio *shared_audio,
 				     AgsCopyPatternSharedAudioRun *shared_audio_run,

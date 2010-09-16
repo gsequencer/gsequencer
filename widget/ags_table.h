@@ -25,7 +25,7 @@ struct _AgsTableClass
   GtkTableClass table;
 };
 
-AgsTable* ags_table_new();
+AgsTable* ags_table_new(guint row, guint columns, gboolean homogeneous);
 
 #endif /*__AGS_TABLE_H__*/
 

@@ -22,9 +22,12 @@ void ags_matrix_connect(AgsMatrix *matrix);
 void ags_matrix_destroy(GtkObject *object);
 void ags_matrix_show(GtkWidget *widget);
 
-void ags_matrix_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_matrix_set_pads(AgsAudio *audio, GType type, guint pads);
-void ags_matrix_set_lines(AgsAudio *audio, GType type, guint lines);
+void ags_matrix_set_audio_channels(AgsAudio *audio,
+				   guint audio_channels, guint audio_channels_old,
+				   gpointer data);
+void ags_matrix_set_pads(AgsAudio *audio, GType type,
+			 guint pads, guint pads_old,
+			 gpointer data);
 
 extern void ags_file_read_matrix(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_matrix(AgsFile *file, AgsMachine *machine);
@@ -88,12 +91,10 @@ ags_matrix_init(AgsMatrix *matrix)
   g_signal_connect_after((GObject *) matrix, "parent_set\0",
 			 G_CALLBACK(ags_matrix_parent_set_callback), (gpointer) matrix);
 
-
-  AGS_AUDIO_GET_CLASS(matrix->machine.audio)->set_audio_channels = ags_matrix_set_audio_channels;
-  AGS_AUDIO_GET_CLASS(matrix->machine.audio)->set_pads = ags_matrix_set_pads;
-  AGS_AUDIO_GET_CLASS(matrix->machine.audio)->set_lines = ags_matrix_set_lines;
-
-  matrix->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC | AGS_AUDIO_HAS_NOTATION);
+  matrix->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+				   AGS_AUDIO_SYNC |
+				   AGS_AUDIO_ASYNC |
+				   AGS_AUDIO_HAS_NOTATION);
   matrix->machine.audio->audio_channels = 1;
 
   matrix->flags = 0;
@@ -251,6 +252,13 @@ ags_matrix_connect(AgsMatrix *matrix)
 
   g_signal_connect((GObject *) matrix->loop_button, "clicked\0",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
+
+  /* AgsAudio */
+  g_signal_connect(G_OBJECT(matrix->machine.audio), "set_audio_channels\0",
+		   G_CALLBACK(ags_matrix_set_audio_channels), NULL);
+
+  g_signal_connect(G_OBJECT(matrix->machine.audio), "set_pads\0",
+		   G_CALLBACK(ags_matrix_set_pads), NULL);
 }
 
 void
@@ -264,34 +272,30 @@ ags_matrix_show(GtkWidget *widget)
 }
 
 void
-ags_matrix_set_audio_channels(AgsAudio *audio, guint audio_channels)
+ags_matrix_set_audio_channels(AgsAudio *audio,
+			      guint audio_channels, guint audio_channels_old,
+			      gpointer data)
 {
   printf("AgsMatrix only pads can be adjusted\n\0");
   //  _ags_audio_set_audio_channels(audio, audio_channels);
 }
 
 void
-ags_matrix_set_pads(AgsAudio *audio, GType type, guint pads)
+ags_matrix_set_pads(AgsAudio *audio, GType type,
+		    guint pads, guint pads_old,
+		    gpointer data)
 {
   AgsMatrix *matrix;
   AgsChannel *channel, *destination;
   AgsAudioSignal *audio_signal;
   AgsDelaySharedAudio *delay_shared_audio;
   AgsCopyPatternSharedChannel *copy_pattern_shared_channel;
-  guint pads_old;
   guint stream_length;
-
-  pads_old = (type == AGS_TYPE_OUTPUT) ? audio->output_pads: audio->input_pads;
-
-  if(pads == pads_old)
-    return;
 
   if(type == AGS_TYPE_INPUT && pads < 8){
     printf("AgsMatrix minimum input pad count 8\n\0");
     pads = 8;
   }
-
-  ags_audio_real_set_pads(audio, type, pads);
 
   matrix = (AgsMatrix *) audio->machine;
   delay_shared_audio = matrix->delay_shared_audio;
@@ -373,13 +377,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type, guint pads)
     }
   }
 }
-
-void
-ags_matrix_set_lines(AgsAudio *audio, GType type, guint lines)
-{
-  ags_audio_real_set_lines(audio, type, lines);
-}
-
 
 void
 ags_matrix_draw_gutter(AgsMatrix *matrix)

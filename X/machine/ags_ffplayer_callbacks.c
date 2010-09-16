@@ -120,7 +120,8 @@ ags_ffplayer_open_response_callback(GtkWidget *widget, gint response, AgsFFPlaye
 	channel = ags_channel_last(channel);
 
       i = ffplayer->machine.audio->input_pads;
-      AGS_AUDIO_GET_CLASS((AgsAudio *) channel->audio)->set_pads((AgsAudio *) channel->audio, AGS_TYPE_INPUT, AGS_AUDIO(channel->audio)->input_pads +1);
+      ags_audio_set_pads((AgsAudio *) channel->audio, AGS_TYPE_INPUT,
+			 AGS_AUDIO(channel->audio)->input_pads + 1);
 
       for(; filenames != NULL;){
 	audio_file = ags_audio_file_new((char *) filenames->data);
@@ -142,7 +143,8 @@ ags_ffplayer_open_response_callback(GtkWidget *widget, gint response, AgsFFPlaye
 	channel = channel->next;
 
 	if(filenames != NULL)
-	  AGS_AUDIO_GET_CLASS((AgsAudio *) channel->audio)->set_pads((AgsAudio *) channel->audio, AGS_TYPE_INPUT, AGS_AUDIO(channel->audio)->input_pads +1);
+	  ags_audio_set_pads((AgsAudio *) channel->audio, AGS_TYPE_INPUT,
+			     AGS_AUDIO(channel->audio)->input_pads +1);
       }
     }
 

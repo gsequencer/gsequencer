@@ -6,13 +6,17 @@
 #include "../ags_recall_id.h"
 #include "../ags_recall_shared.h"
 
+#include "../../object/ags_connectable.h"
+
 #include <stdlib.h>
 
 GType ags_copy_pattern_get_type();
 void ags_copy_pattern_class_init(AgsCopyPatternClass *copy_pattern);
 void ags_copy_pattern_init(AgsCopyPattern *copy_pattern);
-void ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable_interface);
+void ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_finalize(GObject *gobject);
+
+void ags_copy_pattern_connect(AgsConnectable *connectable);
 
 void ags_copy_pattern_run_init_pre(AgsRecall *recall, gpointer data);
 
@@ -24,7 +28,7 @@ void ags_copy_pattern_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 static gpointer ags_copy_pattern_parent_class = NULL;
-static gpointer ags_recall_connectable_interface = NULL;
+static gpointer ags_copy_pattern_connectable_parent_interface = NULL;
 
 GType
 ags_copy_pattern_get_type()
@@ -69,7 +73,7 @@ ags_copy_pattern_class_init(AgsCopyPatternClass *copy_pattern)
   GObjectClass *gobject;
   AgsRecallClass *recall;
 
-  fprintf(stdout, "hallo\n\0");
+  fprintf(stdout, "ags_copy_pattern_class_init\n\0");
 
   ags_copy_pattern_parent_class = g_type_class_peek_parent(copy_pattern);
 
@@ -91,14 +95,15 @@ ags_copy_pattern_init(AgsCopyPattern *copy_pattern)
 }
 
 void
-ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable_interface)
+ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  if(connectable_interface->connect == ags_recall_connect)
-    fprintf(stdout, "debug: true\n\0");
-  else
-    fprintf(stdout, "debug: false\n\0");
+  AgsConnectableInterface *ags_copy_pattern_connectable_parent_interface;
 
-  connectable_interface->connect = ags_copy_pattern_connect;
+  ags_copy_pattern_connectable_parent_interface = g_type_interface_peek_parent(connectable);
+
+  fprintf(stdout, "ags_copy_pattern_connectable_interface_init\n\0");
+
+  connectable->connect = ags_copy_pattern_connect;
 }
 
 void
@@ -111,6 +116,8 @@ void
 ags_copy_pattern_connect(AgsConnectable *connectable)
 {
   AgsCopyPattern *copy_pattern;
+
+  //  AGS_CONNECTABLE_INTERFACE(ags_copy_pattern_connectable_parent_interface)->connect(connectable);
 
   copy_pattern = AGS_COPY_PATTERN(connectable);
 
