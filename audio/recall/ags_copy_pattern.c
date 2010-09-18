@@ -12,8 +12,8 @@
 
 GType ags_copy_pattern_get_type();
 void ags_copy_pattern_class_init(AgsCopyPatternClass *copy_pattern);
-void ags_copy_pattern_init(AgsCopyPattern *copy_pattern);
 void ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_copy_pattern_init(AgsCopyPattern *copy_pattern);
 void ags_copy_pattern_finalize(GObject *gobject);
 
 void ags_copy_pattern_connect(AgsConnectable *connectable);

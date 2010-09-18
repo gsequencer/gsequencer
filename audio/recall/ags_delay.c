@@ -6,6 +6,7 @@
 
 GType ags_delay_get_type();
 void ags_delay_class_init(AgsDelayClass *delay);
+void ags_delay_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_delay_init(AgsDelay *delay);
 void ags_delay_finalize(GObject *gobject);
 
