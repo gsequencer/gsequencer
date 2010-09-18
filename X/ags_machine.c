@@ -6,7 +6,8 @@
 GType ags_machine_get_type(void);
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_init(AgsMachine *machine);
-void ags_machine_connect(AgsMachine *machine);
+void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_destroy(GtkObject *object);
 void ags_machine_show(GtkWidget *widget);
 
@@ -18,29 +19,48 @@ extern void ags_file_write_machine(AgsFile *file, AgsMachine *machine);
 GType
 ags_machine_get_type(void)
 {
-  static GType machine_type = 0;
+  static GType ags_type_machine = 0;
 
-  if (!machine_type){
-    static const GtkTypeInfo machine_info = {
-      "AgsMachine\0",
-      sizeof(AgsMachine), /* base_init */
-      sizeof(AgsMachineClass), /* base_finalize */
-      (GtkClassInitFunc) ags_machine_class_init,
-      (GtkObjectInitFunc) ags_machine_init,
+  if(!ags_type_machine){
+    static const GTypeInfo ags_machine_info = {
+      sizeof (AgsMachineClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_machine_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsMachine),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_machine_init,
     };
 
-    machine_type = gtk_type_unique (GTK_TYPE_HANDLE_BOX, &machine_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_machine_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_machine = g_type_register_static(GTK_TYPE_HANDLE_BOX,
+					      "AgsMachine\0", &ags_machine_info,
+					      0);
+    
+    g_type_add_interface_static(ags_type_machine,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);				
   }
 
-  return (machine_type);
+  return(ags_type_machine);
 }
 
 void
 ags_machine_class_init(AgsMachineClass *machine)
 {
+}
+
+void
+ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_machine_connect;
 }
 
 void
@@ -70,8 +90,12 @@ ags_machine_init(AgsMachine *machine)
 }
 
 void
-ags_machine_connect(AgsMachine *machine)
+ags_machine_connect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
+
+  machine = AGS_MACHINE(connectable);
+
   ags_audio_connect(machine->audio);
 
   g_signal_connect (G_OBJECT (machine), "destroy\0",

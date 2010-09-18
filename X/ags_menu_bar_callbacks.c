@@ -151,15 +151,22 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   GtkWidget *widget;
   AgsWindow *window;
+  AgsPanel *panel;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  widget = (GtkWidget*) ags_panel_new();
+  panel = ags_panel_new();
+  widget = (GtkWidget *) panel;
   gtk_box_pack_start((GtkBox *) window->machines,
 		     widget,
 		     FALSE, FALSE, 0);
 
-  ags_machine_connect((AgsMachine *) widget);
+  ags_connectable_connect(AGS_CONNECTABLE(widget));
+
+  panel->machine.audio->input_pads =
+    panel->machine.audio->output_pads = 1;
+  ags_audio_set_audio_channels(panel->machine.audio, 2);
+
   gtk_widget_show_all(widget);
 }
 

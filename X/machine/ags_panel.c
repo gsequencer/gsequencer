@@ -1,6 +1,8 @@
 #include "ags_panel.h"
 #include "ags_panel_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../ags_window.h"
 
 #include "../../audio/ags_audio.h"
@@ -12,8 +14,9 @@
 
 GType ags_panel_get_type(void);
 void ags_panel_class_init(AgsPanelClass *panel);
+void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_init(AgsPanel *panel);
-void ags_panel_connect(AgsPanel *panel);
+void ags_panel_connect(AgsConnectable *connectable);
 void ags_panel_destroy(GtkObject *object);
 void ags_panel_show(GtkWidget *widget);
 
@@ -26,6 +29,8 @@ void ags_panel_set_pads(AgsAudio *audio, GType type,
 
 extern void ags_file_read_panel(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_panel(AgsFile *file, AgsMachine *machine);
+
+static AgsConnectableInterface *ags_panel_parent_connectable_interface;
 
 extern const char *AGS_COPY_INPUT_TO_OUTPUT;
 
@@ -47,9 +52,19 @@ ags_panel_get_type(void)
       (GInstanceInitFunc) ags_panel_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_panel_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
     ags_type_panel = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsPanel\0", &ags_panel_info,
 					    0);
+    
+    g_type_add_interface_static(ags_type_panel,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_panel);
@@ -62,6 +77,16 @@ ags_panel_class_init(AgsPanelClass *panel)
 
   //  machine->read_file = ags_file_read_panel;
   //  machine->write_file = ags_file_write_panel;
+}
+
+void
+ags_panel_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_panel_connectable_parent_interface;
+
+  ags_panel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_panel_connect;
 }
 
 void
@@ -82,19 +107,24 @@ ags_panel_init(AgsPanel *panel)
 }
 
 void
-ags_panel_connect(AgsPanel *panel)
+ags_panel_connect(AgsConnectable *connectable)
 {
-  ags_machine_connect((AgsMachine *) panel);
+  AgsPanel *panel;
+
+  ags_panel_parent_connectable_interface->connect(connectable);
+
+  /* AgsPanel */
+  panel = AGS_PANEL(connectable);
 
   g_signal_connect((GObject *) panel, "destroy\0",
 		   G_CALLBACK(ags_panel_destroy_callback), (gpointer) panel);
 
   /* AgsAudio */
-  g_signal_connect(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
-		   G_CALLBACK(ags_panel_set_audio_channels), NULL);
+  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_panel_set_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(panel->machine.audio), "set_pads\0",
-		   G_CALLBACK(ags_panel_set_pads), NULL);
+  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_panel_set_pads), NULL);
 }
 
 void

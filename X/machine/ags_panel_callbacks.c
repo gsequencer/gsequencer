@@ -10,7 +10,9 @@ ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel
   if(old_parent != NULL)
     return;
 
-  window = (AgsWindow *) gtk_widget_get_toplevel(widget);
+  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
+  panel->machine.audio->devout = (GObject *) window->devout;
+
   panel->machine.name = g_strdup_printf("Default %d\0", window->counter->panel);
   window->counter->panel++;
 }

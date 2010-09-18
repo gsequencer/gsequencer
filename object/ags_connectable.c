@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 GType ags_connectable_get_type();
-void ags_connectable_class_init(AgsConnectableInterface *interface);
+void ags_connectable_base_init(AgsConnectableInterface *interface);
 
 GType
 ags_connectable_get_type()
@@ -13,14 +13,8 @@ ags_connectable_get_type()
   if(!ags_type_connectable){
     static const GTypeInfo ags_connectable_info = {
       sizeof(AgsConnectableInterface),
-      NULL, /* base_init */
+      (GBaseInitFunc) ags_connectable_base_init,
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_connectable_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      0,    /* sizeof(AgsConnectable) */
-      0,    /* n_preallocs */
-      NULL,
     };
 
     ags_type_connectable = g_type_register_static(G_TYPE_INTERFACE,
@@ -32,10 +26,8 @@ ags_connectable_get_type()
 }
 
 void
-ags_connectable_class_init(AgsConnectableInterface *interface)
+ags_connectable_base_init(AgsConnectableInterface *interface)
 {
-  fprintf(stdout, "connectable_class_init\n\0");
-
   //  interface->connect = NULL;
   //  interface->disconnect = NULL;
 }
