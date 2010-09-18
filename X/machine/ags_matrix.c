@@ -1,6 +1,8 @@
 #include "ags_matrix.h"
 #include "ags_matrix_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../../audio/ags_audio.h"
 #include "../../audio/ags_channel.h"
 #include "../../audio/ags_input.h"
@@ -17,8 +19,9 @@
 
 GType ags_matrix_get_type(void);
 void ags_matrix_class_init(AgsMatrixClass *matrix);
+void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_init(AgsMatrix *matrix);
-void ags_matrix_connect(AgsMatrix *matrix);
+void ags_matrix_connect(AgsConnectable *connectable);
 void ags_matrix_destroy(GtkObject *object);
 void ags_matrix_show(GtkWidget *widget);
 
@@ -32,6 +35,8 @@ void ags_matrix_set_pads(AgsAudio *audio, GType type,
 extern void ags_file_read_matrix(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_matrix(AgsFile *file, AgsMachine *machine);
 
+static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
+
 GtkStyle *matrix_style;
 
 extern const char *AGS_COPY_PATTERN;
@@ -40,24 +45,37 @@ const char *AGS_MATRIX_INDEX = "AgsMatrixIndex\0";
 GType
 ags_matrix_get_type(void)
 {
-  static GType matrix_type = 0;
+  static GType ags_type_matrix = 0;
 
-  if (!matrix_type){
-    static const GtkTypeInfo matrix_info = {
-      "AgsMatrix\0",
-      sizeof(AgsMatrix), /* base_init */
-      sizeof(AgsMatrixClass), /* base_finalize */
-      (GtkClassInitFunc) ags_matrix_class_init,
-      (GtkObjectInitFunc) ags_matrix_init,
+  if(!ags_type_matrix){
+    static const GTypeInfo ags_matrix_info = {
+      sizeof(AgsMatrixClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_matrix_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsMatrix),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_matrix_init,
     };
 
-    matrix_type = gtk_type_unique (AGS_TYPE_MACHINE, &matrix_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_matrix_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_matrix = g_type_register_static(AGS_TYPE_MACHINE,
+					    "AgsMatrix\0", &ags_matrix_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_matrix,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (matrix_type);
+  return(ags_type_matrix);
 }
 
 void
@@ -73,6 +91,16 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
 
   //  machine->read_file = ags_file_read_matrix;
   //  machine->write_file = ags_file_write_matrix;
+}
+
+void
+ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_matrix_connectable_parent_interface;
+
+  ags_matrix_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_matrix_connect;
 }
 
 void
@@ -220,9 +248,15 @@ ags_matrix_init(AgsMatrix *matrix)
 }
 
 void
-ags_matrix_connect(AgsMatrix *matrix)
+ags_matrix_connect(AgsConnectable *connectable)
 {
+  AgsMatrix *matrix;
   int i;
+
+  ags_matrix_parent_connectable_interface->connect(connectable);
+
+  /* AgsMatrix */
+  matrix = AGS_MATRIX(connectable);
 
   g_signal_connect((GObject *) matrix, "destroy\0",
 		   G_CALLBACK(ags_matrix_destroy_callback), (gpointer) matrix);
@@ -254,11 +288,11 @@ ags_matrix_connect(AgsMatrix *matrix)
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
 
   /* AgsAudio */
-  g_signal_connect(G_OBJECT(matrix->machine.audio), "set_audio_channels\0",
-		   G_CALLBACK(ags_matrix_set_audio_channels), NULL);
+  g_signal_connect_after(G_OBJECT(matrix->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_matrix_set_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(matrix->machine.audio), "set_pads\0",
-		   G_CALLBACK(ags_matrix_set_pads), NULL);
+  g_signal_connect_after(G_OBJECT(matrix->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_matrix_set_pads), NULL);
 }
 
 void

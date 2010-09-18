@@ -1,6 +1,8 @@
 #include "ags_synth.h"
 #include "ags_synth_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "ags_oscillator.h"
 
 #include "../ags_window.h"
@@ -17,8 +19,9 @@
 
 GType ags_synth_get_type(void);
 void ags_synth_class_init(AgsSynthClass *synth);
+void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_init(AgsSynth *synth);
-void ags_synth_connect(AgsSynth *synth);
+void ags_synth_connect(AgsConnectable *connectable);
 void ags_synth_destroy(GtkObject *object);
 void ags_synth_show(GtkWidget *widget);
 
@@ -34,27 +37,42 @@ void ags_synth_update(AgsSynth *synth);
 extern void ags_file_read_synth(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_synth(AgsFile *file, AgsMachine *machine);
 
+static AgsConnectableInterface *ags_synth_parent_connectable_interface;
+
 GType
 ags_synth_get_type(void)
 {
-  static GType synth_type = 0;
+  static GType ags_type_synth = 0;
 
-  if (!synth_type){
-    static const GtkTypeInfo synth_info = {
-      "AgsSynth\0",
-      sizeof(AgsSynth), /* base_init */
-      sizeof(AgsSynthClass), /* base_finalize */
-      (GtkClassInitFunc) ags_synth_class_init,
-      (GtkObjectInitFunc) ags_synth_init,
+  if(!ags_type_synth){
+    static const GTypeInfo ags_synth_info = {
+      sizeof(AgsSynthClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_synth_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsSynth),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_synth_init,
     };
 
-    synth_type = gtk_type_unique (AGS_TYPE_MACHINE, &synth_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_synth_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_synth = g_type_register_static(AGS_TYPE_MACHINE,
+					    "AgsSynth\0", &ags_synth_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_synth,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (synth_type);
+  return(ags_type_synth);
 }
 
 void
@@ -64,6 +82,16 @@ ags_synth_class_init(AgsSynthClass *synth)
 
   //  machine->read_file = ags_file_read_synth;
   //  machine->write_file = ags_file_write_synth;
+}
+
+void
+ags_synth_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_synth_connectable_parent_interface;
+
+  ags_synth_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_synth_connect;
 }
 
 void
@@ -139,9 +167,14 @@ ags_synth_show(GtkWidget *widget)
 }
 
 void
-ags_synth_connect(AgsSynth *synth)
+ags_synth_connect(AgsConnectable *connectable)
 {
-  ags_machine_connect((AgsMachine *) synth);
+  AgsSynth *synth;
+
+  ags_synth_parent_connectable_interface->connect(connectable);
+
+  /* AgsSynth */
+  synth = AGS_SYNTH(connectable);
 
   g_signal_connect((GObject *) synth, "destroy\0",
 		   G_CALLBACK(ags_synth_destroy_callback), (gpointer) synth);

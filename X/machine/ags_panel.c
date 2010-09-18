@@ -100,10 +100,6 @@ ags_panel_init(AgsPanel *panel)
 
 
   panel->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_SYNC);
-
-  //  panel->machine.audio->output_pads = 1;
-  //  panel->machine.audio->input_pads = 1;
-  //  ags_audio_set_audio_channels(panel->machine.audio, 2);
 }
 
 void

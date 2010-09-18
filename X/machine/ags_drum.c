@@ -1,6 +1,8 @@
 #include "ags_drum.h"
 #include "ags_drum_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "ags_drum_input_pad.h"
 #include "ags_drum_input_line.h"
 #include "ags_drum_output_pad.h"
@@ -26,8 +28,9 @@
 
 GType ags_drum_get_type(void);
 void ags_drum_class_init(AgsDrumClass *drum);
+void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_init(AgsDrum *drum);
-void ags_drum_connect(AgsDrum *drum);
+void ags_drum_connect(AgsConnectable *connectable);
 void ags_drum_destroy(GtkObject *drum);
 void ags_drum_show(GtkWidget *widget);
 
@@ -41,28 +44,44 @@ void ags_drum_set_pads(AgsAudio *audio, GType type,
 extern void ags_file_read_drum(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_drum(AgsFile *file, AgsMachine *machine);
 
+static AgsConnectableInterface *ags_drum_parent_connectable_interface;
+
 const char *AGS_DRUM_INDEX = "AgsDrumIndex\0";
 
 GType
 ags_drum_get_type(void)
 {
-  static GType drum_type = 0;
+  static GType ags_type_drum = 0;
 
-  if (!drum_type){
-    static const GtkTypeInfo drum_info = {
-      "AgsDrum\0",
-      sizeof(AgsDrum), /* base_init */
-      sizeof(AgsDrumClass), /* base_finalize */
-      (GtkClassInitFunc) ags_drum_class_init,
-      (GtkObjectInitFunc) ags_drum_init,
+  if(!ags_type_drum){
+    static const GTypeInfo ags_drum_info = {
+      sizeof(AgsDrumClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_drum_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsDrum),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_drum_init,
     };
-    drum_type = gtk_type_unique (AGS_TYPE_MACHINE, &drum_info);
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_drum_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_drum = g_type_register_static(AGS_TYPE_MACHINE,
+					    "AgsDrum\0", &ags_drum_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_drum,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (drum_type);
+  return(ags_type_drum);
 }
 
 void
@@ -72,6 +91,16 @@ ags_drum_class_init(AgsDrumClass *drum)
 
   //  machine->read_file = ags_file_read_drum;
   //  machine->write_file = ags_file_write_drum;
+}
+
+void
+ags_drum_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_drum_connectable_parent_interface;
+
+  ags_drum_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_drum_connect;
 }
 
 void
@@ -266,13 +295,17 @@ ags_drum_init(AgsDrum *drum)
 }
 
 void
-ags_drum_connect(AgsDrum *drum)
+ags_drum_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
-  AgsDrumOutputPad *drum_output_pad;
-  AgsDrumInputPad *drum_input_pad;
-  GList *list0, *list1;
+  AgsDrum *drum;
+  GList *list;
   int i;
+
+  ags_drum_parent_connectable_interface->connect(connectable);
+
+  /* AgsDrum */
+  drum = AGS_DRUM(connectable);
 
   g_signal_connect((GObject *) drum, "destroy\0",
 		   G_CALLBACK(ags_drum_destroy_callback), (gpointer) drum);
@@ -280,25 +313,6 @@ ags_drum_connect(AgsDrum *drum)
   g_signal_connect((GObject *) drum, "show\0",
 		   G_CALLBACK(ags_drum_show_callback), (gpointer) drum);
 
-  //  list0 = gtk_container_get_children((GtkContainer *) drum->input_pad);
-
-  //  while(list0 != NULL){
-  //    drum_input_pad = AGS_DRUM_INPUT_PAD(list0->data);
-  //
-  //    ags_drum_input_pad_connect(drum_input_pad);
-  //
-  //    list0 = list0->next;
-  //  }
-
-  //  list0 = gtk_container_get_children((GtkContainer *) drum->output_pad);
-
-  //  while(list0 != NULL){
-  //    drum_output_pad = AGS_DRUM_OUTPUT_PAD(list0->data);
-  //
-  //    ags_drum_output_pad_connect(drum_output_pad);
-  //
-  //    list0 = list0->next;
-  //  }
 
   g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
@@ -319,40 +333,40 @@ ags_drum_connect(AgsDrum *drum)
   g_signal_connect_after((GObject *) drum->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum);
 
-  for(i  = 0; i < 12; i++){
+  for(i = 0; i < 12; i++){
     g_signal_connect(G_OBJECT(drum->index1[i]), "clicked\0",
 		     G_CALLBACK(ags_drum_index1_callback), (gpointer) drum);
   }
 
-  for(i  = 0; i < 4; i++){
+  for(i = 0; i < 4; i++){
     g_signal_connect(G_OBJECT(drum->index0[i]), "clicked\0",
 		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
 
-  list0 = gtk_container_get_children((GtkContainer *) drum->pattern);
+  list = gtk_container_get_children((GtkContainer *) drum->pattern);
 
-  while(list0 != NULL){
-    g_signal_connect(G_OBJECT(list0->data), "clicked\0",
+  while(list != NULL){
+    g_signal_connect(G_OBJECT(list->data), "clicked\0",
 		     G_CALLBACK(ags_drum_pad_callback), (gpointer) drum);
 
-    list0 = list0->next;
+    list = list->next;
   }
 
-  list0 = gtk_container_get_children((GtkContainer *) drum->offset);
+  list = gtk_container_get_children((GtkContainer *) drum->offset);
 
-  while(list0 != NULL){
-    g_signal_connect(G_OBJECT(list0->data), "clicked\0",
+  while(list != NULL){
+    g_signal_connect(G_OBJECT(list->data), "clicked\0",
 		     G_CALLBACK(ags_drum_offset_callback), (gpointer) drum);
 		   
-    list0 = list0->next;
+    list = list->next;
   }
 
   /* AgsAudio */
-  g_signal_connect(G_OBJECT(drum->machine.audio), "set_audio_channels\0",
-		   G_CALLBACK(ags_drum_set_audio_channels), NULL);
+  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_drum_set_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(drum->machine.audio), "set_pads\0",
-		   G_CALLBACK(ags_drum_set_pads), NULL);
+  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_drum_set_pads), NULL);
 }
 
 void

@@ -1,6 +1,8 @@
 #include "ags_mixer.h"
 #include "ags_mixer_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../../audio/ags_audio.h"
 #include "../../audio/ags_input.h"
 #include "../../audio/ags_output.h"
@@ -14,8 +16,9 @@
 
 GType ags_mixer_get_type(void);
 void ags_mixer_class_init(AgsMixerClass *mixer);
+void ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_init(AgsMixer *mixer);
-void ags_mixer_connect(AgsMixer *mixer);
+void ags_mixer_connect(AgsConnectable *connectable);
 void ags_mixer_destroy(GtkObject *object);
 void ags_mixer_show(GtkWidget *widget);
 
@@ -29,29 +32,44 @@ void ags_mixer_set_pads(AgsAudio *audio, GType type,
 extern void ags_file_read_mixer(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_mixer(AgsFile *file, AgsMachine *machine);
 
+static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
+
 extern const char *AGS_MIX_VOLUME;
 
 GType
 ags_mixer_get_type(void)
 {
-  static GType mixer_type = 0;
+  static GType ags_type_mixer = 0;
 
-  if (!mixer_type){
-    static const GtkTypeInfo mixer_info = {
-      "AgsMixer\0",
-      sizeof(AgsMixer), /* base_init */
-      sizeof(AgsMixerClass), /* base_finalize */
-      (GtkClassInitFunc) ags_mixer_class_init,
-      (GtkObjectInitFunc) ags_mixer_init,
+  if(!ags_type_mixer){
+    static const GTypeInfo ags_mixer_info = {
+      sizeof(AgsMixerClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_mixer_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsMixer),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_mixer_init,
     };
 
-    mixer_type = gtk_type_unique (AGS_TYPE_MACHINE, &mixer_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_mixer_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_mixer = g_type_register_static(AGS_TYPE_MACHINE,
+					    "AgsMixer\0", &ags_mixer_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_mixer,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (mixer_type);
+  return(ags_type_mixer);
 }
 
 void
@@ -70,6 +88,16 @@ ags_mixer_class_init(AgsMixerClass *mixer)
 }
 
 void
+ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_mixer_connectable_parent_interface;
+
+  ags_mixer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_mixer_connect;
+}
+
+void
 ags_mixer_init(AgsMixer *mixer)
 {
   g_signal_connect_after((GObject *) mixer, "parent_set\0",
@@ -80,36 +108,27 @@ ags_mixer_init(AgsMixer *mixer)
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->pad);
 
   mixer->machine.audio->flags |= (AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC);
-
-  //  mixer->machine.audio->audio_channels = 2;
-  //  ags_audio_set_pads(mixer->machine.audio, AGS_TYPE_OUTPUT, 1);
-  //  ags_audio_set_pads(mixer->machine.audio, AGS_TYPE_INPUT, 8);
 }
 
 void
-ags_mixer_connect(AgsMixer *mixer)
+ags_mixer_connect(AgsConnectable *connectable)
 {
-  GList *list;
+  AgsMixer *mixer;
 
-  ags_machine_connect((AgsMachine *) mixer);
+  ags_mixer_parent_connectable_interface->connect(connectable);
+
+  /* AgsMixer */
+  mixer = AGS_MIXER(connectable);
 
   g_signal_connect((GObject *) mixer, "destroy\0",
 		   G_CALLBACK(ags_mixer_destroy_callback), (gpointer) mixer);
 
-  //  list = gtk_container_get_children((GtkContainer *) mixer->pad);
-
-  //  while(list != NULL){
-  //    ags_pad_connect((AgsPad *) list->data);
-  //
-  //    list = list->next;
-  //  }
-
   /* AgsAudio */
-  g_signal_connect(G_OBJECT(mixer->machine.audio), "set_audio_channels\0",
-		   G_CALLBACK(ags_mixer_set_audio_channels), NULL);
+  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_mixer_set_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(mixer->machine.audio), "set_pads\0",
-		   G_CALLBACK(ags_mixer_set_pads), NULL);
+  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_mixer_set_pads), NULL);
 }
 
 void

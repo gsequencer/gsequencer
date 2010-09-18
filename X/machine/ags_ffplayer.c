@@ -1,6 +1,8 @@
 #include "ags_ffplayer.h"
 #include "ags_ffplayer_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../../audio/ags_audio.h"
 #include "../../audio/ags_input.h"
 #include "../../audio/ags_output.h"
@@ -9,8 +11,9 @@
 
 GType ags_ffplayer_get_type(void);
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
+void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_init(AgsFFPlayer *ffplayer);
-void ags_ffplayer_connect(AgsFFPlayer *ffplayer);
+void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_destroy(GtkObject *object);
 void ags_ffplayer_show(GtkWidget *widget);
 
@@ -26,29 +29,44 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 extern void ags_file_read_ffplayer(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine);
 
+static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
+
 GtkStyle *ffplayer_style;
 
 GType
 ags_ffplayer_get_type(void)
 {
-  static GType ffplayer_type = 0;
+  static GType ags_type_ffplayer = 0;
 
-  if (!ffplayer_type){
-    static const GtkTypeInfo ffplayer_info = {
-      "AgsFFPlayer\0",
-      sizeof(AgsFFPlayer), /* base_init */
-      sizeof(AgsFFPlayerClass), /* base_finalize */
-      (GtkClassInitFunc) ags_ffplayer_class_init,
-      (GtkObjectInitFunc) ags_ffplayer_init,
+  if(!ags_type_ffplayer){
+    static const GTypeInfo ags_ffplayer_info = {
+      sizeof(AgsFFPlayerClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_ffplayer_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsFFPlayer),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_ffplayer_init,
     };
 
-    ffplayer_type = gtk_type_unique (AGS_TYPE_MACHINE, &ffplayer_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_ffplayer_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_ffplayer = g_type_register_static(AGS_TYPE_MACHINE,
+					    "AgsFFPlayer\0", &ags_ffplayer_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_ffplayer,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (ffplayer_type);
+  return(ags_type_ffplayer);
 }
 
 void
@@ -58,6 +76,16 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
 
   //  machine->read_file = ags_file_read_ffplayer;
   //  machine->write_file = ags_file_write_ffplayer;
+}
+
+void
+ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_ffplayer_connectable_parent_interface;
+
+  ags_ffplayer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_ffplayer_connect;
 }
 
 void
@@ -115,9 +143,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 }
 
 void
-ags_ffplayer_connect(AgsFFPlayer *ffplayer)
+ags_ffplayer_connect(AgsConnectable *connectable)
 {
-  ags_machine_connect((AgsMachine *) ffplayer);
+  AgsFFPlayer *ffplayer;
+
+  /* AgsFFPlayer */
+  ffplayer = AGS_FFPLAYER(connectable);
 
   g_signal_connect((GObject *) ffplayer, "destroy\0",
 		   G_CALLBACK(ags_ffplayer_destroy_callback), (gpointer) ffplayer);
