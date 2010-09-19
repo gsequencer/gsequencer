@@ -35,11 +35,6 @@ struct _AgsPlayChannelClass
   AgsRecallClass recall;
 };
 
-void ags_play_channel_connect_run_handler(AgsPlayChannel *play_channel);
-void ags_play_channel_disconnect_run_handler(AgsPlayChannel *play_channel);
-
-void ags_play_channel_connect(AgsPlayChannel *play_channel);
-
 AgsPlayChannel* ags_play_channel_new(AgsChannel *source,
 				     AgsDevout *devout);
 

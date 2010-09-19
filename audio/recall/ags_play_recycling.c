@@ -1,5 +1,8 @@
 #include "ags_play_recycling.h"
 
+#include "../../object/ags_connectable.h"
+#include "../../object/ags_run_connectable.h"
+
 #include "../ags_audio.h"
 #include "../ags_audio_signal.h"
 #include "../ags_recycling.h"
@@ -12,7 +15,13 @@
 
 GType ags_play_recycling_get_type();
 void ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling);
+void ags_play_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_play_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_recycling_init(AgsPlayRecycling *play_recycling);
+void ags_play_recycling_connect(AgsConnectable *connectable);
+void ags_play_recycling_disconnect(AgsConnectable *connectable);
+void ags_play_recycling_run_connect(AgsRunConnectable *run_connectable);
+void ags_play_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_recycling_finalize(GObject *gobject);
 
 void ags_play_recycling_run_init_inter(AgsRecall *recall, gpointer data);
@@ -41,6 +50,8 @@ void ags_play_recycling_play_audio_signal_done(AgsRecall *recall,
 					       gpointer data);
 
 static gpointer ags_play_recycling_parent_class = NULL;
+static AgsConnectableInterface *ags_play_recycling_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_play_recycling_parent_run_connectable_interface;
 
 GType
 ags_play_recycling_get_type()
@@ -60,10 +71,30 @@ ags_play_recycling_get_type()
       (GInstanceInitFunc) ags_play_recycling_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_recycling_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_recycling_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_play_recycling = g_type_register_static(AGS_TYPE_RECALL,
 						     "AgsPlayRecycling\0",
 						     &ags_play_recycling_info,
 						     0);
+
+    g_type_add_interface_static(ags_type_play_recycling,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_play_recycling,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
 
   return(ags_type_play_recycling);
@@ -81,6 +112,24 @@ ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
 }
 
 void
+ags_play_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_play_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_play_recycling_connect;
+  connectable->disconnect = ags_play_recycling_disconnect;
+}
+
+void
+ags_play_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_play_recycling_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_play_recycling_run_connect;
+  run_connectable->disconnect = ags_play_recycling_run_disconnect;
+}
+
+void
 ags_play_recycling_init(AgsPlayRecycling *play_recycling)
 {
   play_recycling->devout = NULL;
@@ -91,15 +140,14 @@ ags_play_recycling_init(AgsPlayRecycling *play_recycling)
 }
 
 void
-ags_play_recycling_finalize(GObject *gobject)
+ags_play_recycling_connect(AgsConnectable *connectable)
 {
-  G_OBJECT_CLASS(ags_play_recycling_parent_class)->finalize(gobject);
-}
+  AgsPlayRecycling *play_recycling;
 
-void
-ags_play_recycling_connect(AgsPlayRecycling *play_recycling)
-{
-  //  ags_recall_connect(AGS_RECALL(play_recycling));
+  ags_play_recycling_parent_connectable_interface->connect(connectable);
+
+  /* AgsPlayRecycling */
+  play_recycling = AGS_PLAY_RECYCLING(connectable);
 
   g_signal_connect((GObject *) play_recycling, "run_init_inter\0",
 		   G_CALLBACK(ags_play_recycling_run_init_inter), NULL);
@@ -118,9 +166,21 @@ ags_play_recycling_connect(AgsPlayRecycling *play_recycling)
 }
 
 void
-ags_play_recycling_connect_run_handler(AgsPlayRecycling *play_recycling)
+ags_play_recycling_disconnect(AgsConnectable *connectable)
 {
-  GObject *gobject;  
+  ags_play_recycling_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_play_recycling_run_connect(AgsRunConnectable *run_connectable)
+{
+  AgsPlayRecycling *play_recycling;
+  GObject *gobject;
+
+  ags_play_recycling_parent_run_connectable_interface->connect(run_connectable);
+
+  /* AgsPlayRecycling */
+  play_recycling = AGS_PLAY_RECYCLING(run_connectable);
 
   /* source */
   gobject = G_OBJECT(play_recycling->source);
@@ -139,9 +199,15 @@ ags_play_recycling_connect_run_handler(AgsPlayRecycling *play_recycling)
 }
 
 void
-ags_play_recycling_disconnect_run_handler(AgsPlayRecycling *play_recycling)
+ags_play_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 {
+  AgsPlayRecycling *play_recycling;
   GObject *gobject;
+
+  ags_play_recycling_parent_run_connectable_interface->disconnect(run_connectable);
+
+  /* AgsPlayRecycling */
+  play_recycling = AGS_PLAY_RECYCLING(run_connectable);
 
   /* source */
   gobject = G_OBJECT(play_recycling->source);
@@ -153,13 +219,19 @@ ags_play_recycling_disconnect_run_handler(AgsPlayRecycling *play_recycling)
 }
 
 void
+ags_play_recycling_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_play_recycling_parent_class)->finalize(gobject);
+}
+
+void
 ags_play_recycling_run_init_inter(AgsRecall *recall, gpointer data)
 {
   AgsPlayRecycling *play_recycling;
 
   play_recycling = AGS_PLAY_RECYCLING(recall);
   
-  ags_play_recycling_connect_run_handler(play_recycling);
+  //  ags_play_recycling_connect_run_handler(play_recycling);
 }
 
 void
@@ -175,7 +247,7 @@ ags_play_recycling_done(AgsRecall *recall, gpointer data)
 
   play_recycling = AGS_PLAY_RECYCLING(recall);
 
-  ags_play_recycling_disconnect_run_handler(play_recycling);
+  //  ags_play_recycling_disconnect_run_handler(play_recycling);
 }
 
 void
@@ -185,7 +257,7 @@ ags_play_recycling_cancel(AgsRecall *recall, gpointer data)
 
   play_recycling = AGS_PLAY_RECYCLING(recall);
 
-  ags_play_recycling_disconnect_run_handler(play_recycling);
+  //  ags_play_recycling_disconnect_run_handler(play_recycling);
 }
 
 void 

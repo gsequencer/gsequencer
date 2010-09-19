@@ -1,5 +1,8 @@
 #include "ags_play_channel.h" 
 
+#include "../../object/ags_connectable.h"
+#include "../../object/ags_run_connectable.h"
+
 #include "../ags_devout.h"
 #include "../ags_audio.h"
 #include "../ags_recycling.h"
@@ -13,7 +16,13 @@
 
 GType ags_play_channel_get_type();
 void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
+void ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_play_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_channel_init(AgsPlayChannel *play_channel);
+void ags_play_channel_connect(AgsConnectable *connectable);
+void ags_play_channel_disconnect(AgsConnectable *connectable);
+void ags_play_channel_run_connect(AgsRunConnectable *run_connectable);
+void ags_play_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_channel_finalize(GObject *gobject);
 
 void ags_play_channel_run_init_pre(AgsPlayChannel *play_channel, gpointer data);
@@ -37,6 +46,8 @@ void ags_play_channel_source_recycling_changed_callback(AgsChannel *channel,
 							AgsPlayChannel *play_channel);
 
 static gpointer ags_play_channel_parent_class = NULL;
+static AgsConnectableInterface *ags_play_channel_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_play_channel_parent_run_connectable_interface;
 
 GType
 ags_play_channel_get_type()
@@ -56,10 +67,30 @@ ags_play_channel_get_type()
       (GInstanceInitFunc) ags_play_channel_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_channel_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_channel_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_play_channel = g_type_register_static(AGS_TYPE_RECALL,
 						   "AgsPlayChannel\0",
 						   &ags_play_channel_info,
 						   0);
+
+    g_type_add_interface_static(ags_type_play_channel,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_play_channel,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
 
   return(ags_type_play_channel);
@@ -83,6 +114,24 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 }
 
 void
+ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_play_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_play_channel_connect;
+  connectable->disconnect = ags_play_channel_disconnect;
+}
+
+void
+ags_play_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_play_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_play_channel_run_connect;
+  run_connectable->disconnect = ags_play_channel_run_disconnect;
+}
+
+void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
   //  play_channel->ref = 1;
@@ -93,15 +142,14 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 }
 
 void
-ags_play_channel_finalize(GObject *gobject)
+ags_play_channel_connect(AgsConnectable *connectable)
 {
-  G_OBJECT_CLASS(ags_play_channel_parent_class)->finalize(gobject);
-}
+  AgsPlayChannel *play_channel;
 
-void
-ags_play_channel_connect(AgsPlayChannel *play_channel)
-{
-  //  ags_recall_connect((AgsRecall *) play_channel);
+  ags_play_channel_parent_connectable_interface->connect(connectable);
+
+  /* AgsPlayChannel */
+  play_channel = AGS_PLAY_CHANNEL(connectable);
 
   g_signal_connect((GObject *) play_channel, "run_init_pre\0",
 		   G_CALLBACK(ags_play_channel_run_init_pre), NULL);
@@ -123,9 +171,21 @@ ags_play_channel_connect(AgsPlayChannel *play_channel)
 }
 
 void
-ags_play_channel_connect_run_handler(AgsPlayChannel *play_channel)
+ags_play_channel_disconnect(AgsConnectable *connectable)
 {
+  ags_play_channel_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_play_channel_run_connect(AgsRunConnectable *run_connectable)
+{
+  AgsPlayChannel *play_channel;
   GObject *gobject;
+
+  ags_play_channel_parent_run_connectable_interface->connect(run_connectable);
+
+  /* AgsPlayChannel */
+  play_channel = AGS_PLAY_CHANNEL(run_connectable);
 
   /* source */
   gobject = G_OBJECT(play_channel->source);
@@ -136,13 +196,26 @@ ags_play_channel_connect_run_handler(AgsPlayChannel *play_channel)
 }
 
 void
-ags_play_channel_disconnect_run_handler(AgsPlayChannel *play_channel)
+ags_play_channel_run_disconnect(AgsRunConnectable *run_connectable)
 {
+  AgsPlayChannel *play_channel;
   GObject *gobject;
 
+  ags_play_channel_parent_run_connectable_interface->disconnect(run_connectable);
+
+  /* AgsPlayChannel */
+  play_channel = AGS_PLAY_CHANNEL(run_connectable);
+
+  /* source */
   gobject = G_OBJECT(play_channel->source);
 
   g_signal_handler_disconnect(gobject, play_channel->source_recycling_changed_handler);
+}
+
+void
+ags_play_channel_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_play_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -154,7 +227,7 @@ ags_play_channel_run_init_pre(AgsPlayChannel *play_channel, gpointer data)
 void
 ags_play_channel_run_init_inter(AgsPlayChannel *play_channel, gpointer data)
 {
-  ags_play_channel_connect_run_handler(play_channel);
+  //  ags_play_channel_connect_run_handler(play_channel);
 }
 
 void
@@ -170,7 +243,7 @@ ags_play_channel_done(AgsRecall *recall, gpointer data)
 
   play_channel = AGS_PLAY_CHANNEL(recall);
 
-  ags_play_channel_disconnect_run_handler(play_channel);
+  //  ags_play_channel_disconnect_run_handler(play_channel);
 }
 
 void 
@@ -180,7 +253,7 @@ ags_play_channel_cancel(AgsRecall *recall, gpointer data)
 
   play_channel = AGS_PLAY_CHANNEL(recall);
 
-  ags_play_channel_disconnect_run_handler(play_channel);
+  //  ags_play_channel_disconnect_run_handler(play_channel);
 }
 
 void

@@ -1,5 +1,8 @@
 #include "ags_copy_channel.h"
 
+#include "../../object/ags_connectable.h"
+#include "../../object/ags_run_connectable.h"
+
 #include "../ags_recycling.h"
 #include "../ags_recall_id.h"
 
@@ -10,7 +13,13 @@
 
 GType ags_copy_channel_get_type();
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
+void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_copy_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_copy_channel_init(AgsCopyChannel *copy_channel);
+void ags_copy_channel_connect(AgsConnectable *connectable);
+void ags_copy_channel_disconnect(AgsConnectable *connectable);
+void ags_copy_channel_run_connect(AgsRunConnectable *run_connectable);
+void ags_copy_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_channel_finalize(GObject *gobject);
 
 void ags_copy_channel_run_init_pre(AgsRecall *recall, gpointer data);
@@ -43,6 +52,8 @@ void ags_copy_channel_destination_recycling_changed_callback(AgsChannel *channel
 							     AgsCopyChannel *copy_channel);
 
 static gpointer ags_copy_channel_parent_class = NULL;
+static AgsConnectableInterface *ags_copy_channel_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_copy_channel_parent_run_connectable_interface;
 
 GType
 ags_copy_channel_get_type()
@@ -62,10 +73,30 @@ ags_copy_channel_get_type()
       (GInstanceInitFunc) ags_copy_channel_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_channel_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_channel_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL,
 						   "AgsCopyChannel\0",
 						   &ags_copy_channel_info,
 						   0);
+
+    g_type_add_interface_static(ags_type_copy_channel,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_channel,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
 
   return(ags_type_copy_channel);
@@ -89,6 +120,24 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
 }
 
 void
+ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_copy_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_copy_channel_connect;
+  connectable->disconnect = ags_copy_channel_disconnect;
+}
+
+void
+ags_copy_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_copy_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_copy_channel_run_connect;
+  run_connectable->disconnect = ags_copy_channel_run_disconnect;
+}
+
+void
 ags_copy_channel_init(AgsCopyChannel *copy_channel)
 {
   copy_channel->devout = NULL;
@@ -98,16 +147,16 @@ ags_copy_channel_init(AgsCopyChannel *copy_channel)
   copy_channel->source = NULL;
 }
 
-void
-ags_copy_channel_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_copy_channel_parent_class)->finalize(gobject);
-}
 
 void
-ags_copy_channel_connect(AgsCopyChannel *copy_channel)
+ags_copy_channel_connect(AgsConnectable *connectable)
 {
-  //  ags_recall_connect(AGS_RECALL(copy_channel));
+  AgsCopyChannel *copy_channel;
+
+  ags_copy_channel_parent_connectable_interface->connect(connectable);
+
+  /* AgsCopyChannel */
+  copy_channel = AGS_COPY_CHANNEL(connectable);
 
   g_signal_connect((GObject *) copy_channel, "run_init_pre\0",
 		   G_CALLBACK(ags_copy_channel_run_init_pre), NULL);
@@ -129,9 +178,21 @@ ags_copy_channel_connect(AgsCopyChannel *copy_channel)
 }
 
 void
-ags_copy_channel_connect_run_handler(AgsCopyChannel *copy_channel)
+ags_copy_channel_disconnect(AgsConnectable *connectable)
 {
+  ags_copy_channel_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_copy_channel_run_connect(AgsRunConnectable *run_connectable)
+{
+  AgsCopyChannel *copy_channel;
   GObject *gobject;
+
+  ags_copy_channel_parent_run_connectable_interface->connect(run_connectable);
+
+  /* AgsCopyChannel */
+  copy_channel = AGS_COPY_CHANNEL(run_connectable);
 
   /* destination */
   gobject = (GObject *) copy_channel->destination;
@@ -149,9 +210,15 @@ ags_copy_channel_connect_run_handler(AgsCopyChannel *copy_channel)
 }
 
 void
-ags_copy_channel_disconnect_run_handler(AgsCopyChannel *copy_channel)
+ags_copy_channel_run_disconnect(AgsRunConnectable *run_connectable)
 {
+  AgsCopyChannel *copy_channel;
   GObject *gobject;
+
+  ags_copy_channel_parent_run_connectable_interface->disconnect(run_connectable);
+
+  /* AgsCopyChannel */
+  copy_channel = AGS_COPY_CHANNEL(run_connectable);
 
   /* destination */
   gobject = G_OBJECT(copy_channel->destination);
@@ -162,6 +229,12 @@ ags_copy_channel_disconnect_run_handler(AgsCopyChannel *copy_channel)
   gobject = G_OBJECT(copy_channel->source);
 
   g_signal_handler_disconnect(gobject, copy_channel->source_recycling_changed_handler);
+}
+
+void
+ags_copy_channel_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_copy_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -181,7 +254,7 @@ ags_copy_channel_run_init_inter(AgsRecall *recall, gpointer data)
 
   copy_channel = (AgsCopyChannel *) recall;
 
-  ags_copy_channel_connect_run_handler(copy_channel);
+  //  ags_copy_channel_connect_run_handler(copy_channel);
 }
 
 void
@@ -197,13 +270,13 @@ ags_copy_channel_done(AgsRecall *recall, gpointer data)
 
   copy_channel = AGS_COPY_CHANNEL(recall);
 
-  ags_copy_channel_disconnect_run_handler(copy_channel);
+  //  ags_copy_channel_disconnect_run_handler(copy_channel);
 }
 
 void
 ags_copy_channel_cancel(AgsRecall *recall, gpointer data)
 {
-  ags_copy_channel_disconnect_run_handler((AgsCopyChannel *) recall);
+  //  ags_copy_channel_disconnect_run_handler((AgsCopyChannel *) recall);
 }
 
 void 

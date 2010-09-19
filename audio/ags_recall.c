@@ -1,6 +1,8 @@
 #include "ags_recall.h"
 
 #include "../object/ags_marshal.h"
+#include "../object/ags_connectable.h"
+#include "../object/ags_run_connectable.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,7 +11,12 @@
 GType ags_recall_get_type();
 void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_recall_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_recall_init(AgsRecall *recall);
+void ags_recall_connect(AgsConnectable *connectable);
+void ags_recall_disconnect(AgsConnectable *connectable);
+void ags_recall_run_connect(AgsRunConnectable *run_connectable);
+void ags_recall_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_finalize(GObject *recall);
 
 void ags_recall_real_run_init_pre(AgsRecall *recall);
@@ -69,16 +76,26 @@ ags_recall_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_recall_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_recall = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsRecall\0", &ags_recall_info,
 					     0);
 
     g_type_add_interface_static(ags_type_recall,
 				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);				
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_recall,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
 
-  return (ags_type_recall);
+  return(ags_type_recall);
 }
 
 void
@@ -222,6 +239,14 @@ void
 ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_recall_connect;
+  connectable->disconnect = ags_recall_disconnect;
+}
+
+void
+ags_recall_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  run_connectable->connect = ags_recall_run_connect;
+  run_connectable->disconnect = ags_recall_run_disconnect;
 }
 
 void
@@ -234,6 +259,30 @@ ags_recall_init(AgsRecall *recall)
 
   recall->parent = NULL;
   recall->child = NULL;
+}
+
+void
+ags_recall_connect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_recall_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_recall_run_connect(AgsRunConnectable *run_connectable)
+{
+  /* empty */
+}
+
+void
+ags_recall_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  /* empty */
 }
 
 void
@@ -256,12 +305,6 @@ ags_recall_finalize(GObject *gobject)
   }
 
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
-}
-
-void
-ags_recall_connect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void

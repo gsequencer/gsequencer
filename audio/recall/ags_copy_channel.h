@@ -44,11 +44,6 @@ struct _AgsCopyChannelClass
   AgsRecallClass recall;
 };
 
-void ags_copy_channel_connect_run_handler(AgsCopyChannel *copy_channel);
-void ags_copy_channel_disconnect_run_handler(AgsCopyChannel *copy_channel);
-
-void ags_copy_channel_connect(AgsCopyChannel *copy_channel);
-
 AgsCopyChannel* ags_copy_channel_new(AgsChannel *destination,
 				     AgsChannel *source,
 				     AgsDevout *devout);

@@ -4,8 +4,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../object/ags_connectable.h"
-
 #include "ags_recall_id.h"
 
 #define AGS_TYPE_RECALL                (ags_recall_get_type())
@@ -62,8 +60,6 @@ struct _AgsRecallClass
   AgsRecall* (*duplicate)(AgsRecall *recall, AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
   void (*notify_run)(AgsRecall *recall);
 };
-
-void ags_recall_connect(AgsConnectable *connectable);
 
 void ags_recall_run_init_pre(AgsRecall *recall);
 void ags_recall_run_init_inter(AgsRecall *recall);

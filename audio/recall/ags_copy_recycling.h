@@ -44,11 +44,6 @@ struct _AgsCopyRecyclingClass
   AgsRecallClass recall;
 };
 
-void ags_copy_recycling_connect_run_handler(AgsCopyRecycling *copy_recycling);
-void ags_copy_recycling_disconnect_run_handler(AgsCopyRecycling *copy_recycling);
-
-void ags_copy_recycling_connect(AgsCopyRecycling *copy_recycling);
-
 AgsCopyRecycling* ags_copy_recycling_new(AgsRecycling *destination,
 					 AgsRecycling *source,
 					 AgsDevout *devout);

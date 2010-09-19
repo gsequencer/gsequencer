@@ -1,5 +1,8 @@
 #include "ags_play_audio_signal.h"
 
+#include "../../object/ags_connectable.h"
+#include "../../object/ags_run_connectable.h"
+
 #include "../ags_devout.h"
 #include "../ags_audio_signal.h"
 #include "../ags_recycling.h"
@@ -11,7 +14,13 @@
 
 GType ags_play_audio_signal_get_type();
 void ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal);
+void ags_play_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_play_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal);
+void ags_play_audio_signal_connect(AgsConnectable *connectable);
+void ags_play_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_play_audio_signal_run_connect(AgsRunConnectable *run_connectable);
+void ags_play_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_audio_signal_finalize(GObject *gobject);
 
 void ags_play_audio_signal_run_inter(AgsRecall *recall, gpointer data);
@@ -19,6 +28,8 @@ void ags_play_audio_signal_run_inter(AgsRecall *recall, gpointer data);
 AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 static gpointer ags_play_audio_signal_parent_class = NULL;
+static AgsConnectableInterface *ags_play_audio_signal_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_play_audio_signal_parent_run_connectable_interface;
 
 GType
 ags_play_audio_signal_get_type()
@@ -38,10 +49,30 @@ ags_play_audio_signal_get_type()
       (GInstanceInitFunc) ags_play_audio_signal_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_audio_signal_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_audio_signal_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_play_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
 							"AgsPlayAudioSignal\0",
 							&ags_play_audio_signal_info,
 							0);
+
+    g_type_add_interface_static(ags_type_play_audio_signal,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_play_audio_signal,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
 
   return(ags_type_play_audio_signal);
@@ -59,6 +90,24 @@ ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal)
 }
 
 void
+ags_play_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_play_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_play_audio_signal_connect;
+  connectable->disconnect = ags_play_audio_signal_disconnect;
+}
+
+void
+ags_play_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_play_audio_signal_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_play_audio_signal_run_connect;
+  run_connectable->disconnect = ags_play_audio_signal_run_disconnect;
+}
+
+void
 ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal)
 {
   play_audio_signal->source = NULL;
@@ -69,18 +118,41 @@ ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal)
 }
 
 void
-ags_play_audio_signal_finalize(GObject *gobject)
+ags_play_audio_signal_connect(AgsConnectable *connectable)
 {
-  G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
-}
+  AgsPlayAudioSignal *play_audio_signal;
+  
+  ags_play_audio_signal_parent_connectable_interface->connect(connectable);
 
-void
-ags_play_audio_signal_connect(AgsPlayAudioSignal *play_audio_signal)
-{
-  //  ags_recall_connect((AgsRecall *) play_audio_signal);
+  /* AgsPlayAudioSignal */
+  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(connectable);
 
   g_signal_connect((GObject *) play_audio_signal, "run_inter\0",
 		   G_CALLBACK(ags_play_audio_signal_run_inter), NULL);
+}
+
+void
+ags_play_audio_signal_disconnect(AgsConnectable *connectable)
+{
+  ags_play_audio_signal_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_play_audio_signal_run_connect(AgsRunConnectable *run_connectable)
+{
+  ags_play_audio_signal_parent_run_connectable_interface->connect(run_connectable);
+}
+
+void
+ags_play_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  ags_play_audio_signal_parent_run_connectable_interface->disconnect(run_connectable);
+}
+
+void
+ags_play_audio_signal_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
