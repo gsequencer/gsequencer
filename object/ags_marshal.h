@@ -14,7 +14,15 @@ extern void g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
                                                      gpointer      invocation_hint,
                                                      gpointer      marshal_data);
 
-/* VOID:ULONG,UINT (ags_marshallers.list:2) */
+/* VOID:UINT,INT (ags_marshallers.list:2) */
+extern void g_cclosure_user_marshal_VOID__UINT_INT (GClosure     *closure,
+                                                    GValue       *return_value,
+                                                    guint         n_param_values,
+                                                    const GValue *param_values,
+                                                    gpointer      invocation_hint,
+                                                    gpointer      marshal_data);
+
+/* VOID:ULONG,UINT (ags_marshallers.list:3) */
 extern void g_cclosure_user_marshal_VOID__ULONG_UINT (GClosure     *closure,
                                                       GValue       *return_value,
                                                       guint         n_param_values,
@@ -22,7 +30,7 @@ extern void g_cclosure_user_marshal_VOID__ULONG_UINT (GClosure     *closure,
                                                       gpointer      invocation_hint,
                                                       gpointer      marshal_data);
 
-/* VOID:ULONG,UINT,UINT (ags_marshallers.list:3) */
+/* VOID:ULONG,UINT,UINT (ags_marshallers.list:4) */
 extern void g_cclosure_user_marshal_VOID__ULONG_UINT_UINT (GClosure     *closure,
                                                            GValue       *return_value,
                                                            guint         n_param_values,
@@ -30,7 +38,7 @@ extern void g_cclosure_user_marshal_VOID__ULONG_UINT_UINT (GClosure     *closure
                                                            gpointer      invocation_hint,
                                                            gpointer      marshal_data);
 
-/* VOID:OBJECT,UINT (ags_marshallers.list:4) */
+/* VOID:OBJECT,UINT (ags_marshallers.list:5) */
 extern void g_cclosure_user_marshal_VOID__OBJECT_UINT (GClosure     *closure,
                                                        GValue       *return_value,
                                                        guint         n_param_values,
@@ -38,7 +46,7 @@ extern void g_cclosure_user_marshal_VOID__OBJECT_UINT (GClosure     *closure,
                                                        gpointer      invocation_hint,
                                                        gpointer      marshal_data);
 
-/* VOID:OBJECT,OBJECT (ags_marshallers.list:5) */
+/* VOID:OBJECT,OBJECT (ags_marshallers.list:6) */
 extern void g_cclosure_user_marshal_VOID__OBJECT_OBJECT (GClosure     *closure,
                                                          GValue       *return_value,
                                                          guint         n_param_values,
@@ -46,7 +54,7 @@ extern void g_cclosure_user_marshal_VOID__OBJECT_OBJECT (GClosure     *closure,
                                                          gpointer      invocation_hint,
                                                          gpointer      marshal_data);
 
-/* VOID:OBJECT,OBJECT,OBJECT,OBJECT (ags_marshallers.list:6) */
+/* VOID:OBJECT,OBJECT,OBJECT,OBJECT (ags_marshallers.list:7) */
 extern void g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT (GClosure     *closure,
                                                                        GValue       *return_value,
                                                                        guint         n_param_values,
@@ -54,7 +62,7 @@ extern void g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT (GClosure 
                                                                        gpointer      invocation_hint,
                                                                        gpointer      marshal_data);
 
-/* OBJECT:OBJECT (ags_marshallers.list:7) */
+/* OBJECT:OBJECT (ags_marshallers.list:8) */
 extern void g_cclosure_user_marshal_OBJECT__OBJECT (GClosure     *closure,
                                                     GValue       *return_value,
                                                     guint         n_param_values,

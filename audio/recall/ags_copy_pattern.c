@@ -1,22 +1,26 @@
 #include "ags_copy_pattern.h"
 
+#include "../../object/ags_connectable.h"
+#include "../../object/ags_run_connectable.h"
+
 #include "../ags_audio.h"
 #include "../ags_recycling.h"
 #include "../ags_audio_signal.h"
 #include "../ags_recall_id.h"
 #include "../ags_recall_shared.h"
 
-#include "../../object/ags_connectable.h"
-
 #include <stdlib.h>
 
 GType ags_copy_pattern_get_type();
 void ags_copy_pattern_class_init(AgsCopyPatternClass *copy_pattern);
 void ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_copy_pattern_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_copy_pattern_init(AgsCopyPattern *copy_pattern);
-void ags_copy_pattern_finalize(GObject *gobject);
-
 void ags_copy_pattern_connect(AgsConnectable *connectable);
+void ags_copy_pattern_disconnect(AgsConnectable *connectable);
+void ags_copy_pattern_run_connect(AgsRunConnectable *run_connectable);
+void ags_copy_pattern_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_copy_pattern_finalize(GObject *gobject);
 
 void ags_copy_pattern_run_init_pre(AgsRecall *recall, gpointer data);
 
@@ -28,7 +32,8 @@ void ags_copy_pattern_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 static gpointer ags_copy_pattern_parent_class = NULL;
-static gpointer ags_copy_pattern_connectable_parent_interface = NULL;
+static AgsConnectableInterface* ags_copy_pattern_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_copy_pattern_parent_run_connectable_interface;
 
 GType
 ags_copy_pattern_get_type()
@@ -54,6 +59,12 @@ ags_copy_pattern_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_pattern_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_copy_pattern = g_type_register_static(AGS_TYPE_RECALL,
 						   "AgsCopyPattern\0",
 						   &ags_copy_pattern_info,
@@ -62,6 +73,10 @@ ags_copy_pattern_get_type()
     g_type_add_interface_static(ags_type_copy_pattern,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_pattern,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
 
   return(ags_type_copy_pattern);
@@ -72,8 +87,6 @@ ags_copy_pattern_class_init(AgsCopyPatternClass *copy_pattern)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-
-  fprintf(stdout, "ags_copy_pattern_class_init\n\0");
 
   ags_copy_pattern_parent_class = g_type_class_peek_parent(copy_pattern);
 
@@ -87,6 +100,26 @@ ags_copy_pattern_class_init(AgsCopyPatternClass *copy_pattern)
 }
 
 void
+ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_copy_pattern_connectable_parent_interface;
+
+  ags_copy_pattern_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_copy_pattern_connect;
+  connectable->disconnect = ags_copy_pattern_disconnect;
+}
+
+void
+ags_copy_pattern_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_copy_pattern_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_copy_pattern_run_connect;
+  run_connectable->disconnect = ags_copy_pattern_run_disconnect;
+}
+
+void
 ags_copy_pattern_init(AgsCopyPattern *copy_pattern)
 {
   copy_pattern->shared_audio = NULL;
@@ -95,30 +128,13 @@ ags_copy_pattern_init(AgsCopyPattern *copy_pattern)
 }
 
 void
-ags_copy_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  AgsConnectableInterface *ags_copy_pattern_connectable_parent_interface;
-
-  ags_copy_pattern_connectable_parent_interface = g_type_interface_peek_parent(connectable);
-
-  fprintf(stdout, "ags_copy_pattern_connectable_interface_init\n\0");
-
-  connectable->connect = ags_copy_pattern_connect;
-}
-
-void
-ags_copy_pattern_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_copy_pattern_parent_class)->finalize(gobject);
-}
-
-void
 ags_copy_pattern_connect(AgsConnectable *connectable)
 {
   AgsCopyPattern *copy_pattern;
 
-  //  AGS_CONNECTABLE_INTERFACE(ags_copy_pattern_connectable_parent_interface)->connect(connectable);
+  ags_copy_pattern_parent_connectable_interface->connect(connectable);
 
+  /* AgsCopyPattern */
   copy_pattern = AGS_COPY_PATTERN(connectable);
 
   g_signal_connect((GObject *) copy_pattern, "run_init_pre\0",
@@ -132,6 +148,30 @@ ags_copy_pattern_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) copy_pattern, "cancel\0",
 		   G_CALLBACK(ags_copy_pattern_cancel), NULL);
+}
+
+void
+ags_copy_pattern_disconnect(AgsConnectable *connectable)
+{
+  ags_copy_pattern_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_copy_pattern_run_connect(AgsRunConnectable *run_connectable)
+{
+  ags_copy_pattern_parent_run_connectable_interface->connect(run_connectable);
+}
+
+void
+ags_copy_pattern_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  ags_copy_pattern_parent_run_connectable_interface->disconnect(run_connectable);
+}
+
+void
+ags_copy_pattern_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_copy_pattern_parent_class)->finalize(gobject);
 }
 
 void ags_copy_pattern_run_init_pre(AgsRecall *recall, gpointer data)
@@ -188,7 +228,7 @@ ags_copy_pattern_run_pre(AgsRecall *recall, gpointer data)
 	fprintf(stdout, "copy_pattern->recall.recall == NULL\n\0");
 	ags_recall_done((AgsRecall *) copy_pattern);
 
-	delay->recall_ref--;
+	ags_recall_notify_run(delay, FALSE);
 	copy_pattern->shared_audio_run->bit = 0;
       }
       //      pthread_mutex_unlock(&mutex);
@@ -273,9 +313,16 @@ ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   if(list == NULL){
     AgsDelay *delay;
     AgsCopyPatternSharedAudioRun *copy_pattern_shared_audio_run;
+    AgsRecallID *parent_recall_id;
 
-    delay = AGS_DELAY(ags_recall_find_type(audio->play, AGS_TYPE_DELAY)->data);
+    parent_recall_id = ags_recall_id_find_group_id(copy_pattern->shared_channel->destination->recall_id,
+						   recall_id->parent_group_id);
 
+    if(parent_recall_id->parent_group_id == 0)
+      delay = AGS_DELAY(ags_recall_find_type(audio->play, AGS_TYPE_DELAY)->data);
+    else
+      delay = AGS_DELAY(ags_recall_find_type(audio->recall, AGS_TYPE_DELAY)->data);
+    
     copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(delay, 0);
     AGS_RECALL_SHARED(copy_pattern_shared_audio_run)->group_id = recall_id->group_id;
 

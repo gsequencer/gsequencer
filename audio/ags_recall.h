@@ -26,6 +26,14 @@ typedef enum{
   AGS_RECALL_PROPAGATE_DONE     = 1 << 6, // see ags_recall_real_remove
 }AgsRecallFlags;
 
+typedef enum{
+  AGS_RECALL_NOTIFY_RUN,
+  AGS_RECALL_NOTIFY_SHARED_AUDIO,
+  AGS_RECALL_NOTIFY_SHARED_AUDIO_RUN,
+  AGS_RECALL_NOTIFY_SHARED_CHANNEL,
+  AGS_RECALL_NOTIFY_CHANNEL_RUN,
+}AgsRecallNotifyMode;
+
 struct _AgsRecall
 {
   GObject object;
@@ -58,7 +66,8 @@ struct _AgsRecallClass
   void (*remove)(AgsRecall *recall);
 
   AgsRecall* (*duplicate)(AgsRecall *recall, AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
-  void (*notify_run)(AgsRecall *recall);
+
+  void (*notify)(AgsRecall *recall, guint notify, gboolean increase);
 };
 
 void ags_recall_run_init_pre(AgsRecall *recall);
@@ -76,7 +85,8 @@ void ags_recall_cancel(AgsRecall *recall);
 void ags_recall_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
-void ags_recall_notify_run(AgsRecall *recall);
+
+void ags_recall_notify(AgsRecall *recall, guint notify_mode, gint count);
 
 void ags_recall_check_cancel(AgsRecall *recall);
 void ags_recall_child_check_remove(AgsRecall *recall);

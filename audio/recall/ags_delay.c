@@ -1,5 +1,8 @@
 #include "ags_delay.h"
 
+#include "../../object/ags_connectable.h"
+#include "../../object/ags_run_connectable.h"
+
 #include "../ags_recall_id.h"
 
 #include <stdlib.h>
@@ -7,7 +10,12 @@
 GType ags_delay_get_type();
 void ags_delay_class_init(AgsDelayClass *delay);
 void ags_delay_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_delay_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_delay_init(AgsDelay *delay);
+void ags_delay_connect(AgsConnectable *connectable);
+void ags_delay_disconnect(AgsConnectable *connectable);
+void ags_delay_run_connect(AgsRunConnectable *run_connectable);
+void ags_delay_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_delay_finalize(GObject *gobject);
 
 void ags_delay_run_inter(AgsRecall *recall, gpointer data);
@@ -15,9 +23,11 @@ void ags_delay_done(AgsRecall *recall, gpointer data);
 void ags_delay_cancel(AgsRecall *recall, gpointer data);
 void ags_delay_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_delay_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
-void ags_delay_notify_run(AgsRecall *recall);
+void ags_delay_notify(AgsRecall *recall, guint notify_mode, gint count);
 
 static gpointer ags_delay_parent_class = NULL;
+static AgsConnectableInterface *ags_delay_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_delay_parent_run_connectable_interface;
 
 GType
 ags_delay_get_type()
@@ -37,10 +47,30 @@ ags_delay_get_type()
       (GInstanceInitFunc) ags_delay_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_delay_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_delay_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_delay = g_type_register_static(AGS_TYPE_RECALL,
 					    "AgsDelay\0",
 					    &ags_delay_info,
 					    0);
+
+    g_type_add_interface_static(ags_type_delay,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_delay,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
 
   return (ags_type_delay);
@@ -61,6 +91,25 @@ ags_delay_class_init(AgsDelayClass *delay)
   recall = (AgsRecallClass *) delay;
 
   recall->duplicate = ags_delay_duplicate;
+  recall->notify = ags_delay_notify;
+}
+
+void
+ags_delay_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_delay_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_delay_connect;
+  connectable->disconnect = ags_delay_disconnect;
+}
+
+void
+ags_delay_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_delay_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_delay_run_connect;
+  run_connectable->disconnect = ags_delay_run_disconnect;
 }
 
 void
@@ -77,15 +126,14 @@ ags_delay_init(AgsDelay *delay)
 }
 
 void
-ags_delay_finalize(GObject *gobject)
+ags_delay_connect(AgsConnectable *connectable)
 {
-  G_OBJECT_CLASS(ags_delay_parent_class)->finalize(gobject);
-}
+  AgsDelay *delay;
 
-void
-ags_delay_connect(AgsDelay *delay)
-{
-  //  ags_recall_connect((AgsRecall *) delay);
+  ags_delay_parent_connectable_interface->connect(connectable);
+
+  /* AgsDelay */
+  delay = AGS_DELAY(connectable);
 
   g_signal_connect((GObject *) delay, "run_inter\0",
 		   G_CALLBACK(ags_delay_run_inter), NULL);
@@ -98,6 +146,30 @@ ags_delay_connect(AgsDelay *delay)
 
   g_signal_connect((GObject *) delay, "remove\0",
 		   G_CALLBACK(ags_delay_remove), NULL);
+}
+
+void
+ags_delay_disconnect(AgsConnectable *connectable)
+{
+  ags_delay_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_delay_run_connect(AgsRunConnectable *run_connectable)
+{
+  ags_delay_parent_run_connectable_interface->connect(run_connectable);
+}
+
+void
+ags_delay_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  ags_delay_parent_run_connectable_interface->disconnect(run_connectable);
+}
+
+void
+ags_delay_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_delay_parent_class)->finalize(gobject);
 }
 
 void
@@ -169,9 +241,30 @@ ags_delay_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 }
 
 void
-ags_delay_notify_run(AgsRecall *recall)
+ags_delay_notify(AgsRecall *recall, guint notify_mode, gint count)
 {
-  AGS_DELAY(recall)->hide_ref++;
+  AgsDelay *delay;
+
+  delay = AGS_DELAY(recall);
+
+  switch(notify_mode){
+  case AGS_RECALL_NOTIFY_RUN:
+    delay->hide_ref += count;
+
+    break;
+  case AGS_RECALL_NOTIFY_SHARED_AUDIO:
+    break;
+  case AGS_RECALL_NOTIFY_SHARED_AUDIO_RUN:
+    break;
+  case AGS_RECALL_NOTIFY_SHARED_CHANNEL:
+    break;
+  case AGS_RECALL_NOTIFY_CHANNEL_RUN:
+    delay->recall_ref += count;
+
+    break;
+  default:
+    printf("ags_delay.c - ags_delay_notify: unknown notify");
+  }
 }
 
 AgsDelay*
