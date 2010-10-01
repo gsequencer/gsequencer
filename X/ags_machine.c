@@ -1,6 +1,8 @@
 #include "ags_machine.h"
 #include "ags_machine_callbacks.h"
 
+#include "../object/ags_connectable.h"
+
 #include "ags_window.h"
 
 GType ags_machine_get_type(void);

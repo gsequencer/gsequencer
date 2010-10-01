@@ -1,5 +1,7 @@
 #include "ags_menu_bar_callbacks.h"
 
+#include "../object/ags_connectable.h"
+
 #include "../file/ags_file.h"
 
 #include "../audio/ags_input.h"

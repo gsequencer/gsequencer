@@ -1,6 +1,8 @@
 #include "ags_drum_input_line.h"
 #include "ags_drum_input_line_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../ags_window.h"
 
 #include "ags_drum.h"

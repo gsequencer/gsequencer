@@ -23,7 +23,7 @@ void ags_delay_done(AgsRecall *recall, gpointer data);
 void ags_delay_cancel(AgsRecall *recall, gpointer data);
 void ags_delay_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_delay_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
-void ags_delay_notify(AgsRecall *recall, guint notify_mode, gint count);
+void ags_delay_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
 static gpointer ags_delay_parent_class = NULL;
 static AgsConnectableInterface *ags_delay_parent_connectable_interface;
@@ -91,7 +91,7 @@ ags_delay_class_init(AgsDelayClass *delay)
   recall = (AgsRecallClass *) delay;
 
   recall->duplicate = ags_delay_duplicate;
-  recall->notify = ags_delay_notify;
+  recall->notify_dependency = ags_delay_notify_dependency;
 }
 
 void
@@ -189,7 +189,8 @@ ags_delay_run_inter(AgsRecall *recall, gpointer data)
 
   delay->hide_ref_counter = 0;
 
-  if(delay->recall_ref == 0){
+  if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&
+     delay->recall_ref == 0){
     delay->counter = 0;
     ags_recall_done(recall);
   }else{
@@ -241,7 +242,7 @@ ags_delay_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 }
 
 void
-ags_delay_notify(AgsRecall *recall, guint notify_mode, gint count)
+ags_delay_notify_dependency(AgsRecall *recall, guint notify_mode, gint count)
 {
   AgsDelay *delay;
 

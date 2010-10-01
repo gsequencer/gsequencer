@@ -45,7 +45,7 @@ enum{
   CANCEL,
   REMOVE,
   DUPLICATE,
-  NOTIFY_RUN,
+  NOTIFY_DEPENDENCY,
   LAST_SIGNAL,
 };
 
@@ -124,7 +124,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   recall->duplicate = ags_recall_real_duplicate;
 
-  recall->notify = NULL;
+  recall->notify_dependency = NULL;
 
   recall_signals[RUN_INIT_PRE] =
     g_signal_new("run_init_pre\0",
@@ -226,11 +226,11 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_OBJECT, 1,
 		 G_TYPE_OBJECT);
 
-  recall_signals[NOTIFY_RUN] =
+  recall_signals[NOTIFY_DEPENDENCY] =
     g_signal_new("notify\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecallClass, notify),
+		 G_STRUCT_OFFSET (AgsRecallClass, notify_dependency),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_INT,
 		 G_TYPE_NONE, 2,
@@ -599,13 +599,13 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 }
 
 void
-ags_recall_notify_run(AgsRecall *recall, guint flags, gint count)
+ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[NOTIFY_RUN], 0,
+		recall_signals[NOTIFY_DEPENDENCY], 0,
 		flags, count);
   g_object_unref(G_OBJECT(recall));
 }

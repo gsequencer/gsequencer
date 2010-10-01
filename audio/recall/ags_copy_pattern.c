@@ -224,11 +224,15 @@ ags_copy_pattern_run_pre(AgsRecall *recall, gpointer data)
 	goto ags_copy_pattern_pre0;
       }
     }else{
+      if((AGS_RECALL_PERSISTENT & (AGS_RECALL(delay)->flags)) != 0)
+	AGS_RECALL(delay)->flags &= (~AGS_RECALL_PERSISTENT);
+
       if(copy_pattern->recall.child == NULL){
-	fprintf(stdout, "copy_pattern->recall.recall == NULL\n\0");
+	//	fprintf(stdout, "copy_pattern->recall.recall == NULL\n\0");
 	ags_recall_done((AgsRecall *) copy_pattern);
 
-	ags_recall_notify_run(delay, FALSE);
+	ags_recall_notify_dependency(AGS_RECALL(delay), AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
+
 	copy_pattern->shared_audio_run->bit = 0;
       }
       //      pthread_mutex_unlock(&mutex);
