@@ -1,5 +1,6 @@
 #include "ags_audio.h"
 
+#include "../object/ags_connectable.h"
 #include "../object/ags_marshal.h"
 
 #include "ags_devout.h"
@@ -13,8 +14,12 @@
 
 GType ags_audio_get_type();
 void ags_audio_class_init(AgsAudioClass *audio_class);
+void ags_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_init(AgsAudio *audio);
 void ags_audio_finalize(GObject *gobject);
+
+void ags_audio_connect(AgsConnectable *connectable);
+void ags_audio_disconnect(AgsConnectable *connectable);
 
 void ags_audio_real_set_audio_channels(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old);
@@ -30,6 +35,7 @@ enum{
 };
 
 static gpointer ags_audio_parent_class = NULL;
+
 static guint audio_signals[LAST_SIGNAL];
 
 GType
@@ -50,9 +56,19 @@ ags_audio_get_type (void)
       (GInstanceInitFunc) ags_audio_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_audio_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_audio = g_type_register_static(G_TYPE_OBJECT,
 					    "AgsAudio\0", &ags_audio_info,
 					    0);
+
+    g_type_add_interface_static(ags_type_audio,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_audio);
@@ -92,6 +108,13 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT, G_TYPE_UINT);
+}
+
+void
+ags_audio_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_audio_connect;
+  connectable->disconnect = ags_audio_disconnect;
 }
 
 void
@@ -186,8 +209,34 @@ ags_audio_finalize(GObject *gobject)
 }
 
 void
-ags_audio_connect(AgsAudio *audio)
+ags_audio_connect(AgsConnectable *connectable)
 {
+  AgsAudio *audio;
+  GList *list;
+
+  audio = AGS_AUDIO(connectable);
+
+  list = audio->recall;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->play;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_audio_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 /*
@@ -1247,22 +1296,26 @@ void
 ags_audio_play(AgsAudio *audio, guint group_id, gint stage, gboolean do_recall)
 {
   AgsRecall *recall;
-  AgsRecallID *recall_id;
   GList *list, *list_next;
   
   if(do_recall)
     list = audio->recall;
   else
     list = audio->play;
-  
-  recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
 
   while(list != NULL){
     list_next = list->next;
 
     recall = AGS_RECALL(list->data);
+
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
+       recall->recall_id->group_id != group_id){
+      list = list_next;
+
+      continue;
+    }
     
-    if((AGS_RECALL_HIDE & recall->flags) == 0){
+    if((AGS_RECALL_HIDE & (recall->flags)) == 0){
       if(stage == 0)
 	ags_recall_run_pre(recall);
       else if(stage == 1)
@@ -1303,7 +1356,7 @@ ags_audio_recursive_play_init(AgsAudio *audio)
 
     while(channel != NULL){
       ags_channel_recursive_play_init(channel, stage,
-				      (stage == 0 ? TRUE: FALSE),
+				      ((stage == 0) ? TRUE: FALSE),
 				      group_id, child_group_id);
 
       channel = channel->next;

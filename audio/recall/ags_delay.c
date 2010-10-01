@@ -18,6 +18,7 @@ void ags_delay_run_connect(AgsRunConnectable *run_connectable);
 void ags_delay_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_delay_finalize(GObject *gobject);
 
+void ags_delay_run_init_pre(AgsRecall *recall, gpointer data);
 void ags_delay_run_inter(AgsRecall *recall, gpointer data);
 void ags_delay_done(AgsRecall *recall, gpointer data);
 void ags_delay_cancel(AgsRecall *recall, gpointer data);
@@ -130,10 +131,15 @@ ags_delay_connect(AgsConnectable *connectable)
 {
   AgsDelay *delay;
 
+  printf("ags_delay_connect\n\0");
+
   ags_delay_parent_connectable_interface->connect(connectable);
 
   /* AgsDelay */
   delay = AGS_DELAY(connectable);
+
+  g_signal_connect((GObject *) delay, "run_init_pre\0",
+		   G_CALLBACK(ags_delay_run_init_pre), NULL);
 
   g_signal_connect((GObject *) delay, "run_inter\0",
 		   G_CALLBACK(ags_delay_run_inter), NULL);
@@ -173,16 +179,24 @@ ags_delay_finalize(GObject *gobject)
 }
 
 void
+ags_delay_run_init_pre(AgsRecall *recall, gpointer data)
+{
+  printf("ags_delay_run_init_pre\n\0");
+
+  recall->flags |= AGS_RECALL_PERSISTENT;
+}
+
+void
 ags_delay_run_inter(AgsRecall *recall, gpointer data)
 {
   AgsDelay *delay;
 
   delay = (AgsDelay *) recall;
 
+  fprintf(stdout, "ags_delay_run_inter - debug\n\0");
+
   if(delay->hide_ref != 0)
     delay->hide_ref_counter++;
-
-  //  fprintf(stdout, "ags_delay_run_inter - debug\n\0");
 
   if(delay->hide_ref_counter != delay->hide_ref)
     return;
@@ -196,7 +210,7 @@ ags_delay_run_inter(AgsRecall *recall, gpointer data)
   }else{
     if(delay->shared_audio->delay == delay->counter){
       delay->counter = 0;
-      //      fprintf(stdout, "delay->delay == delay->counter\n\0");
+      fprintf(stdout, "delay->delay == delay->counter\n\0");
     }else{
       delay->counter++;
     }

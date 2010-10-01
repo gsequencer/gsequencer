@@ -103,7 +103,7 @@ ags_machine_connect(AgsConnectable *connectable)
   machine = AGS_MACHINE(connectable);
 
   /* AgsAudio */
-  ags_audio_connect(machine->audio);
+  ags_connectable_connect(AGS_CONNECTABLE(machine->audio));
 
   /* GtkObject */
   g_signal_connect(G_OBJECT (machine), "destroy\0",

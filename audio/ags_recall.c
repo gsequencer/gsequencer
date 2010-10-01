@@ -546,7 +546,8 @@ ags_recall_real_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 
   copy = g_object_new(G_OBJECT_TYPE(recall), NULL);
 
-  copy->flags = (recall->flags & (~AGS_RECALL_TEMPLATE));
+  copy->flags = recall->flags;
+  copy->flags &= (~AGS_RECALL_TEMPLATE);
   copy->recall_id = recall_id;
   copy->parent = recall->parent;
 

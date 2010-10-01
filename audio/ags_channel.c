@@ -1,5 +1,6 @@
 #include "ags_channel.h"
 
+#include "../object/ags_connectable.h"
 #include "../object/ags_marshal.h"
 
 #include "ags_audio.h"
@@ -1123,6 +1124,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
 	  recall = ags_recall_duplicate(recall, recall_id);
 	  recall->recall_id = recall_id;
+	  ags_connectable_connect(AGS_CONNECTABLE(recall));
 
 	  if(recall_id->parent_group_id == 0)
 	    channel->play = g_list_prepend(channel->play, recall);
@@ -1186,6 +1188,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	    /* duplicate the recall, notify first run and initialize it */
 	    recall = ags_recall_duplicate(recall, recall_id);
 	    recall->recall_id = recall_id;
+	    ags_connectable_connect(AGS_CONNECTABLE(recall));
 
 	    if(recall_id->parent_group_id == 0)
 	      audio->play = g_list_prepend(audio->play, recall);

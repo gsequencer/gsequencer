@@ -80,8 +80,6 @@ struct _AgsAudioClass
 		   guint pads, guint pads_old);
 };
 
-void ags_audio_connect(AgsAudio *audio);
-
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 
