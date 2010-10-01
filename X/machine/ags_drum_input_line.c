@@ -15,13 +15,16 @@
 
 GType ags_drum_input_line_get_type();
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
+void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_destroy(GtkObject *object);
-void ags_drum_input_line_connect(AgsDrumInputLine *drum_input_line);
+void ags_drum_input_line_connect(AgsConnectable *connectable);
+void ags_drum_input_line_disconnect(AgsConnectable *connectable);
 
 void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 static gpointer ags_drum_input_line_parent_class = NULL;
+static AgsConnectableInterface *ags_drum_input_line_parent_connectable_interface;
 
 GType
 ags_drum_input_line_get_type()
@@ -41,9 +44,19 @@ ags_drum_input_line_get_type()
       (GInstanceInitFunc) ags_drum_input_line_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_drum_input_line_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_drum_input_line = g_type_register_static(AGS_TYPE_LINE,
 						      "AgsDrumInputLine\0", &ags_drum_input_line_info,
 						      0);
+
+    g_type_add_interface_static(ags_type_drum_input_line,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_drum_input_line);
@@ -60,6 +73,15 @@ ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line)
   line = AGS_LINE_CLASS(drum_input_line);
 
   line->set_channel = ags_drum_input_line_set_channel;
+}
+
+void
+ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_drum_input_line_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_drum_input_line_connect;
+  connectable->disconnect = ags_drum_input_line_disconnect;
 }
 
 void
@@ -88,8 +110,28 @@ ags_drum_input_line_destroy(GtkObject *object)
 }
 
 void
-ags_drum_input_line_connect(AgsDrumInputLine *drum_input_line)
+ags_drum_input_line_connect(AgsConnectable *connectable)
 {
+  AgsDrum *drum;
+  AgsDrumInputLine *drum_input_line;
+
+  ags_drum_input_line_parent_connectable_interface->connect(connectable);
+
+  /* AgsDrumInputLine */
+  drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
+  drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) drum_input_line, AGS_TYPE_DRUM));
+
+  /* AgsAudio */
+  g_signal_connect(G_OBJECT(drum->machine.audio), "set_pads\0",
+		   G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
+}
+
+void
+ags_drum_input_line_disconnect(AgsConnectable *connectable)
+{
+  ags_drum_input_line_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
 }
 
 void
@@ -165,6 +207,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   destination = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start);
 
   while(destination != NULL){
+    g_object_ref(G_OBJECT(destination));
+
     /* AgsCopyPattern */
     copy_pattern_shared_channel = ags_copy_pattern_shared_channel_new(destination,
 								      source, (AgsPattern *) source->pattern->data);

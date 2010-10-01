@@ -1,10 +1,13 @@
 #include "ags_line.h"
 #include "ags_line_callbacks.h"
 
+#include "../object/ags_connectable.h"
+
 #include "../audio/ags_channel.h"
 
 GType ags_line_get_type(void);
 void ags_line_class_init(AgsLineClass *line);
+void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_init(AgsLine *line);
 void ags_line_set_property(GObject *gobject,
 			   guint prop_id,
@@ -14,7 +17,8 @@ void ags_line_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
-void ags_line_connect(AgsLine *line);
+void ags_line_connect(AgsConnectable *connectable);
+void ags_line_disconnect(AgsConnectable *connectable);
 void ags_line_destroy(GtkObject *object);
 void ags_line_show(GtkWidget *widget);
 
@@ -51,9 +55,19 @@ ags_line_get_type(void)
       (GInstanceInitFunc) ags_line_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_line_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_line = g_type_register_static(GTK_TYPE_MENU_ITEM,
 					   "AgsLine\0", &ags_line_info,
 					   0);
+
+    g_type_add_interface_static(ags_type_line,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_line);
@@ -94,6 +108,13 @@ ags_line_class_init(AgsLineClass *line)
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
+}
+
+void
+ags_line_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_line_connect;
+  connectable->disconnect = ags_line_disconnect;
 }
 
 void
@@ -163,13 +184,24 @@ ags_line_get_property(GObject *gobject,
 }
 
 void
-ags_line_connect(AgsLine *line)
+ags_line_connect(AgsConnectable *connectable)
 {
+  AgsLine *line;
+
+  line = AGS_LINE(connectable);
+
+  /* GtkWidget */
   g_signal_connect((GObject *) line, "destroy\0",
 		   G_CALLBACK(ags_line_destroy_callback), (gpointer) line);
 
   g_signal_connect((GObject *) line, "show\0",
 		   G_CALLBACK(ags_line_show_callback), (gpointer) line);
+}
+
+void
+ags_line_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 void

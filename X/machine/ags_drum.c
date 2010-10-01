@@ -96,8 +96,6 @@ ags_drum_class_init(AgsDrumClass *drum)
 void
 ags_drum_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_drum_connectable_parent_interface;
-
   ags_drum_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_drum_connect;

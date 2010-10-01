@@ -14,6 +14,41 @@
 #include "../../audio/recall/ags_copy_pattern.h"
 
 void
+ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
+					    guint pads, guint pads_old,
+					    AgsDrumInputLine *drum_input_line)
+{
+  if(type == AGS_TYPE_OUTPUT){
+    if(pads > pads_old){
+      ags_drum_input_line_map_recall(drum_input_line, pads_old);
+    }else{
+      AgsChannel *destination, *channel;
+      AgsRecall *recall;
+      GList *recall_list;
+
+      channel = drum_input_line->line.channel;
+
+      /* AgsCopyPattern */
+      recall_list = channel->recall;
+
+      while((recall_list = ags_recall_find_type(recall_list, AGS_TYPE_COPY_PATTERN)) != NULL){
+	recall = AGS_RECALL(recall_list->data);
+	destination = AGS_COPY_PATTERN(recall)->shared_channel->destination;
+
+	if(destination->pad >= pads){
+	  channel->recall = g_list_delete_link(channel->recall, recall_list);
+	  
+	  g_object_unref(recall);
+	  g_object_unref(destination);
+	}
+
+	recall_list = recall_list->next;
+      }
+    }
+  }
+}
+
+void
 ags_drum_input_line_play_channel_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
   /*

@@ -1,6 +1,8 @@
 #include "ags_drum_output_line.h"
 #include "ags_drum_output_line_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../ags_window.h"
 
 #include "ags_drum.h"
@@ -11,13 +13,16 @@
 
 GType ags_drum_output_line_get_type();
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
+void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
 void ags_drum_output_line_destroy(GtkObject *object);
-void ags_drum_output_line_connect(AgsDrumOutputLine *drum_output_line);
+void ags_drum_output_line_connect(AgsConnectable *connectable);
+void ags_drum_output_line_disconnect(AgsConnectable *connectable);
 
 void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 static gpointer ags_drum_output_line_parent_class = NULL;
+static AgsConnectableInterface *ags_drum_output_line_parent_connectable_interface;
 
 GType
 ags_drum_output_line_get_type()
@@ -37,9 +42,19 @@ ags_drum_output_line_get_type()
       (GInstanceInitFunc) ags_drum_output_line_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_drum_output_line_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_drum_output_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsDrumOutputLine\0", &ags_drum_output_line_info,
 						       0);
+
+    g_type_add_interface_static(ags_type_drum_output_line,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_drum_output_line);
@@ -59,6 +74,15 @@ ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line)
 }
 
 void
+ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_drum_output_line_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_drum_output_line_connect;
+  connectable->disconnect = ags_drum_output_line_disconnect;
+}
+
+void
 ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line)
 {
   g_signal_connect_after((GObject *) drum_output_line, "parent_set\0",
@@ -73,8 +97,19 @@ ags_drum_output_line_destroy(GtkObject *object)
 }
 
 void
-ags_drum_output_line_connect(AgsDrumOutputLine *drum_output_line)
+ags_drum_output_line_connect(AgsConnectable *connectable)
 {
+  ags_drum_output_line_parent_connectable_interface->connect(connectable);
+
+  /* empty */
+}
+
+void
+ags_drum_output_line_disconnect(AgsConnectable *connectable)
+{
+  ags_drum_output_line_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
 }
 
 void

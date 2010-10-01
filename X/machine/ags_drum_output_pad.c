@@ -1,42 +1,61 @@
 #include "ags_drum_output_pad.h"
 #include "ags_drum_output_pad_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "ags_drum.h"
 
 #include "../ags_line.h"
 
 GType ags_drum_output_pad_get_type();
 void ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad);
+void ags_drum_output_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad);
 void ags_drum_output_pad_destroy(GtkObject *object);
-void ags_drum_output_pad_connect(AgsDrumOutputPad *drum_output_pad);
+void ags_drum_output_pad_connect(AgsConnectable *connectable);
+void ags_drum_output_pad_disconnect(AgsConnectable *connectable);
 
 void ags_drum_output_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
 
 static gpointer ags_drum_output_pad_parent_class = NULL;
+static AgsConnectableInterface *ags_drum_output_pad_parent_connectable_interface;
 
 GType
 ags_drum_output_pad_get_type()
 {
-  static GType drum_output_pad_type = 0;
+  static GType ags_type_drum_output_pad = 0;
 
-  if (!drum_output_pad_type){
-    static const GtkTypeInfo drum_output_pad_info = {
-      "AgsDrumOutputPad\0",
-      sizeof(AgsDrumOutputPad), /* base_init */
-      sizeof(AgsDrumOutputPadClass), /* base_finalize */
-      (GtkClassInitFunc) ags_drum_output_pad_class_init,
-      (GtkObjectInitFunc) ags_drum_output_pad_init,
+  if(!ags_type_drum_output_pad){
+    static const GTypeInfo ags_drum_output_pad_info = {
+      sizeof(AgsDrumOutputPadClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_drum_output_pad_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof(AgsDrumOutputPad),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_drum_output_pad_init,
     };
-    drum_output_pad_type = gtk_type_unique (AGS_TYPE_PAD, &drum_output_pad_info);
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_drum_output_pad_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_drum_output_pad = g_type_register_static(AGS_TYPE_PAD,
+						      "AgsDrumOutputPad\0", &ags_drum_output_pad_info,
+						      0);
+    
+    g_type_add_interface_static(ags_type_drum_output_pad,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (drum_output_pad_type);
+  return(ags_type_drum_output_pad);
 }
 
 void
@@ -55,19 +74,40 @@ ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad)
 }
 
 void
+ags_drum_output_pad_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_drum_output_pad_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_drum_output_pad_connect;
+  connectable->disconnect = ags_drum_output_pad_disconnect;
+}
+
+void
 ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad)
 {
   drum_output_pad->flags = 0;
 }
 
 void
-ags_drum_output_pad_destroy(GtkObject *object)
+ags_drum_output_pad_connect(AgsConnectable *connectable)
 {
+  ags_drum_output_pad_parent_connectable_interface->connect(connectable);
+
+  /* empty */
 }
 
 void
-ags_drum_output_pad_connect(AgsDrumOutputPad *drum_output_pad)
+ags_drum_output_pad_disconnect(AgsConnectable *connectable)
 {
+  ags_drum_output_pad_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
+}
+
+void
+ags_drum_output_pad_destroy(GtkObject *object)
+{
+  /* empty */
 }
 
 void

@@ -7,9 +7,10 @@
 
 GType ags_machine_get_type(void);
 void ags_machine_class_init(AgsMachineClass *machine);
-void ags_machine_init(AgsMachine *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_machine_init(AgsMachine *machine);
 void ags_machine_connect(AgsConnectable *connectable);
+void ags_machine_disconnect(AgsConnectable *connectable);
 void ags_machine_destroy(GtkObject *object);
 void ags_machine_show(GtkWidget *widget);
 
@@ -48,7 +49,7 @@ ags_machine_get_type(void)
     
     g_type_add_interface_static(ags_type_machine,
 				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);				
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_machine);
@@ -63,6 +64,7 @@ void
 ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_machine_connect;
+  connectable->disconnect = ags_machine_disconnect;
 }
 
 void
@@ -95,16 +97,45 @@ void
 ags_machine_connect(AgsConnectable *connectable)
 {
   AgsMachine *machine;
+  GList *pad_list;
 
+  /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
+  /* AgsAudio */
   ags_audio_connect(machine->audio);
 
-  g_signal_connect (G_OBJECT (machine), "destroy\0",
-		    G_CALLBACK (ags_machine_destroy_callback), (gpointer) machine);
+  /* GtkObject */
+  g_signal_connect(G_OBJECT (machine), "destroy\0",
+		   G_CALLBACK(ags_machine_destroy_callback), (gpointer) machine);
 
-  g_signal_connect (G_OBJECT (machine), "button_press_event\0",
-                    G_CALLBACK (ags_machine_button_press_callback), (gpointer) machine);
+  /* GtkWidget */
+  g_signal_connect(G_OBJECT (machine), "button_press_event\0",
+		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
+
+  /* AgsPad - input */
+  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+  while(pad_list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+
+    pad_list = pad_list->next;
+  }
+
+  /* AgsPad - output */
+  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+
+  while(pad_list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+
+    pad_list = pad_list->next;
+  }
+}
+
+void
+ags_machine_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 void

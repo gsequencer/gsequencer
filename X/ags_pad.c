@@ -1,11 +1,14 @@
 #include "ags_pad.h"
 #include "ags_pad_callbacks.h"
 
+#include "../object/ags_connectable.h"
 #include "../object/ags_marshal.h"
+
 #include "ags_machine.h"
 
 GType ags_pad_get_type(void);
 void ags_pad_class_init(AgsPadClass *pad);
+void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pad_init(AgsPad *pad);
 void ags_pad_set_property(GObject *gobject,
 			  guint prop_id,
@@ -15,7 +18,8 @@ void ags_pad_get_property(GObject *gobject,
 			  guint prop_id,
 			  GValue *value,
 			  GParamSpec *param_spec);
-void ags_pad_connect(AgsPad *pad);
+void ags_pad_connect(AgsConnectable *connectable);
+void ags_pad_disconnect(AgsConnectable *connectable);
 void ags_pad_destroy(GtkObject *object);
 void ags_pad_show(GtkWidget *widget);
 
@@ -55,9 +59,19 @@ ags_pad_get_type(void)
       (GInstanceInitFunc) ags_pad_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_pad_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_pad = g_type_register_static(GTK_TYPE_VBOX,
 					  "AgsPad\0", &ags_pad_info,
 					  0);
+
+    g_type_add_interface_static(ags_type_pad,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_pad);
@@ -109,6 +123,13 @@ ags_pad_class_init(AgsPadClass *pad)
 		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG, G_TYPE_UINT, G_TYPE_UINT);
+}
+
+void
+ags_pad_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_pad_connect;
+  connectable->disconnect = ags_pad_disconnect;
 }
 
 void
@@ -186,17 +207,27 @@ ags_pad_get_property(GObject *gobject,
 }
 
 void
-ags_pad_connect(AgsPad *pad)
+ags_pad_connect(AgsConnectable *connectable)
 {
+  AgsPad *pad;
+  GList *line_list;
+
+  /* AgsPad */
+  pad = AGS_PAD(connectable);
+
+  /* GtkObject */
   g_signal_connect((GObject *) pad, "destroy\0",
 		   G_CALLBACK(ags_pad_destroy_callback), (gpointer) pad);
 
+  /* GtkWidget */
   g_signal_connect((GObject *) pad, "show\0",
 		   G_CALLBACK(ags_pad_show_callback), (gpointer) pad);
 
+  /* GtkOptionMenu */
   g_signal_connect((GObject *) pad->option, "changed\0",
 		   G_CALLBACK(ags_pad_option_changed_callback), (gpointer) pad);
 
+  /* GtkButton */
   g_signal_connect_after((GObject *) pad->group, "clicked\0",
 			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
 
@@ -205,6 +236,21 @@ ags_pad_connect(AgsPad *pad)
 
   g_signal_connect_after((GObject *) pad->solo, "clicked\0",
 			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
+
+  /* AgsLine */
+  line_list = gtk_container_get_children(GTK_CONTAINER(pad->option->menu));
+
+  while(line_list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
+
+    line_list = line_list->next;
+  }
+}
+
+void
+ags_pad_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 void
@@ -261,9 +307,9 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     for(i = audio_channels_old; i < audio_channels; i++){
       //      fprintf(stdout, "  loop\n\0");
 
-      line = g_object_new(line_type,
-      			  "channel\0", channel,
-			  NULL);
+      line = (AgsLine *) g_object_new(line_type,
+				      "channel\0", channel,
+				      NULL);
       channel->line_widget = (GtkWidget *) line;
       gtk_menu_shell_insert((GtkMenuShell *) pad->option->menu,
 			    (GtkWidget *) line, i);

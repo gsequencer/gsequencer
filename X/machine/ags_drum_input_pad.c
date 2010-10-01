@@ -1,6 +1,8 @@
 #include "ags_drum_input_pad.h"
 #include "ags_drum_input_pad_callbacks.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../ags_window.h"
 
 #include "ags_drum.h"
@@ -9,15 +11,18 @@
 
 GType ags_drum_input_pad_get_type();
 void ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad);
+void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_destroy(GtkObject *object);
-void ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad);
+void ags_drum_input_pad_connect(AgsConnectable *connectable);
+void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
 
 void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
 
 static gpointer ags_drum_input_pad_parent_class = NULL;
+static AgsConnectableInterface *ags_drum_input_pad_parent_connectable_interface;
 
 GType
 ags_drum_input_pad_get_type()
@@ -37,9 +42,19 @@ ags_drum_input_pad_get_type()
       (GInstanceInitFunc) ags_drum_input_pad_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_drum_input_pad_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_drum_input_pad = g_type_register_static(AGS_TYPE_PAD,
 						     "AgsDrumInputPad\0", &ags_drum_input_pad_info,
 						     0);
+
+    g_type_add_interface_static(ags_type_drum_input_pad,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_drum_input_pad);
@@ -56,6 +71,15 @@ ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad)
 
   pad->set_channel = ags_drum_input_pad_set_channel;
   pad->resize_lines = ags_drum_input_pad_resize_lines;
+}
+
+void
+ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_drum_input_pad_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_drum_input_pad_connect;
+  connectable->disconnect = ags_drum_input_pad_disconnect;
 }
 
 void
@@ -89,14 +113,15 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
 }
 
 void
-ags_drum_input_pad_destroy(GtkObject *object)
+ags_drum_input_pad_connect(AgsConnectable *connectable)
 {
-  /* empty */
-}
+  AgsDrumInputPad *drum_input_pad;
 
-void
-ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad)
-{
+  ags_drum_input_pad_parent_connectable_interface->connect(connectable);
+
+  /* AgsDrumInputPad */
+  drum_input_pad = AGS_DRUM_INPUT_PAD(connectable);
+
   g_signal_connect(G_OBJECT(drum_input_pad->open), "clicked\0",
 		   G_CALLBACK(ags_drum_input_pad_open_callback), (gpointer) drum_input_pad);
 
@@ -108,6 +133,20 @@ ags_drum_input_pad_connect(AgsDrumInputPad *drum_input_pad)
 
   g_signal_connect(G_OBJECT(drum_input_pad->edit), "clicked\0",
 		   G_CALLBACK(ags_drum_input_pad_edit_callback), (gpointer) drum_input_pad);
+}
+
+void
+ags_drum_input_pad_disconnect(AgsConnectable *connectable)
+{
+  ags_drum_input_pad_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
+}
+
+void
+ags_drum_input_pad_destroy(GtkObject *object)
+{
+  /* empty */
 }
 
 void

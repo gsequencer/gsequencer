@@ -227,7 +227,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_OBJECT);
 
   recall_signals[NOTIFY_DEPENDENCY] =
-    g_signal_new("notify\0",
+    g_signal_new("notify_dependency\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, notify_dependency),
