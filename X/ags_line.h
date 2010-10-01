@@ -22,6 +22,8 @@ struct _AgsLine
 {
   GtkMenuItem item;
 
+  GtkWidget *pad;
+
   GtkTable *table;
   GtkLabel *label;
 
@@ -43,6 +45,6 @@ struct _AgsLineMember
 
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
-AgsLine* ags_line_new(AgsChannel *channel);
+AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
 
 #endif /*__AGS_LINE_H__*/

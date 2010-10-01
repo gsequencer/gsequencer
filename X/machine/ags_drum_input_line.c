@@ -119,11 +119,11 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 
   /* AgsDrumInputLine */
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
-  drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) drum_input_line, AGS_TYPE_DRUM));
+  drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) drum_input_line->line.pad, AGS_TYPE_DRUM));
 
   /* AgsAudio */
-  g_signal_connect(G_OBJECT(drum->machine.audio), "set_pads\0",
-		   G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
+  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
 }
 
 void

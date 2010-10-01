@@ -3,8 +3,7 @@
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
 {
-  if(old_parent == NULL)
-    gtk_label_set_label(line->label, g_strdup_printf("line %d\0", line->channel->audio_channel));
+  //  if(old_parent == NULL)
 }
 
 int

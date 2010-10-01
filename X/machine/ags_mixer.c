@@ -166,7 +166,7 @@ ags_mixer_set_audio_channels(AgsAudio *audio,
       channel = ags_channel_nth(channel, audio_channels_old);
 
       for(i = audio_channels_old; i < audio_channels; i++){
-	line = ags_line_new(channel);
+	line = ags_line_new(GTK_WIDGET(list0->data), channel);
 	gtk_menu_shell_insert((GtkMenuShell *) AGS_PAD(list0->data)->option->menu, (GtkWidget *) line, i);
 
 	scale = (GtkVScale *) gtk_vscale_new_with_range(0.0, 1.0, 0.025);
@@ -245,7 +245,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
 	menu = (GtkMenu *) pad->option->menu;
 
 	for(j = 0; j < mixer->machine.audio->audio_channels; j++){
-	  line = ags_line_new(channel);
+	  line = ags_line_new((GtkWidget *) pad, channel);
 	  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) line);
 
 	  scale = (GtkVScale *) gtk_vscale_new_with_range(0.0, 1.0, 0.025);

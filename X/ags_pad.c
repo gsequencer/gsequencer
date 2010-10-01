@@ -308,6 +308,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
       //      fprintf(stdout, "  loop\n\0");
 
       line = (AgsLine *) g_object_new(line_type,
+				      "pad\0", pad,
 				      "channel\0", channel,
 				      NULL);
       channel->line_widget = (GtkWidget *) line;

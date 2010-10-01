@@ -3,6 +3,8 @@
 
 #include "../object/ags_connectable.h"
 
+#include "ags_pad.h"
+
 #include "../audio/ags_channel.h"
 
 GType ags_line_get_type(void);
@@ -31,6 +33,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_PAD,
   PROP_CHANNEL,
 };
 
@@ -87,6 +90,15 @@ ags_line_class_init(AgsLineClass *line)
   gobject->set_property = ags_line_set_property;
   gobject->get_property = ags_line_get_property;
 
+  param_spec = g_param_spec_object("pad\0",
+				   "parent pad\0",
+				   "The pad which is its parent\0",
+				   AGS_TYPE_PAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PAD,
+				  param_spec);
+
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
 				   "The channel it is assigned with\0",
@@ -96,7 +108,7 @@ ags_line_class_init(AgsLineClass *line)
 				  PROP_CHANNEL,
 				  param_spec);
 
-  /* AgsLineClass*/
+  /* AgsLineClass */
   line->set_channel = ags_line_real_set_channel;
 
   line_signals[SET_CHANNEL] =
@@ -120,8 +132,8 @@ ags_line_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_line_init(AgsLine *line)
 {
-  g_signal_connect_after((GObject *) line, "parent_set\0",
-			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
+  //  g_signal_connect_after((GObject *) line, "parent_set\0",
+  //			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
 
   line->channel = NULL;
 
@@ -148,6 +160,15 @@ ags_line_set_property(GObject *gobject,
   line = AGS_LINE(gobject);
 
   switch(prop_id){
+  case PROP_PAD:
+    {
+      GtkWidget *pad;
+
+      pad = (GtkWidget *) g_value_get_object(value);
+
+      line->pad = pad;
+    }
+    break;
   case PROP_CHANNEL:
     {
       AgsChannel *channel;
@@ -220,6 +241,8 @@ void
 ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
   line->channel = channel;
+
+  gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
 }
 
 void
@@ -235,12 +258,13 @@ ags_line_set_channel(AgsLine *line, AgsChannel *channel)
 }
 
 AgsLine*
-ags_line_new(AgsChannel *channel)
+ags_line_new(GtkWidget *pad, AgsChannel *channel)
 {
   AgsLine *line;
 
   line = (AgsLine *) g_object_new(AGS_TYPE_LINE,
-				  "channel", channel,
+				  "pad\0", pad,
+				  "channel\0", channel,
 				  NULL);
 
   return(line);
