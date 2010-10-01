@@ -1303,6 +1303,7 @@ ags_audio_recursive_play_init(AgsAudio *audio)
 
     while(channel != NULL){
       ags_channel_recursive_play_init(channel, stage,
+				      (stage == 0 ? TRUE: FALSE),
 				      group_id, child_group_id);
 
       channel = channel->next;

@@ -95,6 +95,7 @@ void ags_channel_recall_id_set_stage(AgsChannel *output, guint group_id, guint s
 void ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboolean do_recall);
 void ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage);
 void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
+				     gboolean arrange_group_id,
 				     guint group_id, guint child_group_id);
 
 AgsChannel* ags_channel_new();

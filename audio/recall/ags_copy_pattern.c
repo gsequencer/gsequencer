@@ -322,6 +322,8 @@ ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
     parent_recall_id = ags_recall_id_find_group_id(copy_pattern->shared_channel->destination->recall_id,
 						   recall_id->parent_group_id);
 
+    printf("%u %u\n\0", recall_id->parent_group_id, AGS_RECALL_ID(copy_pattern->shared_channel->destination->recall_id->data)->group_id);
+
     if(parent_recall_id->parent_group_id == 0)
       delay = AGS_DELAY(ags_recall_find_type(audio->play, AGS_TYPE_DELAY)->data);
     else

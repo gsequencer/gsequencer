@@ -334,6 +334,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	    channel->devout_play->group_id = group_id;
 
 	  ags_channel_recursive_play_init(channel, stage,
+					  TRUE,
 					  group_id, child_group_id);
 	  
 	  channel = channel->next;
@@ -363,6 +364,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       channel->devout_play->group_id = group_id;
 
       ags_channel_recursive_play_init(channel, -1,
+				      TRUE,
 				      group_id, child_group_id);
       
       /* append to AgsDevout */
