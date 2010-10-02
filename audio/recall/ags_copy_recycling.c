@@ -5,6 +5,7 @@
 
 #include "../ags_recall_id.h"
 
+#include "ags_copy_channel.h"
 #include "ags_copy_audio_signal.h"
 
 #include <stdlib.h>
@@ -20,10 +21,6 @@ void ags_copy_recycling_disconnect(AgsConnectable *connectable);
 void ags_copy_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_recycling_finalize(GObject *gobject);
-
-void ags_copy_recycling_run_init_inter(AgsRecall *recall, gpointer data);
-
-void ags_copy_recycling_run_inter(AgsRecall *recall, gpointer data);
 
 void ags_copy_recycling_done(AgsRecall *recall, gpointer data);
 void ags_copy_recycling_cancel(AgsRecall *recall, gpointer data);
@@ -165,12 +162,6 @@ ags_copy_recycling_connect(AgsConnectable *connectable)
   /* AgsCopyRecycling */
   copy_recycling = AGS_COPY_RECYCLING(connectable);
 
-  g_signal_connect((GObject *) copy_recycling, "run_init_inter\0",
-		   G_CALLBACK(ags_copy_recycling_run_init_inter), NULL);
-
-  g_signal_connect((GObject *) copy_recycling, "run_inter\0",
-		   G_CALLBACK(ags_copy_recycling_run_inter), NULL);
-
   g_signal_connect((GObject *) copy_recycling, "done\0",
 		   G_CALLBACK(ags_copy_recycling_done), NULL);
 
@@ -265,22 +256,6 @@ ags_copy_recycling_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_copy_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_copy_recycling_run_init_inter(AgsRecall *recall, gpointer data)
-{
-  AgsCopyRecycling *copy_recycling;
-
-  copy_recycling = AGS_COPY_RECYCLING(recall);
-  
-  //  ags_copy_recycling_connect_run_handler(copy_recycling);
-}
-
-void
-ags_copy_recycling_run_inter(AgsRecall *recall, gpointer data)
-{
-  /* empty */
-}
-
 void 
 ags_copy_recycling_done(AgsRecall *recall, gpointer data)
 {
@@ -344,9 +319,13 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
   copy_recycling->recall.child = g_list_prepend(copy_recycling->recall.child, copy_audio_signal);
 
   if((AGS_RECALL_RUN_INITIALIZED & (copy_recycling->recall.flags)) != 0){
-    ags_recall_run_init_pre((AgsRecall *) copy_audio_signal);
-    ags_recall_run_init_inter((AgsRecall *) copy_audio_signal);
-    ags_recall_run_init_post((AgsRecall *) copy_audio_signal);
+    guint audio_channel;
+
+    audio_channel = AGS_COPY_CHANNEL(AGS_RECALL(copy_recycling)->parent)->source->audio_channel;
+
+    ags_recall_run_init_pre((AgsRecall *) copy_audio_signal, audio_channel);
+    ags_recall_run_init_inter((AgsRecall *) copy_audio_signal, audio_channel);
+    ags_recall_run_init_post((AgsRecall *) copy_audio_signal, audio_channel);
 
     copy_audio_signal->recall.flags |= AGS_RECALL_RUN_INITIALIZED;
   }

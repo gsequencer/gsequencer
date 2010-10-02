@@ -24,7 +24,7 @@ void ags_copy_audio_signal_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_audio_signal_finalize(GObject *gobject);
 
-void ags_copy_audio_signal_run_inter(AgsRecall *recall, gpointer data);
+void ags_copy_audio_signal_run_inter(AgsRecall *recall, guint audio_channel, gpointer data);
 
 AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
@@ -163,7 +163,7 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 }
 
 void
-ags_copy_audio_signal_run_inter(AgsRecall *recall, gpointer data)
+ags_copy_audio_signal_run_inter(AgsRecall *recall, guint audio_channel, gpointer data)
 {
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;

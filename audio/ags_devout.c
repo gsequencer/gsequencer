@@ -294,11 +294,11 @@ ags_devout_play_recall(AgsDevout *devout)
 
     if((AGS_RECALL_HIDE & (recall->flags)) == 0){
       if(stage == 0){
-	ags_recall_run_pre(recall);
+	ags_recall_run_pre(recall, devout_play->audio_channel);
       }else if(stage == 1){
-	ags_recall_run_inter(recall);
+	ags_recall_run_inter(recall, devout_play->audio_channel);
       }else{
-	ags_recall_run_post(recall);
+	ags_recall_run_post(recall, devout_play->audio_channel);
       }
     }
 
@@ -340,6 +340,7 @@ ags_devout_play_alloc()
 
   play->flags = 0;
   play->source = NULL;
+  play->audio_channel = 0;
   play->group_id = 0;
 
   return(play);

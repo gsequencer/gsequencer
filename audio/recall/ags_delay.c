@@ -18,17 +18,23 @@ void ags_delay_run_connect(AgsRunConnectable *run_connectable);
 void ags_delay_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_delay_finalize(GObject *gobject);
 
-void ags_delay_run_init_pre(AgsRecall *recall, gpointer data);
-void ags_delay_run_inter(AgsRecall *recall, gpointer data);
+void ags_delay_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data);
+void ags_delay_run_inter(AgsRecall *recall, guint audio_channel, gpointer data);
 void ags_delay_done(AgsRecall *recall, gpointer data);
 void ags_delay_cancel(AgsRecall *recall, gpointer data);
 void ags_delay_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_delay_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_delay_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
+enum{
+  TIC,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_delay_parent_class = NULL;
 static AgsConnectableInterface *ags_delay_parent_connectable_interface;
 static AgsRunConnectableInterface *ags_delay_parent_run_connectable_interface;
+static guint delay_signals[LAST_SIGNAL];
 
 GType
 ags_delay_get_type()
@@ -93,6 +99,18 @@ ags_delay_class_init(AgsDelayClass *delay)
 
   recall->duplicate = ags_delay_duplicate;
   recall->notify_dependency = ags_delay_notify_dependency;
+
+  delay->tic = NULL;
+
+  delay_signals[TIC] =
+    g_signal_new("tic\0",
+		 G_TYPE_FROM_CLASS(delay),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsDelayClass, tic),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 }
 
 void
@@ -179,7 +197,7 @@ ags_delay_finalize(GObject *gobject)
 }
 
 void
-ags_delay_run_init_pre(AgsRecall *recall, gpointer data)
+ags_delay_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data)
 {
   printf("ags_delay_run_init_pre\n\0");
 
@@ -187,13 +205,11 @@ ags_delay_run_init_pre(AgsRecall *recall, gpointer data)
 }
 
 void
-ags_delay_run_inter(AgsRecall *recall, gpointer data)
+ags_delay_run_inter(AgsRecall *recall, guint audio_channel, gpointer data)
 {
   AgsDelay *delay;
 
   delay = (AgsDelay *) recall;
-
-  fprintf(stdout, "ags_delay_run_inter - debug\n\0");
 
   if(delay->hide_ref != 0)
     delay->hide_ref_counter++;
@@ -210,7 +226,7 @@ ags_delay_run_inter(AgsRecall *recall, gpointer data)
   }else{
     if(delay->shared_audio->delay == delay->counter){
       delay->counter = 0;
-      fprintf(stdout, "delay->delay == delay->counter\n\0");
+      ags_delay_tic(delay, audio_channel);
     }else{
       delay->counter++;
     }
@@ -280,6 +296,18 @@ ags_delay_notify_dependency(AgsRecall *recall, guint notify_mode, gint count)
   default:
     printf("ags_delay.c - ags_delay_notify: unknown notify");
   }
+}
+
+void
+ags_delay_tic(AgsDelay *delay, guint audio_channel)
+{
+  g_return_if_fail(AGS_IS_DELAY(delay));
+
+  g_object_ref(G_OBJECT(delay));
+  g_signal_emit(G_OBJECT(delay),
+		delay_signals[TIC], 0,
+		audio_channel);
+  g_object_unref(G_OBJECT(delay));
 }
 
 AgsDelay*

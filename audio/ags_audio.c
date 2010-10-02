@@ -1293,7 +1293,7 @@ ags_audio_map_delay(AgsAudio *audio)
 }
 
 void
-ags_audio_play(AgsAudio *audio, guint group_id, gint stage, gboolean do_recall)
+ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id, gint stage, gboolean do_recall)
 {
   AgsRecall *recall;
   GList *list, *list_next;
@@ -1317,11 +1317,11 @@ ags_audio_play(AgsAudio *audio, guint group_id, gint stage, gboolean do_recall)
     
     if((AGS_RECALL_HIDE & (recall->flags)) == 0){
       if(stage == 0)
-	ags_recall_run_pre(recall);
+	ags_recall_run_pre(recall, audio_channel);
       else if(stage == 1)
-	ags_recall_run_inter(recall);
+	ags_recall_run_inter(recall, audio_channel);
       else
-	ags_recall_run_post(recall);
+	ags_recall_run_post(recall, audio_channel);
     }
 
     ags_recall_check_cancel(recall);

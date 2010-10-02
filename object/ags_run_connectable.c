@@ -33,7 +33,7 @@ ags_run_connectable_base_init(AgsRunConnectableInterface *interface)
 }
 
 void
-ags_run_connectable_run_connect(AgsRunConnectable *connectable)
+ags_run_connectable_connect(AgsRunConnectable *connectable)
 {
   AgsRunConnectableInterface *connectable_interface;
 

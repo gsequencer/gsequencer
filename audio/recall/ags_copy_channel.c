@@ -22,10 +22,7 @@ void ags_copy_channel_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_channel_finalize(GObject *gobject);
 
-void ags_copy_channel_run_init_pre(AgsRecall *recall, gpointer data);
-void ags_copy_channel_run_init_inter(AgsRecall *recall, gpointer data);
-
-void ags_copy_channel_run_inter(AgsRecall *recall, gpointer data);
+void ags_copy_channel_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data);
 
 void ags_copy_channel_done(AgsRecall *recall, gpointer data);
 void ags_copy_channel_remove(AgsRecall *recall, gpointer data);
@@ -161,12 +158,6 @@ ags_copy_channel_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) copy_channel, "run_init_pre\0",
 		   G_CALLBACK(ags_copy_channel_run_init_pre), NULL);
 
-  g_signal_connect((GObject *) copy_channel, "run_init_inter\0",
-		   G_CALLBACK(ags_copy_channel_run_init_inter), NULL);
-
-  g_signal_connect((GObject *) copy_channel, "run_inter\0",
-		   G_CALLBACK(ags_copy_channel_run_inter), NULL);
-
   g_signal_connect((GObject *) copy_channel, "done\0",
 		   G_CALLBACK(ags_copy_channel_done), NULL);
 
@@ -238,29 +229,13 @@ ags_copy_channel_finalize(GObject *gobject)
 }
 
 void
-ags_copy_channel_run_init_pre(AgsRecall *recall, gpointer data)
+ags_copy_channel_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data)
 {
   AgsCopyChannel *copy_channel;
 
   copy_channel = (AgsCopyChannel *) recall;
 
   ags_copy_channel_map_copy_recycling(copy_channel);
-}
-
-void
-ags_copy_channel_run_init_inter(AgsRecall *recall, gpointer data)
-{
-  AgsCopyChannel *copy_channel;
-
-  copy_channel = (AgsCopyChannel *) recall;
-
-  //  ags_copy_channel_connect_run_handler(copy_channel);
-}
-
-void
-ags_copy_channel_run_inter(AgsRecall *recall, gpointer data)
-{
-  /* empty */
 }
 
 void
@@ -381,9 +356,9 @@ ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
 	copy_channel->recall.child = g_list_prepend(copy_channel->recall.child, copy_recycling);
 
 	if((AGS_RECALL_RUN_INITIALIZED & (copy_channel->recall.flags)) != 0){
-	  ags_recall_run_init_pre((AgsRecall *) copy_recycling);
-	  ags_recall_run_init_inter((AgsRecall *) copy_recycling);
-	  ags_recall_run_init_post((AgsRecall *) copy_recycling);
+	  ags_recall_run_init_pre((AgsRecall *) copy_recycling, copy_channel->source->audio_channel);
+	  ags_recall_run_init_inter((AgsRecall *) copy_recycling, copy_channel->source->audio_channel);
+	  ags_recall_run_init_post((AgsRecall *) copy_recycling, copy_channel->source->audio_channel);
 	}
 
 	source_recycling = source_recycling->next;
@@ -443,9 +418,9 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
 	copy_channel->recall.child = g_list_prepend(copy_channel->recall.child, copy_recycling);
 
 	if((AGS_RECALL_RUN_INITIALIZED & (copy_channel->recall.flags)) != 0){
-	  ags_recall_run_init_pre((AgsRecall *) copy_recycling);
-	  ags_recall_run_init_inter((AgsRecall *) copy_recycling);
-	  ags_recall_run_init_post((AgsRecall *) copy_recycling);
+	  ags_recall_run_init_pre((AgsRecall *) copy_recycling, copy_channel->source->audio_channel);
+	  ags_recall_run_init_inter((AgsRecall *) copy_recycling, copy_channel->source->audio_channel);
+	  ags_recall_run_init_post((AgsRecall *) copy_recycling, copy_channel->source->audio_channel);
 
 	  copy_recycling->recall.flags |= AGS_RECALL_RUN_INITIALIZED;
 	}

@@ -243,9 +243,9 @@ ags_stream_channel_remap_stream_recycling(AgsStreamChannel *stream_channel,
       stream_channel->recall.child = g_list_prepend(stream_channel->recall.child, stream_recycling);
 
       if((AGS_RECALL_RUN_INITIALIZED & (stream_channel->recall.flags)) != 0){
-	ags_recall_run_init_pre((AgsRecall *) stream_recycling);
-	ags_recall_run_init_inter((AgsRecall *) stream_recycling);
-	ags_recall_run_init_post((AgsRecall *) stream_recycling);
+	//	ags_recall_run_init_pre((AgsRecall *) stream_recycling);
+	//	ags_recall_run_init_inter((AgsRecall *) stream_recycling);
+	//	ags_recall_run_init_post((AgsRecall *) stream_recycling);
 	
 	stream_recycling->recall.flags |= AGS_RECALL_RUN_INITIALIZED;
       }

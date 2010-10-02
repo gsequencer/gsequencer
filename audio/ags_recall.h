@@ -52,18 +52,18 @@ struct _AgsRecallClass
 {
   GObjectClass object;
 
-  void (*run_init_pre)(AgsRecall *recall);
-  void (*run_init_inter)(AgsRecall *recall);
-  void (*run_init_post)(AgsRecall *recall);
+  void (*run_init_pre)(AgsRecall *recall, guint audio_channel);
+  void (*run_init_inter)(AgsRecall *recall, guint audio_channel);
+  void (*run_init_post)(AgsRecall *recall, guint audio_channel);
 
-  void (*run_pre)(AgsRecall *recall);
-  void (*run_inter)(AgsRecall *recall);
-  void (*run_post)(AgsRecall *recall);
+  void (*run_pre)(AgsRecall *recall, guint audio_channel);
+  void (*run_inter)(AgsRecall *recall, guint audio_channel);
+  void (*run_post)(AgsRecall *recall, guint audio_channel);
 
   void (*done)(AgsRecall *recall);
   void (*loop)(AgsRecall *recall);
 
-  void (*cancel)(AgsRecall *recall); 
+  void (*cancel)(AgsRecall *recall);
   void (*remove)(AgsRecall *recall);
 
   AgsRecall* (*duplicate)(AgsRecall *recall, AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
@@ -71,13 +71,13 @@ struct _AgsRecallClass
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
 };
 
-void ags_recall_run_init_pre(AgsRecall *recall);
-void ags_recall_run_init_inter(AgsRecall *recall);
-void ags_recall_run_init_post(AgsRecall *recall);
+void ags_recall_run_init_pre(AgsRecall *recall, guint audio_channel);
+void ags_recall_run_init_inter(AgsRecall *recall, guint audio_channel);
+void ags_recall_run_init_post(AgsRecall *recall, guint audio_channel);
 
-void ags_recall_run_pre(AgsRecall *recall);
-void ags_recall_run_inter(AgsRecall *recall);
-void ags_recall_run_post(AgsRecall *recall);
+void ags_recall_run_pre(AgsRecall *recall, guint audio_channel);
+void ags_recall_run_inter(AgsRecall *recall, guint audio_channel);
+void ags_recall_run_post(AgsRecall *recall, guint audio_channel);
 
 void ags_recall_done(AgsRecall *recall);
 void ags_recall_loop(AgsRecall *recall);

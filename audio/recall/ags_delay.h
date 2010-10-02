@@ -36,7 +36,11 @@ struct _AgsDelay
 struct _AgsDelayClass
 {
   AgsRecallClass recall;
+
+  void (*tic)(AgsDelay *delay);
 };
+
+void ags_delay_tic(AgsDelay *delay, guint audio_channel);
 
 AgsDelay* ags_delay_new(AgsDelaySharedAudio *shared_audio);
 

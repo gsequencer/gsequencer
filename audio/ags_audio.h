@@ -87,7 +87,7 @@ void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
-void ags_audio_play(AgsAudio *audio, guint group_id, gint stage, gboolean do_recall);
+void ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id, gint stage, gboolean do_recall);
 guint ags_audio_recursive_play_init(AgsAudio *audio);
 
 AgsAudio* ags_audio_new();

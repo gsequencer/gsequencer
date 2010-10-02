@@ -24,6 +24,8 @@ struct _AgsCopyPattern
 {
   AgsRecall recall;
 
+  gulong tic_handler;
+
   AgsCopyPatternSharedAudio *shared_audio;
   AgsCopyPatternSharedAudioRun *shared_audio_run;
   AgsCopyPatternSharedChannel *shared_channel;

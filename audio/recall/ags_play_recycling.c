@@ -8,6 +8,7 @@
 #include "../ags_recycling.h"
 #include "../ags_recall_id.h"
 
+#include "ags_play_channel.h"
 #include "ags_play_audio_signal.h"
 
 #include <stdlib.h>
@@ -23,10 +24,6 @@ void ags_play_recycling_disconnect(AgsConnectable *connectable);
 void ags_play_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_play_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_recycling_finalize(GObject *gobject);
-
-void ags_play_recycling_run_init_inter(AgsRecall *recall, gpointer data);
-
-void ags_play_recycling_run_inter(AgsRecall *recall, gpointer data);
 
 void ags_play_recycling_done(AgsRecall *recall, gpointer data);
 void ags_play_recycling_cancel(AgsRecall *recall, gpointer data);
@@ -149,12 +146,6 @@ ags_play_recycling_connect(AgsConnectable *connectable)
   /* AgsPlayRecycling */
   play_recycling = AGS_PLAY_RECYCLING(connectable);
 
-  g_signal_connect((GObject *) play_recycling, "run_init_inter\0",
-		   G_CALLBACK(ags_play_recycling_run_init_inter), NULL);
-
-  g_signal_connect((GObject *) play_recycling, "run_inter\0",
-		   G_CALLBACK(ags_play_recycling_run_inter), NULL);
-
   g_signal_connect((GObject *) play_recycling, "done\0",
 		   G_CALLBACK(ags_play_recycling_done), NULL);
 
@@ -224,22 +215,6 @@ ags_play_recycling_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_play_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_play_recycling_run_init_inter(AgsRecall *recall, gpointer data)
-{
-  AgsPlayRecycling *play_recycling;
-
-  play_recycling = AGS_PLAY_RECYCLING(recall);
-  
-  //  ags_play_recycling_connect_run_handler(play_recycling);
-}
-
-void
-ags_play_recycling_run_inter(AgsRecall *recall, gpointer data)
-{
-  /* empty */
-}
-
 void 
 ags_play_recycling_done(AgsRecall *recall, gpointer data)
 {
@@ -301,9 +276,13 @@ ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
   play_recycling->recall.child = g_list_prepend(play_recycling->recall.child, play_audio_signal);
 
   if((AGS_RECALL_RUN_INITIALIZED & (play_recycling->recall.flags)) != 0){
-    ags_recall_run_init_pre((AgsRecall *) play_audio_signal);
-    ags_recall_run_init_inter((AgsRecall *) play_audio_signal);
-    ags_recall_run_init_post((AgsRecall *) play_audio_signal);
+    guint audio_channel;
+
+    audio_channel = AGS_PLAY_CHANNEL(AGS_RECALL(play_recycling)->parent)->source->audio_channel;
+
+    ags_recall_run_init_pre((AgsRecall *) play_audio_signal, audio_channel);
+    ags_recall_run_init_inter((AgsRecall *) play_audio_signal, audio_channel);
+    ags_recall_run_init_post((AgsRecall *) play_audio_signal, audio_channel);
 
     play_audio_signal->recall.flags |= AGS_RECALL_RUN_INITIALIZED;
   }
