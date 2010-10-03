@@ -53,6 +53,8 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   delay_shared_audio = drum->delay_shared_audio;
 
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tic));
+  printf("tic = %f\n\0", tic);
+  printf("tic = %f\n\0", window->navigation->bpm->adjustment->value);
   delay_shared_audio->delay = (guint) round(((double)window->devout->frequency / (double)window->devout->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
 
   /* AgsCopyPattern related */

@@ -227,6 +227,7 @@ ags_delay_run_inter(AgsRecall *recall, guint audio_channel, gpointer data)
     if(delay->shared_audio->delay == delay->counter){
       delay->counter = 0;
       ags_delay_tic(delay, audio_channel);
+      fprintf(stdout, "ags_delay_run_inter, %u\n\0", delay->hide_ref);
     }else{
       delay->counter++;
     }
@@ -281,7 +282,6 @@ ags_delay_notify_dependency(AgsRecall *recall, guint notify_mode, gint count)
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     delay->hide_ref += count;
-
     break;
   case AGS_RECALL_NOTIFY_SHARED_AUDIO:
     break;

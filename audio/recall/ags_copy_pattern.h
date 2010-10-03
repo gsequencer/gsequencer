@@ -6,7 +6,6 @@
 
 #include "../ags_recall.h"
 
-#include "ags_copy_pattern_shared_audio.h"
 #include "ags_copy_pattern_shared_audio_run.h"
 #include "ags_copy_pattern_shared_channel.h"
 
@@ -26,7 +25,6 @@ struct _AgsCopyPattern
 
   gulong tic_handler;
 
-  AgsCopyPatternSharedAudio *shared_audio;
   AgsCopyPatternSharedAudioRun *shared_audio_run;
   AgsCopyPatternSharedChannel *shared_channel;
 };
@@ -36,8 +34,7 @@ struct _AgsCopyPatternClass
   AgsRecallClass recall;
 };
 
-AgsCopyPattern* ags_copy_pattern_new(AgsCopyPatternSharedAudio *shared_audio,
-				     AgsCopyPatternSharedAudioRun *shared_audio_run,
+AgsCopyPattern* ags_copy_pattern_new(AgsCopyPatternSharedAudioRun *shared_audio_run,
 				     AgsCopyPatternSharedChannel *shared_channel);
 
 #endif /*__AGS_COPY_PATTERN_H__*/

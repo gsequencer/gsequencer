@@ -22,16 +22,15 @@ void ags_copy_pattern_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_finalize(GObject *gobject);
 
-void ags_copy_pattern_run_init_pre(AgsRecall *recall, gpointer data);
-
-void ags_copy_pattern_run_pre(AgsRecall *recall, gpointer data);
+void ags_copy_pattern_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data);
 
 void ags_copy_pattern_done(AgsRecall *recall, gpointer data);
 void ags_copy_pattern_cancel(AgsRecall *recall, gpointer data);
 void ags_copy_pattern_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
-void ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPattern *copy_pattern);
+void ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel,
+				   AgsCopyPattern *copy_pattern);
 
 static gpointer ags_copy_pattern_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_parent_connectable_interface;
@@ -124,7 +123,6 @@ ags_copy_pattern_run_connectable_interface_init(AgsRunConnectableInterface *run_
 void
 ags_copy_pattern_init(AgsCopyPattern *copy_pattern)
 {
-  copy_pattern->shared_audio = NULL;
   copy_pattern->shared_channel = NULL;
   copy_pattern->shared_audio_run = NULL;
 }
@@ -190,7 +188,7 @@ ags_copy_pattern_finalize(GObject *gobject)
 }
 
 void
-ags_copy_pattern_run_init_pre(AgsRecall *recall, gpointer data)
+ags_copy_pattern_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data)
 {
   AgsCopyPattern *copy_pattern;
 
@@ -236,14 +234,13 @@ ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy_pattern = (AgsCopyPattern *) recall;
   copy = (AgsCopyPattern *) AGS_RECALL_CLASS(ags_copy_pattern_parent_class)->duplicate(recall, recall_id);
 
-  copy->shared_audio = copy_pattern->shared_audio;
-
   audio = AGS_AUDIO(copy_pattern->shared_channel->source->audio);
   list = ags_recall_shared_find_type_with_group_id(audio->recall_shared,
 						   AGS_TYPE_COPY_PATTERN_SHARED_AUDIO_RUN, recall_id->group_id);
 
   if(list == NULL){
     AgsDelay *delay;
+    AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
     AgsCopyPatternSharedAudioRun *copy_pattern_shared_audio_run;
     AgsRecallID *parent_recall_id;
 
@@ -251,11 +248,14 @@ ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 						   recall_id->parent_group_id);
 
     if(parent_recall_id->parent_group_id == 0)
-      delay = AGS_DELAY(ags_recall_find_type(audio->play, AGS_TYPE_DELAY)->data);
+      delay = AGS_DELAY(ags_recall_find_type_with_group_id(audio->play, AGS_TYPE_DELAY, parent_recall_id->group_id)->data);
     else
-      delay = AGS_DELAY(ags_recall_find_type(audio->recall, AGS_TYPE_DELAY)->data);
+      delay = AGS_DELAY(ags_recall_find_type_with_group_id(audio->recall, AGS_TYPE_DELAY, parent_recall_id->group_id)->data);
     
-    copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(delay, 0);
+    copy_pattern_shared_audio = copy_pattern->shared_audio_run->copy_pattern_shared_audio;
+
+    copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(copy_pattern_shared_audio,
+									  delay, 0);
     AGS_RECALL_SHARED(copy_pattern_shared_audio_run)->group_id = recall_id->group_id;
 
     audio->recall_shared = 
@@ -273,16 +273,18 @@ void
 ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPattern *copy_pattern)
 {
   AgsChannel *output;
+  AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
   //  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   //  pthread_mutex_lock(&mutex);
   if(copy_pattern->shared_channel->source->audio_channel != audio_channel)
     return;
 
-  if(copy_pattern->shared_audio_run->bit == copy_pattern->shared_audio->length){
+  copy_pattern_shared_audio = copy_pattern->shared_audio_run->copy_pattern_shared_audio;
+
+  if(copy_pattern->shared_audio_run->bit == copy_pattern_shared_audio->length){
     //      pthread_mutex_unlock(&mutex);
-    if(copy_pattern->shared_audio->loop){
-      if(delay->counter == 0){
+    if(copy_pattern_shared_audio->loop){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
@@ -292,7 +294,7 @@ ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPatte
 	  while(recycling != copy_pattern->shared_channel->destination->last_recycling->next){
 	    audio_signal = ags_audio_signal_new((GObject *) recycling,
 						(GObject *) AGS_RECALL(copy_pattern)->recall_id);
-	    audio_signal->devout = (GObject *) copy_pattern->shared_audio->devout;
+	    audio_signal->devout = (GObject *) copy_pattern_shared_audio->devout;
 	    ags_audio_signal_connect(audio_signal);
 	    
 	    ags_recycling_add_audio_signal(recycling,
@@ -304,7 +306,6 @@ ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPatte
 
 	copy_pattern->shared_audio_run->bit = 0;
 	goto ags_copy_pattern_pre0;
-      }
     }else{
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(delay)->flags)) != 0)
 	AGS_RECALL(delay)->flags &= (~AGS_RECALL_PERSISTENT);
@@ -321,11 +322,10 @@ ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPatte
     }
   }else{
     //    pthread_mutex_unlock(&mutex);
-    if(delay->counter == 0){
     ags_copy_pattern_pre0:
       
-      if(ags_pattern_get_bit(copy_pattern->shared_channel->pattern,
-			     copy_pattern->shared_audio->i, copy_pattern->shared_audio->j,
+      if(ags_pattern_get_bit((AgsPattern *) copy_pattern->shared_channel->source->pattern->data,//copy_pattern->shared_channel->pattern,
+			     copy_pattern_shared_audio->i, copy_pattern_shared_audio->j,
 			     copy_pattern->shared_audio_run->bit)){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
@@ -338,7 +338,7 @@ ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPatte
 	  while(recycling != copy_pattern->shared_channel->source->last_recycling->next){
 	    ags_audio_signal_new((GObject *) recycling,
 				 (GObject *) AGS_RECALL(copy_pattern)->recall_id);
-	    audio_signal->devout = (GObject *) copy_pattern->shared_audio->devout;
+	    audio_signal->devout = (GObject *) copy_pattern_shared_audio->devout;
 	    ags_audio_signal_connect(audio_signal);
 	    
 	    ags_recycling_add_audio_signal(recycling,
@@ -349,22 +349,19 @@ ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPatte
 	}
       }
       
-      printf("%u\n\0", copy_pattern->shared_audio_run->bit);
-      copy_pattern->shared_audio_run->bit++;
-    }
+      //      printf("%u\n\0", copy_pattern->shared_audio_run->bit);
+      //      copy_pattern->shared_audio_run->bit++;
   }
 }
 
 AgsCopyPattern*
-ags_copy_pattern_new(AgsCopyPatternSharedAudio *shared_audio,
-		     AgsCopyPatternSharedAudioRun *shared_audio_run,
+ags_copy_pattern_new(AgsCopyPatternSharedAudioRun *shared_audio_run,
 		     AgsCopyPatternSharedChannel *shared_channel)
 {
   AgsCopyPattern *copy_pattern;
 
   copy_pattern = (AgsCopyPattern *) g_object_new(AGS_TYPE_COPY_PATTERN, NULL);
 
-  copy_pattern->shared_audio = shared_audio;
   copy_pattern->shared_audio_run = shared_audio_run;
   copy_pattern->shared_channel = shared_channel;
 

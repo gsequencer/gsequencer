@@ -239,7 +239,13 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 gboolean
 ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 {
-  if(((1 << (bit % (sizeof(guint) *8))) & (pattern->pattern[i][j][(guint) floor((double) bit / (double) (sizeof(guint) * 8))])) != 0)
+  guint k, value;
+
+  k = (guint) floor((double) bit / (double) (sizeof(guint) * 8));
+  value = 1 << (bit % (sizeof(guint) * 8));
+
+  //((1 << (bit % (sizeof(guint) *8))) & (pattern->pattern[i][j][(guint) floor((double) bit / (double) (sizeof(guint) * 8))])) != 0
+  if((value & (pattern->pattern[i][j][k])) != 0)
     return(TRUE);
   else
     return(FALSE);

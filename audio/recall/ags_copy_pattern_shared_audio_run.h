@@ -6,6 +6,8 @@
 
 #include "../ags_recall_shared_audio.h"
 
+#include "ags_copy_pattern_shared_audio.h"
+
 #include "ags_delay.h"
 
 #define AGS_TYPE_COPY_PATTERN_SHARED_AUDIO_RUN                (ags_copy_pattern_shared_audio_run_get_type())
@@ -20,7 +22,13 @@ typedef struct _AgsCopyPatternSharedAudioRunClass AgsCopyPatternSharedAudioRunCl
 
 struct _AgsCopyPatternSharedAudioRun
 {
-  AgsRecallSharedAudio shared_audio;
+  AgsRecallSharedAudio recall_shared_audio;
+
+  AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
+
+  guint recall_ref;
+
+  gulong tic_handler;
 
   AgsDelay *delay;
   guint bit;
@@ -28,9 +36,10 @@ struct _AgsCopyPatternSharedAudioRun
 
 struct _AgsCopyPatternSharedAudioRunClass
 {
-  AgsRecallSharedAudioClass shared_audio;
+  AgsRecallSharedAudioClass recall_shared_audio;
 };
 
-AgsCopyPatternSharedAudioRun* ags_copy_pattern_shared_audio_run_new(AgsDelay *delay, guint bit);
+AgsCopyPatternSharedAudioRun* ags_copy_pattern_shared_audio_run_new(AgsCopyPatternSharedAudio *copy_pattern_shared_audio,
+								    AgsDelay *delay, guint bit);
 
 #endif /*__AGS_COPY_PATTERN_SHARED_AUDIO_RUN_H__*/

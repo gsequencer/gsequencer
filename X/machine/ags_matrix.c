@@ -156,7 +156,8 @@ ags_matrix_init(AgsMatrix *matrix)
 									16, FALSE,
 									0);
 
-  matrix->copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(delay, 0);
+  matrix->copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(matrix->copy_pattern_shared_audio,
+										delay, 0);
 
   /* create widgets */
   frame = (GtkFrame *) (gtk_container_get_children((GtkContainer *) matrix))->data;
@@ -355,8 +356,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	  copy_pattern_shared_channel = ags_copy_pattern_shared_channel_new(destination,
 									    channel, (AgsPattern *) channel->pattern->data);
 
-	  copy_pattern = ags_copy_pattern_new(matrix->copy_pattern_shared_audio,
-					      matrix->copy_pattern_shared_audio_run,
+	  copy_pattern = ags_copy_pattern_new(matrix->copy_pattern_shared_audio_run,
 					      copy_pattern_shared_channel);
 
 	  copy_pattern->recall.flags |= AGS_RECALL_TEMPLATE;

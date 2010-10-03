@@ -141,6 +141,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
 
+  fprintf(stdout, "ags_drum_input_line_set_channel\n\0");
   drum_input_line = AGS_DRUM_INPUT_LINE(line);
 
   if(line->channel != NULL){
@@ -213,8 +214,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     copy_pattern_shared_channel = ags_copy_pattern_shared_channel_new(destination,
 								      source, (AgsPattern *) source->pattern->data);
     
-    copy_pattern = ags_copy_pattern_new(drum->copy_pattern_shared_audio,
-					drum->copy_pattern_shared_audio_run,
+    copy_pattern = ags_copy_pattern_new(drum->copy_pattern_shared_audio_run,
 					copy_pattern_shared_channel);
     
     copy_pattern->recall.flags |= AGS_RECALL_TEMPLATE;

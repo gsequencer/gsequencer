@@ -157,7 +157,8 @@ ags_drum_init(AgsDrum *drum)
 								      16, FALSE,
 								      0);
 
-  drum->copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(delay, 0);
+  drum->copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(drum->copy_pattern_shared_audio,
+									      delay, 0);
 
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
