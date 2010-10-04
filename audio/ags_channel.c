@@ -1356,8 +1356,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       audio->recall_id = ags_recall_id_add(audio->recall_id,
 					   0, group_id, child_group_id,
 					   first_recycling, last_recycling);
-
-      ags_channel_recursive_play_init_audio_recall(audio, channel->audio_channel, group_id);
     }else{
       if(channel->link != NULL){
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){

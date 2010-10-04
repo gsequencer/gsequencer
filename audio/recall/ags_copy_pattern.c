@@ -194,6 +194,26 @@ ags_copy_pattern_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer d
 
   copy_pattern = AGS_COPY_PATTERN(recall);
 
+  if(copy_pattern->shared_audio_run->delay == NULL){
+    AgsAudio *audio;
+    AgsDelay *delay;
+    AgsRecallID *parent_recall_id;
+    GList *delay_list;
+
+    audio = AGS_AUDIO(copy_pattern->shared_channel->source->audio);
+
+    parent_recall_id = ags_recall_id_find_group_id(copy_pattern->shared_channel->destination->recall_id,
+						   recall->recall_id->parent_group_id);
+
+    if(parent_recall_id->parent_group_id == 0)
+      delay_list = ags_recall_find_type_with_group_id(audio->play, AGS_TYPE_DELAY, parent_recall_id->group_id);
+    else
+      delay_list = ags_recall_find_type_with_group_id(audio->recall, AGS_TYPE_DELAY, parent_recall_id->group_id);
+    
+    copy_pattern->shared_audio_run->delay = (delay_list != NULL) ? AGS_DELAY(delay_list->data): NULL;
+  }
+
+
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern->shared_audio_run->delay),
 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
   copy_pattern->shared_audio_run->recall_ref++;
@@ -234,29 +254,32 @@ ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
   AgsAudio *audio;
   AgsCopyPattern *copy_pattern, *copy;
-  GList *list;
+  GList *copy_pattern_shared_audio_run_list;
 
   copy_pattern = (AgsCopyPattern *) recall;
   copy = (AgsCopyPattern *) AGS_RECALL_CLASS(ags_copy_pattern_parent_class)->duplicate(recall, recall_id);
 
   audio = AGS_AUDIO(copy_pattern->shared_channel->source->audio);
-  list = ags_recall_shared_find_type_with_group_id(audio->recall_shared,
-						   AGS_TYPE_COPY_PATTERN_SHARED_AUDIO_RUN, recall_id->group_id);
+  copy_pattern_shared_audio_run_list = ags_recall_shared_find_type_with_group_id(audio->recall_shared,
+										 AGS_TYPE_COPY_PATTERN_SHARED_AUDIO_RUN, recall_id->group_id);
 
-  if(list == NULL){
+  if(copy_pattern_shared_audio_run_list == NULL){
     AgsDelay *delay;
     AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
     AgsCopyPatternSharedAudioRun *copy_pattern_shared_audio_run;
     AgsRecallID *parent_recall_id;
+    GList *delay_list;
 
     parent_recall_id = ags_recall_id_find_group_id(copy_pattern->shared_channel->destination->recall_id,
 						   recall_id->parent_group_id);
 
     if(parent_recall_id->parent_group_id == 0)
-      delay = AGS_DELAY(ags_recall_find_type_with_group_id(audio->play, AGS_TYPE_DELAY, parent_recall_id->group_id)->data);
+      delay_list = ags_recall_find_type_with_group_id(audio->play, AGS_TYPE_DELAY, parent_recall_id->group_id);
     else
-      delay = AGS_DELAY(ags_recall_find_type_with_group_id(audio->recall, AGS_TYPE_DELAY, parent_recall_id->group_id)->data);
+      delay_list = ags_recall_find_type_with_group_id(audio->recall, AGS_TYPE_DELAY, parent_recall_id->group_id);
     
+    delay = (delay_list != NULL) ? AGS_DELAY(delay_list->data): NULL;
+
     copy_pattern_shared_audio = copy_pattern->shared_audio_run->copy_pattern_shared_audio;
 
     copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(copy_pattern_shared_audio,
@@ -265,10 +288,10 @@ ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
     ags_run_connectable_connect(AGS_RUN_CONNECTABLE(copy_pattern_shared_audio_run));
 
     audio->recall_shared = 
-      list = g_list_prepend(audio->recall_shared, copy_pattern_shared_audio_run);
+      copy_pattern_shared_audio_run_list = g_list_prepend(audio->recall_shared, copy_pattern_shared_audio_run);
   }
 
-  copy->shared_audio_run = AGS_COPY_PATTERN_SHARED_AUDIO_RUN(list->data);
+  copy->shared_audio_run = AGS_COPY_PATTERN_SHARED_AUDIO_RUN(copy_pattern_shared_audio_run_list->data);
 
   copy->shared_channel = copy_pattern->shared_channel;
 
