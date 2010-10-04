@@ -194,7 +194,9 @@ ags_copy_pattern_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer d
 
   copy_pattern = AGS_COPY_PATTERN(recall);
 
-  copy_pattern->shared_audio_run->delay->recall_ref++;
+  ags_recall_notify_dependency(AGS_RECALL(copy_pattern->shared_audio_run->delay),
+			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
+  copy_pattern->shared_audio_run->recall_ref++;
   fprintf(stdout, "ags_copy_pattern_run_init_pre\n\0");
 }
 
@@ -205,7 +207,8 @@ ags_copy_pattern_done(AgsRecall *recall, gpointer data)
 
   copy_pattern = AGS_COPY_PATTERN(recall);
 
-  copy_pattern->shared_audio_run->delay->recall_ref--;
+  //  copy_pattern->shared_audio_run->delay->recall_ref--;
+  //  copy_pattern->shared_audio_run->recall_ref--;
 }
 
 void
@@ -215,7 +218,9 @@ ags_copy_pattern_cancel(AgsRecall *recall, gpointer data)
 
   copy_pattern = AGS_COPY_PATTERN(recall);
 
-  copy_pattern->shared_audio_run->delay->recall_ref--;
+  ags_recall_notify_dependency(AGS_RECALL(copy_pattern->shared_audio_run->delay),
+			       AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
+  //  copy_pattern->shared_audio_run->recall_ref--;
 }
 
 void
@@ -257,6 +262,7 @@ ags_copy_pattern_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
     copy_pattern_shared_audio_run = ags_copy_pattern_shared_audio_run_new(copy_pattern_shared_audio,
 									  delay, 0);
     AGS_RECALL_SHARED(copy_pattern_shared_audio_run)->group_id = recall_id->group_id;
+    ags_run_connectable_connect(AGS_RUN_CONNECTABLE(copy_pattern_shared_audio_run));
 
     audio->recall_shared = 
       list = g_list_prepend(audio->recall_shared, copy_pattern_shared_audio_run);
@@ -304,7 +310,7 @@ ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPatte
 	  }
 	}
 
-	copy_pattern->shared_audio_run->bit = 0;
+	//	copy_pattern->shared_audio_run->bit = 0;
 	goto ags_copy_pattern_pre0;
     }else{
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(delay)->flags)) != 0)
@@ -314,9 +320,10 @@ ags_copy_pattern_tic_callback(AgsDelay *delay, guint audio_channel, AgsCopyPatte
 	//	fprintf(stdout, "copy_pattern->recall.recall == NULL\n\0");
 	ags_recall_done((AgsRecall *) copy_pattern);
 
-	ags_recall_notify_dependency(AGS_RECALL(delay), AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
-
-	copy_pattern->shared_audio_run->bit = 0;
+	ags_recall_notify_dependency(AGS_RECALL(delay),
+				     AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
+	copy_pattern->shared_audio_run->recall_ref--;
+	//	copy_pattern->shared_audio_run->bit = 0;
       }
       //      pthread_mutex_unlock(&mutex);
     }

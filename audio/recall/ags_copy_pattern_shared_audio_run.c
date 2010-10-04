@@ -90,7 +90,7 @@ ags_copy_pattern_shared_audio_run_run_connect(AgsRunConnectable *run_connectable
 {
   AgsCopyPatternSharedAudioRun *copy_pattern_shared_audio_run;
 
-  ags_copy_pattern_shared_audio_run_parent_run_connectable_interface->connect(run_connectable);
+  //  ags_copy_pattern_shared_audio_run_parent_run_connectable_interface->connect(run_connectable);
 
   /* AgsCopyPattern */
   copy_pattern_shared_audio_run = AGS_COPY_PATTERN_SHARED_AUDIO_RUN(run_connectable);
@@ -128,7 +128,6 @@ ags_copy_pattern_shared_audio_run_tic_callback(AgsDelay *delay, guint audio_chan
   printf("ags_copy_pattern_shared_audio_run_tic_callback: %u\n\0", copy_pattern_shared_audio_run->bit);
 
   copy_pattern_shared_audio = copy_pattern_shared_audio_run->copy_pattern_shared_audio;
-
 
   if(copy_pattern_shared_audio_run->bit == copy_pattern_shared_audio->length - 1){
     if(copy_pattern_shared_audio->loop ||

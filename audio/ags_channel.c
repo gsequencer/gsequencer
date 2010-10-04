@@ -1189,6 +1189,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	    /* notify additional run on the recall */
 	    recall = AGS_RECALL(list_recall_run_notify->data);
 
+	    fprintf(stdout, "ags_channel_recusive_play_init: debug 0\n\0");
 	    ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
 	  }else{
 	    /* duplicate the recall, notify first run and initialize it */
@@ -1202,7 +1203,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	    else
 	      audio->recall = g_list_prepend(audio->recall, recall);
 
-	    ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 0);
+	    fprintf(stdout, "ags_channel_recusive_play_init: debug 1\n\0");
+	    ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
 
 	    recall->flags &= (~AGS_RECALL_HIDE);
 	    ags_recall_run_init_pre(recall, audio_channel);
