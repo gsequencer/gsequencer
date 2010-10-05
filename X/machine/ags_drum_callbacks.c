@@ -149,7 +149,7 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
   AgsAudioFile *audio_file;
   AgsAudioSignal *audio_signal_source_old;
   AgsPlayChannel *play_channel;
-  GList *list, *pad_list;
+  GList *list;
   GSList *filenames;
   guint list_length;
   guint i, j;
@@ -210,7 +210,6 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
       ags_audio_set_pads((AgsAudio *) drum->machine.audio, AGS_TYPE_INPUT,
 			 list_length + AGS_AUDIO(drum->machine.audio)->input_pads);
       channel = ags_channel_nth(AGS_AUDIO(drum->machine.audio)->input, (AGS_AUDIO(drum->machine.audio)->input_pads - list_length) * AGS_AUDIO(drum->machine.audio)->audio_channels);
-      pad_list = g_list_nth(gtk_container_get_children((GtkContainer *) drum->input_pad), AGS_AUDIO(drum->machine.audio)->input_pads - list_length);
 
       while(filenames != NULL){
 	audio_file = ags_audio_file_new((char *) filenames->data);
@@ -223,9 +222,6 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 	ags_audio_file_read_audio_signal(audio_file);
 	list = audio_file->audio_signal;
 
-	//	ags_drum_input_pad_connect(AGS_DRUM_INPUT_PAD(pad_list->data));
-	//	gtk_widget_show(GTK_WIDGET(pad_list->data));
-	pad_list = pad_list->next;
 
 	for(j = 0; j < drum->machine.audio->audio_channels && list != NULL; j++){
 	  AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

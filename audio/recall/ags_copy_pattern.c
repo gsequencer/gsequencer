@@ -216,7 +216,7 @@ ags_copy_pattern_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer d
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern->shared_audio_run->delay),
 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
   copy_pattern->shared_audio_run->recall_ref++;
-  fprintf(stdout, "ags_copy_pattern_run_init_pre\n\0");
+  fprintf(stdout, "ags_copy_pattern_run_init_pre - line: %u\n\0", copy_pattern->shared_channel->source->line);
 }
 
 void

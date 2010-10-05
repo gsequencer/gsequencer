@@ -204,6 +204,7 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsDrum *drum;
   GtkWidget *widget;
+  GList *pad_list;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
@@ -216,8 +217,28 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_connectable_connect(AGS_CONNECTABLE(drum));
 
   drum->machine.audio->audio_channels = 2;
+
+  /* AgsDrumInputPad */
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
+
+  pad_list = gtk_container_get_children(drum->machine.input);
+
+  while(pad_list != NULL){
+    ags_connectable_connect(pad_list->data);
+
+    pad_list = pad_list->next;
+  }
+
+  /* AgsDrumOutputPad */
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
+
+  pad_list = gtk_container_get_children(drum->machine.output);
+
+  while(pad_list != NULL){
+    ags_connectable_connect(pad_list->data);
+
+    pad_list = pad_list->next;
+  }
 
   gtk_widget_show_all(widget);
 }

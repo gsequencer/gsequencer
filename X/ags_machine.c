@@ -114,21 +114,25 @@ ags_machine_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
 
   /* AgsPad - input */
-  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+  if(machine->input != NULL){
+    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
 
-  while(pad_list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
-
-    pad_list = pad_list->next;
+    while(pad_list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+      
+      pad_list = pad_list->next;
+    }
   }
 
   /* AgsPad - output */
-  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-
-  while(pad_list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
-
-    pad_list = pad_list->next;
+  if(machine->output != NULL){
+    pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+    
+    while(pad_list != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+      
+      pad_list = pad_list->next;
+    }
   }
 }
 

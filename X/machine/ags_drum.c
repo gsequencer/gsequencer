@@ -419,7 +419,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 	gtk_option_menu_set_history(drum_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
-	  ags_drum_input_pad_connect(drum_input_pad);
+	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
 	  gtk_widget_show_all((GtkWidget *) drum_input_pad);
 	}
       }else{
@@ -452,7 +452,8 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
-	  ags_drum_output_pad_connect(drum_output_pad);
+	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
+	  //	  ags_drum_output_pad_connect(drum_output_pad);
 	  gtk_widget_show_all((GtkWidget *) drum_output_pad);
 	}
       }else{
@@ -552,8 +553,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 	gtk_option_menu_set_history(drum_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
-	  ags_pad_connect((AgsPad *) drum_input_pad);
-	  ags_drum_input_pad_connect(drum_input_pad);
+	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
 	  gtk_widget_show_all((GtkWidget *) drum_input_pad);
 	}
 
@@ -608,8 +608,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
-	  ags_pad_connect((AgsPad *) drum_output_pad);
-	  ags_drum_output_pad_connect(drum_output_pad);
+	  ags_connectable_connect(AGS_CONNECTABLE(drum_output_pad));
 	  gtk_widget_show_all((GtkWidget *) drum_output_pad);
 	}
 

@@ -117,6 +117,8 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 
   ags_drum_input_line_parent_connectable_interface->connect(connectable);
 
+  fprintf(stdout, "ags_drum_input_line_connect\n\0");
+
   /* AgsDrumInputLine */
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
   drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) drum_input_line->line.pad, AGS_TYPE_DRUM));

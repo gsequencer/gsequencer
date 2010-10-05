@@ -119,6 +119,8 @@ ags_drum_input_pad_connect(AgsConnectable *connectable)
 
   ags_drum_input_pad_parent_connectable_interface->connect(connectable);
 
+  fprintf(stdout, "ags_drum_input_pad_connect\n\0");
+
   /* AgsDrumInputPad */
   drum_input_pad = AGS_DRUM_INPUT_PAD(connectable);
 
