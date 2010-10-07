@@ -140,9 +140,9 @@ ags_audio_init(AgsAudio *audio)
   audio->devout_play->source = (GObject *) audio;
 
   audio->recall_id = NULL;
+
   audio->recall = NULL;
-  audio->play = 0;
-  audio->recall_shared = NULL;
+  audio->play = NULL;
 
   audio->machine = NULL;
 }

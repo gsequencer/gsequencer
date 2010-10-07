@@ -51,7 +51,6 @@ struct _AgsChannel
   GList *recall_id; // there may be several recall's running
   GList *recall;
   GList *play;
-  GList *recall_shared;
 
   AgsChannel *link;
   AgsRecycling *first_recycling;

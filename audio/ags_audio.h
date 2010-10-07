@@ -62,9 +62,9 @@ struct _AgsAudio
   AgsDevoutPlay *devout_play;
 
   GList *recall_id;
+
   GList *recall; // eg. AGS_DELAY in AgsRecallClass->recall_inter
   GList *play;
-  GList *recall_shared;
 
   GtkWidget *machine;
 };
