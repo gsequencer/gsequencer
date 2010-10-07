@@ -10,6 +10,10 @@
 #include "ags_audio_signal.h"
 #include "ags_pattern.h"
 #include "ags_recall.h"
+#include "ags_recall_audio.h"
+#include "ags_recall_audio_run.h"
+#include "ags_recall_channel.h"
+#include "ags_recall_channel_run.h"
 
 #include <stdio.h>
 
@@ -104,7 +108,6 @@ ags_channel_init(AgsChannel *channel)
   channel->recall_id = NULL;
   channel->recall = NULL;
   channel->play = NULL;
-  channel->recall_shared = NULL;
 
   channel->link = NULL;
   channel->first_recycling = NULL;
@@ -1163,7 +1166,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     /* duplicate shared AgsRecalls first */
     duplicating_recall_channel = TRUE;
-    duplicated_lower_recall_channel = TRUE;
 
     recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
 
