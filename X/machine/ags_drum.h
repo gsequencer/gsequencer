@@ -9,9 +9,9 @@
 
 #include "ags_drum_input_pad.h"
 
-#include "../../audio/recall/ags_delay_shared_audio.h"
-#include "../../audio/recall/ags_copy_pattern_shared_audio.h"
-#include "../../audio/recall/ags_copy_pattern_shared_audio_run.h"
+#include "../../audio/recall/ags_delay_audio.h"
+#include "../../audio/recall/ags_copy_pattern_audio.h"
+#include "../../audio/recall/ags_copy_pattern_audio_run.h"
 
 #define AGS_TYPE_DRUM                (ags_drum_get_type())
 #define AGS_DRUM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM, AgsDrum))
@@ -33,10 +33,10 @@ struct _AgsDrum
 
   guint flags;
 
-  AgsDelaySharedAudio *delay_shared_audio;
+  AgsDelayAudio *delay_audio;
 
-  AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
-  AgsCopyPatternSharedAudioRun *copy_pattern_shared_audio_run;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   GtkButton *open;
 

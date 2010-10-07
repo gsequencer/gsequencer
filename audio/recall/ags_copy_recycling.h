@@ -28,12 +28,12 @@ struct _AgsCopyRecycling
 
   AgsRecycling *destination;
   gulong destination_add_audio_signal_handler;
-  gulong destination_add_audio_signal_with_length_handler;
+  gulong destination_add_audio_signal_with_frame_count_handler;
   gulong destination_remove_audio_signal_handler;
 
   AgsRecycling *source;
   gulong source_add_audio_signal_handler;
-  gulong source_add_audio_signal_with_length_handler;
+  gulong source_add_audio_signal_with_frame_count_handler;
   gulong source_remove_audio_signal_handler;
 
   AgsAudioSignal *child_destination;

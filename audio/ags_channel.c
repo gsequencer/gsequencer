@@ -11,11 +11,6 @@
 #include "ags_pattern.h"
 #include "ags_recall.h"
 
-#include "recall/ags_play_pattern.h"
-#include "recall/ags_play_channel.h"
-#include "recall/ags_play_audio_signal.h"
-#include "recall/ags_delay.h"
-
 #include <stdio.h>
 
 GType ags_channel_get_type();
@@ -897,7 +892,7 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
 	if(ags_recall_id_get_run_stage(output_recall_id, stage)){
 	  /* block sync|async for this run */
 	  ags_channel_recall_id_set_stage(output, output_recall_id->group_id, stage, TRUE);
-	  
+
 	  /* run in AGS_AUDIO_ASYNC mode */
 	  ags_channel_recursive_play_input_async(ags_channel_nth(audio->input, output->audio_channel),
 						 output_recall_id->group_id,
@@ -927,7 +922,7 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
       ags_channel_recursive_play_input_async(ags_channel_nth(audio->input, output->audio_channel),
 					     output_recall_id->group_id,
 					     input_do_recall, input_has_new_group_id);
-      }
+    }
     
     
     /* call audio */
@@ -1128,7 +1123,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
 	recall = ags_recall_duplicate(recall, recall_id);
-	recall->recall_id = recall_id;
+	//	recall->recall_id = recall_id;
 	ags_connectable_connect(AGS_CONNECTABLE(recall));
 	
 	if(recall_id->parent_group_id == 0)
@@ -1174,12 +1169,11 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	  /* notify additional run on the recall */
 	  recall = AGS_RECALL(list_recall_run_notify->data);
 	  
-	  fprintf(stdout, "ags_channel_recusive_play_init: debug 0\n\0");
 	  ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
 	}else{
 	  /* duplicate the recall, notify first run and initialize it */
 	  recall = ags_recall_duplicate(recall, recall_id);
-	  recall->recall_id = recall_id;
+	  //	  recall->recall_id = recall_id;
 	  ags_connectable_connect(AGS_CONNECTABLE(recall));
 	  
 	  if(recall_id->parent_group_id == 0)
@@ -1187,7 +1181,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	  else
 	    audio->recall = g_list_prepend(audio->recall, recall);
 	  
-	  fprintf(stdout, "ags_channel_recusive_play_init: debug 1\n\0");
 	  ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
 	}
       }
@@ -1326,8 +1319,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       if(stage == 0){
 	if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
-	  ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
-
 	  recall->flags &= (~AGS_RECALL_HIDE);
 	  ags_recall_run_init_pre(recall, channel->audio_channel);
 	  recall->flags &= (~AGS_RECALL_REMOVE);
@@ -1338,6 +1329,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }else{
 	if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
 	  ags_recall_run_init_post(recall, channel->audio_channel);
+
+	  ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
+
 	  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
 	}
       }
@@ -1368,8 +1362,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       if(stage == 0){
 	if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
-	  ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
-
 	  recall->flags &= (~AGS_RECALL_HIDE);
 	  ags_recall_run_init_pre(recall, audio_channel);
 	  recall->flags &= (~AGS_RECALL_REMOVE);
@@ -1380,6 +1372,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }else{
 	if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
 	  ags_recall_run_init_post(recall, audio_channel);
+
+	  ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
+
 	  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
 	}
       }

@@ -5,7 +5,7 @@
 
 #include "../ags_recall.h"
 
-#include "ags_delay.h"
+//#include "ags_delay.h"
 
 #include "../ags_channel.h"
 #include "../ags_pattern.h"
@@ -20,7 +20,7 @@ typedef struct _AgsPlayPatternClass AgsPlayPatternClass;
 struct _AgsPlayPattern{
   AgsRecall recall;
 
-  AgsDelay *delay;
+  //  AgsDelay *delay;
 
   AgsChannel *channel;
   AgsPattern *pattern;
@@ -39,6 +39,6 @@ struct _AgsPlayPatternClass{
 
 void ags_play_pattern_connect(AgsPlayPattern *play_pattern);
 
-AgsPlayPattern* ags_play_pattern_new(AgsChannel *channel, AgsDelay *delay);
+//AgsPlayPattern* ags_play_pattern_new(AgsChannel *channel, AgsDelay *delay);
 
 #endif /*__AGS_PLAY_PATTERN_H__*/

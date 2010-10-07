@@ -13,8 +13,12 @@
 #include "../../audio/ags_pattern.h"
 #include "../../audio/ags_recall.h"
 
-#include "../../audio/recall/ags_delay.h"
-#include "../../audio/recall/ags_copy_pattern.h"
+#include "../../audio/recall/ags_delay_audio.h"
+#include "../../audio/recall/ags_delay_audio_run.h"
+#include "../../audio/recall/ags_copy_pattern_audio.h"
+#include "../../audio/recall/ags_copy_pattern_audio_run.h"
+#include "../../audio/recall/ags_copy_pattern_channel.h"
+#include "../../audio/recall/ags_copy_pattern_channel_run.h"
 #include "../../audio/recall/ags_play_channel.h"
 #include "../../audio/recall/ags_play_audio_signal.h"
 
@@ -35,8 +39,8 @@ void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsDelaySharedAudio *delay_shared_audio;
-  AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
+  AgsDelayAudio *delay_audio;
+  AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
   double tic;
 
@@ -50,21 +54,21 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   window->counter->drum++;
 
   /* AgsDelay related */
-  delay_shared_audio = drum->delay_shared_audio;
+  delay_audio = drum->delay_audio;
 
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tic));
   printf("tic = %f\n\0", tic);
   printf("tic = %f\n\0", window->navigation->bpm->adjustment->value);
-  delay_shared_audio->delay = (guint) round(((double)window->devout->frequency / (double)window->devout->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
+  delay_audio->delay = (guint) round(((double)window->devout->frequency / (double)window->devout->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
 
   /* AgsCopyPattern related */
-  copy_pattern_shared_audio = drum->copy_pattern_shared_audio;
+  copy_pattern_audio = drum->copy_pattern_audio;
 
-  copy_pattern_shared_audio->devout = window->devout;
+  copy_pattern_audio->devout = window->devout;
 
-  copy_pattern_shared_audio->stream_length = (guint)drum->length_spin->adjustment->value * (guint)(delay_shared_audio->delay + 1) + 1;
+  copy_pattern_audio->stream_length = (guint)drum->length_spin->adjustment->value * (guint)(delay_audio->delay + 1) + 1;
 
-  fprintf(stdout, "ags_drum_parent_set_callback: delay_shared_audio->delay = %d\n\0", delay_shared_audio->delay);
+  fprintf(stdout, "ags_drum_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
 
 gboolean
@@ -86,7 +90,7 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
   AgsChannel *channel;
-  AgsDelay *delay;
+  //  AgsDelay *delay;
   GList *list_recall_id;
   double tic;
   guint delay_value;
@@ -96,14 +100,14 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tic));
   delay_value = (guint) round(((double)AGS_DEVOUT(drum->machine.audio->devout)->frequency / (double)AGS_DEVOUT(drum->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
 
-  drum->delay_shared_audio->delay = delay_value;
+  drum->delay_audio->delay = delay_value;
 
-  drum->copy_pattern_shared_audio->stream_length = (guint)drum->length_spin->adjustment->value * (guint)(delay_value + 1) + 1;
+  drum->copy_pattern_audio->stream_length = (guint)drum->length_spin->adjustment->value * (guint)(delay_value + 1) + 1;
 
   channel = drum->machine.audio->output;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, drum->copy_pattern_shared_audio->stream_length);
+    ags_channel_resize_audio_signal(channel, drum->copy_pattern_audio->stream_length);
 
     channel = channel->next;
   }
@@ -255,7 +259,7 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 void
 ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 {
-  drum->copy_pattern_shared_audio->loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
+  drum->copy_pattern_audio->loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 }
 
 void
@@ -289,7 +293,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     if((AGS_DEVOUT_PLAY_DONE & (drum->machine.audio->devout_play->flags)) == 0){
       drum->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_CANCEL;
     }else{
-      AgsDelay *delay;
+      //      AgsDelay *delay;
 
       drum->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
       drum->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);
@@ -303,7 +307,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 void
 ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum)
 { 
-  AgsDelay *delay;
+  //  AgsDelay *delay;
 
   fprintf(stdout, "ags_drum_run_delay_done\n\0");
 
@@ -328,17 +332,17 @@ ags_drum_tic_callback(GtkWidget *option_menu, AgsDrum *drum)
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tic));
   delay_value = (guint) round(((double)AGS_DEVOUT(drum->machine.audio->devout)->frequency / (double)AGS_DEVOUT(drum->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
 
-  drum->delay_shared_audio->delay = delay_value;
+  drum->delay_audio->delay = delay_value;
 
   //  delay = AGS_DELAY(ags_recall_find_by_effect(drum->machine.audio->recall, (char *) g_type_name(AGS_TYPE_DELAY))->data);
   //  delay->delay = delay_value;
 
-  drum->copy_pattern_shared_audio->stream_length = ((guint)drum->length_spin->adjustment->value) * (delay_value + 1) + 1;
+  drum->copy_pattern_audio->stream_length = ((guint)drum->length_spin->adjustment->value) * (delay_value + 1) + 1;
 
   channel = drum->machine.audio->output;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, drum->copy_pattern_shared_audio->stream_length);
+    ags_channel_resize_audio_signal(channel, drum->copy_pattern_audio->stream_length);
 
     channel = channel->next;
   }
@@ -348,15 +352,15 @@ void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsChannel *channel;
-  AgsDelaySharedAudio *delay_shared_audio;
+  AgsDelayAudio *delay_audio;
 
   channel = drum->machine.audio->output;
-  delay_shared_audio = drum->delay_shared_audio;
-  drum->copy_pattern_shared_audio->length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
-  drum->copy_pattern_shared_audio->stream_length = ((guint)drum->length_spin->adjustment->value) * (delay_shared_audio->delay + 1) + 1;
+  delay_audio = drum->delay_audio;
+  drum->copy_pattern_audio->length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  drum->copy_pattern_audio->stream_length = ((guint)drum->length_spin->adjustment->value) * (delay_audio->delay + 1) + 1;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, drum->copy_pattern_shared_audio->stream_length);
+    ags_channel_resize_audio_signal(channel, drum->copy_pattern_audio->stream_length);
 
     channel = channel->next;
   }
@@ -374,7 +378,7 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       gtk_toggle_button_set_active(toggle_button, FALSE);
       drum->selected0 = (GtkToggleButton*) widget;
 
-      drum->copy_pattern_shared_audio->i = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
+      drum->copy_pattern_audio->i = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
     }else if(! gtk_toggle_button_get_active(drum->selected0)){
       toggle_button = drum->selected0;
       drum->selected0 = NULL;
@@ -398,7 +402,7 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       gtk_toggle_button_set_active(toggle_button, FALSE);
       drum->selected1 = (GtkToggleButton*) widget;
 
-      drum->copy_pattern_shared_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
+      drum->copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
     }else if(!gtk_toggle_button_get_active(drum->selected1)){
       toggle_button = drum->selected1;
       drum->selected1 = NULL;

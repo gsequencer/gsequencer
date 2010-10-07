@@ -7,11 +7,15 @@
 
 #include "ags_drum.h"
 
-#include "../../audio/recall/ags_delay.h"
+#include "../../audio/recall/ags_delay_audio_run.h"
 #include "../../audio/recall/ags_play_volume.h"
 #include "../../audio/recall/ags_play_channel.h"
+#include "../../audio/recall/ags_copy_channel.h"
 #include "../../audio/recall/ags_recall_volume.h"
-#include "../../audio/recall/ags_copy_pattern.h"
+#include "../../audio/recall/ags_copy_pattern_audio.h"
+#include "../../audio/recall/ags_copy_pattern_audio_run.h"
+#include "../../audio/recall/ags_copy_pattern_channel.h"
+#include "../../audio/recall/ags_copy_pattern_channel_run.h"
 
 GType ags_drum_input_line_get_type();
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
@@ -170,10 +174,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsPlayVolume *play_volume;
   AgsRecallVolume *recall_volume;
   AgsPlayChannel *play_channel;
-  AgsCopyPattern *copy_pattern;
-  AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
-  AgsCopyPatternSharedAudioRun *copy_pattern_shared_audio_run;
-  AgsCopyPatternSharedChannel *copy_pattern_shared_channel;
+  AgsCopyChannel *copy_channel;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannel *copy_pattern_channel;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
   guint i;
 
   fprintf(stdout, "ags_drum_input_line_map_recall\n\0");
@@ -195,7 +200,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     
     play_channel->recall.flags |= AGS_RECALL_TEMPLATE;
     
-    ags_play_channel_connect(play_channel);
+    ags_connectable_connect(AGS_CONNECTABLE(play_channel));
     
     g_signal_connect((GObject *) play_channel, "done\0",
 		     G_CALLBACK(ags_drum_input_line_play_channel_done), drum_input_line);
@@ -210,29 +215,43 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   destination = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start);
 
   while(destination != NULL){
+    /* AgsCopyChannel */
     g_object_ref(G_OBJECT(destination));
 
+    copy_channel = ags_copy_channel_new(destination,
+					source,
+					(AgsDevout *) audio->devout);
+
+    copy_channel->recall.flags |= AGS_RECALL_TEMPLATE;
+    
+    ags_connectable_connect(AGS_CONNECTABLE(copy_channel));
+
+    source->recall = g_list_append(source->recall, (gpointer) copy_channel);
+
     /* AgsCopyPattern */
-    copy_pattern_shared_channel = ags_copy_pattern_shared_channel_new(destination,
-								      source, (AgsPattern *) source->pattern->data);
+    g_object_ref(G_OBJECT(destination));
+
+    copy_pattern_channel = ags_copy_pattern_channel_new(destination,
+							source, (AgsPattern *) source->pattern->data);
     
-    copy_pattern = ags_copy_pattern_new(drum->copy_pattern_shared_audio_run,
-					copy_pattern_shared_channel);
+    copy_pattern_channel_run = ags_copy_pattern_channel_run_new((AgsRecallAudio *) drum->copy_pattern_audio,
+								(AgsRecallAudioRun *) drum->copy_pattern_audio_run,
+								(AgsRecallChannel *) copy_pattern_channel);
     
-    copy_pattern->recall.flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;
     
-    ags_connectable_connect(AGS_CONNECTABLE(copy_pattern));
+    ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_channel_run));
     
-    g_signal_connect((GObject *) copy_pattern, "done\0",
+    g_signal_connect((GObject *) copy_pattern_channel_run, "done\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_done), drum_input_line);
     
-    g_signal_connect((GObject *) copy_pattern, "cancel\0",
+    g_signal_connect((GObject *) copy_pattern_channel_run, "cancel\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_cancel), drum_input_line);
     
-    g_signal_connect((GObject *) copy_pattern, "loop\0",
+    g_signal_connect((GObject *) copy_pattern_channel_run, "loop\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_loop), drum_input_line);
     
-    source->recall = g_list_append(source->recall, (gpointer) copy_pattern);
+    source->recall = g_list_append(source->recall, (gpointer) copy_pattern_channel_run);
 
     
     destination = destination->next_pad;

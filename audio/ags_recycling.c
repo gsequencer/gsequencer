@@ -50,9 +50,13 @@ ags_recycling_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recycling_init,
     };
-    ags_type_recycling = g_type_register_static(G_TYPE_OBJECT, "AgsRecycling\0", &ags_recycling_info, 0);
+
+    ags_type_recycling = g_type_register_static(G_TYPE_OBJECT,
+						"AgsRecycling\0",
+						&ags_recycling_info, 0);
   }
-  return (ags_type_recycling);
+
+  return(ags_type_recycling);
 }
 
 void
@@ -149,12 +153,13 @@ ags_recycling_add_audio_signal(AgsRecycling *recycling,
 			       AgsAudioSignal *audio_signal)
 {
   g_return_if_fail(AGS_IS_RECYCLING(recycling));
+  g_return_if_fail(AGS_IS_AUDIO_SIGNAL(audio_signal));
 
-  g_object_ref((GObject *) recycling);
+  g_object_ref(G_OBJECT(recycling));
   g_signal_emit(G_OBJECT(recycling),
 		recycling_signals[ADD_AUDIO_SIGNAL], 0,
 		audio_signal);
-  g_object_unref((GObject *) recycling);
+  g_object_unref(G_OBJECT(recycling));
 }
 
 void

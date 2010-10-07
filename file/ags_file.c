@@ -33,7 +33,7 @@
 #include "../audio/recall/ags_play_audio_signal.h"
 #include "../audio/recall/ags_play_volume.h"
 
-#include "../audio/recall/ags_copy_pattern.h"
+#include "../audio/recall/ags_copy_pattern_channel_run.h"
 #include "../audio/recall/ags_copy_channel.h"
 #include "../audio/recall/ags_copy_audio_signal.h"
 #include "../audio/recall/ags_recall_volume.h"
@@ -1666,7 +1666,7 @@ ags_file_write_play_volume(AgsFile *file, AgsRecall *recall)
 void
 ags_file_write_copy_pattern(AgsFile *file, AgsRecall *recall)
 {
-  file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_COPY_PATTERN), NULL);
+  file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN), NULL);
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 

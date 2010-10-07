@@ -235,6 +235,8 @@ ags_copy_channel_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer d
 
   copy_channel = (AgsCopyChannel *) recall;
 
+  printf("ags_copy_channel_run_init_pre\n\0");
+
   ags_copy_channel_map_copy_recycling(copy_channel);
 }
 
@@ -295,8 +297,9 @@ ags_copy_channel_map_copy_recycling(AgsCopyChannel *copy_channel)
 					      copy_channel->devout);
 
       copy_recycling->recall.parent = (GObject *) copy_channel;
+      copy_recycling->recall.recall_id = copy_channel->recall.recall_id;
 
-      ags_copy_recycling_connect(copy_recycling);
+      ags_connectable_connect(AGS_CONNECTABLE(copy_recycling));
 
       copy_channel->recall.child = g_list_prepend(copy_channel->recall.child, copy_recycling);
 
@@ -350,8 +353,9 @@ ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
 						copy_channel->devout);
 
 	copy_recycling->recall.parent = (GObject *) copy_channel;
+	copy_recycling->recall.recall_id = copy_channel->recall.recall_id;
 
-	ags_copy_recycling_connect(copy_recycling);
+	ags_connectable_connect(AGS_CONNECTABLE(copy_recycling));
 
 	copy_channel->recall.child = g_list_prepend(copy_channel->recall.child, copy_recycling);
 
@@ -412,8 +416,9 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
 						copy_channel->devout);
 
 	copy_recycling->recall.parent = (GObject *) copy_channel;
+	copy_recycling->recall.recall_id = copy_channel->recall.recall_id;
 
-	ags_copy_recycling_connect(copy_recycling);
+	ags_connectable_connect(AGS_CONNECTABLE(copy_recycling));
 
 	copy_channel->recall.child = g_list_prepend(copy_channel->recall.child, copy_recycling);
 

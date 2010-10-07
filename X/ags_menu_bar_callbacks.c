@@ -205,6 +205,8 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsDrum *drum;
   GtkWidget *widget;
   GList *pad_list;
+  AgsChannel *input, *output;
+  guint i, j;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
@@ -241,6 +243,23 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   gtk_widget_show_all(widget);
+
+  /*
+  input = drum->machine.audio->input;
+  output = drum->machine.audio->output;
+
+  for(i = 0; i < 2; i++){
+    for(j = 0; j < 8; j++){
+      printf("input - audio_channel %u; pad %u; line %u\n\0", input->audio_channel, input->pad, input->line);
+      input = input->next;
+    }
+
+    for(j = 0; j < 1; j++){
+      printf("output - audio_channel %u; pad %u; line %u\n\0", output->audio_channel, output->pad, output->line);
+      output = output->next;
+    }
+  }
+  */
 }
 
 void

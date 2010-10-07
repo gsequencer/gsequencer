@@ -155,6 +155,10 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       play_channel = ags_play_channel_new(input,
 					  AGS_DEVOUT(AGS_AUDIO(input->audio)->devout));
 
+      play_channel->recall.flags |= AGS_RECALL_TEMPLATE;
+    
+      ags_connectable_connect(AGS_CONNECTABLE(play_channel));
+
       hbox = (GtkHBox*) gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
 

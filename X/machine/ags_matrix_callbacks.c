@@ -8,9 +8,12 @@
 #include "../../audio/ags_pattern.h"
 #include "../../audio/ags_recall.h"
 
-#include "../../audio/recall/ags_delay.h"
-#include "../../audio/recall/ags_play_pattern.h"
-#include "../../audio/recall/ags_copy_pattern.h"
+#include "../../audio/recall/ags_delay_audio.h"
+#include "../../audio/recall/ags_delay_audio_run.h"
+#include "../../audio/recall/ags_copy_pattern_audio.h"
+#include "../../audio/recall/ags_copy_pattern_audio_run.h"
+#include "../../audio/recall/ags_copy_pattern_channel.h"
+#include "../../audio/recall/ags_copy_pattern_channel_run.h"
 
 #include <math.h>
 
@@ -20,8 +23,8 @@ void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
 {
   AgsWindow *window;
-  AgsDelaySharedAudio *delay_shared_audio;
-  AgsCopyPatternSharedAudio *copy_pattern_shared_audio;
+  AgsDelayAudio *delay_audio;
+  AgsCopyPatternAudio *copy_pattern_audio;
   double tic;
 
   if(old_parent != NULL)
@@ -32,19 +35,19 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   window->counter->matrix++;
 
   /* AgsDelay related */
-  delay_shared_audio = matrix->delay_shared_audio;
+  delay_audio = matrix->delay_audio;
 
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
-  delay_shared_audio->delay = (guint) round(((double)window->devout->frequency / (double)window->devout->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
+  delay_audio->delay = (guint) round(((double)window->devout->frequency / (double)window->devout->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
 
   /* AgsCopyPattern related */
-  copy_pattern_shared_audio = matrix->copy_pattern_shared_audio;
+  copy_pattern_audio = matrix->copy_pattern_audio;
 
-  copy_pattern_shared_audio->devout = window->devout;
+  copy_pattern_audio->devout = window->devout;
 
-  copy_pattern_shared_audio->stream_length = (guint)matrix->length_spin->adjustment->value * (guint)(delay_shared_audio->delay + 1) + 1;
+  copy_pattern_audio->stream_length = (guint)matrix->length_spin->adjustment->value * (guint)(delay_audio->delay + 1) + 1;
 
-  fprintf(stdout, "ags_matrix_parent_set_callback: delay_shared_audio->delay = %d\n\0", delay_shared_audio->delay);
+  fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
 
 gboolean
@@ -84,7 +87,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
     if((AGS_DEVOUT_PLAY_DONE & (matrix->machine.audio->devout_play->flags)) == 0)
       matrix->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_CANCEL;
     else{
-      AgsDelay *delay;
+      //      AgsDelay *delay;
 
       matrix->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
       matrix->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);
@@ -108,7 +111,7 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       matrix->selected = (GtkToggleButton*) widget;
       ags_matrix_draw_matrix(matrix);
 
-      matrix->copy_pattern_shared_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
+      matrix->copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
     }else{
       toggle = matrix->selected;
       matrix->selected = NULL;
@@ -157,22 +160,22 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
   AgsChannel *channel;
-  AgsDelaySharedAudio *delay_shared_audio;
+  AgsDelayAudio *delay_audio;
   double tic;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW);
 
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
 
-  delay_shared_audio = matrix->delay_shared_audio;
-  delay_shared_audio->delay = (guint) round(((double)AGS_DEVOUT(matrix->machine.audio->devout)->frequency / (double)AGS_DEVOUT(matrix->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
+  delay_audio = matrix->delay_audio;
+  delay_audio->delay = (guint) round(((double)AGS_DEVOUT(matrix->machine.audio->devout)->frequency / (double)AGS_DEVOUT(matrix->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
 
-  matrix->copy_pattern_shared_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_shared_audio->delay + 1) + 1;
+  matrix->copy_pattern_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_audio->delay + 1) + 1;
 
   channel = matrix->machine.audio->output;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_shared_audio->stream_length);
+    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_audio->stream_length);
 
     channel = channel->next;
   }
@@ -182,17 +185,17 @@ void
 ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsChannel *channel;
-  AgsDelaySharedAudio *delay_shared_audio;
+  AgsDelayAudio *delay_audio;
 
   channel = matrix->machine.audio->output;
 
-  delay_shared_audio = matrix->delay_shared_audio;
+  delay_audio = matrix->delay_audio;
 
-  matrix->copy_pattern_shared_audio->length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
-  matrix->copy_pattern_shared_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_shared_audio->delay + 1) + 1;
+  matrix->copy_pattern_audio->length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  matrix->copy_pattern_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_audio->delay + 1) + 1;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_shared_audio->length);
+    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_audio->length);
 
     channel = channel->next;
   }
@@ -203,22 +206,22 @@ ags_matrix_tic_callback(GtkWidget *option_menu, AgsMatrix *matrix)
 {
   AgsWindow *window;
   AgsChannel *channel;
-  AgsDelaySharedAudio *delay_shared_audio;
+  AgsDelayAudio *delay_audio;
   double tic;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) matrix);
 
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
 
-  delay_shared_audio = matrix->delay_shared_audio;
-  delay_shared_audio->delay = (guint) round(((double)AGS_DEVOUT(matrix->machine.audio->devout)->frequency / (double)AGS_DEVOUT(matrix->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
+  delay_audio = matrix->delay_audio;
+  delay_audio->delay = (guint) round(((double)AGS_DEVOUT(matrix->machine.audio->devout)->frequency / (double)AGS_DEVOUT(matrix->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
 
-  matrix->copy_pattern_shared_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_shared_audio->delay + 1) + 1;
+  matrix->copy_pattern_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_audio->delay + 1) + 1;
 
   channel = matrix->machine.audio->output;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_shared_audio->stream_length);
+    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_audio->stream_length);
 
     channel = channel->next;
   }
@@ -229,7 +232,7 @@ ags_matrix_tic_callback(GtkWidget *option_menu, AgsMatrix *matrix)
 void
 ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 {
-  matrix->copy_pattern_shared_audio->loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
+  matrix->copy_pattern_audio->loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 }
 
 void
@@ -248,9 +251,9 @@ ags_matrix_run_delay_done(AgsRecall *recall, AgsMatrix *matrix)
 void
 ags_matrix_copy_pattern_done(AgsRecall *recall, AgsMatrix *matrix)
 {
-  AgsCopyPattern *copy_pattern;
+  //  AgsCopyPattern *copy_pattern;
 
-  copy_pattern = AGS_COPY_PATTERN(recall);
+  //  copy_pattern = AGS_COPY_PATTERN(recall);
   recall->flags |= AGS_RECALL_HIDE;
   /*
   g_list_free(copy_pattern->destination);

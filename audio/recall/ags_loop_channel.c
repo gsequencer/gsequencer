@@ -32,6 +32,7 @@ ags_loop_channel_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_loop_channel_init,
     };
+
     ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL,
 						   "AgsLoopChannel\0",
 						   &ags_loop_channel_info,
@@ -55,7 +56,7 @@ void
 ags_loop_channel_init(AgsLoopChannel *loop_channel)
 {
   loop_channel->channel = NULL;
-  loop_channel->delay = NULL;
+  loop_channel->delay_audio_run = NULL;
 }
 
 void
@@ -86,7 +87,7 @@ ags_loop_channel_run_pre(AgsRecall *recall, AgsRecallID *recall_id,
 
   devout = AGS_DEVOUT(AGS_AUDIO(loop_channel->channel->audio)->devout);
 
-  if(loop_channel->delay->counter == 0){
+  if(loop_channel->delay_audio_run->counter == 0){
     recycling = loop_channel->channel->first_recycling;
 
     while(recycling != loop_channel->channel->last_recycling->next){
@@ -106,14 +107,15 @@ ags_loop_channel_run_pre(AgsRecall *recall, AgsRecallID *recall_id,
 }
 
 AgsLoopChannel*
-ags_loop_channel_new(AgsChannel *channel, AgsDelay *delay)
+ags_loop_channel_new(AgsChannel *channel,
+		     AgsDelayAudioRun *delay_audio_run)
 {
   AgsLoopChannel *loop_channel;
 
   loop_channel = (AgsLoopChannel *) g_object_new(AGS_TYPE_LOOP_CHANNEL, NULL);
 
   loop_channel->channel = channel;
-  loop_channel->delay = delay;
+  loop_channel->delay_audio_run = delay_audio_run;
 
   return(loop_channel);
 }

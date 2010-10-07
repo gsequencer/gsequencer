@@ -262,6 +262,8 @@ ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
 {
   AgsPlayAudioSignal *play_audio_signal;  
 
+  printf("ags_play_recycling_source_add_audio_signal\n\0");
+
   audio_signal->stream_current = audio_signal->stream_beginning;
 
   play_audio_signal = ags_play_audio_signal_new(audio_signal, play_recycling->audio_channel,

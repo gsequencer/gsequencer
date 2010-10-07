@@ -41,6 +41,18 @@ struct _AgsRecall
 
   guint flags;
 
+  GType recall_audio_type;
+  AgsRecall *recall_audio;
+
+  GType recall_audio_run_type;
+  GList *recall_audio_run;
+
+  GType recall_channel_type;
+  GList *recall_channel;
+
+  GType recall_channel_run_type;
+  GList *recall_channel_run;
+
   char *name;
   AgsRecallID *recall_id;
 

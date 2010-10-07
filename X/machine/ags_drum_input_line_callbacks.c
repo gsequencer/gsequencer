@@ -11,7 +11,8 @@
 
 #include "../../audio/recall/ags_play_volume.h"
 #include "../../audio/recall/ags_play_channel.h"
-#include "../../audio/recall/ags_copy_pattern.h"
+#include "../../audio/recall/ags_copy_pattern_channel.h"
+#include "../../audio/recall/ags_copy_pattern_channel_run.h"
 
 void
 ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
@@ -31,9 +32,9 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
       /* AgsCopyPattern */
       recall_list = channel->recall;
 
-      while((recall_list = ags_recall_find_type(recall_list, AGS_TYPE_COPY_PATTERN)) != NULL){
+      while((recall_list = ags_recall_find_type(recall_list, AGS_TYPE_COPY_PATTERN_CHANNEL_RUN)) != NULL){
 	recall = AGS_RECALL(recall_list->data);
-	destination = AGS_COPY_PATTERN(recall)->shared_channel->destination;
+	destination = AGS_COPY_PATTERN_CHANNEL(recall->recall_channel)->destination;
 
 	if(destination->pad >= pads){
 	  channel->recall = g_list_delete_link(channel->recall, recall_list);
@@ -111,11 +112,11 @@ ags_drum_input_line_play_volume_cancel(AgsRecall *recall, AgsDrumInputLine *drum
 void
 ags_drum_input_line_copy_pattern_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
-  AgsCopyPattern *copy_pattern;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
   fprintf(stdout, "ags_drum_input_line_copy_pattern_done\n\0");
 
-  copy_pattern = AGS_COPY_PATTERN(recall);
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
   recall->flags |= AGS_RECALL_HIDE;
   /*
   g_list_free(copy_pattern->destination);

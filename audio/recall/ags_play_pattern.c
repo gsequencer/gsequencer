@@ -217,7 +217,7 @@ ags_play_pattern_cancel(AgsRecall *recall)
   _ags_recall_cancel(recall);
   */
 }
-
+/*
 AgsPlayPattern*
 ags_play_pattern_new(AgsChannel *channel, AgsDelay *delay)
 {
@@ -234,3 +234,4 @@ ags_play_pattern_new(AgsChannel *channel, AgsDelay *delay)
 
   return(play_pattern);
 }
+*/

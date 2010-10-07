@@ -1,6 +1,7 @@
 joel@weedlight.ch
 
 TODO:
+- implement an iteration function for ags_channel_recursive_play_init
 - AgsCopyPattern implementation in AgsDrum and AgsMatrix doesn't have correct abort code, perhaps see AgsDelay
 - remove recalls after the 3 stages were executed in ags_channel_recursive_play
 - take care of owner (AgsRecallID) in AgsAudioSignal

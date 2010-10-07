@@ -4,7 +4,7 @@
 
 #include "../../audio/ags_audio_signal.h"
 
-#include "../../audio/recall/ags_delay_shared_audio.h"
+#include "../../audio/recall/ags_delay_audio.h"
 
 int
 ags_drum_output_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, gpointer data)
@@ -17,6 +17,7 @@ ags_drum_output_line_parent_set_callback(GtkWidget *widget, GtkObject *old_paren
   drum_output_line = AGS_DRUM_OUTPUT_LINE(widget);
 
   if(AGS_LINE(drum_output_line)->channel != NULL){
+    /*
     AgsDrum *drum;
     AgsChannel *channel;
     AgsAudioSignal *audio_signal;
@@ -39,6 +40,7 @@ ags_drum_output_line_parent_set_callback(GtkWidget *widget, GtkObject *old_paren
     
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
     ags_audio_signal_stream_resize(audio_signal, stop);
+*/
   }
 
   return(0);

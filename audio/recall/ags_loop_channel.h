@@ -8,7 +8,7 @@
 #include "../ags_recall.h"
 #include "../ags_recall_id.h"
 
-#include "ags_delay.h"
+#include "ags_delay_audio_run.h"
 
 #define AGS_TYPE_LOOP_CHANNEL                (ags_loop_channel_get_type())
 #define AGS_LOOP_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOOP_CHANNEL, AgsLoopChannel))
@@ -24,7 +24,7 @@ struct _AgsLoopChannel
 {
   AgsRecall recall;
 
-  AgsDelay *delay;
+  AgsDelayAudioRun *delay_audio_run;
   AgsChannel *channel;
 };
 
@@ -35,6 +35,7 @@ struct _AgsLoopChannelClass
 
 void ags_loop_channel_connect(AgsLoopChannel *loop_channel);
 
-AgsLoopChannel* ags_loop_channel_new(AgsChannel *channel, AgsDelay *delay);
+AgsLoopChannel* ags_loop_channel_new(AgsChannel *channel,
+				     AgsDelayAudioRun *delay_audio_run);
 
 #endif /*__AGS_LOOP_CHANNEL_H__*/

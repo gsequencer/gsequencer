@@ -272,25 +272,69 @@ ags_recall_init(AgsRecall *recall)
 void
 ags_recall_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecall *recall;
+  GList *list;
+
+  recall = AGS_RECALL(connectable);
+
+  list = recall->child;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_recall_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsRecall *recall;
+  GList *list;
+
+  recall = AGS_RECALL(connectable);
+
+  list = recall->child;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_recall_run_connect(AgsRunConnectable *run_connectable)
 {
-  /* empty */
+  AgsRecall *recall;
+  GList *list;
+
+  recall = AGS_RECALL(run_connectable);
+
+  list = recall->child;
+
+  while(list != NULL){
+    ags_run_connectable_connect(AGS_RUN_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_recall_run_disconnect(AgsRunConnectable *run_connectable)
 {
-  /* empty */
+  AgsRecall *recall;
+  GList *list;
+
+  recall = AGS_RECALL(run_connectable);
+
+  list = recall->child;
+
+  while(list != NULL){
+    ags_run_connectable_disconnect(AGS_RUN_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
@@ -554,22 +598,28 @@ ags_recall_real_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
-  GList *list;
+  GList *recall_audio_run_list, *child;
 
   copy = g_object_new(G_OBJECT_TYPE(recall), NULL);
 
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
+
+  copy->recall_audio = recall->recall_audio;
+  // recall->recall_audio_run has to add itself
+  copy->recall_channel = recall->recall_channel;
+  // recall->recall_channel_run has to add itself
+
   copy->recall_id = recall_id;
+
   copy->parent = recall->parent;
+  child = g_list_last(recall->child);
 
-  list = g_list_last(recall->child);
-
-  while(list != NULL){
+  while(child != NULL){
     copy->child = g_list_prepend(copy->child,
-				 ags_recall_duplicate(AGS_RECALL(list->data), recall_id));
+				 ags_recall_duplicate(AGS_RECALL(child->data), recall_id));
 
-    list = list->prev;
+    child = child->prev;
   }
 
   recall_class = AGS_RECALL_GET_CLASS(recall);
