@@ -98,7 +98,7 @@ ags_pad_class_init(AgsPadClass *pad)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,
-				  param_spec);				  
+				  param_spec);
 
   /* AgsPadClass */
   pad->set_channel = ags_pad_real_set_channel;

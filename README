@@ -1,5 +1,8 @@
 joel@weedlight.ch
 
+You need a realtime kernel in conjunction with ags. The realtime kernel shipped with Ubuntu Studio didn't work but a self compiled worked. See http://rt.wiki.kernel.org/ for more information.
+
+
 TODO:
 - implement an iteration function for ags_channel_recursive_play_init
 - AgsCopyPattern implementation in AgsDrum and AgsMatrix doesn't have correct abort code, perhaps see AgsDelay

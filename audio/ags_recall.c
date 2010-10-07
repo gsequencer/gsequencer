@@ -4,6 +4,11 @@
 #include "../object/ags_connectable.h"
 #include "../object/ags_run_connectable.h"
 
+#include "ags_recall_audio.h"
+#include "ags_recall_audio_run.h"
+#include "ags_recall_channel.h"
+#include "ags_recall_channel_run.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,6 +18,14 @@ void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_recall_init(AgsRecall *recall);
+void ags_recall_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_recall_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
 void ags_recall_connect(AgsConnectable *connectable);
 void ags_recall_disconnect(AgsConnectable *connectable);
 void ags_recall_run_connect(AgsRunConnectable *run_connectable);
@@ -47,6 +60,14 @@ enum{
   DUPLICATE,
   NOTIFY_DEPENDENCY,
   LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_RECALL_AUDIO,
+  PROP_RECALL_AUDIO_RUN,
+  PROP_RECALL_CHANNEL,
+  PROP_RECALL_CHANNEL_RUN,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -102,12 +123,55 @@ void
 ags_recall_class_init(AgsRecallClass *recall)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_recall_parent_class = g_type_class_peek_parent(recall);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) recall;
+
   gobject->finalize = ags_recall_finalize;
 
+  gobject->set_property = ags_recall_set_property;
+  gobject->get_property = ags_recall_get_property;
+
+  param_spec = g_param_spec_object("recall_audio\0",
+				   "audio level recall\0",
+				   "The recall which this recall has on audio level\0",
+				   AGS_TYPE_RECALL_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_audio_run\0",
+				   "audio runlevel recall\0",
+				   "The recall which this recall has on audio level during a run\0",
+				   AGS_TYPE_RECALL_AUDIO_RUN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO_RUN,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_channel\0",
+				   "channel level recall\0",
+				   "The recall which this recall has on channel level\0",
+				   AGS_TYPE_RECALL_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_channel_run\0",
+				   "channel runlevel recall\0",
+				   "The recall which this recall has on audio level during a run\0",
+				   AGS_TYPE_RECALL_CHANNEL_RUN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL_RUN,
+				  param_spec);
+
+  /* AgsRecallClass */
   recall->run_init_pre = ags_recall_real_run_init_pre;
   recall->run_init_inter = ags_recall_real_run_init_inter;
   recall->run_init_post = ags_recall_real_run_init_post;
@@ -262,12 +326,114 @@ ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
 
+  recall->recall_audio = NULL;
+  recall->recall_audio_run = NULL;
+  recall->recall_channel = NULL;
+  recall->recall_channel_run = NULL;
+
   recall->name = NULL;
   recall->recall_id = NULL;
 
   recall->parent = NULL;
   recall->child = NULL;
 }
+
+void
+ags_recall_set_property(GObject *gobject,
+		     guint prop_id,
+		     const GValue *value,
+		     GParamSpec *param_spec)
+{
+  AgsRecall *recall;
+
+  recall = AGS_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL_AUDIO:
+    {
+      AgsRecallAudio *recall_audio;
+
+      recall_audio = (AgsRecallAudio *) g_value_get_object(value);
+
+      recall->recall_audio = (AgsRecall *) recall_audio;
+    }
+    break;
+  case PROP_RECALL_AUDIO_RUN:
+    {
+      AgsRecallAudioRun *recall_audio_run;
+
+      recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
+
+      if(AGS_IS_RECALL_AUDIO(recall) ||
+	 AGS_IS_RECALL_CHANNEL(recall))
+	recall->recall_audio_run = (gpointer) g_list_prepend((GList *) recall->recall_audio_run, recall_audio_run);
+      else if(AGS_IS_RECALL_CHANNEL_RUN(recall))
+	recall->recall_audio_run = (gpointer) recall_audio_run;
+      else
+	printf("ags warning - ags_recall.c: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
+    }
+    break;
+  case PROP_RECALL_CHANNEL:
+    {
+      AgsRecallChannel *recall_channel;
+
+      recall_channel = (AgsRecallChannel *) g_value_get_object(value);
+
+      if(AGS_IS_RECALL_AUDIO(recall) ||
+	 AGS_IS_RECALL_AUDIO_RUN(recall))
+	recall->recall_audio_run = (gpointer) g_list_prepend((GList *) recall->recall_audio_run,
+							     recall_channel);
+      else if(AGS_IS_RECALL_CHANNEL_RUN(recall))
+	recall->recall_channel = (gpointer) recall_channel;
+      else
+	printf("ags warning - ags_recall.c: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
+    }
+    break;
+  case PROP_RECALL_CHANNEL_RUN:
+    {
+      AgsRecallChannelRun *recall_channel_run;
+
+      recall_channel_run = (AgsRecallChannelRun *) g_value_get_object(value);
+
+      recall->recall_channel_run = g_list_prepend(recall->recall_channel_run,
+						  recall_channel_run);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_recall_get_property(GObject *gobject,
+		     guint prop_id,
+		     GValue *value,
+		     GParamSpec *param_spec)
+{
+  AgsRecall *recall;
+
+  recall = AGS_RECALL(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL_AUDIO:
+    g_value_set_object(value, recall->recall_audio);
+    break;
+  case PROP_RECALL_AUDIO_RUN:
+    g_value_set_object(value, recall->recall_audio_run);
+    break;
+  case PROP_RECALL_CHANNEL:
+    g_value_set_object(value, recall->recall_channel);
+    break;
+  case PROP_RECALL_CHANNEL_RUN:
+    g_value_set_object(value, recall->recall_channel_run);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
 
 void
 ags_recall_connect(AgsConnectable *connectable)
