@@ -3,6 +3,11 @@
 #include "../object/ags_connectable.h"
 #include "../object/ags_run_connectable.h"
 
+#include "ags_audio.h"
+#include "ags_channel.h"
+
+#include "ags_recall_audio.h"
+
 GType ags_recall_audio_run_get_type();
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable);
@@ -160,13 +165,24 @@ ags_recall_audio_run_finalize(GObject *gobject)
 AgsRecall*
 ags_recall_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
-  AgsRecallAudioRun *recall_audio, *copy;
+  AgsAudio *audio;
+  AgsRecallAudioRun *recall_audio_run, *copy;
 
-  recall_audio = AGS_RECALL_AUDIO_RUN(recall);
+  recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
   copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall, recall_id));
 
+  audio = AGS_RECALL_AUDIO(recall->recall_audio)->audio;
 
+  if(audio != NULL){
+    AgsRecallAudio *recall_audio;
+    
+    recall_audio = AGS_RECALL_AUDIO(recall->recall_audio);
 
+    AGS_RECALL(copy)->recall_audio = AGS_RECALL(recall_audio);
+
+    AGS_RECALL(recall_audio)->recall_audio_run = g_list_prepend(AGS_RECALL(recall_audio)->recall_audio_run,
+								copy);
+  }
 
   return((AgsRecall *) copy);
 }

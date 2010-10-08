@@ -172,7 +172,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 
   channel = AGS_RECALL_CHANNEL(recall->recall_channel)->channel;
 
-  if(recall->recall_channel != NULL){
+  if(channel != NULL){
     AgsRecallChannel *recall_channel;
 
     recall_channel = AGS_RECALL_CHANNEL(recall->recall_channel);
