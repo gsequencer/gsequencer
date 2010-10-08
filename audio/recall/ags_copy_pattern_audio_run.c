@@ -12,6 +12,8 @@ void ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_audio_run_finalize(GObject *gobject);
 
+AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+
 void ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
 					     AgsCopyPatternAudioRun *copy_pattern_audio_run);
 
@@ -125,6 +127,21 @@ void
 ags_copy_pattern_audio_run_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_copy_pattern_audio_run_parent_class)->finalize(gobject);
+}
+
+AgsRecall*
+ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+{
+  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  GList *list;
+  
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(recall->recall_audio);
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
+
+  //  list = AGS_RECALL_(copy_pattern_audio_run;
+
+  //  copy_pattern_audio_run->delay_audio_run = ;
 }
 
 void

@@ -1136,30 +1136,20 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
-    GList *list_recall_start, *list_recall;
-    gboolean duplicating_recall_channel;
-
-    /* duplicate shared AgsRecalls first */
-    duplicating_recall_channel = TRUE;
+    GList *list_recall;
 
     recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
 
     if(recall_id->parent_group_id == 0)
-      list_recall_start =
-	list_recall = channel->play;
+      list_recall = channel->play;
     else
-      list_recall_start =
-	list_recall = channel->recall;
+      list_recall = channel->recall;
 
-  ags_channel_recursive_play_init_duplicate_channel_recall0:
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
 
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
-	 (duplicating_recall_channel &&
-	  !AGS_IS_RECALL_CHANNEL(recall)) ||
-	 (!duplicating_recall_channel &&
-	  !AGS_IS_RECALL_CHANNEL_RUN(recall))){
+	 AGS_IS_RECALL_CHANNEL(recall)){
 	list_recall = list_recall->next;
 	continue;
       }
@@ -1177,43 +1167,27 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   
       list_recall = list_recall->next;
     }
-
-    /* duplicate generic AgsRecalls now */
-    if(duplicating_recall_channel){
-      duplicating_recall_channel = FALSE;
-
-      list_recall = list_recall_start;
-      goto ags_channel_recursive_play_init_duplicate_channel_recall0;
-    }
   }
   void ags_channel_recursive_play_init_duplicate_audio_recall(AgsAudio *audio, guint audio_channel, guint group_id)
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
     GList *list_recall_start, *list_recall;
-    gboolean duplicating_recall_audio;
-
-    /* duplicate shared AgsRecalls first */
-    duplicating_recall_audio = TRUE;
 
     recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
 
     if(recall_id->parent_group_id == 0)
-      list_recall_start =
+      list_recall_start = 
 	list_recall = audio->play;
     else
       list_recall_start =
 	list_recall = audio->recall;
 
-  ags_channel_recursive_play_init_duplicate_audio_recall0:
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
 
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
-	 (duplicating_recall_audio &&
-	  !AGS_IS_RECALL_AUDIO(recall)) ||
-	 (!duplicating_recall_audio &&
-	  !AGS_IS_RECALL_AUDIO_RUN(recall))){
+	 AGS_IS_RECALL_AUDIO(recall)){
 	list_recall = list_recall->next;
 	continue;
       }
@@ -1245,14 +1219,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }
 
       list_recall = list_recall->next;
-    }
-
-    /* duplicate generic AgsRecalls now */
-    if(duplicating_recall_audio){
-      duplicating_recall_audio = FALSE;
-
-      list_recall = list_recall_start;
-      goto ags_channel_recursive_play_init_duplicate_audio_recall0;
     }
   }
   void ags_channel_recursive_play_init_duplicate_up(AgsChannel *channel)
@@ -1367,30 +1333,20 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
-    GList *list_recall_start, *list_recall;
-    gboolean initializing_recall_channel;
-
-    /* initialize shared AgsRecalls first */
-    initializing_recall_channel = TRUE;
+    GList *list_recall;
 
     recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
 
     if(recall_id->parent_group_id == 0)
-      list_recall_start =
-	list_recall = channel->play;
+      list_recall = channel->play;
     else
-      list_recall_start =
-	list_recall = channel->recall;
+      list_recall = channel->recall;
 
-  ags_channel_recursive_play_init_channel_recall0:
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
 
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
-	 (initializing_recall_channel &&
-	  !AGS_IS_RECALL_CHANNEL(recall)) ||
-	 (!initializing_recall_channel &&
-	  !AGS_IS_RECALL_CHANNEL_RUN(recall))){
+	  AGS_IS_RECALL_CHANNEL(recall)){
 	list_recall = list_recall->next;
 	continue;
       }
@@ -1413,43 +1369,25 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   
       list_recall = list_recall->next;
     }
-
-    /* initialize generic AgsRecalls now */
-    if(initializing_recall_channel){
-      initializing_recall_channel = FALSE;
-
-      list_recall = list_recall_start;
-      goto ags_channel_recursive_play_init_channel_recall0;
-    }
   }
   void ags_channel_recursive_play_init_audio_recall(AgsAudio *audio, guint audio_channel, guint group_id)
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
-    GList *list_recall_start, *list_recall;
-    gboolean initializing_recall_audio;
-
-    /* initialize shared AgsRecalls first */
-    initializing_recall_audio = TRUE;
+    GList *list_recall;
 
     recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
 
     if(recall_id->parent_group_id == 0)
-      list_recall_start =
-	list_recall = audio->play;
+      list_recall = audio->play;
     else
-      list_recall_start =
-	list_recall = audio->recall;
+      list_recall = audio->recall;
 
-  ags_channel_recursive_play_init_audio_recall0:
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
 
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
-	 (initializing_recall_audio &&
-	  !AGS_IS_RECALL_AUDIO(recall)) ||
-	 (!initializing_recall_audio &&
-	  !AGS_IS_RECALL_AUDIO_RUN(recall))){
+	  AGS_IS_RECALL_AUDIO(recall)){
 	list_recall = list_recall->next;
 	continue;
       }
@@ -1471,14 +1409,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }
   
       list_recall = list_recall->next;
-    }
-
-    /* initialize generic AgsRecalls now */
-    if(initializing_recall_audio){
-      initializing_recall_audio = FALSE;
-
-      list_recall = list_recall_start;
-      goto ags_channel_recursive_play_init_audio_recall0;
     }
   }
   void ags_channel_recursive_play_init_up(AgsChannel *channel)

@@ -5,6 +5,7 @@
 #include <glib-object.h>
 
 #include "ags_recall.h"
+#include "ags_channel.h"
 
 #define AGS_TYPE_RECALL_CHANNEL                (ags_recall_channel_get_type())
 #define AGS_RECALL_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_CHANNEL, AgsRecallChannel))
@@ -19,6 +20,8 @@ typedef struct _AgsRecallChannelClass AgsRecallChannelClass;
 struct _AgsRecallChannel
 {
   AgsRecall recall;
+
+  AgsChannel *channel;
 };
 
 struct _AgsRecallChannelClass
@@ -26,6 +29,6 @@ struct _AgsRecallChannelClass
   AgsRecallClass recall;
 };
 
-AgsRecallChannel* ags_recall_channel_new();
+AgsRecallChannel* ags_recall_channel_new(AgsChannel *channel);
 
 #endif /*__AGS_RECALL_CHANNEL_H__*/

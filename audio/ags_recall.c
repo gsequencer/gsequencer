@@ -370,7 +370,7 @@ ags_recall_set_property(GObject *gobject,
       else if(AGS_IS_RECALL_CHANNEL_RUN(recall))
 	recall->recall_audio_run = (gpointer) recall_audio_run;
       else
-	printf("ags warning - ags_recall.c: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
+	printf("ags warning - ags_recall_set_property: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
     }
     break;
   case PROP_RECALL_CHANNEL:
@@ -386,7 +386,7 @@ ags_recall_set_property(GObject *gobject,
       else if(AGS_IS_RECALL_CHANNEL_RUN(recall))
 	recall->recall_channel = (gpointer) recall_channel;
       else
-	printf("ags warning - ags_recall.c: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
+	printf("ags warning - ags_recall_set_property: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
     }
     break;
   case PROP_RECALL_CHANNEL_RUN:
@@ -764,16 +764,30 @@ ags_recall_real_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
-  GList *recall_audio_run_list, *child;
+  GList *list, *child;
 
   copy = g_object_new(G_OBJECT_TYPE(recall), NULL);
 
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
-  copy->recall_audio = recall->recall_audio;
-  // recall->recall_audio_run has to add itself
-  copy->recall_channel = recall->recall_channel;
+  if(AGS_RECALL_AUDIO(recall)){
+    /* not implemented */
+  }else if(AGS_RECALL_AUDIO_RUN(recall)){
+    copy->recall_audio = recall->recall_audio;
+
+    /* not fully implemented */
+  }else if(AGS_RECALL_CHANNEL(recall)){
+    /* not implemented */
+  }else if(AGS_RECALL_CHANNEL_RUN(recall)){
+    copy->recall_audio = recall->recall_audio;
+    copy->recall_channel = recall->recall_channel;
+
+    /* not fully implemented */
+  }else{
+    printf("ags warning - ags_recall_duplicate: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  }
+
   // recall->recall_channel_run has to add itself
 
   copy->recall_id = recall_id;

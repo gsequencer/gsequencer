@@ -5,6 +5,7 @@
 #include <glib-object.h>
 
 #include "ags_recall.h"
+#include "ags_audio.h"
 
 #define AGS_TYPE_RECALL_AUDIO                (ags_recall_audio_get_type())
 #define AGS_RECALL_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_AUDIO, AgsRecallAudio))
@@ -19,6 +20,8 @@ typedef struct _AgsRecallAudioClass AgsRecallAudioClass;
 struct _AgsRecallAudio
 {
   AgsRecall recall;
+
+  AgsAudio *audio;
 };
 
 struct _AgsRecallAudioClass
@@ -26,6 +29,6 @@ struct _AgsRecallAudioClass
   AgsRecallClass recall;
 };
 
-AgsRecallAudio* ags_recall_audio_new();
+AgsRecallAudio* ags_recall_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_RECALL_AUDIO_H__*/
