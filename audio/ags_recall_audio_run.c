@@ -13,14 +13,6 @@ void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run);
-void ags_recall_audio_run_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_recall_audio_run_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
 void ags_recall_audio_run_connect(AgsConnectable *connectable);
 void ags_recall_audio_run_disconnect(AgsConnectable *connectable);
 void ags_recall_audio_run_run_connect(AgsRunConnectable *run_connectable);

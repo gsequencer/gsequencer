@@ -186,6 +186,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   if(AGS_IS_INPUT(channel)){
     AgsRecallAudio *recall_audio;
     AgsRecallAudioRun *recall_audio_run;
+    guint group_id;
 
     audio = AGS_AUDIO(channel->audio);
 
@@ -206,13 +207,13 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
       list_start = audio->recall;
 
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
-      list = ags_recall_find_type_with_group_id(list_start,
-						recall->recall_audio_run_type,
-						recall_id->group_id);
+      group_id = recall_id->group_id;
     else
-      list = ags_recall_find_type_with_group_id(list_start,
-						recall->recall_audio_run_type,
-						recall_id->parent_group_id);
+      group_id = recall_id->parent_group_id;
+
+    list = ags_recall_find_type_with_group_id(list_start,
+					      recall->recall_audio_run_type,
+					      group_id);
 
     if(list != NULL){
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);

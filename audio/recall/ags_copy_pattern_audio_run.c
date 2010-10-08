@@ -132,16 +132,38 @@ ags_copy_pattern_audio_run_finalize(GObject *gobject)
 AgsRecall*
 ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
+  AgsAudio *audio;
   AgsCopyPatternAudio *copy_pattern_audio;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-  GList *list;
-  
-  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(recall->recall_audio);
+  AgsCopyPatternAudioRun *copy_pattern_audio_run, *copy;
+  GList *list, *list_start;
+  guint group_id;
+
+  copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall, recall_id));
+
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
-  //  list = AGS_RECALL_(copy_pattern_audio_run;
+  audio = AGS_RECALL_AUDIO(recall->recall_audio)->audio;
 
-  //  copy_pattern_audio_run->delay_audio_run = ;
+  if(audio != NULL){
+    if((AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL & (recall_id->flags)) == 0)
+      list_start = audio->play;
+    else
+      list_start = audio->recall;
+
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
+      group_id = recall_id->group_id;
+    else
+      group_id = recall_id->parent_group_id;
+
+    list = ags_recall_find_type_with_group_id(list_start,
+					      AGS_TYPE_DELAY_AUDIO_RUN,
+					      group_id);
+
+    if(list != NULL)
+      copy_pattern_audio_run->delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+  }
+
+  return((AgsRecall *) copy);
 }
 
 void
