@@ -105,8 +105,12 @@ ags_drum_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_drum_init(AgsDrum *drum)
 {
+  AgsAudio *audio;
   AgsChannel *template;
+  AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
   GtkVBox *vbox;
   GtkHBox *hbox;
   GtkToggleButton *toggle_button;
@@ -129,38 +133,60 @@ ags_drum_init(AgsDrum *drum)
 
   drum->flags = 0;
 
-  /* create AgsDelay */
-  drum->delay_audio = ags_delay_audio_new(0);
+  audio = drum->machine.audio;
 
-  /* create AgsDelay in audio->play */
-  delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) drum->delay_audio);
+  /* create AgsDelayAudio in audio->play */
+  delay_audio = ags_delay_audio_new(0);
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
+
+  audio->play = g_list_prepend(audio->play, (gpointer) delay_audio);
+
+  /* create AgsDelayAudioRun in audio->play */
+  delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
   AGS_RECALL(delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
-  //  ags_delay_connect(delay);
-  g_signal_connect((GObject *) delay_audio_run, "done\0",
-		   G_CALLBACK(ags_drum_run_delay_done), drum);
+  audio->play = g_list_prepend(audio->play, (gpointer) delay_audio_run);
 
-  drum->machine.audio->play = g_list_prepend(drum->machine.audio->play, (gpointer) delay_audio_run);
+  /* create AgsDelayAudio in audio->play */
+  delay_audio = ags_delay_audio_new(0);
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
 
-  /* create AgsDelay in audio->recall */
-  delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) drum->delay_audio);
+  audio->recall = g_list_prepend(audio->recall, (gpointer) delay_audio);
+
+  /* create AgsDelayAudioRun in audio->recall */
+  delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
   AGS_RECALL(delay_audio_run)->flags = AGS_RECALL_TEMPLATE;
 
-  //  ags_delay_connect(delay);
-  g_signal_connect((GObject *) delay_audio_run, "done\0",
-		   G_CALLBACK(ags_drum_run_delay_done), drum);
+  audio->recall = g_list_prepend(audio->recall, (gpointer) delay_audio_run);
 
-  drum->machine.audio->recall = g_list_prepend(drum->machine.audio->recall, (gpointer) delay_audio_run);
+  /* create AgsCopyPatternAudio in audio->play */
+  copy_pattern_audio = ags_copy_pattern_audio_new(NULL,
+						  0, 0,
+						  16, FALSE,
+						  0);
 
-  /* create AgsCopyPattern */
-  drum->copy_pattern_audio = ags_copy_pattern_audio_new(NULL,
-							0, 0,
-							16, FALSE,
-							0);
+  audio->play = g_list_prepend(audio->play, (gpointer) copy_pattern_audio);
 
-  drum->copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) drum->copy_pattern_audio,
-								delay_audio_run, 0);
-  
+  /* create AgsCopyPatternAudioRun in audio->play */
+  copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) copy_pattern_audio,
+							  delay_audio_run, 0);
+
+  audio->play = g_list_prepend(audio->play, (gpointer) copy_pattern_audio_run);
+
+  /* create AgsCopyPatternAudio in audio->recall */
+  copy_pattern_audio = ags_copy_pattern_audio_new(NULL,
+						  0, 0,
+						  16, FALSE,
+						  0);
+
+  audio->play = g_list_prepend(audio->play, (gpointer) copy_pattern_audio);
+
+  /* create AgsCopyPatternAudioRun in audio->recall */
+  copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) copy_pattern_audio,
+							  delay_audio_run, 0);
+
+  audio->recall = g_list_prepend(audio->recall, (gpointer) copy_pattern_audio_run);
+
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) drum))->data, (GtkWidget *) drum->vbox);

@@ -133,12 +133,16 @@ ags_recall_id_unset_stage(AgsRecallID *recall_id, gint stage)
 GList*
 ags_recall_id_add(GList *recall_id_list,
 		  guint parent_group_id, guint group_id, guint child_group_id,
-		  AgsRecycling *first_recycling, AgsRecycling *last_recycling)
+		  AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+		  gboolean higher_level_is_recall)
 {
   AgsRecallID *recall_id;
   GList *list;
 
   recall_id = ags_recall_id_new();
+
+  if(higher_level_is_recall)
+    recall_id->flags |= AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL;
 
   recall_id->parent_group_id = parent_group_id;
   recall_id->group_id = group_id;

@@ -268,18 +268,26 @@ AgsRecall*
 ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
   AgsAudio *audio;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannel *copy_pattern_channel;
   AgsCopyPatternChannelRun *copy_pattern_channel_run, *copy;
-  //  GList *copy_pattern_audio_run_list;
+  GList *copy_pattern_audio_run_list;
 
   copy_pattern_channel_run = (AgsCopyPatternChannelRun *) recall;
   copy = (AgsCopyPatternChannelRun *) AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->duplicate(recall, recall_id);
 
   /* empty */
 
+  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->recall_channel);
+  audio = AGS_AUDIO(copy_pattern_channel->source->audio);
 
-  //  audio = AGS_AUDIO(copy_pattern->shared_channel->source->audio);
-  //  copy_pattern_shared_audio_run_list = ags_recall_shared_find_type_with_group_id(audio->recall_shared,
-  //										 AGS_TYPE_COPY_PATTERN_AUDIO_RUN, recall_id->group_id);
+  if((AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL & (recall_id->flags)) == 0)
+    copy_pattern_audio_run_list = ags_recall_find_type_with_group_id(audio->play,
+								     AGS_TYPE_COPY_PATTERN_AUDIO_RUN, recall_id->group_id);
+  else
+    copy_pattern_audio_run_list = ags_recall_find_type_with_group_id(audio->recall,
+								     AGS_TYPE_COPY_PATTERN_AUDIO_RUN, recall_id->group_id);
   /*
   if(copy_pattern_shared_audio_run_list == NULL){
     AgsDelay *delay;

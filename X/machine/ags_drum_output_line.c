@@ -127,7 +127,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_DRUM);
 
     if(drum != NULL){
-      recall_shared = ags_recall_find_type(AGS_AUDIO(channel->audio)->recall_shared,
+      recall_shared = ags_recall_find_type(AGS_AUDIO(channel->audio)->play,
 					   AGS_TYPE_DELAY_AUDIO);
       
       if(recall_shared != NULL){

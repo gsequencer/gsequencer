@@ -33,11 +33,6 @@ struct _AgsDrum
 
   guint flags;
 
-  AgsDelayAudio *delay_audio;
-
-  AgsCopyPatternAudio *copy_pattern_audio;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-
   GtkButton *open;
 
   GtkCheckButton *loop_button;

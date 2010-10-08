@@ -108,6 +108,7 @@ void ags_recall_set_effect(AgsRecall *recall, char *effect);
 GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect);
 
 GList* ags_recall_find_type(GList *recall, GType type);
+GList* ags_recall_template_find_type(GList *recall, GType type);
 GList* ags_recall_find_type_with_group_id(GList *recall, GType type, guint group_id);
 
 void ags_recall_run_init(AgsRecall *recall, guint stage);

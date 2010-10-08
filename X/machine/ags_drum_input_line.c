@@ -175,8 +175,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsRecallVolume *recall_volume;
   AgsPlayChannel *play_channel;
   AgsCopyChannel *copy_channel;
-  AgsCopyPatternAudio *copy_pattern_audio;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   guint i;
@@ -198,7 +196,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     play_channel = ags_play_channel_new(source,
 					AGS_DEVOUT(audio->devout));
     
-    play_channel->recall.flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(play_channel)->flags |= AGS_RECALL_TEMPLATE;
     
     ags_connectable_connect(AGS_CONNECTABLE(play_channel));
     
@@ -234,8 +232,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     copy_pattern_channel = ags_copy_pattern_channel_new(destination,
 							source, (AgsPattern *) source->pattern->data);
     
-    copy_pattern_channel_run = ags_copy_pattern_channel_run_new((AgsRecallAudio *) drum->copy_pattern_audio,
-								(AgsRecallAudioRun *) drum->copy_pattern_audio_run,
+    copy_pattern_channel_run = ags_copy_pattern_channel_run_new(NULL,
+								NULL,
 								(AgsRecallChannel *) copy_pattern_channel);
     
     AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;

@@ -17,10 +17,10 @@ typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
 typedef enum{
-  //  AGS_RECALL_ID_GROUP_ID_SOURCE, // indicates if there are no parents of AgsRecallID
-  AGS_RECALL_ID_PRE_SYNC_ASYNC_DONE,
-  AGS_RECALL_ID_INTER_SYNC_ASYNC_DONE,
-  AGS_RECALL_ID_POST_SYNC_ASYNC_DONE,
+  AGS_RECALL_ID_PRE_SYNC_ASYNC_DONE     = 1,
+  AGS_RECALL_ID_INTER_SYNC_ASYNC_DONE   = 1 << 1,
+  AGS_RECALL_ID_POST_SYNC_ASYNC_DONE    = 1 << 2,
+  AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL  = 1 << 3,
 }AgsRecallIDFlags;
 
 struct _AgsRecallID
@@ -53,7 +53,8 @@ void ags_recall_id_unset_stage(AgsRecallID *recall_id, gint stage);
 
 GList* ags_recall_id_add(GList *recall_id_list,
 			 guint parent_group_id, guint group_id, guint child_group_id,
-			 AgsRecycling *first_recycling, AgsRecycling *last_recycling);
+			 AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+			 gboolean higher_level_is_recall);
 AgsRecallID* ags_recall_id_find_group_id(GList *recall_id_list, guint group_id);
 AgsRecallID* ags_recall_id_find_parent_group_id(GList *recall_id_list, guint parent_group_id);
 

@@ -928,6 +928,24 @@ ags_recall_find_type(GList *recall_i, GType type)
 }
 
 GList*
+ags_recall_template_find_type(GList *recall_i, GType type)
+{
+  AgsRecall *recall;
+
+  while(recall_i != NULL){
+    recall = AGS_RECALL(recall_i->data);
+
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
+       G_TYPE_CHECK_INSTANCE_TYPE(recall, type))
+      break;
+
+    recall_i = recall_i->next;
+  }
+
+  return(recall_i);
+}
+
+GList*
 ags_recall_find_type_with_group_id(GList *recall_i, GType type, guint group_id)
 {
   AgsRecall *recall;
