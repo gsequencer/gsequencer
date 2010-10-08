@@ -64,9 +64,13 @@ enum{
 
 enum{
   PROP_0,
+  PROP_RECALL_AUDIO_TYPE,
   PROP_RECALL_AUDIO,
+  PROP_RECALL_AUDIO_RUN_TYPE,
   PROP_RECALL_AUDIO_RUN,
+  PROP_RECALL_CHANNEL_TYPE,
   PROP_RECALL_CHANNEL,
+  PROP_RECALL_CHANNEL_RUN_TYPE,
   PROP_RECALL_CHANNEL_RUN,
 };
 
@@ -135,6 +139,15 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->set_property = ags_recall_set_property;
   gobject->get_property = ags_recall_get_property;
 
+  param_spec = g_param_spec_gtype("recall_audio_type\0",
+				  "audio level recall type\0",
+				  "The recall type which this recall has on audio level\0",
+				   AGS_TYPE_RECALL_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO_TYPE,
+				  param_spec);
+
   param_spec = g_param_spec_object("recall_audio\0",
 				   "audio level recall\0",
 				   "The recall which this recall has on audio level\0",
@@ -142,6 +155,15 @@ ags_recall_class_init(AgsRecallClass *recall)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_AUDIO,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("recall_audio_run_type\0",
+				  "audio runlevel recall type\0",
+				  "The recall type which this recall has on audio level during a run\0",
+				  AGS_TYPE_RECALL_AUDIO_RUN,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO_RUN_TYPE,
 				  param_spec);
 
   param_spec = g_param_spec_object("recall_audio_run\0",
@@ -153,6 +175,15 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_RECALL_AUDIO_RUN,
 				  param_spec);
 
+  param_spec = g_param_spec_gtype("recall_channel_type\0",
+				  "channel level recall type\0",
+				  "The recall type which this recall has on channel level\0",
+				  AGS_TYPE_RECALL_CHANNEL,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL_TYPE,
+				  param_spec);
+
   param_spec = g_param_spec_object("recall_channel\0",
 				   "channel level recall\0",
 				   "The recall which this recall has on channel level\0",
@@ -160,6 +191,15 @@ ags_recall_class_init(AgsRecallClass *recall)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("recall_channel_run_type\0",
+				  "channel runlevel recall type\0",
+				  "The recall type which this recall has on audio level during a run\0",
+				  AGS_TYPE_RECALL_CHANNEL_RUN,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL_RUN_TYPE,
 				  param_spec);
 
   param_spec = g_param_spec_object("recall_channel_run\0",
@@ -349,6 +389,15 @@ ags_recall_set_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
+  case PROP_RECALL_AUDIO_TYPE:
+    {
+      GType recall_audio_type;
+
+      recall_audio_type = (GType) g_value_get_gtype(value);
+
+      recall->recall_audio_type = recall_audio_type;
+    }
+    break;
   case PROP_RECALL_AUDIO:
     {
       AgsRecallAudio *recall_audio;
@@ -356,6 +405,16 @@ ags_recall_set_property(GObject *gobject,
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
 
       recall->recall_audio = (AgsRecall *) recall_audio;
+    }
+    break;
+
+  case PROP_RECALL_AUDIO_RUN_TYPE:
+    {
+      GType recall_audio_run_type;
+
+      recall_audio_run_type = (GType) g_value_get_gtype(value);
+
+      recall->recall_audio_run_type = recall_audio_run_type;
     }
     break;
   case PROP_RECALL_AUDIO_RUN:
@@ -373,6 +432,16 @@ ags_recall_set_property(GObject *gobject,
 	printf("ags warning - ags_recall_set_property: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
     }
     break;
+
+  case PROP_RECALL_CHANNEL_TYPE:
+    {
+      GType recall_channel_type;
+
+      recall_channel_type = (GType) g_value_get_gtype(value);
+
+      recall->recall_channel_type = recall_channel_type;
+    }
+    break;
   case PROP_RECALL_CHANNEL:
     {
       AgsRecallChannel *recall_channel;
@@ -387,6 +456,15 @@ ags_recall_set_property(GObject *gobject,
 	recall->recall_channel = (gpointer) recall_channel;
       else
 	printf("ags warning - ags_recall_set_property: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
+    }
+    break;
+  case PROP_RECALL_CHANNEL_RUN_TYPE:
+    {
+      GType recall_channel_run_type;
+
+      recall_channel_run_type = (GType) g_value_get_gtype(value);
+
+      recall->recall_channel_run_type = recall_channel_run_type;
     }
     break;
   case PROP_RECALL_CHANNEL_RUN:
@@ -416,14 +494,26 @@ ags_recall_get_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
+  case PROP_RECALL_AUDIO_TYPE:
+    g_value_set_gtype(value, recall->recall_audio_type);
+    break;
   case PROP_RECALL_AUDIO:
     g_value_set_object(value, recall->recall_audio);
+    break;
+  case PROP_RECALL_AUDIO_RUN_TYPE:
+    g_value_set_gtype(value, recall->recall_audio_run_type);
     break;
   case PROP_RECALL_AUDIO_RUN:
     g_value_set_object(value, recall->recall_audio_run);
     break;
+  case PROP_RECALL_CHANNEL_TYPE:
+    g_value_set_gtype(value, recall->recall_channel_type);
+    break;
   case PROP_RECALL_CHANNEL:
     g_value_set_object(value, recall->recall_channel);
+    break;
+  case PROP_RECALL_CHANNEL_RUN_TYPE:
+    g_value_set_gtype(value, recall->recall_channel_run_type);
     break;
   case PROP_RECALL_CHANNEL_RUN:
     g_value_set_object(value, recall->recall_channel_run);

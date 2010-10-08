@@ -380,9 +380,13 @@ ags_copy_pattern_channel_run_new(AgsRecallAudio *recall_audio,
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
   copy_pattern_channel_run = (AgsCopyPatternChannelRun *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
+								       "recall_audio_type\0", AGS_TYPE_COPY_PATTERN_AUDIO,
 								       "recall_audio\0", recall_audio,
+								       "recall_audio_run_type\0", AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 								       "recall_audio_run\0", recall_audio_run,
+								       "recall_channel_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL,
 								       "recall_channel\0", recall_channel,
+								       "recall_channel_run_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
 								       NULL);
   
   return(copy_pattern_channel_run);
