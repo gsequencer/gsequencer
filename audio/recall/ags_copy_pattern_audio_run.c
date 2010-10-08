@@ -176,7 +176,8 @@ ags_copy_pattern_audio_run_new(AgsRecallAudio *recall_audio,
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								   "recall_audio\0", recall_audio);
+								   "recall_audio\0", recall_audio,
+								   NULL);
 
   copy_pattern_audio_run->delay_audio_run = delay_audio_run;
   copy_pattern_audio_run->bit = bit;

@@ -3,6 +3,14 @@
 #include "../object/ags_connectable.h"
 #include "../object/ags_run_connectable.h"
 
+#include "ags_audio.h"
+#include "ags_channel.h"
+#include "ags_input.h"
+
+#include "ags_recall_audio.h"
+#include "ags_recall_audio_run.h"
+#include "ags_recall_channel.h"
+
 GType ags_recall_channel_run_get_type();
 void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
 void ags_recall_channel_runconnectable_interface_init(AgsConnectableInterface *connectable);
@@ -153,12 +161,68 @@ ags_recall_channel_run_finalize(GObject *gobject)
 AgsRecall*
 ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
-  AgsRecallChannelRun *recall_channel, *copy;
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsRecallChannelRun *recall_channel_run, *copy;
+  GList *list_start, *list;
+  guint group_id;
 
-  recall_channel = AGS_RECALL_CHANNEL_RUN(recall);
+  recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall, recall_id));
 
+  channel = AGS_RECALL_CHANNEL(recall->recall_channel)->channel;
 
+  if(recall->recall_channel != NULL){
+    AgsRecallChannel *recall_channel;
+
+    recall_channel = AGS_RECALL_CHANNEL(recall->recall_channel);
+
+    AGS_RECALL(copy)->recall_channel = recall_channel;
+
+    AGS_RECALL(recall_channel)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_channel)->recall_channel_run,
+								    copy);
+  }
+
+  if(AGS_IS_INPUT(channel)){
+    AgsRecallAudio *recall_audio;
+    AgsRecallAudioRun *recall_audio_run;
+
+    audio = AGS_AUDIO(channel->audio);
+
+    /* check for AgsRecallAudio */
+    if(recall->recall_audio != NULL){
+      recall_audio = AGS_RECALL_AUDIO(recall->recall_audio);
+
+      AGS_RECALL(copy)->recall_audio = (AgsRecall *) recall_audio;
+
+      AGS_RECALL(recall_audio)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_audio)->recall_channel_run,
+								    copy);
+    }
+
+    /* check for AgsRecallAudioRun */
+    if((AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL & (recall_id->flags)) == 0)
+      list_start = audio->play;
+    else
+      list_start = audio->recall;
+
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
+      list = ags_recall_find_type_with_group_id(list_start,
+						recall->recall_audio_run_type,
+						recall_id->group_id);
+    else
+      list = ags_recall_find_type_with_group_id(list_start,
+						recall->recall_audio_run_type,
+						recall_id->parent_group_id);
+
+    if(list != NULL){
+      recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
+
+      AGS_RECALL(copy)->recall_audio_run = recall_audio_run;
+
+      AGS_RECALL(recall_audio_run)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_audio_run)->recall_channel_run,
+									copy);
+    }    
+  }
 
   return((AgsRecall *) copy);
 }

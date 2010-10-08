@@ -771,24 +771,14 @@ ags_recall_real_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
-  if(AGS_RECALL_AUDIO(recall)){
-    /* not implemented */
-  }else if(AGS_RECALL_AUDIO_RUN(recall)){
-    copy->recall_audio = recall->recall_audio;
+  copy->recall_audio_type = recall->recall_audio_type;
+  copy->recall_audio_run_type = recall->recall_audio_run_type;
+  copy->recall_channel_type = recall->recall_channel_type;
+  copy->recall_channel_run_type = recall->recall_channel_run_type;
 
-    /* not fully implemented */
-  }else if(AGS_RECALL_CHANNEL(recall)){
-    /* not implemented */
-  }else if(AGS_RECALL_CHANNEL_RUN(recall)){
-    copy->recall_audio = recall->recall_audio;
-    copy->recall_channel = recall->recall_channel;
-
-    /* not fully implemented */
-  }else{
-    printf("ags warning - ags_recall_duplicate: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
-  }
-
-  // recall->recall_channel_run has to add itself
+  /* 
+   * linking of shared objects is done by AgsRecall implementations
+   */
 
   copy->recall_id = recall_id;
 
