@@ -15,6 +15,7 @@ void ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectabl
 void ags_copy_pattern_audio_run_finalize(GObject *gobject);
 
 AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
 void ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
 					     AgsCopyPatternAudioRun *copy_pattern_audio_run);
@@ -63,12 +64,18 @@ void
 ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
 
   ags_copy_pattern_audio_run_parent_class = g_type_class_peek_parent(copy_pattern_audio_run);
 
   gobject = (GObjectClass *) copy_pattern_audio_run;
 
   gobject->finalize = ags_copy_pattern_audio_run_finalize;
+
+  recall = (AgsRecallClass *) copy_pattern_audio_run;
+
+  recall->duplicate = ags_copy_pattern_audio_run_duplicate;
+  recall->notify_dependency = ags_copy_pattern_audio_run_notify_dependency;
 }
 
 void
@@ -171,6 +178,33 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 }
 
 void
+ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
+
+  switch(notify_mode){
+  case AGS_RECALL_NOTIFY_RUN:
+    copy_pattern_audio_run->hide_ref += count;
+
+    break;
+  case AGS_RECALL_NOTIFY_SHARED_AUDIO:
+    break;
+  case AGS_RECALL_NOTIFY_SHARED_AUDIO_RUN:
+    break;
+  case AGS_RECALL_NOTIFY_SHARED_CHANNEL:
+    break;
+  case AGS_RECALL_NOTIFY_CHANNEL_RUN:
+    copy_pattern_audio_run->recall_ref += count;
+
+    break;
+  default:
+    printf("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify");
+  }
+}
+
+void
 ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
 					AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
@@ -178,21 +212,21 @@ ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint
 
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL(copy_pattern_audio_run)->recall_audio);
 
+  if(copy_pattern_audio_run->hide_ref != 0)
+    copy_pattern_audio_run->hide_ref_counter++;
+    
+  if(copy_pattern_audio_run->hide_ref_counter != copy_pattern_audio_run->hide_ref){
+    return;
+  }
+
+  copy_pattern_audio_run->hide_ref_counter = 0;
+
   if(copy_pattern_audio_run->bit == copy_pattern_audio->length - 1){
     if(copy_pattern_audio->loop ||
        copy_pattern_audio_run->recall_ref == 0)
       copy_pattern_audio_run->bit = 0;
-  }else{
-    if(copy_pattern_audio_run->hide_ref != 0)
-      copy_pattern_audio_run->hide_ref_counter++;
-    
-    if(copy_pattern_audio_run->hide_ref_counter != copy_pattern_audio_run->hide_ref)
-      return;
-    
-    copy_pattern_audio_run->hide_ref_counter = 0;
-    
+  }else
     copy_pattern_audio_run->bit++;
-  }
 }
 
 AgsCopyPatternAudioRun*
