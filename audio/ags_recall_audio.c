@@ -157,6 +157,7 @@ ags_recall_audio_set_property(GObject *gobject,
 
       recall_audio->audio = audio;
     }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

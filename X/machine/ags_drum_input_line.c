@@ -175,8 +175,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsRecallVolume *recall_volume;
   AgsPlayChannel *play_channel;
   AgsCopyChannel *copy_channel;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  GList *list;
   guint i;
 
   fprintf(stdout, "ags_drum_input_line_map_recall\n\0");
@@ -212,6 +215,13 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   /* create recalls which depend on output */
   destination = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start);
 
+  list = ags_recall_template_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+  list = ags_recall_template_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+
+
   while(destination != NULL){
     /* AgsCopyChannel */
     g_object_ref(G_OBJECT(destination));
@@ -231,9 +241,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     copy_pattern_channel = ags_copy_pattern_channel_new(destination,
 							source, (AgsPattern *) source->pattern->data);
-    
-    copy_pattern_channel_run = ags_copy_pattern_channel_run_new(NULL,
-								NULL,
+    AGS_RECALL(copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
+
+    copy_pattern_channel_run = ags_copy_pattern_channel_run_new((AgsRecallAudio *) copy_pattern_audio,
+								(AgsRecallAudioRun *) copy_pattern_audio_run,
 								(AgsRecallChannel *) copy_pattern_channel);
     
     AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;

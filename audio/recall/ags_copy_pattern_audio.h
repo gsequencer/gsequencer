@@ -37,7 +37,7 @@ struct _AgsCopyPatternAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
-AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsDevout *devout,
+AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsDevout *devout, AgsAudio *audio,
 						guint i, guint j,
 						guint length, gboolean loop,
 						guint stream_length);

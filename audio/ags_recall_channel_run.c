@@ -192,6 +192,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 
     /* check for AgsRecallAudio */
     if(recall->recall_audio != NULL){
+      printf("ags_recall_channel_run_duplicate --- success with AgsRecallAudio\n\0");
       recall_audio = AGS_RECALL_AUDIO(recall->recall_audio);
 
       AGS_RECALL(copy)->recall_audio = (AgsRecall *) recall_audio;
@@ -215,7 +216,10 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 					      recall->recall_audio_run_type,
 					      group_id);
 
+    printf("ags_recall_channel_run_duplicate --- debug 0\n\0");
+
     if(list != NULL){
+      printf("ags_recall_channel_run_duplicate --- success with AgsRecallAudioRun\n\0");
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
 
       AGS_RECALL(copy)->recall_audio_run = recall_audio_run;

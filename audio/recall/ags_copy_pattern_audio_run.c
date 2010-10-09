@@ -3,6 +3,8 @@
 #include "../../object/ags_run_connectable.h"
 
 #include "ags_copy_pattern_audio.h"
+#include "ags_copy_pattern_channel.h"
+#include "ags_copy_pattern_channel_run.h"
 
 GType ags_copy_pattern_audio_run_get_type();
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
@@ -159,6 +161,8 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 					      AGS_TYPE_DELAY_AUDIO_RUN,
 					      group_id);
 
+    printf("ags_copy_pattern_audio_run_duplicate ---- debug 0\n\0");
+
     if(list != NULL)
       copy_pattern_audio_run->delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
   }
@@ -198,7 +202,11 @@ ags_copy_pattern_audio_run_new(AgsRecallAudio *recall_audio,
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								   "recall_audio_type\0", AGS_TYPE_COPY_PATTERN_AUDIO,
 								   "recall_audio\0", recall_audio,
+								   "recall_audio_run_type\0", AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								   "recall_channel_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL,
+								   "recall_channel_run_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
 								   NULL);
 
   copy_pattern_audio_run->delay_audio_run = delay_audio_run;

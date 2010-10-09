@@ -208,8 +208,8 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall, guint audio_channel
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL(copy_pattern_channel_run)->recall_audio_run);
-  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(AGS_RECALL(copy_pattern_channel_run)->recall_channel);
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall->recall_audio_run);
+  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->recall_channel);
 
   if(copy_pattern_audio_run->delay_audio_run == NULL){
     AgsAudio *audio;

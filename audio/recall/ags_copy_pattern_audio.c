@@ -1,5 +1,9 @@
 #include "ags_copy_pattern_audio.h"
 
+#include "ags_copy_pattern_audio_run.h"
+#include "ags_copy_pattern_channel.h"
+#include "ags_copy_pattern_channel_run.h"
+
 GType ags_copy_pattern_audio_get_type();
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
 void ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio);
@@ -67,14 +71,20 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
 }
 
 AgsCopyPatternAudio*
-ags_copy_pattern_audio_new(AgsDevout *devout,
+ags_copy_pattern_audio_new(AgsDevout *devout, AgsAudio *audio,
 			   guint i, guint j,
 			   guint length, gboolean loop,
 			   guint stream_length)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
-  copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO, NULL);
+  copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
+							    "recall_audio_type\0", AGS_TYPE_COPY_PATTERN_AUDIO,
+							    "recall_audio_run_type\0", AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+							    "recall_channel_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL,
+							    "recall_channel_run_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
+							    "audio\0", audio,
+							    NULL);
 
   copy_pattern_audio->devout = devout;
 

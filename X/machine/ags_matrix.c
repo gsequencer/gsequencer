@@ -131,10 +131,10 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->flags = 0;
 
-  /* create an AgsDelaySharedAudio */
+  /* create an AgsDelaySharedAudio * /
   matrix->delay_audio = ags_delay_audio_new(0);
 
-  /* create an AgsDelay in audio->play */
+  /* create an AgsDelay in audio->play * /
   delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) matrix->delay_audio);
   AGS_RECALL(delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
@@ -144,7 +144,7 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->machine.audio->play = g_list_prepend(matrix->machine.audio->play, (gpointer) delay_audio_run);
 
-  /* create an AgsDelay in audio->recall */
+  /* create an AgsDelay in audio->recall * /
   delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) matrix->delay_audio);
   AGS_RECALL(delay_audio_run)->flags = AGS_RECALL_TEMPLATE;
 
@@ -154,7 +154,7 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->machine.audio->recall = g_list_prepend(matrix->machine.audio->recall, (gpointer) delay_audio_run);
 
-  /* create an AgsCopyPatternSharedData */
+  /* create an AgsCopyPatternSharedData * /
   matrix->copy_pattern_audio = ags_copy_pattern_audio_new(NULL,
 							  0, 0,
 							  16, FALSE,
@@ -162,7 +162,7 @@ ags_matrix_init(AgsMatrix *matrix)
   
   matrix->copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) matrix->copy_pattern_audio,
 								  delay_audio_run, 0);
-  
+  */
   /* create widgets */
   frame = (GtkFrame *) (gtk_container_get_children((GtkContainer *) matrix))->data;
 

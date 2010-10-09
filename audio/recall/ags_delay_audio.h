@@ -28,6 +28,7 @@ struct _AgsDelayAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
-AgsDelayAudio* ags_delay_audio_new(guint delay);
+AgsDelayAudio* ags_delay_audio_new(AgsAudio *audio,
+				   guint delay);
 
 #endif /*__AGS_DELAY_AUDIO_H__*/

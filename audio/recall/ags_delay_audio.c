@@ -1,5 +1,7 @@
 #include "ags_delay_audio.h"
 
+#include "ags_delay_audio_run.h"
+
 GType ags_delay_audio_get_type();
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);
@@ -59,11 +61,16 @@ ags_delay_audio_finalize(GObject *gobject)
 }
 
 AgsDelayAudio*
-ags_delay_audio_new(guint delay)
+ags_delay_audio_new(AgsAudio *audio,
+		    guint delay)
 {
   AgsDelayAudio *delay_audio;
 
-  delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO, NULL);
+  delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+					       "recall_audio_type\0", AGS_TYPE_DELAY_AUDIO,
+					       "recall_audio_run_type\0", AGS_TYPE_DELAY_AUDIO_RUN,
+					       "audio", audio,
+					       NULL);
 
   delay_audio->delay = delay;
 

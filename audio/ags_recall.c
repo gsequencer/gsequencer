@@ -402,6 +402,7 @@ ags_recall_set_property(GObject *gobject,
     {
       AgsRecallAudio *recall_audio;
 
+      printf("ags_recall_set_property - recall_audio\n\0");
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
 
       recall->recall_audio = (AgsRecall *) recall_audio;

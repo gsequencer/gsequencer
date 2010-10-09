@@ -24,6 +24,8 @@
 
 #include "../../audio/recall/ags_delay_audio.h"
 #include "../../audio/recall/ags_delay_audio_run.h"
+#include "../../audio/recall/ags_copy_pattern_audio.h"
+#include "../../audio/recall/ags_copy_pattern_audio_run.h"
 
 #include <math.h>
 
@@ -108,7 +110,7 @@ ags_drum_init(AgsDrum *drum)
   AgsAudio *audio;
   AgsChannel *template;
   AgsDelayAudio *delay_audio;
-  AgsDelayAudioRun *delay_audio_run;
+  AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   GtkVBox *vbox;
@@ -136,56 +138,62 @@ ags_drum_init(AgsDrum *drum)
   audio = drum->machine.audio;
 
   /* create AgsDelayAudio in audio->play */
-  delay_audio = ags_delay_audio_new(0);
+  delay_audio = ags_delay_audio_new(audio,
+				    0);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->play = g_list_prepend(audio->play, (gpointer) delay_audio);
+  audio->play = g_list_append(audio->play, (gpointer) delay_audio);
 
   /* create AgsDelayAudioRun in audio->play */
-  delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
-  AGS_RECALL(delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
+  play_delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
+  AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->play = g_list_prepend(audio->play, (gpointer) delay_audio_run);
+  audio->play = g_list_append(audio->play, (gpointer) play_delay_audio_run);
 
-  /* create AgsDelayAudio in audio->play */
-  delay_audio = ags_delay_audio_new(0);
+  /* create AgsDelayAudio in audio->recall */
+  delay_audio = ags_delay_audio_new(audio,
+				    0);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->recall = g_list_prepend(audio->recall, (gpointer) delay_audio);
+  audio->recall = g_list_append(audio->recall, (gpointer) delay_audio);
 
   /* create AgsDelayAudioRun in audio->recall */
-  delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
-  AGS_RECALL(delay_audio_run)->flags = AGS_RECALL_TEMPLATE;
+  recall_delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
+  AGS_RECALL(recall_delay_audio_run)->flags = AGS_RECALL_TEMPLATE;
 
-  audio->recall = g_list_prepend(audio->recall, (gpointer) delay_audio_run);
+  audio->recall = g_list_append(audio->recall, (gpointer) recall_delay_audio_run);
 
   /* create AgsCopyPatternAudio in audio->play */
-  copy_pattern_audio = ags_copy_pattern_audio_new(NULL,
+  copy_pattern_audio = ags_copy_pattern_audio_new(NULL, audio,
 						  0, 0,
 						  16, FALSE,
 						  0);
+  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->play = g_list_prepend(audio->play, (gpointer) copy_pattern_audio);
+  audio->play = g_list_append(audio->play, (gpointer) copy_pattern_audio);
 
   /* create AgsCopyPatternAudioRun in audio->play */
   copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) copy_pattern_audio,
-							  delay_audio_run, 0);
+							  play_delay_audio_run, 0);
+  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->play = g_list_prepend(audio->play, (gpointer) copy_pattern_audio_run);
+  audio->play = g_list_append(audio->play, (gpointer) copy_pattern_audio_run);
 
   /* create AgsCopyPatternAudio in audio->recall */
-  copy_pattern_audio = ags_copy_pattern_audio_new(NULL,
+  copy_pattern_audio = ags_copy_pattern_audio_new(NULL, audio,
 						  0, 0,
 						  16, FALSE,
 						  0);
+  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->play = g_list_prepend(audio->play, (gpointer) copy_pattern_audio);
+  audio->play = g_list_append(audio->play, (gpointer) copy_pattern_audio);
 
   /* create AgsCopyPatternAudioRun in audio->recall */
   copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) copy_pattern_audio,
-							  delay_audio_run, 0);
+							  recall_delay_audio_run, 0);
+  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->recall = g_list_prepend(audio->recall, (gpointer) copy_pattern_audio_run);
+  audio->recall = g_list_append(audio->recall, (gpointer) copy_pattern_audio_run);
 
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);

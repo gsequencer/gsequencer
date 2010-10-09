@@ -157,6 +157,7 @@ ags_recall_channel_set_property(GObject *gobject,
 
       recall_channel->channel = channel;
     }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

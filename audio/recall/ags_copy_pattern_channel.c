@@ -1,5 +1,9 @@
 #include "ags_copy_pattern_channel.h"
 
+#include "ags_copy_pattern_audio.h"
+#include "ags_copy_pattern_audio_run.h"
+#include "ags_copy_pattern_channel_run.h"
+
 GType ags_copy_pattern_channel_get_type();
 void ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_channel);
 void ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel);
@@ -67,7 +71,13 @@ ags_copy_pattern_channel_new(AgsChannel *destination,
 {
   AgsCopyPatternChannel *copy_pattern_channel;
 
-  copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL, NULL);
+  copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
+								"recall_audio_type\0", AGS_TYPE_COPY_PATTERN_AUDIO,
+								"recall_audio_run_type\0", AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								"recall_channel_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL,
+								"recall_channel_run_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
+								"channel\0", source,
+								NULL);
 
   copy_pattern_channel->destination = destination;
 
