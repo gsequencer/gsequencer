@@ -30,8 +30,6 @@ struct _AgsStreamAudioSignalClass
   AgsRecallClass recall;
 };
 
-void ags_stream_audio_signal_connect(AgsStreamAudioSignal *stream_audio_signal);
-
 AgsStreamAudioSignal* ags_stream_audio_signal_new(AgsAudioSignal *audio_signal);
 
 #endif /*__AGS_STREAM_AUDIO_SIGNAL_H__*/

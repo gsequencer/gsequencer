@@ -4,7 +4,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall.h"
+#include "../ags_recall_channel.h"
 
 #include "../ags_channel.h"
 
@@ -20,7 +20,7 @@ typedef struct _AgsStreamChannelClass AgsStreamChannelClass;
 
 struct _AgsStreamChannel
 {
-  AgsRecall recall;
+  AgsRecallChannel recall_channel;
 
   AgsChannel *channel;
   gulong channel_recycling_changed_handler;
@@ -28,13 +28,8 @@ struct _AgsStreamChannel
 
 struct _AgsStreamChannelClass
 {
-  AgsRecallClass recall;
+  AgsRecallChannelClass recall_channel;
 };
-
-void ags_stream_channel_connect_run_handler(AgsStreamChannel *stream_channel);
-void ags_stream_channel_disconnect_run_handler(AgsStreamChannel *stream_channel);
-
-void ags_stream_channel_connect(AgsStreamChannel *stream_channel);
 
 AgsStreamChannel* ags_stream_channel_new(AgsChannel *channel);
 

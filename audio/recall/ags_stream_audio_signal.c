@@ -1,8 +1,17 @@
 #include "ags_stream_audio_signal.h"
 
+#include "../../object/ags_connectable.h"
+#include "../../object/ags_run_connectable.h"
+
 GType ags_stream_audio_signal_get_type();
 void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signal);
+void ags_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_stream_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal);
+void ags_stream_audio_signal_connect(AgsConnectable *connectable);
+void ags_stream_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_stream_audio_signal_run_connect(AgsRunConnectable *run_connectable);
+void ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_finalize(GObject *gobject);
 
 void ags_stream_audio_signal_run_inter(AgsRecall *recall, gpointer data);
@@ -10,6 +19,8 @@ void ags_stream_audio_signal_run_inter(AgsRecall *recall, gpointer data);
 AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 static gpointer ags_stream_audio_signal_parent_class = NULL;
+static AgsConnectableInterface *ags_stream_audio_signal_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_stream_audio_signal_parent_run_connectable_interface;
 
 GType
 ags_stream_audio_signal_get_type()
@@ -28,11 +39,33 @@ ags_stream_audio_signal_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_stream_audio_signal_init,
     };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_stream_audio_signal_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_stream_audio_signal_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_stream_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
 							  "AgsStreamAudioSignal\0",
 							  &ags_stream_audio_signal_info,
 							  0);
+
+    g_type_add_interface_static(ags_type_stream_audio_signal,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_stream_audio_signal,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
+
   return (ags_type_stream_audio_signal);
 }
 
@@ -54,24 +87,64 @@ ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signa
 }
 
 void
+ags_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_stream_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_stream_audio_signal_connect;
+  connectable->disconnect = ags_stream_audio_signal_disconnect;
+}
+
+void
+ags_stream_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_stream_audio_signal_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_stream_audio_signal_run_connect;
+  run_connectable->disconnect = ags_stream_audio_signal_run_disconnect;
+}
+
+void
 ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 {
   stream_audio_signal->audio_signal = NULL;
 }
 
 void
-ags_stream_audio_signal_finalize(GObject *gobject)
+ags_stream_audio_signal_connect(AgsConnectable *connectable)
 {
   AgsStreamAudioSignal *stream_audio_signal;
-}
 
-void
-ags_stream_audio_signal_connect(AgsStreamAudioSignal *stream_audio_signal)
-{
-  //  ags_recall_connect(AGS_RECALL(stream_audio_signal));
+  ags_stream_audio_signal_parent_connectable_interface->connect(connectable);
+
+  stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(connectable);
 
   g_signal_connect((GObject *) stream_audio_signal, "run_inter\0",
 		   G_CALLBACK(ags_stream_audio_signal_run_inter), NULL);
+}
+
+void
+ags_stream_audio_signal_disconnect(AgsConnectable *connectable)
+{
+  ags_stream_audio_signal_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_stream_audio_signal_run_connect(AgsRunConnectable *run_connectable)
+{
+  ags_stream_audio_signal_parent_run_connectable_interface->connect(run_connectable);
+}
+
+void
+ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  ags_stream_audio_signal_parent_run_connectable_interface->disconnect(run_connectable);
+}
+
+void
+ags_stream_audio_signal_finalize(GObject *gobject)
+{
+  AgsStreamAudioSignal *stream_audio_signal;
 }
 
 void

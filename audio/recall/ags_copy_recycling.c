@@ -305,6 +305,7 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 					   AgsAudioSignal *audio_signal)
 {
   AgsCopyAudioSignal *copy_audio_signal;
+  guint audio_channel;
 
   printf("ags_copy_recycling_source_add_audio_signal\n\0");
 
@@ -314,25 +315,8 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 						audio_signal,
 						copy_recycling->devout);
 
-  copy_audio_signal->recall.parent = (GObject *) copy_recycling;
-
-  ags_copy_audio_signal_connect(copy_audio_signal);
-  g_signal_connect((GObject *) copy_audio_signal, "done\0",
-		   G_CALLBACK(ags_copy_recycling_copy_audio_signal_done), NULL);
-
-  copy_recycling->recall.child = g_list_prepend(copy_recycling->recall.child, copy_audio_signal);
-
-  if((AGS_RECALL_RUN_INITIALIZED & (copy_recycling->recall.flags)) != 0){
-    guint audio_channel;
-
-    audio_channel = AGS_COPY_CHANNEL(AGS_RECALL(copy_recycling)->parent)->source->audio_channel;
-
-    ags_recall_run_init_pre((AgsRecall *) copy_audio_signal, audio_channel);
-    ags_recall_run_init_inter((AgsRecall *) copy_audio_signal, audio_channel);
-    ags_recall_run_init_post((AgsRecall *) copy_audio_signal, audio_channel);
-
-    copy_audio_signal->recall.flags |= AGS_RECALL_RUN_INITIALIZED;
-  }
+  audio_channel = AGS_COPY_CHANNEL(AGS_RECALL(copy_recycling)->parent)->source->audio_channel;
+  ags_recall_add_child(AGS_RECALL(copy_recycling), AGS_RECALL(copy_audio_signal), audio_channel);
 }
 
 void

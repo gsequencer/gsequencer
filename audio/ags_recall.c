@@ -935,6 +935,28 @@ ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
 }
 
 void
+ags_recall_add_child(AgsRecall *recall, AgsRecall *child, guint audio_channel)
+{
+  child->recall_id = recall->recall_id;
+
+  recall->child = g_list_prepend(recall->child, child);
+  child->parent = recall;
+
+  ags_connectable_connect(AGS_CONNECTABLE(child));
+
+  if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 &&
+     (AGS_RECALL_RUN_INITIALIZED & (child->flags)) == 0){
+    ags_recall_run_init_pre(AGS_RECALL(child), audio_channel);
+    ags_recall_run_init_inter(AGS_RECALL(child), audio_channel);
+    ags_recall_run_init_post(AGS_RECALL(child), audio_channel);
+
+    ags_run_connectable_connect(AGS_RUN_CONNECTABLE(child));
+    
+    child->flags |= AGS_RECALL_RUN_INITIALIZED;
+  }
+}
+
+void
 ags_recall_check_cancel(AgsRecall *recall)
 {
   void ags_recall_check_cancel_recursive(AgsRecall *recall){

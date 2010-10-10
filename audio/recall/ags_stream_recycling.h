@@ -33,11 +33,6 @@ struct _AgsStreamRecyclingClass
   AgsRecallClass recall;
 };
 
-void ags_stream_recycling_connect(AgsStreamRecycling *stream_recycling);
-
-void ags_stream_recycling_connect_run_handler(AgsStreamRecycling *stream_recycling);
-void ags_stream_recycling_disconnect_run_handler(AgsStreamRecycling *stream_recycling);
-
 AgsStreamRecycling* ags_stream_recycling_new(AgsRecycling *recycling);
 
 #endif /*__AGS_STREAM_RECYCLING_H__*/

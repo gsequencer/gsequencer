@@ -56,7 +56,7 @@ struct _AgsRecall
   char *name;
   AgsRecallID *recall_id;
 
-  GObject *parent;
+  AgsRecall *parent;
   GList *child;
 };
 
@@ -100,6 +100,8 @@ void ags_recall_remove(AgsRecall *recall);
 AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
+
+void ags_recall_add_child(AgsRecall *recall, AgsRecall *child, guint audio_channel);
 
 void ags_recall_check_cancel(AgsRecall *recall);
 void ags_recall_child_check_remove(AgsRecall *recall);
