@@ -34,9 +34,9 @@ void ags_stream_recycling_add_audio_signal(AgsStreamRecycling *stream_recycling,
 void ags_stream_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 						    AgsAudioSignal *audio_signal,
 						    AgsStreamRecycling *stream_recycling);
-void ags_stream_recycling_add_audio_signal_with_length_callback(AgsRecycling *recycling,
-								AgsAudioSignal *audio_signal, guint length,
-								AgsStreamRecycling *stream_recycling);
+void ags_stream_recycling_add_audio_signal_with_frame_count_callback(AgsRecycling *recycling,
+								     AgsAudioSignal *audio_signal, guint frame_count,
+								     AgsStreamRecycling *stream_recycling);
 
 void ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall,
 						   gpointer data);
@@ -176,9 +176,9 @@ ags_stream_recycling_run_connect(AgsRunConnectable *run_connectable)
     g_signal_connect(gobject, "add_audio_signal\0",
 		     G_CALLBACK(ags_stream_recycling_add_audio_signal_callback), stream_recycling);
 
-  stream_recycling->add_audio_signal_with_length_handler =
-    g_signal_connect(gobject, "add_audio_signal_with_length\0",
-		     G_CALLBACK(ags_stream_recycling_add_audio_signal_with_length_callback), stream_recycling);
+  stream_recycling->add_audio_signal_with_frame_count_handler =
+    g_signal_connect(gobject, "add_audio_signal_with_frame_count\0",
+		     G_CALLBACK(ags_stream_recycling_add_audio_signal_with_frame_count_callback), stream_recycling);
 }
 
 void
@@ -193,7 +193,7 @@ ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(stream_recycling);
 
   g_signal_handler_disconnect(gobject, stream_recycling->add_audio_signal_handler);
-  g_signal_handler_disconnect(gobject, stream_recycling->add_audio_signal_with_length_handler);
+  g_signal_handler_disconnect(gobject, stream_recycling->add_audio_signal_with_frame_count_handler);
 }
 
 void
@@ -270,9 +270,9 @@ ags_stream_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 }
 
 void
-ags_stream_recycling_add_audio_signal_with_length_callback(AgsRecycling *recycling,
-							   AgsAudioSignal *audio_signal, guint length,
-							   AgsStreamRecycling *stream_recycling)
+ags_stream_recycling_add_audio_signal_with_frame_count_callback(AgsRecycling *recycling,
+								AgsAudioSignal *audio_signal, guint frame_count,
+								AgsStreamRecycling *stream_recycling)
 {
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&

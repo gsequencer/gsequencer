@@ -1158,9 +1158,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	recall = ags_recall_duplicate(recall, recall_id);
 	
 	if(recall_id->parent_group_id == 0)
-	  channel->play = g_list_prepend(channel->play, recall);
+	  channel->play = g_list_append(channel->play, recall);
 	else
-	  channel->recall = g_list_prepend(channel->recall, recall);
+	  channel->recall = g_list_append(channel->recall, recall);
 
 	ags_connectable_connect(AGS_CONNECTABLE(recall));
       }
@@ -1208,9 +1208,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	  recall = ags_recall_duplicate(recall, recall_id);
 	  
 	  if(recall_id->parent_group_id == 0)
-	    audio->play = g_list_prepend(audio->play, recall);
+	    audio->play = g_list_append(audio->play, recall);
 	  else
-	    audio->recall = g_list_prepend(audio->recall, recall);
+	    audio->recall = g_list_append(audio->recall, recall);
 	  
 	  ags_connectable_connect(AGS_CONNECTABLE(recall));
 

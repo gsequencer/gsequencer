@@ -14,7 +14,7 @@ void ags_stream_audio_signal_run_connect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_finalize(GObject *gobject);
 
-void ags_stream_audio_signal_run_inter(AgsRecall *recall, gpointer data);
+void ags_stream_audio_signal_run_post(AgsRecall *recall, guint audio_channel, gpointer data);
 
 AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
@@ -119,8 +119,8 @@ ags_stream_audio_signal_connect(AgsConnectable *connectable)
 
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(connectable);
 
-  g_signal_connect((GObject *) stream_audio_signal, "run_inter\0",
-		   G_CALLBACK(ags_stream_audio_signal_run_inter), NULL);
+  g_signal_connect((GObject *) stream_audio_signal, "run_post\0",
+		   G_CALLBACK(ags_stream_audio_signal_run_post), NULL);
 }
 
 void
@@ -148,7 +148,7 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 }
 
 void
-ags_stream_audio_signal_run_inter(AgsRecall *recall, gpointer data)
+ags_stream_audio_signal_run_post(AgsRecall *recall, guint audio_channel, gpointer data)
 {
   AgsStreamAudioSignal *stream_audio_signal;
 

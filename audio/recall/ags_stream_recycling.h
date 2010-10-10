@@ -25,7 +25,7 @@ struct _AgsStreamRecycling
   AgsRecycling *recycling;
 
   gulong add_audio_signal_handler;
-  gulong add_audio_signal_with_length_handler;
+  gulong add_audio_signal_with_frame_count_handler;
 };
 
 struct _AgsStreamRecyclingClass

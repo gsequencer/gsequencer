@@ -143,12 +143,14 @@ ags_drum_init(AgsDrum *drum)
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->play = g_list_append(audio->play, (gpointer) delay_audio);
+  //  ags_connectable_connect(AGS_CONNECTABLE(delay_audio));
 
   /* create AgsDelayAudioRun in audio->play */
   play_delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->play = g_list_append(audio->play, (gpointer) play_delay_audio_run);
+  ags_connectable_connect(AGS_CONNECTABLE(play_delay_audio_run));
 
   /* create AgsDelayAudio in audio->recall */
   delay_audio = ags_delay_audio_new(audio,
@@ -156,12 +158,14 @@ ags_drum_init(AgsDrum *drum)
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->recall = g_list_append(audio->recall, (gpointer) delay_audio);
+  //  ags_connectable_connect(AGS_CONNECTABLE(delay_audio));
 
   /* create AgsDelayAudioRun in audio->recall */
   recall_delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
   AGS_RECALL(recall_delay_audio_run)->flags = AGS_RECALL_TEMPLATE;
 
   audio->recall = g_list_append(audio->recall, (gpointer) recall_delay_audio_run);
+  ags_connectable_connect(AGS_CONNECTABLE(recall_delay_audio_run));
 
   /* create AgsCopyPatternAudio in audio->play */
   copy_pattern_audio = ags_copy_pattern_audio_new(NULL, audio,
@@ -171,6 +175,7 @@ ags_drum_init(AgsDrum *drum)
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->play = g_list_append(audio->play, (gpointer) copy_pattern_audio);
+  //  ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_audio));
 
   /* create AgsCopyPatternAudioRun in audio->play */
   copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) copy_pattern_audio,
@@ -178,6 +183,7 @@ ags_drum_init(AgsDrum *drum)
   AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->play = g_list_append(audio->play, (gpointer) copy_pattern_audio_run);
+  ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_audio_run));
 
   /* create AgsCopyPatternAudio in audio->recall */
   copy_pattern_audio = ags_copy_pattern_audio_new(NULL, audio,
@@ -187,6 +193,7 @@ ags_drum_init(AgsDrum *drum)
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->play = g_list_append(audio->play, (gpointer) copy_pattern_audio);
+  //  ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_audio));
 
   /* create AgsCopyPatternAudioRun in audio->recall */
   copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) copy_pattern_audio,
@@ -194,6 +201,7 @@ ags_drum_init(AgsDrum *drum)
   AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->recall = g_list_append(audio->recall, (gpointer) copy_pattern_audio_run);
+  ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_audio_run));
 
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
