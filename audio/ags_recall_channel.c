@@ -159,7 +159,9 @@ ags_recall_channel_set_property(GObject *gobject,
     }
     break;
   default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    G_OBJECT_CLASS(ags_recall_channel_parent_class)->set_property(gobject, prop_id, value, param_spec);
+	
+    //    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
 }
@@ -179,7 +181,8 @@ ags_recall_channel_get_property(GObject *gobject,
     g_value_set_object(value, recall_channel->channel);
     break;
   default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    G_OBJECT_CLASS(ags_recall_channel_parent_class)->get_property(gobject, prop_id, value, param_spec);
+    //    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
 }

@@ -62,7 +62,7 @@ ags_copy_pattern_audio_run_get_type()
 							     "AgsCopyPatternAudioRun\0",
 							     &ags_copy_pattern_audio_run_info,
 							     0);
-
+    
     g_type_add_interface_static(ags_type_copy_pattern_audio_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);

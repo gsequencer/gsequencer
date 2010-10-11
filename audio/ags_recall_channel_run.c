@@ -171,37 +171,44 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall, recall_id));
 
   printf("duplicate recall_channel_run\n\0");
-
   channel = AGS_RECALL_CHANNEL(recall->recall_channel)->channel;
 
-  if(channel != NULL){
+  if(AGS_RECALL_CHANNEL(recall->recall_channel) != NULL){
     AgsRecallChannel *recall_channel;
 
     recall_channel = AGS_RECALL_CHANNEL(recall->recall_channel);
 
     AGS_RECALL(copy)->recall_channel = recall_channel;
 
-    AGS_RECALL(recall_channel)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_channel)->recall_channel_run,
-								    copy);
+    //    AGS_RECALL(recall_channel)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_channel)->recall_channel_run,
+    //								    copy);
   }
 
-  if(AGS_IS_INPUT(channel)){
+  if(channel != NULL && AGS_IS_INPUT(channel)){
     AgsRecallAudio *recall_audio;
     AgsRecallAudioRun *recall_audio_run;
     guint group_id;
-
-    audio = AGS_AUDIO(channel->audio);
 
     /* check for AgsRecallAudio */
     if(recall->recall_audio != NULL){
       printf("ags_recall_channel_run_duplicate --- success with AgsRecallAudio\n\0");
       recall_audio = AGS_RECALL_AUDIO(recall->recall_audio);
 
-      AGS_RECALL(copy)->recall_audio = (AgsRecall *) recall_audio;
+      AGS_RECALL(copy)->recall_audio = AGS_RECALL(recall_audio);
 
-      AGS_RECALL(recall_audio)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_audio)->recall_channel_run,
-								    copy);
+      //      AGS_RECALL(recall_audio)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_audio)->recall_channel_run,
+      //								    copy);
+    }else{
+      recall_audio = NULL;
     }
+
+    if(channel == NULL)
+      return;
+
+    audio = AGS_AUDIO(channel->audio);
+    
+    if(audio == NULL)
+      return;
 
     /* check for AgsRecallAudioRun */
     if((AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL & (recall_id->flags)) == 0)

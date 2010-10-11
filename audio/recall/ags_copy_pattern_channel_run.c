@@ -211,7 +211,6 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall, guint audio_channel
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall->recall_audio_run);
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->recall_channel);
 
-
   if(copy_pattern_audio_run->delay_audio_run == NULL){
     AgsAudio *audio;
     AgsRecallID *parent_recall_id;
@@ -229,7 +228,6 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall, guint audio_channel
     
     copy_pattern_audio_run->delay_audio_run = ((delay_list != NULL) ? AGS_DELAY_AUDIO_RUN(delay_list->data): NULL);
   }
-
 
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->delay_audio_run),
 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
