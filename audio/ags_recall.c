@@ -151,7 +151,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec = g_param_spec_object("recall_audio\0",
 				   "audio level recall\0",
 				   "The recall which this recall has on audio level\0",
-				   G_TYPE_NONE,
+				   AGS_TYPE_RECALL_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_AUDIO,
@@ -169,7 +169,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec = g_param_spec_object("recall_audio_run\0",
 				   "audio runlevel recall\0",
 				   "The recall which this recall has on audio level during a run\0",
-				   G_TYPE_NONE,
+				   AGS_TYPE_RECALL_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_AUDIO_RUN,
