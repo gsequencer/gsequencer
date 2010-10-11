@@ -36,8 +36,8 @@ void ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling
 void ags_play_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 							 AgsAudioSignal *audio_signal,
 							 AgsPlayRecycling *play_recycling);
-void ags_play_recycling_source_add_audio_signal_with_length_callback(AgsRecycling *source,
-								     AgsAudioSignal *audio_signal, guint length,
+void ags_play_recycling_source_add_audio_signal_with_frame_count_callback(AgsRecycling *source,
+								     AgsAudioSignal *audio_signal, guint frame_count,
 								     AgsPlayRecycling *play_recycling);
 void ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 							    AgsAudioSignal *audio_signal,
@@ -177,12 +177,12 @@ ags_play_recycling_run_connect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(play_recycling->source);
 
   play_recycling->source_add_audio_signal_handler =
-    g_signal_connect(gobject, "add_audio_signal\0",
-		     G_CALLBACK(ags_play_recycling_source_add_audio_signal_callback), play_recycling);
+    g_signal_connect_after(gobject, "add_audio_signal\0",
+			   G_CALLBACK(ags_play_recycling_source_add_audio_signal_callback), play_recycling);
 
-  play_recycling->source_add_audio_signal_with_length_handler =
-    g_signal_connect(gobject, "add_audio_signal_with_length\0",
-		     G_CALLBACK(ags_play_recycling_source_add_audio_signal_with_length_callback), play_recycling);
+  play_recycling->source_add_audio_signal_with_frame_count_handler =
+    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
+			   G_CALLBACK(ags_play_recycling_source_add_audio_signal_with_frame_count_callback), play_recycling);
 
   play_recycling->source_remove_audio_signal_handler =
     g_signal_connect(gobject, "remove_audio_signal\0",
@@ -204,7 +204,7 @@ ags_play_recycling_run_disconnect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(play_recycling->source);
 
   g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_handler);
-  g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_with_length_handler);
+  g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_with_frame_count_handler);
 
   g_signal_handler_disconnect(gobject, play_recycling->source_remove_audio_signal_handler);
 }
@@ -261,6 +261,7 @@ ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
 					   AgsAudioSignal *audio_signal)
 {
   AgsPlayAudioSignal *play_audio_signal;  
+  guint audio_channel;
 
   printf("ags_play_recycling_source_add_audio_signal\n\0");
 
@@ -269,25 +270,12 @@ ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
   play_audio_signal = ags_play_audio_signal_new(audio_signal, play_recycling->audio_channel,
 						play_recycling->devout);
 
-  play_audio_signal->recall.parent = (GObject *) play_recycling;
+  audio_channel = AGS_PLAY_CHANNEL(AGS_RECALL(play_recycling)->parent)->source->audio_channel;
+  ags_recall_add_child(AGS_RECALL(play_recycling), AGS_RECALL(play_audio_signal), audio_channel);
 
-  ags_play_audio_signal_connect(play_audio_signal);
   g_signal_connect((GObject *) play_audio_signal, "done\0",
 		   G_CALLBACK(ags_play_recycling_play_audio_signal_done), NULL);
 
-  play_recycling->recall.child = g_list_prepend(play_recycling->recall.child, play_audio_signal);
-
-  if((AGS_RECALL_RUN_INITIALIZED & (play_recycling->recall.flags)) != 0){
-    guint audio_channel;
-
-    audio_channel = AGS_PLAY_CHANNEL(AGS_RECALL(play_recycling)->parent)->source->audio_channel;
-
-    ags_recall_run_init_pre((AgsRecall *) play_audio_signal, audio_channel);
-    ags_recall_run_init_inter((AgsRecall *) play_audio_signal, audio_channel);
-    ags_recall_run_init_post((AgsRecall *) play_audio_signal, audio_channel);
-
-    play_audio_signal->recall.flags |= AGS_RECALL_RUN_INITIALIZED;
-  }
 }
 
 void
@@ -303,8 +291,8 @@ ags_play_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 }
 
 void
-ags_play_recycling_source_add_audio_signal_with_length_callback(AgsRecycling *source,
-								AgsAudioSignal *audio_signal, guint length,
+ags_play_recycling_source_add_audio_signal_with_frame_count_callback(AgsRecycling *source,
+								AgsAudioSignal *audio_signal, guint frame_count,
 								AgsPlayRecycling *play_recycling)
 {
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&

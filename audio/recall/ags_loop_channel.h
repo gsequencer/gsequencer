@@ -5,7 +5,7 @@
 #include <glib-object.h>
 
 #include "../ags_channel.h"
-#include "../ags_recall.h"
+#include "../ags_recall_channel.h"
 #include "../ags_recall_id.h"
 
 #include "ags_delay_audio_run.h"
@@ -22,7 +22,7 @@ typedef struct _AgsLoopChannelClass AgsLoopChannelClass;
 
 struct _AgsLoopChannel
 {
-  AgsRecall recall;
+  AgsRecallChannel recall_channel;
 
   AgsDelayAudioRun *delay_audio_run;
   AgsChannel *channel;
@@ -30,7 +30,7 @@ struct _AgsLoopChannel
 
 struct _AgsLoopChannelClass
 {
-  AgsRecallClass recall;
+  AgsRecallChannelClass recall_channel;
 };
 
 void ags_loop_channel_connect(AgsLoopChannel *loop_channel);

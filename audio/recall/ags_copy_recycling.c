@@ -197,12 +197,12 @@ ags_copy_recycling_run_connect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(copy_recycling->destination);
 
   copy_recycling->destination_add_audio_signal_handler =
-    g_signal_connect(gobject, "add_audio_signal\0",
-		     G_CALLBACK(ags_copy_recycling_destination_add_audio_signal_callback), copy_recycling);
+    g_signal_connect_after(gobject, "add_audio_signal\0",
+			   G_CALLBACK(ags_copy_recycling_destination_add_audio_signal_callback), copy_recycling);
     
   copy_recycling->destination_add_audio_signal_with_frame_count_handler =
-    g_signal_connect(gobject, "add_audio_signal_with_frame_count\0",
-		     G_CALLBACK(ags_copy_recycling_destination_add_audio_signal_with_frame_count_callback), copy_recycling);
+    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
+			   G_CALLBACK(ags_copy_recycling_destination_add_audio_signal_with_frame_count_callback), copy_recycling);
   
   copy_recycling->destination_remove_audio_signal_handler =
     g_signal_connect(gobject, "remove_audio_signal\0",
@@ -212,12 +212,12 @@ ags_copy_recycling_run_connect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(copy_recycling->source);
 
   copy_recycling->source_add_audio_signal_handler =
-    g_signal_connect(gobject, "add_audio_signal\0",
-		     G_CALLBACK(ags_copy_recycling_source_add_audio_signal_callback), copy_recycling);
+    g_signal_connect_after(gobject, "add_audio_signal\0",
+			   G_CALLBACK(ags_copy_recycling_source_add_audio_signal_callback), copy_recycling);
 
   copy_recycling->source_add_audio_signal_with_frame_count_handler =
-    g_signal_connect(gobject, "add_audio_signal_with_frame_count\0",
-		     G_CALLBACK(ags_copy_recycling_source_add_audio_signal_with_frame_count_callback), copy_recycling);
+    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
+			   G_CALLBACK(ags_copy_recycling_source_add_audio_signal_with_frame_count_callback), copy_recycling);
 
   copy_recycling->source_remove_audio_signal_handler =
     g_signal_connect(gobject, "remove_audio_signal\0",
@@ -323,6 +323,8 @@ void
 ags_copy_recycling_destination_add_audio_signal(AgsCopyRecycling *copy_recycling,
 						AgsAudioSignal *audio_signal)
 {
+  printf("ags_copy_recycling_destination_add_audio_signal ---- OK\n\0");
+
   copy_recycling->child_destination = audio_signal;
 }
 

@@ -268,6 +268,9 @@ main(int argc, char **argv)
   ags_init();
   ags_colors_alloc();
 
+  printf("%x\n\0", AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+  printf("%s\n\0", g_type_name(AGS_TYPE_COPY_PATTERN_AUDIO_RUN));
+
   window = ags_window_new();
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);

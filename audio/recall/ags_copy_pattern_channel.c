@@ -66,13 +66,15 @@ ags_copy_pattern_channel_finalize(GObject *gobject)
 }
 
 AgsCopyPatternChannel*
-ags_copy_pattern_channel_new(AgsChannel *destination,
+ags_copy_pattern_channel_new(AgsRecallAudio *recall_audio,
+			     AgsChannel *destination,
 			     AgsChannel *source, AgsPattern *pattern)
 {
   AgsCopyPatternChannel *copy_pattern_channel;
 
   copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
 								"recall_audio_type\0", AGS_TYPE_COPY_PATTERN_AUDIO,
+								"recall_audio\0", recall_audio,
 								"recall_audio_run_type\0", AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 								"recall_channel_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL,
 								"recall_channel_run_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,

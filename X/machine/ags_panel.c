@@ -11,7 +11,6 @@
 #include "../../audio/ags_recall.h"
 
 #include "../../audio/recall/ags_play_channel.h"
-#include "../../audio/recall/ags_stream_channel.h"
 
 GType ags_panel_get_type(void);
 void ags_panel_class_init(AgsPanelClass *panel);
@@ -146,7 +145,6 @@ ags_panel_set_audio_channels(AgsAudio *audio,
   if(audio_channels_old < audio_channels){
     AgsChannel *input, *output;
     AgsPlayChannel *play_channel;
-    AgsStreamChannel *stream_channel;
     GtkHBox *hbox;
     guint i;
 
@@ -162,13 +160,6 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 
       input->play = g_list_append(input->play, (gpointer) play_channel);
       ags_connectable_connect(AGS_CONNECTABLE(play_channel));
-
-      /* AgsStreamChannel */
-      stream_channel = ags_stream_channel_new(input);
-      AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
-      
-      input->play = g_list_append(input->play, (gpointer) stream_channel);
-      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
 
       /* GtkWidgets */
       hbox = (GtkHBox*) gtk_hbox_new(FALSE, 0);

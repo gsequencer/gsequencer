@@ -28,7 +28,7 @@ struct _AgsPlayRecycling
 
   AgsRecycling *source;
   gulong source_add_audio_signal_handler;
-  gulong source_add_audio_signal_with_length_handler;
+  gulong source_add_audio_signal_with_frame_count_handler;
   gulong source_remove_audio_signal_handler;
 
   guint audio_channel;

@@ -10,6 +10,7 @@
 #include "../../audio/recall/ags_delay_audio.h"
 #include "../../audio/recall/ags_play_volume.h"
 #include "../../audio/recall/ags_recall_volume.h"
+#include "../../audio/recall/ags_stream_channel.h"
 
 GType ags_drum_output_line_get_type();
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
@@ -115,7 +116,15 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
+  AgsDrumOutputLine *drum_output_line;
+
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
+
+  drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
+
+  if(line->channel != NULL){
+    drum_output_line->flags &= (~AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL);
+  }
 
   if(channel != NULL){
     AgsDrum *drum;
@@ -124,7 +133,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     GList *recall_shared;
     guint stop;
 
-    drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_DRUM);
+    drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
 
     if(drum != NULL){
       recall_shared = ags_recall_find_type(AGS_AUDIO(channel->audio)->play,
@@ -140,12 +149,29 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
     ags_audio_signal_stream_resize(audio_signal, stop);
+
+    ags_drum_output_line_map_recall(drum_output_line);
   }
 }
 
 void
 ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 {
+  AgsChannel *output;
+  AgsStreamChannel *stream_channel;
+
+  if((AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL & (drum_output_line->flags)) == 0){
+    drum_output_line->flags |= AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL;
+
+    output = AGS_LINE(drum_output_line)->channel;
+
+    /* AgsStreamChannel */
+    stream_channel = ags_stream_channel_new(output);
+    AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
+    
+    output->play = g_list_append(output->play, (gpointer) stream_channel);
+    ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
+  }
 }
 
 AgsDrumOutputLine*

@@ -62,7 +62,7 @@ ags_recall_channel_run_get_type()
 							 "AgsRecallChannelRun\0",
 							 &ags_recall_channel_run_info,
 							 0);
-
+    
     g_type_add_interface_static(ags_type_recall_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
@@ -170,6 +170,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall, recall_id));
 
+  printf("duplicate recall_channel_run\n\0");
+
   channel = AGS_RECALL_CHANNEL(recall->recall_channel)->channel;
 
   if(channel != NULL){
@@ -213,7 +215,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
       group_id = recall_id->parent_group_id;
 
     list = ags_recall_find_type_with_group_id(list_start,
-					      recall->recall_audio_run_type,
+					      AGS_RECALL(copy)->recall_audio_run_type,
 					      group_id);
 
     printf("ags_recall_channel_run_duplicate --- debug 0\n\0");

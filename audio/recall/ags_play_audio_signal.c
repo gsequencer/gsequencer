@@ -173,6 +173,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall, guint source_audio_channel, g
   source = AGS_AUDIO_SIGNAL(play_audio_signal->source);
   stream = source->stream_current;
 
+  printf("----- playing\n\0");
+
   if(stream == NULL){
     //    ags_recall_done(recall, recall_id);
     return;

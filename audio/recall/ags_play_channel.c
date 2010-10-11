@@ -269,11 +269,7 @@ ags_play_channel_map_play_recycling(AgsPlayChannel *play_channel)
       play_recycling = ags_play_recycling_new(source_recycling, play_channel->source->audio_channel,
 					      play_channel->devout);
 
-      play_recycling->recall.parent = (GObject *) play_channel;
-
-      ags_play_recycling_connect(play_recycling);
-
-      play_channel->recall.child = g_list_prepend(play_channel->recall.child, play_recycling);
+      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling), play_channel->source->audio_channel);
 
       source_recycling = source_recycling->next;
     }
@@ -314,23 +310,7 @@ void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
       play_recycling = ags_play_recycling_new(source_recycling, play_channel->source->audio_channel,
 					      play_channel->devout);
 
-      play_recycling->recall.parent = (GObject *) play_channel;
-
-      ags_play_recycling_connect(play_recycling);
-
-      play_channel->recall.child = g_list_prepend(play_channel->recall.child, play_recycling);
-
-      if((AGS_RECALL_RUN_INITIALIZED & (play_channel->recall.flags)) != 0){
-	guint audio_channel;
-
-	audio_channel = play_channel->source->audio_channel;
-
-	ags_recall_run_init_pre((AgsRecall *) play_recycling, audio_channel);
-	ags_recall_run_init_inter((AgsRecall *) play_recycling, audio_channel);
-	ags_recall_run_init_post((AgsRecall *) play_recycling, audio_channel);
-
-	play_recycling->recall.flags |= AGS_RECALL_RUN_INITIALIZED;
-      }
+      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling), play_channel->source->audio_channel);
       
       source_recycling = source_recycling->next;
     }

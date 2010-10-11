@@ -357,7 +357,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
 	while(destination != NULL){
 	  /* AgsCopyPattern */
-	  copy_pattern_channel = ags_copy_pattern_channel_new(destination,
+	  copy_pattern_channel = ags_copy_pattern_channel_new((AgsRecallAudio *) matrix->copy_pattern_audio,
+							      destination,
 							      channel, (AgsPattern *) channel->pattern->data);
 
 	  copy_pattern_channel_run = ags_copy_pattern_channel_run_new((AgsRecallAudio *) matrix->copy_pattern_audio,

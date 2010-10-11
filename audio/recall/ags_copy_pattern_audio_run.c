@@ -1,5 +1,6 @@
 #include "ags_copy_pattern_audio_run.h"
 
+#include "../../object/ags_connectable.h"
 #include "../../object/ags_run_connectable.h"
 
 #include "ags_copy_pattern_audio.h"
@@ -8,8 +9,11 @@
 
 GType ags_copy_pattern_audio_run_get_type();
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
+void ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run);
+void ags_copy_pattern_audio_run_connect(AgsRunConnectable *run_connectable);
+void ags_copy_pattern_audio_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_audio_run_finalize(GObject *gobject);
@@ -21,6 +25,7 @@ void ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, 
 					     AgsCopyPatternAudioRun *copy_pattern_audio_run);
 
 static gpointer ags_copy_pattern_audio_run_parent_class = NULL;
+static AgsConnectableInterface* ags_copy_pattern_audio_run_parent_connectable_interface;
 static AgsRunConnectableInterface *ags_copy_pattern_audio_run_parent_run_connectable_interface;
 
 GType
@@ -41,6 +46,12 @@ ags_copy_pattern_audio_run_get_type()
       (GInstanceInitFunc) ags_copy_pattern_audio_run_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_pattern_audio_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_run_connectable_interface_info = {
       (GInterfaceInitFunc) ags_copy_pattern_audio_run_run_connectable_interface_init,
       NULL, /* interface_finalize */
@@ -51,6 +62,10 @@ ags_copy_pattern_audio_run_get_type()
 							     "AgsCopyPatternAudioRun\0",
 							     &ags_copy_pattern_audio_run_info,
 							     0);
+
+    g_type_add_interface_static(ags_type_copy_pattern_audio_run,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_copy_pattern_audio_run,
 				AGS_TYPE_RUN_CONNECTABLE,
@@ -79,6 +94,15 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
 }
 
 void
+ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_copy_pattern_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_copy_pattern_audio_run_connect;
+  connectable->disconnect = ags_copy_pattern_audio_run_disconnect;
+}
+
+void
 ags_copy_pattern_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
 {
   ags_copy_pattern_audio_run_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
@@ -99,6 +123,16 @@ ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 
   copy_pattern_audio_run->delay_audio_run = NULL;
   copy_pattern_audio_run->bit = 0;
+}
+
+void
+ags_copy_pattern_audio_run_connect(AgsRunConnectable *run_connectable)
+{
+}
+
+void
+ags_copy_pattern_audio_run_disconnect(AgsRunConnectable *run_connectable)
+{
 }
 
 void
@@ -211,6 +245,45 @@ ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint
   AgsCopyPatternAudio *copy_pattern_audio;
 
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL(copy_pattern_audio_run)->recall_audio);
+
+  if(copy_pattern_audio_run->bit == 0){
+    AgsCopyPatternChannel *copy_pattern_channel;
+    AgsRecycling *recycling;
+    AgsAudioSignal *audio_signal;
+    GList *list;
+
+    list = AGS_RECALL(copy_pattern_audio)->recall_channel;
+
+    while(list != NULL){
+      copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
+      printf("loop\n\0");
+
+      if(copy_pattern_channel->destination->audio_channel == audio_channel){
+	goto ags_copy_pattern_audio_run_tic_callback0;
+      }
+
+      list = list->next;
+    }
+    
+    printf("ags_copy_pattern_audio_run_tic_callback ---- warning can't find destination\n\0");
+    copy_pattern_channel = NULL;
+  ags_copy_pattern_audio_run_tic_callback0:
+
+    recycling = copy_pattern_channel->destination->first_recycling;
+
+    while(recycling != copy_pattern_channel->destination->last_recycling->next){
+      audio_signal = ags_audio_signal_new((GObject *) recycling,
+					  (GObject *) AGS_RECALL(copy_pattern_audio_run)->recall_id);
+      audio_signal->devout = (GObject *) copy_pattern_audio->devout;
+      ags_audio_signal_connect(audio_signal);
+
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+      audio_signal->stream_current = audio_signal->stream_beginning;
+      
+      recycling = recycling->next;
+    }
+  }
 
   if(copy_pattern_audio_run->hide_ref != 0)
     copy_pattern_audio_run->hide_ref_counter++;

@@ -157,15 +157,15 @@ ags_recall_audio_run_finalize(GObject *gobject)
 AgsRecall*
 ags_recall_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
-  AgsAudio *audio;
   AgsRecallAudioRun *recall_audio_run, *copy;
+  GList *list;
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
   copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall, recall_id));
 
-  audio = AGS_RECALL_AUDIO(recall->recall_audio)->audio;
+  AGS_RECALL(copy)->recall_channel = g_list_copy((GList *) recall->recall_channel);
 
-  if(audio != NULL){
+  if(recall->recall_audio != NULL){
     AgsRecallAudio *recall_audio;
     
     recall_audio = AGS_RECALL_AUDIO(recall->recall_audio);
@@ -184,7 +184,8 @@ ags_recall_audio_run_new()
 {
   AgsRecallAudioRun *recall_audio_run;
 
-  recall_audio_run = (AgsRecallAudioRun *) g_object_new(AGS_TYPE_RECALL_AUDIO_RUN, NULL);
+  recall_audio_run = (AgsRecallAudioRun *) g_object_new(AGS_TYPE_RECALL_AUDIO_RUN,
+							NULL);
 
   return(recall_audio_run);
 }

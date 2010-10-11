@@ -4,6 +4,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "../ags_recall_audio.h"
 #include "../ags_recall_channel.h"
 #include "../ags_channel.h"
 #include "../ags_pattern.h"
@@ -33,7 +34,8 @@ struct _AgsCopyPatternChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
-AgsCopyPatternChannel* ags_copy_pattern_channel_new(AgsChannel *destination,
+AgsCopyPatternChannel* ags_copy_pattern_channel_new(AgsRecallAudio *recall_audio,
+						    AgsChannel *destination,
 						    AgsChannel *source, AgsPattern *pattern);
 
 #endif /*__AGS_COPY_PATTERN_CHANNEL_H__*/

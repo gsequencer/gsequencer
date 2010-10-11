@@ -394,6 +394,7 @@ ags_recall_set_property(GObject *gobject,
       GType recall_audio_type;
 
       recall_audio_type = (GType) g_value_get_gtype(value);
+      printf("ags_recall_set_property - recall_audio_type: %s\n\0", g_type_name(recall_audio_type));
 
       recall->recall_audio_type = recall_audio_type;
     }
@@ -406,6 +407,9 @@ ags_recall_set_property(GObject *gobject,
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
 
       recall->recall_audio = (AgsRecall *) recall_audio;
+
+      //      if(AGS_IS_RECALL_CHANNEL(recall))
+      //	AGS_RECALL(recall_audio)->recall_channel = (gpointer) g_list_prepend((GList *) AGS_RECALL(recall_audio)->recall_channel, recall);
     }
     break;
 
@@ -414,6 +418,8 @@ ags_recall_set_property(GObject *gobject,
       GType recall_audio_run_type;
 
       recall_audio_run_type = (GType) g_value_get_gtype(value);
+      printf("%x\n\0", recall_audio_run_type);
+      printf("ags_recall_set_property - recall_audio_run_type: %s\n\0", g_type_name(recall_audio_run_type));
 
       recall->recall_audio_run_type = recall_audio_run_type;
     }
@@ -857,6 +863,8 @@ ags_recall_real_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   AgsRecallClass *recall_class, *copy_class;
   GList *list, *child;
 
+  printf("duplicate recall %s\n\0", G_OBJECT_TYPE_NAME(recall));
+
   copy = g_object_new(G_OBJECT_TYPE(recall), NULL);
 
   copy->flags = recall->flags;
@@ -1067,8 +1075,12 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, guint group_id)
 {
   AgsRecall *recall;
 
+  printf("searching for %s\n\0", g_type_name(type));
+
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
+    printf("next is %s\n\0", G_OBJECT_TYPE_NAME(recall));
+
 
     if(G_TYPE_CHECK_INSTANCE_TYPE(recall, type) &&
        recall->recall_id != NULL &&

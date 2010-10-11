@@ -238,7 +238,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     copy_channel = ags_copy_channel_new(destination,
 					source,
 					(AgsDevout *) audio->devout);
-
     AGS_RECALL(copy_channel)->flags |= AGS_RECALL_TEMPLATE;
     
     source->recall = g_list_append(source->recall, (gpointer) copy_channel);
@@ -247,9 +246,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     /* AgsCopyPatternChannel */
     g_object_ref(G_OBJECT(destination));
 
-    copy_pattern_channel = ags_copy_pattern_channel_new(destination,
+    copy_pattern_channel = ags_copy_pattern_channel_new((AgsRecallAudio *) copy_pattern_audio, destination,
 							source, (AgsPattern *) source->pattern->data);
     AGS_RECALL(copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
+    source->recall = g_list_append(source->recall, (gpointer) copy_pattern_channel);
 
     /* AgsCopyPatternChannelRun */
     copy_pattern_channel_run = ags_copy_pattern_channel_run_new((AgsRecallAudio *) copy_pattern_audio,
