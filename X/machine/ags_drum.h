@@ -68,6 +68,8 @@ struct _AgsDrumClass
   AgsMachineClass machine;
 };
 
+GType ags_drum_get_type(void);
+
 void ags_drum_set_pattern(AgsDrum *drum);
 
 AgsDrum* ags_drum_new();

@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-GType ags_recall_volume_get_type();
 void ags_recall_volume_class_init(AgsRecallVolumeClass *recall_volume);
 void ags_recall_volume_init(AgsRecallVolume *recall_volume);
 void ags_recall_volume_connect(AgsRecallVolume *recall_volume);

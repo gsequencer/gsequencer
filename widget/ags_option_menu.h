@@ -37,6 +37,8 @@ struct _AgsOptionMenuClass
   void (*focus_changed)(AgsOptionMenu *option_menu);
 };
 
+GType ags_option_menu_get_type(void);
+
 AgsOptionMenu* ags_option_menu_new();
 
 #endif /*__AGS_OPTION_MENU_H__*/

@@ -36,6 +36,8 @@ struct _AgsCopyAudioSignalClass
   AgsRecallClass recall;
 };
 
+GType ags_copy_audio_signal_get_type();
+
 AgsCopyAudioSignal* ags_copy_audio_signal_new(AgsAudioSignal *destination,
 					      AgsAudioSignal *source,
 					      AgsDevout *devout);

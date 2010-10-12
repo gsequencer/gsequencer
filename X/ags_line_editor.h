@@ -32,6 +32,8 @@ struct _AgsLineEditorClass
   GtkVBoxClass vbox;
 };
 
+GType ags_line_editor_get_type(void);
+
 AgsLineEditor* ags_line_editor_new();
 
 #endif /*__AGS_LINE_EDITOR_H__*/

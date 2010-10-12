@@ -38,6 +38,8 @@ struct _AgsGarbageCollectorClass
   GObjectClass object;
 };
 
+GType ags_garbage_collector_get_type();
+
 void ags_garbage_collector_add(AgsGarbageCollector *garbage_collector, AgsRecycling *recycling);
 void ags_garbage_collector_remove(AgsGarbageCollector *garbage_collector, AgsRecycling *recycling);
 

@@ -12,7 +12,6 @@
 
 #include <pthread.h>
 
-GType ags_play_pattern_get_type();
 void ags_play_pattern_class_init(AgsPlayPatternClass *play_pattern);
 void ags_play_pattern_init(AgsPlayPattern *play_pattern);
 void ags_play_pattern_finalize(GObject *gobject);

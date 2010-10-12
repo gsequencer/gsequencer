@@ -5,7 +5,6 @@
 #include "ags_play_notation.h"
 #include "ags_play_audio_signal.h"
 
-GType ags_play_note_get_type();
 void ags_play_note_class_init(AgsPlayNoteClass *play_note);
 void ags_play_note_init(AgsPlayNote *play_note);
 void ags_play_note_finalize(GObject *gobject);

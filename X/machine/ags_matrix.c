@@ -21,7 +21,6 @@
 #define AGS_MATRIX_CELL_WIDTH   12
 #define AGS_MATRIX_CELL_HEIGHT  10
 
-GType ags_matrix_get_type(void);
 void ags_matrix_class_init(AgsMatrixClass *matrix);
 void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_init(AgsMatrix *matrix);

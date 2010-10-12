@@ -38,6 +38,8 @@ struct _AgsFileClass
   GObjectClass object;
 };
 
+GType ags_file_get_type(void);
+
 void ags_file_write(AgsFile *file);
 void ags_file_read(AgsFile *file);
 

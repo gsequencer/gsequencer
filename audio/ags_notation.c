@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 
-GType ags_notation_get_type();
 void ags_notation_class_init(AgsNotationClass *notation);
 void ags_notation_init(AgsNotation *notation);
 void ags_notation_finalize(GObject *object);

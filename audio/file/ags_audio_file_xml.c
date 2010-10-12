@@ -1,6 +1,5 @@
 #include "ags_audio_file_xml.h"
 
-GType ags_audio_file_xml_get_type();
 void ags_audio_file_xml_class_init(AgsAudioFileXmlClass *file_xml);
 void ags_audio_file_xml_init(AgsAudioFileXml *file_xml);
 void ags_audio_file_xml_destroy(GObject *object);

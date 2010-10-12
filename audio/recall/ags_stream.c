@@ -1,7 +1,6 @@
 #include "ags_stream.h"
 #include "../ags_devout.h"
 
-GType ags_stream_get_type();
 void ags_stream_class_init(AgsStream *stream);
 void ags_stream_init(AgsStream *stream);
 

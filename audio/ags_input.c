@@ -1,6 +1,5 @@
 #include "ags_input.h"
 
-GType ags_input_get_type();
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_init (AgsInput *input);
 void ags_input_finalize (GObject *gobject);

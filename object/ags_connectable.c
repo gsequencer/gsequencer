@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-GType ags_connectable_get_type();
 void ags_connectable_base_init(AgsConnectableInterface *interface);
 
 GType

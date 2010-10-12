@@ -1,7 +1,6 @@
 #include "ags_line_member_editor.h"
 #include "ags_line_member_editor_callbacks.h"
 
-GType ags_line_member_editor_get_type(void);
 void ags_line_member_editor_class_init(AgsLineMemberEditorClass *line_member_editor);
 void ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor);
 void ags_line_member_editor_connect(AgsLineMemberEditor *line_member_editor);

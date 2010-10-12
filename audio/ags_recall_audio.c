@@ -3,7 +3,6 @@
 #include "../object/ags_connectable.h"
 #include "../object/ags_run_connectable.h"
 
-GType ags_recall_audio_get_type();
 void ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio);
 void ags_recall_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

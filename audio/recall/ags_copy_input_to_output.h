@@ -26,6 +26,8 @@ struct _AgsCopyInputToOutputClass{
   AgsRecallClass recall;
 };
 
+GType ags_copy_input_to_output_get_type();
+
 void ags_copy_input_to_output(AgsRecall *recall);
 
 AgsCopyInputToOutput* ags_copy_input_to_output_new();

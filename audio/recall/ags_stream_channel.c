@@ -8,7 +8,6 @@
 
 #include "ags_stream_recycling.h"
 
-GType ags_stream_channel_get_type();
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

@@ -27,6 +27,8 @@ struct _AgsPlayVolumeClass{
   AgsRecallClass recall;
 };
 
+GType ags_play_volume_get_type();
+
 int ags_play_volume_map_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
 
 AgsPlayVolume* ags_play_volume_new(AgsChannel *channel);

@@ -29,7 +29,6 @@
 
 #include <math.h>
 
-GType ags_drum_get_type(void);
 void ags_drum_class_init(AgsDrumClass *drum);
 void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_init(AgsDrum *drum);

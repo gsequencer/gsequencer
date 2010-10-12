@@ -25,6 +25,8 @@ struct _AgsStreamClass{
   AgsRecallClass recall;
 };
 
+GType ags_stream_get_type();
+
 void ags_stream(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
 
 AgsStream* ags_stream_new();

@@ -14,7 +14,6 @@
 
 #include <stdlib.h>
 
-GType ags_copy_pattern_channel_run_get_type();
 void ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_pattern_channel_run);
 void ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
@@ -354,7 +353,6 @@ ags_copy_pattern_channel_run_tic_callback(AgsDelayAudioRun *delay_audio_run, gui
 	
     if(recycling != NULL){
       while(recycling != copy_pattern_channel->source->last_recycling->next){
-	printf("debug\n\0");
 	audio_signal = ags_audio_signal_new((GObject *) recycling,
 					    (GObject *) AGS_RECALL(copy_pattern_channel_run)->recall_id);
 	audio_signal->devout = (GObject *) copy_pattern_audio->devout;
@@ -389,9 +387,6 @@ ags_copy_pattern_channel_run_new(AgsRecallAudio *recall_audio,
 								       "recall_channel\0", recall_channel,
 								       "recall_channel_run_type\0", AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
 								       NULL);
-  
-
-  printf("%s\n\0", g_type_name(AGS_TYPE_COPY_PATTERN_AUDIO_RUN));
 
   return(copy_pattern_channel_run);
 }

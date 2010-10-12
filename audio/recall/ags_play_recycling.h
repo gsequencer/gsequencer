@@ -39,6 +39,8 @@ struct _AgsPlayRecyclingClass
   AgsRecallClass recall;
 };
 
+GType ags_play_recycling_get_type();
+
 AgsPlayRecycling* ags_play_recycling_new(AgsRecycling *source, guint audio_channel,
 					 AgsDevout *devout);
 

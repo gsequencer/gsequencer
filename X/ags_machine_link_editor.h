@@ -38,6 +38,8 @@ struct _AgsMachineLinkEditorClass
   void (*reset_output)(AgsMachineLinkEditor *machine_link_editor);
 };
 
+GType ags_machine_link_editor_get_type();
+
 void ags_machine_link_editor_reset_input(AgsMachineLinkEditor *machine_link_editor);
 void ags_machine_link_editor_reset_output(AgsMachineLinkEditor *machine_link_editor);
 

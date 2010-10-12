@@ -47,6 +47,8 @@ struct _AgsCopyPatternAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
+GType ags_copy_pattern_audio_run_get_type();
+
 AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsRecallAudio *recall_audio,
 						       AgsDelayAudioRun *delay_audio_run, guint bit);
 

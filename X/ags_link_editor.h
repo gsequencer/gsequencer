@@ -42,6 +42,8 @@ struct _AgsLinkEditorClass
   GtkHBoxClass hbox;
 };
 
+GType ags_link_editor_get_type(void);
+
 AgsLinkEditor* ags_link_editor_new();
 
 #endif /*__AGS_LINK_EDITOR_H__*/

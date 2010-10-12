@@ -12,7 +12,6 @@
 #include "../../audio/recall/ags_recall_volume.h"
 #include "../../audio/recall/ags_stream_channel.h"
 
-GType ags_drum_output_line_get_type();
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
 void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);

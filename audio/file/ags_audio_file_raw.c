@@ -4,7 +4,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-GType ags_audio_file_raw_get_type();
 void ags_audio_file_raw_class_init(AgsAudioFileRawClass *file_raw);
 void ags_audio_file_raw_init(AgsAudioFileRaw *file_raw);
 void ags_audio_file_raw_destroy(GObject *object);

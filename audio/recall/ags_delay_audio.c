@@ -2,7 +2,6 @@
 
 #include "ags_delay_audio_run.h"
 
-GType ags_delay_audio_get_type();
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);
 void ags_delay_audio_finalize(GObject *gobject);

@@ -34,6 +34,8 @@ struct _AgsPlayAudioSignalClass
   AgsRecallClass recall;
 };
 
+GType ags_play_audio_signal_get_type();
+
 AgsPlayAudioSignal* ags_play_audio_signal_new(AgsAudioSignal *source, guint audio_channel,
 					      AgsDevout *devout);
 

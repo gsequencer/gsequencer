@@ -42,6 +42,8 @@ struct _AgsRecallIDClass
   GObjectClass object;
 };
 
+GType ags_recall_id_get_type(void);
+
 void ags_recall_id_connect(AgsRecallID *recall_id);
 
 guint ags_recall_id_generate_group_id();

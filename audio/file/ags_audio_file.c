@@ -15,7 +15,6 @@
 //#include <ogg/ogg.h>
 #include <string.h>
 
-GType ags_audio_file_get_type();
 void ags_audio_file_class_init(AgsAudioFileClass *audio_file);
 void ags_audio_file_init(AgsAudioFile *audio_file);
 void ags_audio_file_finalize(GObject *object);

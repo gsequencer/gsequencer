@@ -42,6 +42,8 @@ struct _AgsDrumInputPadClass
   AgsPadClass pad;
 };
 
+GType ags_drum_input_pad_get_type();
+
 AgsDrumInputPad* ags_drum_input_pad_new(AgsChannel *channel);
 
 #endif /*__AGS_DRUM_INPUT_PAD_H__*/

@@ -30,6 +30,8 @@ struct _AgsLineMemberEditorClass
   GtkVBoxClass vbox;
 };
 
+GType ags_line_member_editor_get_type(void);
+
 AgsLineMemberEditor* ags_line_member_editor_new();
 
 #endif /*__AGS_LINE_MEMBER_EDITOR_H__*/

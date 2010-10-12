@@ -26,6 +26,8 @@ struct _AgsRecallVolumeClass{
   AgsRecallClass recall;
 };
 
+GType ags_recall_volume_get_type();
+
 AgsRecallVolume* ags_recall_volume_new(AgsChannel *channel);
 
 #endif /*__AGS_RECALL_VOLUME_H__*/

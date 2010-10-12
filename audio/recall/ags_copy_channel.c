@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GType ags_copy_channel_get_type();
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

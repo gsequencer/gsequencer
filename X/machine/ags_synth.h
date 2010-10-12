@@ -37,6 +37,8 @@ struct _AgsSynthClass
   AgsMachineClass machine;
 };
 
+GType ags_synth_get_type(void);
+
 AgsSynth* ags_synth_new();
 
 #endif /*__AGS_SYNTH_H__*/

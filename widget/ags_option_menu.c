@@ -1,6 +1,5 @@
 #include "ags_option_menu.h"
 
-GType ags_option_menu_get_type(void);
 void ags_option_menu_class_init(AgsOptionMenuClass *option_menu);
 void ags_option_menu_init(AgsOptionMenu *option_menu);
 

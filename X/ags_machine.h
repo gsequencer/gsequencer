@@ -45,6 +45,8 @@ struct _AgsMachineClass
   GtkHandleBoxClass handle_box;
 };
 
+GType ags_machine_get_type(void);
+
 AgsMachine* ags_machine_new();
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);

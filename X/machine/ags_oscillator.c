@@ -1,7 +1,6 @@
 #include "ags_oscillator.h"
 #include "ags_oscillator_callbacks.h"
 
-GType ags_oscillator_get_type(void);
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
 void ags_oscillator_init(AgsOscillator *oscillator);
 void ags_oscillator_connect(AgsOscillator *oscillator);

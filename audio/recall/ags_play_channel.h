@@ -35,6 +35,8 @@ struct _AgsPlayChannelClass
   AgsRecallClass recall;
 };
 
+GType ags_play_channel_get_type();
+
 AgsPlayChannel* ags_play_channel_new(AgsChannel *source,
 				     AgsDevout *devout);
 

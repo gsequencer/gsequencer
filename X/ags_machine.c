@@ -5,7 +5,6 @@
 
 #include "ags_window.h"
 
-GType ags_machine_get_type(void);
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_init(AgsMachine *machine);

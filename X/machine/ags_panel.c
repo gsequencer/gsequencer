@@ -12,7 +12,6 @@
 
 #include "../../audio/recall/ags_play_channel.h"
 
-GType ags_panel_get_type(void);
 void ags_panel_class_init(AgsPanelClass *panel);
 void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_init(AgsPanel *panel);

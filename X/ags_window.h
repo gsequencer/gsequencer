@@ -57,6 +57,8 @@ struct _AgsMachineCounter
   guint ffplayer;
 };
 
+GType ags_window_get_type(void);
+
 AgsWindow* ags_window_new();
 
 #endif /*__AGS_WINDOW_H__*/

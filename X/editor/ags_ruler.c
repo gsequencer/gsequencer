@@ -5,7 +5,6 @@
 
 #include <math.h>
 
-GType ags_ruler_get_type();
 void ags_ruler_class_init(AgsRulerClass *ruler);
 void ags_ruler_init(AgsRuler *ruler);
 void ags_ruler_destroy(GtkObject *object);

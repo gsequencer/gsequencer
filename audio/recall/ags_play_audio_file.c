@@ -2,7 +2,6 @@
 
 #include "../ags_recall_id.h"
 
-GType ags_play_audio_file_get_type();
 void ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file);
 void ags_play_audio_file_init(AgsPlayAudioFile *play_audio_file);
 void ags_play_audio_file_finalize(GObject *gobject);

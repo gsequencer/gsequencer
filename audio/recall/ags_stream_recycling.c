@@ -9,7 +9,6 @@
 #include "ags_stream_channel.h"
 #include "ags_stream_audio_signal.h"
 
-GType ags_stream_recycling_get_type();
 void ags_stream_recycling_class_init(AgsStreamRecyclingClass *stream_recycling);
 void ags_stream_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

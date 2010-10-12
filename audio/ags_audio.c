@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GType ags_audio_get_type();
 void ags_audio_class_init(AgsAudioClass *audio_class);
 void ags_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_init(AgsAudio *audio);

@@ -17,7 +17,6 @@
 
 #include <math.h>
 
-GType ags_synth_get_type(void);
 void ags_synth_class_init(AgsSynthClass *synth);
 void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_init(AgsSynth *synth);

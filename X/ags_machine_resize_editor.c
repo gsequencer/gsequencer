@@ -10,7 +10,6 @@
 #include "../audio/ags_output.h"
 #include "../audio/ags_input.h"
 
-GType ags_machine_resize_editor_get_type();
 void ags_machine_resize_editor_class_init(AgsMachineResizeEditorClass *machine_resize_editor);
 void ags_machine_resize_editor_init(AgsMachineResizeEditor *machine_resize_editor);
 void ags_machine_resize_editor_destroy(GtkObject *object);

@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GType ags_play_recycling_get_type();
 void ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling);
 void ags_play_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

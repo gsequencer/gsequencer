@@ -18,7 +18,6 @@
 #include "../../audio/recall/ags_copy_pattern_channel.h"
 #include "../../audio/recall/ags_copy_pattern_channel_run.h"
 
-GType ags_drum_input_line_get_type();
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
@@ -222,7 +221,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   }
 
   /* create recalls which depend on output */
-  destination = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start);
+  destination = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start + source->audio_channel);
 
   list = ags_recall_template_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);

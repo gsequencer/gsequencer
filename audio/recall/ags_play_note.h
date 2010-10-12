@@ -29,6 +29,8 @@ struct _AgsPlayNoteClass
   AgsRecallClass recall;
 };
 
+GType ags_play_note_get_type();
+
 AgsPlayNote* ags_play_note_new();
 
 #endif /*__AGS_PLAY_NOTE_H__*/

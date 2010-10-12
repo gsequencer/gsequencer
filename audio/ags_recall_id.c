@@ -1,7 +1,6 @@
 #include "ags_recall_id.h"
 #include <stdio.h>
 
-GType ags_recall_id_get_type(void);
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
 void ags_recall_id_init(AgsRecallID *recall_id);
 void ags_recall_id_connect(AgsRecallID *recall_id);

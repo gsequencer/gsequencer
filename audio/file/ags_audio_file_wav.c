@@ -6,7 +6,6 @@
 #include <math.h>
 #include <sndfile.h>
 
-GType ags_audio_file_wav_get_type();
 void ags_audio_file_wav_class_init(AgsAudioFileWavClass *file_wav);
 void ags_audio_file_wav_init(AgsAudioFileWav *file_wav);
 void ags_audio_file_wav_destroy(GObject *object);

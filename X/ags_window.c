@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 
-GType ags_window_get_type(void);
 void ags_window_class_init(AgsWindowClass *window);
 void ags_window_init(AgsWindow *window);
 void ags_window_destroy(GtkObject *object);

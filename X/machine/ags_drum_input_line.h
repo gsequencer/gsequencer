@@ -33,6 +33,8 @@ struct _AgsDrumInputLineClass
   AgsLineClass line;
 };
 
+GType ags_drum_input_line_get_type();
+
 void ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 				    guint output_pad_start);
 

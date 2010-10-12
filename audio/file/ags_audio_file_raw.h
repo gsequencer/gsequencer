@@ -27,6 +27,8 @@ struct _AgsAudioFileRawClass
   GObjectClass object;
 };
 
+GType ags_audio_file_raw_get_type();
+
 AgsAudioFileRaw* ags_audio_file_raw_new(AgsAudioFile *audio_file);
 
 #endif /*__AGS_AUDIO_FILE_RAW_H__*/

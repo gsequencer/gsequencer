@@ -1,6 +1,5 @@
 #include "ags_copy_stream_to_stream.h"
 
-GType ags_copy_stream_to_stream_get_type();
 void ags_copy_stream_to_stream_class_init(AgsCopyStreamToStreamClass *copy_stream_to_stream);
 void ags_copy_stream_to_stream_init(AgsCopyStreamToStream *copy_stream_to_stream);
 

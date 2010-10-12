@@ -60,6 +60,8 @@ struct _AgsNote
   guint y;
 };
 
+GType ags_notation_get_type();
+
 void ags_notation_connect(AgsNotation *notation);
 
 void ags_notation_add_note(AgsNotation *notation, AgsNote *note);

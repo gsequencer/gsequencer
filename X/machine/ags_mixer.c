@@ -14,7 +14,6 @@
 #include "../ags_pad.h"
 #include "../ags_line.h"
 
-GType ags_mixer_get_type(void);
 void ags_mixer_class_init(AgsMixerClass *mixer);
 void ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_init(AgsMixer *mixer);

@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 
-GType ags_garbage_collector_get_type();
 void ags_garbage_collector_class_init (AgsGarbageCollectorClass *garbage_collector_class);
 void ags_garbage_collector_init (AgsGarbageCollector *garbage_collector);
 void ags_garbage_collector_destroy (GObject *gobject);

@@ -25,6 +25,8 @@ struct _AgsMenuItemClass
   AgsTableClass table;
 };
 
+GType ags_menu_item_get_type(void);
+
 AgsMenuItem* ags_menu_item_new();
 
 #endif /*__AGS_MENU_ITEM_H__*/

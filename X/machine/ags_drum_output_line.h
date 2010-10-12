@@ -33,6 +33,8 @@ struct _AgsDrumOutputLineClass
   AgsLineClass line;
 };
 
+GType ags_drum_output_line_get_type();
+
 void ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line);
 
 AgsDrumOutputLine* ags_drum_output_line_new(AgsChannel *channel);

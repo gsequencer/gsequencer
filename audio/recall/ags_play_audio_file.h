@@ -31,6 +31,8 @@ struct _AgsPlayAudioFileClass
   AgsRecallClass recall;
 };
 
+GType ags_play_audio_file_get_type();
+
 AgsPlayAudioFile* ags_play_audio_file_new();
 
 #endif /*__AGS_PLAY_AUDIO_FILE_H__*/

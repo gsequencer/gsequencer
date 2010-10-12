@@ -1,6 +1,5 @@
 #include "ags_copy_input_to_output.h"
 
-GType ags_copy_input_to_output_get_type();
 void ags_copy_input_to_output_class_init(AgsCopyInputToOutput *copy_input_to_output);
 void ags_copy_input_to_output_init(AgsCopyInputToOutput *copy_input_to_output);
 

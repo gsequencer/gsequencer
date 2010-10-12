@@ -5,7 +5,6 @@
 #include <math.h>
 #include <string.h>
 
-GType ags_pattern_get_type();
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
 void ags_pattern_init(AgsPattern *pattern);
 void ags_pattern_finalize(GObject *gobject);

@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GType ags_play_channel_get_type();
 void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
 void ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

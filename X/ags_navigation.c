@@ -1,7 +1,6 @@
 #include "ags_navigation.h"
 #include "ags_navigation_callbacks.h"
 
-GType ags_navigation_get_type(void);
 void ags_navigation_class_init(AgsNavigationClass *navigation);
 void ags_navigation_init(AgsNavigation *navigation);
 void ags_navigation_connect(AgsNavigation *navigation);

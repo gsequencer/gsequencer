@@ -29,6 +29,8 @@ struct _AgsRecallAudioClass
   AgsRecallClass recall;
 };
 
+GType ags_recall_audio_get_type();
+
 AgsRecallAudio* ags_recall_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_RECALL_AUDIO_H__*/

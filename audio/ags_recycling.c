@@ -9,7 +9,6 @@
 #include <string.h>
 #include <math.h>
 
-GType ags_recycling_get_type();
 void ags_recycling_class_init(AgsRecyclingClass *recycling_class);
 void ags_recycling_init(AgsRecycling *recycling);
 void ags_recycling_finalize(GObject *gobject);

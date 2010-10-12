@@ -8,7 +8,6 @@
 
 #include "ags_recall_audio.h"
 
-GType ags_recall_audio_run_get_type();
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

@@ -13,7 +13,6 @@
 
 #include <stdlib.h>
 
-GType ags_copy_audio_signal_get_type();
 void ags_copy_audio_signal_class_init(AgsCopyAudioSignalClass *copy_audio_signal);
 void ags_copy_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

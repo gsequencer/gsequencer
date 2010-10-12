@@ -4,7 +4,6 @@
 
 #include "ags_play_note.h"
 
-GType ags_play_notation_get_type();
 void ags_play_notation_class_init(AgsPlayNotationClass *play_notation);
 void ags_play_notation_init(AgsPlayNotation *play_notation);
 void ags_play_notation_finalize(GObject *gobject);

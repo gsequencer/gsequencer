@@ -45,6 +45,8 @@ struct _AgsOscillatorClass
   GtkMenuItemClass item;
 };
 
+GType ags_oscillator_get_type(void);
+
 AgsOscillator* ags_oscillator_new();
 
 #endif /*__AGS_OSCILLATOR_H__*/

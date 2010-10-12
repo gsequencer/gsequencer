@@ -29,6 +29,8 @@ struct _AgsMixerClass
   AgsMachineClass machine;
 };
 
+GType ags_mixer_get_type(void);
+
 AgsMixer* ags_mixer_new();
 
 #endif /*__AGS_MIXER_H__*/

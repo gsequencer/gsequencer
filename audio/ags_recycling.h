@@ -49,6 +49,8 @@ struct _AgsRecyclingClass
 			      AgsAudioSignal *audio_signal);
 };
 
+GType ags_recycling_get_type();
+
 void ags_recycling_connect(AgsRecycling *recycling);
 
 void ags_recycling_add_audio_signal(AgsRecycling *recycling,

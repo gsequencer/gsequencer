@@ -40,6 +40,8 @@ struct _AgsToolbarClass
   GtkToolbarClass toolbar;
 };
 
+GType ags_toolbar_get_type(void);
+
 AgsToolbar* ags_toolbar_new();
 
 #endif /*__AGS_TOOLBAR_H__*/

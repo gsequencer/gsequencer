@@ -31,6 +31,8 @@ struct _AgsStreamChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+GType ags_stream_channel_get_type();
+
 AgsStreamChannel* ags_stream_channel_new(AgsChannel *channel);
 
 #endif /*__AGS_STREAM_CHANNEL_H__*/

@@ -43,6 +43,8 @@ struct _AgsLineMember
   guint control;
 };
 
+GType ags_line_get_type(void);
+
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);

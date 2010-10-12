@@ -25,6 +25,8 @@ struct _AgsNotebookClass
   GtkNotebookClass notebook;
 };
 
+GType ags_notebook_get_type(void);
+
 AgsNotebook* ags_notebook_new();
 
 #endif /*__AGS_NOTEBOOK_H__*/

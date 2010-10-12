@@ -68,7 +68,6 @@
 #define AGS_CHANNEL_LINK_NAME "AgsChannelLinkName\0"
 #define AGS_CHANNEL_LINK_LINE "AgsChannelLinkLine\0"
 
-GType ags_file_get_type(void);
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init (AgsFile *file);
 void ags_file_destroy (GObject *gobject);

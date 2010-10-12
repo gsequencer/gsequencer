@@ -5,7 +5,6 @@
 
 #include <math.h>
 
-GType ags_meter_get_type(void);
 void ags_meter_class_init(AgsMeterClass *meter);
 void ags_meter_init(AgsMeter *meter);
 void ags_meter_connect(AgsMeter *meter);

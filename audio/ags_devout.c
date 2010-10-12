@@ -20,7 +20,6 @@
 #include <math.h>
 #include <time.h>
 
-GType ags_devout_get_type();
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_init(AgsDevout *devout);
 void ags_devout_finalize(GObject *gobject);

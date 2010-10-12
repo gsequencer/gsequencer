@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-GType ags_audio_signal_get_type();
 void ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal_class);
 void ags_audio_signal_init(AgsAudioSignal *audio_signal);
 void ags_audio_signal_finalize(GObject *gobject);

@@ -28,6 +28,8 @@ struct _AgsCopyStreamToStreamClass{
   AgsRecallClass recall;
 };
 
+GType ags_copy_stream_to_stream_get_type();
+
 void ags_copy_stream_to_stream(AgsRecall *recall);
 
 AgsCopyStreamToStream* ags_copy_stream_to_stream_new();

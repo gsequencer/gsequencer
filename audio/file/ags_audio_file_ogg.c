@@ -6,7 +6,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-GType ags_audio_file_ogg_get_type();
 void ags_audio_file_ogg_class_init(AgsAudioFileOggClass *file_ogg);
 void ags_audio_file_ogg_init(AgsAudioFileOgg *file_ogg);
 void ags_audio_file_ogg_destroy(GObject *object);

@@ -30,6 +30,8 @@ struct _AgsTaskClass
   void (*passed)(AgsTask *task); // a counter step later
 };
 
+GType ags_task_get_type();
+
 void ags_task_recall_delay(AgsTask *task);
 
 AgsTask* ags_task_new();

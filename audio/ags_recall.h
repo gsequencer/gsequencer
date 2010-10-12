@@ -83,6 +83,8 @@ struct _AgsRecallClass
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
 };
 
+GType ags_recall_get_type();
+
 void ags_recall_run_init_pre(AgsRecall *recall, guint audio_channel);
 void ags_recall_run_init_inter(AgsRecall *recall, guint audio_channel);
 void ags_recall_run_init_post(AgsRecall *recall, guint audio_channel);
@@ -113,7 +115,7 @@ GList* ags_recall_find_type(GList *recall, GType type);
 GList* ags_recall_template_find_type(GList *recall, GType type);
 GList* ags_recall_find_type_with_group_id(GList *recall, GType type, guint group_id);
 
-void ags_recall_run_init(AgsRecall *recall, guint stage);
+void ags_recall_run_init(AgsRecall *recall, guint audio_channel, guint stage);
 
 AgsRecall* ags_recall_new();
 

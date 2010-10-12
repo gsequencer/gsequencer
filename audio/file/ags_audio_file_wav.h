@@ -28,6 +28,8 @@ struct _AgsAudioFileWavClass
   GObjectClass object;
 };
 
+GType ags_audio_file_wav_get_type();
+
 AgsAudioFileWav* ags_audio_file_wav_new(AgsAudioFile *audio_file);
 
 #endif /*__AGS_AUDIO_FILE_WAV_H__*/

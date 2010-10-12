@@ -42,6 +42,8 @@ struct _AgsPadClass
 		       guint audio_channels, guint audio_channels_old);
 };
 
+GType ags_pad_get_type(void);
+
 void ags_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,

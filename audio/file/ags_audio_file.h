@@ -48,6 +48,8 @@ struct _AgsAudioFileClass
   void (*read_buffer)(AgsAudioFile *audio_file);
 };
 
+GType ags_audio_file_get_type();
+
 void ags_audio_file_connect(AgsAudioFile *audio_file);
 
 void ags_audio_file_open(AgsAudioFile *audio_file);

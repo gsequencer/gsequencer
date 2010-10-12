@@ -33,6 +33,8 @@ struct _AgsLoopChannelClass
   AgsRecallChannelClass recall_channel;
 };
 
+GType ags_loop_channel_get_type();
+
 void ags_loop_channel_connect(AgsLoopChannel *loop_channel);
 
 AgsLoopChannel* ags_loop_channel_new(AgsChannel *channel,

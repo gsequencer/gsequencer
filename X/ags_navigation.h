@@ -56,6 +56,8 @@ struct _AgsNavigationClass
   GtkVBoxClass vbox;
 };
 
+GType ags_navigation_get_type(void);
+
 AgsNavigation* ags_navigation_new();
 
 #endif /*__AGS_NAVIGATION_H__*/

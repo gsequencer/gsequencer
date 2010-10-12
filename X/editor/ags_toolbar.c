@@ -15,7 +15,6 @@
 #include <gtk/gtkimage.h>
 #include <gtk/gtkstock.h>
 
-GType ags_toolbar_get_type(void);
 void ags_toolbar_class_init(AgsToolbarClass *toolbar);
 void ags_toolbar_init(AgsToolbar *toolbar);
 void ags_toolbar_connect(AgsToolbar *toolbar);

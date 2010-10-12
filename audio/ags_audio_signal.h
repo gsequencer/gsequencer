@@ -54,6 +54,8 @@ struct _AgsAttack
   guint second_length;
 };
 
+GType ags_audio_signal_get_type();
+
 short* ags_stream_alloc(guint buffer_size);
 
 AgsAttack* ags_attack_alloc(guint first_start, guint first_length,

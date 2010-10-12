@@ -44,6 +44,8 @@ struct _AgsCopyRecyclingClass
   AgsRecallClass recall;
 };
 
+GType ags_copy_recycling_get_type();
+
 AgsCopyRecycling* ags_copy_recycling_new(AgsRecycling *destination,
 					 AgsRecycling *source,
 					 AgsDevout *devout);

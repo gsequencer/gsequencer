@@ -25,6 +25,8 @@ struct _AgsMachineLineMemberEditorClass
   GtkVBoxClass vbox;
 };
 
+GType ags_machine_line_member_editor_get_type();
+
 void ags_machine_line_member_editor_apply(AgsMachineLineMemberEditor *machine_line_member_editor, gboolean emit_signal);
 
 AgsMachineLineMemberEditor* ags_machine_line_member_editor_new();

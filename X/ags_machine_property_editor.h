@@ -29,6 +29,8 @@ struct _AgsMachinePropertyEditorClass
   GtkVBoxClass vbox;
 };
 
+GType ags_machine_property_editor_get_type();
+
 void ags_machine_property_editor_update(AgsMachinePropertyEditor *machine_property_editor);
 void ags_machine_property_editor_apply(AgsMachinePropertyEditor *machine_property_editor);
 

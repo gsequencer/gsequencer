@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-GType ags_copy_recycling_get_type();
 void ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling);
 void ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

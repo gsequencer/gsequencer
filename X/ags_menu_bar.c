@@ -4,7 +4,6 @@
 #include <glib/glist.h>
 #include <gtk/gtkmenushell.h>
 
-GType ags_menu_bar_get_type(void);
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_init(AgsMenuBar *menu_bar);
 void ags_menu_bar_connect(AgsMenuBar *menu_bar);

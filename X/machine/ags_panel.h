@@ -28,6 +28,8 @@ struct _AgsPanelClass
   AgsMachineClass machine;
 };
 
+GType ags_panel_get_type(void);
+
 AgsPanel* ags_panel_new();
 
 #endif /*__AGS_PANEL_H__*/

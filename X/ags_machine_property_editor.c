@@ -11,7 +11,6 @@
 
 #include "../audio/file/ags_audio_file.h"
 
-GType ags_machine_property_editor_get_type();
 void ags_machine_property_editor_class_init(AgsMachinePropertyEditorClass *machine_property_editor);
 void ags_machine_property_editor_init(AgsMachinePropertyEditor *machine_property_editor);
 void ags_machine_property_editor_destroy(GtkObject *object);

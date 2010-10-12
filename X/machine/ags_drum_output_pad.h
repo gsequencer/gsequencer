@@ -33,6 +33,8 @@ struct _AgsDrumOutputPadClass
   AgsPadClass pad;
 };
 
+GType ags_drum_output_pad_get_type();
+
 AgsDrumOutputPad* ags_drum_output_pad_new(AgsChannel *channel);
 
 #endif /*__AGS_DRUM_OUTPUT_PAD_H__*/

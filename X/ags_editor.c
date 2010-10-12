@@ -7,7 +7,6 @@
 #include <math.h>
 #include <cairo.h>
 
-GType ags_editor_get_type(void);
 void ags_editor_class_init(AgsEditorClass *editor);
 void ags_editor_init(AgsEditor *editor);
 void ags_editor_connect(AgsEditor *editor);

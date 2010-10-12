@@ -33,6 +33,8 @@ struct _AgsMenuBarClass
   GtkMenuBarClass menu_bar;
 };
 
+GType ags_menu_bar_get_type(void);
+
 AgsMenuBar* ags_menu_bar_new();
 
 GtkMenu* ags_zoom_menu_new();

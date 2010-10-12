@@ -1,6 +1,5 @@
 #include "ags_task.h"
 
-GType ags_task_get_type();
 void ags_task_class_init(AgsTaskClass *task);
 void ags_task_init(AgsTask *task);
 void ags_task_destroy(GObject *task);

@@ -7,7 +7,6 @@
 #include "ags_copy_pattern_channel.h"
 #include "ags_copy_pattern_channel_run.h"
 
-GType ags_copy_pattern_audio_run_get_type();
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
 void ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
@@ -202,8 +201,6 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 					      AGS_TYPE_DELAY_AUDIO_RUN,
 					      group_id);
 
-    printf("ags_copy_pattern_audio_run_duplicate ---- debug 0\n\0");
-
     if(list != NULL)
       copy_pattern_audio_run->delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
   }
@@ -256,7 +253,6 @@ ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint
 
     while(list != NULL){
       copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
-      printf("loop\n\0");
 
       if(copy_pattern_channel->destination->audio_channel == audio_channel){
 	goto ags_copy_pattern_audio_run_tic_callback0;

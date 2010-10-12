@@ -1,6 +1,5 @@
 #include "ags_table.h"
 
-GType ags_table_get_type(void);
 void ags_table_class_init(AgsTableClass *table);
 void ags_table_init(AgsTable *table);
 

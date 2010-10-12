@@ -1,6 +1,5 @@
 #include "ags_audio_file_mp3.h"
 
-GType ags_audio_file_mp3_get_type();
 void ags_audio_file_mp3_class_init(AgsAudioFileMp3Class *file_mp3);
 void ags_audio_file_mp3_init(AgsAudioFileMp3 *file_mp3);
 void ags_audio_file_mp3_destroy(GObject *object);

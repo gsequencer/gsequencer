@@ -7,7 +7,6 @@
 #include "ags_machine_editor.h"
 #include "ags_line_editor.h"
 
-GType ags_link_editor_get_type(void);
 void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
 void ags_link_editor_init(AgsLinkEditor *link_editor);
 void ags_link_editor_connect(AgsLinkEditor *link_editor);

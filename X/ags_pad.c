@@ -6,7 +6,6 @@
 
 #include "ags_machine.h"
 
-GType ags_pad_get_type(void);
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pad_init(AgsPad *pad);

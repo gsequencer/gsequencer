@@ -34,6 +34,8 @@ struct _AgsRulerClass
   GtkDrawingAreaClass drawing_area;
 };
 
+GType ags_ruler_get_type();
+
 AgsRuler* ags_ruler_new();
 
 #endif /*__AGS_RULER_H__*/

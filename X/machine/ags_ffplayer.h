@@ -36,6 +36,8 @@ struct _AgsFFPlayerClass
   AgsMachineClass machine;
 };
 
+GType ags_ffplayer_get_type(void);
+
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 // char* ags_ffplayer_sound_string();
 

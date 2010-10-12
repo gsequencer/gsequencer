@@ -7,7 +7,6 @@
 
 #include "../audio/ags_channel.h"
 
-GType ags_line_get_type(void);
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_init(AgsLine *line);

@@ -37,6 +37,8 @@ struct _AgsMachineResizeEditorClass
 			     guint pads, guint pads_old);
 };
 
+GType ags_machine_resize_editor_get_type();
+
 void ags_machine_resize_editor_resize_audio_channels(AgsMachineResizeEditor *machine_resize_editor,
 						     guint audio_channels, guint audio_channels_old);
 

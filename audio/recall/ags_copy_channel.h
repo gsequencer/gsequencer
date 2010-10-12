@@ -44,6 +44,8 @@ struct _AgsCopyChannelClass
   AgsRecallClass recall;
 };
 
+GType ags_copy_channel_get_type();
+
 AgsCopyChannel* ags_copy_channel_new(AgsChannel *destination,
 				     AgsChannel *source,
 				     AgsDevout *devout);

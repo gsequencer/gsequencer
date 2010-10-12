@@ -7,7 +7,6 @@
 
 #include "../ags_line.h"
 
-GType ags_drum_output_pad_get_type();
 void ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad);
 void ags_drum_output_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad);

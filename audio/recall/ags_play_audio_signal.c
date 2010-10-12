@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-GType ags_play_audio_signal_get_type();
 void ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal);
 void ags_play_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

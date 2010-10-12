@@ -29,6 +29,8 @@ struct _AgsMenuClass
   GtkWindowClass window;
 };
 
+GType ags_menu_get_type(void);
+
 AgsMenu* ags_menu_new();
 
 #endif /*__AGS_MENU_H__*/

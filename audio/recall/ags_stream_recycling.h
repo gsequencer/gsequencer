@@ -33,6 +33,8 @@ struct _AgsStreamRecyclingClass
   AgsRecallClass recall;
 };
 
+GType ags_stream_recycling_get_type();
+
 AgsStreamRecycling* ags_stream_recycling_new(AgsRecycling *recycling);
 
 #endif /*__AGS_STREAM_RECYCLING_H__*/

@@ -26,6 +26,8 @@ struct _AgsRecallAudioRunClass
   AgsRecallClass recall;
 };
 
+GType ags_recall_audio_run_get_type();
+
 AgsRecallAudioRun* ags_recall_audio_run_new();
 
 #endif /*__AGS_RECALL_AUDIO_RUN_H__*/

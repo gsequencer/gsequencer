@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 
-GType ags_channel_get_type();
 void ags_channel_class_init(AgsChannelClass *channel_class);
 void ags_channel_init(AgsChannel *channel);
 void ags_channel_finalize(GObject *gobject);
@@ -1139,6 +1138,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     GList *list_recall;
 
     recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
+    printf("!!!!!! %u %u\n\0", group_id, recall_id->group_id);
+    
 
     if(recall_id->parent_group_id == 0)
       list_recall = channel->play;
@@ -1175,6 +1176,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     GList *list_recall_start, *list_recall;
 
     recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
+    printf(":0 :0 %u %u\n\0", group_id, recall_id->group_id);
 
     if(recall_id->parent_group_id == 0)
       list_recall_start = 

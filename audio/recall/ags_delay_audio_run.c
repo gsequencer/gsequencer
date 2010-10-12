@@ -9,7 +9,6 @@
 
 #include <stdlib.h>
 
-GType ags_delay_audio_run_get_type();
 void ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay);
 void ags_delay_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_delay_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

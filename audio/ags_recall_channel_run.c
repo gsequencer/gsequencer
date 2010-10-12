@@ -11,7 +11,6 @@
 #include "ags_recall_audio_run.h"
 #include "ags_recall_channel.h"
 
-GType ags_recall_channel_run_get_type();
 void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
 void ags_recall_channel_runconnectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
@@ -170,7 +169,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall, recall_id));
 
-  printf("duplicate recall_channel_run\n\0");
   channel = AGS_RECALL_CHANNEL(recall->recall_channel)->channel;
 
   if(AGS_RECALL_CHANNEL(recall->recall_channel) != NULL){
@@ -191,19 +189,15 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 
     /* check for AgsRecallAudio */
     if(recall->recall_audio != NULL){
-      printf("ags_recall_channel_run_duplicate --- success with AgsRecallAudio\n\0");
       recall_audio = AGS_RECALL_AUDIO(recall->recall_audio);
 
       AGS_RECALL(copy)->recall_audio = AGS_RECALL(recall_audio);
 
-      //      AGS_RECALL(recall_audio)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_audio)->recall_channel_run,
-      //								    copy);
+      AGS_RECALL(recall_audio)->recall_channel_run = g_list_prepend(AGS_RECALL(recall_audio)->recall_channel_run,
+								    copy);
     }else{
       recall_audio = NULL;
     }
-
-    if(channel == NULL)
-      return;
 
     audio = AGS_AUDIO(channel->audio);
     
@@ -225,10 +219,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 					      AGS_RECALL(copy)->recall_audio_run_type,
 					      group_id);
 
-    printf("ags_recall_channel_run_duplicate --- debug 0\n\0");
-
     if(list != NULL){
-      printf("ags_recall_channel_run_duplicate --- success with AgsRecallAudioRun\n\0");
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
 
       AGS_RECALL(copy)->recall_audio_run = recall_audio_run;

@@ -9,7 +9,6 @@
 
 #include <math.h>
 
-GType ags_drum_input_pad_get_type();
 void ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad);
 void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);

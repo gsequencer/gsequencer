@@ -29,6 +29,8 @@ struct _AgsRecallChannelClass
   AgsRecallClass recall;
 };
 
+GType ags_recall_channel_get_type();
+
 AgsRecallChannel* ags_recall_channel_new(AgsChannel *channel);
 
 #endif /*__AGS_RECALL_CHANNEL_H__*/

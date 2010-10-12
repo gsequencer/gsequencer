@@ -37,6 +37,8 @@ struct _AgsPlayPatternClass{
   AgsRecallClass recall;
 };
 
+GType ags_play_pattern_get_type();
+
 void ags_play_pattern_connect(AgsPlayPattern *play_pattern);
 
 //AgsPlayPattern* ags_play_pattern_new(AgsChannel *channel, AgsDelay *delay);

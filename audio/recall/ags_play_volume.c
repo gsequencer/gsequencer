@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-GType ags_play_volume_get_type();
 void ags_play_volume_class_init(AgsPlayVolumeClass *volume);
 void ags_play_volume_init(AgsPlayVolume *volume);
 void ags_play_volume_connect(AgsPlayVolume *volume);

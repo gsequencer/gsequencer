@@ -36,6 +36,8 @@ struct _AgsDelayAudioRunClass
   void (*tic)(AgsDelayAudioRun *delay);
 };
 
+GType ags_delay_audio_run_get_type();
+
 void ags_delay_audio_run_tic(AgsDelayAudioRun *delay, guint audio_channel);
 
 AgsDelayAudioRun* ags_delay_audio_run_new(AgsRecallAudio *recall_audio);

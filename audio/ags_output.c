@@ -3,7 +3,6 @@
 #include "ags_devout.h"
 #include "ags_audio.h"
 
-GType ags_output_get_type();
 void ags_output_class_init(AgsOutputClass *output_class);
 void ags_output_init(AgsOutput *output);
 void ags_output_finalize(GObject *gobject);

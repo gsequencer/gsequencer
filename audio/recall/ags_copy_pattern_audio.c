@@ -4,7 +4,6 @@
 #include "ags_copy_pattern_channel.h"
 #include "ags_copy_pattern_channel_run.h"
 
-GType ags_copy_pattern_audio_get_type();
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
 void ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio);
 void ags_copy_pattern_audio_finalize(GObject *gobject);

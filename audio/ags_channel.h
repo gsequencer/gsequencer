@@ -74,6 +74,8 @@ struct _AgsChannelClass
 			    AgsRecycling *new_start_region, AgsRecycling *new_end_region);
 };
 
+GType ags_channel_get_type();
+
 void ags_channel_connect(AgsChannel *channel);
 
 AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);

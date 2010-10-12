@@ -10,7 +10,6 @@
 #include "../audio/ags_input.h"
 #include "../audio/ags_output.h"
 
-GType ags_machine_link_editor_get_type();
 void ags_machine_link_editor_class_init(AgsMachineLinkEditorClass *machine_link_editor);
 void ags_machine_link_editor_init(AgsMachineLinkEditor *machine_link_editor);
 void ags_machine_link_editor_destroy(GtkObject *object);

@@ -21,6 +21,8 @@ struct _AgsRunConnectableInterface
   void (*disconnect)(AgsRunConnectable *connectable);
 };
 
+GType ags_run_connectable_get_type();
+
 void ags_run_connectable_connect(AgsRunConnectable *connectable);
 void ags_run_connectable_disconnect(AgsRunConnectable *connectable);
 

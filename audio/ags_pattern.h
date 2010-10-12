@@ -31,6 +31,8 @@ struct _AgsPatternClass
   GObjectClass object;
 };
 
+GType ags_pattern_get_type();
+
 void ags_pattern_connect(AgsPattern *pattern);
 
 AgsPattern* ags_pattern_get_by_offset(GList *list, guint offset);

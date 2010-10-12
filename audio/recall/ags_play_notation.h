@@ -33,6 +33,8 @@ struct _AgsPlayNotationClass
   AgsRecallClass recall;
 };
 
+GType ags_play_notation_get_type();
+
 AgsPlayNotation* ags_play_notation_new();
 
 #endif /*__AGS_PLAY_NOTATION_H__*/

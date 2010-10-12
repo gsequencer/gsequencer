@@ -154,6 +154,8 @@ struct _AgsDevoutPlay
   AgsRecallID *recall_id; // if source is an AgsRecall
 };
 
+GType ags_devout_get_type();
+
 AgsDevoutPlay* ags_devout_play_alloc();
 
 void ags_devout_connect(AgsDevout *devout);

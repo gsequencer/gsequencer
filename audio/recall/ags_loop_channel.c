@@ -5,7 +5,6 @@
 #include "../ags_audio_signal.h"
 #include "../ags_recall_id.h"
 
-GType ags_loop_channel_get_type();
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);
 void ags_loop_channel_init(AgsLoopChannel *loop_channel);
 void ags_loop_channel_finalize(GObject *gobject);

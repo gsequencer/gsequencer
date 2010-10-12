@@ -28,6 +28,8 @@ struct _AgsOutputClass
   AgsChannelClass channel;
 };
 
+GType ags_output_get_type();
+
 void ags_output_connect(AgsOutput *output);
 
 AgsOutput* ags_output_new();

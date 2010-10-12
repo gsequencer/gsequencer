@@ -25,6 +25,8 @@ struct _AgsAudioFileMp3Class
   AgsAudioFileClass audio_file;
 };
 
+GType ags_audio_file_mp3_get_type();
+
 AgsAudioFileMp3* ags_audio_file_mp3_new(AgsAudioFile *audio_file);
 
 #endif /*__AGS_AUDIO_FILE_MP3_H__*/

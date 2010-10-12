@@ -1,9 +1,9 @@
+
 #include "ags_notebook.h"
 #include "ags_notebook_callbacks.h"
 
 #include "../ags_editor.h"
 
-GType ags_notebook_get_type(void);
 void ags_notebook_class_init(AgsNotebookClass *notebook);
 void ags_notebook_init(AgsNotebook *notebook);
 void ags_notebook_connect(AgsNotebook *notebook);

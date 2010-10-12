@@ -29,6 +29,8 @@ struct _AgsAudioFileOggClass
   GObjectClass object;
 };
 
+GType ags_audio_file_ogg_get_type();
+
 AgsAudioFileOgg* ags_audio_file_ogg_new(AgsAudioFile *audio_file);
 
 #endif /*__AGS_AUDIO_FILE_OGG_H__*/

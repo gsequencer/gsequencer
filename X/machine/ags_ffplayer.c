@@ -9,7 +9,6 @@
 
 #include <math.h>
 
-GType ags_ffplayer_get_type(void);
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
 void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_init(AgsFFPlayer *ffplayer);

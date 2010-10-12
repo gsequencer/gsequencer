@@ -27,6 +27,8 @@ struct _AgsMeterClass
   GtkDrawingAreaClass drawing_area;
 };
 
+GType ags_meter_get_type(void);
+
 char* ags_meter_sound_string();
 void ags_meter_paint(AgsMeter *meter); // , guint rows, guint nth_y, guint y0
 

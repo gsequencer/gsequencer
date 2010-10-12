@@ -52,6 +52,8 @@ struct _AgsMatrixClass
   AgsMachineClass machine;
 };
 
+GType ags_matrix_get_type(void);
+
 void ags_matrix_draw_gutter(AgsMatrix *matrix);
 void ags_matrix_draw_matrix(AgsMatrix *matrix);
 void ags_matrix_redraw_gutter_point(AgsMatrix *matrix, AgsChannel *channel, guint j, guint i);

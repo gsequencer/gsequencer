@@ -1,7 +1,6 @@
 #include "ags_machine_line_member_editor.h"
 #include "ags_machine_line_member_editor_callbacks.h"
 
-GType ags_machine_line_member_editor_get_type();
 void ags_machine_line_member_editor_class_init(AgsMachineLineMemberEditorClass *machine_line_member_editor);
 void ags_machine_line_member_editor_init(AgsMachineLineMemberEditor *machine_line_member_editor);
 void ags_machine_line_member_editor_destroy(GtkObject *object);

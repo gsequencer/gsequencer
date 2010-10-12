@@ -25,6 +25,8 @@ struct _AgsAudioFileXmlClass
   GObjectClass object;
 };
 
+GType ags_audio_file_xml_get_type();
+
 AgsAudioFileXml* ags_audio_file_xml_new(AgsAudioFile *audio_file);
 
 #endif /*__AGS_AUDIO_FILE_XML_H__*/
