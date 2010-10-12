@@ -20,7 +20,7 @@ typedef struct _AgsStreamChannelClass AgsStreamChannelClass;
 
 struct _AgsStreamChannel
 {
-  AgsRecallChannel recall_channel;
+  AgsRecall recall;
 
   AgsChannel *channel;
   gulong channel_recycling_changed_handler;
@@ -28,7 +28,7 @@ struct _AgsStreamChannel
 
 struct _AgsStreamChannelClass
 {
-  AgsRecallChannelClass recall_channel;
+  AgsRecallClass recall;
 };
 
 GType ags_stream_channel_get_type();

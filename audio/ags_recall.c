@@ -577,6 +577,8 @@ ags_recall_run_connect(AgsRunConnectable *run_connectable)
 
     list = list->next;
   }
+
+  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
 }
 
 void

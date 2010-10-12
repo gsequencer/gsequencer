@@ -123,6 +123,8 @@ ags_play_audio_signal_connect(AgsConnectable *connectable)
   
   ags_play_audio_signal_parent_connectable_interface->connect(connectable);
 
+  printf("----- connecting\n\0");
+
   /* AgsPlayAudioSignal */
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(connectable);
 
@@ -139,6 +141,8 @@ ags_play_audio_signal_disconnect(AgsConnectable *connectable)
 void
 ags_play_audio_signal_run_connect(AgsRunConnectable *run_connectable)
 {
+  printf("----- run_connecting\n\0");
+
   ags_play_audio_signal_parent_run_connectable_interface->connect(run_connectable);
 }
 
@@ -171,8 +175,6 @@ ags_play_audio_signal_run_inter(AgsRecall *recall, guint source_audio_channel, g
   devout = play_audio_signal->devout;
   source = AGS_AUDIO_SIGNAL(play_audio_signal->source);
   stream = source->stream_current;
-
-  printf("----- playing\n\0");
 
   if(stream == NULL){
     //    ags_recall_done(recall, recall_id);
@@ -234,7 +236,8 @@ ags_play_audio_signal_new(AgsAudioSignal *source, guint audio_channel,
 {
   AgsPlayAudioSignal *play_audio_signal;
 
-  play_audio_signal = (AgsPlayAudioSignal *) g_object_new(AGS_TYPE_PLAY_AUDIO_SIGNAL, NULL);
+  play_audio_signal = (AgsPlayAudioSignal *) g_object_new(AGS_TYPE_PLAY_AUDIO_SIGNAL,
+							  NULL);
 
   play_audio_signal->devout = devout;
 

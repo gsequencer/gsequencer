@@ -1019,6 +1019,7 @@ ags_devout_alsa_init(AgsDevout *devout)
 
   /* 44100 bits/second sampling rate (CD quality) */
   val = 44100;//(unsigned int) devout->frequency;
+  dir = 0;
   snd_pcm_hw_params_set_rate_near(devout->out.alsa.handle, devout->out.alsa.params,
                                   &val, &dir);
 

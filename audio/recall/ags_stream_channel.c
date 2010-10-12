@@ -70,7 +70,7 @@ ags_stream_channel_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_stream_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
+    ags_type_stream_channel = g_type_register_static(AGS_TYPE_RECALL,
 						     "AgsStreamChannel\0",
 						     &ags_stream_channel_info,
 						     0);
@@ -254,7 +254,7 @@ ags_stream_channel_map_stream_recycling(AgsStreamChannel *stream_channel)
     stream_recycling = ags_stream_recycling_new(recycling);
 
     ags_recall_add_child(AGS_RECALL(stream_channel), AGS_RECALL(stream_recycling), audio_channel);
-    
+
     recycling = recycling->next;
   }
 }

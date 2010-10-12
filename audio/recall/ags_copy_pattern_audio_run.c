@@ -139,7 +139,9 @@ ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
-  //  ags_copy_pattern_audio_run_parent_run_connectable_interface->connect(run_connectable);
+  ags_copy_pattern_audio_run_parent_run_connectable_interface->connect(run_connectable);
+
+  printf("ags_copy_pattern_audio_run_run_connect\n\0");
 
   /* AgsCopyPattern */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(run_connectable);
@@ -147,8 +149,8 @@ ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable)
   copy_pattern_audio_run->flags |= AGS_COPY_PATTERN_AUDIO_RUN_RUN_CONNECTED;
 
   copy_pattern_audio_run->tic_handler =
-    g_signal_connect_after(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic\0",
-			   G_CALLBACK(ags_copy_pattern_audio_run_tic_callback), copy_pattern_audio_run);
+    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic\0",
+		     G_CALLBACK(ags_copy_pattern_audio_run_tic_callback), copy_pattern_audio_run);
 }
 
 void

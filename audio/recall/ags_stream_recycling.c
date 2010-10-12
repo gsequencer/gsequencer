@@ -169,15 +169,15 @@ ags_stream_recycling_run_connect(AgsRunConnectable *run_connectable)
   ags_stream_recycling_parent_run_connectable_interface->connect(run_connectable);
 
   stream_recycling = AGS_STREAM_RECYCLING(run_connectable);
-  gobject = G_OBJECT(stream_recycling);
+  gobject = G_OBJECT(stream_recycling->recycling);
 
   stream_recycling->add_audio_signal_handler =
-    g_signal_connect(gobject, "add_audio_signal\0",
-		     G_CALLBACK(ags_stream_recycling_add_audio_signal_callback), stream_recycling);
+    g_signal_connect_after(gobject, "add_audio_signal\0",
+			   G_CALLBACK(ags_stream_recycling_add_audio_signal_callback), stream_recycling);
 
   stream_recycling->add_audio_signal_with_frame_count_handler =
-    g_signal_connect(gobject, "add_audio_signal_with_frame_count\0",
-		     G_CALLBACK(ags_stream_recycling_add_audio_signal_with_frame_count_callback), stream_recycling);
+    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
+			   G_CALLBACK(ags_stream_recycling_add_audio_signal_with_frame_count_callback), stream_recycling);
 }
 
 void

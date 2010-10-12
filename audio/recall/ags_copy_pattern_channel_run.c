@@ -168,13 +168,15 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL(copy_pattern_channel_run)->recall_audio_run);
 
+  /*
   if((AGS_COPY_PATTERN_AUDIO_RUN_RUN_CONNECTED & (copy_pattern_audio_run->flags)) == 0){
     ags_run_connectable_connect(AGS_RUN_CONNECTABLE(copy_pattern_audio_run));
   }
+  */
 
   copy_pattern_channel_run->tic_handler =
-    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic\0",
-		     G_CALLBACK(ags_copy_pattern_channel_run_tic_callback), copy_pattern_channel_run);
+    g_signal_connect_after(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic\0",
+			   G_CALLBACK(ags_copy_pattern_channel_run_tic_callback), copy_pattern_channel_run);
 }
 
 void

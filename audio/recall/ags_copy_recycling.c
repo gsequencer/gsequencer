@@ -306,8 +306,6 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
   AgsCopyAudioSignal *copy_audio_signal;
   guint audio_channel;
 
-  printf("ags_copy_recycling_source_add_audio_signal\n\0");
-
   audio_signal->stream_current = audio_signal->stream_beginning;
 
   copy_audio_signal = ags_copy_audio_signal_new(copy_recycling->child_destination,
@@ -322,8 +320,6 @@ void
 ags_copy_recycling_destination_add_audio_signal(AgsCopyRecycling *copy_recycling,
 						AgsAudioSignal *audio_signal)
 {
-  printf("ags_copy_recycling_destination_add_audio_signal ---- OK\n\0");
-
   copy_recycling->child_destination = audio_signal;
 }
 
@@ -387,7 +383,7 @@ ags_copy_recycling_destination_add_audio_signal_callback(AgsRecycling *destinati
 {
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(copy_recycling)->recall_id->group_id)
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(copy_recycling)->recall_id->parent_group_id)
     ags_copy_recycling_destination_add_audio_signal(copy_recycling,
 						    audio_signal);
 }
@@ -399,7 +395,7 @@ ags_copy_recycling_destination_add_audio_signal_with_frame_count_callback(AgsRec
 {
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(copy_recycling)->recall_id->group_id)
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(copy_recycling)->recall_id->parent_group_id)
     ags_copy_recycling_destination_add_audio_signal(copy_recycling,
 						    audio_signal);
 }

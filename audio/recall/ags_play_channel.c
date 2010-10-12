@@ -175,6 +175,8 @@ ags_play_channel_run_connect(AgsRunConnectable *run_connectable)
 
   ags_play_channel_parent_run_connectable_interface->connect(run_connectable);
 
+  printf("ags_play_channel_run_connect\n\0");
+
   /* AgsPlayChannel */
   play_channel = AGS_PLAY_CHANNEL(run_connectable);
 
@@ -212,27 +214,19 @@ ags_play_channel_finalize(GObject *gobject)
 void
 ags_play_channel_run_init_pre(AgsPlayChannel *play_channel, guint audio_channel, gpointer data)
 {
-  ags_play_channel_map_play_recycling(play_channel);
+  /* empty */
 }
 
 void
 ags_play_channel_done(AgsRecall *recall, gpointer data)
 {
-  AgsPlayChannel *play_channel;
-
-  play_channel = AGS_PLAY_CHANNEL(recall);
-
-  //  ags_play_channel_disconnect_run_handler(play_channel);
+  /* empty */
 }
 
 void 
 ags_play_channel_cancel(AgsRecall *recall, gpointer data)
 {
-  AgsPlayChannel *play_channel;
-
-  play_channel = AGS_PLAY_CHANNEL(recall);
-
-  //  ags_play_channel_disconnect_run_handler(play_channel);
+  /* empty */
 }
 
 void
@@ -252,6 +246,8 @@ ags_play_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy->devout = play_channel->devout;
   copy->source = play_channel->source;
 
+  ags_play_channel_map_play_recycling(copy);
+
   return((AgsRecall *) copy);
 }
 
@@ -261,10 +257,14 @@ ags_play_channel_map_play_recycling(AgsPlayChannel *play_channel)
   AgsRecycling *source_recycling;
   AgsPlayRecycling *play_recycling;
 
+  printf("fault?\n\0");
+
   source_recycling = play_channel->source->first_recycling;
 
   if(source_recycling != NULL){
     while(source_recycling != play_channel->source->last_recycling->next){
+      printf("--- loopi ---\n\0");
+
       play_recycling = ags_play_recycling_new(source_recycling, play_channel->source->audio_channel,
 					      play_channel->devout);
 

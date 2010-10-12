@@ -154,7 +154,6 @@ ags_stream_audio_signal_run_post(AgsRecall *recall, guint audio_channel, gpointe
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
 
   if(stream_audio_signal->audio_signal->stream_current != NULL){
-    printf("stream ---- ");
     stream_audio_signal->audio_signal->stream_current = stream_audio_signal->audio_signal->stream_current->next;
   }else{
     ags_recall_done(recall);
