@@ -8,11 +8,10 @@
 #include "ags_drum.h"
 
 #include "../../audio/recall/ags_delay_audio_run.h"
-#include "../../audio/recall/ags_play_volume.h"
+#include "../../audio/recall/ags_volume_channel.h"
 #include "../../audio/recall/ags_play_channel.h"
 #include "../../audio/recall/ags_copy_channel.h"
 #include "../../audio/recall/ags_stream_channel.h"
-#include "../../audio/recall/ags_recall_volume.h"
 #include "../../audio/recall/ags_copy_pattern_audio.h"
 #include "../../audio/recall/ags_copy_pattern_audio_run.h"
 #include "../../audio/recall/ags_copy_pattern_channel.h"
@@ -91,17 +90,15 @@ ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
-  GtkVScale *scale;
-
   drum_input_line->flags = 0;
 
-  scale = (GtkVScale *) gtk_vscale_new_with_range(0.0, 1.25, 0.025);
-  gtk_range_set_value((GtkRange *) scale, 0.8);
-  gtk_range_set_inverted((GtkRange *) scale, TRUE);
-  gtk_scale_set_digits((GtkScale *) scale, 3);
-  gtk_widget_set_size_request((GtkWidget *) scale, -1, 100);
+  drum_input_line->volume = (GtkVScale *) gtk_vscale_new_with_range(0.0, 1.25, 0.025);
+  gtk_range_set_value((GtkRange *) drum_input_line->volume, 0.8);
+  gtk_range_set_inverted((GtkRange *) drum_input_line->volume, TRUE);
+  gtk_scale_set_digits((GtkScale *) drum_input_line->volume, 3);
+  gtk_widget_set_size_request((GtkWidget *) drum_input_line->volume, -1, 100);
   gtk_table_attach(AGS_LINE(drum_input_line)->table,
-		   (GtkWidget *) scale,
+		   (GtkWidget *) drum_input_line->volume,
 		   0, 1,
 		   1, 2,
 		   GTK_EXPAND, GTK_EXPAND,
@@ -171,8 +168,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsLine *line;
   AgsAudio *audio;
   AgsChannel *source, *destination;
-  AgsPlayVolume *play_volume;
-  AgsRecallVolume *recall_volume;
+  AgsVolumeChannel *volume_channel;
   AgsPlayChannel *play_channel;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
@@ -193,6 +189,16 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
   if((AGS_DRUM_INPUT_LINE_MAPPED_RECALL & (drum_input_line->flags)) == 0){
     drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;
+
+    /* AgsVolumeChannel */
+    volume_channel = ags_volume_channel_new(source,
+					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
+    
+    AGS_RECALL(volume_channel)->flags |= AGS_RECALL_TEMPLATE;
+        
+    source->recall = g_list_append(source->recall, (gpointer) volume_channel);
+
+    ags_connectable_connect(AGS_CONNECTABLE(volume_channel));
 
     /* AgsPlayChannel */
     play_channel = ags_play_channel_new(source,

@@ -8,8 +8,7 @@
 #include "ags_drum.h"
 
 #include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_play_volume.h"
-#include "../../audio/recall/ags_recall_volume.h"
+#include "../../audio/recall/ags_volume_channel.h"
 #include "../../audio/recall/ags_stream_channel.h"
 
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);

@@ -31,12 +31,11 @@
 #include "../audio/recall/ags_play_pattern.h"
 #include "../audio/recall/ags_play_channel.h"
 #include "../audio/recall/ags_play_audio_signal.h"
-#include "../audio/recall/ags_play_volume.h"
 
 #include "../audio/recall/ags_copy_pattern_channel_run.h"
 #include "../audio/recall/ags_copy_channel.h"
 #include "../audio/recall/ags_copy_audio_signal.h"
-#include "../audio/recall/ags_recall_volume.h"
+#include "../audio/recall/ags_volume_channel.h"
 
 #include "../X/ags_window.h"
 #include "../X/ags_menu_bar.h"
@@ -90,12 +89,12 @@ void ags_file_read_recall(AgsFile *file, AgsRecall *recall);
 void ags_file_read_play_pattern(AgsFile *file, AgsRecall *recall);
 void ags_file_read_play_channel(AgsFile *file, AgsRecall *recall);
 void ags_file_read_play_audio_signal(AgsFile *file, AgsRecall *recall);
-void ags_file_read_play_volume(AgsFile *file, AgsRecall *recall);
+void ags_file_read_volume_channel(AgsFile *file, AgsRecall *recall);
 
 void ags_file_read_copy_pattern(AgsFile *file, AgsRecall *recall);
 void ags_file_read_copy_channel(AgsFile *file, AgsRecall *recall);
 void ags_file_read_copy_audio_signal(AgsFile *file, AgsRecall *recall);
-void ags_file_read_recall_volume(AgsFile *file, AgsRecall *recall);
+void ags_file_read_volume_channel(AgsFile *file, AgsRecall *recall);
 
 void ags_file_read_window(AgsFile *file);
 void ags_file_read_menu_bar(AgsFile *file, AgsMenuBar *menu_bar);
@@ -139,12 +138,11 @@ void ags_file_write_recall(AgsFile *file, AgsRecall *recall);
 void ags_file_write_play_pattern(AgsFile *file, AgsRecall *recall);
 void ags_file_write_play_channel(AgsFile *file, AgsRecall *recall);
 void ags_file_write_play_audio_signal(AgsFile *file, AgsRecall *recall);
-void ags_file_write_play_volume(AgsFile *file, AgsRecall *recall);
+void ags_file_write_volume_channel(AgsFile *file, AgsRecall *recall);
 
 void ags_file_write_copy_pattern(AgsFile *file, AgsRecall *recall);
 void ags_file_write_copy_channel(AgsFile *file, AgsRecall *recall);
 void ags_file_write_copy_audio_signal(AgsFile *file, AgsRecall *recall);
-void ags_file_write_copy_volume(AgsFile *file, AgsRecall *recall);
 
 void ags_file_write_window(AgsFile *file);
 void ags_file_write_menu_bar(AgsFile *file, AgsMenuBar *menu_bar);
@@ -813,7 +811,7 @@ ags_file_read_play_audio_signal(AgsFile *file, AgsRecall *recall)
 }
 
 void
-ags_file_read_play_volume(AgsFile *file, AgsRecall *recall)
+ags_file_read_volume_channel(AgsFile *file, AgsRecall *recall)
 {
 }
 
@@ -829,11 +827,6 @@ ags_file_read_copy_channel(AgsFile *file, AgsRecall *recall)
 
 void
 ags_file_read_copy_audio_signal(AgsFile *file, AgsRecall *recall)
-{
-}
-
-void
-ags_file_read_copy_volume(AgsFile *file, AgsRecall *recall)
 {
 }
 
@@ -1656,9 +1649,9 @@ ags_file_write_play_audio_signal(AgsFile *file, AgsRecall *recall)
 }
 
 void
-ags_file_write_play_volume(AgsFile *file, AgsRecall *recall)
+ags_file_write_volume_channel(AgsFile *file, AgsRecall *recall)
 {
-  file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PLAY_VOLUME), NULL);
+  file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_VOLUME_CHANNEL), NULL);
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
@@ -1680,13 +1673,6 @@ void
 ags_file_write_copy_audio_signal(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_COPY_AUDIO_SIGNAL), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
-}
-
-void
-ags_file_write_recall_volume(AgsFile *file, AgsRecall *recall)
-{
-  file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_RECALL_VOLUME), NULL);
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 

@@ -8,8 +8,7 @@
 #include "../../audio/ags_output.h"
 #include "../../audio/ags_recall.h"
 
-#include "../../audio/recall/ags_play_volume.h"
-#include "../../audio/recall/ags_recall_volume.h"
+#include "../../audio/recall/ags_volume_channel.h"
 
 #include "../ags_pad.h"
 #include "../ags_line.h"

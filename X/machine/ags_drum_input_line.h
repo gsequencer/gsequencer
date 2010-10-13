@@ -26,6 +26,8 @@ struct _AgsDrumInputLine
   AgsLine line;
 
   guint flags;
+
+  GtkVScale *volume;
 };
 
 struct _AgsDrumInputLineClass

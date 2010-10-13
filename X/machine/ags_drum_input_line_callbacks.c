@@ -9,7 +9,7 @@
 #include "../../audio/ags_pattern.h"
 #include "../../audio/ags_recall.h"
 
-#include "../../audio/recall/ags_play_volume.h"
+#include "../../audio/recall/ags_volume_channel.h"
 #include "../../audio/recall/ags_play_channel.h"
 #include "../../audio/recall/ags_copy_pattern_channel.h"
 #include "../../audio/recall/ags_copy_pattern_channel_run.h"
@@ -95,13 +95,6 @@ ags_drum_input_line_play_channel_cancel(AgsRecall *recall, AgsDrumInputLine *dru
 void
 ags_drum_input_line_play_volume_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
-  AgsPlayVolume *play_volume;
-
-  recall->flags |= AGS_RECALL_REMOVE;
-
-  play_volume = AGS_PLAY_VOLUME(recall);
-  g_list_free(play_volume->audio_signal);
-  play_volume->audio_signal = NULL;
 }
 
 void
