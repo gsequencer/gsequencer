@@ -174,13 +174,10 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall, guint audio_channel, gpointer
   source = copy_audio_signal->source;
   stream_source = source->stream_current;
 
-
   if(stream_source == NULL){
-    //    ags_recall_done(recall);
+    ags_recall_done(recall);
     return;
   }
-
-  //  printf("----- copying\n\0");
 
   destination = copy_audio_signal->destination;
   stream_destination = destination->stream_current;

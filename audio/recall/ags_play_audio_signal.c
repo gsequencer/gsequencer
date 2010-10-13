@@ -123,8 +123,6 @@ ags_play_audio_signal_connect(AgsConnectable *connectable)
   
   ags_play_audio_signal_parent_connectable_interface->connect(connectable);
 
-  printf("----- connecting\n\0");
-
   /* AgsPlayAudioSignal */
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(connectable);
 
@@ -141,8 +139,6 @@ ags_play_audio_signal_disconnect(AgsConnectable *connectable)
 void
 ags_play_audio_signal_run_connect(AgsRunConnectable *run_connectable)
 {
-  printf("----- run_connecting\n\0");
-
   ags_play_audio_signal_parent_run_connectable_interface->connect(run_connectable);
 }
 
@@ -246,6 +242,8 @@ ags_play_audio_signal_new(AgsAudioSignal *source, guint audio_channel,
   
   play_audio_signal->source = source;
   play_audio_signal->audio_channel = audio_channel;
+
+  printf("audio_channel = %u\n\0", audio_channel);
 
   return(play_audio_signal);
 }

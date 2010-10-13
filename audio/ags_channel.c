@@ -876,6 +876,9 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
     
     audio = AGS_AUDIO(output->audio);
     
+    /* call audio */
+    ags_audio_play(audio, output->audio_channel, output_recall_id->group_id, stage, do_recall);
+
     /* check if the AgsOutput's group_id is the same of AgsInput */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
       input_has_new_group_id = TRUE;
@@ -925,10 +928,6 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
 					     output_recall_id->group_id,
 					     input_do_recall, input_has_new_group_id);
     }
-    
-    
-    /* call audio */
-    ags_audio_play(audio, output->audio_channel, group_id, stage, do_recall);
     
     /* call output */
     ags_channel_play(output, output_recall_id, stage, do_recall);

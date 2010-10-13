@@ -36,7 +36,8 @@ struct _AgsCopyPatternAudioRun
   guint hide_ref;
   guint hide_ref_counter;
 
-  gulong tic_handler;
+  gulong tic_alloc_handler;
+  gulong tic_count_handler;
 
   AgsDelayAudioRun *delay_audio_run;
   guint bit;

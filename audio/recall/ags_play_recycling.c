@@ -169,8 +169,6 @@ ags_play_recycling_run_connect(AgsRunConnectable *run_connectable)
 
   ags_play_recycling_parent_run_connectable_interface->connect(run_connectable);
 
-  printf("ags_play_recycling_run_connect\n\0");
-
   /* AgsPlayRecycling */
   play_recycling = AGS_PLAY_RECYCLING(run_connectable);
 
@@ -250,8 +248,6 @@ ags_play_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   play_recycling = (AgsPlayRecycling *) recall;
   copy = (AgsPlayRecycling *) AGS_RECALL_CLASS(ags_play_recycling_parent_class)->duplicate(recall, recall_id);
 
-  printf("debug 0\n\0");
-
   copy->devout = play_recycling->devout;
   copy->source = play_recycling->source;
   copy->audio_channel = play_recycling->audio_channel;
@@ -266,8 +262,6 @@ ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
   AgsPlayAudioSignal *play_audio_signal;  
   guint audio_channel;
 
-  printf("ags_play_recycling_source_add_audio_signal\n\0");
-
   audio_signal->stream_current = audio_signal->stream_beginning;
 
   play_audio_signal = ags_play_audio_signal_new(audio_signal, play_recycling->audio_channel,
@@ -275,14 +269,6 @@ ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
 
   audio_channel = AGS_PLAY_CHANNEL(AGS_RECALL(play_recycling)->parent)->source->audio_channel;
   ags_recall_add_child(AGS_RECALL(play_recycling), AGS_RECALL(play_audio_signal), audio_channel);
-
-    if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_recycling)->flags)) == 0)
-      printf("what the hell\n\0");
-
-    if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_audio_signal)->flags)) != 0)
-      printf("everything cool\n\0");
-    else
-      printf(" ---- ehrm ---- \n\0");
 
   g_signal_connect((GObject *) play_audio_signal, "done\0",
 		   G_CALLBACK(ags_play_recycling_play_audio_signal_done), NULL);
@@ -294,8 +280,6 @@ ags_play_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 						    AgsAudioSignal *audio_signal,
 						    AgsPlayRecycling *play_recycling)
 {
-  printf("ags_play_recycling_source_add_audio_signal_callback\n\0");
-
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(play_recycling)->recall_id->group_id)
@@ -348,8 +332,7 @@ void
 ags_play_recycling_play_audio_signal_done(AgsRecall *recall,
 					  gpointer data)
 {
-  fprintf(stdout, "ags_play_recycling_play_audio_signal_done\n\0");
-  recall->flags |= AGS_RECALL_REMOVE;
+  recall->flags |= AGS_RECALL_REMOVE | AGS_RECALL_HIDE;
 }
 
 AgsPlayRecycling*
@@ -361,7 +344,7 @@ ags_play_recycling_new(AgsRecycling *source, guint audio_channel,
   play_recycling = (AgsPlayRecycling *) g_object_new(AGS_TYPE_PLAY_RECYCLING, NULL);
 
   play_recycling->source = source;
-
+  play_recycling->audio_channel = audio_channel;
   play_recycling->devout = devout;
 
   return(play_recycling);

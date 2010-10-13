@@ -20,8 +20,11 @@ void ags_copy_pattern_audio_run_finalize(GObject *gobject);
 AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
-void ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
-					     AgsCopyPatternAudioRun *copy_pattern_audio_run);
+void ags_copy_pattern_audio_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
+						   AgsCopyPatternAudioRun *copy_pattern_audio_run);
+
+void ags_copy_pattern_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
+						   AgsCopyPatternAudioRun *copy_pattern_audio_run);
 
 static gpointer ags_copy_pattern_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_audio_run_parent_connectable_interface;
@@ -141,16 +144,19 @@ ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable)
 
   ags_copy_pattern_audio_run_parent_run_connectable_interface->connect(run_connectable);
 
-  printf("ags_copy_pattern_audio_run_run_connect\n\0");
-
   /* AgsCopyPattern */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(run_connectable);
 
   copy_pattern_audio_run->flags |= AGS_COPY_PATTERN_AUDIO_RUN_RUN_CONNECTED;
 
-  copy_pattern_audio_run->tic_handler =
-    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic\0",
-		     G_CALLBACK(ags_copy_pattern_audio_run_tic_callback), copy_pattern_audio_run);
+  copy_pattern_audio_run->tic_alloc_handler =
+    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_alloc\0",
+		     G_CALLBACK(ags_copy_pattern_audio_run_tic_alloc_callback), copy_pattern_audio_run);
+
+  copy_pattern_audio_run->tic_count_handler =
+    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_count\0",
+		     G_CALLBACK(ags_copy_pattern_audio_run_tic_count_callback), copy_pattern_audio_run);
+
 }
 
 void
@@ -164,7 +170,8 @@ ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable)
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(run_connectable);
 
   copy_pattern_audio_run->flags &= (~AGS_COPY_PATTERN_AUDIO_RUN_RUN_CONNECTED);
-  g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run), copy_pattern_audio_run->tic_handler);
+  g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run), copy_pattern_audio_run->tic_alloc_handler);
+  g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run), copy_pattern_audio_run->tic_count_handler);
 }
 
 void
@@ -238,8 +245,8 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
 }
 
 void
-ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
-					AgsCopyPatternAudioRun *copy_pattern_audio_run)
+ags_copy_pattern_audio_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
+					      AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
@@ -252,10 +259,10 @@ ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint
     GList *list;
 
     list = AGS_RECALL(copy_pattern_audio)->recall_channel;
-
+    
     while(list != NULL){
       copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
-
+      
       if(copy_pattern_channel->destination->audio_channel == audio_channel){
 	goto ags_copy_pattern_audio_run_tic_callback0;
       }
@@ -282,22 +289,30 @@ ags_copy_pattern_audio_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint
       recycling = recycling->next;
     }
   }
+}
+
+void
+ags_copy_pattern_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
+					      AgsCopyPatternAudioRun *copy_pattern_audio_run)
+{
+  AgsCopyPatternAudio *copy_pattern_audio;
+
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL(copy_pattern_audio_run)->recall_audio);
+
 
   if(copy_pattern_audio_run->hide_ref != 0)
     copy_pattern_audio_run->hide_ref_counter++;
-    
-  if(copy_pattern_audio_run->hide_ref_counter != copy_pattern_audio_run->hide_ref){
-    return;
+
+  if(copy_pattern_audio_run->hide_ref_counter == copy_pattern_audio_run->hide_ref){
+    copy_pattern_audio_run->hide_ref_counter = 0;
+
+    if(copy_pattern_audio_run->bit == copy_pattern_audio->length - 1){
+      if(copy_pattern_audio->loop ||
+	 copy_pattern_audio_run->recall_ref == 0)
+	copy_pattern_audio_run->bit = 0;
+    }else
+      copy_pattern_audio_run->bit++;
   }
-
-  copy_pattern_audio_run->hide_ref_counter = 0;
-
-  if(copy_pattern_audio_run->bit == copy_pattern_audio->length - 1){
-    if(copy_pattern_audio->loop ||
-       copy_pattern_audio_run->recall_ref == 0)
-      copy_pattern_audio_run->bit = 0;
-  }else
-    copy_pattern_audio_run->bit++;
 }
 
 AgsCopyPatternAudioRun*

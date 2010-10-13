@@ -31,8 +31,9 @@ void ags_copy_pattern_channel_run_cancel(AgsRecall *recall, gpointer data);
 void ags_copy_pattern_channel_run_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
-void ags_copy_pattern_channel_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel,
-					       AgsCopyPatternChannelRun *copy_pattern_channel_run);
+void ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
+						     guint audio_channel,
+						     AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
@@ -174,9 +175,9 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   }
   */
 
-  copy_pattern_channel_run->tic_handler =
-    g_signal_connect_after(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic\0",
-			   G_CALLBACK(ags_copy_pattern_channel_run_tic_callback), copy_pattern_channel_run);
+  copy_pattern_channel_run->tic_alloc_handler =
+    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_alloc\0",
+		     G_CALLBACK(ags_copy_pattern_channel_run_tic_alloc_callback), copy_pattern_channel_run);
 }
 
 void
@@ -191,7 +192,7 @@ ags_copy_pattern_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL(copy_pattern_channel_run)->recall_audio_run);
 
-  g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), copy_pattern_channel_run->tic_handler);
+  g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), copy_pattern_channel_run->tic_alloc_handler);
 }
 
 void
@@ -233,7 +234,6 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall, guint audio_channel
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->delay_audio_run),
 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
   copy_pattern_audio_run->recall_ref++;
-  fprintf(stdout, "ags_copy_pattern_channel_run_run_init_pre - line: %u\n\0", copy_pattern_channel->source->line);
 }
 
 void
@@ -280,7 +280,9 @@ ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id
 }
 
 void
-ags_copy_pattern_channel_run_tic_callback(AgsDelayAudioRun *delay_audio_run, guint audio_channel, AgsCopyPatternChannelRun *copy_pattern_channel_run)
+ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
+						guint audio_channel,
+						AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AgsChannel *output;
   AgsCopyPatternAudio *copy_pattern_audio;
@@ -291,57 +293,13 @@ ags_copy_pattern_channel_run_tic_callback(AgsDelayAudioRun *delay_audio_run, gui
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(AGS_RECALL(copy_pattern_channel_run)->recall_channel);
 
   //  pthread_mutex_lock(&mutex);
-  if(copy_pattern_channel->source->audio_channel != audio_channel)
+  if(copy_pattern_channel->source->audio_channel != audio_channel){
     return;
+  }
 
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL(copy_pattern_channel_run)->recall_audio);
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL(copy_pattern_channel_run)->recall_audio_run);
 
-  /*
-  if(copy_pattern_audio_run->bit == copy_pattern_audio->length){
-    //      pthread_mutex_unlock(&mutex);
-    if(copy_pattern_audio->loop){
-	AgsRecycling *recycling;
-	AgsAudioSignal *audio_signal;
-
-	recycling = copy_pattern_channel->destination->first_recycling;
-
-	if(recycling != NULL){
-	  while(recycling != copy_pattern_channel->destination->last_recycling->next){
-	    audio_signal = ags_audio_signal_new((GObject *) recycling,
-						(GObject *) AGS_RECALL(copy_pattern_channel_run)->recall_id);
-	    audio_signal->devout = (GObject *) copy_pattern_audio->devout;
-	    ags_audio_signal_connect(audio_signal);
-	    
-	    ags_recycling_add_audio_signal(recycling,
-					   audio_signal);
-	    
-	    recycling = recycling->next;
-	  }
-	}
-
-	//	copy_pattern->shared_audio_run->bit = 0;
-	goto ags_copy_pattern_pre0;
-    }else{
-      if((AGS_RECALL_PERSISTENT & (AGS_RECALL(delay_audio_run)->flags)) != 0)
-	AGS_RECALL(delay_audio_run)->flags &= (~AGS_RECALL_PERSISTENT);
-
-      if(AGS_RECALL(copy_pattern_channel_run)->child == NULL){
-	//	fprintf(stdout, "copy_pattern->recall.recall == NULL\n\0");
-	ags_recall_done((AgsRecall *) copy_pattern_channel_run);
-
-	ags_recall_notify_dependency(AGS_RECALL(delay_audio_run),
-				     AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
-	copy_pattern_audio_run->recall_ref--;
-	//	copy_pattern->shared_audio_run->bit = 0;
-      }
-      //      pthread_mutex_unlock(&mutex);
-    }
-  }else{
-    //    pthread_mutex_unlock(&mutex);
-    ags_copy_pattern_pre0:
-  */
-    //    fprintf(stdout, "ags_copy_pattern - line: %u\n\0", copy_pattern->shared_channel->source->line);
 
   if(ags_pattern_get_bit((AgsPattern *) AGS_COPY_PATTERN_CHANNEL(AGS_RECALL(copy_pattern_channel_run)->recall_channel)->pattern,
 			 copy_pattern_audio->i, copy_pattern_audio->j,

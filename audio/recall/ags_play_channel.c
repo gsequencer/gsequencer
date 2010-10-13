@@ -175,8 +175,6 @@ ags_play_channel_run_connect(AgsRunConnectable *run_connectable)
 
   ags_play_channel_parent_run_connectable_interface->connect(run_connectable);
 
-  printf("ags_play_channel_run_connect\n\0");
-
   /* AgsPlayChannel */
   play_channel = AGS_PLAY_CHANNEL(run_connectable);
 
@@ -257,14 +255,10 @@ ags_play_channel_map_play_recycling(AgsPlayChannel *play_channel)
   AgsRecycling *source_recycling;
   AgsPlayRecycling *play_recycling;
 
-  printf("fault?\n\0");
-
   source_recycling = play_channel->source->first_recycling;
 
   if(source_recycling != NULL){
     while(source_recycling != play_channel->source->last_recycling->next){
-      printf("--- loopi ---\n\0");
-
       play_recycling = ags_play_recycling_new(source_recycling, play_channel->source->audio_channel,
 					      play_channel->devout);
 

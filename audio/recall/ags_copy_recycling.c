@@ -187,8 +187,6 @@ ags_copy_recycling_run_connect(AgsRunConnectable *run_connectable)
 
   ags_copy_recycling_parent_run_connectable_interface->connect(run_connectable);
 
-  printf("ags_copy_recycling_run_connect\n\0");
-
   /* AgsCopyRecycling */
   copy_recycling = AGS_COPY_RECYCLING(run_connectable);
 
@@ -314,6 +312,8 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 
   audio_channel = AGS_COPY_CHANNEL(AGS_RECALL(copy_recycling)->parent)->source->audio_channel;
   ags_recall_add_child(AGS_RECALL(copy_recycling), AGS_RECALL(copy_audio_signal), audio_channel);
+  g_signal_connect(G_OBJECT(copy_audio_signal), "done\0",
+		   G_CALLBACK(ags_copy_recycling_copy_audio_signal_done), copy_recycling);
 }
 
 void
@@ -433,7 +433,7 @@ ags_copy_recycling_copy_audio_signal_done(AgsRecall *recall,
 					  gpointer data)
 {
   fprintf(stdout, "ags_copy_recycling_copy_audio_signal_done\n\0");
-  recall->flags |= AGS_RECALL_REMOVE;
+  recall->flags |= AGS_RECALL_REMOVE | AGS_RECALL_HIDE;
 }
 
 AgsCopyRecycling*

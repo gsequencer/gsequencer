@@ -192,7 +192,7 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
       stream = g_list_alloc();
     stream->data = (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
 
-    for(i = audio_signal->length + 1; i < length; i++){
+    for(i = audio_signal->length; i < length; i++){
       stream->next = g_list_alloc();
       stream->next->prev = stream;
       stream = stream->next;

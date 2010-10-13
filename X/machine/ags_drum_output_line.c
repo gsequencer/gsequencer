@@ -140,7 +140,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
       
       if(recall_shared != NULL){
 	delay_audio = (AgsDelayAudio *) recall_shared->data;
-	stop = ((guint) drum->length_spin->adjustment->value) * (delay_audio->delay + 1);
+	stop = ((guint) drum->length_spin->adjustment->value) * (delay_audio->delay);
       }
     }else{
       stop = 1;
