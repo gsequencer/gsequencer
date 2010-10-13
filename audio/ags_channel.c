@@ -1200,7 +1200,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
 	recall = ags_recall_duplicate(recall, recall_id);
-	
+
 	if(recall_id->parent_group_id == 0)
 	  channel->play = g_list_append(channel->play, recall);
 	else
@@ -1357,6 +1357,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   void ags_channel_recursive_play_init_duplicate_down(AgsChannel *output,
 						      guint group_id){
     AgsAudio *audio;
+    static guint level = 0;
 
     /* AgsAudio */
     audio = AGS_AUDIO(output->audio);

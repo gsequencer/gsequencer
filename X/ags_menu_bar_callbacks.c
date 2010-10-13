@@ -300,8 +300,8 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
   synth->machine.audio->audio_channels = 1;
-  ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_INPUT, 2);
+  ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
 
   gtk_widget_show_all((GtkWidget *) synth);
 }

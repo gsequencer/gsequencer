@@ -243,7 +243,5 @@ ags_play_audio_signal_new(AgsAudioSignal *source, guint audio_channel,
   play_audio_signal->source = source;
   play_audio_signal->audio_channel = audio_channel;
 
-  printf("audio_channel = %u\n\0", audio_channel);
-
   return(play_audio_signal);
 }

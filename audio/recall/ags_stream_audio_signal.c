@@ -3,6 +3,8 @@
 #include "../../object/ags_connectable.h"
 #include "../../object/ags_run_connectable.h"
 
+#include "ags_stream_channel.h"
+
 void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signal);
 void ags_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);

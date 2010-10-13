@@ -386,21 +386,12 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   if(type == AGS_TYPE_INPUT){
 
     if(grow){
-      AgsStreamChannel *stream_channel;
-
       source = ags_channel_nth(audio->input, pads_old);
 
       while(source != NULL){
 	source->pattern = g_list_alloc();
 	source->pattern->data = (gpointer) ags_pattern_new();
 	ags_pattern_set_dim((AgsPattern *) source->pattern->data, 1, 9, 32);
-
-	/* AgsStreamChannel */
-	stream_channel = ags_stream_channel_new(source);
-	AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
-	  
-	source->recall = g_list_append(source->recall, (gpointer) stream_channel);
-	ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
 	
 	source = source->next;
       }
@@ -471,8 +462,6 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
     destination = destination_start;
 
     while(destination != NULL){
-      printf("loop\n\0");
-
       /* AgsCopyChannel */
       g_object_ref(G_OBJECT(destination));
       

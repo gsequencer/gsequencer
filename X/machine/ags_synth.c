@@ -15,6 +15,8 @@
 #include "../../audio/ags_audio_signal.h"
 #include "../../audio/ags_synths.h"
 
+#include "../../audio/recall/ags_stream_channel.h"
+
 #include <math.h>
 
 void ags_synth_class_init(AgsSynthClass *synth);
@@ -188,11 +190,11 @@ ags_synth_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_synth_update_callback), (gpointer) synth);
 
   /* AgsAudio */
-  g_signal_connect(G_OBJECT(synth->machine.audio), "set_audio_channels\0",
-		   G_CALLBACK(ags_synth_set_audio_channels), NULL);
+  g_signal_connect_after(G_OBJECT(synth->machine.audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_synth_set_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(synth->machine.audio), "set_pads\0",
-		   G_CALLBACK(ags_synth_set_pads), NULL);
+  g_signal_connect_after(G_OBJECT(synth->machine.audio), "set_pads\0",
+			 G_CALLBACK(ags_synth_set_pads), NULL);
 }
 
 void
@@ -247,7 +249,7 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
 
   synth = (AgsSynth *) audio->machine;
 
-  if(type == AGS_TYPE_INPUT)
+  if(type == AGS_TYPE_INPUT){
     if(pads > pads_old){
       AgsOscillator *oscillator;
       guint i;
@@ -300,6 +302,23 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
 	list4 = list5;
       }
     }
+  }else{
+    AgsChannel *source;
+    AgsStreamChannel *stream_channel;
+      
+    source = ags_channel_nth(audio->output, pads_old);
+      
+    while(source != NULL){
+      /* AgsStreamChannel */
+      stream_channel = ags_stream_channel_new(source);
+      AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
+      
+      source->recall = g_list_append(source->recall, (gpointer) stream_channel);
+      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
+
+      source = source->next;
+    }
+  }
 }
 
 void
