@@ -183,8 +183,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   GList *list;
   guint i;
 
-  fprintf(stdout, "ags_drum_input_line_map_recall\n\0");
-
   line = AGS_LINE(drum_input_line);
 
   audio = AGS_AUDIO(line->channel->audio);
@@ -213,8 +211,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 		     G_CALLBACK(ags_drum_input_line_play_channel_cancel), drum_input_line);
 
     /* AgsStreamChannel */
-    printf("stream_channel_new\n\0");
-
     stream_channel = ags_stream_channel_new(source);
     AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
     

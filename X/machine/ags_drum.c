@@ -107,7 +107,6 @@ void
 ags_drum_init(AgsDrum *drum)
 {
   AgsAudio *audio;
-  AgsChannel *template;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
   AgsCopyPatternAudio *copy_pattern_audio;
@@ -126,15 +125,14 @@ ags_drum_init(AgsDrum *drum)
 			 G_CALLBACK(ags_drum_parent_set_callback), (gpointer) drum);
 
 
-  drum->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-				 AGS_AUDIO_INPUT_HAS_RECYCLING |
-				 AGS_AUDIO_INPUT_TAKES_FILE |
-				 AGS_AUDIO_SYNC |
-				 AGS_AUDIO_ASYNC);
+  audio = drum->machine.audio;
+  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_TAKES_FILE |
+		   AGS_AUDIO_SYNC |
+		   AGS_AUDIO_ASYNC);
 
   drum->flags = 0;
-
-  audio = drum->machine.audio;
 
   /* create AgsDelayAudio in audio->play */
   delay_audio = ags_delay_audio_new(audio,

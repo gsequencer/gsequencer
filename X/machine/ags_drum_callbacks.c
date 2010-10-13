@@ -191,7 +191,6 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
     copy_pattern_audio->stream_length = stream_length;
   }
 
-
   channel = drum->machine.audio->output;
 
   while(channel != NULL){

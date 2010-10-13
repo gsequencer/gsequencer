@@ -27,8 +27,6 @@ struct _AgsMatrix
 
   guint flags;
 
-  AgsDelayAudio *delay_audio;
-
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
@@ -53,6 +51,8 @@ struct _AgsMatrixClass
 };
 
 GType ags_matrix_get_type(void);
+
+void ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start);
 
 void ags_matrix_draw_gutter(AgsMatrix *matrix);
 void ags_matrix_draw_matrix(AgsMatrix *matrix);

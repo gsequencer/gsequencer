@@ -23,29 +23,75 @@ void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
 {
   AgsWindow *window;
+  AgsAudio *audio;
   AgsDelayAudio *delay_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
-  double tic;
+  GList *list;
+  double bpm, tic;
+  guint delay, length, stream_length;
 
   if(old_parent != NULL)
     return;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
+  audio = matrix->machine.audio;
+  audio->devout = (GObject *) window->devout;
+
   matrix->machine.name = g_strdup_printf("Default %d\0", window->counter->matrix);
   window->counter->matrix++;
 
-  /* AgsDelay related */
-  delay_audio = matrix->delay_audio;
-
+  /* delay related */
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
-  delay_audio->delay = (guint) round(((double)window->devout->frequency / (double)window->devout->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
+  bpm = window->navigation->bpm->adjustment->value;
+  printf("tic = %f\n\0", tic);
+  printf("bpm = %f\n\0", bpm);
+  delay = (guint) round(((double)window->devout->frequency /
+			 (double)window->devout->buffer_size) *
+			(60.0 / bpm) *
+			tic);
 
-  /* AgsCopyPattern related */
-  copy_pattern_audio = matrix->copy_pattern_audio;
+  /* AgsDelayAudio */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_DELAY_AUDIO);
 
-  copy_pattern_audio->devout = window->devout;
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
 
-  copy_pattern_audio->stream_length = (guint)matrix->length_spin->adjustment->value * (guint)(delay_audio->delay + 1) + 1;
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_DELAY_AUDIO);
+
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
+
+  /* pattern related */
+  length = (guint) matrix->length_spin->adjustment->value;
+  stream_length = length * (delay + 1) + 1;
+
+
+  /* AgsCopyPatternAudio */
+  list = ags_recall_find_type(matrix->machine.audio->play,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->devout = window->devout;
+    copy_pattern_audio->stream_length = stream_length;
+  }
+
+  list = ags_recall_find_type(matrix->machine.audio->recall,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->devout = window->devout;
+    copy_pattern_audio->stream_length = stream_length;
+  }
 
   fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
@@ -159,23 +205,71 @@ void
 ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
+  AgsDevout *devout;
+  AgsAudio *audio;
   AgsChannel *channel;
   AgsDelayAudio *delay_audio;
-  double tic;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  GList *list;
+  double bpm, tic;
+  guint delay, length, stream_length;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW);
 
+  audio = matrix->machine.audio;
+  devout = AGS_DEVOUT(audio->devout);
+
+  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
 
-  delay_audio = matrix->delay_audio;
-  delay_audio->delay = (guint) round(((double)AGS_DEVOUT(matrix->machine.audio->devout)->frequency / (double)AGS_DEVOUT(matrix->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
+  delay = (guint) round(((double)devout->frequency /
+			 (double)devout->buffer_size) *
+			(60.0 / bpm) *
+			tic);
 
-  matrix->copy_pattern_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_audio->delay + 1) + 1;
+  /* AgsDelayAudio */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_DELAY_AUDIO);
+
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
+
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_DELAY_AUDIO);
+
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
+
+  length = (guint) matrix->length_spin->adjustment->value;
+  stream_length = length * (delay + 1) + 1;
+
+  /* AgsCopyPatternAudio */
+  list = ags_recall_find_type(matrix->machine.audio->play,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->stream_length = stream_length;
+  }
+
+  list = ags_recall_find_type(matrix->machine.audio->recall,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->stream_length = stream_length;
+  }
 
   channel = matrix->machine.audio->output;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_audio->stream_length);
+    ags_channel_resize_audio_signal(channel, stream_length);
 
     channel = channel->next;
   }
@@ -186,16 +280,48 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsChannel *channel;
   AgsDelayAudio *delay_audio;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  GList *list;
+  guint delay, length, stream_length;
 
   channel = matrix->machine.audio->output;
 
-  delay_audio = matrix->delay_audio;
+  /* AgsDelayAudio */
+  list = ags_recall_find_type(matrix->machine.audio->play,
+			      AGS_TYPE_DELAY_AUDIO);
 
-  matrix->copy_pattern_audio->length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
-  matrix->copy_pattern_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_audio->delay + 1) + 1;
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay = delay_audio->delay;
+  }else
+    delay = 0;
+
+  length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  stream_length = length * (delay + 1) + 1;
+
+  /* AgsCopyPatternAudio */		   
+  list = ags_recall_find_type(matrix->machine.audio->play,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->length = length;
+    copy_pattern_audio->stream_length = stream_length;
+  }
+
+  list = ags_recall_find_type(matrix->machine.audio->recall,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->length = length;
+    copy_pattern_audio->stream_length = stream_length;
+  }
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_audio->length);
+    ags_channel_resize_audio_signal(channel, stream_length);
 
     channel = channel->next;
   }
@@ -205,34 +331,101 @@ void
 ags_matrix_tic_callback(GtkWidget *option_menu, AgsMatrix *matrix)
 {
   AgsWindow *window;
+  AgsDevout *devout;
+  AgsAudio *audio;
   AgsChannel *channel;
   AgsDelayAudio *delay_audio;
-  double tic;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  GList *list;
+  double bpm, tic;
+  guint length, stream_length, delay;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) matrix);
+  audio = matrix->machine.audio;
+  devout = AGS_DEVOUT(audio->devout);
 
+  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
   tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
+  delay = (guint) round(((double)devout->frequency /
+			       (double)devout->buffer_size) *
+			      (60.0 / bpm) *
+			      tic);
 
-  delay_audio = matrix->delay_audio;
-  delay_audio->delay = (guint) round(((double)AGS_DEVOUT(matrix->machine.audio->devout)->frequency / (double)AGS_DEVOUT(matrix->machine.audio->devout)->buffer_size) * (60.0 / gtk_adjustment_get_value(window->navigation->bpm->adjustment)) * tic);
+  /* AgsDelayAudio */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_DELAY_AUDIO);
 
-  matrix->copy_pattern_audio->stream_length = ((guint)matrix->length_spin->adjustment->value) * (delay_audio->delay + 1) + 1;
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
+
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_DELAY_AUDIO);
+
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
+
+  length = (guint) matrix->length_spin->adjustment->value;
+  stream_length = length * (delay + 1) + 1;
+
+  /* AgsCopyPatternAudio */
+  list = ags_recall_find_type(matrix->machine.audio->play,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->stream_length = stream_length;
+  }
+
+  list = ags_recall_find_type(matrix->machine.audio->recall,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->stream_length = stream_length;
+  }
 
   channel = matrix->machine.audio->output;
 
   while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, matrix->copy_pattern_audio->stream_length);
+    ags_channel_resize_audio_signal(channel, stream_length);
 
     channel = channel->next;
   }
-
-  channel = matrix->machine.audio->input;
 }
 
 void
 ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 {
-  matrix->copy_pattern_audio->loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
+  AgsCopyPatternAudio *copy_pattern_audio;
+  GList *list;
+  gboolean loop;
+
+  loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
+
+  /* AgsCopyPatternAudio */
+  list = ags_recall_find_type(matrix->machine.audio->play,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->loop = loop;
+  }
+
+  list = ags_recall_find_type(matrix->machine.audio->recall,
+			      AGS_TYPE_COPY_PATTERN_AUDIO);
+
+  if(list != NULL){
+    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+    copy_pattern_audio->loop = loop;
+  }
 }
 
 void
