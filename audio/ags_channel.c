@@ -519,7 +519,11 @@ ags_channel_set_recycling(AgsChannel *channel,
     else
       return(TRUE);
 
-    output = ags_channel_nth(audio->output, (((AGS_AUDIO_ASYNC & (audio->flags)) == 0) ? input->audio_channel: input->line));
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+      output = ags_channel_nth(audio->output, input->audio_channel);
+    }else{
+      output = ags_channel_nth(audio->output, input->line);
+    }
       
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
       ags_channel_set_recycling_emit_changed_output(output);
@@ -626,7 +630,7 @@ ags_channel_set_recycling(AgsChannel *channel,
 
     ags_channel_set_recycling_emit_changed_input(channel);
 
-    output = ags_channel_nth(audio->output, (((AGS_AUDIO_ASYNC & (audio->flags)) == 0) ? channel->audio_channel: channel->line));
+    output = ags_channel_nth(audio->output, (((AGS_AUDIO_ASYNC & (audio->flags)) == 0) ? channel->line: channel->audio_channel));
     
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
       ags_channel_set_recycling_emit_changed_output(output);

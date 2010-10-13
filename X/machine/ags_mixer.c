@@ -106,7 +106,7 @@ ags_mixer_init(AgsMixer *mixer)
   mixer->machine.input = (GtkContainer *) mixer->pad;
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->pad);
 
-  mixer->machine.audio->flags |= (AGS_AUDIO_SYNC | AGS_AUDIO_ASYNC);
+  mixer->machine.audio->flags |= (AGS_AUDIO_ASYNC);
 }
 
 void

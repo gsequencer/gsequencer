@@ -193,7 +193,7 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(mixer->machine.audio,
-		     AGS_TYPE_OUTPUT, 8);  
+		     AGS_TYPE_OUTPUT, 1);
 
   gtk_widget_show_all(widget);
 }
