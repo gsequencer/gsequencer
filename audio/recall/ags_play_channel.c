@@ -259,6 +259,8 @@ ags_play_channel_map_play_recycling(AgsPlayChannel *play_channel)
 
   if(source_recycling != NULL){
     while(source_recycling != play_channel->source->last_recycling->next){
+      printf("mapping\n\0");
+
       play_recycling = ags_play_recycling_new(source_recycling, play_channel->source->audio_channel,
 					      play_channel->devout);
 
