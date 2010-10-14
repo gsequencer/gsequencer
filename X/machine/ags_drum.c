@@ -431,7 +431,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			    gpointer data)
 {
   AgsDrum *drum;
-  GList *list_output_pad, *list_output_pad_next, *list_input_pad, *list_input_pad_next;
+  GList *list_output_pad, *list_input_pad;
   guint i, j;
 
   drum = (AgsDrum *) audio->machine;
@@ -509,7 +509,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 	list_output_pad = list_output_pad->next;
     }
   }else if(audio_channels < audio_channels_old){
-    GList *list_line, *list_line_next;
+    GList *list_output_pad_next, *list_input_pad_next;
 
     list_output_pad = gtk_container_get_children((GtkContainer *) drum->output_pad);
     list_input_pad = gtk_container_get_children((GtkContainer *) drum->input_pad);
@@ -535,30 +535,16 @@ ags_drum_set_audio_channels(AgsAudio *audio,
     }else{
       /* AgsInput */
       for(i = 0; list_input_pad != NULL; i++){
-	list_line = g_list_nth(gtk_container_get_children((GtkContainer *) gtk_option_menu_get_menu(AGS_PAD(list_input_pad->data)->option)), audio_channels);
-
-	for(j = audio_channels; j < audio_channels_old; j++){
-	  list_line_next = list_line->next;
-
-	  gtk_widget_destroy((GtkWidget *) list_line->data);
-
-	  list_line = list_line_next;
-	}
+	ags_pad_resize_lines(AGS_PAD(list_input_pad->data), AGS_TYPE_DRUM_INPUT_PAD,
+			     audio_channels, audio_channels_old);
 
 	list_input_pad = list_input_pad->next;
       }
 
       /* AgsOutput */
       for(i = 0; list_output_pad != NULL; i++){
-	list_line = g_list_nth(gtk_container_get_children((GtkContainer *) gtk_option_menu_get_menu(AGS_PAD(list_output_pad->data)->option)), audio_channels);
-
-	for(j = audio_channels; j < audio_channels_old; j++){
-	  list_line_next = list_line->next;
-
-	  gtk_widget_destroy((GtkWidget *) list_line->data);
-
-	  list_line = list_line_next;
-	}
+	ags_pad_resize_lines(AGS_PAD(list_output_pad->data), AGS_TYPE_DRUM_OUTPUT_PAD,
+			     audio_channels, audio_channels_old);
 
 	list_output_pad = list_output_pad->next;
       }
@@ -654,15 +640,6 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 
 	channel = channel->next_pad;
       }
-
-      /* update recalls in AgsDrumInputPads */
-      list = gtk_container_get_children(GTK_CONTAINER(drum->input_pad));
-
-      for(i = 0; i < audio->input_pads; i++){
-
-
-	list = list->next;
-      }
     }else if(pads_old > pads){
       /* destroy AgsPad's */
       list = gtk_container_get_children(GTK_CONTAINER(drum->output_pad));
@@ -676,8 +653,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 	list = list_next;
       }
     }
-  }
-  
+  }  
 }
 
 void

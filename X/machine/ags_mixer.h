@@ -21,7 +21,7 @@ struct _AgsMixer
 {
   AgsMachine machine;
 
-  GtkHBox *pad;
+  GtkHBox *input_pad;
 };
 
 struct _AgsMixerClass

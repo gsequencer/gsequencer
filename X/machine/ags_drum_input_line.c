@@ -92,8 +92,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
   drum_input_line->flags = 0;
 
-  drum_input_line->volume = (GtkVScale *) gtk_vscale_new_with_range(0.0, 1.25, 0.025);
-  gtk_range_set_value((GtkRange *) drum_input_line->volume, 0.8);
+  drum_input_line->volume = (GtkVScale *) gtk_vscale_new_with_range(0.0, 2.00, 0.025);
+  gtk_range_set_value((GtkRange *) drum_input_line->volume, 1.0);
   gtk_range_set_inverted((GtkRange *) drum_input_line->volume, TRUE);
   gtk_scale_set_digits((GtkScale *) drum_input_line->volume, 3);
   gtk_widget_set_size_request((GtkWidget *) drum_input_line->volume, -1, 100);
@@ -117,8 +117,6 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   AgsDrumInputLine *drum_input_line;
 
   ags_drum_input_line_parent_connectable_interface->connect(connectable);
-
-  fprintf(stdout, "ags_drum_input_line_connect\n\0");
 
   /* AgsDrumInputLine */
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
@@ -144,7 +142,6 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
 
-  fprintf(stdout, "ags_drum_input_line_set_channel\n\0");
   drum_input_line = AGS_DRUM_INPUT_LINE(line);
 
   if(line->channel != NULL){
