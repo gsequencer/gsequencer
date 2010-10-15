@@ -47,8 +47,10 @@ struct _AgsMachineClass
 
 GType ags_machine_get_type(void);
 
-AgsMachine* ags_machine_new();
+GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
+
+AgsMachine* ags_machine_new();
 
 #endif /*__AGS_MACHINE_H__*/

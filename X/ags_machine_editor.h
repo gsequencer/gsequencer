@@ -20,9 +20,15 @@
 typedef struct _AgsMachineEditor AgsMachineEditor;
 typedef struct _AgsMachineEditorClass AgsMachineEditorClass;
 
+typedef enum{
+  AGS_MACHINE_EDITOR_CLOSING   =  1,
+}AgsMachineEditorFlags;
+
 struct _AgsMachineEditor
 {
   GtkDialog dialog;
+
+  guint flags;
 
   AgsMachine *machine;
 

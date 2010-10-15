@@ -2,6 +2,7 @@
 #include "ags_machine_editor_callbacks.h"
 
 #include "../object/ags_connectable.h"
+#include "../object/ags_applicable.h"
 
 #include "../audio/ags_output.h"
 #include "../audio/ags_input.h"
@@ -10,6 +11,7 @@
 
 void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
 void ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_machine_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_machine_editor_init(AgsMachineEditor *machine_editor);
 void ags_machine_editor_set_property(GObject *gobject,
 				     guint prop_id,
@@ -21,6 +23,9 @@ void ags_machine_editor_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_machine_editor_connect(AgsConnectable *connectable);
 void ags_machine_editor_disconnect(AgsConnectable *connectable);
+void ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_machine_editor_apply(AgsApplicable *applicable);
+void ags_machine_editor_reset(AgsApplicable *applicable);
 void ags_machine_editor_destroy(GtkObject *object);
 void ags_machine_editor_show(GtkWidget *widget);
 
@@ -64,6 +69,12 @@ ags_machine_editor_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_machine_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_machine_editor = g_type_register_static(GTK_TYPE_DIALOG,
 						     "AgsMachineEditor\0", &ags_machine_editor_info,
 						     0);
@@ -71,6 +82,10 @@ ags_machine_editor_get_type(void)
     g_type_add_interface_static(ags_type_machine_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_machine_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
   
   return(ags_type_machine_editor);
@@ -117,12 +132,22 @@ ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectab
 }
 
 void
+ags_machine_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_machine_editor_set_update;
+  applicable->apply = ags_machine_editor_apply;
+  applicable->reset = ags_machine_editor_reset;
+}
+
+void
 ags_machine_editor_init(AgsMachineEditor *machine_editor)
 {
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
   gtk_window_set_title((GtkWindow *) machine_editor, g_strdup("properties\0"));
+
+  machine_editor->flags = 0;
 
   machine_editor->machine = NULL;
 
@@ -280,37 +305,63 @@ ags_machine_editor_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsMachineEditor *machine_editor;
+
+  machine_editor = AGS_MACHINE_EDITOR(applicable);
+
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->output_editor), update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->input_editor), update);
+
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->output_link_editor), update);
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->input_link_editor), update);
+
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor->resize_editor), update);
+}
+
+void
+ags_machine_editor_apply(AgsApplicable *applicable)
+{
+  AgsMachineEditor *machine_editor;
+
+  machine_editor = AGS_MACHINE_EDITOR(applicable);
+
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_editor));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_editor));
+
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->output_link_editor));
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->input_link_editor));
+
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor->resize_editor));
+}
+
+void
+ags_machine_editor_reset(AgsApplicable *applicable)
+{
+  AgsMachineEditor *machine_editor;
+
+  machine_editor = AGS_MACHINE_EDITOR(applicable);
+
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_editor));
+
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->output_link_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->input_link_editor));
+
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor->resize_editor));
+}
+
+void
 ags_machine_editor_destroy(GtkObject *object)
 {
+  /* empty */
 }
 
 void
 ags_machine_editor_show(GtkWidget *widget)
 {
-  AgsMachineEditor *machine_editor;
-
-  machine_editor = (AgsMachineEditor *) widget;
-
-  /*
-  gtk_widget_show((GtkWidget *) machine_editor->notebook);
-  gtk_widget_show((GtkWidget *) machine_editor->output_scrolled_window);
-  gtk_widget_show((GtkWidget *) machine_editor->output_editor);
-  gtk_widget_show((GtkWidget *) machine_editor->input_scrolled_window);
-  gtk_widget_show((GtkWidget *) machine_editor->input_editor);
-
-  gtk_widget_show_all((GtkWidget *) machine_editor->output_link_editor);
-  gtk_widget_show_all((GtkWidget *) machine_editor->input_link_editor);
-
-  gtk_widget_show_all((GtkWidget *) machine_editor->output_resize_editor);
-  gtk_widget_show_all((GtkWidget *) machine_editor->input_resize_editor);
-
-  gtk_widget_show_all((GtkWidget *) machine_editor->output_link_editor_scrolled_window);
-  gtk_widget_show_all((GtkWidget *) machine_editor->input_link_editor_scrolled_window);
-
-  gtk_widget_show_all((GtkWidget *) machine_editor->resize_editor_scrolled_window);
-
-  gtk_widget_show_all((GtkWidget *) machine_editor->dialog.action_area);
-*/
+  /* empty */
 }
 
 void

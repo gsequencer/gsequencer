@@ -1,77 +1,124 @@
 #include "ags_link_editor.h"
 #include "ags_link_editor_callbacks.h"
 
+#include "../object/ags_connectable.h"
+#include "../object/ags_applicable.h"
+
 #include "../audio/ags_audio.h"
+#include "../audio/ags_channel.h"
 #include "../audio/ags_input.h"
 
-#include "ags_machine_editor.h"
+#include "ags_machine.h"
 #include "ags_line_editor.h"
 
 void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
 void ags_link_editor_init(AgsLinkEditor *link_editor);
-void ags_link_editor_connect(AgsLinkEditor *link_editor);
+void ags_link_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_link_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+void ags_link_editor_connect(AgsConnectable *connectable);
+void ags_link_editor_disconnect(AgsConnectable *connectable);
+void ags_link_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_link_editor_apply(AgsApplicable *applicable);
+void ags_link_editor_reset(AgsApplicable *applicable);
 void ags_link_editor_destroy(GtkObject *object);
 void ags_link_editor_show(GtkWidget *widget);
 
 GType
 ags_link_editor_get_type(void)
 {
-  static GType link_editor_type = 0;
+  static GType ags_type_link_editor = 0;
 
-  if (!link_editor_type){
-    static const GtkTypeInfo link_editor_info = {
-      "AgsLinkEditor\0",
-      sizeof(AgsLinkEditor), /* base_init */
-      sizeof(AgsLinkEditorClass), /* base_finalize */
-      (GtkClassInitFunc) ags_link_editor_class_init,
-      (GtkObjectInitFunc) ags_link_editor_init,
+  if(!ags_type_link_editor){
+    static const GTypeInfo ags_link_editor_info = {
+      sizeof (AgsLinkEditorClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_link_editor_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsLinkEditor),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_link_editor_init,
     };
 
-    link_editor_type = gtk_type_unique (GTK_TYPE_HBOX, &link_editor_info);
-  }
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_link_editor_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
 
-  return (link_editor_type);
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_link_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_link_editor = g_type_register_static(GTK_TYPE_HBOX,
+						  "AgsLinkEditor\0", &ags_link_editor_info,
+						  0);
+
+    g_type_add_interface_static(ags_type_link_editor,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_link_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
+  }
+  
+  return(ags_type_link_editor);
 }
 
 void
 ags_link_editor_class_init(AgsLinkEditorClass *link_editor)
 {
+  /* empty */
+}
+
+void
+ags_link_editor_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_link_editor_connect;
+  connectable->disconnect = ags_link_editor_disconnect;
+}
+
+void
+ags_link_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_link_editor_set_update;
+  applicable->apply = ags_link_editor_apply;
+  applicable->reset = ags_link_editor_reset;
 }
 
 void
 ags_link_editor_init(AgsLinkEditor *link_editor)
 {
-  GtkHBox *hbox;
-  GtkMenu *menu;
-  GtkMenuItem *item;
+  GtkCellRenderer *cell_renderer;
 
   g_signal_connect_after((GObject *) link_editor, "parent_set\0",
 			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
 
   link_editor->flags = 0;
 
-  gtk_box_pack_start((GtkBox *) link_editor,
-		     (GtkWidget *) gtk_label_new(NULL),
+  /* linking machine */
+  link_editor->combo = (GtkComboBox *) gtk_combo_box_new();
+  gtk_box_pack_start(GTK_BOX(link_editor),
+		     GTK_WIDGET(link_editor->combo),
 		     FALSE, FALSE, 0);
+  
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(link_editor->combo),
+			     cell_renderer,
+			     FALSE); 
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(link_editor->combo),
+				 cell_renderer,
+				 "text", 0,
+				 NULL);
 
-  link_editor->option = (GtkOptionMenu *) gtk_option_menu_new();
-  menu = (GtkMenu *) gtk_menu_new();
-
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("NULL \0"));
-  g_object_set_data((GObject *) item, g_type_name(AGS_TYPE_MACHINE), NULL);
-  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
-
-  gtk_option_menu_set_menu(link_editor->option, (GtkWidget *) menu);
-  gtk_box_pack_start((GtkBox *) link_editor,
-		     (GtkWidget *) link_editor->option,
-		     FALSE, FALSE, 0);
-
+  /* link with line */
   link_editor->spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_box_pack_start((GtkBox *) link_editor,
-		     (GtkWidget *) link_editor->spin_button,
+  gtk_box_pack_start(GTK_BOX(link_editor),
+		     GTK_WIDGET(link_editor->spin_button),
 		     FALSE, FALSE, 0);
 
   link_editor->audio_file = NULL;
@@ -80,54 +127,97 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 }
 
 void
-ags_link_editor_connect(AgsLinkEditor *link_editor)
+ags_link_editor_connect(AgsConnectable *connectable)
 {
-  AgsMachineEditor *machine_editor;
-  AgsLineEditor *line_editor;
-  GList *list;
-  gboolean can_file_link;
+  AgsLinkEditor *link_editor;
 
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) link_editor, AGS_TYPE_LINE_EDITOR);
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_editor, AGS_TYPE_MACHINE_EDITOR);
+  link_editor = AGS_LINK_EDITOR(connectable);
 
   g_signal_connect((GObject *) link_editor, "destroy\0",
 		   G_CALLBACK(ags_link_editor_destroy_callback), (gpointer) link_editor);
 
   g_signal_connect((GObject *) link_editor, "show\0",
 		   G_CALLBACK(ags_link_editor_show_callback), (gpointer) link_editor);
+}
 
-  //  g_signal_connect((GObject *) link_editor->option, "changed\0",
-  //		   G_CALLBACK(ags_link_editor_option_changed_callback), (gpointer) link_editor);
+void
+ags_link_editor_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
+}
 
-  list = GTK_MENU_SHELL(gtk_option_menu_get_menu(link_editor->option))->children;
-  can_file_link = (AGS_IS_INPUT(line_editor->channel) && (AGS_AUDIO_INPUT_TAKES_FILE & machine_editor->machine->audio->flags) != 0) ? TRUE: FALSE;
+void
+ags_link_editor_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsLinkEditor *link_editor;
 
-  while((can_file_link && list->next != NULL) || (!can_file_link && list != NULL)){
-    g_signal_connect(G_OBJECT(list->data), "activate\0",
-		     G_CALLBACK(ags_link_editor_menu_item_callback), (gpointer) link_editor);
-    list = list->next;
+  link_editor = AGS_LINK_EDITOR(applicable);
+
+  /* empty */
+}
+
+void
+ags_link_editor_apply(AgsApplicable *applicable)
+{
+  AgsLinkEditor *link_editor;
+  AgsLineEditor *line_editor;
+  GtkTreeIter iter;
+
+  link_editor = AGS_LINK_EDITOR(applicable);
+  line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
+							AGS_TYPE_LINE_EDITOR));
+
+  if(gtk_combo_box_get_active_iter(link_editor->combo,
+				   &iter)){
+    AgsMachine *machine;
+    GtkTreeModel *model;
+    AgsChannel *channel, *link;
+
+    channel = line_editor->channel;
+
+    model = gtk_combo_box_get_model(link_editor->combo);
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, machine,
+		       -1);
+
+    if(machine == NULL)
+      ags_channel_set_link(channel, NULL);
+    else{
+      guint link_line;
+
+      link_line = (guint) GTK_RANGE(link_editor->spin_button)->adjustment->value;
+
+      if(AGS_IS_INPUT(channel))
+	link = ags_channel_nth(machine->audio->output,
+			       link_line);
+      else
+	link = ags_channel_nth(machine->audio->input,
+			       link_line);
+    }
   }
+}
 
-  if(can_file_link){
-    g_signal_connect((GObject *) list->data, "activate\0",
-  		     G_CALLBACK(ags_link_editor_menu_item_file_callback), link_editor);
-  }
+void
+ags_link_editor_reset(AgsApplicable *applicable)
+{
+  AgsLinkEditor *link_editor;
+
+  link_editor = AGS_LINK_EDITOR(applicable);
+
+  /* empty */
 }
 
 void
 ags_link_editor_destroy(GtkObject *object)
 {
+  /* empty */
 }
 
 void
 ags_link_editor_show(GtkWidget *widget)
 {
-  AgsLinkEditor *link_editor;
-
-  link_editor = (AgsLinkEditor *) widget;
-
-  gtk_widget_show_all((GtkWidget *) link_editor->option);
-  gtk_widget_show((GtkWidget *) link_editor->spin_button);
+  /* empty */
 }
 
 AgsLinkEditor*
@@ -135,7 +225,8 @@ ags_link_editor_new()
 {
   AgsLinkEditor *link_editor;
 
-  link_editor = (AgsLinkEditor *) g_object_new(AGS_TYPE_LINK_EDITOR, NULL);
+  link_editor = (AgsLinkEditor *) g_object_new(AGS_TYPE_LINK_EDITOR,
+					       NULL);
 
   return(link_editor);
 }

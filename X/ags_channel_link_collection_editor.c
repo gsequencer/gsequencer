@@ -1,4 +1,5 @@
 #include "ags_channel_link_collection_editor.h"
+#include "ags_channel_link_collection_editor_callbacks.h"
 
 #include "../object/ags_connectable.h"
 
@@ -68,6 +69,9 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
   GtkListStore *model;
   GtkTreeIter iter;
 
+  g_signal_connect_after(GTK_WIDGET(channel_link_collection_editor), "parent_set\0",
+			 G_CALLBACK(ags_channel_link_collection_editor_parent_set_callback), channel_link_collection_editor);
+
   gtk_table_resize(GTK_TABLE(channel_link_collection_editor),
 		   4, 2);
   gtk_table_set_row_spacings(GTK_TABLE(channel_link_collection_editor),
@@ -121,7 +125,6 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 
   gtk_combo_box_set_model(channel_link_collection_editor->link,
 			  GTK_TREE_MODEL(model));
-  
 
   /* first line */
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,

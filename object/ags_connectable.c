@@ -27,8 +27,7 @@ ags_connectable_get_type()
 void
 ags_connectable_base_init(AgsConnectableInterface *interface)
 {
-  //  interface->connect = NULL;
-  //  interface->disconnect = NULL;
+  /* empty */
 }
 
 void

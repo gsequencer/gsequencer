@@ -1,6 +1,10 @@
 #ifndef __AGS_CHANNEL_LISTING_EDITOR_CALLBACKS_H__
 #define __AGS_CHANNEL_LISTING_EDITOR_CALLBACKS_H__
 
+#include <glib.h>
+#include <glib-object.h>
+#include <gtk/gtk.h>
+
 #include "ags_channel_listing_editor.h"
 
 #include "ags_machine.h"

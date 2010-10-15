@@ -29,7 +29,7 @@ struct _AgsLinkEditor
 
   guint flags;
 
-  GtkOptionMenu *option;
+  GtkComboBox *combo;
   GtkSpinButton *spin_button;
 
   AgsAudioFile *audio_file;

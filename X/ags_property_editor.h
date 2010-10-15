@@ -15,9 +15,15 @@
 typedef struct _AgsPropertyEditor AgsPropertyEditor;
 typedef struct _AgsPropertyEditorClass AgsPropertyEditorClass;
 
+typedef enum{
+  AGS_PROPERTY_EDITOR_ENABLED   =  1,
+}AgsPropertyEditorFlags;
+
 struct _AgsPropertyEditor
 {
   GtkVBox vbox;
+
+  guint flags;
 
   GtkCheckButton *enabled;
 };

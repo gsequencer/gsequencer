@@ -2,6 +2,7 @@
 #include "ags_channel_listing_editor_callbacks.h"
 
 #include "../object/ags_connectable.h"
+#include "../object/ags_applicable.h"
 
 #include "../audio/ags_channel.h"
 #include "../audio/ags_output.h"
@@ -11,9 +12,13 @@
 
 void ags_channel_listing_editor_class_init(AgsChannelListingEditorClass *channel_listing_editor);
 void ags_channel_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_channel_listing_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_channel_listing_editor_init(AgsChannelListingEditor *channel_listing_editor);
 void ags_channel_listing_editor_connect(AgsConnectable *connectable);
 void ags_channel_listing_editor_disconnect(AgsConnectable *connectable);
+void ags_channel_listing_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_channel_listing_editor_apply(AgsApplicable *applicable);
+void ags_channel_listing_editor_reset(AgsApplicable *applicable);
 void ags_channel_listing_editor_destroy(GtkObject *object);
 void ags_channel_listing_editor_show(GtkWidget *widget);
 
@@ -41,6 +46,12 @@ ags_channel_listing_editor_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_channel_listing_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_channel_listing_editor = g_type_register_static(AGS_TYPE_PROPERTY_LISTING_EDITOR,
 							     "AgsChannelListingEditor\0",
 							     &ags_channel_listing_editor_info,
@@ -49,6 +60,10 @@ ags_channel_listing_editor_get_type(void)
     g_type_add_interface_static(ags_type_channel_listing_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_channel_listing_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_channel_listing_editor);
@@ -64,6 +79,14 @@ ags_channel_listing_editor_connectable_interface_init(AgsConnectableInterface *c
 {
   connectable->connect = ags_channel_listing_editor_connect;
   connectable->disconnect = ags_channel_listing_editor_disconnect;
+}
+
+void
+ags_channel_listing_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_channel_listing_editor_set_update;
+  applicable->apply = ags_channel_listing_editor_apply;
+  applicable->reset = ags_channel_listing_editor_reset;
 }
 
 void
@@ -92,6 +115,61 @@ void
 ags_channel_listing_editor_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+void
+ags_channel_listing_editor_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsChannelListingEditor *channel_listing_editor;
+  GList *pad_editor;
+
+  channel_listing_editor = AGS_CHANNEL_LISTING_EDITOR(applicable);
+
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(channel_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(pad_editor->data), update);
+
+    pad_editor = pad_editor->next;
+  }
+}
+
+void
+ags_channel_listing_editor_apply(AgsApplicable *applicable)
+{
+
+  AgsChannelListingEditor *channel_listing_editor;
+  GList *pad_editor;
+
+  channel_listing_editor = AGS_CHANNEL_LISTING_EDITOR(applicable);
+
+  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(channel_listing_editor)->flags)) == 0)
+    return;
+
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(channel_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(pad_editor->data));
+
+    pad_editor = pad_editor->next;
+  }
+}
+
+void
+ags_channel_listing_editor_reset(AgsApplicable *applicable)
+{
+  AgsChannelListingEditor *channel_listing_editor;
+  GList *pad_editor;
+
+  channel_listing_editor = AGS_CHANNEL_LISTING_EDITOR(applicable);
+
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(channel_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(pad_editor->data));
+
+    pad_editor = pad_editor->next;
+  }
 }
 
 void

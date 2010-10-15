@@ -22,65 +22,19 @@ int
 ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLinkEditor *link_editor)
 {
   AgsLineEditor *line_editor;
-  AgsWindow *window;
-  AgsMachineEditor *machine_editor;
-  GtkMenuItem *item;
-  GList *list;
-  GSList *slist, *start;
-  guint i;
-  gboolean found_own, check_link, is_output;
 
   if(old_parent != NULL)
     return(0);
-  /*
+
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_LINE_EDITOR);
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_MACHINE_EDITOR);
 
-  list = gtk_container_get_children((GtkContainer *) (GTK_WIDGET(machine_editor->machine)->parent));
-  found_own = FALSE;
-
-  if(line_editor->channel->link != NULL){
-    i = 1;
-    check_link = TRUE;
-    is_output = AGS_IS_OUTPUT(line_editor->channel) ? TRUE: FALSE;
-  }else
-    check_link = FALSE;
-
-  while(list != NULL){
-    if(!found_own && list->data == (gpointer) machine_editor->machine){
-      list = list->next;
-      found_own = TRUE;
-      continue;
-    }
-
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strconcat(G_OBJECT_TYPE_NAME(G_OBJECT(list->data)), ": \0", AGS_MACHINE(list->data)->name, NULL));
-    gtk_menu_shell_append((GtkMenuShell *) link_editor->option->menu, (GtkWidget *) item);
-    g_object_set_data((GObject *) item, g_type_name(AGS_TYPE_MACHINE), list->data);
-
-    if(check_link){
-      if(AGS_AUDIO(line_editor->channel->link->audio)->machine == list->data){
-	gtk_option_menu_set_history(link_editor->option, i);
-	link_editor->spin_button->adjustment->value = (gdouble) line_editor->channel->link->line;
-
-	if(is_output)
-	  link_editor->spin_button->adjustment->upper = (gdouble) (AGS_AUDIO(line_editor->channel->link->audio)->input_lines - 1);
-	else
-	  link_editor->spin_button->adjustment->upper = (gdouble) (AGS_AUDIO(line_editor->channel->link->audio)->output_lines - 1);
-
-	check_link = FALSE;
-      }else
-	i++;
-    }
-
-    list = list->next;
+  if(line_editor != NULL &&
+     line_editor->channel != NULL &&
+     line_editor->channel->audio != NULL &&
+     AGS_AUDIO(line_editor->channel->audio)->machine != NULL){
+    gtk_combo_box_set_model(link_editor->combo,
+			    GTK_TREE_MODEL(ags_machine_get_possible_links(AGS_MACHINE(AGS_AUDIO(line_editor->channel->audio)->machine))));
   }
-
-  if(AGS_IS_INPUT(line_editor->channel) && (AGS_AUDIO_INPUT_TAKES_FILE & machine_editor->machine->audio->flags) != 0){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("file://\0"));
-    g_object_set_data((GObject *) item, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);
-    gtk_menu_shell_append((GtkMenuShell *) link_editor->option->menu, (GtkWidget *) item);
-  }
-  */
 
   return(0);
 }
@@ -102,6 +56,7 @@ ags_link_editor_show_callback(GtkWidget *widget, AgsLinkEditor *link_editor)
 int
 ags_link_editor_option_changed_callback(GtkWidget *widget, AgsLinkEditor *link_editor)
 {
+  /*
   AgsLineEditor *line_editor;
   AgsMachine *machine;
 
@@ -112,11 +67,13 @@ ags_link_editor_option_changed_callback(GtkWidget *widget, AgsLinkEditor *link_e
 
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) link_editor, AGS_TYPE_LINE_EDITOR);
   link_editor->spin_button->adjustment->upper = (gdouble) (AGS_IS_OUTPUT(line_editor->channel) ? machine->audio->input_lines - 1: machine->audio->output_lines - 1);
+  */
 }
 
 int
 ags_link_editor_menu_item_callback(GtkWidget *widget, AgsLinkEditor *link_editor)
 {
+  /*
   AgsLineEditor *line_editor;
   AgsMachine *machine;
 
@@ -130,11 +87,13 @@ ags_link_editor_menu_item_callback(GtkWidget *widget, AgsLinkEditor *link_editor
   }
 
   return(0);
+  */
 }
 
 int
 ags_link_editor_menu_item_file_callback(GtkWidget *widget, AgsLinkEditor *link_editor)
 {
+  /*
   GtkToggleButton *play;
   char *tmp, *dir, *name;
 
@@ -178,11 +137,13 @@ ags_link_editor_menu_item_file_callback(GtkWidget *widget, AgsLinkEditor *link_e
 		   G_CALLBACK(ags_link_editor_file_chooser_response_callback), (gpointer) link_editor);
   g_signal_connect((GObject *) play, "toggled\0",
 		   G_CALLBACK(ags_link_editor_file_chooser_play_callback), (gpointer) link_editor);
+  */
 }
 
 int
 ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response, AgsLinkEditor *link_editor)
 {
+  /*
   GtkFileChooserDialog *file_chooser;
   AgsDevout *devout;
   AgsAudioFile *audio_file;
@@ -223,11 +184,13 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
 
   link_editor->file_chooser = NULL;
   gtk_widget_destroy((GtkWidget *) file_chooser);
+  */
 }
 
 int
 ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLinkEditor *link_editor)
 {
+  /*
   GtkFileChooserDialog *file_chooser;
   AgsDevout *devout;
   AgsPlayAudioFile *play_audio_file;
@@ -241,7 +204,7 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
   devout = AGS_DEVOUT(AGS_AUDIO(AGS_LINE_EDITOR(gtk_widget_get_ancestor((GtkWidget *) link_editor, AGS_TYPE_LINE_EDITOR))->channel->audio)->devout);
 
   if(toggle_button->active){
-    /* AgsPlayAudioFile */
+    /* AgsPlayAudioFile * /
     play_audio_file = ags_play_audio_file_new();
     play_audio_file->devout = devout;
     ags_play_audio_file_connect(play_audio_file);
@@ -253,7 +216,7 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
     g_signal_connect((GObject *) play_audio_file, "cancel\0",
 		     G_CALLBACK(ags_link_editor_file_chooser_play_cancel), link_editor);
 
-    /* AgsAudioFile */
+    /* AgsAudioFile * /
     name = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
 
     if(audio_file != NULL){
@@ -278,7 +241,7 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
 
     play_audio_file->audio_file = audio_file;
 
-    /* AgsDevout */
+    /* AgsDevout * /
     g_static_mutex_lock(&mutex);
     devout->play_recall = g_list_append(devout->play_recall, play_audio_file);
     devout->flags |= AGS_DEVOUT_PLAY_RECALL;
@@ -292,7 +255,7 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
     }else
       link_editor->flags &= (~AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE);
   }
-
+*/
   return(0);
 }
 

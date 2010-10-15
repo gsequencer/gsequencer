@@ -170,6 +170,42 @@ ags_machine_show(GtkWidget *widget)
   gtk_widget_show_all((GtkWidget *) frame);
 }
 
+GtkListStore*
+ags_machine_get_possible_links(AgsMachine *machine)
+{
+  GtkListStore *model;
+  GtkTreeIter iter;
+  GList *list;
+
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+		    
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "NULL\0",
+		     1, NULL,
+		     -1);
+
+  if(GTK_WIDGET(machine)->parent != NULL){
+    list = gtk_container_get_children(GTK_CONTAINER(GTK_WIDGET(machine)->parent));
+
+    while(list != NULL){
+      if(list->data != machine){
+	gtk_list_store_append(model, &iter);
+	gtk_list_store_set(model, &iter,
+			   0, g_strdup_printf("%s: %s\0", 
+					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
+					      AGS_MACHINE(list->data)->name),
+			   1, list->data,
+			   -1);
+      }
+
+      list = list->next;
+    }
+  }
+
+  return(model);
+}
+
 AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
 {

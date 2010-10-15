@@ -2,9 +2,11 @@
 #include "ags_line_editor_callbacks.h"
 
 #include "../object/ags_connectable.h"
+#include "../object/ags_applicable.h"
 
 void ags_line_editor_class_init(AgsLineEditorClass *line_editor);
 void ags_line_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_line_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_line_editor_init(AgsLineEditor *line_editor);
 void ags_line_editor_set_property(GObject *gobject,
 				  guint prop_id,
@@ -16,6 +18,9 @@ void ags_line_editor_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_line_editor_connect(AgsConnectable *connectable);
 void ags_line_editor_disconnect(AgsConnectable *connectable);
+void ags_line_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_line_editor_apply(AgsApplicable *applicable);
+void ags_line_editor_reset(AgsApplicable *applicable);
 void ags_line_editor_destroy(GtkObject *object);
 void ags_line_editor_show(GtkWidget *widget);
 
@@ -48,6 +53,12 @@ ags_line_editor_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_line_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_line_editor = g_type_register_static(GTK_TYPE_VBOX,
 						  "AgsLineEditor\0", &ags_line_editor_info,
 						  0);
@@ -55,6 +66,10 @@ ags_line_editor_get_type(void)
     g_type_add_interface_static(ags_type_line_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_line_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
   
   return(ags_type_line_editor);
@@ -89,11 +104,16 @@ ags_line_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_line_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_line_editor_set_update;
+  applicable->apply = ags_line_editor_apply;
+  applicable->reset = ags_line_editor_reset;
+}
+
+void
 ags_line_editor_init(AgsLineEditor *line_editor)
 {
-  //  g_signal_connect_after((GObject *) line_editor, "parent_set\0",
-  //  			 G_CALLBACK(ags_line_editor_parent_set_callback), (gpointer) line_editor);
-
   line_editor->link_editor = NULL;
 }
 
@@ -156,13 +176,49 @@ ags_line_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) line_editor, "show\0",
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
 
-  ags_link_editor_connect(line_editor->link_editor);
+  ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
 }
 
 void
 ags_line_editor_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+void
+ags_line_editor_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsLineEditor *line_editor;
+
+  line_editor = AGS_LINE_EDITOR(applicable);
+
+  if(line_editor->link_editor != NULL){
+    ags_applicable_set_update(AGS_APPLICABLE(line_editor->link_editor), update);
+  }
+}
+
+void
+ags_line_editor_apply(AgsApplicable *applicable)
+{
+  AgsLineEditor *line_editor;
+
+  line_editor = AGS_LINE_EDITOR(applicable);
+
+  if(line_editor->link_editor != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(line_editor->link_editor));
+  }
+}
+
+void
+ags_line_editor_reset(AgsApplicable *applicable)
+{
+  AgsLineEditor *line_editor;
+
+  line_editor = AGS_LINE_EDITOR(applicable);
+
+  if(line_editor->link_editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(line_editor->link_editor));
+  }
 }
 
 void

@@ -1,5 +1,7 @@
 #include "ags_machine_editor_callbacks.h"
 
+#include "../object/ags_applicable.h"
+
 #include "../audio/ags_audio.h"
 #include "../audio/ags_channel.h"
 #include "../audio/ags_output.h"
@@ -39,10 +41,12 @@ ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *
 int
 ags_machine_editor_add_callback(GtkWidget *button, AgsMachineEditor *machine_editor)
 {
+  /*
   if(gtk_notebook_get_current_page(machine_editor->notebook) == 0)
     g_signal_emit_by_name((GObject *) machine_editor, "add_output\0", NULL);
   else
     g_signal_emit_by_name((GObject *) machine_editor, "add_input\0", NULL);
+  */
 
   return(0);
 }
@@ -50,10 +54,12 @@ ags_machine_editor_add_callback(GtkWidget *button, AgsMachineEditor *machine_edi
 int
 ags_machine_editor_remove_callback(GtkWidget *button, AgsMachineEditor *machine_editor)
 {
+  /*
   if(gtk_notebook_get_current_page(machine_editor->notebook) == 0)
     g_signal_emit_by_name((GObject *) machine_editor, "remove_output\0", NULL);
   else
     g_signal_emit_by_name((GObject *) machine_editor, "remove_input\0", NULL);
+  */
 
   return(0);
 }
@@ -61,6 +67,7 @@ ags_machine_editor_remove_callback(GtkWidget *button, AgsMachineEditor *machine_
 int
 ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor));
 
   return(0);
 }
@@ -68,6 +75,8 @@ ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_e
 int
 ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
+  ags_applicable_set_update(AGS_APPLICABLE(machine_editor), FALSE);
+  ags_applicable_apply(AGS_APPLICABLE(machine_editor));
 
   gtk_widget_destroy((GtkWidget *) machine_editor);
 
