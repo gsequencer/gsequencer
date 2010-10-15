@@ -2,12 +2,17 @@
 #include "ags_property_collection_editor_callbacks.h"
 
 #include "../object/ags_connectable.h"
+#include "../object/ags_applicable.h"
 
 void ags_property_collection_editor_class_init(AgsPropertyCollectionEditorClass *property_collection_editor);
 void ags_property_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_property_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_property_collection_editor_init(AgsPropertyCollectionEditor *property_collection_editor);
 void ags_property_collection_editor_connect(AgsConnectable *connectable);
 void ags_property_collection_editor_disconnect(AgsConnectable *connectable);
+void ags_property_collection_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_property_collection_editor_apply(AgsApplicable *applicable);
+void ags_property_collection_editor_reset(AgsApplicable *applicable);
 void ags_property_collection_editor_destroy(GtkObject *object);
 void ags_property_collection_editor_show(GtkWidget *widget);
 
@@ -35,6 +40,13 @@ ags_property_collection_editor_get_type(void)
       NULL, /* interface_data */
     };
 
+
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_property_collection_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_property_collection_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
 								 "AgsPropertyCollectionEditor\0", &ags_property_collection_editor_info,
 								 0);
@@ -42,6 +54,10 @@ ags_property_collection_editor_get_type(void)
     g_type_add_interface_static(ags_type_property_collection_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_property_collection_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_property_collection_editor);
@@ -57,6 +73,14 @@ ags_property_collection_editor_connectable_interface_init(AgsConnectableInterfac
 {
   connectable->connect = ags_property_collection_editor_connect;
   connectable->disconnect = ags_property_collection_editor_disconnect;
+}
+
+void
+ags_property_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_property_collection_editor_set_update;
+  applicable->apply = ags_property_collection_editor_apply;
+  applicable->reset = ags_property_collection_editor_reset;
 }
 
 void
@@ -98,6 +122,49 @@ ags_property_collection_editor_connect(AgsConnectable *connectable)
 void
 ags_property_collection_editor_disconnect(AgsConnectable *connectable)
 {
+  /* empty */
+}
+
+void
+ags_property_collection_editor_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsPropertyCollectionEditor *property_collection_editor;
+  GList *list;
+
+  property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
+
+  /* empty */
+}
+
+void
+ags_property_collection_editor_apply(AgsApplicable *applicable)
+{
+  AgsPropertyCollectionEditor *property_collection_editor;
+  GtkWidget *child;
+  GList *list;
+
+  property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
+
+  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(property_collection_editor)->flags)) == 0)
+    return;
+
+  list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
+
+  while(list != NULL){
+    child = GTK_WIDGET(g_object_get_data(G_OBJECT(list->data), "AgsChild\0"));
+    ags_applicable_apply(AGS_APPLICABLE(child));
+
+    list = list->next;
+  }
+}
+
+void
+ags_property_collection_editor_reset(AgsApplicable *applicable)
+{
+  AgsPropertyCollectionEditor *property_collection_editor;
+
+  property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
+
   /* empty */
 }
 

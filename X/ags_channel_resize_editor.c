@@ -1,12 +1,17 @@
 #include "ags_channel_resize_editor.h"
 
 #include "../object/ags_connectable.h"
+#include "../object/ags_applicable.h"
 
 void ags_channel_resize_editor_class_init(AgsChannelResizeEditorClass *channel_resize_editor);
 void ags_channel_resize_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_channel_resize_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_channel_resize_editor_init(AgsChannelResizeEditor *channel_resize_editor);
 void ags_channel_resize_editor_connect(AgsConnectable *connectable);
 void ags_channel_resize_editor_disconnect(AgsConnectable *connectable);
+void ags_channel_resize_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_channel_resize_editor_apply(AgsApplicable *applicable);
+void ags_channel_resize_editor_reset(AgsApplicable *applicable);
 void ags_channel_resize_editor_destroy(GtkObject *object);
 void ags_channel_resize_editor_show(GtkWidget *widget);
 
@@ -34,6 +39,12 @@ ags_channel_resize_editor_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_channel_resize_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_channel_resize_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
 							    "AgsChannelResizeEditor\0",
 							    &ags_channel_resize_editor_info,
@@ -42,6 +53,10 @@ ags_channel_resize_editor_get_type(void)
     g_type_add_interface_static(ags_type_channel_resize_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_channel_resize_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_channel_resize_editor);
@@ -57,6 +72,14 @@ ags_channel_resize_editor_connectable_interface_init(AgsConnectableInterface *co
 {
   connectable->connect = ags_channel_resize_editor_connect;
   connectable->disconnect = ags_channel_resize_editor_disconnect;
+}
+
+void
+ags_channel_resize_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_channel_resize_editor_set_update;
+  applicable->apply = ags_channel_resize_editor_apply;
+  applicable->reset = ags_channel_resize_editor_reset;
 }
 
 void
@@ -168,6 +191,30 @@ void
 ags_channel_resize_editor_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+void
+ags_channel_resize_editor_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsChannelResizeEditor *channel_resize_editor;
+
+  channel_resize_editor = AGS_CHANNEL_RESIZE_EDITOR(applicable);
+}
+
+void
+ags_channel_resize_editor_apply(AgsApplicable *applicable)
+{
+  AgsChannelResizeEditor *channel_resize_editor;
+
+  channel_resize_editor = AGS_CHANNEL_RESIZE_EDITOR(applicable);
+}
+
+void
+ags_channel_resize_editor_reset(AgsApplicable *applicable)
+{
+  AgsChannelResizeEditor *channel_resize_editor;
+
+  channel_resize_editor = AGS_CHANNEL_RESIZE_EDITOR(applicable);
 }
 
 void

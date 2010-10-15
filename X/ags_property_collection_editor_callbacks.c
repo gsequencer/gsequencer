@@ -17,6 +17,7 @@ ags_property_collection_editor_add_collection_callback(GtkButton *button,
   
   collection = (GtkWidget *) g_object_new(property_collection_editor->child_type,
 					  NULL);
+  g_object_set_data(G_OBJECT(table), "AgsChild\0", collection);
   gtk_table_attach(table,
 		   GTK_WIDGET(collection),
 		   0, 2,
@@ -36,8 +37,17 @@ ags_property_collection_editor_add_collection_callback(GtkButton *button,
   remove_collection = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(remove_collection));
+  g_signal_connect_after(G_OBJECT(remove_collection), "clicked\0",
+			 G_CALLBACK(ags_property_collection_editor_remove_collection_callback), table);
 
   gtk_table_set_row_spacing(table, 0, 8);
 
   gtk_widget_show_all(GTK_WIDGET(table));
+}
+
+void
+ags_property_collection_editor_remove_collection_callback(GtkButton *button,
+							  GtkTable *table)
+{
+  gtk_widget_destroy(GTK_WIDGET(table));
 }

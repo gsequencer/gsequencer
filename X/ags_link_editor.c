@@ -178,7 +178,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
     model = gtk_combo_box_get_model(link_editor->combo);
     gtk_tree_model_get(model,
 		       &iter,
-		       1, machine,
+		       1, &machine,
 		       -1);
 
     if(machine == NULL)
@@ -202,10 +202,54 @@ void
 ags_link_editor_reset(AgsApplicable *applicable)
 {
   AgsLinkEditor *link_editor;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
 
   link_editor = AGS_LINK_EDITOR(applicable);
 
-  /* empty */
+  model = gtk_combo_box_get_model(link_editor->combo);
+
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    AgsMachine *machine, *link;
+    AgsLineEditor *line_editor;
+    AgsChannel *channel;
+    gint i;
+    gboolean found;
+
+    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
+							  AGS_TYPE_LINE_EDITOR));
+
+    channel = line_editor->channel;
+
+    if(channel->link != NULL)
+      machine = AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine);
+    else
+      machine = NULL;
+
+    i = 0;
+    found = FALSE;
+
+    do{
+      gtk_tree_model_get(model,
+			 &iter,
+			 1, &link,
+			 -1);
+
+      if(machine == link){
+	found = TRUE;
+	break;
+      }
+
+      i++;
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+
+    if(found)
+      gtk_combo_box_set_active(link_editor->combo, i);
+    else
+      gtk_combo_box_set_active(link_editor->combo, -1);
+  }
 }
 
 void

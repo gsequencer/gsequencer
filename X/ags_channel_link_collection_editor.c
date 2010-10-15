@@ -2,12 +2,17 @@
 #include "ags_channel_link_collection_editor_callbacks.h"
 
 #include "../object/ags_connectable.h"
+#include "../object/ags_applicable.h"
 
 void ags_channel_link_collection_editor_class_init(AgsChannelLinkCollectionEditorClass *channel_link_collection_editor);
 void ags_channel_link_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_channel_link_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_link_collection_editor);
 void ags_channel_link_collection_editor_connect(AgsConnectable *connectable);
 void ags_channel_link_collection_editor_disconnect(AgsConnectable *connectable);
+void ags_channel_link_collection_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_channel_link_collection_editor_apply(AgsApplicable *applicable);
+void ags_channel_link_collection_editor_reset(AgsApplicable *applicable);
 void ags_channel_link_collection_editor_destroy(GtkObject *object);
 void ags_channel_link_collection_editor_show(GtkWidget *widget);
 
@@ -35,6 +40,12 @@ ags_channel_link_collection_editor_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_channel_link_collection_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_channel_link_collection_editor = g_type_register_static(GTK_TYPE_TABLE,
 								     "AgsChannelLinkCollectionEditor\0",
 								     &ags_channel_link_collection_editor_info,
@@ -43,6 +54,10 @@ ags_channel_link_collection_editor_get_type(void)
     g_type_add_interface_static(ags_type_channel_link_collection_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_channel_link_collection_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_channel_link_collection_editor);
@@ -58,6 +73,14 @@ ags_channel_link_collection_editor_connectable_interface_init(AgsConnectableInte
 {
   connectable->connect = ags_channel_link_collection_editor_connect;
   connectable->disconnect = ags_channel_link_collection_editor_disconnect;
+}
+
+void
+ags_channel_link_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_channel_link_collection_editor_set_update;
+  applicable->apply = ags_channel_link_collection_editor_apply;
+  applicable->reset = ags_channel_link_collection_editor_reset;
 }
 
 void
@@ -220,6 +243,32 @@ void
 ags_channel_link_collection_editor_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+void
+ags_channel_link_collection_editor_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsChannelLinkCollectionEditor *channel_link_collection_editor;
+
+  channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(applicable);
+
+}
+
+void
+ags_channel_link_collection_editor_apply(AgsApplicable *applicable)
+{
+  AgsChannelLinkCollectionEditor *channel_link_collection_editor;
+
+  channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(applicable);
+}
+
+void
+ags_channel_link_collection_editor_reset(AgsApplicable *applicable)
+{
+  AgsChannelLinkCollectionEditor *channel_link_collection_editor;
+
+  channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(applicable);
+
 }
 
 void
