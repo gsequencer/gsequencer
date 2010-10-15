@@ -10,8 +10,6 @@ int ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent
 int ags_link_editor_destroy_callback(GtkObject *object, AgsLinkEditor *link_editor);
 int ags_link_editor_show_callback(GtkWidget *widget, AgsLinkEditor *link_editor);
 
-int ags_link_editor_option_changed_callback(GtkWidget *widget, AgsLinkEditor *link_editor);
-int ags_link_editor_menu_item_callback(GtkWidget *widget, AgsLinkEditor *link_editor);
-int ags_link_editor_menu_item_file_callback(GtkWidget *widget, AgsLinkEditor *link_editor);
+void ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor);
 
 #endif /*__AGS_LINK_EDITOR_CALLBACKS_H__*/

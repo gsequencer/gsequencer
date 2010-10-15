@@ -22,6 +22,8 @@ void ags_channel_listing_editor_reset(AgsApplicable *applicable);
 void ags_channel_listing_editor_destroy(GtkObject *object);
 void ags_channel_listing_editor_show(GtkWidget *widget);
 
+static AgsConnectableInterface* ags_channel_listing_editor_parent_connectable_interface;
+
 GType
 ags_channel_listing_editor_get_type(void)
 {
@@ -77,6 +79,7 @@ ags_channel_listing_editor_class_init(AgsChannelListingEditorClass *channel_list
 void
 ags_channel_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_channel_listing_editor_parent_connectable_interface = g_type_interface_peek_parent(connectable);
   connectable->connect = ags_channel_listing_editor_connect;
   connectable->disconnect = ags_channel_listing_editor_disconnect;
 }
@@ -103,12 +106,20 @@ ags_channel_listing_editor_connect(AgsConnectable *connectable)
 {
   AgsMachineEditor *machine_editor;
   AgsChannelListingEditor *channel_listing_editor;
-  GList *pad_list;
+  GList *pad_editor;
+
+  ags_channel_listing_editor_parent_connectable_interface->connect(connectable);
 
   /* AgsChannelListingEditor */
   channel_listing_editor = AGS_CHANNEL_LISTING_EDITOR(connectable);
 
-  /* empty */
+  pad_editor = gtk_container_get_children(GTK_CONTAINER(channel_listing_editor->child));
+
+  while(pad_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(pad_editor->data));
+
+    pad_editor = pad_editor->next;
+  }
 }
 
 void

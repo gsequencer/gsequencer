@@ -133,11 +133,17 @@ ags_link_editor_connect(AgsConnectable *connectable)
 
   link_editor = AGS_LINK_EDITOR(connectable);
 
-  g_signal_connect((GObject *) link_editor, "destroy\0",
+  /* GtkObject */
+  g_signal_connect(G_OBJECT(link_editor), "destroy\0",
 		   G_CALLBACK(ags_link_editor_destroy_callback), (gpointer) link_editor);
 
-  g_signal_connect((GObject *) link_editor, "show\0",
+  /* GtkWidget */
+  g_signal_connect(G_OBJECT(link_editor), "show\0",
 		   G_CALLBACK(ags_link_editor_show_callback), (gpointer) link_editor);
+
+  /* GtkComboBox */
+  g_signal_connect(G_OBJECT(link_editor->combo), "changed\0",
+		   G_CALLBACK(ags_link_editor_combo_callback), link_editor);
 }
 
 void
@@ -160,18 +166,19 @@ void
 ags_link_editor_apply(AgsApplicable *applicable)
 {
   AgsLinkEditor *link_editor;
-  AgsLineEditor *line_editor;
   GtkTreeIter iter;
 
   link_editor = AGS_LINK_EDITOR(applicable);
-  line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
-							AGS_TYPE_LINE_EDITOR));
 
   if(gtk_combo_box_get_active_iter(link_editor->combo,
 				   &iter)){
     AgsMachine *machine;
+    AgsLineEditor *line_editor;
     GtkTreeModel *model;
     AgsChannel *channel, *link;
+
+    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
+							  AGS_TYPE_LINE_EDITOR));
 
     channel = line_editor->channel;
 
@@ -180,13 +187,13 @@ ags_link_editor_apply(AgsApplicable *applicable)
 		       &iter,
 		       1, &machine,
 		       -1);
-
+    
     if(machine == NULL)
       ags_channel_set_link(channel, NULL);
     else{
       guint link_line;
 
-      link_line = (guint) GTK_RANGE(link_editor->spin_button)->adjustment->value;
+      link_line = (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button);
 
       if(AGS_IS_INPUT(channel))
 	link = ags_channel_nth(machine->audio->output,
@@ -194,6 +201,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
       else
 	link = ags_channel_nth(machine->audio->input,
 			       link_line);
+
+      ags_channel_set_link(channel, link);
     }
   }
 }
@@ -245,9 +254,14 @@ ags_link_editor_reset(AgsApplicable *applicable)
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
 
-    if(found)
+    if(found){
       gtk_combo_box_set_active(link_editor->combo, i);
-    else
+
+      if(channel->link == NULL)
+	gtk_spin_button_set_value(link_editor->spin_button, 0);
+      else
+	gtk_spin_button_set_value(link_editor->spin_button, channel->link->line);
+    }else
       gtk_combo_box_set_active(link_editor->combo, -1);
   }
 }

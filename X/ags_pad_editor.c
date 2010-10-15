@@ -176,7 +176,7 @@ void
 ags_pad_editor_connect(AgsConnectable *connectable)
 {
   AgsPadEditor *pad_editor;
-  GList *list;
+  GList *line_editor;
 
   pad_editor = AGS_PAD_EDITOR(connectable);
 
@@ -186,11 +186,12 @@ ags_pad_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) pad_editor, "show\0",
 		   G_CALLBACK(ags_pad_editor_show_callback), (gpointer) pad_editor);
 
-  list = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
-  while(list != NULL){
-    ags_line_editor_connect(AGS_CONNECTABLE(list->data));
-    list = list->next;
+  while(line_editor != NULL){
+    ags_line_editor_connect(AGS_CONNECTABLE(line_editor->data));
+
+    line_editor = line_editor->next;
   }
 }
 

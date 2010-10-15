@@ -80,7 +80,7 @@ ags_property_editor_connect(AgsConnectable *connectable)
   /* AgsPropertyEditor */
   property_editor = AGS_PROPERTY_EDITOR(connectable);
 
-  g_signal_connect_after(G_OBJECT(property_editor), "toggled",
+  g_signal_connect_after(G_OBJECT(property_editor->enabled), "toggled",
 			 G_CALLBACK(ags_property_editor_enable_callback), property_editor);
 }
 

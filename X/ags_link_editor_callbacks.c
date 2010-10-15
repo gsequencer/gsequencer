@@ -53,6 +53,40 @@ ags_link_editor_show_callback(GtkWidget *widget, AgsLinkEditor *link_editor)
   return(0);
 }
 
+void
+ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
+{
+  GtkTreeIter iter;
+
+  if(gtk_combo_box_get_active_iter(link_editor->combo,
+				   &iter)){
+    AgsMachine *machine;
+    AgsLineEditor *line_editor;
+    GtkTreeModel *model;
+    AgsChannel *channel;
+
+    line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
+							  AGS_TYPE_LINE_EDITOR));
+
+    channel = line_editor->channel;
+
+    model = gtk_combo_box_get_model(link_editor->combo);
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &machine,
+		       -1);
+
+    if(machine == NULL){
+      gtk_spin_button_set_value(link_editor->spin_button, 0.0);
+    }else{
+      if(AGS_IS_INPUT(channel))
+	gtk_spin_button_set_range(link_editor->spin_button, 0.0, (gdouble) (machine->audio->output_lines - 1));
+      else
+	gtk_spin_button_set_range(link_editor->spin_button, 0.0, (gdouble) (machine->audio->input_lines - 1));
+    }
+  }
+}
+
 int
 ags_link_editor_option_changed_callback(GtkWidget *widget, AgsLinkEditor *link_editor)
 {
