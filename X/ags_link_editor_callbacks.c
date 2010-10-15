@@ -32,7 +32,7 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 
   if(old_parent != NULL)
     return(0);
-
+  /*
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_LINE_EDITOR);
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_MACHINE_EDITOR);
 
@@ -80,6 +80,7 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
     g_object_set_data((GObject *) item, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);
     gtk_menu_shell_append((GtkMenuShell *) link_editor->option->menu, (GtkWidget *) item);
   }
+  */
 
   return(0);
 }

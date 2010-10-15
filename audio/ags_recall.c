@@ -527,7 +527,6 @@ ags_recall_get_property(GObject *gobject,
   }
 }
 
-
 void
 ags_recall_connect(AgsConnectable *connectable)
 {

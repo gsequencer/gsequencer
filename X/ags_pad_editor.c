@@ -1,70 +1,162 @@
 #include "ags_pad_editor.h"
 #include "ags_pad_editor_callbacks.h"
 
+#include "../object/ags_connectable.h"
+
 #include "ags_machine_editor.h"
 #include "ags_line_editor.h"
 
-GType ags_pad_editor_get_type(void);
 void ags_pad_editor_class_init(AgsPadEditorClass *pad_editor);
+void ags_pad_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pad_editor_init(AgsPadEditor *pad_editor);
-void ags_pad_editor_connect(AgsPadEditor *pad_editor);
+void ags_pad_editor_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_pad_editor_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
+void ags_pad_editor_connect(AgsConnectable *connectable);
+void ags_pad_editor_disconnect(AgsConnectable *connectable);
 void ags_pad_editor_destroy(GtkObject *object);
 void ags_pad_editor_show(GtkWidget *widget);
+
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+};
 
 GType
 ags_pad_editor_get_type(void)
 {
-  static GType pad_editor_type = 0;
+  static GType ags_type_pad_editor = 0;
 
-  if (!pad_editor_type){
-    static const GtkTypeInfo pad_editor_info = {
-      "AgsPadEditor\0",
-      sizeof(AgsPadEditor), /* base_init */
-      sizeof(AgsPadEditorClass), /* base_finalize */
-      (GtkClassInitFunc) ags_pad_editor_class_init,
-      (GtkObjectInitFunc) ags_pad_editor_init,
+  if(!ags_type_pad_editor){
+    static const GTypeInfo ags_pad_editor_info = {
+      sizeof (AgsPadEditorClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_pad_editor_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsPadEditor),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_pad_editor_init,
     };
 
-    pad_editor_type = gtk_type_unique (GTK_TYPE_VBOX, &pad_editor_info);
-  }
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_pad_editor_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
 
-  return (pad_editor_type);
+    ags_type_pad_editor = g_type_register_static(GTK_TYPE_VBOX,
+						 "AgsPadEditor\0", &ags_pad_editor_info,
+						 0);
+
+    g_type_add_interface_static(ags_type_pad_editor,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+  }
+  
+  return(ags_type_pad_editor);
 }
 
 void
 ags_pad_editor_class_init(AgsPadEditorClass *pad_editor)
 {
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  gobject = (GObjectClass *) pad_editor;
+
+  gobject->set_property = ags_pad_editor_set_property;
+  gobject->get_property = ags_pad_editor_get_property;
+
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel which this pad editor is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+}
+
+void
+ags_pad_editor_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_pad_editor_connect;
+  connectable->disconnect = ags_pad_editor_disconnect;
 }
 
 void
 ags_pad_editor_init(AgsPadEditor *pad_editor)
 {
-  g_signal_connect_after((GObject *) pad_editor, "parent_set\0",
-			 G_CALLBACK(ags_pad_editor_parent_set_callback), (gpointer) pad_editor);
+  pad_editor->line_editor_expander = (GtkExpander *) gtk_expander_new(NULL);
+  gtk_box_pack_start(GTK_BOX(pad_editor),
+		     GTK_WIDGET(pad_editor->line_editor_expander),
+		     FALSE, FALSE,
+		     0);
 
   pad_editor->line_editor = NULL;
+}
 
-  pad_editor->hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox*) pad_editor, (GtkWidget *) pad_editor->hbox, FALSE, FALSE, 0);
 
-  pad_editor->button = (GtkButton *) gtk_button_new();
-  gtk_button_set_relief (pad_editor->button, GTK_RELIEF_NONE);
-  gtk_box_pack_start((GtkBox*) pad_editor->hbox, (GtkWidget *) pad_editor->button, FALSE, FALSE, 0);
+void
+ags_pad_editor_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsPadEditor *pad_editor;
 
-  pad_editor->arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_RIGHT, GTK_SHADOW_NONE);
-  gtk_container_add((GtkContainer *) pad_editor->button, (GtkWidget *) pad_editor->arrow);
+  pad_editor = AGS_PAD_EDITOR(gobject);
 
-  pad_editor->label = (GtkLabel *) gtk_label_new(NULL);
-  gtk_box_pack_start((GtkBox*) pad_editor->hbox, (GtkWidget *) pad_editor->label, FALSE, FALSE, 0);
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      ags_pad_editor_set_channel(pad_editor, channel);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
-ags_pad_editor_connect(AgsPadEditor *pad_editor)
+ags_pad_editor_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
 {
+  AgsPadEditor *pad_editor;
+
+  pad_editor = AGS_PAD_EDITOR(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    g_value_set_object(value, pad_editor->pad);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_pad_editor_connect(AgsConnectable *connectable)
+{
+  AgsPadEditor *pad_editor;
   GList *list;
+
+  pad_editor = AGS_PAD_EDITOR(connectable);
 
   g_signal_connect((GObject *) pad_editor, "destroy\0",
 		   G_CALLBACK(ags_pad_editor_destroy_callback), (gpointer) pad_editor);
@@ -72,44 +164,81 @@ ags_pad_editor_connect(AgsPadEditor *pad_editor)
   g_signal_connect((GObject *) pad_editor, "show\0",
 		   G_CALLBACK(ags_pad_editor_show_callback), (gpointer) pad_editor);
 
-  g_signal_connect((GObject *) pad_editor->button, "clicked\0",
-		   G_CALLBACK(ags_pad_editor_button_clicked), pad_editor);
-
-  list = pad_editor->line_editor;
+  list = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(list != NULL){
-    ags_line_editor_connect(AGS_LINE_EDITOR(list->data));
+    ags_line_editor_connect(AGS_CONNECTABLE(list->data));
     list = list->next;
   }
 }
 
 void
+ags_pad_editor_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
 ags_pad_editor_destroy(GtkObject *object)
 {
-  AgsPadEditor *pad_editor = (AgsPadEditor *) object;
-
-  g_list_free(pad_editor->line_editor);
+  /* empty */
 }
 
 void
 ags_pad_editor_show(GtkWidget *widget)
 {
-  AgsPadEditor *pad_editor;
+  /* empty */
+}
 
-  pad_editor = (AgsPadEditor *) widget;
+void
+ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
+{
+  GtkVBox *vbox;
 
-  gtk_widget_show((GtkWidget *) pad_editor->hbox);
-  gtk_widget_show((GtkWidget *) pad_editor->button);
-  gtk_widget_show((GtkWidget *) pad_editor->arrow);
-  gtk_widget_show((GtkWidget *) pad_editor->label);
+  if(pad_editor->line_editor != NULL){
+    vbox = pad_editor->line_editor;
+    pad_editor->line_editor = NULL;
+    gtk_widget_destroy(GTK_WIDGET(vbox));
+  }
+
+  pad_editor->pad = channel;
+  
+  if(channel != NULL){
+    AgsLineEditor *line_editor;
+    AgsChannel *next_pad;
+
+    gtk_expander_set_label(pad_editor->line_editor_expander,
+			   g_strdup_printf("pad: %u\0", channel->pad));
+
+    pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+    gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
+		      GTK_WIDGET(pad_editor->line_editor));
+
+    next_pad = channel->next_pad;
+
+    while(channel != next_pad){
+      line_editor = ags_line_editor_new(channel);
+      gtk_box_pack_start(GTK_BOX(pad_editor->line_editor),
+			 GTK_WIDGET(line_editor),
+			 FALSE, FALSE,
+			 0);
+
+      channel = channel->next;
+    }
+  }else{
+    gtk_expander_set_label(pad_editor->line_editor_expander,
+			   NULL);
+  }
 }
 
 AgsPadEditor*
-ags_pad_editor_new()
+ags_pad_editor_new(AgsChannel *channel)
 {
   AgsPadEditor *pad_editor;
 
-  pad_editor = (AgsPadEditor *) g_object_new(AGS_TYPE_PAD_EDITOR, NULL);
+  pad_editor = (AgsPadEditor *) g_object_new(AGS_TYPE_PAD_EDITOR,
+					     "channel\0", channel,
+					     NULL);
 
   return(pad_editor);
 }

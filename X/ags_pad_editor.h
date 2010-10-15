@@ -23,12 +23,8 @@ struct _AgsPadEditor
 
   AgsChannel *pad;
 
-  GList *line_editor;
-
-  GtkHBox *hbox;
-  GtkButton *button;
-  GtkArrow *arrow;
-  GtkLabel *label;
+  GtkExpander *line_editor_expander;
+  GtkVBox *line_editor;
 };
 
 struct _AgsPadEditorClass
@@ -36,6 +32,10 @@ struct _AgsPadEditorClass
   GtkVBoxClass vbox;
 };
 
-AgsPadEditor* ags_pad_editor_new();
+GType ags_pad_editor_get_type(void);
+
+void ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel);
+
+AgsPadEditor* ags_pad_editor_new(AgsChannel *channel);
 
 #endif /*__AGS_PAD_EDITOR_H__*/

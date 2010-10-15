@@ -61,12 +61,6 @@ ags_machine_editor_remove_callback(GtkWidget *button, AgsMachineEditor *machine_
 int
 ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
-  ags_machine_property_editor_apply(machine_editor->output_property_editor);
-  ags_machine_property_editor_apply(machine_editor->input_property_editor);
-
-  ags_machine_resize_editor_apply(machine_editor->machine_resize_editor, TRUE);
-  ags_machine_link_editor_apply(machine_editor->machine_link_editor, TRUE);
-  ags_machine_line_member_editor_apply(machine_editor->machine_line_member_editor, TRUE);
 
   return(0);
 }
@@ -74,12 +68,6 @@ ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_e
 int
 ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
-  //  ags_machine_property_editor_apply(machine_editor->output_property_editor);
-  //  ags_machine_property_editor_apply(machine_editor->input_property_editor);
-
-  //  ags_machine_resize_editor_apply(machine_editor->machine_resize_editor, FALSE);
-  ags_machine_link_editor_apply(machine_editor->machine_link_editor, FALSE);
-  //  ags_machine_line_member_editor_apply(machine_editor->machine_line_member_editor, FALSE);
 
   gtk_widget_destroy((GtkWidget *) machine_editor);
 

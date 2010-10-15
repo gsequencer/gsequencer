@@ -8,7 +8,9 @@ int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response,
 #define AGS_RENAME_ENTRY "AgsRenameEntry\0"
 
 int
-ags_machine_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMachine *machine)
+ags_machine_parent_set_callback(GtkWidget *widget,
+				GtkObject *old_parent,
+				AgsMachine *machine)
 {
   AgsWindow *window;
 
@@ -164,11 +166,10 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
 int
 ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
-  machine->properties = (GtkDialog *) ags_machine_editor_new();
+  machine->properties = (GtkDialog *) ags_machine_editor_new(machine);
   gtk_window_set_default_size((GtkWindow *) machine->properties, -1, 400);
-  g_signal_emit_by_name(G_OBJECT(machine->properties), "set_machine\0", machine);
   ags_machine_editor_connect((AgsMachineEditor *) machine->properties);
-  gtk_widget_show((GtkWidget *) machine->properties);
+  gtk_widget_show_all((GtkWidget *) machine->properties);
 
   return(0);
 }

@@ -34,6 +34,9 @@ struct _AgsLineEditorClass
 
 GType ags_line_editor_get_type(void);
 
-AgsLineEditor* ags_line_editor_new();
+void ags_line_editor_set_channel(AgsLineEditor *line_editor,
+				 AgsChannel *channel);
+
+AgsLineEditor* ags_line_editor_new(AgsChannel *channel);
 
 #endif /*__AGS_LINE_EDITOR_H__*/
