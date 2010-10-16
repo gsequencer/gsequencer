@@ -4,10 +4,23 @@
 #include "../object/ags_connectable.h"
 #include "../object/ags_applicable.h"
 
+#include "../audio/ags_input.h"
+
+#include "ags_machine.h"
+#include "ags_machine_editor.h"
+
 void ags_channel_link_collection_editor_class_init(AgsChannelLinkCollectionEditorClass *channel_link_collection_editor);
 void ags_channel_link_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_channel_link_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_link_collection_editor);
+void ags_channel_link_collection_editor_set_property(GObject *gobject,
+						     guint prop_id,
+						     const GValue *value,
+						     GParamSpec *param_spec);
+void ags_channel_link_collection_editor_get_property(GObject *gobject,
+						     guint prop_id,
+						     GValue *value,
+						     GParamSpec *param_spec);
 void ags_channel_link_collection_editor_connect(AgsConnectable *connectable);
 void ags_channel_link_collection_editor_disconnect(AgsConnectable *connectable);
 void ags_channel_link_collection_editor_set_update(AgsApplicable *applicable, gboolean update);
@@ -15,6 +28,11 @@ void ags_channel_link_collection_editor_apply(AgsApplicable *applicable);
 void ags_channel_link_collection_editor_reset(AgsApplicable *applicable);
 void ags_channel_link_collection_editor_destroy(GtkObject *object);
 void ags_channel_link_collection_editor_show(GtkWidget *widget);
+
+enum{
+  PROP_0,
+  PROP_CHANNEL_TYPE,
+};
 
 GType
 ags_channel_link_collection_editor_get_type(void)
@@ -66,6 +84,22 @@ ags_channel_link_collection_editor_get_type(void)
 void
 ags_channel_link_collection_editor_class_init(AgsChannelLinkCollectionEditorClass *channel_link_collection_editor)
 {
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  gobject = (GObjectClass *) channel_link_collection_editor;
+
+  gobject->set_property = ags_channel_link_collection_editor_set_property;
+  gobject->get_property = ags_channel_link_collection_editor_get_property;
+
+  param_spec = g_param_spec_gtype("channel type\0",
+				   "assigned channel type\0",
+				   "The channel type which this channel link collection editor is assigned with\0",
+				   G_TYPE_NONE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
 }
 
 void
@@ -230,6 +264,46 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 }
 
 void
+ags_channel_link_collection_editor_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec)
+{
+  AgsChannelLinkCollectionEditor *channel_link_collection_editor;
+
+  channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL_TYPE:
+    channel_link_collection_editor->channel_type = g_value_get_gtype(value);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_channel_link_collection_editor_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec)
+{
+  AgsChannelLinkCollectionEditor *channel_link_collection_editor;
+
+  channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL_TYPE:
+    g_value_set_gtype(value, channel_link_collection_editor->channel_type);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_channel_link_collection_editor_connect(AgsConnectable *connectable)
 {
   AgsChannelLinkCollectionEditor *channel_link_collection_editor;
@@ -237,6 +311,15 @@ ags_channel_link_collection_editor_connect(AgsConnectable *connectable)
 
   /* AgsChannelLinkCollectionEditor */
   channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(connectable);
+
+  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->link), "changed\0",
+			 G_CALLBACK(ags_channel_link_collection_editor_link_callback), channel_link_collection_editor);
+
+  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->first_line), "value-changed\0",
+			 G_CALLBACK(ags_channel_link_collection_editor_first_line_callback), channel_link_collection_editor);
+
+  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->first_link), "value-changed\0",
+			 G_CALLBACK(ags_channel_link_collection_editor_first_link_callback), channel_link_collection_editor);
 }
 
 void
@@ -252,14 +335,69 @@ ags_channel_link_collection_editor_set_update(AgsApplicable *applicable, gboolea
 
   channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(applicable);
 
+  /* empty */
 }
 
 void
 ags_channel_link_collection_editor_apply(AgsApplicable *applicable)
 {
   AgsChannelLinkCollectionEditor *channel_link_collection_editor;
+  GtkTreeIter iter;
 
   channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(applicable);
+
+  if(gtk_combo_box_get_active_iter(channel_link_collection_editor->link,
+				   &iter)){
+    AgsMachine *link_machine;
+    AgsMachineEditor *machine_editor;
+    AgsChannel *channel, *link;
+    GtkTreeModel *model;
+    guint first_line, count;
+    guint i;
+
+    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(channel_link_collection_editor),
+								AGS_TYPE_MACHINE_EDITOR));
+
+    first_line = (guint) gtk_spin_button_get_value_as_int(channel_link_collection_editor->first_line);
+
+    if(channel_link_collection_editor->channel_type == AGS_TYPE_INPUT)
+      channel = ags_channel_nth(machine_editor->machine->audio->input, first_line);
+    else
+      channel = ags_channel_nth(machine_editor->machine->audio->output, first_line);
+
+    model = gtk_combo_box_get_model(channel_link_collection_editor->link);
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &link_machine,
+		       -1);
+
+    count = (guint) gtk_spin_button_get_value_as_int(channel_link_collection_editor->count);
+
+    if(link_machine == NULL){
+      for(i = 0; i < count; i++){
+	ags_channel_set_link(channel, NULL);
+
+	channel = channel->next;
+      }
+    }else{
+      guint first_link;
+
+      first_link = (guint) gtk_spin_button_get_value_as_int(channel_link_collection_editor->first_link);
+
+
+      if(channel_link_collection_editor->channel_type == AGS_TYPE_INPUT)
+	link = ags_channel_nth(link_machine->audio->output, first_link);
+      else
+	link = ags_channel_nth(link_machine->audio->input, first_link);
+
+      for(i = 0; i < count; i++){
+	ags_channel_set_link(channel, link);
+
+	channel = channel->next;
+	link = link->next;
+      }
+    }
+  }
 }
 
 void
@@ -269,6 +407,7 @@ ags_channel_link_collection_editor_reset(AgsApplicable *applicable)
 
   channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(applicable);
 
+  /* empty */
 }
 
 void
@@ -285,12 +424,84 @@ ags_channel_link_collection_editor_show(GtkWidget *widget)
   AgsChannelLinkCollectionEditor *channel_link_collection_editor = (AgsChannelLinkCollectionEditor *) widget;
 }
 
+void
+ags_channel_link_collection_editor_check(AgsChannelLinkCollectionEditor *channel_link_collection_editor)
+{
+  GtkTreeIter iter;
+
+  if(gtk_combo_box_get_active_iter(channel_link_collection_editor->link,
+				   &iter)){
+    AgsMachine *link_machine;
+    AgsMachineEditor *machine_editor;
+    GtkTreeModel *model;
+    gdouble first_line, first_line_stop, first_line_range;
+    gdouble first_link, first_link_stop, first_link_range;
+    gdouble max;
+
+    first_line = gtk_spin_button_get_value(channel_link_collection_editor->first_line);
+    
+    machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(channel_link_collection_editor),
+								AGS_TYPE_MACHINE_EDITOR));
+
+    if(channel_link_collection_editor->channel_type == AGS_TYPE_INPUT)
+      first_line_stop = (gdouble) machine_editor->machine->audio->input_lines;
+    else
+      first_line_stop = (gdouble) machine_editor->machine->audio->output_lines;
+    
+    
+    /* link machine */
+    first_link = gtk_spin_button_get_value(channel_link_collection_editor->first_link);
+
+    model = gtk_combo_box_get_model(channel_link_collection_editor->link);
+    gtk_tree_model_get(model,
+		       &iter,
+		       1, &link_machine,
+		       -1);
+
+    first_line_range = first_line_stop - first_line;
+
+    if(link_machine != NULL){
+      if(channel_link_collection_editor->channel_type == AGS_TYPE_INPUT)
+	first_link_stop = (gdouble) link_machine->audio->output_lines;
+      else
+	first_link_stop = (gdouble) link_machine->audio->input_lines;
+
+      first_link_range = first_link_stop - first_link;
+
+      if(first_line_range > first_link_range)
+	max = first_link_range;
+      else
+	max = first_line_range;
+    }else{
+      first_link_stop = 0.0;
+      max = first_line_range;
+    }
+
+    gtk_spin_button_set_range(channel_link_collection_editor->first_line,
+			      0.0, first_line_stop - 1.0);
+
+    if(link_machine == NULL)
+      gtk_spin_button_set_range(channel_link_collection_editor->first_link,
+				0.0, 0.0);
+    else
+      gtk_spin_button_set_range(channel_link_collection_editor->first_link,
+				0.0, first_link_stop - 1.0);
+
+    gtk_spin_button_set_range(channel_link_collection_editor->count,
+			      0.0, max);
+  }else{
+    gtk_spin_button_set_range(channel_link_collection_editor->count,
+			      -1.0, -1.0);
+  }
+}
+
 AgsChannelLinkCollectionEditor*
-ags_channel_link_collection_editor_new()
+ags_channel_link_collection_editor_new(GType channel_type)
 {
   AgsChannelLinkCollectionEditor *channel_link_collection_editor;
 
   channel_link_collection_editor = (AgsChannelLinkCollectionEditor *) g_object_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR,
+										   "channel_type\0", channel_type,
 										   NULL);
   
   return(channel_link_collection_editor);

@@ -68,6 +68,7 @@ int
 ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
   ags_applicable_apply(AGS_APPLICABLE(machine_editor));
+  ags_applicable_reset(AGS_APPLICABLE(machine_editor));
 
   return(0);
 }
@@ -75,7 +76,7 @@ ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_e
 int
 ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
 {
-  ags_applicable_set_update(AGS_APPLICABLE(machine_editor), FALSE);
+  //  ags_applicable_set_update(AGS_APPLICABLE(machine_editor), FALSE);
   ags_applicable_apply(AGS_APPLICABLE(machine_editor));
 
   gtk_widget_destroy((GtkWidget *) machine_editor);

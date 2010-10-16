@@ -19,6 +19,8 @@ struct _AgsChannelLinkCollectionEditor
 {
   GtkTable table;
 
+  GType channel_type;
+
   GtkComboBox *link;
   GtkSpinButton *first_line;
   GtkSpinButton *first_link;
@@ -29,6 +31,14 @@ struct _AgsChannelLinkCollectionEditorClass
 {
   GtkTableClass table;
 };
+
+GType ags_channel_link_collection_editor_get_type();
+
+void ags_channel_link_collection_editor_check_first_line(AgsChannelLinkCollectionEditor *channel_link_collection_editor);
+
+void ags_channel_link_collection_editor_check_first_link(AgsChannelLinkCollectionEditor *channel_link_collection_editor);
+
+void ags_channel_link_collection_editor_check_count(AgsChannelLinkCollectionEditor *channel_link_collection_editor);
 
 AgsChannelLinkCollectionEditor* ags_channel_link_collection_editor_new();
 

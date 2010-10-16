@@ -172,10 +172,10 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_editor->combo,
 				   &iter)){
-    AgsMachine *machine;
+    AgsMachine *link_machine;
     AgsLineEditor *line_editor;
-    GtkTreeModel *model;
     AgsChannel *channel, *link;
+    GtkTreeModel *model;
 
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 							  AGS_TYPE_LINE_EDITOR));
@@ -185,10 +185,10 @@ ags_link_editor_apply(AgsApplicable *applicable)
     model = gtk_combo_box_get_model(link_editor->combo);
     gtk_tree_model_get(model,
 		       &iter,
-		       1, &machine,
+		       1, &link_machine,
 		       -1);
     
-    if(machine == NULL)
+    if(link_machine == NULL)
       ags_channel_set_link(channel, NULL);
     else{
       guint link_line;
@@ -196,10 +196,10 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_line = (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button);
 
       if(AGS_IS_INPUT(channel))
-	link = ags_channel_nth(machine->audio->output,
+	link = ags_channel_nth(link_machine->audio->output,
 			       link_line);
       else
-	link = ags_channel_nth(machine->audio->input,
+	link = ags_channel_nth(link_machine->audio->input,
 			       link_line);
 
       ags_channel_set_link(channel, link);

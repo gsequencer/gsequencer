@@ -3,6 +3,12 @@
 #include "../object/ags_connectable.h"
 #include "../object/ags_applicable.h"
 
+#include "../audio/ags_audio.h"
+#include "../audio/ags_output.h"
+#include "../audio/ags_input.h"
+
+#include "ags_machine_editor.h"
+
 void ags_channel_resize_editor_class_init(AgsChannelResizeEditorClass *channel_resize_editor);
 void ags_channel_resize_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_channel_resize_editor_applicable_interface_init(AgsApplicableInterface *applicable);
@@ -14,6 +20,8 @@ void ags_channel_resize_editor_apply(AgsApplicable *applicable);
 void ags_channel_resize_editor_reset(AgsApplicable *applicable);
 void ags_channel_resize_editor_destroy(GtkObject *object);
 void ags_channel_resize_editor_show(GtkWidget *widget);
+
+AgsConnectableInterface *ags_channel_resize_editor_parent_connectable_interface;
 
 GType
 ags_channel_resize_editor_get_type(void)
@@ -70,6 +78,8 @@ ags_channel_resize_editor_class_init(AgsChannelResizeEditorClass *channel_resize
 void
 ags_channel_resize_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_channel_resize_editor_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->connect = ags_channel_resize_editor_connect;
   connectable->disconnect = ags_channel_resize_editor_disconnect;
 }
@@ -118,7 +128,7 @@ ags_channel_resize_editor_init(AgsChannelResizeEditor *channel_resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  channel_resize_editor->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  channel_resize_editor->audio_channels = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(channel_resize_editor->audio_channels));
 
@@ -145,7 +155,7 @@ ags_channel_resize_editor_init(AgsChannelResizeEditor *channel_resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  channel_resize_editor->output_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  channel_resize_editor->output_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(channel_resize_editor->output_pads));
 
@@ -172,7 +182,7 @@ ags_channel_resize_editor_init(AgsChannelResizeEditor *channel_resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  channel_resize_editor->input_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  channel_resize_editor->input_pads = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1024.0, 1.0);
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(channel_resize_editor->input_pads));
 }
@@ -181,7 +191,8 @@ void
 ags_channel_resize_editor_connect(AgsConnectable *connectable)
 {
   AgsChannelResizeEditor *channel_resize_editor;
-  GList *pad_list;
+
+  ags_channel_resize_editor_parent_connectable_interface->connect(connectable);
 
   /* AgsChannelResizeEditor */
   channel_resize_editor = AGS_CHANNEL_RESIZE_EDITOR(connectable);
@@ -204,17 +215,48 @@ ags_channel_resize_editor_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_channel_resize_editor_apply(AgsApplicable *applicable)
 {
+  AgsMachineEditor *machine_editor;
   AgsChannelResizeEditor *channel_resize_editor;
+  AgsAudio *audio;
 
   channel_resize_editor = AGS_CHANNEL_RESIZE_EDITOR(applicable);
+
+  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(channel_resize_editor),
+							      AGS_TYPE_MACHINE_EDITOR));
+
+  audio = machine_editor->machine->audio;
+
+  ags_audio_set_audio_channels(audio,
+			       (guint) gtk_spin_button_get_value_as_int(channel_resize_editor->audio_channels));
+
+  ags_audio_set_pads(audio, AGS_TYPE_INPUT,
+		     (guint) gtk_spin_button_get_value_as_int(channel_resize_editor->input_pads));
+  ags_audio_set_pads(audio, AGS_TYPE_OUTPUT,
+		     (guint) gtk_spin_button_get_value_as_int(channel_resize_editor->output_pads));
 }
 
 void
 ags_channel_resize_editor_reset(AgsApplicable *applicable)
 {
+  AgsMachineEditor *machine_editor;
   AgsChannelResizeEditor *channel_resize_editor;
+  AgsAudio *audio;
 
   channel_resize_editor = AGS_CHANNEL_RESIZE_EDITOR(applicable);
+
+  machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(channel_resize_editor),
+							      AGS_TYPE_MACHINE_EDITOR));
+
+  audio = machine_editor->machine->audio;
+
+  gtk_spin_button_set_value(channel_resize_editor->audio_channels,
+			    audio->audio_channels);
+
+  gtk_spin_button_set_value(channel_resize_editor->input_pads,
+			    audio->input_pads);
+
+  gtk_spin_button_set_value(channel_resize_editor->output_pads,
+			    audio->output_pads);
 }
 
 void

@@ -367,6 +367,26 @@ ags_machine_editor_show(GtkWidget *widget)
 void
 ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 {
+  GParameter *output_link_editor_child_parameter;
+  GParameter *input_link_editor_child_parameter;
+
+  /* output */
+  output_link_editor_child_parameter = g_new0(GParameter, 1);
+
+  output_link_editor_child_parameter[0].name = "channel_type\0";
+
+  g_value_init(&(output_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
+  g_value_set_gtype(&(output_link_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
+
+  /* input */
+  input_link_editor_child_parameter = g_new0(GParameter, 1);
+
+  input_link_editor_child_parameter[0].name = "channel_type\0";
+
+  g_value_init(&(input_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
+  g_value_set_gtype(&(input_link_editor_child_parameter[0].value), AGS_TYPE_INPUT);
+
+
   /* AgsOutput */
   machine_editor->output_editor = ags_channel_listing_editor_new(AGS_TYPE_OUTPUT);
   gtk_scrolled_window_add_with_viewport(machine_editor->output_scrolled_window,
@@ -378,12 +398,16 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 					(GtkWidget *) machine_editor->input_editor);
 
   /* AgsOutput link editor */
-  machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR);
+  machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR,
+									  1,
+									  output_link_editor_child_parameter);
   gtk_scrolled_window_add_with_viewport(machine_editor->output_link_editor_scrolled_window,
 					(GtkWidget *) machine_editor->output_link_editor);
 
   /* AgsInput link editor */
-  machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR);
+  machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR,
+									 1,
+									 input_link_editor_child_parameter);
   gtk_scrolled_window_add_with_viewport(machine_editor->input_link_editor_scrolled_window,
 					(GtkWidget *) machine_editor->input_link_editor);
 
