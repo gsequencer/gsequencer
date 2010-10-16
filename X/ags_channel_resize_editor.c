@@ -221,6 +221,9 @@ ags_channel_resize_editor_apply(AgsApplicable *applicable)
 
   channel_resize_editor = AGS_CHANNEL_RESIZE_EDITOR(applicable);
 
+  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(channel_resize_editor)->flags)) == 0)
+    return;
+  
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(channel_resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
 
