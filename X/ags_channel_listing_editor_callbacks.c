@@ -52,4 +52,3 @@ ags_channel_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type
     }
   }
 }
-

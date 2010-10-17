@@ -5,9 +5,9 @@
 void ags_task_class_init(AgsTaskClass *task);
 void ags_task_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_task_init(AgsTask *task);
-void ags_task_finalize(GObject *gobject);
 void ags_task_connect(AgsConnectable *connectable);
 void ags_task_disconnect(AgsConnectable *connectable);
+void ags_task_finalize(GObject *gobject);
 
 void ags_task_real_launch(AgsTask *task);
 void ags_task_real_passed(AgsTask *task);
@@ -94,6 +94,8 @@ ags_task_class_init(AgsTaskClass *task)
 void
 ags_task_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->connect = ags_task_connect;
+  connectable->disconnect = ags_task_disconnect;
 }
 
 void
@@ -105,8 +107,22 @@ ags_task_init(AgsTask *task)
 }
 
 void
+ags_task_connect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_task_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
 ags_task_finalize(GObject *gobject)
 {
+  G_OBJECT_CLASS(ags_task_parent_class)->finalize(gobject);
+
   /* empty */
 }
 
@@ -137,7 +153,8 @@ ags_task_new()
 {
   AgsTask *task;
 
-  task = (AgsTask *) g_object_new(AGS_TYPE_TASK, NULL);
+  task = (AgsTask *) g_object_new(AGS_TYPE_TASK,
+				  NULL);
 
   return(task);
 }
