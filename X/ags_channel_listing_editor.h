@@ -36,7 +36,8 @@ struct _AgsChannelListingEditorClass
 GType ags_channel_listing_editor_get_type();
 
 void ags_channel_listing_editor_add_children(AgsChannelListingEditor *channel_listing_editor,
-					     AgsAudio *audio);
+					     AgsAudio *audio, guint nth_channel,
+					     gboolean connect);
 AgsChannelListingEditor* ags_channel_listing_editor_new(GType channel_type);
 
 #endif /*__AGS_CHANNEL_LISTING_EDITOR_H__*/

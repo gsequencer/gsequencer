@@ -176,6 +176,7 @@ void
 ags_pad_editor_connect(AgsConnectable *connectable)
 {
   AgsPadEditor *pad_editor;
+  AgsAudio *audio;
   GList *line_editor;
 
   pad_editor = AGS_PAD_EDITOR(connectable);
@@ -186,6 +187,13 @@ ags_pad_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) pad_editor, "show\0",
 		   G_CALLBACK(ags_pad_editor_show_callback), (gpointer) pad_editor);
 
+  /* AgsAudio */
+  audio = AGS_AUDIO(pad_editor->pad->audio);
+
+  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
+
+  /* AgsLineEditor */
   line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){

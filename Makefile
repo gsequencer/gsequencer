@@ -6,6 +6,8 @@ AGS_DIR = ./
 
 AGS_AUDIO_OBJECTS = $(AGS_DIR)audio/ags_devout.o $(AGS_DIR)audio/ags_task.o $(AGS_DIR)audio/ags_audio.o $(AGS_DIR)audio/ags_channel.o $(AGS_DIR)audio/ags_input.o $(AGS_DIR)audio/ags_output.o $(AGS_DIR)audio/ags_recycling.o $(AGS_DIR)audio/ags_audio_signal.o $(AGS_DIR)audio/ags_pattern.o $(AGS_DIR)audio/ags_notation.o $(AGS_DIR)audio/ags_recall.o $(AGS_DIR)audio/ags_recall_id.o $(AGS_DIR)audio/ags_recall_audio.o $(AGS_DIR)audio/ags_recall_audio_run.o $(AGS_DIR)audio/ags_recall_channel.o $(AGS_DIR)audio/ags_recall_channel_run.o $(AGS_DIR)audio/ags_garbage_collector.o $(AGS_DIR)audio/ags_synths.o
 
+AGS_TASK_OBJECTS = $(AGS_DIR)audio/task/ags_open_file.o $(AGS_DIR)audio/task/ags_link_channel.o $(AGS_DIR)audio/task/ags_change_bpm.o
+
 AGS_RECALL_OBJECTS = $(AGS_DIR)audio/recall/ags_loop_channel.o $(AGS_DIR)audio/recall/ags_stream_channel.o $(AGS_DIR)audio/recall/ags_stream_recycling.o $(AGS_DIR)audio/recall/ags_stream_audio_signal.o $(AGS_DIR)audio/recall/ags_stream.o $(AGS_DIR)audio/recall/ags_copy_pattern_channel_run.o $(AGS_DIR)audio/recall/ags_copy_pattern_audio.o $(AGS_DIR)audio/recall/ags_copy_pattern_audio_run.o $(AGS_DIR)audio/recall/ags_copy_pattern_channel.o $(AGS_DIR)audio/recall/ags_copy_channel.o $(AGS_DIR)audio/recall/ags_copy_recycling.o $(AGS_DIR)audio/recall/ags_copy_audio_signal.o $(AGS_DIR)audio/recall/ags_play_audio_file.o $(AGS_DIR)audio/recall/ags_play_notation.o $(AGS_DIR)audio/recall/ags_play_note.o $(AGS_DIR)audio/recall/ags_play_pattern.o $(AGS_DIR)audio/recall/ags_play_channel.o $(AGS_DIR)audio/recall/ags_play_recycling.o $(AGS_DIR)audio/recall/ags_play_audio_signal.o $(AGS_DIR)audio/recall/ags_volume_channel.o $(AGS_DIR)audio/recall/ags_volume_recycling.o $(AGS_DIR)audio/recall/ags_volume_audio_signal.o $(AGS_DIR)audio/recall/ags_delay_audio_run.o $(AGS_DIR)audio/recall/ags_delay_audio.o $(AGS_DIR)audio/recall/ags_amplifier.o $(AGS_DIR)audio/recall/ags_echo.o
 
 AGS_AUDIO_FILE_OBJECTS = $(AGS_DIR)audio/file/ags_audio_file.o $(AGS_DIR)audio/file/ags_audio_file_wav.o $(AGS_DIR)audio/file/ags_audio_file_xml.o $(AGS_DIR)audio/file/ags_audio_file_raw.o $(AGS_DIR)audio/file/ags_audio_file_ogg.o $(AGS_DIR)audio/file/ags_audio_file_mp3.o
@@ -28,7 +30,7 @@ AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_D
 
 AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
 
-AGS_OBJECTS = $(AGS_DIR)main.o $(AGS_OBJECT_OBJECTS) $(AGS_AUDIO_OBJECTS) $(AGS_RECALL_OBJECTS) $(AGS_AUDIO_FILE_OBJECTS) $(AGS_FILE_OBJECTS) $(AGS_WIDGET_OBJECTS) $(AGS_X_OBJECTS) $(AGS_X_CALLBACK_OBJECTS) $(AGS_EDITOR_OBJECTS) $(AGS_EDITOR_CALLBACK_OBJECTS) $(AGS_MACHINE_OBJECTS) $(AGS_MACHINE_CALLBACK_OBJECTS)
+AGS_OBJECTS = $(AGS_DIR)main.o $(AGS_OBJECT_OBJECTS) $(AGS_AUDIO_OBJECTS) $(AGS_TASK_OBJECTS) $(AGS_RECALL_OBJECTS) $(AGS_AUDIO_FILE_OBJECTS) $(AGS_FILE_OBJECTS) $(AGS_WIDGET_OBJECTS) $(AGS_X_OBJECTS) $(AGS_X_CALLBACK_OBJECTS) $(AGS_EDITOR_OBJECTS) $(AGS_EDITOR_CALLBACK_OBJECTS) $(AGS_MACHINE_OBJECTS) $(AGS_MACHINE_CALLBACK_OBJECTS)
 
 
 AGS_OBJECT_SOURCES = $(wildcard $(AGS_DIR)object/*.[ch])

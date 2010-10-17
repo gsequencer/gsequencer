@@ -110,9 +110,23 @@ ags_channel_listing_editor_connect(AgsConnectable *connectable)
 
   ags_channel_listing_editor_parent_connectable_interface->connect(connectable);
 
-  /* AgsChannelListingEditor */
   channel_listing_editor = AGS_CHANNEL_LISTING_EDITOR(connectable);
 
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(GTK_WIDGET(channel_listing_editor),
+								AGS_TYPE_MACHINE_EDITOR);
+
+  if(machine_editor != NULL &&
+     machine_editor->machine != NULL){
+    AgsAudio *audio;
+
+    /* AgsAudio */
+    audio = machine_editor->machine->audio;
+
+    g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
+			   G_CALLBACK(ags_channel_listing_editor_set_pads_callback), channel_listing_editor);
+  }
+
+  /* AgsPadEditor */
   pad_editor = gtk_container_get_children(GTK_CONTAINER(channel_listing_editor->child));
 
   while(pad_editor != NULL){
@@ -197,13 +211,15 @@ ags_channel_listing_editor_show(GtkWidget *widget)
 
 void
 ags_channel_listing_editor_add_children(AgsChannelListingEditor *channel_listing_editor,
-					AgsAudio *audio)
+					AgsAudio *audio, guint nth_channel,
+					gboolean connect)
 {
   AgsPadEditor *pad_editor;
   GtkVBox *vbox;
   AgsChannel *channel;
 
-  if(channel_listing_editor->child != NULL){
+  if(nth_channel == 0 &&
+     channel_listing_editor->child != NULL){
     vbox = channel_listing_editor->child;
     channel_listing_editor->child = NULL;
     gtk_widget_destroy(GTK_WIDGET(vbox));
@@ -212,16 +228,18 @@ ags_channel_listing_editor_add_children(AgsChannelListingEditor *channel_listing
   if(audio == NULL)
     return;
   
-  channel_listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(channel_listing_editor),
-		     GTK_WIDGET(channel_listing_editor->child),
-		     FALSE, FALSE,
-		     0);
+  if(nth_channel == 0){
+    channel_listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(channel_listing_editor),
+		       GTK_WIDGET(channel_listing_editor->child),
+		       FALSE, FALSE,
+		       0);
+  }
 
   if(channel_listing_editor->channel_type == AGS_TYPE_OUTPUT)
-    channel = audio->output;
+    channel = ags_channel_nth(audio->output, nth_channel);
   else
-    channel = audio->input;
+    channel = ags_channel_nth(audio->input, nth_channel);
 
   while(channel != NULL){
     pad_editor = ags_pad_editor_new(channel);
@@ -229,6 +247,11 @@ ags_channel_listing_editor_add_children(AgsChannelListingEditor *channel_listing
 		       GTK_WIDGET(pad_editor),
 		       FALSE, FALSE,
 		       0);
+
+    if(connect){
+      ags_connectable_connect(AGS_CONNECTABLE(pad_editor));
+      gtk_widget_show_all(GTK_WIDGET(pad_editor));
+    }
 
     channel = channel->next_pad;
   }
