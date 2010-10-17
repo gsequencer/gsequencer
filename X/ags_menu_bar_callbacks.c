@@ -345,8 +345,8 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gchar *authors[] = { "joel kraehemann\0", NULL }; 
 
   if(file == NULL){
-    file = fopen("./license/gpl-license\0", "r\0");
-    stat("./license/gpl-license", &sb);
+    file = fopen("./license/gpl-3.0.txt\0", "r\0");
+    stat("./license/gpl-3.0.txt\0", &sb);
     license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
     fread(license, sizeof(char), sb.st_size, file);
     license[sb.st_size] = '\0';
