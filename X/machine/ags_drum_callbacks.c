@@ -307,7 +307,11 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 	audio_file = ags_audio_file_new((gchar *) filenames->data,
 					(AgsDevout *) drum->machine.audio->devout,
 					0, drum->machine.audio->audio_channels);
-	ags_audio_file_open(audio_file);
+	if(!ags_audio_file_open(audio_file)){
+	  filenames = filenames->next;
+	  continue;
+	}
+
 	ags_audio_file_read_audio_signal(audio_file);
 
 	list = audio_file->audio_signal;

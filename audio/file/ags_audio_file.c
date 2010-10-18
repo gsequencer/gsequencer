@@ -141,7 +141,7 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
+gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
   fprintf(stdout, "ags_audio_file_open: %s\n\0", audio_file->name);
@@ -180,24 +180,14 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 
   fprintf(stdout, "ags_audio_file_read:\n  audio_file->frames = %u\n  audio_file->devout->buffer_size = %u\n  length = %u\n\0", audio_file->frames, audio_file->devout->buffer_size, length);
 
-  if(audio_file->channels > 0){
-    audio_file->audio_signal =
-      list = g_list_alloc();
-    i = audio_file->start_channel;
-    i_stop = audio_file->start_channel + audio_file->audio_channels;
-
-    goto ags_audio_file_read_audio_signal0;
-  }else
-    i_stop = 0;
-
+  list = NULL;
+  i = audio_file->start_channel;
+  i_stop = audio_file->start_channel + audio_file->audio_channels;
 
   for(; i < i_stop; i++){
-    list->next = g_list_alloc();
-    list->next->prev = list;
-    list = list->next;
-
-  ags_audio_file_read_audio_signal0:
     audio_signal = ags_audio_signal_new(NULL, NULL);
+    list = g_list_prepend(list, audio_signal);
+
     audio_signal->devout = (GObject *) audio_file->devout;
     ags_audio_signal_connect(audio_signal);
 
@@ -205,13 +195,15 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
     audio_signal->devout = (GObject *) audio_file->devout;
   }
 
+  audio_file->audio_signal = list;
+
   //  if((AGS_AUDIO_FILE_ALL_CHANNELS & (audio_file->flags)) != 0){
   //    fprintf(stdout, "  audio_file->all_channels == TRUE\n\0");
 
   list = audio_file->audio_signal;
   j_stop = (guint) floor((double)(audio_file->frames) / (double)(audio_file->devout->buffer_size));
 
-  for(i = 0; list != NULL; i++){
+  for(i = audio_file->start_channel; list != NULL; i++){
     audio_signal = AGS_AUDIO_SIGNAL(list->data);
     ags_audio_signal_stream_resize(audio_signal, length);
     buffer = ags_playable_read(AGS_PLAYABLE(audio_file->file), i);

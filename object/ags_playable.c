@@ -28,7 +28,7 @@ ags_playable_base_init(AgsPlayableInterface *interface)
   /* empty */
 }
 
-void
+gboolean
 ags_playable_open(AgsPlayable *playable, gchar *name)
 {
   AgsPlayableInterface *playable_interface;

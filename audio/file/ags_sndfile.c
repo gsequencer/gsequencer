@@ -9,7 +9,7 @@ void ags_sndfile_playable_interface_init(AgsPlayableInterface *playable);
 void ags_sndfile_init(AgsSndfile *sndfile);
 void ags_sndfile_connect(AgsConnectable *connectable);
 void ags_sndfile_disconnect(AgsConnectable *connectable);
-void ags_sndfile_open(AgsPlayable *playable, gchar *name);
+gboolean ags_sndfile_open(AgsPlayable *playable, gchar *name);
 void ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames);
 short* ags_sndfile_read(AgsPlayable *playable, guint channel);
 void ags_sndfile_close(AgsPlayable *playable);
@@ -120,7 +120,7 @@ ags_sndfile_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
+gboolean
 ags_sndfile_open(AgsPlayable *playable, gchar *name)
 {
   AgsSndfile *sndfile;
@@ -152,22 +152,24 @@ short*
 ags_sndfile_read(AgsPlayable *playable, guint channel)
 {
   AgsSndfile *sndfile;
-  short *item;
-  short *buffer;
+  short *buffer, *source;
   guint i;
 
   sndfile = AGS_SNDFILE(playable);
 
-  item = (short *) malloc(sndfile->info->channels * sizeof(short));
-  buffer = (short *) malloc(sndfile->info->frames * sizeof(short));
+  source = (short *) malloc(sndfile->info->channels *
+			    sndfile->info->frames *
+			    sizeof(short));
+  sf_read_short(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
+
+  buffer = (short *) malloc(sndfile->info->frames *
+			    sizeof(short));
 
   for(i = 0; i < sndfile->info->frames; i++){
-    sf_read_short(sndfile->file, item, sndfile->info->channels);
-    buffer[i] = item[channel];
-    sf_seek(sndfile->file, 1, SEEK_CUR);
+    buffer[i] = source[i * sndfile->info->channels + channel];
   }
 
-  free(item);
+  free(source);
 
   return(buffer);
 }
