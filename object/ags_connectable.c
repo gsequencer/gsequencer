@@ -1,7 +1,5 @@
 #include "ags_connectable.h"
 
-#include <stdio.h>
-
 void ags_connectable_base_init(AgsConnectableInterface *interface);
 
 GType

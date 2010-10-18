@@ -12,7 +12,6 @@
 #include "../../audio/recall/ags_play_audio_file.h"
 
 #include "../../audio/file/ags_audio_file.h"
-#include "../../audio/file/ags_audio_file_wav.h"
 
 #include <math.h>
 
@@ -99,6 +98,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 void
 ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad *drum_input_pad)
 {
+  /*
   GtkFileChooserDialog *file_chooser;
   AgsDevout *devout;
   AgsAudioFile *audio_file;
@@ -114,7 +114,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
   devout = AGS_DEVOUT(AGS_AUDIO(drum_input_pad->pad.channel->audio)->devout);
 
   if(toggle_button->active){
-    /* AgsPlayAudioFile */
+    /* AgsPlayAudioFile * /
     play_audio_file = ags_play_audio_file_new();
     play_audio_file->devout = devout;
     ags_play_audio_file_connect(play_audio_file);
@@ -126,7 +126,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     g_signal_connect((GObject *) play_audio_file, "cancel\0",
 		     G_CALLBACK(ags_drum_input_pad_open_play_cancel), drum_input_pad);
 
-    /* AgsAudioFile */
+    /* AgsAudioFile * /
     if(!g_strcmp0(name0, name1)){
       audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
     }else{
@@ -152,7 +152,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
     play_audio_file->audio_file = audio_file;
 
-    /* AgsDevout */
+    /* AgsDevout * /
     g_static_mutex_lock(&mutex);
     devout->play_recall = g_list_append(devout->play_recall, (gpointer) play_audio_file);
     devout->flags |= AGS_DEVOUT_PLAY_RECALL;
@@ -168,6 +168,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     }else
       drum_input_pad->flags &= (~AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE);
   }
+*/
 }
 
 void
@@ -204,6 +205,7 @@ ags_drum_input_pad_open_play_cancel(AgsRecall *recall, AgsDrumInputPad *drum_inp
 void
 ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *drum_input_pad)
 {
+  /*
   GtkFileChooserDialog *file_chooser;
   GtkSpinButton *spin_button;
   AgsDevout *devout;
@@ -300,6 +302,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   }
 
   drum_input_pad->file_chooser = NULL;
+  */
 }
 
 void

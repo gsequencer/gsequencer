@@ -23,7 +23,6 @@
 #include "../../audio/recall/ags_play_audio_signal.h"
 
 #include "../../audio/file/ags_audio_file.h"
-#include "../../audio/file/ags_audio_file_wav.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -259,14 +258,16 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
     if(overwrite->toggle_button.active){
       if(channel != NULL){
 	for(i = 0; i < drum->machine.audio->input_pads && filenames != NULL; i++){
-	  audio_file = ags_audio_file_new((char *) filenames->data);
-	  audio_file->name = (char *) filenames->data;
-	  audio_file->flags |= AGS_AUDIO_FILE_ALL_CHANNELS;
-	  ags_audio_file_open(audio_file);
-	  //	  AGS_AUDIO_FILE_GET_CLASS(audio_file)->read_buffer(audio_file);
-	  ags_audio_file_read_wav(audio_file);
-	  ags_audio_file_set_devout(audio_file, (AgsDevout *) drum->machine.audio->devout);
+	  audio_file = ags_audio_file_new((gchar *) filenames->data,
+					  (AgsDevout *) drum->machine.audio->devout,
+					  0, drum->machine.audio->audio_channels);
+	  if(!ags_audio_file_open(audio_file)){
+	    filenames = filenames->next;
+	    continue;
+	  }
+
 	  ags_audio_file_read_audio_signal(audio_file);
+
 	  list = audio_file->audio_signal;
 
 	  for(j = 0; j < drum->machine.audio->audio_channels && list != NULL; j++){
@@ -303,16 +304,13 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
       channel = ags_channel_nth(AGS_AUDIO(drum->machine.audio)->input, (AGS_AUDIO(drum->machine.audio)->input_pads - list_length) * AGS_AUDIO(drum->machine.audio)->audio_channels);
 
       while(filenames != NULL){
-	audio_file = ags_audio_file_new((char *) filenames->data);
-	audio_file->name = (char *) filenames->data;
-	audio_file->flags |= AGS_AUDIO_FILE_ALL_CHANNELS;
+	audio_file = ags_audio_file_new((gchar *) filenames->data,
+					(AgsDevout *) drum->machine.audio->devout,
+					0, drum->machine.audio->audio_channels);
 	ags_audio_file_open(audio_file);
-	//	AGS_AUDIO_FILE_GET_CLASS(audio_file)->read_buffer(audio_file);
-	ags_audio_file_read_wav(audio_file);
-	ags_audio_file_set_devout(audio_file, (AgsDevout *) drum->machine.audio->devout);
 	ags_audio_file_read_audio_signal(audio_file);
-	list = audio_file->audio_signal;
 
+	list = audio_file->audio_signal;
 
 	for(j = 0; j < drum->machine.audio->audio_channels && list != NULL; j++){
 	  AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

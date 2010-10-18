@@ -84,6 +84,7 @@ ags_play_audio_file_connect(AgsPlayAudioFile *play_audio_file)
 void
 ags_play_audio_file(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 {
+  /*
   AgsPlayAudioFile *play_audio_file;
   short *buffer;
   guint i0, i1, j, stop;
@@ -120,6 +121,7 @@ ags_play_audio_file(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 
   if(play_done)
     g_signal_emit_by_name((GObject *) recall, "done\0", recall_id);
+  */
 }
 
 void

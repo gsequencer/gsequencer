@@ -16,15 +16,9 @@
 typedef struct _AgsAudioFile AgsAudioFile;
 typedef struct _AgsAudioFileClass AgsAudioFileClass;
 
-typedef enum{
-  AGS_AUDIO_FILE_ALL_CHANNELS        = 1,
-}AgsAudioFileFlags;
-
 struct _AgsAudioFile
 {
   GObject object;
-
-  guint flags;
 
   AgsDevout *devout;
 
@@ -32,9 +26,8 @@ struct _AgsAudioFile
   guint frames;
   guint channels;
 
-  guint buffer_channels;
-  guint channel;
-  short *buffer;
+  guint start_channel;
+  guint audio_channels;
 
   GList *audio_signal;
 
@@ -44,21 +37,16 @@ struct _AgsAudioFile
 struct _AgsAudioFileClass
 {
   GObjectClass object;
-
-  void (*read_buffer)(AgsAudioFile *audio_file);
 };
 
 GType ags_audio_file_get_type();
 
-void ags_audio_file_connect(AgsAudioFile *audio_file);
-
-void ags_audio_file_open(AgsAudioFile *audio_file);
+gboolean ags_audio_file_open(AgsAudioFile *audio_file);
 void ags_audio_file_read_audio_signal(AgsAudioFile *audio_file);
-
-void ags_audio_file_set_devout(AgsAudioFile *audio_file, AgsDevout *devout);
-
 void ags_audio_file_close(AgsAudioFile *audio_file);
 
-AgsAudioFile* ags_audio_file_new(); // audio_file->audio_signal->devout should have been set before reading
+AgsAudioFile* ags_audio_file_new(gchar *name,
+				 AgsDevout *devout,
+				 guint start_channel, guint audio_channels);
 
 #endif /*__AGS_AUDIO_FILE_H__*/
