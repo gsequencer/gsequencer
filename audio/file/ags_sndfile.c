@@ -160,6 +160,8 @@ ags_sndfile_read(AgsPlayable *playable, guint channel)
   source = (short *) malloc(sndfile->info->channels *
 			    sndfile->info->frames *
 			    sizeof(short));
+
+  sf_seek(sndfile->file, 0, SEEK_SET);
   sf_read_short(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
 
   buffer = (short *) malloc(sndfile->info->frames *

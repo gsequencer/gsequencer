@@ -267,6 +267,7 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 	  }
 
 	  ags_audio_file_read_audio_signal(audio_file);
+	  ags_audio_file_close(audio_file);
 
 	  list = audio_file->audio_signal;
 
@@ -313,6 +314,7 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 	}
 
 	ags_audio_file_read_audio_signal(audio_file);
+	ags_audio_file_close(audio_file);
 
 	list = audio_file->audio_signal;
 
