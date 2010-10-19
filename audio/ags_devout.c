@@ -33,6 +33,8 @@ void ags_devout_play_recall(AgsDevout *devout);
 void ags_devout_play_channel(AgsDevout *devout);
 void ags_devout_play_audio(AgsDevout *devout);
 
+void ags_devout_switch_buffer_flag(AgsDevout *devout);
+
 void* ags_devout_play_functions(void *devout);
 //void* ags_devout_garbage_collector(AgsDevout *devout);
 
@@ -51,7 +53,7 @@ void ags_devout_alsa_free(AgsDevout *devout);
 enum{
   RUN,
   STOP,
-  CHANGE_BPM,
+  BPM_CHANGED,
   LAST_SIGNAL,
 };
 
@@ -93,7 +95,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   devout->run = ags_devout_real_run;
   devout->stop = ags_devout_real_stop;
 
-  devout->change_bpm = ags_devout_real_change_bpm;
+  devout->bpm_changed = NULL;
 
   devout_signals[RUN] =
     g_signal_new("run\0",
@@ -113,11 +115,11 @@ ags_devout_class_init(AgsDevoutClass *devout)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-  devout_signals[CHANGE_BPM] =
-    g_signal_new("change_bpm\0",
+  devout_signals[BPM_CHANGED] =
+    g_signal_new("bpm_changed\0",
 		 G_TYPE_FROM_CLASS (devout),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsDevoutClass, change_bpm),
+		 G_STRUCT_OFFSET (AgsDevoutClass, bpm_changed),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__DOUBLE,
 		 G_TYPE_NONE, 1,
@@ -177,16 +179,7 @@ ags_devout_init(AgsDevout *devout)
   
   pthread_cond_init(&(devout->play_functions_cond), NULL);
 
-  
-  //  devout->play_cond = PTHREAD_COND_INITIALIZER;
-  //  devout->play_functions_cond = PTHREAD_COND_INITIALIZER;
-  //  devout->garbage_collector_cond = PTHREAD_COND_INITIALIZER;
-  
-  /*
-  devout->play_cond = g_cond_new();
-  devout->play_functions_cond = g_cond_new();
-  //devout->garbage_collector_cond = g_cond_new();
-  */
+  devout->task = NULL;
 
   devout->play_recall_ref = 0;
   devout->play_recall = NULL;
@@ -346,20 +339,36 @@ ags_devout_play_alloc()
 }
 
 void
-ags_devout_change_bpm(AgsDevout *devout, double bpm)
+ags_devout_append_task(AgsDevout *devout, AgsTask *task)
+{
+  /* synchronize */
+  pthread_mutex_lock(&(devout->append_task_mutex));
+  while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
+    pthread_cond_wait(&(devout->append_task_cond),
+		      &(devout->append_task_mutex));
+  }
+  
+  devout->flags |= AGS_DEVOUT_WAIT_APPEND_TASK;
+  pthread_mutex_unlock(&(devout->append_task_mutex));
+  
+  /* append */
+  devout->task = g_list_prepend(devout->task, task);
+
+  /* wake up other thread */
+  devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
+  pthread_cond_signal(&(devout->task_cond));
+}
+
+void
+ags_devout_bpm_changed(AgsDevout *devout, double bpm)
 {
   g_return_if_fail(AGS_IS_DEVOUT(devout));
 
-  if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
-    g_object_ref((GObject *) devout);
-    g_signal_emit((GObject *) devout,
-		  devout_signals[CHANGE_BPM], 0,
-		  bpm);
-    g_object_unref((GObject *) devout);
-  }else{
-    devout->new_bpm = bpm;
-    devout->flags |= AGS_DEVOUT_CHANGE_BPM;
-  }
+  g_object_ref((GObject *) devout);
+  g_signal_emit((GObject *) devout,
+		devout_signals[BPM_CHANGED], 0,
+		bpm);
+  g_object_unref((GObject *) devout);
 }
 
 void
@@ -401,8 +410,6 @@ ags_devout_play_channel(AgsDevout *devout)
   GList *list_play, *list_next_play;
   gint stage;
   guint group_id;
-  //GStaticMutex mutex = G_STATIC_MUTEX_INIT;
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   /* entry point */
   devout->flags |= AGS_DEVOUT_PLAYING_CHANNEL;
@@ -421,12 +428,8 @@ ags_devout_play_channel(AgsDevout *devout)
       ags_channel_recursive_play(channel, group_id, stage);
 
       if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
-	//g_static_mutex_lock(&mutex);
-	pthread_mutex_lock(&mutex);
 	devout->play_channel_ref--;
 	devout->play_channel = g_list_remove(devout->play_channel, (gpointer) play);
-	//g_static_mutex_unlock(&mutex);
-	pthread_mutex_unlock(&mutex);
       }
 
       list_play = list_next_play;
@@ -443,8 +446,6 @@ ags_devout_play_audio(AgsDevout *devout)
   GList *list_play, *list_next_play;
   gint stage;
   guint group_id;
-  //GStaticMutex mutex = G_STATIC_MUTEX_INIT;
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   /* entry point */
   devout->flags |= AGS_DEVOUT_PLAYING_AUDIO;
@@ -469,12 +470,8 @@ ags_devout_play_audio(AgsDevout *devout)
       }
 
       if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
-	//g_static_mutex_lock(&mutex);
-	pthread_mutex_lock(&mutex);
 	devout->play_audio_ref--;
 	devout->play_audio = g_list_remove(devout->play_audio, (gpointer) play);
-	//g_static_mutex_unlock(&mutex);
-	pthread_mutex_unlock(&mutex);
       }
 
       list_play = list_next_play;
@@ -485,6 +482,7 @@ ags_devout_play_audio(AgsDevout *devout)
 void
 ags_devout_real_run(AgsDevout *devout)
 {
+  /* start */
   if((AGS_DEVOUT_LIBAO & devout->flags) != 0)
     ags_devout_ao_init(devout);
   else if((AGS_DEVOUT_OSS & devout->flags) != 0)
@@ -563,50 +561,79 @@ ags_devout_stop(AgsDevout *devout)
   g_object_unref((GObject *) devout);
 }
 
+void
+ags_devout_switch_buffer_flag(AgsDevout *devout)
+{
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER0);
+    devout->flags |= AGS_DEVOUT_BUFFER1;
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER1);
+    devout->flags |= AGS_DEVOUT_BUFFER2;
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER2);
+    devout->flags |= AGS_DEVOUT_BUFFER3;
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_BUFFER3);
+    devout->flags |= AGS_DEVOUT_BUFFER0;
+  }
+}
+
 void*
 ags_devout_play_functions(void *devout0)
 {
   AgsDevout *devout;
+  GList *task, *task_next;
   //  static struct timespec ts;
   //GStaticMutex mutex = G_STATIC_MUTEX_INIT;
   void ags_devout_play_functions_timing(){
     while((AGS_DEVOUT_WAIT_DEVICE & (devout->flags)) != 0){
       //      g_cond_wait(devout->play_functions_cond,
       //	  g_static_mutex_get_mutex(&mutex));
-
       pthread_cond_wait(&(devout->play_functions_cond),
       			&(devout->play_functions_mutex));
-      //      nanosleep(&ts, NULL);
     }
 
+    ags_devout_switch_buffer_flag(devout);
     devout->flags |= AGS_DEVOUT_WAIT_RECALL;
     devout->flags |= AGS_DEVOUT_WAIT_DEVICE;
     //    g_static_mutex_unlock(&mutex);
-    //    pthread_mutex_unlock(&(devout->play_functions_mutex));
+    pthread_mutex_unlock(&(devout->play_functions_mutex));
   }
 
   fprintf(stdout, "ags_devout_play_functions:  start\n\0");
   devout = (AgsDevout *) devout0;
   //  ts.tv_sec = 0;
-  //  ts.tv_nsec = 100;
+  //  ts.tv_nsec = 1000;
 
+  //  while(TRUE){
+    //    if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
+    //      nanosleep(&ts, NULL);
+    //    }
   pthread_mutex_lock(&(devout->play_functions_mutex));
-
+  
   while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     pthread_mutex_unlock(&(devout->play_functions_mutex));
 
-    /* check if bpm needs to be updated */
-    if((AGS_DEVOUT_CHANGE_BPM & (devout->flags)) != 0){
-      devout->flags &= (~AGS_DEVOUT_CHANGE_BPM);
-      g_signal_emit(G_OBJECT(devout),
-		    devout_signals[CHANGE_BPM], 0,
-		    devout->new_bpm);
+    //    printf("loop\n\0");
+    
+    /* run tasks */
+    task = devout->task;
+    
+    while(task != NULL){
+      task_next = task->next;
+
+      ags_task_launch(AGS_TASK(task->data));
+      devout->task = g_list_remove(devout->task, task->data);
+
+      task = task_next;
     }
 
+    
     /* play recall */
     if((AGS_DEVOUT_PLAY_RECALL & devout->flags) != 0){
       ags_devout_play_recall(devout);
-
+      
       if(devout->play_recall_ref == 0){
 	devout->flags &= (~AGS_DEVOUT_PLAY_RECALL);
 	ags_devout_stop(devout);
@@ -617,51 +644,50 @@ ags_devout_play_functions(void *devout0)
     /* play channel */
     if((AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0){
       ags_devout_play_channel(devout);
-
+      
       if(devout->play_channel_ref == 0){
 	devout->flags &= (~AGS_DEVOUT_PLAY_CHANNEL);
 	ags_devout_stop(devout);
 	fprintf(stdout, "devout->play_channel_ref == 0\n\0");
       }
     }
-
+    
     /* play audio */
     if((AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) != 0){
       ags_devout_play_audio(devout);
-
+      
       if(devout->play_audio_ref == 0){
 	devout->flags &= (~AGS_DEVOUT_PLAY_AUDIO);
 	ags_devout_stop(devout);
 	fprintf(stdout, "devout->play_audio_ref == 0\n\0");
       }
     }
-
+    
     /* tic counter (AgsAttack) */
     devout->delay_counter++;
-
+      
     if(devout->delay_counter == devout->delay){
       if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
 	devout->flags &= (~AGS_DEVOUT_ATTACK_FIRST);
       else
 	devout->flags |= AGS_DEVOUT_ATTACK_FIRST;
-
+      
       devout->delay_counter = 0;
     }
-
-    //g_static_mutex_lock(&mutex);
-    pthread_mutex_lock(&devout->play_functions_mutex);
+    
+    pthread_mutex_lock(&(devout->play_functions_mutex));
     devout->flags &= (~AGS_DEVOUT_WAIT_RECALL);
-
+    
     if((AGS_DEVOUT_WAIT_DEVICE & (devout->flags)) != 0){
       ags_devout_play_functions_timing();
     }else{
-      //g_cond_broadcast(devout->play_cond);
-      //g_static_mutex_unlock(&mutex);
-      pthread_cond_signal(&devout->play_cond);
+      pthread_mutex_unlock(&(devout->play_functions_mutex));
+      pthread_cond_signal(&(devout->play_cond));
     }
   }
-
-  pthread_mutex_unlock(&devout->play_functions_mutex);
+  
+  pthread_mutex_unlock(&(devout->play_functions_mutex));
+  //}
 
   return(NULL);
 }
@@ -1054,7 +1080,7 @@ ags_devout_alsa_play(void *devout0)
 {
   AgsDevout *devout;
   //struct timespec ts;
-  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
+  //  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
   void ags_devout_play_timing(){
     while((AGS_DEVOUT_WAIT_RECALL & (devout->flags)) != 0){
       //g_cond_wait(devout->play_cond,
@@ -1065,10 +1091,11 @@ ags_devout_alsa_play(void *devout0)
       //      nanosleep(&ts, NULL);
     }
 
+    ags_devout_switch_buffer_flag(devout);
     devout->flags |= AGS_DEVOUT_WAIT_RECALL;
     devout->flags |= AGS_DEVOUT_WAIT_DEVICE;
     //g_static_mutex_unlock(&mutex);
-    //pthread_mutex_unlock(&devout->play_mutex);
+    pthread_mutex_unlock(&devout->play_mutex);
   }
 
   //  ts.tv_sec = 0;
@@ -1097,13 +1124,6 @@ ags_devout_alsa_play(void *devout0)
       }
 
       //      fprintf(stdout, "ags_devout_play 0\n\0");
-
-      //g_static_mutex_lock(&mutex);
-      pthread_mutex_lock(&devout->play_mutex);
-      devout->flags &= (~AGS_DEVOUT_BUFFER0);
-      devout->flags |= AGS_DEVOUT_BUFFER1;
-      //g_static_mutex_unlock(&mutex);
-      pthread_mutex_unlock(&devout->play_mutex);
     }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
       memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
@@ -1120,13 +1140,6 @@ ags_devout_alsa_play(void *devout0)
       }
 
       //      fprintf(stdout, "ags_devout_play 1\n\0");
-
-      //g_static_mutex_lock(&mutex);
-      pthread_mutex_lock(&devout->play_mutex);
-      devout->flags &= (~AGS_DEVOUT_BUFFER1);
-      devout->flags |= AGS_DEVOUT_BUFFER2;
-      //g_static_mutex_unlock(&mutex);
-      pthread_mutex_unlock(&devout->play_mutex);
     }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
       memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
@@ -1143,13 +1156,6 @@ ags_devout_alsa_play(void *devout0)
       }
 
       //      fprintf(stdout, "ags_devout_play 2\n\0");
-
-      //g_static_mutex_lock(&mutex);
-      pthread_mutex_lock(&devout->play_mutex);
-      devout->flags &= (~AGS_DEVOUT_BUFFER2);
-      devout->flags |= AGS_DEVOUT_BUFFER3;
-      //g_static_mutex_unlock(&mutex);
-      pthread_mutex_unlock(&devout->play_mutex);
     }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
       memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
@@ -1166,13 +1172,6 @@ ags_devout_alsa_play(void *devout0)
       }
 
       //      fprintf(stdout, "ags_devout_play 3\n\0");
-
-      //g_static_mutex_lock(&mutex);
-      pthread_mutex_lock(&devout->play_mutex);
-      devout->flags &= (~AGS_DEVOUT_BUFFER3);
-      devout->flags |= AGS_DEVOUT_BUFFER0;
-      //g_static_mutex_unlock(&mutex);
-      pthread_mutex_unlock(&devout->play_mutex);
     }
 
     /*
@@ -1189,6 +1188,7 @@ ags_devout_alsa_play(void *devout0)
     }else{
       //g_cond_broadcast(devout->play_functions_cond);
       //g_static_mutex_unlock(&mutex);
+      pthread_mutex_unlock(&devout->play_mutex);
       pthread_cond_signal(&devout->play_functions_cond);
     }
   }

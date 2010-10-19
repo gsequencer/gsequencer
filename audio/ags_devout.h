@@ -19,7 +19,7 @@
 
 //#include "ags_garbage_collector.h"
 #include "ags_recall_id.h"
-#include "ags_audio_signal.h"
+#include "ags_task.h"
 
 #define AGS_TYPE_DEVOUT                (ags_devout_get_type())
 #define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))
@@ -43,16 +43,18 @@ typedef enum
   AGS_DEVOUT_PLAY                   = 1 << 6,
   AGS_DEVOUT_WAIT_DEVICE            = 1 << 7,
   AGS_DEVOUT_WAIT_RECALL            = 1 << 8,
-  AGS_DEVOUT_LIBAO                  = 1 << 9,
-  AGS_DEVOUT_OSS                    = 1 << 10,
-  AGS_DEVOUT_ALSA                   = 1 << 11,
-  AGS_DEVOUT_PLAY_RECALL            = 1 << 12,
-  AGS_DEVOUT_PLAYING_RECALL         = 1 << 13,
-  AGS_DEVOUT_PLAY_CHANNEL           = 1 << 14,
-  AGS_DEVOUT_PLAYING_CHANNEL        = 1 << 15,
-  AGS_DEVOUT_PLAY_AUDIO             = 1 << 16,
-  AGS_DEVOUT_PLAYING_AUDIO          = 1 << 17,
-  AGS_DEVOUT_PLAY_NOTE              = 1 << 18,
+  AGS_DEVOUT_WAIT_TASK              = 1 << 9,
+  AGS_DEVOUT_WAIT_APPEND_TASK       = 1 << 10,
+  AGS_DEVOUT_LIBAO                  = 1 << 11,
+  AGS_DEVOUT_OSS                    = 1 << 12,
+  AGS_DEVOUT_ALSA                   = 1 << 13,
+  AGS_DEVOUT_PLAY_RECALL            = 1 << 14,
+  AGS_DEVOUT_PLAYING_RECALL         = 1 << 15,
+  AGS_DEVOUT_PLAY_CHANNEL           = 1 << 16,
+  AGS_DEVOUT_PLAYING_CHANNEL        = 1 << 17,
+  AGS_DEVOUT_PLAY_AUDIO             = 1 << 18,
+  AGS_DEVOUT_PLAYING_AUDIO          = 1 << 19,
+  AGS_DEVOUT_PLAY_NOTE              = 1 << 20,
 }AgsDevoutFlags;
 
 typedef enum
@@ -111,23 +113,26 @@ struct _AgsDevout
   pthread_mutex_t play_mutex;
   pthread_mutexattr_t play_mutex_attr;
   pthread_cond_t play_cond;
+
   pthread_t play_functions_thread;
   pthread_attr_t play_functions_thread_attr;
   pthread_mutex_t play_functions_mutex;
   pthread_mutexattr_t play_functions_mutex_attr;
   pthread_cond_t play_functions_cond;
-  /*
-  GThread *play_thread;
-  GCond *play_cond;
-  GThread *play_functions_thread;
-  GCond *play_functions_cond;
-  */
-  //  GObject *channel; / / link to an AgsPanel
+
+  pthread_mutex_t task_mutex;
+  pthread_cond_t task_cond;
+
+  pthread_mutex_t append_task_mutex;
+  pthread_cond_t append_task_cond;
+  
+  GList *task;
+
   guint play_recall_ref;
-  GList *play_recall; // play_recall
+  GList *play_recall; // play AgsRecall
 
   guint play_channel_ref;
-  GList *play_channel;
+  GList *play_channel; // play AgsChannel
 
   guint play_audio_ref;
   GList *play_audio; // play AgsAudio
@@ -140,7 +145,7 @@ struct _AgsDevoutClass
   void (*run)(AgsDevout *devout);
   void (*stop)(AgsDevout *devout);
 
-  void (*change_bpm)(AgsDevout *devout, double bpm);
+  void (*bpm_changed)(AgsDevout *devout, double bpm);
 };
 
 struct _AgsDevoutPlay
@@ -158,12 +163,12 @@ GType ags_devout_get_type();
 
 AgsDevoutPlay* ags_devout_play_alloc();
 
-void ags_devout_connect(AgsDevout *devout);
+void ags_devout_append_task(AgsDevout *devout, AgsTask *task);
+
+void ags_devout_bpm_changed(AgsDevout *devout, double bpm);
 
 void ags_devout_run(AgsDevout *devout);
 void ags_devout_stop(AgsDevout *devout);
-
-void ags_devout_change_bpm(AgsDevout *devout, double bpm);
 
 AgsDevout* ags_devout_new();
 

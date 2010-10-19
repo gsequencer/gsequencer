@@ -13,6 +13,8 @@
 #include "../../audio/ags_pattern.h"
 #include "../../audio/ags_recall.h"
 
+#include "../../audio/task/ags_append_audio.h"
+
 #include "../../audio/recall/ags_delay_audio.h"
 #include "../../audio/recall/ags_delay_audio_run.h"
 #include "../../audio/recall/ags_copy_pattern_audio.h"
@@ -26,6 +28,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <pthread.h>
 
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
@@ -381,27 +384,29 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
   AgsDevout *devout;
   guint group_id;
-  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
 
   devout = AGS_DEVOUT(drum->machine.audio->devout);
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
+    AgsAppendAudio *append_audio;
+
     /* do the init stuff here */
     group_id = ags_audio_recursive_play_init(drum->machine.audio);
     drum->machine.audio->devout_play->group_id = group_id;
 
-    /* append to AgsDevout */
-    g_static_mutex_lock(&mutex);
-    drum->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-    devout->play_audio = g_list_append(devout->play_audio, (gpointer) drum->machine.audio->devout_play);
-    devout->play_audio_ref++;
-    g_static_mutex_unlock(&mutex);
+    /* create task */
+    append_audio = ags_append_audio_new(AGS_DEVOUT(drum->machine.audio->devout),
+					drum->machine.audio->devout_play);
 
     /* call run */
-    if((AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) == 0)
-      devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
+    if((AGS_DEVOUT_PLAY_AUDIO & (append_audio->devout->flags)) == 0)
+      append_audio->devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
+    
+    ags_devout_run(drum->machine.audio->devout);
 
-    AGS_DEVOUT_GET_CLASS(devout)->run(devout);
+    /* append AgsAppendAudio */
+    ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
+			   AGS_TASK(append_audio));
   }else{
     /* abort code */
     if((AGS_DEVOUT_PLAY_DONE & (drum->machine.audio->devout_play->flags)) == 0){

@@ -5,6 +5,7 @@
 #include <glib-object.h>
 
 #include "../ags_task.h"
+#include "../ags_devout.h"
 
 #define AGS_TYPE_APPEND_AUDIO                (ags_append_audio_get_type())
 #define AGS_APPEND_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPEND_AUDIO, AgsAppendAudio))
@@ -19,6 +20,9 @@ typedef struct _AgsAppendAudioClass AgsAppendAudioClass;
 struct _AgsAppendAudio
 {
   AgsTask task;
+
+  AgsDevout *devout;
+  AgsDevoutPlay *devout_play;
 };
 
 struct _AgsAppendAudioClass
@@ -28,6 +32,7 @@ struct _AgsAppendAudioClass
 
 GType ags_append_audio_get_type();
 
-AgsAppendAudio* ags_append_audio_new();
+AgsAppendAudio* ags_append_audio_new(AgsDevout *devout,
+				     AgsDevoutPlay *play);
 
 #endif /*__AGS_APPEND_AUDIO_H__*/
