@@ -2,6 +2,8 @@
 
 #include "../../object/ags_connectable.h"
 #include "../ags_audio.h"
+#include "../ags_audio_signal.h"
+#include "../ags_synths.h"
 
 #include <math.h>
 
@@ -123,119 +125,106 @@ ags_apply_synth_finalize(GObject *gobject)
 void
 ags_apply_synth_launch(AgsTask *task)
 {
-  AgsApplySynth *apply_synth;
   AgsDevout *devout;
+  AgsApplySynth *apply_synth;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
   GList *stream;
-  short *buffer;
-  guint real_frame_count, last_frame_count, real_length;
-  guint start, length, stop;
-  guint current_attack, current_length;
-  guint current_frequency, current_phase[2];
+  gint wave;
+  guint attack, frame_count, stop, phase, frequency;
+  double volume;
+  guint stream_start, last_frame_count, current_frequency, current_phase[2];
   guint i, j;
-  void ags_apply_synth_launch_write(AgsDevout *devout, short *buffer, guint offset,
+  void ags_apply_synth_launch_write(guint offset,
 				    guint frequency, guint phase, guint frame_count,
 				    double volume){
-    printf("buffer_size = %u; offset = %u; frequency = %u; phase = %u; frame_count = %u; volume = %f\n\0", devout->buffer_size, offset, frequency, phase, frame_count, volume);
-
-    switch(apply_synth->wave){
+    switch(wave){
     case AGS_APPLY_SYNTH_SIN:
-      ags_synth_sin(devout, buffer, offset,
-		    frequency, phase, length,
+      ags_synth_sin(devout, (short *) stream->data,
+		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SAW:
-      ags_synth_saw(devout, buffer, offset,
-		    frequency, phase, length,
+      ags_synth_saw(devout, (short *) stream->data,
+		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SQUARE:
-      ags_synth_square(devout, buffer, offset,
-		       frequency, phase, length,
-		       volume);
+      ags_synth_square(devout, (short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     case AGS_APPLY_SYNTH_TRIANGLE:
-      ags_synth_triangle(devout, buffer, offset,
-			 frequency, phase, length,
-			 volume);
+      ags_synth_triangle(devout, (short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     default:
-      printf("ags_apply_synth_launch: invalid wave\n\0");
-      break;
+      printf("ags_apply_synth_launch_write: warning no wave selected\n\0");
     }
   }
 
   apply_synth = AGS_APPLY_SYNTH(task);
-
   channel = apply_synth->start_channel;
-  devout = AGS_DEVOUT(AGS_AUDIO(apply_synth->start_channel->audio)->devout);
+  devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+  
+  wave = (gint) apply_synth->wave;
+  fprintf(stdout, "wave = %d\n\0", wave);
 
-  start = (guint) floor((double)apply_synth->attack / (double)devout->buffer_size);
+  attack = apply_synth->attack;
+  frame_count = apply_synth->frame_count;
+  stop = (guint) ceil((double)(attack + frame_count) / (double)devout->buffer_size);
+  phase = apply_synth->phase;
+  frequency = apply_synth->frequency;
+  volume = (double) apply_synth->volume;
 
-  real_frame_count = apply_synth->attack + apply_synth->frame_count;
-  real_length = (guint) ceil((double)real_frame_count / (double)devout->buffer_size);
+  stream_start = (guint) floor((double)attack / (double)devout->buffer_size);
+  attack = attack % (guint) devout->buffer_size;
+  
+  last_frame_count = (frame_count - devout->buffer_size - attack) % devout->buffer_size;
+  current_phase[0] = (phase + (devout->buffer_size - attack) + i * devout->buffer_size) % frequency;
 
-  length = real_length - (guint) floor((double)apply_synth->attack / (double)devout->buffer_size);
 
-  current_attack = apply_synth->attack % (guint) devout->buffer_size;
-
-  last_frame_count = (apply_synth->frame_count - current_attack) % devout->buffer_size;
-
-  for(i = 0; channel != NULL && i < apply_synth->count; i++){
-    current_frequency = (guint) ((double) apply_synth->frequency *
-				 exp2((double)((apply_synth->start * -1.0) + (double)i) / 12.0));
-
-    current_phase[0] = (guint) ((double) apply_synth->phase *
-				((double) apply_synth->frequency / (double) current_frequency));
-
+  for(i = 0; channel != NULL; i++){
+    current_frequency = (guint) ((double) frequency * exp2((double)((apply_synth->start * -1.0) + (double)i) / 12.0));
+    current_phase[0] = (guint) ((double) phase * ((double) frequency / (double) current_frequency));
+    
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-    if(audio_signal->length < real_length)
-      ags_audio_signal_stream_resize(audio_signal, real_length);
-
-    stream = g_list_nth(audio_signal->stream_beginning, start);
-
-
-    if(length == 1){
-      buffer = (short *) stream->data;
-
-      ags_apply_synth_launch_write(devout, buffer, current_attack,
-				   current_frequency, current_phase[0], apply_synth->frame_count,
-				   apply_synth->volume);
-
+    
+    ags_audio_signal_stream_resize(audio_signal, stop);
+    
+    stream = g_list_nth(audio_signal->stream_beginning, stream_start);
+    
+    if(stream->next != NULL){
+      fprintf(stdout, "freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
+      ags_apply_synth_launch_write(attack,
+				   current_frequency, current_phase[0], AGS_DEVOUT(audio_signal->devout)->buffer_size - attack,
+				   volume);
+    }else{
+      ags_apply_synth_launch_write(attack,
+				   current_frequency, current_phase[0], frame_count,
+				   volume);
+      
       channel = channel->next;
       continue;
-    }else{
-      buffer = (short *) stream->data;
-
-      ags_apply_synth_launch_write(devout, buffer, current_attack,
-				   current_frequency, current_phase[0], devout->buffer_size - current_attack,
-				   apply_synth->volume);
-
-      stream = stream->next;
     }
-
-    for(j = 1; j < length - 1; j++){
-      current_phase[1] = (current_phase[0] + (devout->buffer_size - current_attack) + (j - 1) * devout->buffer_size) % current_frequency;
-
-      //      current_phase[1] = (j * devout->buffer_size + current_phase[0]) % (devout->frequency / current_frequency);
-      buffer = (short *) stream->data;
+    
+    stream = stream->next;
+    
+    
+    for(j = 1; stream->next != NULL; j++){
+      current_phase[1] = (j * AGS_DEVOUT(audio_signal->devout)->buffer_size + current_phase[0]) % (devout->frequency / current_frequency);
+      fprintf(stdout, "freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
       
-      ags_apply_synth_launch_write(devout, buffer, 0,
-				   current_frequency, current_phase[1], devout->buffer_size,
-				   apply_synth->volume);
-
+      ags_apply_synth_launch_write(0,
+				   frequency, current_phase[1], AGS_DEVOUT(audio_signal->devout)->buffer_size,
+				   volume);
+      
       stream = stream->next;
     }
-
-    current_phase[1] = (current_phase[0] + (devout->buffer_size - current_attack) + (j - 1) * devout->buffer_size) % current_frequency;
-    buffer = (short *) stream->data;
-
-    ags_apply_synth_launch_write(devout, buffer, 0,
+    
+    current_phase[1] = (current_phase[0] + (AGS_DEVOUT(audio_signal->devout)->buffer_size - attack) + j * AGS_DEVOUT(audio_signal->devout)->buffer_size) % current_frequency;
+    ags_apply_synth_launch_write(0,
 				 current_frequency, current_phase[1], last_frame_count,
-				 apply_synth->volume);
-
+				 volume);
+    
+    
     channel = channel->next;
   }
 }

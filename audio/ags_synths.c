@@ -4,7 +4,9 @@
 short scale = 32000;
 
 void
-ags_synth_sin(AgsDevout *devout, short *buffer, guint offset, guint freq, guint phase, guint length, double volume)
+ags_synth_sin(AgsDevout *devout, short *buffer, guint offset,
+	      guint freq, guint phase, guint length,
+	      double volume)
 {
   guint i;
 

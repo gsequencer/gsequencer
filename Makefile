@@ -36,6 +36,7 @@ AGS_OBJECTS = $(AGS_DIR)main.o $(AGS_OBJECT_OBJECTS) $(AGS_AUDIO_OBJECTS) $(AGS_
 AGS_OBJECT_SOURCES = $(wildcard $(AGS_DIR)object/*.[ch])
 
 AGS_AUDIO_SOURCES = $(wildcard $(AGS_DIR)audio/*.[ch])
+AGS_TASK_SOURCES = $(wildcard $(AGS_DIR)audio/task/*.[ch])
 AGS_RECALL_SOURCES = $(wildcard $(AGS_DIR)audio/recall/*.[ch])
 AGS_AUDIO_FILE_SOURCES = $(wildcard $(AGS_DIR)audio/audio_file/*.[ch])
 
@@ -47,7 +48,7 @@ AGS_MACHINE_SOURCES = $(wildcard $(AGS_DIR)X/machine/*.[ch])
 
 AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
 
-AGS_SOURCES = $(AGS_DIR)main.[ch] $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
+AGS_SOURCES = $(AGS_DIR)main.[ch] $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
 
 
 LIBS = `pkg-config --libs alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
@@ -69,6 +70,9 @@ $(AGS_DIR)object/.c.o: $(AGS_OBJECT_SOURCES)
 
 $(AGS_DIR)audio/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/$< -o $(AGS_DIR)audio/$@ $(CFLAGS)
+
+$(AGS_DIR)audio/task/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_OBJECT_SOURCES)
+	$(CC) -g -c $(AGS_DIR)audio/task/$< -o $(AGS_DIR)audio/task/$@ $(CFLAGS)
 
 $(AGS_DIR)audio/recall/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/recall/$< -o $(AGS_DIR)audio/recall/$@ $(CFLAGS)
@@ -99,4 +103,4 @@ release:
 	./archivate.sh
 
 clean:
-	rm $(wildcard $(AGS_DIR)*.o) $(wildcard $(AGS_DIR)object/*.o) $(wildcard $(AGS_DIR)audio/*.o) $(wildcard $(AGS_DIR)audio/recall/*.o) $(wildcard $(AGS_DIR)audio/file/*.o) $(wildcard $(AGS_DIR)widget/*.o) $(wildcard $(AGS_DIR)X/*.o) $(wildcard $(AGS_DIR)X/editor/*.o) $(wildcard $(AGS_DIR)X/machine/*.o) $(wildcard $(AGS_DIR)file/*.o)
+	rm ags $(wildcard $(AGS_DIR)*.o) $(wildcard $(AGS_DIR)object/*.o) $(wildcard $(AGS_DIR)audio/*.o) $(wildcard $(AGS_DIR)audio/task/*.o) $(wildcard $(AGS_DIR)audio/recall/*.o) $(wildcard $(AGS_DIR)audio/file/*.o) $(wildcard $(AGS_DIR)widget/*.o) $(wildcard $(AGS_DIR)X/*.o) $(wildcard $(AGS_DIR)X/editor/*.o) $(wildcard $(AGS_DIR)X/machine/*.o) $(wildcard $(AGS_DIR)file/*.o)
