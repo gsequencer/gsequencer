@@ -15,6 +15,7 @@
 #include "../../audio/ags_audio_signal.h"
 #include "../../audio/ags_synths.h"
 
+#include "../../audio/task/ags_apply_synth.h"
 #include "../../audio/recall/ags_stream_channel.h"
 
 #include <math.h>
@@ -326,6 +327,73 @@ ags_synth_update(AgsSynth *synth)
 {
   AgsOscillator *oscillator;
   AgsDevout *devout;
+  AgsChannel *channel;
+  AgsApplySynth *apply_synth;
+  GList *list_oscillator;
+  guint wave;
+  guint attack, frame_count;
+  guint phase, start_frequency;
+  gdouble volume;
+
+  devout = (AgsDevout *) synth->machine.audio->devout;
+
+  /* write input */
+  channel = synth->machine.audio->input;
+
+  list_oscillator = gtk_container_get_children(GTK_CONTAINER(gtk_option_menu_get_menu(synth->oscillator)));
+
+  while(list_oscillator != NULL){
+    oscillator = AGS_OSCILLATOR(list_oscillator->data);
+
+    wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
+    attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
+    frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
+    phase = (guint) gtk_spin_button_get_value_as_int(oscillator->phase);
+    start_frequency = (guint) gtk_spin_button_get_value_as_int(oscillator->frequency);
+    volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
+
+    apply_synth = ags_apply_synth_new(channel, 1,
+				      wave,
+				      attack, frame_count,
+				      phase, start_frequency,
+				      volume);
+
+    ags_devout_append_task(devout,
+			   AGS_TASK(apply_synth));
+
+    channel = channel->next;
+    list_oscillator = list_oscillator->next;
+  }
+
+  /* write output */
+  channel = synth->machine.audio->output;
+  list_oscillator = gtk_container_get_children(GTK_CONTAINER(gtk_option_menu_get_menu(synth->oscillator)));
+
+  while(list_oscillator != NULL){
+    oscillator = AGS_OSCILLATOR(list_oscillator->data);
+
+    wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
+    attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
+    frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
+    phase = (guint) gtk_spin_button_get_value_as_int(oscillator->phase);
+    start_frequency = (guint) gtk_spin_button_get_value_as_int(oscillator->frequency);
+    volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
+
+    apply_synth = ags_apply_synth_new(channel, synth->machine.audio->output_lines,
+				      wave,
+				      attack, frame_count,
+				      phase, start_frequency,
+				      volume);
+
+    ags_devout_append_task(devout,
+			   AGS_TASK(apply_synth));
+
+    channel = channel->next;
+    list_oscillator = list_oscillator->next;
+  }
+
+
+  /*
   AgsChannel *input, *output;
   AgsAudioSignal *audio_signal;
   GList *list0 ,*list1;
@@ -371,7 +439,7 @@ ags_synth_update(AgsSynth *synth)
     attack1 = (guint) floor((double)attack / (double)devout->buffer_size);
     attack = attack % (guint) devout->buffer_size;
 
-    /* write to input */
+    /* write to input * /
     audio_signal = ags_audio_signal_get_template(input->first_recycling->audio_signal);
     ags_audio_signal_stream_resize(audio_signal, stop);
 
@@ -403,7 +471,7 @@ ags_synth_update(AgsSynth *synth)
     phase0 = (phase + (AGS_DEVOUT(audio_signal->devout)->buffer_size - attack) + i * AGS_DEVOUT(audio_signal->devout)->buffer_size) % frequency;
     ags_synth_update_write(0, frequency, phase0, length0, volume);
 
-    /* write to output */
+    /* write to output * /
   ags_synth_update0:
     output = synth->machine.audio->output;
 
@@ -449,6 +517,7 @@ ags_synth_update(AgsSynth *synth)
     input = input->next;
     list0 = list0->next;
   }
+*/
 }
 
 AgsSynth*

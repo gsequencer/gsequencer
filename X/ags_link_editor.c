@@ -112,7 +112,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(link_editor->combo),
 				 cell_renderer,
-				 "text", 0,
+				 "text\0", 0,
 				 NULL);
 
   /* link with line */

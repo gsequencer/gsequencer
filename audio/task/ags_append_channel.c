@@ -9,6 +9,8 @@ void ags_append_channel_connect(AgsConnectable *connectable);
 void ags_append_channel_disconnect(AgsConnectable *connectable);
 void ags_append_channel_finalize(GObject *gobject);
 
+void ags_append_channel_launch(AgsTask *task);
+
 static gpointer ags_append_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_append_channel_parent_connectable_interface;
 
@@ -53,12 +55,19 @@ void
 ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
 {
   GObjectClass *gobject;
+  AgsTaskClass *task;
 
   ags_append_channel_parent_class = g_type_class_peek_parent(append_channel);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) append_channel;
 
   gobject->finalize = ags_append_channel_finalize;
+
+  /* AgsTaskClass */
+  task = (AgsTaskClass *) append_channel;
+
+  task->launch = ags_append_channel_launch;
 }
 
 void
@@ -73,6 +82,8 @@ ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_append_channel_init(AgsAppendChannel *append_channel)
 {
+  append_channel->devout = NULL;
+  append_channel->devout_play = NULL;
 }
 
 void
@@ -99,13 +110,31 @@ ags_append_channel_finalize(GObject *gobject)
   /* empty */
 }
 
+void
+ags_append_channel_launch(AgsTask *task)
+{
+  AgsAppendChannel *append_channel;
+
+  append_channel = AGS_APPEND_CHANNEL(task);
+
+  /* append to AgsDevout */
+  append_channel->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
+  append_channel->devout->play_channel = g_list_append(append_channel->devout->play_channel,
+						       append_channel->devout_play);
+  append_channel->devout->play_channel_ref++;
+}
+
 AgsAppendChannel*
-ags_append_channel_new()
+ags_append_channel_new(AgsDevout *devout,
+		       AgsDevoutPlay *devout_play)
 {
   AgsAppendChannel *append_channel;
 
   append_channel = (AgsAppendChannel *) g_object_new(AGS_TYPE_APPEND_CHANNEL,
-						 NULL);
+						     NULL);
+
+  append_channel->devout = devout;
+  append_channel->devout_play = devout_play;
 
   return(append_channel);
 }

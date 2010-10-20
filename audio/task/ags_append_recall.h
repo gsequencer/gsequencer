@@ -6,6 +6,8 @@
 
 #include "../ags_task.h"
 
+#include "../ags_devout.h"
+
 #define AGS_TYPE_APPEND_RECALL                (ags_append_recall_get_type())
 #define AGS_APPEND_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPEND_RECALL, AgsAppendRecall))
 #define AGS_APPEND_RECALL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_APPEND_RECALL, AgsAppendRecallClass))
@@ -19,6 +21,9 @@ typedef struct _AgsAppendRecallClass AgsAppendRecallClass;
 struct _AgsAppendRecall
 {
   AgsTask task;
+
+  AgsDevout *devout;
+  AgsDevoutPlay *devout_play;
 };
 
 struct _AgsAppendRecallClass
@@ -28,6 +33,7 @@ struct _AgsAppendRecallClass
 
 GType ags_append_recall_get_type();
 
-AgsAppendRecall* ags_append_recall_new();
+AgsAppendRecall* ags_append_recall_new(AgsDevout *devout,
+				       AgsDevoutPlay *devout_play);
 
 #endif /*__AGS_APPEND_RECALL_H__*/

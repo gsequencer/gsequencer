@@ -349,14 +349,21 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
   }
   
   devout->flags |= AGS_DEVOUT_WAIT_APPEND_TASK;
-  pthread_mutex_unlock(&(devout->append_task_mutex));
   
-  /* append */
-  devout->task = g_list_prepend(devout->task, task);
+  if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
+    ags_task_launch(task);
 
-  /* wake up other thread */
-  devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
-  pthread_cond_signal(&(devout->task_cond));
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+  }else{
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+    
+    /* append */
+    devout->task = g_list_prepend(devout->task, task);
+  
+    /* wake up other thread */
+    devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
+    pthread_cond_signal(&(devout->task_cond));
+  }
 }
 
 void
@@ -614,10 +621,19 @@ ags_devout_play_functions(void *devout0)
   
   while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     pthread_mutex_unlock(&(devout->play_functions_mutex));
-
-    //    printf("loop\n\0");
     
-    /* run tasks */
+    /* AgsTask */
+    /* synchronize */
+    pthread_mutex_lock(&(devout->task_mutex));
+    while((AGS_DEVOUT_WAIT_APPEND_TASK & (devout->flags)) != 0){
+      pthread_cond_wait(&(devout->task_cond),
+			&(devout->task_mutex));
+    }
+
+    devout->flags |= AGS_DEVOUT_WAIT_TASK;
+    pthread_mutex_unlock(&(devout->task_mutex));
+
+    /* run task */
     task = devout->task;
     
     while(task != NULL){
@@ -629,6 +645,8 @@ ags_devout_play_functions(void *devout0)
       task = task_next;
     }
 
+    devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
+    pthread_cond_signal(&(devout->append_task_cond));
     
     /* play recall */
     if((AGS_DEVOUT_PLAY_RECALL & devout->flags) != 0){

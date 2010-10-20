@@ -1,6 +1,8 @@
 #include "ags_synth_callbacks.h"
 #include "ags_oscillator.h"
 
+#include "../../object/ags_connectable.h"
+
 #include "../ags_window.h"
 
 #include <math.h>
@@ -41,13 +43,13 @@ ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth)
 
   if(toggle->active)
     while(list != NULL){
-      ags_oscillator_connect(AGS_OSCILLATOR(list->data));
+      ags_oscillator_connect(AGS_CONNECTABLE(list->data));
 
       list = list->next;
     }
   else
     while(list != NULL){
-      ags_oscillator_disconnect(AGS_OSCILLATOR(list->data));
+      ags_oscillator_disconnect(AGS_CONNECTABLE(list->data));
 
       list = list->next;
     }

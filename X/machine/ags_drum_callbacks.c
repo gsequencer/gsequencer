@@ -398,15 +398,15 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     append_audio = ags_append_audio_new(AGS_DEVOUT(drum->machine.audio->devout),
 					drum->machine.audio->devout_play);
 
+    /* append AgsAppendAudio */
+    ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
+			   AGS_TASK(append_audio));
+
     /* call run */
     if((AGS_DEVOUT_PLAY_AUDIO & (append_audio->devout->flags)) == 0)
       append_audio->devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
     
-    ags_devout_run(drum->machine.audio->devout);
-
-    /* append AgsAppendAudio */
-    ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
-			   AGS_TASK(append_audio));
+    ags_devout_run(AGS_DEVOUT(drum->machine.audio->devout));
   }else{
     /* abort code */
     if((AGS_DEVOUT_PLAY_DONE & (drum->machine.audio->devout_play->flags)) == 0){

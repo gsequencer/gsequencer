@@ -21,14 +21,14 @@ struct _AgsOscillator
 
   GtkFrame *frame;
 
-  GtkOptionMenu *wave;
+  GtkComboBox *wave;
   gulong wave_handler;
 
   GtkSpinButton *attack;
   gulong attack_handler;
 
-  GtkSpinButton *length;
-  gulong length_handler;
+  GtkSpinButton *frame_count;
+  gulong frame_count_handler;
 
   GtkSpinButton *frequency;
   gulong frequency_handler;

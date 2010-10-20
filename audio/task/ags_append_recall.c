@@ -9,6 +9,8 @@ void ags_append_recall_connect(AgsConnectable *connectable);
 void ags_append_recall_disconnect(AgsConnectable *connectable);
 void ags_append_recall_finalize(GObject *gobject);
 
+void ags_append_recall_launch(AgsTask *task);
+
 static gpointer ags_append_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_append_recall_parent_connectable_interface;
 
@@ -53,12 +55,19 @@ void
 ags_append_recall_class_init(AgsAppendRecallClass *append_recall)
 {
   GObjectClass *gobject;
+  AgsTaskClass *task;
 
   ags_append_recall_parent_class = g_type_class_peek_parent(append_recall);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) append_recall;
 
   gobject->finalize = ags_append_recall_finalize;
+
+  /* AgsTaskClass */
+  task = (AgsTaskClass *) append_recall;
+
+  task->launch = ags_append_recall_launch;
 }
 
 void
@@ -73,6 +82,8 @@ ags_append_recall_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_append_recall_init(AgsAppendRecall *append_recall)
 {
+  append_recall->devout = NULL;
+  append_recall->devout_play = NULL;
 }
 
 void
@@ -99,13 +110,31 @@ ags_append_recall_finalize(GObject *gobject)
   /* empty */
 }
 
+void
+ags_append_recall_launch(AgsTask *task)
+{
+  AgsAppendRecall *append_recall;
+
+  append_recall = AGS_APPEND_RECALL(task);
+
+  /* append to AgsDevout */
+  append_recall->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
+  append_recall->devout->play_recall = g_list_append(append_recall->devout->play_recall,
+						     append_recall->devout_play);
+  append_recall->devout->play_recall_ref++;
+}
+
 AgsAppendRecall*
-ags_append_recall_new()
+ags_append_recall_new(AgsDevout *devout,
+		      AgsDevoutPlay *devout_play)
 {
   AgsAppendRecall *append_recall;
 
   append_recall = (AgsAppendRecall *) g_object_new(AGS_TYPE_APPEND_RECALL,
-					       NULL);
+						   NULL);
+  
+  append_recall->devout = devout;
+  append_recall->devout_play = devout_play;
 
   return(append_recall);
 }
