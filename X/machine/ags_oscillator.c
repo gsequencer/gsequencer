@@ -113,7 +113,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "saw\0",
+		     0, "sawtooth\0",
 		     -1);
 
   gtk_list_store_append(model, &iter);

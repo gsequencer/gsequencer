@@ -92,7 +92,7 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
   apply_synth->attack = 0;
   apply_synth->frame_count = 0;
   apply_synth->phase = 0;
-  apply_synth->start_frequency = 0;
+  apply_synth->start = 0;
   apply_synth->volume = 1.0;
 }
 
@@ -137,6 +137,8 @@ ags_apply_synth_launch(AgsTask *task)
   void ags_apply_synth_launch_write(AgsDevout *devout, short *buffer, guint offset,
 				    guint frequency, guint phase, guint frame_count,
 				    double volume){
+    printf("buffer_size = %u; offset = %u; frequency = %u; phase = %u; frame_count = %u; volume = %f\n\0", devout->buffer_size, offset, frequency, phase, frame_count, volume);
+
     switch(apply_synth->wave){
     case AGS_APPLY_SYNTH_SIN:
       ags_synth_sin(devout, buffer, offset,
@@ -176,15 +178,16 @@ ags_apply_synth_launch(AgsTask *task)
 
   length = real_length - (guint) floor((double)apply_synth->attack / (double)devout->buffer_size);
 
-  current_attack = apply_synth->attack % devout->buffer_size;
+  current_attack = apply_synth->attack % (guint) devout->buffer_size;
 
   last_frame_count = (apply_synth->frame_count - current_attack) % devout->buffer_size;
 
   for(i = 0; channel != NULL && i < apply_synth->count; i++){
-    current_frequency = (guint) ((double) apply_synth->start_frequency *
-				 exp2((double)((apply_synth->start_frequency * -1.0) + (double)i) / 12.0));
+    current_frequency = (guint) ((double) apply_synth->frequency *
+				 exp2((double)((apply_synth->start * -1.0) + (double)i) / 12.0));
+
     current_phase[0] = (guint) ((double) apply_synth->phase *
-			     ((double) apply_synth->start_frequency / (double) current_frequency));
+				((double) apply_synth->frequency / (double) current_frequency));
 
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 
@@ -214,7 +217,9 @@ ags_apply_synth_launch(AgsTask *task)
     }
 
     for(j = 1; j < length - 1; j++){
-      current_phase[1] = (j * devout->buffer_size + current_phase[0]) % (devout->frequency / current_frequency);
+      current_phase[1] = (current_phase[0] + (devout->buffer_size - current_attack) + (j - 1) * devout->buffer_size) % current_frequency;
+
+      //      current_phase[1] = (j * devout->buffer_size + current_phase[0]) % (devout->frequency / current_frequency);
       buffer = (short *) stream->data;
       
       ags_apply_synth_launch_write(devout, buffer, 0,
@@ -224,13 +229,12 @@ ags_apply_synth_launch(AgsTask *task)
       stream = stream->next;
     }
 
-    current_phase[1] = (j * devout->buffer_size + current_phase[0]) % (devout->frequency / current_frequency);
+    current_phase[1] = (current_phase[0] + (devout->buffer_size - current_attack) + (j - 1) * devout->buffer_size) % current_frequency;
     buffer = (short *) stream->data;
 
     ags_apply_synth_launch_write(devout, buffer, 0,
 				 current_frequency, current_phase[1], last_frame_count,
 				 apply_synth->volume);
-
 
     channel = channel->next;
   }
@@ -240,7 +244,7 @@ AgsApplySynth*
 ags_apply_synth_new(AgsChannel *start_channel, guint count,
 		    guint wave,
 		    guint attack, guint frame_count,
-		    guint phase, guint start_frequency,
+		    guint frequency, guint phase, guint start,
 		    gdouble volume)
 {
   AgsApplySynth *apply_synth;
@@ -253,8 +257,9 @@ ags_apply_synth_new(AgsChannel *start_channel, guint count,
   apply_synth->wave = wave;
   apply_synth->attack = attack;
   apply_synth->frame_count = frame_count;
+  apply_synth->frequency = frequency;
   apply_synth->phase = phase;
-  apply_synth->start_frequency = start_frequency;
+  apply_synth->start = start;
   apply_synth->volume = volume;
   
   return(apply_synth);

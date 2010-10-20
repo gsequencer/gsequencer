@@ -332,10 +332,12 @@ ags_synth_update(AgsSynth *synth)
   GList *list_oscillator;
   guint wave;
   guint attack, frame_count;
-  guint phase, start_frequency;
+  guint frequency, phase, start;
   gdouble volume;
 
   devout = (AgsDevout *) synth->machine.audio->devout;
+
+  start = (guint) gtk_spin_button_get_value_as_int(synth->lower);
 
   /* write input */
   channel = synth->machine.audio->input;
@@ -349,13 +351,13 @@ ags_synth_update(AgsSynth *synth)
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
     phase = (guint) gtk_spin_button_get_value_as_int(oscillator->phase);
-    start_frequency = (guint) gtk_spin_button_get_value_as_int(oscillator->frequency);
+    frequency = (guint) gtk_spin_button_get_value_as_int(oscillator->frequency);
     volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
 
     apply_synth = ags_apply_synth_new(channel, 1,
 				      wave,
 				      attack, frame_count,
-				      phase, start_frequency,
+				      frequency, phase, start,
 				      volume);
 
     ags_devout_append_task(devout,
@@ -376,19 +378,18 @@ ags_synth_update(AgsSynth *synth)
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
     phase = (guint) gtk_spin_button_get_value_as_int(oscillator->phase);
-    start_frequency = (guint) gtk_spin_button_get_value_as_int(oscillator->frequency);
+    frequency = (guint) gtk_spin_button_get_value_as_int(oscillator->frequency);
     volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
 
     apply_synth = ags_apply_synth_new(channel, synth->machine.audio->output_lines,
 				      wave,
 				      attack, frame_count,
-				      phase, start_frequency,
+				      frequency, phase, start,
 				      volume);
 
     ags_devout_append_task(devout,
 			   AGS_TASK(apply_synth));
 
-    channel = channel->next;
     list_oscillator = list_oscillator->next;
   }
 

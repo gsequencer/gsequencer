@@ -359,11 +359,11 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
     
     /* append */
     devout->task = g_list_prepend(devout->task, task);
-  
-    /* wake up other thread */
-    devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
-    pthread_cond_signal(&(devout->task_cond));
   }
+
+  /* wake up other thread */
+  devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
+  pthread_cond_signal(&(devout->task_cond));
 }
 
 void
