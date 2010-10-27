@@ -80,9 +80,16 @@ void ags_channel_connect(AgsChannel *channel);
 
 AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
 
+AgsChannel* ags_channel_first(AgsChannel *channel);
 AgsChannel* ags_channel_last(AgsChannel *channel);
 AgsChannel* ags_channel_nth(AgsChannel *channel, guint nth);
-AgsChannel* ags_channel_nth_pad(AgsChannel *channel, guint nth);
+
+AgsChannel* ags_channel_pad_first(AgsChannel *channel);
+AgsChannel* ags_channel_pad_last(AgsChannel *channel);
+AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
+
+AgsChannel* ags_channel_first_with_recycling(AgsChannel *channel);
+AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
 
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link);
 void ags_channel_set_recycling(AgsChannel *channel, AgsRecycling *first_recycling, AgsRecycling *last_recycling, gboolean update, gboolean destroy_old);
