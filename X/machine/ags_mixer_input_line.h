@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../ags_line.h"
+#include <ags/X/ags_line.h>
 
 #define AGS_TYPE_MIXER_INPUT_LINE                (ags_mixer_input_line_get_type())
 #define AGS_MIXER_INPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIXER_INPUT_LINE, AgsMixerInputLine))

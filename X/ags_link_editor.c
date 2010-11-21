@@ -1,15 +1,15 @@
-#include "ags_link_editor.h"
-#include "ags_link_editor_callbacks.h"
+#include <ags/X/ags_link_editor.h>
+#include <ags/X/ags_link_editor_callbacks.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_applicable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
-#include "../audio/ags_audio.h"
-#include "../audio/ags_channel.h"
-#include "../audio/ags_input.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
 
-#include "ags_machine.h"
-#include "ags_line_editor.h"
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_line_editor.h>
 
 void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
 void ags_link_editor_init(AgsLinkEditor *link_editor);

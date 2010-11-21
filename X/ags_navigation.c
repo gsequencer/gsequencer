@@ -1,5 +1,5 @@
-#include "ags_navigation.h"
-#include "ags_navigation_callbacks.h"
+#include <ags/X/ags_navigation.h>
+#include <ags/X/ags_navigation_callbacks.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
 void ags_navigation_init(AgsNavigation *navigation);
@@ -10,24 +10,27 @@ void ags_navigation_show(GtkWidget *widget);
 GType
 ags_navigation_get_type(void)
 {
-  static GType navigation_type = 0;
+  static GType ags_type_navigation = 0;
 
-  if (!navigation_type){
-    static const GtkTypeInfo navigation_info = {
-      "AgsNavigation\0",
-      sizeof(AgsNavigation), /* base_init */
-      sizeof(AgsNavigationClass), /* base_finalize */
-      (GtkClassInitFunc) ags_navigation_class_init,
-      (GtkObjectInitFunc) ags_navigation_init,
+  if(!ags_type_navigation){
+    static const GTypeInfo ags_navigation_info = {
+      sizeof (AgsNavigationClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_navigation_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsNavigation),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_navigation_init,
     };
 
-    navigation_type = gtk_type_unique (GTK_TYPE_VBOX, &navigation_info);
+    ags_type_navigation = g_type_register_static(GTK_TYPE_VBOX,
+						 "AgsNavigation\0", &ags_navigation_info,
+						 0);
   }
 
-  return (navigation_type);
+  return(ags_type_navigation);
 }
 
 void
@@ -41,8 +44,12 @@ ags_navigation_init(AgsNavigation *navigation)
   GtkHBox *hbox;
   GtkLabel *label;
 
-  navigation->devout = ags_devout_new();
+  navigation->devout = NULL;
 
+  g_signal_connect_after(G_OBJECT(navigation), "parent-set\0",
+			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
+
+  /* GtkWidget */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);
 
@@ -58,6 +65,7 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->bpm->adjustment->value = 120.0;
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->bpm, FALSE, FALSE, 2);
 
+  navigation->current_bpm = 120.0;
 
   navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 							"image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_REWIND, GTK_ICON_SIZE_LARGE_TOOLBAR),
@@ -152,8 +160,8 @@ ags_navigation_connect(AgsNavigation *navigation)
   g_signal_connect((GObject *) navigation->expander, "clicked\0",
 		   G_CALLBACK(ags_navigation_expander_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->bpm, "value-changed\0",
-		   G_CALLBACK(ags_navigation_bpm_callback), (gpointer) navigation);
+  g_signal_connect_after((GObject *) navigation->bpm, "value-changed\0",
+			 G_CALLBACK(ags_navigation_bpm_callback), (gpointer) navigation);
 
   g_signal_connect((GObject *) navigation->rewind, "clicked\0",
 		   G_CALLBACK(ags_navigation_rewind_callback), (gpointer) navigation);

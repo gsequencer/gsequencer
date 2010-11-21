@@ -1,12 +1,12 @@
-#include "ags_recall_audio_run.h"
+#include <ags/audio/ags_recall_audio_run.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "ags_audio.h"
-#include "ags_channel.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 
-#include "ags_recall_audio.h"
+#include <ags/audio/ags_recall_audio.h>
 
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable);

@@ -1,4 +1,4 @@
-#include "ags_audio_file_xml.h"
+#include <ags/audio/file/ags_audio_file_xml.h>
 
 void ags_audio_file_xml_class_init(AgsAudioFileXmlClass *file_xml);
 void ags_audio_file_xml_init(AgsAudioFileXml *file_xml);

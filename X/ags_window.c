@@ -1,5 +1,5 @@
-#include "ags_window.h"
-#include "ags_window_callbacks.h"
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_window_callbacks.h>
 
 #include <stdlib.h>
 

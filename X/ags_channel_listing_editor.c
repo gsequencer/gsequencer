@@ -1,14 +1,14 @@
-#include "ags_channel_listing_editor.h"
-#include "ags_channel_listing_editor_callbacks.h"
+#include <ags/X/ags_channel_listing_editor.h>
+#include <ags/X/ags_channel_listing_editor_callbacks.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_applicable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
-#include "../audio/ags_channel.h"
-#include "../audio/ags_output.h"
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
 
-#include "ags_machine_editor.h"
-#include "ags_pad_editor.h"
+#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_pad_editor.h>
 
 void ags_channel_listing_editor_class_init(AgsChannelListingEditorClass *channel_listing_editor);
 void ags_channel_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);

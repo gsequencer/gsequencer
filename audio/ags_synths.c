@@ -1,4 +1,4 @@
-#include "ags_synths.h"
+#include <ags/audio/ags_synths.h>
 #include <math.h>
 
 short scale = 32000;

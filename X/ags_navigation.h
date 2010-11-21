@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../audio/ags_devout.h"
+#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_NAVIGATION                (ags_navigation_get_type())
 #define AGS_NAVIGATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NAVIGATION, AgsNavigation))
@@ -26,6 +26,7 @@ struct _AgsNavigation
   GtkToggleButton *expander;
 
   GtkSpinButton *bpm;
+  gdouble current_bpm;
 
   GtkToggleButton *rewind;
   GtkButton *previous;

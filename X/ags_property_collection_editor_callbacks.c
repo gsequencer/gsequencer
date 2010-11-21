@@ -1,6 +1,6 @@
-#include "ags_property_collection_editor_callbacks.h"
+#include <ags/X/ags_property_collection_editor_callbacks.h>
 
-#include "../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
 void
 ags_property_collection_editor_add_collection_callback(GtkButton *button,

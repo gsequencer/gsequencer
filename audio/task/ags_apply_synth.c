@@ -1,9 +1,10 @@
-#include "ags_apply_synth.h"
+#include <ags/audio/task/ags_apply_synth.h>
 
-#include "../../object/ags_connectable.h"
-#include "../ags_audio.h"
-#include "../ags_audio_signal.h"
-#include "../ags_synths.h"
+#include <ags/object/ags_connectable.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_synths.h>
 
 #include <math.h>
 

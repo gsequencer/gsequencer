@@ -1,6 +1,6 @@
-#include "ags_meter_callbacks.h"
+#include <ags/X/editor/ags_meter_callbacks.h>
 
-#include "../ags_editor.h"
+#include <ags/X/ags_editor.h>
 
 #include <math.h>
 

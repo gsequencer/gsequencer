@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_line_editor.h"
+#include <ags/X/ags_line_editor.h>
 
 int ags_line_editor_destroy_callback(GtkObject *object, AgsLineEditor *line_editor);
 int ags_line_editor_show_callback(GtkWidget *widget, AgsLineEditor *line_editor);

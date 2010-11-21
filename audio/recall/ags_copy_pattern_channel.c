@@ -1,8 +1,8 @@
-#include "ags_copy_pattern_channel.h"
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
 
-#include "ags_copy_pattern_audio.h"
-#include "ags_copy_pattern_audio_run.h"
-#include "ags_copy_pattern_channel_run.h"
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 void ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_channel);
 void ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel);

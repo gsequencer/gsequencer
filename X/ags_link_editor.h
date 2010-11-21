@@ -5,9 +5,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_machine.h"
+#include <ags/X/ags_machine.h>
 
-#include "../audio/file/ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
 #define AGS_TYPE_LINK_EDITOR                (ags_link_editor_get_type())
 #define AGS_LINK_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_LINK_EDITOR, AgsLinkEditor))

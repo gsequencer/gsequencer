@@ -1,6 +1,6 @@
-#include "ags_drum_output_pad_callbacks.h"
+#include <ags/X/machine/ags_drum_output_pad_callbacks.h>
 
-#include "ags_drum.h"
+#include <ags/X/machine/ags_drum.h>
 
 void
 ags_drum_output_pad_play_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrumOutputPad *drum_output_pad)

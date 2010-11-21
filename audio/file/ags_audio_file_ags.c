@@ -1,4 +1,4 @@
-#include "ags_audio_file_ags.h"
+#include <ags/audio/file/ags_audio_file_ags.h>
 
 void ags_audio_file_ags_class_init(AgsAudioFileAgsClass *file_ags);
 void ags_audio_file_ags_init(AgsAudioFileAgs *file_ags);

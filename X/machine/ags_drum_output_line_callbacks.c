@@ -1,10 +1,10 @@
-#include "ags_drum_output_line_callbacks.h"
+#include <ags/X/machine/ags_drum_output_line_callbacks.h>
 
-#include "ags_drum.h"
+#include <ags/X/machine/ags_drum.h>
 
-#include "../../audio/ags_audio_signal.h"
+#include <ags/audio/ags_audio_signal.h>
 
-#include "../../audio/recall/ags_delay_audio.h"
+#include <ags/audio/recall/ags_delay_audio.h>
 
 int
 ags_drum_output_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, gpointer data)

@@ -1,10 +1,10 @@
-#include "ags_recycling.h"
+#include <ags/audio/ags_recycling.h>
 
-#include "../object/ags_marshal.h"
+#include <ags/object/ags_marshal.h>
 
-#include "ags_devout.h"
-#include "ags_audio.h"
-#include "ags_channel.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 
 #include <string.h>
 #include <math.h>

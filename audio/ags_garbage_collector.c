@@ -1,7 +1,7 @@
-#include "ags_garbage_collector.h"
+#include <ags/audio/ags_garbage_collector.h>
 
-#include "ags_devout.h"
-#include "ags_audio_signal.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio_signal.h>
 
 #include <stdlib.h>
 

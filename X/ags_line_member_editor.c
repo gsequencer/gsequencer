@@ -1,5 +1,5 @@
-#include "ags_line_member_editor.h"
-#include "ags_line_member_editor_callbacks.h"
+#include <ags/X/ags_line_member_editor.h>
+#include <ags/X/ags_line_member_editor_callbacks.h>
 
 void ags_line_member_editor_class_init(AgsLineMemberEditorClass *line_member_editor);
 void ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor);

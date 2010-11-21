@@ -1,7 +1,7 @@
-#include "ags_output.h"
+#include <ags/audio/ags_output.h>
 
-#include "ags_devout.h"
-#include "ags_audio.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
 
 void ags_output_class_init(AgsOutputClass *output_class);
 void ags_output_init(AgsOutput *output);

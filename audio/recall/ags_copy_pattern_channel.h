@@ -4,10 +4,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall_audio.h"
-#include "../ags_recall_channel.h"
-#include "../ags_channel.h"
-#include "../ags_pattern.h"
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_pattern.h>
 
 #define AGS_TYPE_COPY_PATTERN_CHANNEL                (ags_copy_pattern_channel_get_type())
 #define AGS_COPY_PATTERN_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_PATTERN_CHANNEL, AgsCopyPatternChannel))

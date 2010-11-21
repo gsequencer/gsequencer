@@ -1,4 +1,4 @@
-#include "ags_applicable.h"
+#include <ags/object/ags_applicable.h>
 
 #include <stdio.h>
 

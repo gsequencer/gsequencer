@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_panel.h"
+#include <ags/X/machine/ags_panel.h>
 
 void ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel *panel);
 

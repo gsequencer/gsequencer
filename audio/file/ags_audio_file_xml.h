@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <sndfile.h>
 
-#include "ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
 #define AGS_TYPE_AUDIO_FILE_XML              (ags_audio_file_xml_get_type())
 #define AGS_AUDIO_FILE_XML(obj)              (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_AUDIO_FILE_XML, AgsAudioFileXml))

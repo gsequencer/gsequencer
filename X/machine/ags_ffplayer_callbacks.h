@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_ffplayer.h"
+#include <ags/X/machine/ags_ffplayer.h>
 
 void ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer);
 gboolean ags_ffplayer_destroy_callback(GtkObject *object, AgsFFPlayer *ffplayer);

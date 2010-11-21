@@ -4,7 +4,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_window.h"
+#include <ags/X/ags_window.h>
 
 gboolean ags_window_delete_event_callback(GtkWidget *widget, AgsWindow *window);
 gboolean ags_window_destroy_callback(GtkObject *object, AgsWindow *window);

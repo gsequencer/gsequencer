@@ -1,5 +1,5 @@
-#include "ags_menu_bar.h"
-#include "ags_menu_bar_callbacks.h"
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_menu_bar_callbacks.h>
 
 #include <glib/glist.h>
 #include <gtk/gtkmenushell.h>
@@ -271,7 +271,7 @@ ags_zoom_menu_new()
 }
 
 GtkMenu*
-ags_tic_menu_new()
+ags_tact_menu_new()
 {
   GtkMenu *menu;
   GtkMenuItem *item;

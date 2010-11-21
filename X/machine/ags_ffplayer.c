@@ -1,11 +1,11 @@
-#include "ags_ffplayer.h"
-#include "ags_ffplayer_callbacks.h"
+#include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_ffplayer_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
 
 #include <math.h>
 

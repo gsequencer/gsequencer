@@ -1,4 +1,4 @@
-#include "ags_menu.h"
+#include <ags/widget/ags_menu.h>
 
 void ags_menu_class_init(AgsMenuClass *menu);
 void ags_menu_init(AgsMenu *menu);

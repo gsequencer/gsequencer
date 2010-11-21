@@ -1,9 +1,9 @@
-#include "ags_pad_callbacks.h"
+#include <ags/X/ags_pad_callbacks.h>
 
-#include "../audio/ags_channel.h"
-#include "../audio/ags_output.h"
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
 
-#include "ags_machine.h"
+#include <ags/X/ags_machine.h>
 
 int
 ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad)

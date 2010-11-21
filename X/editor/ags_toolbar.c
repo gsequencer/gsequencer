@@ -1,8 +1,8 @@
-#include "ags_toolbar.h"
-#include "ags_toolbar_callbacks.h"
-#include "ags_toolbar_mode_stock.h"
+#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_toolbar_callbacks.h>
+#include <ags/X/editor/ags_toolbar_mode_stock.h>
 
-#include "../ags_menu_bar.h"
+#include <ags/X/ags_menu_bar.h>
 
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkbox.h>
@@ -101,14 +101,14 @@ ags_toolbar_init(AgsToolbar *toolbar)
   gtk_option_menu_set_history(toolbar->zoom, 6);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->zoom, NULL , NULL);
 
-  label = (GtkLabel *) gtk_label_new("tic\0");
+  label = (GtkLabel *) gtk_label_new("tact\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
-  toolbar->tic_history = 4;
-  toolbar->tic = (GtkOptionMenu *) gtk_option_menu_new();
-  gtk_option_menu_set_menu(toolbar->tic, (GtkWidget *) ags_tic_menu_new());
-  gtk_option_menu_set_history(toolbar->tic, 4);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->tic, NULL, NULL);
+  toolbar->tact_history = 4;
+  toolbar->tact = (GtkOptionMenu *) gtk_option_menu_new();
+  gtk_option_menu_set_menu(toolbar->tact, (GtkWidget *) ags_tact_menu_new());
+  gtk_option_menu_set_history(toolbar->tact, 4);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->tact, NULL, NULL);
 
   label = (GtkLabel *) gtk_label_new("mode\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
@@ -158,8 +158,8 @@ ags_toolbar_connect(AgsToolbar *toolbar)
   g_signal_connect_after((GObject *) toolbar->zoom, "changed\0",
 			 G_CALLBACK(ags_toolbar_zoom_callback), (gpointer) toolbar);
 
-  g_signal_connect_after((GObject *) toolbar->tic, "changed\0",
-			 G_CALLBACK(ags_toolbar_tic_callback), (gpointer) toolbar);
+  g_signal_connect_after((GObject *) toolbar->tact, "changed\0",
+			 G_CALLBACK(ags_toolbar_tact_callback), (gpointer) toolbar);
 
   list = gtk_container_get_children((GtkContainer *) gtk_option_menu_get_menu(toolbar->mode));
   g_signal_connect((GObject *) list->data, "activate\0",

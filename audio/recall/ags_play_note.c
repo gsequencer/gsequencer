@@ -1,9 +1,9 @@
-#include "ags_play_note.h"
+#include <ags/audio/recall/ags_play_note.h>
 
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_recall_id.h>
 
-#include "ags_play_notation.h"
-#include "ags_play_audio_signal.h"
+#include <ags/audio/recall/ags_play_notation.h>
+#include <ags/audio/recall/ags_play_audio_signal.h>
 
 void ags_play_note_class_init(AgsPlayNoteClass *play_note);
 void ags_play_note_init(AgsPlayNote *play_note);

@@ -4,10 +4,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall_audio.h"
-#include "../ags_recall_audio_run.h"
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
 
-#include "ags_delay_audio_run.h"
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
 #define AGS_TYPE_COPY_PATTERN_AUDIO_RUN                (ags_copy_pattern_audio_run_get_type())
 #define AGS_COPY_PATTERN_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_PATTERN_AUDIO_RUN, AgsCopyPatternAudioRun))

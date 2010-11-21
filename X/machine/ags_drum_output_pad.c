@@ -1,11 +1,11 @@
-#include "ags_drum_output_pad.h"
-#include "ags_drum_output_pad_callbacks.h"
+#include <ags/X/machine/ags_drum_output_pad.h>
+#include <ags/X/machine/ags_drum_output_pad_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "ags_drum.h"
+#include <ags/X/ags_line.h>
 
-#include "../ags_line.h"
+#include <ags/X/machine/ags_drum.h>
 
 void ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad);
 void ags_drum_output_pad_connectable_interface_init(AgsConnectableInterface *connectable);

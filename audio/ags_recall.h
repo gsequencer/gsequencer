@@ -4,7 +4,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "ags_recall_id.h"
+#include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_RECALL                (ags_recall_get_type())
 #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))

@@ -5,13 +5,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../ags_machine.h"
+#include <ags/X/ags_machine.h>
 
-#include "ags_drum_input_pad.h"
-
-#include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio_run.h"
+#include <ags/X/machine/ags_drum_input_pad.h>
 
 #define AGS_TYPE_DRUM                (ags_drum_get_type())
 #define AGS_DRUM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM, AgsDrum))
@@ -37,7 +33,7 @@ struct _AgsDrum
 
   GtkCheckButton *loop_button;
   GtkSpinButton *length_spin;
-  GtkOptionMenu *tic;
+  GtkOptionMenu *tact;
   gulong bpm_handler;
 
   GtkToggleButton *run;

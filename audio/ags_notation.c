@@ -1,4 +1,4 @@
-#include "ags_notation.h"
+#include <ags/audio/ags_notation.h>
 
 #include <stdlib.h>
 

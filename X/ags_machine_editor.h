@@ -5,10 +5,10 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_machine.h"
-#include "ags_channel_listing_editor.h"
-#include "ags_property_collection_editor.h"
-#include "ags_channel_resize_editor.h"
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_channel_listing_editor.h>
+#include <ags/X/ags_property_collection_editor.h>
+#include <ags/X/ags_channel_resize_editor.h>
 
 #define AGS_TYPE_MACHINE_EDITOR                (ags_machine_editor_get_type())
 #define AGS_MACHINE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_EDITOR, AgsMachineEditor))

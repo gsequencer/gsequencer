@@ -3,9 +3,9 @@
 
 #include <glib-object.h>
 
-#include "../ags_recall.h"
-#include "../ags_channel.h"
-#include "../ags_notation.h"
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_PLAY_NOTATION             (ags_play_notation_get_type())
 #define AGS_PLAY_NOTATION(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))

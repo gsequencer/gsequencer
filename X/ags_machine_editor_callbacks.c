@@ -1,16 +1,16 @@
-#include "ags_machine_editor_callbacks.h"
+#include <ags/X/ags_machine_editor_callbacks.h>
 
-#include "../object/ags_applicable.h"
+#include <ags/object/ags_applicable.h>
 
-#include "../audio/ags_audio.h"
-#include "../audio/ags_channel.h"
-#include "../audio/ags_output.h"
-#include "../audio/ags_input.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 
-#include "ags_machine.h"
-#include "ags_pad_editor.h"
-#include "ags_line_editor.h"
-#include "ags_link_editor.h"
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad_editor.h>
+#include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_link_editor.h>
 
 int
 ags_machine_editor_destroy_callback(GtkObject *object, AgsMachineEditor *machine_editor)

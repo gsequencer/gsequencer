@@ -1,4 +1,4 @@
-#include "ags_run_connectable.h"
+#include <ags/object/ags_run_connectable.h>
 
 #include <stdio.h>
 

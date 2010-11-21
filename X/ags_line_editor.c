@@ -1,8 +1,8 @@
-#include "ags_line_editor.h"
-#include "ags_line_editor_callbacks.h"
+#include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_line_editor_callbacks.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_applicable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 void ags_line_editor_class_init(AgsLineEditorClass *line_editor);
 void ags_line_editor_connectable_interface_init(AgsConnectableInterface *connectable);

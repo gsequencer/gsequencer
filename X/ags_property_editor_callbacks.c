@@ -1,4 +1,4 @@
-#include "ags_property_editor_callbacks.h"
+#include <ags/X/ags_property_editor_callbacks.h>
 
 void
 ags_property_editor_enable_callback(GtkToggleButton *toggle,

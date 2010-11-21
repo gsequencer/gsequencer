@@ -1,17 +1,17 @@
-#include "ags_drum_input_pad_callbacks.h"
-#include "ags_drum.h"
+#include <ags/X/machine/ags_drum_input_pad_callbacks.h>
+#include <ags/X/machine/ags_drum.h>
 
-#include "../../audio/ags_devout.h"
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_audio_signal.h"
-#include "../../audio/ags_pattern.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/recall/ags_play_audio_file.h"
+#include <ags/audio/recall/ags_play_audio_file.h>
 
-#include "../../audio/file/ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
 #include <math.h>
 

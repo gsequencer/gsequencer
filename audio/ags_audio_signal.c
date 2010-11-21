@@ -1,6 +1,6 @@
-#include "ags_audio_signal.h"
+#include <ags/audio/ags_audio_signal.h>
 
-#include "ags_devout.h"
+#include <ags/audio/ags_devout.h>
 
 #include <stdlib.h>
 #include <string.h>

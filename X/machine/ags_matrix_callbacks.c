@@ -1,19 +1,19 @@
-#include "ags_matrix_callbacks.h"
+#include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include "../ags_window.h"
-#include "../ags_navigation.h"
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_navigation.h>
 
-#include "../../audio/ags_channel.h"
-#include "../../audio/ags_recycling.h"
-#include "../../audio/ags_pattern.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_delay_audio_run.h"
-#include "../../audio/recall/ags_copy_pattern_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio_run.h"
-#include "../../audio/recall/ags_copy_pattern_channel.h"
-#include "../../audio/recall/ags_copy_pattern_channel_run.h"
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 #include <math.h>
 
@@ -27,7 +27,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   AgsDelayAudio *delay_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
-  double bpm, tic;
+  double bpm, tact;
   guint delay, length, stream_length;
 
   if(old_parent != NULL)
@@ -41,14 +41,14 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   window->counter->matrix++;
 
   /* delay related */
-  tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
   bpm = window->navigation->bpm->adjustment->value;
-  printf("tic = %f\n\0", tic);
+  printf("tact = %f\n\0", tact);
   printf("bpm = %f\n\0", bpm);
   delay = (guint) round(((double)window->devout->frequency /
 			 (double)window->devout->buffer_size) *
 			(60.0 / bpm) *
-			tic);
+			tact);
 
   /* AgsDelayAudio */
   list = ags_recall_find_type(audio->play,
@@ -211,7 +211,7 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   AgsDelayAudio *delay_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
-  double bpm, tic;
+  double bpm, tact;
   guint delay, length, stream_length;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW);
@@ -220,12 +220,12 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   devout = AGS_DEVOUT(audio->devout);
 
   bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
 
   delay = (guint) round(((double)devout->frequency /
 			 (double)devout->buffer_size) *
 			(60.0 / bpm) *
-			tic);
+			tact);
 
   /* AgsDelayAudio */
   list = ags_recall_find_type(audio->play,
@@ -328,7 +328,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 }
 
 void
-ags_matrix_tic_callback(GtkWidget *option_menu, AgsMatrix *matrix)
+ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
 {
   AgsWindow *window;
   AgsDevout *devout;
@@ -337,7 +337,7 @@ ags_matrix_tic_callback(GtkWidget *option_menu, AgsMatrix *matrix)
   AgsDelayAudio *delay_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
-  double bpm, tic;
+  double bpm, tact;
   guint length, stream_length, delay;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) matrix);
@@ -345,11 +345,11 @@ ags_matrix_tic_callback(GtkWidget *option_menu, AgsMatrix *matrix)
   devout = AGS_DEVOUT(audio->devout);
 
   bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tic));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
   delay = (guint) round(((double)devout->frequency /
-			       (double)devout->buffer_size) *
-			      (60.0 / bpm) *
-			      tic);
+			 (double)devout->buffer_size) *
+			(60.0 / bpm) *
+			tact);
 
   /* AgsDelayAudio */
   list = ags_recall_find_type(audio->play,

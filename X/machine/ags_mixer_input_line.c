@@ -1,12 +1,12 @@
-#include "ags_mixer_input_line.h"
+#include <ags/X/machine/ags_mixer_input_line.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../ags_window.h"
+#include <ags/audio/recall/ags_volume_channel.h>
 
-#include "ags_mixer.h"
+#include <ags/X/ags_window.h>
 
-#include "../../audio/recall/ags_volume_channel.h"
+#include <ags/X/machine/ags_mixer.h>
 
 void ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line);
 void ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);

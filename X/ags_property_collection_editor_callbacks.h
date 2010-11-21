@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_property_collection_editor.h"
+#include <ags/X/ags_property_collection_editor.h>
 
 void ags_property_collection_editor_add_collection_callback(GtkButton *button,
 							    AgsPropertyCollectionEditor *property_collection_editor);

@@ -5,8 +5,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../audio/ags_audio.h"
-#include "../file/ags_file.h"
+#include <ags/audio/ags_audio.h>
+
+#include <ags/file/ags_file.h>
 
 #define AGS_TYPE_MACHINE                (ags_machine_get_type())
 #define AGS_MACHINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE, AgsMachine))

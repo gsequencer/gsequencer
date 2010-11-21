@@ -1,11 +1,11 @@
-#include "ags_ffplayer_callbacks.h"
+#include <ags/X/machine/ags_ffplayer_callbacks.h>
 
-#include "../ags_window.h"
+#include <ags/X/ags_window.h>
 
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_input.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
 
-#include "../../audio/file/ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
 void ags_ffplayer_open_response_callback(GtkWidget *widget, gint response, AgsFFPlayer *ffplayer);
 

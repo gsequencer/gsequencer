@@ -1,16 +1,17 @@
-#include "ags_editor_callbacks.h"
-#include "editor/ags_toolbar.h"
-#include "editor/ags_notebook.h"
-#include "editor/ags_meter.h"
+#include <ags/X/ags_editor_callbacks.h>
 
-#include "ags_window.h"
+#include <ags/X/ags_window.h>
 
-#include "machine/ags_panel.h"
-#include "machine/ags_mixer.h"
-#include "machine/ags_drum.h"
-#include "machine/ags_matrix.h"
-#include "machine/ags_synth.h"
-#include "machine/ags_ffplayer.h"
+#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_notebook.h>
+#include <ags/X/editor/ags_meter.h>
+
+#include <ags/X/machine/ags_panel.h>
+#include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_ffplayer.h>
 
 #include <math.h>
 #include <string.h>
@@ -270,7 +271,7 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
   AgsMachine *machine;
   void ags_editor_drawing_area_button_press_event_set_control(){
     AgsNote *note;
-    guint tic;
+    guint tact;
     guint offset_x, offset_y;
     guint note_x, note_y;
     double value[2];
@@ -278,8 +279,8 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
     if(editor->control.y0 >= editor->map_height || editor->control.x0 >= editor->map_width)
       return;
 
-    tic = gtk_option_menu_get_history(editor->toolbar->tic);
-    tic = (guint) exp2(8 - tic);
+    tact = gtk_option_menu_get_history(editor->toolbar->tact);
+    tact = (guint) exp2(8 - tact);
 
     value[0] = (double) round(editor->hscrollbar->scrollbar.range.adjustment->value);
     value[1] = (double) round(editor->vscrollbar->scrollbar.range.adjustment->value);
@@ -304,7 +305,7 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
 
     note = &(editor->control.note);
     note->flags = AGS_NOTE_GUI;
-    note->x[0] = (guint) (tic * note_x) + (tic * offset_x);
+    note->x[0] = (guint) (tact * note_x) + (tact * offset_x);
     note->x[1] = (guint) note->x[0] + 1;
     note->y = (guint) note_y + offset_y;
 
@@ -340,7 +341,7 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
   AgsMachine *machine;
   AgsNote *note, *note0;
   double value[2];
-  guint tic;
+  guint tact;
   void ags_editor_drawing_area_button_release_event_set_control(){
     GList *list_notation;
     guint note_x, note_y;
@@ -358,7 +359,7 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
       note_x = 0;
     }
 
-    note->x[1] = (guint) (tic * (note_x)) + (tic * offset_x);
+    note->x[1] = (guint) (tact * (note_x)) + (tact * offset_x);
 
     list_notation = machine->audio->notation;
 
@@ -390,8 +391,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     widget = (GtkWidget *) editor->drawing_area;
     cr = gdk_cairo_create(widget->window);
 
-    x = (note->x[0] / tic) * editor->control_current.control_width;
-    width = (note->x[1] / tic) * editor->control_current.control_width;
+    x = (note->x[0] / tact) * editor->control_current.control_width;
+    width = (note->x[1] / tact) * editor->control_current.control_width;
 
     if(x < (guint) value[0]){
       if(width > (guint) value[0]){
@@ -447,8 +448,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
     note = &(editor->control.note);
 
-    tic = gtk_option_menu_get_history(editor->toolbar->tic);
-    tic = (guint) exp2(8 - tic);
+    tact = gtk_option_menu_get_history(editor->toolbar->tact);
+    tact = (guint) exp2(8 - tact);
 
     value[0] = (double) round(editor->hscrollbar->scrollbar.range.adjustment->value);
     value[1] = (double) round(editor->vscrollbar->scrollbar.range.adjustment->value);

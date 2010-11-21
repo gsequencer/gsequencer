@@ -1,6 +1,6 @@
-#include "ags_delay_audio.h"
+#include <ags/audio/recall/ags_delay_audio.h>
 
-#include "ags_delay_audio_run.h"
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);

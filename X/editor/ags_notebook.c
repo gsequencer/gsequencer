@@ -1,8 +1,7 @@
+#include <ags/X/editor/ags_notebook.h>
+#include <ags/X/editor/ags_notebook_callbacks.h>
 
-#include "ags_notebook.h"
-#include "ags_notebook_callbacks.h"
-
-#include "../ags_editor.h"
+#include <ags/X/ags_editor.h>
 
 void ags_notebook_class_init(AgsNotebookClass *notebook);
 void ags_notebook_init(AgsNotebook *notebook);

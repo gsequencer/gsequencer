@@ -1,4 +1,4 @@
-#include "ags_ruler_callbacks.h"
+#include <ags/X/editor/ags_ruler_callbacks.h>
 
 gboolean
 ags_ruler_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsRuler *ruler)

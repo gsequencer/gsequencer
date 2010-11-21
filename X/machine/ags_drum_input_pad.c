@@ -1,11 +1,11 @@
-#include "ags_drum_input_pad.h"
-#include "ags_drum_input_pad_callbacks.h"
+#include <ags/X/machine/ags_drum_input_pad.h>
+#include <ags/X/machine/ags_drum_input_pad_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../ags_window.h"
+#include <ags/X/ags_window.h>
 
-#include "ags_drum.h"
+#include <ags/X/machine/ags_drum.h>
 
 #include <math.h>
 

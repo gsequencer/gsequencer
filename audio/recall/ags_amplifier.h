@@ -4,7 +4,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall.h"
+#include <ags/audio/ags_recall.h>
 
 void ags_amplifier(AgsRecall *recall);
 

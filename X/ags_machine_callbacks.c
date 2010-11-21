@@ -1,10 +1,10 @@
-#include "ags_machine_callbacks.h"
+#include <ags/X/ags_machine_callbacks.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_applicable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
-#include "ags_window.h"
-#include "ags_machine_editor.h"
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_machine_editor.h>
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 

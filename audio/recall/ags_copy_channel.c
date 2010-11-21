@@ -1,12 +1,12 @@
-#include "ags_copy_channel.h"
+#include <ags/audio/recall/ags_copy_channel.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "../ags_recycling.h"
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_id.h>
 
-#include "ags_copy_recycling.h"
+#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>

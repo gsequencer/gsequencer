@@ -4,7 +4,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_devout.h"
+#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_AUDIO_FILE                (ags_audio_file_get_type())
 #define AGS_AUDIO_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_FILE, AgsAudioFile))

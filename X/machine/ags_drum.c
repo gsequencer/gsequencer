@@ -1,31 +1,31 @@
-#include "ags_drum.h"
-#include "ags_drum_callbacks.h"
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_drum_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "ags_drum_input_pad.h"
-#include "ags_drum_input_line.h"
-#include "ags_drum_output_pad.h"
-#include "ags_drum_output_line.h"
+#include <ags/X/machine/ags_drum_input_pad.h>
+#include <ags/X/machine/ags_drum_input_line.h>
+#include <ags/X/machine/ags_drum_output_pad.h>
+#include <ags/X/machine/ags_drum_output_line.h>
 
-#include "../ags_window.h"
-#include "../ags_menu_bar.h"
-#include "../ags_pad.h"
-#include "../ags_line.h"
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_channel.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_recycling.h"
-#include "../../audio/ags_pattern.h"
-#include "../../audio/ags_audio_signal.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_delay_audio_run.h"
-#include "../../audio/recall/ags_copy_pattern_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio_run.h"
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 #include <math.h>
 
@@ -281,15 +281,15 @@ ags_drum_init(AgsDrum *drum)
   drum->selected0 = drum->index0[0];
   gtk_toggle_button_set_active(drum->index0[0], TRUE);
 
-  drum->tic = (GtkOptionMenu *) gtk_option_menu_new();
+  drum->tact = (GtkOptionMenu *) gtk_option_menu_new();
   gtk_table_attach(table0,
-		   (GtkWidget *) drum->tic,
+		   (GtkWidget *) drum->tact,
 		   5, 6, 0, 1,
 		   GTK_EXPAND, GTK_EXPAND,
 		   0, 0);
 
-  gtk_option_menu_set_menu(drum->tic, (GtkWidget *) ags_tic_menu_new());
-  gtk_option_menu_set_history(drum->tic, 6);
+  gtk_option_menu_set_menu(drum->tact, (GtkWidget *) ags_tact_menu_new());
+  gtk_option_menu_set_history(drum->tact, 6);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table0,
@@ -362,8 +362,8 @@ ags_drum_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) drum->run, "clicked\0",
 		   G_CALLBACK(ags_drum_run_callback), (gpointer) drum);
 
-  g_signal_connect((GObject *) drum->tic, "changed\0",
-		   G_CALLBACK(ags_drum_tic_callback), (gpointer) drum);
+  g_signal_connect((GObject *) drum->tact, "changed\0",
+		   G_CALLBACK(ags_drum_tact_callback), (gpointer) drum);
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
   drum->bpm_handler = g_signal_connect((GObject *) window->navigation->bpm, "value-changed\0",

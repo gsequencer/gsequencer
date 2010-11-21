@@ -1,30 +1,30 @@
-#include "ags_drum_callbacks.h"
-#include "ags_drum_input_pad.h"
+#include <ags/X/machine/ags_drum_callbacks.h>
+#include <ags/X/machine/ags_drum_input_pad.h>
 
-#include "../ags_window.h"
-#include "../ags_pad.h"
-#include "../ags_navigation.h"
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_navigation.h>
 
-#include "../../audio/ags_devout.h"
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_audio_signal.h"
-#include "../../audio/ags_pattern.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/task/ags_append_audio.h"
+#include <ags/audio/task/ags_append_audio.h>
 
-#include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_delay_audio_run.h"
-#include "../../audio/recall/ags_copy_pattern_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio_run.h"
-#include "../../audio/recall/ags_copy_pattern_channel.h"
-#include "../../audio/recall/ags_copy_pattern_channel_run.h"
-#include "../../audio/recall/ags_play_channel.h"
-#include "../../audio/recall/ags_play_audio_signal.h"
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_audio_signal.h>
 
-#include "../../audio/file/ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
 #include <stdlib.h>
 #include <math.h>
@@ -45,7 +45,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   AgsDelayAudio *delay_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
-  double bpm, tic;
+  double bpm, tact;
   guint delay, length, stream_length;
 
   if(old_parent != NULL)
@@ -59,14 +59,14 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   window->counter->drum++;
 
   /* delay related */
-  tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tic));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
   bpm = window->navigation->bpm->adjustment->value;
-  printf("tic = %f\n\0", tic);
+  printf("tact = %f\n\0", tact);
   printf("bpm = %f\n\0", bpm);
   delay = (guint) round(((double)window->devout->frequency /
 			 (double)window->devout->buffer_size) *
 			(60.0 / bpm) *
-			tic);
+			tact);
 
   /* AgsDelayAudio */
   list = ags_recall_find_type(audio->play,
@@ -138,7 +138,7 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
   AgsDelayAudio *delay_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
-  double bpm, tic;
+  double bpm, tact;
   guint delay, length, stream_length;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW);
@@ -147,12 +147,12 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
   devout = AGS_DEVOUT(audio->devout);
 
   bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tic));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
 
   delay = (guint) round(((double)devout->frequency /
 			 (double)devout->buffer_size) *
 			(60.0 / bpm) *
-			tic);
+			tact);
 
   /* AgsDelayAudio */
   list = ags_recall_find_type(audio->play,
@@ -438,7 +438,7 @@ ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum
 }
 
 void
-ags_drum_tic_callback(GtkWidget *option_menu, AgsDrum *drum)
+ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
 {
   AgsWindow *window;
   AgsDevout *devout;
@@ -447,7 +447,7 @@ ags_drum_tic_callback(GtkWidget *option_menu, AgsDrum *drum)
   AgsDelayAudio *delay_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
-  double bpm, tic;
+  double bpm, tact;
   guint length, stream_length, delay;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
@@ -455,11 +455,11 @@ ags_drum_tic_callback(GtkWidget *option_menu, AgsDrum *drum)
   devout = AGS_DEVOUT(audio->devout);
 
   bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  tic = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tic));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
   delay = (guint) round(((double)devout->frequency /
-			       (double)devout->buffer_size) *
-			      (60.0 / bpm) *
-			      tic);
+			 (double)devout->buffer_size) *
+			(60.0 / bpm) *
+			tact);
 
   /* AgsDelayAudio */
   list = ags_recall_find_type(audio->play,

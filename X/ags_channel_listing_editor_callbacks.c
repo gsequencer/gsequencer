@@ -1,4 +1,4 @@
-#include "ags_channel_listing_editor_callbacks.h"
+#include <ags/X/ags_channel_listing_editor_callbacks.h>
 
 int
 ags_channel_listing_editor_parent_set_callback(GtkWidget *widget,

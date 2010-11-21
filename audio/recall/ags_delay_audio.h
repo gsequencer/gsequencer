@@ -4,7 +4,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall_audio.h"
+#include <ags/audio/ags_recall_audio.h>
 
 #define AGS_TYPE_DELAY_AUDIO                (ags_delay_audio_get_type())
 #define AGS_DELAY_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DELAY_AUDIO, AgsDelayAudio))

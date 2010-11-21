@@ -4,7 +4,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_toolbar.h"
+#include <ags/X/editor/ags_toolbar.h>
 
 gboolean ags_toolbar_destroy_callback(GtkObject *object, AgsToolbar *toolbar);
 void ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar);
@@ -18,7 +18,7 @@ void ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_select_callback(GtkWidget *widget, AgsToolbar *toolbar);
 
 void ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
-void ags_toolbar_tic_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
+void ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
 
 void ags_toolbar_mode_default_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_mode_group_channels_callback(GtkWidget *widget, AgsToolbar *toolbar);

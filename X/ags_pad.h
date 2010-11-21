@@ -5,8 +5,10 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_line.h"
-#include "../audio/ags_channel.h"
+#include <ags/audio/ags_channel.h>
+
+#include <ags/X/ags_line.h>
+
 
 #define AGS_TYPE_PAD                (ags_pad_get_type())
 #define AGS_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PAD, AgsPad))

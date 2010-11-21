@@ -1,13 +1,13 @@
-#include "ags_channel_resize_editor.h"
+#include <ags/X/ags_channel_resize_editor.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_applicable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
-#include "../audio/ags_audio.h"
-#include "../audio/ags_output.h"
-#include "../audio/ags_input.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 
-#include "ags_machine_editor.h"
+#include <ags/X/ags_machine_editor.h>
 
 void ags_channel_resize_editor_class_init(AgsChannelResizeEditorClass *channel_resize_editor);
 void ags_channel_resize_editor_connectable_interface_init(AgsConnectableInterface *connectable);

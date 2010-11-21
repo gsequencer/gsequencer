@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_devout.h"
+#include <ags/audio/ags_devout.h>
 
 void ags_synth_sin(AgsDevout *devout, short *buffer, guint offset,
 		   guint freq, guint phase, guint length,

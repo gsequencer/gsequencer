@@ -1,16 +1,16 @@
 #include <gtk/gtk.h>
 
-#include "audio/ags_channel.h"
-#include "audio/ags_output.h"
-#include "audio/ags_input.h"
-#include "audio/ags_recycling.h"
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recycling.h>
 
-#include "X/ags_window.h"
+#include <ags/X/ags_window.h>
 
-#include "X/machine/ags_matrix.h"
-#include "X/machine/ags_synth.h"
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
 
-#include "audio/ags_synths.h"
+#include <ags/audio/ags_synths.h>
 
 //void (*gtk_window_destroy)(GtkObject *object);
 //void (*gtk_window_show)(GtkWidget *widget);

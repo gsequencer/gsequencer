@@ -1,12 +1,12 @@
-#include "ags_volume_channel.h"
+#include <ags/audio/recall/ags_volume_channel.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "../ags_recycling.h"
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_id.h>
 
-#include "ags_volume_recycling.h"
+#include <ags/audio/recall/ags_volume_recycling.h>
 
 void ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel);
 void ags_volume_channel_connectable_interface_init(AgsConnectableInterface *connectable);

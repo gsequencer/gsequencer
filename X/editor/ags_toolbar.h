@@ -29,8 +29,8 @@ struct _AgsToolbar
   guint zoom_history;
   GtkOptionMenu *zoom;
 
-  guint tic_history;
-  GtkOptionMenu *tic;
+  guint tact_history;
+  GtkOptionMenu *tact;
 
   GtkOptionMenu *mode;
 };

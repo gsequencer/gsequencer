@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_channel_link_collection_editor.h"
+#include <ags/X/ags_channel_link_collection_editor.h>
 
 int ags_channel_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsChannelLinkCollectionEditor *channel_link_collection_editor);
 

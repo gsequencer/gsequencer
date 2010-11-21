@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../ags_machine.h"
+#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_MIXER                (ags_mixer_get_type())
 #define AGS_MIXER(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_MIXER, AgsMixer))

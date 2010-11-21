@@ -4,7 +4,8 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include "../ags_machine.h"
+
+#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_SYNTH                (ags_synth_get_type())
 #define AGS_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH, AgsSynth))

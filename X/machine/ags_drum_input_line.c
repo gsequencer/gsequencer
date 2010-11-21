@@ -1,21 +1,21 @@
-#include "ags_drum_input_line.h"
-#include "ags_drum_input_line_callbacks.h"
+#include <ags/X/machine/ags_drum_input_line.h>
+#include <ags/X/machine/ags_drum_input_line_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../ags_window.h"
+#include <ags/X/ags_window.h>
 
-#include "ags_drum.h"
+#include <ags/X/machine/ags_drum.h>
 
-#include "../../audio/recall/ags_delay_audio_run.h"
-#include "../../audio/recall/ags_volume_channel.h"
-#include "../../audio/recall/ags_play_channel.h"
-#include "../../audio/recall/ags_copy_channel.h"
-#include "../../audio/recall/ags_stream_channel.h"
-#include "../../audio/recall/ags_copy_pattern_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio_run.h"
-#include "../../audio/recall/ags_copy_pattern_channel.h"
-#include "../../audio/recall/ags_copy_pattern_channel_run.h"
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);

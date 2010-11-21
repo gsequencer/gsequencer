@@ -1,4 +1,4 @@
-#include "ags_table.h"
+#include <ags/widget/ags_table.h>
 
 void ags_table_class_init(AgsTableClass *table);
 void ags_table_init(AgsTable *table);

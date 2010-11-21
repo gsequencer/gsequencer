@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_machine_editor.h"
+#include <ags/X/ags_machine_editor.h>
 
 int ags_machine_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMachineEditor *machine_editor);
 int ags_machine_editor_destroy_callback(GtkObject *object, AgsMachineEditor *machine_editor);

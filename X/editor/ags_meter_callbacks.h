@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_meter.h"
+#include <ags/X/editor/ags_meter.h>
 
 gboolean ags_meter_destroy_callback(GtkObject *object, AgsMeter *meter);
 void ags_meter_show_callback(GtkWidget *widget, AgsMeter *meter);

@@ -1,4 +1,4 @@
-#include "ags_line_member_editor_callbacks.h"
+#include <ags/X/ags_line_member_editor_callbacks.h>
 
 int
 ags_line_member_editor_destroy_callback(GtkObject *object, AgsLineMemberEditor *line_member_editor)

@@ -1,5 +1,5 @@
-#include "ags_pattern.h"
-#include "ags_audio_signal.h"
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_audio_signal.h>
 
 #include <stdarg.h>
 #include <math.h>
@@ -28,8 +28,13 @@ ags_pattern_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_pattern_init,
     };
-    ags_type_pattern = g_type_register_static(G_TYPE_OBJECT, "AgsPattern\0", &ags_pattern_info, 0);
+
+    ags_type_pattern = g_type_register_static(G_TYPE_OBJECT,
+					      "AgsPattern\0",
+					      &ags_pattern_info,
+					      0);
   }
+
   return (ags_type_pattern);
 }
 

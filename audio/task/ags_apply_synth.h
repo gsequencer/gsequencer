@@ -4,9 +4,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_task.h"
+#include <ags/audio/ags_task.h>
 
-#include "../ags_channel.h"
+#include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_APPLY_SYNTH                (ags_apply_synth_get_type())
 #define AGS_APPLY_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_SYNTH, AgsApplySynth))

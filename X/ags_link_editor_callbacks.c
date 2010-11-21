@@ -1,16 +1,16 @@
-#include "ags_link_editor_callbacks.h"
+#include <ags/X/ags_link_editor_callbacks.h>
 
-#include "../audio/ags_devout.h"
-#include "../audio/ags_output.h"
-#include "../audio/ags_input.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 
-#include "../audio/file/ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
-#include "../audio/recall/ags_play_audio_file.h"
+#include <ags/audio/recall/ags_play_audio_file.h>
 
-#include "ags_window.h"
-#include "ags_machine_editor.h"
-#include "ags_line_editor.h"
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_line_editor.h>
 
 int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response, AgsLinkEditor *link_editor);
 int ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLinkEditor *link_editor);

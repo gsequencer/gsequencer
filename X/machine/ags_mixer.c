@@ -1,20 +1,20 @@
-#include "ags_mixer.h"
-#include "ags_mixer_callbacks.h"
+#include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_mixer_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "ags_mixer_input_pad.h"
-#include "ags_mixer_input_line.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/recall/ags_volume_channel.h>
 
-#include "../../audio/recall/ags_volume_channel.h"
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
-#include "../ags_pad.h"
-#include "../ags_line.h"
+#include <ags/X/machine/ags_mixer_input_pad.h>
+#include <ags/X/machine/ags_mixer_input_line.h>
 
 void ags_mixer_class_init(AgsMixerClass *mixer);
 void ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable);

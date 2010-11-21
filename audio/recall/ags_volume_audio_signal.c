@@ -1,9 +1,9 @@
-#include "ags_volume_audio_signal.h"
+#include <ags/audio/recall/ags_volume_audio_signal.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "ags_volume_channel.h"
+#include <ags/audio/recall/ags_volume_channel.h>
 
 void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signal);
 void ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);

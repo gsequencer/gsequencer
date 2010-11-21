@@ -5,9 +5,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../audio/ags_audio.h"
+#include <ags/audio/ags_audio.h>
 
-#include "ags_pad_editor.h"
+#include <ags/X/ags_pad_editor.h>
 
 int ags_pad_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPadEditor *pad_editor);
 

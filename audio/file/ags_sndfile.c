@@ -1,7 +1,7 @@
-#include "ags_sndfile.h"
+#include <ags/audio/file/ags_sndfile.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_playable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_playable.h>
 
 void ags_sndfile_class_init(AgsSndfileClass *sndfile);
 void ags_sndfile_connectable_interface_init(AgsConnectableInterface *connectable);

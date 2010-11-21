@@ -1,13 +1,13 @@
-#include "ags_audio.h"
+#include <ags/audio/ags_audio.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_marshal.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_marshal.h>
 
-#include "ags_devout.h"
-#include "ags_output.h"
-#include "ags_input.h"
-#include "ags_recall.h"
-#include "ags_recall_id.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_id.h>
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -3,12 +3,12 @@
 
 #include <glib-object.h>
 
-#include "../ags_recall.h"
+#include <ags/audio/ags_recall.h>
 
-//#include "ags_delay.h"
+//#include <ags/audio/recall/ags_delay.h>
 
-#include "../ags_channel.h"
-#include "../ags_pattern.h"
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_pattern.h>
 
 #define AGS_TYPE_PLAY_PATTERN             (ags_play_pattern_get_type())
 #define AGS_PLAY_PATTERN(obj)             (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PLAY_PATTERN, AgsPlayPattern))

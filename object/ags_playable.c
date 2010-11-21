@@ -1,4 +1,4 @@
-#include "ags_playable.h"
+#include <ags/object/ags_playable.h>
 
 void ags_playable_base_init(AgsPlayableInterface *interface);
 

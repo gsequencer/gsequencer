@@ -1,6 +1,6 @@
-#include "ags_notebook_callbacks.h"
+#include <ags/X/editor/ags_notebook_callbacks.h>
 
-#include "ags_ruler.h"
+#include <ags/X/editor/ags_ruler.h>
 
 gboolean
 ags_notebook_destroy_callback(GtkObject *object, AgsNotebook *notebook)

@@ -1,7 +1,7 @@
-#include "ags_oscillator.h"
-#include "ags_oscillator_callbacks.h"
+#include <ags/X/machine/ags_oscillator.h>
+#include <ags/X/machine/ags_oscillator_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
 void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);

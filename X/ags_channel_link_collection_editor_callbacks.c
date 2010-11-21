@@ -1,6 +1,6 @@
-#include "ags_channel_link_collection_editor_callbacks.h"
+#include <ags/X/ags_channel_link_collection_editor_callbacks.h>
 
-#include "ags_machine_editor.h"
+#include <ags/X/ags_machine_editor.h>
 
 int
 ags_channel_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsChannelLinkCollectionEditor *channel_link_collection_editor)

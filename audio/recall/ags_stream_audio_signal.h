@@ -4,9 +4,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall.h"
+#include <ags/audio/ags_recall.h>
 
-#include "../ags_audio_signal.h"
+#include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_STREAM_AUDIO_SIGNAL                (ags_stream_audio_signal_get_type())
 #define AGS_STREAM_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STREAM_AUDIO_SIGNAL, AgsStreamAudioSignal))

@@ -1,6 +1,6 @@
-#include "ags_mixer_callbacks.h"
+#include <ags/X/machine/ags_mixer_callbacks.h>
 
-#include "../ags_window.h"
+#include <ags/X/ags_window.h>
 
 void
 ags_mixer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMixer *mixer)

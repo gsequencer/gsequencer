@@ -1,4 +1,4 @@
-#include "ags_copy_input_to_output.h"
+#include <ags/audio/recall/ags_copy_input_to_output.h>
 
 void ags_copy_input_to_output_class_init(AgsCopyInputToOutput *copy_input_to_output);
 void ags_copy_input_to_output_init(AgsCopyInputToOutput *copy_input_to_output);

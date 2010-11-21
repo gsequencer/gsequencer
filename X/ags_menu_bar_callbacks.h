@@ -5,7 +5,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkwidget.h>
-#include "ags_menu_bar.h"
+
+#include <ags/X/ags_menu_bar.h>
 
 gboolean ags_menu_bar_destroy_callback(GtkObject *object, AgsMenuBar *menu_bar);
 void ags_menu_bar_show_callback(GtkWidget *widget, AgsMenuBar *menu_bar);

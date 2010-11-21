@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_drum_input_pad.h"
+#include <ags/X/machine/ags_drum_input_pad.h>
 
 void ags_drum_input_pad_option_callback(GtkOptionMenu *option, AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_open_callback(GtkWidget *button, AgsDrumInputPad *drum_input_pad);

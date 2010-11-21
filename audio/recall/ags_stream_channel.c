@@ -1,12 +1,12 @@
-#include "ags_stream_channel.h"
+#include <ags/audio/recall/ags_stream_channel.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "../ags_recycling.h"
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_id.h>
 
-#include "ags_stream_recycling.h"
+#include <ags/audio/recall/ags_stream_recycling.h>
 
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);

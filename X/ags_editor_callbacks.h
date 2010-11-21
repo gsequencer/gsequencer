@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_editor.h"
+#include <ags/X/ags_editor.h>
 
 void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEditor *editor);
 gboolean ags_editor_destroy_callback(GtkObject *object, AgsEditor *editor);

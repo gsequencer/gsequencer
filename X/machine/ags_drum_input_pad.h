@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../ags_pad.h"
+#include <ags/X/ags_pad.h>
 
 #define AGS_TYPE_DRUM_INPUT_PAD                (ags_drum_input_pad_get_type())
 #define AGS_DRUM_INPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM_INPUT_PAD, AgsDrumInputPad))

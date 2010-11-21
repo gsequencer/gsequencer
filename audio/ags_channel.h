@@ -5,13 +5,13 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_devout.h"
-#include "ags_recall_id.h"
-#include "ags_recall.h"
-#include "ags_recycling.h"
-#include "ags_notation.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_notation.h>
 
-#include "../file/ags_file.h"
+#include <ags/file/ags_file.h>
 
 #define AGS_TYPE_CHANNEL                (ags_channel_get_type())
 #define AGS_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CHANNEL, AgsChannel))

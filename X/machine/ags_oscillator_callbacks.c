@@ -1,5 +1,5 @@
-#include "ags_oscillator_callbacks.h"
-#include "ags_synth.h"
+#include <ags/X/machine/ags_oscillator_callbacks.h>
+#include <ags/X/machine/ags_synth.h>
 
 void
 ags_oscillator_wave_callback(GtkComboBox *combo, AgsOscillator *oscillator)

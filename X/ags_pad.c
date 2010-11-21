@@ -1,10 +1,10 @@
-#include "ags_pad.h"
-#include "ags_pad_callbacks.h"
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_pad_callbacks.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_marshal.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_marshal.h>
 
-#include "ags_machine.h"
+#include <ags/X/ags_machine.h>
 
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);

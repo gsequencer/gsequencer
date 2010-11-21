@@ -4,11 +4,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_channel.h"
-#include "../ags_recall_channel.h"
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_id.h>
 
-#include "ags_delay_audio_run.h"
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
 #define AGS_TYPE_LOOP_CHANNEL                (ags_loop_channel_get_type())
 #define AGS_LOOP_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOOP_CHANNEL, AgsLoopChannel))

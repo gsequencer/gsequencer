@@ -4,9 +4,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall.h"
-#include "../ags_channel.h"
-#include "../ags_audio_signal.h"
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_COPY_INPUT_TO_OUTPUT                (ags_copy_input_to_output_get_type())
 #define AGS_COPY_INPUT_TO_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_COPY_INPUT_TO_OUTPUT, AgsCopyInputToOutput))

@@ -1,10 +1,10 @@
-#include "ags_pad_editor.h"
-#include "ags_pad_editor_callbacks.h"
+#include <ags/X/ags_pad_editor.h>
+#include <ags/X/ags_pad_editor_callbacks.h>
 
-#include "../object/ags_connectable.h"
-#include "../object/ags_applicable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
-#include "ags_line_editor.h"
+#include <ags/X/ags_line_editor.h>
 
 void ags_pad_editor_class_init(AgsPadEditorClass *pad_editor);
 void ags_pad_editor_connectable_interface_init(AgsConnectableInterface *connectable);

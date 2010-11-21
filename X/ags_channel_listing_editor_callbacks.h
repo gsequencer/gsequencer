@@ -5,10 +5,10 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_channel_listing_editor.h"
+#include <ags/X/ags_channel_listing_editor.h>
 
-#include "ags_machine.h"
-#include "ags_machine_editor.h"
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_machine_editor.h>
 
 int ags_channel_listing_editor_parent_set_callback(GtkWidget *widget,
 						   GtkObject *old_parent,

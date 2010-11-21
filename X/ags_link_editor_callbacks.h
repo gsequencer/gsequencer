@@ -4,7 +4,8 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include "ags_link_editor.h"
+
+#include <ags/X/ags_link_editor.h>
 
 int ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLinkEditor *link_editor);
 int ags_link_editor_destroy_callback(GtkObject *object, AgsLinkEditor *link_editor);

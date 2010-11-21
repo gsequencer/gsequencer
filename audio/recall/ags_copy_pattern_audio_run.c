@@ -1,11 +1,11 @@
-#include "ags_copy_pattern_audio_run.h"
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "ags_copy_pattern_audio.h"
-#include "ags_copy_pattern_channel.h"
-#include "ags_copy_pattern_channel_run.h"
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
 void ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -1,6 +1,6 @@
-#include "ags_append_recall.h"
+#include <ags/audio/task/ags_append_recall.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
 void ags_append_recall_class_init(AgsAppendRecallClass *append_recall);
 void ags_append_recall_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -2,7 +2,8 @@ CC = gcc
 
 GTK_DIR = /usr/include/gtk/
 AGS_DIR = ./
-
+INCLUDE_DIR = ../
+LINKING_DIR = ../
 
 AGS_AUDIO_OBJECTS = $(AGS_DIR)audio/ags_devout.o $(AGS_DIR)audio/ags_task.o $(AGS_DIR)audio/ags_audio.o $(AGS_DIR)audio/ags_channel.o $(AGS_DIR)audio/ags_input.o $(AGS_DIR)audio/ags_output.o $(AGS_DIR)audio/ags_recycling.o $(AGS_DIR)audio/ags_audio_signal.o $(AGS_DIR)audio/ags_pattern.o $(AGS_DIR)audio/ags_notation.o $(AGS_DIR)audio/ags_recall.o $(AGS_DIR)audio/ags_recall_id.o $(AGS_DIR)audio/ags_recall_audio.o $(AGS_DIR)audio/ags_recall_audio_run.o $(AGS_DIR)audio/ags_recall_channel.o $(AGS_DIR)audio/ags_recall_channel_run.o $(AGS_DIR)audio/ags_garbage_collector.o $(AGS_DIR)audio/ags_synths.o
 
@@ -28,7 +29,7 @@ AGS_MACHINE_OBJECTS = $(AGS_DIR)X/machine/ags_panel.o $(AGS_DIR)X/machine/ags_mi
 
 AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_DIR)X/machine/ags_mixer_callbacks.o $(AGS_DIR)X/machine/ags_drum_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_line_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_line_callbacks.o $(AGS_DIR)X/machine/ags_matrix_callbacks.o $(AGS_DIR)X/machine/ags_synth_callbacks.o $(AGS_DIR)X/machine/ags_oscillator_callbacks.o $(AGS_DIR)X/machine/ags_ffplayer_callbacks.o
 
-AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
+AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_tactable.o $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
 
 AGS_OBJECTS = $(AGS_DIR)main.o $(AGS_OBJECT_OBJECTS) $(AGS_AUDIO_OBJECTS) $(AGS_TASK_OBJECTS) $(AGS_RECALL_OBJECTS) $(AGS_AUDIO_FILE_OBJECTS) $(AGS_FILE_OBJECTS) $(AGS_WIDGET_OBJECTS) $(AGS_X_OBJECTS) $(AGS_X_CALLBACK_OBJECTS) $(AGS_EDITOR_OBJECTS) $(AGS_EDITOR_CALLBACK_OBJECTS) $(AGS_MACHINE_OBJECTS) $(AGS_MACHINE_CALLBACK_OBJECTS)
 
@@ -51,9 +52,11 @@ AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
 AGS_SOURCES = $(AGS_DIR)main.[ch] $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
 
 
-LIBS = `pkg-config --libs alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
+LIB_LIBS = `pkg-config --libs alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
+LIBS = -L$(LINKING_DIR) $(LIB_LIBS)
 
-CFLAGS = `pkg-config --cflags alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
+LIB_CFLAGS = `pkg-config --cflags alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
+CFLAGS = -I$(INCLUDE_DIR) $(LIB_CFLAGS)
 
 
 $(AGS_DIR)ags: $(AGS_OBJECTS)

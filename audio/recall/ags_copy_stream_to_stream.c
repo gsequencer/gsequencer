@@ -1,4 +1,4 @@
-#include "ags_copy_stream_to_stream.h"
+#include <ags/audio/recall/ags_copy_stream_to_stream.h>
 
 void ags_copy_stream_to_stream_class_init(AgsCopyStreamToStreamClass *copy_stream_to_stream);
 void ags_copy_stream_to_stream_init(AgsCopyStreamToStream *copy_stream_to_stream);

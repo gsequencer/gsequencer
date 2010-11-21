@@ -4,9 +4,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall.h"
+#include <ags/audio/ags_recall.h>
 
-#include "../ags_recycling.h"
+#include <ags/audio/ags_recycling.h>
 
 #define AGS_TYPE_VOLUME_RECYCLING                (ags_volume_recycling_get_type())
 #define AGS_VOLUME_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VOLUME_RECYCLING, AgsVolumeRecycling))

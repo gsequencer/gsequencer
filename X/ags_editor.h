@@ -6,13 +6,13 @@
 
 #include <gtk/gtk.h>
 
-#include "../audio/ags_audio.h"
+#include <ags/audio/ags_audio.h>
 
-#include "editor/ags_toolbar.h"
-#include "editor/ags_notebook.h"
-#include "editor/ags_meter.h"
+#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_notebook.h>
+#include <ags/X/editor/ags_meter.h>
 
-#include "ags_machine.h"
+#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_EDITOR                (ags_editor_get_type ())
 #define AGS_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EDITOR, AgsEditor))

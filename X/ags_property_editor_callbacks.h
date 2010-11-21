@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_property_editor.h"
+#include <ags/X/ags_property_editor.h>
 
 void ags_property_editor_enable_callback(GtkToggleButton *toggle,
 					 AgsPropertyEditor *property_editor);

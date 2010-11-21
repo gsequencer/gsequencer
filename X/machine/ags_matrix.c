@@ -1,23 +1,23 @@
-#include "ags_matrix.h"
-#include "ags_matrix_callbacks.h"
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_channel.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_pattern.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_delay_audio_run.h"
-#include "../../audio/recall/ags_copy_channel.h"
-#include "../../audio/recall/ags_stream_channel.h"
-#include "../../audio/recall/ags_copy_pattern_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio_run.h"
-#include "../../audio/recall/ags_copy_pattern_channel.h"
-#include "../../audio/recall/ags_copy_pattern_channel_run.h"
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 #define AGS_MATRIX_CELL_WIDTH   12
 #define AGS_MATRIX_CELL_HEIGHT  10
@@ -281,11 +281,11 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) matrix->length_spin, FALSE, FALSE, 0);
 
-  matrix->tic = (GtkOptionMenu *) gtk_option_menu_new();
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tic, FALSE, FALSE, 0);
+  matrix->tact = (GtkOptionMenu *) gtk_option_menu_new();
+  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tact, FALSE, FALSE, 0);
 
-  gtk_option_menu_set_menu(matrix->tic, (GtkWidget *) ags_tic_menu_new());
-  gtk_option_menu_set_history(matrix->tic, 6);
+  gtk_option_menu_set_menu(matrix->tact, (GtkWidget *) ags_tact_menu_new());
+  gtk_option_menu_set_history(matrix->tact, 6);
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
@@ -325,8 +325,8 @@ ags_matrix_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
 
-  g_signal_connect((GObject *) matrix->tic, "changed\0",
-		   G_CALLBACK(ags_matrix_tic_callback), (gpointer) matrix);
+  g_signal_connect((GObject *) matrix->tact, "changed\0",
+		   G_CALLBACK(ags_matrix_tact_callback), (gpointer) matrix);
 
   g_signal_connect((GObject *) matrix->loop_button, "clicked\0",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);

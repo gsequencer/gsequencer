@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_oscillator.h"
+#include <ags/X/machine/ags_oscillator.h>
 
 void ags_oscillator_wave_callback(GtkComboBox *combo, AgsOscillator *oscillator);
 void ags_oscillator_attack_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);

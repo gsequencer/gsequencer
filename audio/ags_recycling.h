@@ -6,7 +6,7 @@
 #include <gtk/gtk.h>
 #include <glib/glist.h>
 
-#include "ags_audio_signal.h"
+#include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_RECYCLING                (ags_recycling_get_type())
 #define AGS_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECYCLING, AgsRecycling))

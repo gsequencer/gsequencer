@@ -1,15 +1,15 @@
-#include "ags_recall.h"
+#include <ags/audio/ags_recall.h>
 
-#include "../object/ags_marshal.h"
-#include "../object/ags_connectable.h"
-#include "../object/ags_run_connectable.h"
+#include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "ags_recall_audio.h"
-#include "ags_recall_audio_run.h"
-#include "ags_recall_channel.h"
-#include "ags_recall_channel_run.h"
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
-#include "recall/ags_copy_pattern_audio_run.h"
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 #include <stdlib.h>
 #include <stdio.h>

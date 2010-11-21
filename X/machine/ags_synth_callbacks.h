@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_synth.h"
+#include <ags/X/machine/ags_synth.h>
 
 void ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth);
 gboolean ags_synth_destroy_callback(GtkObject *object, AgsSynth *synth);

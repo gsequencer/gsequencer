@@ -1,4 +1,4 @@
-#include "ags_input.h"
+#include <ags/audio/ags_input.h>
 
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_init (AgsInput *input);

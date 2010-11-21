@@ -1,8 +1,8 @@
-#include "ags_editor.h"
-#include "ags_editor_callbacks.h"
+#include <ags/X/ags_editor.h>
+#include <ags/X/ags_editor_callbacks.h>
 
-#include "../audio/ags_audio.h"
-#include "../audio/ags_notation.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_notation.h>
 
 #include <math.h>
 #include <cairo.h>
@@ -262,7 +262,7 @@ ags_editor_draw_segment(AgsEditor *editor)
   GtkWidget *widget;
   cairo_t *cr;
   guint i;
-  double tic;
+  double tact;
 
   widget = (GtkWidget *) editor->drawing_area;
 
@@ -284,16 +284,16 @@ ags_editor_draw_segment(AgsEditor *editor)
     i += editor->control_height;
   }
 
-  tic = exp2((double) gtk_option_menu_get_history(editor->toolbar->tic) - 4.0);
+  tact = exp2((double) gtk_option_menu_get_history(editor->toolbar->tact) - 4.0);
 
-  if(tic > 1){
+  if(tact > 1){
     guint j, j_set;
 
-    if((j_set = editor->control_current.nth_x % ((guint) tic)) != 0){
+    if((j_set = editor->control_current.nth_x % ((guint) tact)) != 0){
       i = editor->control_current.x0;
 
       if(i < editor->width){
-	j = (guint) tic - j_set;
+	j = (guint) tact - j_set;
 	cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
 
 	goto ags_editor_draw_segment0;
@@ -313,7 +313,7 @@ ags_editor_draw_segment(AgsEditor *editor)
 
       cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
 
-      for(j = 0; i < editor->width && j < ((guint) tic) - 1; j++){
+      for(j = 0; i < editor->width && j < ((guint) tact) - 1; j++){
       ags_editor_draw_segment0:
 	cairo_move_to(cr, (double) i, 0.0);
 	cairo_line_to(cr, (double) i, (double) editor->height);
@@ -343,7 +343,7 @@ ags_editor_draw_notation(AgsEditor *editor)
   cairo_t *cr;
   AgsNote *note;
   GList *list_notation, *list_note;
-  double tic;
+  double tact;
   guint control_height;
   guint x, y, width, height;
 

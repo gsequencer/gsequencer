@@ -1,6 +1,6 @@
-#include "ags_append_audio.h"
+#include <ags/audio/task/ags_append_audio.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -65,6 +65,8 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
   gobject->finalize = ags_append_audio_finalize;
 
   /* task */
+  task = (AgsTaskClass *) append_audio;
+
   task->launch = ags_append_audio_launch;
 }
 

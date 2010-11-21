@@ -1,4 +1,4 @@
-#include "ags_line_callbacks.h"
+#include <ags/X/ags_line_callbacks.h>
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)

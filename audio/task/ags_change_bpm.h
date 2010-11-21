@@ -4,7 +4,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_task.h"
+#include <ags/audio/ags_task.h>
+#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_CHANGE_BPM                (ags_change_bpm_get_type())
 #define AGS_CHANGE_BPM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CHANGE_BPM, AgsChangeBpm))
@@ -19,6 +20,11 @@ typedef struct _AgsChangeBpmClass AgsChangeBpmClass;
 struct _AgsChangeBpm
 {
   AgsTask task;
+
+  AgsDevout *devout;
+
+  gdouble bpm;
+  gdouble old_bpm;
 };
 
 struct _AgsChangeBpmClass
@@ -28,6 +34,7 @@ struct _AgsChangeBpmClass
 
 GType ags_change_bpm_get_type();
 
-AgsChangeBpm* ags_change_bpm_new();
+AgsChangeBpm* ags_change_bpm_new(AgsDevout *devout,
+				 gdouble bpm, gdouble old_bpm);
 
 #endif /*__AGS_CHANGE_BPM_H__*/

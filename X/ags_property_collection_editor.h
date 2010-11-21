@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_property_editor.h"
+#include <ags/X/ags_property_editor.h>
 
 #include <stdarg.h>
 

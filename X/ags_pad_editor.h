@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../audio/ags_channel.h"
+#include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_PAD_EDITOR                (ags_pad_editor_get_type())
 #define AGS_PAD_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PAD_EDITOR, AgsPadEditor))

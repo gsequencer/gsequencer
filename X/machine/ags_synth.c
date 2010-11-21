@@ -1,22 +1,22 @@
-#include "ags_synth.h"
-#include "ags_synth_callbacks.h"
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_synth_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "ags_oscillator.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_synths.h>
 
-#include "../ags_window.h"
+#include <ags/audio/task/ags_apply_synth.h>
+#include <ags/audio/recall/ags_stream_channel.h>
 
-#include "../../audio/ags_devout.h"
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_channel.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_audio_signal.h"
-#include "../../audio/ags_synths.h"
+#include <ags/X/machine/ags_oscillator.h>
 
-#include "../../audio/task/ags_apply_synth.h"
-#include "../../audio/recall/ags_stream_channel.h"
+#include <ags/X/ags_window.h>
 
 #include <math.h>
 

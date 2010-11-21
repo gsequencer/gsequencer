@@ -1,4 +1,4 @@
-#include "ags_file.h"
+#include <ags/file/ags_file.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,54 +12,54 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-#include "../main.h"
+#include <ags/main.h>
 
-#include "../audio/ags_audio.h"
-#include "../audio/ags_channel.h"
-#include "../audio/ags_output.h"
-#include "../audio/ags_input.h"
-#include "../audio/ags_recycling.h"
-#include "../audio/ags_audio_signal.h"
-#include "../audio/ags_effect.h"
-#include "../audio/ags_pattern.h"
-#include "../audio/ags_notation.h"
-#include "../audio/ags_devout.h"
-#include "../audio/ags_task.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_effect.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_task.h>
 
-#include "../audio/ags_recall.h"
+#include <ags/audio/ags_recall.h>
 
-#include "../audio/recall/ags_play_pattern.h"
-#include "../audio/recall/ags_play_channel.h"
-#include "../audio/recall/ags_play_audio_signal.h"
+#include <ags/audio/recall/ags_play_pattern.h>
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_audio_signal.h>
 
-#include "../audio/recall/ags_copy_pattern_channel_run.h"
-#include "../audio/recall/ags_copy_channel.h"
-#include "../audio/recall/ags_copy_audio_signal.h"
-#include "../audio/recall/ags_volume_channel.h"
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_audio_signal.h>
+#include <ags/audio/recall/ags_volume_channel.h>
 
-#include "../X/ags_window.h"
-#include "../X/ags_menu_bar.h"
-#include "../X/ags_machine.h"
-#include "../X/ags_pad.h"
-#include "../X/ags_line.h"
-#include "../X/ags_editor.h"
-#include "../X/ags_navigation.h"
-#include "../X/ags_machine_editor.h"
-#include "../X/ags_pad_editor.h"
-#include "../X/ags_line_editor.h"
-#include "../X/ags_link_editor.h"
-#include "../X/ags_line_member_editor.h"
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
+#include <ags/X/ags_editor.h>
+#include <ags/X/ags_navigation.h>
+#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_pad_editor.h>
+#include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_link_editor.h>
+#include <ags/X/ags_line_member_editor.h>
 
-#include "../X/editor/ags_toolbar.h"
-#include "../X/editor/ags_notebook.h"
+#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_notebook.h>
 
-#include "../X/machine/ags_panel.h"
-#include "../X/machine/ags_mixer.h"
-#include "../X/machine/ags_drum.h"
-#include "../X/machine/ags_matrix.h"
-#include "../X/machine/ags_synth.h"
-#include "../X/machine/ags_oscillator.h"
-#include "../X/machine/ags_ffplayer.h"
+#include <ags/X/machine/ags_panel.h>
+#include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_oscillator.h>
+#include <ags/X/machine/ags_ffplayer.h>
 
 #define MY_ENCODING "ISO-8859-15\0"
 #define AGS_FILE_FALSE "FALSE\0"

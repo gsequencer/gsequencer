@@ -4,8 +4,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall.h"
-#include "../ags_audio_signal.h"
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_COPY_STREAM_TO_STREAM                (ags_copy_stream_to_stream_get_type())
 #define AGS_COPY_STREAM_TO_STREAM(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_COPY_STREAM_TO_STREAM, AgsCopyStreamToStream))

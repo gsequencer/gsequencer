@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_table.h"
+#include <ags/widget/ags_table.h>
 
 #define AGS_TYPE_MENU                (ags_menu_get_type())
 #define AGS_MENU(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MENU, AgsMenu))

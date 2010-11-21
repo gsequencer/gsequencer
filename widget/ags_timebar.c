@@ -1,2 +1,2 @@
-#include "ags_timebar.h"
+#include <ags/widget/ags_timebar.h>
 

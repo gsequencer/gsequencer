@@ -1,16 +1,16 @@
-#include "ags_panel.h"
-#include "ags_panel_callbacks.h"
+#include <ags/X/machine/ags_panel.h>
+#include <ags/X/machine/ags_panel_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../ags_window.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/recall/ags_play_channel.h>
 
-#include "../../audio/recall/ags_play_channel.h"
+#include <ags/X/ags_window.h>
 
 void ags_panel_class_init(AgsPanelClass *panel);
 void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);

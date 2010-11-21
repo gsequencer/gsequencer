@@ -4,9 +4,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_recall_channel.h"
+#include <ags/audio/ags_recall_channel.h>
 
-#include "../ags_channel.h"
+#include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_STREAM_CHANNEL                (ags_stream_channel_get_type())
 #define AGS_STREAM_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STREAM_CHANNEL, AgsStreamChannel))

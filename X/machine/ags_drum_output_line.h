@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../ags_line.h"
+#include <ags/X/ags_line.h>
 
 #define AGS_TYPE_DRUM_OUTPUT_LINE                (ags_drum_output_line_get_type())
 #define AGS_DRUM_OUTPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM_OUTPUT_LINE, AgsDrumOutputLine))

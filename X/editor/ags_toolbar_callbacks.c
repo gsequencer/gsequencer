@@ -1,6 +1,6 @@
-#include "ags_toolbar_callbacks.h"
+#include <ags/X/editor/ags_toolbar_callbacks.h>
 
-#include "../ags_editor.h"
+#include <ags/X/ags_editor.h>
 
 #include <math.h>
 
@@ -136,12 +136,12 @@ ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_tic_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
+ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
 {
   AgsEditor *editor;
   GtkWidget *widget;
   GtkAdjustment *adjustment;
-  double tic, tic_old;
+  double tact, tact_old;
   guint history;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
@@ -149,14 +149,14 @@ ags_toolbar_tic_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
 
   history = gtk_option_menu_get_history(option);
 
-  tic = exp2((double) history - 4.0);
-  tic_old = exp2((double) toolbar->tic_history - 4.0);
+  tact = exp2((double) history - 4.0);
+  tact_old = exp2((double) toolbar->tact_history - 4.0);
 
-  toolbar->tic_history = history;
+  toolbar->tact_history = history;
 
   /* reset viewport */
   editor->flags |= AGS_EDITOR_RESET_HSCROLLBAR;
-  editor->map_width = (guint) ((double) editor->map_width / tic_old * tic);
+  editor->map_width = (guint) ((double) editor->map_width / tact_old * tact);
   adjustment = GTK_RANGE(editor->hscrollbar)->adjustment;
 
   if(editor->map_width > widget->allocation.width){
@@ -178,7 +178,7 @@ ags_toolbar_tic_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
   editor->flags &= (~AGS_EDITOR_RESET_HSCROLLBAR);
 
   /* reset AgsEditorControlCurrent */
-  editor->control_current.control_count = (guint) ((double) editor->control_current.control_count / tic_old * tic);
+  editor->control_current.control_count = (guint) ((double) editor->control_current.control_count / tact_old * tact);
 
   if(editor->map_width > editor->width){
     // x0 is unchanged

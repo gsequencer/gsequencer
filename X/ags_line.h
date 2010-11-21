@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../audio/ags_channel.h"
+#include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_LINE                (ags_line_get_type())
 #define AGS_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE, AgsLine))

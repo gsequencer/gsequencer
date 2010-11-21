@@ -1,18 +1,18 @@
-#include "ags_drum_input_line_callbacks.h"
-#include "ags_drum.h"
+#include <ags/X/machine/ags_drum_input_line_callbacks.h>
+#include <ags/X/machine/ags_drum.h>
 
-#include "../../audio/ags_devout.h"
-#include "../../audio/ags_audio.h"
-#include "../../audio/ags_input.h"
-#include "../../audio/ags_output.h"
-#include "../../audio/ags_audio_signal.h"
-#include "../../audio/ags_pattern.h"
-#include "../../audio/ags_recall.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall.h>
 
-#include "../../audio/recall/ags_volume_channel.h"
-#include "../../audio/recall/ags_play_channel.h"
-#include "../../audio/recall/ags_copy_pattern_channel.h"
-#include "../../audio/recall/ags_copy_pattern_channel_run.h"
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 void
 ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,

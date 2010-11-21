@@ -1,7 +1,7 @@
-#include "ags_ruler.h"
-#include "ags_ruler_callbacks.h"
+#include <ags/X/editor/ags_ruler.h>
+#include <ags/X/editor/ags_ruler_callbacks.h>
 
-#include "../ags_editor.h"
+#include <ags/X/ags_editor.h>
 
 #include <math.h>
 

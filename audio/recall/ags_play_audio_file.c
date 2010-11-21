@@ -1,6 +1,6 @@
-#include "ags_play_audio_file.h"
+#include <ags/audio/recall/ags_play_audio_file.h>
 
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_recall_id.h>
 
 void ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file);
 void ags_play_audio_file_init(AgsPlayAudioFile *play_audio_file);

@@ -1,11 +1,11 @@
-#include "ags_delay_audio_run.h"
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_recall_id.h>
 
-#include "ags_delay_audio.h"
+#include <ags/audio/recall/ags_delay_audio.h>
 
 #include <stdlib.h>
 

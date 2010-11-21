@@ -1,12 +1,12 @@
-#include "ags_devout.h"
+#include <ags/audio/ags_devout.h>
 
-#include "ags_audio.h"
-#include "ags_channel.h"
-#include "ags_audio_signal.h"
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_audio_signal.h>
 
-#include "recall/ags_play_channel.h"
+#include <ags/audio/recall/ags_play_channel.h>
 
-#include "file/ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
 #include <unistd.h>
 #include <sys/stat.h>
@@ -53,7 +53,6 @@ void ags_devout_alsa_free(AgsDevout *devout);
 enum{
   RUN,
   STOP,
-  BPM_CHANGED,
   LAST_SIGNAL,
 };
 
@@ -95,8 +94,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
   devout->run = ags_devout_real_run;
   devout->stop = ags_devout_real_stop;
 
-  devout->bpm_changed = NULL;
-
   devout_signals[RUN] =
     g_signal_new("run\0",
 		 G_TYPE_FROM_CLASS (devout),
@@ -114,16 +111,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
-
-  devout_signals[BPM_CHANGED] =
-    g_signal_new("bpm_changed\0",
-		 G_TYPE_FROM_CLASS (devout),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsDevoutClass, bpm_changed),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__DOUBLE,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_DOUBLE);
 }
 
 void
@@ -152,7 +139,6 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[2] = (short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(short));
   devout->buffer[3] = (short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(short));
 
-  devout->new_bpm = 0.0;
   devout->bpm = 0.0;
   devout->delay = 0;
   devout->delay_counter = 0;
@@ -180,6 +166,7 @@ ags_devout_init(AgsDevout *devout)
   pthread_cond_init(&(devout->play_functions_cond), NULL);
 
   devout->task = NULL;
+  devout->tactable = NULL;
 
   devout->play_recall_ref = 0;
   devout->play_recall = NULL;
@@ -364,49 +351,6 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
   /* wake up other thread */
   devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
   pthread_cond_signal(&(devout->task_cond));
-}
-
-void
-ags_devout_bpm_changed(AgsDevout *devout, double bpm)
-{
-  g_return_if_fail(AGS_IS_DEVOUT(devout));
-
-  g_object_ref((GObject *) devout);
-  g_signal_emit((GObject *) devout,
-		devout_signals[BPM_CHANGED], 0,
-		bpm);
-  g_object_unref((GObject *) devout);
-}
-
-void
-ags_devout_real_change_bpm(AgsDevout *devout, double bpm)
-{
-  AgsAttack *attack;
-  double frames; // delay in frames
-  guint delay, delay_old;
-
-  frames = (double) devout->frequency / (60.0 / bpm / 64.0);
-
-  delay = (guint) floor(floor(frames) / (double) devout->buffer_size);
-
-  delay_old = devout->delay;
-  devout->delay = delay;
-
-  if(devout->delay_counter > devout->delay)
-    devout->delay_counter = devout->delay_counter % devout->delay;
-
-  attack = devout->attack;
-
-  if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0){
-    attack->first_start = attack->first_start;
-    attack->first_length = attack->first_length;
-  }else{
-    attack->first_start = attack->second_start;
-    attack->first_length = attack->second_length;
-  }
-
-  attack->second_start = (attack->first_start + (guint) round(frames)) % devout->buffer_size;
-  attack->second_length = devout->buffer_size - attack->second_start;
 }
 
 void

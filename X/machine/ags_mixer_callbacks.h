@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_mixer.h"
+#include <ags/X/machine/ags_mixer.h>
 
 void ags_mixer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMixer *mixer);
 gboolean ags_mixer_destroy_callback(GtkObject *object, AgsMixer *mixer);

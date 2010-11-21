@@ -1,4 +1,4 @@
-#include "ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
 void ags_connectable_base_init(AgsConnectableInterface *interface);
 

@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_pad.h"
+#include <ags/X/ags_pad.h>
 
 int ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad);
 int ags_pad_destroy_callback(GtkObject *object, AgsPad *pad);

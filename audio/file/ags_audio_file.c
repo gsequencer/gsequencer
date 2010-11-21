@@ -1,11 +1,11 @@
-#include "ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_playable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_playable.h>
 
-#include "../ags_audio_signal.h"
+#include <ags/audio/ags_audio_signal.h>
 
-#include "ags_sndfile.h"
+#include <ags/audio/file/ags_sndfile.h>
 
 #include <stdlib.h>
 #include <stdio.h>

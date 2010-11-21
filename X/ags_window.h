@@ -5,12 +5,12 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../audio/ags_devout.h"
+#include <ags/audio/ags_devout.h>
 
-#include "ags_menu_bar.h"
-#include "ags_machine.h"
-#include "ags_editor.h"
-#include "ags_navigation.h"
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_editor.h>
+#include <ags/X/ags_navigation.h>
 
 #define AGS_TYPE_WINDOW                (ags_window_get_type())
 #define AGS_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WINDOW, AgsWindow))

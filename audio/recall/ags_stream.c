@@ -1,5 +1,6 @@
-#include "ags_stream.h"
-#include "../ags_devout.h"
+#include <ags/audio/recall/ags_stream.h>
+
+#include <ags/audio/ags_devout.h>
 
 void ags_stream_class_init(AgsStream *stream);
 void ags_stream_init(AgsStream *stream);

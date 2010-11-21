@@ -1,15 +1,15 @@
-#include "ags_play_channel.h" 
+#include <ags/audio/recall/ags_play_channel.h>
 
-#include "../../object/ags_connectable.h"
-#include "../../object/ags_run_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 
-#include "../ags_devout.h"
-#include "../ags_audio.h"
-#include "../ags_recycling.h"
-#include "../ags_audio_signal.h"
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_id.h>
 
-#include "ags_play_recycling.h"
+#include <ags/audio/recall/ags_play_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>

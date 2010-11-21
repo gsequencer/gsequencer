@@ -1,4 +1,4 @@
-#include "ags_recall_id.h"
+#include <ags/audio/ags_recall_id.h>
 #include <stdio.h>
 
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);

@@ -1,6 +1,9 @@
-#include "ags_change_bpm.h"
+#include <ags/audio/task/ags_change_bpm.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_tactable.h>
+
+#include <math.h>
 
 void ags_change_bpm_class_init(AgsChangeBpmClass *change_bpm);
 void ags_change_bpm_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -8,6 +11,8 @@ void ags_change_bpm_init(AgsChangeBpm *change_bpm);
 void ags_change_bpm_connect(AgsConnectable *connectable);
 void ags_change_bpm_disconnect(AgsConnectable *connectable);
 void ags_change_bpm_finalize(GObject *gobject);
+
+void ags_change_bpm_launch(AgsTask *task);
 
 static gpointer ags_change_bpm_parent_class = NULL;
 static AgsConnectableInterface *ags_change_bpm_parent_connectable_interface;
@@ -53,12 +58,19 @@ void
 ags_change_bpm_class_init(AgsChangeBpmClass *change_bpm)
 {
   GObjectClass *gobject;
+  AgsTaskClass *task;
 
   ags_change_bpm_parent_class = g_type_class_peek_parent(change_bpm);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) change_bpm;
 
   gobject->finalize = ags_change_bpm_finalize;
+
+  /* AgsTaskClass */
+  task = (AgsTaskClass *) change_bpm;
+  
+  task->launch = ags_change_bpm_launch;
 }
 
 void
@@ -73,6 +85,10 @@ ags_change_bpm_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_change_bpm_init(AgsChangeBpm *change_bpm)
 {
+  change_bpm->devout = NULL;
+
+  change_bpm->bpm = 0.0;
+  change_bpm->old_bpm = 0.0;
 }
 
 void
@@ -99,13 +115,67 @@ ags_change_bpm_finalize(GObject *gobject)
   /* empty */
 }
 
+void
+ags_change_bpm_launch(AgsTask *task)
+{
+  AgsChangeBpm *change_bpm;
+  AgsDevout *devout;
+  AgsAttack *attack;
+  double frames; // delay in frames
+  guint delay, delay_old;
+  GList *list;
+
+  change_bpm = AGS_CHANGE_BPM(task);
+
+  /* AgsDevout */
+  devout = change_bpm->devout;
+
+  frames = (double) devout->frequency / (60.0 / (double)change_bpm->bpm / 64.0);
+
+  delay = (guint) floor(floor(frames) / (double) devout->buffer_size);
+
+  delay_old = devout->delay;
+  devout->delay = delay;
+
+  if(devout->delay_counter > devout->delay)
+    devout->delay_counter = devout->delay_counter % devout->delay;
+
+  attack = devout->attack;
+
+  if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0){
+    attack->first_start = attack->first_start;
+    attack->first_length = attack->first_length;
+  }else{
+    attack->first_start = attack->second_start;
+    attack->first_length = attack->second_length;
+  }
+
+  attack->second_start = (attack->first_start + (guint) round(frames)) % devout->buffer_size;
+  attack->second_length = devout->buffer_size - attack->second_start;
+
+  /* AgsTactable */
+  list = devout->tactable;
+
+  while(list != NULL){
+    ags_tactable_change_bpm(AGS_TACTABLE(list->data),
+			    change_bpm->bpm, change_bpm->old_bpm);
+
+    list = list->next;
+  }
+}
+
 AgsChangeBpm*
-ags_change_bpm_new()
+ags_change_bpm_new(AgsDevout *devout,
+		   gdouble bpm, gdouble old_bpm)
 {
   AgsChangeBpm *change_bpm;
 
   change_bpm = (AgsChangeBpm *) g_object_new(AGS_TYPE_CHANGE_BPM,
 					     NULL);
+
+  change_bpm->devout = devout;
+  change_bpm->bpm = bpm;
+  change_bpm->old_bpm = old_bpm;
 
   return(change_bpm);
 }

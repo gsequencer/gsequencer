@@ -1,1 +1,1 @@
-#include "ags_htimebar.h"
+#include <ags/widget/ags_htimebar.h>

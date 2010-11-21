@@ -5,10 +5,10 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../ags_machine.h"
-#include "../ags_editor.h"
+#include <ags/X/editor/ags_notebook.h>
 
-#include "ags_notebook.h"
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_editor.h>
 
 
 gboolean ags_notebook_destroy_callback(GtkObject *object, AgsNotebook *notebook);

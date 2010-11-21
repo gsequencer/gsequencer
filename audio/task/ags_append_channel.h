@@ -4,9 +4,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_task.h"
+#include <ags/audio/ags_task.h>
 
-#include "../ags_devout.h"
+#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_APPEND_CHANNEL                (ags_append_channel_get_type())
 #define AGS_APPEND_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPEND_CHANNEL, AgsAppendChannel))

@@ -5,7 +5,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_recycling.h"
+#include <ags/audio/ags_recycling.h>
 
 #define AGS_TYPE_GARBAGE_COLLECTOR                (ags_garbage_collector_get_type())
 #define AGS_GARBAGE_COLLECTOR(obj)                ((AgsGarbage_Collector*) G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_GARBAGE_COLLECTOR, AgsGarbageCollector))

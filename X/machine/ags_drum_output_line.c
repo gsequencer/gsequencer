@@ -1,15 +1,15 @@
-#include "ags_drum_output_line.h"
-#include "ags_drum_output_line_callbacks.h"
+#include <ags/X/machine/ags_drum_output_line.h>
+#include <ags/X/machine/ags_drum_output_line_callbacks.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../ags_window.h"
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_stream_channel.h>
 
-#include "ags_drum.h"
+#include <ags/X/ags_window.h>
 
-#include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_volume_channel.h"
-#include "../../audio/recall/ags_stream_channel.h"
+#include <ags/X/machine/ags_drum.h>
 
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
 void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);

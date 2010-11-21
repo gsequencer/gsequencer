@@ -4,7 +4,8 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include "../ags_machine.h"
+
+#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_PANEL                (ags_panel_get_type())
 #define AGS_PANEL(obj)                ((AgsPanel*) G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PANEL, AgsPanel))

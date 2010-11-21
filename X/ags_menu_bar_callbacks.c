@@ -1,20 +1,20 @@
-#include "ags_menu_bar_callbacks.h"
+#include <ags/X/ags_menu_bar_callbacks.h>
 
-#include "../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../file/ags_file.h"
+#include <ags/file/ags_file.h>
 
-#include "../audio/ags_input.h"
-#include "../audio/ags_output.h"
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
 
-#include "ags_window.h"
+#include <ags/X/ags_window.h>
 
-#include "machine/ags_panel.h"
-#include "machine/ags_mixer.h"
-#include "machine/ags_drum.h"
-#include "machine/ags_matrix.h"
-#include "machine/ags_synth.h"
-#include "machine/ags_ffplayer.h"
+#include <ags/X/machine/ags_panel.h>
+#include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_ffplayer.h>
 
 void ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 void ags_menu_bar_open_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar);

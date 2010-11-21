@@ -5,8 +5,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "ags_drum_input_line.h"
-#include "../../audio/ags_audio.h"
+#include <ags/X/machine/ags_drum_input_line.h>
+
+#include <ags/audio/ags_audio.h>
 
 /* AgsAudio */
 void ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,

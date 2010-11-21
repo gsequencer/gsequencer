@@ -4,7 +4,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "../ags_task.h"
+#include <ags/audio/ags_task.h>
 
 #define AGS_TYPE_OPEN_FILE                (ags_open_file_get_type())
 #define AGS_OPEN_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_FILE, AgsOpenFile))

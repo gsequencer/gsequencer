@@ -1,9 +1,9 @@
-#include "ags_machine.h"
-#include "ags_machine_callbacks.h"
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_machine_callbacks.h>
 
-#include "../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "ags_window.h"
+#include <ags/X/ags_window.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);

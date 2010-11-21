@@ -1,11 +1,11 @@
-#include "ags_line.h"
-#include "ags_line_callbacks.h"
+#include <ags/X/ags_line.h>
+#include <ags/X/ags_line_callbacks.h>
 
-#include "../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "ags_pad.h"
+#include <ags/X/ags_pad.h>
 
-#include "../audio/ags_channel.h"
+#include <ags/audio/ags_channel.h>
 
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);

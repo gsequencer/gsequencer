@@ -1,9 +1,9 @@
-#include "ags_loop_channel.h"
+#include <ags/audio/recall/ags_loop_channel.h>
 
-#include "../ags_devout.h"
-#include "../ags_audio.h"
-#include "../ags_audio_signal.h"
-#include "../ags_recall_id.h"
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_id.h>
 
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);
 void ags_loop_channel_init(AgsLoopChannel *loop_channel);

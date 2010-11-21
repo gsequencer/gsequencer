@@ -6,9 +6,9 @@
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 
-#include "ags_channel.h"
+#include <ags/audio/ags_channel.h>
 
-#include "file/ags_audio_file.h"
+#include <ags/audio/file/ags_audio_file.h>
 
 #define AGS_TYPE_INPUT                (ags_input_get_type())
 #define AGS_INPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INPUT, AgsInput))

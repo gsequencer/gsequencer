@@ -5,11 +5,10 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "../ags_machine.h"
+#include <ags/X/ags_machine.h>
 
-#include "../../audio/recall/ags_delay_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio.h"
-#include "../../audio/recall/ags_copy_pattern_audio_run.h"
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 #define AGS_TYPE_MATRIX                (ags_matrix_get_type())
 #define AGS_MATRIX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MATRIX, AgsMatrix))
@@ -41,7 +40,7 @@ struct _AgsMatrix
   GtkAdjustment *adjustment;
 
   GtkSpinButton *length_spin;
-  GtkOptionMenu *tic;
+  GtkOptionMenu *tact;
   GtkCheckButton *loop_button;
 };
 

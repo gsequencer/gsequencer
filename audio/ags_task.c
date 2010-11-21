@@ -1,6 +1,6 @@
-#include "ags_task.h"
+#include <ags/audio/ags_task.h>
 
-#include "../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
 void ags_task_class_init(AgsTaskClass *task);
 void ags_task_connectable_interface_init(AgsConnectableInterface *connectable);

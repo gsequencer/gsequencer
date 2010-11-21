@@ -1,10 +1,10 @@
-#include "ags_mixer_input_pad.h"
+#include <ags/X/machine/ags_mixer_input_pad.h>
 
-#include "../../object/ags_connectable.h"
+#include <ags/object/ags_connectable.h>
 
-#include "../ags_window.h"
+#include <ags/X/ags_window.h>
 
-#include "ags_mixer.h"
+#include <ags/X/machine/ags_mixer.h>
 
 #include <math.h>
 
