@@ -473,9 +473,12 @@ ags_file_read_channel_link(AgsFile *file)
   AgsChannel *channel, *channel_link;
   GList *list_start, *list;
   guint nth;
+  GError *error;
 
   list_start =
     list = gtk_container_get_children((GtkContainer *) window->machines);
+
+  error = NULL;
 
   while(list != NULL){
     machine = AGS_MACHINE(list->data);
@@ -489,7 +492,7 @@ ags_file_read_channel_link(AgsFile *file)
 	if(machine_link != NULL){
 	  nth = atoi(g_object_get_data((GObject *) channel, AGS_CHANNEL_LINK_LINE));
 	  channel_link = ags_channel_nth(machine_link->audio->input, nth);
-	  ags_channel_set_link(channel, channel_link);
+	  ags_channel_set_link(channel, channel_link, &error);
 	}
       }
 
@@ -505,7 +508,7 @@ ags_file_read_channel_link(AgsFile *file)
 	if(machine_link != NULL){
 	  nth = atoi(g_object_get_data((GObject *) channel, AGS_CHANNEL_LINK_LINE));
 	  channel_link = ags_channel_nth(machine_link->audio->output, nth);
-	  ags_channel_set_link(channel, channel_link);
+	  ags_channel_set_link(channel, channel_link, &error);
 	}
       }
 

@@ -27,6 +27,12 @@ typedef enum{
   AGS_CHANNEL_RUNNING        = 1,
 }AgsChannelFlags;
 
+#define AGS_CHANNEL_ERROR (ags_channel_error_quark())
+
+typedef enum{
+  AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+}AgsChannelError;
+
 struct _AgsChannel
 {
   GObject object;
@@ -76,6 +82,8 @@ struct _AgsChannelClass
 
 GType ags_channel_get_type();
 
+GQuark ags_channel_error_quark();
+
 void ags_channel_connect(AgsChannel *channel);
 
 AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
@@ -91,7 +99,8 @@ AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
 AgsChannel* ags_channel_first_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
 
-void ags_channel_set_link(AgsChannel *channel, AgsChannel *link);
+void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
+			  GError **error);
 void ags_channel_set_recycling(AgsChannel *channel, AgsRecycling *first_recycling, AgsRecycling *last_recycling, gboolean update, gboolean destroy_old);
 void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,

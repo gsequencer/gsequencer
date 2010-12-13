@@ -83,6 +83,12 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_OBJECT, G_TYPE_OBJECT);
 }
 
+GQuark
+ags_channel_error_quark()
+{
+  return(g_quark_from_static_string("ags-channel-error-quark\0"));
+}
+
 void
 ags_channel_init(AgsChannel *channel)
 {
@@ -307,7 +313,8 @@ ags_channel_last_with_recycling(AgsChannel *channel)
 }
 
 void
-ags_channel_set_link(AgsChannel *channel, AgsChannel *link)
+ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
+		     GError **error)
 {
   AgsChannel *output, *output_link;
   AgsChannel *input, *input_link;
@@ -329,7 +336,49 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link)
     input = link;
   }
 
-  /* AgsInput */
+  /* check for a loop */
+  if(link != NULL){
+    AgsAudio *audio, *current_audio;
+    AgsChannel *current_channel;
+
+    audio = AGS_AUDIO(channel->audio);
+
+    current_channel = link;
+    current_audio = AGS_AUDIO(current_channel->audio);
+
+    while(TRUE){
+      if(current_audio == audio){
+	if(link != NULL)
+	  g_set_error(error,
+		      AGS_CHANNEL_ERROR,
+		      AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+		      "failed to link channel %u from %s with channel %u from %s\0",
+		      channel->line, G_OBJECT_TYPE_NAME(audio),
+		      link->line, G_OBJECT_TYPE_NAME(link->audio));
+	else
+	  g_set_error(error,
+		      AGS_CHANNEL_ERROR,
+		      AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+		      "failed to link channel %u from %s with channel %u from %s\0",
+		      channel->line, G_OBJECT_TYPE_NAME(audio),
+		      0, "NULL\0");
+
+	return;
+      }
+
+      if(current_channel->link == NULL)
+	break;
+
+      current_audio = AGS_AUDIO(current_channel->link->audio);
+
+      if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0)
+	current_channel = ags_channel_nth(current_audio->output, current_channel->audio_channel)->link;
+      else
+	current_channel = ags_channel_nth(current_audio->output, current_channel->line)->link;
+    }
+  }
+
+  /* link AgsInput */
   if(input != NULL){
     input_link = input->link;
     input->link = output;
@@ -340,7 +389,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link)
     input_link->link = NULL;
   }
 
-  /* AgsOutput */
+  /* link AgsOutput */
   if(output != NULL){
     output_link = output->link;
     output->link = input;

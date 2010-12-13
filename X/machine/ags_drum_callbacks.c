@@ -14,6 +14,7 @@
 #include <ags/audio/ags_recall.h>
 
 #include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_link_channel.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -239,6 +240,7 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
   GtkCheckButton *overwrite;
   GtkCheckButton *create;
   AgsChannel *channel;
+  AgsLinkChannel *link_channel;
   AgsAudioFile *audio_file;
   AgsAudioSignal *audio_signal_source_old;
   AgsPlayChannel *play_channel;
@@ -275,7 +277,12 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 	  list = audio_file->audio_signal;
 
 	  for(j = 0; j < drum->machine.audio->audio_channels && list != NULL; j++){
-	    ags_channel_set_link(channel, NULL);
+	    /* create task */
+	    link_channel = ags_link_channel_new(channel, NULL);
+	    
+	    /* append AgsLinkChannel */
+	    ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+				   AGS_TASK(link_channel));
 
 	    AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	    AGS_AUDIO_SIGNAL(list->data)->recycling = (GObject *) channel->first_recycling;

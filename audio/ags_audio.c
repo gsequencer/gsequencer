@@ -640,14 +640,18 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     AgsChannel *start, *channel_next;
     AgsRecycling *prev_recycling, *next_recycling;
     gboolean first_run;
+    GError *error;
 
     start =
       channel = audio->output;
     first_run = TRUE;
+
+    error = NULL;
+
   ags_audio_set_audio_channel_shrink_zero0:
 
     while(channel != NULL){
-      ags_channel_set_link(channel, NULL);
+      ags_channel_set_link(channel, NULL, &error);
       channel = channel->next;
     }
 
@@ -675,18 +679,22 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     AgsChannel *channel0, *channel1, *start;
     AgsRecycling *recycling;
     gboolean first_run;
+    GError *error;
 
     start =
       channel = audio->output;
     pads = audio->output_pads;
     first_run = TRUE;
 
+    error = NULL;
+
   ags_audio_set_audio_channel_shrink0:
+
     for(i = 0; i < pads; i++){
       channel = ags_channel_nth(channel, audio_channels);
 
       for(j = audio_channels; j < audio->audio_channels; j++){
-	ags_channel_set_link(channel, NULL);
+	ags_channel_set_link(channel, NULL, &error);
 	channel = channel->next;
       }
     }
@@ -1002,11 +1010,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
   }
   void ags_audio_set_pads_shrink_zero(){
     AgsChannel *start, *channel_next;
+    GError *error;
 
     start = channel;
+    error = NULL;
 
     while(channel != NULL){
-      ags_channel_set_link(channel, NULL);
+      ags_channel_set_link(channel, NULL, &error);
 
       channel = channel->next;
     }

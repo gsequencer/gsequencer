@@ -6,6 +6,8 @@
 
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/task/ags_link_channel.h>
+
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 
@@ -351,9 +353,11 @@ ags_channel_link_collection_editor_apply(AgsApplicable *applicable)
     AgsMachine *link_machine;
     AgsMachineEditor *machine_editor;
     AgsChannel *channel, *link;
+    AgsLinkChannel *link_channel;
     GtkTreeModel *model;
     guint first_line, count;
     guint i;
+    GError *error;
 
     machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(channel_link_collection_editor),
 								AGS_TYPE_MACHINE_EDITOR));
@@ -373,9 +377,16 @@ ags_channel_link_collection_editor_apply(AgsApplicable *applicable)
 
     count = (guint) gtk_spin_button_get_value_as_int(channel_link_collection_editor->count);
 
+    error = NULL;
+
     if(link_machine == NULL){
       for(i = 0; i < count; i++){
-	ags_channel_set_link(channel, NULL);
+	/* create task */
+	link_channel = ags_link_channel_new(channel, NULL);
+
+	/* append AgsLinkChannel */
+	ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+			       AGS_TASK(link_channel));
 
 	channel = channel->next;
       }
@@ -391,7 +402,12 @@ ags_channel_link_collection_editor_apply(AgsApplicable *applicable)
 	link = ags_channel_nth(link_machine->audio->input, first_link);
 
       for(i = 0; i < count; i++){
-	ags_channel_set_link(channel, link);
+	/* create task */
+	link_channel = ags_link_channel_new(channel, link);
+
+	/* append AgsLinkChannel */
+	ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+			       AGS_TASK(link_channel));
 
 	channel = channel->next;
 	link = link->next;

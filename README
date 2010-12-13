@@ -4,6 +4,8 @@ You need a realtime kernel in conjunction with ags. The realtime kernel shipped 
 
 
 TODO:
+- write a destroy task
+- play channel when linked if needed
 - implement an iteration function for ags_channel_recursive_play_init
 - AgsCopyPattern implementation in AgsDrum and AgsMatrix doesn't have correct abort code, perhaps see AgsDelay
 - remove recalls after the 3 stages were executed in ags_channel_recursive_play

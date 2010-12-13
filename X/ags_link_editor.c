@@ -8,6 +8,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/task/ags_link_channel.h>
+
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_editor.h>
 
@@ -175,6 +177,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
     AgsMachine *link_machine;
     AgsLineEditor *line_editor;
     AgsChannel *channel, *link;
+    AgsLinkChannel *link_channel;
     GtkTreeModel *model;
 
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
@@ -188,9 +191,14 @@ ags_link_editor_apply(AgsApplicable *applicable)
 		       1, &link_machine,
 		       -1);
     
-    if(link_machine == NULL)
-      ags_channel_set_link(channel, NULL);
-    else{
+    if(link_machine == NULL){
+      /* create task */
+      link_channel = ags_link_channel_new(channel, NULL);
+      
+      /* append AgsLinkChannel */
+      ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+			     AGS_TASK(link_channel));
+    }else{
       guint link_line;
 
       link_line = (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button);
@@ -202,7 +210,12 @@ ags_link_editor_apply(AgsApplicable *applicable)
 	link = ags_channel_nth(link_machine->audio->input,
 			       link_line);
 
-      ags_channel_set_link(channel, link);
+      /* create task */
+      link_channel = ags_link_channel_new(channel, link);
+      
+      /* append AgsLinkChannel */
+      ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+			     AGS_TASK(link_channel));
     }
   }
 }

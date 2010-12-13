@@ -9,6 +9,8 @@ void ags_link_channel_connect(AgsConnectable *connectable);
 void ags_link_channel_disconnect(AgsConnectable *connectable);
 void ags_link_channel_finalize(GObject *gobject);
 
+void ags_link_channel_launch(AgsTask *task);
+
 static gpointer ags_link_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_link_channel_parent_connectable_interface;
 
@@ -53,12 +55,19 @@ void
 ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
 {
   GObjectClass *gobject;
+  AgsTaskClass *task;
 
   ags_link_channel_parent_class = g_type_class_peek_parent(link_channel);
 
+  /* GObject */
   gobject = (GObjectClass *) link_channel;
 
   gobject->finalize = ags_link_channel_finalize;
+
+  /* AgsTask */
+  task = (AgsTaskClass *) link_channel;
+
+  task->launch = ags_link_channel_launch;
 }
 
 void
@@ -73,6 +82,10 @@ ags_link_channel_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_link_channel_init(AgsLinkChannel *link_channel)
 {
+  link_channel->channel = NULL;
+  link_channel->link = NULL;
+
+  link_channel->error = NULL;
 }
 
 void
@@ -99,13 +112,28 @@ ags_link_channel_finalize(GObject *gobject)
   /* empty */
 }
 
+void
+ags_link_channel_launch(AgsTask *task)
+{
+  AgsLinkChannel *link_channel;
+
+  link_channel = AGS_LINK_CHANNEL(task);
+
+  /* link channel */
+  ags_channel_set_link(link_channel->channel, link_channel->link,
+		       &(link_channel->error));
+}
+
 AgsLinkChannel*
-ags_link_channel_new()
+ags_link_channel_new(AgsChannel *channel, AgsChannel *link)
 {
   AgsLinkChannel *link_channel;
 
   link_channel = (AgsLinkChannel *) g_object_new(AGS_TYPE_LINK_CHANNEL,
 						 NULL);
+
+  link_channel->channel = channel;
+  link_channel->link = link;
 
   return(link_channel);
 }
