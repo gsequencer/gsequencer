@@ -1,12 +1,14 @@
 #include <ags/audio/recall/ags_play_pattern.h>
 
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_audio_signal.h>
-
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
+
+#include <ags/audio/task/ags_cancel_recall.h>
+
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_audio_signal.h>
 
 #include <ags/X/ags_machine.h>
 

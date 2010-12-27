@@ -9,6 +9,8 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
 
+#include <ags/audio/task/ags_cancel_recall.h>
+
 #include <ags/audio/recall/ags_play_recycling.h>
 
 #include <stdlib.h>
@@ -278,17 +280,27 @@ void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
   AgsRecycling *source_recycling;
   AgsPlayRecycling *play_recycling;
   GList *list;
+  guint audio_channel;
+
+  audio_channel = play_channel->source->audio_channel;
 
   /* remove old */
   if(old_start_region != NULL){
+    AgsDevout *devout;
+    AgsCancelRecall *cancel_recall;
+
+    devout = AGS_DEVOUT(AGS_AUDIO(play_channel->source->audio)->devout);
     source_recycling = old_start_region;
 
     while(source_recycling != old_end_region->next){
       list = play_channel->recall.child;
 
       while(list != NULL){
-	if(AGS_PLAY_RECYCLING(list->data)->source == source_recycling)
-	  AGS_RECALL(list->data)->flags |= AGS_RECALL_HIDE | AGS_RECALL_CANCEL;
+	if(AGS_PLAY_RECYCLING(list->data)->source == source_recycling){
+	  cancel_recall = ags_cancel_recall_new(AGS_RECALL(list->data), audio_channel);
+
+	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
+	}
 
 	list = list->next;
       }
@@ -302,10 +314,10 @@ void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
     source_recycling = new_start_region;
 
     while(source_recycling != new_end_region->next){
-      play_recycling = ags_play_recycling_new(source_recycling, play_channel->source->audio_channel,
+      play_recycling = ags_play_recycling_new(source_recycling, audio_channel,
 					      play_channel->devout);
 
-      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling), play_channel->source->audio_channel);
+      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling), audio_channel);
       
       source_recycling = source_recycling->next;
     }

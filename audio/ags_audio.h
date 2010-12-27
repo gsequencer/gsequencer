@@ -85,12 +85,21 @@ GType ags_audio_get_type();
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 
-void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
+void ags_audio_find_group_id_from_child(AgsAudio *audio,
+					AgsChannel *input, AgsRecallID *input_recall_id, gboolean input_do_recall,
+					AgsRecallID **child_recall_id, gboolean *child_do_recall);
+
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
-void ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id, gint stage, gboolean do_recall);
+void ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id,
+		    gint stage, gboolean do_recall);
 guint ags_audio_recursive_play_init(AgsAudio *audio);
+
+void ags_audio_cancel(AgsAudio *audio, guint audio_channel, guint group_id,
+		      gboolean do_recall);
+
+void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 
 AgsAudio* ags_audio_new();
 

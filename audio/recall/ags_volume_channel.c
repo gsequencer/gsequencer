@@ -3,8 +3,12 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
+
+#include <ags/audio/task/ags_cancel_recall.h>
 
 #include <ags/audio/recall/ags_volume_recycling.h>
 
@@ -225,16 +229,27 @@ ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
   GList *list;
   guint audio_channel;
 
+  audio_channel = volume_channel->channel->audio_channel;
+
   /* remove old */
   if(old_start_region !=  NULL){
+    AgsDevout *devout;
+    AgsCancelRecall *cancel_recall;
+
+    devout = AGS_DEVOUT(AGS_AUDIO(volume_channel->channel->audio)->devout);
     recycling = old_start_region;
 
     while(recycling != old_end_region->next){
       list = AGS_RECALL(volume_channel)->child;
       
       while(list != NULL){
-	if(AGS_VOLUME_RECYCLING(list->data)->recycling == recycling)
-	  AGS_RECALL(list->data)->flags |= AGS_RECALL_HIDE | AGS_RECALL_CANCEL;
+	if(AGS_VOLUME_RECYCLING(list->data)->recycling == recycling){
+	  //	  AGS_RECALL(list->data)->flags |= AGS_RECALL_HIDE | AGS_RECALL_CANCEL;
+	  cancel_recall = ags_cancel_recall_new(AGS_RECALL(list->data), audio_channel);
+
+	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
+	}
+
 
 	list = list->next;
       }
@@ -246,8 +261,6 @@ ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
   /* add new */
   if(new_start_region != NULL){
     recycling = new_start_region;
-
-    audio_channel = volume_channel->channel->audio_channel;
 
     while(recycling != new_end_region->next){
       volume_recycling = ags_volume_recycling_new(recycling, volume_channel->volume);

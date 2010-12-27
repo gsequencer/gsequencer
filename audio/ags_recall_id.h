@@ -17,10 +17,11 @@ typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
 typedef enum{
-  AGS_RECALL_ID_PRE_SYNC_ASYNC_DONE     = 1,
-  AGS_RECALL_ID_INTER_SYNC_ASYNC_DONE   = 1 << 1,
-  AGS_RECALL_ID_POST_SYNC_ASYNC_DONE    = 1 << 2,
-  AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL  = 1 << 3,
+  AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE     = 1,
+  AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE   = 1 << 1,
+  AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE    = 1 << 2,
+  AGS_RECALL_ID_CANCELED                    = 1 << 3,
+  AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL      = 1 << 4,
 }AgsRecallIDFlags;
 
 struct _AgsRecallID
@@ -49,9 +50,8 @@ void ags_recall_id_connect(AgsRecallID *recall_id);
 guint ags_recall_id_generate_group_id();
 
 gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
-
-void ags_recall_id_set_stage(AgsRecallID *recall_id, gint stage);
-void ags_recall_id_unset_stage(AgsRecallID *recall_id, gint stage);
+void ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage);
+void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
 
 GList* ags_recall_id_add(GList *recall_id_list,
 			 guint parent_group_id, guint group_id, guint child_group_id,

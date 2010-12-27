@@ -42,7 +42,7 @@ void ags_recall_real_run_inter(AgsRecall *recall, guint audio_channel);
 void ags_recall_real_run_post(AgsRecall *recall, guint audio_channel);
 
 void ags_recall_real_done(AgsRecall *recall);
-void ags_recall_real_cancel(AgsRecall *recall);
+void ags_recall_real_cancel(AgsRecall *recall, guint audio_channel);
 void ags_recall_real_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall, AgsRecallID *recall_id);
@@ -315,8 +315,9 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, cancel),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 
   recall_signals[REMOVE] =
     g_signal_new("remove\0",
@@ -806,19 +807,20 @@ ags_recall_loop(AgsRecall *recall)
 }
 
 void
-ags_recall_real_cancel(AgsRecall *recall)
+ags_recall_real_cancel(AgsRecall *recall, guint audio_channel)
 {
-  recall->flags |= AGS_RECALL_REMOVE;
+  recall->flags |= AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 }
 
 void
-ags_recall_cancel(AgsRecall *recall)
+ags_recall_cancel(AgsRecall *recall, guint audio_channel)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[CANCEL], 0);
+		recall_signals[CANCEL], 0,
+		audio_channel);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -958,28 +960,7 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child, guint audio_channel)
     child->flags |= AGS_RECALL_RUN_INITIALIZED;
   }
 }
-
-void
-ags_recall_check_cancel(AgsRecall *recall)
-{
-  void ags_recall_check_cancel_recursive(AgsRecall *recall){
-    GList *list;
-
-    list = recall->child;
-
-    while(list != NULL){
-      ags_recall_check_cancel_recursive(AGS_RECALL(list->data));
-
-      list = list->next;
-    }
-
-    if((AGS_RECALL_CANCEL & (recall->flags)) != 0)
-      ags_recall_cancel(recall);
-  }
-
-  ags_recall_check_cancel_recursive(recall);
-}
-
+ 
 void
 ags_recall_child_check_remove(AgsRecall *recall)
 {

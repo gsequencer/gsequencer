@@ -13,6 +13,8 @@
 
 #include <ags/file/ags_file.h>
 
+#include <stdarg.h>
+
 #define AGS_TYPE_CHANNEL                (ags_channel_get_type())
 #define AGS_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CHANNEL, AgsChannel))
 #define AGS_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CHANNEL, AgsChannelClass))
@@ -26,6 +28,11 @@ typedef struct _AgsChannelClass AgsChannelClass;
 typedef enum{
   AGS_CHANNEL_RUNNING        = 1,
 }AgsChannelFlags;
+
+typedef enum{
+  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
+  AGS_CHANNEL_RECALL_ID_CANCEL,
+}AgsChannelRecallIDMode;
 
 #define AGS_CHANNEL_ERROR (ags_channel_error_quark())
 
@@ -108,12 +115,21 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 
 void ags_channel_resize_audio_signal(AgsChannel *channel, guint size);
 
-void ags_channel_recall_id_set_stage(AgsChannel *output, guint group_id, guint stage, gboolean ommit_own_channel);
+void ags_channel_find_input_recall_id(AgsChannel *input,
+				      guint group_id,
+				      gboolean find_parent_group_id,
+				      AgsRecallID **input_recall_id);
+void ags_channel_recall_id_set(AgsChannel *output, guint group_id, gboolean ommit_own_channel,
+			       guint mode, ...);
+
 void ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboolean do_recall);
 void ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage);
 void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				     gboolean arrange_group_id, gboolean duplicate_templates,
 				     guint group_id, guint child_group_id);
+
+void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_recall);
+void ags_channel_recursive_cancel(AgsChannel *channel, guint group_id);
 
 AgsChannel* ags_channel_new();
 

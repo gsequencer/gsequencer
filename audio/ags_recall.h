@@ -21,10 +21,9 @@ typedef enum{
   AGS_RECALL_TEMPLATE           = 1 << 1, // if a sequencer's AgsOutput->recall is called all AgsRecalls with this flag has to be duplicated
   AGS_RECALL_PERSISTENT         = 1 << 2,
   AGS_RECALL_DONE               = 1 << 3,
-  AGS_RECALL_CANCEL             = 1 << 4,
-  AGS_RECALL_REMOVE             = 1 << 5,
-  AGS_RECALL_HIDE               = 1 << 6,
-  AGS_RECALL_PROPAGATE_DONE     = 1 << 7, // see ags_recall_real_remove
+  AGS_RECALL_REMOVE             = 1 << 4,
+  AGS_RECALL_HIDE               = 1 << 5,
+  AGS_RECALL_PROPAGATE_DONE     = 1 << 6, // see ags_recall_real_remove
 }AgsRecallFlags;
 
 typedef enum{
@@ -75,7 +74,7 @@ struct _AgsRecallClass
   void (*done)(AgsRecall *recall);
   void (*loop)(AgsRecall *recall);
 
-  void (*cancel)(AgsRecall *recall);
+  void (*cancel)(AgsRecall *recall, guint audio_channel);
   void (*remove)(AgsRecall *recall);
 
   AgsRecall* (*duplicate)(AgsRecall *recall, AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
@@ -96,7 +95,7 @@ void ags_recall_run_post(AgsRecall *recall, guint audio_channel);
 void ags_recall_done(AgsRecall *recall);
 void ags_recall_loop(AgsRecall *recall);
 
-void ags_recall_cancel(AgsRecall *recall);
+void ags_recall_cancel(AgsRecall *recall, guint audio_channel);
 void ags_recall_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
@@ -105,7 +104,6 @@ void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint coun
 
 void ags_recall_add_child(AgsRecall *recall, AgsRecall *child, guint audio_channel);
 
-void ags_recall_check_cancel(AgsRecall *recall);
 void ags_recall_child_check_remove(AgsRecall *recall);
 
 void ags_recall_set_effect(AgsRecall *recall, char *effect);

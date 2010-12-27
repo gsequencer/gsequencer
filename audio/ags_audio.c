@@ -239,6 +239,7 @@ ags_audio_disconnect(AgsConnectable *connectable)
 }
 
 /*
+ * resize
  * AgsInput has to be allocated first
  */
 void
@@ -857,6 +858,7 @@ ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
 }
 
 /*
+ * resize
  * AgsInput has to be allocated first
  */
 void
@@ -1260,49 +1262,36 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   g_object_unref((GObject *) audio);
 }
 
-void
-ags_audio_set_devout(AgsAudio *audio, GObject *devout)
-{
-  void ags_audio_set_devout_real(AgsChannel *channel){
-    AgsRecycling *recycling;
-    AgsAudioSignal *audio_signal;
-
-    while(channel != NULL){
-      recycling = channel->first_recycling;
-
-      while(recycling != channel->last_recycling->next){
-	audio_signal = ags_audio_signal_get_template(recycling->audio_signal);
-	audio_signal->devout = devout;
-
-	recycling = recycling->next;
-      }
-
-      channel = channel->next;
-    }
-  }
-
-  audio->devout = devout;
-
-  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
-    ags_audio_set_devout_real(audio->input);
-
-  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
-    ags_audio_set_devout_real(audio->output);
-}
-
+/*
+ * AgsAudioSignal related
+ */
 void
 ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 {
   audio->sequence_length = sequence_length;
 }
 
-void
-ags_audio_map_delay(AgsAudio *audio)
-{
-}
 
 void
-ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id, gint stage, gboolean do_recall)
+ags_audio_find_group_id_from_child(AgsAudio *audio,
+				   AgsChannel *input, AgsRecallID *input_recall_id, gboolean input_do_recall,
+				   AgsRecallID **child_recall_id, gboolean *child_do_recall)
+{
+  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
+    (*child_recall_id) = ags_recall_id_find_parent_group_id(input->link->recall_id, input_recall_id->group_id);
+    (*child_do_recall) = TRUE;
+  }else{
+    (*child_recall_id) = ags_recall_id_find_group_id(input->link->recall_id, input_recall_id->group_id);
+    (*child_do_recall) = input_do_recall;
+  }
+}
+
+/*
+ * AgsRecall related
+ */
+void
+ags_audio_play(AgsAudio *audio, guint audio_channel,guint group_id,
+	       gint stage, gboolean do_recall)
 {
   AgsRecall *recall;
   GList *list, *list_next;
@@ -1333,8 +1322,6 @@ ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id, gint stage,
 	ags_recall_run_post(recall, audio_channel);
     }
 
-    ags_recall_check_cancel(recall);
-
     ags_recall_child_check_remove(recall);
 
     if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
@@ -1350,6 +1337,9 @@ ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id, gint stage,
   }
 }
 
+/*
+ * AgsRecall related
+ */
 guint
 ags_audio_recursive_play_init(AgsAudio *audio)
 {
@@ -1382,6 +1372,72 @@ ags_audio_recursive_play_init(AgsAudio *audio)
   }
 
   return(group_id);
+}
+
+/*
+ * AgsRecall related
+ */
+void
+ags_audio_cancel(AgsAudio *audio, guint audio_channel, guint group_id,
+		 gboolean do_recall)
+{
+  AgsRecall *recall;
+  GList *list, *list_next;
+  
+  if(do_recall)
+    list = audio->recall;
+  else
+    list = audio->play;
+
+  while(list != NULL){
+    list_next = list->next;
+
+    recall = AGS_RECALL(list->data);
+
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
+       recall->recall_id->group_id != group_id){
+      list = list_next;
+
+      continue;
+    }
+
+    ags_recall_cancel(recall, audio_channel);
+    
+    list = list_next;
+  }
+}
+
+/*
+ * AgsDevout related
+ */
+void
+ags_audio_set_devout(AgsAudio *audio, GObject *devout)
+{
+  void ags_audio_set_devout_real(AgsChannel *channel){
+    AgsRecycling *recycling;
+    AgsAudioSignal *audio_signal;
+
+    while(channel != NULL){
+      recycling = channel->first_recycling;
+
+      while(recycling != channel->last_recycling->next){
+	audio_signal = ags_audio_signal_get_template(recycling->audio_signal);
+	audio_signal->devout = devout;
+
+	recycling = recycling->next;
+      }
+
+      channel = channel->next;
+    }
+  }
+
+  audio->devout = devout;
+
+  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
+    ags_audio_set_devout_real(audio->input);
+
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
+    ags_audio_set_devout_real(audio->output);
 }
 
 AgsAudio*

@@ -241,75 +241,6 @@ ags_devout_connect(AgsDevout *devout)
 		   G_CALLBACK(ags_devout_finalize), NULL);
 }
 
-void
-ags_devout_play_recall(AgsDevout *devout)
-{
-  AgsDevoutPlay *devout_play;
-  AgsRecall *recall;
-  AgsRecallID *recall_id;
-  GList *list, *list_next;
-  guint stage;
-  //GStaticMutex mutex = G_STATIC_MUTEX_INIT;
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  devout->flags |= AGS_DEVOUT_PLAYING_RECALL;
-  stage = 0;
-
- ags_devout_play_recall0:
-
-  list = devout->play_recall;
-
-  if(list == NULL){
-    devout->flags &= (~AGS_DEVOUT_PLAY_RECALL);
-    ags_devout_stop(devout);
-  }
-
-  while(list != NULL){
-    devout_play = (AgsDevoutPlay *) list->data;
-    recall = AGS_RECALL(devout_play->source);
-    recall_id = devout_play->recall_id;
-    list_next = list->next;
-
-
-    if((AGS_RECALL_HIDE & (recall->flags)) == 0){
-      if(stage == 0){
-	ags_recall_run_pre(recall, devout_play->audio_channel);
-      }else if(stage == 1){
-	ags_recall_run_inter(recall, devout_play->audio_channel);
-      }else{
-	ags_recall_run_post(recall, devout_play->audio_channel);
-      }
-    }
-
-    ags_recall_check_cancel(recall);
-    
-    ags_recall_child_check_remove(recall);
-
-    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
-      //g_static_mutex_lock(&mutex);
-      pthread_mutex_lock(&mutex);
-      devout->play_recall_ref--;
-      devout->play_recall = g_list_remove(devout->play_recall, (gpointer) recall);
-      //g_static_mutex_unlock(&mutex);
-      pthread_mutex_unlock(&mutex);
-
-      ags_recall_remove(recall);
-    }
-
-    list = list_next;
-  }
-
-  if(stage == 0){
-    stage = 1;
-    goto ags_devout_play_recall0;
-  }else if(stage == 1){
-    stage = 2;
-    goto ags_devout_play_recall0;
-  }
-
-  devout->flags &= (~AGS_DEVOUT_PLAYING_RECALL);
-}
-
 AgsDevoutPlay*
 ags_devout_play_alloc()
 {
@@ -351,6 +282,73 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
   /* wake up other thread */
   devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
   pthread_cond_signal(&(devout->task_cond));
+}
+
+void
+ags_devout_play_recall(AgsDevout *devout)
+{
+  AgsDevoutPlay *devout_play;
+  AgsRecall *recall;
+  AgsRecallID *recall_id;
+  GList *list, *list_next;
+  guint stage;
+  //GStaticMutex mutex = G_STATIC_MUTEX_INIT;
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  devout->flags |= AGS_DEVOUT_PLAYING_RECALL;
+  stage = 0;
+
+ ags_devout_play_recall0:
+
+  list = devout->play_recall;
+
+  if(list == NULL){
+    devout->flags &= (~AGS_DEVOUT_PLAY_RECALL);
+    ags_devout_stop(devout);
+  }
+
+  while(list != NULL){
+    devout_play = (AgsDevoutPlay *) list->data;
+    recall = AGS_RECALL(devout_play->source);
+    recall_id = devout_play->recall_id;
+    list_next = list->next;
+
+
+    if((AGS_RECALL_HIDE & (recall->flags)) == 0){
+      if(stage == 0){
+	ags_recall_run_pre(recall, devout_play->audio_channel);
+      }else if(stage == 1){
+	ags_recall_run_inter(recall, devout_play->audio_channel);
+      }else{
+	ags_recall_run_post(recall, devout_play->audio_channel);
+      }
+    }
+
+    ags_recall_child_check_remove(recall);
+
+    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
+      //g_static_mutex_lock(&mutex);
+      pthread_mutex_lock(&mutex);
+      devout->play_recall_ref--;
+      devout->play_recall = g_list_remove(devout->play_recall, (gpointer) recall);
+      //g_static_mutex_unlock(&mutex);
+      pthread_mutex_unlock(&mutex);
+
+      ags_recall_remove(recall);
+    }
+
+    list = list_next;
+  }
+
+  if(stage == 0){
+    stage = 1;
+    goto ags_devout_play_recall0;
+  }else if(stage == 1){
+    stage = 2;
+    goto ags_devout_play_recall0;
+  }
+
+  devout->flags &= (~AGS_DEVOUT_PLAYING_RECALL);
 }
 
 void

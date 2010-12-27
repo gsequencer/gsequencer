@@ -3,10 +3,13 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
+
+#include <ags/audio/task/ags_cancel_recall.h>
 
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
@@ -304,22 +307,30 @@ ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 						       AgsAudioSignal *audio_signal,
 						       AgsPlayRecycling *play_recycling)
 {
+  AgsDevout *devout;
   AgsRecall *play_recycling_recall;
+  AgsCancelRecall *cancel_recall;
   AgsPlayAudioSignal *play_audio_signal;
   GList *list;
+  guint audio_channel;
 
   play_recycling_recall = AGS_RECALL(play_recycling);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == play_recycling_recall->recall_id->group_id){
+    devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->devout);
     list = play_recycling_recall->child;
+    audio_channel = AGS_CHANNEL(source->channel)->audio_channel;
 
     while(list != NULL){
       play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(list->data);
 
       if(play_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (AGS_RECALL(play_audio_signal)->flags)) == 0){
-	play_audio_signal->recall.flags |= AGS_RECALL_HIDE | AGS_RECALL_CANCEL;
+	cancel_recall = ags_cancel_recall_new(AGS_RECALL(play_audio_signal), audio_channel);
+
+	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
+
 	break;
       }
 

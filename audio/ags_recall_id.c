@@ -90,17 +90,17 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
 {
   switch(stage){
   case 0:
-    if((AGS_RECALL_ID_PRE_SYNC_ASYNC_DONE & (id->flags)) == 0)
+    if((AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE & (id->flags)) == 0)
       return(TRUE);
 
     break;
   case 1:
-    if((AGS_RECALL_ID_INTER_SYNC_ASYNC_DONE & (id->flags)) == 0)
+    if((AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE & (id->flags)) == 0)
       return(TRUE);
 
     break;
   case 2:
-    if((AGS_RECALL_ID_POST_SYNC_ASYNC_DONE & (id->flags)) == 0)
+    if((AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE & (id->flags)) == 0)
       return(TRUE);
   }
 
@@ -108,25 +108,25 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
 }
 
 void
-ags_recall_id_set_stage(AgsRecallID *recall_id, gint stage)
+ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
 {
   if(stage == 0)
-    recall_id->flags |= AGS_RECALL_ID_PRE_SYNC_ASYNC_DONE;
+    recall_id->flags |= AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE;
   else if(stage == 1)
-    recall_id->flags |= AGS_RECALL_ID_INTER_SYNC_ASYNC_DONE;
+    recall_id->flags |= AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE;
   else
-    recall_id->flags |= AGS_RECALL_ID_POST_SYNC_ASYNC_DONE;
+    recall_id->flags |= AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE;
 }
 
 void
-ags_recall_id_unset_stage(AgsRecallID *recall_id, gint stage)
+ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
 {
   if(stage == 0)
-    recall_id->flags &= (~AGS_RECALL_ID_PRE_SYNC_ASYNC_DONE);
+    recall_id->flags &= (~AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE);
   else if(stage == 1)
-    recall_id->flags &= (~AGS_RECALL_ID_INTER_SYNC_ASYNC_DONE);
+    recall_id->flags &= (~AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE);
   else
-    recall_id->flags &= (~AGS_RECALL_ID_POST_SYNC_ASYNC_DONE);
+    recall_id->flags &= (~AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE);
 }
 
 GList*
