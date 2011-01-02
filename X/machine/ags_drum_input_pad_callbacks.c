@@ -9,6 +9,8 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/task/ags_cancel_channel.h>
+
 #include <ags/audio/recall/ags_play_audio_file.h>
 
 #include <ags/audio/file/ags_audio_file.h>
@@ -394,6 +396,8 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
     AGS_DEVOUT_GET_CLASS(devout)->run(devout);
   }else{
+    AgsCancelChannel *cancel_channel;
+
     /* abort code */
     channel = drum_input_pad->pad.channel;
 
@@ -404,7 +408,10 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
       if((AGS_DEVOUT_PLAY_DONE & (channel->devout_play->flags)) == 0){
 	while(channel != next_pad){
-	  channel->devout_play->flags |= AGS_DEVOUT_PLAY_CANCEL;
+	  cancel_channel = ags_cancel_channel_new(channel, channel->devout_play->group_id,
+						  channel->devout_play);
+
+	  ags_devout_append_task(devout, (AgsTask *) cancel_channel);
 
 	  channel = channel->next;
 	}
@@ -421,7 +428,10 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 				gtk_option_menu_get_history(drum_input_pad->pad.option));
 
       if((AGS_DEVOUT_PLAY_DONE & (channel->devout_play->flags)) == 0){
-	channel->devout_play->flags |= AGS_DEVOUT_PLAY_CANCEL;
+	cancel_channel = ags_cancel_channel_new(channel, channel->devout_play->group_id,
+						channel->devout_play);
+
+	ags_devout_append_task(devout, (AgsTask *) cancel_channel);
       }else{
 	channel->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
 	channel->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);

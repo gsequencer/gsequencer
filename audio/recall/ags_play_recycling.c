@@ -319,15 +319,20 @@ ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == play_recycling_recall->recall_id->group_id){
+    AgsRecall *recall;
+
     devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->devout);
     list = play_recycling_recall->child;
     audio_channel = AGS_CHANNEL(source->channel)->audio_channel;
 
     while(list != NULL){
       play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(list->data);
+      recall = AGS_RECALL(play_audio_signal);
 
-      if(play_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (AGS_RECALL(play_audio_signal)->flags)) == 0){
-	cancel_recall = ags_cancel_recall_new(AGS_RECALL(play_audio_signal), audio_channel);
+      if(play_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
+	recall->flags |= AGS_RECALL_HIDE;
+	cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+					      NULL);
 
 	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
 

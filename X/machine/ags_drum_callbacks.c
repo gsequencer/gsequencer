@@ -14,6 +14,7 @@
 #include <ags/audio/ags_recall.h>
 
 #include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_link_channel.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -417,15 +418,13 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
   }else{
     /* abort code */
     if((AGS_DEVOUT_PLAY_DONE & (drum->machine.audio->devout_play->flags)) == 0){
-      drum->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_CANCEL;
-    }else{
-      //      AgsDelay *delay;
+      AgsCancelAudio *cancel_audio;
 
+      cancel_audio = ags_cancel_audio_new(drum->machine.audio, drum->machine.audio->devout_play->group_id,
+					  drum->machine.audio->devout_play);
+    }else{
       drum->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
       drum->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);
-
-      //      delay = AGS_DELAY(ags_recall_find_by_effect(drum->machine.audio->play, (char *) g_type_name(AGS_TYPE_DELAY))->data);
-      //      delay->recall_ref = drum->machine.audio->input_lines;
     }
   }
 }

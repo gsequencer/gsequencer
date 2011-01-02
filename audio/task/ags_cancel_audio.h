@@ -5,6 +5,8 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
+
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_CANCEL_AUDIO                (ags_cancel_audio_get_type())
@@ -23,6 +25,8 @@ struct _AgsCancelAudio
 
   AgsAudio *audio;
   guint group_id;
+
+  AgsDevoutPlay *play;
 };
 
 struct _AgsCancelAudioClass
@@ -32,6 +36,7 @@ struct _AgsCancelAudioClass
 
 GType ags_cancel_audio_get_type();
 
-AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio, guint group_id);
+AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio, guint group_id,
+				     AgsDevoutPlay *play);
 
 #endif /*__AGS_CANCEL_AUDIO_H__*/

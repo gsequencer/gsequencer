@@ -5,6 +5,8 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
+
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_CANCEL_RECALL                (ags_cancel_recall_get_type())
@@ -23,6 +25,8 @@ struct _AgsCancelRecall
 
   AgsRecall *recall;
   guint audio_channel;
+
+  AgsDevoutPlay *play;
 };
 
 struct _AgsCancelRecallClass
@@ -32,6 +36,7 @@ struct _AgsCancelRecallClass
 
 GType ags_cancel_recall_get_type();
 
-AgsCancelRecall* ags_cancel_recall_new(AgsRecall *recall, guint audio_channel);
+AgsCancelRecall* ags_cancel_recall_new(AgsRecall *recall, guint audio_channel,
+				       AgsDevoutPlay *play);
 
 #endif /*__AGS_CANCEL_RECALL_H__*/

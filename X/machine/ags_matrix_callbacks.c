@@ -8,6 +8,9 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_cancel_audio.h>
+
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
@@ -109,37 +112,39 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 {
   AgsDevout *devout;
   guint group_id;
-  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
 
   devout = AGS_DEVOUT(matrix->machine.audio->devout);
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
-    matrix->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
+    AgsAppendAudio *append_audio;
 
-    /* do init stuff here */
+    /* do the init stuff here */
     group_id = ags_audio_recursive_play_init(matrix->machine.audio);
     matrix->machine.audio->devout_play->group_id = group_id;
 
-    g_static_mutex_lock(&mutex);
-    devout->play_audio_ref++;
-    devout->play_audio = g_list_append(devout->play_audio, matrix->machine.audio->devout_play);
-    g_static_mutex_unlock(&mutex);
+    /* create task */
+    append_audio = ags_append_audio_new(AGS_DEVOUT(matrix->machine.audio->devout),
+					matrix->machine.audio->devout_play);
 
-    if((AGS_DEVOUT_PLAY_AUDIO & devout->flags) == 0)
-      devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
+    /* append AgsAppendAudio */
+    ags_devout_append_task(AGS_DEVOUT(matrix->machine.audio->devout),
+			   AGS_TASK(append_audio));
 
-    AGS_DEVOUT_GET_CLASS(devout)->run(devout);
+    /* call run */
+    if((AGS_DEVOUT_PLAY_AUDIO & (append_audio->devout->flags)) == 0)
+      append_audio->devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
+    
+    ags_devout_run(AGS_DEVOUT(matrix->machine.audio->devout));
   }else{
-    if((AGS_DEVOUT_PLAY_DONE & (matrix->machine.audio->devout_play->flags)) == 0)
-      matrix->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_CANCEL;
-    else{
-      //      AgsDelay *delay;
+    /* abort code */
+    if((AGS_DEVOUT_PLAY_DONE & (matrix->machine.audio->devout_play->flags)) == 0){
+      AgsCancelAudio *cancel_audio;
 
+      cancel_audio = ags_cancel_audio_new(matrix->machine.audio, matrix->machine.audio->devout_play->group_id,
+					  matrix->machine.audio->devout_play);
+    }else{
       matrix->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
       matrix->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);
-
-      //      delay = AGS_DELAY(ags_recall_find_by_effect(matrix->machine.audio->play, (char *) g_type_name(AGS_TYPE_DELAY))->data);
-      //      delay->recall_ref = matrix->machine.audio->input_lines;
     }
   }
 }

@@ -86,6 +86,8 @@ ags_cancel_audio_init(AgsCancelAudio *cancel_audio)
 {
   cancel_audio->audio = NULL;
   cancel_audio->group_id = 0;
+
+  cancel_audio->play = NULL;
 }
 
 void
@@ -122,7 +124,7 @@ ags_cancel_audio_launch(AgsTask *task)
 
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
-  /*  */
+  /* cancel AgsAudio */
   audio = cancel_audio->audio;
 
   channel = audio->output;
@@ -132,10 +134,15 @@ ags_cancel_audio_launch(AgsTask *task)
 
     channel = channel->next;
   }
+
+  /* set remove flag */
+  if(cancel_audio->play != NULL)
+    cancel_audio->play->flags |= AGS_DEVOUT_PLAY_REMOVE;
 }
 
 AgsCancelAudio*
-ags_cancel_audio_new(AgsAudio *audio, guint group_id)
+ags_cancel_audio_new(AgsAudio *audio, guint group_id,
+		     AgsDevoutPlay *play)
 {
   AgsCancelAudio *cancel_audio;
 
@@ -144,6 +151,8 @@ ags_cancel_audio_new(AgsAudio *audio, guint group_id)
 
   cancel_audio->audio = audio;
   cancel_audio->group_id = group_id;
+
+  cancel_audio->play = play;
 
   return(cancel_audio);
 }

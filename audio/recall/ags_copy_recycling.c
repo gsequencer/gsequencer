@@ -368,15 +368,19 @@ ags_copy_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == copy_recycling_recall->recall_id->group_id){
+    AgsRecall *recall;
+
     devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->devout);
     audio_channel = AGS_CHANNEL(source->channel)->audio_channel;
     list = copy_recycling_recall->child;
 
     while(list != NULL){
       copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(list->data);
+      recall = AGS_RECALL(copy_audio_signal);
 
-      if(copy_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (AGS_RECALL(copy_audio_signal)->flags)) == 0){
-	cancel_recall = ags_cancel_recall_new(AGS_RECALL(copy_audio_signal), audio_channel);
+      if(copy_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
+	cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+					      NULL);
 	
 	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
 
@@ -429,15 +433,19 @@ ags_copy_recycling_destination_remove_audio_signal_callback(AgsRecycling *destin
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == copy_recycling_recall->recall_id->group_id){
+    AgsRecall *recall;
+
     devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->devout);
     list = copy_recycling_recall->child;
     audio_channel = AGS_CHANNEL(destination->channel)->audio_channel;
 
     while(list != NULL){
       copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(list->data);
+      recall = AGS_RECALL(copy_audio_signal);
 
-      if(copy_audio_signal->destination == audio_signal && (AGS_RECALL_DONE & (AGS_RECALL(copy_audio_signal)->flags)) == 0){
-	cancel_recall = ags_cancel_recall_new(AGS_RECALL(copy_audio_signal), audio_channel);
+      if(copy_audio_signal->destination == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
+	cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+					      NULL);
 
 	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
       }

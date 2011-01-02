@@ -278,6 +278,7 @@ ags_stream_channel_remap_stream_recycling(AgsStreamChannel *stream_channel,
   /* remove old */
   if(old_start_region !=  NULL){
     AgsDevout *devout;
+    AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
 
     devout = AGS_DEVOUT(AGS_AUDIO(stream_channel->channel->audio)->devout);
@@ -288,7 +289,11 @@ ags_stream_channel_remap_stream_recycling(AgsStreamChannel *stream_channel,
       
       while(list != NULL){
 	if(AGS_STREAM_RECYCLING(list->data)->recycling == recycling){
-	  cancel_recall = ags_cancel_recall_new(AGS_RECALL(list->data), audio_channel);
+	  recall = AGS_RECALL(list->data);
+
+	  recall->flags |= AGS_RECALL_HIDE;
+	  cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+						NULL);
 
 	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
 	}

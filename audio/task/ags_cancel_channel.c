@@ -84,6 +84,8 @@ ags_cancel_channel_init(AgsCancelChannel *cancel_channel)
 {
   cancel_channel->channel = NULL;
   cancel_channel->group_id = 0;
+
+  cancel_channel->play = NULL;
 }
 
 void
@@ -118,12 +120,17 @@ ags_cancel_channel_launch(AgsTask *task)
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
-  /*  */
+  /* cancel AgsChannel */
   ags_channel_recursive_cancel(cancel_channel->channel, cancel_channel->group_id);
+
+  /* set remove flag */
+  if(cancel_channel->play != NULL)
+    cancel_channel->play->flags |= AGS_DEVOUT_PLAY_REMOVE;
 }
 
 AgsCancelChannel*
-ags_cancel_channel_new(AgsChannel *channel, guint group_id)
+ags_cancel_channel_new(AgsChannel *channel, guint group_id,
+		       AgsDevoutPlay *play)
 {
   AgsCancelChannel *cancel_channel;
 
@@ -132,6 +139,8 @@ ags_cancel_channel_new(AgsChannel *channel, guint group_id)
 
   cancel_channel->channel = channel;
   cancel_channel->group_id = group_id;
+
+  cancel_channel->play = play;
 
   return(cancel_channel);
 }

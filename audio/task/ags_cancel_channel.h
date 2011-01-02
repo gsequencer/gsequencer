@@ -5,6 +5,8 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
+
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_CANCEL_CHANNEL                (ags_cancel_channel_get_type())
@@ -23,6 +25,8 @@ struct _AgsCancelChannel
 
   AgsChannel *channel;
   guint group_id;
+
+  AgsDevoutPlay *play;
 };
 
 struct _AgsCancelChannelClass
@@ -32,6 +36,7 @@ struct _AgsCancelChannelClass
 
 GType ags_cancel_channel_get_type();
 
-AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel, guint group_id);
+AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel, guint group_id,
+					 AgsDevoutPlay *play);
 
 #endif /*__AGS_CANCEL_CHANNEL_H__*/

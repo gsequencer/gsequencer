@@ -809,6 +809,18 @@ ags_recall_loop(AgsRecall *recall)
 void
 ags_recall_real_cancel(AgsRecall *recall, guint audio_channel)
 {
+  GList *list;
+
+  list = recall->child;
+
+  while(list != NULL){
+    ags_recall_cancel(AGS_RECALL(list->data), audio_channel);
+
+    list = list->next;
+  }
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(recall));
+
   recall->flags |= AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 }
 

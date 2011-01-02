@@ -60,8 +60,7 @@ typedef enum
 {
   AGS_DEVOUT_PLAY_DONE              = 1,
   AGS_DEVOUT_PLAY_REMOVE            = 1 << 1,
-  AGS_DEVOUT_PLAY_CANCEL            = 1 << 2,
-  AGS_DEVOUT_PLAY_PAD               = 1 << 3,
+  AGS_DEVOUT_PLAY_PAD               = 1 << 2,
 }AgsDevoutPlayFlags;
 
 struct _AgsDevout

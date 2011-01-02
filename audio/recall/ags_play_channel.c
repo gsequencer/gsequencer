@@ -287,6 +287,7 @@ void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
   /* remove old */
   if(old_start_region != NULL){
     AgsDevout *devout;
+    AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
 
     devout = AGS_DEVOUT(AGS_AUDIO(play_channel->source->audio)->devout);
@@ -297,7 +298,11 @@ void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
 
       while(list != NULL){
 	if(AGS_PLAY_RECYCLING(list->data)->source == source_recycling){
-	  cancel_recall = ags_cancel_recall_new(AGS_RECALL(list->data), audio_channel);
+	  recall = AGS_RECALL(list->data);
+	  
+	  recall->flags |= AGS_RECALL_HIDE;
+	  cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+						NULL);
 
 	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
 	}
