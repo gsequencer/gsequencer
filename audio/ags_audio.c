@@ -143,6 +143,9 @@ ags_audio_init(AgsAudio *audio)
   audio->recall = NULL;
   audio->play = NULL;
 
+  audio->recall_remove= NULL;
+  audio->play_remove = NULL;
+
   audio->machine = NULL;
 }
 

@@ -17,7 +17,6 @@
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #include <alsa/asoundlib.h>
 
-//#include "ags_garbage_collector.h"
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_task.h>
 
@@ -34,26 +33,30 @@ typedef struct _AgsDevoutPlay AgsDevoutPlay;
 
 typedef enum
 {
-  AGS_DEVOUT_BUFFER0                = 1,
-  AGS_DEVOUT_BUFFER1                = 1 << 1,
-  AGS_DEVOUT_BUFFER2                = 1 << 2,
-  AGS_DEVOUT_BUFFER3                = 1 << 3,
-  AGS_DEVOUT_ATTACK_FIRST           = 1 << 4,
-  AGS_DEVOUT_PLAY                   = 1 << 5,
-  AGS_DEVOUT_WAIT_DEVICE            = 1 << 6,
-  AGS_DEVOUT_WAIT_RECALL            = 1 << 7,
-  AGS_DEVOUT_WAIT_TASK              = 1 << 8,
-  AGS_DEVOUT_WAIT_APPEND_TASK       = 1 << 9,
-  AGS_DEVOUT_LIBAO                  = 1 << 10,
-  AGS_DEVOUT_OSS                    = 1 << 11,
-  AGS_DEVOUT_ALSA                   = 1 << 12,
-  AGS_DEVOUT_PLAY_RECALL            = 1 << 13,
-  AGS_DEVOUT_PLAYING_RECALL         = 1 << 14,
-  AGS_DEVOUT_PLAY_CHANNEL           = 1 << 15,
-  AGS_DEVOUT_PLAYING_CHANNEL        = 1 << 16,
-  AGS_DEVOUT_PLAY_AUDIO             = 1 << 17,
-  AGS_DEVOUT_PLAYING_AUDIO          = 1 << 18,
-  AGS_DEVOUT_PLAY_NOTE              = 1 << 19,
+  AGS_DEVOUT_BUFFER0                        = 1,
+  AGS_DEVOUT_BUFFER1                        = 1 << 1,
+  AGS_DEVOUT_BUFFER2                        = 1 << 2,
+  AGS_DEVOUT_BUFFER3                        = 1 << 3,
+  AGS_DEVOUT_ATTACK_FIRST                   = 1 << 4,
+  AGS_DEVOUT_PLAY                           = 1 << 5,
+  AGS_DEVOUT_WAIT_DEVICE                    = 1 << 6,
+  AGS_DEVOUT_WAIT_RECALL                    = 1 << 7,
+  AGS_DEVOUT_WAIT_TASK                      = 1 << 8,
+  AGS_DEVOUT_WAIT_APPEND_TASK               = 1 << 9,
+  AGS_DEVOUT_LOCK_APPEND_TASK               = 1 << 10,
+  AGS_DEVOUT_WAIT_APPEND_TASK_PENDING       = 1 << 11,
+  AGS_DEVOUT_ANNOUNCE_APPEND_TASK_PENDING   = 1 << 12,
+  AGS_DEVOUT_APPEND_TASK_PENDING_IS_WAITING = 1 << 13,
+  AGS_DEVOUT_LIBAO                          = 1 << 14,
+  AGS_DEVOUT_OSS                            = 1 << 15,
+  AGS_DEVOUT_ALSA                           = 1 << 16,
+  AGS_DEVOUT_PLAY_RECALL                    = 1 << 17,
+  AGS_DEVOUT_PLAYING_RECALL                 = 1 << 18,
+  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 19,
+  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 20,
+  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 21,
+  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 22,
+  AGS_DEVOUT_PLAY_NOTE                      = 1 << 23,
 }AgsDevoutFlags;
 
 typedef enum
@@ -109,19 +112,25 @@ struct _AgsDevout
   pthread_attr_t play_thread_attr;
   pthread_mutex_t play_mutex;
   pthread_mutexattr_t play_mutex_attr;
-  pthread_cond_t play_cond;
+  pthread_cond_t play_wait_cond;
 
   pthread_t play_functions_thread;
   pthread_attr_t play_functions_thread_attr;
   pthread_mutex_t play_functions_mutex;
   pthread_mutexattr_t play_functions_mutex_attr;
-  pthread_cond_t play_functions_cond;
+  pthread_cond_t play_functions_wait_cond;
 
   pthread_mutex_t task_mutex;
-  pthread_cond_t task_cond;
+  pthread_cond_t task_wait_cond;
 
   pthread_mutex_t append_task_mutex;
-  pthread_cond_t append_task_cond;
+  pthread_cond_t append_task_wait_cond;
+  pthread_cond_t append_task_lock_cond;
+
+  pthread_t append_task_pending_thread;
+  pthread_mutex_t append_task_pending_mutex;
+  pthread_cond_t append_task_pending_wait_cond;
+  GList *append_task;
   
   GList *task;
   GList *tactable;

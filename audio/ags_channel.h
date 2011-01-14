@@ -62,6 +62,7 @@ struct _AgsChannel
   AgsDevoutPlay *devout_play;
 
   GList *recall_id; // there may be several recall's running
+
   GList *recall;
   GList *play;
 

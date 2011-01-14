@@ -158,7 +158,14 @@ ags_copy_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_copy_audio_signal_finalize(GObject *gobject)
 {
+  AgsCopyAudioSignal *copy_audio_signal;
+
   G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
+
+  copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(gobject);
+
+  g_object_unref(copy_audio_signal->destination);
+  g_object_unref(copy_audio_signal->source);
 }
 
 void

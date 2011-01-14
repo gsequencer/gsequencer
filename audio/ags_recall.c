@@ -819,7 +819,7 @@ ags_recall_real_cancel(AgsRecall *recall, guint audio_channel)
     list = list->next;
   }
 
-  ags_connectable_disconnect(AGS_CONNECTABLE(recall));
+  ags_run_connectable_disconnect(AGS_CONNECTABLE(recall));
 
   recall->flags |= AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 }

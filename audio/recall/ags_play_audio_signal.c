@@ -23,7 +23,7 @@ void ags_play_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_audio_signal_finalize(GObject *gobject);
 
 void ags_play_audio_signal_run_inter(AgsRecall *recall, guint audio_channel, gpointer data);
-
+void ags_play_audio_signal_cancel(AgsRecall *recall, guint audio_channel);
 AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 static gpointer ags_play_audio_signal_parent_class = NULL;
@@ -81,7 +81,7 @@ void
 ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal)
 {
   GObjectClass *gobject;
-  
+
   ags_play_audio_signal_parent_class = g_type_class_peek_parent(play_audio_signal);
 
   gobject = (GObjectClass *) play_audio_signal;
@@ -151,7 +151,13 @@ ags_play_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_play_audio_signal_finalize(GObject *gobject)
 {
+  AgsPlayAudioSignal *play_audio_signal;
+
   G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
+
+  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(gobject);
+
+  g_object_unref(play_audio_signal->source);
 }
 
 void

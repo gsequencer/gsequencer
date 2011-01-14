@@ -112,6 +112,7 @@ ags_channel_init(AgsChannel *channel)
   channel->devout_play->source = (GObject *) channel;
 
   channel->recall_id = NULL;
+
   channel->recall = NULL;
   channel->play = NULL;
 
@@ -1420,20 +1421,24 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
 
-    if(recall_id->parent_group_id == 0)
+    /* get the appropriate lists */
+    if(recall_id->parent_group_id == 0){
       list_recall = channel->play;
-    else
+    }else{
       list_recall = channel->recall;
+    }
 
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
 
+      /* ignore initialized or non-runnable AgsRecalls */
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
 	 AGS_IS_RECALL_CHANNEL(recall)){
 	list_recall = list_recall->next;
 	continue;
       }
 
+      /* duplicate play or recall AgsRecall */
       if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
 	recall = ags_recall_duplicate(recall, recall_id);
 
