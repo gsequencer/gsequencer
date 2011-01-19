@@ -117,6 +117,10 @@ ags_remove_audio_run_init(AgsRemoveAudioRun *remove_audio_run)
 {
   remove_audio_run->flags = 0;
 
+  remove_audio_run->fifo_wait_ref = 0;
+  pthread_cond_init(&(remove_audio_run->fifo_cond), NULL);
+  pthread_mutex_init(&(remove_audio_run->fifo_mutex), NULL);
+
   remove_audio_run->unref_list = NULL;
 }
 
@@ -147,12 +151,50 @@ ags_remove_audio_run_finalize(GObject *gobject)
 }
 
 void
+ags_remove_audio_run_enter_fifo(AgsRemoveAudioRun *remove_audio_run)
+{
+  gboolean was_waiting;
+  void ags_remove_audio_run_fifo_wait(){
+    while((AGS_REMOVE_AUDIO_RUN_FIFO_IS_BUSY & (remove_audio_run->flags)) != 0){
+      pthread_cond_wait(&(remove_audio_run->fifo_cond),
+			&(remove_audio_run->fifo_mutex));
+    }
+  }
+
+  pthread_mutex_lock(&(remove_audio_run->fifo_mutex));
+
+  if((AGS_REMOVE_AUDIO_RUN_FIFO_IS_BUSY & (remove_audio_run->flags)) != 0){
+    remove_audio_run->fifo_wait_ref++;
+    was_waiting = TRUE;
+
+    ags_remove_audio_run_fifo_wait();
+  }else{
+    was_waiting = FALSE;
+  }
+
+  /* tell that the fifo is busy */
+  remove_audio_run->flags |= AGS_REMOVE_AUDIO_RUN_FIFO_IS_BUSY;
+  pthread_mutex_unlock(&(remove_audio_run->fifo_mutex));
+
+  if(was_waiting)
+    remove_audio_run->fifo_wait_ref--;
+}
+
+void
+ags_remove_audio_run_leave_fifo(AgsRemoveAudioRun *remove_audio_run)
+{
+  /* unlock fifo */
+  remove_audio_run->flags &= (~AGS_REMOVE_AUDIO_RUN_FIFO_IS_BUSY);
+  pthread_cond_signal(&(remove_audio_run->fifo_cond));
+}
+
+void
 ags_remove_audio_run_remove(AgsRecall *recall)
 {
   AgsDevout *devout;
   AgsRemoveAudio *remove_audio;
   AgsRemoveAudioRun *remove_audio_run;
-  AgsRemoveAudioRunUnref *unref;
+  GObject *object;
   GList *list;
 
   AGS_RECALL_CLASS(ags_remove_audio_run_parent_class)->remove(recall);
@@ -160,38 +202,49 @@ ags_remove_audio_run_remove(AgsRecall *recall)
   remove_audio = AGS_REMOVE_AUDIO(recall->recall_audio);
   remove_audio_run = AGS_REMOVE_AUDIO_RUN(recall);
 
-  /* lacks of thread synchronization */
+  /* beginning of thread synchronization */
+  ags_remove_audio_run_enter_fifo(remove_audio_run);
 
+  /* unref all objects */
   list = remove_audio_run->unref_list;
 
   while(list != NULL){
-    unref = (AgsRemoveAudioRunUnref *) list->data;
+    object = G_OBJECT(list->data);
 
-    unref->locked = TRUE;
-    g_object_unref(G_OBJECT(unref));
-    unref->locked = FALSE;
+    g_object_unref(object);
 
     list = list->next;
   }
 
-  g_list_free(remove_audio_run->unref_list);
+  list = remove_audio_run->unref_list;
   remove_audio_run->unref_list = NULL;
+
+  /* end of thread synchronization  */
+  ags_remove_audio_run_leave_fifo(remove_audio_run);
+
+  /* free the list */
+  g_list_free(list);
 }
 
+/*
+ * Note you have to call ags_remove_audio_run_leave_fifo after this function else other threads
+ * will be blocked as soon they call one of these thread safe functions
+ */
 gboolean
 ags_remove_audio_run_unref_exists(AgsRemoveAudioRun *remove_audio_run, GObject *object)
 {
-  AgsRemoveAudioRunUnref *unref;
+  GObject *current_object;
   GList *list;
 
-  /* lacks of thread synchronization */
+  /* beginning of thread synchronization */
+  ags_remove_audio_run_enter_fifo(remove_audio_run);
 
   list = remove_audio_run->unref_list;
 
   while(list != NULL){
-    unref = (AgsRemoveAudioRunUnref *) list->data;
+    current_object = G_OBJECT(list->data);
 
-    if(unref->object == object)
+    if(current_object == object)
       return(TRUE);
 
     list = list->next;
@@ -203,40 +256,49 @@ ags_remove_audio_run_unref_exists(AgsRemoveAudioRun *remove_audio_run, GObject *
 void
 ags_remove_audio_run_unref_append(AgsRemoveAudioRun *remove_audio_run, GObject *object)
 {
-  AgsRemoveAudioRunUnref *unref;
+  /* beginning of thread synchronization */
+  ags_remove_audio_run_enter_fifo(remove_audio_run);
 
-  unref = (AgsRemoveAudioRunUnref *) malloc(sizeof(AgsRemoveAudioRunUnref));
-  unref->locked = FALSE;
-  unref->object = object;
-						   
-  /* lacks of thread synchronization */
+  /* add object */
+  remove_audio_run->unref_list = g_list_prepend(remove_audio_run->unref_list, object);
 
-  remove_audio_run->unref_list = g_list_prepend(remove_audio_run->unref_list, unref);
+  /* end of thread synchronization  */
+  ags_remove_audio_run_leave_fifo(remove_audio_run);
 }
 
 void
 ags_remove_audio_run_unref_remove(AgsRemoveAudioRun *remove_audio_run, GObject *object,
 				  GError **error)
 {
-  AgsRemoveAudioRunUnref *unref;
   GList *list;
+  gboolean object_not_found;
 
-  /* lacks of thread synchronization */
+  /* beginning of thread synchronization */
+  ags_remove_audio_run_enter_fifo(remove_audio_run);
 
+  /* find object */
   list = g_list_find(remove_audio_run->unref_list, object);
 
-  if(list == NULL || (unref = (AgsRemoveAudioRunUnref *) list->data)->locked){
+  /* check if object it's possible to remove the object */
+  if(list == NULL)
+    object_not_found = TRUE;
+  else{
+    object_not_found = FALSE;
+
+    remove_audio_run->unref_list = g_list_delete_link(remove_audio_run->unref_list, list);
+  }
+
+  /* end of thread synchronization  */
+  ags_remove_audio_run_leave_fifo(remove_audio_run);
+
+  /* */
+  if(object_not_found){
     g_set_error(error,
 		AGS_REMOVE_AUDIO_RUN_ERROR,
 		AGS_REMOVE_AUDIO_RUN_ERROR_REMOVE_FAILED,
-		"failed to remove object %s from unref list\0",
+		"failed to remove object %s from unref_list\0",
 		G_OBJECT_TYPE_NAME(object));
-
-    return;
   }
-
-  g_list_delete_link(remove_audio_run->unref_list, object);
-  free(unref);
 }
 
 AgsRemoveAudioRun*

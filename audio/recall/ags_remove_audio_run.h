@@ -17,12 +17,9 @@
 
 typedef struct _AgsRemoveAudioRun AgsRemoveAudioRun;
 typedef struct _AgsRemoveAudioRunClass AgsRemoveAudioRunClass;
-typedef struct _AgsRemoveAudioRunUnref AgsRemoveAudioRunUnref;
 
 typedef enum{
-  AGS_REMOVE_AUDIO_RUN_WAIT_EXISTS   = 1,
-  AGS_REMOVE_AUDIO_RUN_WAIT_APPEND   = 1 <<  1,
-  AGS_REMOVE_AUDIO_RUN_WAIT_REMOVE   = 1 <<  2,
+  AGS_REMOVE_AUDIO_RUN_FIFO_IS_BUSY    = 1,
 }AgsRemoveAudioRunFlags;
 
 #define AGS_REMOVE_AUDIO_RUN_ERROR (ags_remove_audio_run_error_quark())
@@ -37,6 +34,10 @@ struct _AgsRemoveAudioRun
 
   guint flags;
 
+  guint fifo_wait_ref;
+  pthread_cond_t fifo_cond;
+  pthread_mutex_t fifo_mutex;
+
   GList *unref_list;
 };
 
@@ -45,16 +46,18 @@ struct _AgsRemoveAudioRunClass
   AgsRecallAudioRunClass recall_audio_run;
 };
 
-struct _AgsRemoveAudioRunUnref
-{
-  GObject *object;
-
-  gboolean locked;
-};
+typedef enum{
+  AGS_REMOVE_AUDIO_RUN_UNREF_EXISTS,
+  AGS_REMOVE_AUDIO_RUN_UNREF_APPEND,
+  AGS_REMOVE_AUDIO_RUN_UNREF_REMOVE,
+}AgsRemoveAudioRunFunction;
 
 GType ags_remove_audio_run_get_type();
 
 GQuark ags_remove_audio_run_error_quark();
+
+void ags_remove_audio_run_enter_fifo(AgsRemoveAudioRun *remove_audio_run);
+void ags_remove_audio_run_leave_fifo(AgsRemoveAudioRun *remove_audio_run);
 
 gboolean ags_remove_audio_run_unref_exists(AgsRemoveAudioRun *remove_audio_run, GObject *object);
 void ags_remove_audio_run_unref_append(AgsRemoveAudioRun *remove_audio_run, GObject *object);
