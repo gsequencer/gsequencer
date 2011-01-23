@@ -1,5 +1,7 @@
 #include <ags/audio/ags_channel.h>
 
+#include <ags/lib/ags_list.h>
+
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 #include <ags/object/ags_marshal.h>
@@ -132,75 +134,46 @@ ags_channel_finalize(GObject *gobject)
 {
   AgsChannel *channel;
   AgsRecycling *recycling, *recycling_next;
-  GList *list, *list_next;
 
   channel = AGS_CHANNEL(gobject);
 
+  /* AgsRecycling */
   if(((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 && AGS_IS_INPUT(channel)) ||
      ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 && AGS_IS_OUTPUT(channel))){
 
     recycling = channel->first_recycling;
-    //    ags_garbage_collector_remove(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->garbage_collector, recycling);
 
     if(recycling != NULL)
       while(recycling != channel->last_recycling->next){
 	recycling_next = recycling->next;
 
-	//	ags_garbage_collector_remove(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->garbage_collector, recycling);
 	g_object_unref((GObject *) recycling);
 
 	recycling = recycling_next;
       }
   }
 
-  /* AgsRecallID */
-  list = channel->recall_id;
+  /* key string */
+  if(channel->note != NULL)
+    free(channel->note);
 
-  while(list != NULL){
-    list_next = list->next;
+  if(channel->devout_play != NULL)
+    free(channel->devout_play);  
 
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
 
-    list = list_next;
-  }
+  /* free some lists */
+  ags_list_free_and_unref_link(channel->recall_id);
   
-  /* AgsRecall - recall */
-  list = channel->recall;
+  ags_list_free_and_unref_link(channel->recall);
+  ags_list_free_and_unref_link(channel->play);
 
-  while(list != NULL){
-    list_next = list->next;
+  ags_list_free_and_unref_link(channel->pattern);
 
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
+  /* AgsNotation */
+  if(channel->notation != NULL)
+    g_object_unref(channel->notation);
 
-    list = list_next;
-  }
-
-  /* AgsRecall - play */
-  list = channel->play;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
-
-    list = list_next;
-  }
-
-  /* AgsPattern */
-  list = channel->pattern;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
-
-    list = list_next;
-  }
-
+  /* call parent class */
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);
 }
 

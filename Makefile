@@ -5,6 +5,7 @@ AGS_DIR = ./
 INCLUDE_DIR = ../
 LINKING_DIR = ../
 
+
 AGS_AUDIO_OBJECTS = $(AGS_DIR)audio/ags_devout.o $(AGS_DIR)audio/ags_task.o $(AGS_DIR)audio/ags_audio.o $(AGS_DIR)audio/ags_channel.o $(AGS_DIR)audio/ags_input.o $(AGS_DIR)audio/ags_output.o $(AGS_DIR)audio/ags_recycling.o $(AGS_DIR)audio/ags_audio_signal.o $(AGS_DIR)audio/ags_pattern.o $(AGS_DIR)audio/ags_notation.o $(AGS_DIR)audio/ags_recall.o $(AGS_DIR)audio/ags_recall_id.o $(AGS_DIR)audio/ags_recall_audio.o $(AGS_DIR)audio/ags_recall_audio_run.o $(AGS_DIR)audio/ags_recall_channel.o $(AGS_DIR)audio/ags_recall_channel_run.o $(AGS_DIR)audio/ags_garbage_collector.o $(AGS_DIR)audio/ags_synths.o
 
 AGS_TASK_OBJECTS = $(AGS_DIR)audio/task/ags_open_file.o $(AGS_DIR)audio/task/ags_link_channel.o $(AGS_DIR)audio/task/ags_change_bpm.o $(AGS_DIR)audio/task/ags_apply_synth.o $(AGS_DIR)audio/task/ags_apply_wavetable.o $(AGS_DIR)audio/task/ags_append_audio.o $(AGS_DIR)audio/task/ags_append_channel.o $(AGS_DIR)audio/task/ags_append_recall.o $(AGS_DIR)audio/task/ags_cancel_audio.o $(AGS_DIR)audio/task/ags_cancel_channel.o $(AGS_DIR)audio/task/ags_cancel_recall.o
@@ -31,8 +32,12 @@ AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_D
 
 AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_tactable.o $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
 
-AGS_OBJECTS = $(AGS_DIR)main.o $(AGS_OBJECT_OBJECTS) $(AGS_AUDIO_OBJECTS) $(AGS_TASK_OBJECTS) $(AGS_RECALL_OBJECTS) $(AGS_AUDIO_FILE_OBJECTS) $(AGS_FILE_OBJECTS) $(AGS_WIDGET_OBJECTS) $(AGS_X_OBJECTS) $(AGS_X_CALLBACK_OBJECTS) $(AGS_EDITOR_OBJECTS) $(AGS_EDITOR_CALLBACK_OBJECTS) $(AGS_MACHINE_OBJECTS) $(AGS_MACHINE_CALLBACK_OBJECTS)
+AGS_LIB_OBJECTS = $(AGS_DIR)lib/ags_list.o
 
+AGS_OBJECTS = $(AGS_DIR)main.o $(AGS_LIB_OBJECTS) $(AGS_OBJECT_OBJECTS) $(AGS_AUDIO_OBJECTS) $(AGS_TASK_OBJECTS) $(AGS_RECALL_OBJECTS) $(AGS_AUDIO_FILE_OBJECTS) $(AGS_FILE_OBJECTS) $(AGS_WIDGET_OBJECTS) $(AGS_X_OBJECTS) $(AGS_X_CALLBACK_OBJECTS) $(AGS_EDITOR_OBJECTS) $(AGS_EDITOR_CALLBACK_OBJECTS) $(AGS_MACHINE_OBJECTS) $(AGS_MACHINE_CALLBACK_OBJECTS)
+
+
+AGS_LIB_SOURCES = $(wildcard $(AGS_DIR)lib/*.[ch])
 
 AGS_OBJECT_SOURCES = $(wildcard $(AGS_DIR)object/*.[ch])
 
@@ -49,7 +54,7 @@ AGS_MACHINE_SOURCES = $(wildcard $(AGS_DIR)X/machine/*.[ch])
 
 AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
 
-AGS_SOURCES = $(AGS_DIR)main.[ch] $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
+AGS_SOURCES = $(AGS_DIR)main.[ch] $(AGS_LIB_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
 
 
 LIB_LIBS = `pkg-config --libs alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
@@ -67,20 +72,24 @@ $(AGS_DIR).c.o: $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES)
 	$(CC) -g -c $< -o $@ $(CFLAGS)
 
 
+$(AGS_DIR)lib/.c.o: $(AGS_LIB_SOURCES)
+	$(CC) -g -c $< -o $@ $(CFLAGS)
+
+
 $(AGS_DIR)object/.c.o: $(AGS_OBJECT_SOURCES)
 	$(CC) -g -c $< -o $@ $(CFLAGS)
 
 
-$(AGS_DIR)audio/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES)
+$(AGS_DIR)audio/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/$< -o $(AGS_DIR)audio/$@ $(CFLAGS)
 
-$(AGS_DIR)audio/task/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_OBJECT_SOURCES)
+$(AGS_DIR)audio/task/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/task/$< -o $(AGS_DIR)audio/task/$@ $(CFLAGS)
 
-$(AGS_DIR)audio/recall/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES)
+$(AGS_DIR)audio/recall/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/recall/$< -o $(AGS_DIR)audio/recall/$@ $(CFLAGS)
 
-$(AGS_DIR)audio/audio_file/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES)
+$(AGS_DIR)audio/audio_file/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/audio_file/$< -o $(AGS_DIR)audio/audio_file/$@ $(CFLAGS)
 
 

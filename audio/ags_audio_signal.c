@@ -28,9 +28,14 @@ ags_audio_signal_get_type(void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_audio_signal_init,
     };
-    ags_type_audio_signal = g_type_register_static(G_TYPE_OBJECT, "AgsAudioSignal\0", &ags_audio_signal_info, 0);
+
+    ags_type_audio_signal = g_type_register_static(G_TYPE_OBJECT,
+						   "AgsAudioSignal\0",
+						   &ags_audio_signal_info,
+						   0);
   }
-  return (ags_type_audio_signal);
+
+  return(ags_type_audio_signal);
 }
 
 void
@@ -84,6 +89,7 @@ ags_audio_signal_finalize(GObject *gobject)
     list = list_next;
   }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }
 

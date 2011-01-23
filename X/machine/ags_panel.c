@@ -16,7 +16,7 @@ void ags_panel_class_init(AgsPanelClass *panel);
 void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_init(AgsPanel *panel);
 void ags_panel_connect(AgsConnectable *connectable);
-void ags_panel_destroy(GtkObject *object);
+static void ags_panel_finalize(GObject *gobject);
 void ags_panel_show(GtkWidget *widget);
 
 void ags_panel_set_audio_channels(AgsAudio *audio,
@@ -29,6 +29,7 @@ void ags_panel_set_pads(AgsAudio *audio, GType type,
 extern void ags_file_read_panel(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_panel(AgsFile *file, AgsMachine *machine);
 
+static gpointer ags_panel_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_parent_connectable_interface;
 
 extern const char *AGS_COPY_INPUT_TO_OUTPUT;
@@ -72,10 +73,25 @@ ags_panel_get_type(void)
 void
 ags_panel_class_init(AgsPanelClass *panel)
 {
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsMachineClass *machine = (AgsMachineClass *) panel;
+
+  ags_panel_parent_class = g_type_class_peek_parent(panel);
+
+  /* GtkObjectClass */
+  gobject = (GObjectClass *) panel;
+
+  gobject->finalize = ags_panel_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) panel;
+
+  widget->show = ags_panel_show;
 
   //  machine->read_file = ags_file_read_panel;
   //  machine->write_file = ags_file_write_panel;
+
 }
 
 void
@@ -111,9 +127,6 @@ ags_panel_connect(AgsConnectable *connectable)
   /* AgsPanel */
   panel = AGS_PANEL(connectable);
 
-  g_signal_connect((GObject *) panel, "destroy\0",
-		   G_CALLBACK(ags_panel_destroy_callback), (gpointer) panel);
-
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_panel_set_audio_channels), NULL);
@@ -122,14 +135,16 @@ ags_panel_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_panel_set_pads), NULL);
 }
 
-void
-ags_panel_destroy(GtkObject *object)
+static void
+ags_panel_finalize(GObject *gobject)
 {
+  G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
 }
 
 void
 ags_panel_show(GtkWidget *widget)
 {
+  GTK_WIDGET_CLASS(ags_panel_parent_class)->show(widget);
 }
 
 void

@@ -1,10 +1,10 @@
 joel@weedlight.ch
 
-You need a realtime kernel in conjunction with ags. The realtime kernel shipped with Ubuntu Studio didn't work but a self compiled worked. See http://rt.wiki.kernel.org/ for more information.
+You need a realtime kernel in conjunction with ags. The realtime kernel shipped with Ubuntu Studio didn't work but a self compiled worked. See http://rt.wiki.kernel.org/ for more information. 
 
 
 TODO:
-- write a destroy task
+- revise destroy functions - disconnect before destroying
 - play channel when linked if needed
 - implement an iteration function for ags_channel_recursive_play_init
 - AgsCopyPattern implementation in AgsDrum and AgsMatrix doesn't have correct abort code, perhaps see AgsDelay
@@ -22,6 +22,9 @@ TODO:
 - remove ags_editor_reset and move code to callback functions
 - ags_editor.c implement machine_changed signal
 - ags_audio.c add protection against multiple pads on AgsChannel's with AGS_AUDIO_ASYNC and without AgsAudioSignal on AgsOutput
+
+DONE:
+- write a destroy task (see <ags/audio/recall/ags_remove_audio_run.[ch]>)
 
 NEW CODE (not well tested yet):
 - ags_copy_pattern_shared_channel

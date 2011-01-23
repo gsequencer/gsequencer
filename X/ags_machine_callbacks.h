@@ -16,7 +16,7 @@ int ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *m
 int ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_hide_activate_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine);
 

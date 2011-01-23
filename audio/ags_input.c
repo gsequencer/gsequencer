@@ -25,8 +25,13 @@ ags_input_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_input_init,
     };
-    ags_type_input = g_type_register_static (AGS_TYPE_CHANNEL, "AgsInput\0", &ags_input_info, 0);
+
+    ags_type_input = g_type_register_static(AGS_TYPE_CHANNEL,
+					    "AgsInput\0",
+					    &ags_input_info,
+					    0);
   }
+
   return (ags_type_input);
 }
 
@@ -58,7 +63,8 @@ ags_input_finalize(GObject *gobject)
 
   input = AGS_INPUT(gobject);
 
-  g_object_unref(input->file);
+  if(input->file != NULL)
+    g_object_unref(input->file);
 
   G_OBJECT_CLASS(ags_input_parent_class)->finalize(gobject);
 }

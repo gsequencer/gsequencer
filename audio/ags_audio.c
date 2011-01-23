@@ -1,5 +1,7 @@
 #include <ags/audio/ags_audio.h>
 
+#include <ags/lib/ags_list.h>
+
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 
@@ -154,21 +156,10 @@ ags_audio_finalize(GObject *gobject)
 {
   AgsAudio *audio;
   AgsChannel *channel;
-  GList *list, *list_next;
 
   audio = AGS_AUDIO(gobject);
 
-  /* recall */
-  list = audio->recall;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref((GObject *) list->data);
-    g_list_free1(list);
-
-    list = list_next;
-  }
+  g_object_unref(audio->devout);
 
   /* output */
   channel = audio->output;
@@ -194,17 +185,19 @@ ags_audio_finalize(GObject *gobject)
     g_object_unref(channel);
   }
 
-  /* notation */
-  list = audio->notation;
+  /* free some lists */
+  ags_list_free_and_unref_link(audio->notation);
 
-  while(list != NULL){
-    list_next = list->next;
-   
-    g_object_unref((GObject *) list->data);
-    g_list_free1(list);
+  if(audio->devout_play != NULL)
+    free(audio->devout_play);
 
-    list = list_next;
-  }
+  ags_list_free_and_unref_link(audio->recall_id);
+
+  ags_list_free_and_unref_link(audio->recall);
+  ags_list_free_and_unref_link(audio->play);
+
+  ags_list_free_and_unref_link(audio->recall_remove);
+  ags_list_free_and_unref_link(audio->play_remove);
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_parent_class)->finalize(gobject);
@@ -1434,6 +1427,7 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
     }
   }
 
+  g_object_ref(devout);
   audio->devout = devout;
 
   if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)

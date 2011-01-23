@@ -420,8 +420,13 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     if((AGS_DEVOUT_PLAY_DONE & (drum->machine.audio->devout_play->flags)) == 0){
       AgsCancelAudio *cancel_audio;
 
+      /* create cancel task */
       cancel_audio = ags_cancel_audio_new(drum->machine.audio, drum->machine.audio->devout_play->group_id,
 					  drum->machine.audio->devout_play);
+
+      /* append AgsCancelAudio */
+      ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
+			     AGS_TASK(cancel_audio));
     }else{
       drum->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
       drum->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);

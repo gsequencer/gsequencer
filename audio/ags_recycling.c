@@ -1,5 +1,7 @@
 #include <ags/audio/ags_recycling.h>
 
+#include <ags/lib/ags_list.h>
+
 #include <ags/object/ags_marshal.h>
 
 #include <ags/audio/ags_devout.h>
@@ -128,17 +130,9 @@ ags_recycling_finalize(GObject *gobject)
   recycling = AGS_RECYCLING(gobject);
 
   /* AgsAudioSignal */
-  list = recycling->audio_signal;
+  ags_list_free_and_unref_link(recycling->audio_signal);
 
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
-
-    list = list_next;
-  }
-
+  /* call parent */
   G_OBJECT_CLASS(ags_recycling_parent_class)->finalize(gobject);
 }
 

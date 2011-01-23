@@ -28,14 +28,6 @@ ags_machine_parent_set_callback(GtkWidget *widget,
 }
 
 int
-ags_machine_destroy_callback(GtkObject *object, AgsMachine *machine)
-{
-  ags_machine_destroy(object);
-
-  return(0);
-}
-
-int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
 {
   AgsWindow *window = AGS_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET(handle_box)));
@@ -110,12 +102,13 @@ ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine)
   return(0);
 }
 
-int
+void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
-  gtk_widget_destroy((GtkWidget *) machine);
+  fprintf(stdout, "popup\n\0");
 
-  return(0);
+  ags_connectable_disconnect(AGS_CONNECTABLE(machine));
+  gtk_widget_destroy((GtkWidget *) machine);
 }
 
 int

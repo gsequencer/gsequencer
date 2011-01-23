@@ -10,13 +10,15 @@ void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable
 void ags_machine_init(AgsMachine *machine);
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
-void ags_machine_destroy(GtkObject *object);
+static void ags_machine_finalize(GObject *gobject);
 void ags_machine_show(GtkWidget *widget);
 
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 
 extern void ags_file_read_machine(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_machine(AgsFile *file, AgsMachine *machine);
+
+static gpointer ags_machine_parent_class = NULL;
 
 GType
 ags_machine_get_type(void)
@@ -57,6 +59,20 @@ ags_machine_get_type(void)
 void
 ags_machine_class_init(AgsMachineClass *machine)
 {
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+
+  ags_machine_parent_class = g_type_class_peek_parent(machine);
+
+  /* GtkObjectClass */
+  gobject = (GObjectClass *) machine;
+
+  gobject->finalize = ags_machine_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) machine;
+
+  widget->show = ags_machine_show;
 }
 
 void
@@ -104,9 +120,7 @@ ags_machine_connect(AgsConnectable *connectable)
   /* AgsAudio */
   ags_connectable_connect(AGS_CONNECTABLE(machine->audio));
 
-  /* GtkObject */
-  g_signal_connect(G_OBJECT (machine), "destroy\0",
-		   G_CALLBACK(ags_machine_destroy_callback), (gpointer) machine);
+  /* GtkObject * /
 
   /* GtkWidget */
   g_signal_connect(G_OBJECT (machine), "button_press_event\0",
@@ -141,19 +155,21 @@ ags_machine_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
-ags_machine_destroy(GtkObject *object)
+static void
+ags_machine_finalize(GObject *gobject)
 {
   AgsMachine *machine;
+  char *str;
 
-  machine = (AgsMachine *) object;
+  machine = (AgsMachine *) gobject;
 
-  fprintf(stdout, "ags_machine_destroy\n\0");
+  if(machine->name != NULL)
+    g_free(machine->name);
 
-  //  if(machine->name != NULL)
-  //    free(machine->name);
+  if(machine->audio != NULL)
+    g_object_unref(G_OBJECT(machine->audio));
 
-  g_object_unref((GObject *) machine->audio);
+  G_OBJECT_CLASS(ags_machine_parent_class)->finalize(gobject);
 }
 
 void
@@ -162,6 +178,8 @@ ags_machine_show(GtkWidget *widget)
   AgsMachine *machine = (AgsMachine *) widget;
   AgsWindow *window;
   GtkFrame *frame;
+
+  GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
   window->counter->everything++;

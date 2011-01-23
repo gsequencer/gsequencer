@@ -140,8 +140,13 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
     if((AGS_DEVOUT_PLAY_DONE & (matrix->machine.audio->devout_play->flags)) == 0){
       AgsCancelAudio *cancel_audio;
 
+      /* create cancel task */
       cancel_audio = ags_cancel_audio_new(matrix->machine.audio, matrix->machine.audio->devout_play->group_id,
 					  matrix->machine.audio->devout_play);
+
+      /* append AgsAppendAudio */
+      ags_devout_append_task(AGS_DEVOUT(matrix->machine.audio->devout),
+			     AGS_TASK(cancel_audio));
     }else{
       matrix->machine.audio->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
       matrix->machine.audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);

@@ -292,7 +292,7 @@ void
 ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old)
 {
-  //  AgsMachine *machine;
+  AgsMachine *machine;
   AgsLine *line;
   AgsChannel *channel;
   guint i;
@@ -300,12 +300,11 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
   if(audio_channels > audio_channels_old){
-    //    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
+    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
     channel = ags_channel_nth(pad->channel, audio_channels_old);
 
+    /* create AgsLine */
     for(i = audio_channels_old; i < audio_channels; i++){
-      //      fprintf(stdout, "  loop\n\0");
-
       line = (AgsLine *) g_object_new(line_type,
 				      "pad\0", pad,
 				      "channel\0", channel,
@@ -317,15 +316,48 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
       channel = channel->next;
     }
 
+    /* set selected AgsLine in AgsPad */
     if(audio_channels_old == 0){
       pad->selected_line = AGS_LINE(gtk_container_get_children((GtkContainer *) pad->option->menu)->data);
+    }
 
-    //    if(machine != NULL && GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
-      //     gtk_widget_show_all((GtkWidget *) line);
-      //      ags_line_connect(line);
-    //    }
+    /* check if we should show and connect the AgsLine */
+    if(machine != NULL && GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
+      GList *list;
+
+      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(gtk_option_menu_get_menu(pad->option))),
+			audio_channels_old);
+
+      /* show and connect AgsLine */
+      while(list != NULL){
+	line = AGS_LINE(list->data);
+
+	gtk_widget_show_all((GtkWidget *) line);
+	ags_connectable_connect(AGS_CONNECTABLE(line));
+
+	list = list->next;
+      }
     }
   }else if(audio_channels < audio_channels_old){
+    GList *list, *list_start;
+
+    list_start =
+      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(gtk_option_menu_get_menu(pad->option))),
+			audio_channels);
+    
+    while(list != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+      list = list->next;
+    }
+
+    list = list_start;
+
+    while(list != NULL){
+      gtk_widget_destroy(GTK_WIDGET(list->data));
+
+      list = list->next;
+    }
   }
 }
 

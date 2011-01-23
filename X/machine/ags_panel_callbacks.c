@@ -16,11 +16,3 @@ ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel
   panel->machine.name = g_strdup_printf("Default %d\0", window->counter->panel);
   window->counter->panel++;
 }
-
-gboolean
-ags_panel_destroy_callback(GtkObject *object, AgsPanel *panel)
-{
-  ags_panel_destroy(object);
-
-  return(TRUE);
-}
