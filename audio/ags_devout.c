@@ -201,51 +201,49 @@ ags_devout_finalize(GObject *gobject)
 
   devout = AGS_DEVOUT(gobject);
 
+  /* free output buffer */
   free(devout->buffer[0]);
   free(devout->buffer[1]);
   free(devout->buffer[2]);
   free(devout->buffer[3]);
 
+  /* free buffer array */
   free(devout->buffer);
 
+  /* free AgsAttack */
   free(devout->attack);
 
-  /* AgsRecall */
-  list = devout->play_recall;
+  /* free thread related structs */
+  pthread_attr_destroy(&(devout->play_thread_attr));
+  pthread_mutex_destroy(&(devout->play_mutex));
+  pthread_mutexattr_destroy(&(devout->play_mutex_attr));
+  pthread_cond_destroy(&(devout->play_wait_cond));
 
-  while(list != NULL){
-    list_next = list->next;
+  pthread_attr_destroy(&(devout->play_functions_thread_attr));
+  pthread_mutex_destroy(&(devout->play_functions_mutex));
+  pthread_mutexattr_destroy(&(devout->play_functions_mutex_attr));
+  pthread_cond_destroy(&(devout->play_functions_wait_cond));
 
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
+  pthread_mutex_destroy(&(devout->task_mutex));
+  pthread_cond_destroy(&(devout->task_wait_cond));
 
-    list = list_next;
-  }
+  pthread_mutex_destroy(&(devout->append_task_mutex));
+  pthread_cond_destroy(&(devout->append_task_wait_cond));
+  pthread_cond_destroy(&(devout->append_task_lock_cond));
 
-  /* AgsChannel */
-  list = devout->play_channel;
+  pthread_mutex_destroy(&(devout->append_task_pending_mutex));
+  pthread_mutexattr_destroy(&(devout->append_task_pending_wait_cond));
 
-  while(list != NULL){
-    list_next = list->next;
+  /* free AgsTask lists */
+  ags_list_free_and_unref_link(devout->append_task)
+  ags_list_free_and_unref_link(devout->task)
 
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
+  /* free AgsDevoutPlay lists */
+  ags_list_free_and_free_link(devout->play_recall);
+  ags_list_free_and_free_link(devout->play_channel);
+  ags_list_free_and_free_link(devout->play_audio);
 
-    list = list_next;
-  }
-
-  /* AgsAudio */
-  list = devout->play_audio;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
-
-    list = list_next;
-  }
-
+  /* call parent */
   G_OBJECT_CLASS(ags_devout_parent_class)->finalize(gobject);
 }
 

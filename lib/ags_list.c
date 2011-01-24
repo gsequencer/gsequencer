@@ -1,6 +1,21 @@
 #include <ags/lib/ags_list.h>
 
 void
+ags_list_free_and_free_link(GList *list)
+{
+  GList *list_next;
+
+  while(list != NULL){
+    list_next = list->next;
+   
+    g_free(list->data);
+    g_list_free1(list);
+
+    list = list_next;
+  }
+}
+
+void
 ags_list_free_and_unref_link(GList *list)
 {
   GList *list_next;
