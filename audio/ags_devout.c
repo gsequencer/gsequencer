@@ -232,11 +232,11 @@ ags_devout_finalize(GObject *gobject)
   pthread_cond_destroy(&(devout->append_task_lock_cond));
 
   pthread_mutex_destroy(&(devout->append_task_pending_mutex));
-  pthread_mutexattr_destroy(&(devout->append_task_pending_wait_cond));
+  pthread_cond_destroy(&(devout->append_task_pending_wait_cond));
 
   /* free AgsTask lists */
-  ags_list_free_and_unref_link(devout->append_task)
-  ags_list_free_and_unref_link(devout->task)
+  ags_list_free_and_unref_link(devout->append_task);
+  ags_list_free_and_unref_link(devout->task);
 
   /* free AgsDevoutPlay lists */
   ags_list_free_and_free_link(devout->play_recall);
