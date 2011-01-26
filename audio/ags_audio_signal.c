@@ -1,4 +1,24 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/ags_audio_signal.h>
+
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 
@@ -6,8 +26,26 @@
 #include <string.h>
 
 void ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal_class);
+void ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_signal_init(AgsAudioSignal *audio_signal);
+void ags_audio_signal_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_audio_signal_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_audio_signal_finalize(GObject *gobject);
+void ags_audio_signal_connect(AgsConnectable *connectable);
+void ags_audio_signal_disconnect(AgsConnectable *connectable);
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+  PROP_RECYCLING,
+  PROP_RECALL_ID,
+};
 
 static gpointer ags_audio_signal_parent_class = NULL;
 
@@ -29,10 +67,20 @@ ags_audio_signal_get_type(void)
       (GInstanceInitFunc) ags_audio_signal_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_audio_signal_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_audio_signal = g_type_register_static(G_TYPE_OBJECT,
 						   "AgsAudioSignal\0",
 						   &ags_audio_signal_info,
 						   0);
+
+    g_type_add_interface_static(ags_type_audio_signal,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_audio_signal);
@@ -42,11 +90,53 @@ void
 ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_audio_signal_parent_class = g_type_class_peek_parent(audio_signal);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) audio_signal;
+
+  gobject->set_property = ags_audio_signal_set_property;
+  gobject->get_property = ags_audio_signal_get_property;
+
   gobject->finalize = ags_audio_signal_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recycling\0",
+				   "assigned recycling\0",
+				   "The devout it is assigned with\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall-id\0",
+				   "assigned recall id\0",
+				   "The recall id it is assigned with\0",
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
+
+}
+
+void
+ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_audio_signal_connect;
+  connectable->disconnect = ags_audio_signal_disconnect;
 }
 
 void
@@ -68,26 +158,93 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 }
 
 void
+ags_audio_signal_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAudioSignal *audio_signal;
+
+  audio_signal = AGS_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      GObject *devout;
+
+      devout = g_value_get_object(value);
+
+      g_object_ref(devout);
+      audio_signal->devout = devout;
+    }
+    break;
+  case PROP_RECYCLING:
+    {
+      GObject *recycling;
+
+      recycling = g_value_get_object(value);
+
+      g_object_ref(recycling);
+      audio_signal->recycling = recycling;
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      GObject *recall_id;
+
+      recall_id = g_value_get_object(value);
+
+      g_object_ref(recall_id);
+      audio_signal->recall_id = recall_id;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_audio_signal_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsAudioSignal *audio_signal;
+
+  audio_signal = AGS_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    g_value_set_object(value, audio_signal->devout);
+    break;
+  case PROP_RECYCLING:
+    g_value_set_object(value, audio_signal->recycling);
+    break;
+  case PROP_RECALL_ID:
+    g_value_set_object(value, audio_signal->recall_id);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_audio_signal_finalize(GObject *gobject)
 {
   AgsAudioSignal *audio_signal;
-  GList *list, *list_next;
 
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0)
     fprintf(stdout, "AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
 
-  list = audio_signal->stream_beginning;
+  g_object_unref(audio_signal->devout);
+  g_object_unref(audio_signal->recycling);
+  g_object_unref(audio_signal->recall_id);
 
-  while(list != NULL){
-    list_next = list->next;
-
-    free((short *) list->data);
-    g_list_free1(list);
-
-    list = list_next;
-  }
+  ags_list_free_and_free_link(audio_signal->stream_beginning);
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
@@ -102,6 +259,18 @@ ags_stream_alloc(guint buffer_size)
   memset(buffer, 0, buffer_size * sizeof(short));
 
   return(buffer);
+}
+
+void
+ags_audio_signal_connect(AgsConnectable *connectable)
+{
+  // empty
+}
+
+void
+ags_audio_signal_disconnect(AgsConnectable *connectable)
+{
+  // empty
 }
 
 AgsAttack*
@@ -152,11 +321,6 @@ ags_attack_get_from_devout(GObject *devout0)
 			      0, 0);
 
   return(attack);
-}
-
-void
-ags_audio_signal_connect(AgsAudioSignal *audio_signal)
-{
 }
 
 void
@@ -378,11 +542,17 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
 }
 
 AgsAudioSignal*
-ags_audio_signal_new(GObject *recycling, GObject *recall_id)
+ags_audio_signal_new(GObject *devout,
+		     GObject *recycling,
+		     GObject *recall_id)
 {
   AgsAudioSignal *audio_signal;
 
-  audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL, NULL);
+  audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+						 "devout\0", devout,
+						 "recycling\0", recycling,
+						 "recall-id\0", recall_id,
+						 NULL);
 
   audio_signal->recycling = recycling;
   audio_signal->recall_id = recall_id;

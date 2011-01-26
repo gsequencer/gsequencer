@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/object/ags_connectable.h>
@@ -185,11 +203,12 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   i_stop = audio_file->start_channel + audio_file->audio_channels;
 
   for(; i < i_stop; i++){
-    audio_signal = ags_audio_signal_new(NULL, NULL);
+    audio_signal = ags_audio_signal_new((GObject *) audio_file->devout,
+					NULL,
+					NULL);
     list = g_list_prepend(list, audio_signal);
 
-    audio_signal->devout = (GObject *) audio_file->devout;
-    ags_audio_signal_connect(audio_signal);
+    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 
     list->data = (gpointer) audio_signal;
     audio_signal->devout = (GObject *) audio_file->devout;

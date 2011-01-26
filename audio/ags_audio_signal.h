@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #ifndef __AGS_AUDIO_SIGNAL_H__
 #define __AGS_AUDIO_SIGNAL_H__
 
@@ -63,8 +81,6 @@ AgsAttack* ags_attack_alloc(guint first_start, guint first_length,
 AgsAttack* ags_attack_duplicate(AgsAttack *attack);
 AgsAttack* ags_attack_get_from_devout(GObject *devout);
 
-void ags_audio_signal_connect(AgsAudioSignal *audio_signal);
-
 void ags_audio_signal_add_stream(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 
@@ -80,7 +96,8 @@ GList* ags_audio_signal_get_stream_current(GList *audio_signal,
 GList* ags_audio_signal_get_by_recall_id(GList *audio_signal,
 					 GObject *recall_id);
 
-AgsAudioSignal* ags_audio_signal_new(GObject *recycling,
+AgsAudioSignal* ags_audio_signal_new(GObject *devout,
+				     GObject *recycling,
 				     GObject *owner);
 
 #endif /*__AGS_AUDIO_SIGNAL_H__*/

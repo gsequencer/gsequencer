@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_callbacks.h>
 
@@ -522,11 +540,19 @@ ags_synth_update(AgsSynth *synth)
 }
 
 AgsSynth*
-ags_synth_new()
+ags_synth_new(GObject *devout)
 {
   AgsSynth *synth;
+  GValue value;
 
-  synth = (AgsSynth *) g_object_new(AGS_TYPE_SYNTH, NULL);
+  synth = (AgsSynth *) g_object_new(AGS_TYPE_SYNTH,
+				    NULL);
+
+  g_value_init(&value, G_TYPE_OBJECT);
+  g_value_set_object(&value, devout);
+
+  g_object_set_property(G_OBJECT(synth->machine.audio),
+			"devout\0", &value);
 
   return(synth);
 }

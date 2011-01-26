@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/ags_audio.h>
 
 #include <ags/lib/ags_list.h>
@@ -17,6 +35,14 @@
 void ags_audio_class_init(AgsAudioClass *audio_class);
 void ags_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_init(AgsAudio *audio);
+void ags_audio_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec);
+void ags_audio_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec);
 void ags_audio_finalize(GObject *gobject);
 
 void ags_audio_connect(AgsConnectable *connectable);
@@ -27,12 +53,18 @@ void ags_audio_real_set_audio_channels(AgsAudio *audio,
 void ags_audio_real_set_pads(AgsAudio *audio,
 			     GType type,
 			     guint channels, guint channels_old);
+void ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout);
 
 enum{
   SET_AUDIO_CHANNELS,
   SET_PADS,
   SET_LINES,
   LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
 };
 
 static gpointer ags_audio_parent_class = NULL;
@@ -79,16 +111,33 @@ void
 ags_audio_class_init(AgsAudioClass *audio)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_audio_parent_class = g_type_class_peek_parent(audio);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) audio;
+
+  gobject->set_property = ags_audio_set_property;
+  gobject->get_property = ags_audio_get_property;
 
   gobject->finalize = ags_audio_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  /* AgsAudioClass */
   audio->set_audio_channels = ags_audio_real_set_audio_channels;
   audio->set_pads = ags_audio_real_set_pads;
 
+  /* signals */
   audio_signals[SET_AUDIO_CHANNELS] = 
     g_signal_new("set_audio_channels\0",
 		 G_TYPE_FROM_CLASS(audio),
@@ -149,6 +198,52 @@ ags_audio_init(AgsAudio *audio)
   audio->play_remove = NULL;
 
   audio->machine = NULL;
+}
+
+void
+ags_audio_set_property(GObject *gobject,
+		       guint prop_id,
+		       const GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsAudio *audio;
+
+  audio = AGS_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      ags_audio_set_devout(audio, devout);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_audio_get_property(GObject *gobject,
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsAudio *audio;
+
+  audio = AGS_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    g_value_set_object(value, audio->devout);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -1407,9 +1502,9 @@ ags_audio_cancel(AgsAudio *audio, guint audio_channel, guint group_id,
  * AgsDevout related
  */
 void
-ags_audio_set_devout(AgsAudio *audio, GObject *devout)
+ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
 {
-  void ags_audio_set_devout_real(AgsChannel *channel){
+  void ags_audio_set_devout_for_audio_signal(AgsChannel *channel){
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
 
@@ -1417,8 +1512,15 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
       recycling = channel->first_recycling;
 
       while(recycling != channel->last_recycling->next){
+	GValue value = {0,};
+
 	audio_signal = ags_audio_signal_get_template(recycling->audio_signal);
-	audio_signal->devout = devout;
+
+	g_value_init(&value, G_TYPE_OBJECT);
+	g_value_set_object(&value, audio_signal);
+
+	g_object_set_property(G_OBJECT(audio_signal),
+			      "devout\0", &value);
 
 	recycling = recycling->next;
       }
@@ -1427,22 +1529,26 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
     }
   }
 
+  g_object_unref(audio->devout);
+
   g_object_ref(devout);
-  audio->devout = devout;
+  audio->devout = (GObject *) devout;
 
   if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
-    ags_audio_set_devout_real(audio->input);
+    ags_audio_set_devout_for_audio_signal(audio->input);
 
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
-    ags_audio_set_devout_real(audio->output);
+    ags_audio_set_devout_for_audio_signal(audio->output);
 }
 
 AgsAudio*
-ags_audio_new()
+ags_audio_new(AgsDevout *devout)
 {
   AgsAudio *audio;
 
-  audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO, NULL);
+  audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
+				    "devout\0", devout,
+				    NULL);
 
   return(audio);
 }

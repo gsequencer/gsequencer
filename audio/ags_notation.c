@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/ags_notation.h>
 
 #include <stdlib.h>
@@ -25,8 +43,13 @@ ags_notation_get_type()
       0,
       (GInstanceInitFunc) ags_notation_init,
     };
-    notation_type = g_type_register_static(G_TYPE_OBJECT, "AgsNotation\0", &notation_info, 0);
+
+    notation_type = g_type_register_static(G_TYPE_OBJECT,
+					   "AgsNotation\0",
+					   &notation_info,
+					   0);
   }
+
   return(notation_type);
 }
 
@@ -50,7 +73,7 @@ ags_notation_init(AgsNotation *notation)
 
   notation->base_frequence = 0;
 
-  notation->tact = "1/4\0";
+  notation->tact = g_strdup("1/4\0");
   notation->bpm = 120;
 
   notation->note = NULL;
@@ -65,16 +88,10 @@ ags_notation_finalize(GObject *gobject)
 
   notation = AGS_NOTATION(gobject);
 
-  list = notation->note;
+  if(notation->tact != NULL)
+    g_free(notation->tact);
 
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
-
-    list = list_next;
-  }
+  ags_list_free_and_unref_link(notation->note);
 
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
 }

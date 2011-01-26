@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/X/ags_machine_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
@@ -10,22 +28,6 @@ int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response,
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry\0"
 
-int
-ags_machine_parent_set_callback(GtkWidget *widget,
-				GtkObject *old_parent,
-				AgsMachine *machine)
-{
-  AgsWindow *window;
-
-  if(old_parent != NULL)
-    return(0);
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
-
-  ags_audio_set_devout(machine->audio, G_OBJECT(window->navigation->devout));
-
-  return(0);
-}
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)

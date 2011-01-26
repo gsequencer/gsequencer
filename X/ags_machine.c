@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
@@ -87,9 +105,6 @@ ags_machine_init(AgsMachine *machine)
 {
   GtkFrame *frame;
 
-  g_signal_connect_after((GObject *) machine, "parent_set\0",
-			 G_CALLBACK(ags_machine_parent_set_callback), (gpointer) machine);
-
   machine->flags = 0;
 
   machine->name = NULL;
@@ -97,7 +112,7 @@ ags_machine_init(AgsMachine *machine)
   frame = (GtkFrame *) gtk_frame_new(NULL);
   gtk_container_add((GtkContainer *) machine, (GtkWidget *) frame);
 
-  machine->audio = ags_audio_new();
+  machine->audio = ags_audio_new(NULL);
   machine->audio->machine = (GtkWidget *) machine;
 
   machine->output = NULL;
@@ -238,11 +253,19 @@ ags_machine_find_by_name(GList *list, char *name)
 }
 
 AgsMachine*
-ags_machine_new()
+ags_machine_new(GObject *devout)
 {
   AgsMachine *machine;
+  GValue value;
 
-  machine = (AgsMachine *) g_object_new(AGS_TYPE_MACHINE, NULL);
+  machine = (AgsMachine *) g_object_new(AGS_TYPE_MACHINE,
+					NULL);
+  
+  g_value_init(&value, G_TYPE_OBJECT);
+  g_value_set_object(&value, devout);
+
+  g_object_set_property(G_OBJECT(machine->audio),
+			"devout\0", &value);
 
   return(machine);
 }

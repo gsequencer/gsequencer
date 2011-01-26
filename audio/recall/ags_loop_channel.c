@@ -1,4 +1,24 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/recall/ags_loop_channel.h>
+
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -86,22 +106,21 @@ ags_loop_channel_run_pre(AgsRecall *recall, AgsRecallID *recall_id,
 
   devout = AGS_DEVOUT(AGS_AUDIO(loop_channel->channel->audio)->devout);
 
-
-    recycling = loop_channel->channel->first_recycling;
-
-    while(recycling != loop_channel->channel->last_recycling->next){
-      audio_signal = ags_audio_signal_new((GObject *) recycling,
-					  (GObject *) recall_id);
-      audio_signal->devout = (GObject *) devout;
-      ags_audio_signal_connect(audio_signal);
-
-      ags_recycling_add_audio_signal(recycling,
-				     audio_signal);
-      audio_signal->stream_current = audio_signal->stream_beginning;
-      
-      
-      recycling = recycling->next;
-    }
+  recycling = loop_channel->channel->first_recycling;
+ 
+  while(recycling != loop_channel->channel->last_recycling->next){
+    audio_signal = ags_audio_signal_new((GObject *) devout,
+					(GObject *) recycling,
+					(GObject *) recall_id);
+    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+    
+    ags_recycling_add_audio_signal(recycling,
+				   audio_signal);
+    audio_signal->stream_current = audio_signal->stream_beginning;
+    
+    
+    recycling = recycling->next;
+  }
 }
 
 AgsLoopChannel*

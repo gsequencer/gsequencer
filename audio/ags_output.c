@@ -1,4 +1,24 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/ags_output.h>
+
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -28,8 +48,13 @@ ags_output_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_output_init,
     };
-    ags_type_output = g_type_register_static(AGS_TYPE_CHANNEL, "AgsOutput\0", &ags_output_info, 0);
+
+    ags_type_output = g_type_register_static(AGS_TYPE_CHANNEL,
+					     "AgsOutput\0",
+					     &ags_output_info,
+					     0);
   }
+
   return (ags_type_output);
 }
 
@@ -86,10 +111,10 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
   ags_copy_pattern_map_destination0:
     fprintf(stdout, "ags_output_map_audio_signal\n\0");
 
-    audio_signal = ags_audio_signal_new((GObject *) output->channel.first_recycling,
+    audio_signal = ags_audio_signal_new((GObject *) devout,
+					(GObject *) output->channel.first_recycling,
 					(GObject *) recall_id);
-    audio_signal->devout = (GObject *) devout;
-    ags_audio_signal_connect(audio_signal);
+    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 
     ags_recycling_add_audio_signal(output->channel.first_recycling,
 				   audio_signal);

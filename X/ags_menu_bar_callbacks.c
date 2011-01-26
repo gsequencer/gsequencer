@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/X/ags_menu_bar_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
@@ -157,7 +175,7 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  panel = ags_panel_new();
+  panel = ags_panel_new(G_OBJECT(window->navigation->devout));
   widget = (GtkWidget *) panel;
   gtk_box_pack_start((GtkBox *) window->machines,
 		     widget,
@@ -181,7 +199,7 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  mixer = ags_mixer_new();
+  mixer = ags_mixer_new(G_OBJECT(window->navigation->devout));
   widget = (GtkWidget *) mixer;
   gtk_box_pack_start((GtkBox *) window->machines,
 		     widget,
@@ -210,7 +228,7 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  drum = ags_drum_new();
+  drum = ags_drum_new(G_OBJECT(window->navigation->devout));
   widget = (GtkWidget*) drum;
   gtk_box_pack_start((GtkBox *) window->machines,
 		     widget,
@@ -270,7 +288,7 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  matrix = ags_matrix_new();
+  matrix = ags_matrix_new(G_OBJECT(window->navigation->devout));
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) matrix,
 		     FALSE, FALSE, 0);
@@ -292,7 +310,7 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  synth = ags_synth_new();
+  synth = ags_synth_new(G_OBJECT(window->navigation->devout));
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) synth,
 		     FALSE, FALSE, 0);
@@ -314,7 +332,7 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  ffplayer =  ags_ffplayer_new();
+  ffplayer = ags_ffplayer_new(G_OBJECT(window->navigation->devout));
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) ffplayer,
 		     FALSE, FALSE, 0);

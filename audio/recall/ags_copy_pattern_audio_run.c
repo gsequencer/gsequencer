@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 #include <ags/object/ags_connectable.h>
@@ -277,10 +295,10 @@ ags_copy_pattern_audio_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
     recycling = copy_pattern_channel->destination->first_recycling;
 
     while(recycling != copy_pattern_channel->destination->last_recycling->next){
-      audio_signal = ags_audio_signal_new((GObject *) recycling,
+      audio_signal = ags_audio_signal_new((GObject *) copy_pattern_audio->devout,
+					  (GObject *) recycling,
 					  (GObject *) AGS_RECALL(copy_pattern_audio_run)->recall_id);
-      audio_signal->devout = (GObject *) copy_pattern_audio->devout;
-      ags_audio_signal_connect(audio_signal);
+      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 
       ags_recycling_add_audio_signal(recycling,
 				     audio_signal);

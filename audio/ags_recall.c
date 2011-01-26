@@ -1,3 +1,21 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
 #include <ags/audio/ags_recall.h>
 
 #include <ags/object/ags_marshal.h>
@@ -606,16 +624,8 @@ ags_recall_finalize(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
-  list = recall->child;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
-
-    list = list_next;
-  }
+  g_free(recall->name);
+  ags_list_free_and_unref_link(recall->child);
 
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
 }
