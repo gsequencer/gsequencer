@@ -254,7 +254,8 @@ ags_audio_finalize(GObject *gobject)
 
   audio = AGS_AUDIO(gobject);
 
-  g_object_unref(audio->devout);
+  if(audio->devout != NULL)
+    g_object_unref(audio->devout);
 
   /* output */
   channel = audio->output;
@@ -387,7 +388,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }    
   }
   void ags_audio_set_audio_channels_grow_one(GType type){
-    channel = (AgsChannel *) g_object_new(type, NULL);
+    channel = (AgsChannel *) g_object_new(type,
+					  "audio", (GObject *) audio,
+					  NULL);
 
     if(type == AGS_TYPE_OUTPUT){
       /* AGS_TYPE_OUTPUT */
@@ -398,8 +401,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       audio->input = channel;
       pads = audio->input_pads;
     }
-
-    channel->audio = (GObject *) audio;
 
     if(alloc_recycling){
       recycling =
@@ -427,12 +428,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     for(j = 1; j < pads; j++){
       channel->next =
-	channel->next_pad = (AgsChannel *) g_object_new(type, NULL);
+	channel->next_pad = (AgsChannel *) g_object_new(type,
+							"audio\0", (GObject *) audio,
+							NULL);
       channel->next->prev = channel;
       channel = channel->next;
       channel->prev_pad = channel->prev;
-
-      channel->audio = (GObject *) audio;
 
       channel->pad = j;
       channel->line = j;
@@ -478,9 +479,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
      * linking with prev_channel is done later else linked channels would be lost
      */
     start =
-      channel = (AgsChannel *) g_object_new(type, NULL);
-
-    channel->audio = (GObject *) audio;
+      channel = (AgsChannel *) g_object_new(type,
+					    "audio\0", (GObject *) audio,
+					    NULL);
 
     channel->audio_channel = audio->audio_channels;
     channel->line = audio->audio_channels;
@@ -524,11 +525,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     prev_channel = next_channel;
 
     for(j = audio->audio_channels + 1; j < audio_channels; j++){
-      channel->next = (AgsChannel *) g_object_new(type, NULL);
+      channel->next = (AgsChannel *) g_object_new(type,
+						  "audio\0", (GObject *) audio,
+						  NULL);
       channel->next->prev = channel;
       channel = channel->next;
-
-      channel->audio = (GObject *) audio;
 
       channel->pad = 0;
       channel->audio_channel = j;
@@ -604,7 +605,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       /* alloc new AgsChannel's */
       start =
-	channel = (AgsChannel *) g_object_new(type, NULL);
+	channel = (AgsChannel *) g_object_new(type,
+					      "audio\0", (GObject *) audio,
+					      NULL);
 
       next_channel = prev_channel->next;
 
@@ -617,7 +620,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       goto ags_audio_set_audio_channels_grow0;
 
       for(; j < audio_channels; j++){
-	channel->next = (AgsChannel *) g_object_new(type, NULL);
+	channel->next = (AgsChannel *) g_object_new(type,
+						    "audio\0", (GObject *) audio,
+						    NULL);
 
 	channel->next->prev = channel;
 	channel = channel->next;
@@ -626,8 +631,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
 	prev_pad->next_pad = channel;
 	channel->prev_pad = prev_pad;
-
-	channel->audio = (GObject *) audio;
 
 	channel->pad = i;
 	channel->audio_channel = j;
@@ -680,7 +683,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     prev_channel->line = i * audio_channels + j;
 
     start =
-      channel = (AgsChannel *) g_object_new(type, NULL);
+      channel = (AgsChannel *) g_object_new(type,
+					    "audio\0", (GObject *) audio,
+					    NULL);
 
     prev_channel->next = start;
     start->prev = prev_channel;
@@ -689,7 +694,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     goto ags_audio_set_audio_channels_grow1;
 
     for(; j < audio_channels; j++){
-      channel->next = (AgsChannel *) g_object_new(type, NULL);
+      channel->next = (AgsChannel *) g_object_new(type,
+						  "audio\0", (GObject *) audio,
+						  NULL);
 
       channel->next->prev = channel;
       channel = channel->next;
@@ -698,8 +705,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       prev_pad->next_pad = channel;
       channel->prev_pad = prev_pad;
-
-      channel->audio = (GObject *) audio;
 
       channel->pad = i;
       channel->audio_channel = j;
@@ -963,9 +968,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
   gboolean alloc_recycling, link_recycling, set_sync_link, update_async_link, set_async_link;
   void ags_audio_set_pads_grow_one(){
     start =
-      channel = (AgsChannel *) g_object_new(type, NULL);
-
-    channel->audio = (GObject *) audio;
+      channel = (AgsChannel *) g_object_new(type,
+					    "audio\0", (GObject *) audio,
+					    NULL);
 
     if(alloc_recycling){
       channel->first_recycling =
@@ -994,11 +999,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
 
     for(j = 1; j < audio->audio_channels; j++){
-      channel->next = (AgsChannel *) g_object_new(type, NULL);
+      channel->next = (AgsChannel *) g_object_new(type,
+						  "audio\0", (GObject *) audio,
+						  NULL);
       channel->next->prev = channel;
       channel = channel->next;
-
-      channel->audio = (GObject *) audio;
 
       channel->audio_channel = j;
       channel->line = j;
@@ -1051,14 +1056,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
       }
 
       for(j = 0; j < audio->audio_channels; j++){
-	channel->next = (AgsChannel *) g_object_new(type, NULL);
+	channel->next = (AgsChannel *) g_object_new(type,
+						    "audio\0", (GObject *) audio,
+						    NULL);
 	channel->next->prev = channel;
 	channel = channel->next;
 
 	channel->prev_pad = prev_pad;
 	prev_pad->next_pad = channel;
-
-	channel->audio = (GObject *) audio;
 
 	channel->pad = i;
 	channel->audio_channel = j;

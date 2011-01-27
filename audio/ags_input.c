@@ -93,11 +93,13 @@ ags_input_connect(AgsInput *input)
 }
 
 AgsInput*
-ags_input_new()
+ags_input_new(GObject *audio)
 {
   AgsInput *input;
 
-  input = (AgsInput *) g_object_new(AGS_TYPE_INPUT, NULL);
+  input = (AgsInput *) g_object_new(AGS_TYPE_INPUT,
+				    "audio\0", audio,
+				    NULL);
 
   return(input);
 }

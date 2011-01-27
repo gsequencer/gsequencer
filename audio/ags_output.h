@@ -50,6 +50,6 @@ GType ags_output_get_type();
 
 void ags_output_connect(AgsOutput *output);
 
-AgsOutput* ags_output_new();
+AgsOutput* ags_output_new(GObject *audio);
 
 #endif /*__AGS_OUTPUT_H__*/

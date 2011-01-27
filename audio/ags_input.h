@@ -54,6 +54,6 @@ GType ags_input_get_type();
 
 void ags_input_connect(AgsInput *input);
 
-AgsInput* ags_input_new();
+AgsInput* ags_input_new(GObject *audio);
 
 #endif /*__AGS_INPUT_H__*/

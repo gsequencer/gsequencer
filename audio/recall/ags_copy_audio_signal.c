@@ -178,14 +178,18 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 {
   AgsCopyAudioSignal *copy_audio_signal;
 
-  G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
-
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(gobject);
 
-  g_object_unref(copy_audio_signal->destination);
-  free(copy_audio_signal->attack);
+  if(copy_audio_signal->destination != NULL)
+    g_object_unref(copy_audio_signal->destination);
 
-  g_object_unref(copy_audio_signal->source);
+  if(copy_audio_signal->attack != NULL)
+    free(copy_audio_signal->attack);
+
+  if(copy_audio_signal->source != NULL)
+    g_object_unref(copy_audio_signal->source);
+
+  G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
@@ -255,14 +259,24 @@ ags_copy_audio_signal_new(AgsAudioSignal *destination,
 
   copy_audio_signal = (AgsCopyAudioSignal *) g_object_new(AGS_TYPE_COPY_AUDIO_SIGNAL, NULL);
 
-  copy_audio_signal->destination = destination;
+  if(destination != NULL){
+    g_object_ref(G_OBJECT(destination));
 
-  copy_audio_signal->source = source;
+    copy_audio_signal->destination = destination;
+  }
 
-  copy_audio_signal->devout = devout;
+  if(source != NULL){
+    g_object_ref(G_OBJECT(source));
 
-  if(devout != NULL)
+    copy_audio_signal->source = source;
+  }
+
+  if(devout != NULL){
+    g_object_ref(G_OBJECT(devout));
+
+    copy_audio_signal->devout = devout;
     copy_audio_signal->attack = ags_attack_get_from_devout((GObject *) devout);
+  }
 
   return(copy_audio_signal);
 }

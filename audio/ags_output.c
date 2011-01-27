@@ -128,11 +128,13 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
 }
 
 AgsOutput*
-ags_output_new()
+ags_output_new(GObject *audio)
 {
   AgsOutput *output;
 
-  output = (AgsOutput *) g_object_new(AGS_TYPE_OUTPUT, NULL);
+  output = (AgsOutput *) g_object_new(AGS_TYPE_OUTPUT,
+				      "audio\0", audio,
+				      NULL);
 
   return(output);
 }

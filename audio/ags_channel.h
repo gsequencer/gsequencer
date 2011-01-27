@@ -150,6 +150,6 @@ void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_recall);
 void ags_channel_recursive_cancel(AgsChannel *channel, guint group_id);
 
-AgsChannel* ags_channel_new();
+AgsChannel* ags_channel_new(GObject *audio);
 
 #endif /*__AGS_CHANNEL_H__*/

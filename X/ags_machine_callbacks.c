@@ -107,8 +107,6 @@ ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine)
 void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
-  fprintf(stdout, "popup\n\0");
-
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);
 }

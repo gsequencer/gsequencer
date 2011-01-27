@@ -40,6 +40,14 @@
 
 void ags_channel_class_init(AgsChannelClass *channel_class);
 void ags_channel_init(AgsChannel *channel);
+void ags_channel_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec);
+void ags_channel_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec);
 void ags_channel_finalize(GObject *gobject);
 
 extern void ags_file_write_channel(AgsFile *file, AgsChannel *channel);
@@ -47,6 +55,11 @@ extern void ags_file_write_channel(AgsFile *file, AgsChannel *channel);
 enum{
   RECYCLING_CHANGED,
   LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
 };
 
 static gpointer ags_channel_parent_class = NULL;
@@ -82,16 +95,34 @@ void
 ags_channel_class_init(AgsChannelClass *channel)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_channel_parent_class = g_type_class_peek_parent(channel);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) channel;
+
+  gobject->set_property = ags_channel_set_property;
+  gobject->get_property = ags_channel_get_property;
+
   gobject->finalize = ags_channel_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio it is assigned with\0",
+				   AGS_TYPE_AUDIO ,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO ,
+				  param_spec);
+
+  /* AgsChannelClass */
   channel->write_file = ags_file_write_channel;
 
   channel->recycling_changed = NULL;
 
+  /* signals */
   channel_signals[RECYCLING_CHANGED] =
     g_signal_new("recycling_changed\0",
 		 G_TYPE_FROM_CLASS (channel),
@@ -147,6 +178,59 @@ ags_channel_init(AgsChannel *channel)
   channel->file_data = NULL;
 }
 
+
+void
+ags_channel_set_property(GObject *gobject,
+			 guint prop_id,
+			 const GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsChannel *channel;
+
+  channel = AGS_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      GObject *audio;
+
+      audio = g_value_get_object(value);
+
+      if(channel->audio == audio)
+	return;
+
+      if(audio != NULL)
+	g_object_ref(audio);
+
+      channel->audio = audio;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_channel_get_property(GObject *gobject,
+			 guint prop_id,
+			 GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsChannel *channel;
+
+  channel = AGS_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    g_value_set_object(value, channel->audio);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
 void
 ags_channel_finalize(GObject *gobject)
 {
@@ -154,6 +238,9 @@ ags_channel_finalize(GObject *gobject)
   AgsRecycling *recycling, *recycling_next;
 
   channel = AGS_CHANNEL(gobject);
+
+  if(channel->audio != NULL)
+    g_object_unref(channel->audio);
 
   /* AgsRecycling */
   if(((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 && AGS_IS_INPUT(channel)) ||
@@ -2106,11 +2193,13 @@ ags_channel_recursive_cancel(AgsChannel *channel, guint group_id)
 }
 
 AgsChannel*
-ags_channel_new()
+ags_channel_new(GObject *audio)
 {
   AgsChannel *channel;
 
-  channel = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL, NULL);
+  channel = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
+					"audio\0", audio,
+					NULL);
 
   return(channel);
 }

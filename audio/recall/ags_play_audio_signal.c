@@ -171,11 +171,15 @@ ags_play_audio_signal_finalize(GObject *gobject)
 {
   AgsPlayAudioSignal *play_audio_signal;
 
-  G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
-
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(gobject);
 
-  g_object_unref(play_audio_signal->source);
+  if(play_audio_signal->source != NULL)
+    g_object_unref(play_audio_signal->source);
+
+  if(play_audio_signal->devout != NULL)
+    g_object_unref(play_audio_signal->devout);
+
+  G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
@@ -259,13 +263,21 @@ ags_play_audio_signal_new(AgsAudioSignal *source, guint audio_channel,
   play_audio_signal = (AgsPlayAudioSignal *) g_object_new(AGS_TYPE_PLAY_AUDIO_SIGNAL,
 							  NULL);
 
-  play_audio_signal->devout = devout;
+  if(source != NULL){
+    g_object_ref(G_OBJECT(source));
 
-  if(devout != NULL)
-    play_audio_signal->attack = ags_attack_get_from_devout((GObject *) devout);
-  
-  play_audio_signal->source = source;
+    play_audio_signal->source = source;
+  }
+
   play_audio_signal->audio_channel = audio_channel;
+
+  if(devout != NULL){
+    g_object_ref(G_OBJECT(devout));
+
+    play_audio_signal->devout = devout;
+
+    play_audio_signal->attack = ags_attack_get_from_devout((GObject *) devout);
+  }
 
   return(play_audio_signal);
 }
