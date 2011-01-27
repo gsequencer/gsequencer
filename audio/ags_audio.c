@@ -1517,7 +1517,7 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
 	audio_signal = ags_audio_signal_get_template(recycling->audio_signal);
 
 	g_value_init(&value, G_TYPE_OBJECT);
-	g_value_set_object(&value, audio_signal);
+	g_value_set_object(&value, devout);
 
 	g_object_set_property(G_OBJECT(audio_signal),
 			      "devout\0", &value);
@@ -1529,11 +1529,17 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
     }
   }
 
-  g_object_unref(audio->devout);
+  if((AgsDevout *) audio->devout == devout)
+    return;
 
-  g_object_ref(devout);
+  if(audio->devout != NULL)
+    g_object_unref(audio->devout);
+
+  if(devout != NULL)
+    g_object_ref(devout);
+
   audio->devout = (GObject *) devout;
-
+	
   if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
     ags_audio_set_devout_for_audio_signal(audio->input);
 

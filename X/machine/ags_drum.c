@@ -721,16 +721,18 @@ AgsDrum*
 ags_drum_new(GObject *devout)
 {
   AgsDrum *drum;
-  GValue value;
+  GValue value = {0,};
 
   drum = (AgsDrum *) g_object_new(AGS_TYPE_DRUM,
 				  NULL);
 
-  g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, devout);
+  if(devout != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, devout);
 
-  g_object_set_property(G_OBJECT(drum->machine.audio),
-			"devout\0", &value);
+    g_object_set_property(G_OBJECT(drum->machine.audio),
+			  "devout\0", &value);
+  }
 
   return(drum);
 }

@@ -246,16 +246,18 @@ AgsPanel*
 ags_panel_new(GObject *devout)
 {
   AgsPanel *panel;
-  GValue value;
+  GValue value = {0,};
 
   panel = (AgsPanel *) g_object_new(AGS_TYPE_PANEL,
 				    NULL);
 
-  g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, devout);
+  if(devout != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, devout);
 
-  g_object_set_property(G_OBJECT(panel->machine.audio),
-			"devout\0", &value);
+    g_object_set_property(G_OBJECT(panel->machine.audio),
+			  "devout\0", &value);
+  }
 
   return(panel);
 }

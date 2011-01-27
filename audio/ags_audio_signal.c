@@ -174,7 +174,15 @@ ags_audio_signal_set_property(GObject *gobject,
 
       devout = g_value_get_object(value);
 
-      g_object_ref(devout);
+      if(audio_signal->devout == devout)
+	return;
+
+      if(audio_signal->devout != NULL)
+	g_object_unref(audio_signal->devout);
+
+      if(devout != NULL)
+	g_object_ref(devout);
+
       audio_signal->devout = devout;
     }
     break;
@@ -184,7 +192,12 @@ ags_audio_signal_set_property(GObject *gobject,
 
       recycling = g_value_get_object(value);
 
-      g_object_ref(recycling);
+      if(audio_signal->recycling == recycling)
+	return;
+
+      if(recycling != NULL)
+	g_object_ref(recycling);
+
       audio_signal->recycling = recycling;
     }
     break;
@@ -193,8 +206,16 @@ ags_audio_signal_set_property(GObject *gobject,
       GObject *recall_id;
 
       recall_id = g_value_get_object(value);
+      
+      if(audio_signal->recall_id == recall_id)
+	return;
+      
+      if(audio_signal->recall_id != NULL)
+	g_object_unref(audio_signal->recall_id);
 
-      g_object_ref(recall_id);
+      if(recall_id != NULL)
+	g_object_ref(recall_id);
+
       audio_signal->recall_id = recall_id;
     }
     break;
@@ -553,9 +574,6 @@ ags_audio_signal_new(GObject *devout,
 						 "recycling\0", recycling,
 						 "recall-id\0", recall_id,
 						 NULL);
-
-  audio_signal->recycling = recycling;
-  audio_signal->recall_id = recall_id;
 
   return(audio_signal);
 }

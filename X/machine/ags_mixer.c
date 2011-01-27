@@ -289,16 +289,18 @@ AgsMixer*
 ags_mixer_new(GObject *devout)
 {
   AgsMixer *mixer;
-  GValue value;
+  GValue value = {0,};
 
   mixer = (AgsMixer *) g_object_new(AGS_TYPE_MIXER,
 				    NULL);
 
-  g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, devout);
-
-  g_object_set_property(G_OBJECT(mixer->machine.audio),
-			"devout\0", &value);
+  if(devout != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, devout);
+    
+    g_object_set_property(G_OBJECT(mixer->machine.audio),
+			  "devout\0", &value);
+  }
 
   return(mixer);
 }

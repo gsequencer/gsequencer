@@ -543,16 +543,18 @@ AgsSynth*
 ags_synth_new(GObject *devout)
 {
   AgsSynth *synth;
-  GValue value;
+  GValue value = {0,};
 
   synth = (AgsSynth *) g_object_new(AGS_TYPE_SYNTH,
 				    NULL);
 
-  g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, devout);
-
-  g_object_set_property(G_OBJECT(synth->machine.audio),
-			"devout\0", &value);
+  if(devout != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, devout);
+    
+    g_object_set_property(G_OBJECT(synth->machine.audio),
+			  "devout\0", &value);
+  }
 
   return(synth);
 }

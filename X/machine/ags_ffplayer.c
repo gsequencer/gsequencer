@@ -353,16 +353,18 @@ AgsFFPlayer*
 ags_ffplayer_new(GObject *devout)
 {
   AgsFFPlayer *ffplayer;
-  GValue value;
+  GValue value = {0,};
 
   ffplayer = (AgsFFPlayer *) g_object_new(AGS_TYPE_FFPLAYER,
 					  NULL);
 
-  g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, devout);
-
-  g_object_set_property(G_OBJECT(ffplayer->machine.audio),
-			"devout\0", &value);
+  if(devout != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, devout);
+    
+    g_object_set_property(G_OBJECT(ffplayer->machine.audio),
+			  "devout\0", &value);
+  }
 
   return(ffplayer);
 }

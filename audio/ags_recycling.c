@@ -21,6 +21,7 @@
 #include <ags/lib/ags_list.h>
 
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -310,7 +311,7 @@ ags_recycling_new(GObject *devout)
 				      NULL);
   audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 
-  ags_audio_signal_connect(audio_signal);
+  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 
   recycling->audio_signal = g_list_alloc();
   recycling->audio_signal->data = (gpointer) audio_signal;
