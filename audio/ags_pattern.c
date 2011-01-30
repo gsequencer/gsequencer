@@ -100,11 +100,6 @@ ags_pattern_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
 }
 
-void
-ags_pattern_connect(AgsPattern *pattern)
-{
-}
-
 AgsPattern*
 ags_pattern_get_by_offset(GList *list, guint offset)
 {

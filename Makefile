@@ -6,7 +6,7 @@ INCLUDE_DIR = ../
 LINKING_DIR = ../
 
 
-AGS_AUDIO_OBJECTS = $(AGS_DIR)audio/ags_devout.o $(AGS_DIR)audio/ags_task.o $(AGS_DIR)audio/ags_audio.o $(AGS_DIR)audio/ags_channel.o $(AGS_DIR)audio/ags_input.o $(AGS_DIR)audio/ags_output.o $(AGS_DIR)audio/ags_recycling.o $(AGS_DIR)audio/ags_audio_signal.o $(AGS_DIR)audio/ags_pattern.o $(AGS_DIR)audio/ags_notation.o $(AGS_DIR)audio/ags_recall.o $(AGS_DIR)audio/ags_recall_id.o $(AGS_DIR)audio/ags_recall_audio.o $(AGS_DIR)audio/ags_recall_audio_run.o $(AGS_DIR)audio/ags_recall_channel.o $(AGS_DIR)audio/ags_recall_channel_run.o $(AGS_DIR)audio/ags_garbage_collector.o $(AGS_DIR)audio/ags_synths.o
+AGS_AUDIO_OBJECTS = $(AGS_DIR)audio/ags_devout.o $(AGS_DIR)audio/ags_task.o $(AGS_DIR)audio/ags_audio.o $(AGS_DIR)audio/ags_channel.o $(AGS_DIR)audio/ags_input.o $(AGS_DIR)audio/ags_output.o $(AGS_DIR)audio/ags_recycling.o $(AGS_DIR)audio/ags_audio_signal.o $(AGS_DIR)audio/ags_pattern.o $(AGS_DIR)audio/ags_notation.o $(AGS_DIR)audio/ags_recall_container.o $(AGS_DIR)audio/ags_recall.o $(AGS_DIR)audio/ags_recall_id.o $(AGS_DIR)audio/ags_recall_audio.o $(AGS_DIR)audio/ags_recall_audio_run.o $(AGS_DIR)audio/ags_recall_channel.o $(AGS_DIR)audio/ags_recall_channel_run.o $(AGS_DIR)audio/ags_garbage_collector.o $(AGS_DIR)audio/ags_synths.o
 
 AGS_TASK_OBJECTS = $(AGS_DIR)audio/task/ags_open_file.o $(AGS_DIR)audio/task/ags_link_channel.o $(AGS_DIR)audio/task/ags_change_bpm.o $(AGS_DIR)audio/task/ags_apply_synth.o $(AGS_DIR)audio/task/ags_apply_wavetable.o $(AGS_DIR)audio/task/ags_append_audio.o $(AGS_DIR)audio/task/ags_append_channel.o $(AGS_DIR)audio/task/ags_append_recall.o $(AGS_DIR)audio/task/ags_cancel_audio.o $(AGS_DIR)audio/task/ags_cancel_channel.o $(AGS_DIR)audio/task/ags_cancel_recall.o
 
@@ -30,7 +30,7 @@ AGS_MACHINE_OBJECTS = $(AGS_DIR)X/machine/ags_panel.o $(AGS_DIR)X/machine/ags_mi
 
 AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_DIR)X/machine/ags_mixer_callbacks.o $(AGS_DIR)X/machine/ags_drum_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_line_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_line_callbacks.o $(AGS_DIR)X/machine/ags_matrix_callbacks.o $(AGS_DIR)X/machine/ags_synth_callbacks.o $(AGS_DIR)X/machine/ags_oscillator_callbacks.o $(AGS_DIR)X/machine/ags_ffplayer_callbacks.o
 
-AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_tactable.o $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
+AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_packable.o $(AGS_DIR)object/ags_tactable.o $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
 
 AGS_LIB_OBJECTS = $(AGS_DIR)lib/ags_list.o
 

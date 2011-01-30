@@ -51,8 +51,6 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
-void ags_pattern_connect(AgsPattern *pattern);
-
 AgsPattern* ags_pattern_get_by_offset(GList *list, guint offset);
 
 void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint lenght);

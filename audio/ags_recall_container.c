@@ -1,0 +1,368 @@
+#include <ags/audio/ags_recall_container.h>
+
+#include <ags/lib/ags_list.h>
+
+#include <ags/object/ags_packable.h>
+
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
+
+void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
+void ags_recall_container_init(AgsRecallContainer *recall);
+void ags_recall_container_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_recall_container_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+void ags_recall_container_finalize(GObject *recall);
+
+enum{
+  PROP_0,
+  PROP_RECALL_AUDIO_TYPE,
+  PROP_RECALL_AUDIO,
+  PROP_RECALL_AUDIO_RUN_TYPE,
+  PROP_RECALL_AUDIO_RUN,
+  PROP_RECALL_CHANNEL_TYPE,
+  PROP_RECALL_CHANNEL,
+  PROP_RECALL_CHANNEL_RUN_TYPE,
+  PROP_RECALL_CHANNEL_RUN,
+};
+
+static gpointer ags_recall_container_parent_class = NULL;
+
+GType
+ags_recall_container_get_type (void)
+{
+  static GType ags_type_recall = 0;
+
+  if(!ags_type_recall){
+    static const GTypeInfo ags_recall_container_info = {
+      sizeof (AgsRecallContainerClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_recall_container_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsRecallContainer),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_recall_container_init,
+    };
+
+    ags_type_recall = g_type_register_static(G_TYPE_OBJECT,
+					     "AgsRecallContainer\0",
+					     &ags_recall_container_info,
+					     0);
+  }
+
+  return(ags_type_recall);
+}
+
+void
+ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
+{
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  ags_recall_container_parent_class = g_type_class_peek_parent(recall_container);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) recall_container;
+
+  gobject->finalize = ags_recall_container_finalize;
+
+  gobject->set_property = ags_recall_container_set_property;
+  gobject->get_property = ags_recall_container_get_property;
+
+  /* properties */
+  param_spec = g_param_spec_gtype("recall_audio_type\0",
+				  "audio level recall type\0",
+				  "The recall type which this recall container has on audio level\0",
+				   G_TYPE_NONE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO_TYPE,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_audio\0",
+				   "audio level recall\0",
+				   "The recall which this recall container has on audio level\0",
+				   AGS_TYPE_RECALL_AUDIO,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("recall_audio_run_type\0",
+				  "audio runlevel recall type\0",
+				  "The recall type which this recall container has on audio level during a run\0",
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO_RUN_TYPE,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_audio_run\0",
+				   "audio runlevel recall\0",
+				   "The recall which this recall container has on audio level during a run\0",
+				   AGS_TYPE_RECALL_AUDIO_RUN,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO_RUN,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("recall_channel_type\0",
+				  "channel level recall type\0",
+				  "The recall type which this recall container has on channel level\0",
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL_TYPE,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_channel\0",
+				   "channel level recall\0",
+				   "The recall which this recall container has on channel level\0",
+				   AGS_TYPE_RECALL_CHANNEL,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("recall_channel_run_type\0",
+				  "channel runlevel recall type\0",
+				  "The recall type which this recall container has on audio level during a run\0",
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL_RUN_TYPE,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_channel_run\0",
+				   "channel runlevel recall\0",
+				   "The recall which this recall container has on audio level during a run\0",
+				   AGS_TYPE_RECALL_CHANNEL_RUN,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CHANNEL_RUN,
+				  param_spec);
+}
+
+void
+ags_recall_container_init(AgsRecallContainer *recall_container)
+{
+  recall_container->recall_audio = NULL;
+  recall_container->recall_audio_run = NULL;
+  recall_container->recall_channel = NULL;
+  recall_container->recall_channel_run = NULL;
+}
+
+void
+ags_recall_container_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsRecallContainer *recall_container;
+
+  recall_container = AGS_RECALL_CONTAINER(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL_AUDIO_TYPE:
+    {
+      GType recall_audio_type;
+
+      recall_audio_type = (GType) g_value_get_gtype(value);
+
+      recall_container->recall_audio_type = recall_audio_type;
+    }
+    break;
+  case PROP_RECALL_AUDIO:
+    {
+      AgsRecallAudio *recall_audio;
+
+      recall_audio = (AgsRecallAudio *) g_value_get_object(value);
+
+      if((AgsRecallContainer *) AGS_RECALL(recall_audio)->container == recall_container)
+	return;
+
+      /* remove old */
+      if(AGS_RECALL(recall_audio)->container != NULL)
+	ags_packable_unpack(AGS_PACKABLE(recall_audio), AGS_RECALL(recall_audio)->container);
+
+      /* add new */
+      if(recall_audio != NULL)
+	ags_packable_pack(AGS_PACKABLE(recall_audio), G_OBJECT(recall_container));
+    }
+    break;
+  case PROP_RECALL_AUDIO_RUN_TYPE:
+    {
+      GType recall_audio_run_type;
+
+      recall_audio_run_type = g_value_get_gtype(value);
+
+      recall_container->recall_audio_run_type = recall_audio_run_type;
+    }
+    break;
+  case PROP_RECALL_AUDIO_RUN:
+    {
+      AgsRecallAudioRun *recall_audio_run;
+
+      recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
+
+      if((AgsRecallContainer *) AGS_RECALL(recall_audio_run)->container == recall_container)
+	return;
+
+      /* remove old */
+      if(AGS_RECALL(recall_audio_run)->container != NULL)
+	ags_packable_unpack(AGS_PACKABLE(recall_audio_run), G_OBJECT(AGS_RECALL(recall_audio_run)->container));
+
+      /* add new */
+      if(recall_audio_run != NULL)
+	ags_packable_pack(AGS_PACKABLE(recall_audio_run), G_OBJECT(recall_container));
+    }
+    break;
+
+  case PROP_RECALL_CHANNEL_TYPE:
+    {
+      GType recall_channel_type;
+
+      recall_channel_type = (GType) g_value_get_gtype(value);
+
+      recall_container->recall_channel_type = recall_channel_type;
+    }
+    break;
+  case PROP_RECALL_CHANNEL:
+    {
+      AgsRecallChannel *recall_channel;
+
+      recall_channel = (AgsRecallChannel *) g_value_get_object(value);
+
+      if((AgsRecallContainer *) AGS_RECALL(recall_channel)->container == recall_container)
+	return;
+
+      /* remove old */
+      if(AGS_RECALL(recall_channel)->container != NULL)
+	ags_packable_unpack(AGS_PACKABLE(recall_channel), G_OBJECT(AGS_RECALL(recall_channel)->container));
+
+      /* add new */
+      if(recall_channel != NULL)
+	ags_packable_pack(AGS_PACKABLE(recall_channel), G_OBJECT(recall_container));
+    }
+    break;
+  case PROP_RECALL_CHANNEL_RUN_TYPE:
+    {
+      GType recall_channel_run_type;
+
+      recall_channel_run_type = (GType) g_value_get_gtype(value);
+
+      recall_container->recall_channel_run_type = recall_channel_run_type;
+    }
+    break;
+  case PROP_RECALL_CHANNEL_RUN:
+    {
+      AgsRecallChannelRun *recall_channel_run;
+
+      recall_channel_run = (AgsRecallChannelRun *) g_value_get_object(value);
+
+      if((AgsRecallContainer *) AGS_RECALL(recall_channel_run)->container == recall_container)
+	return;
+
+      /* remove old */
+      if(AGS_RECALL(recall_channel_run)->container != NULL)
+	ags_packable_unpack(AGS_PACKABLE(recall_channel_run), G_OBJECT(AGS_RECALL(recall_channel_run)->container));
+
+      /* add new */
+      if(recall_channel_run != NULL)
+	ags_packable_pack(AGS_PACKABLE(recall_channel_run), G_OBJECT(recall_container));
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_recall_container_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsRecallContainer *recall_container;
+
+  recall_container = AGS_RECALL_CONTAINER(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL_AUDIO_TYPE:
+    g_value_set_gtype(value, recall_container->recall_audio_type);
+    break;
+  case PROP_RECALL_AUDIO_RUN_TYPE:
+    g_value_set_gtype(value, recall_container->recall_audio_run_type);
+    break;
+  case PROP_RECALL_CHANNEL_TYPE:
+    g_value_set_gtype(value, recall_container->recall_channel_type);
+    break;
+  case PROP_RECALL_CHANNEL_RUN_TYPE:
+    g_value_set_gtype(value, recall_container->recall_channel_run_type);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_recall_container_finalize(GObject *gobject)
+{
+  AgsRecallContainer *container;
+
+  container = AGS_RECALL_CONTAINER(gobject);
+
+  g_object_unref(container->recall_audio);
+  ags_list_free_and_unref_link(container->recall_audio_run);
+  ags_list_free_and_unref_link(container->recall_channel);
+  ags_list_free_and_unref_link(container->recall_channel_run);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_container_parent_class)->finalize(gobject);
+}
+
+AgsRecall*
+ags_recall_container_get_recall_audio(AgsRecallContainer *container)
+{
+  return(container->recall_audio);
+}
+
+GList*
+ags_recall_container_get_recall_audio_run(AgsRecallContainer *container)
+{
+  return(container->recall_audio_run);
+}
+
+GList*
+ags_recall_container_get_recall_channel(AgsRecallContainer *container)
+{
+  return(container->recall_channel);
+}
+
+GList*
+ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
+{
+  return(container->recall_channel_run);
+}
+
+AgsRecallContainer*
+ags_recall_container_new()
+{
+  AgsRecallContainer *recall_container;
+
+  recall_container = (AgsRecallContainer *) g_object_new(AGS_TYPE_RECALL_CONTAINER,
+							 NULL);
+
+  return(recall_container);
+}

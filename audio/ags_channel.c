@@ -48,7 +48,7 @@ void ags_channel_get_property(GObject *gobject,
 			      guint prop_id,
 			      GValue *value,
 			      GParamSpec *param_spec);
-void ags_channel_finalize(GObject *gobject);
+static void ags_channel_finalize(GObject *gobject);
 
 extern void ags_file_write_channel(AgsFile *file, AgsChannel *channel);
 
@@ -231,7 +231,7 @@ ags_channel_get_property(GObject *gobject,
   }
 }
 
-void
+static void
 ags_channel_finalize(GObject *gobject)
 {
   AgsChannel *channel;

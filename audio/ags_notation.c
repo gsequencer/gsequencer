@@ -18,21 +18,26 @@
 
 #include <ags/audio/ags_notation.h>
 
+#include <ags/object/ags_tactable.h>
+
 #include <stdlib.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
+void ags_notation_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_notation_init(AgsNotation *notation);
 void ags_notation_finalize(GObject *object);
+
+void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
 
 static gpointer ags_notation_parent_class = NULL;
 
 GType
 ags_notation_get_type()
 {
-  static GType notation_type = 0;
+  static GType ags_type_notation = 0;
 
-  if(!notation_type){
-    static const GTypeInfo notation_info = {
+  if(!ags_type_notation){
+    static const GTypeInfo ags_notation_info = {
       sizeof(AgsNotationClass),
       NULL,
       NULL,
@@ -44,13 +49,23 @@ ags_notation_get_type()
       (GInstanceInitFunc) ags_notation_init,
     };
 
-    notation_type = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsNotation\0",
-					   &notation_info,
-					   0);
+    static const GInterfaceInfo ags_tactable_interface_info = {
+      (GInterfaceInitFunc) ags_notation_tactable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_notation = g_type_register_static(G_TYPE_OBJECT,
+					       "AgsNotation\0",
+					       &ags_notation_info,
+					       0);
+
+    g_type_add_interface_static(ags_type_notation,
+				AGS_TYPE_TACTABLE,
+				&ags_tactable_interface_info);
   }
 
-  return(notation_type);
+  return(ags_type_notation);
 }
 
 void 
@@ -61,7 +76,14 @@ ags_notation_class_init(AgsNotationClass *notation)
   ags_notation_parent_class = g_type_class_peek_parent(notation);
 
   gobject = (GObjectClass *) notation;
+
   gobject->finalize = ags_notation_finalize;
+}
+
+void
+ags_notation_tactable_interface_init(AgsTactableInterface *tactable)
+{
+  tactable->change_bpm = ags_notation_change_bpm;
 }
 
 void
@@ -97,10 +119,9 @@ ags_notation_finalize(GObject *gobject)
 }
 
 void
-ags_notation_connect(AgsNotation *notation)
+ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm)
 {
-  g_signal_connect(G_OBJECT(notation), "finalize\0",
-		   G_CALLBACK(ags_notation_finalize), NULL);
+  /* empty */
 }
 
 void

@@ -19,10 +19,14 @@
 #include <ags/audio/ags_recall_channel.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
+
+#include <ags/audio/ags_recall_container.h>
 
 void ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel);
 void ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_recall_channel_packable_interface_init(AgsPackableInterface *packable);
 void ags_recall_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_recall_channel_init(AgsRecallChannel *recall_channel);
 void ags_recall_channel_set_property(GObject *gobject,
@@ -35,11 +39,15 @@ void ags_recall_channel_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_recall_channel_connect(AgsConnectable *connectable);
 void ags_recall_channel_disconnect(AgsConnectable *connectable);
+gboolean ags_recall_channel_pack(AgsPackable *packable, GObject *container);
+gboolean ags_recall_channel_unpack(AgsPackable *packable);
 void ags_recall_channel_runconnect(AgsRunConnectable *run_connectable);
 void ags_recall_channel_rundisconnect(AgsRunConnectable *run_connectable);
 void ags_recall_channel_finalize(GObject *gobject);
 
-AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
+					GObject *container,
+					AgsRecallID *recall_id);
 
 enum{
   PROP_0,
@@ -48,6 +56,7 @@ enum{
 
 static gpointer ags_recall_channel_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_channel_parent_connectable_interface;
+static AgsPackableInterface* ags_recall_channel_parent_packable_interface;
 static AgsRunConnectableInterface *ags_recall_channel_parent_run_connectable_interface;
 
 GType
@@ -74,6 +83,12 @@ ags_recall_channel_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_packable_interface_info = {
+      (GInterfaceInitFunc) ags_recall_channel_packable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_run_connectable_interface_info = {
       (GInterfaceInitFunc) ags_recall_channel_run_connectable_interface_init,
       NULL, /* interface_finalize */
@@ -88,6 +103,10 @@ ags_recall_channel_get_type()
     g_type_add_interface_static(ags_type_recall_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_recall_channel,
+				AGS_TYPE_PACKABLE,
+				&ags_packable_interface_info);
     
     g_type_add_interface_static(ags_type_recall_channel,
 				AGS_TYPE_RUN_CONNECTABLE,
@@ -141,6 +160,15 @@ ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectab
 }
 
 void
+ags_recall_channel_packable_interface_init(AgsPackableInterface *packable)
+{
+  ags_recall_channel_parent_packable_interface = g_type_interface_peek_parent(packable);
+
+  packable->pack = ags_recall_channel_pack;
+  packable->unpack = ags_recall_channel_unpack;
+}
+
+void
 ags_recall_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
 {
   ags_recall_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
@@ -172,13 +200,18 @@ ags_recall_channel_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
+      if(recall_channel->channel == channel)
+	return;
+
+      if(recall_channel->channel != NULL)
+	g_object_unref(recall_channel->channel);
+
+      g_object_ref(channel);
       recall_channel->channel = channel;
     }
     break;
   default:
-    G_OBJECT_CLASS(ags_recall_channel_parent_class)->set_property(gobject, prop_id, value, param_spec);
-	
-    //    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
 }
@@ -198,8 +231,7 @@ ags_recall_channel_get_property(GObject *gobject,
     g_value_set_object(value, recall_channel->channel);
     break;
   default:
-    G_OBJECT_CLASS(ags_recall_channel_parent_class)->get_property(gobject, prop_id, value, param_spec);
-    //    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
 }
@@ -218,6 +250,57 @@ ags_recall_channel_disconnect(AgsConnectable *connectable)
   ags_recall_channel_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+gboolean
+ags_recall_channel_pack(AgsPackable *packable, GObject *container)
+{
+  AgsRecallContainer *recall_container;
+
+  if(ags_recall_channel_parent_packable_interface->pack(packable, container))
+    return(TRUE);
+
+  recall_container = AGS_RECALL_CONTAINER(container);
+
+  recall_container->recall_channel = g_list_prepend(recall_container->recall_channel,
+						    AGS_RECALL(packable));
+
+  return(FALSE);
+}
+
+gboolean
+ags_recall_channel_unpack(AgsPackable *packable)
+{
+  AgsRecall *recall;
+  AgsRecallContainer *recall_container;
+
+  recall = AGS_RECALL(packable);
+
+  if(recall == NULL)
+    return(TRUE);
+
+  recall_container = AGS_RECALL_CONTAINER(recall->container);
+
+  if(recall_container == NULL)
+    return(TRUE);
+
+  /* ref */
+  g_object_ref(recall);
+  g_object_ref(recall_container);
+
+  /* call parent */
+  if(ags_recall_channel_parent_packable_interface->unpack(packable))
+    return(TRUE);
+
+  /* remove from list */
+  recall_container->recall_channel = g_list_remove(recall_container->recall_channel,
+						   recall);
+
+  /* unref */
+  g_object_unref(recall);
+  g_object_unref(recall_container);
+
+  return(FALSE);
 }
 
 void
@@ -239,22 +322,22 @@ ags_recall_channel_rundisconnect(AgsConnectable *connectable)
 void
 ags_recall_channel_finalize(GObject *gobject)
 {
-  AgsRecall *recall;
-
-  recall = AGS_RECALL(gobject);
-
-  g_list_free(recall->recall_channel_run);
+  /* empty */
 
   G_OBJECT_CLASS(ags_recall_channel_parent_class)->finalize(gobject);
 }
 
 AgsRecall*
-ags_recall_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_recall_channel_duplicate(AgsRecall *recall,
+			     GObject *container,
+			     AgsRecallID *recall_id)
 {
   AgsRecallChannel *recall_channel, *copy;
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
-  copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall, recall_id));
+  copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
+											 container,
+											 recall_id));
 
   printf("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
 

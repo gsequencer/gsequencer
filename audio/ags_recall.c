@@ -20,12 +20,10 @@
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
 
-#include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
@@ -35,6 +33,7 @@
 
 void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_recall_packable_interface_init(AgsPackableInterface *packable);
 void ags_recall_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_recall_init(AgsRecall *recall);
 void ags_recall_set_property(GObject *gobject,
@@ -47,6 +46,8 @@ void ags_recall_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_recall_connect(AgsConnectable *connectable);
 void ags_recall_disconnect(AgsConnectable *connectable);
+gboolean ags_recall_pack(AgsPackable *packable, GObject *container);
+gboolean ags_recall_unpack(AgsPackable *packable);
 void ags_recall_run_connect(AgsRunConnectable *run_connectable);
 void ags_recall_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_finalize(GObject *recall);
@@ -63,7 +64,9 @@ void ags_recall_real_done(AgsRecall *recall);
 void ags_recall_real_cancel(AgsRecall *recall, guint audio_channel);
 void ags_recall_real_remove(AgsRecall *recall);
 
-AgsRecall* ags_recall_real_duplicate(AgsRecall *reall, AgsRecallID *recall_id);
+AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
+				     GObject *container,
+				     AgsRecallID *recall_id);
 
 enum{
   RUN_INIT_PRE,
@@ -83,14 +86,9 @@ enum{
 
 enum{
   PROP_0,
-  PROP_RECALL_AUDIO_TYPE,
-  PROP_RECALL_AUDIO,
-  PROP_RECALL_AUDIO_RUN_TYPE,
-  PROP_RECALL_AUDIO_RUN,
-  PROP_RECALL_CHANNEL_TYPE,
-  PROP_RECALL_CHANNEL,
-  PROP_RECALL_CHANNEL_RUN_TYPE,
-  PROP_RECALL_CHANNEL_RUN,
+  PROP_CONTAINER,
+  PROP_PARENT,
+  PROP_CHILD,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -120,6 +118,12 @@ ags_recall_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_packable_interface_info = {
+      (GInterfaceInitFunc) ags_recall_packable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_run_connectable_interface_info = {
       (GInterfaceInitFunc) ags_recall_run_connectable_interface_init,
       NULL, /* interface_finalize */
@@ -127,12 +131,17 @@ ags_recall_get_type (void)
     };
 
     ags_type_recall = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsRecall\0", &ags_recall_info,
+					     "AgsRecall\0",
+					     &ags_recall_info,
 					     0);
 
     g_type_add_interface_static(ags_type_recall,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_recall,
+				AGS_TYPE_PACKABLE,
+				&ags_packable_interface_info);
 
     g_type_add_interface_static(ags_type_recall,
 				AGS_TYPE_RUN_CONNECTABLE,
@@ -158,76 +167,32 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->set_property = ags_recall_set_property;
   gobject->get_property = ags_recall_get_property;
 
-  param_spec = g_param_spec_gtype("recall_audio_type\0",
-				  "audio level recall type\0",
-				  "The recall type which this recall has on audio level\0",
+  /* properties */
+  param_spec = g_param_spec_gtype("container\0",
+				  "container of recall\0",
+				  "The container which this recall is packed into\0",
 				   G_TYPE_NONE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_RECALL_AUDIO_TYPE,
+				  PROP_CONTAINER,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recall_audio\0",
-				   "audio level recall\0",
-				   "The recall which this recall has on audio level\0",
-				   AGS_TYPE_RECALL_AUDIO,
+  param_spec = g_param_spec_gtype("parent\0",
+				  "parent recall of this recall\0",
+				  "The recall should be the parent instance of this recall\0",
+				   G_TYPE_NONE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_RECALL_AUDIO,
+				  PROP_PARENT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("recall_audio_run_type\0",
-				  "audio runlevel recall type\0",
-				  "The recall type which this recall has on audio level during a run\0",
-				  G_TYPE_NONE,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("child\0",
+				   "child of recall\0",
+				   "The child that can be added\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_RECALL_AUDIO_RUN_TYPE,
-				  param_spec);
-
-  param_spec = g_param_spec_object("recall_audio_run\0",
-				   "audio runlevel recall\0",
-				   "The recall which this recall has on audio level during a run\0",
-				   AGS_TYPE_RECALL_AUDIO_RUN,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_AUDIO_RUN,
-				  param_spec);
-
-  param_spec = g_param_spec_gtype("recall_channel_type\0",
-				  "channel level recall type\0",
-				  "The recall type which this recall has on channel level\0",
-				  G_TYPE_NONE,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_CHANNEL_TYPE,
-				  param_spec);
-
-  param_spec = g_param_spec_object("recall_channel\0",
-				   "channel level recall\0",
-				   "The recall which this recall has on channel level\0",
-				   AGS_TYPE_RECALL_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_CHANNEL,
-				  param_spec);
-
-  param_spec = g_param_spec_gtype("recall_channel_run_type\0",
-				  "channel runlevel recall type\0",
-				  "The recall type which this recall has on audio level during a run\0",
-				  G_TYPE_NONE,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_CHANNEL_RUN_TYPE,
-				  param_spec);
-
-  param_spec = g_param_spec_object("recall_channel_run\0",
-				   "channel runlevel recall\0",
-				   "The recall which this recall has on audio level during a run\0",
-				   AGS_TYPE_RECALL_CHANNEL_RUN,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_CHANNEL_RUN,
+				  PROP_CHILD,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -249,6 +214,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   recall->notify_dependency = NULL;
 
+  /* signals */
   recall_signals[RUN_INIT_PRE] =
     g_signal_new("run_init_pre\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -375,6 +341,13 @@ ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_recall_packable_interface_init(AgsPackableInterface *packable)
+{
+  packable->pack = ags_recall_pack;
+  packable->unpack = ags_recall_unpack;
+}
+
+void
 ags_recall_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
 {
   run_connectable->connect = ags_recall_run_connect;
@@ -386,10 +359,7 @@ ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
 
-  recall->recall_audio = NULL;
-  recall->recall_audio_run = NULL;
-  recall->recall_channel = NULL;
-  recall->recall_channel_run = NULL;
+  recall->container = NULL;
 
   recall->name = NULL;
   recall->recall_id = NULL;
@@ -409,96 +379,69 @@ ags_recall_set_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_RECALL_AUDIO_TYPE:
+  case PROP_CONTAINER:
     {
-      GType recall_audio_type;
+      AgsRecallContainer *container;
 
-      recall_audio_type = (GType) g_value_get_gtype(value);
+      container = (AgsRecallContainer *) g_value_get_object(value);
 
-      recall->recall_audio_type = recall_audio_type;
+      if((AgsRecallContainer *) recall->container == container)
+	return;
+
+      /* remove from old */
+      if(recall->container != NULL)
+	ags_packable_unpack(AGS_PACKABLE(recall));
+
+      /* add to new */
+      if(container != NULL)
+	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(recall->container));
     }
-    break;
-  case PROP_RECALL_AUDIO:
+  case PROP_PARENT:
     {
-      AgsRecallAudio *recall_audio;
+      AgsRecall *parent;
 
-      recall_audio = (AgsRecallAudio *) g_value_get_object(value);
+      parent = (AgsRecall *) g_value_get_object(value);
 
-      recall->recall_audio = (AgsRecall *) recall_audio;
+      if(recall->parent == parent)
+	return;
 
-      if(AGS_IS_RECALL_CHANNEL(recall))
-	AGS_RECALL(recall_audio)->recall_channel = (gpointer) g_list_prepend((GList *) AGS_RECALL(recall_audio)->recall_channel, recall);
+      /* unref old */
+      if(recall->parent != NULL){
+	recall->parent->child = g_list_remove(recall->parent->child, recall);
+	g_object_unref(recall->parent);
+	g_object_unref(recall);
+      }
+
+      /* ref new */
+      if(parent != NULL){
+	g_object_ref(parent);
+	g_object_ref(recall);
+	parent->child = g_list_prepend(parent->child, recall);
+      }
+
+      recall->parent = parent;
     }
-    break;
-  case PROP_RECALL_AUDIO_RUN_TYPE:
+  case PROP_CHILD:
     {
-      GType recall_audio_run_type;
+      AgsRecall *child;
 
-      recall_audio_run_type = g_value_get_gtype(value);
+      child = (AgsRecall *) g_value_get_object(value);
 
-      recall->recall_audio_run_type = recall_audio_run_type;
+      if(child->parent == recall || child == NULL)
+	return;
+
+      /* unref old */
+      if(child->parent != NULL){
+	child->parent->child = g_list_remove(child->parent->child, child);
+	g_object_unref(child->parent);
+	g_object_unref(child);
+      }
+
+      /* ref new */
+      g_object_ref(recall);
+      g_object_ref(child);
+      recall->child = g_list_prepend(recall->child, child);
     }
-    break;
-  case PROP_RECALL_AUDIO_RUN:
-    {
-      AgsRecallAudioRun *recall_audio_run;
-
-      recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
-
-      if(AGS_IS_RECALL_AUDIO(recall) ||
-	 AGS_IS_RECALL_CHANNEL(recall))
-	recall->recall_audio_run = (gpointer) g_list_prepend((GList *) recall->recall_audio_run, recall_audio_run);
-      else if(AGS_IS_RECALL_CHANNEL_RUN(recall))
-	recall->recall_audio_run = (gpointer) recall_audio_run;
-      else
-	printf("ags warning - ags_recall_set_property: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
-    }
-    break;
-
-  case PROP_RECALL_CHANNEL_TYPE:
-    {
-      GType recall_channel_type;
-
-      recall_channel_type = (GType) g_value_get_gtype(value);
-
-      recall->recall_channel_type = recall_channel_type;
-    }
-    break;
-  case PROP_RECALL_CHANNEL:
-    {
-      AgsRecallChannel *recall_channel;
-
-      recall_channel = (AgsRecallChannel *) g_value_get_object(value);
-
-      if(AGS_IS_RECALL_AUDIO(recall) ||
-	 AGS_IS_RECALL_AUDIO_RUN(recall))
-	recall->recall_audio_run = (gpointer) g_list_prepend((GList *) recall->recall_audio_run,
-							     recall_channel);
-      else if(AGS_IS_RECALL_CHANNEL_RUN(recall))
-	recall->recall_channel = (gpointer) recall_channel;
-      else
-	printf("ags warning - ags_recall_set_property: unsupported AgsRecall implementation called by %s\n\0", G_OBJECT_TYPE_NAME(recall));
-    }
-    break;
-  case PROP_RECALL_CHANNEL_RUN_TYPE:
-    {
-      GType recall_channel_run_type;
-
-      recall_channel_run_type = (GType) g_value_get_gtype(value);
-
-      recall->recall_channel_run_type = recall_channel_run_type;
-    }
-    break;
-  case PROP_RECALL_CHANNEL_RUN:
-    {
-      AgsRecallChannelRun *recall_channel_run;
-
-      recall_channel_run = (AgsRecallChannelRun *) g_value_get_object(value);
-
-      recall->recall_channel_run = g_list_prepend(recall->recall_channel_run,
-						  recall_channel_run);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -516,30 +459,14 @@ ags_recall_get_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_RECALL_AUDIO_TYPE:
-    g_value_set_gtype(value, recall->recall_audio_type);
-    break;
-  case PROP_RECALL_AUDIO:
-    g_value_set_object(value, recall->recall_audio);
-    break;
-  case PROP_RECALL_AUDIO_RUN_TYPE:
-    g_value_set_gtype(value, recall->recall_audio_run_type);
-    break;
-  case PROP_RECALL_AUDIO_RUN:
-    g_value_set_object(value, recall->recall_audio_run);
-    break;
-  case PROP_RECALL_CHANNEL_TYPE:
-    g_value_set_gtype(value, recall->recall_channel_type);
-    break;
-  case PROP_RECALL_CHANNEL:
-    g_value_set_object(value, recall->recall_channel);
-    break;
-  case PROP_RECALL_CHANNEL_RUN_TYPE:
-    g_value_set_gtype(value, recall->recall_channel_run_type);
-    break;
-  case PROP_RECALL_CHANNEL_RUN:
-    g_value_set_object(value, recall->recall_channel_run);
-    break;
+  case PROP_CONTAINER:
+    {
+      g_value_set_object(value, recall->container);
+    }
+  case PROP_PARENT:
+    {
+      g_value_set_object(value, recall->parent);
+    }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -578,6 +505,55 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
     list = list->next;
   }
+}
+
+
+gboolean
+ags_recall_pack(AgsPackable *packable, GObject *container)
+{
+  AgsRecall *recall;
+  AgsRecallContainer *recall_container;
+
+  recall = AGS_RECALL(packable);
+  recall_container = AGS_RECALL_CONTAINER(container);
+
+  if(recall == NULL ||
+     recall->container == container ||
+     (container != NULL && !AGS_IS_RECALL_CONTAINER(container)))
+    return(TRUE);
+
+  g_object_ref(recall);
+
+  if(recall_container != NULL)
+    g_object_ref(recall_container);
+
+  recall->container = container;
+
+  return(FALSE);
+}
+
+gboolean
+ags_recall_unpack(AgsPackable *packable)
+{
+  AgsRecall *recall;
+  AgsRecallContainer *recall_container;
+
+  recall = AGS_RECALL(packable);
+
+  if(recall == NULL ||
+     recall->container == NULL)
+    return(TRUE);
+
+  recall_container = AGS_RECALL_CONTAINER(recall->container);
+
+  /* unref */
+  g_object_unref(recall);
+  g_object_unref(recall_container);
+
+  /* unset link */
+  recall->container = NULL;
+
+  return(FALSE);
 }
 
 void
@@ -627,6 +603,7 @@ ags_recall_finalize(GObject *gobject)
   g_free(recall->name);
   ags_list_free_and_unref_link(recall->child);
 
+  /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
 }
 
@@ -878,7 +855,9 @@ ags_recall_remove(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_recall_real_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_recall_real_duplicate(AgsRecall *recall,
+			  GObject *container,
+			  AgsRecallID *recall_id)
 {
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
@@ -889,14 +868,9 @@ ags_recall_real_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
-  copy->recall_audio_type = recall->recall_audio_type;
-  copy->recall_audio_run_type = recall->recall_audio_run_type;
-  copy->recall_channel_type = recall->recall_channel_type;
-  copy->recall_channel_run_type = recall->recall_channel_run_type;
+  ags_packable_pack(AGS_PACKABLE(recall), container);
 
-  /* 
-   * linking of shared objects is done by AgsRecall implementations
-   */
+  // copy->name
 
   copy->recall_id = recall_id;
 

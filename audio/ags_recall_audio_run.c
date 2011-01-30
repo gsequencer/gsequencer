@@ -19,27 +19,34 @@
 #include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
-
 #include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_container.h>
 
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable);
+void ags_recall_audio_run_packable_interface_init(AgsPackableInterface *packable);
 void ags_recall_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run);
 void ags_recall_audio_run_connect(AgsConnectable *connectable);
+gboolean ags_recall_audio_run_pack(AgsPackable *packable, GObject *container);
+gboolean ags_recall_audio_run_unpack(AgsPackable *packable);
 void ags_recall_audio_run_disconnect(AgsConnectable *connectable);
 void ags_recall_audio_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_recall_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_audio_run_finalize(GObject *gobject);
 
-AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
+					  GObject *container,
+					  AgsRecallID *recall_id);
 
 static gpointer ags_recall_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_audio_run_parent_connectable_interface;
+static AgsPackableInterface* ags_recall_audio_run_parent_packable_interface;
 static AgsRunConnectableInterface *ags_recall_audio_run_parent_run_connectable_interface;
 
 GType
@@ -66,6 +73,12 @@ ags_recall_audio_run_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_packable_interface_info = {
+      (GInterfaceInitFunc) ags_recall_audio_run_packable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_run_connectable_interface_info = {
       (GInterfaceInitFunc) ags_recall_audio_run_run_connectable_interface_init,
       NULL, /* interface_finalize */
@@ -80,7 +93,11 @@ ags_recall_audio_run_get_type()
     g_type_add_interface_static(ags_type_recall_audio_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-    
+
+    g_type_add_interface_static(ags_type_recall_audio_run,
+				AGS_TYPE_PACKABLE,
+				&ags_packable_interface_info);
+
     g_type_add_interface_static(ags_type_recall_audio_run,
 				AGS_TYPE_RUN_CONNECTABLE,
 				&ags_run_connectable_interface_info);
@@ -111,12 +128,19 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
 void
 ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_recall_audio_connectable_parent_interface;
-
   ags_recall_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_recall_audio_run_connect;
   connectable->disconnect = ags_recall_audio_run_disconnect;
+}
+
+void
+ags_recall_audio_run_packable_interface_init(AgsPackableInterface *packable)
+{
+  ags_recall_audio_run_parent_packable_interface = g_type_interface_peek_parent(packable);
+
+  packable->pack = ags_recall_audio_run_pack;
+  packable->unpack = ags_recall_audio_run_unpack;
 }
 
 void
@@ -139,6 +163,57 @@ ags_recall_audio_run_connect(AgsConnectable *connectable)
   ags_recall_audio_run_parent_connectable_interface->connect(connectable);
 
   /* empty */
+}
+
+gboolean
+ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
+{
+  AgsRecallContainer *recall_container;
+
+  if(ags_recall_audio_run_parent_packable_interface->pack(packable, container))
+    return(TRUE);
+
+  recall_container = AGS_RECALL_CONTAINER(container);
+
+  recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run,
+						      AGS_RECALL(packable));
+
+  return(FALSE);
+}
+
+gboolean
+ags_recall_audio_run_unpack(AgsPackable *packable)
+{
+  AgsRecall *recall;
+  AgsRecallContainer *recall_container;
+
+  recall = AGS_RECALL(packable);
+
+  if(recall == NULL)
+    return(TRUE);
+  
+  recall_container = AGS_RECALL_CONTAINER(recall->container);
+ 
+  if(recall_container == NULL)
+    return(TRUE); 
+  
+  /* ref */
+  g_object_ref(recall);
+  g_object_ref(recall_container);
+
+  /* call parent */
+  if(ags_recall_audio_run_parent_packable_interface->unpack(packable))
+    return(TRUE);
+
+  /* remove from list */
+  recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
+						     recall);
+
+  /* unref */
+  g_object_unref(recall);
+  g_object_unref(recall_container);
+
+  return(FALSE);
 }
 
 void
@@ -168,38 +243,22 @@ ags_recall_audio_run_run_disconnect(AgsConnectable *connectable)
 void
 ags_recall_audio_run_finalize(GObject *gobject)
 {
-  AgsRecall *recall;
-
-  recall = AGS_RECALL(gobject);
-
-  g_list_free(recall->recall_channel);
-  g_list_free(recall->recall_channel_run);
-
+  /* empty */
 
   G_OBJECT_CLASS(ags_recall_audio_run_parent_class)->finalize(gobject);
 }
 
 AgsRecall*
-ags_recall_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_recall_audio_run_duplicate(AgsRecall *recall,
+			       GObject *container,
+			       AgsRecallID *recall_id)
 {
-  AgsAudio *audio;
   AgsRecallAudioRun *recall_audio_run, *copy;
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
-  copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall, recall_id));
-  //  AGS_RECALL(copy)->recall_channel = g_list_copy((GList *) recall->recall_channel);
-  audio = AGS_RECALL_AUDIO(recall->recall_audio)->audio;
-
-  if(audio != NULL){
-    AgsRecallAudio *recall_audio;
-    
-    recall_audio = AGS_RECALL_AUDIO(recall->recall_audio);
-
-    AGS_RECALL(copy)->recall_audio = AGS_RECALL(recall_audio);
-
-    AGS_RECALL(recall_audio)->recall_audio_run = g_list_prepend(AGS_RECALL(recall_audio)->recall_audio_run,
-								copy);
-  }
+  copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
+											     container,
+											     recall_id));
 
   return((AgsRecall *) copy);
 }

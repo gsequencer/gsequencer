@@ -58,17 +58,7 @@ struct _AgsRecall
 
   guint flags;
 
-  GType recall_audio_type;
-  AgsRecall *recall_audio;
-
-  GType recall_audio_run_type;
-  gpointer recall_audio_run;
-
-  GType recall_channel_type;
-  gpointer recall_channel;
-
-  GType recall_channel_run_type;
-  GList *recall_channel_run;
+  GObject *container; // see AgsRecallContainer
 
   char *name;
   AgsRecallID *recall_id;
@@ -95,7 +85,9 @@ struct _AgsRecallClass
   void (*cancel)(AgsRecall *recall, guint audio_channel);
   void (*remove)(AgsRecall *recall);
 
-  AgsRecall* (*duplicate)(AgsRecall *recall, AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
+  AgsRecall* (*duplicate)(AgsRecall *recall,
+			  GObject *container,
+			  AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
 
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
 };
