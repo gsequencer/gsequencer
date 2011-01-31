@@ -315,6 +315,9 @@ ags_attack_duplicate(AgsAttack *attack)
 {
   AgsAttack *copy;
 
+  if(attack == NULL)
+    return(NULL);
+
   copy = (AgsAttack *) malloc(sizeof(AgsAttack));
 
   copy->first_start = attack->first_start;

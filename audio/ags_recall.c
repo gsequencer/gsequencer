@@ -52,20 +52,19 @@ void ags_recall_run_connect(AgsRunConnectable *run_connectable);
 void ags_recall_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_finalize(GObject *recall);
 
-void ags_recall_real_run_init_pre(AgsRecall *recall, guint audio_channel);
-void ags_recall_real_run_init_inter(AgsRecall *recall, guint audio_channel);
-void ags_recall_real_run_init_post(AgsRecall *recall, guint audio_channel);
+void ags_recall_real_run_init_pre(AgsRecall *recall);
+void ags_recall_real_run_init_inter(AgsRecall *recall);
+void ags_recall_real_run_init_post(AgsRecall *recall);
 
-void ags_recall_real_run_pre(AgsRecall *recall, guint audio_channel);
-void ags_recall_real_run_inter(AgsRecall *recall, guint audio_channel);
-void ags_recall_real_run_post(AgsRecall *recall, guint audio_channel);
+void ags_recall_real_run_pre(AgsRecall *recall);
+void ags_recall_real_run_inter(AgsRecall *recall);
+void ags_recall_real_run_post(AgsRecall *recall);
 
 void ags_recall_real_done(AgsRecall *recall);
-void ags_recall_real_cancel(AgsRecall *recall, guint audio_channel);
+void ags_recall_real_cancel(AgsRecall *recall);
 void ags_recall_real_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
-				     GObject *container,
 				     AgsRecallID *recall_id);
 
 enum{
@@ -171,7 +170,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec = g_param_spec_gtype("container\0",
 				  "container of recall\0",
 				  "The container which this recall is packed into\0",
-				   G_TYPE_NONE,
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CONTAINER,
@@ -180,7 +179,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec = g_param_spec_gtype("parent\0",
 				  "parent recall of this recall\0",
 				  "The recall should be the parent instance of this recall\0",
-				   G_TYPE_NONE,
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PARENT,
@@ -189,7 +188,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec = g_param_spec_object("child\0",
 				   "child of recall\0",
 				   "The child that can be added\0",
-				   AGS_TYPE_RECALL,
+				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
@@ -365,7 +364,7 @@ ags_recall_init(AgsRecall *recall)
   recall->recall_id = NULL;
 
   recall->parent = NULL;
-  recall->child = NULL;
+  recall->children = NULL;
 }
 
 void
@@ -396,52 +395,25 @@ ags_recall_set_property(GObject *gobject,
       if(container != NULL)
 	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(recall->container));
     }
+    break;
   case PROP_PARENT:
     {
       AgsRecall *parent;
 
       parent = (AgsRecall *) g_value_get_object(value);
 
-      if(recall->parent == parent)
-	return;
-
-      /* unref old */
-      if(recall->parent != NULL){
-	recall->parent->child = g_list_remove(recall->parent->child, recall);
-	g_object_unref(recall->parent);
-	g_object_unref(recall);
-      }
-
-      /* ref new */
-      if(parent != NULL){
-	g_object_ref(parent);
-	g_object_ref(recall);
-	parent->child = g_list_prepend(parent->child, recall);
-      }
-
-      recall->parent = parent;
+      ags_recall_add_child(parent, recall);
     }
+    break;
   case PROP_CHILD:
     {
       AgsRecall *child;
 
       child = (AgsRecall *) g_value_get_object(value);
 
-      if(child->parent == recall || child == NULL)
-	return;
-
-      /* unref old */
-      if(child->parent != NULL){
-	child->parent->child = g_list_remove(child->parent->child, child);
-	g_object_unref(child->parent);
-	g_object_unref(child);
-      }
-
-      /* ref new */
-      g_object_ref(recall);
-      g_object_ref(child);
-      recall->child = g_list_prepend(recall->child, child);
+      ags_recall_add_child(recall, child);
     }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -481,7 +453,7 @@ ags_recall_connect(AgsConnectable *connectable)
 
   recall = AGS_RECALL(connectable);
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -498,7 +470,7 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
   recall = AGS_RECALL(connectable);
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -564,7 +536,7 @@ ags_recall_run_connect(AgsRunConnectable *run_connectable)
 
   recall = AGS_RECALL(run_connectable);
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
     ags_run_connectable_connect(AGS_RUN_CONNECTABLE(list->data));
@@ -583,7 +555,7 @@ ags_recall_run_disconnect(AgsRunConnectable *run_connectable)
 
   recall = AGS_RECALL(run_connectable);
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
     ags_run_connectable_disconnect(AGS_RUN_CONNECTABLE(list->data));
@@ -600,168 +572,175 @@ ags_recall_finalize(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
-  g_free(recall->name);
-  ags_list_free_and_unref_link(recall->child);
+  if(recall->name != NULL)
+    g_free(recall->name);
+
+  ags_list_free_and_unref_link(recall->children);
+
+  if(recall->container != NULL){
+    ags_packable_unpack(recall);
+  }
+
+  if(recall->parent != NULL){
+    g_object_set_property(G_OBJECT(recall->parent),
+			  "parent\0", NULL);
+  }
+
+  list = recall->children;
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
 }
 
 void
-ags_recall_real_run_init_pre(AgsRecall *recall, guint audio_channel)
+ags_recall_real_run_init_pre(AgsRecall *recall)
 {
   GList *list;
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
-    ags_recall_run_init_pre(AGS_RECALL(list->data), audio_channel);
+    ags_recall_run_init_pre(AGS_RECALL(list->data));
 
     list = list->next;
   }
 }
 
 void
-ags_recall_run_init_pre(AgsRecall *recall, guint audio_channel)
+ags_recall_run_init_pre(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INIT_PRE], 0,
-		audio_channel);
+		recall_signals[RUN_INIT_PRE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
 void
-ags_recall_real_run_init_inter(AgsRecall *recall, guint audio_channel)
+ags_recall_real_run_init_inter(AgsRecall *recall)
 {
   GList *list;
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
-    ags_recall_run_init_inter(AGS_RECALL(list->data), audio_channel);
+    ags_recall_run_init_inter(AGS_RECALL(list->data));
 
     list = list->next;
   }
 }
 
 void
-ags_recall_run_init_inter(AgsRecall *recall, guint audio_channel)
+ags_recall_run_init_inter(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INIT_INTER], 0,
-		audio_channel);
+		recall_signals[RUN_INIT_INTER], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
 void
-ags_recall_real_run_init_post(AgsRecall *recall, guint audio_channel)
+ags_recall_real_run_init_post(AgsRecall *recall)
 {
   GList *list;
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
-    ags_recall_run_init_post(AGS_RECALL(list->data), audio_channel);
+    ags_recall_run_init_post(AGS_RECALL(list->data));
 
     list = list->next;
   }
 }
 
 void
-ags_recall_run_init_post(AgsRecall *recall, guint audio_channel)
+ags_recall_run_init_post(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INIT_POST], 0,
-		audio_channel);
+		recall_signals[RUN_INIT_POST], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
 void
-ags_recall_real_run_pre(AgsRecall *recall, guint audio_channel)
+ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list;
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
-    ags_recall_run_pre(AGS_RECALL(list->data), audio_channel);
+    ags_recall_run_pre(AGS_RECALL(list->data));
 
     list = list->next;
   }
 }
 
 void
-ags_recall_run_pre(AgsRecall *recall, guint audio_channel)
+ags_recall_run_pre(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_PRE], 0,
-		audio_channel);
+		recall_signals[RUN_PRE], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
 void
-ags_recall_real_run_inter(AgsRecall *recall, guint audio_channel)
+ags_recall_real_run_inter(AgsRecall *recall)
 {
   GList *list;
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
-    ags_recall_run_inter(AGS_RECALL(list->data), audio_channel);
+    ags_recall_run_inter(AGS_RECALL(list->data));
 
     list = list->next;
   }
 }
 
 void
-ags_recall_run_inter(AgsRecall *recall, guint audio_channel)
+ags_recall_run_inter(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_INTER], 0,
-		audio_channel);
+		recall_signals[RUN_INTER], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
 void
-ags_recall_real_run_post(AgsRecall *recall, guint audio_channel)
+ags_recall_real_run_post(AgsRecall *recall)
 {
   GList *list, *list_next;
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
     list_next = list->next;
 
-    ags_recall_run_post(AGS_RECALL(list->data), audio_channel);
+    ags_recall_run_post(AGS_RECALL(list->data));
 
     list = list_next;
   }
 }
 
 void
-ags_recall_run_post(AgsRecall *recall, guint audio_channel)
+ags_recall_run_post(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RUN_POST], 0,
-		audio_channel);
+		recall_signals[RUN_POST], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -794,14 +773,14 @@ ags_recall_loop(AgsRecall *recall)
 }
 
 void
-ags_recall_real_cancel(AgsRecall *recall, guint audio_channel)
+ags_recall_real_cancel(AgsRecall *recall)
 {
   GList *list;
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
-    ags_recall_cancel(AGS_RECALL(list->data), audio_channel);
+    ags_recall_cancel(AGS_RECALL(list->data));
 
     list = list->next;
   }
@@ -812,14 +791,13 @@ ags_recall_real_cancel(AgsRecall *recall, guint audio_channel)
 }
 
 void
-ags_recall_cancel(AgsRecall *recall, guint audio_channel)
+ags_recall_cancel(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[CANCEL], 0,
-		audio_channel);
+		recall_signals[CANCEL], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -836,10 +814,10 @@ ags_recall_real_remove(AgsRecall *recall)
   }
 
   parent = AGS_RECALL(recall->parent);
-  parent->child = g_list_remove(parent->child, recall);
+  parent->children = g_list_remove(parent->children, recall);
   g_object_unref(recall);
 
-  if((AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 && parent->child == NULL)
+  if((AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 && parent->children == NULL)
     ags_recall_done(parent);
 }
 
@@ -856,7 +834,6 @@ ags_recall_remove(AgsRecall *recall)
 
 AgsRecall*
 ags_recall_real_duplicate(AgsRecall *recall,
-			  GObject *container,
 			  AgsRecallID *recall_id)
 {
   AgsRecall *copy;
@@ -868,21 +845,10 @@ ags_recall_real_duplicate(AgsRecall *recall,
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
-  ags_packable_pack(AGS_PACKABLE(recall), container);
-
   // copy->name
-
-  copy->recall_id = recall_id;
-
-  copy->parent = recall->parent;
-  child = g_list_last(recall->child);
-
-  while(child != NULL){
-    copy->child = g_list_prepend(copy->child,
-				 ags_recall_duplicate(AGS_RECALL(child->data), recall_id));
-
-    child = child->prev;
-  }
+  /*
+   * TODO:JK: set parent and container
+   */
 
   recall_class = AGS_RECALL_GET_CLASS(recall);
   copy_class = AGS_RECALL_GET_CLASS(copy);
@@ -936,27 +902,52 @@ ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
 }
 
 void
-ags_recall_add_child(AgsRecall *recall, AgsRecall *child, guint audio_channel)
+ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 {
-  child->recall_id = recall->recall_id;
+  if(child == NULL ||
+     child->parent == parent)
+    return;
 
-  recall->child = g_list_prepend(recall->child, child);
-  child->parent = recall;
+  /* unref old */
+  if(child->parent != NULL){
+    child->parent->children = g_list_remove(child->parent->children, child);
+    g_object_unref(child->parent);
+    g_object_unref(child);
+  }
+
+  /* ref new */
+  if(parent != NULL){
+    g_object_ref(parent);
+    g_object_ref(child);
+
+    parent->children = g_list_prepend(parent->children, child);
+
+    child->recall_id = parent->recall_id;
+  }
+  
+  child->parent = parent;
 
   ags_connectable_connect(AGS_CONNECTABLE(child));
 
-  if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 &&
+  if(parent != NULL &&
+     (AGS_RECALL_RUN_INITIALIZED & (parent->flags)) != 0 &&
      (AGS_RECALL_RUN_INITIALIZED & (child->flags)) == 0){
-    ags_recall_run_init_pre(AGS_RECALL(child), audio_channel);
-    ags_recall_run_init_inter(AGS_RECALL(child), audio_channel);
-    ags_recall_run_init_post(AGS_RECALL(child), audio_channel);
+    ags_recall_run_init_pre(AGS_RECALL(child));
+    ags_recall_run_init_inter(AGS_RECALL(child));
+    ags_recall_run_init_post(AGS_RECALL(child));
 
     ags_run_connectable_connect(AGS_RUN_CONNECTABLE(child));
     
     child->flags |= AGS_RECALL_RUN_INITIALIZED;
   }
 }
- 
+
+GList*
+ags_recall_get_children(AgsRecall *recall)
+{
+  return(recall->children);
+}
+
 void
 ags_recall_child_check_remove(AgsRecall *recall)
 {
@@ -964,7 +955,7 @@ ags_recall_child_check_remove(AgsRecall *recall)
   void ags_recall_check_remove_recursive(AgsRecall *recall){
     GList *list;
 
-    list = recall->child;
+    list = recall->children;
 
     while(list != NULL){
       ags_recall_check_remove_recursive(AGS_RECALL(list->data));
@@ -976,7 +967,7 @@ ags_recall_child_check_remove(AgsRecall *recall)
       ags_recall_remove(recall);
   }
 
-  list = recall->child;
+  list = recall->children;
 
   while(list != NULL){
     ags_recall_check_remove_recursive(AGS_RECALL(list->data));
@@ -1064,14 +1055,14 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, guint group_id)
 }
 
 void
-ags_recall_run_init(AgsRecall *recall, guint audio_channel, guint stage)
+ags_recall_run_init(AgsRecall *recall, guint stage)
 {
   if(stage == 0){
-    ags_recall_run_init_pre(recall, audio_channel);
+    ags_recall_run_init_pre(recall);
   }else if(stage == 1){
-    ags_recall_run_init_inter(recall, audio_channel);
+    ags_recall_run_init_inter(recall);
   }else{
-    ags_recall_run_init_post(recall, audio_channel);
+    ags_recall_run_init_post(recall);
   }
 }
 

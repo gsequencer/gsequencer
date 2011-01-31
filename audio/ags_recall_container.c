@@ -192,7 +192,7 @@ ags_recall_container_set_property(GObject *gobject,
 
       /* remove old */
       if(AGS_RECALL(recall_audio)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_audio), AGS_RECALL(recall_audio)->container);
+	ags_packable_unpack(AGS_PACKABLE(recall_audio));
 
       /* add new */
       if(recall_audio != NULL)
@@ -219,14 +219,13 @@ ags_recall_container_set_property(GObject *gobject,
 
       /* remove old */
       if(AGS_RECALL(recall_audio_run)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_audio_run), G_OBJECT(AGS_RECALL(recall_audio_run)->container));
+	ags_packable_unpack(AGS_PACKABLE(recall_audio_run));
 
       /* add new */
       if(recall_audio_run != NULL)
 	ags_packable_pack(AGS_PACKABLE(recall_audio_run), G_OBJECT(recall_container));
     }
     break;
-
   case PROP_RECALL_CHANNEL_TYPE:
     {
       GType recall_channel_type;
@@ -247,7 +246,7 @@ ags_recall_container_set_property(GObject *gobject,
 
       /* remove old */
       if(AGS_RECALL(recall_channel)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_channel), G_OBJECT(AGS_RECALL(recall_channel)->container));
+	ags_packable_unpack(AGS_PACKABLE(recall_channel));
 
       /* add new */
       if(recall_channel != NULL)
@@ -274,7 +273,7 @@ ags_recall_container_set_property(GObject *gobject,
 
       /* remove old */
       if(AGS_RECALL(recall_channel_run)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_channel_run), G_OBJECT(AGS_RECALL(recall_channel_run)->container));
+	ags_packable_unpack(AGS_PACKABLE(recall_channel_run));
 
       /* add new */
       if(recall_channel_run != NULL)
@@ -320,13 +319,41 @@ void
 ags_recall_container_finalize(GObject *gobject)
 {
   AgsRecallContainer *container;
+  GList *list, *list_next;
 
   container = AGS_RECALL_CONTAINER(gobject);
 
-  g_object_unref(container->recall_audio);
-  ags_list_free_and_unref_link(container->recall_audio_run);
-  ags_list_free_and_unref_link(container->recall_channel);
-  ags_list_free_and_unref_link(container->recall_channel_run);
+  ags_packable_unpack(AGS_PACKABLE(container->recall_audio));
+
+  list = container->recall_audio_run;
+
+  while(list != NULL){
+    list_next = list->next;
+
+    ags_packable_unpack(AGS_PACKABLE(container->recall_audio_run));
+
+    list = list_next;
+  }
+
+  list = container->recall_channel;
+
+  while(list != NULL){
+    list_next = list->next;
+
+    ags_packable_unpack(AGS_PACKABLE(container->recall_channel));
+
+    list = list_next;
+  }
+
+  list = container->recall_channel_run;
+
+  while(list != NULL){
+    list_next = list->next;
+
+    ags_packable_unpack(AGS_PACKABLE(container->recall_channel_run));
+
+    list = list_next;
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_container_parent_class)->finalize(gobject);

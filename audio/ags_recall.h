@@ -64,29 +64,28 @@ struct _AgsRecall
   AgsRecallID *recall_id;
 
   AgsRecall *parent;
-  GList *child;
+  GList *children;
 };
 
 struct _AgsRecallClass
 {
   GObjectClass object;
 
-  void (*run_init_pre)(AgsRecall *recall, guint audio_channel);
-  void (*run_init_inter)(AgsRecall *recall, guint audio_channel);
-  void (*run_init_post)(AgsRecall *recall, guint audio_channel);
+  void (*run_init_pre)(AgsRecall *recall);
+  void (*run_init_inter)(AgsRecall *recall);
+  void (*run_init_post)(AgsRecall *recall);
 
-  void (*run_pre)(AgsRecall *recall, guint audio_channel);
-  void (*run_inter)(AgsRecall *recall, guint audio_channel);
-  void (*run_post)(AgsRecall *recall, guint audio_channel);
+  void (*run_pre)(AgsRecall *recall);
+  void (*run_inter)(AgsRecall *recall);
+  void (*run_post)(AgsRecall *recall);
 
   void (*done)(AgsRecall *recall);
   void (*loop)(AgsRecall *recall);
 
-  void (*cancel)(AgsRecall *recall, guint audio_channel);
+  void (*cancel)(AgsRecall *recall);
   void (*remove)(AgsRecall *recall);
 
   AgsRecall* (*duplicate)(AgsRecall *recall,
-			  GObject *container,
 			  AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
 
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
@@ -94,25 +93,26 @@ struct _AgsRecallClass
 
 GType ags_recall_get_type();
 
-void ags_recall_run_init_pre(AgsRecall *recall, guint audio_channel);
-void ags_recall_run_init_inter(AgsRecall *recall, guint audio_channel);
-void ags_recall_run_init_post(AgsRecall *recall, guint audio_channel);
+void ags_recall_run_init_pre(AgsRecall *recall);
+void ags_recall_run_init_inter(AgsRecall *recall);
+void ags_recall_run_init_post(AgsRecall *recall);
 
-void ags_recall_run_pre(AgsRecall *recall, guint audio_channel);
-void ags_recall_run_inter(AgsRecall *recall, guint audio_channel);
-void ags_recall_run_post(AgsRecall *recall, guint audio_channel);
+void ags_recall_run_pre(AgsRecall *recall);
+void ags_recall_run_inter(AgsRecall *recall);
+void ags_recall_run_post(AgsRecall *recall);
 
 void ags_recall_done(AgsRecall *recall);
 void ags_recall_loop(AgsRecall *recall);
 
-void ags_recall_cancel(AgsRecall *recall, guint audio_channel);
+void ags_recall_cancel(AgsRecall *recall);
 void ags_recall_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
 
-void ags_recall_add_child(AgsRecall *recall, AgsRecall *child, guint audio_channel);
+void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
+GList* ags_recall_get_children(AgsRecall *recall);
 
 void ags_recall_child_check_remove(AgsRecall *recall);
 
@@ -123,7 +123,7 @@ GList* ags_recall_find_type(GList *recall, GType type);
 GList* ags_recall_template_find_type(GList *recall, GType type);
 GList* ags_recall_find_type_with_group_id(GList *recall, GType type, guint group_id);
 
-void ags_recall_run_init(AgsRecall *recall, guint audio_channel, guint stage);
+void ags_recall_run_init(AgsRecall *recall, guint stage);
 
 AgsRecall* ags_recall_new();
 

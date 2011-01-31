@@ -19,6 +19,8 @@
 #include <ags/audio/recall/ags_loop_channel.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_countable.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -26,13 +28,36 @@
 #include <ags/audio/ags_recall_id.h>
 
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);
+void ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_loop_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_loop_channel_init(AgsLoopChannel *loop_channel);
+void ags_loop_channel_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_loop_channel_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+void ags_loop_channel_connect(AgsConnectable *connectable);
+void ags_loop_channel_disconnect(AgsConnectable *connectable);
+void ags_loop_channel_run_connect(AgsRunConnectable *run_connectable);
+void ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_loop_channel_finalize(GObject *gobject);
 
-void ags_loop_channel_run_pre(AgsRecall *recall, AgsRecallID *recall_id,
-			      gpointer data);
+void ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
+					 AgsLoopChannel *loop_channel);
+
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+  PROP_DELAY_AUDIO_RUN,
+  PROP_COUNTABLE,
+};
 
 static gpointer ags_loop_channel_parent_class = NULL;
+static AgsConnectableInterface *ags_loop_channel_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_loop_channel_parent_run_connectable_interface;
 
 GType
 ags_loop_channel_get_type()
@@ -52,11 +77,31 @@ ags_loop_channel_get_type()
       (GInstanceInitFunc) ags_loop_channel_init,
     };
 
-    ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_loop_channel_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_loop_channel_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						   "AgsLoopChannel\0",
 						   &ags_loop_channel_info,
 						   0);
+    g_type_add_interface_static(ags_type_loop_channel,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_loop_channel,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
+
   return (ags_type_loop_channel);
 }
 
@@ -64,11 +109,63 @@ void
 ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_loop_channel_parent_class = g_type_class_peek_parent(loop_channel);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) loop_channel;
+
+  gobject->set_property = ags_loop_channel_set_property;
+  gobject->get_property = ags_loop_channel_get_property;
+
   gobject->finalize = ags_loop_channel_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_gtype("channel\0",
+				  "assigned channel\0",
+				  "The channel where looping should be applied\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("delay_audio_run\0",
+				  "assigned AgsDelayAudioRun\0",
+				  "The AgsDelayAudioRun which emits tic_alloc signal\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY_AUDIO_RUN,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("countable\0",
+				  "pointer to a countable\0",
+				  "The pointer to a countable object which indicates when looping should happen\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_COUNTABLE,
+				  param_spec);
+}
+
+void
+ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_loop_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_loop_channel_connect;
+  connectable->disconnect = ags_loop_channel_disconnect;
+}
+
+void
+ags_loop_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_loop_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_loop_channel_run_connect;
+  run_connectable->disconnect = ags_loop_channel_run_disconnect;
 }
 
 void
@@ -76,6 +173,117 @@ ags_loop_channel_init(AgsLoopChannel *loop_channel)
 {
   loop_channel->channel = NULL;
   loop_channel->delay_audio_run = NULL;
+  loop_channel->countable = NULL;
+}
+
+void
+ags_loop_channel_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsLoopChannel *loop_channel;
+
+  loop_channel = AGS_LOOP_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(loop_channel->channel == channel)
+	return;
+
+      if(loop_channel->channel != NULL)
+	g_object_unref(loop_channel->channel);
+
+      if(channel != NULL)
+	g_object_ref(channel);
+
+      loop_channel->channel = channel;
+    }
+    break;
+  case PROP_DELAY_AUDIO_RUN:
+    {
+      AgsDelayAudioRun *delay_audio_run;
+
+      delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
+
+      if(loop_channel->delay_audio_run == delay_audio_run)
+	return;
+
+      if(loop_channel->delay_audio_run != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(loop_channel)->flags)) != 0)
+	  g_signal_handler_disconnect(G_OBJECT(loop_channel), loop_channel->tic_alloc_handler);
+
+	g_object_unref(loop_channel->delay_audio_run);
+      }
+
+      if(delay_audio_run != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(loop_channel)->flags)) != 0)
+	  loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc",
+							     G_CALLBACK(ags_loop_channel_tic_alloc_callback), loop_channel);
+
+	g_object_ref(loop_channel->delay_audio_run);
+      }
+    }
+    break;
+  case PROP_COUNTABLE:
+    {
+      GObject *countable;
+
+      countable = (GObject *) g_value_get_object(value);
+
+      if(loop_channel->countable == countable)
+	return;
+
+      if(loop_channel->countable != NULL)
+	g_object_unref(loop_channel->countable);
+
+      if(countable != NULL)
+	g_object_ref(countable);
+
+      loop_channel->countable = countable;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_loop_channel_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsLoopChannel *loop_channel;
+
+  loop_channel = AGS_LOOP_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, loop_channel->channel);
+    }
+    break;
+  case PROP_DELAY_AUDIO_RUN:
+    {
+      g_value_set_object(value, loop_channel->delay_audio_run);
+    }
+    break;
+  case PROP_COUNTABLE:
+    {
+      g_value_set_object(value, loop_channel->countable);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -85,24 +293,57 @@ ags_loop_channel_finalize(GObject *gobject)
 }
 
 void
-ags_loop_channel_connect(AgsLoopChannel *loop_channel)
+ags_loop_channel_connect(AgsConnectable *connectable)
 {
-  //  ags_recall_connect(AGS_RECALL(loop_channel));
+  ags_loop_channel_parent_connectable_interface->connect(connectable);
 
-  g_signal_connect((GObject *) loop_channel, "run_pre\0",
-		   G_CALLBACK(ags_loop_channel_run_pre), NULL);
+  /* empty */
 }
 
 void
-ags_loop_channel_run_pre(AgsRecall *recall, AgsRecallID *recall_id,
-			 gpointer data)
+ags_loop_channel_disconnect(AgsConnectable *connectable)
+{
+  ags_loop_channel_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_loop_channel_run_connect(AgsRunConnectable *run_connectable)
 {
   AgsLoopChannel *loop_channel;
+
+  ags_loop_channel_parent_run_connectable_interface->connect(run_connectable);
+
+  loop_channel = AGS_LOOP_CHANNEL(run_connectable);
+
+  if(loop_channel->delay_audio_run != NULL)
+    loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc",
+						       G_CALLBACK(ags_loop_channel_tic_alloc_callback), loop_channel);
+}
+
+void
+ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  AgsLoopChannel *loop_channel;
+
+  ags_loop_channel_parent_run_connectable_interface->disconnect(run_connectable);
+
+  loop_channel = AGS_LOOP_CHANNEL(run_connectable);
+
+  if(loop_channel->delay_audio_run != NULL)
+    g_signal_handler_disconnect(G_OBJECT(loop_channel), loop_channel->tic_alloc_handler);
+
+}
+
+void
+ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
+				    AgsLoopChannel *loop_channel)
+{
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  loop_channel = AGS_LOOP_CHANNEL(recall);
+  if(AGS_COUNTABLE_GET_INTERFACE(loop_channel->countable)->get_counter(AGS_COUNTABLE(loop_channel)) != 0)
+    return;
 
   devout = AGS_DEVOUT(AGS_AUDIO(loop_channel->channel->audio)->devout);
 
@@ -111,7 +352,7 @@ ags_loop_channel_run_pre(AgsRecall *recall, AgsRecallID *recall_id,
   while(recycling != loop_channel->channel->last_recycling->next){
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) recycling,
-					(GObject *) recall_id);
+					(GObject *) AGS_RECALL(loop_channel)->recall_id);
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
     
     ags_recycling_add_audio_signal(recycling,
@@ -125,14 +366,16 @@ ags_loop_channel_run_pre(AgsRecall *recall, AgsRecallID *recall_id,
 
 AgsLoopChannel*
 ags_loop_channel_new(AgsChannel *channel,
-		     AgsDelayAudioRun *delay_audio_run)
+		     AgsDelayAudioRun *delay_audio_run,
+		     GObject *countable)
 {
   AgsLoopChannel *loop_channel;
 
-  loop_channel = (AgsLoopChannel *) g_object_new(AGS_TYPE_LOOP_CHANNEL, NULL);
-
-  loop_channel->channel = channel;
-  loop_channel->delay_audio_run = delay_audio_run;
+  loop_channel = (AgsLoopChannel *) g_object_new(AGS_TYPE_LOOP_CHANNEL,
+						 "channel\0", channel,
+						 "delay_audio_run", delay_audio_run,
+						 "countable", countable,
+						 NULL);
 
   return(loop_channel);
 }

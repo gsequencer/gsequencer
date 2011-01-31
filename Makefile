@@ -30,7 +30,7 @@ AGS_MACHINE_OBJECTS = $(AGS_DIR)X/machine/ags_panel.o $(AGS_DIR)X/machine/ags_mi
 
 AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_DIR)X/machine/ags_mixer_callbacks.o $(AGS_DIR)X/machine/ags_drum_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_input_line_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_pad_callbacks.o $(AGS_DIR)X/machine/ags_drum_output_line_callbacks.o $(AGS_DIR)X/machine/ags_matrix_callbacks.o $(AGS_DIR)X/machine/ags_synth_callbacks.o $(AGS_DIR)X/machine/ags_oscillator_callbacks.o $(AGS_DIR)X/machine/ags_ffplayer_callbacks.o
 
-AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_packable.o $(AGS_DIR)object/ags_tactable.o $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
+AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_packable.o $(AGS_DIR)object/ags_tactable.o $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_countable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
 
 AGS_LIB_OBJECTS = $(AGS_DIR)lib/ags_list.o
 
