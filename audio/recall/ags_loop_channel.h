@@ -44,6 +44,7 @@ struct _AgsLoopChannel
 
   AgsDelayAudioRun *delay_audio_run;
   gulong tic_alloc_handler;
+  guint nth_run;
 
   GObject *countable;
 

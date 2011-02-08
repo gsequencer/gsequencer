@@ -21,6 +21,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -37,11 +38,11 @@ void ags_delay_audio_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_delay_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_delay_audio_run_finalize(GObject *gobject);
 
-void ags_delay_audio_run_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data);
-void ags_delay_audio_run_run_pre(AgsRecall *recall, guint audio_channel, gpointer data);
-void ags_delay_audio_run_done(AgsRecall *recall, gpointer data);
-void ags_delay_audio_run_cancel(AgsRecall *recall, gpointer data);
-void ags_delay_audio_run_remove(AgsRecall *recall, gpointer data);
+void ags_delay_audio_run_run_init_pre(AgsRecall *recall);
+void ags_delay_audio_run_run_pre(AgsRecall *recall);
+void ags_delay_audio_run_done(AgsRecall *recall);
+void ags_delay_audio_run_cancel(AgsRecall *recall);
+void ags_delay_audio_run_remove(AgsRecall *recall);
 AgsRecall* ags_delay_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
@@ -111,18 +112,27 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 
   ags_delay_audio_run_parent_class = g_type_class_peek_parent(delay_audio_run);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) delay_audio_run;
 
   gobject->finalize = ags_delay_audio_run_finalize;
 
+  /* AgsRecallClass */
   recall = (AgsRecallClass *) delay_audio_run;
 
+  recall->run_init_pre = ags_delay_audio_run_run_init_pre;
+  recall->run_pre = ags_delay_audio_run_run_pre;
+  recall->done = ags_delay_audio_run_done;
+  recall->cancel = ags_delay_audio_run_cancel;
+  recall->remove = ags_delay_audio_run_remove;
   recall->duplicate = ags_delay_audio_run_duplicate;
   recall->notify_dependency = ags_delay_audio_run_notify_dependency;
 
+  /* AgsDelayAudioRun */
   delay_audio_run->tic_alloc = NULL;
   delay_audio_run->tic_count = NULL;
 
+  /* signals */
   delay_signals[TIC_ALLOC] =
     g_signal_new("tic_alloc\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
@@ -181,24 +191,6 @@ ags_delay_audio_run_connect(AgsConnectable *connectable)
   printf("ags_delay_audio_run_connect\n\0");
 
   ags_delay_audio_run_parent_connectable_interface->connect(connectable);
-
-  /* AgsDelayAudioRun */
-  delay_audio_run = AGS_DELAY_AUDIO_RUN(connectable);
-
-  g_signal_connect((GObject *) delay_audio_run, "run_init_pre\0",
-		   G_CALLBACK(ags_delay_audio_run_run_init_pre), NULL);
-
-  g_signal_connect((GObject *) delay_audio_run, "run_pre\0",
-		   G_CALLBACK(ags_delay_audio_run_run_pre), NULL);
-
-  g_signal_connect((GObject *) delay_audio_run, "done\0",
-		   G_CALLBACK(ags_delay_audio_run_done), NULL);
-
-  g_signal_connect((GObject *) delay_audio_run, "cancel\0",
-		   G_CALLBACK(ags_delay_audio_run_cancel), NULL);
-
-  g_signal_connect((GObject *) delay_audio_run, "remove\0",
-		   G_CALLBACK(ags_delay_audio_run_remove), NULL);
 }
 
 void
@@ -226,18 +218,20 @@ ags_delay_audio_run_finalize(GObject *gobject)
 }
 
 void
-ags_delay_audio_run_run_init_pre(AgsRecall *recall, guint audio_channel, gpointer data)
+ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 {
-  printf("ags_delay_audio_run_run_init_pre\n\0");
+  AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_init_pre(recall);
 
   recall->flags |= AGS_RECALL_PERSISTENT;
 }
 
 void
-ags_delay_audio_run_run_pre(AgsRecall *recall, guint audio_channel, gpointer data)
+ags_delay_audio_run_run_pre(AgsRecall *recall)
 {
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
+
+  AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
@@ -246,11 +240,28 @@ ags_delay_audio_run_run_pre(AgsRecall *recall, guint audio_channel, gpointer dat
     delay_audio_run->counter = 0;
     ags_recall_done(recall);
   }else{
-    delay_audio = AGS_DELAY_AUDIO(recall->recall_audio);
+    AgsRecallContainer *recall_container;
+    GValue recall_container_value = {0,};
+    GValue delay_audio_value = {0,};
+
+    /* get AgsRecallContainer */
+    g_object_get_property(G_OBJECT(delay_audio_run),
+			  "container\0",
+			  &recall_container_value);
+    recall_container = AGS_RECALL_CONTAINER(g_value_get_object(&recall_container_value));
+    g_value_unset(&recall_container_value);
+    
+    /* get AgsCopyPatternAudioRun */
+    g_object_get_property(G_OBJECT(recall_container),
+			  "recall_audio\0",
+			  &delay_audio_value);
+    delay_audio = AGS_DELAY_AUDIO(g_value_get_object(&delay_audio_value));
+    g_value_unset(&delay_audio_value);
+
 
     if(delay_audio_run->counter == 0){
-      ags_delay_audio_run_tic_alloc(delay_audio_run, audio_channel);
-      ags_delay_audio_run_tic_count(delay_audio_run, audio_channel);
+      ags_delay_audio_run_tic_alloc(delay_audio_run, delay_audio_run->hide_ref_counter);
+      ags_delay_audio_run_tic_count(delay_audio_run, delay_audio_run->hide_ref_counter);
     }
 
     if(delay_audio_run->hide_ref != 0)
@@ -268,20 +279,26 @@ ags_delay_audio_run_run_pre(AgsRecall *recall, guint audio_channel, gpointer dat
 }
 
 void
-ags_delay_audio_run_done(AgsRecall *recall, gpointer data)
+ags_delay_audio_run_done(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->done(recall);
+
   /* empty */
 }
 
 void
-ags_delay_audio_run_cancel(AgsRecall *recall, gpointer data)
+ags_delay_audio_run_cancel(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->cancel(recall);
+
   /* empty */
 }
 
 void
-ags_delay_audio_run_remove(AgsRecall *recall, gpointer data)
+ags_delay_audio_run_remove(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->remove(recall);
+
   /* empty */
 }
 
@@ -331,7 +348,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
 }
 
 void
-ags_delay_audio_run_tic_alloc(AgsDelayAudioRun *delay_audio_run, guint audio_channel)
+ags_delay_audio_run_tic_alloc(AgsDelayAudioRun *delay_audio_run, guint nth_run)
 {
   //  printf("%u\n\0", audio_channel);
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
@@ -339,12 +356,12 @@ ags_delay_audio_run_tic_alloc(AgsDelayAudioRun *delay_audio_run, guint audio_cha
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_signals[TIC_ALLOC], 0,
-		audio_channel);
+		nth_run);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
 void
-ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay_audio_run, guint audio_channel)
+ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay_audio_run, guint nth_run)
 {
   //  printf("%u\n\0", audio_channel);
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
@@ -352,7 +369,7 @@ ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay_audio_run, guint audio_cha
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_signals[TIC_COUNT], 0,
-		audio_channel);
+		nth_run);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 

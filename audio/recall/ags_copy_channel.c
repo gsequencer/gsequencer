@@ -147,6 +147,7 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
 
   gobject->set_property = ags_copy_channel_set_property;
   gobject->get_property = ags_copy_channel_get_property;
+
   gobject->finalize = ags_copy_channel_finalize;
 
   /* properties */
@@ -486,19 +487,33 @@ AgsRecall*
 ags_copy_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
   AgsCopyChannel *copy_channel, *copy;
-  GValue value = {0,};
+  GValue devout_value = {0,};
+  GValue destination_value = {0,};
+  GValue source_value = {0,};
 
   copy_channel = (AgsCopyChannel *) recall;
   copy = (AgsCopyChannel *) AGS_RECALL_CLASS(ags_copy_channel_parent_class)->duplicate(recall, recall_id);
 
-  g_value_set_object(&value, G_OBJECT(copy_channel->devout));
-  g_object_set_property(G_OBJECT(copy), "devout\0", &value);
+  g_value_init(&devout_value, G_TYPE_OBJECT);
+  g_value_set_object(&devout_value, G_OBJECT(copy_channel->devout));
+  g_object_set_property(G_OBJECT(copy),
+			"devout\0",
+			&devout_value);
+  g_value_unset(&devout_value);
 
-  g_value_set_object(&value, G_OBJECT(copy_channel->destination));
-  g_object_set_property(G_OBJECT(copy), "destination\0", &value);
+  g_value_init(&destination_value, G_TYPE_OBJECT);
+  g_value_set_object(&destination_value, G_OBJECT(copy_channel->destination));
+  g_object_set_property(G_OBJECT(copy),
+			"destination\0",
+			&destination_value);
+  g_value_unset(&destination_value);
 
-  g_value_set_object(&value, G_OBJECT(copy_channel->source));
-  g_object_set_property(G_OBJECT(copy), "source\0", &value);
+  g_value_init(&source_value, G_TYPE_OBJECT);
+  g_value_set_object(&source_value, G_OBJECT(copy_channel->source));
+  g_object_set_property(G_OBJECT(copy),
+			"source\0",
+			&source_value);
+  g_value_unset(&source_value);
 		     
   ags_copy_channel_map_copy_recycling(copy);
 

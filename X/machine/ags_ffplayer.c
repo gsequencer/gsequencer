@@ -361,9 +361,9 @@ ags_ffplayer_new(GObject *devout)
   if(devout != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, devout);
-    
     g_object_set_property(G_OBJECT(ffplayer->machine.audio),
 			  "devout\0", &value);
+    g_value_unset(&value);
   }
 
   return(ffplayer);

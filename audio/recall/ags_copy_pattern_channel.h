@@ -43,7 +43,7 @@ struct _AgsCopyPatternChannel
 
   AgsChannel *destination;
 
-  AgsChannel *source;
+  //  AgsChannel *source; 
   AgsPattern *pattern;
 };
 
@@ -54,8 +54,8 @@ struct _AgsCopyPatternChannelClass
 
 GType ags_copy_pattern_channel_get_type();
 
-AgsCopyPatternChannel* ags_copy_pattern_channel_new(AgsRecallAudio *recall_audio,
-						    AgsChannel *destination,
-						    AgsChannel *source, AgsPattern *pattern);
+AgsCopyPatternChannel* ags_copy_pattern_channel_new(AgsChannel *destination,
+						    AgsChannel *source,
+						    AgsPattern *pattern);
 
 #endif /*__AGS_COPY_PATTERN_CHANNEL_H__*/

@@ -190,6 +190,7 @@ ags_audio_init(AgsAudio *audio)
   audio->devout_play->source = (GObject *) audio;
 
   audio->recall_id = NULL;
+  audio->recall_container;
 
   audio->recall = NULL;
   audio->play = NULL;
@@ -1386,7 +1387,7 @@ ags_audio_find_group_id_from_child(AgsAudio *audio,
  * AgsRecall related
  */
 void
-ags_audio_play(AgsAudio *audio, guint audio_channel,guint group_id,
+ags_audio_play(AgsAudio *audio, guint group_id,
 	       gint stage, gboolean do_recall)
 {
   AgsRecall *recall;
@@ -1411,11 +1412,11 @@ ags_audio_play(AgsAudio *audio, guint audio_channel,guint group_id,
     
     if((AGS_RECALL_HIDE & (recall->flags)) == 0){
       if(stage == 0)
-	ags_recall_run_pre(recall, audio_channel);
+	ags_recall_run_pre(recall);
       else if(stage == 1)
-	ags_recall_run_inter(recall, audio_channel);
+	ags_recall_run_inter(recall);
       else
-	ags_recall_run_post(recall, audio_channel);
+	ags_recall_run_post(recall);
     }
 
     ags_recall_child_check_remove(recall);
@@ -1497,7 +1498,7 @@ ags_audio_cancel(AgsAudio *audio, guint audio_channel, guint group_id,
       continue;
     }
 
-    ags_recall_cancel(recall, audio_channel);
+    ags_recall_cancel(recall);
     
     list = list_next;
   }
@@ -1523,9 +1524,9 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
 
 	g_value_init(&value, G_TYPE_OBJECT);
 	g_value_set_object(&value, devout);
-
 	g_object_set_property(G_OBJECT(audio_signal),
 			      "devout\0", &value);
+	g_value_unset(&value);
 
 	recycling = recycling->next;
       }

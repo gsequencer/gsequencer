@@ -163,6 +163,7 @@ ags_channel_init(AgsChannel *channel)
   channel->devout_play->source = (GObject *) channel;
 
   channel->recall_id = NULL;
+  channel->recall_container = NULL;
 
   channel->recall = NULL;
   channel->play = NULL;

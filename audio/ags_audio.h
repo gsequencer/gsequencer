@@ -80,6 +80,7 @@ struct _AgsAudio
   AgsDevoutPlay *devout_play;
 
   GList *recall_id;
+  GList *recall_container;
 
   GList *recall; // eg. AGS_DELAY in AgsRecallClass->recall_inter
   GList *play;
@@ -113,7 +114,7 @@ void ags_audio_find_group_id_from_child(AgsAudio *audio,
 					AgsRecallID **child_recall_id, gboolean *child_do_recall);
 
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
-void ags_audio_play(AgsAudio *audio, guint audio_channel, guint group_id,
+void ags_audio_play(AgsAudio *audio, guint group_id,
 		    gint stage, gboolean do_recall);
 guint ags_audio_recursive_play_init(AgsAudio *audio);
 

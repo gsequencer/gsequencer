@@ -89,6 +89,7 @@ struct _AgsRecallClass
 			  AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
 
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
+  void (*run_order_changed)(AgsRecall *recall, guint nth_run);
 };
 
 GType ags_recall_get_type();

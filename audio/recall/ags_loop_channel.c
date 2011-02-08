@@ -45,13 +45,17 @@ void ags_loop_channel_run_connect(AgsRunConnectable *run_connectable);
 void ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_loop_channel_finalize(GObject *gobject);
 
+void ags_loop_channel_run_order_changed(AgsRecall *recall, guint nth_run);
+
 void ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
+					 guint nth_run,
 					 AgsLoopChannel *loop_channel);
 
 enum{
   PROP_0,
   PROP_CHANNEL,
   PROP_DELAY_AUDIO_RUN,
+  PROP_NTH_RUN,
   PROP_COUNTABLE,
 };
 
@@ -171,8 +175,11 @@ ags_loop_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_
 void
 ags_loop_channel_init(AgsLoopChannel *loop_channel)
 {
-  loop_channel->channel = NULL;
   loop_channel->delay_audio_run = NULL;
+  loop_channel->nth_run = 0;
+
+  loop_channel->channel = NULL;
+
   loop_channel->countable = NULL;
 }
 
@@ -230,6 +237,15 @@ ags_loop_channel_set_property(GObject *gobject,
       }
     }
     break;
+  case PROP_NTH_RUN:
+    {
+      guint nth_run;
+
+      nth_run = g_value_get_uint(value);
+
+      loop_channel->nth_run = nth_run;
+    }
+    break;
   case PROP_COUNTABLE:
     {
       GObject *countable;
@@ -271,6 +287,11 @@ ags_loop_channel_get_property(GObject *gobject,
     }
     break;
   case PROP_DELAY_AUDIO_RUN:
+    {
+      g_value_set_object(value, loop_channel->delay_audio_run);
+    }
+    break;
+  case PROP_NTH_RUN:
     {
       g_value_set_object(value, loop_channel->delay_audio_run);
     }
@@ -335,14 +356,29 @@ ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable)
 }
 
 void
+ags_loop_channel_run_order_changed(AgsRecall *recall, guint nth_run)
+{
+  GValue value = {0,};
+
+  g_value_init(&value, G_TYPE_UINT);
+  g_value_set_uint(&value, nth_run);
+  g_object_set_property(G_OBJECT(recall),
+			"nth_run\0",
+			&value);
+  g_value_unset(&value);
+}
+
+void 
 ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
+				    guint nth_run,
 				    AgsLoopChannel *loop_channel)
 {
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  if(AGS_COUNTABLE_GET_INTERFACE(loop_channel->countable)->get_counter(AGS_COUNTABLE(loop_channel)) != 0)
+  if(loop_channel->nth_run != nth_run ||
+      AGS_COUNTABLE_GET_INTERFACE(loop_channel->countable)->get_counter(AGS_COUNTABLE(loop_channel)) != 0)
     return;
 
   devout = AGS_DEVOUT(AGS_AUDIO(loop_channel->channel->audio)->devout);

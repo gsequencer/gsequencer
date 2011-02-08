@@ -39,6 +39,7 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -125,6 +126,7 @@ void
 ags_drum_init(AgsDrum *drum)
 {
   AgsAudio *audio;
+  AgsRecallContainer *recall_container;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
   AgsCopyPatternAudio *copy_pattern_audio;
@@ -152,9 +154,15 @@ ags_drum_init(AgsDrum *drum)
 
   drum->flags = 0;
 
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+
   /* create AgsDelayAudio in audio->play */
-  delay_audio = ags_delay_audio_new(audio,
-				    0);
+  delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+					       "container\0", recall_container,
+					       "audio\0", audio,
+					       "delay\0", 0,
+					       NULL);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->play = g_list_append(audio->play, (gpointer) delay_audio);
@@ -211,8 +219,7 @@ ags_drum_init(AgsDrum *drum)
   //  ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_audio));
 
   /* create AgsCopyPatternAudioRun in audio->recall */
-  copy_pattern_audio_run = ags_copy_pattern_audio_run_new((AgsRecallAudio *) copy_pattern_audio,
-							  recall_delay_audio_run, 0);
+  copy_pattern_audio_run = ags_copy_pattern_audio_run_new(recall_delay_audio_run, 0);
   AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
   audio->recall = g_list_append(audio->recall, (gpointer) copy_pattern_audio_run);
@@ -732,6 +739,7 @@ ags_drum_new(GObject *devout)
 
     g_object_set_property(G_OBJECT(drum->machine.audio),
 			  "devout\0", &value);
+    g_value_unset(&value);
   }
 
   return(drum);

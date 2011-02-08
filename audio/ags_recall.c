@@ -80,6 +80,7 @@ enum{
   REMOVE,
   DUPLICATE,
   NOTIFY_DEPENDENCY,
+  RUN_ORDER_CHANGED,
   LAST_SIGNAL,
 };
 
@@ -161,10 +162,10 @@ ags_recall_class_init(AgsRecallClass *recall)
   /* GObjectClass */
   gobject = (GObjectClass *) recall;
 
-  gobject->finalize = ags_recall_finalize;
-
   gobject->set_property = ags_recall_set_property;
   gobject->get_property = ags_recall_get_property;
+
+  gobject->finalize = ags_recall_finalize;
 
   /* properties */
   param_spec = g_param_spec_gtype("container\0",
@@ -212,6 +213,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->duplicate = ags_recall_real_duplicate;
 
   recall->notify_dependency = NULL;
+  recall->run_order_changed = NULL;
 
   /* signals */
   recall_signals[RUN_INIT_PRE] =
@@ -330,6 +332,16 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_user_marshal_VOID__UINT_INT,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_INT);
+
+  recall_signals[RUN_ORDER_CHANGED] =
+    g_signal_new("run_order_changed\0",
+		 G_TYPE_FROM_CLASS (recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallClass, run_order_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 }
 
 void
@@ -582,8 +594,14 @@ ags_recall_finalize(GObject *gobject)
   }
 
   if(recall->parent != NULL){
+    GValue value = {0,};
+    
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, NULL);
     g_object_set_property(G_OBJECT(recall->parent),
-			  "parent\0", NULL);
+			  "parent\0",
+			  &value);
+    g_value_unset(&value);
   }
 
   list = recall->children;
@@ -898,6 +916,18 @@ ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[NOTIFY_DEPENDENCY], 0,
 		flags, count);
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
+ags_recall_run_order_changed(AgsRecall *recall, guint nth_run)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[RUN_ORDER_CHANGED], 0,
+		nth_run);
   g_object_unref(G_OBJECT(recall));
 }
 

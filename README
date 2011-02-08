@@ -4,6 +4,7 @@ You need a realtime kernel in conjunction with ags. The realtime kernel shipped 
 
 
 TODO:
+- call run_order_changed in AgsRecall from ags_channel_recursive_play_init
 - revise ags_recall_set_property
 - revise destroy functions - disconnect before destroying
 - play channel when linked if needed

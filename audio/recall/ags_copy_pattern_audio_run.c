@@ -334,26 +334,35 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   AgsCopyPatternAudioRun *copy_pattern_audio_run, *copy;
   GList *list, *list_start;
   guint group_id;
-  GValue value = {0,};
+  GValue container_value = {0,};
+  GValue recall_audio_value = {0,};
+  GValue audio_value = {0,};
+  GValue delay_audio_run_value = {0,};
 
   copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall, recall_id));
 
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
+  g_value_init(&container_value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(recall),
 			"container\0",
-			&value);
-  container = AGS_RECALL_CONTAINER(g_value_get_object(&value));
+			&container_value);
+  container = AGS_RECALL_CONTAINER(g_value_get_object(&container_value));
+  g_value_unset(&container_value);
 
+  g_value_init(&recall_audio_value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(container),
 			"recall_audio\0",
-			&value);
-  recall_audio = AGS_RECALL_AUDIO(g_value_get_object(&value));
+			&recall_audio_value);
+  recall_audio = AGS_RECALL_AUDIO(g_value_get_object(&recall_audio_value));
+  g_value_unset(&recall_audio_value);
 
+  g_value_init(&audio_value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(recall_audio),
 			"audio\0",
-			&value);
-  audio = AGS_AUDIO(g_value_get_object(&value));
+			&audio_value);
+  audio = AGS_AUDIO(g_value_get_object(&audio_value));
+  g_value_unset(&audio_value);
 
   if(audio != NULL){
     if((AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL & (recall_id->flags)) == 0)
@@ -371,10 +380,12 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 					      group_id);
 
     if(list != NULL){
-      g_value_set_object(&value, list->data);
+      g_value_init(&delay_audio_run_value, G_TYPE_OBJECT);
+      g_value_set_object(&delay_audio_run_value, list->data);
       g_object_set_property(G_OBJECT(copy),
-			    "delay_audio_run\0",
-			    &value);
+			    "delay_audio_run_run\0",
+			    &delay_audio_run_value);
+      g_value_unset(&delay_audio_run_value);
     }
   }
 
@@ -415,10 +426,12 @@ ags_copy_pattern_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
   AgsCopyPatternAudio *copy_pattern_audio;
   GValue value = {0,};
 
+  g_value_init(&value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(copy_pattern_audio_run),
 			"recall_audio\0",
 			&value);
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(g_value_get_object(&value));
+  g_value_unset(&value);
 
   if(copy_pattern_audio_run->hide_ref != 0)
     copy_pattern_audio_run->hide_ref_counter++;
@@ -445,14 +458,6 @@ ags_copy_pattern_audio_run_new(AgsDelayAudioRun *delay_audio_run,
 								   "delay_audio_run\0", delay_audio_run,
 								   "bit\0", bit,
 								   NULL);
-
-
-  if(delay_audio_run != NULL){
-    g_object_ref(delay_audio_run);
-    copy_pattern_audio_run->delay_audio_run = delay_audio_run;
-  }
-
-  copy_pattern_audio_run->bit = bit;
 
   return(copy_pattern_audio_run);
 }

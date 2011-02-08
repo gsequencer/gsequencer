@@ -99,7 +99,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("bank-index-0\0",
+  param_spec = g_param_spec_gtype("bank_index_0\0",
 				  "current bank index 0\0",
 				  "The current bank index 0 of the AgsPattern\0",
 				   G_TYPE_UINT,
@@ -108,7 +108,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 				  PROP_BANK_INDEX_0,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("bank-index-1\0",
+  param_spec = g_param_spec_gtype("bank_index_\0",
 				  "current bank index 1\0",
 				  "The current bank index 1 of the AgsPattern\0",
 				   G_TYPE_UINT,
@@ -135,7 +135,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 				  PROP_LOOP,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("stream-length\0",
+  param_spec = g_param_spec_gtype("stream_length\0",
 				  "stream length in buffers\0",
 				  "The length of the stream in buffer count\0",
 				   G_TYPE_UINT,
@@ -310,11 +310,11 @@ ags_copy_pattern_audio_new(AgsDevout *devout,
 
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
 							    "devout\0", devout,
-							    "bank-index-0\0", i,
-							    "bank-index-1\0", j,
+							    "bank_index_0\0", i,
+							    "bank_index_1\0", j,
 							    "length\0", length,
 							    "loop\0", loop,
-							    "stream-length", stream_length,
+							    "stream_length", stream_length,
 							    NULL);
 
   return(copy_pattern_audio);
