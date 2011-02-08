@@ -132,6 +132,7 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
 
   gobject->set_property = ags_copy_pattern_channel_run_set_property;
   gobject->get_property = ags_copy_pattern_channel_run_get_property;
+
   gobject->finalize = ags_copy_pattern_channel_run_finalize;
 
   /* properties */

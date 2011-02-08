@@ -187,6 +187,7 @@ GType ags_devout_get_type();
 AgsDevoutPlay* ags_devout_play_alloc();
 
 void ags_devout_append_task(AgsDevout *devout, AgsTask *task);
+void ags_devout_append_tasks(AgsDevout *devout, GList *list);
 
 void ags_devout_run(AgsDevout *devout);
 void ags_devout_stop(AgsDevout *devout);

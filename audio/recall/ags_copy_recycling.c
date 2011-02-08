@@ -37,15 +37,23 @@ void ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling);
 void ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_copy_recycling_init(AgsCopyRecycling *copy_recycling);
+void ags_copy_recycling_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_copy_recycling_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_copy_recycling_connect(AgsConnectable *connectable);
 void ags_copy_recycling_disconnect(AgsConnectable *connectable);
 void ags_copy_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_recycling_finalize(GObject *gobject);
 
-void ags_copy_recycling_done(AgsRecall *recall, gpointer data);
-void ags_copy_recycling_cancel(AgsRecall *recall, gpointer data);
-void ags_copy_recycling_remove(AgsRecall *recall, gpointer data);
+void ags_copy_recycling_done(AgsRecall *recall);
+void ags_copy_recycling_cancel(AgsRecall *recall);
+void ags_copy_recycling_remove(AgsRecall *recall);
 AgsRecall* ags_copy_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
@@ -74,6 +82,13 @@ void ags_copy_recycling_destination_remove_audio_signal_callback(AgsRecycling *d
 
 void ags_copy_recycling_copy_audio_signal_done(AgsRecall *recall,
 					       gpointer data);
+
+enum{
+  PROP_0,
+  PROP_DESTINATION,
+  PROP_SOURCE,
+  PROP_DEVOUT,
+};
 
 static gpointer ags_copy_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_recycling_parent_connectable_interface;
@@ -131,14 +146,52 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_copy_recycling_parent_class = g_type_class_peek_parent(copy_recycling);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) copy_recycling;
+
+  gobject->set_property = ags_copy_recycling_set_property;
+  gobject->get_property = ags_copy_recycling_get_property;
 
   gobject->finalize = ags_copy_recycling_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_gtype("devout\0",
+				  "assigned AgsDevout\0",
+				  "The AgsDevout this recall is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("destination\0",
+				  "destination AgsRecycling\0",
+				  "The AgsRecycling this recall has as destination\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("source\0",
+				  "source AgsRecycling\0",
+				  "The AgsRecycling this recall has as source\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_recycling;
+
+  recall->done = ags_copy_recycling_done;
+  recall->cancel = ags_copy_recycling_cancel;
+  recall->remove = ags_copy_recycling_remove;
 
   recall->duplicate = ags_copy_recycling_duplicate;
 }
@@ -174,23 +227,172 @@ ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 }
 
 void
+ags_copy_recycling_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsCopyRecycling *copy_recycling;
+  
+  copy_recycling = AGS_COPY_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(copy_recycling->devout == devout)
+	return;
+
+      if(copy_recycling->devout != NULL)
+	g_object_unref(G_OBJECT(copy_recycling->devout));
+
+      if(devout != NULL)
+	g_object_ref(G_OBJECT(devout));
+
+      copy_recycling->devout = devout;
+    }
+    break;
+  case PROP_DESTINATION:
+    {
+      AgsRecycling *destination;
+
+      destination = (AgsRecycling *) g_value_get_object(value);
+
+      if(copy_recycling->destination == destination)
+	return;
+
+      if(copy_recycling->destination != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(copy_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(copy_recycling->destination);
+
+	  g_signal_handler_disconnect(gobject, copy_recycling->destination_add_audio_signal_handler);
+	  g_signal_handler_disconnect(gobject, copy_recycling->destination_add_audio_signal_with_frame_count_handler);
+	  
+	  g_signal_handler_disconnect(gobject, copy_recycling->destination_remove_audio_signal_handler);
+	}
+
+	g_object_unref(copy_recycling->destination);
+      }
+
+      if(destination != NULL)
+	g_object_ref(destination);
+
+      copy_recycling->destination = destination;
+
+      if(destination != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(copy_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(destination);
+	  
+	  copy_recycling->destination_add_audio_signal_handler =
+	    g_signal_connect_after(gobject, "add_audio_signal\0",
+				   G_CALLBACK(ags_copy_recycling_destination_add_audio_signal_callback), copy_recycling);
+	  
+	  copy_recycling->destination_add_audio_signal_with_frame_count_handler =
+	    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
+				   G_CALLBACK(ags_copy_recycling_destination_add_audio_signal_with_frame_count_callback), copy_recycling);
+  
+	  copy_recycling->destination_remove_audio_signal_handler =
+	    g_signal_connect(gobject, "remove_audio_signal\0",
+			     G_CALLBACK(ags_copy_recycling_destination_remove_audio_signal_callback), copy_recycling);
+	}
+      }
+    }
+    break;
+  case PROP_SOURCE:
+    {
+      AgsRecycling *source;
+
+      source = (AgsRecycling *) g_value_get_object(value);
+
+      if(copy_recycling->source == source)
+	return;
+
+      if(copy_recycling->source != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(copy_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(copy_recycling->source);
+
+	  g_signal_handler_disconnect(gobject, copy_recycling->source_add_audio_signal_handler);
+	  g_signal_handler_disconnect(gobject, copy_recycling->source_add_audio_signal_with_frame_count_handler);
+	  
+	  g_signal_handler_disconnect(gobject, copy_recycling->source_remove_audio_signal_handler);
+	}
+
+	g_object_unref(copy_recycling->source);
+      }
+
+      if(source != NULL)
+	g_object_ref(source);
+
+      copy_recycling->source = source;
+
+      if(source != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(copy_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(source);
+	  
+	  copy_recycling->source_add_audio_signal_handler =
+	    g_signal_connect_after(gobject, "add_audio_signal\0",
+				   G_CALLBACK(ags_copy_recycling_source_add_audio_signal_callback), copy_recycling);
+	  
+	  copy_recycling->source_add_audio_signal_with_frame_count_handler =
+	    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
+				   G_CALLBACK(ags_copy_recycling_source_add_audio_signal_with_frame_count_callback), copy_recycling);
+  
+	  copy_recycling->source_remove_audio_signal_handler =
+	    g_signal_connect(gobject, "remove_audio_signal\0",
+			     G_CALLBACK(ags_copy_recycling_source_remove_audio_signal_callback), copy_recycling);
+	}
+      }
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_copy_recycling_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsCopyRecycling *copy_recycling;
+  
+  copy_recycling = AGS_COPY_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, copy_recycling->devout);
+    }
+    break;
+  case PROP_DESTINATION:
+    {
+      g_value_set_object(value, copy_recycling->destination);
+    }
+    break;
+  case PROP_SOURCE:
+    {
+      g_value_set_object(value, copy_recycling->source);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_copy_recycling_connect(AgsConnectable *connectable)
 {
   AgsCopyRecycling *copy_recycling;
 
   ags_copy_recycling_parent_connectable_interface->connect(connectable);
 
-  /* AgsCopyRecycling */
-  copy_recycling = AGS_COPY_RECYCLING(connectable);
-
-  g_signal_connect((GObject *) copy_recycling, "done\0",
-		   G_CALLBACK(ags_copy_recycling_done), NULL);
-
-  g_signal_connect((GObject *) copy_recycling, "remove\0",
-		   G_CALLBACK(ags_copy_recycling_remove), NULL);
-
-  g_signal_connect((GObject *) copy_recycling, "cancel\0",
-		   G_CALLBACK(ags_copy_recycling_cancel), NULL);
+  /* empty */
 }
 
 void
@@ -199,6 +401,8 @@ ags_copy_recycling_disconnect(AgsConnectable *connectable)
   AgsCopyRecycling *copy_recycling;
 
   ags_copy_recycling_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
 }
 
 void
@@ -278,28 +482,26 @@ ags_copy_recycling_finalize(GObject *gobject)
 }
 
 void 
-ags_copy_recycling_done(AgsRecall *recall, gpointer data)
+ags_copy_recycling_done(AgsRecall *recall)
 {
-  AgsCopyRecycling *copy_recycling;
+  AGS_RECALL_CLASS(ags_copy_recycling_parent_class)->done(recall);
 
-  copy_recycling = AGS_COPY_RECYCLING(recall);
-
-  //  ags_copy_recycling_disconnect_run_handler(copy_recycling);
+  /* empty */
 }
 
 void
-ags_copy_recycling_cancel(AgsRecall *recall, gpointer data)
+ags_copy_recycling_cancel(AgsRecall *recall)
 {
-  AgsCopyRecycling *copy_recycling;
+  AGS_RECALL_CLASS(ags_copy_recycling_parent_class)->cancel(recall);
 
-  copy_recycling = AGS_COPY_RECYCLING(recall);
-
-  //  ags_copy_recycling_disconnect_run_handler(copy_recycling);
+  /* empty */
 }
 
 void 
-ags_copy_recycling_remove(AgsRecall *recall, gpointer data)
+ags_copy_recycling_remove(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_copy_recycling_parent_class)->remove(recall);
+
   /* empty */
 }
 
@@ -488,13 +690,11 @@ ags_copy_recycling_new(AgsRecycling *destination,
 {
   AgsCopyRecycling *copy_recycling;
 
-  copy_recycling = (AgsCopyRecycling *) g_object_new(AGS_TYPE_COPY_RECYCLING, NULL);
-
-  copy_recycling->destination = destination;
-
-  copy_recycling->source = source;
-
-  copy_recycling->devout = devout;
+  copy_recycling = (AgsCopyRecycling *) g_object_new(AGS_TYPE_COPY_RECYCLING,
+						     "destination\0", destination,
+						     "source\0", source,
+						     "devout\0", devout,
+						     NULL);
 
   return(copy_recycling);
 }

@@ -450,6 +450,12 @@ ags_devout_play_recall(AgsDevout *devout)
 }
 
 void
+ags_devout_append_tasks(AgsDevout *devout, GList *list)
+{
+  /* empty */
+}
+
+void
 ags_devout_play_channel(AgsDevout *devout)
 {
   AgsDevoutPlay *play;
