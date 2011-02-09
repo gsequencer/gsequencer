@@ -42,7 +42,6 @@ struct _AgsCancelRecall
   AgsTask task;
 
   AgsRecall *recall;
-  guint audio_channel;
 
   AgsDevoutPlay *play;
 };
@@ -54,7 +53,7 @@ struct _AgsCancelRecallClass
 
 GType ags_cancel_recall_get_type();
 
-AgsCancelRecall* ags_cancel_recall_new(AgsRecall *recall, guint audio_channel,
+AgsCancelRecall* ags_cancel_recall_new(AgsRecall *recall,
 				       AgsDevoutPlay *play);
 
 #endif /*__AGS_CANCEL_RECALL_H__*/

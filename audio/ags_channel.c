@@ -1103,11 +1103,11 @@ ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboole
 
     if((AGS_RECALL_HIDE & (recall->flags)) == 0){
       if(stage == 0)
-	ags_recall_run_pre(recall, channel->audio_channel);
+	ags_recall_run_pre(recall);
       else if(stage == 1)
-	ags_recall_run_inter(recall, channel->audio_channel);
+	ags_recall_run_inter(recall);
       else
-	ags_recall_run_post(recall, channel->audio_channel);
+	ags_recall_run_post(recall);
     }
 
     ags_recall_child_check_remove(recall);
@@ -1182,8 +1182,10 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
     audio = AGS_AUDIO(output->audio);
     
     /* call audio */
-    ags_audio_play(audio, output->audio_channel, output_recall_id->group_id,
-		   stage, do_recall);
+    ags_audio_play(audio,
+		   output_recall_id->group_id,
+		   stage,
+		   do_recall);
 
     /* check if the AgsOutput's group_id is the same of AgsInput */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
@@ -1272,8 +1274,10 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
       ags_channel_play(channel, recall_id, stage, FALSE);
 
       /* play audio */
-      ags_audio_play(audio, channel->audio_channel, recall_id->group_id,
-		     stage, FALSE);
+      ags_audio_play(audio,
+		     recall_id->group_id,
+		     stage,
+		     FALSE);
 
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
 	return;
@@ -1720,12 +1724,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
 	if(stage == 0){
 	  recall->flags &= (~AGS_RECALL_HIDE);
-	  ags_recall_run_init_pre(recall, channel->audio_channel);
+	  ags_recall_run_init_pre(recall);
 	  recall->flags &= (~AGS_RECALL_REMOVE);
 	}else if(stage == 1){
-	  ags_recall_run_init_inter(recall, channel->audio_channel);
+	  ags_recall_run_init_inter(recall);
 	}else{
-	  ags_recall_run_init_post(recall, channel->audio_channel);
+	  ags_recall_run_init_post(recall);
 
 	  ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
 
@@ -1761,12 +1765,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
 	if(stage == 0){
 	  recall->flags &= (~AGS_RECALL_HIDE);
-	  ags_recall_run_init_pre(recall, audio_channel);
+	  ags_recall_run_init_pre(recall);
 	  recall->flags &= (~AGS_RECALL_REMOVE);
 	}else if(stage == 1){
-	  ags_recall_run_init_inter(recall, audio_channel);
+	  ags_recall_run_init_inter(recall);
 	}else{
-	  ags_recall_run_init_post(recall, audio_channel);
+	  ags_recall_run_init_post(recall);
 	    
 	  ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
 	  
@@ -2014,7 +2018,7 @@ ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_reca
       continue;
     }
 
-    ags_recall_cancel(recall, channel->audio_channel);
+    ags_recall_cancel(recall);
     
     list = list_next;
   }

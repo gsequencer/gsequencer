@@ -1383,6 +1383,30 @@ ags_audio_find_group_id_from_child(AgsAudio *audio,
   }
 }
 
+void
+ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  audio->recall_container = g_list_prepend(audio->recall_container, recall_container);
+}
+
+void
+ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  if(play){
+    audio->play = g_list_append(audio->play, recall);
+  }else{
+    audio->recall = g_list_append(audio->recall, recall);
+  }
+}
+
 /*
  * AgsRecall related
  */

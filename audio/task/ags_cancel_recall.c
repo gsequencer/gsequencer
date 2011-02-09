@@ -101,7 +101,6 @@ void
 ags_cancel_recall_init(AgsCancelRecall *cancel_recall)
 {
   cancel_recall->recall = NULL;
-  cancel_recall->audio_channel = 0;
 
   cancel_recall->play = NULL;
 }
@@ -138,7 +137,7 @@ ags_cancel_recall_launch(AgsTask *task)
   cancel_recall = AGS_CANCEL_RECALL(task);
 
   /* cancel AgsRecall */
-  ags_recall_cancel(cancel_recall->recall, cancel_recall->audio_channel);
+  ags_recall_cancel(cancel_recall->recall);
 
   /* set remove flag */
   if(cancel_recall->play != NULL)
@@ -146,7 +145,7 @@ ags_cancel_recall_launch(AgsTask *task)
 }
 
 AgsCancelRecall*
-ags_cancel_recall_new(AgsRecall *recall, guint audio_channel,
+ags_cancel_recall_new(AgsRecall *recall,
 		      AgsDevoutPlay *play)
 {
   AgsCancelRecall *cancel_recall;
@@ -155,7 +154,6 @@ ags_cancel_recall_new(AgsRecall *recall, guint audio_channel,
 						   NULL);
 
   cancel_recall->recall = recall;
-  cancel_recall->audio_channel = audio_channel;
 
   cancel_recall->play = play;
 

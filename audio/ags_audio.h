@@ -113,6 +113,10 @@ void ags_audio_find_group_id_from_child(AgsAudio *audio,
 					AgsChannel *input, AgsRecallID *input_recall_id, gboolean input_do_recall,
 					AgsRecallID **child_recall_id, gboolean *child_do_recall);
 
+void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
+
+void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
+
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 void ags_audio_play(AgsAudio *audio, guint group_id,
 		    gint stage, gboolean do_recall);

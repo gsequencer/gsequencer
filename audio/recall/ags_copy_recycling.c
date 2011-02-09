@@ -526,7 +526,6 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 					   AgsAudioSignal *audio_signal)
 {
   AgsCopyAudioSignal *copy_audio_signal;
-  guint audio_channel;
 
   audio_signal->stream_current = audio_signal->stream_beginning;
 
@@ -534,8 +533,7 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 						audio_signal,
 						copy_recycling->devout);
 
-  audio_channel = AGS_COPY_CHANNEL(AGS_RECALL(copy_recycling)->parent)->source->audio_channel;
-  ags_recall_add_child(AGS_RECALL(copy_recycling), AGS_RECALL(copy_audio_signal), audio_channel);
+  ags_recall_add_child(AGS_RECALL(copy_recycling), AGS_RECALL(copy_audio_signal));
   g_signal_connect(G_OBJECT(copy_audio_signal), "done\0",
 		   G_CALLBACK(ags_copy_recycling_copy_audio_signal_done), copy_recycling);
 }
@@ -581,7 +579,6 @@ ags_copy_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   AgsCancelRecall *cancel_recall;
   AgsCopyAudioSignal *copy_audio_signal;
   GList *list;
-  guint audio_channel;
 
   copy_recycling_recall = AGS_RECALL(copy_recycling);
 
@@ -591,15 +588,15 @@ ags_copy_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
     AgsRecall *recall;
 
     devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->devout);
-    audio_channel = AGS_CHANNEL(source->channel)->audio_channel;
-    list = copy_recycling_recall->child;
+
+    list = ags_recall_get_children(AGS_RECALL(copy_recycling_recall));
 
     while(list != NULL){
       copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(list->data);
       recall = AGS_RECALL(copy_audio_signal);
 
       if(copy_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
-	cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+	cancel_recall = ags_cancel_recall_new(recall,
 					      NULL);
 	
 	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
@@ -646,7 +643,7 @@ ags_copy_recycling_destination_remove_audio_signal_callback(AgsRecycling *destin
   AgsCancelRecall *cancel_recall;
   AgsCopyAudioSignal *copy_audio_signal;
   GList *list;
-  guint audio_channel;
+  GValue children_value = {0,};
 
   copy_recycling_recall = AGS_RECALL(copy_recycling);
 
@@ -655,16 +652,16 @@ ags_copy_recycling_destination_remove_audio_signal_callback(AgsRecycling *destin
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == copy_recycling_recall->recall_id->group_id){
     AgsRecall *recall;
 
-    devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->devout);
-    list = copy_recycling_recall->child;
-    audio_channel = AGS_CHANNEL(destination->channel)->audio_channel;
+    devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->devout);;
+
+    list = ags_recall_get_children(AGS_RECALL(copy_recycling_recall));
 
     while(list != NULL){
       copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(list->data);
       recall = AGS_RECALL(copy_audio_signal);
 
       if(copy_audio_signal->destination == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
-	cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+	cancel_recall = ags_cancel_recall_new(recall,
 					      NULL);
 
 	ags_devout_append_task(devout, (AgsTask *) cancel_recall);

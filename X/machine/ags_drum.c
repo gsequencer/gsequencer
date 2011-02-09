@@ -156,6 +156,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->play */
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
@@ -165,14 +166,20 @@ ags_drum_init(AgsDrum *drum)
 					       NULL);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->play = g_list_append(audio->play, (gpointer) delay_audio);
+  ags_audio_add_recall(audio, (GObject *) delay_audio, TRUE);
   //  ags_connectable_connect(AGS_CONNECTABLE(delay_audio));
 
+  /*
+   * TODO:JK: move connects to ags_drum_connect
+   */
+
   /* create AgsDelayAudioRun in audio->play */
-  play_delay_audio_run = ags_delay_audio_run_new((AgsRecallAudio *) delay_audio);
+  play_delay_audio_run = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							"container\0", recall_container,
+							NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
 
-  audio->play = g_list_append(audio->play, (gpointer) play_delay_audio_run);
+  ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
   ags_connectable_connect(AGS_CONNECTABLE(play_delay_audio_run));
 
   /* create AgsDelayAudio in audio->recall */

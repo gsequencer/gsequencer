@@ -60,6 +60,6 @@ GType ags_delay_audio_run_get_type();
 void ags_delay_audio_run_tic_alloc(AgsDelayAudioRun *delay, guint nth_run);
 void ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay, guint nth_run);
 
-AgsDelayAudioRun* ags_delay_audio_run_new(AgsRecallAudio *recall_audio);
+AgsDelayAudioRun* ags_delay_audio_run_new();
 
 #endif /*__AGS_DELAY_AUDIO_RUN_H__*/

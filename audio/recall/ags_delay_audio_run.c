@@ -374,14 +374,11 @@ ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay_audio_run, guint nth_run)
 }
 
 AgsDelayAudioRun*
-ags_delay_audio_run_new(AgsRecallAudio *recall_audio)
+ags_delay_audio_run_new()
 {
   AgsDelayAudioRun *delay_audio_run;
 
   delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
-						      "recall_audio_type\0", AGS_TYPE_DELAY_AUDIO,
-						      "recall_audio\0", recall_audio,
-						      "recall_audio_run_type\0", AGS_TYPE_DELAY_AUDIO_RUN,
 						      NULL);
 
   return(delay_audio_run);
