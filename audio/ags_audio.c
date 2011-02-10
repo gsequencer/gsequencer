@@ -43,10 +43,9 @@ void ags_audio_get_property(GObject *gobject,
 			    guint prop_id,
 			    GValue *value,
 			    GParamSpec *param_spec);
-void ags_audio_finalize(GObject *gobject);
-
 void ags_audio_connect(AgsConnectable *connectable);
 void ags_audio_disconnect(AgsConnectable *connectable);
+void ags_audio_finalize(GObject *gobject);
 
 void ags_audio_real_set_audio_channels(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old);
@@ -304,10 +303,46 @@ void
 ags_audio_connect(AgsConnectable *connectable)
 {
   AgsAudio *audio;
+  AgsChannel *channel;
   GList *list;
 
   audio = AGS_AUDIO(connectable);
 
+  /* connect channels */
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+
+  channel = audio->input;
+
+  while(channel != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+
+  /* connect recall ids and recall containers */
+  list = audio->recall_id;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->recall_container;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recalls */
   list = audio->recall;
 
   while(list != NULL){
@@ -323,6 +358,27 @@ ags_audio_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  /* connect remove recalls */
+  list = audio->recall_remove;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->play_remove;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect notation */
+  if(audio->notation != NULL)
+    ags_connectable_connect(AGS_CONNECTABLE(audio->notation));
 }
 
 void

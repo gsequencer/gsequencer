@@ -17,6 +17,9 @@
  */
 
 #include <ags/audio/ags_pattern.h>
+
+#include <ags/object/ags_connectable.h>
+
 #include <ags/audio/ags_audio_signal.h>
 
 #include <stdarg.h>
@@ -25,6 +28,8 @@
 
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
 void ags_pattern_init(AgsPattern *pattern);
+void ags_channel_connect(AgsConnectable *connectable);
+void ags_channel_disconnect(AgsConnectable *connectable);
 void ags_pattern_finalize(GObject *gobject);
 
 static gpointer ags_pattern_parent_class = NULL;

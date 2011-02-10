@@ -48,6 +48,8 @@ void ags_channel_get_property(GObject *gobject,
 			      guint prop_id,
 			      GValue *value,
 			      GParamSpec *param_spec);
+void ags_channel_connect(AgsConnectable *connectable);
+void ags_channel_disconnect(AgsConnectable *connectable);
 static void ags_channel_finalize(GObject *gobject);
 
 extern void ags_file_write_channel(AgsFile *file, AgsChannel *channel);
@@ -83,9 +85,19 @@ ags_channel_get_type (void)
       (GInstanceInitFunc) ags_channel_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_channel_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_channel = g_type_register_static(G_TYPE_OBJECT,
 					      "AgsChannel\0",
 					      &ags_channel_info, 0);
+
+    g_type_add_interface_static(ags_type_channel,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_channel);
@@ -133,6 +145,13 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_NONE, 4,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT);
+}
+
+void
+ags_channel_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_channel_connect;
+  connectable->disconnect = ags_channel_disconnect;
 }
 
 GQuark
@@ -230,6 +249,76 @@ ags_channel_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_channel_connect(AgsConnectable *connectable)
+{
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+
+  channel = AGS_CHANNEL(connectable);
+
+  /* connect recall ids and recall containers */
+  list = channel->recall_id;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = channel->recall_container;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recalls */
+  list = channel->recall;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = channel->play;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recycling */
+  recycling = channel->first_recycling;
+
+  while(recycling != channel->last_recycling->next){
+    ags_connectable_connect(AGS_CONNECTABLE(recycling));
+
+    recycling = recycling->next;
+  }
+
+  /* connect pattern and notation */
+  list = channel->pattern;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  if(channel->notation != NULL)
+    ags_connectable_connect(AGS_CONNECTABLE(channel->notation));
+}
+
+void
+ags_channel_disconnect(AgsConnectable *connectable)
+{
+  AgsChannel *channel;
 }
 
 static void

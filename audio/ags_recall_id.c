@@ -17,11 +17,15 @@
  */
 
 #include <ags/audio/ags_recall_id.h>
+
+#include <ags/object/ags_connectable.h>
+
 #include <stdio.h>
 
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
 void ags_recall_id_init(AgsRecallID *recall_id);
-void ags_recall_id_connect(AgsRecallID *recall_id);
+void ags_recall_id_connect(AgsConnectable *connectable);
+void ags_recall_id_disconnect(AgsConnectable *connectable);
 void ags_recall_id_finalize(GObject *gobject);
 
 static gpointer ags_recall_id_parent_class = NULL;
@@ -43,8 +47,23 @@ ags_recall_id_get_type(void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recall_id_init,
     };
-    ags_type_recall_id = g_type_register_static(G_TYPE_OBJECT, "AgsRecallID\0", &ags_recall_id_info, 0);
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_recall_id_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_recall_id = g_type_register_static(G_TYPE_OBJECT,
+						"AgsRecallID\0",
+						&ags_recall_id_info,
+						0);
+
+    g_type_add_interface_static(ags_type_recall_id,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
+
   return (ags_type_recall_id);
 }
 
@@ -57,6 +76,13 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 
   gobject = (GObjectClass *) recall_id;
   gobject->finalize = ags_recall_id_finalize;
+}
+
+void
+ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_recall_id_connect;
+  connectable->disconnect = ags_recall_id_disconnect;
 }
 
 void
@@ -73,14 +99,19 @@ ags_recall_id_init(AgsRecallID *recall_id)
 }
 
 void
-ags_recall_id_finalize(GObject *gobject)
+ags_recall_id_connect(AgsConnectable *connectable)
 {
-  G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
 }
 
 void
-ags_recall_id_connect(AgsRecallID *recall_id)
+ags_recall_id_disconnect(AgsConnectable *connectable)
 {
+}
+
+void
+ags_recall_id_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
 }
 
 guint
