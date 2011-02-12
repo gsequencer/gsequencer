@@ -139,7 +139,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 				  "stream length in buffers\0",
 				  "The length of the stream in buffer count\0",
 				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_LENGTH,
 				  param_spec);
@@ -213,6 +213,10 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
       length = g_value_get_uint(value);
 
       copy_pattern_audio->length = length;
+
+      /*
+       * FIXME:JK: calculate stream_length with length
+       */
     }
     break;
   case PROP_LOOP:
@@ -222,15 +226,6 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
       loop = g_value_get_boolean(value);
 
       copy_pattern_audio->loop = loop;
-    }
-    break;
-  case PROP_STREAM_LENGTH:
-    {
-      guint stream_length;
-
-      stream_length = g_value_get_uint(value);
-
-      copy_pattern_audio->stream_length = stream_length;
     }
     break;
   default:
@@ -303,8 +298,7 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
 AgsCopyPatternAudio*
 ags_copy_pattern_audio_new(AgsDevout *devout,
 			   guint i, guint j,
-			   guint length, gboolean loop,
-			   guint stream_length)
+			   guint length, gboolean loop)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
@@ -314,7 +308,6 @@ ags_copy_pattern_audio_new(AgsDevout *devout,
 							    "bank_index_1\0", j,
 							    "length\0", length,
 							    "loop\0", loop,
-							    "stream_length", stream_length,
 							    NULL);
 
   return(copy_pattern_audio);

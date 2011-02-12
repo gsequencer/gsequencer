@@ -111,8 +111,6 @@ GType ags_channel_get_type();
 
 GQuark ags_channel_error_quark();
 
-void ags_channel_connect(AgsChannel *channel);
-
 AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
 
 AgsChannel* ags_channel_first(AgsChannel *channel);

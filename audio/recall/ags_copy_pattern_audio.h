@@ -59,7 +59,6 @@ GType ags_copy_pattern_audio_get_type();
 
 AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsDevout *devout,
 						guint i, guint j,
-						guint length, gboolean loop,
-						guint stream_length);
+						guint length, gboolean loop);
 
 #endif /*__AGS_COPY_PATTERN_AUDIO_H__*/

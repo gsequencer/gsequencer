@@ -4,6 +4,7 @@ You need a realtime kernel in conjunction with ags. The realtime kernel shipped 
 
 
 TODO:
+- fix ags_channel_recursive_play_init to use AgsRecallContainer
 - call run_order_changed in AgsRecall from ags_channel_recursive_play_init
 - revise ags_recall_set_property
 - revise destroy functions - disconnect before destroying
@@ -28,19 +29,6 @@ TODO:
 DONE:
 - write a destroy task (see <ags/audio/recall/ags_remove_audio_run.[ch]>)
 
-NEW CODE (not well tested yet):
-- ags_copy_pattern_shared_channel
-- ags_copy_pattern_shared_audio_run
-- ags_copy_pattern_shared_audio
-- ags_delay_shared_audio_run
-- ags_delay_shared_audio
-- ags_recall_shared_channel
-- ags_recall_shared_audio
-- ags_recall_shared
-- ags_copy_audio_signal.c
-- ags_copy_recycling.c
-- ags_copy_channel.c
-
 BUGS:
 - ags_recall_volume causes the AgsAudioSignal to quiet down: check wheter it has been fixed through uninitialized AgsDevout->audio bug fix
 - ags_audio_set_audio_channels do proper set_async_link: believed to be fixed
@@ -48,7 +36,7 @@ BUGS:
 - application crashes while running an AgsSynth linked with an AgsMatrix, when AgsOscillator has different length
 
 WARNING:
-- ags_copy_pattern should be used only once by an AgsAudio because in ags_copy_pattern_duplicate detection of AgsCopyPatternSharedAudioRun can't handle more than one
+- ags_copy_pattern should be used only once by an AgsAudio because in ags_copy_pattern_duplicate detection of AgsCopyPatternAudioRun can't handle more than one
 
 DEPRECATED:
 - ags_play_pattern.c

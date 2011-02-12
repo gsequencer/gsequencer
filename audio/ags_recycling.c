@@ -31,7 +31,10 @@
 #include <math.h>
 
 void ags_recycling_class_init(AgsRecyclingClass *recycling_class);
+void ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recycling_init(AgsRecycling *recycling);
+void ags_recycling_connect(AgsConnectable *connectable);
+void ags_recycling_disconnect(AgsConnectable *connectable);
 void ags_recycling_finalize(GObject *gobject);
 
 void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
@@ -71,9 +74,19 @@ ags_recycling_get_type (void)
       (GInstanceInitFunc) ags_recycling_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_recycling_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_recycling = g_type_register_static(G_TYPE_OBJECT,
 						"AgsRecycling\0",
 						&ags_recycling_info, 0);
+
+    g_type_add_interface_static(ags_type_recycling,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_recycling);
@@ -126,6 +139,13 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 }
 
 void
+ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_recycling_connect;
+  connectable->disconnect = ags_recycling_disconnect;
+}
+
+void
 ags_recycling_init(AgsRecycling *recycling)
 {
   //  recycling->flags = 0;
@@ -141,6 +161,16 @@ ags_recycling_init(AgsRecycling *recycling)
 }
 
 void
+ags_recycling_connect(AgsConnectable *connectable)
+{
+}
+
+void
+ags_recycling_disconnect(AgsConnectable *connectable)
+{
+}
+
+void
 ags_recycling_finalize(GObject *gobject)
 {
   AgsRecycling *recycling;
@@ -153,11 +183,6 @@ ags_recycling_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_parent_class)->finalize(gobject);
-}
-
-void
-ags_recycling_connect(AgsRecycling *recycling)
-{
 }
 
 void

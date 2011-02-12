@@ -69,8 +69,6 @@ struct _AgsRecyclingClass
 
 GType ags_recycling_get_type();
 
-void ags_recycling_connect(AgsRecycling *recycling);
-
 void ags_recycling_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal);
 void ags_recycling_add_audio_signal_with_frame_count(AgsRecycling *recycling,

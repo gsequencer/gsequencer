@@ -39,6 +39,7 @@
 #include <stdio.h>
 
 void ags_channel_class_init(AgsChannelClass *channel_class);
+void ags_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_channel_init(AgsChannel *channel);
 void ags_channel_set_property(GObject *gobject,
 			      guint prop_id,
@@ -256,6 +257,7 @@ ags_channel_connect(AgsConnectable *connectable)
 {
   AgsChannel *channel;
   AgsRecycling *recycling;
+  GList *list;
 
   channel = AGS_CHANNEL(connectable);
 
@@ -318,7 +320,7 @@ ags_channel_connect(AgsConnectable *connectable)
 void
 ags_channel_disconnect(AgsConnectable *connectable)
 {
-  AgsChannel *channel;
+  /* empty */
 }
 
 static void
@@ -370,11 +372,6 @@ ags_channel_finalize(GObject *gobject)
 
   /* call parent class */
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);
-}
-
-void
-ags_channel_connect(AgsChannel *channel)
-{
 }
 
 AgsRecall*

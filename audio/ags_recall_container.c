@@ -2,6 +2,7 @@
 
 #include <ags/lib/ags_list.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 
 #include <ags/audio/ags_recall_audio.h>
@@ -10,6 +11,7 @@
 #include <ags/audio/ags_recall_channel_run.h>
 
 void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
+void ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_container_init(AgsRecallContainer *recall);
 void ags_recall_container_set_property(GObject *gobject,
 				       guint prop_id,
@@ -19,6 +21,8 @@ void ags_recall_container_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
+void ags_recall_container_connect(AgsConnectable *connectable);
+void ags_recall_container_disconnect(AgsConnectable *connectable);
 void ags_recall_container_finalize(GObject *recall);
 
 enum{
@@ -38,9 +42,9 @@ static gpointer ags_recall_container_parent_class = NULL;
 GType
 ags_recall_container_get_type (void)
 {
-  static GType ags_type_recall = 0;
+  static GType ags_type_recall_container = 0;
 
-  if(!ags_type_recall){
+  if(!ags_type_recall_container){
     static const GTypeInfo ags_recall_container_info = {
       sizeof (AgsRecallContainerClass),
       NULL, /* base_init */
@@ -53,13 +57,23 @@ ags_recall_container_get_type (void)
       (GInstanceInitFunc) ags_recall_container_init,
     };
 
-    ags_type_recall = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsRecallContainer\0",
-					     &ags_recall_container_info,
-					     0);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_recall_container_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_recall_container = g_type_register_static(G_TYPE_OBJECT,
+						       "AgsRecallContainer\0",
+						       &ags_recall_container_info,
+						       0);
+
+    g_type_add_interface_static(ags_type_recall_container,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return(ags_type_recall);
+  return(ags_type_recall_container);
 }
 
 void
@@ -150,6 +164,13 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CHANNEL_RUN,
 				  param_spec);
+}
+
+void
+ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_recall_container_connect;
+  connectable->disconnect = ags_recall_container_disconnect;
 }
 
 void
@@ -313,6 +334,18 @@ ags_recall_container_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_recall_container_connect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_recall_container_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 void

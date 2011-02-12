@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
+void ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_id_init(AgsRecallID *recall_id);
 void ags_recall_id_connect(AgsConnectable *connectable);
 void ags_recall_id_disconnect(AgsConnectable *connectable);

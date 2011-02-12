@@ -18,13 +18,17 @@
 
 #include <ags/audio/ags_notation.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_tactable.h>
 
 #include <stdlib.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
+void ags_notation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notation_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_notation_init(AgsNotation *notation);
+void ags_notation_connect(AgsConnectable *connectable);
+void ags_notation_disconnect(AgsConnectable *connectable);
 void ags_notation_finalize(GObject *object);
 
 void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
@@ -47,6 +51,12 @@ ags_notation_get_type()
       sizeof(AgsNotation),
       0,
       (GInstanceInitFunc) ags_notation_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_notation_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
     };
 
     static const GInterfaceInfo ags_tactable_interface_info = {
@@ -81,6 +91,13 @@ ags_notation_class_init(AgsNotationClass *notation)
 }
 
 void
+ags_notation_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_notation_connect;
+  connectable->disconnect = ags_notation_disconnect;
+}
+
+void
 ags_notation_tactable_interface_init(AgsTactableInterface *tactable)
 {
   tactable->change_bpm = ags_notation_change_bpm;
@@ -100,6 +117,18 @@ ags_notation_init(AgsNotation *notation)
 
   notation->note = NULL;
   notation->pads = 0;
+}
+
+void
+ags_notation_connect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_notation_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 void
@@ -156,8 +185,17 @@ ags_notation_add_note(AgsNotation *notation, AgsNote *note)
 
   while(list->next != NULL){
     if(((AgsNote *) (list->data))->x[0] >= note->x[0]){
-      ags_notation_add_note_add1();
-      return;
+      while(list->next != NULL){
+	if(((AgsNote *) (list->data))->y >= note->y){
+	  ags_notation_add_note_add1();
+
+	  return;
+	}
+
+	list = list->next;
+      }
+
+      break;
     }
 
     list = list->next;
@@ -166,9 +204,8 @@ ags_notation_add_note(AgsNotation *notation, AgsNote *note)
   if(((AgsNote *) (list->data))->x[0] >= note->x[0])
     ags_notation_add_note_add1();
   else{
-    list_new = (GList *) malloc(sizeof(GList));
+    list_new = g_list_alloc();
     list_new->data = (gpointer) note;
-    list_new->next = NULL;
     list_new->prev = list;
     list->next = list_new;
   }

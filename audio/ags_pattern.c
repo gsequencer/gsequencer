@@ -20,16 +20,15 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_audio_signal.h>
-
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
 
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
+void ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_init(AgsPattern *pattern);
-void ags_channel_connect(AgsConnectable *connectable);
-void ags_channel_disconnect(AgsConnectable *connectable);
+void ags_pattern_connect(AgsConnectable *connectable);
+void ags_pattern_disconnect(AgsConnectable *connectable);
 void ags_pattern_finalize(GObject *gobject);
 
 static gpointer ags_pattern_parent_class = NULL;
@@ -52,10 +51,20 @@ ags_pattern_get_type (void)
       (GInstanceInitFunc) ags_pattern_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_pattern_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_pattern = g_type_register_static(G_TYPE_OBJECT,
 					      "AgsPattern\0",
 					      &ags_pattern_info,
 					      0);
+
+    g_type_add_interface_static(ags_type_pattern,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return (ags_type_pattern);
@@ -69,7 +78,15 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   ags_pattern_parent_class = g_type_class_peek_parent(pattern);
 
   gobject = (GObjectClass *) pattern;
+
   gobject->finalize = ags_pattern_finalize;
+}
+
+void
+ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_pattern_connect;
+  connectable->disconnect = ags_pattern_disconnect;
 }
 
 void
@@ -82,6 +99,18 @@ ags_pattern_init(AgsPattern *pattern)
   pattern->pattern = NULL;
 
   pattern->offset = 0;
+}
+
+void
+ags_pattern_connect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_pattern_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 void

@@ -63,8 +63,6 @@ struct _AgsRecallIDClass
 
 GType ags_recall_id_get_type(void);
 
-void ags_recall_id_connect(AgsRecallID *recall_id);
-
 guint ags_recall_id_generate_group_id();
 
 gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
