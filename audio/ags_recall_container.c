@@ -416,6 +416,83 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
   return(container->recall_channel_run);
 }
 
+GList*
+ags_recall_container_find(GList *recall_container,
+			  guint find_flags,
+			  GType type,
+			  guint group_id)
+{
+  AgsRecallContainer *current;
+  AgsRecall *recall;
+  guint mode;
+
+  if(g_type_is_a(type, AGS_TYPE_RECALL_AUDIO)){
+    mode = 0;
+  }else if(g_type_is_a(type, AGS_TYPE_RECALL_AUDIO_RUN)){
+    mode = 1;
+  }else if(g_type_is_a(type, AGS_TYPE_RECALL_CHANNEL)){
+    mode = 2;
+  }else if(g_type_is_a(type, AGS_TYPE_RECALL_CHANNEL_RUN)){
+    mode = 3;
+  }else{
+    fprintf(stdout, "ags_recall_container_find: invalid type\n\0");
+    return(NULL);
+  }
+
+  while(recall_container != NULL){
+    current = AGS_RECALL_CONTAINER(recall_container->data);
+
+    switch(mode){
+    case 0:
+      {
+	recall = ags_recall_container_get_recall_audio(recall_container);
+      }
+      break;
+    case 1:
+      {
+	GList *list;
+
+	list = ags_recall_container_get_recall_audio_run(recall_container);
+
+	if(list == NULL)
+	  recall = NULL;
+      }
+      break;
+    case 2:
+      {
+	GList *list;
+
+	list = ags_recall_container_get_recall_channel(recall_container);
+
+	if(list == NULL)
+	  recall = NULL;
+      }
+      break;
+    case 3:
+      {
+	GList *list;
+
+	list = ags_recall_container_get_recall_channel_run(recall_container);
+
+	if(list == NULL)
+	  recall = NULL;
+      }
+    }
+   
+    if(recall != NULL){
+      if(((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) == 0 || type == G_OBJECT_TYPE(recall)) &&
+	 ((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) == 0 || (AGS_RECALL_TEMPLATE & (recall->flags)) != 0) &&
+	 ((AGS_RECALL_CONTAINER_FIND_GROUP_ID & find_flags) == 0 || (recall->recall_id != NULL && AGS_RECALL_ID(recall->recall_id)->group_id == group_id))){
+	break;
+      }
+    }
+
+    recall_container = recall_container->next;
+  }
+
+  return(recall_container);
+}
+
 AgsRecallContainer*
 ags_recall_container_new()
 {

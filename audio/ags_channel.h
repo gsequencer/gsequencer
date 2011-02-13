@@ -80,7 +80,9 @@ struct _AgsChannel
   AgsDevoutPlay *devout_play;
 
   GList *recall_id; // there may be several recall's running
+
   GList *recall_container;
+  GList *play_container;
 
   GList *recall;
   GList *play;
@@ -123,6 +125,9 @@ AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
 
 AgsChannel* ags_channel_first_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
+
+void ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container, gboolean play);
+void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);

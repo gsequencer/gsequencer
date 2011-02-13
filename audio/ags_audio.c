@@ -1440,13 +1440,16 @@ ags_audio_find_group_id_from_child(AgsAudio *audio,
 }
 
 void
-ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
+ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play)
 {
   /*
    * TODO:JK: thread synchronisation
    */
 
-  audio->recall_container = g_list_prepend(audio->recall_container, recall_container);
+  if(play)
+    audio->play_container = g_list_prepend(audio->play_container, recall_container);
+  else
+    audio->recall_container = g_list_prepend(audio->recall_container, recall_container);
 }
 
 void

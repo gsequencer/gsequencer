@@ -480,6 +480,33 @@ ags_channel_last_with_recycling(AgsChannel *channel)
 }
 
 void
+ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container, gboolean play)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  if(play)
+    channel->play_container = g_list_prepend(channel->play_container, recall_container);
+  else
+    channel->recall_container = g_list_prepend(channel->recall_container, recall_container);
+}
+
+void
+ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  if(play){
+    channel->play = g_list_append(channel->play, recall);
+  }else{
+    channel->recall = g_list_append(channel->recall, recall);
+  }
+}
+
+void
 ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 		     GError **error)
 {
