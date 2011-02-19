@@ -56,7 +56,7 @@ enum{
   PROP_CHANNEL,
   PROP_DELAY_AUDIO_RUN,
   PROP_NTH_RUN,
-  PROP_COUNTABLE,
+  PROP_COUNTER,
 };
 
 static gpointer ags_loop_channel_parent_class = NULL;
@@ -144,13 +144,13 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("countable\0",
-				  "pointer to a countable\0",
-				  "The pointer to a countable object which indicates when looping should happen\0",
+  param_spec = g_param_spec_gtype("counter\0",
+				  "pointer to a counter\0",
+				  "The pointer to a counter object which indicates when looping should happen\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_COUNTABLE,
+				  PROP_COUNTER,
 				  param_spec);
 }
 
@@ -180,7 +180,7 @@ ags_loop_channel_init(AgsLoopChannel *loop_channel)
 
   loop_channel->channel = NULL;
 
-  loop_channel->countable = NULL;
+  loop_channel->counter = NULL;
 }
 
 void
@@ -246,22 +246,22 @@ ags_loop_channel_set_property(GObject *gobject,
       loop_channel->nth_run = nth_run;
     }
     break;
-  case PROP_COUNTABLE:
+  case PROP_COUNTER:
     {
-      GObject *countable;
+      GObject *counter;
 
-      countable = (GObject *) g_value_get_object(value);
+      counter = (GObject *) g_value_get_object(value);
 
-      if(loop_channel->countable == countable)
+      if(loop_channel->counter == counter)
 	return;
 
-      if(loop_channel->countable != NULL)
-	g_object_unref(loop_channel->countable);
+      if(loop_channel->counter != NULL)
+	g_object_unref(loop_channel->counter);
 
-      if(countable != NULL)
-	g_object_ref(countable);
+      if(counter != NULL)
+	g_object_ref(counter);
 
-      loop_channel->countable = countable;
+      loop_channel->counter = counter;
     }
     break;
   default:
@@ -296,9 +296,9 @@ ags_loop_channel_get_property(GObject *gobject,
       g_value_set_object(value, loop_channel->delay_audio_run);
     }
     break;
-  case PROP_COUNTABLE:
+  case PROP_COUNTER:
     {
-      g_value_set_object(value, loop_channel->countable);
+      g_value_set_object(value, loop_channel->counter);
     }
     break;
   default:
@@ -311,6 +311,23 @@ void
 ags_loop_channel_finalize(GObject *gobject)
 {
   AgsLoopChannel *loop_channel;
+
+  loop_channel = AGS_LOOP_CHANNEL(gobject);
+
+  if(loop_channel->delay_audio_run != NULL){
+    g_object_unref(G_OBJECT(loop_channel->delay_audio_run));
+  }
+
+  if(loop_channel->channel != NULL){
+    g_object_unref(G_OBJECT(loop_channel->channel));
+  }
+
+  if(loop_channel->counter != NULL){
+    g_object_unref(G_OBJECT(loop_channel->counter));
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_loop_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -325,6 +342,8 @@ void
 ags_loop_channel_disconnect(AgsConnectable *connectable)
 {
   ags_loop_channel_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
 }
 
 void
@@ -378,7 +397,7 @@ ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
   AgsAudioSignal *audio_signal;
 
   if(loop_channel->nth_run != nth_run ||
-      AGS_COUNTABLE_GET_INTERFACE(loop_channel->countable)->get_counter(AGS_COUNTABLE(loop_channel)) != 0)
+      AGS_COUNTABLE_GET_INTERFACE(loop_channel->counter)->get_counter(AGS_COUNTABLE(loop_channel)) != 0)
     return;
 
   devout = AGS_DEVOUT(AGS_AUDIO(loop_channel->channel->audio)->devout);
@@ -403,14 +422,14 @@ ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 AgsLoopChannel*
 ags_loop_channel_new(AgsChannel *channel,
 		     AgsDelayAudioRun *delay_audio_run,
-		     GObject *countable)
+		     GObject *counter)
 {
   AgsLoopChannel *loop_channel;
 
   loop_channel = (AgsLoopChannel *) g_object_new(AGS_TYPE_LOOP_CHANNEL,
 						 "channel\0", channel,
 						 "delay_audio_run", delay_audio_run,
-						 "countable", countable,
+						 "counter", counter,
 						 NULL);
 
   return(loop_channel);

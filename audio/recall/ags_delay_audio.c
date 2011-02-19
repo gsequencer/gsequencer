@@ -22,7 +22,20 @@
 
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);
+void ags_delay_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec);
+void ags_delay_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec);
 void ags_delay_audio_finalize(GObject *gobject);
+
+enum{
+  PROP_0,
+  PROP_DELAY,
+};
 
 static gpointer ags_delay_audio_parent_class = NULL;
 
@@ -60,9 +73,24 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 
   ags_delay_audio_parent_class = g_type_class_peek_parent(delay_audio);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) delay_audio;
 
+  gobject->set_property = ags_recall_set_property;
+  gobject->get_property = ags_recall_get_property;
+
   gobject->finalize = ags_delay_audio_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_gtype("delay\0",
+				  "delay for timeing\0",
+				  "The delay whenever a tic occures\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY,
+				  param_spec);
+
 }
 
 void
@@ -72,24 +100,65 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 }
 
 void
+ags_delay_set_property(GObject *gobject,
+		       guint prop_id,
+		       const GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsDelay *delay;
+
+  delay = AGS_DELAY(gobject);
+
+  switch(prop_id){
+  case PROP_DELAY:
+    {
+      guint delay;
+
+      delay->delay = (guint) g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_delay_get_property(GObject *gobject,
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsDelay *delay;
+
+  delay = AGS_DELAY(gobject);
+
+  switch(prop_id){
+  case PROP_DELAY:
+    {
+      g_value_set_uint(value, delay->delay);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_delay_audio_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_delay_audio_parent_class)->finalize(gobject);
 }
 
 AgsDelayAudio*
-ags_delay_audio_new(AgsAudio *audio,
-		    guint delay)
+ags_delay_audio_new(guint delay)
 {
   AgsDelayAudio *delay_audio;
 
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-					       "recall_audio_type\0", AGS_TYPE_DELAY_AUDIO,
-					       "recall_audio_run_type\0", AGS_TYPE_DELAY_AUDIO_RUN,
-					       "audio", audio,
+					       "delay\0", delay,
 					       NULL);
-
-  delay_audio->delay = delay;
 
   return(delay_audio);
 }

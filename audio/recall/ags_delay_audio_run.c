@@ -175,7 +175,7 @@ ags_delay_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *r
 void
 ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 {
-  delay_audio_run->recall_ref = 0;
+  delay_audio_run->dependency_ref = 0;
 
   delay_audio_run->hide_ref = 0;
   delay_audio_run->hide_ref_counter = 0;
@@ -236,7 +236,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&
-     delay_audio_run->recall_ref == 0){
+     delay_audio_run->dependency_ref == 0){
     delay_audio_run->counter = 0;
     ags_recall_done(recall);
   }else{
@@ -310,7 +310,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   delay_audio_run = (AgsDelayAudioRun *) recall;
   copy = (AgsDelayAudioRun *) AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate(recall, recall_id);
 
-  copy->recall_ref = delay_audio_run->recall_ref;
+  copy->dependency_ref = delay_audio_run->dependency_ref;
 
   copy->hide_ref = delay_audio_run->hide_ref;
   copy->hide_ref_counter = delay_audio_run->hide_ref_counter;
@@ -339,7 +339,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
   case AGS_RECALL_NOTIFY_SHARED_CHANNEL:
     break;
   case AGS_RECALL_NOTIFY_CHANNEL_RUN:
-    delay_audio_run->recall_ref += count;
+    delay_audio_run->dependency_ref += count;
 
     break;
   default:

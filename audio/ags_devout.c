@@ -40,6 +40,14 @@
 
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_init(AgsDevout *devout);
+void ags_devout_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_devout_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
 void ags_devout_finalize(GObject *gobject);
 
 void* ags_devout_append_task_pending_thread(void *devout);
@@ -70,6 +78,22 @@ void* ags_devout_alsa_play(void *devout);
 void ags_devout_alsa_free(AgsDevout *devout);
 
 enum{
+  PROP_0,
+  PROP_DSP_CHANNELS,
+  PROP_PCM_CHANNELS,
+  PROP_BITS,
+  PROP_BUFFER_SIZE,
+  PROP_FREQUENCY,
+  PROP_BUFFER,
+  PROP_BPM,
+  PROP_ATTACK,
+  PROP_TASK,
+  PROP_PLAY_RECALL,
+  PROP_PLAY_CHANNEL,
+  PROP_PLAY_AUDIO,
+};
+
+enum{
   RUN,
   STOP,
   LAST_SIGNAL,
@@ -95,8 +119,13 @@ ags_devout_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_devout_init,
     };
-    ags_type_devout = g_type_register_static(G_TYPE_OBJECT, "AgsDevout\0", &ags_devout_info, 0);
+
+    ags_type_devout = g_type_register_static(G_TYPE_OBJECT,
+					     "AgsDevout\0",
+					     &ags_devout_info,
+					     0);
   }
+
   return (ags_type_devout);
 }
 
@@ -104,12 +133,128 @@ void
 ags_devout_class_init(AgsDevoutClass *devout)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_devout_parent_class = g_type_class_peek_parent(devout);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) devout;
+
+  gobject->set_property = ags_devout_set_property;
+  gobject->get_property = ags_devout_get_property;
+
   gobject->finalize = ags_devout_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_object("dsp_channels\0",
+				   "count of DSP channels\0",
+				   "The count of DSP channels to use\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DSP_CHANNELS,
+				  param_spec);
+
+  param_spec = g_param_spec_object("pcm_channels\0",
+				   "count of PCM channels\0",
+				   "The count of PCM channels to use\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PCM_CHANNELS,
+				  param_spec);
+
+  param_spec = g_param_spec_object("bits\0",
+				   "precision of buffer\0",
+				   "The precision to use for a frame\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BITS,
+				  param_spec);
+
+  param_spec = g_param_spec_object("buffer_size\0",
+				   "frame count of a buffer\0",
+				   "The count of frames a buffer contains\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  param_spec = g_param_spec_object("frequency\0",
+				   "frames per second\0",
+				   "The frames count played during a second\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FREQUENCY,
+				  param_spec);
+
+  param_spec = g_param_spec_object("buffer\0",
+				   "the buffer\0",
+				   "The buffer to play\0",
+				   G_TYPE_POINTER,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER,
+				  param_spec);
+
+  param_spec = g_param_spec_object("bpm\0",
+				   "beats per minute\0",
+				   "Beats per minute to use\0",
+				   G_TYPE_DOUBLE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BPM,
+				  param_spec);
+
+  param_spec = g_param_spec_object("attack\0",
+				   "attack of buffer\0",
+				   "The attack to use for the buffer\0",
+				   G_TYPE_POINTER,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+  param_spec = g_param_spec_object("task\0",
+				   "task to launch\0",
+				   "A task to launch\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK,
+				  param_spec);
+
+  param_spec = g_param_spec_object("play_recall\0",
+				   "recall to run\0",
+				   "A recall to run\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_RECALL,
+				  param_spec);
+
+  param_spec = g_param_spec_object("play_channel\0",
+				   "channel to run\0",
+				   "A channel to run\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_object("play_audio\0",
+				   "audio to run\0",
+				   "A audio to run\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_AUDIO,
+				  param_spec);
+
+  /* AgsDevoutClass */
   devout->run = ags_devout_real_run;
   devout->stop = ags_devout_real_stop;
 
@@ -209,6 +354,134 @@ ags_devout_init(AgsDevout *devout)
 
   devout->play_audio_ref = 0;
   devout->play_audio = NULL;
+}
+
+
+void
+ags_devout_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(gobject);
+
+  /*
+   * TODO:JK: implement set functionality
+   */
+  
+  switch(prop_id){
+  case PROP_DSP_CHANNELS:
+    {
+    }
+    break;
+  case PROP_PCM_CHANNELS:
+    {
+    }
+    break;
+  case PROP_BITS:
+    {
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+    }
+    break;
+  case PROP_BUFFER:
+    {
+    }
+    break;
+  case PROP_BPM:
+    {
+    }
+    break;
+  case PROP_TASK:
+    {
+    }
+    break;
+  case PROP_PLAY_RECALL:
+    {
+    }
+    break;
+  case PROP_PLAY_CHANNEL:
+    {
+    }
+    break;
+  case PROP_PLAY_AUDIO:
+    {
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_devout_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(gobject);
+  
+  switch(prop_id){
+  case PROP_DSP_CHANNELS:
+    {
+      g_value_set_uint(value, devout->dsp_channels);
+    }
+    break;
+  case PROP_PCM_CHANNELS:
+    {
+      g_value_set_uint(value, devout->pcm_channels);
+    }
+    break;
+  case PROP_BITS:
+    {
+      g_value_set_uint(value, devout->bits);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, devout->buffer_size);
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+      g_value_set_uint(value, devout->frequency);
+    }
+    break;
+  case PROP_BUFFER:
+    {
+      g_value_set_pointer(value, devout->buffer);
+    }
+    break;
+  case PROP_BPM:
+    {
+      g_value_set_double(value, devout->bpm);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      g_value_set_pointer(value, devout->attack);
+    }
+    break;
+  case PROP_TASK:
+    {
+      g_value_set_(value, devout->);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

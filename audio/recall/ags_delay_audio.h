@@ -48,7 +48,6 @@ struct _AgsDelayAudioClass
 
 GType ags_delay_audio_get_type();
 
-AgsDelayAudio* ags_delay_audio_new(AgsAudio *audio,
-				   guint delay);
+AgsDelayAudio* ags_delay_audio_new(guint delay);
 
 #endif /*__AGS_DELAY_AUDIO_H__*/

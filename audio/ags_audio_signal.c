@@ -330,21 +330,29 @@ ags_attack_duplicate(AgsAttack *attack)
 
 
 AgsAttack*
-ags_attack_get_from_devout(GObject *devout0)
+ags_attack_duplicate_from_devout(GObject *devout0)
 {
   AgsDevout *devout;
-  AgsAttack *attack;
+  AgsAttack *copy;
+  GValue attack_value = {0,};
 
   devout = AGS_DEVOUT(devout0);
 
-  if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
-    attack = ags_attack_alloc(devout->attack->first_start, devout->attack->first_length,
-			      0, 0);
-  else
-    attack = ags_attack_alloc(devout->attack->second_start, devout->attack->second_length,
-			      0, 0);
+  g_value_init(&attack_value, G_TYPE_POINTER);
+  g_object_get_property(copy_recycling->devout,
+			"attack\0",
+			&attack_value);
+  attack = g_value_get_pointer(&attack_value);
+  g_value_unset(&attack_value);
 
-  return(attack);
+  if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
+    copy = ags_attack_alloc(attack->first_start, attack->first_length,
+			    0, 0);
+  else
+    copy = ags_attack_alloc(attack->second_start, attack->second_length,
+			    0, 0);
+
+  return(copy);
 }
 
 void

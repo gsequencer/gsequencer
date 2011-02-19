@@ -163,7 +163,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
 
   /* create AgsDelayAudio in audio->play */
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
@@ -184,7 +184,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
 
   /* create AgsDelayAudio in audio->recall */
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
@@ -206,7 +206,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
 
   /* create AgsCopyPatternAudio in audio->play */
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
@@ -232,7 +232,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
 
   /* create AgsCopyPatternAudio in audio->recall */
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
@@ -495,7 +495,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
 {
   AgsAudio *audio;
   AgsChannel *destination, *destination_start, *source;
-  AgsRecallContainer *recall_container;
+  AgsRecallContainer *play_container, *recall_container;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
   AgsCopyPatternAudio *play_copy_pattern_audio, *recall_copy_pattern_audio;
   AgsCopyPatternChannel *copy_pattern_channel;
@@ -522,15 +522,17 @@ list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO)
   
   /* find AgsRecallContainer pattern copying recalls in audio->play_recall_container */
   g_value_init(&recall_container_value, G_TYPE_OBJECT);
-  play_container = (AgsRecallContainer *) g_object_get_property(&play_copy_pattern_audio,
-								  "recall_container",
-								  &recall_container_value);
+  g_object_get_property(G_OBJECT(play_copy_pattern_audio),
+			"recall_container\0",
+			&recall_container_value);
+  play_container = (AgsRecallContainer *) g_value_get_object(&recall_container_value);
   g_value_unset(&recall_container_value);
 
   g_value_init(&recall_container_value, G_TYPE_OBJECT);
-  recall_container = (AgsRecallContainer *) g_object_get_property(&recall_copy_pattern_audio,
-								  "recall_container",
-								  &recall_container_value);
+  g_object_get_property(G_OBJECT(recall_copy_pattern_audio),
+			"recall_container\0",
+			&recall_container_value);
+  recall_container = (AgsRecallContainer *) g_value_get_object(&recall_container_value);
   g_value_unset(&recall_container_value);
 
   while(source != NULL){
@@ -557,11 +559,11 @@ list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO)
 									   "delay_audio_run\0", play_delay_audio_run,
 									   NULL);
 
-      AGS_RECALL(copy_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;
       ags_audio_add_recall(audio, (GObject *) copy_pattern_channel_run, TRUE);
 
       if(GTK_WIDGET_VISIBLE(matrix))
-	ags_connectable_connect(AGS_CONNECTABLE(copy_channel_run));
+	ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_channel_run));
 
       /* connect callbacks for play */
       g_signal_connect((GObject *) copy_pattern_channel_run, "done\0",
@@ -595,11 +597,11 @@ list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO)
 									   "delay_audio_run\0", recall_delay_audio_run,
 									   NULL);
 
-      AGS_RECALL(copy_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;
       ags_audio_add_recall(audio, (GObject *) copy_pattern_channel_run, FALSE);
 
       if(GTK_WIDGET_VISIBLE(matrix))
-	ags_connectable_connect(AGS_CONNECTABLE(copy_channel_run));
+	ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_channel_run));
     }
     
     source = source->next;

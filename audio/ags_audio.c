@@ -189,6 +189,8 @@ ags_audio_init(AgsAudio *audio)
   audio->devout_play->source = (GObject *) audio;
 
   audio->recall_id = NULL;
+
+  audio->play_container;
   audio->recall_container;
 
   audio->recall = NULL;
@@ -325,8 +327,18 @@ ags_audio_connect(AgsConnectable *connectable)
     channel = channel->next;
   }
 
-  /* connect recall ids and recall containers */
+  /* connect recall ids */
   list = audio->recall_id;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recall containers */
+
+  list = audio->play_container;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));

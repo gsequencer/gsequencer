@@ -186,7 +186,8 @@ ags_notation_add_note(AgsNotation *notation, AgsNote *note)
   while(list->next != NULL){
     if(((AgsNote *) (list->data))->x[0] >= note->x[0]){
       while(list->next != NULL){
-	if(((AgsNote *) (list->data))->y >= note->y){
+	if(((AgsNote *) (list->data))->x[0] > note->x[0] ||
+	   ((AgsNote *) (list->data))->y >= note->y){
 	  ags_notation_add_note_add1();
 
 	  return;

@@ -478,6 +478,23 @@ ags_copy_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_copy_recycling_finalize(GObject *gobject)
 {
+  AgsCopyRecycling *copy_recycling;
+
+  copy_recycling = AGS_COPY_RECYCLING(gobject);
+
+  if(copy_recycling->devout != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->devout));
+
+  if(copy_recycling->destination != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->destination));
+
+  if(copy_recycling->source != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->source));
+
+  if(copy_recycling->child_destination != NULL)
+    g_object_unref(copy_recycling->child_destination);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_copy_recycling_parent_class)->finalize(gobject);
 }
 
@@ -526,12 +543,16 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 					   AgsAudioSignal *audio_signal)
 {
   AgsCopyAudioSignal *copy_audio_signal;
+  AgsAttack *attack;
 
   audio_signal->stream_current = audio_signal->stream_beginning;
 
+  attack = ags_attack_duplicate_from_devout(copy_recycling->devout);
+
   copy_audio_signal = ags_copy_audio_signal_new(copy_recycling->child_destination,
 						audio_signal,
-						copy_recycling->devout);
+						copy_recycling->devout,
+						attack);
 
   ags_recall_add_child(AGS_RECALL(copy_recycling), AGS_RECALL(copy_audio_signal));
   g_signal_connect(G_OBJECT(copy_audio_signal), "done\0",

@@ -54,7 +54,9 @@ struct _AgsPlayAudioSignalClass
 
 GType ags_play_audio_signal_get_type();
 
-AgsPlayAudioSignal* ags_play_audio_signal_new(AgsAudioSignal *source, guint audio_channel,
-					      AgsDevout *devout);
+AgsPlayAudioSignal* ags_play_audio_signal_new(AgsAudioSignal *source,
+					      AgsDevout *devout,
+					      guint audio_channel,
+					      AgsAttack *attack);
 
 #endif /*__AGS_PLAY_AUDIO_SIGNAL__H__*/

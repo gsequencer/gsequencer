@@ -161,7 +161,7 @@ ags_drum_init(AgsDrum *drum)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
 
   /* create AgsDelayAudio in audio->play */
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
@@ -182,7 +182,7 @@ ags_drum_init(AgsDrum *drum)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
 
   /* create AgsDelayAudio in audio->recall */
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
@@ -204,7 +204,7 @@ ags_drum_init(AgsDrum *drum)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
 
   /* create AgsCopyPatternAudio in audio->play */
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
@@ -230,7 +230,7 @@ ags_drum_init(AgsDrum *drum)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
 
   /* create AgsCopyPatternAudio in audio->recall */
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,

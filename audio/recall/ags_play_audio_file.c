@@ -18,18 +18,43 @@
 
 #include <ags/audio/recall/ags_play_audio_file.h>
 
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
+
 #include <ags/audio/ags_recall_id.h>
 
 void ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file);
+void ags_play_audio_file_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_play_audio_file_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_audio_file_init(AgsPlayAudioFile *play_audio_file);
+void ags_play_audio_file_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+void ags_play_audio_file_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+void ags_play_audio_file_connect(AgsConnectable *connectable);
+void ags_play_audio_file_disconnect(AgsConnectable *connectable);
+void ags_play_audio_file_run_connect(AgsRunConnectable *run_connectable);
+void ags_play_audio_file_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_audio_file_finalize(GObject *gobject);
-void ags_play_audio_file_connect(AgsPlayAudioFile *play_audio_file);
 
-void ags_play_audio_file(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
-void ags_play_audio_file_stop(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
-void ags_play_audio_file_cancel(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
+void ags_play_audio_file_run_inter(AgsRecall *recall);
+void ags_play_audio_file_remove(AgsRecall *recall);
+void ags_play_audio_file_cancel(AgsRecall *recall);
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+  PROP_AUDIO_FILE,
+  PROP_CURRENT_FRAME,
+};
 
 static gpointer ags_play_audio_file_parent_class = NULL;
+static AgsConnectableInterface *ags_play_audio_file_parent_connectable_interface;
+static AgsRunConnectableInterface *ags_play_audio_file_parent_run_connectable_interface;
 
 GType
 ags_play_audio_file_get_type()
@@ -48,8 +73,33 @@ ags_play_audio_file_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_play_audio_file_init,
     };
-    ags_type_play_audio_file = g_type_register_static(AGS_TYPE_RECALL, "AgsPlayAudioFile\0", &ags_play_audio_file_info, 0);
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_audio_file_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_run_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_audio_file_run_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_play_audio_file = g_type_register_static(AGS_TYPE_RECALL,
+						      "AgsPlayAudioFile\0",
+						      &ags_play_audio_file_info,
+						      0);
+
+    g_type_add_interface_static(ags_type_play_audio_file,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_play_audio_file,
+				AGS_TYPE_RUN_CONNECTABLE,
+				&ags_run_connectable_interface_info);
   }
+
   return (ags_type_play_audio_file);
 }
 
@@ -57,20 +107,204 @@ void
 ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_play_audio_file_parent_class = g_type_class_peek_parent(play_audio_file);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) play_audio_file;
+
+  gobject->set_property = ags_play_audio_file_set_property;
+  gobject->get_property = ags_play_audio_file_get_property;
+
   gobject->finalize = ags_play_audio_file_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_gtype("devout\0",
+				  "assigned devout\0",
+				  "The devout this recall is assigned to\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("audio_file\0",
+				  "assigned audio file\0",
+				  "The audio file this recall is assigned to\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_FILE,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("current\0",
+				  "current frame\0",
+				  "The current frame this recall is playing\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CURRENT_FRAME,
+				  param_spec);
+
+  /* AgsRecallClass */
+  recall->run_inter = ags_play_audio_file_run_inter;
+  recall->remove = ags_play_audio_file_remove;
+  recall->cancel = ags_play_audio_file_cancel;
+}
+
+void
+ags_play_audio_file_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_play_audio_file_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_play_audio_file_connect;
+  connectable->disconnect = ags_play_audio_file_disconnect;
+}
+
+void
+ags_play_audio_file_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+{
+  ags_play_audio_file_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+
+  run_connectable->connect = ags_play_audio_file_run_connect;
+  run_connectable->disconnect = ags_play_audio_file_run_disconnect;
 }
 
 void
 ags_play_audio_file_init(AgsPlayAudioFile *play_audio_file)
 {
   play_audio_file->audio_file = NULL;
-  play_audio_file->current = 0;
+  play_audio_file->current_frame = 0;
 
   play_audio_file->devout = NULL;
+}
+
+void
+ags_play_audio_file_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsPlayAudioFile *play_audio_file;
+
+  play_audio_file = AGS_PLAY_AUDIO_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(play_audio_file->devout == devout)
+	return;
+
+      if(play_audio_file->devout != NULL)
+	g_object_unref(play_audio_file->devout);
+
+      if(devout != NULL)
+	g_object_ref(devout);
+
+      play_audio_file->devout = devout;
+    }
+    break;
+  case PROP_AUDIO_FILE:
+    {
+      AgsAudioFile *audio_file;
+
+      audio_file = (AgsAudioFile *) g_value_get_object(value);
+
+      if(play_audio_file->audio_file == audio_file)
+	return;
+
+      if(play_audio_file->audio_file != NULL)
+	g_object_unref(play_audio_file->audio_file);
+
+      if(play_audio_file != NULL)
+	g_object_ref(play_audio_file);
+
+      play_audio_file->audio_file = audio_file;
+    }
+    break;
+  case PROP_CURRENT_FRAME:
+    {
+      play_audio_file->current_frame = (guint) g_value_get_uint(value);
+
+      /*
+       * TODO:JK: implement seeking over the buffer
+       */
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_play_audio_file_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsPlayAudioFile *play_audio_file;
+
+  play_audio_file = AGS_PLAY_AUDIO_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, play_audio_file->devout);
+    }
+    break;
+  case PROP_AUDIO_FILE:
+    {
+      g_value_set_object(value, play_audio_file->audio_file);
+    }
+    break;
+  case PROP_CURRENT_FRAME:
+    {
+      g_value_set_uint(value, play_audio_file->current_frame);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_play_audio_file_connect(AgsConnectable *connectable)
+{
+  ags_play_audio_file_parent_connectable_interface->connect(connectable);
+
+  /* empty */
+}
+
+void
+ags_play_audio_file_disconnect(AgsConnectable *connectable)
+{
+  ags_play_audio_file_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
+}
+
+void
+ags_play_audio_file_run_connect(AgsRunConnectable *run_connectable)
+{
+  ags_play_audio_file_parent_run_connectable_interface->connect(run_connectable);
+
+  /* empty */
+}
+
+void
+ags_play_audio_file_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  ags_play_audio_file_parent_run_connectable_interface->disconnect(run_connectable);
+
+  /* empty */
 }
 
 void
@@ -79,29 +313,19 @@ ags_play_audio_file_finalize(GObject *gobject)
   AgsPlayAudioFile *play_audio_file;
 
   play_audio_file = AGS_PLAY_AUDIO_FILE(gobject);
+
   g_object_unref(G_OBJECT(play_audio_file->audio_file));
+
+  g_object_unref(G_OBJECT(play_audio_file->devout));
 
   G_OBJECT_CLASS(ags_play_audio_file_parent_class)->finalize(gobject);
 }
 
 void
-ags_play_audio_file_connect(AgsPlayAudioFile *play_audio_file)
+ags_play_audio_file_run_inter(AgsRecall *recall)
 {
-  //  ags_recall_connect(AGS_RECALL(play_audio_file));
+  AGS_RECALL_CLASS(ags_play_audio_file_parent_class)->run_inter(recall);
 
-  g_signal_connect((GObject *) play_audio_file, "run_inter\0",
-		   G_CALLBACK(ags_play_audio_file), NULL);
-
-  g_signal_connect((GObject *) play_audio_file, "stop\0",
-		   G_CALLBACK(ags_play_audio_file_stop), NULL);
-
-  g_signal_connect((GObject *) play_audio_file, "cancel\0",
-		   G_CALLBACK(ags_play_audio_file_cancel), NULL);
-}
-
-void
-ags_play_audio_file(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
-{
   /*
   AgsPlayAudioFile *play_audio_file;
   short *buffer;
@@ -143,21 +367,27 @@ ags_play_audio_file(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 }
 
 void
-ags_play_audio_file_stop(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
+ags_play_audio_file_remove(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_play_audio_file_parent_class)->remove(recall);
 }
 
 void
-ags_play_audio_file_cancel(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
+ags_play_audio_file_cancel(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_play_audio_file_parent_class)->cancel(recall);
 }
 
 AgsPlayAudioFile*
-ags_play_audio_file_new()
+ags_play_audio_file_new(AgsAudioFile *audio_file,
+			AgsDevout *devout)
 {
   AgsPlayAudioFile *play_audio_file;
 
-  play_audio_file = (AgsPlayAudioFile *) g_object_new(AGS_TYPE_PLAY_AUDIO_FILE, NULL);
+  play_audio_file = (AgsPlayAudioFile *) g_object_new(AGS_TYPE_PLAY_AUDIO_FILE,
+						      "audio_file\0", audio_file,
+						      "devout\0", devout,
+						      NULL);
 
   return(play_audio_file);
 }

@@ -39,15 +39,23 @@ void ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling);
 void ags_play_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_recycling_init(AgsPlayRecycling *play_recycling);
+void ags_play_recycling_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_play_recycling_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_play_recycling_connect(AgsConnectable *connectable);
 void ags_play_recycling_disconnect(AgsConnectable *connectable);
 void ags_play_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_play_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_recycling_finalize(GObject *gobject);
 
-void ags_play_recycling_done(AgsRecall *recall, gpointer data);
-void ags_play_recycling_cancel(AgsRecall *recall, gpointer data);
-void ags_play_recycling_remove(AgsRecall *recall, gpointer data);
+void ags_play_recycling_done(AgsRecall *recall);
+void ags_play_recycling_cancel(AgsRecall *recall);
+void ags_play_recycling_remove(AgsRecall *recall);
 AgsRecall* ags_play_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
@@ -121,11 +129,54 @@ void
 ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_play_recycling_parent_class = g_type_class_peek_parent(play_recycling);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) play_recycling;
+
+  gobject->set_property = ags_play_recycling_set_property;
+  gobject->get_property = ags_play_recycling_get_property;
+
   gobject->finalize = ags_play_recycling_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_gtype("devout\0",
+				  "assigned AgsDevout\0",
+				  "The AgsDevout this recall is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("audio_channel\0",
+				  "assigned audio Channel\0",
+				  "The audio channel this recall does output to\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("source\0",
+				  "source AgsRecycling\0",
+				  "The AgsRecycling this recall has as source\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) play_recycling;
+
+  recall->done = ags_play_recycling_done;
+  recall->cancel = ags_play_recycling_cancel;
+  recall->remove = ags_play_recycling_remove;
+  recall->duplicate = ags_play_recycling_duplicate;
 }
 
 void
@@ -230,34 +281,55 @@ ags_play_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 }
 
 void
+ags_play_recycling_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+}
+
+void
+ags_play_recycling_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+}
+
+void
 ags_play_recycling_finalize(GObject *gobject)
 {
+  if(copy_recycling->devout != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->devout));
+
+  if(copy_recycling->source != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->source));
+
+  /* call parent */
   G_OBJECT_CLASS(ags_play_recycling_parent_class)->finalize(gobject);
 }
 
 void 
-ags_play_recycling_done(AgsRecall *recall, gpointer data)
+ags_play_recycling_done(AgsRecall *recall)
 {
-  AgsPlayRecycling *play_recycling;
+  AGS_RECALL_CLASS(ags_play_recycling_parent_class)->done(recall);
 
-  play_recycling = AGS_PLAY_RECYCLING(recall);
-
-  //  ags_play_recycling_disconnect_run_handler(play_recycling);
+  /* empty */
 }
 
 void
 ags_play_recycling_cancel(AgsRecall *recall, gpointer data)
 {
-  AgsPlayRecycling *play_recycling;
+  AGS_RECALL_CLASS(ags_play_recycling_parent_class)->cancel(recall);
 
-  play_recycling = AGS_PLAY_RECYCLING(recall);
-
-  //  ags_play_recycling_disconnect_run_handler(play_recycling);
+  /* empty */
 }
 
 void 
 ags_play_recycling_remove(AgsRecall *recall, gpointer data)
 {
+  AGS_RECALL_CLASS(ags_play_recycling_parent_class)->remove(recall);
+
   /* empty */
 }
 
@@ -282,11 +354,16 @@ ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
 {
   AgsPlayAudioSignal *play_audio_signal;  
   guint audio_channel;
+  GValue attack_value = {0,};
 
   audio_signal->stream_current = audio_signal->stream_beginning;
 
-  play_audio_signal = ags_play_audio_signal_new(audio_signal, play_recycling->audio_channel,
-						play_recycling->devout);
+  attack = ags_attack_duplicate_from_devout(play_recycling->devout);
+
+  play_audio_signal = ags_play_audio_signal_new(audio_signal,
+						play_recycling->devout,
+						play_recycling->audio_channel,
+						attack);
 
   audio_channel = AGS_PLAY_CHANNEL(AGS_RECALL(play_recycling)->parent)->source->audio_channel;
   ags_recall_add_child(AGS_RECALL(play_recycling), AGS_RECALL(play_audio_signal), audio_channel);
@@ -370,16 +447,17 @@ ags_play_recycling_play_audio_signal_done(AgsRecall *recall,
 }
 
 AgsPlayRecycling*
-ags_play_recycling_new(AgsRecycling *source, guint audio_channel,
-		       AgsDevout *devout)
+ags_play_recycling_new(AgsRecycling *source,
+		       AgsDevout *devout,
+		       guint audio_channel)
 {
   AgsPlayRecycling *play_recycling;
 
-  play_recycling = (AgsPlayRecycling *) g_object_new(AGS_TYPE_PLAY_RECYCLING, NULL);
-
-  play_recycling->source = source;
-  play_recycling->audio_channel = audio_channel;
-  play_recycling->devout = devout;
+  play_recycling = (AgsPlayRecycling *) g_object_new(AGS_TYPE_PLAY_RECYCLING,
+						     "source\0", source,
+						     "devout\0", devout,
+						     "audio_channel\0", audio_channel,
+						     NULL);
 
   return(play_recycling);
 }

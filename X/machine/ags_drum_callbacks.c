@@ -78,6 +78,9 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   drum->machine.name = g_strdup_printf("Default %d\0", window->counter->drum);
   window->counter->drum++;
 
+  /*
+   * FIXME:JK: the following code is ugly
+   */
   /* delay related */
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
   bpm = window->navigation->bpm->adjustment->value;

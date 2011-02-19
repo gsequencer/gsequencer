@@ -42,7 +42,7 @@ struct _AgsPlayAudioFile
   AgsRecall recall;
 
   AgsAudioFile *audio_file;
-  guint current;
+  guint current_frame;
 
   AgsDevout *devout;
 };
@@ -54,6 +54,7 @@ struct _AgsPlayAudioFileClass
 
 GType ags_play_audio_file_get_type();
 
-AgsPlayAudioFile* ags_play_audio_file_new();
+AgsPlayAudioFile* ags_play_audio_file_new(AgsAudioFile *audio_file,
+					  AgsDevout *devout);
 
 #endif /*__AGS_PLAY_AUDIO_FILE_H__*/

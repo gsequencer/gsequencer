@@ -57,6 +57,7 @@ enum{
   PROP_DESTINATION,
   PROP_SOURCE,
   PROP_DEVOUT,
+  PROP_ATTACK,
 };
 
 static gpointer ags_copy_audio_signal_parent_class = NULL;
@@ -155,6 +156,14 @@ ags_copy_audio_signal_class_init(AgsCopyAudioSignalClass *copy_audio_signal)
 				  PROP_DEVOUT,
 				  param_spec);
 
+  param_spec = g_param_spec_gtype("attack\0",
+				  "assigned attack\0",
+				  "The attack that determines to which frame to copy\0",
+				   G_TYPE_POINTER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_audio_signal;
@@ -254,10 +263,25 @@ ags_copy_audio_signal_set_property(GObject *gobject,
 
       if(devout != NULL){
 	g_object_ref(G_OBJECT(devout));
-	copy_audio_signal->attack = ags_attack_duplicate(ags_attack_get_from_devout((GObject *) devout));
+	copy_audio_signal->attack = ags_attack_duplicate_from_devout((GObject *) devout);
       }
 
       copy_audio_signal->devout = devout;
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      AgsAttack *attack;
+
+      attack = (AgsAttack *) g_value_get_pointer(value);
+
+      if(copy_audio_signal->attack == attack)
+	return;
+
+      if(copy_audio_signal->attack != NULL)
+	free(copy_audio_signal->attack);
+
+      copy_audio_signal->attack = attack;
     }
     break;
   default:
@@ -293,6 +317,11 @@ ags_copy_audio_signal_get_property(GObject *gobject,
     }
     break;
   default:
+  case PROP_ATTACK:
+    {
+      g_value_set_pointer(value, copy_audio_signal->attack);
+    }
+    break;
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
@@ -345,6 +374,7 @@ ags_copy_audio_signal_finalize(GObject *gobject)
   if(copy_audio_signal->source != NULL)
     g_object_unref(copy_audio_signal->source);
 
+  /* call parent */
   G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
 }
 
@@ -424,7 +454,8 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,
 			  AgsAudioSignal *source,
-			  AgsDevout *devout)
+			  AgsDevout *devout,
+			  AgsAttack *attack)
 {
   AgsCopyAudioSignal *copy_audio_signal;
 
@@ -432,6 +463,7 @@ ags_copy_audio_signal_new(AgsAudioSignal *destination,
 							  "destination\0", destination,
 							  "source\0", source,
 							  "devout\0", devout,
+							  "attack\0", attack,
 							  NULL);
 
   return(copy_audio_signal);

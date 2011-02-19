@@ -46,7 +46,7 @@ struct _AgsLoopChannel
   gulong tic_alloc_handler;
   guint nth_run;
 
-  GObject *countable;
+  GObject *counter;
 
   AgsChannel *channel;
 };

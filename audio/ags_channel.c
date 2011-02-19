@@ -124,7 +124,7 @@ ags_channel_class_init(AgsChannelClass *channel)
   param_spec = g_param_spec_object("audio\0",
 				   "assigned audio\0",
 				   "The audio it is assigned with\0",
-				   AGS_TYPE_AUDIO ,
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO ,
@@ -183,6 +183,8 @@ ags_channel_init(AgsChannel *channel)
   channel->devout_play->source = (GObject *) channel;
 
   channel->recall_id = NULL;
+
+  channel->play_container = NULL;
   channel->recall_container = NULL;
 
   channel->recall = NULL;
@@ -261,8 +263,17 @@ ags_channel_connect(AgsConnectable *connectable)
 
   channel = AGS_CHANNEL(connectable);
 
-  /* connect recall ids and recall containers */
+  /* connect recall ids */
   list = channel->recall_id;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recall containers */
+  list = channel->play_container;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));

@@ -39,7 +39,7 @@ struct _AgsDelayAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
 
-  guint recall_ref;
+  guint dependency_ref;
 
   guint hide_ref;
   guint hide_ref_counter;

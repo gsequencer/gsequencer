@@ -24,7 +24,6 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/task/ags_cancel_recall.h>
@@ -38,18 +37,25 @@ void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
 void ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_channel_init(AgsPlayChannel *play_channel);
+void ags_play_channel_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_play_channel_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_play_channel_connect(AgsConnectable *connectable);
 void ags_play_channel_disconnect(AgsConnectable *connectable);
 void ags_play_channel_run_connect(AgsRunConnectable *run_connectable);
 void ags_play_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_channel_finalize(GObject *gobject);
 
-void ags_play_channel_run_init_pre(AgsPlayChannel *play_channel, guint audio_channel, gpointer data);
-
-void ags_play_channel_done(AgsRecall *recall, gpointer data);
-void ags_play_channel_remove(AgsRecall *recall, gpointer data);
-void ags_play_channel_cancel(AgsRecall *recall, gpointer data);
-AgsRecall* ags_play_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+void ags_play_channel_run_init_pre(AgsRecall *recall);
+void ags_play_channel_done(AgsRecall *recall);
+void ags_play_channel_remove(AgsRecall *recall);
+void ags_play_channel_cancel(AgsRecall *recall);
+AgsRecall* ags_play_channel_duplicate(AgsRecall *recall);
 
 void ags_play_channel_map_play_recycling(AgsPlayChannel *play_channel);
 void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
@@ -61,6 +67,12 @@ void ags_play_channel_source_recycling_changed_callback(AgsChannel *channel,
 							AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 							AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 							AgsPlayChannel *play_channel);
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+  PROP_SOURCE,
+};
 
 static gpointer ags_play_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_parent_connectable_interface;
@@ -118,15 +130,45 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_play_channel_parent_class = g_type_class_peek_parent(play_channel);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) play_channel;
+
+  gobject->set_property = ags_play_channel_set_property;
+  gobject->get_property = ags_play_channel_get_property;
 
   gobject->finalize = ags_play_channel_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_gtype("source\0",
+				  "source of input\0",
+				  "The source where this recall will take the channel from\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOURCE,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("devout\0",
+				  "assigned devout\0",
+				  "The devout this recall is assigned to\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+
+  /* AgsRecallClass */
   recall = (AgsRecallClass *) play_channel;
 
+  recall->run_init_pre = ags_play_channel_run_init_pre;
+  recall->done = ags_play_channel_done;
+  recall->remove = ags_play_channel_remove;
+  recall->cancel = ags_play_channel_cancel;
   recall->duplicate = ags_play_channel_duplicate;
 }
 
@@ -151,11 +193,94 @@ ags_play_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_
 void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
-  //  play_channel->ref = 1;
-
   play_channel->devout = NULL;
 
   play_channel->source = NULL;
+}
+
+
+void
+ags_play_channel_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsCopyChannel *copy_channel;
+
+  copy_channel = AGS_COPY_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_SOURCE:
+    {
+      AgsChannel *source;
+
+      source = (AgsChannel *) g_value_get_object(value);
+
+      if(copy_channel->source == source)
+	return;
+
+      if(copy_channel->source != NULL){
+	g_object_unref(copy_channel->source);
+      }
+
+      if(source != NULL){
+	g_object_ref(source);
+      }
+
+      copy_channel->source = source;
+    }
+    break;
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(copy_channel->devout == devout)
+	return;
+
+      if(devout != NULL){
+	g_object_unref(copy_channel->devout);
+      }
+
+      if(devout != NULL){
+	g_object_ref(G_OBJECT(devout));
+      }
+
+      copy_channel->devout = devout;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }  
+}
+
+void
+ags_play_channel_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsCopyChannel *copy_channel;
+
+  copy_channel = AGS_COPY_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_SOURCE:
+    {
+      g_value_set_object(value, copy_channel->source);
+    }
+    break;
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, copy_channel->devout);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -165,26 +290,15 @@ ags_play_channel_connect(AgsConnectable *connectable)
 
   ags_play_channel_parent_connectable_interface->connect(connectable);
 
-  /* AgsPlayChannel */
-  play_channel = AGS_PLAY_CHANNEL(connectable);
-
-  g_signal_connect((GObject *) play_channel, "run_init_pre\0",
-		   G_CALLBACK(ags_play_channel_run_init_pre), NULL);
-
-  g_signal_connect((GObject *) play_channel, "done\0",
-		   G_CALLBACK(ags_play_channel_done), NULL);
-
-  g_signal_connect((GObject *) play_channel, "remove\0",
-		   G_CALLBACK(ags_play_channel_remove), NULL);
-
-  g_signal_connect((GObject *) play_channel, "cancel\0",
-		   G_CALLBACK(ags_play_channel_cancel), NULL);
+  /* empty */
 }
 
 void
 ags_play_channel_disconnect(AgsConnectable *connectable)
 {
   ags_play_channel_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
 }
 
 void
@@ -226,30 +340,49 @@ ags_play_channel_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_play_channel_finalize(GObject *gobject)
 {
+  AgsPlayChannel *play_channel;
+
+  play_channel = AGS_PLAY_CHANNEL(gobject);
+
+  if(play_channel->source != NULL)
+    g_object_unref(G_OBJECT(play_channel->source));
+
+  if(play_channel->devout != NULL)
+    g_object_unref(G_OBJECT(play_channel->devout));
+
+  /* call parent */
   G_OBJECT_CLASS(ags_play_channel_parent_class)->finalize(gobject);
 }
 
 void
-ags_play_channel_run_init_pre(AgsPlayChannel *play_channel, guint audio_channel, gpointer data)
+ags_play_channel_run_init_pre(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_play_channel_parent_class)->run_init_pre(recall);
+
   /* empty */
 }
 
 void
-ags_play_channel_done(AgsRecall *recall, gpointer data)
+ags_play_channel_done(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_play_channel_parent_class)->done(recall);
+
   /* empty */
 }
 
 void 
-ags_play_channel_cancel(AgsRecall *recall, gpointer data)
+ags_play_channel_cancel(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_play_channel_parent_class)->cancel(recall);
+
   /* empty */
 }
 
 void
-ags_play_channel_remove(AgsRecall *recall, gpointer data)
+ags_play_channel_remove(AgsRecall *recall)
 {
+  AGS_RECALL_CLASS(ags_play_channel_parent_class)->remove(recall);
+
   /* empty */
 }
 
@@ -273,18 +406,23 @@ void
 ags_play_channel_map_play_recycling(AgsPlayChannel *play_channel)
 {
   AgsRecycling *source_recycling;
-  AgsPlayRecycling *play_recycling;
 
   source_recycling = play_channel->source->first_recycling;
 
   if(source_recycling != NULL){
-    while(source_recycling != play_channel->source->last_recycling->next){
-      printf("mapping\n\0");
+    AgsPlayRecycling *play_recycling;
+    guint audio_channel;
 
-      play_recycling = ags_play_recycling_new(source_recycling, play_channel->source->audio_channel,
+    audio_channel = play_channel->source->audio_channel;
+
+    while(source_recycling != play_channel->source->last_recycling->next){
+      printf("ags_play_channel_map_play_recycling\n\0");
+
+      play_recycling = ags_play_recycling_new(source_recycling,
+					      audio_channel,
 					      play_channel->devout);
 
-      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling), play_channel->source->audio_channel);
+      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling));
 
       source_recycling = source_recycling->next;
     }
@@ -337,10 +475,11 @@ void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
     source_recycling = new_start_region;
 
     while(source_recycling != new_end_region->next){
-      play_recycling = ags_play_recycling_new(source_recycling, audio_channel,
+      play_recycling = ags_play_recycling_new(source_recycling,
+					      audio_channel,
 					      play_channel->devout);
 
-      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling), audio_channel);
+      ags_recall_add_child(AGS_RECALL(play_channel), AGS_RECALL(play_recycling));
       
       source_recycling = source_recycling->next;
     }
@@ -364,11 +503,10 @@ ags_play_channel_new(AgsChannel *source,
 {
   AgsPlayChannel *play_channel;
 
-  play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL, NULL);
-
-  play_channel->devout = devout;
-
-  play_channel->source = source;
+  play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
+						 "devout\0", devout,
+						 "source\0", source,
+						 NULL);
 
   return(play_channel);
 }

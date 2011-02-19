@@ -418,8 +418,8 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
 
 GList*
 ags_recall_container_find(GList *recall_container,
-			  guint find_flags,
 			  GType type,
+			  guint find_flags,
 			  guint group_id)
 {
   AgsRecallContainer *current;
@@ -445,37 +445,43 @@ ags_recall_container_find(GList *recall_container,
     switch(mode){
     case 0:
       {
-	recall = ags_recall_container_get_recall_audio(recall_container);
+	recall = ags_recall_container_get_recall_audio(current);
       }
       break;
     case 1:
       {
 	GList *list;
 
-	list = ags_recall_container_get_recall_audio_run(recall_container);
+	list = ags_recall_container_get_recall_audio_run(current);
 
 	if(list == NULL)
 	  recall = NULL;
+	else
+	  recall = AGS_RECALL(list->data);
       }
       break;
     case 2:
       {
 	GList *list;
 
-	list = ags_recall_container_get_recall_channel(recall_container);
+	list = ags_recall_container_get_recall_channel(current);
 
 	if(list == NULL)
 	  recall = NULL;
+	else
+	  recall = AGS_RECALL(list->data);
       }
       break;
     case 3:
       {
 	GList *list;
 
-	list = ags_recall_container_get_recall_channel_run(recall_container);
+	list = ags_recall_container_get_recall_channel_run(current);
 
 	if(list == NULL)
 	  recall = NULL;
+	else
+	  recall = AGS_RECALL(list->data);
       }
     }
    

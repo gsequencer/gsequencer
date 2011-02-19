@@ -81,8 +81,8 @@ struct _AgsAudio
 
   GList *recall_id;
 
-  GList *recall_recall_container;
-  GList *play_recall_container;
+  GList *recall_container;
+  GList *play_container;
 
   GList *recall; // eg. AGS_DELAY in AgsRecallClass->recall_inter
   GList *play;

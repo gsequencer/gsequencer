@@ -37,7 +37,7 @@ typedef struct _AgsRecallContainerClass AgsRecallContainerClass;
 typedef enum{
   AGS_RECALL_CONTAINER_FIND_TYPE,
   AGS_RECALL_CONTAINER_FIND_TEMPLATE,
-  AGS_RECALL_CONTAINER_FIND_RECALL_ID,
+  AGS_RECALL_CONTAINER_FIND_GROUP_ID,
 }AgsRecallContainerFindFlags;
 
 struct _AgsRecallContainer
