@@ -71,6 +71,7 @@ void ags_play_channel_source_recycling_changed_callback(AgsChannel *channel,
 enum{
   PROP_0,
   PROP_DEVOUT,
+  PROP_AUDIO_CHANNEL,
   PROP_SOURCE,
 };
 
@@ -152,6 +153,15 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 				  PROP_SOURCE,
 				  param_spec);
 
+  param_spec = g_param_spec_gtype("audio_channel\0",
+				  "assigned audio Channel\0",
+				  "The audio channel this recall does output to\0",
+				   G_TYPE_UINT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
   param_spec = g_param_spec_gtype("devout\0",
 				  "assigned devout\0",
 				  "The devout this recall is assigned to\0",
@@ -194,6 +204,7 @@ void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
   play_channel->devout = NULL;
+  play_channel->audio_channel = 0;
 
   play_channel->source = NULL;
 }
@@ -250,6 +261,11 @@ ags_play_channel_set_property(GObject *gobject,
       copy_channel->devout = devout;
     }
     break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      copy_channel->audio_channel = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -275,6 +291,11 @@ ags_play_channel_get_property(GObject *gobject,
   case PROP_DEVOUT:
     {
       g_value_set_object(value, copy_channel->devout);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      g_value_set_uint(value, copy_channel->audio_channel);
     }
     break;
   default:
@@ -413,7 +434,7 @@ ags_play_channel_map_play_recycling(AgsPlayChannel *play_channel)
     AgsPlayRecycling *play_recycling;
     guint audio_channel;
 
-    audio_channel = play_channel->source->audio_channel;
+    audio_channel = play_channel->audio_channel;
 
     while(source_recycling != play_channel->source->last_recycling->next){
       printf("ags_play_channel_map_play_recycling\n\0");
@@ -438,7 +459,7 @@ void ags_play_channel_remap_child_source(AgsPlayChannel *play_channel,
   GList *list;
   guint audio_channel;
 
-  audio_channel = play_channel->source->audio_channel;
+  audio_channel = play_channel->audio_channel;
 
   /* remove old */
   if(old_start_region != NULL){
@@ -499,13 +520,15 @@ ags_play_channel_source_recycling_changed_callback(AgsChannel *channel,
 
 AgsPlayChannel*
 ags_play_channel_new(AgsChannel *source,
-		     AgsDevout *devout)
+		     AgsDevout *devout,
+		     guint audio_channel)
 {
   AgsPlayChannel *play_channel;
 
   play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
 						 "devout\0", devout,
 						 "source\0", source,
+						 "audio_channel\0", audio_channel,
 						 NULL);
 
   return(play_channel);

@@ -32,13 +32,13 @@ void ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connec
 void ags_loop_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_loop_channel_init(AgsLoopChannel *loop_channel);
 void ags_loop_channel_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
 void ags_loop_channel_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_loop_channel_connect(AgsConnectable *connectable);
 void ags_loop_channel_disconnect(AgsConnectable *connectable);
 void ags_loop_channel_run_connect(AgsRunConnectable *run_connectable);

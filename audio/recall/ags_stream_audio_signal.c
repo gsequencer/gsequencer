@@ -27,15 +27,27 @@ void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_
 void ags_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal);
+void ags_stream_audio_signal_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+void ags_stream_audio_signal_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
 void ags_stream_audio_signal_connect(AgsConnectable *connectable);
 void ags_stream_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_stream_audio_signal_run_connect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_finalize(GObject *gobject);
 
-void ags_stream_audio_signal_run_post(AgsRecall *recall, guint audio_channel, gpointer data);
-
+void ags_stream_audio_signal_run_post(AgsRecall *recall);
 AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+
+enum{
+  PROP_0,
+  PROP_AUDIO_SIGNAL,
+};
 
 static gpointer ags_stream_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_audio_signal_parent_connectable_interface;
@@ -93,15 +105,32 @@ ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signa
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_stream_audio_signal_parent_class = g_type_class_peek_parent(stream_audio_signal);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) stream_audio_signal;
+
+  gobject->set_property = ags_stream_audio_signal_set_property;
+  gobject->get_property = ags_stream_audio_signal_get_property;
 
   gobject->finalize = ags_stream_audio_signal_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_gtype("audio_signal\0",
+				  "stream AgsAudioSignal\0",
+				  "The AgsAudioSignal to stream\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL,
+				  param_spec);
+
+  /* AgsRecallClass */
   recall = (AgsRecallClass *) stream_audio_signal;
 
+  recall->run_post = ags_stream_audio_signal_run_post;
   recall->duplicate = ags_stream_audio_signal_duplicate;
 }
 
@@ -130,46 +159,113 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 }
 
 void
-ags_stream_audio_signal_connect(AgsConnectable *connectable)
+ags_stream_audio_signal_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec)
 {
   AgsStreamAudioSignal *stream_audio_signal;
 
-  ags_stream_audio_signal_parent_connectable_interface->connect(connectable);
+  stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(gobject);
 
-  stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(connectable);
+  switch(prop_id){
+  case PROP_AUDIO_SIGNAL:
+    {
+      AgsAudioSignal *audio_signal;
 
-  g_signal_connect((GObject *) stream_audio_signal, "run_post\0",
-		   G_CALLBACK(ags_stream_audio_signal_run_post), NULL);
+      audio_signal = (AgsAudioSignal *) g_value_get_object(value);
+
+      if(stream_audio_signal->audio_signal == audio_signal)
+	return;
+
+      if(stream_audio_signal->audio_signal != NULL)
+	g_object_unref(G_OBJECT(stream_audio_signal->audio_signal));
+
+      if(audio_signal != NULL)
+	g_object_ref(G_OBJECT(audio_signal));
+
+      stream_audio_signal->audio_signal = audio_signal;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
-ags_stream_audio_signal_disconnect(AgsConnectable *connectable)
+ags_stream_audio_signal_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec)
 {
-  ags_stream_audio_signal_parent_connectable_interface->disconnect(connectable);
-}
+  AgsStreamAudioSignal *stream_audio_signal;
 
-void
-ags_stream_audio_signal_run_connect(AgsRunConnectable *run_connectable)
-{
-  ags_stream_audio_signal_parent_run_connectable_interface->connect(run_connectable);
-}
+  stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(gobject);
 
-void
-ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
-{
-  ags_stream_audio_signal_parent_run_connectable_interface->disconnect(run_connectable);
+  switch(prop_id){
+  case PROP_AUDIO_SIGNAL:
+    {
+      g_value_set_object(value, stream_audio_signal->audio_signal);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_stream_audio_signal_finalize(GObject *gobject)
 {
   AgsStreamAudioSignal *stream_audio_signal;
+
+  stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(gobject);
+
+  if(stream_audio_signal->audio_signal != NULL)
+    g_object_unref(G_OBJECT(stream_audio_signal->audio_signal));
+
+  G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
-ags_stream_audio_signal_run_post(AgsRecall *recall, guint audio_channel, gpointer data)
+ags_stream_audio_signal_connect(AgsConnectable *connectable)
+{
+  ags_stream_audio_signal_parent_connectable_interface->connect(connectable);
+
+  /* empty */
+}
+
+void
+ags_stream_audio_signal_disconnect(AgsConnectable *connectable)
+{
+  ags_stream_audio_signal_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
+}
+
+void
+ags_stream_audio_signal_run_connect(AgsRunConnectable *run_connectable)
+{
+  ags_stream_audio_signal_parent_run_connectable_interface->connect(run_connectable);
+
+  /* empty */
+}
+
+void
+ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
+{
+  ags_stream_audio_signal_parent_run_connectable_interface->disconnect(run_connectable);
+
+  /* empty */
+}
+
+void
+ags_stream_audio_signal_run_post(AgsRecall *recall)
 {
   AgsStreamAudioSignal *stream_audio_signal;
+
+  AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
 
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
 
@@ -198,9 +294,9 @@ ags_stream_audio_signal_new(AgsAudioSignal *audio_signal)
 {
   AgsStreamAudioSignal *stream_audio_signal;
 
-  stream_audio_signal = (AgsStreamAudioSignal *) g_object_new(AGS_TYPE_STREAM_AUDIO_SIGNAL, NULL);
-
-  stream_audio_signal->audio_signal = audio_signal;
+  stream_audio_signal = (AgsStreamAudioSignal *) g_object_new(AGS_TYPE_STREAM_AUDIO_SIGNAL,
+							      "audio_signal\0", audio_signal,
+							      NULL);
 
   return(stream_audio_signal);
 }

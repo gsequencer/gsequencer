@@ -74,6 +74,13 @@ void ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source
 void ags_play_recycling_play_audio_signal_done(AgsRecall *recall,
 					       gpointer data);
 
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+  PROP_AUDIO_CHANNEL,
+  PROP_SOURCE,
+};
+
 static gpointer ags_play_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_play_recycling_parent_connectable_interface;
 static AgsRunConnectableInterface *ags_play_recycling_parent_run_connectable_interface;
@@ -167,7 +174,7 @@ ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOURCE,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -286,6 +293,84 @@ ags_play_recycling_set_property(GObject *gobject,
 				const GValue *value,
 				GParamSpec *param_spec)
 {
+  AgsPlayRecycling *play_recycling;
+  
+  play_recycling = AGS_PLAY_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(play_recycling->devout == devout)
+	return;
+
+      if(play_recycling->devout != NULL)
+	g_object_unref(G_OBJECT(play_recycling->devout));
+
+      if(devout != NULL)
+	g_object_ref(G_OBJECT(devout));
+
+      play_recycling->devout = devout;
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      play_recycling->audio_channel = g_value_get_uint(value);
+    }
+    break;
+  case PROP_SOURCE:
+    {
+      AgsRecycling *source;
+
+      source = (AgsRecycling *) g_value_get_object(value);
+
+      if(play_recycling->source == source)
+	return;
+
+      if(play_recycling->source != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(play_recycling->source);
+
+	  g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_handler);
+	  g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_with_frame_count_handler);
+	  
+	  g_signal_handler_disconnect(gobject, play_recycling->source_remove_audio_signal_handler);
+	}
+
+	g_object_unref(play_recycling->source);
+      }
+
+      if(source != NULL)
+	g_object_ref(source);
+
+      play_recycling->source = source;
+
+      if(source != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(source);
+	  
+	  play_recycling->source_add_audio_signal_handler =
+	    g_signal_connect_after(gobject, "add_audio_signal\0",
+				   G_CALLBACK(ags_play_recycling_source_add_audio_signal_callback), play_recycling);
+	  
+	  play_recycling->source_add_audio_signal_with_frame_count_handler =
+	    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
+				   G_CALLBACK(ags_play_recycling_source_add_audio_signal_with_frame_count_callback), play_recycling);
+  
+	  play_recycling->source_remove_audio_signal_handler =
+	    g_signal_connect(gobject, "remove_audio_signal\0",
+			     G_CALLBACK(ags_play_recycling_source_remove_audio_signal_callback), play_recycling);
+	}
+      }
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -294,16 +379,44 @@ ags_play_recycling_get_property(GObject *gobject,
 				GValue *value,
 				GParamSpec *param_spec)
 {
+  AgsPlayRecycling *play_recycling;
+
+  play_recycling = AGS_PLAY_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, play_recycling->devout);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      g_value_set_uint(value, play_recycling->audio_channel);
+    }
+    break;
+  case PROP_SOURCE:
+    {
+      g_value_set_object(value, play_recycling->source);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_play_recycling_finalize(GObject *gobject)
 {
-  if(copy_recycling->devout != NULL)
-    g_object_unref(G_OBJECT(copy_recycling->devout));
+  AgsPlayRecycling *play_recycling;
 
-  if(copy_recycling->source != NULL)
-    g_object_unref(G_OBJECT(copy_recycling->source));
+  play_recycling = AGS_PLAY_RECYCLING(gobject);
+
+  if(play_recycling->devout != NULL)
+    g_object_unref(G_OBJECT(play_recycling->devout));
+
+  if(play_recycling->source != NULL)
+    g_object_unref(G_OBJECT(play_recycling->source));
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_recycling_parent_class)->finalize(gobject);
