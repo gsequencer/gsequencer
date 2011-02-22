@@ -217,7 +217,6 @@ ags_remove_audio_run_remove(AgsRecall *recall)
 
   AGS_RECALL_CLASS(ags_remove_audio_run_parent_class)->remove(recall);
 
-  remove_audio = AGS_REMOVE_AUDIO(recall->recall_audio);
   remove_audio_run = AGS_REMOVE_AUDIO_RUN(recall);
 
   /* beginning of thread synchronization */

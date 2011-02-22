@@ -46,7 +46,6 @@ void ags_recall_channel_rundisconnect(AgsRunConnectable *run_connectable);
 void ags_recall_channel_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
-					GObject *container,
 					AgsRecallID *recall_id);
 
 enum{
@@ -206,7 +205,9 @@ ags_recall_channel_set_property(GObject *gobject,
       if(recall_channel->channel != NULL)
 	g_object_unref(recall_channel->channel);
 
-      g_object_ref(channel);
+      if(channel != NULL)
+	g_object_ref(channel);
+
       recall_channel->channel = channel;
     }
     break;
@@ -234,6 +235,19 @@ ags_recall_channel_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_recall_channel_finalize(GObject *gobject)
+{
+  AgsRecallChannel *recall_channel;
+
+  recall_channel = AGS_RECALL_CHANNEL(gobject);
+
+  if(recall_channel->channel != NULL)
+    g_object_unref(recall_channel->channel);
+
+  G_OBJECT_CLASS(ags_recall_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -319,24 +333,14 @@ ags_recall_channel_rundisconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
-ags_recall_channel_finalize(GObject *gobject)
-{
-  /* empty */
-
-  G_OBJECT_CLASS(ags_recall_channel_parent_class)->finalize(gobject);
-}
-
 AgsRecall*
 ags_recall_channel_duplicate(AgsRecall *recall,
-			     GObject *container,
 			     AgsRecallID *recall_id)
 {
   AgsRecallChannel *recall_channel, *copy;
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
   copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
-											 container,
 											 recall_id));
 
   printf("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));

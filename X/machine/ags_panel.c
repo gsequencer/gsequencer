@@ -186,7 +186,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
     for(i = audio_channels_old; i < audio_channels; i++){
       /* AgsPlayChannel */
       play_channel = ags_play_channel_new(input,
-					  AGS_DEVOUT(AGS_AUDIO(input->audio)->devout));
+					  AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
+					  i);
 
       play_channel->recall.flags |= AGS_RECALL_TEMPLATE;
 

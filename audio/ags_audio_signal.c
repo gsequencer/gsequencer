@@ -333,13 +333,13 @@ AgsAttack*
 ags_attack_duplicate_from_devout(GObject *devout0)
 {
   AgsDevout *devout;
-  AgsAttack *copy;
+  AgsAttack *copy, *attack;
   GValue attack_value = {0,};
 
   devout = AGS_DEVOUT(devout0);
 
   g_value_init(&attack_value, G_TYPE_POINTER);
-  g_object_get_property(copy_recycling->devout,
+  g_object_get_property(G_OBJECT(devout),
 			"attack\0",
 			&attack_value);
   attack = g_value_get_pointer(&attack_value);

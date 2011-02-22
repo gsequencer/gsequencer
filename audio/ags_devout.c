@@ -146,74 +146,87 @@ ags_devout_class_init(AgsDevoutClass *devout)
   gobject->finalize = ags_devout_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("dsp_channels\0",
-				   "count of DSP channels\0",
-				   "The count of DSP channels to use\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("dsp_channels\0",
+				 "count of DSP channels\0",
+				 "The count of DSP channels to use\0",
+				 1,
+				 64,
+				 2,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DSP_CHANNELS,
 				  param_spec);
 
-  param_spec = g_param_spec_object("pcm_channels\0",
-				   "count of PCM channels\0",
-				   "The count of PCM channels to use\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("pcm_channels\0",
+				 "count of PCM channels\0",
+				 "The count of PCM channels to use\0",
+				 1,
+				 64,
+				 2,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PCM_CHANNELS,
 				  param_spec);
 
-  param_spec = g_param_spec_object("bits\0",
-				   "precision of buffer\0",
-				   "The precision to use for a frame\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  /*
+   * TODO:JK: add support for other quality than 16 bit
+   */
+  param_spec = g_param_spec_uint("bits\0",
+				 "precision of buffer\0",
+				 "The precision to use for a frame\0",
+				 1,
+				 64,
+				 16,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BITS,
 				  param_spec);
 
-  param_spec = g_param_spec_object("buffer_size\0",
-				   "frame count of a buffer\0",
-				   "The count of frames a buffer contains\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("buffer_size\0",
+				 "frame count of a buffer\0",
+				 "The count of frames a buffer contains\0",
+				 1,
+				 44100,
+				 940,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
 				  param_spec);
 
-  param_spec = g_param_spec_object("frequency\0",
-				   "frames per second\0",
-				   "The frames count played during a second\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("frequency\0",
+				 "frames per second\0",
+				 "The frames count played during a second\0",
+				 8000,
+				 96000,
+				 44100,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FREQUENCY,
 				  param_spec);
 
-  param_spec = g_param_spec_object("buffer\0",
-				   "the buffer\0",
-				   "The buffer to play\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE);
+  param_spec = g_param_spec_pointer("buffer\0",
+				    "the buffer\0",
+				    "The buffer to play\0",
+				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
 				  param_spec);
 
-  param_spec = g_param_spec_object("bpm\0",
+  param_spec = g_param_spec_double("bpm\0",
 				   "beats per minute\0",
 				   "Beats per minute to use\0",
-				   G_TYPE_DOUBLE,
+				   1.0,
+				   240.0,
+				   120.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BPM,
 				  param_spec);
 
-  param_spec = g_param_spec_object("attack\0",
-				   "attack of buffer\0",
-				   "The attack to use for the buffer\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE);
+  param_spec = g_param_spec_pointer("attack\0",
+				    "attack of buffer\0",
+				    "The attack to use for the buffer\0",
+				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
 				  param_spec);
@@ -221,8 +234,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_object("task\0",
 				   "task to launch\0",
 				   "A task to launch\0",
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   AGS_TYPE_TASK,
+				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TASK,
 				  param_spec);
@@ -230,7 +243,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_object("play_recall\0",
 				   "recall to run\0",
 				   "A recall to run\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_RECALL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAY_RECALL,
@@ -239,7 +252,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_object("play_channel\0",
 				   "channel to run\0",
 				   "A channel to run\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAY_CHANNEL,
@@ -248,7 +261,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_object("play_audio\0",
 				   "audio to run\0",
 				   "A audio to run\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_AUDIO,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAY_AUDIO,
@@ -471,11 +484,6 @@ ags_devout_get_property(GObject *gobject,
   case PROP_ATTACK:
     {
       g_value_set_pointer(value, devout->attack);
-    }
-    break;
-  case PROP_TASK:
-    {
-      g_value_set_(value, devout->);
     }
     break;
   default:

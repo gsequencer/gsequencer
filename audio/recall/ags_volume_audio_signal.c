@@ -44,6 +44,12 @@ void ags_volume_audio_signal_finalize(GObject *gobject);
 void ags_volume_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
+enum{
+  PROP_0,
+  PROP_AUDIO_SIGNAL,
+  PROP_VOLUME,
+};
+
 static gpointer ags_volume_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_audio_signal_parent_connectable_interface;
 static AgsRunConnectableInterface *ags_volume_audio_signal_parent_run_connectable_interface;
@@ -100,13 +106,36 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_volume_audio_signal_parent_class = g_type_class_peek_parent(volume_audio_signal);
 
   /* GObjectClass */
   gobject = (GObjectClass *) volume_audio_signal;
 
+  gobject->set_property = ags_volume_audio_signal_set_property;
+  gobject->get_property = ags_volume_audio_signal_get_property;
+
   gobject->finalize = ags_volume_audio_signal_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_gtype("audio_signal\0",
+				  "volume AgsAudioSignal\0",
+				  "The AgsAudioSignal to apply volume\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("volume\0",
+				  "volume to apply\0",
+				  "The volume to apply on the audio signal\0",
+				   G_TYPE_POINTER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) volume_audio_signal;
@@ -147,6 +176,37 @@ ags_volume_audio_signal_set_property(GObject *gobject,
 				     const GValue *value,
 				     GParamSpec *param_spec)
 {
+  AgsVolumeAudioSignal *volume_audio_signal;
+
+  volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO_SIGNAL:
+    {
+      AgsAudioSignal *audio_signal;
+
+      audio_signal = (AgsAudioSignal *) g_value_get_object(value);
+
+      if(volume_audio_signal->audio_signal != NULL){
+	g_object_unref(G_OBJECT(volume_audio_signal->audio_signal));
+      }
+
+      if(audio_signal != NULL){
+	g_object_ref(G_OBJECT(audio_signal));
+      }
+
+      volume_audio_signal->audio_signal = audio_signal;
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      volume_audio_signal->volume = g_value_get_pointer(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -155,6 +215,25 @@ ags_volume_audio_signal_get_property(GObject *gobject,
 				     GValue *value,
 				     GParamSpec *param_spec)
 {
+  AgsVolumeAudioSignal *volume_audio_signal;
+
+  volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO_SIGNAL:
+    {
+      g_value_set_object(value, volume_audio_signal->audio_signal);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      g_value_set_pointer(value, volume_audio_signal->volume);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

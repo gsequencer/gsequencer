@@ -22,14 +22,14 @@
 
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);
-void ags_delay_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_delay_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
+void ags_delay_audio_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+void ags_delay_audio_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
 void ags_delay_audio_finalize(GObject *gobject);
 
 enum{
@@ -70,14 +70,15 @@ void
 ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_delay_audio_parent_class = g_type_class_peek_parent(delay_audio);
 
   /* GObjectClass */
   gobject = (GObjectClass *) delay_audio;
 
-  gobject->set_property = ags_recall_set_property;
-  gobject->get_property = ags_recall_get_property;
+  gobject->set_property = ags_delay_audio_set_property;
+  gobject->get_property = ags_delay_audio_get_property;
 
   gobject->finalize = ags_delay_audio_finalize;
 
@@ -100,21 +101,21 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 }
 
 void
-ags_delay_set_property(GObject *gobject,
-		       guint prop_id,
-		       const GValue *value,
-		       GParamSpec *param_spec)
+ags_delay_audio_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
 {
-  AgsDelay *delay;
+  AgsDelayAudio *delay_audio;
 
-  delay = AGS_DELAY(gobject);
+  delay_audio = AGS_DELAY_AUDIO(gobject);
 
   switch(prop_id){
   case PROP_DELAY:
     {
       guint delay;
 
-      delay->delay = (guint) g_value_get_uint(value);
+      delay_audio->delay = (guint) g_value_get_uint(value);
     }
     break;
   default:
@@ -124,19 +125,19 @@ ags_delay_set_property(GObject *gobject,
 }
 
 void
-ags_delay_get_property(GObject *gobject,
-		       guint prop_id,
-		       GValue *value,
-		       GParamSpec *param_spec)
+ags_delay_audio_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
 {
-  AgsDelay *delay;
+  AgsDelayAudio *delay_audio;
 
-  delay = AGS_DELAY(gobject);
+  delay_audio = AGS_DELAY_AUDIO(gobject);
 
   switch(prop_id){
   case PROP_DELAY:
     {
-      g_value_set_uint(value, delay->delay);
+      g_value_set_uint(value, delay_audio->delay);
     }
     break;
   default:

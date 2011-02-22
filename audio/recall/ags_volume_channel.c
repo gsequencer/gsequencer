@@ -34,15 +34,19 @@ void ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel);
 void ags_volume_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_volume_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_volume_channel_init(AgsVolumeChannel *volume_channel);
+void ags_volume_channel_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_volume_channel_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_volume_channel_connect(AgsConnectable *connectable);
 void ags_volume_channel_disconnect(AgsConnectable *connectable);
 void ags_volume_channel_run_connect(AgsRunConnectable *run_connectable);
 void ags_volume_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_volume_channel_finalize(GObject *gobject);
-
-void ags_volume_channel(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
-void ags_volume_channel_stop(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
-void ags_volume_channel_cancel(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
 
 AgsRecall* ags_volume_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
@@ -55,6 +59,12 @@ void ags_volume_channel_recycling_changed_callback(AgsChannel *channel,
 						   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 						   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 						   AgsVolumeChannel *volume_channel);
+
+enum{
+  PROP_0,
+  PROP_CHANNEL,
+  PROP_VOLUME,
+};
 
 static gpointer ags_volume_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_channel_parent_connectable_interface;
@@ -112,13 +122,38 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_volume_channel_parent_class = g_type_class_peek_parent(volume_channel);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) volume_channel;
+
+  gobject->set_property = ags_volume_channel_set_property;
+  gobject->get_property = ags_volume_channel_get_property;
 
   gobject->finalize = ags_volume_channel_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_gtype("channel\0",
+				  "volume AgsChannel\0",
+				  "The AgsChannel to apply volume\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("volume\0",
+				  "volume to apply\0",
+				  "The volume to apply on the channel\0",
+				   G_TYPE_POINTER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
+
+  /* AgsRecallClass */
   recall = (AgsRecallClass *) volume_channel;
 
   recall->duplicate = ags_volume_channel_duplicate;
@@ -147,6 +182,88 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 {
   volume_channel->channel = NULL;
   volume_channel->volume = NULL;
+}
+
+
+void
+ags_volume_channel_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsVolumeChannel *volume_channel;
+
+  volume_channel = AGS_VOLUME_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(volume_channel->channel != NULL){
+	g_object_unref(G_OBJECT(volume_channel->channel));
+      }
+
+      if(channel != NULL){
+	g_object_ref(G_OBJECT(channel));
+      }
+
+      volume_channel->channel = channel;
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      volume_channel->volume = g_value_get_pointer(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_volume_channel_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsVolumeChannel *volume_channel;
+
+  volume_channel = AGS_VOLUME_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, volume_channel->channel);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      g_value_set_pointer(value, volume_channel->volume);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_volume_channel_finalize(GObject *gobject)
+{
+  AgsVolumeChannel *volume_channel;
+
+  volume_channel = AGS_VOLUME_CHANNEL(gobject);
+
+  if(volume_channel->channel != NULL){
+    g_object_unref(G_OBJECT(volume_channel->channel));
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_volume_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -191,12 +308,6 @@ ags_volume_channel_run_disconnect(AgsRunConnectable *run_connectable)
   g_signal_handler_disconnect(G_OBJECT(volume_channel), volume_channel->channel_recycling_changed_handler);
 }
 
-void
-ags_volume_channel_finalize(GObject *gobject)
-{
-  AgsVolumeChannel *volume_channel;
-}
-
 AgsRecall*
 ags_volume_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
@@ -231,7 +342,7 @@ ags_volume_channel_map_volume_recycling(AgsVolumeChannel *volume_channel)
   while(recycling != volume_channel->channel->last_recycling->next){
     volume_recycling = ags_volume_recycling_new(recycling, volume_channel->volume);
 
-    ags_recall_add_child(AGS_RECALL(volume_channel), AGS_RECALL(volume_recycling), audio_channel);
+    ags_recall_add_child(AGS_RECALL(volume_channel), AGS_RECALL(volume_recycling));
 
     recycling = recycling->next;
   }
@@ -259,14 +370,14 @@ ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
     recycling = old_start_region;
 
     while(recycling != old_end_region->next){
-      list = AGS_RECALL(volume_channel)->child;
+      list = ags_recall_get_children(AGS_RECALL(volume_channel));
       
       while(list != NULL){
 	if(AGS_VOLUME_RECYCLING(list->data)->recycling == recycling){
 	  recall = AGS_RECALL(list->data);
 	  
 	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
 	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
@@ -287,7 +398,7 @@ ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
     while(recycling != new_end_region->next){
       volume_recycling = ags_volume_recycling_new(recycling, volume_channel->volume);
       
-      ags_recall_add_child(AGS_RECALL(volume_channel), AGS_RECALL(volume_recycling), audio_channel);
+      ags_recall_add_child(AGS_RECALL(volume_channel), AGS_RECALL(volume_recycling));
       
       recycling = recycling->next;
     }
@@ -310,11 +421,10 @@ ags_volume_channel_new(AgsChannel *channel, gdouble *volume)
 {
   AgsVolumeChannel *volume_channel;
 
-  volume_channel = (AgsVolumeChannel *) g_object_new(AGS_TYPE_VOLUME_CHANNEL, NULL);
-
-  volume_channel->channel = channel;
-  
-  volume_channel->volume = volume;
+  volume_channel = (AgsVolumeChannel *) g_object_new(AGS_TYPE_VOLUME_CHANNEL,
+						     "channel\0", channel,
+						     "volume\0", volume,
+						     NULL);
 
   return(volume_channel);
 }

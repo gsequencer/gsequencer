@@ -41,7 +41,6 @@ void ags_recall_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_audio_run_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
-					  GObject *container,
 					  AgsRecallID *recall_id);
 
 static gpointer ags_recall_audio_run_parent_class = NULL;
@@ -250,14 +249,12 @@ ags_recall_audio_run_finalize(GObject *gobject)
 
 AgsRecall*
 ags_recall_audio_run_duplicate(AgsRecall *recall,
-			       GObject *container,
 			       AgsRecallID *recall_id)
 {
   AgsRecallAudioRun *recall_audio_run, *copy;
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
   copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
-											     container,
 											     recall_id));
 
   return((AgsRecall *) copy);

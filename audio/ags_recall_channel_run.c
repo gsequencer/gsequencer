@@ -44,7 +44,6 @@ void ags_recall_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_channel_run_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
-					    GObject *container,
 					    AgsRecallID *recall_id);
 
 static gpointer ags_recall_channel_run_parent_class = NULL;
@@ -164,6 +163,14 @@ ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run)
 }
 
 void
+ags_recall_channel_run_finalize(GObject *gobject)
+{
+  /* empty */
+
+  G_OBJECT_CLASS(ags_recall_channel_run_parent_class)->finalize(gobject);
+}
+
+void
 ags_recall_channel_run_connect(AgsConnectable *connectable)
 {
   ags_recall_channel_run_parent_connectable_interface->connect(connectable);
@@ -246,24 +253,14 @@ ags_recall_channel_run_run_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
-ags_recall_channel_run_finalize(GObject *gobject)
-{
-  /* empty */
-
-  G_OBJECT_CLASS(ags_recall_channel_run_parent_class)->finalize(gobject);
-}
-
 AgsRecall*
 ags_recall_channel_run_duplicate(AgsRecall *recall,
-				 GObject *container,
 				 AgsRecallID *recall_id)
 {
   AgsRecallChannelRun *recall_channel_run, *copy;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
-												 container,
 												 recall_id));
   
   return((AgsRecall *) copy);

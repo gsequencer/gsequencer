@@ -508,6 +508,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
   source = audio->input;
   destination_start = ags_channel_nth(audio->output, output_pad_start);
 
+  /* get some recalls */
   list = ags_recall_template_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
   play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
 

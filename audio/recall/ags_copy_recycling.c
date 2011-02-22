@@ -23,6 +23,7 @@
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/task/ags_cancel_recall.h>
@@ -547,7 +548,7 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 
   audio_signal->stream_current = audio_signal->stream_beginning;
 
-  attack = ags_attack_duplicate_from_devout(copy_recycling->devout);
+  attack = ags_attack_duplicate_from_devout(G_OBJECT(copy_recycling->devout));
 
   copy_audio_signal = ags_copy_audio_signal_new(copy_recycling->child_destination,
 						audio_signal,

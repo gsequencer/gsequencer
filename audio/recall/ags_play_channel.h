@@ -43,6 +43,7 @@ struct _AgsPlayChannel
   //  guint ref;
 
   AgsDevout *devout;
+  guint audio_channel;
 
   AgsChannel *source;
   gulong source_recycling_changed_handler;
@@ -56,6 +57,7 @@ struct _AgsPlayChannelClass
 GType ags_play_channel_get_type();
 
 AgsPlayChannel* ags_play_channel_new(AgsChannel *source,
-				     AgsDevout *devout);
+				     AgsDevout *devout,
+				     guint audio_channel);
 
 #endif /*__AGS_PLAY_CHANNEL_H__*/

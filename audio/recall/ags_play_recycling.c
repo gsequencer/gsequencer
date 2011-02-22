@@ -431,7 +431,7 @@ ags_play_recycling_done(AgsRecall *recall)
 }
 
 void
-ags_play_recycling_cancel(AgsRecall *recall, gpointer data)
+ags_play_recycling_cancel(AgsRecall *recall)
 {
   AGS_RECALL_CLASS(ags_play_recycling_parent_class)->cancel(recall);
 
@@ -439,7 +439,7 @@ ags_play_recycling_cancel(AgsRecall *recall, gpointer data)
 }
 
 void 
-ags_play_recycling_remove(AgsRecall *recall, gpointer data)
+ags_play_recycling_remove(AgsRecall *recall)
 {
   AGS_RECALL_CLASS(ags_play_recycling_parent_class)->remove(recall);
 
@@ -465,21 +465,21 @@ void
 ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
 					   AgsAudioSignal *audio_signal)
 {
-  AgsPlayAudioSignal *play_audio_signal;  
-  guint audio_channel;
+  AgsPlayAudioSignal *play_audio_signal;
+  AgsAttack *attack;
   GValue attack_value = {0,};
 
   audio_signal->stream_current = audio_signal->stream_beginning;
 
-  attack = ags_attack_duplicate_from_devout(play_recycling->devout);
+  attack = ags_attack_duplicate_from_devout(G_OBJECT(play_recycling->devout));
 
   play_audio_signal = ags_play_audio_signal_new(audio_signal,
 						play_recycling->devout,
 						play_recycling->audio_channel,
 						attack);
 
-  audio_channel = AGS_PLAY_CHANNEL(AGS_RECALL(play_recycling)->parent)->source->audio_channel;
-  ags_recall_add_child(AGS_RECALL(play_recycling), AGS_RECALL(play_audio_signal), audio_channel);
+  ags_recall_add_child(AGS_RECALL(play_recycling),
+		       AGS_RECALL(play_audio_signal));
 
   g_signal_connect((GObject *) play_audio_signal, "done\0",
 		   G_CALLBACK(ags_play_recycling_play_audio_signal_done), NULL);
@@ -530,7 +530,7 @@ ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
     AgsRecall *recall;
 
     devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->devout);
-    list = play_recycling_recall->child;
+    list = ags_recall_get_children(AGS_RECALL(play_recycling_recall));
     audio_channel = AGS_CHANNEL(source->channel)->audio_channel;
 
     while(list != NULL){
@@ -539,7 +539,7 @@ ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
       if(play_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags |= AGS_RECALL_HIDE;
-	cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+	cancel_recall = ags_cancel_recall_new(recall,
 					      NULL);
 
 	ags_devout_append_task(devout, (AgsTask *) cancel_recall);

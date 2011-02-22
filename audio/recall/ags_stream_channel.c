@@ -338,7 +338,7 @@ ags_stream_channel_map_stream_recycling(AgsStreamChannel *stream_channel)
   while(recycling != stream_channel->channel->last_recycling->next){
     stream_recycling = ags_stream_recycling_new(recycling);
 
-    ags_recall_add_child(AGS_RECALL(stream_channel), AGS_RECALL(stream_recycling), audio_channel);
+    ags_recall_add_child(AGS_RECALL(stream_channel), AGS_RECALL(stream_recycling));
 
     recycling = recycling->next;
   }
@@ -366,15 +366,14 @@ ags_stream_channel_remap_stream_recycling(AgsStreamChannel *stream_channel,
     recycling = old_start_region;
 
     while(recycling != old_end_region->next){
-      list = AGS_RECALL(stream_channel)->child;
+      list = ags_recall_get_children(AGS_RECALL(stream_channel));
       
       while(list != NULL){
 	if(AGS_STREAM_RECYCLING(list->data)->recycling == recycling){
 	  recall = AGS_RECALL(list->data);
 
 	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall, audio_channel,
-						NULL);
+	  cancel_recall = ags_cancel_recall_new(recall, NULL);
 
 	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
 	}
@@ -393,7 +392,7 @@ ags_stream_channel_remap_stream_recycling(AgsStreamChannel *stream_channel,
     while(recycling != new_end_region->next){
       stream_recycling = ags_stream_recycling_new(recycling);
       
-      ags_recall_add_child(AGS_RECALL(stream_channel), AGS_RECALL(stream_recycling), audio_channel);
+      ags_recall_add_child(AGS_RECALL(stream_channel), AGS_RECALL(stream_recycling));
       
       recycling = recycling->next;
     }

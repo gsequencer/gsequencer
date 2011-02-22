@@ -580,7 +580,7 @@ ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
 	  recall = AGS_RECALL(list->data);
 
 	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
 	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
@@ -647,7 +647,7 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
 	  recall = AGS_RECALL(list->data);
 
 	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall, audio_channel,
+	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
 	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);

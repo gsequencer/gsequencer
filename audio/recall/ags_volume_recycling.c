@@ -31,6 +31,14 @@ void ags_volume_recycling_class_init(AgsVolumeRecyclingClass *volume_recycling);
 void ags_volume_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_volume_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling);
+void ags_volume_recycling_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_volume_recycling_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_volume_recycling_connect(AgsConnectable *connectable);
 void ags_volume_recycling_disconnect(AgsConnectable *connectable);
 void ags_volume_recycling_run_connect(AgsRunConnectable *run_connectable);
@@ -57,6 +65,12 @@ void ags_volume_recycling_add_audio_signal_with_frame_count_callback(AgsRecyclin
 
 void ags_volume_recycling_volume_audio_signal_done(AgsRecall *recall,
 						   gpointer data);
+
+enum{
+  PROP_0,
+  PROP_RECYCLING,
+  PROP_VOLUME,
+};
 
 static gpointer ags_volume_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_recycling_parent_connectable_interface;
@@ -150,26 +164,44 @@ ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling)
   volume_recycling->recycling = NULL;
 }
 
+
 void
-ags_volume_recycling_connect(AgsConnectable *connectable)
+ags_volume_recycling_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+}
+
+void
+ags_volume_recycling_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+}
+
+void
+ags_volume_recycling_finalize(GObject *gobject)
 {
   AgsVolumeRecycling *volume_recycling;
 
+  volume_recycling = AGS_VOLUME_RECYCLING(gobject);
+
+  if(volume_recycling->recycling != NULL){
+    g_object_unref(G_OBJECT(volume_recycling->recycling));
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_volume_recycling_parent_class)->finalize(gobject);
+}
+
+void
+ags_volume_recycling_connect(AgsConnectable *connectable)
+{ 
   ags_volume_recycling_parent_connectable_interface->connect(connectable);
 
-  volume_recycling = AGS_VOLUME_RECYCLING(connectable);
-
-  g_signal_connect((GObject *) volume_recycling, "run_init_inter\0",
-		   G_CALLBACK(ags_volume_recycling_run_init_inter), NULL);
-
-  g_signal_connect((GObject *) volume_recycling, "done\0",
-		   G_CALLBACK(ags_volume_recycling_done), NULL);
-
-  g_signal_connect((GObject *) volume_recycling, "cancel\0",
-		   G_CALLBACK(ags_volume_recycling_cancel), NULL);
-
-  g_signal_connect((GObject *) volume_recycling, "remove\0",
-		   G_CALLBACK(ags_volume_recycling_remove), NULL);
+  /* empty */
 }
 
 void
@@ -213,36 +245,6 @@ ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable)
   g_signal_handler_disconnect(gobject, volume_recycling->add_audio_signal_with_frame_count_handler);
 }
 
-void
-ags_volume_recycling_finalize(GObject *gobject)
-{
-  /* empty */
-}
-
-void
-ags_volume_recycling_run_init_inter(AgsRecall *recall, gpointer data)
-{
-  /* empty */
-}
-
-void 
-ags_volume_recycling_done(AgsRecall *recall, gpointer data)
-{
-  /* empty */
-}
-
-void
-ags_volume_recycling_cancel(AgsRecall *recall, gpointer data)
-{
-  /* empty */
-}
-
-void
-ags_volume_recycling_remove(AgsRecall *recall, gpointer data)
-{
-  /* empty */
-}
-
 AgsRecall*
 ags_volume_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
@@ -264,15 +266,12 @@ ags_volume_recycling_add_audio_signal(AgsVolumeRecycling *volume_recycling,
 				      AgsAudioSignal *audio_signal)
 {
   AgsVolumeAudioSignal *volume_audio_signal;
-  guint audio_channel;
 
   volume_audio_signal = ags_volume_audio_signal_new(audio_signal, volume_recycling->volume);
 
   AGS_RECALL(volume_audio_signal)->flags |= AGS_RECALL_PROPAGATE_DONE;
 
-  audio_channel = AGS_VOLUME_CHANNEL(AGS_RECALL(volume_recycling)->parent)->channel->audio_channel;
-
-  ags_recall_add_child(AGS_RECALL(volume_recycling), AGS_RECALL(volume_audio_signal), audio_channel);
+  ags_recall_add_child(AGS_RECALL(volume_recycling), AGS_RECALL(volume_audio_signal));
 }
 
 void
