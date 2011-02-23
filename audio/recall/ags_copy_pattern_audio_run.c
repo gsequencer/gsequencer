@@ -126,20 +126,22 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
   gobject->finalize = ags_copy_pattern_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("delay_audio_run\0",
-				  "assigned AgsDelayAudioRun\0",
-				  "The AgsDelayAudioRun which emits tic_count signal\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("delay_audio_run\0",
+				   "assigned AgsDelayAudioRun\0",
+				   "The AgsDelayAudioRun which emits tic_count signal\0",
+				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("bit\0",
-				  "playing bit\0",
-				  "The bit that is currently played\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("bit\0",
+				 "playing bit\0",
+				 "The bit that is currently played\0",
+				 0,
+				 128,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BIT,
 				  param_spec);

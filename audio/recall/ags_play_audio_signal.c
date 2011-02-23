@@ -129,38 +129,39 @@ ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal)
   gobject->finalize = ags_play_audio_signal_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("source\0",
+  param_spec = g_param_spec_object("source\0",
 				  "source of input\0",
 				  "The source where this recall will take the audio signal from\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOURCE,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("devout\0",
+  param_spec = g_param_spec_object("devout\0",
 				  "assigned devout\0",
 				  "The devout this recall is assigned to\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("audio_channel\0",
-				  "output to audio channel\0",
-				  "The audio channel to which it should write\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("audio_channel\0",
+				 "output to audio channel\0",
+				 "The audio channel to which it should write\0",
+				 0,
+				 65536,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("attack\0",
-				  "assigned attack\0",
-				  "The attack that determines to which frame to copy\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("attack\0",
+				    "assigned attack\0",
+				    "The attack that determines to which frame to copy\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
 				  param_spec);

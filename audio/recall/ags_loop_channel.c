@@ -126,28 +126,39 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
   gobject->finalize = ags_loop_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("channel\0",
+  param_spec = g_param_spec_object("channel\0",
 				  "assigned channel\0",
 				  "The channel where looping should be applied\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("delay_audio_run\0",
+  param_spec = g_param_spec_object("delay_audio_run\0",
 				  "assigned AgsDelayAudioRun\0",
 				  "The AgsDelayAudioRun which emits tic_alloc signal\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("counter\0",
+  param_spec = g_param_spec_uint("nth_run\0",
+				 "nth run in the queue\0",
+				 "The nth run in the queue of other channels\0",
+				 0,
+				 65536,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_COUNTER,
+				  param_spec);
+
+  param_spec = g_param_spec_object("counter\0",
 				  "pointer to a counter\0",
 				  "The pointer to a counter object which indicates when looping should happen\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_COUNTABLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_COUNTER,

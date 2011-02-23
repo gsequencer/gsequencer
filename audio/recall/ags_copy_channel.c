@@ -151,28 +151,28 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
   gobject->finalize = ags_copy_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("destination\0",
-				  "destination of output\0",
-				  "The destination AgsChannel where it will output to\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("destination\0",
+				   "destination of output\0",
+				   "The destination AgsChannel where it will output to\0",
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DESTINATION,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("source\0",
-				  "source of input\0",
-				  "The source AgsChannel where it will take the input from\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("source\0",
+				   "source of input\0",
+				   "The source AgsChannel where it will take the input from\0",
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOURCE,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("devout\0",
-				  "assigned devout\0",
-				  "The devout this recall is assigned to\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout this recall is assigned to\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
@@ -250,7 +250,7 @@ ags_copy_channel_set_property(GObject *gobject,
       }
 
       if(destination != NULL){
-	g_object_ref(destination);
+	g_object_ref(G_OBJECT(destination));
 
 	new_start_region = destination->first_recycling;
 	new_end_region = destination->last_recycling;
@@ -266,7 +266,7 @@ ags_copy_channel_set_property(GObject *gobject,
 					       new_start_region, new_end_region);
 
       if(old_destination != NULL)
-	g_object_unref(old_destination);
+	g_object_unref(G_OBJECT(old_destination));
     }
     break;
   case PROP_SOURCE:
@@ -292,7 +292,7 @@ ags_copy_channel_set_property(GObject *gobject,
       }
 
       if(source != NULL){
-	g_object_ref(source);
+	g_object_ref(G_OBJECT(source));
 
 	new_start_region = source->first_recycling;
 	new_end_region = source->last_recycling;
@@ -308,7 +308,7 @@ ags_copy_channel_set_property(GObject *gobject,
 					       new_start_region, new_end_region);
 
       if(old_source != NULL)
-	g_object_unref(old_source);
+	g_object_unref(G_OBJECT(old_source));
     }
     break;
   case PROP_DEVOUT:
@@ -321,10 +321,10 @@ ags_copy_channel_set_property(GObject *gobject,
 	return;
 
       if(copy_channel->devout != NULL)
-	g_object_unref(copy_channel->devout);
+	g_object_unref(G_OBJECT(copy_channel->devout));
 
       if(devout != NULL)
-	g_object_ref(devout);
+	g_object_ref(G_OBJECT(devout));
 
       copy_channel->devout = devout;
     }
@@ -561,6 +561,9 @@ ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
   GList *list;
   guint audio_channel;
 
+  if(copy_channel->source == NULL)
+    return;
+
   audio_channel = copy_channel->source->audio_channel;
 
   /* remove old */
@@ -628,6 +631,9 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
   GList *list;
   guint audio_channel;
 
+  if(copy_channel->source == NULL)
+    return;
+
   audio_channel = copy_channel->source->audio_channel;
 
   /* remove old */
@@ -662,7 +668,8 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
 
   /* add new */
   if(new_start_region != NULL){
-    if(copy_channel->destination->first_recycling == NULL)
+    if(copy_channel->destination == NULL ||
+       copy_channel->destination->first_recycling == NULL)
       return;
 
     destination_recycling = copy_channel->destination->first_recycling;

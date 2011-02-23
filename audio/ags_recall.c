@@ -168,28 +168,28 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("container\0",
-				  "container of recall\0",
-				  "The container which this recall is packed into\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("recall_container\0",
+				   "container of recall\0",
+				   "The container which this recall is packed into\0",
+				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CONTAINER,
 				  param_spec);
-
-  param_spec = g_param_spec_gtype("parent\0",
-				  "parent recall of this recall\0",
-				  "The recall should be the parent instance of this recall\0",
-				   G_TYPE_OBJECT,
+  
+  param_spec = g_param_spec_object("parent\0",
+				   "parent recall of this recall\0",
+				   "The recall should be the parent instance of this recall\0",
+				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PARENT,
 				  param_spec);
-
+  
   param_spec = g_param_spec_object("child\0",
 				   "child of recall\0",
 				   "The child that can be added\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_RECALL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
@@ -447,10 +447,12 @@ ags_recall_get_property(GObject *gobject,
     {
       g_value_set_object(value, recall->container);
     }
+    break;
   case PROP_PARENT:
     {
       g_value_set_object(value, recall->parent);
     }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

@@ -160,28 +160,28 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
   gobject->finalize = ags_copy_recycling_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("devout\0",
-				  "assigned AgsDevout\0",
-				  "The AgsDevout this recall is assigned with\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned AgsDevout\0",
+				   "The AgsDevout this recall is assigned with\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("destination\0",
-				  "destination AgsRecycling\0",
-				  "The AgsRecycling this recall has as destination\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("destination\0",
+				   "destination AgsRecycling\0",
+				   "The AgsRecycling this recall has as destination\0",
+				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("source\0",
-				  "source AgsRecycling\0",
-				  "The AgsRecycling this recall has as source\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("source\0",
+				   "source AgsRecycling\0",
+				   "The AgsRecycling this recall has as source\0",
+				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,

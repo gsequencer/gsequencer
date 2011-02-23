@@ -135,10 +135,10 @@ ags_stream_recycling_class_init(AgsStreamRecyclingClass *stream_recycling)
   gobject->finalize = ags_stream_recycling_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("recycling\0",
-				  "assigned recycling\0",
-				  "The recycling to stream\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("recycling\0",
+				   "assigned recycling\0",
+				   "The recycling to stream\0",
+				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECYCLING,

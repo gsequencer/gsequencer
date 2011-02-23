@@ -135,20 +135,19 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
   gobject->finalize = ags_volume_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("channel\0",
-				  "volume AgsChannel\0",
-				  "The AgsChannel to apply volume\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("channel\0",
+				   "volume AgsChannel\0",
+				   "The AgsChannel to apply volume\0",
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("volume\0",
-				  "volume to apply\0",
-				  "The volume to apply on the channel\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("volume\0",
+				    "volume to apply\0",
+				    "The volume to apply on the channel\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_VOLUME,
 				  param_spec);

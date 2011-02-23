@@ -129,38 +129,37 @@ ags_copy_audio_signal_class_init(AgsCopyAudioSignalClass *copy_audio_signal)
   gobject->finalize = ags_copy_audio_signal_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("destination\0",
-				  "destination of output\0",
-				  "The destination where this recall will write the audio signal to\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("destination\0",
+				   "destination of output\0",
+				   "The destination where this recall will write the audio signal to\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DESTINATION,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("source\0",
-				  "source of input\0",
-				  "The source where this recall will take the audio signal from\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("source\0",
+				   "source of input\0",
+				   "The source where this recall will take the audio signal from\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOURCE,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("devout\0",
-				  "assigned devout\0",
-				  "The devout this recall is assigned to\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout this recall is assigned to\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("attack\0",
-				  "assigned attack\0",
-				  "The attack that determines to which frame to copy\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("attack\0",
+				    "assigned attack\0",
+				    "The attack that determines to which frame to copy\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
 				  param_spec);

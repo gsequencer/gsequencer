@@ -119,20 +119,19 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
   gobject->finalize = ags_volume_audio_signal_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("audio_signal\0",
-				  "volume AgsAudioSignal\0",
-				  "The AgsAudioSignal to apply volume\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("audio_signal\0",
+				   "volume AgsAudioSignal\0",
+				   "The AgsAudioSignal to apply volume\0",
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_SIGNAL,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("volume\0",
-				  "volume to apply\0",
-				  "The volume to apply on the audio signal\0",
-				   G_TYPE_POINTER,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("volume\0",
+				    "volume to apply\0",
+				    "The volume to apply on the audio signal\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_VOLUME,
 				  param_spec);

@@ -150,28 +150,30 @@ ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
   gobject->finalize = ags_play_recycling_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("devout\0",
+  param_spec = g_param_spec_object("devout\0",
 				  "assigned AgsDevout\0",
 				  "The AgsDevout this recall is assigned with\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("audio_channel\0",
-				  "assigned audio Channel\0",
-				  "The audio channel this recall does output to\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("audio_channel\0",
+				 "assigned audio Channel\0",
+				 "The audio channel this recall does output to\0",
+				 0,
+				 65536,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("source\0",
-				  "source AgsRecycling\0",
-				  "The AgsRecycling this recall has as source\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("source\0",
+				   "source AgsRecycling\0",
+				   "The AgsRecycling this recall has as source\0",
+				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOURCE,

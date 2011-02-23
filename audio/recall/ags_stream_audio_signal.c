@@ -118,10 +118,10 @@ ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signa
   gobject->finalize = ags_stream_audio_signal_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("audio_signal\0",
-				  "stream AgsAudioSignal\0",
-				  "The AgsAudioSignal to stream\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("audio_signal\0",
+				   "stream AgsAudioSignal\0",
+				   "The AgsAudioSignal to stream\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_SIGNAL,

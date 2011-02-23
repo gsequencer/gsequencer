@@ -90,56 +90,64 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
   gobject->finalize = ags_copy_pattern_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("devout\0",
-				  "the assigned devout\0",
-				  "The AgsDevout it is assigned to\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("devout\0",
+				   "the assigned devout\0",
+				   "The AgsDevout it is assigned to\0",
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("bank_index_0\0",
-				  "current bank index 0\0",
-				  "The current bank index 0 of the AgsPattern\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("bank_index_0\0",
+				 "current bank index 0\0",
+				 "The current bank index 0 of the AgsPattern\0",
+				 0,
+				 256,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BANK_INDEX_0,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("bank_index_\0",
-				  "current bank index 1\0",
-				  "The current bank index 1 of the AgsPattern\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("bank_index_1\0",
+				 "current bank index 1\0",
+				 "The current bank index 1 of the AgsPattern\0",
+				 0,
+				 256,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BANK_INDEX_1,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("length\0",
-				  "length in sounds\0",
-				  "The length of the stream in sounds\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("length\0",
+				 "length in sounds\0",
+				 "The length of the stream in sounds\0",
+				 1,
+				 128,
+				 16,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LENGTH,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("loop\0",
-				  "loop playing\0",
-				  "Play in a endless loop\0",
-				   G_TYPE_BOOLEAN,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_boolean("loop\0",
+				    "loop playing\0",
+				    "Play in a endless loop\0",
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LOOP,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("stream_length\0",
-				  "stream length in buffers\0",
-				  "The length of the stream in buffer count\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE);
+  param_spec = g_param_spec_uint("stream_length\0",
+				 "stream length in buffers\0",
+				 "The length of the stream in buffer count\0",
+				 1,
+				 65536,
+				 1,
+				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_LENGTH,
 				  param_spec);

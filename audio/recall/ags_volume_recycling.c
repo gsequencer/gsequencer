@@ -45,11 +45,6 @@ void ags_volume_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_volume_recycling_finalize(GObject *gobject);
 
-void ags_volume_recycling_run_init_inter(AgsRecall *recall, gpointer data);
-
-void ags_volume_recycling_done(AgsRecall *recall, gpointer data);
-void ags_volume_recycling_cancel(AgsRecall *recall, gpointer data);
-void ags_volume_recycling_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_volume_recycling_add_audio_signal(AgsVolumeRecycling *volume_recycling,
@@ -128,13 +123,37 @@ ags_volume_recycling_class_init(AgsVolumeRecyclingClass *volume_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_volume_recycling_parent_class = g_type_class_peek_parent(volume_recycling);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) volume_recycling;
+
+  gobject->set_property = ags_volume_recycling_set_property;
+  gobject->get_property = ags_volume_recycling_get_property;
 
   gobject->finalize = ags_volume_recycling_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_object("recycling\0",
+				   "volume AgsRecycling\0",
+				   "The AgsAudioSignal to apply volume\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING,
+				  param_spec);
+
+  param_spec = g_param_spec_pointer("volume\0",
+				    "volume to apply\0",
+				    "The volume to apply on the recycling\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
+
+  /* AgsRecallClass */
   recall = (AgsRecallClass *) volume_recycling;
 
   recall->duplicate = ags_volume_recycling_duplicate;
@@ -171,6 +190,37 @@ ags_volume_recycling_set_property(GObject *gobject,
 				  const GValue *value,
 				  GParamSpec *param_spec)
 {
+  AgsVolumeRecycling *volume_recycling;
+
+  volume_recycling = AGS_VOLUME_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(volume_recycling->recycling != NULL){
+	g_object_unref(G_OBJECT(volume_recycling->recycling));
+      }
+
+      if(recycling != NULL){
+	g_object_ref(G_OBJECT(recycling));
+      }
+
+      volume_recycling->recycling = recycling;
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      volume_recycling->volume = g_value_get_pointer(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -179,6 +229,25 @@ ags_volume_recycling_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec)
 {
+  AgsVolumeRecycling *volume_recycling;
+
+  volume_recycling = AGS_VOLUME_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      g_value_set_object(value, volume_recycling->recycling);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      g_value_set_pointer(value, volume_recycling->volume);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

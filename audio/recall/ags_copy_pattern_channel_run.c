@@ -136,10 +136,10 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   gobject->finalize = ags_copy_pattern_channel_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("delay_audio_run\0",
-				  "assigned AgsDelayAudioRun\0",
-				  "The AgsDelayAudioRun which emits tic_alloc signal\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("delay_audio_run\0",
+				   "assigned AgsDelayAudioRun\0",
+				   "The AgsDelayAudioRun which emits tic_alloc signal\0",
+				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_AUDIO_RUN,
@@ -198,17 +198,19 @@ ags_copy_pattern_channel_run_set_property(GObject *gobject,
       AgsRecallContainer *recall_container;
       AgsCopyPatternAudioRun *copy_pattern_audio_run;
       AgsDelayAudioRun *delay_audio_run;
-      GValue recall_container_value;
-      GValue copy_pattern_audio_run_value;
-      GValue delay_audio_run_value;
+      GValue recall_container_value = {0,};
+      GValue copy_pattern_audio_run_value = {0,};
+      GValue delay_audio_run_value = {0,};
 
       /* get AgsRecallContainer */
       g_value_init(&recall_container_value, G_TYPE_OBJECT);
       g_object_get_property(G_OBJECT(copy_pattern_channel_run),
-			    "container\0",
+			    "recall_container\0",
 			    &recall_container_value);
       recall_container = AGS_RECALL_CONTAINER(g_value_get_object(&recall_container_value));
       g_value_unset(&recall_container_value);
+
+      printf("debug 1\n\0");
 
       /* get AgsCopyPatternAudioRun */
       g_value_init(&copy_pattern_audio_run_value, G_TYPE_OBJECT);
@@ -218,16 +220,20 @@ ags_copy_pattern_channel_run_set_property(GObject *gobject,
       copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(g_value_get_object(&copy_pattern_audio_run_value));
       g_value_unset(&copy_pattern_audio_run_value);
 
+      printf("debug 2\n\0");
+
       /* AgsDelayAudioRun */
       g_value_init(&delay_audio_run_value, G_TYPE_OBJECT);
       g_object_get_property(G_OBJECT(copy_pattern_audio_run),
 			    "delay_audio_run\0",
 			    &delay_audio_run_value);
-      delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
+      delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(&delay_audio_run_value);
       g_value_unset(&delay_audio_run_value);
 
       if(copy_pattern_channel_run->delay_audio_run == delay_audio_run)
 	return;
+
+      printf("debug 3\n\0");
 
       /* disconnect and unref */
       if(copy_pattern_channel_run->delay_audio_run != NULL){

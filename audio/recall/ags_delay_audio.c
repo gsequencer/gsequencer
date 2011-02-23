@@ -83,11 +83,13 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   gobject->finalize = ags_delay_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("delay\0",
-				  "delay for timeing\0",
-				  "The delay whenever a tic occures\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("delay\0",
+				 "delay for timeing\0",
+				 "The delay whenever a tic occures\0",
+				 0,
+				 65536,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY,
 				  param_spec);

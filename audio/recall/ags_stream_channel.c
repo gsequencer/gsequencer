@@ -140,10 +140,10 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
   gobject->finalize = ags_stream_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("channel\0",
-				  "stream AgsChannel\0",
-				  "The AgsChannel to stream\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("channel\0",
+				   "stream AgsChannel\0",
+				   "The AgsChannel to stream\0",
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,

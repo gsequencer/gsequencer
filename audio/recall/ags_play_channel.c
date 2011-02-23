@@ -144,33 +144,34 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
   gobject->finalize = ags_play_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("source\0",
+  param_spec = g_param_spec_object("source\0",
 				  "source of input\0",
 				  "The source where this recall will take the channel from\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOURCE,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("audio_channel\0",
-				  "assigned audio Channel\0",
-				  "The audio channel this recall does output to\0",
-				   G_TYPE_UINT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
-				  param_spec);
-
-  param_spec = g_param_spec_gtype("devout\0",
+  param_spec = g_param_spec_object("devout\0",
 				  "assigned devout\0",
 				  "The devout this recall is assigned to\0",
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
+  param_spec = g_param_spec_uint("audio_channel\0",
+				 "assigned audio Channel\0",
+				 "The audio channel this recall does output to\0",
+				 0,
+				 65536,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_channel;
@@ -231,11 +232,11 @@ ags_play_channel_set_property(GObject *gobject,
 	return;
 
       if(play_channel->source != NULL){
-	g_object_unref(play_channel->source);
+	g_object_unref(G_OBJECT(play_channel->source));
       }
 
       if(source != NULL){
-	g_object_ref(source);
+	g_object_ref(G_OBJECT(source));
       }
 
       play_channel->source = source;
@@ -250,8 +251,8 @@ ags_play_channel_set_property(GObject *gobject,
       if(play_channel->devout == devout)
 	return;
 
-      if(devout != NULL){
-	g_object_unref(play_channel->devout);
+      if(play_channel->devout != NULL){
+	g_object_unref(G_OBJECT(play_channel->devout));
       }
 
       if(devout != NULL){

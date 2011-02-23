@@ -86,19 +86,19 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
   gobject->finalize = ags_copy_pattern_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("destination\0",
-				  "destination of output\0",
-				  "The destination AgsChannel where it will output to\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("destination\0",
+				   "destination of output\0",
+				   "The destination AgsChannel where it will output to\0",
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DESTINATION,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("pattern\0",
-				  "pattern to play\0",
-				  "The pattern which has to be played\0",
-				   G_TYPE_OBJECT,
+  param_spec = g_param_spec_object("pattern\0",
+				   "pattern to play\0",
+				   "The pattern which has to be played\0",
+				   AGS_TYPE_PATTERN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PATTERN,

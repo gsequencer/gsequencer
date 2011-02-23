@@ -165,7 +165,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsDelayAudio in audio->play */
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-					       "container\0", recall_container,
+					       "recall_container\0", recall_container,
 					       "audio\0", audio,
 					       "delay\0", 0,
 					       NULL);
@@ -174,7 +174,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsDelayAudioRun in audio->play */
   play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
-							   "container\0", recall_container,
+							   "recall_container\0", recall_container,
 							   NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
@@ -186,7 +186,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsDelayAudio in audio->recall */
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-					       "container\0", recall_container,
+					       "recall_container\0", recall_container,
 					       "audio\0", audio,
 					       "delay\0", 0,
 					       NULL);
@@ -195,7 +195,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsDelayAudioRun in audio->recall */
   recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
-							     "container\0", recall_container,
+							     "recall_container\0", recall_container,
 							     NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, FALSE);
@@ -208,7 +208,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsCopyPatternAudio in audio->play */
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "container\0", recall_container,
+							    "recall_container\0", recall_container,
 							    "audio\0", audio,
 							    "devout\0", audio->devout,
 							    "bank_index_0\0", 0,
@@ -234,7 +234,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsCopyPatternAudio in audio->recall */
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "container\0", recall_container,
+							    "recall_container\0", recall_container,
 							    "audio\0", audio,
 							    "devout\0", audio->devout,
 							    "bank_index_0\0", 0,
