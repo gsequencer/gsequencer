@@ -385,7 +385,7 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
       g_value_init(&delay_audio_run_value, G_TYPE_OBJECT);
       g_value_set_object(&delay_audio_run_value, list->data);
       g_object_set_property(G_OBJECT(copy),
-			    "delay_audio_run_run\0",
+			    "delay_audio_run\0",
 			    &delay_audio_run_value);
       g_value_unset(&delay_audio_run_value);
     }

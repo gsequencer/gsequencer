@@ -37,14 +37,6 @@ void ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy
 void ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run);
-void ags_copy_pattern_channel_run_set_property(GObject *gobject,
-					       guint prop_id,
-					       const GValue *value,
-					       GParamSpec *param_spec);
-void ags_copy_pattern_channel_run_get_property(GObject *gobject,
-					       guint prop_id,
-					       GValue *value,
-					       GParamSpec *param_spec);
 void ags_copy_pattern_channel_run_connect(AgsConnectable *connectable);
 void ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable);
 void ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable);
@@ -62,10 +54,6 @@ void ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_aud
 						     guint audio_channel,
 						     AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
-enum{
-  PROP_0,
-  PROP_DELAY_AUDIO_RUN,
-};
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
@@ -130,20 +118,7 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   /* GObjectClass */
   gobject = (GObjectClass *) copy_pattern_channel_run;
 
-  gobject->set_property = ags_copy_pattern_channel_run_set_property;
-  gobject->get_property = ags_copy_pattern_channel_run_get_property;
-
   gobject->finalize = ags_copy_pattern_channel_run_finalize;
-
-  /* properties */
-  param_spec = g_param_spec_object("delay_audio_run\0",
-				   "assigned AgsDelayAudioRun\0",
-				   "The AgsDelayAudioRun which emits tic_alloc signal\0",
-				   AGS_TYPE_DELAY_AUDIO_RUN,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DELAY_AUDIO_RUN,
-				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_pattern_channel_run;
@@ -178,112 +153,9 @@ ags_copy_pattern_channel_run_run_connectable_interface_init(AgsRunConnectableInt
 void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
-  copy_pattern_channel_run->delay_audio_run = NULL;
   copy_pattern_channel_run->nth_run = 0;
 }
 
-void
-ags_copy_pattern_channel_run_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec)
-{
-  AgsCopyPatternChannelRun *copy_pattern_channel_run;
-
-  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(gobject);
-
-  switch(prop_id){
-  case PROP_DELAY_AUDIO_RUN:
-    {
-      AgsRecallContainer *recall_container;
-      AgsCopyPatternAudioRun *copy_pattern_audio_run;
-      AgsDelayAudioRun *delay_audio_run;
-      GValue recall_container_value = {0,};
-      GValue copy_pattern_audio_run_value = {0,};
-      GValue delay_audio_run_value = {0,};
-
-      /* get AgsRecallContainer */
-      g_value_init(&recall_container_value, G_TYPE_OBJECT);
-      g_object_get_property(G_OBJECT(copy_pattern_channel_run),
-			    "recall_container\0",
-			    &recall_container_value);
-      recall_container = AGS_RECALL_CONTAINER(g_value_get_object(&recall_container_value));
-      g_value_unset(&recall_container_value);
-
-      printf("debug 1\n\0");
-
-      /* get AgsCopyPatternAudioRun */
-      g_value_init(&copy_pattern_audio_run_value, G_TYPE_OBJECT);
-      g_object_get_property(G_OBJECT(recall_container),
-			    "recall_audio_run\0",
-			    &copy_pattern_audio_run_value);
-      copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(g_value_get_object(&copy_pattern_audio_run_value));
-      g_value_unset(&copy_pattern_audio_run_value);
-
-      printf("debug 2\n\0");
-
-      /* AgsDelayAudioRun */
-      g_value_init(&delay_audio_run_value, G_TYPE_OBJECT);
-      g_object_get_property(G_OBJECT(copy_pattern_audio_run),
-			    "delay_audio_run\0",
-			    &delay_audio_run_value);
-      delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(&delay_audio_run_value);
-      g_value_unset(&delay_audio_run_value);
-
-      if(copy_pattern_channel_run->delay_audio_run == delay_audio_run)
-	return;
-
-      printf("debug 3\n\0");
-
-      /* disconnect and unref */
-      if(copy_pattern_channel_run->delay_audio_run != NULL){
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(gobject)->flags)) != 0)
-	  g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run->delay_audio_run),
-				      copy_pattern_channel_run->tic_alloc_handler);
-
-	g_object_unref(copy_pattern_channel_run->delay_audio_run);
-      }
-
-      /* ref and connect */
-      if(delay_audio_run != NULL){
-	g_object_ref(delay_audio_run);
-
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(gobject)->flags)) != 0)
-	  copy_pattern_channel_run->tic_alloc_handler =
-	    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_alloc\0",
-			     G_CALLBACK(ags_copy_pattern_channel_run_tic_alloc_callback), copy_pattern_channel_run);
-      }
-
-      copy_pattern_channel_run->delay_audio_run = delay_audio_run;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_copy_pattern_channel_run_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec)
-{
-  AgsCopyPatternChannelRun *copy_pattern_channel_run;
-
-  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(gobject);
-
-  switch(prop_id){
-  case PROP_DELAY_AUDIO_RUN:
-    {
-      g_value_set_object(value, copy_pattern_channel_run->delay_audio_run);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
 
 void
 ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
@@ -309,8 +181,9 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   AgsRecallContainer *recall_container;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsRecallID *recall_id;
+  GList *copy_pattern_audio_run_list;
   GValue recall_container_value = {0,};
-  GValue copy_pattern_audio_run_value = {0,};
 
   ags_copy_pattern_channel_run_parent_run_connectable_interface->connect(run_connectable);
 
@@ -320,18 +193,18 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   /* get AgsRecallContainer */
   g_value_init(&recall_container_value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(copy_pattern_channel_run),
-			"container\0",
+			"recall_container\0",
 			&recall_container_value);
   recall_container = AGS_RECALL_CONTAINER(g_value_get_object(&recall_container_value));
   g_value_unset(&recall_container_value);
 
   /* get AgsCopyPatternAudioRun */
-  g_value_init(&copy_pattern_audio_run_value, G_TYPE_OBJECT);
-  g_object_get_property(G_OBJECT(recall_container),
-			"recall_audio_run\0",
-			&copy_pattern_audio_run_value);
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(g_value_get_object(&copy_pattern_audio_run_value));
-  g_value_unset(&copy_pattern_audio_run_value);
+  recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
+  copy_pattern_audio_run_list = ags_recall_container_get_recall_audio_run(recall_container);
+  copy_pattern_audio_run_list = ags_recall_find_type_with_group_id(copy_pattern_audio_run_list,
+								   AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								   recall_id->group_id);
+  //  copy_pattern_audio_run = ;
 
   /* connect tic_alloc in AgsDelayAudioRun */
   copy_pattern_channel_run->tic_alloc_handler =
@@ -631,12 +504,11 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
 }
 
 AgsCopyPatternChannelRun*
-ags_copy_pattern_channel_run_new(AgsDelayAudioRun *delay_audio_run)
+ags_copy_pattern_channel_run_new()
 {
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
   copy_pattern_channel_run = (AgsCopyPatternChannelRun *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
-								       "delay_audio_run\0", delay_audio_run,
 								       NULL);
 
   return(copy_pattern_channel_run);

@@ -87,6 +87,7 @@ enum{
 enum{
   PROP_0,
   PROP_CONTAINER,
+  PROP_RECALL_ID,
   PROP_PARENT,
   PROP_CHILD,
 };
@@ -175,6 +176,15 @@ ags_recall_class_init(AgsRecallClass *recall)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CONTAINER,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall_id\0",
+				   "run id of recall\0",
+				   "The recall id of the recall\0",
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
 				  param_spec);
   
   param_spec = g_param_spec_object("parent\0",
@@ -408,6 +418,26 @@ ags_recall_set_property(GObject *gobject,
 	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(recall->container));
     }
     break;
+  case PROP_RECALL_ID:
+    {
+      AgsRecallID *recall_id;
+
+      recall_id = (AgsRecallID *) g_value_get_object(value);
+
+      if(recall->recall_id == recall_id)
+	return;
+
+      if(recall->recall_id != NULL){
+	g_object_unref(G_OBJECT(recall->recall_id));
+      }
+
+      if(recall_id != NULL){
+	g_object_ref(G_OBJECT(recall_id));
+      }
+	
+      recall->recall_id = recall_id;
+    }
+    break;
   case PROP_PARENT:
     {
       AgsRecall *parent;
@@ -446,6 +476,11 @@ ags_recall_get_property(GObject *gobject,
   case PROP_CONTAINER:
     {
       g_value_set_object(value, recall->container);
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      g_value_set_object(value, recall->recall_id);
     }
     break;
   case PROP_PARENT:
@@ -858,36 +893,28 @@ ags_recall_real_duplicate(AgsRecall *recall,
 {
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
+  AgsRecallContainer *recall_container;
   GList *list, *child;
+  GValue recall_container_value = {0,};
 
   copy = g_object_new(G_OBJECT_TYPE(recall), NULL);
 
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
-  // copy->name
-  /*
-   * TODO:JK: set parent and container
+  /* set recall container */
+  g_value_init(&recall_container_value, G_TYPE_OBJECT);
+  g_object_get_property(G_OBJECT(recall),
+			"recall_container\0",
+			&recall_container_value);
+  recall_container = (AgsRecallContainer *) g_value_get_object(&recall_container_value);
+  g_value_unset(&recall_container_value);
+
+  g_object_set_property(G_OBJECT(copy), "recall_container\0", recall_container);
+
+  /* 
+   * TODO:JK: duplicate callbacks
    */
-
-  recall_class = AGS_RECALL_GET_CLASS(recall);
-  copy_class = AGS_RECALL_GET_CLASS(copy);
-
-  copy_class->run_init_pre = recall_class->run_init_pre;
-  copy_class->run_init_inter = recall_class->run_init_inter;
-  copy_class->run_init_post = recall_class->run_init_post;
-
-  copy_class->run_pre = recall_class->run_pre;
-  copy_class->run_inter = recall_class->run_inter;
-  copy_class->run_post = recall_class->run_post;
-
-  copy_class->done = recall_class->done;
-  copy_class->loop = recall_class->loop;
-
-  copy_class->cancel = recall_class->cancel;
-  copy_class->remove = recall_class->remove;
-
-  copy_class->duplicate = recall_class->duplicate;
 
   return(copy);
 }

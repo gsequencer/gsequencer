@@ -40,7 +40,6 @@ struct _AgsCopyPatternChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
 
-  AgsDelayAudioRun *delay_audio_run;
   gulong tic_alloc_handler;
   guint nth_run;
 };
