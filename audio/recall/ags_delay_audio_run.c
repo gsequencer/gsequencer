@@ -246,7 +246,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     /* get AgsRecallContainer */
     g_object_get_property(G_OBJECT(delay_audio_run),
-			  "container\0",
+			  "recall_container\0",
 			  &recall_container_value);
     recall_container = AGS_RECALL_CONTAINER(g_value_get_object(&recall_container_value));
     g_value_unset(&recall_container_value);

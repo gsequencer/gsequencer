@@ -221,6 +221,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsCopyPatternAudioRun in audio->play */
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								   "recall_container\0", recall_container,
 								   "delay_audio_run\0", play_delay_audio_run,
 								   "bit\0", 0,
 								   NULL);
@@ -247,6 +248,7 @@ ags_drum_init(AgsDrum *drum)
 
   /* create AgsCopyPatternAudioRun in audio->recall */
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								   "recall_container\0", recall_container,
 								   "delay_audio_run\0", recall_delay_audio_run,
 								   "bit\0", 0,
 								   NULL);

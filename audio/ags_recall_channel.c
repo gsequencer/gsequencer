@@ -348,6 +348,23 @@ ags_recall_channel_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+GList*
+ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *channel)
+{
+  AgsRecallChannel *recall_channel;
+
+  while(recall_channel_i != NULL){
+    recall_channel = AGS_RECALL_CHANNEL(recall_channel_i->data);
+
+    if(recall_channel->channel == channel)
+      return(recall_channel_i);
+
+    recall_channel_i = recall_channel_i->next;
+  }
+
+  return(NULL);
+}
+
 AgsRecallChannel*
 ags_recall_channel_new(AgsChannel *channel)
 {

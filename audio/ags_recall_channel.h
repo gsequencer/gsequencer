@@ -49,6 +49,8 @@ struct _AgsRecallChannelClass
 
 GType ags_recall_channel_get_type();
 
+GList* ags_recall_channel_find_channel(GList *recall_channel, AgsChannel *channel);
+
 AgsRecallChannel* ags_recall_channel_new(AgsChannel *channel);
 
 #endif /*__AGS_RECALL_CHANNEL_H__*/

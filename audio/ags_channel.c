@@ -1638,6 +1638,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
 
+      fprintf(stdout, "debug\n\0");
+
       /* ignore initialized or non-runnable AgsRecalls */
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
 	 AGS_IS_RECALL_CHANNEL(recall)){

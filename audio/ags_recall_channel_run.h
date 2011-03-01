@@ -24,6 +24,9 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+
 #define AGS_TYPE_RECALL_CHANNEL_RUN                (ags_recall_channel_run_get_type())
 #define AGS_RECALL_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_CHANNEL_RUN, AgsRecallChannelRun))
 #define AGS_RECALL_CHANNEL_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_CHANNEL_RUN, AgsRecallChannelRunClass))
@@ -37,6 +40,9 @@ typedef struct _AgsRecallChannelRunClass AgsRecallChannelRunClass;
 struct _AgsRecallChannelRun
 {
   AgsRecall recall;
+
+  AgsRecallChannel *recall_channel;
+  AgsRecallAudioRun *recall_audio_run;
 };
 
 struct _AgsRecallChannelRunClass

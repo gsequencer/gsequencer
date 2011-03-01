@@ -345,25 +345,21 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
+  /* get audio object */
   g_value_init(&container_value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(recall),
-			"container\0",
+			"recall_container\0",
 			&container_value);
-  container = AGS_RECALL_CONTAINER(g_value_get_object(&container_value));
+  container = (AgsRecallContainer *) g_value_get_object(&container_value);
   g_value_unset(&container_value);
 
-  g_value_init(&recall_audio_value, G_TYPE_OBJECT);
-  g_object_get_property(G_OBJECT(container),
-			"recall_audio\0",
-			&recall_audio_value);
-  recall_audio = AGS_RECALL_AUDIO(g_value_get_object(&recall_audio_value));
-  g_value_unset(&recall_audio_value);
+  recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(container);
 
   g_value_init(&audio_value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(recall_audio),
 			"audio\0",
 			&audio_value);
-  audio = AGS_AUDIO(g_value_get_object(&audio_value));
+  audio = (AgsAudio *) g_value_get_object(&audio_value);
   g_value_unset(&audio_value);
 
   if(audio != NULL){

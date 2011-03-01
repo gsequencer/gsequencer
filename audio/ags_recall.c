@@ -415,7 +415,7 @@ ags_recall_set_property(GObject *gobject,
 
       /* add to new */
       if(container != NULL)
-	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(recall->container));
+	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(container));
     }
     break;
   case PROP_RECALL_ID:
@@ -464,9 +464,9 @@ ags_recall_set_property(GObject *gobject,
 
 void
 ags_recall_get_property(GObject *gobject,
-		     guint prop_id,
-		     GValue *value,
-		     GParamSpec *param_spec)
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
 {
   AgsRecall *recall;
 
@@ -902,15 +902,21 @@ ags_recall_real_duplicate(AgsRecall *recall,
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
+  /* set recall id */
+  copy->recall_id = recall_id;
+
   /* set recall container */
   g_value_init(&recall_container_value, G_TYPE_OBJECT);
   g_object_get_property(G_OBJECT(recall),
 			"recall_container\0",
 			&recall_container_value);
   recall_container = (AgsRecallContainer *) g_value_get_object(&recall_container_value);
-  g_value_unset(&recall_container_value);
 
-  g_object_set_property(G_OBJECT(copy), "recall_container\0", recall_container);
+  g_object_set_property(G_OBJECT(copy),
+			"recall_container\0",
+			&recall_container_value);
+
+  g_value_unset(&recall_container_value);
 
   /* 
    * TODO:JK: duplicate callbacks
@@ -1100,8 +1106,6 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, guint group_id)
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(recall->recall_id != NULL)
-
     if(G_OBJECT_TYPE(recall) == type &&
        recall->recall_id != NULL &&
        recall->recall_id->group_id == group_id)
@@ -1111,6 +1115,22 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, guint group_id)
   }
 
   return(NULL);
+}
+
+GList*
+ags_recall_find_group_id(GList *recall_i, guint group_id)
+{
+  AgsRecall *recall;
+
+  while(recall_i != NULL){
+    recall = AGS_RECALL(recall_i->data);
+
+    if(recall->recall_id != NULL &&
+       recall->recall_id->group_id == group_id)
+      return(recall_i);
+
+    recall_i = recall_i->next;
+  }
 }
 
 void

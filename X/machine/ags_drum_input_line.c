@@ -298,8 +298,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     
     g_signal_connect((GObject *) copy_pattern_channel_run, "loop\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_loop), drum);
-      
-    destination = destination->next;
     
     /* recall for channel->recall */
     /* AgsCopyChannel */
@@ -309,7 +307,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 						   "devout\0", audio->devout,
 						   NULL);
     AGS_RECALL(copy_channel)->flags |= AGS_RECALL_TEMPLATE;
-    ags_channel_add_recall(source, (GObject *) copy_pattern_channel, FALSE);
+    ags_channel_add_recall(source, (GObject *) copy_channel, FALSE);
     
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(copy_channel));
@@ -324,6 +322,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_channel_run));
+
+    destination = destination->next;
   }
 }
 

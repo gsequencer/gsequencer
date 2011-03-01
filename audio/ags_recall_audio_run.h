@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/ags_recall_audio.h>
+
 #define AGS_TYPE_RECALL_AUDIO_RUN                (ags_recall_audio_run_get_type())
 #define AGS_RECALL_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_AUDIO_RUN, AgsRecallAudioRun))
 #define AGS_RECALL_AUDIO_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_AUDIO_RUN, AgsRecallAudioRunClass))
@@ -37,6 +39,8 @@ typedef struct _AgsRecallAudioRunClass AgsRecallAudioRunClass;
 struct _AgsRecallAudioRun
 {
   AgsRecall recall;
+
+  AgsRecallAudio *recall_audio;
 };
 
 struct _AgsRecallAudioRunClass
