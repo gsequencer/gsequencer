@@ -21,8 +21,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
-#include <ags/audio/ags_recall_container.h>
-
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
@@ -330,15 +328,11 @@ AgsRecall*
 ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
   AgsAudio *audio;
-  AgsRecallContainer *container;
   AgsRecallAudio *recall_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run, *copy;
   GList *list, *list_start;
   guint group_id;
-  GValue container_value = {0,};
-  GValue recall_audio_value = {0,};
-  GValue audio_value = {0,};
   GValue delay_audio_run_value = {0,};
 
   copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall, recall_id));
@@ -346,21 +340,9 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
   /* get audio object */
-  g_value_init(&container_value, G_TYPE_OBJECT);
-  g_object_get_property(G_OBJECT(recall),
-			"recall_container\0",
-			&container_value);
-  container = (AgsRecallContainer *) g_value_get_object(&container_value);
-  g_value_unset(&container_value);
-
-  recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(container);
-
-  g_value_init(&audio_value, G_TYPE_OBJECT);
-  g_object_get_property(G_OBJECT(recall_audio),
-			"audio\0",
-			&audio_value);
-  audio = (AgsAudio *) g_value_get_object(&audio_value);
-  g_value_unset(&audio_value);
+  recall_audio = copy_pattern_audio_run->recall_audio_run.recall_audio;
+  
+  audio = recall_audio->audio;
 
   if(audio != NULL){
     if((AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL & (recall_id->flags)) == 0)
@@ -422,14 +404,8 @@ ags_copy_pattern_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
 					      AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
-  GValue value = {0,};
 
-  g_value_init(&value, G_TYPE_OBJECT);
-  g_object_get_property(G_OBJECT(copy_pattern_audio_run),
-			"recall_audio\0",
-			&value);
-  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(g_value_get_object(&value));
-  g_value_unset(&value);
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(copy_pattern_audio_run->recall_audio_run.recall_audio);
 
   if(copy_pattern_audio_run->hide_ref != 0)
     copy_pattern_audio_run->hide_ref_counter++;

@@ -21,7 +21,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
-#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -228,7 +227,6 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 void
 ags_delay_audio_run_run_pre(AgsRecall *recall)
 {
-  AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
 
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
@@ -240,24 +238,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     delay_audio_run->counter = 0;
     ags_recall_done(recall);
   }else{
-    AgsRecallContainer *recall_container;
-    GValue recall_container_value = {0,};
-    GValue delay_audio_value = {0,};
+    AgsDelayAudio *delay_audio;
 
-    /* get AgsRecallContainer */
-    g_object_get_property(G_OBJECT(delay_audio_run),
-			  "recall_container\0",
-			  &recall_container_value);
-    recall_container = AGS_RECALL_CONTAINER(g_value_get_object(&recall_container_value));
-    g_value_unset(&recall_container_value);
-    
-    /* get AgsCopyPatternAudioRun */
-    g_object_get_property(G_OBJECT(recall_container),
-			  "recall_audio\0",
-			  &delay_audio_value);
-    delay_audio = AGS_DELAY_AUDIO(g_value_get_object(&delay_audio_value));
-    g_value_unset(&delay_audio_value);
-
+    delay_audio = AGS_DELAY_AUDIO(delay_audio_run->recall_audio_run.recall_audio);
 
     if(delay_audio_run->counter == 0){
       ags_delay_audio_run_tic_alloc(delay_audio_run, delay_audio_run->hide_ref_counter);
