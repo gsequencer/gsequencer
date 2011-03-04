@@ -937,8 +937,6 @@ ags_channel_set_recycling(AgsChannel *channel,
   if(AGS_IS_INPUT(channel)){
     AgsChannel *output;
 
-    printf("debug 0\n\0");
-    
     if(!ags_channel_set_recycling_recursive_input(channel)){
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
 	if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
@@ -1637,8 +1635,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
-
-      fprintf(stdout, "debug\n\0");
 
       /* ignore initialized or non-runnable AgsRecalls */
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||

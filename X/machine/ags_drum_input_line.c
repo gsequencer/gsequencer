@@ -190,7 +190,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsDrum *drum;
   AgsLine *line;
   AgsAudio *audio;
-  AgsChannel *source, *destination;
+  AgsChannel *source, *destination, *destination_start;
   AgsRecallContainer *play_copy_pattern_container, *recall_copy_pattern_container;
   AgsVolumeChannel *volume_channel;
   AgsPlayChannel *play_channel;
@@ -211,6 +211,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   drum = AGS_DRUM(audio->machine);
 
   source = line->channel;
+  destination_start = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start + source->audio_channel);
 
   /* get some recalls */
   list = ags_recall_template_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
@@ -241,30 +242,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   g_value_unset(&recall_container_value);
 
   if((AGS_DRUM_INPUT_LINE_MAPPED_RECALL & (drum_input_line->flags)) == 0){
-    drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;
-
-    /* AgsCopyPatternChannel in channel->play */
-    play_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
-								       "recall_container\0", play_copy_pattern_container,
-								       "channel\0", source,
-								       NULL);
-    AGS_RECALL(play_copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
-    ags_channel_add_recall(source, (GObject *) play_copy_pattern_channel, TRUE);
-
-    if(GTK_WIDGET_VISIBLE(drum))
-      ags_connectable_connect(AGS_CONNECTABLE(play_copy_pattern_channel));
-    
-    /* AgsCopyPatternChannel in channel->recall */
-    recall_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
-									 "recall_container\0", recall_copy_pattern_container,
-									 "channel\0", source,
-									 NULL);
-    AGS_RECALL(recall_copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
-    ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel, TRUE);
-
-    if(GTK_WIDGET_VISIBLE(drum))
-      ags_connectable_connect(AGS_CONNECTABLE(recall_copy_pattern_channel));
-    
     /* AgsVolumeChannel */
     volume_channel = ags_volume_channel_new(source,
 					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
@@ -299,20 +276,38 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
-  }else{
-    list = ags_recall_container_get_recall_channel(play_copy_pattern_container);
-    list = ags_recall_channel_find_channel(list, source);
-    play_copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
-
-    list = ags_recall_container_get_recall_channel(recall_copy_pattern_container);
-    list = ags_recall_channel_find_channel(list, source);
-    recall_copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
   }
 
   /* create recalls which depend on output */
-  destination = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start + source->audio_channel);
+  destination = destination_start;
 
   while(destination != NULL){
+    /* AgsCopyPatternChannel in channel->play */
+    play_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
+								       "recall_container\0", play_copy_pattern_container,
+								       "channel\0", source,
+								       "destination\0", destination,
+								       "pattern\0", source->pattern->data,
+								       NULL);
+    AGS_RECALL(play_copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(source, (GObject *) play_copy_pattern_channel, TRUE);
+    
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(play_copy_pattern_channel));
+    
+    /* AgsCopyPatternChannel in channel->play */
+    recall_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
+									 "recall_container\0", play_copy_pattern_container,
+									 "channel\0", source,
+									 "destination\0", destination,
+									 "pattern\0", source->pattern->data,
+									 NULL);
+    AGS_RECALL(recall_copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel, TRUE);
+      
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(recall_copy_pattern_channel));
+  
     /* recall for channel->play */
     /* AgsCopyPatternChannelRun */
     copy_pattern_channel_run = (AgsCopyPatternChannelRun *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
@@ -320,26 +315,27 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									 "recall_audio_run\0", play_copy_pattern_audio_run,
 									 "recall_channel\0", play_copy_pattern_channel,
 									 NULL);
-
+  
     AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;
     ags_channel_add_recall(source, (GObject *) copy_pattern_channel_run, TRUE);
-   
+    
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_channel_run));
- 
+    
     /* connect callbacks for play */
     g_signal_connect((GObject *) copy_pattern_channel_run, "done\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_done), drum);
     
     g_signal_connect((GObject *) copy_pattern_channel_run, "cancel\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_cancel), drum);
-    
+  
     g_signal_connect((GObject *) copy_pattern_channel_run, "loop\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_loop), drum);
     
     /* recall for channel->recall */
     /* AgsCopyChannel */
     copy_channel = (AgsCopyChannel *) g_object_new(AGS_TYPE_COPY_CHANNEL,
+						   "recall_container\0", recall_copy_pattern_container,
 						   "source\0", source,
 						   "destination\0", destination,
 						   "devout\0", audio->devout,
@@ -363,8 +359,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(copy_pattern_channel_run));
 
-    destination = destination->next;
+    destination = destination->next_pad;
   }
+
+  drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;
 }
 
 AgsDrumInputLine*

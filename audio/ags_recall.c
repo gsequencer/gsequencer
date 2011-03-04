@@ -907,11 +907,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   /* set recall container */
   g_value_init(&recall_container_value, G_TYPE_OBJECT);
-  g_object_get_property(G_OBJECT(recall),
-			"recall_container\0",
-			&recall_container_value);
-  recall_container = (AgsRecallContainer *) g_value_get_object(&recall_container_value);
-
+  g_value_set_object(&recall_container_value, recall->container);
   g_object_set_property(G_OBJECT(copy),
 			"recall_container\0",
 			&recall_container_value);
@@ -1124,6 +1120,9 @@ ags_recall_find_group_id(GList *recall_i, guint group_id)
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
+
+    if(recall->recall_id != NULL)
+      printf("%u\n\0", recall->recall_id->group_id);
 
     if(recall->recall_id != NULL &&
        recall->recall_id->group_id == group_id)

@@ -265,6 +265,20 @@ ags_copy_pattern_audio_run_get_property(GObject *gobject,
 }
 
 void
+ags_copy_pattern_audio_run_finalize(GObject *gobject)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(gobject);
+
+  if(copy_pattern_audio_run->delay_audio_run != NULL)
+    g_object_unref(copy_pattern_audio_run->delay_audio_run);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_copy_pattern_audio_run_parent_class)->finalize(gobject);
+}
+
+void
 ags_copy_pattern_audio_run_connect(AgsConnectable *connectable)
 {
   /* call parent */
@@ -284,6 +298,8 @@ ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable)
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   ags_copy_pattern_audio_run_parent_run_connectable_interface->connect(run_connectable);
+
+  printf("debug 0\n\0");
 
   /* AgsCopyPattern */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(run_connectable);
@@ -310,20 +326,6 @@ ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable)
   g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run), copy_pattern_audio_run->tic_count_handler);
 }
 
-void
-ags_copy_pattern_audio_run_finalize(GObject *gobject)
-{
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(gobject);
-
-  if(copy_pattern_audio_run->delay_audio_run != NULL)
-    g_object_unref(copy_pattern_audio_run->delay_audio_run);
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_copy_pattern_audio_run_parent_class)->finalize(gobject);
-}
-
 AgsRecall*
 ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
@@ -345,21 +347,21 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   audio = recall_audio->audio;
 
   if(audio != NULL){
-    if((AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL & (recall_id->flags)) == 0)
+    if(recall_id->parent_group_id == 0){
       list_start = audio->play;
-    else
-      list_start = audio->recall;
-
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
       group_id = recall_id->group_id;
-    else
+    }else{
+      list_start = audio->recall;
       group_id = recall_id->parent_group_id;
+    }
 
     list = ags_recall_find_type_with_group_id(list_start,
 					      AGS_TYPE_DELAY_AUDIO_RUN,
 					      group_id);
 
     if(list != NULL){
+      printf("hello\n\0");
+
       g_value_init(&delay_audio_run_value, G_TYPE_OBJECT);
       g_value_set_object(&delay_audio_run_value, list->data);
       g_object_set_property(G_OBJECT(copy),

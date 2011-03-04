@@ -209,6 +209,31 @@ ags_copy_pattern_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_copy_pattern_channel_parent_class)->finalize(gobject);
 }
 
+GList*
+ags_copy_pattern_channel_template_find_source_and_destination(GList *recall,
+							      AgsChannel *destination,
+							      AgsChannel *source)
+{
+  AgsCopyPatternChannel *copy_pattern_channel;
+
+  while(recall != NULL){
+    recall = ags_recall_template_find_type(recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
+
+    if(recall == NULL)
+      break;
+
+    copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->data);
+
+    if(copy_pattern_channel->destination == destination &&
+       AGS_RECALL_CHANNEL(copy_pattern_channel)->channel == source)
+      break;
+
+    recall = recall->next;
+  }
+
+  return(recall);
+}
+
 AgsCopyPatternChannel*
 ags_copy_pattern_channel_new(AgsChannel *destination,
 			     AgsChannel *source,

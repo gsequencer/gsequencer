@@ -54,6 +54,10 @@ struct _AgsCopyPatternChannelClass
 
 GType ags_copy_pattern_channel_get_type();
 
+GList* ags_copy_pattern_channel_template_find_source_and_destination(GList *recall,
+								     AgsChannel *destination,
+								     AgsChannel *source);
+
 AgsCopyPatternChannel* ags_copy_pattern_channel_new(AgsChannel *destination,
 						    AgsChannel *source,
 						    AgsPattern *pattern);

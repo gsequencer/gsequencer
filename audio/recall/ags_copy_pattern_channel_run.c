@@ -182,6 +182,8 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
 
   ags_copy_pattern_channel_run_parent_run_connectable_interface->connect(run_connectable);
 
+  printf("debug 2\n\0");
+
   /* AgsCopyPatternChannelRun */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
 
@@ -202,6 +204,9 @@ ags_copy_pattern_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
   ags_copy_pattern_channel_run_parent_run_connectable_interface->disconnect(run_connectable);
+
+  /* AgsCopyPatternChannelRun */
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
 
   /* get AgsCopyPatternAudioRun */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
@@ -228,11 +233,13 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 
   AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre(recall);
 
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
+
   /* get AgsCopyPatternAudio */
-  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(copy_pattern_channel_run->recall_channel_run.recall_audio_run->recall_audio);
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run->recall_audio);
 
   /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
 
   /* get AgsCopyPatternChannel */
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);

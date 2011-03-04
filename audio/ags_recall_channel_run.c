@@ -403,7 +403,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   /* set recall audio run */
   recall_audio_run_list = container->recall_audio_run;
-  recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list, recall_id->group_id);
+
 
   if(recall_audio_run_list != NULL){
     recall_audio_run = AGS_RECALL_AUDIO_RUN(recall_audio_run_list->data);

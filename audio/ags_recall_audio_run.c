@@ -25,6 +25,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_container.h>
 
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
@@ -345,12 +346,16 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id)
 {
   AgsRecallAudioRun *recall_audio_run, *copy;
+  AgsRecallChannelRun *recall_channel_run;
+  GList *list;
   GValue recall_audio_value = {0,};
+  GValue recall_audio_run_value = {0,};
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
   copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
 											     recall_id));
 
+  /* set recall audio */
   g_value_init(&recall_audio_value, G_TYPE_OBJECT);
   g_value_set_object(&recall_audio_value,
 		     G_OBJECT(recall_audio_run->recall_audio));
@@ -358,6 +363,7 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 			"recall_audio\0",
 			&recall_audio_value);
   g_value_unset(&recall_audio_value);
+
 
   return((AgsRecall *) copy);
 }
