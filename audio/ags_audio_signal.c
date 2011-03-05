@@ -261,9 +261,14 @@ ags_audio_signal_finalize(GObject *gobject)
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0)
     fprintf(stdout, "AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
 
-  g_object_unref(audio_signal->devout);
-  g_object_unref(audio_signal->recycling);
-  g_object_unref(audio_signal->recall_id);
+  if(audio_signal->devout != NULL)
+    g_object_unref(audio_signal->devout);
+
+  if(audio_signal->recycling != NULL)
+    g_object_unref(audio_signal->recycling);
+
+  if(audio_signal->recall_id != NULL)
+    g_object_unref(audio_signal->recall_id);
 
   ags_list_free_and_free_link(audio_signal->stream_beginning);
 

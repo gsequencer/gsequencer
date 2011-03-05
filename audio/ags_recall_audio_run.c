@@ -271,11 +271,13 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 {
   AgsRecallContainer *recall_container;
 
+  printf("pack\n\0");
+
   if(ags_recall_audio_run_parent_packable_interface->pack(packable, container))
     return(TRUE);
 
   recall_container = AGS_RECALL_CONTAINER(container);
-
+  printf("packing: %s\n\0", G_OBJECT_TYPE_NAME(packable));
   recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run,
 						      AGS_RECALL(packable));
 

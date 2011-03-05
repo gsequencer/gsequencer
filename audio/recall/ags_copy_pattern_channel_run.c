@@ -182,7 +182,7 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
 
   ags_copy_pattern_channel_run_parent_run_connectable_interface->connect(run_connectable);
 
-  printf("debug 2\n\0");
+  printf("ags_copy_pattern_channel_run_run_connect: debug\n\0");
 
   /* AgsCopyPatternChannelRun */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
@@ -191,6 +191,7 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
   /* connect tic_alloc in AgsDelayAudioRun */
+  printf("ags_copy_pattern_channel_run_run_connect: %x\n\0", copy_pattern_audio_run->delay_audio_run);
   g_object_ref(G_OBJECT(copy_pattern_audio_run->delay_audio_run));
   copy_pattern_channel_run->tic_alloc_handler =
     g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_alloc\0",
@@ -320,6 +321,8 @@ ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id
 {
   AgsCopyPatternChannelRun *copy;
 
+  printf("ags_copy_pattern_channel_run_duplicate\n\0");
+
   copy = AGS_COPY_PATTERN_CHANNEL_RUN(AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->duplicate(recall, recall_id));
 
   /* empty */
@@ -350,6 +353,8 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
   //  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  printf("ags_copy_pattern_channel_run_tic_alloc_callback: debug\n\0");
 
   //  pthread_mutex_lock(&mutex);
   if(copy_pattern_channel_run->nth_run != nth_run){

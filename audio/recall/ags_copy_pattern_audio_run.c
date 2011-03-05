@@ -300,8 +300,6 @@ ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable)
 
   ags_copy_pattern_audio_run_parent_run_connectable_interface->connect(run_connectable);
 
-  printf("debug 0\n\0");
-
   /* AgsCopyPattern */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(run_connectable);
 
@@ -337,6 +335,8 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   GList *list, *list_start;
   guint group_id;
   GValue delay_audio_run_value = {0,};
+
+  printf("ags_copy_pattern_audio_run_duplicate\n\0");
 
   copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall, recall_id));
 

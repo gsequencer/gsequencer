@@ -391,9 +391,9 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   AgsRecallChannelRun *recall_channel_run, *copy;
   AgsRecallContainer *container;
   AgsRecallAudioRun *recall_audio_run;
+  GList *recall_audio_run_list;
   GValue recall_audio_run_value = {0,};
   GValue recall_channel_value = {0,};
-  GList *recall_audio_run_list;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
@@ -403,7 +403,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   /* set recall audio run */
   recall_audio_run_list = container->recall_audio_run;
-
+  recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list, recall_id->parent_group_id);
 
   if(recall_audio_run_list != NULL){
     recall_audio_run = AGS_RECALL_AUDIO_RUN(recall_audio_run_list->data);

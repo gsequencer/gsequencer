@@ -1122,7 +1122,9 @@ ags_recall_find_group_id(GList *recall_i, guint group_id)
     recall = AGS_RECALL(recall_i->data);
 
     if(recall->recall_id != NULL)
-      printf("%u\n\0", recall->recall_id->group_id);
+      printf("ags_recall_find_group_id: %u\n\0", recall->recall_id->group_id);
+    else
+      printf("ags_recall_find_group_id: no recall id\n\0");
 
     if(recall->recall_id != NULL &&
        recall->recall_id->group_id == group_id)
@@ -1130,6 +1132,8 @@ ags_recall_find_group_id(GList *recall_i, guint group_id)
 
     recall_i = recall_i->next;
   }
+
+  return(NULL);
 }
 
 void
