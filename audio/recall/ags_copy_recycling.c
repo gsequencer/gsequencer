@@ -175,7 +175,7 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_DESTINATION,
 				  param_spec);
 
   param_spec = g_param_spec_object("source\0",
@@ -184,7 +184,7 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOURCE,
 				  param_spec);
 
   /* AgsRecallClass */
