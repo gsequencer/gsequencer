@@ -50,7 +50,7 @@ AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID
 void ags_copy_pattern_channel_run_run_order_changed(AgsRecall *recall, guint nth_run);
 
 void ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-						     guint audio_channel,
+						     guint nth_run,
 						     AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
 

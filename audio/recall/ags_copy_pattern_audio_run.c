@@ -47,6 +47,7 @@ AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *
 void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
 void ags_copy_pattern_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
+						   guint nth_run,
 						   AgsCopyPatternAudioRun *copy_pattern_audio_run);
 
 enum{
@@ -403,18 +404,15 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
 
 void
 ags_copy_pattern_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
+					      guint nth_run,
 					      AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(copy_pattern_audio_run->recall_audio_run.recall_audio);
 
-  if(copy_pattern_audio_run->hide_ref != 0)
-    copy_pattern_audio_run->hide_ref_counter++;
-
-  if(copy_pattern_audio_run->hide_ref_counter == copy_pattern_audio_run->hide_ref){
-    copy_pattern_audio_run->hide_ref_counter = 0;
-
+  // TODO:JK: check if it needs to be fixed
+  if(nth_run == copy_pattern_audio_run->hide_ref){
     if(copy_pattern_audio_run->bit == copy_pattern_audio->length - 1){
       if(copy_pattern_audio->loop ||
 	 copy_pattern_audio_run->recall_ref == 0)
