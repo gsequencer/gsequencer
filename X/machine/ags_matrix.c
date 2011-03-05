@@ -177,6 +177,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* create AgsDelayAudioRun in audio->play */
   play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
 							   "recall_container\0", recall_container,
+							   "recall_audio\0", delay_audio,
 							   NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
@@ -198,6 +199,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* create AgsDelayAudioRun in audio->recall */
   recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
 							     "recall_container\0", recall_container,
+							     "recall_audio\0", delay_audio,
 							     NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, FALSE);
