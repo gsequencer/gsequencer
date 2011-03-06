@@ -25,6 +25,7 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_id.h>
 
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);
@@ -39,11 +40,14 @@ void ags_loop_channel_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
+void ags_loop_channel_finalize(GObject *gobject);
 void ags_loop_channel_connect(AgsConnectable *connectable);
 void ags_loop_channel_disconnect(AgsConnectable *connectable);
 void ags_loop_channel_run_connect(AgsRunConnectable *run_connectable);
 void ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable);
-void ags_loop_channel_finalize(GObject *gobject);
+
+AgsRecall* ags_loop_channel_duplicate(AgsRecall *recall,
+				      AgsRecallID *recall_id);
 
 void ags_loop_channel_run_order_changed(AgsRecall *recall, guint nth_run);
 
@@ -113,6 +117,7 @@ void
 ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
   GParamSpec *param_spec;
 
   ags_loop_channel_parent_class = g_type_class_peek_parent(loop_channel);
@@ -163,6 +168,11 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
   g_object_class_install_property(gobject,
 				  PROP_COUNTER,
 				  param_spec);
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) loop_channel;
+
+  recall->duplicate = ags_loop_channel_duplicate;
 }
 
 void
@@ -368,6 +378,8 @@ ags_loop_channel_run_connect(AgsRunConnectable *run_connectable)
 
   loop_channel = AGS_LOOP_CHANNEL(run_connectable);
 
+  printf("debug\n\0");
+
   if(loop_channel->delay_audio_run != NULL)
     loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc\0",
 						       G_CALLBACK(ags_loop_channel_tic_alloc_callback), loop_channel);
@@ -385,6 +397,38 @@ ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable)
   if(loop_channel->delay_audio_run != NULL)
     g_signal_handler_disconnect(G_OBJECT(loop_channel), loop_channel->tic_alloc_handler);
 
+}
+
+AgsRecall*
+ags_loop_channel_duplicate(AgsRecall *recall,
+			   AgsRecallID *recall_id)
+{
+  AgsLoopChannel *loop_channel, *copy;
+  AgsRecallContainer *container;
+  AgsDelayAudioRun *delay_audio_run;
+  GObject *counter;
+  GList *list;
+
+  loop_channel = AGS_LOOP_CHANNEL(recall);
+  copy = (AgsLoopChannel *) AGS_RECALL_CLASS(ags_loop_channel_parent_class)->duplicate(recall,
+										       recall_id);
+
+  container = AGS_RECALL_CONTAINER(AGS_RECALL(loop_channel->delay_audio_run)->container);
+  list = ags_recall_find_group_id(container->recall_audio_run, recall_id->group_id);
+  delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+
+  container = AGS_RECALL_CONTAINER(AGS_RECALL(loop_channel->counter)->container);
+  list = ags_recall_find_group_id(container->recall_audio_run, recall_id->group_id);
+  counter = G_OBJECT(list->data);
+
+  g_object_set(G_OBJECT(copy),
+	       "channel\0", loop_channel->channel,
+	       "delay_audio_run\0", delay_audio_run,
+	       "counter\0", counter,
+	       NULL);
+
+  
+  return((AgsRecall *) copy);
 }
 
 void
@@ -412,7 +456,7 @@ ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
   printf("debug 0\n\0");
 
   if(loop_channel->nth_run != nth_run ||
-      AGS_COUNTABLE_GET_INTERFACE(loop_channel->counter)->get_counter(AGS_COUNTABLE(loop_channel)) != 0)
+      AGS_COUNTABLE_GET_INTERFACE(loop_channel->counter)->get_counter(AGS_COUNTABLE(loop_channel->counter)) != 0)
     return;
 
   printf("debug 1\n\0");
