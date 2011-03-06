@@ -130,17 +130,17 @@ ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal)
 
   /* properties */
   param_spec = g_param_spec_object("source\0",
-				  "source of input\0",
-				  "The source where this recall will take the audio signal from\0",
+				   "source of input\0",
+				   "The source where this recall will take the audio signal from\0",
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOURCE,
 				  param_spec);
-
+  
   param_spec = g_param_spec_object("devout\0",
-				  "assigned devout\0",
-				  "The devout this recall is assigned to\0",
+				   "assigned devout\0",
+				   "The devout this recall is assigned to\0",
 				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -243,6 +243,7 @@ ags_play_audio_signal_set_property(GObject *gobject,
       if(devout != NULL){
 	g_object_unref(play_audio_signal->devout);
 	free(play_audio_signal->attack);
+	play_audio_signal->attack = NULL;
       }
 
       if(devout != NULL){
@@ -271,8 +272,9 @@ ags_play_audio_signal_set_property(GObject *gobject,
       if(play_audio_signal->attack == attack)
 	return;
 
-      if(play_audio_signal->attack != NULL)
+      if(play_audio_signal->attack != NULL){
 	free(play_audio_signal->attack);
+      }
 
       play_audio_signal->attack = attack;
     }

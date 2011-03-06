@@ -65,8 +65,8 @@ void ags_play_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 							 AgsAudioSignal *audio_signal,
 							 AgsPlayRecycling *play_recycling);
 void ags_play_recycling_source_add_audio_signal_with_frame_count_callback(AgsRecycling *source,
-								     AgsAudioSignal *audio_signal, guint frame_count,
-								     AgsPlayRecycling *play_recycling);
+									  AgsAudioSignal *audio_signal, guint frame_count,
+									  AgsPlayRecycling *play_recycling);
 void ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 							    AgsAudioSignal *audio_signal,
 							    AgsPlayRecycling *play_recycling);
@@ -151,8 +151,8 @@ ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
 
   /* properties */
   param_spec = g_param_spec_object("devout\0",
-				  "assigned AgsDevout\0",
-				  "The AgsDevout this recall is assigned with\0",
+				   "assigned AgsDevout\0",
+				   "The AgsDevout this recall is assigned with\0",
 				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -169,7 +169,7 @@ ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
-
+  
   param_spec = g_param_spec_object("source\0",
 				   "source AgsRecycling\0",
 				   "The AgsRecycling this recall has as source\0",

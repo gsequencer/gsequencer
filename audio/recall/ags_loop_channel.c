@@ -93,7 +93,7 @@ ags_loop_channel_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
+    ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL,
 						   "AgsLoopChannel\0",
 						   &ags_loop_channel_info,
 						   0);
@@ -127,8 +127,8 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
 
   /* properties */
   param_spec = g_param_spec_object("channel\0",
-				  "assigned channel\0",
-				  "The channel where looping should be applied\0",
+				   "assigned channel\0",
+				   "The channel where looping should be applied\0",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -136,8 +136,8 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
 				  param_spec);
 
   param_spec = g_param_spec_object("delay_audio_run\0",
-				  "assigned AgsDelayAudioRun\0",
-				  "The AgsDelayAudioRun which emits tic_alloc signal\0",
+				   "assigned AgsDelayAudioRun\0",
+				   "The AgsDelayAudioRun which emits tic_alloc signal\0",
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -156,9 +156,9 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
 				  param_spec);
 
   param_spec = g_param_spec_object("counter\0",
-				  "pointer to a counter\0",
-				  "The pointer to a counter object which indicates when looping should happen\0",
-				   AGS_TYPE_COUNTABLE,
+				   "pointer to a counter\0",
+				   "The pointer to a counter object which indicates when looping should happen\0",
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_COUNTER,
@@ -244,8 +244,10 @@ ags_loop_channel_set_property(GObject *gobject,
 	  loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc",
 							     G_CALLBACK(ags_loop_channel_tic_alloc_callback), loop_channel);
 
-	g_object_ref(loop_channel->delay_audio_run);
+	g_object_ref(delay_audio_run);
       }
+
+      loop_channel->delay_audio_run = delay_audio_run;
     }
     break;
   case PROP_NTH_RUN:
@@ -367,7 +369,7 @@ ags_loop_channel_run_connect(AgsRunConnectable *run_connectable)
   loop_channel = AGS_LOOP_CHANNEL(run_connectable);
 
   if(loop_channel->delay_audio_run != NULL)
-    loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc",
+    loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc\0",
 						       G_CALLBACK(ags_loop_channel_tic_alloc_callback), loop_channel);
 }
 
@@ -407,9 +409,13 @@ ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
+  printf("debug 0\n\0");
+
   if(loop_channel->nth_run != nth_run ||
       AGS_COUNTABLE_GET_INTERFACE(loop_channel->counter)->get_counter(AGS_COUNTABLE(loop_channel)) != 0)
     return;
+
+  printf("debug 1\n\0");
 
   devout = AGS_DEVOUT(AGS_AUDIO(loop_channel->channel->audio)->devout);
 
@@ -439,8 +445,8 @@ ags_loop_channel_new(AgsChannel *channel,
 
   loop_channel = (AgsLoopChannel *) g_object_new(AGS_TYPE_LOOP_CHANNEL,
 						 "channel\0", channel,
-						 "delay_audio_run", delay_audio_run,
-						 "counter", counter,
+						 "delay_audio_run\0", delay_audio_run,
+						 "counter\0", counter,
 						 NULL);
 
   return(loop_channel);

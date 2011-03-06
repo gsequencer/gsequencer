@@ -255,9 +255,10 @@ ags_copy_audio_signal_set_property(GObject *gobject,
       if(copy_audio_signal->devout == devout)
 	return;
 
-      if(devout != NULL){
+      if(copy_audio_signal->devout != NULL){
 	g_object_unref(copy_audio_signal->devout);
 	free(copy_audio_signal->attack);
+	copy_audio_signal->attack = NULL;
       }
 
       if(devout != NULL){

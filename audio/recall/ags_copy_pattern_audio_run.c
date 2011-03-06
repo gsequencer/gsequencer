@@ -20,6 +20,7 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_countable.h>
 
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
@@ -28,6 +29,7 @@
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
 void ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_copy_pattern_audio_run_countable_interface_init(AgsCountableInterface *countable);
 void ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run);
 void ags_copy_pattern_audio_run_set_property(GObject *gobject,
 					     guint prop_id,
@@ -37,10 +39,11 @@ void ags_copy_pattern_audio_run_get_property(GObject *gobject,
 					     guint prop_id,
 					     GValue *value,
 					     GParamSpec *param_spec);
-void ags_copy_pattern_audio_run_connect(AgsRunConnectable *run_connectable);
-void ags_copy_pattern_audio_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_copy_pattern_audio_run_connect(AgsConnectable *connectable);
+void ags_copy_pattern_audio_run_disconnect(AgsConnectable *connectable);
 void ags_copy_pattern_audio_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
+guint ags_copy_pattern_audio_run_get_counter(AgsCountable *countable);
 void ags_copy_pattern_audio_run_finalize(GObject *gobject);
 
 AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
@@ -90,6 +93,12 @@ ags_copy_pattern_audio_run_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_countable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_pattern_audio_run_countable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_copy_pattern_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 							     "AgsCopyPatternAudioRun\0",
 							     &ags_copy_pattern_audio_run_info,
@@ -102,6 +111,10 @@ ags_copy_pattern_audio_run_get_type()
     g_type_add_interface_static(ags_type_copy_pattern_audio_run,
 				AGS_TYPE_RUN_CONNECTABLE,
 				&ags_run_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_pattern_audio_run,
+				AGS_TYPE_COUNTABLE,
+				&ags_countable_interface_info);
   }
 
   return(ags_type_copy_pattern_audio_run);
@@ -168,6 +181,12 @@ ags_copy_pattern_audio_run_run_connectable_interface_init(AgsRunConnectableInter
 
   run_connectable->connect = ags_copy_pattern_audio_run_run_connect;
   run_connectable->disconnect = ags_copy_pattern_audio_run_run_disconnect;
+}
+
+void
+ags_copy_pattern_audio_run_countable_interface_init(AgsCountableInterface *countable)
+{
+  countable->get_counter = ags_copy_pattern_audio_run_get_counter;
 }
 
 void
@@ -323,6 +342,12 @@ ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable)
   copy_pattern_audio_run->flags &= (~AGS_COPY_PATTERN_AUDIO_RUN_RUN_CONNECTED);
 
   g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run), copy_pattern_audio_run->tic_count_handler);
+}
+
+guint
+ags_copy_pattern_audio_run_get_counter(AgsCountable *countable)
+{
+  return(AGS_COPY_PATTERN_AUDIO_RUN(countable)->bit);
 }
 
 AgsRecall*

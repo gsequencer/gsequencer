@@ -317,7 +317,7 @@ ags_copy_channel_set_property(GObject *gobject,
 
       devout = (AgsDevout *) g_value_get_object(value);
 
-      if(copy_channel->devout != devout)
+      if(copy_channel->devout == devout)
 	return;
 
       if(copy_channel->devout != NULL)

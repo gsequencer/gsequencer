@@ -22,6 +22,9 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_loop_channel.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 
@@ -173,13 +176,36 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 void
 ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 {
-  AgsChannel *output;
-  AgsStreamChannel *stream_channel;
-
   if((AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL & (drum_output_line->flags)) == 0){
+    AgsAudio *audio;
+    AgsChannel *output;
+    AgsDelayAudioRun *delay_audio_run;
+    AgsCopyPatternAudioRun *copy_pattern_audio_run;
+    AgsLoopChannel *loop_channel;
+    AgsStreamChannel *stream_channel;
+    GList *list;
+
     drum_output_line->flags |= AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL;
 
     output = AGS_LINE(drum_output_line)->channel;
+    audio = AGS_AUDIO(output->audio);
+
+    list = ags_recall_template_find_type(audio->play,
+					 AGS_TYPE_DELAY_AUDIO_RUN);
+    delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+
+    list = ags_recall_template_find_type(audio->play,
+					 AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+    copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+
+    /* AgsLoopChannel */
+    loop_channel = ags_loop_channel_new(output,
+					delay_audio_run,
+					G_OBJECT(copy_pattern_audio_run));
+    AGS_RECALL(loop_channel)->flags |= AGS_RECALL_TEMPLATE;
+    
+    output->play = g_list_append(output->play, (gpointer) loop_channel);
+    ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
 
     /* AgsStreamChannel */
     stream_channel = ags_stream_channel_new(output);

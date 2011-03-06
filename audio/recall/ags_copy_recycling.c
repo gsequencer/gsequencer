@@ -387,6 +387,29 @@ ags_copy_recycling_get_property(GObject *gobject,
 }
 
 void
+ags_copy_recycling_finalize(GObject *gobject)
+{
+  AgsCopyRecycling *copy_recycling;
+
+  copy_recycling = AGS_COPY_RECYCLING(gobject);
+
+  if(copy_recycling->devout != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->devout));
+
+  if(copy_recycling->destination != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->destination));
+
+  if(copy_recycling->source != NULL)
+    g_object_unref(G_OBJECT(copy_recycling->source));
+
+  if(copy_recycling->child_destination != NULL)
+    g_object_unref(copy_recycling->child_destination);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_copy_recycling_parent_class)->finalize(gobject);
+}
+
+void
 ags_copy_recycling_connect(AgsConnectable *connectable)
 {
   AgsCopyRecycling *copy_recycling;
@@ -476,29 +499,6 @@ ags_copy_recycling_run_disconnect(AgsRunConnectable *run_connectable)
   g_signal_handler_disconnect(gobject, copy_recycling->source_remove_audio_signal_handler);
 }
 
-void
-ags_copy_recycling_finalize(GObject *gobject)
-{
-  AgsCopyRecycling *copy_recycling;
-
-  copy_recycling = AGS_COPY_RECYCLING(gobject);
-
-  if(copy_recycling->devout != NULL)
-    g_object_unref(G_OBJECT(copy_recycling->devout));
-
-  if(copy_recycling->destination != NULL)
-    g_object_unref(G_OBJECT(copy_recycling->destination));
-
-  if(copy_recycling->source != NULL)
-    g_object_unref(G_OBJECT(copy_recycling->source));
-
-  if(copy_recycling->child_destination != NULL)
-    g_object_unref(copy_recycling->child_destination);
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_copy_recycling_parent_class)->finalize(gobject);
-}
-
 void 
 ags_copy_recycling_done(AgsRecall *recall)
 {
@@ -534,7 +534,7 @@ ags_copy_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy->devout = copy_recycling->devout;
   copy->destination = copy_recycling->destination;
   copy->source = copy_recycling->source;
-  // copy->child_destination = copy_recycling->child_destination;
+  copy->child_destination = copy_recycling->child_destination;
 
   return((AgsRecall *) copy);
 }
