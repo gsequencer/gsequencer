@@ -240,7 +240,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }else{
     AgsDelayAudio *delay_audio;
 
-    printf("ags_delay_audio_run_run_pre: %x\n\0", delay_audio_run);
     delay_audio = AGS_DELAY_AUDIO(delay_audio_run->recall_audio_run.recall_audio);
 
     if(delay_audio_run->counter == 0){
@@ -347,7 +346,6 @@ ags_delay_audio_run_tic_alloc(AgsDelayAudioRun *delay_audio_run, guint nth_run)
 void
 ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay_audio_run, guint nth_run)
 {
-  printf("%u\n\0", nth_run);
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));

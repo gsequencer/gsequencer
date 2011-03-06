@@ -289,7 +289,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 								       "destination\0", destination,
 								       "pattern\0", source->pattern->data,
 								       NULL);
-    AGS_RECALL(play_copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(play_copy_pattern_channel)->flags |= (AGS_RECALL_TEMPLATE |
+						     AGS_RECALL_DISTINCTS_REAL);
     ags_channel_add_recall(source, (GObject *) play_copy_pattern_channel, FALSE);
     
     if(GTK_WIDGET_VISIBLE(drum))
@@ -302,7 +303,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									 "destination\0", destination,
 									 "pattern\0", source->pattern->data,
 									 NULL);
-    AGS_RECALL(recall_copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_IS_REAL;
+    AGS_RECALL(recall_copy_pattern_channel)->flags |= (AGS_RECALL_TEMPLATE |
+						       AGS_RECALL_DISTINCTS_REAL |
+						       AGS_RECALL_IS_REAL);
     ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel, FALSE);
       
     if(GTK_WIDGET_VISIBLE(drum))
@@ -316,7 +319,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									 "recall_channel\0", play_copy_pattern_channel,
 									 NULL);
   
-    AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_DISTINCTS_REAL);
     ags_channel_add_recall(source, (GObject *) copy_pattern_channel_run, FALSE);
     
     if(GTK_WIDGET_VISIBLE(drum))
@@ -353,7 +357,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									 "recall_channel\0", recall_copy_pattern_channel,
 									 NULL);
     
-    AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_IS_REAL;
+    AGS_RECALL(copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_DISTINCTS_REAL |
+						    AGS_RECALL_IS_REAL);
     ags_channel_add_recall(source, (GObject *) copy_pattern_channel_run, FALSE);
     
     if(GTK_WIDGET_VISIBLE(drum))
