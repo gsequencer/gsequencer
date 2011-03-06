@@ -403,7 +403,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   /* set recall audio run */
   recall_audio_run_list = container->recall_audio_run;
-  printf("recall_id->parent_group_id: %u\n\0", recall_id->parent_group_id);
   recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list, recall_id->parent_group_id);
 
   if(recall_audio_run_list != NULL){

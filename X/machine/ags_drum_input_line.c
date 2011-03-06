@@ -242,15 +242,21 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   g_value_unset(&recall_container_value);
 
   if((AGS_DRUM_INPUT_LINE_MAPPED_RECALL & (drum_input_line->flags)) == 0){
-    /* AgsVolumeChannel */
-    volume_channel = ags_volume_channel_new(source,
-					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
-    
-    AGS_RECALL(volume_channel)->flags |= AGS_RECALL_TEMPLATE;
-    ags_channel_add_recall(source, (GObject *) volume_channel, TRUE);
+    /* AgsStreamChannel */
+    stream_channel = ags_stream_channel_new(source);
+    AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(source, (GObject *) stream_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
-      ags_connectable_connect(AGS_CONNECTABLE(volume_channel));
+      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
+
+    /* AgsStreamChannel */
+    stream_channel = ags_stream_channel_new(source);
+    AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(source, (GObject *) stream_channel, FALSE);
+
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
 
     /* AgsPlayChannel */
     play_channel = ags_play_channel_new(source,
@@ -269,13 +275,26 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     g_signal_connect((GObject *) play_channel, "cancel\0",
 		     G_CALLBACK(ags_drum_input_line_play_channel_cancel), drum_input_line);
 
-    /* AgsStreamChannel */
-    stream_channel = ags_stream_channel_new(source);
-    AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
-    ags_channel_add_recall(source, (GObject *) stream_channel, TRUE);
+    /* AgsVolumeChannel */
+    volume_channel = ags_volume_channel_new(source,
+					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
+    
+    AGS_RECALL(volume_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(source, (GObject *) volume_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
-      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
+      ags_connectable_connect(AGS_CONNECTABLE(volume_channel));
+
+    /* AgsVolumeChannel */
+    volume_channel = ags_volume_channel_new(source,
+					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
+    
+    AGS_RECALL(volume_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(source, (GObject *) volume_channel, FALSE);
+
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(volume_channel));
+
   }
 
   /* create recalls which depend on output */

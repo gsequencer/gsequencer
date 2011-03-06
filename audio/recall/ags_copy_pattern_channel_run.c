@@ -191,7 +191,7 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   /* connect tic_alloc in AgsDelayAudioRun */
   g_object_ref(G_OBJECT(copy_pattern_audio_run->delay_audio_run));
   copy_pattern_channel_run->tic_alloc_handler =
-    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_alloc\0",
+    g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_alloc_input\0",
 		     G_CALLBACK(ags_copy_pattern_channel_run_tic_alloc_callback), copy_pattern_channel_run);
 }
 

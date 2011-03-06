@@ -303,17 +303,17 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 	    link_channel = ags_link_channel_new(channel, NULL);
 	    
 	    /* append AgsLinkChannel */
-	    ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
-				   AGS_TASK(link_channel));
+	    // FIXME:JK: has a need for the unavaible task
+	    //	    ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+				   //				   AGS_TASK(link_channel));
 
 	    AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	    AGS_AUDIO_SIGNAL(list->data)->recycling = (GObject *) channel->first_recycling;
 	    audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 
-	    g_static_mutex_lock(&mutex);
+	    // FIXME:JK: create a task
 	    channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal, (gpointer) audio_signal_source_old);
 	    channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal, list->data);
-	    g_static_mutex_unlock(&mutex);
 
 	    g_object_unref(G_OBJECT(audio_signal_source_old));
 

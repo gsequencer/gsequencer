@@ -251,7 +251,7 @@ ags_loop_channel_set_property(GObject *gobject,
 
       if(delay_audio_run != NULL){
 	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(loop_channel)->flags)) != 0)
-	  loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc",
+	  loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc_output\0",
 							     G_CALLBACK(ags_loop_channel_tic_alloc_callback), loop_channel);
 
 	g_object_ref(delay_audio_run);
@@ -378,10 +378,8 @@ ags_loop_channel_run_connect(AgsRunConnectable *run_connectable)
 
   loop_channel = AGS_LOOP_CHANNEL(run_connectable);
 
-  printf("debug\n\0");
-
   if(loop_channel->delay_audio_run != NULL)
-    loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc\0",
+    loop_channel->tic_alloc_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio_run), "tic_alloc_output\0",
 						       G_CALLBACK(ags_loop_channel_tic_alloc_callback), loop_channel);
 }
 
@@ -453,13 +451,9 @@ ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  printf("debug 0\n\0");
-
   if(loop_channel->nth_run != nth_run ||
       AGS_COUNTABLE_GET_INTERFACE(loop_channel->counter)->get_counter(AGS_COUNTABLE(loop_channel->counter)) != 0)
     return;
-
-  printf("debug 1\n\0");
 
   devout = AGS_DEVOUT(AGS_AUDIO(loop_channel->channel->audio)->devout);
 
