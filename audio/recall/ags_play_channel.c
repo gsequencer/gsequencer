@@ -416,8 +416,11 @@ ags_play_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   play_channel = (AgsPlayChannel *) recall;
   copy = (AgsPlayChannel *) AGS_RECALL_CLASS(ags_play_channel_parent_class)->duplicate(recall, recall_id);
 
-  copy->devout = play_channel->devout;
-  copy->source = play_channel->source;
+  g_object_set(G_OBJECT(copy),
+	       "devout\0", play_channel->devout,
+	       "audio_channel\0", play_channel->audio_channel,
+	       "source\0", play_channel->source,
+	       NULL);
 
   ags_play_channel_map_play_recycling(copy);
 

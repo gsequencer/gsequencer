@@ -240,7 +240,7 @@ ags_play_audio_signal_set_property(GObject *gobject,
       if(play_audio_signal->devout == devout)
 	return;
 
-      if(devout != NULL){
+      if(play_audio_signal->devout != NULL){
 	g_object_unref(play_audio_signal->devout);
 	free(play_audio_signal->attack);
 	play_audio_signal->attack = NULL;

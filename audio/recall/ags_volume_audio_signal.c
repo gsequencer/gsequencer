@@ -122,7 +122,7 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
   param_spec = g_param_spec_object("audio_signal\0",
 				   "volume AgsAudioSignal\0",
 				   "The AgsAudioSignal to apply volume\0",
-				   AGS_TYPE_CHANNEL,
+				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_SIGNAL,
@@ -314,7 +314,10 @@ ags_volume_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   volume_audio_signal = (AgsVolumeAudioSignal *) recall;
   copy = (AgsVolumeAudioSignal *) AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->duplicate(recall, recall_id);
 
-  copy->audio_signal = volume_audio_signal->audio_signal;
+  g_object_set(G_OBJECT(copy),
+	       "audio_signal\0", volume_audio_signal->audio_signal,
+	       "volume\0", volume_audio_signal->volume,
+	       NULL);
 
   return((AgsRecall *) copy);
 }
