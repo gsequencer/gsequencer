@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_RUN_ORDER                (ags_run_order_get_type ())
 #define AGS_RUN_ORDER(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), AGS_TYPE_RUN_ORDER, AgsRunOrder))

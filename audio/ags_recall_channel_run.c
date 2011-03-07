@@ -55,6 +55,11 @@ AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id);
 
 enum{
+  RUN_ORDER_CHANGED,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_RECALL_AUDIO_RUN,
   PROP_RECALL_CHANNEL,
@@ -64,6 +69,8 @@ static gpointer ags_recall_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_channel_run_parent_connectable_interface;
 static AgsPackableInterface* ags_recall_channel_run_parent_packable_interface;
 static AgsRunConnectableInterface *ags_recall_channel_run_parent_run_connectable_interface;
+
+static guint recall_channel_run_signals[LAST_SIGNAL];
 
 GType
 ags_recall_channel_run_get_type()
@@ -162,6 +169,20 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   recall = (AgsRecallClass *) recall_channel_run;
 
   recall->duplicate = ags_recall_channel_run_duplicate;
+
+  /* AgsRecallChannelRunClass */
+  recall_channel_run->run_order_changed = NULL;
+
+  /* signals */
+  recall_channel_run_signals[RUN_ORDER_CHANGED] =
+    g_signal_new("run_order_changed\0",
+		 G_TYPE_FROM_CLASS (recall_channel_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, run_order_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 }
 
 void
@@ -428,6 +449,19 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
 
   return((AgsRecall *) copy);
+}
+
+void
+ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+					 guint nth_run)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall_channel_run));
+
+  g_object_ref(G_OBJECT(recall_channel_run));
+  g_signal_emit(G_OBJECT(recall_channel_run),
+		recall_channel_run_signals[RUN_ORDER_CHANGED], 0,
+		nth_run);
+  g_object_unref(G_OBJECT(recall_channel_run));
 }
 
 AgsRecallChannelRun*

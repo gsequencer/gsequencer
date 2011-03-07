@@ -48,9 +48,13 @@ struct _AgsRecallChannelRun
 struct _AgsRecallChannelRunClass
 {
   AgsRecallClass recall;
+
+  void (*run_order_changed)(AgsRecallChannelRun *recall_channel_run, guint nth_run);
 };
 
 GType ags_recall_channel_run_get_type();
+
+void ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run, guint nth_run);
 
 AgsRecallChannelRun* ags_recall_channel_run_new();
 
