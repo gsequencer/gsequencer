@@ -22,6 +22,8 @@ void ags_run_order_class_init(AgsRunOrderClass *run_order);
 void ags_run_order_init(AgsRunOrder *run_order);
 void ags_run_order_finalize(GObject *gobject);
 
+void ags_run_order_changed(AgsRunOrder *run_order, AgsChannel *channel, guint position);
+
 static gpointer ags_run_order_parent_class = NULL;
 
 GType
@@ -75,6 +77,69 @@ void
 ags_run_order_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_run_order_parent_class)->finalize(gobject);
+}
+
+void
+ags_run_order_changed(AgsRunOrder *run_order, AgsChannel *channel, guint position)
+{
+  GList *list;
+
+  if(run_order->recall_id->parent_group_id == 0){
+    list = channel->play;
+  }else{
+    list = channel->recall;
+  }
+
+  while(list != NULL){
+    if(AGS_IS_RECALL_CHANNEL_RUN(list->data) &&
+       AGS_RECALL(list->data)->recall_id != NULL &&
+       AGS_RECALL(list->data)->recall_id->group_id == run_order->recall_id->group_id){
+      ags_recall_channel_run_run_order_changed(AGS_RECALL_CHANNEL_RUN(list->data),
+					       position);
+    }
+    
+    list = list->next;
+  }
+}
+
+void
+ags_run_order_add_channel(AgsRunOrder *run_order, AgsChannel *channel)
+{
+  run_order->run_order = g_list_append(run_order->run_order, channel);
+  run_order->run_count++;
+
+  ags_run_order_changed(run_order, channel, run_order->run_count - 1);
+}
+
+void
+ags_run_order_insert_channel(AgsRunOrder *run_order, AgsChannel *channel, guint position)
+{
+  AgsChannel *channel;
+  GList *run_order_i;
+  guint i;
+
+  run_order->run_order = g_list_insert(run_order->run_order, channel, (gint) position);
+  run_order->run_count++;
+
+  run_order_i = g_list_nth(run_order->run_order, position + 1);
+
+  for(i = run_order->run_count - 1; run_order_i != NULL; i++){
+    channel = AGS_CHANNEL(run_order_i->data);
+
+    ags_run_order_changed(run_order, channel, i);
+
+    run_order_i = run_order_i->next;
+  }
+}
+
+void
+ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel)
+{
+}
+
+AgsRunOrder*
+ags_run_order_find_group_id(GList *run_order_i, guint group_id)
+{
 }
 
 AgsRunOrder*

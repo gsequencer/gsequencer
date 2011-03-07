@@ -24,6 +24,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_run_order.h>
 
 #define AGS_TYPE_AUDIO                (ags_audio_get_type ())
 #define AGS_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO, AgsAudio))
@@ -107,6 +108,9 @@ void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 void ags_audio_find_group_id_from_child(AgsAudio *audio,
 					AgsChannel *input, AgsRecallID *input_recall_id, gboolean input_do_recall,
 					AgsRecallID **child_recall_id, gboolean *child_do_recall);
+
+void ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order);
+void ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order);
 
 void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play);
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);

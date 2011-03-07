@@ -291,6 +291,7 @@ ags_audio_finalize(GObject *gobject)
     free(audio->devout_play);
 
   ags_list_free_and_unref_link(audio->recall_id);
+  ags_list_free_and_unref_link(audio->run_order);
 
   ags_list_free_and_unref_link(audio->recall);
   ags_list_free_and_unref_link(audio->play);
@@ -1450,6 +1451,18 @@ ags_audio_find_group_id_from_child(AgsAudio *audio,
     (*child_recall_id) = ags_recall_id_find_group_id(input->link->recall_id, input_recall_id->group_id);
     (*child_do_recall) = input_do_recall;
   }
+}
+
+void
+ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order)
+{
+  audio->run_order = g_list_prepend(audio->run_order, run_order);
+}
+
+void
+ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order)
+{
+  audio->run_order = g_list_remove(audio->run_order, run_order);
 }
 
 void

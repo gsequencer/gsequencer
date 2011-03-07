@@ -51,6 +51,12 @@ struct _AgsRunOrderClass
 
 GType ags_run_order_get_type(void);
 
+void ags_run_order_add_channel(AgsRunOrder *run_order, AgsChannel *channel);
+void ags_run_order_insert_channel(AgsRunOrder *run_order, AgsChannel *channel, guint position);
+void ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel);
+
+AgsRunOrder* ags_run_order_find_group_id(GList *run_order, guint group_id);
+
 AgsRunOrder* ags_run_order_new();
 
 #endif /*__AGS_RUN_ORDER_H__*/
