@@ -189,6 +189,7 @@ ags_audio_init(AgsAudio *audio)
   audio->devout_play->source = (GObject *) audio;
 
   audio->recall_id = NULL;
+  audio->run_order = NULL;
 
   audio->play_container;
   audio->recall_container;

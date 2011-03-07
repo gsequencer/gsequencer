@@ -1639,6 +1639,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
 
+      /* check if it's a real recall or not and whether it needs to be loaded */
       matches_reality = TRUE;
 
       if((AGS_RECALL_DISTINCTS_REAL & (recall->flags)) != 0){

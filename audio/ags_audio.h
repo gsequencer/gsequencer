@@ -42,16 +42,8 @@ typedef enum{
   AGS_AUDIO_HAS_NOTATION           = 1 << 3,
   AGS_AUDIO_SYNC                   = 1 << 4, // can be combined with below
   AGS_AUDIO_ASYNC                  = 1 << 5,
-  //  AGS_AUDIO_DEVOUT_PLAY_REMOVE     = 1 << 6,
-  //  AGS_AUDIO_DEVOUT_PLAY_CANCEL     = 1 << 7,
   AGS_AUDIO_RUNNING                = 1 << 6,
   AGS_AUDIO_PLAYING                = 1 << 7,
-  /*  AGS_AUDIO_RECALL_PRE_INIT_DONE   = 1 << 10,
-  AGS_AUDIO_RECALL_INTER_INIT_DONE = 1 << 11,
-  AGS_AUDIO_RECALL_POST_INIT_DONE  = 1 << 12,
-  AGS_AUDIO_PLAY_PRE_INIT_DONE     = 1 << 13,
-  AGS_AUDIO_PLAY_INTER_INIT_DONE   = 1 << 14,
-  AGS_AUDIO_PLAY_POST_INIT_DONE    = 1 << 15, */
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -80,11 +72,12 @@ struct _AgsAudio
   AgsDevoutPlay *devout_play;
 
   GList *recall_id;
+  GList *run_order;
 
   GList *recall_container;
   GList *play_container;
 
-  GList *recall; // eg. AGS_DELAY in AgsRecallClass->recall_inter
+  GList *recall;
   GList *play;
 
   GList *recall_remove;
