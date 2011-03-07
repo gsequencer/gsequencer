@@ -363,12 +363,12 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
   /* get AgsCopyPatternChannel */
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
 
-
   if(ags_pattern_get_bit((AgsPattern *) copy_pattern_channel->pattern,
 			 copy_pattern_audio->i, copy_pattern_audio->j,
 			 copy_pattern_audio_run->bit)){
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
+    printf("channel: %u\n\0", copy_pattern_channel->recall_channel.channel->line);
 
     /* get source */
     source = copy_pattern_channel->recall_channel.channel;

@@ -437,7 +437,7 @@ ags_copy_pattern_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(copy_pattern_audio_run->recall_audio_run.recall_audio);
 
   // TODO:JK: check if it needs to be fixed
-  if(nth_run == copy_pattern_audio_run->hide_ref){
+  if(nth_run == 0){
     if(copy_pattern_audio_run->bit == copy_pattern_audio->length - 1){
       if(copy_pattern_audio->loop ||
 	 copy_pattern_audio_run->recall_ref == 0)
