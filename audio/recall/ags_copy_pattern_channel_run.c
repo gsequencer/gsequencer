@@ -47,7 +47,9 @@ void ags_copy_pattern_channel_run_done(AgsRecall *recall);
 void ags_copy_pattern_channel_run_cancel(AgsRecall *recall);
 void ags_copy_pattern_channel_run_remove(AgsRecall *recall);
 AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
-void ags_copy_pattern_channel_run_run_order_changed(AgsRecall *recall, guint nth_run);
+
+void ags_copy_pattern_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+						    guint nth_run);
 
 void ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 						     guint nth_run,
@@ -110,6 +112,7 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  AgsRecallChannelRunClass *recall_channel_run;
   GParamSpec *param_spec;
 
   ags_copy_pattern_channel_run_parent_class = g_type_class_peek_parent(copy_pattern_channel_run);
@@ -127,6 +130,10 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   recall->cancel = ags_copy_pattern_channel_run_cancel;
   recall->remove = ags_copy_pattern_channel_run_remove;
   recall->duplicate = ags_copy_pattern_channel_run_duplicate;
+
+  /* AgsRecallChannelRunClass */
+  recall_channel_run = (AgsRecallChannelRunClass *) copy_pattern_channel_run;
+  recall_channel_run->run_order_changed = ags_copy_pattern_channel_run_run_order_changed;
 }
 
 void
@@ -326,16 +333,20 @@ ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id
 }
 
 void
-ags_copy_pattern_channel_run_run_order_changed(AgsRecall *recall, guint nth_run)
+ags_copy_pattern_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+					       guint nth_run)
 {
+  AGS_COPY_PATTERN_CHANNEL_RUN(recall_channel_run)->nth_run = nth_run;
+  /*
   GValue value = {0,};
 
   g_value_init(&value, G_TYPE_UINT);
   g_value_set_uint(&value, nth_run);
-  g_object_set_property(G_OBJECT(recall),
+  g_object_set_property(G_OBJECT(recall_channel_run),
 			"nth_run\0",
 			&value);
   g_value_unset(&value);
+  */
 }
 
 void

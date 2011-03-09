@@ -58,6 +58,6 @@ void ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel);
 
 AgsRunOrder* ags_run_order_find_group_id(GList *run_order, guint group_id);
 
-AgsRunOrder* ags_run_order_new();
+AgsRunOrder* ags_run_order_new(AgsRecallID *recall_id);
 
 #endif /*__AGS_RUN_ORDER_H__*/

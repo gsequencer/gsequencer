@@ -54,6 +54,9 @@ void ags_recall_channel_run_finalize(GObject *gobject);
 AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id);
 
+void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+						   guint run_order);
+
 enum{
   RUN_ORDER_CHANGED,
   LAST_SIGNAL,
@@ -219,6 +222,8 @@ ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run)
 {
   recall_channel_run->recall_audio_run = NULL;
   recall_channel_run->recall_channel = NULL;
+
+  recall_channel_run->run_order = 0;
 }
 
 
@@ -452,16 +457,29 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 }
 
 void
+ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+					      guint run_order)
+{
+  recall_channel_run->run_order = run_order;
+}
+
+void
 ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-					 guint nth_run)
+					 guint run_order)
 {
   g_return_if_fail(AGS_IS_RECALL(recall_channel_run));
 
   g_object_ref(G_OBJECT(recall_channel_run));
   g_signal_emit(G_OBJECT(recall_channel_run),
 		recall_channel_run_signals[RUN_ORDER_CHANGED], 0,
-		nth_run);
+		run_order);
   g_object_unref(G_OBJECT(recall_channel_run));
+}
+
+guint
+ags_recall_channel_run_get_run_order(AgsRecallChannelRun *recall_channel_run)
+{
+  return(recall_channel_run->run_order);
 }
 
 AgsRecallChannelRun*

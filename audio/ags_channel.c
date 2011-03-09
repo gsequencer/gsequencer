@@ -35,6 +35,7 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_run_order.h>
 
 #include <stdio.h>
 
@@ -1622,8 +1623,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   }
   void ags_channel_recursive_play_init_duplicate_channel_recall(AgsChannel *channel, guint group_id, guint audio_signal_level)
   {
-    AgsRecall *recall;
     AgsRecallID *recall_id;
+    AgsRecall *recall;
     GList *list_recall;
     gboolean matches_reality;
 
@@ -1662,14 +1663,30 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       /* duplicate play or recall AgsRecall */
       if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
-	recall = ags_recall_duplicate(recall, recall_id);
+	AgsRecall *copy;
+
+	copy = ags_recall_duplicate(recall, recall_id);
+
+
+	if(AGS_IS_OUTPUT(channel)){
+	  AgsAudio *audio;
+	  AgsRunOrder *run_order;
+
+	  audio = AGS_AUDIO(channel->audio);
+
+	  run_order = ags_run_order_find_group_id(audio->run_order,
+						  recall_id->group_id);
+
+	  ags_run_order_add_channel(run_order,
+				    channel);
+	}
 
 	if(recall_id->parent_group_id == 0)
-	  channel->play = g_list_append(channel->play, recall);
+	  channel->play = g_list_append(channel->play, copy);
 	else
-	  channel->recall = g_list_append(channel->recall, recall);
+	  channel->recall = g_list_append(channel->recall, copy);
 
-	ags_connectable_connect(AGS_CONNECTABLE(recall));
+	ags_connectable_connect(AGS_CONNECTABLE(copy));
       }
   
       list_recall = list_recall->next;
@@ -1713,6 +1730,17 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
 	GList *list_recall_run_notify;
+	AgsRunOrder *run_order;
+
+	/* set run order */
+	run_order = ags_run_order_find_group_id(audio->run_order,
+						recall_id->group_id);
+	
+	if(run_order == NULL){
+	  run_order = ags_run_order_new(recall_id);
+	  ags_audio_add_run_order(audio, run_order);
+	}
+
 	
 	/* check if the object has already been duplicated */
 	list_recall_run_notify = ags_recall_find_type_with_group_id(list_recall_start, G_OBJECT_TYPE(recall), group_id);

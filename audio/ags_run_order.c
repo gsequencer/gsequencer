@@ -22,9 +22,25 @@
 
 void ags_run_order_class_init(AgsRunOrderClass *run_order);
 void ags_run_order_init(AgsRunOrder *run_order);
+void ags_run_order_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_run_order_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_run_order_finalize(GObject *gobject);
 
-void ags_run_order_changed(AgsRunOrder *run_order, AgsChannel *channel, guint position);
+void ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *input,
+				  guint new_position, guint old_position);
+void ags_run_order_changed_input(AgsRunOrder *run_order, AgsChannel *input,
+				 guint new_position, guint old_position);
+
+enum{
+  PROP_0,
+  PROP_RECALL_ID,
+};
 
 static gpointer ags_run_order_parent_class = NULL;
 
@@ -59,11 +75,26 @@ void
 ags_run_order_class_init(AgsRunOrderClass *run_order)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_run_order_parent_class = g_type_class_peek_parent(run_order);
 
   gobject = (GObjectClass *) run_order;
+
+  gobject->set_property = ags_run_order_set_property;
+  gobject->get_property = ags_run_order_get_property;
+
   gobject->finalize = ags_run_order_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("recall_id\0",
+				   "recall id of AgsRunOrder\0",
+				   "The recall id of the AgsRunOrder\0",
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
 }
 
 void
@@ -75,32 +106,129 @@ ags_run_order_init(AgsRunOrder *run_order)
   run_order->run_order = NULL;
 }
 
+
+void
+ags_run_order_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsRunOrder *run_order;
+
+  run_order = AGS_RUN_ORDER(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL_ID:
+    {
+      AgsRecallID *recall_id;
+
+      recall_id = (AgsRecallID *) g_value_get_object(value);
+
+      if(run_order->recall_id == recall_id)
+	return;
+
+      if(run_order->recall_id != NULL){
+	g_object_unref(run_order->recall_id);
+      }
+
+      if(recall_id != NULL){
+	g_object_ref(recall_id);
+      }
+
+      run_order->recall_id = recall_id;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_run_order_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsRunOrder *run_order;
+
+  run_order = AGS_RUN_ORDER(gobject);
+
+  switch(prop_id){
+  case PROP_RECALL_ID:
+    {
+      g_value_set_object(value, run_order->recall_id);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
 void
 ags_run_order_finalize(GObject *gobject)
 {
+  AgsRunOrder *run_order;
+
+  run_order = AGS_RUN_ORDER(gobject);
+
+  if(run_order->recall_id != NULL)
+    g_object_unref(run_order->recall_id);
+
+  ags_list_free_and_unref_link(run_order->run_order);
+
   G_OBJECT_CLASS(ags_run_order_parent_class)->finalize(gobject);
 }
 
 void
-ags_run_order_changed(AgsRunOrder *run_order, AgsChannel *channel, guint position)
+ags_run_order_changed_input(AgsRunOrder *run_order, AgsChannel *input,
+			    guint new_position, guint old_position)
 {
   GList *list;
 
   if(run_order->recall_id->parent_group_id == 0){
-    list = channel->play;
+    list = input->play;
   }else{
-    list = channel->recall;
+    list = input->recall;
   }
 
   while(list != NULL){
     if(AGS_IS_RECALL_CHANNEL_RUN(list->data) &&
        AGS_RECALL(list->data)->recall_id != NULL &&
-       AGS_RECALL(list->data)->recall_id->group_id == run_order->recall_id->group_id){
+       AGS_RECALL(list->data)->recall_id->group_id == run_order->recall_id->group_id &&
+       ags_recall_channel_run_get_run_order(AGS_RECALL_CHANNEL_RUN(list->data)) == old_position){
       ags_recall_channel_run_run_order_changed(AGS_RECALL_CHANNEL_RUN(list->data),
-					       position);
+					       new_position);
     }
     
     list = list->next;
+  }
+}
+
+void
+ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *output,
+			     guint new_position, guint old_position)
+{
+  AgsAudio *audio;
+  AgsChannel *input;
+
+  audio = AGS_AUDIO(output->audio);
+
+  if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+    input = ags_channel_nth(audio->input, output->audio_channel);
+
+    while(input != NULL){
+      ags_run_order_changed_input(run_order, input,
+				  new_position, old_position);
+
+      input = input->next_pad;
+    }
+  }else{
+    input = ags_channel_nth(audio->input, output->line);
+
+    ags_run_order_changed_input(run_order, input,
+				new_position, old_position);
   }
 }
 
@@ -110,7 +238,7 @@ ags_run_order_add_channel(AgsRunOrder *run_order, AgsChannel *channel)
   run_order->run_order = g_list_append(run_order->run_order, channel);
   run_order->run_count++;
 
-  ags_run_order_changed(run_order, channel, run_order->run_count - 1);
+  ags_run_order_changed_output(run_order, channel, run_order->run_count, 0);
 }
 
 void
@@ -122,12 +250,13 @@ ags_run_order_insert_channel(AgsRunOrder *run_order, AgsChannel *channel, guint 
   run_order->run_order = g_list_insert(run_order->run_order, channel, (gint) position);
   run_order->run_count++;
 
-  list = g_list_nth(run_order->run_order, position);
+  ags_run_order_changed_output(run_order, channel, position, 0);
+  list = g_list_nth(run_order->run_order, position + 1);
 
-  for(i = run_order->run_count - 1; list != NULL; i++){
+  for(i = position + 1; list != NULL; i++){
     channel = AGS_CHANNEL(list->data);
 
-    ags_run_order_changed(run_order, channel, i);
+    ags_run_order_changed_output(run_order, channel, i, i - 1);
 
     list = list->next;
   }
@@ -150,12 +279,13 @@ ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel)
     run_order->run_order = g_list_remove(run_order->run_order, channel);
     run_order->run_count--;
 
+    ags_run_order_changed_output(run_order, channel, 0, position + 1);
     list = g_list_nth(run_order->run_order, position);
     
-    for(i = run_order->run_count - 1; list != NULL; i++){
+    for(i = position; list != NULL; i++){
       channel = AGS_CHANNEL(list->data);
       
-      ags_run_order_changed(run_order, channel, i);
+      ags_run_order_changed_output(run_order, channel, i, i + 1);
       
       list = list->next;
     }
@@ -177,11 +307,13 @@ ags_run_order_find_group_id(GList *run_order_i, guint group_id)
 }
 
 AgsRunOrder*
-ags_run_order_new()
+ags_run_order_new(AgsRecallID *recall_id)
 {
   AgsRunOrder *run_order;
 
-  run_order = (AgsRunOrder *) g_object_new(AGS_TYPE_RUN_ORDER, NULL);
+  run_order = (AgsRunOrder *) g_object_new(AGS_TYPE_RUN_ORDER,
+					   "recall_id\0", recall_id,
+					   NULL);
 
   return(run_order);
 }
