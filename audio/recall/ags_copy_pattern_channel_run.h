@@ -41,7 +41,6 @@ struct _AgsCopyPatternChannelRun
   AgsRecallChannelRun recall_channel_run;
 
   gulong tic_alloc_handler;
-  guint nth_run;
 };
 
 struct _AgsCopyPatternChannelRunClass

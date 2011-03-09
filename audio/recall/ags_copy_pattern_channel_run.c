@@ -48,11 +48,8 @@ void ags_copy_pattern_channel_run_cancel(AgsRecall *recall);
 void ags_copy_pattern_channel_run_remove(AgsRecall *recall);
 AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
-void ags_copy_pattern_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-						    guint nth_run);
-
 void ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-						     guint nth_run,
+						     guint run_order,
 						     AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
 
@@ -130,10 +127,6 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   recall->cancel = ags_copy_pattern_channel_run_cancel;
   recall->remove = ags_copy_pattern_channel_run_remove;
   recall->duplicate = ags_copy_pattern_channel_run_duplicate;
-
-  /* AgsRecallChannelRunClass */
-  recall_channel_run = (AgsRecallChannelRunClass *) copy_pattern_channel_run;
-  recall_channel_run->run_order_changed = ags_copy_pattern_channel_run_run_order_changed;
 }
 
 void
@@ -159,9 +152,8 @@ ags_copy_pattern_channel_run_run_connectable_interface_init(AgsRunConnectableInt
 void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
-  copy_pattern_channel_run->nth_run = 0;
+  /* empty */
 }
-
 
 void
 ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
@@ -333,25 +325,8 @@ ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id
 }
 
 void
-ags_copy_pattern_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-					       guint nth_run)
-{
-  AGS_COPY_PATTERN_CHANNEL_RUN(recall_channel_run)->nth_run = nth_run;
-  /*
-  GValue value = {0,};
-
-  g_value_init(&value, G_TYPE_UINT);
-  g_value_set_uint(&value, nth_run);
-  g_object_set_property(G_OBJECT(recall_channel_run),
-			"nth_run\0",
-			&value);
-  g_value_unset(&value);
-  */
-}
-
-void
 ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-						guint nth_run,
+						guint run_order,
 						AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AgsChannel *output, *source;
@@ -361,7 +336,7 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
   //  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   //  pthread_mutex_lock(&mutex);
-  if(copy_pattern_channel_run->nth_run != nth_run){
+  if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
     return;
   }
 

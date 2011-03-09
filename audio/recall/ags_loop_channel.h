@@ -23,7 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -40,11 +40,10 @@ typedef struct _AgsLoopChannelClass AgsLoopChannelClass;
 
 struct _AgsLoopChannel
 {
-  AgsRecall recall;
+  AgsRecallChannelRun recall_channel_run;
 
   AgsDelayAudioRun *delay_audio_run;
   gulong tic_alloc_handler;
-  guint nth_run;
 
   GObject *counter;
 
@@ -53,7 +52,7 @@ struct _AgsLoopChannel
 
 struct _AgsLoopChannelClass
 {
-  AgsRecallClass recall;
+  AgsRecallChannelRunClass recall_channel_run;
 };
 
 GType ags_loop_channel_get_type();

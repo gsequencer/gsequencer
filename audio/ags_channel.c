@@ -1667,20 +1667,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
 	copy = ags_recall_duplicate(recall, recall_id);
 
-
-	if(AGS_IS_OUTPUT(channel)){
-	  AgsAudio *audio;
-	  AgsRunOrder *run_order;
-
-	  audio = AGS_AUDIO(channel->audio);
-
-	  run_order = ags_run_order_find_group_id(audio->run_order,
-						  recall_id->group_id);
-
-	  ags_run_order_add_channel(run_order,
-				    channel);
-	}
-
 	if(recall_id->parent_group_id == 0)
 	  channel->play = g_list_append(channel->play, copy);
 	else
@@ -1691,11 +1677,25 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   
       list_recall = list_recall->next;
     }
+
+    if(AGS_IS_OUTPUT(channel)){
+      AgsAudio *audio;
+      AgsRunOrder *run_order;
+      
+      audio = AGS_AUDIO(channel->audio);
+      
+      run_order = ags_run_order_find_group_id(audio->run_order,
+					      recall_id->group_id);
+      
+      ags_run_order_add_channel(run_order,
+				channel);
+    }
   }
   void ags_channel_recursive_play_init_duplicate_audio_recall(AgsAudio *audio, guint group_id, guint audio_signal_level)
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
+    AgsRunOrder *run_order;
     GList *list_recall_start, *list_recall;
     gboolean matches_reality;
     
@@ -1730,17 +1730,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
 	GList *list_recall_run_notify;
-	AgsRunOrder *run_order;
-
-	/* set run order */
-	run_order = ags_run_order_find_group_id(audio->run_order,
-						recall_id->group_id);
-	
-	if(run_order == NULL){
-	  run_order = ags_run_order_new(recall_id);
-	  ags_audio_add_run_order(audio, run_order);
-	}
-
 	
 	/* check if the object has already been duplicated */
 	list_recall_run_notify = ags_recall_find_type_with_group_id(list_recall_start, G_OBJECT_TYPE(recall), group_id);
@@ -1766,6 +1755,15 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }
 
       list_recall = list_recall->next;
+    }
+
+    /* set run order */
+    run_order = ags_run_order_find_group_id(audio->run_order,
+					    recall_id->group_id);
+    
+    if(run_order == NULL){
+      run_order = ags_run_order_new(recall_id);
+      ags_audio_add_run_order(audio, run_order);
     }
   }
   void ags_channel_recursive_play_init_duplicate_up(AgsChannel *channel)

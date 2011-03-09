@@ -49,8 +49,6 @@ void ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable);
 AgsRecall* ags_loop_channel_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id);
 
-void ags_loop_channel_run_order_changed(AgsRecall *recall, guint nth_run);
-
 void ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 					 guint nth_run,
 					 AgsLoopChannel *loop_channel);
@@ -59,7 +57,6 @@ enum{
   PROP_0,
   PROP_CHANNEL,
   PROP_DELAY_AUDIO_RUN,
-  PROP_NTH_RUN,
   PROP_COUNTER,
 };
 
@@ -97,7 +94,7 @@ ags_loop_channel_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						   "AgsLoopChannel\0",
 						   &ags_loop_channel_info,
 						   0);
@@ -197,7 +194,6 @@ void
 ags_loop_channel_init(AgsLoopChannel *loop_channel)
 {
   loop_channel->delay_audio_run = NULL;
-  loop_channel->nth_run = 0;
 
   loop_channel->channel = NULL;
 
@@ -260,15 +256,6 @@ ags_loop_channel_set_property(GObject *gobject,
       loop_channel->delay_audio_run = delay_audio_run;
     }
     break;
-  case PROP_NTH_RUN:
-    {
-      guint nth_run;
-
-      nth_run = g_value_get_uint(value);
-
-      loop_channel->nth_run = nth_run;
-    }
-    break;
   case PROP_COUNTER:
     {
       GObject *counter;
@@ -310,11 +297,6 @@ ags_loop_channel_get_property(GObject *gobject,
     }
     break;
   case PROP_DELAY_AUDIO_RUN:
-    {
-      g_value_set_object(value, loop_channel->delay_audio_run);
-    }
-    break;
-  case PROP_NTH_RUN:
     {
       g_value_set_object(value, loop_channel->delay_audio_run);
     }
@@ -429,19 +411,6 @@ ags_loop_channel_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
-void
-ags_loop_channel_run_order_changed(AgsRecall *recall, guint nth_run)
-{
-  GValue value = {0,};
-
-  g_value_init(&value, G_TYPE_UINT);
-  g_value_set_uint(&value, nth_run);
-  g_object_set_property(G_OBJECT(recall),
-			"nth_run\0",
-			&value);
-  g_value_unset(&value);
-}
-
 void 
 ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 				    guint nth_run,
@@ -451,7 +420,7 @@ ags_loop_channel_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  if(loop_channel->nth_run != nth_run ||
+  if(AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order != nth_run ||
       AGS_COUNTABLE_GET_INTERFACE(loop_channel->counter)->get_counter(AGS_COUNTABLE(loop_channel->counter)) != 0)
     return;
 

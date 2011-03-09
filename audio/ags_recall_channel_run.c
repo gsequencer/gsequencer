@@ -174,7 +174,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   recall->duplicate = ags_recall_channel_run_duplicate;
 
   /* AgsRecallChannelRunClass */
-  recall_channel_run->run_order_changed = NULL;
+  recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
 
   /* signals */
   recall_channel_run_signals[RUN_ORDER_CHANGED] =
@@ -427,20 +427,23 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   
   container = AGS_RECALL_CONTAINER(recall->container);
 
-  /* set recall audio run */
-  recall_audio_run_list = container->recall_audio_run;
-  recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list, recall_id->parent_group_id);
-
-  if(recall_audio_run_list != NULL){
-    recall_audio_run = AGS_RECALL_AUDIO_RUN(recall_audio_run_list->data);
-
-    g_value_init(&recall_audio_run_value, G_TYPE_OBJECT);
-    g_value_set_object(&recall_audio_run_value,
-		       G_OBJECT(recall_audio_run));
-    g_object_set_property(G_OBJECT(copy),
-			  "recall_audio_run\0",
-			  &recall_audio_run_value);
-    g_value_unset(&recall_audio_run_value);
+  if(container != NULL){
+    /* set recall audio run */
+    recall_audio_run_list = container->recall_audio_run;
+    recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list,
+						     recall_id->parent_group_id);
+    
+    if(recall_audio_run_list != NULL){
+      recall_audio_run = AGS_RECALL_AUDIO_RUN(recall_audio_run_list->data);
+      
+      g_value_init(&recall_audio_run_value, G_TYPE_OBJECT);
+      g_value_set_object(&recall_audio_run_value,
+			 G_OBJECT(recall_audio_run));
+      g_object_set_property(G_OBJECT(copy),
+			    "recall_audio_run\0",
+			    &recall_audio_run_value);
+      g_value_unset(&recall_audio_run_value);
+    }
   }
 
   /* set recall channel */

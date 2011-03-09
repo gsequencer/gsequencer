@@ -254,16 +254,21 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     delay_audio = AGS_DELAY_AUDIO(delay_audio_run->recall_audio_run.recall_audio);
 
-    if(delay_audio_run->counter == 0){
-      ags_delay_audio_run_tic_alloc_output(delay_audio_run,
-					   delay_audio_run->hide_ref_counter);
-      ags_delay_audio_run_tic_alloc_input(delay_audio_run,
-					  delay_audio_run->hide_ref_counter);
-      ags_delay_audio_run_tic_count(delay_audio_run, delay_audio_run->hide_ref_counter);
-    }
-
     if(delay_audio_run->hide_ref != 0)
       delay_audio_run->hide_ref_counter++;
+
+    if(delay_audio_run->counter == 0){
+      guint run_order;
+
+      run_order = delay_audio_run->hide_ref_counter;
+
+      ags_delay_audio_run_tic_alloc_output(delay_audio_run,
+					   run_order);
+      ags_delay_audio_run_tic_alloc_input(delay_audio_run,
+					  run_order);
+      ags_delay_audio_run_tic_count(delay_audio_run,
+				    run_order);
+    }
 
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
