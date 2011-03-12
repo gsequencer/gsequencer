@@ -96,20 +96,20 @@ ags_editor_index_callback(GtkRadioButton *radio_button, AgsEditor *editor)
 
     if(editor->map_height > height){
       //      gtk_adjustment_set_upper(adjustment, (double) (editor->map_height - height));
-      adjustment->upper = (double) (editor->map_height - height);
+      gtk_adjustment_set_upper(adjustment,
+			       (gdouble) (editor->map_height - height));
 
       if(adjustment->value > adjustment->upper)
 	gtk_adjustment_set_value(adjustment, adjustment->value);
     }else{
-      //      gtk_adjustment_set_upper(adjustment, 0.0);
-      adjustment->upper = 0.0;
+      gtk_adjustment_set_upper(adjustment, 0.0);
       gtk_adjustment_set_value(adjustment, 0.0);
     }
 
     editor->height = height;
     editor->flags &= (~AGS_EDITOR_RESET_VSCROLLBAR);
 
-    editor->y0 = ((guint) round(editor->vscrollbar->scrollbar.range.adjustment->value)) % editor->control_height;
+    editor->y0 = ((guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value)) % editor->control_height;
 
     if(editor->y0 != 0){
       editor->y0 = editor->control_height - editor->y0;
@@ -189,13 +189,13 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
 
       if(editor->map_width > width){
 	//	gtk_adjustment_set_upper(adjustment, (double) (editor->map_width - width));
-	adjustment->upper = (double) (editor->map_width - width);
+	gtk_adjustment_set_upper(adjustment,
+				 (gdouble) (editor->map_width - width));
 
 	if(adjustment->value > adjustment->upper)
 	  gtk_adjustment_set_value(adjustment, adjustment->upper);
       }else{
-	//	gtk_adjustment_set_upper(adjustment, 0.0);
-	adjustment->upper = 0.0;
+	gtk_adjustment_set_upper(adjustment, 0.0);
 	gtk_adjustment_set_value(adjustment, 0.0);
       }
 
@@ -208,13 +208,15 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
 
       if(editor->map_height > height){
 	//	gtk_adjustment_set_upper(adjustment, (double) (editor->map_height - height));
-	adjustment->upper = (double) (editor->map_height - height);
+	gtk_adjustment_set_upper(adjustment,
+				 (gdouble) (editor->map_height - height));
 
 	if(adjustment->value > adjustment->upper)
 	  gtk_adjustment_set_value(adjustment, adjustment->value);
       }else{
 	//	gtk_adjustment_set_upper(adjustment, 0.0);
-	adjustment->upper = 0.0;
+	gtk_adjustment_set_upper(adjustment,
+				 0.0);
 	gtk_adjustment_set_value(adjustment, 0.0);
       }
 
@@ -223,7 +225,7 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
 
       /* reset AgsEditorControlCurrent */
       if(editor->map_width > editor->width){
-	editor->control_current.x0 = ((guint) round(adjustment->value) % editor->control_current.control_width);
+	editor->control_current.x0 = ((guint) round((double) adjustment->value) % editor->control_current.control_width);
 
 	if(editor->control_current.x0 != 0)
 	  editor->control_current.x0 = editor->control_current.control_width - editor->control_current.x0;
@@ -240,7 +242,7 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
 
       /* reset AgsEditorControlUnit */
       if(editor->map_width > editor->width){
-	editor->control_unit.x0 = ((guint) round(adjustment->value) % editor->control_unit.control_width);
+	editor->control_unit.x0 = ((guint) round((double) adjustment->value) % editor->control_unit.control_width);
 
 	if(editor->control_unit.x0 != 0)
 	  editor->control_unit.x0 = editor->control_unit.control_width - editor->control_unit.x0;
@@ -300,8 +302,8 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
     tact = gtk_option_menu_get_history(editor->toolbar->tact);
     tact = (guint) exp2(8 - tact);
 
-    value[0] = (double) round(editor->hscrollbar->scrollbar.range.adjustment->value);
-    value[1] = (double) round(editor->vscrollbar->scrollbar.range.adjustment->value);
+    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     offset_x = (guint) ceil(value[0] / (double) (editor->control_current.control_width));
 
@@ -469,8 +471,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     tact = gtk_option_menu_get_history(editor->toolbar->tact);
     tact = (guint) exp2(8 - tact);
 
-    value[0] = (double) round(editor->hscrollbar->scrollbar.range.adjustment->value);
-    value[1] = (double) round(editor->vscrollbar->scrollbar.range.adjustment->value);
+    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     if(AGS_IS_PANEL(machine)){
     }else if(AGS_IS_MIXER(machine)){
@@ -629,21 +631,22 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
       adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
 
       if(editor->map_height > height){
-	//	gtk_adjustment_set_upper(adjustment, (double) (editor->map_height - height));
-	adjustment->upper = (double) (editor->map_height - height);
+	gtk_adjustment_set_upper(adjustment,
+				 (gdouble) (editor->map_height - height));
+	// adjustment->upper = (double) (editor->map_height - height);
 
 	if(adjustment->value > adjustment->upper)
 	  gtk_adjustment_set_value(adjustment, adjustment->value);
       }else{
-	//	gtk_adjustment_set_upper(adjustment, 0.0);
-	adjustment->upper = 0.0;
+	gtk_adjustment_set_upper(adjustment, 0.0);
+	//	adjustment->upper = 0.0;
 	gtk_adjustment_set_value(adjustment, 0.0);
       }
 
       editor->height = height;
       editor->flags &= (~AGS_EDITOR_RESET_VSCROLLBAR);
 
-      editor->y0 = ((guint) round(editor->vscrollbar->scrollbar.range.adjustment->value)) % editor->control_height;
+      editor->y0 = ((guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value)) % editor->control_height;
 
       if(editor->y0 != 0){
 	editor->y0 = editor->control_height - editor->y0;
@@ -678,8 +681,8 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
   gtk_widget_destroy((GtkWidget *) dialog);
 }
 
-gboolean
-ags_editor_vscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdouble value, AgsEditor *editor)
+void
+ags_editor_vscrollbar_change_value(GtkRange *range, AgsEditor *editor)
 {
   if((AGS_EDITOR_RESET_VSCROLLBAR & editor->flags) != 0){
     return;
@@ -687,9 +690,11 @@ ags_editor_vscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdoubl
 
   if(editor->selected != NULL){
     AgsMachine *machine;
-    gboolean value;
+    gdouble value;
 
-    editor->y0 = ((guint) round(editor->vscrollbar->scrollbar.range.adjustment->value)) % editor->control_height;
+    value = range->adjustment->value;
+
+    editor->y0 = ((guint) round((double) value)) % editor->control_height;
 
     if(editor->y0 != 0){
       editor->y0 = editor->control_height - editor->y0;
@@ -697,7 +702,7 @@ ags_editor_vscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdoubl
 
     editor->y1 = (editor->height - editor->y0) % editor->control_height;
 
-    editor->nth_y = (guint) ceil(round(range->adjustment->value) / (double)(editor->control_height));
+    editor->nth_y = (guint) ceil(round((double) value) / (double)(editor->control_height));
     editor->stop_y = (editor->height - editor->y0 - editor->y1) / editor->control_height;
 
     /* refresh display */
@@ -705,12 +710,10 @@ ags_editor_vscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdoubl
     ags_editor_draw_notation(editor);
     ags_meter_paint(editor->meter);
   }
-
-  return(FALSE);
 }
 
-gboolean
-ags_editor_hscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdouble value, AgsEditor *editor)
+void
+ags_editor_hscrollbar_change_value(GtkRange *range, AgsEditor *editor)
 {
   GtkAdjustment *adjustment;
 
@@ -720,11 +723,12 @@ ags_editor_hscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdoubl
 
   if(editor->selected != NULL){
     AgsMachine *machine;
+    gdouble value;
 
-    adjustment = range->adjustment;
+    value = range->adjustment->value;
 
     /* reset AgsEditorControlCurrent */
-    editor->control_current.x0 = (guint) round(adjustment->value) % editor->control_current.control_width;
+    editor->control_current.x0 = (guint) round((double) value) % editor->control_current.control_width;
 
     if(editor->control_current.x0 != 0){
       editor->control_current.x0 = editor->control_current.control_width - editor->control_current.x0;
@@ -732,24 +736,22 @@ ags_editor_hscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdoubl
 
     editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
 
-    editor->control_current.nth_x = (guint) ceil((double)(adjustment->value) / (double)(editor->control_current.control_width));
+    editor->control_current.nth_x = (guint) ceil((double)(value) / (double)(editor->control_current.control_width));
 
     /* reset AgsEditorControlUnit */
 
-    editor->control_unit.x0 = ((guint) round(adjustment->value) % editor->control_unit.control_width);
+    editor->control_unit.x0 = ((guint) round((double) value) % editor->control_unit.control_width);
 
     if(editor->control_unit.x0 != 0)
       editor->control_unit.x0 = editor->control_unit.control_width - editor->control_unit.x0;
 
     editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
 
-    editor->control_unit.nth_x = (guint) ceil(round(adjustment->value) / (double) editor->control_unit.control_width);
+    editor->control_unit.nth_x = (guint) ceil(round((double) value) / (double) editor->control_unit.control_width);
     editor->control_unit.stop_x = (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
 
     /* refresh display */
     ags_editor_draw_segment(editor);
     ags_editor_draw_notation(editor);
   }
-
-  return(FALSE);
 }

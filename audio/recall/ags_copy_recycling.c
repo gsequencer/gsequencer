@@ -564,6 +564,9 @@ void
 ags_copy_recycling_destination_add_audio_signal(AgsCopyRecycling *copy_recycling,
 						AgsAudioSignal *audio_signal)
 {
+  printf("ags_copy_recycling_destination_add_audio_signal - channel: %u\n\0",
+	 AGS_CHANNEL(copy_recycling->source->channel)->line);
+
   copy_recycling->child_destination = audio_signal;
 }
 

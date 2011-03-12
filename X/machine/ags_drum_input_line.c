@@ -170,6 +170,9 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(line);
 
+  printf("ags_drum_input_line_set_channel - channel: %u\n\0",
+	 channel->line);
+
   if(line->channel != NULL){
     drum_input_line->flags &= (~AGS_DRUM_INPUT_LINE_MAPPED_RECALL);
   }
@@ -299,6 +302,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
   /* create recalls which depend on output */
   destination = destination_start;
+
+  if(destination != NULL)
+    printf("ags_drum_input_line_map_recall - destination: %u\n\0",
+	   destination->line);
+
 
   while(destination != NULL){
     /* unreal AgsCopyPatternChannel in channel->recall */

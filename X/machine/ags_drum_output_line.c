@@ -149,21 +149,21 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     AgsDrum *drum;
     AgsAudioSignal *audio_signal;
     AgsDelayAudio *delay_audio;
-    GList *recall_shared;
+    GList *list;
     guint stop;
 
     drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
 
+    stop = 1;
+
     if(drum != NULL){
-      recall_shared = ags_recall_find_type(AGS_AUDIO(channel->audio)->play,
-					   AGS_TYPE_DELAY_AUDIO);
+      list = ags_recall_find_type(AGS_AUDIO(drum->machine.audio)->play,
+				  AGS_TYPE_DELAY_AUDIO);
       
-      if(recall_shared != NULL){
-	delay_audio = (AgsDelayAudio *) recall_shared->data;
-	stop = ((guint) drum->length_spin->adjustment->value) * (delay_audio->delay);
+      if(list != NULL){
+	delay_audio = (AgsDelayAudio *) list->data;
+	stop = ((guint)drum->length_spin->adjustment->value) * (delay_audio->delay + 1);
       }
-    }else{
-      stop = 1;
     }
     
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);

@@ -133,8 +133,6 @@ void ags_editor_change_machine(AgsEditor *editor, AgsMachine *machine);
 void ags_editor_draw_segment(AgsEditor *editor);
 void ags_editor_draw_notation(AgsEditor *editor);
 
-void ags_editor_reset(AgsEditor *editor);
-
 AgsEditor* ags_editor_new();
 
 #endif /*__AGS_EDITOR_H__*/

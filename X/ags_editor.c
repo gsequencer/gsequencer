@@ -107,7 +107,8 @@ ags_editor_init(AgsEditor *editor)
 		     TRUE, TRUE, 0);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_paned_add1((GtkPaned *) paned, (GtkWidget *) scrolled_window);
+  gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
+  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   editor->index_radio = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->index_radio);
@@ -115,8 +116,8 @@ ags_editor_init(AgsEditor *editor)
   editor->selected = NULL;
 
   table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_paned_add2((GtkPaned *) paned, (GtkWidget *) table);
-
+  gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) table, TRUE, FALSE);
+  
   editor->notebook = ags_notebook_new();
   gtk_table_attach(table, (GtkWidget *) editor->notebook,
 		   0, 3, 0, 1,
@@ -226,10 +227,10 @@ ags_editor_connect(AgsEditor *editor)
   //  g_signal_connect ((GObject *) editor->drawing_area, "motion_notify_event\0",
   //		    G_CALLBACK (ags_editor_drawing_area_motion_notify_event), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->vscrollbar, "change-value\0",
+  g_signal_connect ((GObject *) editor->vscrollbar, "value-changed\0",
 		    G_CALLBACK (ags_editor_vscrollbar_change_value), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->hscrollbar, "change-value\0",
+  g_signal_connect ((GObject *) editor->hscrollbar, "value-changed\0",
 		    G_CALLBACK (ags_editor_hscrollbar_change_value), (gpointer) editor);
 
   ags_toolbar_connect(editor->toolbar);
@@ -364,6 +365,7 @@ ags_editor_draw_notation(AgsEditor *editor)
   double tact;
   guint control_height;
   guint x, y, width, height;
+  gint difference;
 
   if(editor->selected == NULL ||
      (machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE))) == NULL ||
@@ -497,8 +499,6 @@ ags_editor_draw_notation(AgsEditor *editor)
 
     list_note = list_note->next;
   }
-
-  fprintf(stdout, "\n\0");
 }
 
 AgsEditor*

@@ -70,7 +70,7 @@ ags_ruler_init(AgsRuler *ruler)
 
   widget = (GtkWidget *) ruler;
   gtk_widget_set_style(widget, ruler_style);
-  gtk_widget_set_size_request(widget, 60, 20);
+  //  gtk_widget_set_size_request(widget, 60, 20);
   gtk_widget_set_events (widget, GDK_EXPOSURE_MASK
                          | GDK_LEAVE_NOTIFY_MASK
                          | GDK_BUTTON_PRESS_MASK

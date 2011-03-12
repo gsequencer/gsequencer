@@ -304,8 +304,8 @@ ags_copy_channel_set_property(GObject *gobject,
       copy_channel->source = source;
 
       ags_copy_channel_remap_child_source(copy_channel,
-					       old_start_region, old_end_region,
-					       new_start_region, new_end_region);
+					  old_start_region, old_end_region,
+					  new_start_region, new_end_region);
 
       if(old_source != NULL)
 	g_object_unref(G_OBJECT(old_source));
@@ -515,7 +515,7 @@ ags_copy_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 			&source_value);
   g_value_unset(&source_value);
 		     
-  ags_copy_channel_map_copy_recycling(copy);
+  //  ags_copy_channel_map_copy_recycling(copy);
 
   return((AgsRecall *) copy);
 }
@@ -525,14 +525,11 @@ ags_copy_channel_map_copy_recycling(AgsCopyChannel *copy_channel)
 {
   AgsRecycling *destination_recycling, *source_recycling;
   AgsCopyRecycling *copy_recycling;
-  guint audio_channel;
 
   destination_recycling = copy_channel->destination->first_recycling;
 
   if(destination_recycling == NULL || copy_channel->source->first_recycling == NULL)
     return;
-
-  audio_channel = copy_channel->source->audio_channel;
 
   while(destination_recycling != copy_channel->destination->last_recycling->next){
     source_recycling = copy_channel->source->first_recycling;
@@ -559,12 +556,9 @@ ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
   AgsRecycling *destination_recycling, *source_recycling;
   AgsCopyRecycling *copy_recycling;
   GList *list;
-  guint audio_channel;
 
   if(copy_channel->source == NULL)
     return;
-
-  audio_channel = copy_channel->source->audio_channel;
 
   /* remove old */
   if(old_start_region != NULL){
@@ -629,12 +623,9 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
   AgsRecycling *destination_recycling, *source_recycling;
   AgsCopyRecycling *copy_recycling;
   GList *list;
-  guint audio_channel;
 
   if(copy_channel->source == NULL)
     return;
-
-  audio_channel = copy_channel->source->audio_channel;
 
   /* remove old */
   if(old_start_region != NULL){
@@ -678,6 +669,9 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
       source_recycling = new_start_region;
 
       while(source_recycling != new_end_region->next){
+	printf("ags_copy_channel_remap_child_source - [destination,source]: %u %u\n\0",
+	       AGS_CHANNEL(destination_recycling->channel)->line,
+	       AGS_CHANNEL(source_recycling->channel)->line);
 	copy_recycling = ags_copy_recycling_new(destination_recycling,
 						source_recycling,
 						copy_channel->devout);

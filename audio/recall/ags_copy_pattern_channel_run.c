@@ -335,6 +335,7 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
   AgsCopyPatternChannel *copy_pattern_channel;
   //  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  printf("%u - %u\n\0",AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order, run_order);
   //  pthread_mutex_lock(&mutex);
   if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
     return;

@@ -44,7 +44,7 @@ void ags_editor_popup_add_index_callback(GtkWidget *widget, GtkMenu *popup);
 void ags_editor_popup_remove_index_callback(GtkWidget *widget, GtkMenu *popup);
 void ags_editor_popup_link_index_callback(GtkWidget *widget, GtkMenu *popup);
 
-gboolean ags_editor_vscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdouble value, AgsEditor *editor);
-gboolean ags_editor_hscrollbar_change_value(GtkRange *range, GtkScrollType scroll, gdouble value, AgsEditor *editor);
+void ags_editor_vscrollbar_change_value(GtkRange *range, AgsEditor *editor);
+void ags_editor_hscrollbar_change_value(GtkRange *range, AgsEditor *editor);
 
 #endif /*__AGS_EDITOR_CALLBACKS_H__*/
