@@ -389,7 +389,7 @@ ags_editor_draw_notation(AgsEditor *editor)
 	x = 0;
 	y = (note->y - editor->nth_y) * editor->control_height + editor->y0 + editor->control_margin_y;
 
-	width = (note->x[1] - editor->control_unit.nth_x) * editor->control_unit.control_width;
+	width = (note->x[1] - editor->control_unit.nth_x) * editor->control_unit.control_width + editor->control_unit.x0;
 
 	if(width > widget->allocation.width)
 	  width = widget->allocation.width;
@@ -401,7 +401,7 @@ ags_editor_draw_notation(AgsEditor *editor)
       }else if(note->y == (editor->nth_y - 1) && editor->y0 != 0){
 	if(editor->y0 > editor->control_margin_y){
 	  x = 0;
-	  width = (note->x[1] - editor->control_unit.nth_x) * editor->control_unit.control_width;
+	  width = (note->x[1] - editor->control_unit.nth_x) * editor->control_unit.control_width + editor->control_unit.x0;
 
 	  if(width > widget->allocation.width)
 	    width = widget->allocation.width;
@@ -420,7 +420,7 @@ ags_editor_draw_notation(AgsEditor *editor)
       }else if(note->y == (editor->stop_y + 1) && editor->y1 != 0){
 	if(editor->y1 > editor->control_margin_y){
 	  x = 0;
-	  width = (note->x[1] - editor->control_unit.nth_x) * editor->control_unit.control_width;
+	  width = (note->x[1] - editor->control_unit.nth_x) * editor->control_unit.control_width + editor->control_unit.x0;
 
 	  if(width > widget->allocation.width)
 	    width = widget->allocation.width;
@@ -448,7 +448,7 @@ ags_editor_draw_notation(AgsEditor *editor)
       x = (note->x[0] - editor->control_unit.nth_x) * editor->control_unit.control_width + editor->control_unit.x0;
       y = (note->y - editor->nth_y) * editor->control_height + editor->y0 + editor->control_margin_y;
 
-      width = (note->x[1] - note->x[0]) * editor->control_unit.control_width + editor->control_unit.x0;
+      width = (note->x[1] - note->x[0]) * editor->control_unit.control_width;
       
       if(x + width > widget->allocation.width)
 	width = widget->allocation.width - x;
@@ -460,7 +460,7 @@ ags_editor_draw_notation(AgsEditor *editor)
     }else if(note->y == (editor->nth_y - 1) && editor->y0 != 0){
       if(editor->y0 > editor->control_margin_y){
 	x = (note->x[0] - editor->control_unit.nth_x) * editor->control_unit.control_width + editor->control_unit.x0;
-	width = (note->x[1] - note->x[0]) * editor->control_unit.control_width + editor->control_unit.x0;
+	width = (note->x[1] - note->x[0]) * editor->control_unit.control_width;
       
 	if(x + width > widget->allocation.width)
 	  width = widget->allocation.width - x;
@@ -479,7 +479,7 @@ ags_editor_draw_notation(AgsEditor *editor)
     }else if(note->y == (editor->stop_y + 1) && editor->y1 != 0){
       if(editor->y1 > editor->control_margin_y){
 	x = (note->x[0] - editor->control_unit.nth_x) * editor->control_unit.control_width + editor->control_unit.x0;
-	width = (note->x[1] - note->x[0]) * editor->control_unit.control_width + editor->control_unit.x0;
+	width = (note->x[1] - note->x[0]) * editor->control_unit.control_width;
       
 	if(x + width > widget->allocation.width)
 	  width = widget->allocation.width - x;
