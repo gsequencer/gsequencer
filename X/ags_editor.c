@@ -382,8 +382,6 @@ ags_editor_draw_notation(AgsEditor *editor)
 
   control_height = editor->control_height - 2 * editor->control_margin_y;
 
-  printf("ags_editor_draw_notation - control_unit.nth_x: %u\n\0", editor->control_unit.nth_x);
-
   /* draw controls smaller than editor->nth_x */
   while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] < editor->control_unit.nth_x){
     if(note->x[1] >= editor->control_unit.nth_x){
@@ -444,7 +442,6 @@ ags_editor_draw_notation(AgsEditor *editor)
     list_note = list_note->next;
   }
 
-  printf("ags_editor_draw_notation - control_unit.stop_x: %u\n\0", editor->control_unit.stop_x);
   /* draw controls equal or greater than editor->nth_x */
   while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] <= editor->control_unit.stop_x){
     if(note->y >= editor->nth_y && note->y <= editor->stop_y){

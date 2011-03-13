@@ -47,7 +47,7 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
     return;
   
   editor->width = (editor->map_width < widget->allocation.width) ? editor->map_width: widget->allocation.width;
-
+  
   editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
 
   editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
@@ -88,13 +88,13 @@ ags_editor_index_callback(GtkRadioButton *radio_button, AgsEditor *editor)
 
   if(machine != NULL){
     editor->map_height = machine->audio->input_pads * editor->control_height;
-    height = (editor->map_height < widget->allocation.height) ? editor->map_height: widget->allocation.height;
 
     /* reset GtkVScrollbar */
     editor->flags |= AGS_EDITOR_RESET_VSCROLLBAR;
     adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
 
-    if(editor->map_height > height){
+    if(editor->map_height > widget->allocation.height){
+      height = widget->allocation.height;
       //      gtk_adjustment_set_upper(adjustment, (double) (editor->map_height - height));
       gtk_adjustment_set_upper(adjustment,
 			       (gdouble) (editor->map_height - height));
@@ -102,6 +102,8 @@ ags_editor_index_callback(GtkRadioButton *radio_button, AgsEditor *editor)
       if(adjustment->value > adjustment->upper)
 	gtk_adjustment_set_value(adjustment, adjustment->value);
     }else{
+      height = editor->map_height;
+
       gtk_adjustment_set_upper(adjustment, 0.0);
       gtk_adjustment_set_value(adjustment, 0.0);
     }
@@ -180,14 +182,12 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
     machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE));
 
     if(machine != NULL){
-      width = (editor->map_width < widget->allocation.width) ? editor->map_width: widget->allocation.width;
-      height = (editor->map_height < widget->allocation.height) ? editor->map_height: widget->allocation.height;
-
       /* reset GtkHScrollbar */
       editor->flags |= AGS_EDITOR_RESET_HSCROLLBAR;
       adjustment = GTK_RANGE(editor->hscrollbar)->adjustment;
 
-      if(editor->map_width > width){
+      if(editor->map_width > widget->allocation.width){
+	width = widget->allocation.width;
 	//	gtk_adjustment_set_upper(adjustment, (double) (editor->map_width - width));
 	gtk_adjustment_set_upper(adjustment,
 				 (gdouble) (editor->map_width - width));
@@ -195,6 +195,8 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
 	if(adjustment->value > adjustment->upper)
 	  gtk_adjustment_set_value(adjustment, adjustment->upper);
       }else{
+	width = editor->map_width;
+
 	gtk_adjustment_set_upper(adjustment, 0.0);
 	gtk_adjustment_set_value(adjustment, 0.0);
       }
@@ -206,7 +208,8 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
       editor->flags |= AGS_EDITOR_RESET_VSCROLLBAR;
       adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
 
-      if(editor->map_height > height){
+      if(editor->map_height > widget->allocation.height){
+	height = widget->allocation.height;
 	//	gtk_adjustment_set_upper(adjustment, (double) (editor->map_height - height));
 	gtk_adjustment_set_upper(adjustment,
 				 (gdouble) (editor->map_height - height));
@@ -214,6 +217,7 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
 	if(adjustment->value > adjustment->upper)
 	  gtk_adjustment_set_value(adjustment, adjustment->value);
       }else{
+	height = editor->map_height;
 	//	gtk_adjustment_set_upper(adjustment, 0.0);
 	gtk_adjustment_set_upper(adjustment,
 				 0.0);
@@ -624,20 +628,22 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
       adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
 
       editor->map_height = machine0->audio->input_pads * editor->control_height;
-      height = (editor->map_height < widget->allocation.height) ? editor->map_height: widget->allocation.height;
       
       /* reset GtkVScrollbar */
       editor->flags |= AGS_EDITOR_RESET_VSCROLLBAR;
       adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
 
-      if(editor->map_height > height){
+      if(editor->map_height > widget->allocation.height){
+	height = widget->allocation.height;
 	gtk_adjustment_set_upper(adjustment,
 				 (gdouble) (editor->map_height - height));
 	// adjustment->upper = (double) (editor->map_height - height);
 
-	if(adjustment->value > adjustment->upper)
-	  gtk_adjustment_set_value(adjustment, adjustment->value);
+	//	if(adjustment->value > adjustment->upper)
+	  gtk_adjustment_set_value(adjustment, 0.0);
       }else{
+	height = editor->map_height;
+
 	gtk_adjustment_set_upper(adjustment, 0.0);
 	//	adjustment->upper = 0.0;
 	gtk_adjustment_set_value(adjustment, 0.0);
@@ -653,6 +659,7 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
       }
 
       editor->y1 = (editor->height - editor->y0) % editor->control_height;
+      editor->stop_y = editor->nth_y + (editor->height - editor->y0 - editor->y1) / editor->control_height;
 
       gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine0), ": \0", machine0->name, NULL));
 
@@ -684,11 +691,9 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
 void
 ags_editor_vscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
 {
-  /*
   if((AGS_EDITOR_RESET_VSCROLLBAR & editor->flags) != 0){
     return;
   }
-  */
 
   if(editor->selected != NULL){
     AgsMachine *machine;
@@ -719,11 +724,9 @@ ags_editor_hscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
 {
   GtkAdjustment *adjustment;
 
-  /*
   if((AGS_EDITOR_RESET_HSCROLLBAR & editor->flags) != 0){
     return;
   }
-  */
 
   if(editor->selected != NULL){
     AgsMachine *machine;
