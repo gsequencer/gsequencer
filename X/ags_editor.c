@@ -227,11 +227,11 @@ ags_editor_connect(AgsEditor *editor)
   //  g_signal_connect ((GObject *) editor->drawing_area, "motion_notify_event\0",
   //		    G_CALLBACK (ags_editor_drawing_area_motion_notify_event), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->vscrollbar, "value-changed\0",
-		    G_CALLBACK (ags_editor_vscrollbar_change_value), (gpointer) editor);
+  g_signal_connect_after ((GObject *) editor->vscrollbar, "value-changed\0",
+			  G_CALLBACK (ags_editor_vscrollbar_value_changed), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->hscrollbar, "value-changed\0",
-		    G_CALLBACK (ags_editor_hscrollbar_change_value), (gpointer) editor);
+  g_signal_connect_after ((GObject *) editor->hscrollbar, "value-changed\0",
+			  G_CALLBACK (ags_editor_hscrollbar_value_changed), (gpointer) editor);
 
   ags_toolbar_connect(editor->toolbar);
   ags_notebook_connect(editor->notebook);
@@ -382,6 +382,8 @@ ags_editor_draw_notation(AgsEditor *editor)
 
   control_height = editor->control_height - 2 * editor->control_margin_y;
 
+  printf("ags_editor_draw_notation - control_unit.nth_x: %u\n\0", editor->control_unit.nth_x);
+
   /* draw controls smaller than editor->nth_x */
   while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] < editor->control_unit.nth_x){
     if(note->x[1] >= editor->control_unit.nth_x){
@@ -442,6 +444,7 @@ ags_editor_draw_notation(AgsEditor *editor)
     list_note = list_note->next;
   }
 
+  printf("ags_editor_draw_notation - control_unit.stop_x: %u\n\0", editor->control_unit.stop_x);
   /* draw controls equal or greater than editor->nth_x */
   while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] <= editor->control_unit.stop_x){
     if(note->y >= editor->nth_y && note->y <= editor->stop_y){

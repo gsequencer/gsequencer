@@ -682,11 +682,13 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
 }
 
 void
-ags_editor_vscrollbar_change_value(GtkRange *range, AgsEditor *editor)
+ags_editor_vscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
 {
+  /*
   if((AGS_EDITOR_RESET_VSCROLLBAR & editor->flags) != 0){
     return;
   }
+  */
 
   if(editor->selected != NULL){
     AgsMachine *machine;
@@ -703,7 +705,7 @@ ags_editor_vscrollbar_change_value(GtkRange *range, AgsEditor *editor)
     editor->y1 = (editor->height - editor->y0) % editor->control_height;
 
     editor->nth_y = (guint) ceil(round((double) value) / (double)(editor->control_height));
-    editor->stop_y = (editor->height - editor->y0 - editor->y1) / editor->control_height;
+    editor->stop_y = editor->nth_y + (editor->height - editor->y0 - editor->y1) / editor->control_height;
 
     /* refresh display */
     ags_editor_draw_segment(editor);
@@ -713,13 +715,15 @@ ags_editor_vscrollbar_change_value(GtkRange *range, AgsEditor *editor)
 }
 
 void
-ags_editor_hscrollbar_change_value(GtkRange *range, AgsEditor *editor)
+ags_editor_hscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
 {
   GtkAdjustment *adjustment;
 
+  /*
   if((AGS_EDITOR_RESET_HSCROLLBAR & editor->flags) != 0){
     return;
   }
+  */
 
   if(editor->selected != NULL){
     AgsMachine *machine;
@@ -728,7 +732,7 @@ ags_editor_hscrollbar_change_value(GtkRange *range, AgsEditor *editor)
     value = range->adjustment->value;
 
     /* reset AgsEditorControlCurrent */
-    editor->control_current.x0 = (guint) round((double) value) % editor->control_current.control_width;
+    editor->control_current.x0 = ((guint) round((double) value)) % editor->control_current.control_width;
 
     if(editor->control_current.x0 != 0){
       editor->control_current.x0 = editor->control_current.control_width - editor->control_current.x0;
@@ -748,7 +752,7 @@ ags_editor_hscrollbar_change_value(GtkRange *range, AgsEditor *editor)
     editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
 
     editor->control_unit.nth_x = (guint) ceil(round((double) value) / (double) editor->control_unit.control_width);
-    editor->control_unit.stop_x = (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
+    editor->control_unit.stop_x = editor->control_unit.nth_x + (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
 
     /* refresh display */
     ags_editor_draw_segment(editor);
