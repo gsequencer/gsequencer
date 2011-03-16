@@ -93,16 +93,17 @@ ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
   if(editor->map_width > widget->allocation.width){
     editor->width = widget->allocation.width;
 
-    //    gtk_adjustment_set_upper(adjustment, (double) (editor->map_width - editor->width));
-    adjustment->upper = (double) (editor->map_width - editor->width);
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (editor->map_width - editor->width));
+    //adjustment->upper = (double) (editor->map_width - editor->width);
 
     if(adjustment->value > adjustment->upper)
       gtk_adjustment_set_value(adjustment, adjustment->upper);
   }else{
     editor->width = editor->map_width;
 
-    //    gtk_adjustment_set_upper(adjustment, 0.0);
-    adjustment->upper = 0.0;
+    gtk_adjustment_set_upper(adjustment, 0.0);
+    //    adjustment->upper = 0.0;
     gtk_adjustment_set_value(adjustment, 0.0);
   }
 
@@ -180,16 +181,18 @@ ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
   if(editor->map_width > widget->allocation.width){
     editor->width = widget->allocation.width;
 
-    //    gtk_adjustment_set_upper(adjustment, (double) (editor->map_width - editor->width));
-    adjustment->upper = (double) (editor->map_width - editor->width);
+    gtk_adjustment_set_upper(adjustment,
+			     (gdouble) (editor->map_width - editor->width));
+    //adjustment->upper = (double) (editor->map_width - editor->width);
 
     if(adjustment->value > adjustment->upper)
       gtk_adjustment_set_value(adjustment, adjustment->upper);
   }else{
     editor->width = editor->map_width;
 
-    //    gtk_adjustment_set_upper(adjustment, 0.0);
-    adjustment->upper = 0.0;
+    gtk_adjustment_set_upper(adjustment,
+			     0.0);
+    //    adjustment->upper = 0.0;
     gtk_adjustment_set_value(adjustment, 0.0);
   }
 
@@ -202,7 +205,7 @@ ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
     // x0 is unchanged
     editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
 
-    editor->control_current.nth_x = (guint) ceil(adjustment->value / (double) editor->control_current.control_width);
+    editor->control_current.nth_x = (guint) ceil((double)(adjustment->value) / (double) editor->control_current.control_width);
   }else{
     // x0 is unchanged
     editor->control_current.x1 = 0;
@@ -215,7 +218,7 @@ ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
     // x0 is unchanged
     editor->control_unit.x1 = (editor->width - editor->control_current.x0) % editor->control_unit.control_width;
 
-    editor->control_unit.nth_x = (guint) ceil(adjustment->value / (double) editor->control_unit.control_width);
+    editor->control_unit.nth_x = (guint) ceil((double)(adjustment->value) / (double) (editor->control_unit.control_width));
     editor->control_unit.stop_x = (editor->width - editor->control_current.x0 - editor->control_current.x1) / editor->control_unit.control_width;
   }else{
     // x0 is unchanged

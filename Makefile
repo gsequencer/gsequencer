@@ -115,4 +115,4 @@ release:
 	./archivate.sh
 
 clean:
-	rm ags $(wildcard $(AGS_DIR)*.o) $(wildcard $(AGS_DIR)object/*.o) $(wildcard $(AGS_DIR)audio/*.o) $(wildcard $(AGS_DIR)audio/task/*.o) $(wildcard $(AGS_DIR)audio/recall/*.o) $(wildcard $(AGS_DIR)audio/file/*.o) $(wildcard $(AGS_DIR)widget/*.o) $(wildcard $(AGS_DIR)X/*.o) $(wildcard $(AGS_DIR)X/editor/*.o) $(wildcard $(AGS_DIR)X/machine/*.o) $(wildcard $(AGS_DIR)file/*.o)
+	rm ags $(wildcard $(AGS_DIR)*.o) $(wildcard $(AGS_DIR)lib/*.o) $(wildcard $(AGS_DIR)object/*.o) $(wildcard $(AGS_DIR)audio/*.o) $(wildcard $(AGS_DIR)audio/task/*.o) $(wildcard $(AGS_DIR)audio/recall/*.o) $(wildcard $(AGS_DIR)audio/file/*.o) $(wildcard $(AGS_DIR)widget/*.o) $(wildcard $(AGS_DIR)X/*.o) $(wildcard $(AGS_DIR)X/editor/*.o) $(wildcard $(AGS_DIR)X/machine/*.o) $(wildcard $(AGS_DIR)file/*.o)

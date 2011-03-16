@@ -45,9 +45,14 @@ typedef struct _AgsEditor AgsEditor;
 typedef struct _AgsEditorClass AgsEditorClass;
 
 typedef enum{
-  AGS_EDITOR_RESET_VSCROLLBAR,
-  AGS_EDITOR_RESET_HSCROLLBAR,
+  AGS_EDITOR_RESETING_VERTICALLY    = 1,
+  AGS_EDITOR_RESETING_HORIZONTALLY  = 1 <<  1,
 }AgsEditorFlags;
+
+typedef enum{
+  AGS_EDITOR_RESET_VSCROLLBAR   = 1,
+  AGS_EDITOR_RESET_HSCROLLBAR   = 1 <<  1,
+}AgsEditorResetFlags;
 
 struct _AgsEditor
 {
@@ -129,6 +134,9 @@ GType ags_editor_get_type(void);
 void ags_editor_connect(AgsEditor *editor);
 
 void ags_editor_change_machine(AgsEditor *editor, AgsMachine *machine);
+
+void ags_editor_reset_vertically(AgsEditor *editor, guint flags);
+void ags_editor_reset_horizontally(AgsEditor *editor, guint flags);
 
 void ags_editor_draw_segment(AgsEditor *editor);
 void ags_editor_draw_notation(AgsEditor *editor);

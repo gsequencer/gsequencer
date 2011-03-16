@@ -63,6 +63,7 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
   }else{
     machine_old = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE)));
 
+
     if(machine_old == NULL){
       i = 0;
       stop = machine->audio->audio_channels;
@@ -81,5 +82,8 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
   }
 
   g_object_set_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE), machine);
+  
+  gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook),
+				0);
   gtk_widget_show_all((GtkWidget *) notebook);
 }
