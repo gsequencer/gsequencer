@@ -172,7 +172,7 @@ ags_editor_init(AgsEditor *editor)
 
   /* AgsEditorControlUnit is used by ags_editor_draw_notation */
   editor->control_unit.control_count = 16 * 128;
-  editor->control_unit.control_width = 1 * 4 * 4;
+  editor->control_unit.control_width = 1 * 4;
 
   editor->control_unit.x0 = 0;
   editor->control_unit.x1 = 0;
