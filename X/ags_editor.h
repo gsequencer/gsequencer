@@ -52,6 +52,8 @@ typedef enum{
 typedef enum{
   AGS_EDITOR_RESET_VSCROLLBAR   = 1,
   AGS_EDITOR_RESET_HSCROLLBAR   = 1 <<  1,
+  AGS_EDITOR_RESET_WIDTH        = 1 <<  2,
+  AGS_EDITOR_RESET_HEIGHT       = 1 <<  3, // reserved
 }AgsEditorResetFlags;
 
 struct _AgsEditor
@@ -88,6 +90,8 @@ struct _AgsEditor
 
   guint control_height;
   guint control_margin_y;
+
+  guint control_width;
 
   guint y0;
   guint y1;

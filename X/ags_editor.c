@@ -153,6 +153,8 @@ ags_editor_init(AgsEditor *editor)
   editor->control_height = 10;
   editor->control_margin_y = 2;
 
+  editor->control_width = 1;
+
   editor->y0 = 0;
   editor->y1 = 0;
 
@@ -170,7 +172,7 @@ ags_editor_init(AgsEditor *editor)
 
   /* AgsEditorControlUnit is used by ags_editor_draw_notation */
   editor->control_unit.control_count = 16 * 128;
-  editor->control_unit.control_width = 4;
+  editor->control_unit.control_width = 1 * 4 * 4;
 
   editor->control_unit.x0 = 0;
   editor->control_unit.x1 = 0;
@@ -329,10 +331,24 @@ ags_editor_reset_horizontally(AgsEditor *editor, guint flags)
 {
   if(editor->selected != NULL){
     gdouble value;
+    double tact_factor, zoom_factor;
     double tact;
 
     value = GTK_RANGE(editor->hscrollbar)->adjustment->value;
+
+    zoom_factor = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->zoom));
+
+    tact_factor = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
     tact = exp2((double) gtk_option_menu_get_history(editor->toolbar->tact) - 4.0);
+
+    if((AGS_EDITOR_RESET_WIDTH & flags) != 0){
+      editor->control_unit.control_width = (guint) (((double) editor->control_width * zoom_factor * tact));
+
+      editor->control_current.control_count = (guint) ((double) editor->control_unit.control_count * tact);
+      editor->control_current.control_width = (editor->control_width * zoom_factor * tact_factor * tact);
+
+      editor->map_width = (guint) ((double) editor->control_current.control_count * (double) editor->control_current.control_width);
+    }
 
     if((AGS_EDITOR_RESET_HSCROLLBAR & flags) != 0){
       GtkWidget *widget;
@@ -361,28 +377,38 @@ ags_editor_reset_horizontally(AgsEditor *editor, guint flags)
     }
 
     /* reset AgsEditorControlCurrent */
-    editor->control_current.x0 = ((guint) round((double) value)) % editor->control_current.control_width;
+    if(editor->map_width > editor->width){
+      editor->control_current.x0 = ((guint) round((double) value)) % editor->control_current.control_width;
 
-    if(editor->control_current.x0 != 0){
-      editor->control_current.x0 = editor->control_current.control_width - editor->control_current.x0;
+      if(editor->control_current.x0 != 0){
+	editor->control_current.x0 = editor->control_current.control_width - editor->control_current.x0;
+      }
+
+      editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
+
+      editor->control_current.nth_x = (guint) ceil((double)(value) / (double)(editor->control_current.control_width));
+    }else{
+      editor->control_current.x0 = 0;
+      editor->control_current.x1 = 0;
+      editor->control_current.nth_x = 0;
     }
 
-    editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
-
-    editor->control_current.nth_x = (guint) ceil((double)(value) / (double)(editor->control_current.control_width));
-
     /* reset AgsEditorControlUnit */
+    if(editor->map_width > editor->width){
+      editor->control_unit.x0 = ((guint)round((double) value)) % editor->control_unit.control_width;
 
-    editor->control_unit.x0 = (guint)(round((double) value)) % (guint)((double) (editor->control_unit.control_width));
-
-    if(editor->control_unit.x0 != 0)
-      editor->control_unit.x0 = editor->control_unit.control_width - editor->control_unit.x0;
-
-    editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
-
-    editor->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (editor->control_unit.control_width));
-    printf("x0 = %u\nnth_x = %u\n\0", editor->control_unit.x0, editor->control_unit.nth_x);
-    editor->control_unit.stop_x = editor->control_unit.nth_x + (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
+      if(editor->control_unit.x0 != 0)
+	editor->control_unit.x0 = editor->control_unit.control_width - editor->control_unit.x0;
+      
+      editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
+      
+      editor->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (editor->control_unit.control_width));
+      editor->control_unit.stop_x = editor->control_unit.nth_x + (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
+    }else{
+      editor->control_unit.x0 = 0;
+      editor->control_unit.x1 = 0;
+      editor->control_unit.nth_x = 0;
+    }
 
     /* refresh display */
     ags_editor_draw_segment(editor);
@@ -395,8 +421,9 @@ ags_editor_draw_segment(AgsEditor *editor)
 {
   GtkWidget *widget;
   cairo_t *cr;
-  guint i;
   double tact;
+  guint i, j;
+  guint j_set;
 
   widget = (GtkWidget *) editor->drawing_area;
 
@@ -420,50 +447,36 @@ ags_editor_draw_segment(AgsEditor *editor)
 
   tact = exp2((double) gtk_option_menu_get_history(editor->toolbar->tact) - 4.0);
 
-  if(tact > 1){
-    guint j, j_set;
+  i = editor->control_current.x0;
+  
+  if(i < editor->width &&
+     tact > 1.0 ){
+    j_set = editor->control_current.nth_x % ((guint) tact);
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
 
-    if((j_set = editor->control_current.nth_x % ((guint) tact)) != 0){
-      i = editor->control_current.x0;
-
-      if(i < editor->width){
-       	j = j_set - 1;
-	cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
-
-	goto ags_editor_draw_segment0;
-      }
-    }else{
-      i = editor->control_current.x0;
+    if(j_set != 0){
+      j = j_set;
+      goto ags_editor_draw_segment0;
     }
+  }
 
-    for(; i < editor->width; ){
-      cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
-
-      cairo_move_to(cr, (double) i, 0.0);
-      cairo_line_to(cr, (double) i, (double) editor->height);
-      cairo_stroke(cr);
-
-      i += editor->control_current.control_width;
-
-      cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
-
-      for(j = 0; i < editor->width && j < ((guint) tact) - 1; j++){
-      ags_editor_draw_segment0:
-	cairo_move_to(cr, (double) i, 0.0);
-	cairo_line_to(cr, (double) i, (double) editor->height);
-	cairo_stroke(cr);
-
-	i += editor->control_current.control_width;
-      }
-    }
-  }else{
+  for(; i < editor->width; ){
     cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
-
-    for(i = editor->control_current.x0 ; i < editor->width;){
+    
+    cairo_move_to(cr, (double) i, 0.0);
+    cairo_line_to(cr, (double) i, (double) editor->height);
+    cairo_stroke(cr);
+    
+    i += editor->control_current.control_width;
+    
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+    
+    for(j = 1; i < editor->width && j < tact; j++){
+    ags_editor_draw_segment0:
       cairo_move_to(cr, (double) i, 0.0);
       cairo_line_to(cr, (double) i, (double) editor->height);
       cairo_stroke(cr);
-	
+      
       i += editor->control_current.control_width;
     }
   }
@@ -477,7 +490,6 @@ ags_editor_draw_notation(AgsEditor *editor)
   cairo_t *cr;
   AgsNote *note;
   GList *list_notation, *list_note;
-  double tact, tact_factor;
   guint x_offset;
   guint control_height;
   guint x, y, width, height;
@@ -504,8 +516,6 @@ ags_editor_draw_notation(AgsEditor *editor)
 
   control_height = editor->control_height - 2 * editor->control_margin_y;
 
-  tact = exp2((double) gtk_option_menu_get_history(editor->toolbar->tact) - 4.0);
-  tact_factor = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
   x_offset = (guint) GTK_RANGE(editor->hscrollbar)->adjustment->value;
 
   /* draw controls smaller than editor->nth_x */
@@ -515,7 +525,7 @@ ags_editor_draw_notation(AgsEditor *editor)
 	x = 0;
 	y = (note->y - editor->nth_y) * editor->control_height + editor->y0 + editor->control_margin_y;
 
-	width = (note->x[1] / tact) * editor->control_current.control_width - x_offset;
+	width = (guint) ((double) note->x[1] * editor->control_unit.control_width - (double) x_offset);
 
 	if(width > widget->allocation.width)
 	  width = widget->allocation.width;
@@ -527,7 +537,7 @@ ags_editor_draw_notation(AgsEditor *editor)
       }else if(note->y == (editor->nth_y - 1) && editor->y0 != 0){
 	if(editor->y0 > editor->control_margin_y){
 	  x = 0;
-	  width = (note->x[1] / tact) * editor->control_current.control_width - x_offset;
+	  width = (guint) ((double) note->x[1] * (double) editor->control_unit.control_width - x_offset);
 
 	  if(width > widget->allocation.width)
 	    width = widget->allocation.width;
@@ -546,7 +556,7 @@ ags_editor_draw_notation(AgsEditor *editor)
       }else if(note->y == (editor->stop_y + 1) && editor->y1 != 0){
 	if(editor->y1 > editor->control_margin_y){
 	  x = 0;
-	  width = (note->x[1] / tact) * editor->control_current.control_width - x_offset;
+	  width = note->x[1] * editor->control_unit.control_width - x_offset;
 
 	  if(width > widget->allocation.width)
 	    width = widget->allocation.width;
@@ -571,13 +581,14 @@ ags_editor_draw_notation(AgsEditor *editor)
   /* draw controls equal or greater than editor->nth_x */
   while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] <= editor->control_unit.stop_x){
     if(note->y >= editor->nth_y && note->y <= editor->stop_y){
-      x = (note->x[0] / tact) * editor->control_current.control_width - x_offset;
+      x = (guint) note->x[0] * editor->control_unit.control_width;
       y = (note->y - editor->nth_y) * editor->control_height +
 	editor->y0 +
 	editor->control_margin_y;
 
-      width = (note->x[1] - note->x[0]) * editor->control_current.control_width / tact_factor;
-      
+      width = note->x[1] * editor->control_unit.control_width - x;
+      x -= x_offset;
+
       if(x + width > widget->allocation.width)
 	width = widget->allocation.width - x;
 
@@ -587,8 +598,8 @@ ags_editor_draw_notation(AgsEditor *editor)
       cairo_fill(cr);
     }else if(note->y == (editor->nth_y - 1) && editor->y0 != 0){
       if(editor->y0 > editor->control_margin_y){
-	x = (note->x[0] / tact) * editor->control_current.control_width - x_offset;
-	width = (note->x[1] - note->x[0]) * editor->control_current.control_width / tact_factor;
+	x = note->x[0] * editor->control_unit.control_width - x_offset;
+	width = note->x[1] * editor->control_unit.control_width - x_offset - x;
       
 	if(x + width > widget->allocation.width)
 	  width = widget->allocation.width - x;
@@ -606,8 +617,8 @@ ags_editor_draw_notation(AgsEditor *editor)
       }
     }else if(note->y == (editor->stop_y + 1) && editor->y1 != 0){
       if(editor->y1 > editor->control_margin_y){
-	x = (note->x[0] / tact) * editor->control_current.control_width - x_offset;
-	width = (note->x[1] - note->x[0]) * editor->control_current.control_width / tact_factor;
+	x = note->x[0] * editor->control_unit.control_width - x_offset;
+	width = note->x[1] * editor->control_unit.control_width - x_offset - x;
       
 	if(x + width > widget->allocation.width)
 	  width = widget->allocation.width - x;
