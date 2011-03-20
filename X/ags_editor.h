@@ -47,6 +47,7 @@ typedef struct _AgsEditorClass AgsEditorClass;
 typedef enum{
   AGS_EDITOR_RESETING_VERTICALLY    = 1,
   AGS_EDITOR_RESETING_HORIZONTALLY  = 1 <<  1,
+  AGS_EDITOR_ADDING_NOTE            = 1 <<  2,
 }AgsEditorFlags;
 
 typedef enum{

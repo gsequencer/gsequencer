@@ -136,8 +136,8 @@ ags_editor_init(AgsEditor *editor)
                          | GDK_LEAVE_NOTIFY_MASK
                          | GDK_BUTTON_PRESS_MASK
 			 | GDK_BUTTON_RELEASE_MASK
-			 //                         | GDK_POINTER_MOTION_MASK
-			 //                         | GDK_POINTER_MOTION_HINT_MASK
+                         | GDK_POINTER_MOTION_MASK
+			 | GDK_POINTER_MOTION_HINT_MASK
 			 );
 
   gtk_table_attach(table, (GtkWidget *) editor->drawing_area,
@@ -226,8 +226,8 @@ ags_editor_connect(AgsEditor *editor)
   g_signal_connect ((GObject *) editor->drawing_area, "button_release_event\0",
                     G_CALLBACK (ags_editor_drawing_area_button_release_event), (gpointer) editor);
 
-  //  g_signal_connect ((GObject *) editor->drawing_area, "motion_notify_event\0",
-  //		    G_CALLBACK (ags_editor_drawing_area_motion_notify_event), (gpointer) editor);
+  g_signal_connect ((GObject *) editor->drawing_area, "motion_notify_event\0",
+ 		    G_CALLBACK (ags_editor_drawing_area_motion_notify_event), (gpointer) editor);
 
   g_signal_connect_after ((GObject *) editor->vscrollbar, "value-changed\0",
 			  G_CALLBACK (ags_editor_vscrollbar_value_changed), (gpointer) editor);

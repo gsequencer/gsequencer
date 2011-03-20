@@ -49,16 +49,6 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
   editor->flags |= AGS_EDITOR_RESETING_HORIZONTALLY;
   ags_editor_reset_horizontally(editor, AGS_EDITOR_RESET_HSCROLLBAR);
   editor->flags &= (~AGS_EDITOR_RESETING_HORIZONTALLY);
-
-
-  /*
-  editor->width = (editor->map_width < widget->allocation.width) ? editor->map_width: widget->allocation.width;
-  
-  editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
-
-  editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
-  editor->control_unit.stop_x = (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
-*/
 }
 
 gboolean
@@ -95,62 +85,6 @@ ags_editor_index_callback(GtkRadioButton *radio_button, AgsEditor *editor)
   editor->flags |= AGS_EDITOR_RESETING_VERTICALLY;
   ags_editor_reset_vertically(editor, AGS_EDITOR_RESET_VSCROLLBAR);
   editor->flags &= (~AGS_EDITOR_RESETING_VERTICALLY);
-
-  /*
-  GtkWidget *widget;
-  GtkAdjustment *adjustment;
-  guint height;
-  guint i;
-
-  editor->selected = radio_button;
-
-
-  if(editor->selected != NULL)
-    machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE));
-  else
-    machine = NULL;
-
-  widget = (GtkWidget *) editor->drawing_area;
-
-  if(machine != NULL){
-    editor->map_height = machine->audio->input_pads * editor->control_height;
-
-    /* reset GtkVScrollbar * /
-    editor->flags |= AGS_EDITOR_RESET_VSCROLLBAR;
-    adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
-
-    if(editor->map_height > widget->allocation.height){
-      height = widget->allocation.height;
-      //      gtk_adjustment_set_upper(adjustment, (double) (editor->map_height - height));
-      gtk_adjustment_set_upper(adjustment,
-			       (gdouble) (editor->map_height - height));
-
-      if(adjustment->value > adjustment->upper)
-	gtk_adjustment_set_value(adjustment, adjustment->value);
-    }else{
-      height = editor->map_height;
-
-      gtk_adjustment_set_upper(adjustment, 0.0);
-      gtk_adjustment_set_value(adjustment, 0.0);
-    }
-
-    editor->height = height;
-    editor->flags &= (~AGS_EDITOR_RESET_VSCROLLBAR);
-
-    editor->y0 = ((guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value)) % editor->control_height;
-
-    if(editor->y0 != 0){
-      editor->y0 = editor->control_height - editor->y0;
-    }
-
-    editor->y1 = (editor->height - editor->y0) % editor->control_height;
-  }
-
-
-
-  ags_editor_draw_segment(editor);
-  ags_editor_draw_notation(editor);
-*/
 }
 
 gboolean
@@ -209,119 +143,6 @@ ags_editor_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *ev
   ags_editor_reset_horizontally(editor, AGS_EDITOR_RESET_HSCROLLBAR);
   editor->flags &= (~AGS_EDITOR_RESETING_HORIZONTALLY);  
 
-    /*
-  if(editor->selected != NULL){
-    AgsMachine *machine;
-    GtkAdjustment *adjustment;
-    guint width, height;
-
-    machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE));
-
-    if(machine != NULL){
-      /* reset GtkHScrollbar * /
-      editor->flags |= AGS_EDITOR_RESET_HSCROLLBAR;
-      adjustment = GTK_RANGE(editor->hscrollbar)->adjustment;
-
-      if(editor->map_width > widget->allocation.width){
-	width = widget->allocation.width;
-	//	gtk_adjustment_set_upper(adjustment, (double) (editor->map_width - width));
-	gtk_adjustment_set_upper(adjustment,
-				 (gdouble) (editor->map_width - width));
-
-	if(adjustment->value > adjustment->upper)
-	  gtk_adjustment_set_value(adjustment, adjustment->upper);
-      }else{
-	width = editor->map_width;
-
-	gtk_adjustment_set_upper(adjustment, 0.0);
-	gtk_adjustment_set_value(adjustment, 0.0);
-      }
-
-      editor->width = width;
-      editor->flags &= (~AGS_EDITOR_RESET_HSCROLLBAR);
-
-      /* reset GtkVScrollbar * /
-      editor->flags |= AGS_EDITOR_RESET_VSCROLLBAR;
-      adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
-
-      if(editor->map_height > widget->allocation.height){
-	height = widget->allocation.height;
-	//	gtk_adjustment_set_upper(adjustment, (double) (editor->map_height - height));
-	gtk_adjustment_set_upper(adjustment,
-				 (gdouble) (editor->map_height - height));
-
-	if(adjustment->value > adjustment->upper)
-	  gtk_adjustment_set_value(adjustment, adjustment->value);
-      }else{
-	height = editor->map_height;
-	//	gtk_adjustment_set_upper(adjustment, 0.0);
-	gtk_adjustment_set_upper(adjustment,
-				 0.0);
-	gtk_adjustment_set_value(adjustment, 0.0);
-      }
-
-      editor->height = height;
-      editor->flags &= (~AGS_EDITOR_RESET_VSCROLLBAR);
-
-      /* reset AgsEditorControlCurrent * /
-      if(editor->map_width > editor->width){
-	editor->control_current.x0 = ((guint) round((double) adjustment->value) % editor->control_current.control_width);
-
-	if(editor->control_current.x0 != 0)
-	  editor->control_current.x0 = editor->control_current.control_width - editor->control_current.x0;
-
-	editor->control_current.x1 = (editor->width - editor->control_current.x0) % editor->control_current.control_width;
-
-	editor->control_current.nth_x = (guint) ceil(adjustment->value / (double) editor->control_current.control_width);
-      }else{
-	editor->control_current.x0 = 0;
-	editor->control_current.x1 = 0;
-
-	editor->control_current.nth_x = 0;
-      }
-
-      /* reset AgsEditorControlUnit * /
-      if(editor->map_width > editor->width){
-	editor->control_unit.x0 = ((guint) round((double) adjustment->value) % editor->control_unit.control_width);
-
-	if(editor->control_unit.x0 != 0)
-	  editor->control_unit.x0 = editor->control_unit.control_width - editor->control_unit.x0;
-
-	editor->control_unit.x1 = (editor->width - editor->control_unit.x0) % editor->control_unit.control_width;
-
-	editor->control_unit.nth_x = (guint) ceil(adjustment->value / (double) editor->control_unit.control_width);
-	editor->control_unit.stop_x = (editor->width - editor->control_unit.x0 - editor->control_unit.x1) / editor->control_unit.control_width;
-      }else{
-	editor->control_unit.x0 = 0;
-	editor->control_unit.x1 = 0;
-
-	editor->control_unit.nth_x = 0;
-	editor->control_unit.stop_x = editor->control_unit.control_width * editor->control_unit.control_count;
-      }
-
-      /* refresh display * /
-      if(AGS_IS_PANEL(machine)){
-      }else if(AGS_IS_MIXER(machine)){
-      }else if(AGS_IS_DRUM(machine)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
-      }else if(AGS_IS_MATRIX(machine)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
-      }else if(AGS_IS_SYNTH(machine)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
-      }else if(AGS_IS_FFPLAYER(machine)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
-      }
-    }
-  }
-    */
   return(FALSE);
 }
 
@@ -366,12 +187,14 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
     note->x[1] = (guint) note->x[0] + 1;
     note->y = note_y + offset_y;
 
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
+    //    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
   }
 
   if(editor->selected != NULL &&
      event->button == 1 &&
      (machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE))) != NULL){
+    editor->flags |= AGS_EDITOR_ADDING_NOTE;
+
     /* store the events position */
     editor->control.x0 = (guint) event->x;
     editor->control.y0 = (guint) event->y;
@@ -440,8 +263,6 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 	list_notation = list_notation->next;
       }
     }
-
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
   }
   void ags_editor_drawing_area_button_release_event_draw_control(){
     cairo_t *cr;
@@ -524,6 +345,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
       ags_editor_drawing_area_button_release_event_set_control();
       ags_editor_drawing_area_button_release_event_draw_control();
     }
+
+    editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
   }
 
   return(FALSE);
@@ -532,6 +355,125 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 gboolean
 ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, AgsEditor *editor)
 {
+  AgsMachine *machine;
+  AgsNote *note, *note0;
+  double value[2];
+  double tact;
+  guint note_x1;
+  guint prev_x1;
+  void ags_editor_drawing_area_motion_notify_event_set_control(){
+    GList *list_notation;
+    guint note_x, note_y;
+    guint offset_x, offset_y;
+
+    if(editor->control.x0 >= editor->map_width)
+      editor->control.x0 = editor->map_width - 1;
+
+    offset_x = (guint) (ceil(value[0] / (double) (editor->control_unit.control_width)));
+
+    if(editor->control.x1 >= editor->control_current.x0)
+      note_x = (guint) (ceil((double) (editor->control.x1 - editor->control_current.x0) / (double) (editor->control_current.control_width)));
+    else{
+      offset_x -= 1;
+      note_x = 0;
+    }
+
+    note_x1 = (note_x * tact) + (offset_x * tact);
+
+    list_notation = machine->audio->notation;
+
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
+  }
+  void ags_editor_drawing_area_motion_notify_event_draw_control(){
+    cairo_t *cr;
+    guint x, y, width, height;
+
+    widget = (GtkWidget *) editor->drawing_area;
+    cr = gdk_cairo_create(widget->window);
+
+    x = note->x[0] * editor->control_unit.control_width;
+    width = note_x1 * editor->control_unit.control_width;
+
+    if(x < (guint) value[0]){
+      if(width > (guint) value[0]){
+	width -= (guint) x;
+	x = 0;
+      }else{
+	return;
+      }
+    }else if(x < (guint) value[0] + widget->allocation.width){
+      width -= x;
+      x -= (guint) value[0];
+    }else{
+      return;
+    }
+
+    if(x + width > widget->allocation.width)
+      width = widget->allocation.width - x;
+
+    y = note->y * editor->control_height;
+
+    if(y < (guint) value[1]){
+      if(y + editor->control_height - editor->control_margin_y < (guint) value[1]){
+	return;
+      }else{
+	if(y + editor->control_margin_y < (guint) value[1]){
+	  height = editor->control_height;
+	  y = y + editor->control_margin_y - (guint) value[1];
+	}else{
+	  height = editor->y0;
+	  y -= (guint) value[1];
+	}
+      }
+    }else if(y < (guint) value[1] + widget->allocation.height - editor->control_height){
+      height = editor->control_height - 2 * editor->control_margin_y;
+      y = y - (guint) value[1] + editor->control_margin_y;
+    }else{
+      if(y > value[1] + widget->allocation.height - editor->y1 + editor->control_margin_y){
+	return;
+      }else{
+	height = editor->y0;
+	y = y - (guint) value[1] + editor->control_margin_y;
+      }
+    }
+
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+    cairo_fill(cr);
+  }
+    
+  if(editor->selected != NULL &&
+     (AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+    prev_x1 = editor->control.x1;
+    editor->control.x1 = (guint) event->x;
+
+    machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
+    note = &(editor->control.note);
+
+    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
+
+    tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
+
+    if(prev_x1 > editor->control.x1){
+      ags_editor_draw_segment(editor);
+      ags_editor_draw_notation(editor);
+    }
+
+    if(AGS_IS_PANEL(machine)){
+    }else if(AGS_IS_MIXER(machine)){
+    }else if(AGS_IS_DRUM(machine)){
+      ags_editor_drawing_area_motion_notify_event_set_control();
+      ags_editor_drawing_area_motion_notify_event_draw_control();
+    }else if(AGS_IS_MATRIX(machine)){
+      ags_editor_drawing_area_motion_notify_event_set_control();
+      ags_editor_drawing_area_motion_notify_event_draw_control();
+    }else if(AGS_IS_FFPLAYER(machine)){
+      ags_editor_drawing_area_motion_notify_event_set_control();
+      ags_editor_drawing_area_motion_notify_event_draw_control();
+    }
+  }
+
   return(FALSE);
 }
 
@@ -666,72 +608,6 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
       ags_editor_reset_horizontally(editor, AGS_EDITOR_RESET_HSCROLLBAR);
       editor->flags &= (~AGS_EDITOR_RESETING_HORIZONTALLY);  
     }
-    /*
-    if(machine0 != NULL){
-      GtkWidget *widget;
-      GtkAdjustment *adjustment;
-      guint height;
-
-      widget = (GtkWidget *) editor->drawing_area;
-      adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
-
-      editor->map_height = machine0->audio->input_pads * editor->control_height;
-      
-      /* reset GtkVScrollbar * /
-      editor->flags |= AGS_EDITOR_RESET_VSCROLLBAR;
-      adjustment = GTK_RANGE(editor->vscrollbar)->adjustment;
-
-      if(editor->map_height > widget->allocation.height){
-	height = widget->allocation.height;
-	gtk_adjustment_set_upper(adjustment,
-				 (gdouble) (editor->map_height - height));
-	// adjustment->upper = (double) (editor->map_height - height);
-
-	//	if(adjustment->value > adjustment->upper)
-	  gtk_adjustment_set_value(adjustment, 0.0);
-      }else{
-	height = editor->map_height;
-
-	gtk_adjustment_set_upper(adjustment, 0.0);
-	//	adjustment->upper = 0.0;
-	gtk_adjustment_set_value(adjustment, 0.0);
-      }
-
-      editor->height = height;
-      editor->flags &= (~AGS_EDITOR_RESET_VSCROLLBAR);
-
-      editor->y0 = ((guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value)) % editor->control_height;
-
-      if(editor->y0 != 0){
-	editor->y0 = editor->control_height - editor->y0;
-      }
-
-      editor->y1 = (editor->height - editor->y0) % editor->control_height;
-      editor->stop_y = editor->nth_y + (editor->height - editor->y0 - editor->y1) / editor->control_height;
-
-      gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine0), ": \0", machine0->name, NULL));
-
-      if(AGS_IS_PANEL(machine0)){
-      }else if(AGS_IS_MIXER(machine0)){
-      }else if(AGS_IS_DRUM(machine0)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	//	ags_editor_draw_notation(editor);
-      }else if(AGS_IS_MATRIX(machine0)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	//	ags_editor_draw_notation(editor);
-      }else if(AGS_IS_SYNTH(machine0)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	//	ags_editor_draw_notation(editor);
-      }else if(AGS_IS_FFPLAYER(machine0)){
-	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	//	ags_editor_draw_notation(editor);
-      }
-    }
-*/
   }
 
   gtk_widget_destroy((GtkWidget *) dialog);
