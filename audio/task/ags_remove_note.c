@@ -137,7 +137,7 @@ ags_remove_note_launch(AgsTask *task)
 
   remove_note = AGS_REMOVE_NOTE(task);
 
-  /* append to AgsDevout */
+  /* remove note */
   ags_notation_remove_note_at_position(remove_note->notation,
 				       remove_note->x, remove_note->y,
 				       remove_note->x_offset);

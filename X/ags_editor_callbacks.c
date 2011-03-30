@@ -181,7 +181,7 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
       note_y = 0;
     }
 
-    note = &(editor->control.note);
+    note = editor->control.note;
     note->flags = AGS_NOTE_GUI;
     note->x[0] = (note_x * tact) + (offset_x * tact);
     note->x[1] = (guint) note->x[0] + 1;
@@ -247,15 +247,13 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
       if(gtk_notebook_get_n_pages((GtkNotebook *) editor->notebook) > 0){
 	list_notation = g_list_nth(list_notation, gtk_notebook_get_current_page((GtkNotebook *) editor->notebook));
 
-	note0 = (AgsNote *) malloc(sizeof(AgsNote));
-	memcpy(note0, note, sizeof(AgsNote));
+	note0 = ags_note_duplicate(note);
 
 	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0);
       }
     }else{
       while(list_notation != NULL ){
-	note0 = (AgsNote *) malloc(sizeof(AgsNote));
-	memcpy(note0, note, sizeof(AgsNote));
+	note0 = ags_note_duplicate(note);
 
 	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0);
 	list_notation = list_notation->next;
@@ -324,7 +322,7 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     editor->control.x1 = (guint) event->x;
 
     machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
-    note = &(editor->control.note);
+    note = editor->control.note;
 
     value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
     value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
@@ -446,7 +444,7 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
     editor->control.x1 = (guint) event->x;
 
     machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
-    note = &(editor->control.note);
+    note = editor->control.note;
 
     value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
     value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);

@@ -145,6 +145,8 @@ ags_editor_init(AgsEditor *editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
+  editor->control.note = ags_note_new();
+
   editor->width = 0;
   editor->height = 0;
   editor->map_width = 128 * 64;
@@ -512,7 +514,7 @@ ags_editor_draw_notation(AgsEditor *editor)
 
   list_notation = g_list_nth(machine->audio->notation,
 			     selected_channel);
-  list_note = AGS_NOTATION(list_notation->data)->note;
+  list_note = AGS_NOTATION(list_notation->data)->notes;
 
   control_height = editor->control_height - 2 * editor->control_margin_y;
 

@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_note.h>
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
@@ -76,7 +77,7 @@ struct _AgsEditor
   GtkMenu *popup;
 
   struct _AgsEditorControl{ // values retrieved by mouse pressed and released callback
-    AgsNote note;
+    AgsNote *note;
 
     guint x0;
     guint y0;

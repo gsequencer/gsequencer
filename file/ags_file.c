@@ -41,6 +41,7 @@
 #include <ags/audio/ags_effect.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_note.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_task.h>
 
@@ -686,7 +687,7 @@ ags_file_read_notation(AgsFile *file, AgsNotation *notation)
     if(node->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name, "AgsNote\0", 7)){
 	if(first_note){
-	  notation->note =
+	  notation->notes =
 	    list = g_list_alloc();
 	}else{
 	  list->next = (GList *) malloc(sizeof(GList));
@@ -695,7 +696,7 @@ ags_file_read_notation(AgsFile *file, AgsNotation *notation)
 	  list->next = NULL;
 	}
 	
-	list->data = (gpointer) ags_note_alloc();
+	list->data = (gpointer) ags_note_new();
 	ags_file_read_note(file, (AgsNote *) list->data);
       }
     }
@@ -1572,7 +1573,7 @@ ags_file_write_notation(AgsFile *file, AgsNotation *notation)
   xmlNewProp(node, BAD_CAST "bpm\0", BAD_CAST g_strdup_printf("%d\n", notation->bpm));
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
-  list = notation->note;
+  list = notation->notes;
 
   while(list != NULL){
     ags_file_write_note(file, (AgsNote *) list->data);

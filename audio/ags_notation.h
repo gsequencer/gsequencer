@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_note.h>
+
 #define AGS_TYPE_NOTATION                (ags_notation_get_type())
 #define AGS_NOTATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION, AgsNotation))
 #define AGS_NOTATION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTATION, AgsNotationClass))
@@ -29,23 +31,13 @@
 #define AGS_IS_NOTATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_NOTATION))
 #define AGS_NOTATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NOTATION, AgsNotationClass))
 
-#define AGS_NOTE(obj) ((AgsNote *) obj)
-
 typedef struct _AgsNotation AgsNotation;
 typedef struct _AgsNotationClass AgsNotationClass;
-typedef struct _AgsNote AgsNote;
 
 typedef enum{
   AGS_NOTATION_RASTER            =  1,
   AGS_NOTATION_DEFAULT_LENGTH    =  1 <<  1,
 }AgsNotationFlags;
-
-typedef enum{
-  AGS_NOTE_GUI             =  1,
-  AGS_NOTE_RUNTIME         =  1 <<  1,
-  AGS_NOTE_HUMAN_READABLE  =  1 <<  2,
-  AGS_NOTE_DEFAULT_LENGTH  =  1 <<  3,
-}AgsNoteFlags;
 
 struct _AgsNotation
 {
@@ -55,15 +47,17 @@ struct _AgsNotation
 
   GObject *audio;
 
-  guint base_frequence;
+  guint base_frequency;
 
   char *tact;
   guint bpm;
 
   guint maximum_note_length;
 
-  GList *note;
+  GList *notes;
   guint pads;
+
+  GList *selection;
 };
 
 struct _AgsNotationClass
@@ -71,23 +65,31 @@ struct _AgsNotationClass
   GObjectClass object;
 };
 
-struct _AgsNote
-{
-  guint flags;
-
-  // gui format, convert easy to visualization
-  guint x[2];
-  guint y;
-};
-
 GType ags_notation_get_type();
 
 void ags_notation_add_note(AgsNotation *notation, AgsNote *note);
-AgsNote* ags_note_alloc();
 
 gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
 					      guint x, guint y,
 					      guint x_offset);
+
+GList* ags_notation_get_selection(AgsNotation *notation);
+
+gboolean ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note);
+
+void ags_notation_add_point_to_selection(AgsNotation *notation,
+					 guint x, guint y,
+					 gboolean replace_current_selection);
+void ags_notation_remove_point_from_selection(AgsNotation *notation,
+					      guint x, guint y);
+
+void ags_notation_add_region_to_selection(AgsNotation *notation,
+					  guint x, guint y,
+					  guint width, guint height,
+					  gboolean replace_current_selection);
+void ags_notation_remove_region_from_selection(AgsNotation *notation,
+					       guint x, guint y,
+					       guint width, guint height);
 
 AgsNotation* ags_notation_new();
 

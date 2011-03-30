@@ -1271,7 +1271,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     while(notation != NULL){
       notation = AGS_NOTATION(notation_i->data);
-      note = notation->note;
+      note = notation->notes;
 
       while(note != NULL){
 	note_next = note->next;
@@ -1280,7 +1280,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  if(note->prev != NULL)
 	    note->prev->next = note_next;
 	  else
-	    notation->note = note_next;
+	    notation->notes = note_next;
 
 	  if(note_next != NULL)
 	    note_next->prev = note->prev;
