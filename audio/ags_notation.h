@@ -60,6 +60,8 @@ struct _AgsNotation
   char *tact;
   guint bpm;
 
+  guint maximum_note_length;
+
   GList *note;
   guint pads;
 };
@@ -81,8 +83,11 @@ struct _AgsNote
 GType ags_notation_get_type();
 
 void ags_notation_add_note(AgsNotation *notation, AgsNote *note);
-
 AgsNote* ags_note_alloc();
+
+gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
+					      guint x, guint y,
+					      guint x_offset);
 
 AgsNotation* ags_notation_new();
 

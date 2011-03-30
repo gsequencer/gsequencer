@@ -115,6 +115,8 @@ ags_notation_init(AgsNotation *notation)
   notation->tact = g_strdup("1/4\0");
   notation->bpm = 120;
 
+  notation->maximum_note_length = 256;
+
   notation->note = NULL;
   notation->pads = 0;
 }
@@ -231,6 +233,64 @@ ags_note_alloc()
   note->y = 0;
 
   return(note);
+}
+
+gboolean
+ags_notation_remove_note_at_position(AgsNotation *notation,
+				     guint x, guint y,
+				     guint x_offset)
+{
+  AgsNote *note;
+  GList *notes;
+  guint x_start;
+
+  notes = notation->note;
+
+  /* get entry point */
+  while(notes != NULL && (note = (AgsNote *) notes->data)->x[0] < x)
+    notes = notes->next;
+
+  /* search in y region for appropriate note */
+  if(notes != NULL && note->x[0] == x){
+    do{
+      if(note->y == y){
+	notation->note = g_list_remove_link(notation->note, notes);
+	free(note);
+
+	return(TRUE);
+      }
+
+      notes = notes->next;
+    }while(notes != NULL && (note = (AgsNote *) notes->data)->y <= y);
+  }
+
+  /* search backward until x_start */
+  if(x_offset < notation->maximum_note_length){
+    x_start = 0;
+  }else{
+    x_start = x_offset - notation->maximum_note_length;
+  }
+
+  while(notes != NULL && (note = (AgsNote *) notes->data)->x[0] >= x_start){
+    if(note->y == y){
+      do{
+	if(note->x[1] > x){
+	  notation->note = g_list_remove_link(notation->note, notes);
+	  free(note);
+	
+	  return(TRUE);
+	}
+
+	notes = notes->prev;
+      }while(notes != NULL && (note = (AgsNote *) notes->data)->y == y);
+
+      continue;
+    }
+
+    notes = notes->prev;
+  }
+
+  return(FALSE);
 }
 
 AgsNotation*

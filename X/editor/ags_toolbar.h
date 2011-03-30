@@ -37,9 +37,11 @@ struct _AgsToolbar
 {
   GtkToolbar toolbar;
 
+  GtkToggleButton *selected_edit_mode;
   GtkToggleButton *edit;
   GtkToggleButton *clear;
   GtkToggleButton *select;
+
   GtkButton *copy;
   GtkButton *cut;
   GtkButton *paste;

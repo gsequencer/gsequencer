@@ -186,8 +186,6 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
     note->x[0] = (note_x * tact) + (offset_x * tact);
     note->x[1] = (guint) note->x[0] + 1;
     note->y = note_y + offset_y;
-
-    //    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
   }
 
   if(editor->selected != NULL &&

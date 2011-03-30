@@ -77,8 +77,10 @@ ags_toolbar_init(AgsToolbar *toolbar)
   toolbar->edit = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 						   "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_LARGE_TOOLBAR),
 						   "relief\0", GTK_RELIEF_NONE,
+						   "active\0", TRUE,
 						   NULL);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->edit, "edit notes\0", NULL);
+  toolbar->selected_edit_mode = toolbar->edit;
 
   toolbar->clear = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 						    "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CLEAR, GTK_ICON_SIZE_LARGE_TOOLBAR),
@@ -155,14 +157,14 @@ ags_toolbar_connect(AgsToolbar *toolbar)
   g_signal_connect((GObject *) toolbar, "show\0",
 		   G_CALLBACK(ags_toolbar_show_callback), (gpointer) toolbar);
 
-  g_signal_connect((GObject *) toolbar->edit, "clicked\0",
-		   G_CALLBACK(ags_toolbar_edit_callback), (gpointer) toolbar);
+  g_signal_connect_after((GObject *) toolbar->edit, "toggled\0",
+			 G_CALLBACK(ags_toolbar_edit_callback), (gpointer) toolbar);
 
-  g_signal_connect((GObject *) toolbar->clear, "clicked\0",
-		   G_CALLBACK(ags_toolbar_clear_callback), (gpointer) toolbar);
+  g_signal_connect_after((GObject *) toolbar->clear, "toggled\0",
+			 G_CALLBACK(ags_toolbar_clear_callback), (gpointer) toolbar);
 
-  g_signal_connect((GObject *) toolbar->select, "clicked\0",
-		   G_CALLBACK(ags_toolbar_select_callback), (gpointer) toolbar);
+  g_signal_connect_after((GObject *) toolbar->select, "toggled\0",
+			 G_CALLBACK(ags_toolbar_select_callback), (gpointer) toolbar);
 
   g_signal_connect((GObject *) toolbar->copy, "clicked\0",
 		   G_CALLBACK(ags_toolbar_copy_callback), (gpointer) toolbar);

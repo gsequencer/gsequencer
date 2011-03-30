@@ -27,13 +27,13 @@
 gboolean ags_toolbar_destroy_callback(GtkObject *object, AgsToolbar *toolbar);
 void ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar);
 
-void ags_toolbar_edit_callback(GtkWidget *widget, AgsToolbar *toolbar);
-void ags_toolbar_clear_callback(GtkWidget *widget, AgsToolbar *toolbar);
+void ags_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar);
+void ags_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar);
+void ags_toolbar_select_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar);
 
 void ags_toolbar_copy_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_cut_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar);
-void ags_toolbar_select_callback(GtkWidget *widget, AgsToolbar *toolbar);
 
 void ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
 void ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
