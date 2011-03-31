@@ -67,7 +67,9 @@ struct _AgsNotationClass
 
 GType ags_notation_get_type();
 
-void ags_notation_add_note(AgsNotation *notation, AgsNote *note);
+void ags_notation_add_note(AgsNotation *notation,
+			   AgsNote *note,
+			   gboolean use_selection_list);
 
 gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
 					      guint x, guint y,

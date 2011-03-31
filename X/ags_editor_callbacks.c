@@ -249,13 +249,13 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 
 	note0 = ags_note_duplicate(note);
 
-	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0);
+	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
       }
     }else{
       while(list_notation != NULL ){
 	note0 = ags_note_duplicate(note);
 
-	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0);
+	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
 	list_notation = list_notation->next;
       }
     }

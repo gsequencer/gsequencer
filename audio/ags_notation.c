@@ -162,7 +162,9 @@ ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm)
 }
 
 void
-ags_notation_add_note(AgsNotation *notation, AgsNote *note)
+ags_notation_add_note(AgsNotation *notation,
+		      AgsNote *note,
+		      gboolean use_selection_list)
 {
   GList *list, *list_new;
   void ags_notation_add_note_add1(){
@@ -173,7 +175,11 @@ ags_notation_add_note(AgsNotation *notation, AgsNote *note)
       list_new->prev = NULL;
       list_new->next = list;
       list->prev = list_new;
-      notation->notes = list_new;
+
+      if(use_selection_list)
+	notation->selection = list_new;
+      else
+	notation->notes = list_new;
     }else{
       list_new->prev = list->prev;
       list_new->next = list;
@@ -182,12 +188,20 @@ ags_notation_add_note(AgsNotation *notation, AgsNote *note)
     }
   }
 
-  list = notation->notes;
+  if(use_selection_list)
+    list = notation->selection;
+  else
+    list = notation->notes;
 
   if(list == NULL){
     list_new = g_list_alloc();
     list_new->data = (gpointer) note;
-    notation->notes = list_new;
+
+    if(use_selection_list)
+      notation->selection = list_new;
+    else
+      notation->notes = list_new;
+
     return;
   }
 
@@ -246,7 +260,9 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
       }
 
       notes = notes->next;
-    }while(notes != NULL && (note = AGS_NOTE(notes->data))->y <= y);
+    }while(notes != NULL &&
+	   (note = AGS_NOTE(notes->data))->x[0] == x &&
+	   note->y <= y);
   }
 
   /* search backward until x_start */
@@ -267,7 +283,9 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 	}
 
 	notes = notes->prev;
-      }while(notes != NULL && (note = AGS_NOTE(notes->data))->y == y);
+      }while(notes != NULL &&
+	     (note = AGS_NOTE(notes->data))->x[0] >= x_start &&
+	     note->y == y);
 
       continue;
     }
@@ -287,6 +305,16 @@ ags_notation_get_selection(AgsNotation *notation)
 gboolean
 ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
 {
+  GList *selection;
+
+  selection = notation->selection;
+
+  while(selection != NULL && AGS_NOTE(selection->data)->x[0] <= note->x[0]){
+    if(selection->data == note)
+      return(TRUE);
+
+    selection = selection->next;
+  }
 
   return(FALSE);
 }
@@ -296,32 +324,60 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 				    guint x, guint y,
 				    gboolean replace_current_selection)
 {
-  AgsNote *note;
-  GList *notes, *notes_next;
+  AgsNote *note, *prev_note;
+  GList *notes;
 
   notes = notation->notes;
 
-  while(notes != NULL && ((AgsNote *) notes->data)->x[0] < x){
+  while(notes != NULL && AGS_NOTE(notes->data)->x[0] < x){
     notes = notes->next;
   }
 
   if(notes == NULL){
     if(replace_current_selection){
-      ags_list_free_and_free_link(notation->notes);
-      notation->notes = NULL;
+      ags_list_free_and_unref_link(notation->selection);
+      notation->selection = NULL;
     }
 
     return;
   }
 
-  while((notes_next = notes->next) != NULL && (note = AGS_NOTE(notes_next->data))->x[0] == x){
+  prev_note = NULL;
+
+  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
     if(note->y == y){
-      {
-	notes = notes_next;
-      }while((notes_next = notes->next) != NULL && (note = AGS_NOTE(notes_next->data))->y == y);
+      do{
+	prev_note = note;
+	notes = notes->next;
+      }while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x && note->y == y);
+
+      break;
     }
 
-    notes = notes_next;
+    notes = notes->next;
+  }
+
+  if(prev_note == NULL){
+    if(replace_current_selection){
+      ags_list_free_and_unref_link(notation->selection);
+      notation->selection = NULL;
+    }
+
+    return;
+  }
+
+  if(replace_current_selection){
+    GList *list;
+
+    list = g_list_alloc();
+    list->data = prev_note;
+
+    ags_list_free_and_unref_link(notation->selection);
+    notation->selection = list;
+  }else{
+    if(!ags_notation_is_note_selected(notation, prev_note)){
+      ags_notation_add_note(notation, prev_note, TRUE);
+    }
   }
 }
 
