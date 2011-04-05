@@ -319,33 +319,33 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
   return(FALSE);
 }
 
-void
-ags_notation_add_point_to_selection(AgsNotation *notation,
-				    guint x, guint y,
-				    gboolean replace_current_selection)
+AgsNote*
+ags_notation_find_point(AgsNotation *notation,
+			guint x, guint y,
+			gboolean use_selection_list)
 {
   AgsNote *note, *prev_note;
   GList *notes;
 
-  notes = notation->notes;
+  if(use_selection_list){
+    notes = notation->selection;
+  }else{
+    notes = notation->notes;
+  }
 
   while(notes != NULL && AGS_NOTE(notes->data)->x[0] < x){
     notes = notes->next;
   }
 
-  if(notes == NULL){
-    if(replace_current_selection){
-      ags_list_free_and_unref_link(notation->selection);
-      notation->selection = NULL;
-    }
-
-    return;
-  }
+  if(notes == NULL)
+    return(NULL);
 
   prev_note = NULL;
 
   while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
     if(note->y == y){
+      /* find last match for point */
+
       do{
 	prev_note = note;
 	notes = notes->next;
@@ -357,26 +357,78 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
     notes = notes->next;
   }
 
-  if(prev_note == NULL){
+  return(prev_note);
+}
+
+GList*
+ags_notation_find_region(AgsNotation *notation,
+			 guint x0, guint y0,
+			 guint x1, guint y1,
+			 gboolean use_selection_list)
+{
+  AgsNote *note;
+  GList *notes;
+  GList *region;
+
+  if(use_selection_list){
+    notes = notation->selection;
+  }else{
+    notes = notation->notes;
+  }
+
+  while(notes != NULL && AGS_NOTE(notes->data)->x[0] < x0){
+    notes = notes->next;
+  }
+
+  region = NULL;
+
+  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] < x1){
+    if(note->y >= y0 && note->y < y1){
+      region = g_list_prepend(region, note);
+    }
+
+    notes = notes->next;
+  }
+
+  region = g_list_reverse(region);
+
+  return(region);
+}
+
+void
+ags_notation_add_point_to_selection(AgsNotation *notation,
+				    guint x, guint y,
+				    gboolean replace_current_selection)
+{
+  AgsNote *note;
+
+  note = ags_notation_find_point(notation,
+				 x, y,
+				 FALSE);
+
+  if(note == NULL){
+    /* there is nothing to be selected */
+
     if(replace_current_selection){
       ags_list_free_and_unref_link(notation->selection);
       notation->selection = NULL;
     }
-
-    return;
-  }
-
-  if(replace_current_selection){
-    GList *list;
-
-    list = g_list_alloc();
-    list->data = prev_note;
-
-    ags_list_free_and_unref_link(notation->selection);
-    notation->selection = list;
   }else{
-    if(!ags_notation_is_note_selected(notation, prev_note)){
-      ags_notation_add_note(notation, prev_note, TRUE);
+    /* add to or replace selection */
+    g_object_ref(note);
+
+    if(replace_current_selection){
+      GList *list;
+      
+      list = g_list_alloc();
+      list->data = note;
+      
+      ags_list_free_and_unref_link(notation->selection);
+      notation->selection = list;
+    }else{
+      if(!ags_notation_is_note_selected(notation, note)){
+	ags_notation_add_note(notation, note, TRUE);
+      }
     }
   }
 }
@@ -385,21 +437,73 @@ void
 ags_notation_remove_point_from_selection(AgsNotation *notation,
 					 guint x, guint y)
 {
+  AgsNote *note;
+
+  note = ags_notation_find_point(notation,
+				 x, y,
+				 FALSE);
+
+  if(note != NULL){
+    /* remove note from selection */
+    notation->selection = g_list_remove(notation->selection, note);
+
+    g_object_unref(note);
+  }
 }
 
 void
 ags_notation_add_region_to_selection(AgsNotation *notation,
-				     guint x, guint y,
-				     guint width, guint height,
+				     guint x0, guint y0,
+				     guint x1, guint y1,
 				     gboolean replace_current_selection)
 {
+  AgsNote *note;
+  GList *region;
+
+  region = ags_notation_find_region(notation,
+				    x0, y0,
+				    x1, y1,
+				    FALSE);
+
+  while(region != NULL){
+    note = AGS_NOTE(region->data);
+
+    if(!ags_notation_is_note_selected(notation, note)){
+      g_object_ref(G_OBJECT(note));
+      ags_notation_add_note(notation,
+			    note,
+			    TRUE);
+    }
+
+    region = region->next;
+  }
+
+  g_list_free(region);
 }
 
 void
 ags_notation_remove_region_from_selection(AgsNotation *notation,
-					  guint x, guint y,
-					  guint width, guint height)
+					  guint x0, guint y0,
+					  guint x1, guint y1)
 {
+  AgsNote *note;
+  GList *region;
+
+  region = ags_notation_find_region(notation,
+				    x0, y0,
+				    x1, y1,
+				    TRUE);
+
+  while(region != NULL){
+    note = AGS_NOTE(region->data);
+
+    notation->selection = g_list_remove(notation->selection, note);
+    g_object_unref(G_OBJECT(note));
+
+    region = region->next;
+  }
+
+  g_list_free(region);
 }
 
 AgsNotation*

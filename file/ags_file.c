@@ -658,10 +658,9 @@ ags_file_read_pattern(AgsFile *file, AgsPattern *pattern)
 void
 ags_file_read_notation(AgsFile *file, AgsNotation *notation)
 {
+  AgsNote *note;
   xmlNodePtr node, child;
-  GList *list;
   xmlChar *prop;
-  gboolean first_note;
 
   prop = xmlGetProp(file->current, "raster\0");
 
@@ -679,25 +678,16 @@ ags_file_read_notation(AgsFile *file, AgsNotation *notation)
   node = file->current;
   file->current = node->children;
 
-  first_note = TRUE;
-
   while(node != NULL){
     child = file->current;
 
     if(node->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name, "AgsNote\0", 7)){
-	if(first_note){
-	  notation->notes =
-	    list = g_list_alloc();
-	}else{
-	  list->next = (GList *) malloc(sizeof(GList));
-	  list->next->prev = list;
-	  list = list->next;
-	  list->next = NULL;
-	}
-	
-	list->data = (gpointer) ags_note_new();
-	ags_file_read_note(file, (AgsNote *) list->data);
+	note = ags_note_new();
+	ags_file_read_note(file, note);
+	ags_notation_add_note(notation,
+			      note,
+			      FALSE);
       }
     }
 

@@ -137,7 +137,8 @@ ags_insert_note_launch(AgsTask *task)
 
   /* add note */
   ags_notation_add_note(insert_note->notation,
-			insert_note->note);
+			insert_note->note,
+			FALSE);
 }
 
 AgsInsertNote*
