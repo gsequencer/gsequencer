@@ -191,24 +191,36 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
   if(editor->selected != NULL &&
      event->button == 1 &&
      (machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE))) != NULL){
-    editor->flags |= AGS_EDITOR_ADDING_NOTE;
+    AgsToolbar *toolbar;
+
+    toolbar = editor->toolbar;
+
+    if(toolbar->selected_edit_mode == toolbar->edit)
+      editor->flags |= AGS_EDITOR_ADDING_NOTE;
+    else if(toolbar->selected_edit_mode == toolbar->select)
+      editor->flags |= AGS_EDITOR_SELECTING_NOTE;
 
     /* store the events position */
+    editor->control.x_offset0 = (guint) round();
+    editor->control.y_offset0 = (guint) round();
+
     editor->control.x0 = (guint) event->x;
     editor->control.y0 = (guint) event->y;
 
-    tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
-
-    if(AGS_IS_PANEL(machine)){
-    }else if(AGS_IS_MIXER(machine)){
-    }else if(AGS_IS_DRUM(machine)){
+    if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+      tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
+      
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_editor_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_editor_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_SYNTH(machine)){
       ags_editor_drawing_area_button_press_event_set_control();
-    }else if(AGS_IS_MATRIX(machine)){
-      ags_editor_drawing_area_button_press_event_set_control();
-    }else if(AGS_IS_SYNTH(machine)){
-      ags_editor_drawing_area_button_press_event_set_control();
-    }else if(AGS_IS_FFPLAYER(machine)){
-      ags_editor_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_FFPLAYER(machine)){
+	ags_editor_drawing_area_button_press_event_set_control();
+      }
     }
   }
 
@@ -317,6 +329,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
+  void ags_editor_drawing_area_button_release_event_select_region(){
+  }
 
   if(editor->selected != NULL && event->button == 1){
     editor->control.x1 = (guint) event->x;
@@ -329,20 +343,29 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 
     tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
 
-    if(AGS_IS_PANEL(machine)){
-    }else if(AGS_IS_MIXER(machine)){
-    }else if(AGS_IS_DRUM(machine)){
-      ags_editor_drawing_area_button_release_event_set_control();
-      ags_editor_drawing_area_button_release_event_draw_control();
-    }else if(AGS_IS_MATRIX(machine)){
-      ags_editor_drawing_area_button_release_event_set_control();
-      ags_editor_drawing_area_button_release_event_draw_control();
-    }else if(AGS_IS_FFPLAYER(machine)){
-      ags_editor_drawing_area_button_release_event_set_control();
-      ags_editor_drawing_area_button_release_event_draw_control();
-    }
+    if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_editor_drawing_area_button_release_event_set_control();
+	ags_editor_drawing_area_button_release_event_draw_control();
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_editor_drawing_area_button_release_event_set_control();
+	ags_editor_drawing_area_button_release_event_draw_control();
+      }else if(AGS_IS_FFPLAYER(machine)){
+	ags_editor_drawing_area_button_release_event_set_control();
+	ags_editor_drawing_area_button_release_event_draw_control();
+      }
 
-    editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
+      editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
+    }else if((AGS_EDITOR_SELECTING_NOTE & (editor->flags)) != 0){
+      editor->flags &= (~AGS_EDITOR_SELECTING_NOTE);
+
+      ags_editor_drawing_area_button_release_event_select_region();
+
+      ags_editor_draw_segment(editor);
+      ags_editor_draw_notation(editor);
+    }
   }
 
   return(FALSE);

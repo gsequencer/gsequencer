@@ -87,6 +87,8 @@ GList* ags_notation_find_region(AgsNotation *notation,
 				guint x1, guint y1,
 				gboolean use_selection_list);
 
+void ags_notation_free_selection(AgsNotation *notation);
+
 void ags_notation_add_point_to_selection(AgsNotation *notation,
 					 guint x, guint y,
 					 gboolean replace_current_selection);

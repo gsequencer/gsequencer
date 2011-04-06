@@ -49,6 +49,7 @@ typedef enum{
   AGS_EDITOR_RESETING_VERTICALLY    = 1,
   AGS_EDITOR_RESETING_HORIZONTALLY  = 1 <<  1,
   AGS_EDITOR_ADDING_NOTE            = 1 <<  2,
+  AGS_EDITOR_SELECTING_NOTES        = 1 <<  3,
 }AgsEditorFlags;
 
 typedef enum{
@@ -79,8 +80,13 @@ struct _AgsEditor
   struct _AgsEditorControl{ // values retrieved by mouse pressed and released callback
     AgsNote *note;
 
+    guint x_offset0;
+    guint y_offset0;
     guint x0;
     guint y0;
+
+    guint x_offset1;
+    guint y_offset1;
     guint x1;
     guint y1;
   }control;

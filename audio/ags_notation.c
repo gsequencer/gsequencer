@@ -396,6 +396,27 @@ ags_notation_find_region(AgsNotation *notation,
 }
 
 void
+ags_notation_free_selection(AgsNotation *notation)
+{
+  AgsNote *note;
+  GList *list;
+
+  list = notation->selection;
+  
+  while(list != NULL){
+    note = AGS_NOTE(list->data);
+    note->flags &= (~AGS_NOTE_IS_SELECTED);
+    g_object_unref(G_OBJECT(note));
+    
+    list = list->next;
+  }
+
+  list = notation->selection;
+  notation->selection = NULL;
+  g_list_free(list);
+}
+
+void
 ags_notation_add_point_to_selection(AgsNotation *notation,
 				    guint x, guint y,
 				    gboolean replace_current_selection)
@@ -408,10 +429,8 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 
   if(note == NULL){
     /* there is nothing to be selected */
-
     if(replace_current_selection){
-      ags_list_free_and_unref_link(notation->selection);
-      notation->selection = NULL;
+      ags_notation_free_selection(notation);
     }
   }else{
     /* add to or replace selection */
@@ -419,11 +438,11 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 
     if(replace_current_selection){
       GList *list;
-      
+
       list = g_list_alloc();
       list->data = note;
       
-      ags_list_free_and_unref_link(notation->selection);
+      ags_notation_free_selection(notation);
       notation->selection = list;
     }else{
       if(!ags_notation_is_note_selected(notation, note)){
@@ -458,27 +477,41 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
 				     gboolean replace_current_selection)
 {
   AgsNote *note;
-  GList *region;
+  GList *region, *list;
 
   region = ags_notation_find_region(notation,
 				    x0, y0,
 				    x1, y1,
 				    FALSE);
 
-  while(region != NULL){
-    note = AGS_NOTE(region->data);
+  if(replace_current_selection){
+    ags_notation_free_selection(notation);
 
-    if(!ags_notation_is_note_selected(notation, note)){
-      g_object_ref(G_OBJECT(note));
-      ags_notation_add_note(notation,
-			    note,
-			    TRUE);
+    list = region;
+
+    while(list != NULL){
+      g_object_ref(G_OBJECT(list->data));
+
+      list = list->next;
     }
 
-    region = region->next;
-  }
+    notation->selection = region;
+  }else{
+    while(region != NULL){
+      note = AGS_NOTE(region->data);
 
-  g_list_free(region);
+      if(!ags_notation_is_note_selected(notation, note)){
+	g_object_ref(G_OBJECT(note));
+	ags_notation_add_note(notation,
+			      note,
+			      TRUE);
+      }
+      
+      region = region->next;
+    }
+    
+    g_list_free(region);
+  }
 }
 
 void
