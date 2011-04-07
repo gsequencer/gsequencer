@@ -151,7 +151,6 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
 {
   AgsMachine *machine;
   double tact, zoom;
-  //  double value[2];
   void ags_editor_drawing_area_button_press_event_set_control(){
     AgsNote *note;
     guint note_offset_x0, note_offset_y0;
@@ -199,9 +198,7 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
     }
 
     /* store the events position */
-    //    value[0] = round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
     editor->control.x0_offset = (guint) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
-    //    value[1] = round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
     editor->control.y0_offset = (guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     editor->control.x0 = (guint) event->x;
@@ -232,7 +229,6 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 {
   AgsMachine *machine;
   AgsNote *note, *note0;
-  //  double value[2];
   double tact;
   void ags_editor_drawing_area_button_release_event_set_control(){
     GList *list_notation;
@@ -336,14 +332,13 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 
   if(editor->selected != NULL && event->button == 1){
     editor->control.x1 = (guint) event->x;
+    editor->control.y1 = (guint) event->y;
 
     machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
     note = editor->control.note;
 
     /* store the events position */
-    //    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
     editor->control.x1_offset = (guint) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
-    //    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
     editor->control.y1_offset = (guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
@@ -465,18 +460,94 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
+  void ags_editor_drawing_area_motion_notify_event_draw_selection(){
+    GtkAllocation allocation;
+    cairo_t *cr;
+    guint x0_offset, x1_offset, y0_offset, y1_offset;
+    guint x0, x1, y0, y1, width, height;
+    guint x0_viewport, x1_viewport, y0_viewport, y1_viewport;
+
+    cr = gdk_cairo_create(widget->window);
+
+    /* get viewport */
+    gtk_widget_get_allocation(widget, &allocation);
+
+    x0_viewport = editor->control.x1_offset;
+    x1_viewport = editor->control.x1_offset + allocation.width;
+
+    y0_viewport = editor->control.y1_offset;
+    y1_viewport = editor->control.y1_offset + allocation.height;
+
+    /* get real size and offset */
+    x0 = editor->control.x0_offset + editor->control.x0;
+    x1 = editor->control.x1_offset + editor->control.x1;
+
+    if(x0 > x1){
+      x0_offset = x1;
+      x1_offset = x0;
+
+      x1 = x0_offset;
+      x0 = x1_offset;
+    }else{
+      x0_offset = x0;
+      x1_offset = x1;
+    }
+
+    /* get effective size and offset */
+    if(x0 < x0_viewport){
+      x0 = 0;
+      width = x1_offset - x0_viewport;
+    }else{
+      x0 -= x0_viewport;
+      width = x1 - x0;
+    }
+
+    if(x1 > x1_viewport){
+      width -= (x1 - x1_viewport);
+    }
+
+    /* get real size and offset */
+    y0 = editor->control.y0_offset + editor->control.y0;
+    y1 = editor->control.y1_offset + editor->control.y1;
+
+    if(y0 > y1){
+      y0_offset = y1;
+      y1_offset = y0;
+
+      y1 = y0_offset;
+      y0 = y1_offset;
+    }else{
+      y0_offset = y0;
+      y1_offset = y1;
+    }
+
+    /* get effective size and offset */
+    if(y0 < y0_viewport){
+      y0 = 0;
+      height = y1_offset - y0_viewport;
+    }else{
+      y0 -= y0_viewport;
+      height = y1 - y0;
+    }
+
+    if(y1 > y1_viewport){
+      height -= (y1 - y1_viewport);
+    }
+
+    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.1);
+    cairo_rectangle(cr, (double) x0, (double) y0, (double) width, (double) height);
+    cairo_fill(cr);
+  }
     
-  if(editor->selected != NULL &&
-     (AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+  if(editor->selected != NULL){
     prev_x1 = editor->control.x1;
     editor->control.x1 = (guint) event->x;
+    editor->control.y1 = (guint) event->y;
 
     machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
     note = editor->control.note;
 
-    //    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
     editor->control.x1_offset = (guint) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
-    //    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
     editor->control.y1_offset = (guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
@@ -486,17 +557,21 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
       ags_editor_draw_notation(editor);
     }
 
-    if(AGS_IS_PANEL(machine)){
-    }else if(AGS_IS_MIXER(machine)){
-    }else if(AGS_IS_DRUM(machine)){
-      ags_editor_drawing_area_motion_notify_event_set_control();
-      ags_editor_drawing_area_motion_notify_event_draw_control();
-    }else if(AGS_IS_MATRIX(machine)){
-      ags_editor_drawing_area_motion_notify_event_set_control();
-      ags_editor_drawing_area_motion_notify_event_draw_control();
-    }else if(AGS_IS_FFPLAYER(machine)){
-      ags_editor_drawing_area_motion_notify_event_set_control();
-      ags_editor_drawing_area_motion_notify_event_draw_control();
+    if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_editor_drawing_area_motion_notify_event_set_control();
+	ags_editor_drawing_area_motion_notify_event_draw_control();
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_editor_drawing_area_motion_notify_event_set_control();
+	ags_editor_drawing_area_motion_notify_event_draw_control();
+      }else if(AGS_IS_FFPLAYER(machine)){
+	ags_editor_drawing_area_motion_notify_event_set_control();
+	ags_editor_drawing_area_motion_notify_event_draw_control();
+      }
+    }else if((AGS_EDITOR_SELECTING_NOTES & (editor->flags)) != 0){
+      ags_editor_drawing_area_motion_notify_event_draw_selection();
     }
   }
 
