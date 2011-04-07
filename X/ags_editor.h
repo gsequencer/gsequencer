@@ -80,13 +80,13 @@ struct _AgsEditor
   struct _AgsEditorControl{ // values retrieved by mouse pressed and released callback
     AgsNote *note;
 
-    guint x_offset0;
-    guint y_offset0;
+    guint x0_offset;
+    guint y0_offset;
     guint x0;
     guint y0;
 
-    guint x_offset1;
-    guint y_offset1;
+    guint x1_offset;
+    guint y1_offset;
     guint x1;
     guint y1;
   }control;

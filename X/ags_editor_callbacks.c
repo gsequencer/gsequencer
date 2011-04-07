@@ -151,41 +151,38 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
 {
   AgsMachine *machine;
   double tact, zoom;
+  //  double value[2];
   void ags_editor_drawing_area_button_press_event_set_control(){
     AgsNote *note;
-    guint offset_x, offset_y;
+    guint note_offset_x0, note_offset_y0;
     guint note_x, note_y;
-    double value[2];
 
     if(editor->control.y0 >= editor->map_height || editor->control.x0 >= editor->map_width)
       return;
 
-    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
-    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
-
-    offset_x = (guint) (ceil(value[0] / (double) (editor->control_current.control_width)));
+    note_offset_x0 = (guint) (ceil((double) (editor->control.x0_offset) / (double) (editor->control_current.control_width)));
 
     if(editor->control.x0 >= editor->control_current.x0)
       note_x = (guint) (floor((double) (editor->control.x0 - editor->control_current.x0) / (double) (editor->control_current.control_width)));
     else{
-      offset_x -= 1;
+      note_offset_x0 -= 1;
       note_x = 0;
     }
 
-    offset_y = (guint) ceil(value[1] / (double) (editor->control_height));
+    note_offset_y0 = (guint) ceil((double) (editor->control.y0_offset) / (double) (editor->control_height));
 
     if(editor->control.y0 >= editor->y0)
       note_y = (guint) floor((double) (editor->control.y0 - editor->y0) / (double) (editor->control_height));
     else{
-      offset_y -= 1;
+      note_offset_y0 -= 1;
       note_y = 0;
     }
 
     note = editor->control.note;
     note->flags = AGS_NOTE_GUI;
-    note->x[0] = (note_x * tact) + (offset_x * tact);
+    note->x[0] = (note_x * tact) + (note_offset_x0 * tact);
     note->x[1] = (guint) note->x[0] + 1;
-    note->y = note_y + offset_y;
+    note->y = note_y + note_offset_y0;
   }
 
   if(editor->selected != NULL &&
@@ -195,14 +192,17 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
 
     toolbar = editor->toolbar;
 
-    if(toolbar->selected_edit_mode == toolbar->edit)
+    if(toolbar->selected_edit_mode == toolbar->edit){
       editor->flags |= AGS_EDITOR_ADDING_NOTE;
-    else if(toolbar->selected_edit_mode == toolbar->select)
-      editor->flags |= AGS_EDITOR_SELECTING_NOTE;
+    }else if(toolbar->selected_edit_mode == toolbar->select){
+      editor->flags |= AGS_EDITOR_SELECTING_NOTES;
+    }
 
     /* store the events position */
-    editor->control.x_offset0 = (guint) round();
-    editor->control.y_offset0 = (guint) round();
+    //    value[0] = round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    editor->control.x0_offset = (guint) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    //    value[1] = round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
+    editor->control.y0_offset = (guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     editor->control.x0 = (guint) event->x;
     editor->control.y0 = (guint) event->y;
@@ -217,7 +217,7 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
       }else if(AGS_IS_MATRIX(machine)){
 	ags_editor_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_SYNTH(machine)){
-      ags_editor_drawing_area_button_press_event_set_control();
+	ags_editor_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_editor_drawing_area_button_press_event_set_control();
       }
@@ -232,26 +232,26 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 {
   AgsMachine *machine;
   AgsNote *note, *note0;
-  double value[2];
+  //  double value[2];
   double tact;
   void ags_editor_drawing_area_button_release_event_set_control(){
     GList *list_notation;
     guint note_x, note_y;
-    guint offset_x, offset_y;
+    guint note_offset_x1;
 
     if(editor->control.x0 >= editor->map_width)
       editor->control.x0 = editor->map_width - 1;
 
-    offset_x = (guint) (ceil(value[0] / (double) (editor->control_unit.control_width)));
+    note_offset_x1 = (guint) (ceil((double) (editor->control.x1_offset)  / (double) (editor->control_current.control_width)));
 
     if(editor->control.x1 >= editor->control_current.x0)
       note_x = (guint) (ceil((double) (editor->control.x1 - editor->control_current.x0) / (double) (editor->control_current.control_width)));
     else{
-      offset_x -= 1;
+      note_offset_x1 -= 1;
       note_x = 0;
     }
 
-    note->x[1] = (note_x * tact) + (offset_x * tact);
+    note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
 
@@ -271,6 +271,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 	list_notation = list_notation->next;
       }
     }
+
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
   }
   void ags_editor_drawing_area_button_release_event_draw_control(){
     cairo_t *cr;
@@ -282,16 +284,16 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     x = note->x[0] * editor->control_unit.control_width;
     width = note->x[1] * editor->control_unit.control_width;
 
-    if(x < (guint) value[0]){
-      if(width > (guint) value[0]){
+    if(x < editor->control.x1_offset){
+      if(width > editor->control.x1_offset){
 	width -= (guint) x;
 	x = 0;
       }else{
 	return;
       }
-    }else if(x < (guint) value[0] + widget->allocation.width){
+    }else if(x < editor->control.x1_offset + widget->allocation.width){
       width -= x;
-      x -= (guint) value[0];
+      x -= editor->control.x1_offset;
     }else{
       return;
     }
@@ -301,27 +303,27 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 
     y = note->y * editor->control_height;
 
-    if(y < (guint) value[1]){
-      if(y + editor->control_height - editor->control_margin_y < (guint) value[1]){
+    if(y < editor->control.y1_offset){
+      if(y + editor->control_height - editor->control_margin_y < editor->control.y1_offset){
 	return;
       }else{
-	if(y + editor->control_margin_y < (guint) value[1]){
+	if(y + editor->control_margin_y < editor->control.y1_offset){
 	  height = editor->control_height;
-	  y = y + editor->control_margin_y - (guint) value[1];
+	  y = y + editor->control_margin_y - editor->control.y1_offset;
 	}else{
 	  height = editor->y0;
-	  y -= (guint) value[1];
+	  y -= editor->control.y1_offset;
 	}
       }
-    }else if(y < (guint) value[1] + widget->allocation.height - editor->control_height){
+    }else if(y < editor->control.y1_offset + widget->allocation.height - editor->control_height){
       height = editor->control_height - 2 * editor->control_margin_y;
-      y = y - (guint) value[1] + editor->control_margin_y;
+      y = y - editor->control.y1_offset + editor->control_margin_y;
     }else{
-      if(y > value[1] + widget->allocation.height - editor->y1 + editor->control_margin_y){
+      if(y > editor->control.y1_offset + widget->allocation.height - editor->y1 + editor->control_margin_y){
 	return;
       }else{
 	height = editor->y0;
-	y = y - (guint) value[1] + editor->control_margin_y;
+	y = y - editor->control.y1_offset + editor->control_margin_y;
       }
     }
 
@@ -338,8 +340,11 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
     note = editor->control.note;
 
-    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
-    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
+    /* store the events position */
+    //    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    editor->control.x1_offset = (guint) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    //    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
+    editor->control.y1_offset = (guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
 
@@ -358,8 +363,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
       }
 
       editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
-    }else if((AGS_EDITOR_SELECTING_NOTE & (editor->flags)) != 0){
-      editor->flags &= (~AGS_EDITOR_SELECTING_NOTE);
+    }else if((AGS_EDITOR_SELECTING_NOTES & (editor->flags)) != 0){
+      editor->flags &= (~AGS_EDITOR_SELECTING_NOTES);
 
       ags_editor_drawing_area_button_release_event_select_region();
 
@@ -383,21 +388,21 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
   void ags_editor_drawing_area_motion_notify_event_set_control(){
     GList *list_notation;
     guint note_x, note_y;
-    guint offset_x, offset_y;
+    guint note_offset_x1;
 
     if(editor->control.x0 >= editor->map_width)
       editor->control.x0 = editor->map_width - 1;
 
-    offset_x = (guint) (ceil(value[0] / (double) (editor->control_unit.control_width)));
+    note_offset_x1 = (guint) (ceil(editor->control.x1_offset / (double) (editor->control_current.control_width)));
 
     if(editor->control.x1 >= editor->control_current.x0)
       note_x = (guint) (ceil((double) (editor->control.x1 - editor->control_current.x0) / (double) (editor->control_current.control_width)));
     else{
-      offset_x -= 1;
+      note_offset_x1 -= 1;
       note_x = 0;
     }
 
-    note_x1 = (note_x * tact) + (offset_x * tact);
+    note_x1 = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
 
@@ -413,16 +418,16 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
     x = note->x[0] * editor->control_unit.control_width;
     width = note_x1 * editor->control_unit.control_width;
 
-    if(x < (guint) value[0]){
-      if(width > (guint) value[0]){
-	width -= (guint) x;
+    if(x < editor->control.x1_offset){
+      if(width > editor->control.x1_offset){
+	width -= x;
 	x = 0;
       }else{
 	return;
       }
-    }else if(x < (guint) value[0] + widget->allocation.width){
+    }else if(x < editor->control.x1_offset + widget->allocation.width){
       width -= x;
-      x -= (guint) value[0];
+      x -= editor->control.x1_offset;
     }else{
       return;
     }
@@ -432,27 +437,27 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
 
     y = note->y * editor->control_height;
 
-    if(y < (guint) value[1]){
-      if(y + editor->control_height - editor->control_margin_y < (guint) value[1]){
+    if(y < editor->control.y1_offset){
+      if(y + editor->control_height - editor->control_margin_y < editor->control.y1_offset){
 	return;
       }else{
-	if(y + editor->control_margin_y < (guint) value[1]){
+	if(y + editor->control_margin_y < editor->control.y1_offset){
 	  height = editor->control_height;
-	  y = y + editor->control_margin_y - (guint) value[1];
+	  y = y + editor->control_margin_y - editor->control.y1_offset;
 	}else{
 	  height = editor->y0;
-	  y -= (guint) value[1];
+	  y -= editor->control.y1_offset;
 	}
       }
-    }else if(y < (guint) value[1] + widget->allocation.height - editor->control_height){
+    }else if(y < editor->control.y1_offset + widget->allocation.height - editor->control_height){
       height = editor->control_height - 2 * editor->control_margin_y;
-      y = y - (guint) value[1] + editor->control_margin_y;
+      y = y - editor->control.y1_offset + editor->control_margin_y;
     }else{
-      if(y > value[1] + widget->allocation.height - editor->y1 + editor->control_margin_y){
+      if(y > editor->control.y1_offset + widget->allocation.height - editor->y1 + editor->control_margin_y){
 	return;
       }else{
 	height = editor->y0;
-	y = y - (guint) value[1] + editor->control_margin_y;
+	y = y - editor->control.y1_offset + editor->control_margin_y;
       }
     }
 
@@ -469,8 +474,10 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
     machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
     note = editor->control.note;
 
-    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
-    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
+    //    value[0] = (double) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    editor->control.x1_offset = (guint) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
+    //    value[1] = (double) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
+    editor->control.y1_offset = (guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
 
     tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
 
