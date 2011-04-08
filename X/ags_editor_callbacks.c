@@ -107,25 +107,33 @@ ags_editor_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, A
     machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE));
 
     if(machine != NULL){
+      cairo_t *cr;
+
+      cr = gdk_cairo_create(widget->window);
+      cairo_push_group(cr);
+
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
       }else if(AGS_IS_DRUM(machine)){
 	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
+	ags_editor_draw_segment(editor, cr);
+	ags_editor_draw_notation(editor, cr);
       }else if(AGS_IS_MATRIX(machine)){
 	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
+	ags_editor_draw_segment(editor, cr);
+	ags_editor_draw_notation(editor, cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
+	ags_editor_draw_segment(editor, cr);
+	ags_editor_draw_notation(editor, cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_meter_paint(editor->meter);
-	ags_editor_draw_segment(editor);
-	ags_editor_draw_notation(editor);
+	ags_editor_draw_segment(editor, cr);
+	ags_editor_draw_notation(editor, cr);
       }
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
     }
   }
 
@@ -270,12 +278,11 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
   }
-  void ags_editor_drawing_area_button_release_event_draw_control(){
-    cairo_t *cr;
+  void ags_editor_drawing_area_button_release_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
 
     widget = (GtkWidget *) editor->drawing_area;
-    cr = gdk_cairo_create(widget->window);
+    //    cr = gdk_cairo_create(widget->window);
 
     x = note->x[0] * editor->control_unit.control_width;
     width = note->x[1] * editor->control_unit.control_width;
@@ -331,6 +338,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
   }
 
   if(editor->selected != NULL && event->button == 1){
+    cairo_t *cr;
+
     editor->control.x1 = (guint) event->x;
     editor->control.y1 = (guint) event->y;
 
@@ -343,18 +352,21 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 
     tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
 
+    cr = gdk_cairo_create(widget->window);
+    cairo_push_group(cr);
+
     if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
       }else if(AGS_IS_DRUM(machine)){
 	ags_editor_drawing_area_button_release_event_set_control();
-	ags_editor_drawing_area_button_release_event_draw_control();
+	ags_editor_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_MATRIX(machine)){
 	ags_editor_drawing_area_button_release_event_set_control();
-	ags_editor_drawing_area_button_release_event_draw_control();
+	ags_editor_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_editor_drawing_area_button_release_event_set_control();
-	ags_editor_drawing_area_button_release_event_draw_control();
+	ags_editor_drawing_area_button_release_event_draw_control(cr);
       }
 
       editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
@@ -363,9 +375,12 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 
       ags_editor_drawing_area_button_release_event_select_region();
 
-      ags_editor_draw_segment(editor);
-      ags_editor_draw_notation(editor);
+      ags_editor_draw_segment(editor, cr);
+      ags_editor_draw_notation(editor, cr);
     }
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
   }
 
   return(FALSE);
@@ -403,12 +418,11 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
 
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", note->x[0], note->x[1], note->y);
   }
-  void ags_editor_drawing_area_motion_notify_event_draw_control(){
-    cairo_t *cr;
+  void ags_editor_drawing_area_motion_notify_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
 
     widget = (GtkWidget *) editor->drawing_area;
-    cr = gdk_cairo_create(widget->window);
+    //    cr = gdk_cairo_create(widget->window);
 
     x = note->x[0] * editor->control_unit.control_width;
     width = note_x1 * editor->control_unit.control_width;
@@ -460,14 +474,11 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
-  void ags_editor_drawing_area_motion_notify_event_draw_selection(){
+  void ags_editor_drawing_area_motion_notify_event_draw_selection(cairo_t *cr){
     GtkAllocation allocation;
-    cairo_t *cr;
     guint x0_offset, x1_offset, y0_offset, y1_offset;
     guint x0, x1, y0, y1, width, height;
     guint x0_viewport, x1_viewport, y0_viewport, y1_viewport;
-
-    cr = gdk_cairo_create(widget->window);
 
     /* get viewport */
     gtk_widget_get_allocation(widget, &allocation);
@@ -540,6 +551,8 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
   }
     
   if(editor->selected != NULL){
+    cairo_t *cr;
+
     prev_x1 = editor->control.x1;
     editor->control.x1 = (guint) event->x;
     editor->control.y1 = (guint) event->y;
@@ -552,9 +565,12 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
 
     tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
 
+    cr = gdk_cairo_create(widget->window);
+    cairo_push_group(cr);
+
     if(prev_x1 > editor->control.x1){
-      ags_editor_draw_segment(editor);
-      ags_editor_draw_notation(editor);
+      ags_editor_draw_segment(editor, cr);
+      ags_editor_draw_notation(editor, cr);
     }
 
     if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
@@ -562,17 +578,20 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
       }else if(AGS_IS_MIXER(machine)){
       }else if(AGS_IS_DRUM(machine)){
 	ags_editor_drawing_area_motion_notify_event_set_control();
-	ags_editor_drawing_area_motion_notify_event_draw_control();
+	ags_editor_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_MATRIX(machine)){
 	ags_editor_drawing_area_motion_notify_event_set_control();
-	ags_editor_drawing_area_motion_notify_event_draw_control();
+	ags_editor_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_editor_drawing_area_motion_notify_event_set_control();
-	ags_editor_drawing_area_motion_notify_event_draw_control();
+	ags_editor_drawing_area_motion_notify_event_draw_control(cr);
       }
     }else if((AGS_EDITOR_SELECTING_NOTES & (editor->flags)) != 0){
-      ags_editor_drawing_area_motion_notify_event_draw_selection();
+      ags_editor_drawing_area_motion_notify_event_draw_selection(cr);
     }
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
   }
 
   return(FALSE);

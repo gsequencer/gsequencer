@@ -150,8 +150,8 @@ void ags_editor_change_machine(AgsEditor *editor, AgsMachine *machine);
 void ags_editor_reset_vertically(AgsEditor *editor, guint flags);
 void ags_editor_reset_horizontally(AgsEditor *editor, guint flags);
 
-void ags_editor_draw_segment(AgsEditor *editor);
-void ags_editor_draw_notation(AgsEditor *editor);
+void ags_editor_draw_segment(AgsEditor *editor, cairo_t *cr);
+void ags_editor_draw_notation(AgsEditor *editor, cairo_t *cr);
 
 AgsEditor* ags_editor_new();
 

@@ -283,6 +283,7 @@ void
 ags_editor_reset_vertically(AgsEditor *editor, guint flags)
 {
   if(editor->selected != NULL){
+    cairo_t *cr;
     gdouble value;
 
     value = GTK_RANGE(editor->vscrollbar)->adjustment->value;
@@ -322,9 +323,16 @@ ags_editor_reset_vertically(AgsEditor *editor, guint flags)
     editor->stop_y = editor->nth_y + (editor->height - editor->y0 - editor->y1) / editor->control_height;
 
     /* refresh display */
-    ags_editor_draw_segment(editor);
     ags_meter_paint(editor->meter);
-    ags_editor_draw_notation(editor);
+
+    cr = gdk_cairo_create(GTK_WIDGET(editor->drawing_area)->window);
+    cairo_push_group(cr);
+
+    ags_editor_draw_segment(editor, cr);
+    ags_editor_draw_notation(editor, cr);
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
   }
 }
 
@@ -332,6 +340,8 @@ void
 ags_editor_reset_horizontally(AgsEditor *editor, guint flags)
 {
   if(editor->selected != NULL){
+    cairo_t *cr;
+
     gdouble value;
     double tact_factor, zoom_factor;
     double tact;
@@ -413,23 +423,28 @@ ags_editor_reset_horizontally(AgsEditor *editor, guint flags)
     }
 
     /* refresh display */
-    ags_editor_draw_segment(editor);
-    ags_editor_draw_notation(editor);
+    cr = gdk_cairo_create(GTK_WIDGET(editor->drawing_area)->window);
+    cairo_push_group(cr);
+
+    ags_editor_draw_segment(editor, cr);
+    ags_editor_draw_notation(editor, cr);
+
+    cairo_pop_group_to_source(cr);
+    cairo_paint(cr);
   }
 }
 
 void
-ags_editor_draw_segment(AgsEditor *editor)
+ags_editor_draw_segment(AgsEditor *editor, cairo_t *cr)
 {
   GtkWidget *widget;
-  cairo_t *cr;
   double tact;
   guint i, j;
   guint j_set;
 
   widget = (GtkWidget *) editor->drawing_area;
 
-  cr = gdk_cairo_create(widget->window);
+  //  cr = gdk_cairo_create(widget->window);
 
   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
   cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
@@ -485,11 +500,11 @@ ags_editor_draw_segment(AgsEditor *editor)
 }
 
 void
-ags_editor_draw_notation(AgsEditor *editor)
+ags_editor_draw_notation(AgsEditor *editor, cairo_t *cr)
 {
   AgsMachine *machine;
   GtkWidget *widget;
-  cairo_t *cr;
+  //  cairo_t *cr;
   AgsNote *note;
   GList *list_notation, *list_note;
   guint x_offset;
@@ -504,7 +519,7 @@ ags_editor_draw_notation(AgsEditor *editor)
 
   widget = (GtkWidget *) editor->drawing_area;
 
-  cr = gdk_cairo_create(widget->window);
+  //  cr = gdk_cairo_create(widget->window);
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 
   selected_channel = gtk_notebook_get_current_page((GtkNotebook *) editor->notebook);
