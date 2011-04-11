@@ -80,7 +80,7 @@
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
-#define MY_ENCODING "ISO-8859-15\0"
+#define MY_ENCODING "UTF-8" //"ISO-8859-15\0"
 #define AGS_FILE_FALSE "FALSE\0"
 #define AGS_FILE_TRUE "TRUE\0"
 #define AGS_CHANNEL_LINK_NAME "AgsChannelLinkName\0"

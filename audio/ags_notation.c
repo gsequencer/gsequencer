@@ -22,6 +22,7 @@
 #include <ags/object/ags_tactable.h>
 
 #include <stdlib.h>
+#include <errno.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
 void ags_notation_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -33,7 +34,18 @@ void ags_notation_finalize(GObject *object);
 
 void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
 
+void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
+						     xmlNodePtr root_node, char *version,
+						     char *base_frequency,
+						     char *x_boundary, char *y_boundary,
+						     gboolean from_x_offset, guint x_offset,
+						     gboolean from_y_offset, guint y_offset);
+
 static gpointer ags_notation_parent_class = NULL;
+
+#define AGS_NOTATION_CLIPBOARD_VERSION "0.3.12\0"
+#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
+#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
 
 GType
 ags_notation_get_type()
@@ -537,6 +549,294 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
   }
 
   g_list_free(region);
+}
+
+xmlDocPtr
+ags_notation_copy_selection(AgsNotation *notation)
+{
+  AgsNote *note;
+  xmlDocPtr clipboard;
+  xmlNodePtr notation_node, current_note;
+  GList *selection;
+  guint x_boundary, y_boundary;
+
+  selection = notation->selection;
+
+  /* create document */
+  clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+  /* create root node */
+  notation_node = xmlNewNode(NULL, BAD_CAST "notation");
+
+  xmlNewProp(notation_node, BAD_CAST "program\0", BAD_CAST "ags");
+  xmlNewProp(notation_node, BAD_CAST "type\0", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+  xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+  xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+  xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup_printf("%u\0", notation->base_frequency));
+
+  xmlDocSetRootElement(clipboard, notation_node);
+
+  selection = notation->selection;
+  x_boundary = AGS_NOTE(selection->data)->x[0];
+  y_boundary = ~0;
+
+  while(selection != NULL){
+    note = AGS_NOTE(selection->data);
+    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
+
+    xmlNewProp(current_note, BAD_CAST "x0\0", BAD_CAST g_strdup_printf("%u\0", note->x[0]));
+    xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", note->x[1]));
+    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", note->y));
+
+    if(y_boundary < note->y)
+      y_boundary = note->y;
+
+    selection = selection->next;
+  }
+
+  xmlNewProp(notation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
+  xmlNewProp(notation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
+
+  return(clipboard);
+}
+
+xmlDocPtr
+ags_notation_cut_selection(AgsNotation *notation)
+{
+  xmlDocPtr clipboard;
+  GList *selection, *notes;
+  
+  clipboard = ags_notation_copy_selection(notation);
+
+  selection = notation->selection;
+  notes = notation->notes;
+
+  while(selection != NULL){
+    notes = g_list_find(notes, selection->data);
+
+    if(notes->prev == NULL){
+      notation->notes = g_list_remove_link(notes, notes);
+    }else{
+      g_list_remove_link(notes->prev, notes);
+    }
+
+    g_object_unref(selection->data);
+
+    selection = selection->next;
+  }
+
+  ags_notation_free_selection(notation);
+
+  return(clipboard);
+}
+
+void
+ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
+						xmlNodePtr root_node, char *version,
+						char *base_frequency,
+						char *x_boundary, char *y_boundary,
+						gboolean reset_x_offset, guint x_offset,
+						gboolean reset_y_offset, guint y_offset)
+{
+  void ags_notation_insert_native_piano_from_clipboard_version_0_3_12(){
+    AgsNote *note;
+    xmlNodePtr node;
+    char *endptr;
+    guint x_boundary_val, y_boundary_val;
+    char *x0, *x1, *y;
+    guint x0_val, x1_val, y_val;
+    guint base_x_difference, base_y_difference;
+    gboolean subtract_x, subtract_y;
+
+    node = root_node->children;
+
+    /* retrieve x values for resetting */
+    if(reset_x_offset){
+      if(x_boundary != NULL){
+	errno = 0;
+	x_boundary_val = strtoul(x_boundary, &endptr, 10);
+
+	if(errno == ERANGE){
+	  goto dont_reset_x_offset;
+	} 
+
+	if(x_boundary == endptr){
+	  goto dont_reset_x_offset;
+	}
+
+	if(x_boundary_val < x_offset){
+	  base_x_difference = x_offset - x_boundary_val;
+	  subtract_x = TRUE;
+	}else{
+	  base_x_difference = x_boundary_val - x_offset;
+	  subtract_x = FALSE;
+	}
+      }else{
+      dont_reset_x_offset:
+	reset_x_offset = FALSE;
+      }
+    }
+
+    /* retrieve y values for resetting */
+    if(reset_y_offset){
+      if(y_boundary != NULL){
+	errno = 0;
+	y_boundary_val = strtoul(y_boundary, &endptr, 10);
+
+	if(errno == ERANGE){
+	  goto dont_reset_y_offset;
+	} 
+
+	if(y_boundary == endptr){
+	  goto dont_reset_y_offset;
+	}
+
+	if(y_boundary_val < y_offset){
+	  base_x_difference = y_offset - y_boundary_val;
+	  subtract_y = TRUE;
+	}else{
+	  base_y_difference = y_boundary_val - y_offset;
+	  subtract_y = FALSE;
+	}
+      }else{
+      dont_reset_y_offset:
+	reset_y_offset = FALSE;
+      }
+    }
+    
+    for(; node != NULL; node = node->next){
+      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note\0", node->name, 5)){
+	/* retrieve offset */
+	x0 = xmlGetProp(node, "x0\0");
+
+	if(x0 == NULL)
+	  continue;
+
+	x0_val = strtoul(x0, &endptr, 10);
+
+	x1 = xmlGetProp(node, "x1\0");
+
+	if(x1 == NULL)
+	  continue;
+
+	x1_val = strtoul(x1, &endptr, 10);
+
+	y = xmlGetProp(node, "y\0");
+
+	if(y == NULL)
+	  continue;
+
+	y_val = strtoul(y, &endptr, 10);
+
+	/* calculate new offset */
+	if(reset_x_offset){
+	  errno = 0;
+
+	  if(subtract_x){
+	    x0_val -= base_x_difference;
+
+	    if(errno != 0)
+	      continue;
+
+	    x1_val -= base_x_difference;
+	  }else{
+	    x0_val += base_x_difference;
+	    x1_val += base_x_difference;
+
+	    if(errno != 0)
+	      continue;
+	  }
+	}
+
+	if(reset_y_offset){
+	  errno = 0;
+
+	  if(subtract_y){
+	    y_val -= base_y_difference;
+	  }else{
+	    y_val += base_y_difference;
+	  }
+
+	  if(errno != 0)
+	    continue;
+	}
+
+	if(x0_val > x1_val){
+	  guint tmp;
+
+	  tmp = x0_val;
+	  x0_val = x1_val;
+	  x1_val = tmp;
+	}
+
+	/* check if max length wasn't exceeded */
+	if(x1_val - x0_val > notation->maximum_note_length)
+	  continue;
+
+	/* add note */
+	note = ags_note_new();
+
+	note->x[0] = x0_val;
+	note->x[1] = x1_val;
+
+	note->y = y_val;
+
+	ags_notation_add_note(notation,
+			      note,
+			      FALSE);
+      }
+    }
+
+  }
+
+  if(!xmlStrncmp("0.3.12\0", version, 7)){
+    ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
+  }
+}
+
+void
+ags_notation_insert_from_clipboard(AgsNotation *notation,
+				   xmlDocPtr content,
+				   gboolean reset_x_offset, guint x_offset,
+				   gboolean reset_y_offset, guint y_offset)
+{
+  xmlNodePtr root_node;
+  char *program, *version, *type, *format;
+  char *base_frequency;
+  char *x_boundary, *y_boundary;
+
+  root_node = xmlDocGetRootElement(content);
+
+  while(root_node != NULL){
+    if(root_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation\0", root_node->name, 9))
+      break;
+
+    root_node = root_node->next;
+  }
+
+  if(root_node != NULL){
+    program = xmlGetProp(root_node, "program\0");
+
+    if(!xmlStrncmp("ags\0", program, 4)){
+      version = xmlGetProp(root_node, "version\0");
+      type = xmlGetProp(root_node, "type\0");
+      format = xmlGetProp(root_node, "format\0");
+
+      if(!xmlStrncmp("AgsNotationNativePiano\0", format, 22)){
+	base_frequency = xmlGetProp(root_node, "base_frequency\0");
+
+	x_boundary = xmlGetProp(root_node, "x_boundary\0");
+	y_boundary = xmlGetProp(root_node, "y_boundary\0");
+
+	ags_notation_insert_native_piano_from_clipboard(notation,
+							root_node, version,
+							base_frequency,
+							x_boundary, y_boundary,
+							reset_x_offset, x_offset,
+							reset_y_offset, y_offset);
+      }
+    }
+  }
 }
 
 AgsNotation*
