@@ -272,6 +272,7 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 	note0 = ags_note_duplicate(note);
 
 	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+
 	list_notation = list_notation->next;
       }
     }
@@ -335,6 +336,64 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     cairo_fill(cr);
   }
   void ags_editor_drawing_area_button_release_event_select_region(){
+    GList *list_notation;
+    guint x0, x1, y0, y1;
+
+    /* get real size and offset */
+    x0 = editor->control.x0_offset + editor->control.x0;
+    x1 = editor->control.x1_offset + editor->control.x1;
+
+    if(x0 > x1){
+      guint tmp;
+
+      tmp = x1;
+      x1 = x0;
+      x0 = tmp;
+    }
+
+    /* convert to region */
+    x0 = (guint) (floor((double) x0 / (double) (editor->control_current.control_width)) * tact);
+    x1 = (guint) (ceil((double) x1 / (double) (editor->control_current.control_width)) * tact);
+
+    /* get real size and offset */
+    y0 = editor->control.y0_offset + editor->control.y0;
+    y1 = editor->control.y1_offset + editor->control.y1;
+
+    if(y0 > y1){
+      guint tmp;
+
+      tmp = y1;
+      y1 = y0;
+      y0 = tmp;
+    }
+
+    /* convert to region */
+    y0 = (guint) floor((double) y0 / (double) (editor->control_height));
+    y1 = (guint) ceil((double) y1 / (double) (editor->control_height));
+
+    /* select notes */
+    list_notation = machine->audio->notation;
+
+    if(gtk_option_menu_get_history(editor->toolbar->mode) == 0){
+      if(gtk_notebook_get_n_pages((GtkNotebook *) editor->notebook) > 0){
+	list_notation = g_list_nth(list_notation, gtk_notebook_get_current_page((GtkNotebook *) editor->notebook));
+
+	ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
+					     x0, y0,
+					     x1, y1,
+					     TRUE);
+      }
+    }else{
+      while(list_notation != NULL ){
+	ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
+					     x0, y0,
+					     x1, y1,
+					     TRUE);
+
+	list_notation = list_notation->next;
+      }
+    }
+
   }
 
   if(editor->selected != NULL && event->button == 1){
@@ -422,7 +481,6 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
     guint x, y, width, height;
 
     widget = (GtkWidget *) editor->drawing_area;
-    //    cr = gdk_cairo_create(widget->window);
 
     x = note->x[0] * editor->control_unit.control_width;
     width = note_x1 * editor->control_unit.control_width;
@@ -504,7 +562,7 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
       x1_offset = x1;
     }
 
-    /* get effective size and offset */
+    /* get drawable size and offset */
     if(x0 < x0_viewport){
       x0 = 0;
       width = x1_offset - x0_viewport;
@@ -532,7 +590,7 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
       y1_offset = y1;
     }
 
-    /* get effective size and offset */
+    /* get drawable size and offset */
     if(y0 < y0_viewport){
       y0 = 0;
       height = y1_offset - y0_viewport;

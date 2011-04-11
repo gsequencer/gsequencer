@@ -446,6 +446,7 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
     }
   }else{
     /* add to or replace selection */
+    note->flags |= AGS_NOTE_IS_SELECTED;
     g_object_ref(note);
 
     if(replace_current_selection){
@@ -475,6 +476,8 @@ ags_notation_remove_point_from_selection(AgsNotation *notation,
 				 FALSE);
 
   if(note != NULL){
+    note->flags &= (~AGS_NOTE_IS_SELECTED);
+
     /* remove note from selection */
     notation->selection = g_list_remove(notation->selection, note);
 
@@ -502,6 +505,7 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
     list = region;
 
     while(list != NULL){
+      AGS_NOTE(list->data)->flags |= AGS_NOTE_IS_SELECTED;
       g_object_ref(G_OBJECT(list->data));
 
       list = list->next;
@@ -513,6 +517,7 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
       note = AGS_NOTE(region->data);
 
       if(!ags_notation_is_note_selected(notation, note)){
+	note->flags |= AGS_NOTE_IS_SELECTED;
 	g_object_ref(G_OBJECT(note));
 	ags_notation_add_note(notation,
 			      note,
@@ -541,6 +546,7 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
 
   while(region != NULL){
     note = AGS_NOTE(region->data);
+    note->flags &= (~AGS_NOTE_IS_SELECTED);
 
     notation->selection = g_list_remove(notation->selection, note);
     g_object_unref(G_OBJECT(note));
@@ -706,27 +712,65 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     
     for(; node != NULL; node = node->next){
       if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note\0", node->name, 5)){
-	/* retrieve offset */
+	/* retrieve x0 offset */
 	x0 = xmlGetProp(node, "x0\0");
 
 	if(x0 == NULL)
 	  continue;
 
+	errno = 0;
 	x0_val = strtoul(x0, &endptr, 10);
 
+	if(errno == ERANGE){
+	  continue;
+	} 
+
+	if(x0 == endptr){
+	  continue;
+	}
+
+	/* retrieve x1 offset */
 	x1 = xmlGetProp(node, "x1\0");
 
 	if(x1 == NULL)
 	  continue;
 
+	errno = 0;
 	x1_val = strtoul(x1, &endptr, 10);
 
+	if(errno == ERANGE){
+	  continue;
+	} 
+
+	if(x1 == endptr){
+	  continue;
+	}
+
+	/* retrieve y offset */
 	y = xmlGetProp(node, "y\0");
 
 	if(y == NULL)
 	  continue;
 
+	errno = 0;
 	y_val = strtoul(y, &endptr, 10);
+
+	if(errno == ERANGE){
+	  continue;
+	} 
+
+	if(y == endptr){
+	  continue;
+	}
+
+	/* switch x values if necessary */
+	if(x0_val > x1_val){
+	  guint tmp;
+
+	  tmp = x0_val;
+	  x0_val = x1_val;
+	  x1_val = tmp;
+	}
 
 	/* calculate new offset */
 	if(reset_x_offset){
@@ -759,14 +803,6 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 	  if(errno != 0)
 	    continue;
-	}
-
-	if(x0_val > x1_val){
-	  guint tmp;
-
-	  tmp = x0_val;
-	  x0_val = x1_val;
-	  x1_val = tmp;
 	}
 
 	/* check if max length wasn't exceeded */
