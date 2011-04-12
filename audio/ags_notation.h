@@ -104,11 +104,11 @@ void ags_notation_remove_region_from_selection(AgsNotation *notation,
 					       guint x0, guint y0,
 					       guint x1, guint y1);
 
-xmlDocPtr ags_notation_copy_selection(AgsNotation *notation);
-xmlDocPtr ags_notation_cut_selection(AgsNotation *notation);
+xmlNodePtr ags_notation_copy_selection(AgsNotation *notation);
+xmlNodePtr ags_notation_cut_selection(AgsNotation *notation);
 
 void ags_notation_insert_from_clipboard(AgsNotation *notation,
-					xmlDocPtr content,
+					xmlNodePtr content,
 					gboolean reset_x_offset, guint x_offset,
 					gboolean reset_y_offset, guint y_offset);
 

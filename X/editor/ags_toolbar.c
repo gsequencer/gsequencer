@@ -167,10 +167,10 @@ ags_toolbar_connect(AgsToolbar *toolbar)
 			 G_CALLBACK(ags_toolbar_select_callback), (gpointer) toolbar);
 
   g_signal_connect((GObject *) toolbar->copy, "clicked\0",
-		   G_CALLBACK(ags_toolbar_copy_callback), (gpointer) toolbar);
+		   G_CALLBACK(ags_toolbar_copy_or_cut_callback), (gpointer) toolbar);
 
   g_signal_connect((GObject *) toolbar->cut, "clicked\0",
-		   G_CALLBACK(ags_toolbar_cut_callback), (gpointer) toolbar);
+		   G_CALLBACK(ags_toolbar_copy_or_cut_callback), (gpointer) toolbar);
 
   g_signal_connect((GObject *) toolbar->paste, "clicked\0",
 		   G_CALLBACK(ags_toolbar_paste_callback), (gpointer) toolbar);

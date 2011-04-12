@@ -20,6 +20,9 @@
 
 #include <ags/X/ags_editor.h>
 
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+
 #include <math.h>
 
 gboolean
@@ -85,18 +88,141 @@ ags_toolbar_select_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_copy_callback(GtkWidget *widget, AgsToolbar *toolbar)
+ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
 {
-}
+  AgsMachine *machine;
+  AgsEditor *editor;
+  AgsNotation *notation;
+  GList *list_notation;
+  xmlDocPtr clipboard;
+  xmlNodePtr audio_node, notation_node;
+  xmlChar *buffer;
+  int size;
 
-void
-ags_toolbar_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
-{
+  /* add notation to root node */
+  editor = AGS_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR));
+
+  if(editor->selected != NULL &&
+     (machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)))) != NULL){
+    /* create document */
+    clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+    /* create root node */
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    xmlDocSetRootElement(clipboard, audio_node);
+
+    /* create notation nodes */
+    list_notation = machine->audio->notation;
+
+    if(gtk_option_menu_get_history(toolbar->mode) == 0){
+      if(gtk_notebook_get_n_pages((GtkNotebook *) editor->notebook) > 0){
+	list_notation = g_list_nth(list_notation, gtk_notebook_get_current_page((GtkNotebook *) editor->notebook));
+
+	if(widget == (GtkWidget *) toolbar->copy)
+	  notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
+	else
+	  notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
+
+	xmlAddChild(audio_node, notation_node);
+      }
+    }else{
+      while(list_notation != NULL ){
+	if(widget == (GtkWidget *) toolbar->copy)
+	  notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
+	else
+	  notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
+
+	xmlAddChild(audio_node, notation_node);
+
+	list_notation = list_notation->next;
+      }
+    }
+
+    /* write to clipboard */
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			   buffer, size);
+    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    xmlFreeDoc(clipboard);
+  }
 }
 
 void
 ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
 {
+  AgsMachine *machine;
+  AgsEditor *editor;
+  AgsNotation *notation;
+  xmlDocPtr clipboard;
+  xmlNodePtr audio_node, notation_node;
+  gchar *buffer;
+  void ags_toolbar_paste_callback_read_notation(){
+    xmlXPathContextPtr xpathCtxt;
+    xmlXPathObjectPtr xpathObj;
+    xmlNodeSetPtr nodes;
+    GList *notation_list;
+
+    xpathCtxt = xmlXPathNewContext(clipboard);
+
+    xpathObj = xmlXPathEvalExpression("/audio/notation\0", xpathCtxt);
+
+    if(xpathObj != NULL){
+      int i, size;
+
+      nodes = xpathObj->nodesetval;
+      size = (nodes != NULL) ? nodes->nodeNr: 0;
+
+      notation_list = machine->audio->notation;
+
+      for(i = 0; i < size && notation_list != NULL; i++){
+	ags_notation_insert_from_clipboard(AGS_NOTATION(notation_list->data),
+					   nodes->nodeTab[i],
+					   FALSE, 0,
+					   FALSE, 0);
+
+	notation_list = notation_list->next;
+      }
+
+      xmlXPathFreeObject(xpathObj);
+    }
+
+    if(xpathCtxt != NULL)
+      xmlXPathFreeContext(xpathCtxt);
+  }
+
+  /* retrieve AgsEditor */
+  editor = AGS_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR));
+
+  if(editor->selected != NULL &&
+     (machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)))) != NULL){
+    /* get clipboard */
+    buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+    
+    if(buffer == NULL)
+      return;
+    
+    /* get xml tree */
+    clipboard = xmlReadMemory(buffer, strlen(buffer),
+			      NULL, "UTF-8\0",
+			      0);
+    audio_node = xmlDocGetRootElement(clipboard);
+    
+    /* iterate xml tree */
+    while(audio_node != NULL){
+      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
+	notation_node = audio_node->children;
+	
+	ags_toolbar_paste_callback_read_notation();
+
+	break;
+      }
+      
+      audio_node = audio_node->next;
+    }
+
+    xmlFreeDoc(clipboard); 
+  }
 }
 
 void
