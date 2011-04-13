@@ -73,8 +73,7 @@ void ags_notation_add_note(AgsNotation *notation,
 			   gboolean use_selection_list);
 
 gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
-					      guint x, guint y,
-					      guint x_offset);
+					      guint x, guint y);
 
 GList* ags_notation_get_selection(AgsNotation *notation);
 

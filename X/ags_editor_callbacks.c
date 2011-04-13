@@ -201,6 +201,8 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
 
     if(toolbar->selected_edit_mode == toolbar->edit){
       editor->flags |= AGS_EDITOR_ADDING_NOTE;
+    }else if(toolbar->selected_edit_mode == toolbar->clear){
+      editor->flags |= AGS_EDITOR_DELETING_NOTE;
     }else if(toolbar->selected_edit_mode == toolbar->select){
       editor->flags |= AGS_EDITOR_SELECTING_NOTES;
     }
@@ -335,6 +337,35 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
+  void ags_editor_drawing_area_button_release_event_delete_point(){
+    GList *list_notation;
+    guint x, y;
+
+    x = editor->control.x0_offset + editor->control.x0;
+    y = editor->control.y0_offset + editor->control.y0;
+
+    x = (guint) ceil((double) x / (double) (editor->control_unit.control_width));
+    y = (guint) floor((double) y / (double) (editor->control_height));
+
+    /* select notes */
+    list_notation = machine->audio->notation;
+
+    if(gtk_option_menu_get_history(editor->toolbar->mode) == 0){
+      if(gtk_notebook_get_n_pages((GtkNotebook *) editor->notebook) > 0){
+	list_notation = g_list_nth(list_notation, gtk_notebook_get_current_page((GtkNotebook *) editor->notebook));
+
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     x, y);
+      }
+    }else{
+      while(list_notation != NULL ){
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     x, y);
+
+	list_notation = list_notation->next;
+      }
+    }
+  }
   void ags_editor_drawing_area_button_release_event_select_region(){
     GList *list_notation;
     guint x0, x1, y0, y1;
@@ -415,6 +446,11 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     cairo_push_group(cr);
 
     if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+      editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
+
+      ags_editor_draw_segment(editor, cr);
+      ags_editor_draw_notation(editor, cr);
+
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
       }else if(AGS_IS_DRUM(machine)){
@@ -427,8 +463,13 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 	ags_editor_drawing_area_button_release_event_set_control();
 	ags_editor_drawing_area_button_release_event_draw_control(cr);
       }
+    }else if((AGS_EDITOR_DELETING_NOTE & (editor->flags)) != 0){
+      editor->flags &= (~AGS_EDITOR_DELETING_NOTE);
 
-      editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
+      ags_editor_drawing_area_button_release_event_delete_point();
+
+      ags_editor_draw_segment(editor, cr);
+      ags_editor_draw_notation(editor, cr);
     }else if((AGS_EDITOR_SELECTING_NOTES & (editor->flags)) != 0){
       editor->flags &= (~AGS_EDITOR_SELECTING_NOTES);
 
