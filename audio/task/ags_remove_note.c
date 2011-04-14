@@ -103,7 +103,6 @@ ags_remove_note_init(AgsRemoveNote *remove_note)
   remove_note->notation = NULL;
   remove_note->x = 0;
   remove_note->y = 0;
-  remove_note->x_offset = 0;
 }
 
 void
@@ -139,14 +138,12 @@ ags_remove_note_launch(AgsTask *task)
 
   /* remove note */
   ags_notation_remove_note_at_position(remove_note->notation,
-				       remove_note->x, remove_note->y,
-				       remove_note->x_offset);
+				       remove_note->x, remove_note->y);
 }
 
 AgsRemoveNote*
 ags_remove_note_new(AgsNotation *notation,
-		    guint x, guint y,
-		    guint x_offset)
+		    guint x, guint y)
 {
   AgsRemoveNote *remove_note;
 
@@ -156,7 +153,6 @@ ags_remove_note_new(AgsNotation *notation,
   remove_note->notation = notation;
   remove_note->x = x;
   remove_note->y = y;
-  remove_note->x_offset = x_offset;
 
   return(remove_note);
 }

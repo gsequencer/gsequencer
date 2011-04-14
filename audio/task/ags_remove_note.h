@@ -43,8 +43,6 @@ struct _AgsRemoveNote
 
   guint x;
   guint y;
-
-  guint x_offset;
 };
 
 struct _AgsRemoveNoteClass
@@ -55,7 +53,6 @@ struct _AgsRemoveNoteClass
 GType ags_remove_note_get_type();
 
 AgsRemoveNote* ags_remove_note_new(AgsNotation *notation,
-				   guint x, guint y,
-				   guint x_offset);
+				   guint x, guint y);
 
 #endif /*__AGS_REMOVE_NOTE_H__*/
