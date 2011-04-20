@@ -100,7 +100,7 @@ struct _AgsDevout
 
   //  guint note_delay;
   //  guint note_counter;
-  //  guint64 note_offset; // corresponds to AgsNote->x
+  //  guint note_offset; // corresponds to AgsNote->x
 
   short** buffer;
 
@@ -169,6 +169,8 @@ struct _AgsDevoutClass
 
   void (*run)(AgsDevout *devout);
   void (*stop)(AgsDevout *devout);
+
+  void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
 };
 
 struct _AgsDevoutPlay
@@ -191,6 +193,7 @@ void ags_devout_append_tasks(AgsDevout *devout, GList *list);
 
 void ags_devout_run(AgsDevout *devout);
 void ags_devout_stop(AgsDevout *devout);
+void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 
 AgsDevout* ags_devout_new();
 

@@ -307,8 +307,9 @@ ags_devout_init(AgsDevout *devout)
 
   devout->note_delay = (guint) round((double)devout->frequency / (double)devout->buffer_size * 60.0 / 120.0 / 16.0);
   devout->note_counter = 0;
-  devout->note_offset = 0;
   */
+
+  //  devout->note_offset = 0;
 
   devout->buffer = (short **) malloc(4 * sizeof(short*));
   devout->buffer[0] = (short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(short));
@@ -1007,7 +1008,7 @@ ags_devout_play_functions(void *devout0)
       }
     }
     
-    /* tic counter (AgsAttack) */
+    /* determine if attack should be switched */
     devout->delay_counter++;
       
     if(devout->delay_counter == devout->delay){
