@@ -335,11 +335,11 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
     delay_audio_run->hide_ref += count;
     printf("hide_ref: %u\n\0", delay_audio_run->hide_ref);
     break;
-  case AGS_RECALL_NOTIFY_SHARED_AUDIO:
+  case AGS_RECALL_NOTIFY_AUDIO:
     break;
-  case AGS_RECALL_NOTIFY_SHARED_AUDIO_RUN:
+  case AGS_RECALL_NOTIFY_AUDIO_RUN:
     break;
-  case AGS_RECALL_NOTIFY_SHARED_CHANNEL:
+  case AGS_RECALL_NOTIFY_CHANNEL:
     break;
   case AGS_RECALL_NOTIFY_CHANNEL_RUN:
     delay_audio_run->dependency_ref += count;

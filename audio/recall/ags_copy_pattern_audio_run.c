@@ -412,11 +412,11 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
     copy_pattern_audio_run->hide_ref += count;
 
     break;
-  case AGS_RECALL_NOTIFY_SHARED_AUDIO:
+  case AGS_RECALL_NOTIFY_AUDIO:
     break;
-  case AGS_RECALL_NOTIFY_SHARED_AUDIO_RUN:
+  case AGS_RECALL_NOTIFY_AUDIO_RUN:
     break;
-  case AGS_RECALL_NOTIFY_SHARED_CHANNEL:
+  case AGS_RECALL_NOTIFY_CHANNEL:
     break;
   case AGS_RECALL_NOTIFY_CHANNEL_RUN:
     copy_pattern_audio_run->recall_ref += count;

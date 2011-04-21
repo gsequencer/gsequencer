@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_dependency.h>
 
 #define AGS_TYPE_RECALL                (ags_recall_get_type())
 #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
@@ -48,10 +49,11 @@ typedef enum{
 
 typedef enum{
   AGS_RECALL_NOTIFY_RUN,
-  AGS_RECALL_NOTIFY_SHARED_AUDIO,
-  AGS_RECALL_NOTIFY_SHARED_AUDIO_RUN,
-  AGS_RECALL_NOTIFY_SHARED_CHANNEL,
+  AGS_RECALL_NOTIFY_AUDIO,
+  AGS_RECALL_NOTIFY_AUDIO_RUN,
+  AGS_RECALL_NOTIFY_CHANNEL,
   AGS_RECALL_NOTIFY_CHANNEL_RUN,
+  AGS_RECALL_NOTIFY_RECALL,
 }AgsRecallNotifyDependencyMode;
 
 struct _AgsRecall
@@ -63,6 +65,9 @@ struct _AgsRecall
   GObject *container; // see AgsRecallContainer
 
   char *name;
+
+  GList *dependencies;
+
   AgsRecallID *recall_id;
 
   AgsRecall *parent;
@@ -72,6 +77,8 @@ struct _AgsRecall
 struct _AgsRecallClass
 {
   GObjectClass object;
+
+  void (*resolve_dependencies)(AgsRecall *recall);
 
   void (*run_init_pre)(AgsRecall *recall);
   void (*run_init_inter)(AgsRecall *recall);
@@ -95,6 +102,8 @@ struct _AgsRecallClass
 
 GType ags_recall_get_type();
 
+void ags_recall_resolve_dependencies(AgsRecall *reall);
+
 void ags_recall_run_init_pre(AgsRecall *recall);
 void ags_recall_run_init_inter(AgsRecall *recall);
 void ags_recall_run_init_post(AgsRecall *recall);
@@ -113,6 +122,9 @@ AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
 
+void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *dependency);
+GList* ags_recall_get_dependencies(AgsRecall *recall);
+
 void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
 GList* ags_recall_get_children(AgsRecall *recall);
 
@@ -125,6 +137,7 @@ GList* ags_recall_find_type(GList *recall, GType type);
 GList* ags_recall_template_find_type(GList *recall, GType type);
 GList* ags_recall_find_type_with_group_id(GList *recall, GType type, guint group_id);
 GList* ags_recall_find_group_id(GList *recall, guint group_id);
+AgsRecall* ags_recall_find_dependency(GList *recall, AgsRecallDependency *dependency);
 
 void ags_recall_run_init(AgsRecall *recall, guint stage);
 

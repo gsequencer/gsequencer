@@ -68,6 +68,7 @@ AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 				     AgsRecallID *recall_id);
 
 enum{
+  RESOLVE_DEPENDENCIES,
   RUN_INIT_PRE,
   RUN_INIT_INTER,
   RUN_INIT_POST,
@@ -86,6 +87,7 @@ enum{
 enum{
   PROP_0,
   PROP_CONTAINER,
+  PROP_DEPENDENCY,
   PROP_RECALL_ID,
   PROP_PARENT,
   PROP_CHILD,
@@ -177,6 +179,15 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_CONTAINER,
 				  param_spec);
 
+  param_spec = g_param_spec_object("dependency\0",
+				   "dependency of recall\0",
+				   "The dependency that can be added\0",
+				   AGS_TYPE_RECALL_DEPENDENCY,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEPENDENCY,
+				  param_spec);
+
   param_spec = g_param_spec_object("recall_id\0",
 				   "run id of recall\0",
 				   "The recall id of the recall\0",
@@ -205,6 +216,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /* AgsRecallClass */
+  recall->resolve_dependencies = NULL;
+
   recall->run_init_pre = ags_recall_real_run_init_pre;
   recall->run_init_inter = ags_recall_real_run_init_inter;
   recall->run_init_post = ags_recall_real_run_init_post;
@@ -224,6 +237,15 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->notify_dependency = NULL;
 
   /* signals */
+  recall_signals[RESOLVE_DEPENDENCIES] =
+    g_signal_new("resolve_dependencies\0",
+		 G_TYPE_FROM_CLASS (recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallClass, resolve_dependencies),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
   recall_signals[RUN_INIT_PRE] =
     g_signal_new("run_init_pre\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -371,6 +393,9 @@ ags_recall_init(AgsRecall *recall)
   recall->container = NULL;
 
   recall->name = NULL;
+
+  recall->dependencies = NULL;
+
   recall->recall_id = NULL;
 
   recall->parent = NULL;
@@ -404,6 +429,15 @@ ags_recall_set_property(GObject *gobject,
       /* add to new */
       if(container != NULL)
 	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(container));
+    }
+    break;
+  case PROP_DEPENDENCY:
+    {
+      AgsRecallDependency *recall_dependency;
+
+      recall_dependency = (AgsRecallDependency *) g_value_get_object(value);
+
+      ags_recall_add_dependency(recall, recall_dependency);
     }
     break;
   case PROP_RECALL_ID:
@@ -633,6 +667,17 @@ ags_recall_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
+}
+
+void
+ags_recall_resolve_dependencies(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[RESOLVE_DEPENDENCIES], 0);
+  g_object_unref(G_OBJECT(recall));
 }
 
 void
@@ -939,6 +984,26 @@ ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
 }
 
 void
+ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency)
+{
+  if(recall == NULL ||
+     recall_dependency == NULL)
+    return;
+
+  g_object_ref(recall_dependency);
+  
+  recall->dependencies = g_list_prepend(recall->dependencies, recall_dependency);
+  
+  ags_connectable_connect(AGS_CONNECTABLE(recall_dependency));
+}
+
+GList*
+ags_recall_get_dependencies(AgsRecall *recall)
+{
+  return(recall->dependencies);
+}
+
+void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 {
   if(child == NULL ||
@@ -1103,6 +1168,14 @@ ags_recall_find_group_id(GList *recall_i, guint group_id)
 
     recall_i = recall_i->next;
   }
+
+  return(NULL);
+}
+
+AgsRecall*
+ags_recall_find_dependency(GList *recall, AgsRecallDependency *dependency)
+{
+  //TODO:JK: implement this function
 
   return(NULL);
 }
