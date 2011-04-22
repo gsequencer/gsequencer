@@ -32,21 +32,11 @@
 typedef struct _AgsRecallDependency AgsRecallDependency;
 typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
 
-typedef enum{
-  AGS_RECALL_DEPENDENCY_IS_IN_RECALL_LIST,
-  AGS_RECALL_DEPENDENCY_IS_IN_AUDIO,
-  AGS_RECALL_DEPENDENCY_IS_IN_OUTPUT,
-  AGS_RECALL_DEPENDENCY_IS_IN_INPUT,
-}AgsRecallDependencyFlags;
-
 struct _AgsRecallDependency
 {
   GObject object;
 
-  guint flags;
-
-  GType recall_type;
-  guint template_id;
+  GObject *recall_template;
 };
 
 struct _AgsRecallDependencyClass
@@ -55,6 +45,8 @@ struct _AgsRecallDependencyClass
 };
 
 GType ags_recall_dependency_get_type(void);
+
+GObject* ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_id);
 
 AgsRecallDependency* ags_recall_dependency_new();
 

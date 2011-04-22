@@ -24,6 +24,10 @@
 #include <ags/object/ags_run_connectable.h>
 
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
@@ -1172,10 +1176,65 @@ ags_recall_find_group_id(GList *recall_i, guint group_id)
   return(NULL);
 }
 
-AgsRecall*
-ags_recall_find_dependency(GList *recall, AgsRecallDependency *dependency)
+GList*
+ags_recall_find_provider(GList *recall_i, GObject *provider)
 {
-  //TODO:JK: implement this function
+  AgsRecall *recall;
+
+  while(recall_i != NULL){
+    recall = AGS_RECALL(recall_i->data);
+
+    if(AGS_IS_AUDIO(provider)){
+      if(AGS_IS_RECALL_AUDIO(recall)){
+	if(((GObject *) AGS_RECALL_AUDIO(recall)->audio) == provider)
+	  return(recall_i);
+      }else if(AGS_IS_RECALL_AUDIO_RUN(recall)){
+	AgsRecallAudio *recall_audio;
+
+	recall_audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio;
+
+	if(recall_audio != NULL &&
+	   ((GObject *) recall_audio->audio) == provider){
+	  return(recall_i);
+	}
+      }
+    }else if(AGS_IS_CHANNEL(provider)){
+      if(AGS_IS_RECALL_CHANNEL(recall)){
+	if(((GObject *) AGS_RECALL_CHANNEL(recall)->channel) == provider)
+	  return(recall_i);
+      }else if(AGS_IS_RECALL_CHANNEL_RUN(recall)){
+	AgsRecallChannel *recall_channel;
+
+	recall_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
+
+	if(recall_channel != NULL &&
+	   ((GObject *) recall_channel->channel) == provider){
+	  return(recall_i);
+	}
+      }
+    }
+
+    recall_i = recall_i->next;
+  }
+
+  return(NULL);
+}
+
+GList*
+ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, guint group_id)
+{
+  AgsRecall *recall;
+
+  while((recall_i = ags_recall_find_provider(recall_i, provider)) != NULL){
+    recall = AGS_RECALL(recall_i->data);
+    
+    if(recall->recall_id != NULL &&
+       recall->recall_id->group_id == group_id){
+      return(recall_i);
+    }
+
+    recall_i = recall_i->next;
+  }
 
   return(NULL);
 }

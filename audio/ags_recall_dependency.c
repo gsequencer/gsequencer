@@ -20,6 +20,12 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
+
 #include <stdio.h>
 
 void ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency);
@@ -89,8 +95,7 @@ ags_recall_dependency_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_recall_dependency_init(AgsRecallDependency *recall_dependency)
 {
-  recall_dependency->recall_type = G_TYPE_NONE;
-  recall_dependency->template_id = 0;
+  recall_dependency->recall_template = NULL;
 }
 
 void
@@ -108,6 +113,53 @@ ags_recall_dependency_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_recall_dependency_parent_class)->finalize(gobject);
 }
+
+GObject*
+ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_id)
+{
+  AgsRecallContainer *recall_container;
+  AgsRecall *recall_template;
+  
+  if(recall_dependency->recall_template == NULL ||
+     AGS_RECALL(recall_dependency->recall_template)->container == NULL){
+    return(NULL);
+  }
+
+  recall_template = AGS_RECALL(recall_dependency->recall_template);
+  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(recall_dependency->recall_template)->container);
+  
+  if(AGS_IS_RECALL_AUDIO(recall_template)){
+    return((GObject *) recall_container->recall_audio);
+  }else if(AGS_IS_RECALL_AUDIO_RUN(recall_template)){
+    GList *recall_list;
+
+    recall_list = ags_recall_find_group_id(recall_container->recall_audio_run,
+					   group_id);
+
+    if(recall_list != NULL)
+      return(G_OBJECT(recall_list->data));
+  }else if(AGS_IS_RECALL_CHANNEL(recall_template)){
+    GList *recall_list;
+
+    recall_list = ags_recall_find_provider(recall_container->recall_audio_run,
+					   (GObject *) AGS_RECALL_CHANNEL(recall_template)->channel);
+
+    if(recall_list != NULL)
+      return(G_OBJECT(recall_list->data));
+  }else if(AGS_IS_RECALL_CHANNEL_RUN(recall_template)){
+    GList *recall_list;
+
+    recall_list = ags_recall_find_provider_with_group_id(recall_container->recall_audio_run,
+							 (GObject *) AGS_RECALL_CHANNEL(recall_template)->channel,
+							 group_id);
+
+    if(recall_list != NULL)
+      return(G_OBJECT(recall_list->data));
+  }
+
+  return(NULL);
+}
+
 
 AgsRecallDependency*
 ags_recall_dependency_new()
