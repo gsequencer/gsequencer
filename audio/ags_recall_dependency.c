@@ -101,11 +101,13 @@ ags_recall_dependency_init(AgsRecallDependency *recall_dependency)
 void
 ags_recall_dependency_connect(AgsConnectable *connectable)
 {
+  /* empty */
 }
 
 void
 ags_recall_dependency_disconnect(AgsConnectable *connectable)
 {
+  /* empty */
 }
 
 void
@@ -162,12 +164,14 @@ ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_i
 
 
 AgsRecallDependency*
-ags_recall_dependency_new()
+ags_recall_dependency_new(GObject *recall_template)
 {
   AgsRecallDependency *recall_dependency;
 
   recall_dependency = (AgsRecallDependency *) g_object_new(AGS_TYPE_RECALL_DEPENDENCY,
 							   NULL);
+
+  recall_dependency->recall_template = recall_template;
 
   return(recall_dependency);
 }

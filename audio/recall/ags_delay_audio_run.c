@@ -55,7 +55,8 @@ enum{
 static gpointer ags_delay_audio_run_parent_class = NULL;
 static AgsConnectableInterface *ags_delay_audio_run_parent_connectable_interface;
 static AgsRunConnectableInterface *ags_delay_audio_run_parent_run_connectable_interface;
-static guint delay_signals[LAST_SIGNAL];
+
+static guint delay_audio_run_signals[LAST_SIGNAL];
 
 GType
 ags_delay_audio_run_get_type()
@@ -134,7 +135,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
   delay_audio_run->tic_count = NULL;
 
   /* signals */
-  delay_signals[TIC_ALLOC_OUTPUT] =
+  delay_audio_run_signals[TIC_ALLOC_OUTPUT] =
     g_signal_new("tic_alloc_output\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
@@ -144,7 +145,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
-  delay_signals[TIC_ALLOC_INPUT] =
+  delay_audio_run_signals[TIC_ALLOC_INPUT] =
     g_signal_new("tic_alloc_input\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
@@ -154,7 +155,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
-  delay_signals[TIC_COUNT] =
+  delay_audio_run_signals[TIC_COUNT] =
     g_signal_new("tic_count\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
@@ -357,7 +358,7 @@ ags_delay_audio_run_tic_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nt
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
-		delay_signals[TIC_ALLOC_OUTPUT], 0,
+		delay_audio_run_signals[TIC_ALLOC_OUTPUT], 0,
 		nth_run);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
@@ -369,7 +370,7 @@ ags_delay_audio_run_tic_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
-		delay_signals[TIC_ALLOC_INPUT], 0,
+		delay_audio_run_signals[TIC_ALLOC_INPUT], 0,
 		nth_run);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
@@ -381,7 +382,7 @@ ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay_audio_run, guint nth_run)
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
-		delay_signals[TIC_COUNT], 0,
+		delay_audio_run_signals[TIC_COUNT], 0,
 		nth_run);
   g_object_unref(G_OBJECT(delay_audio_run));
 }

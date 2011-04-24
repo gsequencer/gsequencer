@@ -26,7 +26,7 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_id.h>
 
-#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #define AGS_TYPE_LOOP_CHANNEL                (ags_loop_channel_get_type())
 #define AGS_LOOP_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOOP_CHANNEL, AgsLoopChannel))
@@ -42,10 +42,8 @@ struct _AgsLoopChannel
 {
   AgsRecallChannelRun recall_channel_run;
 
-  AgsDelayAudioRun *delay_audio_run;
-  gulong tic_alloc_handler;
-
-  GObject *counter;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  gulong loop_handler;
 
   AgsChannel *channel;
 };
@@ -58,7 +56,7 @@ struct _AgsLoopChannelClass
 GType ags_loop_channel_get_type();
 
 AgsLoopChannel* ags_loop_channel_new(AgsChannel *channel,
-				     AgsDelayAudioRun *delay_audio_run,
-				     GObject *counter);
+				     AgsCountBeatsAudioRun *count_beats_audio_run,
+				     gboolean is_template);
 
 #endif /*__AGS_LOOP_CHANNEL_H__*/

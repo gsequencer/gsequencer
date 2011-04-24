@@ -39,9 +39,6 @@ enum{
   PROP_DEVOUT,
   PROP_BANK_INDEX_0,
   PROP_BANK_INDEX_1,
-  PROP_LENGTH,
-  PROP_LOOP,
-  PROP_STREAM_LENGTH,
 };
 
 static gpointer ags_copy_pattern_audio_parent_class = NULL;
@@ -120,37 +117,6 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
   g_object_class_install_property(gobject,
 				  PROP_BANK_INDEX_1,
 				  param_spec);
-
-  param_spec = g_param_spec_uint("length\0",
-				 "length in sounds\0",
-				 "The length of the stream in sounds\0",
-				 1,
-				 128,
-				 16,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_LENGTH,
-				  param_spec);
-
-  param_spec = g_param_spec_boolean("loop\0",
-				    "loop playing\0",
-				    "Play in a endless loop\0",
-				    FALSE,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_LOOP,
-				  param_spec);
-
-  param_spec = g_param_spec_uint("stream_length\0",
-				 "stream length in buffers\0",
-				 "The length of the stream in buffer count\0",
-				 1,
-				 65536,
-				 1,
-				 G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_STREAM_LENGTH,
-				  param_spec);
 }
 
 void
@@ -160,11 +126,6 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 
   copy_pattern_audio->i = 0;
   copy_pattern_audio->j = 0;
-
-  copy_pattern_audio->length = 0;
-  copy_pattern_audio->loop = FALSE;
-
-  copy_pattern_audio->stream_length = 0;
 }
 
 void
@@ -214,28 +175,6 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
       copy_pattern_audio->j = j;
     }
     break;
-  case PROP_LENGTH:
-    {
-      guint length;
-
-      length = g_value_get_uint(value);
-
-      copy_pattern_audio->length = length;
-
-      /*
-       * FIXME:JK: calculate stream_length with length
-       */
-    }
-    break;
-  case PROP_LOOP:
-    {
-      gboolean loop;
-
-      loop = g_value_get_boolean(value);
-
-      copy_pattern_audio->loop = loop;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -268,21 +207,6 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
       g_value_set_uint(value, copy_pattern->j);
     }
     break;
-  case PROP_LENGTH:
-    {
-      g_value_set_uint(value, copy_pattern->length);
-    }
-    break;
-  case PROP_LOOP:
-    {
-      g_value_set_boolean(value, copy_pattern->loop);
-    }
-    break;
-  case PROP_STREAM_LENGTH:
-    {
-      g_value_set_uint(value, copy_pattern->stream_length);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -305,8 +229,7 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
 
 AgsCopyPatternAudio*
 ags_copy_pattern_audio_new(AgsDevout *devout,
-			   guint i, guint j,
-			   guint length, gboolean loop)
+			   guint i, guint j)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
@@ -314,8 +237,6 @@ ags_copy_pattern_audio_new(AgsDevout *devout,
 							    "devout\0", devout,
 							    "bank_index_0\0", i,
 							    "bank_index_1\0", j,
-							    "length\0", length,
-							    "loop\0", loop,
 							    NULL);
 
   return(copy_pattern_audio);

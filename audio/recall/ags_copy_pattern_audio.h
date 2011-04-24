@@ -43,11 +43,6 @@ struct _AgsCopyPatternAudio
 
   guint i;
   guint j;
-
-  guint length;
-  gboolean loop;
-
-  guint stream_length;
 };
 
 struct _AgsCopyPatternAudioClass
@@ -58,7 +53,6 @@ struct _AgsCopyPatternAudioClass
 GType ags_copy_pattern_audio_get_type();
 
 AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsDevout *devout,
-						guint i, guint j,
-						guint length, gboolean loop);
+						guint i, guint j);
 
 #endif /*__AGS_COPY_PATTERN_AUDIO_H__*/

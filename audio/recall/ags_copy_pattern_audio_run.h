@@ -22,10 +22,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 
-#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #define AGS_TYPE_COPY_PATTERN_AUDIO_RUN                (ags_copy_pattern_audio_run_get_type())
 #define AGS_COPY_PATTERN_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_PATTERN_AUDIO_RUN, AgsCopyPatternAudioRun))
@@ -37,28 +36,11 @@
 typedef struct _AgsCopyPatternAudioRun AgsCopyPatternAudioRun;
 typedef struct _AgsCopyPatternAudioRunClass AgsCopyPatternAudioRunClass;
 
-typedef enum{
-  AGS_COPY_PATTERN_AUDIO_RUN_RUN_CONNECTED  = 1,
-}AgsCopyPatternAudioRunFlags;
-
 struct _AgsCopyPatternAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
 
-  guint flags;
-
-  //  AgsCopyPatternAudio *copy_pattern_audio;
-
-  guint recall_ref;
-
-  guint hide_ref;
-  guint hide_ref_counter;
-
-  gulong tic_alloc_handler;
-  gulong tic_count_handler;
-
-  AgsDelayAudioRun *delay_audio_run;
-  guint bit;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
 };
 
 struct _AgsCopyPatternAudioRunClass
@@ -68,7 +50,6 @@ struct _AgsCopyPatternAudioRunClass
 
 GType ags_copy_pattern_audio_run_get_type();
 
-AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsDelayAudioRun *delay_audio_run,
-						       guint bit);
+AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run);
 
 #endif /*__AGS_COPY_PATTERN_AUDIO_RUN_H__*/

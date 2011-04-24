@@ -48,6 +48,6 @@ GType ags_recall_dependency_get_type(void);
 
 GObject* ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_id);
 
-AgsRecallDependency* ags_recall_dependency_new();
+AgsRecallDependency* ags_recall_dependency_new(GObject *recall_template);
 
 #endif /*__AGS_RECALL_DEPENDENCY_H__*/

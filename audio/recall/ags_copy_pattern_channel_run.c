@@ -42,6 +42,7 @@ void ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable
 void ags_copy_pattern_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_pattern_channel_run_finalize(GObject *gobject);
 
+void ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall);
 void ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall);
 void ags_copy_pattern_channel_run_done(AgsRecall *recall);
 void ags_copy_pattern_channel_run_cancel(AgsRecall *recall);
@@ -122,6 +123,7 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_pattern_channel_run;
 
+  recall->resolve_dependencies = ags_copy_pattern_channel_run_resolve_dependencies;
   recall->run_init_pre = ags_copy_pattern_channel_run_run_init_pre;
   recall->done = ags_copy_pattern_channel_run_done;
   recall->cancel = ags_copy_pattern_channel_run_cancel;
@@ -184,14 +186,15 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   /* AgsCopyPatternChannelRun */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
 
-  /* get AgsCopyPatternAudioRun */
+  /* get AgsCopyPatternAudioRun * /
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
-  /* connect tic_alloc in AgsDelayAudioRun */
+  /* connect tic_alloc in AgsDelayAudioRun * /
   g_object_ref(G_OBJECT(copy_pattern_audio_run->delay_audio_run));
   copy_pattern_channel_run->tic_alloc_handler =
     g_signal_connect(G_OBJECT(copy_pattern_audio_run->delay_audio_run), "tic_alloc_input\0",
 		     G_CALLBACK(ags_copy_pattern_channel_run_tic_alloc_callback), copy_pattern_channel_run);
+  */
 }
 
 void
@@ -205,19 +208,26 @@ ags_copy_pattern_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
   /* AgsCopyPatternChannelRun */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
 
-  /* get AgsCopyPatternAudioRun */
+  /* get AgsCopyPatternAudioRun * /
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
-  /* disconnect tic_alloc in AgsDelayAudioRun */
+  /* disconnect tic_alloc in AgsDelayAudioRun * /
   g_signal_handler_disconnect(G_OBJECT(copy_pattern_audio_run->delay_audio_run),
 			      copy_pattern_channel_run->tic_alloc_handler);
   g_object_ref(G_OBJECT(copy_pattern_audio_run->delay_audio_run));
+  */
 }
 
 void
 ags_copy_pattern_channel_run_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_copy_pattern_channel_run_parent_class)->finalize(gobject);
+}
+
+void
+ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
+{
+  //TODO:JK: implement this function - see uncommented
 }
 
 void
@@ -241,22 +251,23 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   /* get AgsCopyPatternChannel */
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
 
+  /*
   if(copy_pattern_audio_run->delay_audio_run == NULL){
     AgsAudio *audio;
     AgsChannel *source;
     AgsRecallID *parent_recall_id;
     GList *delay_list;
 
-    /* get source */
+    /* get source * /
     source = copy_pattern_channel->recall_channel.channel;
 
-    /* find AgsRecallID */
+    /* find AgsRecallID * /
     audio = AGS_AUDIO(source->audio);
 
     parent_recall_id = ags_recall_id_find_group_id(copy_pattern_channel->destination->recall_id,
 						   AGS_RECALL(copy_pattern_channel_run)->recall_id->parent_group_id);
 
-    /* find AgsDelayAudioRun */
+    /* find AgsDelayAudioRun * /
     if(parent_recall_id->parent_group_id == 0)
       delay_list = ags_recall_find_type_with_group_id(audio->play, AGS_TYPE_DELAY_AUDIO_RUN, parent_recall_id->group_id);
     else
@@ -265,10 +276,11 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
     copy_pattern_audio_run->delay_audio_run = ((delay_list != NULL) ? AGS_DELAY_AUDIO_RUN(delay_list->data): NULL);
   }
 
-  /* notify dependency */
-  ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->delay_audio_run),
-			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
-  copy_pattern_audio_run->recall_ref++;
+/* notify dependency * /
+ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
+ 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
+copy_pattern_audio_run->count_beats_audio_rung->recall_ref++;
+*/
 }
 
 void
@@ -298,7 +310,7 @@ ags_copy_pattern_channel_run_cancel(AgsRecall *recall)
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
   /* notify dependency */
-  ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->delay_audio_run),
+  ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
   //  copy_pattern_channel_run->shared_audio_run->recall_ref--;
 }
@@ -352,7 +364,7 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
 
   if(ags_pattern_get_bit((AgsPattern *) copy_pattern_channel->pattern,
 			 copy_pattern_audio->i, copy_pattern_audio->j,
-			 copy_pattern_audio_run->bit)){
+			 copy_pattern_audio_run->count_beats_audio_run->counter)){
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
     printf("channel: %u\n\0", copy_pattern_channel->recall_channel.channel->line);
