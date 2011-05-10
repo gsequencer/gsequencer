@@ -1441,11 +1441,24 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   AgsRecycling *first_recycling, *last_recycling;
   guint next_group_id, next_audio_signal_level;
   gboolean stage_stop;
-  auto void ags_channel_recursive_play_init_arrange_group_id_down(AgsChannel *output, guint parent_group_id, guint group_id, guint child_group_id, guint recall_level);
-  auto void ags_channel_recursive_play_init_duplicate_down(AgsChannel *output, guint group_id, guint audio_signal_level);
+  auto void ags_channel_recursive_play_init_arrange_group_id_down(AgsChannel *output,
+								  guint parent_group_id, guint group_id, guint child_group_id,
+								  guint recall_level);
+  auto void ags_channel_recursive_play_init_duplicate_down(AgsChannel *output,
+							   guint group_id,
+							   guint audio_signal_level);
+  auto void ags_channel_recursive_play_init_resolve_up_output(AgsChannel *output,
+							      guint group_id);
+  auto void ags_channel_recursive_play_init_resolve_down(AgsChannel *output,
+							 guint group_id);
   auto void ags_channel_recursive_play_init_down(AgsChannel *output, guint group_id);
+
+  /*
+   * arrangeing group ids is done from the axis to the root and then from the axis to the leafs
+   */
   void ags_channel_recursive_play_init_arrange_group_id_up(AgsChannel *output,
-							   AgsRecycling *first_recycling, AgsRecycling *last_recycling){
+							   AgsRecycling *first_recycling, AgsRecycling *last_recycling)
+  {
     AgsAudio *audio;
     AgsChannel *current;
     AgsRecallID *recall_id;
@@ -1500,7 +1513,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   }
   void ags_channel_recursive_play_init_arrange_group_id_down_input(AgsChannel *output,
 								   guint parent_group_id, guint group_id, guint child_group_id,
-								   guint recall_level){
+								   guint recall_level)
+  {
     AgsAudio *audio;
     AgsChannel *input;
     guint next_child_parent_group_id, next_child_group_id, next_child_child_group_id;
@@ -1587,7 +1601,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   }
   void ags_channel_recursive_play_init_arrange_group_id_down(AgsChannel *output,
 							     guint parent_group_id, guint group_id, guint child_group_id,
-							     guint recall_level){
+							     guint recall_level)
+  {
     AgsAudio *audio;
 
     /* AgsOutput */
@@ -1621,7 +1636,13 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 								  parent_group_id, group_id, child_group_id,
 								  recall_level);
   }
-  void ags_channel_recursive_play_init_duplicate_channel_recall(AgsChannel *channel, guint group_id, guint audio_signal_level)
+
+  /*
+   * duplicateing template recalls is done from the leafs to the root
+   */
+  void ags_channel_recursive_play_init_duplicate_channel_recall(AgsChannel *channel,
+								guint group_id,
+								guint audio_signal_level)
   {
     AgsRecallID *recall_id;
     AgsRecall *recall;
@@ -1691,7 +1712,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				channel);
     }
   }
-  void ags_channel_recursive_play_init_duplicate_audio_recall(AgsAudio *audio, guint group_id, guint audio_signal_level)
+  void ags_channel_recursive_play_init_duplicate_audio_recall(AgsAudio *audio,
+							      guint group_id,
+							      guint audio_signal_level)
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
@@ -1813,7 +1836,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   }
   void ags_channel_recursive_play_init_duplicate_down_input(AgsChannel *output,
 							    guint group_id,
-							    guint audio_signal_level){
+							    guint audio_signal_level)
+  {
     AgsAudio *audio;
     AgsChannel *input;
     guint next_group_id;
@@ -1821,9 +1845,11 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     audio = AGS_AUDIO(output->audio);
 
-    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){ /* async order of channels within audio */
+      /* retrieve input */
       input = ags_channel_nth(audio->input, output->audio_channel);
     
+      /* retrieve group id and audio signal level of link */
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	next_group_id = ags_recall_id_find_group_id(input->recall_id, group_id)->child_group_id;
 	next_audio_signal_level = audio_signal_level + 1;
@@ -1833,21 +1859,26 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }
       
       while(input != NULL){
+	/* follow the links */
 	if(input->link != NULL){
 	  ags_channel_recursive_play_init_duplicate_down(input->link,
 							 next_group_id,
 							 next_audio_signal_level);
 	}
 
+	/* duplicate input */
 	ags_channel_recursive_play_init_duplicate_channel_recall(input,
 								 group_id,
 								 audio_signal_level);
 
+	/* iterate */
 	input = input->next_pad;
       }
-    }else{
+    }else{ /* sync order of channels within audio */
+      /* retrieve input */
       input = ags_channel_nth(audio->input, output->line);
 
+      /* retrieve group id and audio signal level of link */
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	next_group_id = ags_recall_id_find_group_id(input->recall_id, group_id)->child_group_id;
 	next_audio_signal_level = audio_signal_level + 1;
@@ -1857,11 +1888,13 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }
 
       if(input->link != NULL){
+	/* follow the links */
 	ags_channel_recursive_play_init_duplicate_down(input->link,
 						       next_group_id,
 						       next_audio_signal_level);
       }
 
+      /* duplicate input */
       ags_channel_recursive_play_init_duplicate_channel_recall(input,
 							       group_id,
 							       audio_signal_level);
@@ -1869,23 +1902,21 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   }
   void ags_channel_recursive_play_init_duplicate_down(AgsChannel *output,
 						      guint group_id,
-						      guint audio_signal_level){
+						      guint audio_signal_level)
+  {
     AgsAudio *audio;
     guint next_audio_signal_level;
 
     /* AgsAudio */
     audio = AGS_AUDIO(output->audio);
 
+    /* retrieve next audio signal level */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
       next_audio_signal_level = audio_signal_level + 1;
     else
       next_audio_signal_level = audio_signal_level;
 
-    ags_channel_recursive_play_init_duplicate_audio_recall(audio,
-							   group_id,
-							   next_audio_signal_level);
-    
-    /* AgsInput */
+    /* call function which duplicates input */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
       ags_channel_recursive_play_init_duplicate_down_input(output,
 							   ags_recall_id_find_group_id(output->recall_id, group_id)->child_group_id,
@@ -1895,12 +1926,183 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							   group_id,
 							   next_audio_signal_level);
 
-    /* AgsOutput */
+    /* dupcliate audio */
+    ags_channel_recursive_play_init_duplicate_audio_recall(audio,
+							   group_id,
+							   next_audio_signal_level);
+
+    /* duplicate output */
     ags_channel_recursive_play_init_duplicate_channel_recall(output,
 							     group_id,
 							     audio_signal_level);
   }
-  void ags_channel_recursive_play_init_channel_recall(AgsChannel *channel, guint group_id)
+
+  /*
+   * resolving recall dependencies has to be done from the root to the leafs
+   */
+  void ags_channel_recursive_play_init_resolve_channel_recall(AgsChannel *channel,
+							      guint group_id)
+  {
+    //TODO:JK: implement this function
+  }
+  void ags_channel_recursive_play_init_resolve_audio_recall(AgsAudio *audio,
+							    guint audio_channel,
+							    guint group_id)
+  {
+    //TODO:JK: implement this function
+  }
+  void ags_channel_recursive_play_init_resolve_up_input(AgsChannel *input,
+							guint group_id)
+  {
+    AgsAudio *audio;
+    AgsChannel *output;
+
+    if(input == NULL)
+      return;
+
+    audio = AGS_AUDIO(input->audio);
+
+    /* stop if input has recycling */
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      return;
+    }
+
+    /* retrieve output */
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+      output = ags_channel_nth(audio->output,
+			       input->audio_channel);
+    }else{
+      output = ags_channel_nth(audio->output,
+			       input->line);
+    }
+
+    /* call output */
+    ags_channel_recursive_play_init_resolve_up_output(output,
+						      group_id);
+
+    /* resolve audio */
+    ags_channel_recursive_play_init_resolve_audio_recall(audio,
+							 input->audio_channel,
+							 group_id);
+
+    /* resolve input */
+    ags_channel_recursive_play_init_resolve_channel_recall(input,
+							   group_id);
+  }
+  void ags_channel_recursive_play_init_resolve_up_output(AgsChannel *output,
+							 guint group_id)
+  {
+    AgsAudio *audio;
+    AgsChannel *input;
+
+    if(output == NULL)
+      return;
+
+    audio = AGS_AUDIO(output->audio);
+
+    /* stop if output has recycling */
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      return;
+    }
+
+    /* call link */
+    ags_channel_recursive_play_init_resolve_up_input(output->link,
+						     group_id);
+
+    /* resolve output */
+    ags_channel_recursive_play_init_resolve_channel_recall(input,
+							   group_id);
+  }
+  void ags_channel_recursive_play_init_resolve_down_input(AgsChannel *output,
+							  guint group_id)
+  {
+    AgsAudio *audio;
+    AgsChannel *input;
+    guint next_group_id;
+
+    audio = AGS_AUDIO(output->audio);
+
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){ /* async order of channels within audio */
+      /* retrieve input */
+      input = ags_channel_nth(audio->input, output->audio_channel);
+    
+      /* retrieve group id and audio signal level of link */
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	next_group_id = ags_recall_id_find_group_id(input->recall_id, group_id)->child_group_id;
+      }else{
+	next_group_id = group_id;
+      }
+      
+      while(input != NULL){
+	/* resolve input */
+	ags_channel_recursive_play_init_resolve_channel_recall(input,
+							       group_id);
+
+	/* follow the links */
+	if(input->link != NULL){
+	  ags_channel_recursive_play_init_resolve_down(input->link,
+						       next_group_id);
+	}
+
+	/* iterate */
+	input = input->next_pad;
+      }
+    }else{ /* sync order of channels within audio */
+      /* retrieve input */
+      input = ags_channel_nth(audio->input, output->line);
+
+      /* retrieve group id and audio signal level of link */
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	next_group_id = ags_recall_id_find_group_id(input->recall_id, group_id)->child_group_id;
+	next_audio_signal_level = audio_signal_level + 1;
+      }else{
+	next_group_id = child_group_id;
+	next_audio_signal_level = audio_signal_level;
+      }
+
+      if(input->link != NULL){
+	/* follow the links */
+	ags_channel_recursive_play_init_resolve_down(input->link,
+						     next_group_id);
+      }
+
+      /* duplicate input */
+      ags_channel_recursive_play_init_resolve_channel_recall(input,
+							     group_id);
+    }
+  }
+  void ags_channel_recursive_play_init_resolve_down(AgsChannel *output,
+						    guint group_id)
+  {
+    AgsAudio *audio;
+    guint next_audio_signal_level;
+
+    /* AgsAudio */
+    audio = AGS_AUDIO(output->audio);
+
+    /* resolve output */
+    ags_channel_recursive_play_init_resolve_channel_recall(output,
+							   group_id);
+
+    /* resolve audio */
+    ags_channel_recursive_play_init_resolve_audio_recall(audio,
+							 output->audio_channel,
+							 group_id);
+    
+    /* call function which resolves input */
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
+      ags_channel_recursive_play_init_resolve_down_input(output,
+							 ags_recall_id_find_group_id(output->recall_id, group_id)->child_group_id);
+    else
+      ags_channel_recursive_play_init_resolve_down_input(output,
+							 group_id);
+  }
+
+  /*
+   * run-initializeing recalls is done from the leafs to the root
+   */
+  void ags_channel_recursive_play_init_channel_recall(AgsChannel *channel,
+						      guint group_id)
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
@@ -1941,7 +2143,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       list_recall = list_recall->next;
     }
   }
-  void ags_channel_recursive_play_init_audio_recall(AgsAudio *audio, guint audio_channel, guint group_id)
+  void ags_channel_recursive_play_init_audio_recall(AgsAudio *audio, guint audio_channel,
+						    guint group_id)
   {
     AgsRecall *recall;
     AgsRecallID *recall_id;
@@ -2028,7 +2231,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     }
   }
   void ags_channel_recursive_play_init_down_input(AgsChannel *output,
-						  guint group_id){
+						  guint group_id)
+  {
     AgsAudio *audio;
     AgsChannel *input;
     guint next_group_id;
@@ -2072,7 +2276,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     }
   }
   void ags_channel_recursive_play_init_down(AgsChannel *output,
-					    guint group_id){
+					    guint group_id)
+  {
     AgsAudio *audio;
 
     /* AgsAudio */
@@ -2091,7 +2296,10 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     ags_channel_recursive_play_init_channel_recall(output, group_id);
   }
 
-  /* entry point */
+
+  /*
+   * entry point
+   */
   first_recycling = channel->first_recycling;
   last_recycling = channel->last_recycling;
 
