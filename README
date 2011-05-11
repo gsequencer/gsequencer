@@ -4,6 +4,7 @@ You need a realtime kernel in conjunction with ags. The realtime kernel shipped 
 
 
 TODO:
+- fix ids in AgsRecallID, use pointers instead of a counter
 - fix AgsAudio shouldn't contain an AgsDevout move it to AgsChannel
 - fix ags_channel_recursive_play_init to use AgsRecallContainer
 - call run_order_changed in AgsRecall from ags_channel_recursive_play_init
