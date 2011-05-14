@@ -1552,7 +1552,7 @@ ags_audio_recursive_play_init(AgsAudio *audio)
   AgsChannel *channel;
   guint group_id, child_group_id;
   gint stage;
-  gboolean arrange_group_id, duplicate_templates;
+  gboolean arrange_group_id, duplicate_templates, resolve_dependencies;
 
   group_id = ags_recall_id_generate_group_id();
   child_group_id = ags_recall_id_generate_group_id();
@@ -1563,14 +1563,16 @@ ags_audio_recursive_play_init(AgsAudio *audio)
     if(stage == 0){
       arrange_group_id = TRUE;
       duplicate_templates = TRUE;
+      resolve_dependencies = TRUE;
     }else{
       arrange_group_id = FALSE;
       duplicate_templates = FALSE;
+      resolve_dependencies = FALSE;
     }
 
     while(channel != NULL){
       ags_channel_recursive_play_init(channel, stage,
-				      arrange_group_id, duplicate_templates,
+				      arrange_group_id, duplicate_templates, resolve_dependencies,
 				      group_id, child_group_id,
 				      0);
 

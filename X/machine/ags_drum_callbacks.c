@@ -37,6 +37,8 @@
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
@@ -63,6 +65,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   AgsWindow *window;
   AgsAudio *audio;
   AgsDelayAudio *delay_audio;
+  AgsCountBeatsAudio *count_beats_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
   double bpm, tact;
@@ -112,6 +115,24 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   length = (guint) drum->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
+  /* AgsCountBeats */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
+
+  if(list != NULL){
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+
+    count_beats_audio->stream_length = stream_length;
+  }
+
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
+
+  if(list != NULL){
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+
+    count_beats_audio->stream_length = stream_length;
+  }
 
   /* AgsCopyPatternAudio */
   list = ags_recall_find_type(drum->machine.audio->play,
@@ -121,7 +142,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
     copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 
     copy_pattern_audio->devout = window->devout;
-    copy_pattern_audio->stream_length = stream_length;
   }
 
   list = ags_recall_find_type(drum->machine.audio->recall,
@@ -131,7 +151,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
     copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 
     copy_pattern_audio->devout = window->devout;
-    copy_pattern_audio->stream_length = stream_length;
   }
 
   fprintf(stdout, "ags_drum_parent_set_callback: delay = %d\n\0", delay);
@@ -159,7 +178,7 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
   AgsAudio *audio;
   AgsChannel *channel;
   AgsDelayAudio *delay_audio;
-  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCountBeatsAudio *count_beats_audio;
   GList *list;
   double bpm, tact;
   guint delay, length, stream_length;
@@ -197,25 +216,26 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
   length = (guint) drum->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCopyPatternAudio */
-  list = ags_recall_find_type(drum->machine.audio->play,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+  /* AgsCountBeatsAudio */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->stream_length = stream_length;
+    count_beats_audio->stream_length = stream_length;
   }
 
-  list = ags_recall_find_type(drum->machine.audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->stream_length = stream_length;
+    count_beats_audio->stream_length = stream_length;
   }
 
+  /* resize audio signals */
   channel = drum->machine.audio->output;
 
   while(channel != NULL){
@@ -382,7 +402,7 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 void
 ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 {
-  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCountBeatsAudio *count_beats_audio;
   GList *list;
   gboolean loop;
 
@@ -390,21 +410,21 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 
   /* AgsCopyPatternAudio */
   list = ags_recall_find_type(drum->machine.audio->play,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->loop = loop;
+    count_beats_audio->loop = loop;
   }
 
   list = ags_recall_find_type(drum->machine.audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->loop = loop;
+    count_beats_audio->loop = loop;
   }
 }
 
@@ -477,7 +497,7 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
   AgsAudio *audio;
   AgsChannel *channel;
   AgsDelayAudio *delay_audio;
-  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCountBeatsAudio *count_beats_audio;
   GList *list;
   double bpm, tact;
   guint length, stream_length, delay;
@@ -513,25 +533,26 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
   length = (guint) drum->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCopyPatternAudio */
+  /* AgsCountBeatsAudio */
   list = ags_recall_find_type(drum->machine.audio->play,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->stream_length = stream_length;
+    count_beats_audio->stream_length = stream_length;
   }
 
   list = ags_recall_find_type(drum->machine.audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->stream_length = stream_length;
+    count_beats_audio->stream_length = stream_length;
   }
 
+  /* resize audio signal */
   channel = drum->machine.audio->output;
 
   while(channel != NULL){
@@ -546,7 +567,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsChannel *channel;
   AgsDelayAudio *delay_audio;
-  AgsCopyPatternAudio *copy_pattern_audio;
+  AgsCountBeatsAudio *count_beats_audio;
   GList *list;
   guint delay, length, stream_length;
 
@@ -565,27 +586,28 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCopyPatternAudio */		   
+  /* AgsCountBeatsAudio */
   list = ags_recall_find_type(drum->machine.audio->play,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->length = length;
-    copy_pattern_audio->stream_length = stream_length;
+    count_beats_audio->length = length;
+    count_beats_audio->stream_length = stream_length;
   }
 
   list = ags_recall_find_type(drum->machine.audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
   if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    copy_pattern_audio->length = length;
-    copy_pattern_audio->stream_length = stream_length;
+    count_beats_audio->length = length;
+    count_beats_audio->stream_length = stream_length;
   }
 
+  /* resize audio signal */
   while(channel != NULL){
     ags_channel_resize_audio_signal(channel, stream_length);
 

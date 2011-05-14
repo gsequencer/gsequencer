@@ -345,7 +345,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     if(drum_input_pad->pad.group->active){
       AgsChannel *next_pad;
       gint stage;
-      gboolean arrange_group_id, duplicate_templates;
+      gboolean arrange_group_id, duplicate_templates, resolve_dependencies;
 
       next_pad = drum_input_pad->pad.channel->next_pad;
 
@@ -356,9 +356,11 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	if(stage == 0){
 	  arrange_group_id = TRUE;
 	  duplicate_templates = TRUE;
+	  resolve_dependencies = TRUE;
 	}else{
 	  arrange_group_id = FALSE;
 	  duplicate_templates = FALSE;
+	  resolve_dependencies = FALSE;
 	}
 	
 	while(channel != next_pad){
@@ -366,7 +368,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	    channel->devout_play->group_id = group_id;
 
 	  ags_channel_recursive_play_init(channel, stage,
-					  arrange_group_id, duplicate_templates,
+					  arrange_group_id, duplicate_templates, resolve_dependencies,
 					  group_id, child_group_id,
 					  0);
 	  
@@ -397,7 +399,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       channel->devout_play->group_id = group_id;
 
       ags_channel_recursive_play_init(channel, -1,
-				      TRUE, TRUE,
+				      TRUE, TRUE, TRUE,
 				      group_id, child_group_id,
 				      0);
       
