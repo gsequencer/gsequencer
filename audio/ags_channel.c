@@ -1944,6 +1944,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   void ags_channel_recursive_play_init_resolve_channel_recall(AgsChannel *channel,
 							      guint group_id)
   {
+    AgsRecall *recall;
     AgsRecallID *recall_id;
     GList *list_recall;
 
@@ -1968,6 +1969,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							    guint audio_channel,
 							    guint group_id)
   {
+    AgsRecall *recall;
     AgsRecallID *recall_id;
     GList *list_recall;
 
