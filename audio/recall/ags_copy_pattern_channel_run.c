@@ -191,7 +191,7 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
   /* connect tic_alloc in AgsDelayAudioRun */
-  delay_audio_run = copy_pattern_audio_run->delay_audio_run;
+  delay_audio_run = copy_pattern_audio_run->count_beats_audio_run->delay_audio_run;
 
   g_object_ref(G_OBJECT(delay_audio_run));
   copy_pattern_channel_run->tic_alloc_handler =
@@ -215,7 +215,7 @@ ags_copy_pattern_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
   /* disconnect tic_alloc in AgsDelayAudioRun */
-  delay_audio_run = copy_pattern_audio_run->delay_audio_run;
+  delay_audio_run = copy_pattern_audio_run->count_beats_audio_run->delay_audio_run;
 
   g_signal_handler_disconnect(G_OBJECT(delay_audio_run),
 			      copy_pattern_channel_run->tic_alloc_handler);
@@ -237,8 +237,8 @@ ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
 void
 ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 {
-  AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
   AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre(recall);
 
