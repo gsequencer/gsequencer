@@ -43,6 +43,8 @@
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
@@ -129,6 +131,8 @@ ags_drum_init(AgsDrum *drum)
   AgsRecallContainer *recall_container;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
+  AgsCountBeatsAudio *count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   GtkVBox *vbox;
@@ -201,6 +205,52 @@ ags_drum_init(AgsDrum *drum)
 							     NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, FALSE);
+
+  /* audio->play */
+  /* create AgsRecallContainer for count beats related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+
+  /* create AgsCountBeatsAudio in audio->play */
+  count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							  "recall_container\0", recall_container,
+							  "audio\0", audio,
+							  "length\0", 16,
+							  "loop\0", FALSE,
+							  NULL);
+  AGS_RECALL(count_beats_audio)->flags |= AGS_RECALL_TEMPLATE;
+  ags_audio_add_recall(audio, (GObject *) count_beats_audio, TRUE);
+
+  /* create AgsCountBeatsAudioRun in audio->play */
+  play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+								      "recall_container\0", recall_container,
+								      "delay_audio_run\0", play_delay_audio_run,
+								      NULL);
+  AGS_RECALL(play_count_beats_audio_run)->flags |= AGS_RECALL_TEMPLATE;
+  ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
+
+  /* audio->recall */
+  /* create AgsRecallContainer for count beats related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+
+  /* create AgsCountBeatsAudio in audio->recall */
+  count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							  "recall_container\0", recall_container,
+							  "audio\0", audio,
+							  "length\0", 16,
+							  "loop\0", FALSE,
+							  NULL);
+  AGS_RECALL(count_beats_audio)->flags |= AGS_RECALL_TEMPLATE;
+  ags_audio_add_recall(audio, (GObject *) count_beats_audio, TRUE);
+
+  /* create AgsCountBeatsAudioRun in audio->recall */
+  recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+								      "recall_container\0", recall_container,
+								      "delay_audio_run\0", recall_delay_audio_run,
+								      NULL);
+  AGS_RECALL(recall_count_beats_audio_run)->flags |= AGS_RECALL_TEMPLATE;
+  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, TRUE);
 
 
   /* audio->play */
