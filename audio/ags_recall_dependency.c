@@ -116,6 +116,24 @@ ags_recall_dependency_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_dependency_parent_class)->finalize(gobject);
 }
 
+GList*
+ags_recall_dependency_find_template(GList *recall_dependencies, GObject *template)
+{
+  AgsRecallDependency *recall_dependency;
+
+  while(recall_dependencies != NULL){
+    recall_dependency = AGS_RECALL_DEPENDENCY(recall_dependencies->data);
+
+    if(recall_dependency->recall_template == template){
+      return(recall_dependencies);
+    }
+
+    recall_dependencies = recall_dependencies->next;
+  }
+
+  return(NULL);
+}
+
 GObject*
 ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_id)
 {

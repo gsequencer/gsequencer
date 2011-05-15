@@ -122,6 +122,7 @@ AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
 
 void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *dependency);
+void ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *template);
 GList* ags_recall_get_dependencies(AgsRecall *recall);
 
 void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);

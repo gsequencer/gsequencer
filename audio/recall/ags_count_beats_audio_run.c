@@ -282,27 +282,46 @@ void ags_count_beats_audio_run_set_property(GObject *gobject,
   case PROP_DELAY_AUDIO_RUN:
     {
       AgsDelayAudioRun *delay_audio_run;
+      gboolean is_template;
 
       delay_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
 
       if(count_beats_audio_run->delay_audio_run == delay_audio_run)
 	return;
 
-      if(count_beats_audio_run->delay_audio_run != NULL){
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0)
-	  g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
-				      count_beats_audio_run->tic_count_handler);
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(delay_audio_run)->flags)) != 0){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
 
-	g_object_unref(G_OBJECT(count_beats_audio_run->delay_audio_run));
+      if(count_beats_audio_run->delay_audio_run != NULL){
+	if(is_template){
+	  ags_recall_remove_dependency(AGS_RECALL(count_beats_audio_run),
+				       (AgsRecall *) count_beats_audio_run->delay_audio_run);
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+	    g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
+					count_beats_audio_run->tic_count_handler);
+	  }
+
+	  g_object_unref(G_OBJECT(count_beats_audio_run->delay_audio_run));
+	}
       }
 
       if(delay_audio_run != NULL){
 	g_object_ref(G_OBJECT(delay_audio_run));
 
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0)
-	  count_beats_audio_run->tic_count_handler =
-	    g_signal_connect(G_OBJECT(delay_audio_run), "tic_count\0",
-			     G_CALLBACK(ags_count_beats_audio_run_tic_count_callback), count_beats_audio_run);
+	if(is_template){
+	  ags_recall_add_dependency(AGS_RECALL(count_beats_audio_run),
+				    ags_recall_dependency_new((GObject *) delay_audio_run));
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+	    count_beats_audio_run->tic_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "tic_count\0",
+			       G_CALLBACK(ags_count_beats_audio_run_tic_count_callback), count_beats_audio_run);
+	  }
+	}
       }
 
       count_beats_audio_run->delay_audio_run = delay_audio_run;
@@ -545,6 +564,7 @@ ags_count_beats_audio_run_new(AgsDelayAudioRun *delay_audio_run)
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+								 "delay_audio_run\0", delay_audio_run,
 								 NULL);
   
   return(count_beats_audio_run);

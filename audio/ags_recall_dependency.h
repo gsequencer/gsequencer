@@ -46,6 +46,8 @@ struct _AgsRecallDependencyClass
 
 GType ags_recall_dependency_get_type(void);
 
+GList* ags_recall_dependency_find_template(GList *recall_dependencies, GObject *template);
+
 GObject* ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_id);
 
 AgsRecallDependency* ags_recall_dependency_new(GObject *recall_template);

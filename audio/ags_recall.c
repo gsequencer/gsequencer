@@ -979,6 +979,27 @@ ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_depende
   ags_connectable_connect(AGS_CONNECTABLE(recall_dependency));
 }
 
+
+void
+ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *template)
+{
+  AgsRecallDependency *recall_dependency;
+  GList *dependencies;
+
+  if(recall == NULL ||
+     template == NULL)
+    return;
+
+  dependencies = ags_recall_dependency_find_template(recall->dependencies, (GObject *) template);
+
+  if(dependencies == NULL)
+    return;
+
+  recall_dependency = AGS_RECALL_DEPENDENCY(dependencies->data);
+  recall->dependencies = g_list_delete_link(recall->dependencies, dependencies);
+  g_object_unref(G_OBJECT(recall_dependency));
+}
+
 GList*
 ags_recall_get_dependencies(AgsRecall *recall)
 {
