@@ -491,7 +491,7 @@ ags_count_beats_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
 
-  // TODO:JK: check if it needs to be fixed
+  //TODO:JK: check if it needs to be fixed
   if(nth_run == delay_audio_run->hide_ref){
     if(count_beats_audio_run->counter == count_beats_audio->length - 1){
       if(count_beats_audio->loop){
@@ -499,6 +499,7 @@ ags_count_beats_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
 	ags_count_beats_audio_run_loop(count_beats_audio_run,
 				       nth_run);
       }else if(count_beats_audio_run->recall_ref == 0){
+	//FIXME:JK: doesn't it need to call ags_recall_done here?
 	count_beats_audio_run->counter = 0;
       }
     }else{
