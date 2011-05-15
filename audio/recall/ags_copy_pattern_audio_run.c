@@ -260,7 +260,43 @@ ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 {
-  //TODO:JK: implement this function, see uncommented
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsRecallDependency *recall_dependency;
+  AgsDelayAudioRun *delay_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  GList *list;
+  guint group_id;
+  guint i, i_stop;
+
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
+
+  list = recall->dependencies;
+  group_id = recall->recall_id->group_id;
+
+  delay_audio_run = NULL;
+  count_beats_audio_run = NULL;
+  i_stop = 2;
+
+  for(i = 0; i < i_stop && list != NULL;){
+    recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
+
+    if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->recall_template)){
+      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
+
+      i++;
+    }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->recall_template)){
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
+
+      i++;
+    }
+
+    list = list->next;
+  }
+
+  g_object_set(G_OBJECT(recall),
+	       "delay_audio_run\0", delay_audio_run,
+	       "count_beats_audio_run\0", count_beats_audio_run,
+	       NULL);
 }
 
 AgsRecall*
@@ -279,35 +315,6 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall, recall_id));
 
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
-
-  /* get audio object * /
-  recall_audio = copy_pattern_audio_run->recall_audio_run.recall_audio;
-  
-  audio = recall_audio->audio;
-
-  if(audio != NULL){
-    if(recall_id->parent_group_id == 0){
-      list_start = audio->play;
-      group_id = recall_id->group_id;
-    }else{
-      list_start = audio->recall;
-      group_id = recall_id->parent_group_id;
-    }
-
-    list = ags_recall_find_type_with_group_id(list_start,
-					      AGS_TYPE_DELAY_AUDIO_RUN,
-					      group_id);
-
-    if(list != NULL){
-      g_value_init(&delay_audio_run_value, G_TYPE_OBJECT);
-      g_value_set_object(&delay_audio_run_value, list->data);
-      g_object_set_property(G_OBJECT(copy),
-			    "delay_audio_run\0",
-			    &delay_audio_run_value);
-      g_value_unset(&delay_audio_run_value);
-    }
-  }
-  */
 
   return((AgsRecall *) copy);
 }
