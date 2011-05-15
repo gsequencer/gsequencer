@@ -262,7 +262,6 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsRecallDependency *recall_dependency;
-  AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   GList *list;
   guint group_id;
@@ -273,18 +272,13 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   list = recall->dependencies;
   group_id = recall->recall_id->group_id;
 
-  delay_audio_run = NULL;
   count_beats_audio_run = NULL;
-  i_stop = 2;
+  i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
-    if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->recall_template)){
-      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
-
-      i++;
-    }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->recall_template)){
+    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->recall_template)){
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
 
       i++;
@@ -294,7 +288,6 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "delay_audio_run\0", delay_audio_run,
 	       "count_beats_audio_run\0", count_beats_audio_run,
 	       NULL);
 }

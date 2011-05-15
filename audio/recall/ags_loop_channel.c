@@ -332,7 +332,36 @@ ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_loop_channel_resolve_dependencies(AgsRecall *recall)
 {
-  //TODO:JK: implement this function, see uncommented
+  AgsLoopChannel *loop_channel;
+  AgsRecallDependency *recall_dependency;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  GList *list;
+  guint group_id;
+  guint i, i_stop;
+
+  loop_channel = AGS_LOOP_CHANNEL(recall);
+
+  list = recall->dependencies;
+  group_id = recall->recall_id->group_id;
+
+  count_beats_audio_run = NULL;
+  i_stop = 1;
+
+  for(i = 0; i < i_stop && list != NULL;){
+    recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
+
+    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->recall_template)){
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
+
+      i++;
+    }
+
+    list = list->next;
+  }
+
+  g_object_set(G_OBJECT(recall),
+	       "count_beats_audio_run\0", count_beats_audio_run,
+	       NULL);
 }
 
 AgsRecall*
@@ -340,31 +369,10 @@ ags_loop_channel_duplicate(AgsRecall *recall,
 			   AgsRecallID *recall_id)
 {
   AgsLoopChannel *loop_channel, *copy;
-  AgsRecallContainer *container;
-  //  AgsCountBeatsAudioRun *count_beats_audio_run;
-  GObject *counter;
-  GList *list;
 
   loop_channel = AGS_LOOP_CHANNEL(recall);
   copy = (AgsLoopChannel *) AGS_RECALL_CLASS(ags_loop_channel_parent_class)->duplicate(recall,
 										       recall_id);
-
-  /*
-  container = AGS_RECALL_CONTAINER(AGS_RECALL(loop_channel->count_beats_audio_run)->container);
-  list = ags_recall_find_group_id(container->recall_audio_run, recall_id->group_id);
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-
-  container = AGS_RECALL_CONTAINER(AGS_RECALL(loop_channel->counter)->container);
-  list = ags_recall_find_group_id(container->recall_audio_run, recall_id->group_id);
-  counter = G_OBJECT(list->data);
-
-  g_object_set(G_OBJECT(copy),
-	       "channel\0", loop_channel->channel,
-	       "count_beats_audio_run\0", count_beats_audio_run,
-	       "counter\0", counter,
-	       NULL);
-
-  */
   
   return((AgsRecall *) copy);
 }
