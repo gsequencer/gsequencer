@@ -265,8 +265,6 @@ ags_drum_init(AgsDrum *drum)
 							    "devout\0", audio->devout,
 							    "bank_index_0\0", 0,
 							    "bank_index_1\0", 0,
-							    "length\0", 16,
-							    "loop\0", FALSE,
 							    NULL);
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, TRUE);
@@ -276,8 +274,7 @@ ags_drum_init(AgsDrum *drum)
 								   "recall_container\0", recall_container,
 
 								   "recall_audio\0", copy_pattern_audio,
-								   "delay_audio_run\0", play_delay_audio_run,
-								   "bit\0", 0,
+								   "count_beats_audio_run\0", play_count_beats_audio_run,
 								   NULL);
   AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, TRUE);
@@ -294,8 +291,6 @@ ags_drum_init(AgsDrum *drum)
 							    "devout\0", audio->devout,
 							    "bank_index_0\0", 0,
 							    "bank_index_1\0", 0,
-							    "length\0", 16,
-							    "loop\0", FALSE,
 							    NULL);
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, FALSE);
@@ -304,8 +299,7 @@ ags_drum_init(AgsDrum *drum)
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 								   "recall_container\0", recall_container,
 								   "recall_audio\0", copy_pattern_audio,
-								   "delay_audio_run\0", recall_delay_audio_run,
-								   "bit\0", 0,
+								   "count_beats_audio_run\0", recall_count_beats_audio_run,
 								   NULL);
   AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, FALSE);

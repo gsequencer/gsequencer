@@ -33,6 +33,7 @@ void ags_count_beats_audio_get_property(GObject *gobject,
 void ags_count_beats_audio_finalize(GObject *gobject);
 
 enum{
+  PROP_0,
   PROP_LENGTH,
   PROP_LOOP,
   PROP_STREAM_LENGTH,
@@ -84,8 +85,8 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 
   /* properties */
   param_spec = g_param_spec_uint("length\0",
-				 "length in sounds\0",
-				 "The length of the stream in sounds\0",
+				 "length in beats\0",
+				 "The length of the stream in beats\0",
 				 1,
 				 128,
 				 16,
