@@ -89,7 +89,6 @@ struct _AgsRecallClass
   void (*run_post)(AgsRecall *recall);
 
   void (*done)(AgsRecall *recall);
-  void (*loop)(AgsRecall *recall);
 
   void (*cancel)(AgsRecall *recall);
   void (*remove)(AgsRecall *recall);

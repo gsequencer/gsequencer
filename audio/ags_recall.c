@@ -80,7 +80,6 @@ enum{
   RUN_INTER,
   RUN_POST,
   DONE,
-  LOOP,
   CANCEL,
   REMOVE,
   DUPLICATE,
@@ -231,7 +230,6 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->run_post = ags_recall_real_run_post;
 
   recall->done = ags_recall_real_done;
-  recall->loop = NULL;
 
   recall->cancel = ags_recall_real_cancel;
   recall->remove = ags_recall_real_remove;
@@ -315,15 +313,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, done),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
-
-  recall_signals[LOOP] =
-    g_signal_new("loop\0",
-		 G_TYPE_FROM_CLASS (recall),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecallClass, loop),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -850,17 +839,6 @@ ags_recall_done(AgsRecall *recall)
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[DONE], 0);
-  g_object_unref(G_OBJECT(recall));
-}
-
-void
-ags_recall_loop(AgsRecall *recall)
-{
-  g_return_if_fail(AGS_IS_RECALL(recall));
-
-  g_object_ref(G_OBJECT(recall));
-  g_signal_emit(G_OBJECT(recall),
-		recall_signals[LOOP], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
