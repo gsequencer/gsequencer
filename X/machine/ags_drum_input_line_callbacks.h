@@ -37,8 +37,6 @@ void ags_drum_input_line_copy_pattern_done(AgsRecall *recall,
 					   AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_copy_pattern_cancel(AgsRecall *recall,
 					     AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_copy_pattern_loop(AgsRecall *recall,
-					   AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_recall_volume_done(AgsRecall *recall,
 					    AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_recall_volume_cancel(AgsRecall *recall,

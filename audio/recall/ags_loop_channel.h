@@ -46,6 +46,8 @@ struct _AgsLoopChannel
   gulong loop_handler;
 
   AgsChannel *channel;
+
+  AgsRecall *template;
 };
 
 struct _AgsLoopChannelClass

@@ -231,6 +231,7 @@ ags_copy_pattern_channel_run_finalize(GObject *gobject)
 void
 ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
 {
+  printf(" ----- resolving: copy_pattern_channel_run -----\n\0");
   //TODO:JK: implement this function - see uncommented
 }
 

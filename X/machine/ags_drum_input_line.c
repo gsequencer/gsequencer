@@ -217,17 +217,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   destination_start = ags_channel_nth(audio->output, audio->audio_channels * output_pad_start + source->audio_channel);
 
   /* get some recalls */
-  list = ags_recall_template_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
-  play_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+  play_copy_pattern_audio = drum->play_copy_pattern_audio;
+  play_copy_pattern_audio_run = drum->play_copy_pattern_audio_run;
 
-  list = ags_recall_template_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-  play_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
-
-  list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
-  recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-
-  list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-  recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+  recall_copy_pattern_audio = drum->recall_copy_pattern_audio;
+  recall_copy_pattern_audio_run = drum->recall_copy_pattern_audio_run;
 
   /* find AgsRecallContainer pattern copying recalls in audio->play_recall_container */
   g_value_init(&recall_container_value, G_TYPE_OBJECT);
@@ -360,9 +354,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     g_signal_connect((GObject *) copy_pattern_channel_run, "cancel\0",
 		     G_CALLBACK(ags_drum_input_line_copy_pattern_cancel), drum);
   
-    g_signal_connect((GObject *) copy_pattern_channel_run, "loop\0",
-		     G_CALLBACK(ags_drum_input_line_copy_pattern_loop), drum);
-    
     /* recall for channel->recall */
     /* AgsCopyChannel */
     copy_channel = (AgsCopyChannel *) g_object_new(AGS_TYPE_COPY_CHANNEL,

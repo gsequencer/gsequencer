@@ -981,16 +981,16 @@ ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_depende
 
 
 void
-ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *template)
+ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency)
 {
   AgsRecallDependency *recall_dependency;
   GList *dependencies;
 
   if(recall == NULL ||
-     template == NULL)
+     dependency == NULL)
     return;
 
-  dependencies = ags_recall_dependency_find_template(recall->dependencies, (GObject *) template);
+  dependencies = ags_recall_dependency_find_dependency(recall->dependencies, (GObject *) dependency);
 
   if(dependencies == NULL)
     return;
@@ -1118,6 +1118,23 @@ ags_recall_find_type(GList *recall_i, GType type)
   }
 
   return(recall_i);
+}
+
+AgsRecall*
+ags_recall_find_template(GList *recall_i)
+{
+  AgsRecall *recall;
+
+  while(recall_i != NULL){
+    recall = AGS_RECALL(recall_i->data);
+
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0)
+      return(recall);
+
+    recall_i = recall_i->next;
+  }
+
+  return(NULL);
 }
 
 GList*

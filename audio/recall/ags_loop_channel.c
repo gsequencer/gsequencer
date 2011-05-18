@@ -150,6 +150,7 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
   recall = (AgsRecallClass *) loop_channel;
 
   recall->duplicate = ags_loop_channel_duplicate;
+  recall->resolve_dependencies = ags_loop_channel_resolve_dependencies;
 }
 
 void
@@ -176,6 +177,8 @@ ags_loop_channel_init(AgsLoopChannel *loop_channel)
   loop_channel->count_beats_audio_run = NULL;
 
   loop_channel->channel = NULL;
+
+  loop_channel->template = NULL;
 }
 
 void
@@ -332,6 +335,7 @@ ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_loop_channel_resolve_dependencies(AgsRecall *recall)
 {
+  AgsRecall *template;
   AgsLoopChannel *loop_channel;
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -341,7 +345,9 @@ ags_loop_channel_resolve_dependencies(AgsRecall *recall)
 
   loop_channel = AGS_LOOP_CHANNEL(recall);
 
-  list = recall->dependencies;
+  template = loop_channel->template;
+
+  list = template->dependencies;
   group_id = recall->recall_id->group_id;
 
   count_beats_audio_run = NULL;
@@ -350,8 +356,8 @@ ags_loop_channel_resolve_dependencies(AgsRecall *recall)
   for(i = 0; i < i_stop && list != NULL;){
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
-    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->recall_template)){
-      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
+    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
     }
@@ -374,6 +380,8 @@ ags_loop_channel_duplicate(AgsRecall *recall,
   copy = (AgsLoopChannel *) AGS_RECALL_CLASS(ags_loop_channel_parent_class)->duplicate(recall,
 										       recall_id);
   
+  loop_channel->template = recall;
+
   return((AgsRecall *) copy);
 }
 

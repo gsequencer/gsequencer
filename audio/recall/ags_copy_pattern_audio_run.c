@@ -21,6 +21,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_recall_container.h>
+
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
@@ -174,14 +176,36 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
       AgsCountBeatsAudioRun *count_beats_audio_run;
+      gboolean is_template;
 
       count_beats_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
 
       if(copy_pattern_audio_run->count_beats_audio_run == count_beats_audio_run)
 	return;
 
+      if(count_beats_audio_run != NULL &&
+	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
+
       if(copy_pattern_audio_run->count_beats_audio_run != NULL){
+	if(is_template){
+	  ags_recall_remove_dependency(AGS_RECALL(copy_pattern_audio_run),
+				       (AgsRecall *) copy_pattern_audio_run->count_beats_audio_run);
+	}
+
 	g_object_unref(G_OBJECT(copy_pattern_audio_run->count_beats_audio_run));
+      }
+
+      if(count_beats_audio_run != NULL){
+	g_object_ref(G_OBJECT(count_beats_audio_run));
+
+	if(is_template){
+	  ags_recall_add_dependency(AGS_RECALL(copy_pattern_audio_run),
+				    ags_recall_dependency_new((GObject *) count_beats_audio_run));
+	}
       }
 
       copy_pattern_audio_run->count_beats_audio_run = count_beats_audio_run;
@@ -260,6 +284,7 @@ ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 {
+  AgsRecall *template;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -267,19 +292,25 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   guint group_id;
   guint i, i_stop;
 
+  printf(" ----- resolving: copy_pattern_audio_run -----\n\0");
+
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
-  list = recall->dependencies;
+  template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run);
+
+  list = template->dependencies;
   group_id = recall->recall_id->group_id;
 
   count_beats_audio_run = NULL;
   i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
+    printf("debug\n\0");
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
-    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->recall_template)){
-      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
+    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
+      printf("debug: OK\n\0");
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
     }

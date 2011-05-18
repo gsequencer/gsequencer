@@ -41,13 +41,6 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-
 #include <math.h>
 
 void ags_drum_class_init(AgsDrumClass *drum);
@@ -159,7 +152,7 @@ ags_drum_init(AgsDrum *drum)
   drum->flags = 0;
 
   /*
-   * FIXME:JK: move creation of recalls into a own function
+   * FIXME:JK: move creation of recalls in a own function
    */
 
   /* audio->play */
@@ -168,19 +161,21 @@ ags_drum_init(AgsDrum *drum)
   ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
 
   /* create AgsDelayAudio in audio->play */
-  delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-					       "recall_container\0", recall_container,
-					       "audio\0", audio,
-					       "delay\0", 0,
-					       NULL);
+  drum->play_delay_audio =
+    delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "recall_container\0", recall_container,
+						 "audio\0", audio,
+						 "delay\0", 0,
+						 NULL);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) delay_audio, TRUE);
 
   /* create AgsDelayAudioRun in audio->play */
-  play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
-							   "recall_container\0", recall_container,
-							   "recall_audio\0", delay_audio,
-							   NULL);
+  drum->play_delay_audio_run =
+    play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							     "recall_container\0", recall_container,
+							     "recall_audio\0", delay_audio,
+							     NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
 
@@ -190,19 +185,21 @@ ags_drum_init(AgsDrum *drum)
   ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
 
   /* create AgsDelayAudio in audio->recall */
-  delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-					       "recall_container\0", recall_container,
-					       "audio\0", audio,
-					       "delay\0", 0,
-					       NULL);
+  drum->recall_delay_audio =
+    delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "recall_container\0", recall_container,
+						 "audio\0", audio,
+						 "delay\0", 0,
+						 NULL);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) delay_audio, FALSE);
 
   /* create AgsDelayAudioRun in audio->recall */
-  recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
-							     "recall_container\0", recall_container,
-							     "recall_audio\0", delay_audio,
-							     NULL);
+  drum->recall_delay_audio_run =
+    recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							       "recall_container\0", recall_container,
+							       "recall_audio\0", delay_audio,
+							       NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, FALSE);
 
@@ -212,20 +209,22 @@ ags_drum_init(AgsDrum *drum)
   ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
 
   /* create AgsCountBeatsAudio in audio->play */
-  count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							  "recall_container\0", recall_container,
-							  "audio\0", audio,
-							  "length\0", 16,
-							  "loop\0", FALSE,
-							  NULL);
+  drum->play_count_beats_audio =
+    count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							    "recall_container\0", recall_container,
+							    "audio\0", audio,
+							    "length\0", 16,
+							    "loop\0", FALSE,
+							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) count_beats_audio, TRUE);
 
   /* create AgsCountBeatsAudioRun in audio->play */
-  play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-								      "recall_container\0", recall_container,
-								      "delay_audio_run\0", play_delay_audio_run,
-								      NULL);
+  drum->play_count_beats_audio_run = 
+    play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									"recall_container\0", recall_container,
+									"delay_audio_run\0", play_delay_audio_run,
+									NULL);
   AGS_RECALL(play_count_beats_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
 
@@ -235,22 +234,24 @@ ags_drum_init(AgsDrum *drum)
   ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
 
   /* create AgsCountBeatsAudio in audio->recall */
-  count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							  "recall_container\0", recall_container,
-							  "audio\0", audio,
-							  "length\0", 16,
-							  "loop\0", FALSE,
-							  NULL);
+  drum->recall_count_beats_audio =
+    count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							    "recall_container\0", recall_container,
+							    "audio\0", audio,
+							    "length\0", 16,
+							    "loop\0", FALSE,
+							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= AGS_RECALL_TEMPLATE;
-  ags_audio_add_recall(audio, (GObject *) count_beats_audio, TRUE);
+  ags_audio_add_recall(audio, (GObject *) count_beats_audio, FALSE);
 
   /* create AgsCountBeatsAudioRun in audio->recall */
-  recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-								      "recall_container\0", recall_container,
-								      "delay_audio_run\0", recall_delay_audio_run,
-								      NULL);
+  drum->recall_count_beats_audio_run = 
+    recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									  "recall_container\0", recall_container,
+									  "delay_audio_run\0", recall_delay_audio_run,
+									  NULL);
   AGS_RECALL(recall_count_beats_audio_run)->flags |= AGS_RECALL_TEMPLATE;
-  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, TRUE);
+  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, FALSE);
 
 
   /* audio->play */
@@ -259,23 +260,24 @@ ags_drum_init(AgsDrum *drum)
   ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
 
   /* create AgsCopyPatternAudio in audio->play */
-  copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "recall_container\0", recall_container,
-							    "audio\0", audio,
-							    "devout\0", audio->devout,
-							    "bank_index_0\0", 0,
-							    "bank_index_1\0", 0,
-							    NULL);
+  drum->play_copy_pattern_audio =
+    copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
+							      "recall_container\0", recall_container,
+							      "audio\0", audio,
+							      "devout\0", audio->devout,
+							      "bank_index_0\0", 0,
+							      "bank_index_1\0", 0,
+							      NULL);
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, TRUE);
 
   /* create AgsCopyPatternAudioRun in audio->play */
-  copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								   "recall_container\0", recall_container,
-
-								   "recall_audio\0", copy_pattern_audio,
-								   "count_beats_audio_run\0", play_count_beats_audio_run,
-								   NULL);
+  drum->play_copy_pattern_audio_run =
+    copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								     "recall_container\0", recall_container,
+								     "recall_audio\0", copy_pattern_audio,
+								     "count_beats_audio_run\0", play_count_beats_audio_run,
+								     NULL);
   AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, TRUE);
 
@@ -285,22 +287,24 @@ ags_drum_init(AgsDrum *drum)
   ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
 
   /* create AgsCopyPatternAudio in audio->recall */
-  copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "recall_container\0", recall_container,
-							    "audio\0", audio,
-							    "devout\0", audio->devout,
-							    "bank_index_0\0", 0,
-							    "bank_index_1\0", 0,
-							    NULL);
+  drum->recall_copy_pattern_audio =
+    copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
+							      "recall_container\0", recall_container,
+							      "audio\0", audio,
+							      "devout\0", audio->devout,
+							      "bank_index_0\0", 0,
+							      "bank_index_1\0", 0,
+							      NULL);
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, FALSE);
 
   /* create AgsCopyPatternAudioRun in audio->recall */
-  copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								   "recall_container\0", recall_container,
-								   "recall_audio\0", copy_pattern_audio,
-								   "count_beats_audio_run\0", recall_count_beats_audio_run,
-								   NULL);
+  drum->recall_copy_pattern_audio_run =
+    copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								     "recall_container\0", recall_container,
+								     "recall_audio\0", copy_pattern_audio,
+								     "count_beats_audio_run\0", recall_count_beats_audio_run,
+								     NULL);
   AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, FALSE);
 

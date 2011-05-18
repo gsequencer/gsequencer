@@ -177,42 +177,59 @@ void
 ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 {
   if((AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL & (drum_output_line->flags)) == 0){
+    AgsDrum *drum;
     AgsAudio *audio;
     AgsChannel *output;
-    AgsDelayAudioRun *delay_audio_run;
-    AgsCopyPatternAudioRun *copy_pattern_audio_run;
+    AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
     AgsLoopChannel *loop_channel;
     AgsStreamChannel *stream_channel;
-    GList *list;
 
     drum_output_line->flags |= AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL;
 
     output = AGS_LINE(drum_output_line)->channel;
     audio = AGS_AUDIO(output->audio);
 
-    list = ags_recall_template_find_type(audio->play,
-					 AGS_TYPE_DELAY_AUDIO_RUN);
-    delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+    drum = AGS_DRUM(audio->machine);
 
-    list = ags_recall_template_find_type(audio->play,
-					 AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-    copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+    /* get some recalls */
+    play_count_beats_audio_run = drum->play_count_beats_audio_run;
+    recall_count_beats_audio_run = drum->recall_count_beats_audio_run;
 
-    /* AgsLoopChannel */
+    /* AgsLoopChannel in channel->play */
     loop_channel = ags_loop_channel_new(output,
-					delay_audio_run,
-					G_OBJECT(copy_pattern_audio_run));
+					play_count_beats_audio_run,
+					TRUE);
     AGS_RECALL(loop_channel)->flags |= AGS_RECALL_TEMPLATE;
-    
-    output->play = g_list_append(output->play, (gpointer) loop_channel);
-    ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
+    ags_channel_add_recall(output, (GObject *) loop_channel, TRUE);
 
-    /* AgsStreamChannel */
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
+
+    /* AgsLoopChannel in channel->recall */
+    loop_channel = ags_loop_channel_new(output,
+					recall_count_beats_audio_run,
+					TRUE);
+    AGS_RECALL(loop_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(output, (GObject *) loop_channel, FALSE);
+
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
+
+    /* AgsStreamChannel in channel->play */
     stream_channel = ags_stream_channel_new(output);
     AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
-    
-    output->play = g_list_append(output->play, (gpointer) stream_channel);
-    ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
+    ags_channel_add_recall(output, (GObject *) stream_channel, TRUE);
+
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
+
+    /* AgsStreamChannel in channel->recall */
+    stream_channel = ags_stream_channel_new(output);
+    AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(output, (GObject *) stream_channel, FALSE);
+
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
   }
 }
 

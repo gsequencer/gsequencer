@@ -120,12 +120,6 @@ ags_drum_input_line_copy_pattern_cancel(AgsRecall *recall, AgsDrumInputLine *dru
 }
 
 void
-ags_drum_input_line_copy_pattern_loop(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
-{
-  //AGS_COPY_PATTERN(recall)->bit = 0;
-}
-
-void
 ags_drum_input_line_recall_volume_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
 }

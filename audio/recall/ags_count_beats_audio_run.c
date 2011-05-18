@@ -24,6 +24,8 @@
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_tactable.h>
 
+#include <ags/audio/ags_recall_container.h>
+
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
 void ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_audio_run);
@@ -289,7 +291,8 @@ void ags_count_beats_audio_run_set_property(GObject *gobject,
       if(count_beats_audio_run->delay_audio_run == delay_audio_run)
 	return;
 
-      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(delay_audio_run)->flags)) != 0){
+      if(delay_audio_run != NULL &&
+	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(delay_audio_run)->flags)) != 0){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -446,6 +449,7 @@ ags_count_beats_audio_run_get_counter(AgsCountable *countable)
 void
 ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
 {
+  AgsRecall *template;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   AgsRecallDependency *recall_dependency;
   AgsDelayAudioRun *delay_audio_run;
@@ -456,7 +460,9 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   // TODO:JK: implement this function
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
 
-  list = recall->dependencies;
+  template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run);
+
+  list = template->dependencies;
   group_id = recall->recall_id->group_id;
 
   delay_audio_run = NULL;
@@ -466,8 +472,8 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   for(i = 0; i < i_stop && list != NULL;){
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
-    if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->recall_template)){
-      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_find(recall_dependency, group_id);
+    if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
+      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
     }
@@ -486,6 +492,9 @@ ags_count_beats_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   AgsCountBeatsAudioRun *copy;
 
   copy = AGS_COUNT_BEATS_AUDIO_RUN(AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->duplicate(recall, recall_id));
+
+  printf("ags_count_beats_audio_run_duplicate\n\0");
+  
 
   return((AgsRecall *) copy);
 }

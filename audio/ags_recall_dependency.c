@@ -95,7 +95,7 @@ ags_recall_dependency_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_recall_dependency_init(AgsRecallDependency *recall_dependency)
 {
-  recall_dependency->recall_template = NULL;
+  recall_dependency->dependency = NULL;
 }
 
 void
@@ -117,14 +117,14 @@ ags_recall_dependency_finalize(GObject *gobject)
 }
 
 GList*
-ags_recall_dependency_find_template(GList *recall_dependencies, GObject *template)
+ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency)
 {
   AgsRecallDependency *recall_dependency;
 
   while(recall_dependencies != NULL){
     recall_dependency = AGS_RECALL_DEPENDENCY(recall_dependencies->data);
 
-    if(recall_dependency->recall_template == template){
+    if(recall_dependency->dependency == dependency){
       return(recall_dependencies);
     }
 
@@ -135,22 +135,22 @@ ags_recall_dependency_find_template(GList *recall_dependencies, GObject *templat
 }
 
 GObject*
-ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_id)
+ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, guint group_id)
 {
   AgsRecallContainer *recall_container;
-  AgsRecall *recall_template;
+  AgsRecall *dependency;
   
-  if(recall_dependency->recall_template == NULL ||
-     AGS_RECALL(recall_dependency->recall_template)->container == NULL){
+  if(recall_dependency->dependency == NULL ||
+     AGS_RECALL(recall_dependency->dependency)->container == NULL){
     return(NULL);
   }
 
-  recall_template = AGS_RECALL(recall_dependency->recall_template);
-  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(recall_dependency->recall_template)->container);
+  dependency = AGS_RECALL(recall_dependency->dependency);
+  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(recall_dependency->dependency)->container);
   
-  if(AGS_IS_RECALL_AUDIO(recall_template)){
+  if(AGS_IS_RECALL_AUDIO(dependency)){
     return((GObject *) recall_container->recall_audio);
-  }else if(AGS_IS_RECALL_AUDIO_RUN(recall_template)){
+  }else if(AGS_IS_RECALL_AUDIO_RUN(dependency)){
     GList *recall_list;
 
     recall_list = ags_recall_find_group_id(recall_container->recall_audio_run,
@@ -158,19 +158,19 @@ ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_i
 
     if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));
-  }else if(AGS_IS_RECALL_CHANNEL(recall_template)){
+  }else if(AGS_IS_RECALL_CHANNEL(dependency)){
     GList *recall_list;
 
     recall_list = ags_recall_find_provider(recall_container->recall_audio_run,
-					   (GObject *) AGS_RECALL_CHANNEL(recall_template)->channel);
+					   (GObject *) AGS_RECALL_CHANNEL(dependency)->channel);
 
     if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));
-  }else if(AGS_IS_RECALL_CHANNEL_RUN(recall_template)){
+  }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
     GList *recall_list;
 
     recall_list = ags_recall_find_provider_with_group_id(recall_container->recall_audio_run,
-							 (GObject *) AGS_RECALL_CHANNEL(recall_template)->channel,
+							 (GObject *) AGS_RECALL_CHANNEL(dependency)->channel,
 							 group_id);
 
     if(recall_list != NULL)
@@ -182,14 +182,14 @@ ags_recall_dependency_find(AgsRecallDependency *recall_dependency, guint group_i
 
 
 AgsRecallDependency*
-ags_recall_dependency_new(GObject *recall_template)
+ags_recall_dependency_new(GObject *dependency)
 {
   AgsRecallDependency *recall_dependency;
 
   recall_dependency = (AgsRecallDependency *) g_object_new(AGS_TYPE_RECALL_DEPENDENCY,
 							   NULL);
 
-  recall_dependency->recall_template = recall_template;
+  recall_dependency->dependency = dependency;
 
   return(recall_dependency);
 }
