@@ -30,6 +30,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+
 void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
 void ags_recall_channel_runconnectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_channel_run_packable_interface_init(AgsPackableInterface *packable);
@@ -427,11 +429,14 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   
   container = AGS_RECALL_CONTAINER(recall->container);
 
+  if(AGS_IS_COPY_PATTERN_CHANNEL_RUN(recall))
+    printf("yes\n\0");
+
   if(container != NULL){
     /* set recall audio run */
     recall_audio_run_list = container->recall_audio_run;
     recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list,
-						     recall_id->parent_group_id);
+						     recall_id->group_id);
     
     if(recall_audio_run_list != NULL){
       recall_audio_run = AGS_RECALL_AUDIO_RUN(recall_audio_run_list->data);
