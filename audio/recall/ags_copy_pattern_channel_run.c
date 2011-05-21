@@ -184,6 +184,8 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
 
   ags_copy_pattern_channel_run_parent_run_connectable_interface->connect(run_connectable);
 
+  printf("ags_copy_pattern_channel_run_run_connect\n\0");
+
   /* AgsCopyPatternChannelRun */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
 

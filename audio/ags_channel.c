@@ -1300,22 +1300,20 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
     AgsAudio *audio;
     AgsChannel *current, *input;
     AgsRecallID *input_recall_id;
+    guint next_group_id;
     gboolean input_do_recall, input_has_new_group_id;
     
     audio = AGS_AUDIO(output->audio);
     
-    /* call audio */
-    ags_audio_play(audio,
-		   output_recall_id->group_id,
-		   stage,
-		   do_recall);
-
     /* check if the AgsOutput's group_id is the same of AgsInput */
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      next_group_id = output_recall_id->child_group_id;
       input_has_new_group_id = TRUE;
-    else
+    }else{
+      next_group_id = output_recall_id->group_id;
       input_has_new_group_id = FALSE;
-    
+    }
+
     /* check if input_do_recall */
     if(do_recall || (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
       input_do_recall = TRUE;
@@ -1342,6 +1340,12 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
 	    ags_recall_id_unset_run_stage(output_recall_id, stage);
 	  }
 	}
+
+	/* call audio */
+	ags_audio_play(audio,
+		       next_group_id,
+		       stage,
+		       input_do_recall);
       }else{
 	AgsChannel *input;
 	
@@ -1354,13 +1358,24 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
 	  
 	ags_channel_recursive_play_input_sync(input, input_recall_id,
 					      input_do_recall);
-	
+
+	/* call audio */
+	ags_audio_play(audio,
+		       input_recall_id->group_id,
+		       stage,
+		       input_do_recall);
       }
     }else{
       /* run in AGS_AUDIO_ASYNC mode */
       ags_channel_recursive_play_input_async(ags_channel_nth(audio->input, output->audio_channel),
 					     output_recall_id->group_id,
 					     input_do_recall, input_has_new_group_id);
+
+      /* call audio */
+      ags_audio_play(audio,
+		     next_group_id,
+		     stage,
+		     input_do_recall);
     }
     
     /* call output */

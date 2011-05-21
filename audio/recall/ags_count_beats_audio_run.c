@@ -406,9 +406,13 @@ ags_count_beats_audio_run_run_connect(AgsRunConnectable *run_connectable)
   /* AgsCountBeats */
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(run_connectable);
 
+  printf("debug 0\n\0");
+
   count_beats_audio_run->tic_count_handler =
     g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "tic_count\0",
 		     G_CALLBACK(ags_count_beats_audio_run_tic_count_callback), count_beats_audio_run);
+
+  printf("debug 1\n\0");
 }
 
 void
@@ -457,7 +461,6 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   guint group_id;
   guint i, i_stop;
 
-  // TODO:JK: implement this function
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
 
   template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run);
@@ -470,9 +473,11 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
+    printf("OK22:\n\0");
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
+      printf("OK22: found\n\0");
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
@@ -551,7 +556,7 @@ ags_count_beats_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
 
   //TODO:JK: check if it needs to be fixed
-  if(nth_run == delay_audio_run->hide_ref){
+  if(nth_run == count_beats_audio_run->hide_ref){
     if(count_beats_audio_run->counter == count_beats_audio->length - 1){
       if(count_beats_audio->loop){
 	count_beats_audio_run->counter = 0;
