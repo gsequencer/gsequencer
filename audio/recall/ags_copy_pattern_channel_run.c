@@ -29,6 +29,7 @@
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
 #include <stdlib.h>
 

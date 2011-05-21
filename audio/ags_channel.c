@@ -1671,6 +1671,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 								guint group_id,
 								guint audio_signal_level)
   {
+    AgsAudio *audio;
+    AgsRunOrder *run_order;
     AgsRecallID *recall_id;
     AgsRecall *recall;
     GList *list_recall;
@@ -1684,6 +1686,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     }else{
       list_recall = channel->recall;
     }
+
+    audio = AGS_AUDIO(channel->audio);
+    
+    run_order = ags_run_order_find_group_id(audio->run_order,
+					    recall_id->child_group_id);
+    
 
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
@@ -1726,15 +1734,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       list_recall = list_recall->next;
     }
 
-    if(AGS_IS_OUTPUT(channel)){
-      AgsAudio *audio;
-      AgsRunOrder *run_order;
-      
-      audio = AGS_AUDIO(channel->audio);
-      
-      run_order = ags_run_order_find_group_id(audio->run_order,
-					      recall_id->child_group_id);
-      
+    if(AGS_IS_OUTPUT(channel)){  
       ags_run_order_add_channel(run_order,
 				channel);
     }
