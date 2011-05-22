@@ -45,10 +45,11 @@ void ags_copy_notation_audio_run_finalize(GObject *gobject);
 
 void ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_copy_notation_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+void ags_copy_notation_audio_run_run_init_pre(AgsRecall *recall);
 
-void ags_copy_notation_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-						      guint run_order,
-						      AgsCopyNotationAudioRun *copy_notation_audio_run);
+void ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
+							  guint run_order,
+							  AgsCopyNotationAudioRun *copy_notation_audio_run);
 
 enum{
   PROP_0,
@@ -138,6 +139,7 @@ ags_copy_notation_audio_run_class_init(AgsCopyNotationAudioRunClass *copy_notati
 
   recall->resolve_dependencies = ags_copy_notation_audio_run_resolve_dependencies;
   recall->duplicate = ags_copy_notation_audio_run_duplicate;
+  recall->run_init_pre = ags_copy_notation_audio_run_run_init_pre;
 }
 
 void
@@ -286,9 +288,9 @@ ags_copy_notation_audio_run_run_connect(AgsRunConnectable *run_connectable)
   delay_audio_run = copy_notation_audio_run->count_beats_audio_run->delay_audio_run;
 
   g_object_ref(G_OBJECT(delay_audio_run));
-  copy_notation_channel_run->tic_alloc_handler =
+  copy_notation_audio_run->tic_alloc_input_handler =
     g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input\0",
-		     G_CALLBACK(ags_copy_notation_channel_run_tic_alloc_callback), copy_notation_channel_run);
+		     G_CALLBACK(ags_copy_notation_audio_run_tic_alloc_input_callback), copy_notation_audio_run);
 }
 
 void
@@ -306,7 +308,7 @@ ags_copy_notation_audio_run_run_disconnect(AgsRunConnectable *run_connectable)
   delay_audio_run = copy_notation_audio_run->count_beats_audio_run->delay_audio_run;
 
   g_signal_handler_disconnect(G_OBJECT(delay_audio_run),
-			      copy_notation_channel_run->tic_alloc_handler);
+			      copy_notation_audio_run->tic_alloc_input_handler);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
@@ -359,10 +361,38 @@ ags_copy_notation_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 }
 
 void
-ags_copy_notation_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-						 guint run_order,
-						 AgsCopyNotationAudioRun *copy_notation_audio_run)
+ags_copy_notation_audio_run_run_init_pre(AgsRecall *recall)
 {
+  AgsCopyNotationAudio *copy_notation_audio;
+  AgsCopyNotationAudioRun *copy_notation_audio_run;
+
+  copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(recall);
+  copy_notation_audio = AGS_COPY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(copy_notation_audio_run)->recall_audio);
+
+  copy_notation_audio_run->current_note = copy_notation_audio->notation->notes;
+}
+
+void
+ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
+						     guint run_order,
+						     AgsCopyNotationAudioRun *copy_notation_audio_run)
+{
+  AgsAudio *audio;
+  AgsChannel *input;
+  AgsCopyNotationAudio *copy_notation_audio;
+
+  copy_notation_audio = AGS_COPY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(copy_notation_audio_run)->recall_audio);
+  audio = AGS_RECALL_AUDIO(copy_notation_audio)->audio;
+
+  input = ags_channel_nth(audio->input, copy_notation_audio->audio_channel);
+
+  if(input != NULL){
+    GList *note_list;
+
+    note_list = copy_notation_audio->notation->notes;
+
+    //TODO:JK: implement me!
+  }
 }
 
 AgsCopyNotationAudioRun*

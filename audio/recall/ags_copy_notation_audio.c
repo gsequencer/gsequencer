@@ -18,10 +18,6 @@
 
 #include <ags/audio/recall/ags_copy_notation_audio.h>
 
-#include <ags/audio/recall/ags_copy_notation_audio_run.h>
-#include <ags/audio/recall/ags_copy_notation_channel.h>
-#include <ags/audio/recall/ags_copy_notation_channel_run.h>
-
 void ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audio);
 void ags_copy_notation_audio_init(AgsCopyNotationAudio *copy_notation_audio);
 void ags_copy_notation_audio_set_property(GObject *gobject,
@@ -37,6 +33,7 @@ void ags_copy_notation_audio_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_NOTATION,
+  PROP_AUDIO_CHANNEL,
 };
 
 static gpointer ags_copy_notation_audio_parent_class = NULL;
@@ -93,12 +90,25 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
   g_object_class_install_property(gobject,
 				  PROP_NOTATION,
 				  param_spec);
+
+  param_spec = g_param_spec_uint("audio_channel\0",
+				 "the audio channel to play\0",
+				 "The audio channel to play of audio object\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
 }
 
 void
 ags_copy_notation_audio_init(AgsCopyNotationAudio *copy_notation_audio)
 {
   copy_notation_audio->notation = NULL;
+
+  copy_notation_audio->audio_channel = 0;
 }
 
 void
@@ -130,6 +140,14 @@ ags_copy_notation_audio_set_property(GObject *gobject,
       copy_notation_audio->notation = notation;
     }
     break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      guint audio_channel;
+
+      audio_channel = g_value_get_uint(value);
+
+      copy_notation_audio->audio_channel = audio_channel;
+    }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -142,7 +160,7 @@ ags_copy_notation_audio_get_property(GObject *gobject,
 				    GValue *value,
 				    GParamSpec *param_spec)
 {
-  AgsCopyNotationAudio *copy_notation;
+  AgsCopyNotationAudio *copy_notation_audio;
   
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
@@ -152,6 +170,10 @@ ags_copy_notation_audio_get_property(GObject *gobject,
       g_value_set_object(value, copy_notation_audio->notation);
     }
     break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      g_value_set_uint(value, copy_notation_audio->audio_channel);
+    }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -166,11 +188,14 @@ ags_copy_notation_audio_finalize(GObject *gobject)
 }
 
 AgsCopyNotationAudio*
-ags_copy_notation_audio_new()
+ags_copy_notation_audio_new(AgsNotation *notation,
+			    guint audio_channel)
 {
   AgsCopyNotationAudio *copy_notation_audio;
 
   copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
+							      "notation\0", notation,
+							      "audio_channel\0", audio_channel,
 							      NULL);
   
   return(copy_notation_audio);

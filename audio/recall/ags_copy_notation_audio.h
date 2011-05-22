@@ -40,6 +40,7 @@ struct _AgsCopyNotationAudio
   AgsRecallAudio recall_audio;
 
   AgsNotation *notation;
+  guint audio_channel;
 };
 
 struct _AgsCopyNotationAudioClass
