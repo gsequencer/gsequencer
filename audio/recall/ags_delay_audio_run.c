@@ -200,7 +200,7 @@ ags_delay_audio_run_connect(AgsConnectable *connectable)
 {
   AgsDelayAudioRun *delay_audio_run;
 
-  printf("ags_delay_audio_run_connect\n\0");
+  //  printf("ags_delay_audio_run_connect\n\0");
 
   ags_delay_audio_run_parent_connectable_interface->connect(connectable);
 }
@@ -263,6 +263,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
       run_order = delay_audio_run->hide_ref_counter;
 
+      printf("delay signal\n\0");
+
       ags_delay_audio_run_tic_alloc_output(delay_audio_run,
 					   run_order);
       ags_delay_audio_run_tic_alloc_input(delay_audio_run,
@@ -273,6 +275,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
+      printf("delay counting\n\0");
 
       if(delay_audio_run->counter == delay_audio->delay - 1)
 	delay_audio_run->counter = 0;
@@ -334,7 +337,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     delay_audio_run->hide_ref += count;
-    printf("hide_ref: %u\n\0", delay_audio_run->hide_ref);
+    printf("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;

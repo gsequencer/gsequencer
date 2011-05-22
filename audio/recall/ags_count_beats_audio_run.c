@@ -531,7 +531,7 @@ ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     count_beats_audio_run->hide_ref += count;
-
+    printf("count_beats_audio_run->hide_ref: %u\n\0", count_beats_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;
@@ -587,7 +587,10 @@ ags_count_beats_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
 
-  //TODO:JK: check if it needs to be fixed
+  if(count_beats_audio_run->hide_ref != 0){
+    count_beats_audio_run->hide_ref_counter++;
+  }
+
   if(count_beats_audio_run->hide_ref_counter == count_beats_audio_run->hide_ref){
     if(count_beats_audio_run->counter == count_beats_audio->length - 1){
       count_beats_audio_run->counter = 0;
@@ -596,8 +599,6 @@ ags_count_beats_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
     }
 
     count_beats_audio_run->hide_ref_counter = 0;
-  }else{
-    count_beats_audio_run->hide_ref_counter++;
   }
 }
 
