@@ -1185,8 +1185,9 @@ ags_recall_find_group_id(GList *recall_i, guint group_id)
     recall = AGS_RECALL(recall_i->data);
 
     if(recall->recall_id != NULL &&
-       recall->recall_id->group_id == group_id)
-      return(recall_i);
+       recall->recall_id->group_id == group_id){
+	return(recall_i);
+    }
 
     recall_i = recall_i->next;
   }

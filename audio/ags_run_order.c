@@ -217,22 +217,32 @@ ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *output,
   AgsChannel *input;
   GList *list;
   guint output_group_id, group_id;
-  gboolean do_play;
+  gboolean output_do_play, input_do_play;
 
   audio = AGS_AUDIO(output->audio);
 
   /* get some parameters */
   group_id = run_order->recall_id->group_id;
-  do_play = FALSE;
+  output_do_play = FALSE;
+  input_do_play = FALSE;
 
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
     output_group_id = run_order->recall_id->group_id;
 
     if(run_order->recall_id->parent_group_id == 0){
-      do_play = TRUE;
+      input_do_play = TRUE;
+      output_do_play = TRUE;
     }
   }else{
+    AgsRecallID *output_recall_id;
+
     output_group_id = run_order->recall_id->parent_group_id;
+
+    output_recall_id = ags_recall_id_find_group_id(output->recall_id, output_group_id);
+
+    if(output_recall_id->parent_group_id == 0){
+      output_do_play = TRUE;
+    }
   }
 
   /* set input */
@@ -242,7 +252,7 @@ ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *output,
     while(input != NULL){
       ags_run_order_changed_input(run_order, input,
 				  new_position, old_position,
-				  group_id, do_play);
+				  group_id, input_do_play);
 
       input = input->next_pad;
     }
@@ -251,11 +261,11 @@ ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *output,
 
     ags_run_order_changed_input(run_order, input,
 				new_position, old_position,
-				group_id, do_play);
+				group_id, input_do_play);
   }
 
   /* set output */
-  if(run_order->recall_id->parent_group_id == 0){
+  if(output_do_play){
     list = output->play;
   }else{
     list = output->recall;

@@ -36,6 +36,10 @@
 typedef struct _AgsCountBeatsAudioRun AgsCountBeatsAudioRun;
 typedef struct _AgsCountBeatsAudioRunClass AgsCountBeatsAudioRunClass;
 
+typedef enum{
+  AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN   =  1,
+};
+
 struct _AgsCountBeatsAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
@@ -47,7 +51,7 @@ struct _AgsCountBeatsAudioRun
   guint hide_ref;
   guint hide_ref_counter;
 
-  gulong tic_alloc_handler;
+  gulong tic_alloc_output_handler;
   gulong tic_count_handler;
 
   AgsDelayAudioRun *delay_audio_run;

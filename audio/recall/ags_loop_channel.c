@@ -213,25 +213,44 @@ ags_loop_channel_set_property(GObject *gobject,
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
       AgsCountBeatsAudioRun *count_beats_audio_run;
+      gboolean is_template;
 
       count_beats_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
 
       if(loop_channel->count_beats_audio_run == count_beats_audio_run)
 	return;
 
+      if(count_beats_audio_run != NULL &&
+	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
+
+
       if(loop_channel->count_beats_audio_run != NULL){
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(loop_channel)->flags)) != 0)
-	  g_signal_handler_disconnect(G_OBJECT(loop_channel), loop_channel->loop_handler);
+	if(is_template){
+	  ags_recall_remove_dependency(AGS_RECALL(loop_channel),
+				       (AgsRecall *) loop_channel->count_beats_audio_run);
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(loop_channel)->flags)) != 0)
+	    g_signal_handler_disconnect(G_OBJECT(loop_channel), loop_channel->loop_handler);
+	}
 
 	g_object_unref(loop_channel->count_beats_audio_run);
       }
 
       if(count_beats_audio_run != NULL){
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(loop_channel)->flags)) != 0)
-	  loop_channel->loop_handler = g_signal_connect(G_OBJECT(loop_channel->count_beats_audio_run), "loop\0",
-							G_CALLBACK(ags_loop_channel_loop_callback), loop_channel);
-
 	g_object_ref(count_beats_audio_run);
+
+	if(is_template){
+	  ags_recall_add_dependency(AGS_RECALL(loop_channel),
+				    ags_recall_dependency_new((GObject *) count_beats_audio_run));
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(loop_channel)->flags)) != 0)
+	    loop_channel->loop_handler = g_signal_connect(G_OBJECT(loop_channel->count_beats_audio_run), "loop\0",
+							  G_CALLBACK(ags_loop_channel_loop_callback), loop_channel);
+	}
       }
 
       loop_channel->count_beats_audio_run = count_beats_audio_run;
@@ -348,7 +367,8 @@ ags_loop_channel_resolve_dependencies(AgsRecall *recall)
   template = loop_channel->template;
 
   list = template->dependencies;
-  group_id = recall->recall_id->group_id;
+
+  group_id = recall->recall_id->child_group_id;
 
   count_beats_audio_run = NULL;
   i_stop = 1;
@@ -380,7 +400,8 @@ ags_loop_channel_duplicate(AgsRecall *recall,
   copy = (AgsLoopChannel *) AGS_RECALL_CLASS(ags_loop_channel_parent_class)->duplicate(recall,
 										       recall_id);
   
-  loop_channel->template = recall;
+  copy->template = recall;
+  copy->channel = loop_channel->channel;
 
   return((AgsRecall *) copy);
 }
@@ -393,6 +414,8 @@ ags_loop_channel_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
+
+  printf("%u: %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order, nth_run);
 
   if(AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order != nth_run)
     return;

@@ -197,7 +197,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* AgsLoopChannel in channel->play */
     loop_channel = ags_loop_channel_new(output,
-					play_count_beats_audio_run,
+					recall_count_beats_audio_run,
 					TRUE);
     AGS_RECALL(loop_channel)->flags |= AGS_RECALL_TEMPLATE;
     ags_channel_add_recall(output, (GObject *) loop_channel, TRUE);

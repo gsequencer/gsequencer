@@ -31,6 +31,8 @@ void ags_recall_id_finalize(GObject *gobject);
 
 static gpointer ags_recall_id_parent_class = NULL;
 
+static guint ags_recall_id_counter = 1;
+
 GType
 ags_recall_id_get_type(void)
 {
@@ -118,13 +120,12 @@ ags_recall_id_finalize(GObject *gobject)
 guint
 ags_recall_id_generate_group_id()
 {
-  static guint counter = 1;
   guint group_id;
 
-  group_id = counter;
-  counter++;
+  group_id = ags_recall_id_counter;
+  ags_recall_id_counter++;
 
-  if(counter == ~0)
+  if(ags_recall_id_counter == ~0)
     fprintf(stderr, "WARNING: ags_recall_id_generate_group_id - counter expired\n\0");
 
   return(group_id);

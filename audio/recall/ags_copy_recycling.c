@@ -674,7 +674,7 @@ ags_copy_recycling_destination_remove_audio_signal_callback(AgsRecycling *destin
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == copy_recycling_recall->recall_id->group_id){
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == copy_recycling_recall->recall_id->parent_group_id){
     AgsRecall *recall;
 
     devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->devout);;
