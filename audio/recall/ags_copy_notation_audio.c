@@ -32,6 +32,7 @@ void ags_copy_notation_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_DEVOUT,
   PROP_NOTATION,
   PROP_AUDIO_CHANNEL,
 };
@@ -122,6 +123,24 @@ ags_copy_notation_audio_set_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(copy_notation_audio->devout != devout)
+	return;
+
+      if(copy_notation_audio->devout != NULL)
+	g_object_unref(copy_notation_audio->devout);
+
+      if(devout != NULL)
+	g_object_ref(devout);
+
+      copy_notation_audio->devout = devout;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -165,6 +184,11 @@ ags_copy_notation_audio_get_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, copy_notation_audio->devout);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, copy_notation_audio->notation);
@@ -188,12 +212,14 @@ ags_copy_notation_audio_finalize(GObject *gobject)
 }
 
 AgsCopyNotationAudio*
-ags_copy_notation_audio_new(AgsNotation *notation,
+ags_copy_notation_audio_new(AgsDevout *devout,
+			    AgsNotation *notation,
 			    guint audio_channel)
 {
   AgsCopyNotationAudio *copy_notation_audio;
 
   copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
+							      "devout\0", devout,
 							      "notation\0", notation,
 							      "audio_channel\0", audio_channel,
 							      NULL);

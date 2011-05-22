@@ -39,6 +39,8 @@ struct _AgsCopyNotationAudio
 {
   AgsRecallAudio recall_audio;
 
+  AgsDevout *devout;
+
   AgsNotation *notation;
   guint audio_channel;
 };
@@ -50,6 +52,8 @@ struct _AgsCopyNotationAudioClass
 
 GType ags_copy_notation_audio_get_type();
 
-AgsCopyNotationAudio* ags_copy_notation_audio_new();
+AgsCopyNotationAudio* ags_copy_notation_audio_new(AgsDevout *devout,
+						  AgsNotation *notation,
+						  guint audio_channel);
 
 #endif /*__AGS_COPY_NOTATION_AUDIO_H__*/

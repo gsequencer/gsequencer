@@ -378,7 +378,7 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
 						     AgsCopyNotationAudioRun *copy_notation_audio_run)
 {
   AgsAudio *audio;
-  AgsChannel *input;
+  AgsChannel *input, *current_input;
   AgsCopyNotationAudio *copy_notation_audio;
 
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(copy_notation_audio_run)->recall_audio);
@@ -387,11 +387,49 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
   input = ags_channel_nth(audio->input, copy_notation_audio->audio_channel);
 
   if(input != NULL){
+    AgsRecycling *recycling, *last_recycling;
+    AgsAudioSignal *audio_signal;
+    AgsNote *note;
     GList *note_list;
+    guint offset;
+    guint width;
 
-    note_list = copy_notation_audio->notation->notes;
+    note_list = copy_notation_audio_run->current_note;
+    offset = copy_notation_audio_run->count_beats_audio_run->counter;
 
-    //TODO:JK: implement me!
+    while(note_list != NULL &&
+	  (note = AGS_NOTE(note_list->data))->x[0] == offset){
+      current_input = ags_channel_nth(input, note->y);
+
+      if(current_input != NULL){
+	recycling = current_input->first_recycling;
+	
+	if(recycling == NULL){
+	  note_list = note_list->next;
+	  continue;
+	}
+
+	last_recycling = current_input->last_recycling;
+	width = note->x[1] - note->x[0];
+
+	while(recycling != last_recycling->next){
+	  //FIXME:JK: use width
+	  audio_signal = ags_audio_signal_new((GObject *) copy_notation_audio->devout,
+					      (GObject *) recycling,
+					      (GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id);
+	  ags_audio_signal_connect(audio_signal);
+	
+	  ags_recycling_add_audio_signal(recycling,
+					 audio_signal);
+
+	  recycling = recycling->next;
+	}
+      }
+
+      note_list = note_list->next;
+    }
+
+    copy_notation_audio_run->current_note = note_list;
   }
 }
 
