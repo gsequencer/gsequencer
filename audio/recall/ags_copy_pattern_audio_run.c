@@ -24,8 +24,6 @@
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
 void ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -292,8 +290,6 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   guint group_id;
   guint i, i_stop;
 
-  printf(" ----- resolving: copy_pattern_audio_run -----\n\0");
-
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
   template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run);
@@ -305,11 +301,9 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
-    printf("debug\n\0");
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
-      printf("debug: OK\n\0");
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
@@ -326,19 +320,9 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 AgsRecall*
 ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
-  AgsAudio *audio;
-  AgsRecallAudio *recall_audio;
-  AgsCopyPatternAudio *copy_pattern_audio;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run, *copy;
-  GList *list, *list_start;
-  guint group_id;
-  GValue delay_audio_run_value = {0,};
-
-  printf("ags_copy_pattern_audio_run_duplicate\n\0");
+  AgsCopyPatternAudioRun *copy;
 
   copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall, recall_id));
-
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
   return((AgsRecall *) copy);
 }

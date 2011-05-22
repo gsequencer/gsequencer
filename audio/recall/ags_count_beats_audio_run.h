@@ -38,11 +38,13 @@ typedef struct _AgsCountBeatsAudioRunClass AgsCountBeatsAudioRunClass;
 
 typedef enum{
   AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN   =  1,
-};
+}AgsCountBeatsAudioRunFlags;
 
 struct _AgsCountBeatsAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
+
+  guint flags;
 
   guint counter;
 

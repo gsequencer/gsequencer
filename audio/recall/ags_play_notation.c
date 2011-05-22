@@ -53,8 +53,13 @@ ags_play_notation_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_play_notation_init,
     };
-    ags_type_play_notation = g_type_register_static(AGS_TYPE_RECALL, "AgsPlayNotation\0", &ags_play_notation_info, 0);
+
+    ags_type_play_notation = g_type_register_static(AGS_TYPE_RECALL,
+						    "AgsPlayNotation\0",
+						    &ags_play_notation_info,
+						    0);
   }
+
   return (ags_type_play_notation);
 }
 
