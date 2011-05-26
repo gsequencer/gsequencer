@@ -581,22 +581,97 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
   return(NULL);
 }
 
-AgsAudioSignal*
-ags_audio_signal_tile(AgsAudioSignal *audio_signal, guint length)
+void
+ags_audio_signal_tile(AgsAudioSignal *audio_signal,
+		      AgsAudioSignal *template,
+		      guint length)
 {
-  AgsAudioSignal *new_audio_signal;
-  guint old_length;
+  AgsDevout *devout;
+  GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
+  short *template_buffer, *audio_signal_buffer;
+  guint template_length, mod_template_length;
+  gboolean mod_template_even;
+  guint i, j, j_offcut, j_offcut_odd;
 
-  return(new_audio_signal);
+  devout = AGS_DEVOUT(audio_signal->devout);
+
+  audio_signal_stream = NULL;
+  template_stream = template->stream_beginning;
+
+  if(template_stream == NULL){
+    return;
+  }
+
+  template_length = template->length;
+  mod_template_length = template_length % devout->buffer_size;
+  mod_template_length_odd = devout->buffer_size - mod_template_length;
+  mod_template_even = TRUE;
+  j_offcut = 0;
+
+  for(i = 0; i < length - devout->buffer_size; i += devout->buffer_size){
+    audio_signal_buffer = (short *) malloc(devout->buffer_size * sizeof(short));
+    audio_signal_stream = g_list_prepend(audio_signal_stream,
+					 audio_signal_buffer);
+
+    template_buffer = (short *) template_stream->data;
+
+    if(template_length < devout->buffer_size){
+      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
+					     &(template_buffer[j_offcut]), 1, template_length - j_offcut);
+
+      for(j = template_length - j_offcut; j < devout->buffer_size - template_length; j += template_length){
+	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+					       template_buffer, 1, template_length);
+      }
+
+      j_offcut = devout->buffer_size - j;
+      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+					     template_buffer, 1, j_offcut);
+    }else{
+      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
+					     &(template_buffer[j_offcut]), 1, j_offcut_odd);
+
+      if(i + j_offcut + devout->buffer_size < template_length){
+	template_stream = template_stream->next;
+      }else{
+	template_stream = template->stream_beginning;
+      }
+
+      if(mod_template_even){
+	j_offcut = mod_template_length;
+	j_offcut_odd = mod_template_length_odd;
+	
+	template_mod_even = FALSE;
+      }else{
+	j_offcut = mod_template_length_odd;
+	j_offcut_odd = mod_template_length;
+	
+	template_mod_even = TRUE;
+      }
+      
+      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j_offcut_odd]), 1,
+					     template_buffer, 1, j_offcut);
+    }
+  }
+
+  audio_signal_stream_end = audio_signal_stream;
+  audio_signal_stream = g_list_reverse(audio_signal_stream);
+
+  if(audio_signal->stream_beginning != NULL){
+    ags_list_free_and_free_link(audio_signal_stream_beginning);
+  }
+
+  audio_signal->stream_beginning = audio_signal_stream;
+  //TODO:JK: perhaps you want to handle stream_current properly
+  audio_signal->stream_current = audio_signal_stream;
+  audio_signal->stream_end = audio_signal_stream_end;
 }
 
-AgsAudioSignal*
-ags_audio_signal_scale(AgsAudioSignal *audio_signal, guint length)
+void
+ags_audio_signal_scale(AgsAudioSignal *audio_signal,
+		       AgsAudioSignal *template,
+		       guint length)
 {
-  AgsAudioSignal *new_audio_signal;
-  guint old_length;
-
-  return(new_audio_signal);
 }
 
 AgsAudioSignal*
