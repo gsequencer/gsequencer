@@ -392,7 +392,7 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
     AgsNote *note;
     GList *note_list;
     guint offset;
-    guint width;
+    guint length;
 
     note_list = copy_notation_audio_run->current_note;
     offset = copy_notation_audio_run->count_beats_audio_run->counter;
@@ -410,13 +410,23 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
 	}
 
 	last_recycling = current_input->last_recycling;
-	width = note->x[1] - note->x[0];
+
+	if((AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL & (copy_notation_audio->flags)) != 0){
+	  length = note->x[1] - note->x[0];
+	}
 
 	while(recycling != last_recycling->next){
-	  //FIXME:JK: use width
-	  audio_signal = ags_audio_signal_new((GObject *) copy_notation_audio->devout,
-					      (GObject *) recycling,
-					      (GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id);
+	  if((AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL & (copy_notation_audio->flags)) != 0){
+	    audio_signal = ags_audio_signal_new_with_length((GObject *) copy_notation_audio->devout,
+							    (GObject *) recycling,
+							    (GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id,
+							    length);
+	  }else{
+	    audio_signal = ags_audio_signal_new((GObject *) copy_notation_audio->devout,
+						(GObject *) recycling,
+						(GObject *) AGS_RECALL(copy_notation_audio_run)->recall_id);
+	  }
+
 	  ags_audio_signal_connect(audio_signal);
 	
 	  ags_recycling_add_audio_signal(recycling,

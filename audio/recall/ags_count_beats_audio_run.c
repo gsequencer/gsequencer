@@ -267,6 +267,8 @@ ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *counta
 void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
+  count_beats_audio_run->flags = 0;
+
   count_beats_audio_run->recall_ref = 0;
 
   count_beats_audio_run->hide_ref = 0;

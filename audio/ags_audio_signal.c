@@ -616,10 +616,10 @@ ags_audio_signal_new(GObject *devout,
 }
 
 AgsAudioSignal*
-ags_audio_signal_new_with_width(GObject *devout,
-				GObject *recycling,
-				GObject *recall_id,
-				guint width)
+ags_audio_signal_new_with_length(GObject *devout,
+				 GObject *recycling,
+				 GObject *recall_id,
+				 guint length)
 {
   AgsAudioSignal *audio_signal;
 

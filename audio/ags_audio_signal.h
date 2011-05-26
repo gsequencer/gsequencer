@@ -101,11 +101,11 @@ AgsAudioSignal* ags_audio_signal_scale(AgsAudioSignal *audio_signal, guint lengt
 
 AgsAudioSignal* ags_audio_signal_new(GObject *devout,
 				     GObject *recycling,
-				     GObject *owner);
+				     GObject *recall_id);
 
-AgsAudioSignal* ags_audio_signal_new_with_width(GObject *devout,
-						GObject *recycling,
-						GObject *owner,
-						guint width);
+AgsAudioSignal* ags_audio_signal_new_with_length(GObject *devout,
+						 GObject *recycling,
+						 GObject *recall_id,
+						 guint length);
 
 #endif /*__AGS_AUDIO_SIGNAL_H__*/

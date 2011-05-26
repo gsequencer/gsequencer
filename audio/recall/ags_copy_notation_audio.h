@@ -35,9 +35,15 @@
 typedef struct _AgsCopyNotationAudio AgsCopyNotationAudio;
 typedef struct _AgsCopyNotationAudioClass AgsCopyNotationAudioClass;
 
+typedef enum{
+  AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL  = 1,
+}AgsCopyNotationAudioFlags;
+
 struct _AgsCopyNotationAudio
 {
   AgsRecallAudio recall_audio;
+
+  guint flags;
 
   AgsDevout *devout;
 

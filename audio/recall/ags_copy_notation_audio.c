@@ -107,6 +107,8 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
 void
 ags_copy_notation_audio_init(AgsCopyNotationAudio *copy_notation_audio)
 {
+  copy_notation_audio->flags = 0;
+
   copy_notation_audio->notation = NULL;
 
   copy_notation_audio->audio_channel = 0;
