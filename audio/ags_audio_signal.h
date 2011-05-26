@@ -96,8 +96,16 @@ GList* ags_audio_signal_get_stream_current(GList *audio_signal,
 GList* ags_audio_signal_get_by_recall_id(GList *audio_signal,
 					 GObject *recall_id);
 
+AgsAudioSignal* ags_audio_signal_tile(AgsAudioSignal *audio_signal, guint length);
+AgsAudioSignal* ags_audio_signal_scale(AgsAudioSignal *audio_signal, guint length);
+
 AgsAudioSignal* ags_audio_signal_new(GObject *devout,
 				     GObject *recycling,
 				     GObject *owner);
+
+AgsAudioSignal* ags_audio_signal_new_with_width(GObject *devout,
+						GObject *recycling,
+						GObject *owner,
+						guint width);
 
 #endif /*__AGS_AUDIO_SIGNAL_H__*/

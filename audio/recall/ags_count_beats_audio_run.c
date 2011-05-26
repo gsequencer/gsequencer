@@ -61,6 +61,7 @@ AgsRecall* ags_count_beats_audio_run_duplicate(AgsRecall *recall, AgsRecallID *r
 void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 						 guint notify_mode,
 						 gint count);
+void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
 
 void ags_count_beats_audio_run_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 				    guint nth_run);
@@ -210,6 +211,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   recall->resolve_dependencies = ags_count_beats_audio_run_resolve_dependencies;
   recall->duplicate = ags_count_beats_audio_run_duplicate;
   recall->notify_dependency = ags_count_beats_audio_run_notify_dependency;
+  recall->run_init_pre = ags_count_beats_audio_run_run_init_pre;
 
   /* AgsCountBeatsAudioRunClass */
   count_beats_audio_run->loop = NULL;
@@ -416,8 +418,6 @@ ags_count_beats_audio_run_run_connect(AgsRunConnectable *run_connectable)
   /* AgsCountBeats */
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(run_connectable);
 
-  printf("debug 0\n\0");
-
   count_beats_audio_run->tic_alloc_output_handler =
     g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "tic_alloc_output\0",
 		     G_CALLBACK(ags_count_beats_audio_run_tic_alloc_output_callback), count_beats_audio_run);
@@ -425,8 +425,6 @@ ags_count_beats_audio_run_run_connect(AgsRunConnectable *run_connectable)
   count_beats_audio_run->tic_count_handler =
     g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "tic_count\0",
 		     G_CALLBACK(ags_count_beats_audio_run_tic_count_callback), count_beats_audio_run);
-
-  printf("debug 1\n\0");
 }
 
 void
@@ -488,11 +486,9 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
-    printf("OK22:\n\0");
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
-      printf("OK22: found\n\0");
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
@@ -549,6 +545,14 @@ ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 }
 
 void
+ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
+{
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  count_beats_audio_run->flags |= AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN;
+}
+
+void
 ags_count_beats_audio_run_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 			       guint nth_run)
 {
@@ -574,6 +578,12 @@ ags_count_beats_audio_run_tic_alloc_output_callback(AgsDelayAudioRun *delay_audi
     if(count_beats_audio->loop){
       ags_count_beats_audio_run_loop(count_beats_audio_run,
 				     nth_run);
+    }else{
+      if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
+	count_beats_audio_run->flags &= (~AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN);
+      }else{
+	ags_recall_done(AGS_RECALL(count_beats_audio_run));
+      }
     }
   }
 }

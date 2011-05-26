@@ -195,6 +195,9 @@ ags_audio_signal_set_property(GObject *gobject,
       if(audio_signal->recycling == recycling)
 	return;
 
+      if(audio_signal->recycling != NULL)
+	g_object_unref(audio_signal->recycling);
+
       if(recycling != NULL)
 	g_object_ref(recycling);
 
@@ -579,9 +582,44 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
 }
 
 AgsAudioSignal*
+ags_audio_signal_tile(AgsAudioSignal *audio_signal, guint length)
+{
+  AgsAudioSignal *new_audio_signal;
+  guint old_length;
+
+  return(new_audio_signal);
+}
+
+AgsAudioSignal*
+ags_audio_signal_scale(AgsAudioSignal *audio_signal, guint length)
+{
+  AgsAudioSignal *new_audio_signal;
+  guint old_length;
+
+  return(new_audio_signal);
+}
+
+AgsAudioSignal*
 ags_audio_signal_new(GObject *devout,
 		     GObject *recycling,
 		     GObject *recall_id)
+{
+  AgsAudioSignal *audio_signal;
+
+  audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+						 "devout\0", devout,
+						 "recycling\0", recycling,
+						 "recall-id\0", recall_id,
+						 NULL);
+
+  return(audio_signal);
+}
+
+AgsAudioSignal*
+ags_audio_signal_new_with_width(GObject *devout,
+				GObject *recycling,
+				GObject *recall_id,
+				guint width)
 {
   AgsAudioSignal *audio_signal;
 
