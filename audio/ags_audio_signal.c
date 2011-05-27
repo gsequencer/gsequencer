@@ -590,8 +590,9 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
   short *template_buffer, *audio_signal_buffer;
   guint template_length, mod_template_length;
+  guint remaining_length;
   gboolean mod_template_even;
-  guint i, j, j_offcut, j_offcut_odd;
+  guint i, j, j_offcut, j_offcut_odd, k;
 
   devout = AGS_DEVOUT(audio_signal->devout);
 
@@ -607,7 +608,9 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   mod_template_length_odd = devout->buffer_size - mod_template_length;
   mod_template_even = TRUE;
   j_offcut = 0;
+  k = 1;
 
+  /* write buffers */
   for(i = 0; i < length - devout->buffer_size; i += devout->buffer_size){
     audio_signal_buffer = (short *) malloc(devout->buffer_size * sizeof(short));
     audio_signal_stream = g_list_prepend(audio_signal_stream,
@@ -631,11 +634,15 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
       ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
 					     &(template_buffer[j_offcut]), 1, j_offcut_odd);
 
-      if(i + j_offcut + devout->buffer_size < template_length){
+      if((guint) floor((double) (i + j_offcut_odd + devout->buffer_size) / (double) template_length) < k){
 	template_stream = template_stream->next;
       }else{
 	template_stream = template->stream_beginning;
+	k++;
       }
+      
+      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j_offcut_odd]), 1,
+					     template_buffer, 1, j_offcut);
 
       if(mod_template_even){
 	j_offcut = mod_template_length;
@@ -648,12 +655,65 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 	
 	template_mod_even = TRUE;
       }
+    }
+  }
+  
+  /* write remaining buffer */
+  remaining_length = length - (i * devout->buffer_size);
+
+  if(template_length < devout->buffer_size){
+    guint remaining_length_odd, remaining_length_overflow;
+
+    if(remaining_length < template_length - j_offcut){
+      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
+					     &(template_buffer[j_offcut]), 1, remaining_length);
+    }else{
+      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
+					     &(template_buffer[j_offcut]), 1, template_length - j_offcut);
+    
+      if(remaining_length >= template_length){
+	for(j = template_length - j_offcut; j < remaining_length - template_length; j += template_length){
+	  ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+						 template_buffer, 1, template_length);
+	}
+	
+	j_offcut = remaining_length - j;
+	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+					       template_buffer, 1, j_offcut);
+      }else{
+	j_offcut = remaining_length + j_offcut - template_length;
+	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
+					       template_buffer, 1, j_offcut);
+      }
+    }
+  }else{
+    guint remaining_length_odd, remaining_length_overflow;
+
+    remaining_length_overflow = j_offcut + remaining_length;
+
+    if(remaining_length_overflow > devout->buffer_size){
+      remaining_length = j_offcut_odd;
+      remaining_length_odd = devout->buffer_size - remaining_length_overflow;
+    }else{
+      remaining_length_odd = 0;
+    }
+
+    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
+					   &(template_buffer[j_offcut]), 1, remaining_length);
+
+    if(remaining_length_odd != 0){
+      if((i + j_offcut + devout->buffer_size) % template_length < template_length){
+	template_stream = template_stream->next;
+      }else{
+	template_stream = template->stream_beginning;
+      }
       
       ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j_offcut_odd]), 1,
 					     template_buffer, 1, j_offcut);
     }
   }
-
+  
+  /* reverse list */
   audio_signal_stream_end = audio_signal_stream;
   audio_signal_stream = g_list_reverse(audio_signal_stream);
 
