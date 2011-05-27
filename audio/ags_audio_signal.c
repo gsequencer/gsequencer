@@ -589,7 +589,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   AgsDevout *devout;
   GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
   short *template_buffer, *audio_signal_buffer;
-  guint template_length, mod_template_length;
+  guint template_length, mod_template_length, mod_template_length_odd;
   guint remaining_length;
   gboolean mod_template_even;
   guint i, j, j_offcut, j_offcut_odd, k;
@@ -648,12 +648,12 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 	j_offcut = mod_template_length;
 	j_offcut_odd = mod_template_length_odd;
 	
-	template_mod_even = FALSE;
+	mod_template_even = FALSE;
       }else{
 	j_offcut = mod_template_length_odd;
 	j_offcut_odd = mod_template_length;
 	
-	template_mod_even = TRUE;
+	mod_template_even = TRUE;
       }
     }
   }
@@ -718,12 +718,11 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   audio_signal_stream = g_list_reverse(audio_signal_stream);
 
   if(audio_signal->stream_beginning != NULL){
-    ags_list_free_and_free_link(audio_signal_stream_beginning);
+    ags_list_free_and_free_link(audio_signal->stream_beginning);
   }
 
   audio_signal->stream_beginning = audio_signal_stream;
-  //TODO:JK: perhaps you want to handle stream_current properly
-  audio_signal->stream_current = audio_signal_stream;
+  //  audio_signal->stream_current = audio_signal_stream;
   audio_signal->stream_end = audio_signal_stream_end;
 }
 
