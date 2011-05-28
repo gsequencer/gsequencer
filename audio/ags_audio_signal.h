@@ -90,6 +90,7 @@ void ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels,
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);
 
+//TODO:JK: rename these functions name it rather find than get
 AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);
 GList* ags_audio_signal_get_stream_current(GList *audio_signal,
 					   GObject *recall_id);

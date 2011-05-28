@@ -23,6 +23,7 @@
 #include <ags/audio/ags_devout.h>
 
 #include <stdlib.h>
+#include <math.h>
 #include <string.h>
 
 void ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal_class);
@@ -589,6 +590,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   AgsDevout *devout;
   GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
   short *template_buffer, *audio_signal_buffer;
+  guint buffer_size;
   guint template_length, mod_template_length, mod_template_length_odd;
   guint remaining_length;
   gboolean mod_template_even;
@@ -603,38 +605,41 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
     return;
   }
 
+  buffer_size = devout->buffer_size;
+
   template_length = template->length;
-  mod_template_length = template_length % devout->buffer_size;
-  mod_template_length_odd = devout->buffer_size - mod_template_length;
+  mod_template_length = template_length % buffer_size;
+  mod_template_length_odd = buffer_size - mod_template_length;
   mod_template_even = TRUE;
+
   j_offcut = 0;
   k = 1;
 
   /* write buffers */
-  for(i = 0; i < length - devout->buffer_size; i += devout->buffer_size){
-    audio_signal_buffer = (short *) malloc(devout->buffer_size * sizeof(short));
+  for(i = 0; i < length - buffer_size; i += buffer_size){
+    audio_signal_buffer = (short *) malloc(buffer_size * sizeof(short));
     audio_signal_stream = g_list_prepend(audio_signal_stream,
 					 audio_signal_buffer);
 
     template_buffer = (short *) template_stream->data;
 
-    if(template_length < devout->buffer_size){
+    if(template_length < buffer_size){
       ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
 					     &(template_buffer[j_offcut]), 1, template_length - j_offcut);
 
-      for(j = template_length - j_offcut; j < devout->buffer_size - template_length; j += template_length){
+      for(j = template_length - j_offcut; j < buffer_size - template_length; j += template_length){
 	ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					       template_buffer, 1, template_length);
       }
 
-      j_offcut = devout->buffer_size - j;
+      j_offcut = buffer_size - j;
       ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					     template_buffer, 1, j_offcut);
     }else{
       ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,
 					     &(template_buffer[j_offcut]), 1, j_offcut_odd);
 
-      if((guint) floor((double) (i + j_offcut_odd + devout->buffer_size) / (double) template_length) < k){
+      if((guint) floor((double) (i + j_offcut_odd + buffer_size) / (double) template_length) < k){
 	template_stream = template_stream->next;
       }else{
 	template_stream = template->stream_beginning;
@@ -659,9 +664,9 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   }
   
   /* write remaining buffer */
-  remaining_length = length - (i * devout->buffer_size);
+  remaining_length = length - (i * buffer_size);
 
-  if(template_length < devout->buffer_size){
+  if(template_length < buffer_size){
     guint remaining_length_odd, remaining_length_overflow;
 
     if(remaining_length < template_length - j_offcut){
@@ -691,9 +696,9 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 
     remaining_length_overflow = j_offcut + remaining_length;
 
-    if(remaining_length_overflow > devout->buffer_size){
+    if(remaining_length_overflow > buffer_size){
       remaining_length = j_offcut_odd;
-      remaining_length_odd = devout->buffer_size - remaining_length_overflow;
+      remaining_length_odd = buffer_size - remaining_length_overflow;
     }else{
       remaining_length_odd = 0;
     }
@@ -702,7 +707,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 					   &(template_buffer[j_offcut]), 1, remaining_length);
 
     if(remaining_length_odd != 0){
-      if((i + j_offcut + devout->buffer_size) % template_length < template_length){
+      if((i + j_offcut + buffer_size) % template_length < template_length){
 	template_stream = template_stream->next;
       }else{
 	template_stream = template->stream_beginning;
@@ -755,13 +760,21 @@ ags_audio_signal_new_with_length(GObject *devout,
 				 GObject *recall_id,
 				 guint length)
 {
-  AgsAudioSignal *audio_signal;
+  AgsAudioSignal *audio_signal, *template;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
 						 "devout\0", devout,
 						 "recycling\0", recycling,
 						 "recall-id\0", recall_id,
 						 NULL);
+
+  template = ags_audio_signal_get_template(AGS_RECYCLING(recycling)->audio_signal);
+
+  if(template != NULL){
+    ags_audio_signal_tile(audio_signal,
+			  template,
+			  length);
+  }
 
   return(audio_signal);
 }
