@@ -1689,9 +1689,13 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     audio = AGS_AUDIO(channel->audio);
     
-    run_order = ags_run_order_find_group_id(audio->run_order,
-					    recall_id->child_group_id);
-    
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      run_order = ags_run_order_find_group_id(audio->run_order,
+					      recall_id->child_group_id);
+    }else{
+      run_order = ags_run_order_find_group_id(audio->run_order,
+					      group_id);
+    }
 
     while(list_recall != NULL){
       recall = AGS_RECALL(list_recall->data);
