@@ -204,7 +204,8 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       matrix->selected = (GtkToggleButton*) widget;
       ags_matrix_draw_matrix(matrix);
 
-      matrix->copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
+      matrix->play_copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
+      matrix->recall_copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
     }else{
       toggle = matrix->selected;
       matrix->selected = NULL;

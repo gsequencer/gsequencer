@@ -25,6 +25,10 @@
 
 #include <ags/X/ags_machine.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
@@ -44,8 +48,20 @@ struct _AgsMatrix
 
   guint flags;
 
-  AgsCopyPatternAudio *copy_pattern_audio;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  /* these recall will be moved to a mapping list in AgsAudio in a future release */
+  AgsDelayAudio *play_delay_audio;
+  AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsCopyPatternAudio *play_copy_pattern_audio;
+  AgsCopyPatternAudioRun *play_copy_pattern_audio_run;
+
+  AgsDelayAudio *recall_delay_audio;
+  AgsDelayAudioRun *recall_delay_audio_run;
+  AgsCountBeatsAudio *recall_count_beats_audio;
+  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
+  AgsCopyPatternAudio *recall_copy_pattern_audio;
+  AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
 
   GtkTable *table;
 

@@ -2172,7 +2172,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* resolve audio */
       ags_channel_recursive_play_init_resolve_audio_recall(audio,
 							   output->audio_channel,
-							   group_id);
+							   next_group_id);
       
 
       /* call function which resolves input */
