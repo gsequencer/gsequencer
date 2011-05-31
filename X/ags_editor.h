@@ -131,6 +131,9 @@ struct _AgsEditor
     guint stop_x;
   }control_unit;
 
+  guint selected_x;
+  guint selected_y;
+  
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
 };

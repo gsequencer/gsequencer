@@ -74,6 +74,12 @@ ags_toolbar_init(AgsToolbar *toolbar)
   GtkMenu *menu;
   GtkMenuItem *item;
 
+  toolbar->position = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+						       "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_LARGE_TOOLBAR),
+						       "relief\0", GTK_RELIEF_NONE,
+						       NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->position, "position cursor\0", NULL);
+
   toolbar->edit = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 						   "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_LARGE_TOOLBAR),
 						   "relief\0", GTK_RELIEF_NONE,
@@ -156,6 +162,9 @@ ags_toolbar_connect(AgsToolbar *toolbar)
 
   g_signal_connect((GObject *) toolbar, "show\0",
 		   G_CALLBACK(ags_toolbar_show_callback), (gpointer) toolbar);
+
+  g_signal_connect_after((GObject *) toolbar->position, "toggled\0",
+			 G_CALLBACK(ags_toolbar_position_callback), (gpointer) toolbar);
 
   g_signal_connect_after((GObject *) toolbar->edit, "toggled\0",
 			 G_CALLBACK(ags_toolbar_edit_callback), (gpointer) toolbar);

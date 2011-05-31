@@ -182,6 +182,10 @@ ags_editor_init(AgsEditor *editor)
   editor->control_unit.nth_x = 0;
   editor->control_unit.stop_x = 0;
 
+  /* offset for pasting from clipboard */
+  editor->selected_x = 0;
+  editor->selected_y = 0;
+
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   editor->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);

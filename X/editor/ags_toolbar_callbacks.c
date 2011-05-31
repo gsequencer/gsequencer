@@ -40,6 +40,22 @@ ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar)
 }
 
 void
+ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
+{
+  if(toggle_button == toolbar->selected_edit_mode){
+    if(!gtk_toggle_button_get_active(toggle_button)){
+      gtk_toggle_button_set_active(toggle_button, TRUE);
+    }
+  }else{
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = toolbar->selected_edit_mode;
+    toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+  }
+}
+
+void
 ags_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
 {
   if(toggle_button == toolbar->selected_edit_mode){
