@@ -516,10 +516,10 @@ ags_editor_draw_position(AgsEditor *editor, cairo_t *cr)
   size_height = GTK_WIDGET(editor->drawing_area)->allocation.height;
 
   x_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(editor->hscrollbar));
-  x_offset[1] = x_offset[0] + size_width;
+  x_offset[1] = x_offset[0] + (guint) size_width;
 
   y_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(editor->vscrollbar));
-  y_offset[1] = y_offset[0] + size_height;
+  y_offset[1] = y_offset[0] + (guint) size_height;
 
   /* calculate horizontally values */
   if(selected_x < x_offset[0]){
@@ -545,7 +545,7 @@ ags_editor_draw_position(AgsEditor *editor, cairo_t *cr)
   if(selected_y < y_offset[0]){
     if(selected_y + editor->control_height > y_offset[0]){
       y = 0;
-      width = selected_y + editor->control_height - y_offset[0];
+      height = selected_y + editor->control_height - y_offset[0];
     }else{
       return;
     }
@@ -555,13 +555,11 @@ ags_editor_draw_position(AgsEditor *editor, cairo_t *cr)
     y = selected_y - y_offset[0];
 
     if(selected_y + editor->control_height < y_offset[1]){
-      width = editor->control_height;
+      height = editor->control_height;
     }else{
-      width = y_offset[1] - (selected_y + editor->control_height);
+      height = y_offset[1] - (selected_y + editor->control_height);
     }
   }
-
-  printf("");
 
   /* draw */
   cairo_set_source_rgba(cr, 0.25, 0.5, 1.0, 0.5);
