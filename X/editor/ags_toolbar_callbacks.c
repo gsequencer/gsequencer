@@ -42,16 +42,49 @@ ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar)
 void
 ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
 {
+  AgsEditor *editor;
+
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR);
+
   if(toggle_button == toolbar->selected_edit_mode){
+
     if(!gtk_toggle_button_get_active(toggle_button)){
+      cairo_t *cr;
+      
       gtk_toggle_button_set_active(toggle_button, TRUE);
+      
+      /* refresh editor */
+      cr = gdk_cairo_create(GTK_WIDGET(editor->drawing_area)->window);
+    
+      ags_editor_draw_position(editor, cr);
     }
-  }else{
+  }else if(gtk_toggle_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
+    GdkRectangle *rectangle;
+    gint width, height;
     
     old_selected_edit_mode = toolbar->selected_edit_mode;
     toolbar->selected_edit_mode = toggle_button;
     gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    
+    /* refresh editor */
+    gtk_widget_get_size_request(GTK_WIDGET(editor->drawing_area),
+				&width,
+				&height);
+    
+    rectangle = g_new(GdkRectangle, 1);
+    rectangle->x = 0;
+    rectangle->y = 0;
+    rectangle->width = width;
+    rectangle->height = height;
+    
+    gdk_window_invalidate_rect(GTK_WIDGET(editor->drawing_area)->window,
+			       rectangle,
+			       TRUE);
+    gdk_window_process_updates(GTK_WIDGET(editor->drawing_area)->window,
+			       TRUE);
+    
+    g_free(rectangle);
   }
 }
 
@@ -62,7 +95,7 @@ ags_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
     if(!gtk_toggle_button_get_active(toggle_button)){
       gtk_toggle_button_set_active(toggle_button, TRUE);
     }
-  }else{
+  }else if(gtk_toggle_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = toolbar->selected_edit_mode;
@@ -78,7 +111,7 @@ ags_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
     if(!gtk_toggle_button_get_active(toggle_button)){
       gtk_toggle_button_set_active(toggle_button, TRUE);
     }
-  }else{
+  }else if(gtk_toggle_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = toolbar->selected_edit_mode;
@@ -94,7 +127,7 @@ ags_toolbar_select_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
     if(!gtk_toggle_button_get_active(toggle_button)){
       gtk_toggle_button_set_active(toggle_button, TRUE);
     }
-  }else{
+  }else if(gtk_toggle_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = toolbar->selected_edit_mode;

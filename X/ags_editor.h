@@ -155,6 +155,7 @@ void ags_editor_reset_vertically(AgsEditor *editor, guint flags);
 void ags_editor_reset_horizontally(AgsEditor *editor, guint flags);
 
 void ags_editor_draw_segment(AgsEditor *editor, cairo_t *cr);
+void ags_editor_draw_position(AgsEditor *editor, cairo_t *cr);
 void ags_editor_draw_notation(AgsEditor *editor, cairo_t *cr);
 
 AgsEditor* ags_editor_new();

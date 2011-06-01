@@ -502,6 +502,74 @@ ags_editor_draw_segment(AgsEditor *editor, cairo_t *cr)
 }
 
 void
+ags_editor_draw_position(AgsEditor *editor, cairo_t *cr)
+{
+  guint selected_x, selected_y;
+  guint x_offset[2], y_offset[2];
+  guint x, y, width, height;
+  gint size_width, size_height;
+  
+  selected_x = editor->selected_x * editor->control_unit.control_width;
+  selected_y = editor->selected_y * editor->control_height;
+
+  size_width = GTK_WIDGET(editor->drawing_area)->allocation.width;
+  size_height = GTK_WIDGET(editor->drawing_area)->allocation.height;
+
+  x_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(editor->hscrollbar));
+  x_offset[1] = x_offset[0] + size_width;
+
+  y_offset[0] = (guint) gtk_range_get_value(GTK_RANGE(editor->vscrollbar));
+  y_offset[1] = y_offset[0] + size_height;
+
+  /* calculate horizontally values */
+  if(selected_x < x_offset[0]){
+    if(selected_x + editor->control_current.control_width > x_offset[0]){
+      x = 0;
+      width = selected_x + editor->control_current.control_width - x_offset[0];
+    }else{
+      return;
+    }
+  }else if(selected_x > x_offset[1]){
+    return;
+  }else{
+    x = selected_x - x_offset[0];
+
+    if(selected_x + editor->control_current.control_width < x_offset[1]){
+      width = editor->control_current.control_width;
+    }else{
+      width = x_offset[1] - (selected_x + editor->control_current.control_width);
+    }
+  }
+
+  /* calculate vertically values */
+  if(selected_y < y_offset[0]){
+    if(selected_y + editor->control_height > y_offset[0]){
+      y = 0;
+      width = selected_y + editor->control_height - y_offset[0];
+    }else{
+      return;
+    }
+  }else if(selected_y > y_offset[1]){
+    return;
+  }else{
+    y = selected_y - y_offset[0];
+
+    if(selected_y + editor->control_height < y_offset[1]){
+      width = editor->control_height;
+    }else{
+      width = y_offset[1] - (selected_y + editor->control_height);
+    }
+  }
+
+  printf("");
+
+  /* draw */
+  cairo_set_source_rgba(cr, 0.25, 0.5, 1.0, 0.5);
+  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+  cairo_fill(cr);
+}
+
+void
 ags_editor_draw_notation(AgsEditor *editor, cairo_t *cr)
 {
   AgsMachine *machine;
