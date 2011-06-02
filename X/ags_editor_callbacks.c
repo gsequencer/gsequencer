@@ -132,6 +132,10 @@ ags_editor_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, A
 	ags_editor_draw_notation(editor, cr);
       }
 
+      if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+	ags_editor_draw_position(editor, cr);
+      }
+
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
@@ -199,7 +203,9 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
 
     toolbar = editor->toolbar;
 
-    if(toolbar->selected_edit_mode == toolbar->edit){
+    if(toolbar->selected_edit_mode == toolbar->position){
+      editor->flags |= AGS_EDITOR_POSITION_CURSOR;
+    }else if(toolbar->selected_edit_mode == toolbar->edit){
       editor->flags |= AGS_EDITOR_ADDING_NOTE;
     }else if(toolbar->selected_edit_mode == toolbar->clear){
       editor->flags |= AGS_EDITOR_DELETING_NOTE;
@@ -214,7 +220,8 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
     editor->control.x0 = (guint) event->x;
     editor->control.y0 = (guint) event->y;
 
-    if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+    if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0 ||
+       (AGS_EDITOR_POSITION_CURSOR & (editor->flags)) != 0){
       tact = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
       
       if(AGS_IS_PANEL(machine)){
@@ -445,7 +452,25 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
 
-    if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
+    if((AGS_EDITOR_POSITION_CURSOR & (editor->flags)) != 0){
+      editor->flags &= (~AGS_EDITOR_POSITION_CURSOR);
+
+      ags_editor_draw_segment(editor, cr);
+      ags_editor_draw_notation(editor, cr);
+
+      editor->selected_x = editor->control.note->x[0];
+      editor->selected_y = editor->control.note->y;
+
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_editor_draw_position(editor, cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_editor_draw_position(editor, cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
+	ags_editor_draw_position(editor, cr);
+      }
+    }else if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
       editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
 
       ags_editor_draw_segment(editor, cr);
@@ -689,6 +714,10 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
       ags_editor_drawing_area_motion_notify_event_draw_selection(cr);
     }
 
+    if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+      ags_editor_draw_position(editor, cr);
+    }
+    
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
   }

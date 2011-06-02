@@ -335,6 +335,10 @@ ags_editor_reset_vertically(AgsEditor *editor, guint flags)
     ags_editor_draw_segment(editor, cr);
     ags_editor_draw_notation(editor, cr);
 
+    if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+      ags_editor_draw_position(editor, cr);
+    }
+
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
   }
@@ -345,7 +349,6 @@ ags_editor_reset_horizontally(AgsEditor *editor, guint flags)
 {
   if(editor->selected != NULL){
     cairo_t *cr;
-
     gdouble value;
     double tact_factor, zoom_factor;
     double tact;
@@ -432,6 +435,10 @@ ags_editor_reset_horizontally(AgsEditor *editor, guint flags)
 
     ags_editor_draw_segment(editor, cr);
     ags_editor_draw_notation(editor, cr);
+
+    if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+      ags_editor_draw_position(editor, cr);
+    }
 
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
