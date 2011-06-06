@@ -205,6 +205,8 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
   xmlDocPtr clipboard;
   xmlNodePtr audio_node, notation_node;
   gchar *buffer;
+  guint position_x, position_y;
+  gboolean paste_from_position;
   void ags_toolbar_paste_callback_read_notation(){
     xmlXPathContextPtr xpathCtxt;
     xmlXPathObjectPtr xpathObj;
@@ -224,10 +226,17 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
       notation_list = machine->audio->notation;
 
       for(i = 0; i < size && notation_list != NULL; i++){
-	ags_notation_insert_from_clipboard(AGS_NOTATION(notation_list->data),
-					   nodes->nodeTab[i],
-					   FALSE, 0,
-					   FALSE, 0);
+	if(paste_from_position){
+	  ags_notation_insert_from_clipboard(AGS_NOTATION(notation_list->data),
+					     nodes->nodeTab[i],
+					     TRUE, position_x,
+					     TRUE, position_y);
+	}else{
+	  ags_notation_insert_from_clipboard(AGS_NOTATION(notation_list->data),
+					     nodes->nodeTab[i],
+					     FALSE, 0,
+					     FALSE, 0);
+	}
 
 	notation_list = notation_list->next;
       }
@@ -249,7 +258,17 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
     
     if(buffer == NULL)
       return;
-    
+
+    /* get position */
+    if(toolbar->selected_edit_mode == toolbar->position){
+      paste_from_position = TRUE;
+
+      position_x = editor->selected_x;
+      position_y = editor->selected_y;
+    }else{
+      paste_from_position = FALSE;
+    }
+
     /* get xml tree */
     clipboard = xmlReadMemory(buffer, strlen(buffer),
 			      NULL, "UTF-8\0",
