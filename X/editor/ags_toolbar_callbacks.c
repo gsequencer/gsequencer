@@ -265,6 +265,8 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
 
       position_x = editor->selected_x;
       position_y = editor->selected_y;
+
+      printf("pasting at position: [%u,%u]\n\0", position_x, position_y);
     }else{
       paste_from_position = FALSE;
     }

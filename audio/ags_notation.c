@@ -579,7 +579,7 @@ ags_notation_copy_selection(AgsNotation *notation)
 
   if(selection != NULL){
     x_boundary = AGS_NOTE(selection->data)->x[0];
-    y_boundary = ~0;
+    y_boundary = G_MAXUINT;
   }else{
     x_boundary = 0;
     y_boundary = 0;
@@ -593,7 +593,7 @@ ags_notation_copy_selection(AgsNotation *notation)
     xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", note->x[1]));
     xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", note->y));
 
-    if(y_boundary < note->y)
+    if(y_boundary > note->y)
       y_boundary = note->y;
 
     selection = selection->next;
@@ -682,10 +682,10 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 	if(x_boundary_val < x_offset){
 	  base_x_difference = x_offset - x_boundary_val;
-	  subtract_x = TRUE;
+	  subtract_x = FALSE;
 	}else{
 	  base_x_difference = x_boundary_val - x_offset;
-	  subtract_x = FALSE;
+	  subtract_x = TRUE;
 	}
       }else{
       dont_reset_x_offset:
@@ -708,11 +708,11 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	}
 
 	if(y_boundary_val < y_offset){
-	  base_x_difference = y_offset - y_boundary_val;
-	  subtract_y = TRUE;
+	  base_y_difference = y_offset - y_boundary_val;
+	  subtract_y = FALSE;
 	}else{
 	  base_y_difference = y_boundary_val - y_offset;
-	  subtract_y = FALSE;
+	  subtract_y = TRUE;
 	}
       }else{
       dont_reset_y_offset:
@@ -826,6 +826,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	note->x[1] = x1_val;
 
 	note->y = y_val;
+
+	printf("adding note at: [%u,%u|%u]\n\0", x0_val, x1_val, y_val);
 
 	ags_notation_add_note(notation,
 			      note,
