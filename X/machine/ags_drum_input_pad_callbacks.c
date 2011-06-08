@@ -389,6 +389,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
       while(channel != next_pad){
 	channel->devout_play->flags |= AGS_DEVOUT_PLAY_PAD;
+	channel->devout_play->group_id = group_id;
 
 	/* append channel for playback */
 	append_channel = ags_append_channel_new(devout,

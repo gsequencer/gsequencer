@@ -1728,6 +1728,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	AgsRecall *copy;
 
 	copy = ags_recall_duplicate(recall, recall_id);
+	printf("%s\n\0", G_OBJECT_TYPE_NAME(copy));
 
 	if(recall_id->parent_group_id == 0)
 	  channel->play = g_list_append(channel->play, copy);

@@ -145,6 +145,8 @@ ags_add_audio_signal_launch(AgsTask *task)
   
   ags_recycling_add_audio_signal(add_audio_signal->recycling,
 				 audio_signal);
+
+  printf("add audio signal - group_id: %u\n\0", add_audio_signal->recall_id->group_id);
 }
 
 AgsAddAudioSignal*

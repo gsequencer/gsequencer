@@ -665,6 +665,66 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
 }
 
 void
+ags_devout_append_tasks(AgsDevout *devout, GList *list)
+{
+  /* synchronize: don't access devout->append_task while reading it */
+  pthread_mutex_lock(&(devout->append_task_mutex));
+  while((AGS_DEVOUT_WAIT_APPEND_TASK_PENDING & (devout->flags)) != 0){
+    pthread_cond_wait(&(devout->append_task_wait_cond),
+		      &(devout->append_task_mutex));
+  }
+  
+  devout->flags |= AGS_DEVOUT_WAIT_APPEND_TASK;
+  
+  if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
+    while(list != NULL){
+      ags_task_launch(AGS_TASK(list->data));
+
+      list = list->next;
+    }
+
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+  }else{
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+
+    /* synchronize: don't allow to concat simultanously */
+    pthread_mutex_lock(&(devout->append_task_mutex));
+
+    while((AGS_DEVOUT_LOCK_APPEND_TASK & (devout->flags)) != 0){
+      pthread_cond_wait(&(devout->append_task_lock_cond),
+			&(devout->append_task_mutex));
+    }
+
+    /* lock other calls */
+    devout->flags |= AGS_DEVOUT_LOCK_APPEND_TASK;
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+
+    /* append */
+    devout->append_task = g_list_concat(devout->append_task, list);
+
+    /* create pending thread if necessary */
+    pthread_mutex_lock(&(devout->append_task_mutex));
+
+    if((AGS_DEVOUT_APPEND_TASK_PENDING_IS_WAITING & (devout->flags)) == 0){
+      devout->flags |= AGS_DEVOUT_APPEND_TASK_PENDING_IS_WAITING;
+      pthread_mutex_unlock(&(devout->append_task_mutex));
+
+      pthread_create(&devout->append_task_pending_thread, NULL, &ags_devout_append_task_pending_thread, devout);
+    }else{
+      pthread_mutex_unlock(&(devout->append_task_mutex));
+    }
+
+    /* wake up an other thread */
+    devout->flags &= (~AGS_DEVOUT_LOCK_APPEND_TASK);
+    pthread_cond_signal(&(devout->append_task_lock_cond));
+  }
+
+  /* wake up other thread */
+  devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
+  pthread_cond_signal(&(devout->append_task_wait_cond));
+}
+
+void
 ags_devout_play_recall(AgsDevout *devout)
 {
   AgsDevoutPlay *devout_play;
@@ -729,12 +789,6 @@ ags_devout_play_recall(AgsDevout *devout)
   }
 
   devout->flags &= (~AGS_DEVOUT_PLAYING_RECALL);
-}
-
-void
-ags_devout_append_tasks(AgsDevout *devout, GList *list)
-{
-  /* empty */
 }
 
 void
