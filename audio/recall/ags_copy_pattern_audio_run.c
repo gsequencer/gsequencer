@@ -157,6 +157,8 @@ ags_copy_pattern_audio_run_run_connectable_interface_init(AgsRunConnectableInter
 void
 ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
+  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_SEQUENCER;
+
   copy_pattern_audio_run->count_beats_audio_run = NULL;
 }
 

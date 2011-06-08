@@ -27,6 +27,8 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/task/ags_append_channel.h>
+#include <ags/audio/task/ags_add_audio_signal.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 
 #include <ags/audio/recall/ags_play_audio_file.h>
@@ -331,16 +333,22 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
   AgsDrum *drum;
   AgsDevout *devout;
   AgsChannel *channel;
-  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
 
   drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad, AGS_TYPE_DRUM);
   devout = AGS_DEVOUT(drum->machine.audio->devout);
 
   if(toggle_button->active){
+    AgsAppendChannel *append_channel;
+    AgsAddAudioSignal *add_audio_signal;
+    AgsRecycling *recycling;
+    AgsRecallID *recall_id;
+    GList *tasks;
     guint group_id, child_group_id;
 
     group_id = ags_recall_id_generate_group_id();
     child_group_id = ags_recall_id_generate_group_id();
+
+    tasks = NULL;
 
     if(drum_input_pad->pad.group->active){
       AgsChannel *next_pad;
@@ -368,7 +376,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	    channel->devout_play->group_id = group_id;
 
 	  ags_channel_recursive_play_init(channel, stage,
-					  arrange_group_id, duplicate_templates, resolve_dependencies,
+					  arrange_group_id, duplicate_templates, FALSE, FALSE, resolve_dependencies,
 					  group_id, child_group_id,
 					  0);
 	  
@@ -377,20 +385,35 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       }
 
       /* append to AgsDevout */
-      g_static_mutex_lock(&mutex);
-      drum_input_pad->play_ref += drum->machine.audio->audio_channels;
       channel = drum_input_pad->pad.channel;
 
       while(channel != next_pad){
-	channel->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
 	channel->devout_play->flags |= AGS_DEVOUT_PLAY_PAD;
-	devout->play_channel = g_list_append(devout->play_channel, (gpointer) channel->devout_play);
+
+	/* append channel for playback */
+	append_channel = ags_append_channel_new(devout,
+						channel->devout_play);
+	tasks = g_list_prepend(tasks, append_channel);
+
+	/* play an audio signal */
+	recycling = channel->first_recycling;
+
+	recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
+
+	while(recycling != channel->last_recycling->next){
+	  add_audio_signal = ags_add_audio_signal_new(recycling,
+						      devout,
+						      recall_id);
+	  tasks = g_list_prepend(tasks, add_audio_signal);
+
+	  recycling = recycling->next;
+	}
 
 	channel = channel->next;
       }
 
-      devout->play_channel_ref += drum->machine.audio->audio_channels;
-      g_static_mutex_unlock(&mutex);
+      tasks = g_list_reverse(tasks);
+      ags_devout_append_tasks(devout, tasks);
     }else{
       channel = ags_channel_nth(drum_input_pad->pad.channel,
 				gtk_option_menu_get_history(drum_input_pad->pad.option));
@@ -399,24 +422,40 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       channel->devout_play->group_id = group_id;
 
       ags_channel_recursive_play_init(channel, -1,
-				      TRUE, TRUE, TRUE,
+				      TRUE, TRUE, FALSE, FALSE, TRUE,
 				      group_id, child_group_id,
 				      0);
       
       /* append to AgsDevout */
-      g_static_mutex_lock(&mutex);
-      drum_input_pad->play_ref++;
-      channel->devout_play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE | AGS_DEVOUT_PLAY_PAD));
-      devout->play_channel = g_list_append(devout->play_channel, (gpointer) channel->devout_play);
-      devout->play_channel_ref++;
-      g_static_mutex_unlock(&mutex);
+      channel->devout_play->flags &= (~AGS_DEVOUT_PLAY_PAD);
+
+      append_channel = ags_append_channel_new(devout,
+					      channel->devout_play);
+      tasks = g_list_prepend(tasks, append_channel);
+
+      /* play an audio signal */
+      recycling = channel->first_recycling;
+      
+      recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
+      
+      while(recycling != channel->last_recycling->next){
+	add_audio_signal = ags_add_audio_signal_new(recycling,
+						    devout,
+						    recall_id);
+	tasks = g_list_prepend(tasks, add_audio_signal);
+	
+	recycling = recycling->next;
+      }
+
+      tasks = g_list_reverse(tasks);      
+      ags_devout_append_tasks(devout, tasks);
     }
 
     /* call run */
     if((AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) == 0)
       devout->flags |= AGS_DEVOUT_PLAY_CHANNEL;
 
-    AGS_DEVOUT_GET_CLASS(devout)->run(devout);
+    ags_devout_run(devout);
   }else{
     AgsCancelChannel *cancel_channel;
 

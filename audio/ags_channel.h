@@ -148,7 +148,7 @@ void ags_channel_recall_id_set(AgsChannel *output, guint group_id, gboolean ommi
 void ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboolean do_recall);
 void ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage);
 void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-				     gboolean arrange_group_id, gboolean duplicate_templates, gboolean resolve_dependencies,
+				     gboolean arrange_group_id, gboolean duplicate_templates, gboolean sequencer, gboolean notation, gboolean resolve_dependencies,
 				     guint group_id, guint child_group_id,
 				     guint audio_signal_level);
 

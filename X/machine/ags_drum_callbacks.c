@@ -440,7 +440,8 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     AgsAppendAudio *append_audio;
 
     /* do the init stuff here */
-    group_id = ags_audio_recursive_play_init(drum->machine.audio);
+    group_id = ags_audio_recursive_play_init(drum->machine.audio,
+					     TRUE, FALSE);
     drum->machine.audio->devout_play->group_id = group_id;
 
     /* create task */

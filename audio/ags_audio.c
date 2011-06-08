@@ -1547,7 +1547,8 @@ ags_audio_play(AgsAudio *audio, guint group_id,
  * AgsRecall related
  */
 guint
-ags_audio_recursive_play_init(AgsAudio *audio)
+ags_audio_recursive_play_init(AgsAudio *audio,
+			      gboolean sequencer, gboolean notation)
 {
   AgsChannel *channel;
   guint group_id, child_group_id;
@@ -1572,7 +1573,7 @@ ags_audio_recursive_play_init(AgsAudio *audio)
 
     while(channel != NULL){
       ags_channel_recursive_play_init(channel, stage,
-				      arrange_group_id, duplicate_templates, resolve_dependencies,
+				      arrange_group_id, duplicate_templates, sequencer, notation, resolve_dependencies,
 				      group_id, child_group_id,
 				      0);
 

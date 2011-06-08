@@ -122,6 +122,8 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 void
 ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 {
+  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_SEQUENCER;
+
   copy_pattern_audio->devout = NULL;
 
   copy_pattern_audio->i = 0;

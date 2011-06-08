@@ -142,8 +142,8 @@ ags_drum_input_pad_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(drum_input_pad->open), "clicked\0",
 		   G_CALLBACK(ags_drum_input_pad_open_callback), (gpointer) drum_input_pad);
 
-  g_signal_connect(G_OBJECT(drum_input_pad->play), "toggled\0",
-		   G_CALLBACK(ags_drum_input_pad_play_callback), (gpointer) drum_input_pad);
+  g_signal_connect_after(G_OBJECT(drum_input_pad->play), "toggled\0",
+			 G_CALLBACK(ags_drum_input_pad_play_callback), (gpointer) drum_input_pad);
 
   g_signal_connect(G_OBJECT(AGS_PAD(drum_input_pad)->option), "changed\0",
 		   G_CALLBACK(ags_drum_input_pad_option_callback), (gpointer) drum_input_pad);

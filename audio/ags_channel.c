@@ -1448,7 +1448,7 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
 
 void
 ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-				gboolean arrange_group_id, gboolean duplicate_templates, gboolean resolve_dependencies,
+				gboolean arrange_group_id, gboolean duplicate_templates, gboolean sequencer, gboolean notation, gboolean resolve_dependencies,
 				guint group_id, guint child_group_id,
 				guint audio_signal_level)
 {
@@ -1716,7 +1716,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* ignore initialized or non-runnable AgsRecalls */
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
 	 AGS_IS_RECALL_CHANNEL(recall) ||
-	 !matches_reality){
+	 !matches_reality ||
+	 (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
+	 (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))){
 	list_recall = list_recall->next;
 	continue;
       }
@@ -1777,7 +1779,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
 	 AGS_IS_RECALL_AUDIO(recall) ||
-	 !matches_reality){
+	 !matches_reality ||
+	 (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
+	 (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))){
 	list_recall = list_recall->next;
 	continue;
       }
@@ -2273,7 +2277,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	  ags_recall_run_init_post(recall);
 	    
 	  ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
-	  
 	  //	  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
 	}
       }
@@ -2516,24 +2519,42 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							     group_id);
 
 	/* go to the root */
-	ags_channel_recursive_play_init_resolve_up_output(channel,
-							  group_id);
+	ags_channel_recursive_play_init_resolve_up_input(channel->link,
+							 group_id);
       }
     }else{
+      AgsChannel *output;
+
       /* start from the leafs */
       if(channel->link != NULL){
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	  ags_channel_recursive_play_init_resolve_down(channel->link,
 						       child_group_id);
 	}else{
-	  ags_channel_recursive_play_init_resolve_down_input(channel->link,
-							     group_id);
+	  ags_channel_recursive_play_init_resolve_down(channel->link,
+						       group_id);
 	}
       }
 
+      ags_channel_recursive_play_init_resolve_channel_recall(channel,
+							     group_id);
+
+      ags_channel_recursive_play_init_resolve_audio_recall(audio,
+							   channel->audio_channel,
+							   group_id);
+      
+
       /* go to the root */
-      ags_channel_recursive_play_init_resolve_up_input(channel,
-						       group_id);
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+	output = ags_channel_nth(audio->output,
+				 channel->audio_channel);
+      }else{
+	output = ags_channel_nth(audio->output,
+				 channel->line);
+      }
+
+      ags_channel_recursive_play_init_resolve_up_output(output,
+							group_id);
     }
   }
 
