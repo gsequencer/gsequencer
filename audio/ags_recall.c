@@ -524,6 +524,8 @@ ags_recall_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  recall->flags |= AGS_RECALL_CONNECTED;
 }
 
 void
@@ -541,6 +543,8 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  recall->flags &= (~AGS_RECALL_CONNECTED);
 }
 
 
@@ -637,6 +641,14 @@ ags_recall_finalize(GObject *gobject)
   GList *list, *list_next;
 
   recall = AGS_RECALL(gobject);
+
+  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+    ags_connectable_disconnect(AGS_CONNECTABLE(recall));
+  }
+
+  if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0){
+    ags_run_connectable_disconnect(AGS_RUN_CONNECTABLE(recall));
+  }
 
   if(recall->name != NULL)
     g_free(recall->name);
@@ -830,7 +842,7 @@ ags_recall_run_post(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
-  recall->flags |= AGS_RECALL_DONE;
+  recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 }
 
 void
@@ -849,6 +861,7 @@ ags_recall_real_cancel(AgsRecall *recall)
 {
   GList *list;
 
+  /* call cancel for children */
   list = recall->children;
 
   while(list != NULL){
@@ -857,9 +870,7 @@ ags_recall_real_cancel(AgsRecall *recall)
     list = list->next;
   }
 
-  ags_run_connectable_disconnect(AGS_CONNECTABLE(recall));
-
-  recall->flags |= AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
+  ags_recall_done(AGS_RECALL(list->data));
 }
 
 void
@@ -931,9 +942,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   g_value_unset(&recall_container_value);
 
-  /* 
-   * TODO:JK: duplicate callbacks
-   */
+  //TODO:JK: duplicate callbacks
 
   return(copy);
 }

@@ -1448,7 +1448,7 @@ ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage)
 
 void
 ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-				gboolean arrange_group_id, gboolean duplicate_templates, gboolean sequencer, gboolean notation, gboolean resolve_dependencies,
+				gboolean arrange_group_id, gboolean duplicate_templates, gboolean playback, gboolean sequencer, gboolean notation, gboolean resolve_dependencies,
 				guint group_id, guint child_group_id,
 				guint audio_signal_level)
 {
@@ -1717,6 +1717,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
 	 AGS_IS_RECALL_CHANNEL(recall) ||
 	 !matches_reality ||
+	 (!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
 	 (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
 	 (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))){
 	list_recall = list_recall->next;

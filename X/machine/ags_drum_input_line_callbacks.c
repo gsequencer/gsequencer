@@ -28,7 +28,7 @@
 #include <ags/audio/ags_recall.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
@@ -47,7 +47,7 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 }
 
 void
-ags_drum_input_line_play_channel_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
   /*
   AgsDevout *devout;
@@ -85,18 +85,21 @@ ags_drum_input_line_play_channel_done(AgsRecall *recall, AgsDrumInputLine *drum_
 }
 
 void
-ags_drum_input_line_play_channel_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+ags_drum_input_line_play_channel_run_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
+  /* empty */
 }
 
 void
 ags_drum_input_line_play_volume_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
+  /* empty */
 }
 
 void
 ags_drum_input_line_play_volume_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
+  /* empty */
 }
 
 void
@@ -107,7 +110,6 @@ ags_drum_input_line_copy_pattern_done(AgsRecall *recall, AgsDrumInputLine *drum_
   fprintf(stdout, "ags_drum_input_line_copy_pattern_done\n\0");
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
-  recall->flags |= AGS_RECALL_HIDE;
   /*
   g_list_free(copy_pattern->destination);
   copy_pattern->destination = NULL;
@@ -117,14 +119,17 @@ ags_drum_input_line_copy_pattern_done(AgsRecall *recall, AgsDrumInputLine *drum_
 void
 ags_drum_input_line_copy_pattern_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
+  /* empty */
 }
 
 void
 ags_drum_input_line_recall_volume_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
+  /* empty */
 }
 
 void
 ags_drum_input_line_recall_volume_cancel(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
+  /* empty */
 }

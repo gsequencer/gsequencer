@@ -285,7 +285,7 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
   AgsLinkChannel *link_channel;
   AgsAudioFile *audio_file;
   AgsAudioSignal *audio_signal_source_old;
-  AgsPlayChannel *play_channel;
+  AgsPlayChannelRun *play_channel_run;
   GList *list;
   GSList *filenames;
   guint list_length;
@@ -441,7 +441,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     /* do the init stuff here */
     group_id = ags_audio_recursive_play_init(drum->machine.audio,
-					     TRUE, FALSE);
+					     FALSE, TRUE, FALSE);
     drum->machine.audio->devout_play->group_id = group_id;
 
     /* create task */

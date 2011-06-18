@@ -1649,7 +1649,7 @@ ags_file_write_play_pattern(AgsFile *file, AgsRecall *recall)
 void
 ags_file_write_play_channel(AgsFile *file, AgsRecall *recall)
 {
-  file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PLAY_CHANNEL), NULL);
+  file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PLAY_CHANNEL_RUN), NULL);
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 

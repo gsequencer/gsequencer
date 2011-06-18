@@ -26,7 +26,7 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_recall.h>
 
-#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
 
 #include <ags/X/ags_window.h>
 
@@ -176,7 +176,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 
   if(audio_channels_old < audio_channels){
     AgsChannel *input, *output;
-    AgsPlayChannel *play_channel;
+    AgsPlayChannelRun *play_channel_run;
     GtkHBox *hbox;
     guint i;
 
@@ -184,15 +184,15 @@ ags_panel_set_audio_channels(AgsAudio *audio,
     output = ags_channel_nth(audio->output, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
 
     for(i = audio_channels_old; i < audio_channels; i++){
-      /* AgsPlayChannel */
-      play_channel = ags_play_channel_new(input,
-					  AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
-					  i);
+      /* AgsPlayChannelRun */
+      play_channel_run = ags_play_channel_run_new(input,
+						  AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
+						  i);
 
-      play_channel->recall.flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(play_channel_run)->flags |= AGS_RECALL_TEMPLATE;
 
-      input->play = g_list_append(input->play, (gpointer) play_channel);
-      ags_connectable_connect(AGS_CONNECTABLE(play_channel));
+      input->play = g_list_append(input->play, (gpointer) play_channel_run);
+      ags_connectable_connect(AGS_CONNECTABLE(play_channel_run));
 
       /* GtkWidgets */
       hbox = (GtkHBox*) gtk_hbox_new(FALSE, 0);

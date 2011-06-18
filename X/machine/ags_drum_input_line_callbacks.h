@@ -43,10 +43,10 @@ void ags_drum_input_line_recall_volume_cancel(AgsRecall *recall,
 					      AgsDrumInputLine *drum_input_line);
 
 /* AgsRecall - play */
-void ags_drum_input_line_play_channel_done(AgsRecall *recall,
-					   AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_play_channel_cancel(AgsRecall *recall,
-					     AgsDrumInputLine *drum_input_line);
+void ags_drum_input_line_play_channel_run_done(AgsRecall *recall,
+					       AgsDrumInputLine *drum_input_line);
+void ags_drum_input_line_play_channel_run_cancel(AgsRecall *recall,
+						 AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_play_volume_done(AgsRecall *recall,
 					  AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_play_volume_cancel(AgsRecall *recall,

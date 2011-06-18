@@ -36,17 +36,19 @@ typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
 
 typedef enum{
-  AGS_RECALL_RUN_INITIALIZED    = 1,
-  AGS_RECALL_TEMPLATE           = 1 <<  1, // if a sequencer's AgsOutput->recall is called all AgsRecalls with this flag has to be duplicated
-  AGS_RECALL_SEQUENCER          = 1 <<  2,
-  AGS_RECALL_NOTATION           = 1 <<  3,
-  AGS_RECALL_DISTINCTS_REAL     = 1 <<  4,
-  AGS_RECALL_IS_REAL            = 1 <<  5,
-  AGS_RECALL_PERSISTENT         = 1 <<  6,
-  AGS_RECALL_DONE               = 1 <<  7,
-  AGS_RECALL_REMOVE             = 1 <<  8,
-  AGS_RECALL_HIDE               = 1 <<  9,
-  AGS_RECALL_PROPAGATE_DONE     = 1 << 10, // see ags_recall_real_remove
+  AGS_RECALL_CONNECTED          = 1,
+  AGS_RECALL_RUN_INITIALIZED    = 1 <<  1, //TODO:JK: rename to AGS_RECALL_RUN_CONNECTED
+  AGS_RECALL_TEMPLATE           = 1 <<  2, // if a sequencer's AgsOutput->recall is called all AgsRecalls with this flag has to be duplicated
+  AGS_RECALL_PLAYBACK           = 1 <<  3,
+  AGS_RECALL_SEQUENCER          = 1 <<  4,
+  AGS_RECALL_NOTATION           = 1 <<  5,
+  AGS_RECALL_DISTINCTS_REAL     = 1 <<  6,
+  AGS_RECALL_IS_REAL            = 1 <<  7,
+  AGS_RECALL_PERSISTENT         = 1 <<  8,
+  AGS_RECALL_DONE               = 1 <<  9,
+  AGS_RECALL_REMOVE             = 1 << 10,
+  AGS_RECALL_HIDE               = 1 << 11,
+  AGS_RECALL_PROPAGATE_DONE     = 1 << 12, // see ags_recall_real_remove
 }AgsRecallFlags;
 
 typedef enum{

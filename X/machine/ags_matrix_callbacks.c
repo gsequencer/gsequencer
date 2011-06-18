@@ -156,7 +156,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
     AgsAppendAudio *append_audio;
 
     /* do the init stuff here */
-    group_id = ags_audio_recursive_play_init(matrix->machine.audio, TRUE, FALSE);
+    group_id = ags_audio_recursive_play_init(matrix->machine.audio, FALSE, TRUE, FALSE);
     matrix->machine.audio->devout_play->group_id = group_id;
 
     /* create task */
