@@ -50,7 +50,7 @@ struct _AgsDrumInputPad
   GtkToggleButton *play;
   GtkToggleButton *edit;
 
-  guint play_ref;
+  //  guint play_ref;
 
   GtkFileChooserDialog *file_chooser;
 };

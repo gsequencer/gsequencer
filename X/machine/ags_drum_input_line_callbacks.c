@@ -26,6 +26,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
@@ -49,6 +50,21 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 void
 ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
 {
+  AgsChannel *channel;
+
+  fprintf(stdout, "ags_drum_input_line_play_channel_done\n\0");
+
+  channel = AGS_LINE(drum_input_line)->channel;
+
+  if(channel->devout_play->group_id == recall->recall_id->group_id &&
+     AGS_RECALL_CONTAINER(recall->container)->recall_channel_run == NULL){
+    AgsDrumInputPad *drum_input_pad;
+
+    drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
+
+    gtk_toggle_button_set_active(drum_input_pad->play, FALSE);
+  }
+
   /*
   AgsDevout *devout;
   AgsChannel *channel;
