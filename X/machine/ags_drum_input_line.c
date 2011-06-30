@@ -31,6 +31,7 @@
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_copy_channel.h>
 #include <ags/audio/recall/ags_stream_channel.h>
@@ -194,8 +195,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsLine *line;
   AgsAudio *audio;
   AgsChannel *source, *destination, *destination_start;
-  AgsRecallContainer *play_copy_pattern_container, *recall_copy_pattern_container;
+  AgsRecallContainer *play_copy_pattern_container, *recall_copy_pattern_container, *play_channel_container;
   AgsVolumeChannel *volume_channel;
+  AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   AgsCopyPatternAudio *play_copy_pattern_audio, *recall_copy_pattern_audio;
   AgsCopyPatternAudioRun *play_copy_pattern_audio_run, *recall_copy_pattern_audio_run;
@@ -256,10 +258,28 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
 
     /* AgsPlayChannel */
-    play_channel_run = ags_play_channel_run_new(source,
-						AGS_DEVOUT(audio->devout),
-						source->audio_channel);
-    
+    play_channel_container = ags_recall_container_new();
+    ags_channel_add_recall_container(source, (GObject *) play_channel_container, TRUE);
+
+    play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
+						   "recall_container\0", play_channel_container,
+						   "channel\0", source,
+						   "devout\0", AGS_DEVOUT(audio->devout),
+						   "audio_channel\0", source->audio_channel,
+						   NULL);
+
+    AGS_RECALL(play_channel)->flags |= AGS_RECALL_TEMPLATE;
+    ags_channel_add_recall(source, (GObject *) play_channel, TRUE);
+
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(play_channel));
+
+    /* AgsPlayChannelRun */
+    play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
+							  "recall_container\0", play_channel_container,
+							  "recall_channel\0", play_channel,
+							  NULL);
+
     AGS_RECALL(play_channel_run)->flags |= AGS_RECALL_TEMPLATE;
     ags_channel_add_recall(source, (GObject *) play_channel_run, TRUE);
 
