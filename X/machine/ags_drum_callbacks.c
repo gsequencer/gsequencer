@@ -285,7 +285,6 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
   AgsLinkChannel *link_channel;
   AgsAudioFile *audio_file;
   AgsAudioSignal *audio_signal_source_old;
-  AgsPlayChannelRun *play_channel_run;
   GList *list;
   GSList *filenames;
   guint list_length;

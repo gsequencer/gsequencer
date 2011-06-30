@@ -16,48 +16,42 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_PLAY_CHANNEL_RUN_H__
-#define __AGS_PLAY_CHANNEL_RUN_H__
+#ifndef __AGS_PLAY_CHANNEL_H__
+#define __AGS_PLAY_CHANNEL_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 
-#define AGS_TYPE_PLAY_CHANNEL_RUN                (ags_play_channel_run_get_type())
-#define AGS_PLAY_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL_RUN, AgsPlayChannelRun))
-#define AGS_PLAY_CHANNEL_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_CHANNEL_RUN, AgsPlayChannelRunClass))
-#define AGS_IS_PLAY_CHANNEL_RUN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_PLAY_CHANNEL_RUN))
-#define AGS_IS_PLAY_CHANNEL_RUN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PLAY_CHANNEL_RUN))
-#define AGS_PLAY_CHANNEL_RUN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PLAY_CHANNEL_RUN, AgsPlayChannelRunClass))
+#define AGS_TYPE_PLAY_CHANNEL                (ags_play_channel_get_type())
+#define AGS_PLAY_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL, AgsPlayChannel))
+#define AGS_PLAY_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_CHANNEL, AgsPlayChannelClass))
+#define AGS_IS_PLAY_CHANNEL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_PLAY_CHANNEL))
+#define AGS_IS_PLAY_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PLAY_CHANNEL))
+#define AGS_PLAY_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PLAY_CHANNEL, AgsPlayChannelClass))
 
-typedef struct _AgsPlayChannelRun AgsPlayChannelRun;
-typedef struct _AgsPlayChannelRunClass AgsPlayChannelRunClass;
+typedef struct _AgsPlayChannel AgsPlayChannel;
+typedef struct _AgsPlayChannelClass AgsPlayChannelClass;
 
-struct _AgsPlayChannelRun
+struct _AgsPlayChannel
 {
-  AgsRecallChannelRun recall_channel_run;
-
-  //  guint ref;
+  AgsRecallChannel recall_channel;
 
   AgsDevout *devout;
   guint audio_channel;
-
-  AgsChannel *source;
-  gulong source_recycling_changed_handler;
 };
 
-struct _AgsPlayChannelRunClass
+struct _AgsPlayChannelClass
 {
-  AgsRecallChannelRunClass recall_channel_run;
+  AgsRecallChannelClass recall_channel;
 };
 
-GType ags_play_channel_run_get_type();
+GType ags_play_channel_get_type();
 
-AgsPlayChannelRun* ags_play_channel_run_new(AgsChannel *source,
-					    AgsDevout *devout,
-					    guint audio_channel);
+AgsPlayChannel* ags_play_channel_new(AgsDevout *devout,
+				     guint audio_channel);
 
-#endif /*__AGS_PLAY_CHANNEL_RUN_H__*/
+#endif /*__AGS_PLAY_CHANNEL_H__*/

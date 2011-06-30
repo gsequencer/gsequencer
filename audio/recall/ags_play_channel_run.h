@@ -40,12 +40,6 @@ struct _AgsPlayChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
 
-  //  guint ref;
-
-  AgsDevout *devout;
-  guint audio_channel;
-
-  AgsChannel *source;
   gulong source_recycling_changed_handler;
 };
 
@@ -56,8 +50,6 @@ struct _AgsPlayChannelRunClass
 
 GType ags_play_channel_run_get_type();
 
-AgsPlayChannelRun* ags_play_channel_run_new(AgsChannel *source,
-					    AgsDevout *devout,
-					    guint audio_channel);
+AgsPlayChannelRun* ags_play_channel_run_new();
 
 #endif /*__AGS_PLAY_CHANNEL_RUN_H__*/

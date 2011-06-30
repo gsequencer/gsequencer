@@ -49,6 +49,7 @@
 
 #include <ags/audio/recall/ags_play_pattern.h>
 #include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
 
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
