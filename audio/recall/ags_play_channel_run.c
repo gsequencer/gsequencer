@@ -409,7 +409,7 @@ ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
 
   play_channel_run = AGS_PLAY_CHANNEL_RUN(recall);
 
-  template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run);
+  template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run);
 
   list = template->dependencies;
   group_id = recall->recall_id->group_id;

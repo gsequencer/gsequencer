@@ -429,9 +429,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   
   container = AGS_RECALL_CONTAINER(recall->container);
 
-  if(AGS_IS_COPY_PATTERN_CHANNEL_RUN(recall))
-    printf("yes\n\0");
-
   if(container != NULL){
     /* set recall audio run */
     recall_audio_run_list = container->recall_audio_run;

@@ -40,12 +40,6 @@ void ags_stream_channel_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_channel_run_finalize(GObject *gobject);
 
-void ags_stream_channel_run_run_init_pre(AgsRecall *recall, gpointer data);
-void ags_stream_channel_run_run_init_inter(AgsRecall *recall, gpointer data);
-
-void ags_stream_channel_run_done(AgsRecall *recall, gpointer data);
-void ags_stream_channel_run_cancel(AgsRecall *recall, gpointer data);
-void ags_stream_channel_run_remove(AgsRecall *recall, gpointer data);
 AgsRecall* ags_stream_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_stream_channel_run_map_stream_recycling(AgsStreamChannelRun *stream_channel_run);
@@ -322,7 +316,7 @@ ags_stream_channel_run_new()
   AgsStreamChannelRun *stream_channel_run;
 
   stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-							 NULL);
-
+							    NULL);
+  
   return(stream_channel_run);
 }

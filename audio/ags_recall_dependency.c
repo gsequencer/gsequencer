@@ -161,7 +161,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, guint grou
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){
     GList *recall_list;
 
-    recall_list = ags_recall_find_provider(recall_container->recall_audio_run,
+    recall_list = ags_recall_find_provider(recall_container->recall_channel,
 					   (GObject *) AGS_RECALL_CHANNEL(dependency)->channel);
 
     if(recall_list != NULL)
@@ -169,8 +169,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, guint grou
   }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
     GList *recall_list;
 
-    recall_list = ags_recall_find_provider_with_group_id(recall_container->recall_audio_run,
-							 (GObject *) AGS_RECALL_CHANNEL(dependency)->channel,
+    recall_list = ags_recall_find_provider_with_group_id(recall_container->recall_channel_run,
+							 (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->channel,
 							 group_id);
 
     if(recall_list != NULL)
