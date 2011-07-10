@@ -24,8 +24,6 @@
 
 #include <ags/audio/ags_recall_channel.h>
 
-#include <ags/audio/ags_channel.h>
-
 #define AGS_TYPE_STREAM_CHANNEL                (ags_stream_channel_get_type())
 #define AGS_STREAM_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STREAM_CHANNEL, AgsStreamChannel))
 #define AGS_STREAM_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_STREAM_CHANNEL, AgsStreamChannelClass))
@@ -38,19 +36,16 @@ typedef struct _AgsStreamChannelClass AgsStreamChannelClass;
 
 struct _AgsStreamChannel
 {
-  AgsRecall recall;
-
-  AgsChannel *channel;
-  gulong channel_recycling_changed_handler;
+  AgsRecallChannel recall_channel;
 };
 
 struct _AgsStreamChannelClass
 {
-  AgsRecallClass recall;
+  AgsRecallChannelClass recall_channel;
 };
 
 GType ags_stream_channel_get_type();
 
-AgsStreamChannel* ags_stream_channel_new(AgsChannel *channel);
+AgsStreamChannel* ags_stream_channel_new();
 
 #endif /*__AGS_STREAM_CHANNEL_H__*/

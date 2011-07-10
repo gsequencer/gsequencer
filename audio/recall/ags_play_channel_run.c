@@ -25,6 +25,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/task/ags_cancel_recall.h>
 
@@ -38,6 +39,14 @@ void ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run);
 void ags_play_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run);
+void ags_play_channel_run_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_play_channel_run_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_play_channel_run_connect(AgsConnectable *connectable);
 void ags_play_channel_run_disconnect(AgsConnectable *connectable);
 void ags_play_channel_run_run_connect(AgsRunConnectable *run_connectable);
@@ -48,18 +57,26 @@ void ags_play_channel_run_run_init_pre(AgsRecall *recall);
 void ags_play_channel_run_done(AgsRecall *recall);
 void ags_play_channel_run_remove(AgsRecall *recall);
 void ags_play_channel_run_cancel(AgsRecall *recall);
+void ags_play_channel_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_play_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_play_channel_run_map_play_recycling(AgsPlayChannelRun *play_channel_run);
 void ags_play_channel_run_remap_child_source(AgsPlayChannelRun *play_channel_run,
-					 AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-					 AgsRecycling *new_start_region, AgsRecycling *new_end_region);
+					     AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+					     AgsRecycling *new_start_region, AgsRecycling *new_end_region);
 
 
 void ags_play_channel_run_source_recycling_changed_callback(AgsChannel *channel,
-							AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-							AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-							AgsPlayChannelRun *play_channel_run);
+							    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+							    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+							    AgsPlayChannelRun *play_channel_run);
+void ags_play_channel_run_done_callback(AgsRecall *recall,
+					AgsPlayChannelRun *play_channel_run);
+
+enum{
+  PROP_0,
+  PROP_STREAM_CHANNEL_RUN,
+};
 
 static gpointer ags_play_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_run_parent_connectable_interface;
@@ -124,7 +141,20 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   /* GObjectClass */
   gobject = (GObjectClass *) play_channel_run;
 
+  gobject->set_property = ags_play_channel_run_set_property;
+  gobject->get_property = ags_play_channel_run_get_property;
+
   gobject->finalize = ags_play_channel_run_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("stream_channel_run\0",
+				   "assigned AgsStreamChannelRun\0",
+				   "the assigned AgsStreamChannelRun\0",
+				   AGS_TYPE_STREAM_CHANNEL_RUN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STREAM_CHANNEL_RUN,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_channel_run;
@@ -133,6 +163,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   recall->done = ags_play_channel_run_done;
   recall->remove = ags_play_channel_run_remove;
   recall->cancel = ags_play_channel_run_cancel;
+  recall->resolve_dependencies = ags_play_channel_run_resolve_dependencies;
   recall->duplicate = ags_play_channel_run_duplicate;
 }
 
@@ -157,7 +188,97 @@ ags_play_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *
 void
 ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
 {
-  /* empty */
+  play_channel_run->flags = 0;
+
+  play_channel_run->stream_channel_run = NULL;
+}
+
+void
+ags_play_channel_run_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsPlayChannelRun *play_channel_run;
+
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
+
+  switch(prop_id){
+  case PROP_STREAM_CHANNEL_RUN:
+    {
+      AgsStreamChannelRun *stream_channel_run;
+      gboolean is_template;
+
+      stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
+
+      if(stream_channel_run == play_channel_run->stream_channel_run)
+	return;
+
+      if(stream_channel_run != NULL &&
+	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(stream_channel_run)->flags)) != 0){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
+
+      if(play_channel_run->stream_channel_run != NULL){
+	if(is_template){
+	  ags_recall_remove_dependency(AGS_RECALL(play_channel_run),
+				       (AgsRecall *) play_channel_run->stream_channel_run);
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
+	    g_signal_handler_disconnect(G_OBJECT(play_channel_run),
+					play_channel_run->done_handler);
+	  }
+	}
+
+	g_object_unref(G_OBJECT(play_channel_run->stream_channel_run));
+      }
+
+      if(stream_channel_run != NULL){
+	g_object_ref(G_OBJECT(stream_channel_run));
+
+	if(is_template){
+	  ags_recall_add_dependency(AGS_RECALL(play_channel_run),
+				    ags_recall_dependency_new((GObject *) stream_channel_run));
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
+	    play_channel_run->done_handler =
+	      g_signal_connect(G_OBJECT(stream_channel_run), "done\0",
+			       G_CALLBACK(ags_play_channel_run_done_callback), play_channel_run);
+	  }
+	}
+      }
+
+      play_channel_run->stream_channel_run = stream_channel_run;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_play_channel_run_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsPlayChannelRun *play_channel_run;
+
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
+
+  switch(prop_id){
+  case PROP_STREAM_CHANNEL_RUN:
+    {
+      g_value_set_object(value, G_OBJECT(play_channel_run->stream_channel_run));
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -208,6 +329,13 @@ ags_play_channel_run_run_connect(AgsRunConnectable *run_connectable)
   play_channel_run->source_recycling_changed_handler =
     g_signal_connect(gobject, "recycling_changed\0",
 		     G_CALLBACK(ags_play_channel_run_source_recycling_changed_callback), play_channel_run);
+
+  /* stream_channel_run */
+  gobject = G_OBJECT(play_channel_run->stream_channel_run);
+
+  play_channel_run->done_handler =
+    g_signal_connect(gobject, "done\0",
+		     G_CALLBACK(ags_play_channel_run_done_callback), play_channel_run);
 }
 
 void
@@ -229,6 +357,11 @@ ags_play_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(AGS_RECALL_CHANNEL(play_channel)->channel);
 
   g_signal_handler_disconnect(gobject, play_channel_run->source_recycling_changed_handler);
+
+  /* stream_channel_run */
+  gobject = G_OBJECT(play_channel_run->stream_channel_run);
+
+  g_signal_handler_disconnect(gobject, play_channel_run->done_handler);
 }
 
 void
@@ -261,6 +394,45 @@ ags_play_channel_run_remove(AgsRecall *recall)
   AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->remove(recall);
 
   /* empty */
+}
+
+void
+ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
+{
+  AgsRecall *template;
+  AgsPlayChannelRun *play_channel_run;
+  AgsRecallDependency *recall_dependency;
+  AgsStreamChannelRun *stream_channel_run;
+  GList *list;
+  guint group_id;
+  guint i, i_stop;
+
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(recall);
+
+  template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run);
+
+  list = template->dependencies;
+  group_id = recall->recall_id->group_id;
+
+  stream_channel_run = NULL;
+
+  i_stop = 1;
+
+  for(i = 0; i < i_stop && list != NULL;){
+    recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
+
+    if(AGS_IS_STREAM_CHANNEL_RUN(recall_dependency->dependency)){
+      stream_channel_run = (AgsStreamChannelRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+
+      i++;
+    }
+
+    list = list->next;
+  }
+
+  g_object_set(G_OBJECT(recall),
+	       "stream_channel_run\0", stream_channel_run,
+	       NULL);
 }
 
 AgsRecall*
@@ -380,12 +552,20 @@ ags_play_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 					  new_start_region, new_end_region);
 }
 
+void
+ags_play_channel_run_done_callback(AgsRecall *recall,
+				   AgsPlayChannelRun *play_channel_run)
+{
+  play_channel_run->flags |= AGS_PLAY_CHANNEL_RUN_TERMINATING;
+}
+
 AgsPlayChannelRun*
-ags_play_channel_run_new()
+ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)
 {
   AgsPlayChannelRun *play_channel_run;
 
   play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
+							"stream_channel_run\0", stream_channel_run,
 							NULL);
   
   return(play_channel_run);

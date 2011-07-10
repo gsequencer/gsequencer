@@ -19,61 +19,16 @@
 #include <ags/audio/recall/ags_stream_channel.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/task/ags_cancel_recall.h>
-
-#include <ags/audio/recall/ags_stream_recycling.h>
 
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_stream_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_stream_channel_init(AgsStreamChannel *stream_channel);
-void ags_stream_channel_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_stream_channel_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
 void ags_stream_channel_connect(AgsConnectable *connectable);
 void ags_stream_channel_disconnect(AgsConnectable *connectable);
-void ags_stream_channel_run_connect(AgsRunConnectable *run_connectable);
-void ags_stream_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_channel_finalize(GObject *gobject);
-
-void ags_stream_channel_run_init_pre(AgsRecall *recall, gpointer data);
-void ags_stream_channel_run_init_inter(AgsRecall *recall, gpointer data);
-
-void ags_stream_channel_done(AgsRecall *recall, gpointer data);
-void ags_stream_channel_cancel(AgsRecall *recall, gpointer data);
-void ags_stream_channel_remove(AgsRecall *recall, gpointer data);
-AgsRecall* ags_stream_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
-
-void ags_stream_channel_map_stream_recycling(AgsStreamChannel *stream_channel);
-void ags_stream_channel_remap_stream_recycling(AgsStreamChannel *stream_channel,
-					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-					       AgsRecycling *new_start_region, AgsRecycling *new_end_region);
-
-void ags_stream_channel_recycling_changed_callback(AgsChannel *channel,
-						   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-						   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-						   AgsStreamChannel *stream_channel);
-
-enum{
-  PROP_0,
-  PROP_CHANNEL,
-};
 
 static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_stream_channel_parent_run_connectable_interface;
 
 GType
 ags_stream_channel_get_type()
@@ -99,13 +54,7 @@ ags_stream_channel_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_stream_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    ags_type_stream_channel = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_stream_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						     "AgsStreamChannel\0",
 						     &ags_stream_channel_info,
 						     0);
@@ -113,10 +62,6 @@ ags_stream_channel_get_type()
     g_type_add_interface_static(ags_type_stream_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_stream_channel,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
   }
 
   return (ags_type_stream_channel);
@@ -127,32 +72,13 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_stream_channel_parent_class = g_type_class_peek_parent(stream_channel);
 
   /* GObjectClass */
   gobject = (GObjectClass *) stream_channel;
 
-  gobject->set_property = ags_stream_channel_set_property;
-  gobject->get_property = ags_stream_channel_get_property;
-
   gobject->finalize = ags_stream_channel_finalize;
-
-  /* properties */
-  param_spec = g_param_spec_object("channel\0",
-				   "stream AgsChannel\0",
-				   "The AgsChannel to stream\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
-				  param_spec);
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) stream_channel;
-
-  recall->duplicate = ags_stream_channel_duplicate;
 }
 
 void
@@ -165,99 +91,15 @@ ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectab
 }
 
 void
-ags_stream_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
-{
-  ags_stream_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
-
-  run_connectable->connect = ags_stream_channel_run_connect;
-  run_connectable->disconnect = ags_stream_channel_run_disconnect;
-}
-
-void
 ags_stream_channel_init(AgsStreamChannel *stream_channel)
 {
-  stream_channel->channel = NULL;
-}
-
-void
-ags_stream_channel_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec)
-{
-  AgsStreamChannel *stream_channel;
-
-  stream_channel = AGS_STREAM_CHANNEL(gobject);
-
-  switch(prop_id){
-  case PROP_CHANNEL:
-    {
-      AgsChannel *channel;
-
-      channel = (AgsChannel *) g_value_get_object(value);
-
-      if(stream_channel->channel == channel)
-	return;
-
-      if(stream_channel->channel != NULL){
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(stream_channel)->flags)) != 0){
-	  g_signal_handler_disconnect(G_OBJECT(stream_channel),
-				      stream_channel->channel_recycling_changed_handler);
-	}
-
-	g_object_unref(G_OBJECT(stream_channel->channel));
-      }
-
-      if(channel != NULL){
-	g_object_ref(G_OBJECT(channel));
-
-	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(stream_channel)->flags)) != 0){
-	  stream_channel->channel_recycling_changed_handler =
-	    g_signal_connect(G_OBJECT(stream_channel->channel), "recycling_changed\0",
-			     G_CALLBACK(ags_stream_channel_recycling_changed_callback), stream_channel);
-	}
-      }
-
-      stream_channel->channel = channel;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_stream_channel_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec)
-{
-  AgsStreamChannel *stream_channel;
-
-  stream_channel = AGS_STREAM_CHANNEL(gobject);
-
-  switch(prop_id){
-  case PROP_CHANNEL:
-    {
-      g_value_set_object(value, stream_channel->channel);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  /* empty */
 }
 
 void
 ags_stream_channel_finalize(GObject *gobject)
 {
-  AgsStreamChannel *stream_channel;
-
-  stream_channel = AGS_STREAM_CHANNEL(gobject);
-
-  if(stream_channel->channel != NULL)
-    g_object_unref(G_OBJECT(stream_channel->channel));
+  /* empty */
 
   /* call parent */
   G_OBJECT_CLASS(ags_stream_channel_parent_class)->finalize(gobject);
@@ -279,144 +121,12 @@ ags_stream_channel_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
-ags_stream_channel_run_connect(AgsRunConnectable *run_connectable)
-{
-  AgsStreamChannel *stream_channel;
-
-  ags_stream_channel_parent_run_connectable_interface->connect(run_connectable);
-
-  stream_channel = AGS_STREAM_CHANNEL(run_connectable);
-
-  stream_channel->channel_recycling_changed_handler =
-    g_signal_connect(G_OBJECT(stream_channel->channel), "recycling_changed\0",
-		     G_CALLBACK(ags_stream_channel_recycling_changed_callback), stream_channel);
-}
-
-void
-ags_stream_channel_run_disconnect(AgsRunConnectable *run_connectable)
-{
-  AgsStreamChannel *stream_channel;
-
-  ags_stream_channel_parent_run_connectable_interface->disconnect(run_connectable);
-
-  stream_channel = AGS_STREAM_CHANNEL(run_connectable);
-
-  g_signal_handler_disconnect(G_OBJECT(stream_channel),
-			      stream_channel->channel_recycling_changed_handler);
-}
-
-AgsRecall*
-ags_stream_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
-{
-  AgsStreamChannel *stream_channel, *copy;
-
-  stream_channel = (AgsStreamChannel *) recall;  
-  copy = (AgsStreamChannel *) AGS_RECALL_CLASS(ags_stream_channel_parent_class)->duplicate(recall, recall_id);
-
-  copy->channel = stream_channel->channel;
-
-  ags_stream_channel_map_stream_recycling(copy);
-
-  return((AgsRecall *) copy);
-}
-
-void
-ags_stream_channel_map_stream_recycling(AgsStreamChannel *stream_channel)
-{
-  AgsRecycling *recycling;
-  AgsStreamRecycling *stream_recycling;
-  guint audio_channel;
-  
-  recycling = stream_channel->channel->first_recycling;
-
-  if(recycling == NULL)
-    return;
-
-  audio_channel = stream_channel->channel->audio_channel;
-
-  while(recycling != stream_channel->channel->last_recycling->next){
-    stream_recycling = ags_stream_recycling_new(recycling);
-
-    ags_recall_add_child(AGS_RECALL(stream_channel), AGS_RECALL(stream_recycling));
-
-    recycling = recycling->next;
-  }
-}
-
-void
-ags_stream_channel_remap_stream_recycling(AgsStreamChannel *stream_channel,
-					  AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-					  AgsRecycling *new_start_region, AgsRecycling *new_end_region)
-{
-  AgsRecycling *recycling;
-  AgsStreamRecycling *stream_recycling;
-  GList *list;
-  guint audio_channel;
-
-  audio_channel = stream_channel->channel->audio_channel;
-  
-  /* remove old */
-  if(old_start_region !=  NULL){
-    AgsDevout *devout;
-    AgsRecall *recall;
-    AgsCancelRecall *cancel_recall;
-
-    devout = AGS_DEVOUT(AGS_AUDIO(stream_channel->channel->audio)->devout);
-    recycling = old_start_region;
-
-    while(recycling != old_end_region->next){
-      list = ags_recall_get_children(AGS_RECALL(stream_channel));
-      
-      while(list != NULL){
-	if(AGS_STREAM_RECYCLING(list->data)->recycling == recycling){
-	  recall = AGS_RECALL(list->data);
-
-	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall, NULL);
-
-	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
-	}
-
-	list = list->next;
-      }
-
-      recycling = recycling->next;
-    }
-  }
-
-  /* add new */
-  if(new_start_region != NULL){
-    recycling = new_start_region;
-
-    while(recycling != new_end_region->next){
-      stream_recycling = ags_stream_recycling_new(recycling);
-      
-      ags_recall_add_child(AGS_RECALL(stream_channel), AGS_RECALL(stream_recycling));
-      
-      recycling = recycling->next;
-    }
-  }
-}
-
-void
-ags_stream_channel_recycling_changed_callback(AgsChannel *channel,
-					      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-					      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-					      AgsStreamChannel *stream_channel)
-{
-  ags_stream_channel_remap_stream_recycling(stream_channel,
-					    old_start_region, old_end_region,
-					    new_start_region, new_end_region);
-}
-
 AgsStreamChannel*
-ags_stream_channel_new(AgsChannel *channel)
+ags_stream_channel_new()
 {
   AgsStreamChannel *stream_channel;
 
   stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-						     "channel\0", channel,
 						     NULL);
 
   return(stream_channel);

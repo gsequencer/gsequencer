@@ -103,6 +103,7 @@ ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal)
   add_audio_signal->recycling = NULL;
   add_audio_signal->devout = NULL;
   add_audio_signal->recall_id = NULL;
+  add_audio_signal->audio_signal_flags = 0;
 }
 
 void
@@ -141,6 +142,7 @@ ags_add_audio_signal_launch(AgsTask *task)
   audio_signal = ags_audio_signal_new((GObject *) add_audio_signal->devout,
 				      (GObject *) add_audio_signal->recycling,
 				      (GObject *) add_audio_signal->recall_id);
+  audio_signal->flags = add_audio_signal->audio_signal_flags;
   ags_audio_signal_connect(audio_signal);
   
   ags_recycling_add_audio_signal(add_audio_signal->recycling,
@@ -150,7 +152,8 @@ ags_add_audio_signal_launch(AgsTask *task)
 AgsAddAudioSignal*
 ags_add_audio_signal_new(AgsRecycling *recycling,
 			 AgsDevout *devout,
-			 AgsRecallID *recall_id)
+			 AgsRecallID *recall_id,
+			 guint audio_signal_flags)
 {
   AgsAddAudioSignal *add_audio_signal;
 
@@ -160,6 +163,7 @@ ags_add_audio_signal_new(AgsRecycling *recycling,
   add_audio_signal->recycling = recycling;
   add_audio_signal->devout = devout;
   add_audio_signal->recall_id = recall_id;
+  add_audio_signal->audio_signal_flags = audio_signal_flags;
 
   return(add_audio_signal);
 }

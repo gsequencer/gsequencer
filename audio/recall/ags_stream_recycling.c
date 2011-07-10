@@ -337,13 +337,10 @@ ags_stream_recycling_add_audio_signal(AgsStreamRecycling *stream_recycling,
 				      AgsAudioSignal *audio_signal)
 {
   AgsStreamAudioSignal *stream_audio_signal;
-  guint audio_channel;
 
   stream_audio_signal = ags_stream_audio_signal_new(audio_signal);
 
   AGS_RECALL(stream_audio_signal)->flags |= AGS_RECALL_PROPAGATE_DONE;
-
-  audio_channel = AGS_STREAM_CHANNEL(AGS_RECALL(stream_recycling)->parent)->channel->audio_channel;
 
   ags_recall_add_child(AGS_RECALL(stream_recycling), AGS_RECALL(stream_audio_signal));
 }

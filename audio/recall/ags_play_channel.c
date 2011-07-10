@@ -22,19 +22,12 @@
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/task/ags_cancel_recall.h>
-
-#include <ags/audio/recall/ags_play_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 
 void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
 void ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_channel_connectable_interface_init(AgsConnectableInterface *run_connectable);
 void ags_play_channel_init(AgsPlayChannel *play_channel);
 void ags_play_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -46,8 +39,6 @@ void ags_play_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_play_channel_connect(AgsConnectable *connectable);
 void ags_play_channel_disconnect(AgsConnectable *connectable);
-void ags_play_channel_connect(AgsConnectable *run_connectable);
-void ags_play_channel_disconnect(AgsConnectable *run_connectable);
 void ags_play_channel_finalize(GObject *gobject);
 
 enum{

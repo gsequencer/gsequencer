@@ -25,13 +25,13 @@
 void ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_channel);
 void ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel);
 void ags_copy_pattern_channel_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
 void ags_copy_pattern_channel_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
 void ags_copy_pattern_channel_finalize(GObject *gobject);
 
 enum{
@@ -117,9 +117,9 @@ ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
 
 void
 ags_copy_pattern_channel_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec)
 {
   AgsCopyPatternChannel *copy_pattern_channel;
 
@@ -170,9 +170,9 @@ ags_copy_pattern_channel_set_property(GObject *gobject,
 
 void
 ags_copy_pattern_channel_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec)
 {
   AgsCopyPatternChannel *copy_pattern_channel;
 

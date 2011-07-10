@@ -23,8 +23,11 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
+
+#include <ags/audio/recall/ags_stream_channel_run.h>
 
 #define AGS_TYPE_PLAY_CHANNEL_RUN                (ags_play_channel_run_get_type())
 #define AGS_PLAY_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL_RUN, AgsPlayChannelRun))
@@ -36,9 +39,18 @@
 typedef struct _AgsPlayChannelRun AgsPlayChannelRun;
 typedef struct _AgsPlayChannelRunClass AgsPlayChannelRunClass;
 
+typedef enum{
+  AGS_PLAY_CHANNEL_RUN_TERMINATING        = 1,
+}AgsPlayChannelRunFlags;
+
 struct _AgsPlayChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
+
+  guint flags;
+
+  AgsStreamChannelRun *stream_channel_run;
+  gulong done_handler;
 
   gulong source_recycling_changed_handler;
 };
@@ -50,6 +62,6 @@ struct _AgsPlayChannelRunClass
 
 GType ags_play_channel_run_get_type();
 
-AgsPlayChannelRun* ags_play_channel_run_new();
+AgsPlayChannelRun* ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run);
 
 #endif /*__AGS_PLAY_CHANNEL_RUN_H__*/

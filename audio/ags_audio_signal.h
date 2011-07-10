@@ -38,6 +38,7 @@ typedef struct _AgsAttack AgsAttack;
 typedef enum{
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1,
   AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 << 1,
+  AGS_AUDIO_SIGNAL_STANDALONE           = 1 << 2,
 }AgsAudioSignalFlags;
 
 struct _AgsAudioSignal

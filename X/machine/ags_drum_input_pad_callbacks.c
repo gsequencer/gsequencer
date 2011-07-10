@@ -344,11 +344,13 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     AgsRecallID *recall_id;
     GList *tasks;
     guint group_id, child_group_id;
+    guint flags;
 
     group_id = ags_recall_id_generate_group_id();
     child_group_id = ags_recall_id_generate_group_id();
 
     tasks = NULL;
+    flags = AGS_AUDIO_SIGNAL_STANDALONE;
 
     if(drum_input_pad->pad.group->active){
       AgsChannel *next_pad;
@@ -404,7 +406,8 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	while(recycling != channel->last_recycling->next){
 	  add_audio_signal = ags_add_audio_signal_new(recycling,
 						      devout,
-						      recall_id);
+						      recall_id,
+						      flags);
 	  tasks = g_list_prepend(tasks, add_audio_signal);
 
 	  recycling = recycling->next;
@@ -442,7 +445,8 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       while(recycling != channel->last_recycling->next){
 	add_audio_signal = ags_add_audio_signal_new(recycling,
 						    devout,
-						    recall_id);
+						    recall_id,
+						    flags);
 	tasks = g_list_prepend(tasks, add_audio_signal);
 	
 	recycling = recycling->next;
