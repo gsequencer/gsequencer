@@ -58,9 +58,6 @@ void ags_stream_recycling_add_audio_signal_with_frame_count_callback(AgsRecyclin
 								     AgsAudioSignal *audio_signal, guint frame_count,
 								     AgsStreamRecycling *stream_recycling);
 
-void ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall,
-						   gpointer data);
-
 enum{
   PROP_0,
   PROP_RECYCLING,
@@ -340,7 +337,8 @@ ags_stream_recycling_add_audio_signal(AgsStreamRecycling *stream_recycling,
 
   stream_audio_signal = ags_stream_audio_signal_new(audio_signal);
 
-  AGS_RECALL(stream_audio_signal)->flags |= AGS_RECALL_PROPAGATE_DONE;
+  if((AGS_RECALL_PLAYBACK & (AGS_RECALL(stream_recycling)->flags)) != 0)
+    AGS_RECALL(stream_audio_signal)->flags |= AGS_RECALL_PROPAGATE_DONE;
 
   ags_recall_add_child(AGS_RECALL(stream_recycling), AGS_RECALL(stream_audio_signal));
 }
@@ -369,14 +367,6 @@ ags_stream_recycling_add_audio_signal_with_frame_count_callback(AgsRecycling *re
     ags_stream_recycling_add_audio_signal(stream_recycling,
 					  recycling,
 					  audio_signal);
-}
-
-void
-ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall,
-					      gpointer data)
-{
-  fprintf(stdout, "ags_stream_recycling_stream_audio_signal_done\n\0");
-  recall->flags |= AGS_RECALL_REMOVE;
 }
 
 AgsStreamRecycling*

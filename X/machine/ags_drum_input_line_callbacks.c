@@ -52,7 +52,7 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
 {
   AgsChannel *channel;
 
-  fprintf(stdout, "ags_drum_input_line_play_channel_done\n\0");
+  fprintf(stdout, "ags_drum_input_line_play_channel_run_done\n\0");
 
   channel = AGS_LINE(drum_input_line)->channel;
 

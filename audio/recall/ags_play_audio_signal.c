@@ -27,6 +27,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
 
+#include <ags/audio/recall/ags_play_channel_run.h>
+
 #include <stdlib.h>
 #include <pthread.h>
 
@@ -395,7 +397,13 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   stream = source->stream_current;
 
   if(stream == NULL){
-    //    ags_recall_done(recall, recall_id);
+    AgsPlayChannelRun *play_channel_run;
+
+    play_channel_run = AGS_PLAY_CHANNEL_RUN(recall->parent->parent);
+
+    if((AGS_PLAY_CHANNEL_RUN_TERMINATING & (play_channel_run->flags)) != 0)
+      ags_recall_done(recall);
+
     return;
   }
 
@@ -425,12 +433,6 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 					   &(((short *) stream->data)[attack->first_length]), 1,
 					   attack->first_start);
   }
-  /*
-  audio_signal->stream_current = audio_signal->stream_current->next;
-
-  if(audio_signal->stream_current == NULL)
-    ags_recall_done(recall, recall_id);
-  */
 }
 
 AgsRecall*
@@ -441,13 +443,11 @@ ags_play_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   play_audio_signal = (AgsPlayAudioSignal *) recall;
   copy = (AgsPlayAudioSignal *) AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->duplicate(recall, recall_id);
 
-  /*
-   * FIXME:JK: use ags_play_audio_signal_set_property
-   */
-
-  copy->source = play_audio_signal->source;
-  copy->audio_channel = play_audio_signal->audio_channel;
-  copy->devout = play_audio_signal->devout;
+  g_object_set(G_OBJECT(copy),
+	       "source\0", play_audio_signal->source,
+	       "audio_channel\0", play_audio_signal->audio_channel,
+	       "devout\0", play_audio_signal->devout,
+	       NULL);
 
   return((AgsRecall *) copy);
 }

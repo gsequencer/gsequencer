@@ -70,8 +70,8 @@ void ags_play_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 							    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 							    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 							    AgsPlayChannelRun *play_channel_run);
-void ags_play_channel_run_done_callback(AgsRecall *recall,
-					AgsPlayChannelRun *play_channel_run);
+void ags_play_channel_run_stream_channel_done_callback(AgsRecall *recall,
+						       AgsPlayChannelRun *play_channel_run);
 
 enum{
   PROP_0,
@@ -245,7 +245,7 @@ ags_play_channel_run_set_property(GObject *gobject,
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
 	    play_channel_run->done_handler =
 	      g_signal_connect(G_OBJECT(stream_channel_run), "done\0",
-			       G_CALLBACK(ags_play_channel_run_done_callback), play_channel_run);
+			       G_CALLBACK(ags_play_channel_run_stream_channel_done_callback), play_channel_run);
 	  }
 	}
       }
@@ -335,7 +335,7 @@ ags_play_channel_run_run_connect(AgsRunConnectable *run_connectable)
 
   play_channel_run->done_handler =
     g_signal_connect(gobject, "done\0",
-		     G_CALLBACK(ags_play_channel_run_done_callback), play_channel_run);
+		     G_CALLBACK(ags_play_channel_run_stream_channel_done_callback), play_channel_run);
 }
 
 void
@@ -553,8 +553,8 @@ ags_play_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 }
 
 void
-ags_play_channel_run_done_callback(AgsRecall *recall,
-				   AgsPlayChannelRun *play_channel_run)
+ags_play_channel_run_stream_channel_done_callback(AgsRecall *recall,
+						  AgsPlayChannelRun *play_channel_run)
 {
   play_channel_run->flags |= AGS_PLAY_CHANNEL_RUN_TERMINATING;
 }

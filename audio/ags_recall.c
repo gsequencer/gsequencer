@@ -892,15 +892,19 @@ ags_recall_real_remove(AgsRecall *recall)
   fprintf(stdout, "remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   if(recall->parent == NULL){
+    parent = NULL;
     g_object_unref(recall);
     return;
+  }else{
+    parent = AGS_RECALL(recall->parent);
+    parent->children = g_list_remove(parent->children, recall);
   }
 
-  parent = AGS_RECALL(recall->parent);
-  parent->children = g_list_remove(parent->children, recall);
   g_object_unref(recall);
 
-  if((AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 && parent->children == NULL)
+  if((AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
+     parent != NULL &&
+     parent->children == NULL)
     ags_recall_done(parent);
 }
 
@@ -1020,12 +1024,21 @@ ags_recall_get_dependencies(AgsRecall *recall)
 void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 {
+  guint inheritated_flags_mask;
+
   if(child == NULL ||
      child->parent == parent)
     return;
 
+  inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
+			    AGS_RECALL_SEQUENCER |
+			    AGS_RECALL_NOTATION |
+			    AGS_RECALL_PROPAGATE_DONE);
+
   /* unref old */
   if(child->parent != NULL){
+    child->flags &= (~inheritated_flags_mask);
+
     child->parent->children = g_list_remove(child->parent->children, child);
     g_object_unref(child->parent);
     g_object_unref(child);
@@ -1035,6 +1048,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   if(parent != NULL){
     g_object_ref(parent);
     g_object_ref(child);
+
+    child->flags |= (inheritated_flags_mask & (parent->flags));
 
     parent->children = g_list_prepend(parent->children, child);
 

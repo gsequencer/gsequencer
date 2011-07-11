@@ -236,6 +236,9 @@ ags_stream_channel_run_map_stream_recycling(AgsStreamChannelRun *stream_channel_
   while(recycling != channel->last_recycling->next){
     stream_recycling = ags_stream_recycling_new(recycling);
 
+    if((AGS_RECALL_PLAYBACK & (AGS_RECALL(stream_channel_run)->flags)) != 0)
+      AGS_RECALL(stream_recycling)->flags |= AGS_RECALL_PROPAGATE_DONE;
+
     ags_recall_add_child(AGS_RECALL(stream_channel_run), AGS_RECALL(stream_recycling));
 
     recycling = recycling->next;
