@@ -525,11 +525,13 @@ void ags_play_channel_run_remap_child_source(AgsPlayChannelRun *play_channel_run
     }
   }
 
-  /* remove new */
+  /* add new */
   if(new_start_region != NULL){
     source_recycling = new_start_region;
     
     while(source_recycling != new_end_region->next){
+      printf("ags_play_channel_run_remap_play_recycling\n\0");
+
       play_recycling = ags_play_recycling_new(source_recycling,
 					      play_channel->devout,
 					      audio_channel);

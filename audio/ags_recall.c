@@ -29,7 +29,7 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_play_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -891,6 +891,9 @@ ags_recall_real_remove(AgsRecall *recall)
 
   fprintf(stdout, "remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
+  if(AGS_IS_PLAY_RECYCLING(recall))
+    printf("AgsPlayRecycling: %x\n\0", recall);
+
   if(recall->parent == NULL){
     parent = NULL;
     g_object_unref(recall);
@@ -900,12 +903,12 @@ ags_recall_real_remove(AgsRecall *recall)
     parent->children = g_list_remove(parent->children, recall);
   }
 
-  g_object_unref(recall);
-
-  if((AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
-     parent != NULL &&
+  if(parent != NULL &&
+     (AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
      parent->children == NULL)
     ags_recall_done(parent);
+
+  g_object_unref(recall);
 }
 
 void
