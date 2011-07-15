@@ -55,7 +55,6 @@ void ags_play_recycling_finalize(GObject *gobject);
 
 void ags_play_recycling_done(AgsRecall *recall);
 void ags_play_recycling_cancel(AgsRecall *recall);
-void ags_play_recycling_remove(AgsRecall *recall);
 AgsRecall* ags_play_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
@@ -184,7 +183,6 @@ ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
 
   recall->done = ags_play_recycling_done;
   recall->cancel = ags_play_recycling_cancel;
-  recall->remove = ags_play_recycling_remove;
   recall->duplicate = ags_play_recycling_duplicate;
 }
 
@@ -219,21 +217,9 @@ ags_play_recycling_init(AgsPlayRecycling *play_recycling)
 void
 ags_play_recycling_connect(AgsConnectable *connectable)
 {
-  AgsPlayRecycling *play_recycling;
-
   ags_play_recycling_parent_connectable_interface->connect(connectable);
 
-  /* AgsPlayRecycling */
-  play_recycling = AGS_PLAY_RECYCLING(connectable);
-
-  g_signal_connect((GObject *) play_recycling, "done\0",
-		   G_CALLBACK(ags_play_recycling_done), NULL);
-
-  g_signal_connect((GObject *) play_recycling, "remove\0",
-		   G_CALLBACK(ags_play_recycling_remove), NULL);
-
-  g_signal_connect((GObject *) play_recycling, "cancel\0",
-		   G_CALLBACK(ags_play_recycling_cancel), NULL);
+  /* empty */
 }
 
 void
@@ -436,14 +422,6 @@ void
 ags_play_recycling_cancel(AgsRecall *recall)
 {
   AGS_RECALL_CLASS(ags_play_recycling_parent_class)->cancel(recall);
-
-  /* empty */
-}
-
-void 
-ags_play_recycling_remove(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_play_recycling_parent_class)->remove(recall);
 
   /* empty */
 }

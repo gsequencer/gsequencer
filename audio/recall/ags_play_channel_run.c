@@ -161,7 +161,6 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
 
   recall->run_init_pre = ags_play_channel_run_run_init_pre;
   recall->done = ags_play_channel_run_done;
-  recall->remove = ags_play_channel_run_remove;
   recall->cancel = ags_play_channel_run_cancel;
   recall->resolve_dependencies = ags_play_channel_run_resolve_dependencies;
   recall->duplicate = ags_play_channel_run_duplicate;
@@ -384,14 +383,6 @@ void
 ags_play_channel_run_cancel(AgsRecall *recall)
 {
   AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->cancel(recall);
-
-  /* empty */
-}
-
-void
-ags_play_channel_run_remove(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->remove(recall);
 
   /* empty */
 }
