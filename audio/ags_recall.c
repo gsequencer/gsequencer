@@ -393,6 +393,8 @@ ags_recall_init(AgsRecall *recall)
 
   recall->parent = NULL;
   recall->children = NULL;
+
+  recall->handlers = NULL;
 }
 
 void
@@ -1295,6 +1297,43 @@ ags_recall_run_init(AgsRecall *recall, guint stage)
   }else{
     ags_recall_run_init_post(recall);
   }
+}
+
+AgsRecallHandler*
+ags_recall_handler_alloc(const gchar *signal_name,
+			 GCallback callback,
+			 GObject *data)
+{
+  AgsRecallHandler *recall_handler;
+
+  recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+  
+  recall_handler->signal_name = signal_name;
+  recall_handler->callback = callback;
+  recall_handler->data = data;
+
+  return(recall_handler);
+}
+
+void
+ags_recall_add_handler(AgsRecall *recall,
+		       AgsRecallHandler *recall_handler)
+{
+  recall->handlers = g_list_prepend(recall->handlers,
+				    recall_handler);
+
+  recall_handler->handler = g_signal_connect(G_OBJECT(recall), recall_handler->signal_name,
+					     G_CALLBACK(recall_handler->callback), recall_handler->data);
+}
+
+void
+ags_recall_remove_handler(AgsRecall *recall,
+			  AgsRecallHandler *recall_handler)
+{
+  recall->handlers = g_list_remove(recall->handlers,
+				   recall_handler);
+
+  g_signal_handler_disconnect(G_OBJECT(recall), recall_handler->handler);
 }
 
 AgsRecall*

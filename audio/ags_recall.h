@@ -34,6 +34,7 @@
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
+typedef struct _AgsRecallHandler AgsRecallHandler;
 
 typedef enum{
   AGS_RECALL_CONNECTED          = 1,
@@ -76,6 +77,8 @@ struct _AgsRecall
 
   AgsRecall *parent;
   GList *children;
+
+  GList *handlers;
 };
 
 struct _AgsRecallClass
@@ -101,6 +104,14 @@ struct _AgsRecallClass
 			  AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
 
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
+};
+
+struct _AgsRecallHandler
+{
+  const gchar *signal_name;
+  GCallback callback;
+  GObject *data;
+  gulong handler;
 };
 
 GType ags_recall_get_type();
@@ -146,6 +157,15 @@ GList* ags_recall_find_provider(GList *recall, GObject *provider);
 GList* ags_recall_find_provider_with_group_id(GList *recall, GObject *provider, guint group_id);
 
 void ags_recall_run_init(AgsRecall *recall, guint stage);
+
+AgsRecallHandler* ags_recall_handler_alloc(const gchar *signal_name,
+					   GCallback callback,
+					   GObject *data);
+
+void ags_recall_add_handler(AgsRecall *recall,
+			    AgsRecallHandler *recall_handler);
+void ags_recall_remove_handler(AgsRecall *recall,
+			       AgsRecallHandler *recall_handler);
 
 AgsRecall* ags_recall_new();
 
