@@ -798,7 +798,7 @@ ags_devout_play_channel(AgsDevout *devout)
   AgsChannel *channel;
   GList *list_play, *list_next_play;
   gint stage;
-  guint group_id;
+  AgsGroupId group_id;
 
   /* entry point */
   devout->flags |= AGS_DEVOUT_PLAYING_CHANNEL;
@@ -834,7 +834,7 @@ ags_devout_play_audio(AgsDevout *devout)
   AgsChannel *output;
   GList *list_play, *list_next_play;
   gint stage;
-  guint group_id;
+  AgsGroupId group_id;
 
   /* entry point */
   devout->flags |= AGS_DEVOUT_PLAYING_AUDIO;

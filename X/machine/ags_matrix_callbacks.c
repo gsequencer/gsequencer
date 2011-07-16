@@ -148,7 +148,7 @@ void
 ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 {
   AgsDevout *devout;
-  guint group_id;
+  AgsGroupId group_id;
 
   devout = AGS_DEVOUT(matrix->machine.audio->devout);
 

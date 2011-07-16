@@ -116,12 +116,12 @@ void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, 
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
 
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
-void ags_audio_play(AgsAudio *audio, guint group_id,
+void ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
 		    gint stage, gboolean do_recall);
 guint ags_audio_recursive_play_init(AgsAudio *audio,
 				    gboolean playback, gboolean sequencer, gboolean notation);
 
-void ags_audio_cancel(AgsAudio *audio, guint audio_channel, guint group_id,
+void ags_audio_cancel(AgsAudio *audio, guint audio_channel, AgsGroupId group_id,
 		      gboolean do_recall);
 
 AgsAudio* ags_audio_new();

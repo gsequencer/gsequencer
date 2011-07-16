@@ -320,7 +320,7 @@ ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   GList *list;
-  guint group_id;
+  AgsGroupId group_id;
   guint i, i_stop;
 
   copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(recall);

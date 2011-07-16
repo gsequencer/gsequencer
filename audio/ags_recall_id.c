@@ -117,15 +117,15 @@ ags_recall_id_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
 }
 
-guint
+AgsGroupId
 ags_recall_id_generate_group_id()
 {
-  guint group_id;
+  AgsGroupId group_id;
 
   group_id = ags_recall_id_counter;
   ags_recall_id_counter++;
 
-  if(ags_recall_id_counter == ~0)
+  if(ags_recall_id_counter == G_MAXULONG)
     fprintf(stderr, "WARNING: ags_recall_id_generate_group_id - counter expired\n\0");
 
   return(group_id);
@@ -182,7 +182,7 @@ ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
 
 GList*
 ags_recall_id_add(GList *recall_id_list,
-		  guint parent_group_id, guint group_id, guint child_group_id,
+		  AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
 		  AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 		  gboolean higher_level_is_recall)
 {
@@ -208,7 +208,7 @@ ags_recall_id_add(GList *recall_id_list,
 }
 
 AgsRecallID*
-ags_recall_id_find_group_id(GList *recall_id_list, guint group_id)
+ags_recall_id_find_group_id(GList *recall_id_list, AgsGroupId group_id)
 {
   while(recall_id_list != NULL){
     if(AGS_RECALL_ID(recall_id_list->data)->group_id == group_id)
@@ -221,7 +221,7 @@ ags_recall_id_find_group_id(GList *recall_id_list, guint group_id)
 }
 
 AgsRecallID*
-ags_recall_id_find_parent_group_id(GList *recall_id_list, guint parent_group_id)
+ags_recall_id_find_parent_group_id(GList *recall_id_list, AgsGroupId parent_group_id)
 {
   while(recall_id_list != NULL){
     if(AGS_RECALL_ID(recall_id_list->data)->parent_group_id == parent_group_id)

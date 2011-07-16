@@ -604,14 +604,27 @@ void
 ags_recall_run_connect(AgsRunConnectable *run_connectable)
 {
   AgsRecall *recall;
+  AgsRecallHandler *recall_handler;
   GList *list;
 
   recall = AGS_RECALL(run_connectable);
 
+  /* connect children */
   list = recall->children;
 
   while(list != NULL){
     ags_run_connectable_connect(AGS_RUN_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect handlers */
+  list = recall->handlers;
+
+  while(list != NULL){
+    recall_handler = AGS_RECALL_HANDLER(list->data);
+    recall_handler->handler = g_signal_connect_after(G_OBJECT(recall), recall_handler->signal_name,
+						     G_CALLBACK(recall_handler->callback), recall_handler->data);
 
     list = list->next;
   }
@@ -623,14 +636,27 @@ void
 ags_recall_run_disconnect(AgsRunConnectable *run_connectable)
 {
   AgsRecall *recall;
+  AgsRecallHandler *recall_handler;
   GList *list;
 
   recall = AGS_RECALL(run_connectable);
 
+  /* disconnect children */
   list = recall->children;
 
   while(list != NULL){
     ags_run_connectable_disconnect(AGS_RUN_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* disconnect handlers */
+  list = recall->handlers;
+
+  while(list != NULL){
+    recall_handler = AGS_RECALL_HANDLER(list->data);
+
+    g_signal_handler_disconnect(G_OBJECT(recall), recall_handler->handler);
 
     list = list->next;
   }
@@ -924,6 +950,25 @@ ags_recall_remove(AgsRecall *recall)
   g_object_unref(G_OBJECT(recall));
 }
 
+gboolean
+ags_recall_is_done(GList *recalls, AgsGroupId group_id)
+{
+  AgsRecall *recall;
+
+  while(recalls != NULL){
+    recall = AGS_RECALL(recalls->data);
+
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0)
+      if((recall->recall_id != NULL && recall->recall_id->group_id != group_id) ||
+	 (AGS_RECALL_DONE & (recall->flags)) == 0)
+	return(FALSE);
+
+    recalls = recalls->next;
+  }
+
+  return(TRUE);
+}
+
 AgsRecall*
 ags_recall_real_duplicate(AgsRecall *recall,
 			  AgsRecallID *recall_id)
@@ -931,6 +976,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
   AgsRecallContainer *recall_container;
+  AgsRecallHandler *recall_handler, *recall_handler_copy;
   GList *list, *child;
   GValue recall_container_value = {0,};
 
@@ -951,7 +997,19 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   g_value_unset(&recall_container_value);
 
-  //TODO:JK: duplicate callbacks
+  /* duplicate handlers */
+  list = recall->handlers;
+  
+  while(list != NULL){
+    recall_handler = AGS_RECALL_HANDLER(list->data);
+
+    recall_handler_copy = ags_recall_handler_alloc(recall_handler->signal_name,
+						   recall_handler->callback,
+						   recall_handler->data);
+    ags_recall_add_handler(copy, recall_handler_copy);
+
+    list = list->next;
+  }
 
   return(copy);
 }
@@ -1187,7 +1245,7 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 }
 
 GList*
-ags_recall_find_type_with_group_id(GList *recall_i, GType type, guint group_id)
+ags_recall_find_type_with_group_id(GList *recall_i, GType type, AgsGroupId group_id)
 {
   AgsRecall *recall;
 
@@ -1206,7 +1264,7 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, guint group_id)
 }
 
 GList*
-ags_recall_find_group_id(GList *recall_i, guint group_id)
+ags_recall_find_group_id(GList *recall_i, AgsGroupId group_id)
 {
   AgsRecall *recall;
 
@@ -1269,7 +1327,7 @@ ags_recall_find_provider(GList *recall_i, GObject *provider)
 }
 
 GList*
-ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, guint group_id)
+ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, AgsGroupId group_id)
 {
   AgsRecall *recall;
 
@@ -1321,9 +1379,6 @@ ags_recall_add_handler(AgsRecall *recall,
 {
   recall->handlers = g_list_prepend(recall->handlers,
 				    recall_handler);
-
-  recall_handler->handler = g_signal_connect(G_OBJECT(recall), recall_handler->signal_name,
-					     G_CALLBACK(recall_handler->callback), recall_handler->data);
 }
 
 void
@@ -1332,8 +1387,6 @@ ags_recall_remove_handler(AgsRecall *recall,
 {
   recall->handlers = g_list_remove(recall->handlers,
 				   recall_handler);
-
-  g_signal_handler_disconnect(G_OBJECT(recall), recall_handler->handler);
 }
 
 AgsRecall*

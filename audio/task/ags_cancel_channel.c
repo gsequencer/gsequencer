@@ -147,7 +147,7 @@ ags_cancel_channel_launch(AgsTask *task)
 }
 
 AgsCancelChannel*
-ags_cancel_channel_new(AgsChannel *channel, guint group_id,
+ags_cancel_channel_new(AgsChannel *channel, AgsGroupId group_id,
 		       AgsDevoutPlay *play)
 {
   AgsCancelChannel *cancel_channel;

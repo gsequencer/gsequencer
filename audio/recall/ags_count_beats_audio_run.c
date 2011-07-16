@@ -473,7 +473,7 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   AgsRecallDependency *recall_dependency;
   AgsDelayAudioRun *delay_audio_run;
   GList *list;
-  guint group_id;
+  AgsGroupId group_id;
   guint i, i_stop;
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);

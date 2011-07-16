@@ -395,7 +395,7 @@ ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
   AgsRecallDependency *recall_dependency;
   AgsStreamChannelRun *stream_channel_run;
   GList *list;
-  guint group_id;
+  AgsGroupId group_id;
   guint i, i_stop;
 
   play_channel_run = AGS_PLAY_CHANNEL_RUN(recall);

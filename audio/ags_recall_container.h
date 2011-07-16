@@ -72,7 +72,7 @@ GList* ags_recall_container_get_recall_channel_run(AgsRecallContainer *container
 GList* ags_recall_container_find(GList *recall_container,
 				 GType type,
 				 guint find_flags,
-				 guint group_id);
+				 AgsGroupId group_id);
 
 AgsRecallContainer* ags_recall_container_new();
 

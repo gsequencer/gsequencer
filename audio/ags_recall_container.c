@@ -420,7 +420,7 @@ GList*
 ags_recall_container_find(GList *recall_container,
 			  GType type,
 			  guint find_flags,
-			  guint group_id)
+			  AgsGroupId group_id)
 {
   AgsRecallContainer *current;
   AgsRecall *recall;

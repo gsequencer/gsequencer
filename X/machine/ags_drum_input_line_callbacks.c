@@ -57,7 +57,8 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
   channel = AGS_LINE(drum_input_line)->channel;
 
   if(channel->devout_play->group_id == recall->recall_id->group_id &&
-     AGS_RECALL_CONTAINER(recall->container)->recall_channel_run == NULL){
+     ags_recall_is_done(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run,
+			recall->recall_id->group_id)){
     AgsDrumInputPad *drum_input_pad;
 
     printf("ags_drum_input_line_play_channel_run_done\n\0");

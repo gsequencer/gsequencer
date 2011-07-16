@@ -31,6 +31,7 @@
 #define AGS_IS_RECALL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RECALL))
 #define AGS_IS_RECALL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL))
 #define AGS_RECALL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL, AgsRecallClass))
+#define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
@@ -132,6 +133,8 @@ void ags_recall_loop(AgsRecall *recall);
 void ags_recall_cancel(AgsRecall *recall);
 void ags_recall_remove(AgsRecall *recall);
 
+gboolean ags_recall_is_done(GList *recalls, AgsGroupId group_id);
+
 AgsRecall* ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
@@ -151,10 +154,10 @@ GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effe
 GList* ags_recall_find_type(GList *recall, GType type);
 AgsRecall* ags_recall_find_template(GList *recall);
 GList* ags_recall_template_find_type(GList *recall, GType type);
-GList* ags_recall_find_type_with_group_id(GList *recall, GType type, guint group_id);
-GList* ags_recall_find_group_id(GList *recall, guint group_id);
+GList* ags_recall_find_type_with_group_id(GList *recall, GType type, AgsGroupId group_id);
+GList* ags_recall_find_group_id(GList *recall, AgsGroupId group_id);
 GList* ags_recall_find_provider(GList *recall, GObject *provider);
-GList* ags_recall_find_provider_with_group_id(GList *recall, GObject *provider, guint group_id);
+GList* ags_recall_find_provider_with_group_id(GList *recall, GObject *provider, AgsGroupId group_id);
 
 void ags_recall_run_init(AgsRecall *recall, guint stage);
 

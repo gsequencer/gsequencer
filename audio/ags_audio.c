@@ -1496,7 +1496,7 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
  * AgsRecall related
  */
 void
-ags_audio_play(AgsAudio *audio, guint group_id,
+ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
 	       gint stage, gboolean do_recall)
 {
   AgsRecall *recall;
@@ -1551,7 +1551,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
 			      gboolean playback, gboolean sequencer, gboolean notation)
 {
   AgsChannel *channel;
-  guint group_id, child_group_id;
+  AgsGroupId group_id, child_group_id;
   gint stage;
   gboolean arrange_group_id, duplicate_templates, resolve_dependencies;
 
@@ -1588,7 +1588,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
  * AgsRecall related
  */
 void
-ags_audio_cancel(AgsAudio *audio, guint audio_channel, guint group_id,
+ags_audio_cancel(AgsAudio *audio, guint audio_channel, AgsGroupId group_id,
 		 gboolean do_recall)
 {
   AgsRecall *recall;

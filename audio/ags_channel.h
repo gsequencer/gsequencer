@@ -139,21 +139,21 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 void ags_channel_resize_audio_signal(AgsChannel *channel, guint size);
 
 void ags_channel_find_input_recall_id(AgsChannel *input,
-				      guint group_id,
+				      AgsGroupId group_id,
 				      gboolean find_parent_group_id,
 				      AgsRecallID **input_recall_id);
-void ags_channel_recall_id_set(AgsChannel *output, guint group_id, gboolean ommit_own_channel,
+void ags_channel_recall_id_set(AgsChannel *output, AgsGroupId group_id, gboolean ommit_own_channel,
 			       guint mode, ...);
 
 void ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboolean do_recall);
-void ags_channel_recursive_play(AgsChannel *channel, guint group_id, gint stage);
+void ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage);
 void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				     gboolean arrange_group_id, gboolean duplicate_templates, gboolean playback, gboolean sequencer, gboolean notation, gboolean resolve_dependencies,
-				     guint group_id, guint child_group_id,
+				     AgsGroupId group_id, AgsGroupId child_group_id,
 				     guint audio_signal_level);
 
 void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_recall);
-void ags_channel_recursive_cancel(AgsChannel *channel, guint group_id);
+void ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id);
 
 AgsChannel* ags_channel_new(GObject *audio);
 

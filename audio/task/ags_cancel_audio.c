@@ -159,7 +159,7 @@ ags_cancel_audio_launch(AgsTask *task)
 }
 
 AgsCancelAudio*
-ags_cancel_audio_new(AgsAudio *audio, guint group_id,
+ags_cancel_audio_new(AgsAudio *audio, AgsGroupId group_id,
 		     AgsDevoutPlay *play)
 {
   AgsCancelAudio *cancel_audio;

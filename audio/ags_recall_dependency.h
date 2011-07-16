@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_recall_id.h>
+
 #define AGS_TYPE_RECALL_DEPENDENCY                (ags_recall_dependency_get_type ())
 #define AGS_RECALL_DEPENDENCY(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependency))
 #define AGS_RECALL_DEPENDENCY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST ((class), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))
@@ -48,7 +50,7 @@ GType ags_recall_dependency_get_type(void);
 
 GList* ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency);
 
-GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, guint group_id);
+GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId group_id);
 
 AgsRecallDependency* ags_recall_dependency_new(GObject *dependency);
 

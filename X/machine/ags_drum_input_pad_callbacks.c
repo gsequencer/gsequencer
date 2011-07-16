@@ -343,7 +343,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     AgsRecycling *recycling;
     AgsRecallID *recall_id;
     GList *tasks;
-    guint group_id, child_group_id;
+    AgsGroupId group_id, child_group_id;
     guint flags;
 
     group_id = ags_recall_id_generate_group_id();

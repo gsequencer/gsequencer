@@ -135,7 +135,7 @@ ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *depen
 }
 
 GObject*
-ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, guint group_id)
+ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId group_id)
 {
   AgsRecallContainer *recall_container;
   AgsRecall *dependency;

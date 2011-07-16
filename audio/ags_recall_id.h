@@ -33,6 +33,7 @@
 
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
+typedef gulong AgsGroupId;
 
 typedef enum{
   AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE     = 1,
@@ -49,9 +50,9 @@ struct _AgsRecallID
 
   guint flags;
 
-  guint parent_group_id;
-  guint group_id;
-  guint child_group_id;
+  AgsGroupId parent_group_id;
+  AgsGroupId group_id;
+  AgsGroupId child_group_id;
 
   AgsRecycling *first_recycling; // the AgsRecycling that indicates the beginning for affecting AgsRecalls, NULL means AgsChannel's first_recycling
   AgsRecycling *last_recycling; // the AgsRecycling that indicates the end for affecting AgsRecalls, NULL means AgsChannel's last_recycling
@@ -64,18 +65,18 @@ struct _AgsRecallIDClass
 
 GType ags_recall_id_get_type(void);
 
-guint ags_recall_id_generate_group_id();
+AgsGroupId ags_recall_id_generate_group_id();
 
 gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
 void ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage);
 void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
 
 GList* ags_recall_id_add(GList *recall_id_list,
-			 guint parent_group_id, guint group_id, guint child_group_id,
+			 AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
 			 AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			 gboolean higher_level_is_recall);
-AgsRecallID* ags_recall_id_find_group_id(GList *recall_id_list, guint group_id);
-AgsRecallID* ags_recall_id_find_parent_group_id(GList *recall_id_list, guint parent_group_id);
+AgsRecallID* ags_recall_id_find_group_id(GList *recall_id_list, AgsGroupId group_id);
+AgsRecallID* ags_recall_id_find_parent_group_id(GList *recall_id_list, AgsGroupId parent_group_id);
 
 AgsRecallID* ags_recall_id_new();
 

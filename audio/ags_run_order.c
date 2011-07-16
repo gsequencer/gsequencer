@@ -36,7 +36,7 @@ void ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *input,
 				  guint new_position, guint old_position);
 void ags_run_order_changed_input(AgsRunOrder *run_order, AgsChannel *input,
 				 guint new_position, guint old_position,
-				 guint group_id, gboolean do_play);
+				 AgsGroupId group_id, gboolean do_play);
 
 enum{
   PROP_0,
@@ -185,7 +185,7 @@ ags_run_order_finalize(GObject *gobject)
 void
 ags_run_order_changed_input(AgsRunOrder *run_order, AgsChannel *input,
 			    guint new_position, guint old_position,
-			    guint group_id, gboolean do_play)
+			    AgsGroupId group_id, gboolean do_play)
 {
   GList *list;
 
@@ -216,7 +216,7 @@ ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *output,
   AgsAudio *audio;
   AgsChannel *input;
   GList *list;
-  guint output_group_id, group_id;
+  AgsGroupId output_group_id, group_id;
   gboolean output_do_play, input_do_play;
 
   audio = AGS_AUDIO(output->audio);
@@ -345,7 +345,7 @@ ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel)
 }
 
 AgsRunOrder*
-ags_run_order_find_group_id(GList *run_order_i, guint group_id)
+ags_run_order_find_group_id(GList *run_order_i, AgsGroupId group_id)
 {
   while(run_order_i != NULL){
     if(AGS_RUN_ORDER(run_order_i->data)->recall_id->group_id == group_id){

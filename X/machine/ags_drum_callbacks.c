@@ -431,7 +431,7 @@ void
 ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
   AgsDevout *devout;
-  guint group_id;
+  AgsGroupId group_id;
 
   devout = AGS_DEVOUT(drum->machine.audio->devout);
 
