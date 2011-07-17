@@ -919,9 +919,6 @@ ags_recall_real_remove(AgsRecall *recall)
 
   fprintf(stdout, "remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
-  if(AGS_IS_PLAY_RECYCLING(recall))
-    printf("AgsPlayRecycling: %x\n\0", recall);
-
   if(recall->parent == NULL){
     parent = NULL;
     g_object_unref(recall);

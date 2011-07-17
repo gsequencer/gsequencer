@@ -2798,6 +2798,59 @@ ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id)
   ags_channel_recursive_cancel_up(channel->link, recall_id);
 }
 
+void
+ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsGroupId new_toplevel_group_id,
+				      AgsChannel *old_link, AgsGroupId old_toplevel_group_id)
+{
+  AgsChannel *old_toplevel;
+  auto void ags_channel_recursive_set_group_id_up(AgsChannel *current);
+  auto void ags_channel_recursive_set_group_id_down(AgsChannel *current);
+  auto void ags_channel_recursive_set_parent_group_id_input_down(AgsChannel *output);
+  auto void ags_channel_recursive_set_parent_group_id_down(AgsChannel *current);
+  auto AgsChannel* ags_channel_recursive_unset_group_id_up(AgsChannel *current);
+  auto void ags_channel_recursive_unset_child_group_id_up(AgsChannel *current);
+  void ags_channel_recursive_set_group_id_up(AgsChannel *current){
+    GList *recalls;
+  }
+  void ags_channel_recursive_set_group_id_down(AgsChannel *current){
+    GList *recalls;
+  }
+  void ags_channel_recursive_set_parent_group_id_input_down(AgsChannel *output){
+    GList *recalls;
+  }
+  void ags_channel_recursive_set_parent_group_id_down(AgsChannel *current){
+    GList *recalls;
+  }
+  AgsChannel* ags_channel_recursive_unset_group_id_up(AgsChannel *current){
+    GList *recalls;
+
+    
+    return(current);
+  }
+  void ags_channel_recursive_unset_child_group_id_up(AgsChannel *current){
+    GList *recalls;
+  }
+
+  /* entry point */
+  /* unset invalid group ids of old link */
+  old_toplevel = ags_channel_recursive_unset_group_id_up(old_link);
+  ags_channel_recursive_unset_child_group_id_up(old_toplevel);
+
+  /* set the appropriate group ids of channel */
+}
+
+AgsChannel*
+ags_channel_find_toplevel(AgsChannel *channel)
+{
+  return(channel);
+}
+
+AgsChannel*
+ags_channel_find_source(AgsChannel *channel, AgsGroupId group_id)
+{
+  return(channel);
+}
+
 AgsChannel*
 ags_channel_new(GObject *audio)
 {
