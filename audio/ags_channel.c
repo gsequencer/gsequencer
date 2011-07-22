@@ -492,6 +492,29 @@ ags_channel_last_with_recycling(AgsChannel *channel)
 }
 
 void
+ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  channel->recall_id = g_list_remove(channel->recall_id,
+				     recall_id);
+  g_object_unref(G_OBJECT(recall_id));
+}
+
+void
+ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  channel->recall_id = g_list_prepend(channel->recall_id,
+				      recall_id);
+}
+
+void
 ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container, gboolean play)
 {
   /*
@@ -502,6 +525,22 @@ ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container,
     channel->play_container = g_list_prepend(channel->play_container, recall_container);
   else
     channel->recall_container = g_list_prepend(channel->recall_container, recall_container);
+}
+
+void
+ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  if(play){
+    channel->play = g_list_remove(channel->play, recall);
+  }else{
+    channel->recall = g_list_remove(channel->recall, recall);
+  }
+
+  g_object_unref(G_OBJECT(recall));
 }
 
 void
@@ -2814,6 +2853,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsGroupId new_toplev
   AgsAudio *audio;
   AgsChannel *old_toplevel, *source;
   GList *invalid_group_id_list, *invalid_group_id_list_of_old;
+  auto void ags_audio_reset_group_id(AgsAudio *audio, GList *group_id_list, GList *invalid_group_id_list);
   auto void ags_channel_reset_group_id(AgsChannel *channel, GList *group_id_list, GList *invalid_group_id_list);
   auto void ags_channel_group_id_to_child_group_id(AgsChannel *channel, GList **group_id_list, GList **invalid_group_id_list);
   auto void ags_channel_recursive_collect_invalid_group_id_down_input(AgsChannel *output);
@@ -2823,15 +2863,40 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsGroupId new_toplev
   auto void ags_channel_recursive_reset_group_id_down(AgsChannel *current, GList *group_id_list, GList *invalid_group_id_list);
   auto void ags_channel_tillrecycling_unset_group_id_up(AgsChannel *current);
   auto void ags_channel_tillrecycling_set_group_id_up(AgsChannel *current);
+  void ags_audio_reset_group_id(AgsAudio *audio, GList *group_id_list, GList *invalid_group_id_list){
+  }
   void ags_channel_reset_group_id(AgsChannel *channel, GList *group_id_list, GList *invalid_group_id_list){
-    //TODO:JK: implement me
+    AgsRecall *recall;
+    AgsRecallID *recall_id;
+    AgsGroupId group_id;
+    GList *list, *recall_list;
+    gboolean play;
+    
+    while(invalid_group_id_list != NULL){
+      group_id = AGS_POINTER_TO_GROUP_ID(invalid_group_id_list->data);
+      recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
+      
+      play = (recall_id->parent_group_id == 0) ? TRUE: FALSE;
+      recall_list = play ? channel->play: channel->recall;
 
-    /* unref AgsRecalls */
+      /* unref AgsRecalls */
+      while((list = ags_recall_find_group_id(recall_list, group_id)) != NULL){
+	recall = AGS_RECALL(list->data);
+	
+	ags_channel_remove_recall(channel, (GObject *) recall, play);
+	
+	list = list->next;
+      }
+      
+      /* unref AgsRecallID */
+      ags_channel_remove_recall_id(channel, recall_id);
 
-    /* unref AgsRecallIDs */
-
+      /* iterate */
+      invalid_group_id_list = invalid_group_id_list->next;
+    }
+    
     /* create new AgsRecallIDs */
-
+    
     /* create new AgsRecalls */
   }
   void ags_channel_group_id_to_child_group_id(AgsChannel *channel, GList **group_id_list, GList **invalid_group_id_list){
