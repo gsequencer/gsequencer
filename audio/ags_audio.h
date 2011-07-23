@@ -119,6 +119,7 @@ void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 void ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
 		    gint stage, gboolean do_recall);
 void ags_audio_duplicate_recall(AgsAudio *audio,
+				gboolean playback, gboolean sequencer, gboolean notation,
 				AgsGroupId group_id,
 				guint audio_signal_level);
 guint ags_audio_recursive_play_init(AgsAudio *audio,
