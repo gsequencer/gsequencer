@@ -1543,6 +1543,87 @@ ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
   }
 }
 
+void
+ags_audio_duplicate_recall(AgsAudio *audio,
+			   AgsGroupId group_id,
+			   guint audio_signal_level)
+{
+  AgsRecall *recall;
+  AgsRecallID *recall_id;
+  AgsRunOrder *run_order;
+  GList *list_recall_start, *list_recall;
+  gboolean matches_reality;
+  
+  recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
+  
+  if(recall_id->parent_group_id == 0)
+    list_recall_start = 
+      list_recall = audio->play;
+  else
+    list_recall_start =
+      list_recall = audio->recall;
+  
+  while(list_recall != NULL){
+    recall = AGS_RECALL(list_recall->data);
+    
+    matches_reality = TRUE;
+    
+    if(AGS_RECALL_DISTINCTS_REAL & (recall->flags) != 0){
+      if(AGS_RECALL_IS_REAL & (recall->flags) != 0){
+	if(audio_signal_level < 2)
+	  matches_reality = FALSE;
+      }else if(audio_signal_level > 1)
+	matches_reality = FALSE;
+    }
+    
+    if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
+       AGS_IS_RECALL_AUDIO(recall) ||
+       !matches_reality ||
+       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
+       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))){
+      list_recall = list_recall->next;
+      continue;
+    }
+    
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+      GList *list_recall_run_notify;
+      
+      /* check if the object has already been duplicated */
+      list_recall_run_notify = ags_recall_find_type_with_group_id(list_recall_start, G_OBJECT_TYPE(recall), group_id);
+      
+      if(list_recall_run_notify != NULL){
+	/* notify additional run on the recall */
+	recall = AGS_RECALL(list_recall_run_notify->data);
+	
+	ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
+      }else{
+	/* duplicate the recall, notify first run and initialize it */
+	recall = ags_recall_duplicate(recall, recall_id);
+	
+	if(recall_id->parent_group_id == 0)
+	  audio->play = g_list_append(audio->play, recall);
+	else
+	  audio->recall = g_list_append(audio->recall, recall);
+	
+	ags_connectable_connect(AGS_CONNECTABLE(recall));
+	
+	ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
+      }
+    }
+    
+    list_recall = list_recall->next;
+  }
+  
+  /* set run order */
+  run_order = ags_run_order_find_group_id(audio->run_order,
+					  recall_id->group_id);
+  
+  if(run_order == NULL){
+    run_order = ags_run_order_new(recall_id);
+    ags_audio_add_run_order(audio, run_order);
+  }
+}
+
 /*
  * AgsRecall related
  */
