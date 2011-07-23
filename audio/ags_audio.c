@@ -27,6 +27,7 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <stdlib.h>

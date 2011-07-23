@@ -80,8 +80,11 @@ typedef enum
 typedef enum
 {
   AGS_DEVOUT_PLAY_DONE              = 1,
-  AGS_DEVOUT_PLAY_REMOVE            = 1 << 1,
-  AGS_DEVOUT_PLAY_PAD               = 1 << 2,
+  AGS_DEVOUT_PLAY_REMOVE            = 1 <<  1,
+  AGS_DEVOUT_PLAY_PAD               = 1 <<  2,
+  AGS_DEVOUT_PLAY_PLAYBACK          = 1 <<  3,
+  AGS_DEVOUT_PLAY_SEQUENCER         = 1 <<  4,
+  AGS_DEVOUT_PLAY_NOTATION          = 1 <<  5,
 }AgsDevoutPlayFlags;
 
 struct _AgsDevout
