@@ -35,7 +35,7 @@
 
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
-typedef gulong AgsGroupId;
+typedef guint AgsGroupId;
 
 typedef enum{
   AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE     = 1,

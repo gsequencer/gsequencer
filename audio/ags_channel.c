@@ -1542,9 +1542,11 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_CHANNEL(recall) ||
        !matches_reality ||
-       (!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
-       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
-       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))){
+       (!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) || (playback && (AGS_RECALL_PLAYBACK & (recall->flags)) == 0 && audio_signal_level == 0) || ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && audio_signal_level != 0)
+       //       ((!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && (playback && (audio_signal_level != 0)))// ||
+       //       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
+       //       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))
+       ){
       list_recall = list_recall->next;
       continue;
     }
@@ -1575,7 +1577,9 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 
 void
 ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-				gboolean arrange_group_id, gboolean duplicate_templates, gboolean playback, gboolean sequencer, gboolean notation, gboolean resolve_dependencies,
+				gboolean arrange_group_id,
+				gboolean duplicate_templates, gboolean playback, gboolean sequencer, gboolean notation,
+				gboolean resolve_dependencies,
 				AgsGroupId group_id, AgsGroupId child_group_id,
 				guint audio_signal_level)
 {
@@ -2826,6 +2830,66 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsGroupId new_toplev
 				GList *group_id_list, GList *child_group_id_list,
 				GList *invalid_group_id_list,
 				guint audio_signal_level){
+    AgsRecall *recall;
+    AgsRecallID *recall_id;
+    AgsGroupId group_id, child_group_id;
+    GList *list, *recall_list;
+    gboolean play;
+    guint recall_purpose;
+    gboolean playback, sequencer, notation;
+
+    while(invalid_group_id_list != NULL){
+      group_id = AGS_POINTER_TO_GROUP_ID(invalid_group_id_list->data);
+      recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
+      
+      play = (recall_id->parent_group_id == 0) ? TRUE: FALSE;
+      recall_list = play ? audio->play: audio->recall;
+
+      /* unref AgsRecalls */
+      while((list = ags_recall_find_group_id(recall_list, group_id)) != NULL){
+	recall = AGS_RECALL(list->data);
+	
+	ags_audio_remove_recall(audio, (GObject *) recall, play);
+	
+	list = list->next;
+      }
+      
+      /* unref AgsRecallID */
+      ags_audio_remove_recall_id(audio, recall_id);
+
+      /* iterate */
+      invalid_group_id_list = invalid_group_id_list->next;
+    }
+    
+    while(group_id_list != NULL){
+      /* create new AgsRecallIDs */
+      group_id = AGS_POINTER_TO_GROUP_ID(group_id_list->data);
+      child_group_id = AGS_POINTER_TO_GROUP_ID(child_group_id_list->data);
+
+      recall_id = ags_recall_id_new();
+      audio->recall_id = ags_recall_id_add(audio->recall_id,
+					     0, group_id, child_group_id,
+					     channel->first_recycling, channel->last_recycling,
+					     ((audio_signal_level > 1) ? TRUE: FALSE));
+
+      /* retrieve the recalls purpose */
+      recall_purpose = GPOINTER_TO_UINT(recall_purpose_list->data);
+
+      playback = ((AGS_DEVOUT_PLAY_PLAYBACK & recall_purpose) != 0) ? TRUE: FALSE;
+      sequencer = ((AGS_DEVOUT_PLAY_SEQUENCER & recall_purpose) != 0) ? TRUE: FALSE;
+      notation = ((AGS_DEVOUT_PLAY_NOTATION & recall_purpose) != 0) ? TRUE: FALSE;
+
+      /* create new AgsRecalls */
+      ags_audio_duplicate_recall(audio,
+				 playback, sequencer, notation,
+				 group_id,
+				 audio_signal_level);
+
+      /* iterate */
+      group_id_list = group_id_list->next;
+      child_group_id_list = child_group_id_list->next;
+      recall_purpose_list = recall_purpose_list->next;
+    }
   }
   void ags_channel_reset_group_id(AgsChannel *channel,
 				  GList *group_id_list, GList *child_group_id_list,
@@ -3114,10 +3178,10 @@ ags_channel_find_toplevel(AgsChannel *channel)
   return(channel);
 }
 
-AgsChannel*
+GObject*
 ags_channel_find_source(AgsChannel *channel, AgsGroupId group_id)
 {
-  return(channel);
+  return((GObject *) channel);
 }
 
 AgsChannel*

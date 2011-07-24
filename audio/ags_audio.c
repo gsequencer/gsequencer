@@ -1580,9 +1580,10 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_AUDIO(recall) ||
-       !matches_reality ||
-       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
-       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))){
+       !matches_reality // ||
+       //       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
+       //       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))
+       ){
       list_recall = list_recall->next;
       continue;
     }
