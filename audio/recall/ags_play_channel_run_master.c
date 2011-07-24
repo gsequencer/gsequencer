@@ -149,9 +149,9 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
   /* properties */
   param_spec = g_param_spec_object("stream_channel_run\0",
 				   "assigned AgsStreamChannelRun\0",
-				   "the assigned AgsStreamChannelRun\0",
+				   "an assigned AgsStreamChannelRun\0",
 				   AGS_TYPE_STREAM_CHANNEL_RUN,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_CHANNEL_RUN,
 				  param_spec);
@@ -210,7 +210,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
 
       stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
 
-      if(stream_channel_run == play_channel_run_master->stream_channel_run)
+      if(g_list_find(play_channel_run_master->stream_channel_run, stream_channel_run) != NULL)
 	return;
 
       if(stream_channel_run != NULL &&
@@ -218,20 +218,6 @@ ags_play_channel_run_master_set_property(GObject *gobject,
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
-      }
-
-      if(play_channel_run_master->stream_channel_run != NULL){
-	if(is_template){
-	  ags_recall_remove_dependency(AGS_RECALL(play_channel_run_master),
-				       (AgsRecall *) play_channel_run_master->stream_channel_run);
-	}else{
-	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run_master)->flags)) != 0){
-	    g_signal_handler_disconnect(G_OBJECT(play_channel_run_master),
-					play_channel_run_master->done_handler);
-	  }
-	}
-
-	g_object_unref(G_OBJECT(play_channel_run_master->stream_channel_run));
       }
 
       if(stream_channel_run != NULL){
@@ -249,7 +235,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
 	}
       }
 
-      play_channel_run_master->stream_channel_run = stream_channel_run;
+      play_channel_run_master->stream_channel_run = g_list_prepend(play_channel_run_master->stream_channel_run, stream_channel_run);
     }
     break;
   default:
@@ -269,11 +255,6 @@ ags_play_channel_run_master_get_property(GObject *gobject,
   play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(gobject);
 
   switch(prop_id){
-  case PROP_STREAM_CHANNEL_RUN:
-    {
-      g_value_set_object(value, G_OBJECT(play_channel_run_master->stream_channel_run));
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
