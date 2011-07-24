@@ -1541,8 +1541,8 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* ignore initialized or non-runnable AgsRecalls */
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_CHANNEL(recall) ||
-       !matches_reality ||
-       (!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) || (playback && (AGS_RECALL_PLAYBACK & (recall->flags)) == 0 && audio_signal_level == 0) || ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && audio_signal_level != 0)
+       !matches_reality// ||
+       //       (!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) || (playback && (AGS_RECALL_PLAYBACK & (recall->flags)) == 0 && audio_signal_level == 0) || ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && audio_signal_level != 0)
        //       ((!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && (playback && (audio_signal_level != 0)))// ||
        //       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
        //       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))
