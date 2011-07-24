@@ -1467,6 +1467,26 @@ ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order)
 }
 
 void
+ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  audio->recall_id = g_list_prepend(audio->recall_id, recall_id);
+}
+
+void
+ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  audio->recall_id = g_list_remove(audio->recall_id, recall_id);
+}
+
+void
 ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play)
 {
   /*
@@ -1480,6 +1500,19 @@ ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, gbool
 }
 
 void
+ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  if(play)
+    audio->play_container = g_list_remove(audio->play_container, recall_container);
+  else
+    audio->recall_container = g_list_remove(audio->recall_container, recall_container);
+}
+
+void
 ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
 {
   /*
@@ -1490,6 +1523,20 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
     audio->play = g_list_append(audio->play, recall);
   }else{
     audio->recall = g_list_append(audio->recall, recall);
+  }
+}
+
+void
+ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
+{
+  /*
+   * TODO:JK: thread synchronisation
+   */
+
+  if(play){
+    audio->play = g_list_remove(audio->play, recall);
+  }else{
+    audio->recall = g_list_remove(audio->recall, recall);
   }
 }
 

@@ -112,8 +112,12 @@ void ags_audio_find_group_id_from_child(AgsAudio *audio,
 void ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order);
 void ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order);
 
+void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
+void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play);
+void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play);
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
+void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
 
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 void ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
