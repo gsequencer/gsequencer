@@ -62,11 +62,16 @@ struct _AgsPlayChannelRunMasterClass
 
 struct _AgsPlayChannelRunMasterStreamer
 {
-  AgsStreamChannelRunMaster *stream_channel_run;
+  AgsPlayChannelRunMaster *play_channel_run_master;
+
+  AgsStreamChannelRun *stream_channel_run;
   gulong done_handler;
 };
 
 GType ags_play_channel_run_master_get_type();
+
+AgsPlayChannelRunMasterStreamer* ags_play_channel_run_master_streamer_alloc(AgsPlayChannelRunMaster *play_channel_run_master,
+									    AgsStreamChannelRun *stream_channel_run);
 
 AgsPlayChannelRunMaster* ags_play_channel_run_master_new();
 

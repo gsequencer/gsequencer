@@ -666,7 +666,6 @@ void
 ags_recall_finalize(GObject *gobject)
 {
   AgsRecall *recall;
-  GList *list, *list_next;
 
   recall = AGS_RECALL(gobject);
 
@@ -680,6 +679,8 @@ ags_recall_finalize(GObject *gobject)
 
   if(recall->name != NULL)
     g_free(recall->name);
+
+  ags_list_free_and_unref_link(recall->dependencies);
 
   ags_list_free_and_unref_link(recall->children);
 
@@ -697,8 +698,6 @@ ags_recall_finalize(GObject *gobject)
 			  &value);
     g_value_unset(&value);
   }
-
-  list = recall->children;
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);

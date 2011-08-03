@@ -2855,7 +2855,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsGroupId new_toplev
       }
       
       /* unref AgsRecallID */
-      ags_audio_remove_recall_id(audio, recall_id);
+      ags_audio_remove_recall_id(audio, (GObject *) recall_id);
 
       /* iterate */
       invalid_group_id_list = invalid_group_id_list->next;

@@ -206,6 +206,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
   case PROP_STREAM_CHANNEL_RUN:
     {
       AgsStreamChannelRun *stream_channel_run;
+      AgsPlayChannelRunMasterStreamer *streamer;
       gboolean is_template;
 
       stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
@@ -223,19 +224,22 @@ ags_play_channel_run_master_set_property(GObject *gobject,
       if(stream_channel_run != NULL){
 	g_object_ref(G_OBJECT(stream_channel_run));
 
+	streamer = ags_play_channel_run_master_streamer_alloc(play_channel_run_master,
+							      stream_channel_run);
+
 	if(is_template){
 	  ags_recall_add_dependency(AGS_RECALL(play_channel_run_master),
 				    ags_recall_dependency_new((GObject *) stream_channel_run));
 	}else{
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run_master)->flags)) != 0){
-	    play_channel_run_master->done_handler =
+	    streamer->done_handler =
 	      g_signal_connect(G_OBJECT(stream_channel_run), "done\0",
 			       G_CALLBACK(ags_play_channel_run_master_stream_channel_done_callback), play_channel_run_master);
 	  }
 	}
       }
 
-      play_channel_run_master->stream_channel_run = g_list_prepend(play_channel_run_master->stream_channel_run, stream_channel_run);
+      play_channel_run_master->stream_channel_run = g_list_prepend(play_channel_run_master->stream_channel_run, streamer);
     }
     break;
   default:
@@ -294,6 +298,8 @@ ags_play_channel_run_master_run_connect(AgsRunConnectable *run_connectable)
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run_master;
   GObject *gobject;
+  AgsPlayChannelRunMasterStreamer *streamer;
+  GList *list;
 
   ags_play_channel_run_master_parent_run_connectable_interface->connect(run_connectable);
 
@@ -311,11 +317,19 @@ ags_play_channel_run_master_run_connect(AgsRunConnectable *run_connectable)
 		     G_CALLBACK(ags_play_channel_run_master_source_recycling_changed_callback), play_channel_run_master);
 
   /* stream_channel_run */
-  gobject = G_OBJECT(play_channel_run_master->stream_channel_run);
+  list = play_channel_run_master->stream_channel_run;
 
-  play_channel_run_master->done_handler =
-    g_signal_connect(gobject, "done\0",
-		     G_CALLBACK(ags_play_channel_run_master_stream_channel_done_callback), play_channel_run_master);
+  while(list != NULL){
+    streamer = (AgsPlayChannelRunMasterStreamer *) list->data;
+
+    gobject = G_OBJECT(streamer->stream_channel_run);
+
+    streamer->done_handler =
+      g_signal_connect(gobject, "done\0",
+		       G_CALLBACK(ags_play_channel_run_master_stream_channel_done_callback), streamer);
+
+    list = list->next;
+  }
 }
 
 void
@@ -324,6 +338,8 @@ ags_play_channel_run_master_run_disconnect(AgsRunConnectable *run_connectable)
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run_master;
   GObject *gobject;
+  AgsPlayChannelRunMasterStreamer *streamer;
+  GList *list;
 
   ags_play_channel_run_master_parent_run_connectable_interface->disconnect(run_connectable);
 
@@ -339,9 +355,17 @@ ags_play_channel_run_master_run_disconnect(AgsRunConnectable *run_connectable)
   g_signal_handler_disconnect(gobject, play_channel_run_master->source_recycling_changed_handler);
 
   /* stream_channel_run */
-  gobject = G_OBJECT(play_channel_run_master->stream_channel_run);
+  list = play_channel_run_master->stream_channel_run;
 
-  g_signal_handler_disconnect(gobject, play_channel_run_master->done_handler);
+  while(list != NULL){
+    streamer = (AgsPlayChannelRunMasterStreamer *) list->data;
+    
+    gobject = G_OBJECT(streamer->stream_channel_run);
+
+    g_signal_handler_disconnect(gobject, streamer->done_handler);
+
+    list = list->next;
+  }
 }
 
 void
@@ -531,6 +555,19 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 							 AgsPlayChannelRunMaster *play_channel_run_master)
 {
   play_channel_run_master->flags |= AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING;
+}
+
+AgsPlayChannelRunMasterStreamer*
+ags_play_channel_run_master_streamer_alloc(AgsPlayChannelRunMaster *play_channel_run_master,
+					   AgsStreamChannelRun *stream_channel_run)
+{
+  AgsPlayChannelRunMasterStreamer *streamer;
+
+  streamer = (AgsPlayChannelRunMasterStreamer *) malloc(sizeof(AgsPlayChannelRunMasterStreamer));
+
+  streamer->stream_channel_run = stream_channel_run;
+
+  return(streamer);
 }
 
 AgsPlayChannelRunMaster*
