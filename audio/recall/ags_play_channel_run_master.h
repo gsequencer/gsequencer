@@ -50,7 +50,7 @@ struct _AgsPlayChannelRunMaster
 
   guint flags;
 
-  GList *stream_channel_run;
+  GList *streamer;
 
   gulong source_recycling_changed_handler;
 };

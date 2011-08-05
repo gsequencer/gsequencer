@@ -211,7 +211,6 @@ ags_property_collection_editor_new(GType child_type,
 				   GParameter *child_parameter)
 {
   AgsPropertyCollectionEditor *property_collection_editor;
-  va_list var_arg;
 
   property_collection_editor = (AgsPropertyCollectionEditor *) g_object_new(AGS_TYPE_PROPERTY_COLLECTION_EDITOR,
 									    NULL);
