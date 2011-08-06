@@ -48,9 +48,10 @@ void ags_stream_channel_run_remap_stream_recycling(AgsStreamChannelRun *stream_c
 					       AgsRecycling *new_start_region, AgsRecycling *new_end_region);
 
 void ags_stream_channel_run_recycling_changed_callback(AgsChannel *channel,
-						   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-						   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-						   AgsStreamChannelRun *stream_channel_run);
+						       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+						       AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+						       AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
+						       AgsStreamChannelRun *stream_channel_run);
 
 static gpointer ags_stream_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_run_parent_connectable_interface;
@@ -306,6 +307,7 @@ void
 ags_stream_channel_run_recycling_changed_callback(AgsChannel *channel,
 						  AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 						  AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+						  AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
 						  AgsStreamChannelRun *stream_channel_run)
 {
   ags_stream_channel_run_remap_stream_recycling(stream_channel_run,

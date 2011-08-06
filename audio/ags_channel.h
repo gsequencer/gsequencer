@@ -106,7 +106,8 @@ struct _AgsChannelClass
 
   void (*recycling_changed)(AgsChannel *channel,
 			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-			    AgsRecycling *new_start_region, AgsRecycling *new_end_region);
+			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+			    AgsRecycling *start_changed_region, AgsRecycling *end_changed_region);
 };
 
 GType ags_channel_get_type();
@@ -137,7 +138,8 @@ void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 void ags_channel_set_recycling(AgsChannel *channel, AgsRecycling *first_recycling, AgsRecycling *last_recycling, gboolean update, gboolean destroy_old);
 void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-				   AgsRecycling *new_start_region, AgsRecycling *new_end_region);
+				   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+				   AgsRecycling *start_changed_region, AgsRecycling *end_changed_region);
 
 void ags_channel_resize_audio_signal(AgsChannel *channel, guint size);
 

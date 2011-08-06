@@ -324,6 +324,25 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 }
 
 AgsRecycling*
+ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
+				GObject *prev_channel)
+{
+  AgsRecycling *recycling;
+
+  recycling = start_region;
+
+  while(recycling != end_region->next){
+    if(recycling->channel != prev_channel){
+      return(recycling);
+    }
+
+    recycling = recycling->next;
+  }
+
+  return(NULL);
+}
+
+AgsRecycling*
 ags_recycling_new(GObject *devout)
 {
   AgsRecycling *recycling;

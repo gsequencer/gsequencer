@@ -143,8 +143,9 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsChannelClass, recycling_changed),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT,
-		 G_TYPE_NONE, 4,
+		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT,
+		 G_TYPE_NONE, 6,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT);
 }
@@ -873,7 +874,8 @@ ags_channel_set_recycling(AgsChannel *channel,
 
     ags_channel_recycling_changed(input,
 				  changed_old_first_recycling, changed_old_last_recycling,
-				  input->first_recycling, input->last_recycling);
+				  input->first_recycling, input->last_recycling,
+				  first_recycling, last_recycling);
 
     /* change will affect output */
     if(change_old_first){
@@ -891,7 +893,8 @@ ags_channel_set_recycling(AgsChannel *channel,
   void ags_channel_set_recycling_emit_changed_output(AgsChannel *output){
     ags_channel_recycling_changed(output,
 				  changed_old_first_recycling, changed_old_last_recycling,
-				  output->first_recycling, output->last_recycling);
+				  output->first_recycling, output->last_recycling,
+				  first_recycling, last_recycling);
 
     if(output->link != NULL)
       if(ags_channel_set_recycling_emit_changed(output->link))
@@ -1103,7 +1106,8 @@ ags_channel_set_recycling(AgsChannel *channel,
 void
 ags_channel_recycling_changed(AgsChannel *channel,
 			      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-			      AgsRecycling *new_start_region, AgsRecycling *new_end_region)
+			      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+			      AgsRecycling *start_changed_region, AgsRecycling *end_changed_region)
 {
   g_return_if_fail(AGS_IS_CHANNEL(channel));
 
@@ -1111,7 +1115,8 @@ ags_channel_recycling_changed(AgsChannel *channel,
   g_signal_emit(G_OBJECT(channel),
 		channel_signals[RECYCLING_CHANGED], 0,
 		old_start_region, old_end_region,
-		new_start_region, new_end_region);
+		new_start_region, new_end_region,
+		start_changed_region, end_changed_region);
   g_object_unref(G_OBJECT(channel));
 }
 

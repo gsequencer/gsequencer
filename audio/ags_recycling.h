@@ -78,6 +78,9 @@ void ags_recycling_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 void ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 				       AgsAudioSignal *audio_signal);
 
+AgsRecycling* ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
+					      GObject *prev_channel);
+
 AgsRecycling* ags_recycling_new(GObject *devout);
 
 #endif /*__AGS_RECYCLING_H__*/

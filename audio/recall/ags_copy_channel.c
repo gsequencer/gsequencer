@@ -68,11 +68,13 @@ void ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
 void ags_copy_channel_source_recycling_changed_callback(AgsChannel *channel,
 							AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 							AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+							AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
 							AgsCopyChannel *copy_channel);
 
 void ags_copy_channel_destination_recycling_changed_callback(AgsChannel *channel,
 							     AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 							     AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+							     AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
 							     AgsCopyChannel *copy_channel);
 
 enum{
@@ -690,6 +692,7 @@ void
 ags_copy_channel_source_recycling_changed_callback(AgsChannel *channel,
 						   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 						   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+						   AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
 						   AgsCopyChannel *copy_channel)
 {
   ags_copy_channel_remap_child_source(copy_channel,
@@ -701,6 +704,7 @@ void
 ags_copy_channel_destination_recycling_changed_callback(AgsChannel *channel,
 							AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 							AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+							AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
 							AgsCopyChannel *copy_channel)
 {
   ags_copy_channel_remap_child_destination(copy_channel,
