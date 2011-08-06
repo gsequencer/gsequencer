@@ -875,6 +875,7 @@ ags_channel_set_recycling(AgsChannel *channel,
     ags_channel_recycling_changed(input,
 				  changed_old_first_recycling, changed_old_last_recycling,
 				  input->first_recycling, input->last_recycling,
+				  old_first_recycling, old_last_recycling,
 				  first_recycling, last_recycling);
 
     /* change will affect output */
@@ -894,6 +895,7 @@ ags_channel_set_recycling(AgsChannel *channel,
     ags_channel_recycling_changed(output,
 				  changed_old_first_recycling, changed_old_last_recycling,
 				  output->first_recycling, output->last_recycling,
+				  old_first_recycling, old_last_recycling,
 				  first_recycling, last_recycling);
 
     if(output->link != NULL)
@@ -1107,7 +1109,8 @@ void
 ags_channel_recycling_changed(AgsChannel *channel,
 			      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 			      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-			      AgsRecycling *start_changed_region, AgsRecycling *end_changed_region)
+			      AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+			      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
 {
   g_return_if_fail(AGS_IS_CHANNEL(channel));
 
@@ -1116,7 +1119,8 @@ ags_channel_recycling_changed(AgsChannel *channel,
 		channel_signals[RECYCLING_CHANGED], 0,
 		old_start_region, old_end_region,
 		new_start_region, new_end_region,
-		start_changed_region, end_changed_region);
+		old_start_changed_region, old_end_changed_region,
+		new_start_changed_region, new_end_changed_region);
   g_object_unref(G_OBJECT(channel));
 }
 
