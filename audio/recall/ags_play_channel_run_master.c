@@ -61,14 +61,15 @@ void ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_play_channel_run_master_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
 
 void ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_channel_run_master);
-void ags_play_channel_run_master_refresh_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
-						      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-						      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-						      AgsRecycling *start_changed_region, AgsRecycling *end_changed_region);
 void ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
 						    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 						    AgsRecycling *new_start_region, AgsRecycling *new_end_region);
-
+void ags_play_channel_run_master_refresh_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
+						      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+						      AgsRecycling *new_start_region, AgsRecycling *new_end_region);
+void ags_play_channel_run_master_refresh_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
+						      AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
 void ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channel,
 								   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -483,16 +484,6 @@ ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_cha
 }
 
 void
-ags_play_channel_run_master_refresh_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
-						 AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-						 AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-						 AgsRecycling *start_changed_region, AgsRecycling *end_changed_region)
-{
-  AgsRecycling *recycling;
-  
-}
-
-void
 ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
 					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 					       AgsRecycling *new_start_region, AgsRecycling *new_end_region)
@@ -557,6 +548,24 @@ ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_cha
 }
 
 void
+ags_play_channel_run_master_refresh_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
+						 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
+{
+  AgsRecycling *recycling;
+
+  //TODO:JK: implement this function  
+}
+
+void
+ags_play_channel_run_master_refresh_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
+						 AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+						 AgsRecycling *new_start_region, AgsRecycling *new_end_region)
+{
+  //TODO:JK: implement this function
+}
+
+void
 ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channel,
 							      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 							      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
@@ -565,13 +574,12 @@ ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channe
 							      AgsPlayChannelRunMaster *play_channel_run_master)
 {
   ags_play_channel_run_master_refresh_dependencies(play_channel_run_master,
-						   old_start_region, old_end_region,
-						   new_start_region, new_end_region,
-						   start_changed_region, end_changed_region);
+						   old_start_changed_region, old_end_changed_region,
+						   new_start_changed_region, new_end_changed_region);
 
   ags_play_channel_run_master_remap_child_source(play_channel_run_master,
-						 old_start_region, old_end_region,
-						 new_start_region, new_end_region);
+						 old_start_changed_region, old_end_changed_region,
+						 new_start_changed_region, new_end_changed_region);
 }
 
 void

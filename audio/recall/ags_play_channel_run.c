@@ -64,7 +64,9 @@ void ags_play_channel_run_map_play_recycling(AgsPlayChannelRun *play_channel_run
 void ags_play_channel_run_remap_child_source(AgsPlayChannelRun *play_channel_run,
 					     AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 					     AgsRecycling *new_start_region, AgsRecycling *new_end_region);
-
+void ags_play_channel_run_refresh_child_source(AgsPlayChannelRun *play_channel_run,
+					       AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+					       AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
 void ags_play_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 							    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -536,6 +538,15 @@ void ags_play_channel_run_remap_child_source(AgsPlayChannelRun *play_channel_run
   }
 }
 
+
+void
+ags_play_channel_run_refresh_child_source(AgsPlayChannelRun *play_channel_run,
+					  AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+					  AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
+{
+  //TODO:JK: implement this function
+}
+
 void
 ags_play_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 						       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -544,9 +555,9 @@ ags_play_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 						       AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 						       AgsPlayChannelRun *play_channel_run)
 {
-  ags_play_channel_run_remap_child_source(play_channel_run,
-					  old_start_region, old_end_region,
-					  new_start_region, new_end_region);
+  ags_play_channel_run_refresh_child_source(play_channel_run,
+					    old_start_changed_region, old_end_changed_region,
+					    new_start_changed_region, new_end_changed_region);
 }
 
 void

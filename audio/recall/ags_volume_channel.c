@@ -54,6 +54,9 @@ void ags_volume_channel_map_volume_recycling(AgsVolumeChannel *volume_channel);
 void ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
 					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 					       AgsRecycling *new_start_region, AgsRecycling *new_end_region);
+void ags_volume_channel_refresh_volume_recycling(AgsVolumeChannel *volume_channel,
+						 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
 void ags_volume_channel_recycling_changed_callback(AgsChannel *channel,
 						   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -406,6 +409,15 @@ ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
   }
 }
 
+
+void
+ags_volume_channel_refresh_volume_recycling(AgsVolumeChannel *volume_channel,
+					    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+					    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
+{
+  //TODO:JK: implement this function
+}
+
 void
 ags_volume_channel_recycling_changed_callback(AgsChannel *channel,
 					      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -414,9 +426,9 @@ ags_volume_channel_recycling_changed_callback(AgsChannel *channel,
 					      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 					      AgsVolumeChannel *volume_channel)
 {
-  ags_volume_channel_remap_volume_recycling(volume_channel,
-					    old_start_region, old_end_region,
-					    new_start_region, new_end_region);
+  ags_volume_channel_refresh_volume_recycling(volume_channel,
+					      old_start_region, old_end_region,
+					      new_start_region, new_end_region);
 }
 
 AgsVolumeChannel*

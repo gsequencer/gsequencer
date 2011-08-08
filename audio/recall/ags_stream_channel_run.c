@@ -44,8 +44,11 @@ AgsRecall* ags_stream_channel_run_duplicate(AgsRecall *recall, AgsRecallID *reca
 
 void ags_stream_channel_run_map_stream_recycling(AgsStreamChannelRun *stream_channel_run);
 void ags_stream_channel_run_remap_stream_recycling(AgsStreamChannelRun *stream_channel_run,
-					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-					       AgsRecycling *new_start_region, AgsRecycling *new_end_region);
+						   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+						   AgsRecycling *new_start_region, AgsRecycling *new_end_region);
+void ags_stream_channel_run_refresh_stream_recycling(AgsStreamChannelRun *stream_channel_run,
+						     AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						     AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);  
 
 void ags_stream_channel_run_recycling_changed_callback(AgsChannel *channel,
 						       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -304,6 +307,15 @@ ags_stream_channel_run_remap_stream_recycling(AgsStreamChannelRun *stream_channe
   }
 }
 
+
+void
+ags_stream_channel_run_refresh_stream_recycling(AgsStreamChannelRun *stream_channel_run,
+						AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
+{
+  //TODO:JK: implement this function
+}
+
 void
 ags_stream_channel_run_recycling_changed_callback(AgsChannel *channel,
 						  AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -312,9 +324,9 @@ ags_stream_channel_run_recycling_changed_callback(AgsChannel *channel,
 						  AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 						  AgsStreamChannelRun *stream_channel_run)
 {
-  ags_stream_channel_run_remap_stream_recycling(stream_channel_run,
-						old_start_region, old_end_region,
-						new_start_region, new_end_region);
+  ags_stream_channel_run_refresh_stream_recycling(stream_channel_run,
+						  old_start_changed_region, old_end_changed_region,
+						  new_start_changed_region, new_end_changed_region);
 }
 
 AgsStreamChannelRun*
