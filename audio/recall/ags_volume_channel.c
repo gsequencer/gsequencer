@@ -58,7 +58,8 @@ void ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
 void ags_volume_channel_recycling_changed_callback(AgsChannel *channel,
 						   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 						   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-						   AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
+						   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 						   AgsVolumeChannel *volume_channel);
 
 enum{
@@ -409,7 +410,8 @@ void
 ags_volume_channel_recycling_changed_callback(AgsChannel *channel,
 					      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 					      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-					      AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
+					      AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+					      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 					      AgsVolumeChannel *volume_channel)
 {
   ags_volume_channel_remap_volume_recycling(volume_channel,

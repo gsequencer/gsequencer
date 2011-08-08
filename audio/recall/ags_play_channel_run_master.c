@@ -73,7 +73,8 @@ void ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *pla
 void ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channel,
 								   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 								   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-								   AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
+								   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+								   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 								   AgsPlayChannelRunMaster *play_channel_run_master);
 void ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 							      AgsPlayChannelRunMasterStreamer *streamer);
@@ -559,7 +560,8 @@ void
 ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channel,
 							      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 							      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-							      AgsRecycling *start_changed_region, AgsRecycling *end_changed_region,
+							      AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+							      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							      AgsPlayChannelRunMaster *play_channel_run_master)
 {
   ags_play_channel_run_master_refresh_dependencies(play_channel_run_master,
