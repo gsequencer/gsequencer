@@ -45,6 +45,8 @@
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
 
+#define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
+
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;

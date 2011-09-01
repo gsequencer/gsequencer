@@ -577,9 +577,9 @@ ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channe
 						   old_start_changed_region, old_end_changed_region,
 						   new_start_changed_region, new_end_changed_region);
 
-  ags_play_channel_run_master_remap_child_source(play_channel_run_master,
-						 old_start_changed_region, old_end_changed_region,
-						 new_start_changed_region, new_end_changed_region);
+  ags_play_channel_run_master_refresh_child_source(play_channel_run_master,
+						   old_start_changed_region, old_end_changed_region,
+						   new_start_changed_region, new_end_changed_region);
 }
 
 void
