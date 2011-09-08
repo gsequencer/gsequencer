@@ -166,8 +166,8 @@ void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_recall);
 void ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id);
 
-void ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsGroupId new_toplevel_group_id,
-					   AgsChannel *old_link, AgsGroupId old_toplevel_group_id);
+void ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
+					   AgsChannel *old_channel_link, AgsChannel *old_link_link);
 AgsChannel* ags_channel_find_toplevel(AgsChannel *channel);
 GObject* ags_channel_find_source(AgsChannel *channel, AgsGroupId group_id);
 
