@@ -56,8 +56,8 @@ struct _AgsRecallID
   AgsGroupId group_id;
   AgsGroupId child_group_id;
 
-  AgsRecycling *first_recycling; // the AgsRecycling that indicates the beginning for affecting AgsRecalls, NULL means AgsChannel's first_recycling
-  AgsRecycling *last_recycling; // the AgsRecycling that indicates the end for affecting AgsRecalls, NULL means AgsChannel's last_recycling
+  //  AgsRecycling *first_recycling; // the AgsRecycling that indicates the beginning for affecting AgsRecalls, NULL means AgsChannel's first_recycling
+  //  AgsRecycling *last_recycling; // the AgsRecycling that indicates the end for affecting AgsRecalls, NULL means AgsChannel's last_recycling
 };
 
 struct _AgsRecallIDClass

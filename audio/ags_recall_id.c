@@ -97,8 +97,8 @@ ags_recall_id_init(AgsRecallID *recall_id)
   recall_id->group_id = 0;
   recall_id->child_group_id = 0;
 
-  recall_id->first_recycling = NULL;
-  recall_id->last_recycling = NULL;
+  //  recall_id->first_recycling = NULL;
+  //  recall_id->last_recycling = NULL;
 }
 
 void
@@ -198,8 +198,8 @@ ags_recall_id_add(GList *recall_id_list,
   recall_id->group_id = group_id;
   recall_id->child_group_id = child_group_id;
 
-  recall_id->first_recycling = first_recycling;
-  recall_id->last_recycling = last_recycling;
+  //  recall_id->first_recycling = first_recycling;
+  //  recall_id->last_recycling = last_recycling;
 
   list = g_list_prepend(recall_id_list,
 			(gpointer) recall_id);

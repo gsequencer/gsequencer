@@ -168,8 +168,6 @@ void ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id);
 
 void ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 					   AgsChannel *old_channel_link, AgsChannel *old_link_link);
-AgsChannel* ags_channel_find_toplevel(AgsChannel *channel);
-GObject* ags_channel_find_source(AgsChannel *channel, AgsGroupId group_id);
 
 AgsChannel* ags_channel_new(GObject *audio);
 
