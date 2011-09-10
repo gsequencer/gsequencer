@@ -2827,21 +2827,15 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
   GList *invalid_lower_group_id_list, *invalid_lower_child_group_id_list;
   GList *audio_signal_level;
   /* applying functions */
-  auto void ags_audio_reset_group_id(AgsAudio *audio,
-				     GList *group_id_list,
-				     GList *devout_play_list, guint audio_signal_level,
-				     GList *invalid_group_id_list);
-  auto void ags_channel_reset_group_id(AgsChannel *channel,
-				       GList *group_id_list,
-				       GList *devout_play_list, guint audio_signal_level,
-				       GList *invalid_group_id_list);
   auto void ags_audio_reset_group_id_for_recursive(AgsAudio *audio,
 						   GList *group_id_list, GList *child_group_id_list,
-						   GList *devout_play_list, GList *audio_signal_level,
+						   GList *devout_play_list,
+						   GList *audio_signal_level_list, guint audio_signal_level,
 						   GList *invalid_group_id_list);
   auto void ags_channel_reset_group_id_for_recursive(AgsChannel *channel,
 						     GList *group_id_list, GList *child_group_id_list,
-						     GList *devout_play_list, GList *audio_signal_level,
+						     GList *devout_play_list,
+						     GList *audio_signal_level_list, guint audio_signal_level,
 						     GList *invalid_group_id_list);
   /* converters of lists */
   auto GList* ags_channel_devout_play_to_group_id(GList *devout_play_list);
@@ -2875,25 +2869,17 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 							GList *devout_play_list,
 							GList *invalid_group_id_list);
   /* implementation */
-  void ags_audio_reset_group_id(AgsAudio *audio,
-				GList *group_id_list,
-				GList *devout_play_list, guint audio_signal_level,
-				GList *invalid_group_id_list){
-  }
-  void ags_channel_reset_group_id(AgsChannel *channel,
-				  GList *group_id_list,
-				  GList *devout_play_list, guint audio_signal_level,
-				  GList *invalid_group_id_list){
-  }
   void ags_audio_reset_group_id_for_recursive(AgsAudio *audio,
 					      GList *group_id_list, GList *child_group_id_list,
-					      GList *devout_play_list, GList *audio_signal_level,
+					      GList *devout_play_list,
+					      GList *audio_signal_level_list, guint audio_signal_level,
 					      GList *invalid_group_id_list){
     AgsRecall *recall;
     AgsRecallID *recall_id;
     AgsDevoutPlay *devout_play;
     AgsGroupId group_id, child_group_id;
     GList *list, *recall_list;
+    guint level;
     gboolean play;
     gboolean playback, sequencer, notation;
 
@@ -2925,11 +2911,13 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       group_id = AGS_POINTER_TO_GROUP_ID(group_id_list->data);
       child_group_id = AGS_POINTER_TO_GROUP_ID(child_group_id_list->data);
 
+      level = (audio_signal_level_list != NULL) ? GPOINTER_TO_UINT(audio_signal_level_list->data): audio_signal_level;
+
       recall_id = ags_recall_id_new();
       audio->recall_id = ags_recall_id_add(audio->recall_id,
 					   0, group_id, child_group_id,
 					   channel->first_recycling, channel->last_recycling,
-					   ((GPOINTER_TO_UINT(audio_signal_level->data) > 1) ? TRUE: FALSE));
+					   ((level > 1) ? TRUE: FALSE));
 
       /* retrieve the recalls purpose */
       devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
@@ -2942,24 +2930,29 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       ags_audio_duplicate_recall(audio,
 				 playback, sequencer, notation,
 				 group_id,
-				 GPOINTER_TO_UINT(audio_signal_level->data));
+				 level);
 
       /* iterate */
       group_id_list = group_id_list->next;
       child_group_id_list = child_group_id_list->next;
       devout_play_list = devout_play_list->next;
-      audio_signal_level = audio_signal_level->next;
+
+      if(audio_signal_level_list != NULL){
+	audio_signal_level_list = audio_signal_level_list->next;
+      }
     }
   }
   void ags_channel_reset_group_id_for_recursive(AgsChannel *channel,
 						GList *group_id_list, GList *child_group_id_list,
-						GList *devout_play_list, GList *audio_signal_level,
+						GList *devout_play_list,
+						GList *audio_signal_level_list, guint audio_signal_level,
 						GList *invalid_group_id_list){
     AgsRecall *recall;
     AgsRecallID *recall_id;
     AgsDevoutPlay *devout_play;
     AgsGroupId group_id, child_group_id;
     GList *list, *recall_list;
+    guint level;
     gboolean play;
     gboolean playback, sequencer, notation;
 
@@ -2991,11 +2984,13 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       group_id = AGS_POINTER_TO_GROUP_ID(group_id_list->data);
       child_group_id = AGS_POINTER_TO_GROUP_ID(child_group_id_list->data);
 
+      level = (audio_signal_level_list != NULL) ? GPOINTER_TO_UINT(audio_signal_level_list->data): audio_signal_level;
+
       recall_id = ags_recall_id_new();
       channel->recall_id = ags_recall_id_add(channel->recall_id,
 					     0, group_id, child_group_id,
 					     channel->first_recycling, channel->last_recycling,
-					     ((GPOINTER_TO_UINT(audio_signal_level->data) > 1) ? TRUE: FALSE));
+					     ((level > 1) ? TRUE: FALSE));
 
       /* retrieve the recalls purpose */
       devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
@@ -3008,13 +3003,16 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       ags_channel_duplicate_recall(channel,
 				   playback, sequencer, notation,
 				   group_id,
-				   GPOINTER_TO_UINT(audio_signal_level->data));
+				   level);
 
       /* iterate */
       group_id_list = group_id_list->next;
       child_group_id_list = child_group_id_list->next;
       devout_play_list = devout_play_list->next;
-      audio_signal_level = audio_signal_level->next;
+
+      if(audio_signal_level_list != NULL){
+	audio_signal_level_list = audio_signal_level_list->next;
+      }
     }
   }
   GList* ags_channel_devout_play_to_group_id(GList *devout_play_list){
