@@ -2799,11 +2799,21 @@ ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id)
   ags_channel_recursive_cancel_up(channel->link, recall_id);
 }
 
-/*
- * channel
- * link
- * old_channel_link
- * old_link_link
+/**
+ *
+ * Called by ags_channel_set_link() to handle running #AgsAudio objects correctly.
+ * This function destroys #AgsRecall objects which were uneeded because they became
+ * invalid due to unlinking. By the way it destroys the uneeded #AgsRecallID objects, too.
+ * Additionally it creates #AgsRecall and #AgsRecallID objects to prepare becoming a
+ * running object (#AgsAudio or #AgsChannel).
+ * By the clean up the invalid #AgsRecall objects will be removed.
+ * Once the clean up has done ags_channel_recursive_play_init() will be called for every
+ * playing instance that was found.
+ *
+ * @channel a channel that was linked with @link
+ * @link a channel that was linked with @channel
+ * @old_channel_link the old link of @channel
+ * @old_link_link the old link of @link
  */
 void
 ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
