@@ -3530,11 +3530,10 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
       /* free allocated lists */
       if(new_level){
-	g_list_free(next_parent_group_id_list);
-	g_list_free(next_group_id_list);
 	g_list_free(next_child_group_id_list);
+
 	g_list_free(next_audio_signal_level);
-	g_list_free(next_invalid_group_id_list);
+
 	g_list_free(next_invalid_child_group_id_list);
       }
     }
@@ -3595,11 +3594,10 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
     /* free allocated lists */
     if(new_level){
-      g_list_free(next_parent_group_id_list);
-      g_list_free(next_group_id_list);
       g_list_free(next_child_group_id_list);
+
       g_list_free(next_audio_signal_level);
-      g_list_free(next_invalid_group_id_list);
+
       g_list_free(next_invalid_child_group_id_list);
     }
   }
@@ -3741,11 +3739,22 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
   /* free the lists */
   g_list_free(channel_lower_devout_play_list);
   g_list_free(link_upper_devout_play_list);
+
+  g_list_free(channel_parent_group_id_list);
   g_list_free(channel_group_id_list);
   g_list_free(channel_child_group_id_list);
+
+  g_list_free(link_parent_group_id_list);
   g_list_free(link_group_id_list);
   g_list_free(link_child_group_id_list);
+
   g_list_free(audio_signal_level);
+
+  g_list_free(invalid_upper_group_id_list);
+  g_list_free(invalid_upper_child_group_id_list);
+
+  g_list_free(invalid_lower_group_id_list);
+  g_list_free(invalid_lower_child_group_id_list);
 }
 
 AgsChannel*

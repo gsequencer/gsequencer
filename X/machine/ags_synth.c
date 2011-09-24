@@ -232,7 +232,6 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
 {
   AgsSynth *synth;
   GtkHBox *hbox;
-  GtkMenuItem *item;
   GtkHBox* ags_synth_set_pads_amplifier(){
     GtkHBox *hbox;
     GtkVScale *scale;
@@ -271,26 +270,30 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
   if(type == AGS_TYPE_INPUT){
     if(pads > pads_old){
       AgsOscillator *oscillator;
+      GtkMenuItem *item0, *item1;
       guint i;
       
       for(i = pads_old; i < pads; i++){
 	oscillator = ags_oscillator_new();
 	gtk_menu_shell_append((GtkMenuShell *) gtk_option_menu_get_menu(synth->oscillator), (GtkWidget *) oscillator);
 
-	item = (GtkMenuItem *) gtk_menu_item_new();
+	item0 = (GtkMenuItem *) gtk_menu_item_new();
 	hbox = ags_synth_set_pads_amplifier();
-	gtk_container_add((GtkContainer *) item,
+	gtk_container_add((GtkContainer *) item0,
 			  (GtkWidget *) hbox);
-	gtk_menu_shell_append((GtkMenuShell *) gtk_option_menu_get_menu(synth->amplifier[0]), (GtkWidget *) item);
+	gtk_menu_shell_append((GtkMenuShell *) gtk_option_menu_get_menu(synth->amplifier[0]), (GtkWidget *) item0);
 
-	item = (GtkMenuItem *) gtk_menu_item_new();
+	item1 = (GtkMenuItem *) gtk_menu_item_new();
 	hbox = ags_synth_set_pads_amplifier();
-	gtk_container_add((GtkContainer *) item,
+	gtk_container_add((GtkContainer *) item1,
 			  (GtkWidget *) hbox);
-	gtk_menu_shell_append((GtkMenuShell *) gtk_option_menu_get_menu(synth->amplifier[1]), (GtkWidget *) item);
+	gtk_menu_shell_append((GtkMenuShell *) gtk_option_menu_get_menu(synth->amplifier[1]), (GtkWidget *) item1);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) synth)){
-	  gtk_widget_show_all((GtkWidget *) item);
+	  gtk_widget_show_all((GtkWidget *) item0);
+	  gtk_widget_show_all((GtkWidget *) item1);
+
+	  gtk_widget_show_all((GtkWidget *) oscillator);
 	  ags_oscillator_connect(oscillator);
 	}
       }
