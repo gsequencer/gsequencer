@@ -3834,10 +3834,68 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
     }
 
   }
-  void ags_channel_tillrecycling_unset_group_id_up(AgsChannel *current,
+  void ags_channel_tillrecycling_unset_group_id_up(AgsChannel *channel,
 						   GList *invalid_group_id_list)
   {
+    AgsAudio *audio;
+    AgsChannel *current;
 
+    if(channel == NULL)
+      return;
+
+    current = channel;
+
+    if(AGS_IS_OUTPUT(channel)){
+      audio = AGS_AUDIO(current->audio);
+
+      goto ags_channel_tillrecycling_reset_group_id_upOUTPUT;
+    }
+    
+    while(current != NULL){
+      audio = AGS_AUDIO(current->audio);
+
+      /* input */
+      ags_channel_reset_group_id(current,
+				 NULL, NULL, NULL,
+				 NULL,
+				 NULL, G_MAXUINT,
+				 invalid_group_id_list);
+
+
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	break;
+      }      
+
+      /* audio */
+      ags_audio_reset_group_id(audio,
+			       NULL, NULL, NULL,
+			       NULL,
+			       NULL, G_MAXUINT,
+			       invalid_group_id_list);
+
+      /* output */
+      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	break;
+      }
+
+    ags_channel_tillrecycling_reset_group_id_upOUTPUT:
+
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+	current = ags_channel_nth(audio->output,
+				  current->audio_channel);
+      }else{
+	current = ags_channel_nth(audio->output,
+				  current->line);
+      }
+
+      ags_channel_reset_group_id(current,
+				 NULL, NULL, NULL,
+				 NULL,
+				 NULL, G_MAXUINT,
+				 invalid_group_id_list);
+
+      current = current->link;
+    }
   }
 
   /* entry point */
