@@ -1543,6 +1543,40 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
 /*
  * AgsRecall related
  */
+void ags_audio_resolve_recall(AgsAudio *audio,
+			      AgsGroupId group_id,
+			      AgsRecycling *first_recycling, AgsRecycling *last_recycling)
+{
+  AgsRecall *recall;
+  AgsRecallID *recall_id;
+  GList *list_recall;
+  
+  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
+							 group_id,
+							 first_recycling, last_recycling);
+  
+  if((AGS_RECALL_ID_AUDIO_RESOLVED & (recall_id->flags)) != 0){
+    return;
+  }
+
+  recall_id->flags |= AGS_RECALL_ID_AUDIO_RESOLVED;
+  
+  /* get the appropriate lists */
+  if(recall_id->parent_group_id == 0){
+    list_recall = audio->play;
+  }else{
+    list_recall = audio->recall;
+  }
+  
+  while((list_recall = ags_recall_find_group_id(list_recall, group_id)) != NULL){
+    recall = AGS_RECALL(list_recall->data);
+    
+    ags_recall_resolve_dependencies(recall);
+    
+    list_recall = list_recall->next;
+  }
+}
+
 void
 ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
 	       gint stage, gboolean do_recall)

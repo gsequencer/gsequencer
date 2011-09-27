@@ -152,6 +152,9 @@ void ags_channel_find_input_recall_id(AgsChannel *input,
 void ags_channel_recall_id_set(AgsChannel *output, AgsGroupId group_id, gboolean ommit_own_channel,
 			       guint mode, ...);
 
+void ags_channel_resolve_recall(AgsChannel *channel,
+				AgsGroupId group_id);
+
 void ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboolean do_recall);
 void ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage);
 void ags_channel_duplicate_recall(AgsChannel *channel,
