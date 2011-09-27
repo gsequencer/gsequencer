@@ -2093,8 +2093,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     /* resolve audio */
     ags_audio_resolve_recall(audio,
-			     group_id,
-			     input->first_recycling, input->last_recycling);
+			     input->first_recycling, input->last_recycling,
+			     group_id);
 
     /* resolve input */
     ags_channel_resolve_recall(input,
@@ -2200,8 +2200,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       /* resolve audio */
       ags_audio_resolve_recall(audio,
-			       next_group_id,
-			       output->first_recycling, output->last_recycling);
+			       output->first_recycling, output->last_recycling,
+			       next_group_id);
       
 
       /* call function which resolves input */
@@ -2210,8 +2210,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     }else{
       /* resolve audio */
       ags_audio_resolve_recall(audio,
-			       group_id,
-			       output->first_recycling, output->last_recycling);
+			       output->first_recycling, output->last_recycling,
+			       group_id);
 
       /* call function which resolves input */
       ags_channel_recursive_play_init_resolve_down_input(output,
@@ -2530,8 +2530,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							   child_group_id);
 
 	ags_audio_resolve_recall(audio,
-				 child_group_id,
-				 channel->first_recycling, channel->last_recycling);
+				 channel->first_recycling, channel->last_recycling,
+				 child_group_id);
 
 	/* go to the root */
 	/* resolve output */
@@ -2545,8 +2545,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							   group_id);
 
 	ags_audio_resolve_recall(audio,
-				 group_id,
-				 channel->first_recycling, channel->last_recycling);
+				 channel->first_recycling, channel->last_recycling,
+				 group_id);
 	
 	/* go to the root */
 	ags_channel_recursive_play_init_resolve_up_input(channel->link,
@@ -2570,8 +2570,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				 group_id);
 
       ags_audio_resolve_recall(audio,
-			       group_id,
-			       channel->first_recycling, channel->last_recycling);
+			       channel->first_recycling, channel->last_recycling,
+			       group_id);
       
 
       /* go to the root */
@@ -3115,8 +3115,8 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       group_id = AGS_POINTER_TO_GROUP_ID(group_id_list->data);
 
       ags_audio_resolve_recall(audio,
-			       group_id,
-			       first_recycling, last_recycling);
+			       first_recycling, last_recycling,
+			       group_id);
 
       group_id_list = group_id_list->next;
     }
