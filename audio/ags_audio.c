@@ -1544,8 +1544,8 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
  * AgsRecall related
  */
 void ags_audio_resolve_recall(AgsAudio *audio,
-			      AgsGroupId group_id,
-			      AgsRecycling *first_recycling, AgsRecycling *last_recycling)
+			      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+			      AgsGroupId group_id)
 {
   AgsRecall *recall;
   AgsRecallID *recall_id;
