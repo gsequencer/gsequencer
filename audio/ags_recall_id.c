@@ -97,8 +97,8 @@ ags_recall_id_init(AgsRecallID *recall_id)
   recall_id->group_id = 0;
   recall_id->child_group_id = 0;
 
-  //  recall_id->first_recycling = NULL;
-  //  recall_id->last_recycling = NULL;
+  recall_id->first_recycling = NULL;
+  recall_id->last_recycling = NULL;
 }
 
 void
@@ -198,8 +198,8 @@ ags_recall_id_add(GList *recall_id_list,
   recall_id->group_id = group_id;
   recall_id->child_group_id = child_group_id;
 
-  //  recall_id->first_recycling = first_recycling;
-  //  recall_id->last_recycling = last_recycling;
+  recall_id->first_recycling = first_recycling;
+  recall_id->last_recycling = last_recycling;
 
   list = g_list_prepend(recall_id_list,
 			(gpointer) recall_id);
@@ -211,8 +211,26 @@ AgsRecallID*
 ags_recall_id_find_group_id(GList *recall_id_list, AgsGroupId group_id)
 {
   while(recall_id_list != NULL){
-    if(AGS_RECALL_ID(recall_id_list->data)->group_id == group_id)
+    if(AGS_RECALL_ID(recall_id_list->data)->group_id == group_id){
       return((AgsRecallID *) recall_id_list->data);
+    }
+
+    recall_id_list = recall_id_list->next;
+  }
+
+  return(NULL);
+}
+
+AgsRecallID*
+ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
+					   AgsGroupId group_id,
+					   AgsRecycling *first_recycling, AgsRecycling *last_recycling)
+{
+  while((recall_id_list = ags_recall_id_find_group_id(recall_id_list, group_id)) != NULL){
+    if(AGS_RECALL_ID(recall_id_list->data)->first_recycling == first_recycling &&
+       AGS_RECALL_ID(recall_id_list->data)->last_recycling == last_recycling){
+      return((AgsRecallID *) recall_id_list->data);
+    }
 
     recall_id_list = recall_id_list->next;
   }

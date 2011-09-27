@@ -129,7 +129,9 @@ void ags_audio_duplicate_recall(AgsAudio *audio,
 guint ags_audio_recursive_play_init(AgsAudio *audio,
 				    gboolean playback, gboolean sequencer, gboolean notation);
 
-void ags_audio_cancel(AgsAudio *audio, guint audio_channel, AgsGroupId group_id,
+void ags_audio_cancel(AgsAudio *audio,
+		      AgsGroupId group_id,
+		      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 		      gboolean do_recall);
 
 AgsAudio* ags_audio_new();

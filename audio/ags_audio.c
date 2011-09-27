@@ -1719,7 +1719,9 @@ ags_audio_recursive_play_init(AgsAudio *audio,
  * AgsRecall related
  */
 void
-ags_audio_cancel(AgsAudio *audio, guint audio_channel, AgsGroupId group_id,
+ags_audio_cancel(AgsAudio *audio,
+		 AgsGroupId group_id,
+		 AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 		 gboolean do_recall)
 {
   AgsRecall *recall;
@@ -1736,7 +1738,9 @@ ags_audio_cancel(AgsAudio *audio, guint audio_channel, AgsGroupId group_id,
     recall = AGS_RECALL(list->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
-       recall->recall_id->group_id != group_id){
+       recall->recall_id == NULL ||
+       recall->recall_id->group_id != group_id ||
+       !(recall->recall_id->first_recycling != first_recycling && recall->recall_id->last_recycling != last_recycling)){
       list = list_next;
 
       continue;

@@ -56,8 +56,8 @@ struct _AgsRecallID
   AgsGroupId group_id;
   AgsGroupId child_group_id;
 
-  //  AgsRecycling *first_recycling; // the AgsRecycling that indicates the beginning for affecting AgsRecalls, NULL means AgsChannel's first_recycling
-  //  AgsRecycling *last_recycling; // the AgsRecycling that indicates the end for affecting AgsRecalls, NULL means AgsChannel's last_recycling
+  AgsRecycling *first_recycling; // identify the channel in AgsAudio
+  AgsRecycling *last_recycling; // identify the channel in AgsAudio
 };
 
 struct _AgsRecallIDClass
@@ -77,8 +77,13 @@ GList* ags_recall_id_add(GList *recall_id_list,
 			 AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
 			 AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			 gboolean higher_level_is_recall);
-AgsRecallID* ags_recall_id_find_group_id(GList *recall_id_list, AgsGroupId group_id);
-AgsRecallID* ags_recall_id_find_parent_group_id(GList *recall_id_list, AgsGroupId parent_group_id);
+AgsRecallID* ags_recall_id_find_group_id(GList *recall_id_list,
+					 AgsGroupId group_id);
+AgsRecallID* ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
+							AgsGroupId group_id,
+							AgsRecycling *first_recycling, AgsRecycling *last_recycling);
+AgsRecallID* ags_recall_id_find_parent_group_id(GList *recall_id_list,
+						AgsGroupId parent_group_id);
 
 AgsRecallID* ags_recall_id_new();
 
