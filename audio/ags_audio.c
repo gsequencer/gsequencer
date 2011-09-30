@@ -21,6 +21,7 @@
 #include <ags/lib/ags_list.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_run_connectable.h>
 #include <ags/object/ags_marshal.h>
 
 #include <ags/audio/ags_devout.h>
@@ -1705,6 +1706,55 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   if(run_order == NULL){
     run_order = ags_run_order_new(recall_id);
     ags_audio_add_run_order(audio, run_order);
+  }
+}
+
+/**
+ *
+ */
+void
+ags_audio_init_recall(AgsAudio *audio, gint stage,
+		      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+		      AgsGroupId group_id)
+{
+  AgsRecall *recall;
+  AgsRecallID *recall_id;
+  GList *list_recall;
+  
+  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
+							 group_id,
+							 first_recycling, last_recycling);
+
+  if(recall_id->parent_group_id == 0)
+    list_recall = audio->play;
+  else
+    list_recall = audio->recall;
+
+  while(list_recall != NULL){
+    recall = AGS_RECALL(list_recall->data);
+    
+    if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
+       AGS_IS_RECALL_AUDIO(recall)){
+      list_recall = list_recall->next;
+      continue;
+    }
+    
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
+      if(stage == 0){
+	recall->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(recall);
+	recall->flags &= (~AGS_RECALL_REMOVE);
+      }else if(stage == 1){
+	ags_recall_run_init_inter(recall);
+      }else{
+	ags_recall_run_init_post(recall);
+	
+	ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
+	//	  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
+      }
+    }
+    
+    list_recall = list_recall->next;
   }
 }
 

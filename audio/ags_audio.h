@@ -125,7 +125,9 @@ void ags_audio_duplicate_recall(AgsAudio *audio,
 				gboolean playback, gboolean sequencer, gboolean notation,
 				AgsGroupId group_id,
 				guint audio_signal_level);
-
+void ags_audio_init_recall(AgsAudio *audio, gint stage,
+			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+			   AgsGroupId group_id);
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			      AgsGroupId group_id);
