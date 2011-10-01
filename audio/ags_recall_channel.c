@@ -270,6 +270,7 @@ gboolean
 ags_recall_channel_pack(AgsPackable *packable, GObject *container)
 {
   AgsRecallContainer *recall_container;
+  GList *list;
 
   if(ags_recall_channel_parent_packable_interface->pack(packable, container))
     return(TRUE);
@@ -279,6 +280,17 @@ ags_recall_channel_pack(AgsPackable *packable, GObject *container)
   recall_container->recall_channel = g_list_prepend(recall_container->recall_channel,
 						    AGS_RECALL(packable));
 
+  /* set in AgsRecallChannelRun */
+  list = recall_container->recall_channel_run;
+
+  while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->channel))) != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "recall_channel\0", AGS_RECALL_CHANNEL(packable),
+		 NULL);
+
+    list = list->next;
+  }
+
   return(FALSE);
 }
 
@@ -287,7 +299,8 @@ ags_recall_channel_unpack(AgsPackable *packable)
 {
   AgsRecall *recall;
   AgsRecallContainer *recall_container;
-
+  GList *list;
+  
   recall = AGS_RECALL(packable);
 
   if(recall == NULL)
@@ -301,6 +314,17 @@ ags_recall_channel_unpack(AgsPackable *packable)
   /* ref */
   g_object_ref(recall);
   g_object_ref(recall_container);
+
+  /* unset in AgsRecallChannelRun */
+  list = recall_container->recall_channel_run;
+
+  while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->channel))) != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "recall_channel\0", NULL,
+		 NULL);
+
+    list = list->next;
+  }
 
   /* call parent */
   if(ags_recall_channel_parent_packable_interface->unpack(packable))

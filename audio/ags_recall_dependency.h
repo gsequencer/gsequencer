@@ -51,7 +51,6 @@ GType ags_recall_dependency_get_type(void);
 GList* ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency);
 
 GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId group_id);
-GObject* ags_recall_dependency_resolve_in_source(AgsRecallDependency *recall_dependency, AgsGroupId group_id);
 
 AgsRecallDependency* ags_recall_dependency_new(GObject *dependency);
 

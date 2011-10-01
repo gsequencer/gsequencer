@@ -271,17 +271,50 @@ ags_recall_audio_run_connect(AgsConnectable *connectable)
 gboolean
 ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 {
+  AgsRecallAudioRun *recall_audio_run;
   AgsRecallContainer *recall_container;
+  GList *list;
+  AgsGroupId group_id;
 
   if(ags_recall_audio_run_parent_packable_interface->pack(packable, container))
     return(TRUE);
 
-  if(AGS_IS_COPY_PATTERN_AUDIO_RUN(packable))
-    printf("yes\n\0");
-
   recall_container = AGS_RECALL_CONTAINER(container);
   recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run,
 						      AGS_RECALL(packable));
+
+  recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
+
+  /* set AgsRecallAudio */
+  g_object_set(G_OBJECT(recall_audio_run->recall_audio),
+	       "recall_audio\0", recall_container->recall_audio,
+	       NULL);
+
+  /* set in AgsRecallChannelRun */
+  list = recall_container->recall_channel_run;
+
+  if(AGS_RECALL(packable)->recall_id != NULL){
+    group_id = AGS_RECALL(packable)->recall_id->group_id;
+
+    while((list = ags_recall_find_group_id(list, group_id)) != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
+		   NULL);
+
+      list= list->next;
+    }
+  }else{
+    while(list != NULL){
+      if(AGS_RECALL(list->data)->recall_id == NULL){
+	g_object_set(G_OBJECT(list->data),
+		     "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
+		     NULL);
+      }
+
+      list= list->next;
+    }
+  }
+
 
   return(FALSE);
 }
@@ -289,8 +322,11 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 gboolean
 ags_recall_audio_run_unpack(AgsPackable *packable)
 {
+  AgsRecallAudioRun *recall_audio_run;
   AgsRecall *recall;
   AgsRecallContainer *recall_container;
+  GList *list;
+  AgsGroupId group_id;
 
   recall = AGS_RECALL(packable);
 
@@ -305,6 +341,37 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   /* ref */
   g_object_ref(recall);
   g_object_ref(recall_container);
+  
+  recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
+
+  /* unset AgsRecallAudio */
+  g_object_set(G_OBJECT(recall_audio_run->recall_audio),
+	       "recall_audio\0", NULL,
+	       NULL);
+
+  /* unset in AgsRecallChannelRun */
+  if(AGS_RECALL(packable)->recall_id != NULL){
+    list = recall_container->recall_channel_run;
+    group_id = AGS_RECALL(packable)->recall_id->group_id;
+
+    while((list = ags_recall_find_group_id(list, group_id)) != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "recall_audio_run\0", NULL,
+		   NULL);
+
+      list= list->next;
+    }
+  }else{
+    while(list != NULL){
+      if(AGS_RECALL(list->data)->recall_id == NULL){
+	g_object_set(G_OBJECT(list->data),
+		     "recall_audio_run\0", NULL,
+		     NULL);
+      }
+
+      list= list->next;
+    }
+  }
 
   /* call parent */
   if(ags_recall_audio_run_parent_packable_interface->unpack(packable))
@@ -359,7 +426,8 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
   copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
 											     recall_id));
 
-  /* set recall audio */
+  /* moved to AGS_PACKABLE->pack
+  /* set recall audio * /
   g_value_init(&recall_audio_value, G_TYPE_OBJECT);
   g_value_set_object(&recall_audio_value,
 		     G_OBJECT(recall_audio_run->recall_audio));
@@ -367,7 +435,7 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 			"recall_audio\0",
 			&recall_audio_value);
   g_value_unset(&recall_audio_value);
-
+  */
 
   return((AgsRecall *) copy);
 }

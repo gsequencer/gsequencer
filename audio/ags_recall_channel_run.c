@@ -358,6 +358,13 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   recall_container->recall_channel_run = g_list_prepend(recall_container->recall_channel_run,
 							AGS_RECALL(packable));
 
+
+  /* set AgsRecallAudioRun */
+  //TODO:JK:
+
+  /* set AgsRecallChannel */
+  //TODO:JK:
+
   return(FALSE);
 }
 
@@ -427,10 +434,11 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
 												 recall_id));
   
+  /* moved to AgsPackable
   container = AGS_RECALL_CONTAINER(recall->container);
 
   if(container != NULL){
-    /* set recall audio run */
+    /* set recall audio run * /
     recall_audio_run_list = container->recall_audio_run;
     recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list,
 						     recall_id->group_id);
@@ -447,7 +455,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
       g_value_unset(&recall_audio_run_value);
     }
   }
-
+  */
   /* set recall channel */
   g_value_init(&recall_channel_value, G_TYPE_OBJECT);
   g_value_set_object(&recall_channel_value,

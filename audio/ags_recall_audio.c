@@ -256,6 +256,7 @@ gboolean
 ags_recall_audio_pack(AgsPackable *packable, GObject *container)
 {
   AgsRecallContainer *recall_container;
+  GList *list;
 
   if(ags_recall_audio_parent_packable_interface->pack(packable, container))
     return(TRUE);
@@ -263,6 +264,17 @@ ags_recall_audio_pack(AgsPackable *packable, GObject *container)
   recall_container = AGS_RECALL_CONTAINER(container);
 
   recall_container->recall_audio = AGS_RECALL(packable);
+
+  /* set in AgsRecallAudioRun */
+  list = recall_container->recall_audio_run;
+
+  while(list != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "recall_audio\0", AGS_RECALL_AUDIO(packable),
+		 NULL);
+
+    list = list->next;
+  }
 
   return(FALSE);
 }
@@ -272,6 +284,7 @@ ags_recall_audio_unpack(AgsPackable *packable)
 {
   AgsRecall *recall;
   AgsRecallContainer *recall_container;
+  GList *list;
 
   recall = AGS_RECALL(packable);
 
@@ -284,7 +297,19 @@ ags_recall_audio_unpack(AgsPackable *packable)
     return(TRUE);
 
   /* ref */
+  g_object_ref(recall);
   g_object_ref(recall_container);
+
+  /* unset in AgsRecallAudioRun */
+  list = recall_container->recall_audio_run;
+
+  while(list != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "recall_audio\0", NULL,
+		 NULL);
+
+    list = list->next;
+  }
 
   /* call parent */
   if(ags_recall_audio_parent_packable_interface->unpack(packable))
@@ -293,6 +318,7 @@ ags_recall_audio_unpack(AgsPackable *packable)
   recall_container->recall_audio = NULL;
 
   /* unref */
+  g_object_unref(recall);
   g_object_unref(recall_container);
 
   return(FALSE);

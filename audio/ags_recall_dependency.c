@@ -180,52 +180,6 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId
   return(NULL);
 }
 
-GObject*
-ags_recall_dependency_resolve_in_source(AgsRecallDependency *recall_dependency, AgsGroupId group_id)
-{
-  AgsRecallContainer *recall_container;
-  AgsRecall *dependency;
-  
-  if(recall_dependency->dependency == NULL ||
-     AGS_RECALL(recall_dependency->dependency)->container == NULL){
-    return(NULL);
-  }
-
-  dependency = AGS_RECALL(recall_dependency->dependency);
-  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(recall_dependency->dependency)->container);
-  
-  if(AGS_IS_RECALL_AUDIO(dependency)){
-    return((GObject *) recall_container->recall_audio);
-  }else if(AGS_IS_RECALL_AUDIO_RUN(dependency)){
-    GList *recall_list;
-
-    recall_list = ags_recall_find_group_id(recall_container->recall_audio_run,
-					   group_id);
-
-    if(recall_list != NULL)
-      return(G_OBJECT(recall_list->data));
-  }else if(AGS_IS_RECALL_CHANNEL(dependency)){
-    GList *recall_list;
-
-    recall_list = ags_recall_find_provider(recall_container->recall_channel,
-					   (GObject *) AGS_RECALL_CHANNEL(dependency)->channel);
-
-    if(recall_list != NULL)
-      return(G_OBJECT(recall_list->data));
-  }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
-    GList *recall_list;
-
-    recall_list = ags_recall_find_provider_with_group_id(recall_container->recall_channel_run,
-							 (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->channel,
-							 group_id);
-
-    if(recall_list != NULL)
-      return(G_OBJECT(recall_list->data));
-  }
-
-  return(NULL);
-}
-
 AgsRecallDependency*
 ags_recall_dependency_new(GObject *dependency)
 {
