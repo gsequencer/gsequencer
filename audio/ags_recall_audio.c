@@ -312,8 +312,12 @@ ags_recall_audio_unpack(AgsPackable *packable)
   }
 
   /* call parent */
-  if(ags_recall_audio_parent_packable_interface->unpack(packable))
+  if(ags_recall_audio_parent_packable_interface->unpack(packable)){
+    g_object_unref(recall);
+    g_object_unref(recall_container);
+
     return(TRUE);
+  }
 
   recall_container->recall_audio = NULL;
 

@@ -41,6 +41,8 @@ struct _AgsRecallChannelRun
 {
   AgsRecall recall;
 
+  AgsChannel *channel;
+
   AgsRecallChannel *recall_channel;
   AgsRecallAudioRun *recall_audio_run;
 

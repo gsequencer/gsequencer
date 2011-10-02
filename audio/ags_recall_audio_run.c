@@ -303,13 +303,11 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 
       list= list->next;
     }
-  }else{
-    while(list != NULL){
-      if(AGS_RECALL(list->data)->recall_id == NULL){
-	g_object_set(G_OBJECT(list->data),
-		     "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
-		     NULL);
-      }
+  }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
+    while((list = ags_recall_find_template(list)) != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
+		   NULL);
 
       list= list->next;
     }
@@ -350,8 +348,9 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
 	       NULL);
 
   /* unset in AgsRecallChannelRun */
+  list = recall_container->recall_channel_run;
+
   if(AGS_RECALL(packable)->recall_id != NULL){
-    list = recall_container->recall_channel_run;
     group_id = AGS_RECALL(packable)->recall_id->group_id;
 
     while((list = ags_recall_find_group_id(list, group_id)) != NULL){
@@ -361,21 +360,23 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
 
       list= list->next;
     }
-  }else{
-    while(list != NULL){
-      if(AGS_RECALL(list->data)->recall_id == NULL){
-	g_object_set(G_OBJECT(list->data),
-		     "recall_audio_run\0", NULL,
-		     NULL);
-      }
+  }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
+    while((list = ags_recall_find_template(list)) != NULL){
+      g_object_set(G_OBJECT(list->data),
+		   "recall_audio_run\0", NULL,
+		   NULL);
 
       list= list->next;
     }
   }
 
   /* call parent */
-  if(ags_recall_audio_run_parent_packable_interface->unpack(packable))
+  if(ags_recall_audio_run_parent_packable_interface->unpack(packable)){
+    g_object_unref(recall);
+    g_object_unref(recall_container);
+
     return(TRUE);
+  }
 
   /* remove from list */
   recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,

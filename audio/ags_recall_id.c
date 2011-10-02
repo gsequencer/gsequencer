@@ -226,8 +226,9 @@ ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
 					   AgsGroupId group_id,
 					   AgsRecycling *first_recycling, AgsRecycling *last_recycling)
 {
-  while((recall_id_list = ags_recall_id_find_group_id(recall_id_list, group_id)) != NULL){
-    if(AGS_RECALL_ID(recall_id_list->data)->first_recycling == first_recycling &&
+  while(recall_id_list != NULL){
+    if(AGS_RECALL_ID(recall_id_list->data)->group_id == group_id &&
+       AGS_RECALL_ID(recall_id_list->data)->first_recycling == first_recycling &&
        AGS_RECALL_ID(recall_id_list->data)->last_recycling == last_recycling){
       return((AgsRecallID *) recall_id_list->data);
     }

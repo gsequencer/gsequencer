@@ -327,8 +327,12 @@ ags_recall_channel_unpack(AgsPackable *packable)
   }
 
   /* call parent */
-  if(ags_recall_channel_parent_packable_interface->unpack(packable))
+  if(ags_recall_channel_parent_packable_interface->unpack(packable)){
+    g_object_unref(recall);
+    g_object_unref(recall_container);
+  
     return(TRUE);
+  }
 
   /* remove from list */
   recall_container->recall_channel = g_list_remove(recall_container->recall_channel,

@@ -1205,7 +1205,7 @@ ags_recall_find_type(GList *recall_i, GType type)
   return(recall_i);
 }
 
-AgsRecall*
+GList*
 ags_recall_find_template(GList *recall_i)
 {
   AgsRecall *recall;
@@ -1214,7 +1214,7 @@ ags_recall_find_template(GList *recall_i)
     recall = AGS_RECALL(recall_i->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0)
-      return(recall);
+      return(recall_i);
 
     recall_i = recall_i->next;
   }

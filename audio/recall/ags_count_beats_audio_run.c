@@ -478,7 +478,7 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
 
-  template = ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run);
+  template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run)->data);
 
   list = template->dependencies;
   group_id = recall->recall_id->group_id;

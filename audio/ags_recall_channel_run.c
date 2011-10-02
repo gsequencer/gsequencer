@@ -66,6 +66,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_CHANNEL,
   PROP_RECALL_AUDIO_RUN,
   PROP_RECALL_CHANNEL,
 };
@@ -152,6 +153,15 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   gobject->finalize = ags_recall_channel_run_finalize;
 
   /* properties */
+  param_spec = g_param_spec_object("channel\0",
+				   "AgsChannel of this recall\0",
+				   "The AgsChannel of this recall\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
   param_spec = g_param_spec_object("recall_audio_run\0",
 				   "AgsRecallAudioRun of this recall\0",
 				   "The AgsRecallAudioRun which this recall needs\0",
@@ -222,6 +232,8 @@ ags_recall_channel_run_run_connectable_interface_init(AgsRunConnectableInterface
 void
 ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run)
 {
+  recall_channel_run->channel = NULL;
+
   recall_channel_run->recall_audio_run = NULL;
   recall_channel_run->recall_channel = NULL;
 
@@ -240,6 +252,26 @@ ags_recall_channel_run_set_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(recall_channel_run->channel == channel)
+	return;
+
+      if(recall_channel_run->channel != NULL){
+	g_object_unref(G_OBJECT(recall_channel_run->channel));
+      }
+
+      if(channel != NULL){
+	g_object_ref(G_OBJECT(channel));
+      }
+
+      recall_channel_run->channel = channel;
+    }
+    break;
   case PROP_RECALL_AUDIO_RUN:
     {
       AgsRecallAudioRun *recall_audio_run;
@@ -297,6 +329,11 @@ ags_recall_channel_run_get_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, recall_channel_run->channel);
+    }
+    break;
   case PROP_RECALL_AUDIO_RUN:
     {
       g_value_set_object(value, recall_channel_run->recall_audio_run);
@@ -349,6 +386,8 @@ gboolean
 ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
 {
   AgsRecallContainer *recall_container;
+  GList *list;
+  AgsGroupId group_id;
 
   if(ags_recall_channel_run_parent_packable_interface->pack(packable, container))
     return(TRUE);
@@ -358,12 +397,42 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   recall_container->recall_channel_run = g_list_prepend(recall_container->recall_channel_run,
 							AGS_RECALL(packable));
 
-
   /* set AgsRecallAudioRun */
-  //TODO:JK:
+  list = recall_container->recall_audio_run;
+
+  if(AGS_RECALL(packable)->recall_id != NULL){
+    group_id = AGS_RECALL(packable)->recall_id->group_id;
+      
+    list = ags_recall_find_group_id(list,
+				    group_id);
+
+    if(list != NULL){
+      g_object_set(G_OBJECT(packable),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(list->data),
+		   NULL);
+    }
+  }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
+    list = ags_recall_find_template(list);
+
+    if(list != NULL){
+      g_object_set(G_OBJECT(packable),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(list->data),
+		   NULL);
+    }
+  }
 
   /* set AgsRecallChannel */
-  //TODO:JK:
+  if(AGS_RECALL_CHANNEL_RUN(packable)->channel != NULL){
+    list = recall_container->recall_channel;
+    list = ags_recall_find_provider(list,
+				    G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->channel));
+
+    if(list != NULL){
+      g_object_set(G_OBJECT(packable),
+		   "recall_channel\0", AGS_RECALL_CHANNEL(list->data),
+		   NULL);
+    }
+  }
 
   return(FALSE);
 }
@@ -373,6 +442,8 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
 {
   AgsRecall *recall;
   AgsRecallContainer *recall_container;
+  GList *list;
+  AgsGroupId group_id;
 
   recall = AGS_RECALL(packable);
 
@@ -388,9 +459,23 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
   g_object_ref(recall);
   g_object_ref(recall_container);
 
+  /* unset AgsRecallAudioRun */
+  g_object_set(G_OBJECT(packable),
+	       "recall_audio_run\0", NULL,
+	       NULL);
+
+  /* unset AgsRecallChannel */
+  g_object_set(G_OBJECT(packable),
+	       "recall_channel\0", NULL,
+	       NULL);
+
   /* call parent */
-  if(ags_recall_channel_run_parent_packable_interface->unpack(packable))
+  if(ags_recall_channel_run_parent_packable_interface->unpack(packable)){
+    g_object_unref(recall);
+    g_object_unref(recall_container);
+
     return(TRUE);
+  }
 
   /* remove from list */
   recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
