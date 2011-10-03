@@ -286,7 +286,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
 
   /* set AgsRecallAudio */
-  g_object_set(G_OBJECT(recall_audio_run->recall_audio),
+  g_object_set(G_OBJECT(recall_audio_run),
 	       "recall_audio\0", recall_container->recall_audio,
 	       NULL);
 
@@ -343,7 +343,7 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
 
   /* unset AgsRecallAudio */
-  g_object_set(G_OBJECT(recall_audio_run->recall_audio),
+  g_object_set(G_OBJECT(recall_audio_run),
 	       "recall_audio\0", NULL,
 	       NULL);
 
