@@ -282,14 +282,14 @@ ags_copy_pattern_channel_run_cancel(AgsRecall *recall)
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
+  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->cancel(recall);
+
   /* get AgsCopyPatternAudioRun */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
 
   /* notify dependency */
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
-
-  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->cancel(recall);
 }
 
 void
