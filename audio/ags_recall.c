@@ -897,7 +897,7 @@ ags_recall_real_cancel(AgsRecall *recall)
     list = list->next;
   }
 
-  ags_recall_done(AGS_RECALL(list->data));
+  ags_recall_done(AGS_RECALL(recall));
 }
 
 void
