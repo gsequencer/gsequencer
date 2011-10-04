@@ -1467,7 +1467,7 @@ ags_devout_alsa_init(AgsDevout *devout)
 
   fprintf(stdout, "%u %u\n\0", frames, dir);
 
-  /* We want to loop for 5 seconds */
+  /* We want to loop */
   snd_pcm_hw_params_get_period_time(devout->out.alsa.params,
                                     &val, &dir);
 

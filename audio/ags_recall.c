@@ -794,6 +794,8 @@ ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list;
 
+  printf("ags_recall_real_run_pre: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+
   list = recall->children;
 
   while(list != NULL){
