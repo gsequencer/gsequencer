@@ -660,6 +660,8 @@ ags_recall_run_disconnect(AgsRunConnectable *run_connectable)
 
     list = list->next;
   }
+
+  recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 }
 
 void
