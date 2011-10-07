@@ -566,11 +566,6 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
 
   printf("===== packing: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
-  g_object_ref(recall);
-
-  if(recall_container != NULL)
-    g_object_ref(recall_container);
-
   recall->container = container;
 
   return(FALSE);
@@ -589,10 +584,6 @@ ags_recall_unpack(AgsPackable *packable)
     return(TRUE);
 
   recall_container = AGS_RECALL_CONTAINER(recall->container);
-
-  /* unref */
-  g_object_unref(recall);
-  g_object_unref(recall_container);
 
   /* unset link */
   recall->container = NULL;
@@ -670,6 +661,8 @@ ags_recall_finalize(GObject *gobject)
   AgsRecall *recall;
 
   recall = AGS_RECALL(gobject);
+
+  printf("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
     ags_connectable_disconnect(AGS_CONNECTABLE(recall));
@@ -796,7 +789,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list;
 
-  printf("ags_recall_real_run_pre: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  //  printf("ags_recall_real_run_pre: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 

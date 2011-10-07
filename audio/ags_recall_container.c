@@ -214,7 +214,7 @@ ags_recall_container_set_property(GObject *gobject,
       /* remove old */
       if(AGS_RECALL(recall_audio)->container != NULL)
 	ags_packable_unpack(AGS_PACKABLE(recall_audio));
-
+      
       /* add new */
       if(recall_audio != NULL)
 	ags_packable_pack(AGS_PACKABLE(recall_audio), G_OBJECT(recall_container));

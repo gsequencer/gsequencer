@@ -1585,22 +1585,19 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 	  matches_reality = FALSE;
       }
     }
-    
+
     /* ignore initialized or non-runnable AgsRecalls */
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_CHANNEL(recall) ||
        !matches_reality ||
+
        !((playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
 	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
 	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0)) ||
+
        (audio_signal_level != 0 && ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 ||
 				    (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 ||
 				    (AGS_RECALL_NOTATION & (recall->flags)) != 0))
-       //       (!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) || (playback && (AGS_RECALL_PLAYBACK & (recall->flags)) == 0 && audio_signal_level == 0) || ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && audio_signal_level != 0)
-       //       ((!playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0 && (playback && (audio_signal_level != 0)))// ||
-       //       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
-       //       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))
-       //FIXME:JK: the uncommented code above was uncommented for testing purpose, needs implementation when creating the recall templates
        ){
       list_recall = list_recall->next;
       continue;
@@ -1612,7 +1609,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
       AgsRecall *copy;
       
       copy = ags_recall_duplicate(recall, recall_id);
-      printf("%s\n\0", G_OBJECT_TYPE_NAME(copy));
+      printf("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
       
       if(recall_id->parent_group_id == 0)
 	  channel->play = g_list_append(channel->play, copy);

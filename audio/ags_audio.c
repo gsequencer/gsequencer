@@ -1662,9 +1662,14 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_AUDIO(recall) ||
-       !matches_reality // ||
-       //       (!sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1)) ||
-       //       (!notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0 && (audio_signal_level == 0 || audio_signal_level == 1))
+       !matches_reality ||
+       !((playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
+	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
+	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0)) ||
+
+       (audio_signal_level != 0 && ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 ||
+				    (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 ||
+				    (AGS_RECALL_NOTATION & (recall->flags)) != 0))
        ){
       list_recall = list_recall->next;
       continue;
@@ -1684,7 +1689,8 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       }else{
 	/* duplicate the recall, notify first run and initialize it */
 	recall = ags_recall_duplicate(recall, recall_id);
-	
+	printf("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+      
 	if(recall_id->parent_group_id == 0)
 	  audio->play = g_list_append(audio->play, recall);
 	else
