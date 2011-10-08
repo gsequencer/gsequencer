@@ -750,6 +750,9 @@ ags_channel_set_recycling(AgsChannel *channel,
   auto void ags_channel_set_recycling_emit_changed_input(AgsChannel *input);
   auto void ags_channel_set_recycling_emit_changed_output(AgsChannel *output);
   auto gboolean ags_channel_set_recycling_emit_changed(AgsChannel *input);
+
+//FIXME:JK: should update AgsRecallID's references
+
   gboolean ags_channel_set_recycling_recursive_input(AgsChannel *input){
     AgsChannel *nth_channel_prev, *nth_channel_next;
 
@@ -3669,7 +3672,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
     if(new_level){
       /* reset on AgsAudio */
       ags_audio_reset_group_id(audio,
-			       current->first_recycling, current->last_recycling,
+			       ags_output_find_first_input_recycling(current), ags_output_find_last_input_recycling(current),
 			       next_parent_group_id_list, next_group_id_list, next_child_group_id_list,
 			       devout_play_list,
 			       next_audio_signal_level, G_MAXUINT,
@@ -3727,7 +3730,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
       /* audio */
       ags_audio_reset_group_id(audio,
-			       current->first_recycling, current->last_recycling,
+			       channel->first_recycling, channel->last_recycling,
 			       parent_group_id_list, group_id_list, child_group_id_list,
 			       devout_play_list,
 			       NULL, 0,
@@ -3738,8 +3741,6 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 	break;
       }
 
-    ags_channel_tillrecycling_reset_group_id_upOUTPUT:
-
       if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
 	current = ags_channel_nth(audio->output,
 				  current->audio_channel);
@@ -3747,6 +3748,8 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 	current = ags_channel_nth(audio->output,
 				  current->line);
       }
+
+    ags_channel_tillrecycling_reset_group_id_upOUTPUT:
 
       ags_channel_reset_group_id(current,
 				 parent_group_id_list, group_id_list, child_group_id_list,
@@ -3855,31 +3858,37 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 			       NULL, G_MAXUINT,
 			       invalid_group_id_list);
 
-
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      new_level = TRUE;
-    }else{
-      new_level = FALSE;
-    }
-
     /* retrieve next AgsGroupIds */
-    if(new_level){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       next_invalid_group_id_list = invalid_child_group_id_list;
       invalid_child_group_id_list = ags_channel_find_child_group_id_from_child(current,
 									       invalid_child_group_id_list);
+
+      new_level = TRUE;
     }else{
       next_invalid_group_id_list = invalid_group_id_list;
       next_invalid_child_group_id_list = invalid_child_group_id_list;
+
+      new_level = FALSE;
     }
-    
+
     /* reset on AgsAudio */
     ags_audio_reset_group_id(audio,
 			     current->first_recycling, current->last_recycling,
 			     NULL, NULL, NULL,
 			     NULL,
 			     NULL, G_MAXUINT,
-			     next_invalid_group_id_list);
+			     invalid_group_id_list);
 
+    if(new_level){
+      ags_audio_reset_group_id(audio,
+			       ags_output_find_first_input_recycling(current), ags_output_find_last_input_recycling(current),
+			       NULL, NULL, NULL,
+			       NULL,
+			       NULL, G_MAXUINT,
+			       next_invalid_group_id_list);
+    }
+    
     /* go down */
     ags_channel_recursive_unset_group_id_down_input(current,
 						    next_invalid_group_id_list, next_invalid_child_group_id_list);
@@ -3924,7 +3933,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
       /* audio */
       ags_audio_reset_group_id(audio,
-			       current->first_recycling, current->last_recycling,
+			       channel->first_recycling, channel->last_recycling,
 			       NULL, NULL, NULL,
 			       NULL,
 			       NULL, G_MAXUINT,
@@ -3935,8 +3944,6 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 	break;
       }
 
-    ags_channel_tillrecycling_reset_group_id_upOUTPUT:
-
       if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
 	current = ags_channel_nth(audio->output,
 				  current->audio_channel);
@@ -3944,6 +3951,8 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 	current = ags_channel_nth(audio->output,
 				  current->line);
       }
+
+    ags_channel_tillrecycling_reset_group_id_upOUTPUT:
 
       ags_channel_reset_group_id(current,
 				 NULL, NULL, NULL,
@@ -4042,7 +4051,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
         
     /* resolve audio */
     ags_channel_recursive_reset_audio_resolve_recall(audio,
-						     current->first_recycling, current->last_recycling,
+						     ags_output_find_first_input_recycling(current), ags_output_find_last_input_recycling(current),
 						     next_group_id);
     
     /* go down */
@@ -4052,8 +4061,53 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
   void ags_channel_tillrecycling_resolve_recall_up(AgsChannel *channel,
 						   GList *group_id, GList *child_group_id)
   {
-    //TODO:JK: implement me
+    AgsAudio *audio;
+    AgsChannel *current;
 
+    if(channel == NULL)
+      return;
+
+    audio = AGS_AUDIO(channel->audio);
+    current = channel;
+
+    if(AGS_IS_OUTPUT(channel)){
+      goto ags_channel_tillrecycling_resolve_recall_upOUTPUT;
+    }
+
+    while(current != NULL){
+      audio = AGS_AUDIO(current->audio);
+
+      /* resolve input */
+      
+
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	break;
+      }
+
+      /* resolve audio */
+      ags_channel_recursive_reset_audio_resolve_recall(audio,
+						       channel->first_recycling, channel->last_recycling,
+						       next_group_id);
+
+
+      /* resolve output */
+      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	break;
+      }
+
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+	current = ags_channel_nth(audio->output,
+				  current->audio_channel);
+      }else{
+	current = ags_channel_nth(audio->output,
+				  current->line);
+      }
+
+    ags_channel_tillrecycling_resolve_recall_upOUTPUT:
+
+
+      current = current->link;
+    }
   }
   void ags_channel_recursive_init_recall_down_input(AgsChannel *channel,
 						    GList *group_id, GList *child_group_id)
