@@ -744,6 +744,7 @@ ags_channel_set_recycling(AgsChannel *channel,
   gboolean replace_first, replace_last;
   gboolean find_prev, find_next;
   gboolean change_old_last, change_old_first;
+
   auto gboolean ags_channel_set_recycling_recursive_input(AgsChannel *input);
   auto void ags_channel_set_recycling_recursive_output(AgsChannel *output);
   auto void ags_channel_set_recycling_recursive(AgsChannel *input);
@@ -751,16 +752,28 @@ ags_channel_set_recycling(AgsChannel *channel,
   auto void ags_channel_set_recycling_emit_changed_output(AgsChannel *output);
   auto gboolean ags_channel_set_recycling_emit_changed(AgsChannel *input);
 
-//FIXME:JK: should update AgsRecallID's references
-
   gboolean ags_channel_set_recycling_recursive_input(AgsChannel *input){
     AgsChannel *nth_channel_prev, *nth_channel_next;
 
-    if(replace_first)
-      input->first_recycling = replace_with_first_recycling;
+    /* update input AgsRecallIDs */
+    ags_recall_id_reset_recycling(input->recall_id,
+				  input->first_recycling, replace_with_first_recycling,
+				  input->last_recycling, replace_with_last_recycling);
 
-    if(replace_last)
+    /* update audio AgsRecallIDs */
+    ags_recall_id_reset_recycling(audio->recall_id,
+				  input->first_recycling, replace_with_first_recycling,
+				  input->last_recycling, replace_with_last_recycling);
+
+    if(replace_first){
+      /* set recycling */
+      input->first_recycling = replace_with_first_recycling;
+    }
+
+    if(replace_last){
+      /* set recycling */
       input->last_recycling = replace_with_last_recycling;
+    }
 
     if((AGS_AUDIO_ASYNC & (AGS_AUDIO(input->audio)->flags)) != 0){
       /* search for neighboor recyclings */
@@ -825,11 +838,16 @@ ags_channel_set_recycling(AgsChannel *channel,
     return(FALSE);
   }
   void ags_channel_set_recycling_recursive_output(AgsChannel *output){
+    /* update input AgsRecallIDs */
+    ags_recall_id_reset_recycling(output->recall_id,
+				  output->first_recycling, replace_with_first_recycling,
+				  output->last_recycling, replace_with_last_recycling);
+
     if(replace_first)
-      output->first_recycling = first_recycling;
+      output->first_recycling = replace_with_first_recycling;
 
     if(replace_last)
-      output->last_recycling = last_recycling;
+      output->last_recycling = replace_with_last_recycling;
 
     if(output->link != NULL)
       ags_channel_set_recycling_recursive(output->link);
@@ -876,6 +894,7 @@ ags_channel_set_recycling(AgsChannel *channel,
       change_old_last = TRUE;
     }
 
+    /* emit changed */
     ags_channel_recycling_changed(input,
 				  changed_old_first_recycling, changed_old_last_recycling,
 				  input->first_recycling, input->last_recycling,
@@ -986,6 +1005,7 @@ ags_channel_set_recycling(AgsChannel *channel,
       replace_last = FALSE;
   }
 
+  /* set recycling */
   if(AGS_IS_INPUT(channel)){
     AgsChannel *output;
 

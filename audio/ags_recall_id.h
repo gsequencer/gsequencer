@@ -85,6 +85,10 @@ AgsRecallID* ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
 AgsRecallID* ags_recall_id_find_parent_group_id(GList *recall_id_list,
 						AgsGroupId parent_group_id);
 
+void ags_recall_id_reset_recycling(GList *recall_ids,
+				   AgsRecycling *old_first_recycling, AgsRecycling *first_recycling,
+				   AgsRecycling *old_last_recycling, AgsRecycling *last_recycling);
+
 AgsRecallID* ags_recall_id_new();
 
 #endif /*__AGS_RECALL_ID_H__*/
