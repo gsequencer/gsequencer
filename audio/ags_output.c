@@ -84,11 +84,6 @@ ags_output_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_output_parent_class)->finalize(gobject);
 }
 
-void
-ags_output_connect(AgsOutput *output)
-{
-}
-
 GList*
 ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
 {
@@ -125,6 +120,59 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
   }
   
   return(list_destination);
+}
+
+AgsRecycling*
+ags_output_find_first_input_recycling(AgsOutput *output)
+{
+  AgsAudio *audio;
+  AgsChannel *input;
+
+  if(output == NULL)
+    return(NULL);
+
+  audio = AGS_AUDIO(AGS_CHANNEL(output)->audio);
+
+
+  if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->audio_channel);
+
+    input = ags_channel_first_with_recycling(input);
+  }else{
+    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->line);
+  }
+
+  if(input != NULL){
+    return(input->first_recycling);
+  }else{
+    return(NULL);
+  }
+}
+
+AgsRecycling*
+ags_output_find_last_input_recycling(AgsOutput *output)
+{
+  AgsAudio *audio;
+  AgsChannel *input;
+
+  if(output == NULL)
+    return(NULL);
+
+  audio = AGS_AUDIO(AGS_CHANNEL(output)->audio);
+
+  if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->audio_channel);
+
+    input = ags_channel_last_with_recycling(input);
+  }else{
+    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->line);
+  }
+
+  if(input != NULL){
+    return(input->last_recycling);
+  }else{
+    return(NULL);
+  }
 }
 
 AgsOutput*

@@ -48,7 +48,8 @@ struct _AgsOutputClass
 
 GType ags_output_get_type();
 
-void ags_output_connect(AgsOutput *output);
+AgsRecycling* ags_output_find_first_input_recycling(AgsOutput *output);
+AgsRecycling* ags_output_find_last_input_recycling(AgsOutput *output);
 
 AgsOutput* ags_output_new(GObject *audio);
 
