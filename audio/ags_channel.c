@@ -3578,7 +3578,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 	  g_list_free(next_invalid_child_group_id_list);
 	}
 
-	current = current->next;
+	current = current->next_pad;
       }
     }else{
       current = ags_channel_nth(audio->input, output->line);
@@ -3803,7 +3803,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 	  g_list_free(next_invalid_child_group_id_list);
 	}
 
-	current = current->next;
+	current = current->next_pad;
       }
     }else{
       current = ags_channel_nth(audio->input, output->line);
@@ -3954,16 +3954,90 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       current = current->link;
     }
   }
-  void ags_channel_recursive_resolve_recall_down_input(AgsChannel *channel,
+  void ags_channel_recursive_resolve_recall_down_input(AgsChannel *output,
 						       GList *group_id, GList *child_group_id)
   {
-    //TODO:JK: implement me
+    AgsAudio *audio;
+    AgsChannel *current;
+    GList *next_group_id, *next_child_group_id;
 
+    audio = AGS_AUDIO(output->audio);
+
+    next_group_id = NULL;
+    next_child_group_id = NULL;
+
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+      current = ags_channel_nth(audio->input,
+				output->audio_channel);
+
+      while(current != NULL){
+	/* resolve input */
+	ags_channel_recursive_reset_channel_resolve_recall(current,
+							   group_id);
+
+	if(current->link != NULL){
+	  /* retrieve next child_group_id */
+	  if(next_group_id == NULL){
+	    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	      next_group_id = child_group_id;
+	      next_child_group_id = ags_channel_group_id_to_child_group_id(current->link,
+									   child_group_id);
+	    }else{
+	      next_group_id = group_id;
+	      child_group_id = child_group_id;
+	    }
+	  }
+
+	  /* go down */
+	  ags_channel_recursive_resolve_recall_down(current->link,
+						    next_group_id, next_child_group_id);
+	}
+
+	current = current->next_pad;
+      }
+    }else{
+      current = ags_channel_nth(audio->input,
+				output->line);
+
+      /* resolve input */
+      ags_channel_recursive_reset_channel_resolve_recall(current,
+							 group_id);
+
+      /* retrieve next child_group_id */
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	next_group_id = child_group_id;
+	next_child_group_id = ags_channel_group_id_to_child_group_id(current->link,
+								     child_group_id);
+      }else{
+	next_group_id = group_id;
+	child_group_id = child_group_id;
+      }
+
+      /* go down */
+      ags_channel_recursive_resolve_recall_down(current->link,
+						next_group_id, next_child_group_id);
+    }
   }
-  void ags_channel_recursive_resolve_recall_down(AgsChannel *channel,
+  void ags_channel_recursive_resolve_recall_down(AgsChannel *current,
 						 GList *group_id, GList *child_group_id)
   {
+    AgsAudio *audio;
+    GList *next_group_id, *next_child_group_id;
+
     //TODO:JK: implement me
+
+    audio = AGS_AUDIO(current->audio);
+
+
+
+
+
+
+
+    /* resolve audio */
+    ags_channel_recursive_reset_audio_resolve_recall(audio,
+						     current->first_recycling, current->last_recycling,
+						     next_group_id);
 
   }
   void ags_channel_tillrecycling_resolve_recall_up(AgsChannel *channel,
@@ -4087,8 +4161,8 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 					    invalid_lower_group_id_list, invalid_lower_child_group_id_list);
 
   /* go up */
-  ags_channel_recursive_unset_group_id_down(old_channel_link,
-					    invalid_upper_group_id_list, invalid_upper_child_group_id_list);
+  ags_channel_tillrecycling_unset_group_id_up(old_channel_link,
+					      invalid_upper_group_id_list);
 
   /* resolve recalls */
 
