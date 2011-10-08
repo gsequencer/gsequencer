@@ -254,11 +254,21 @@ ags_recall_id_find_parent_group_id(GList *recall_id_list, AgsGroupId parent_grou
 
 void
 ags_recall_id_reset_recycling(GList *recall_ids,
-			      AgsRecycling *old_first_recycling, AgsRecycling *first_recycling,
-			      AgsRecycling *old_last_recycling, AgsRecycling *last_recycling)
+			      AgsRecycling *old_first_recycling,
+			      AgsRecycling *first_recycling, AgsRecycling *last_recycling)
 {
-  
+  AgsRecallID *recall_id;
 
+  while(recall_ids != NULL){
+    recall_id = AGS_RECALL_ID(recall_ids->data);
+    
+    if(recall_id->first_recycling == old_first_recycling){
+      recall_id->first_recycling = first_recycling;
+      recall_id->last_recycling = last_recycling;
+    }
+
+    recall_ids = recall_ids->next;
+  }
 }
 
 AgsRecallID*
