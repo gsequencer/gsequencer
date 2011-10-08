@@ -3984,7 +3984,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 									   child_group_id);
 	    }else{
 	      next_group_id = group_id;
-	      child_group_id = child_group_id;
+	      next_child_group_id = child_group_id;
 	    }
 	  }
 
@@ -4010,7 +4010,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 								     child_group_id);
       }else{
 	next_group_id = group_id;
-	child_group_id = child_group_id;
+	next_child_group_id = child_group_id;
       }
 
       /* go down */
@@ -4037,7 +4037,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 								   child_group_id);
     }else{
       next_group_id = group_id;
-      child_group_id = child_group_id;
+      next_child_group_id = child_group_id;
     }
         
     /* resolve audio */
