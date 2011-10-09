@@ -4098,6 +4098,8 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       audio = AGS_AUDIO(current->audio);
 
       /* resolve input */
+      ags_channel_recursive_reset_channel_resolve_recall(current,
+							 group_id);
       
 
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
@@ -4124,6 +4126,9 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       }
 
     ags_channel_tillrecycling_resolve_recall_upOUTPUT:
+
+      ags_channel_recursive_reset_channel_resolve_recall(current,
+							 group_id);
 
 
       current = current->link;
