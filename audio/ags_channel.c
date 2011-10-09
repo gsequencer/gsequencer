@@ -2855,6 +2855,7 @@ ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id)
  * Once the clean up has done ags_channel_recursive_play_init() will be called for every
  * playing instance that was found.
  */
+//TODO:JK: you may want to store querried child id in a tree for optimization
 void
 ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 				      AgsChannel *old_channel_link, AgsChannel *old_link_link)
@@ -4270,7 +4271,58 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
   void ags_channel_tillrecycling_init_recall_up(AgsChannel *channel,
 						GList *group_id)
   {
-    //TODO:JK: implement me
+    AgsAudio *audio;
+    AgsChannel *current;
+
+    if(channel == NULL)
+      return;
+
+    audio = AGS_AUDIO(channel->audio);
+    current = channel;
+
+    if(AGS_IS_OUTPUT(channel)){
+      goto ags_channel_tillrecycling_init_recall_upOUTPUT;
+    }
+
+    while(current != NULL){
+      audio = AGS_AUDIO(current->audio);
+
+      /* init input */
+      ags_channel_recursive_reset_channel_init_recall(current,
+						      group_id);
+      
+
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	break;
+      }
+
+      /* init audio */
+      ags_channel_recursive_reset_audio_init_recall(audio,
+						    channel->first_recycling, channel->last_recycling,
+						    group_id);
+
+
+      /* init output */
+      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	break;
+      }
+
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+	current = ags_channel_nth(audio->output,
+				  current->audio_channel);
+      }else{
+	current = ags_channel_nth(audio->output,
+				  current->line);
+      }
+
+    ags_channel_tillrecycling_init_recall_upOUTPUT:
+
+      ags_channel_recursive_reset_channel_init_recall(current,
+						      group_id);
+
+
+      current = current->link;
+    }
 
   }
 
