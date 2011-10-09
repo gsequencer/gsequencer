@@ -2856,6 +2856,7 @@ ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id)
  * playing instance that was found.
  */
 //TODO:JK: you may want to store querried child id in a tree for optimization
+//FIXME:JK: most iterations run from the root to the leafs, but the up going functions doesn't do it correctly and will be called after down going functions, it should hurt but isn't clean
 void
 ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 				      AgsChannel *old_channel_link, AgsChannel *old_link_link)
@@ -2950,7 +2951,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
   auto void ags_channel_recursive_resolve_recall_down(AgsChannel *channel,
 						      GList *group_id, GList *child_group_id);
   auto void ags_channel_tillrecycling_resolve_recall_up(AgsChannel *channel,
-							GList *group_id, GList *child_group_id);
+							GList *group_id);
 
   auto void ags_channel_recursive_init_recall_down_input(AgsChannel *channel,
 							 GList *group_id, GList *child_group_id);
@@ -4101,7 +4102,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
     }
   }
   void ags_channel_tillrecycling_resolve_recall_up(AgsChannel *channel,
-						   GList *group_id, GList *child_group_id)
+						   GList *group_id)
   {
     AgsAudio *audio;
     AgsChannel *current;
@@ -4432,13 +4433,17 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
   /* go up */
   ags_channel_tillrecycling_resolve_recall_up(link,
-					      link_group_id_list, link_child_group_id_list);
+					      link_group_id_list);
 
   /* init recalls */
   for(stage = 0; stage < 3; stage++){
     /* go down */
+    ags_channel_recursive_init_recall_down(channel,
+					   channel_group_id_list, channel_child_group_id_list);
 
     /* go up */
+    ags_channel_tillrecycling_init_recall_up(link,
+					     link_group_id_list);
 
   }
 
