@@ -134,6 +134,30 @@ ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *depen
   return(NULL);
 }
 
+GList*
+ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
+						  GObject *provider)
+{
+  AgsRecallDependency *recall_dependency;
+
+  while(recall_dependencies != NULL){
+    recall_dependency = AGS_RECALL_DEPENDENCY(recall_dependencies->data);
+
+    if((AGS_IS_CHANNEL(provider) &&
+	AGS_IS_RECALL_CHANNEL_RUN(recall_dependency->dependency) &&
+	(AGS_RECALL_CHANNEL_RUN(recall_dependency->dependency)->channel == AGS_CHANNEL(provider))) ||
+       (AGS_IS_AUDIO(provider) &&
+	AGS_IS_RECALL_AUDIO_RUN(recall_dependency->dependency) &&
+	(AGS_RECALL_AUDIO_RUN(recall_dependency->dependency)->recall_audio->audio == AGS_AUDIO(provider)))){
+      return(recall_dependencies);
+    }
+
+    recall_dependencies = recall_dependencies->next;
+  }
+
+  return(NULL);
+}
+
 GObject*
 ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId group_id)
 {
