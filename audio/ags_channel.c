@@ -3775,7 +3775,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 			     parent_group_id_list, group_id_list, child_group_id_list,
 			     devout_play_list,
 			     next_audio_signal_level, G_MAXUINT,
-			     next_invalid_group_id_list);
+			     invalid_group_id_list);
 
     /* retrieve next AgsGroupIds */
     ags_channel_reset_get_next_group_id_lists(audio, current,
