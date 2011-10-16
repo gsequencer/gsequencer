@@ -224,7 +224,7 @@ ags_drum_init(AgsDrum *drum)
 									"recall_audio\0", count_beats_audio,
 									"delay_audio_run\0", play_delay_audio_run,
 									NULL);
-  AGS_RECALL(play_count_beats_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
   ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
 
   /* audio->recall */
@@ -250,7 +250,7 @@ ags_drum_init(AgsDrum *drum)
 									  "recall_audio\0", count_beats_audio,
 									  "delay_audio_run\0", recall_delay_audio_run,
 									  NULL);
-  AGS_RECALL(recall_count_beats_audio_run)->flags |= AGS_RECALL_TEMPLATE;
+  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
   ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, FALSE);
 
 
@@ -278,7 +278,7 @@ ags_drum_init(AgsDrum *drum)
 								     "recall_audio\0", copy_pattern_audio,
 								     "count_beats_audio_run\0", play_count_beats_audio_run,
 								     NULL);
-  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
+  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, TRUE);
 
   /* audio->recall */
@@ -295,7 +295,7 @@ ags_drum_init(AgsDrum *drum)
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
-  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
+  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, FALSE);
 
   /* create AgsCopyPatternAudioRun in audio->recall */
@@ -305,7 +305,7 @@ ags_drum_init(AgsDrum *drum)
 								     "recall_audio\0", copy_pattern_audio,
 								     "count_beats_audio_run\0", recall_count_beats_audio_run,
 								     NULL);
-  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE;
+  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, FALSE);
 
   /* create widgets */

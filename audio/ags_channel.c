@@ -1644,7 +1644,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   AgsRecallID *recall_id;
   AgsRecall *recall;
   GList *list_recall;
-  gboolean matches_reality;
+  gboolean matches_reality, immediate_new_level;
   
   recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
   
@@ -1658,12 +1658,20 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   audio = AGS_AUDIO(channel->audio);
     
   if(AGS_IS_OUTPUT(channel)){
+    immediate_new_level = FALSE;
+
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       run_order = ags_run_order_find_group_id(audio->run_order,
 					      recall_id->child_group_id);
     }else{
       run_order = ags_run_order_find_group_id(audio->run_order,
 					      group_id);
+    }
+  }else{
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      immediate_new_level = TRUE;
+    }else{
+      immediate_new_level = FALSE;
     }
   }
 
@@ -1673,6 +1681,8 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* check if it's a real recall or not and whether it needs to be loaded */
     matches_reality = TRUE;
     
+    //TODO:JK: remove because it's probably deprecated
+    /*
     if((AGS_RECALL_DISTINCTS_REAL & (recall->flags)) != 0){
       if((AGS_RECALL_IS_REAL & (recall->flags)) != 0){
 	if(audio_signal_level < 2)
@@ -1682,6 +1692,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 	  matches_reality = FALSE;
       }
     }
+    */
 
     /* ignore initialized or non-runnable AgsRecalls */
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
@@ -1692,9 +1703,11 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
 	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0)) ||
 
-       (audio_signal_level != 0 && ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 ||
-				    (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 ||
-				    (AGS_RECALL_NOTATION & (recall->flags)) != 0))
+
+       ((audio_signal_level != 0) && ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 ||
+				      (((AGS_RECALL_SEQUENCER & (recall->flags)) != 0 ||
+					(AGS_RECALL_NOTATION & (recall->flags)) != 0)) &&
+				      !(immediate_new_level && audio_signal_level == 1)))
        ){
       list_recall = list_recall->next;
       continue;

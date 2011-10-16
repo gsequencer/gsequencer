@@ -31,6 +31,10 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -1636,7 +1640,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   AgsRecallID *recall_id;
   AgsRunOrder *run_order;
   GList *list_recall_start, *list_recall;
-  gboolean matches_reality;
+  gboolean matches_reality, immediate_new_level;
   
   recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
   
@@ -1647,11 +1651,19 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     list_recall_start =
       list_recall = audio->recall;
   
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+    immediate_new_level = TRUE;
+  }else{
+    immediate_new_level = FALSE;
+  }
+
   while(list_recall != NULL){
     recall = AGS_RECALL(list_recall->data);
     
     matches_reality = TRUE;
-    
+
+    //TODO:JK: remove because it's probably deprecated
+    /*
     if(AGS_RECALL_DISTINCTS_REAL & (recall->flags) != 0){
       if(AGS_RECALL_IS_REAL & (recall->flags) != 0){
 	if(audio_signal_level < 2)
@@ -1659,7 +1671,13 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       }else if(audio_signal_level > 1)
 	matches_reality = FALSE;
     }
-    
+    */
+
+    if(AGS_IS_DELAY_AUDIO_RUN(recall) ||
+       AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
+       AGS_IS_COPY_PATTERN_AUDIO_RUN(recall))
+      printf("\n");
+
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_AUDIO(recall) ||
        !matches_reality ||
@@ -1667,10 +1685,10 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
 	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0)) ||
 
-       (audio_signal_level != 0 && ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 ||
-				    (AGS_RECALL_SEQUENCER & (recall->flags)) != 0 ||
-				    (AGS_RECALL_NOTATION & (recall->flags)) != 0))
-       ){
+       ((audio_signal_level != 0) && ((AGS_RECALL_PLAYBACK & (recall->flags)) != 0 ||
+				      (((AGS_RECALL_SEQUENCER & (recall->flags)) != 0 ||
+					(AGS_RECALL_NOTATION & (recall->flags)) != 0)) &&
+				      !(immediate_new_level && audio_signal_level == 1)))){
       list_recall = list_recall->next;
       continue;
     }

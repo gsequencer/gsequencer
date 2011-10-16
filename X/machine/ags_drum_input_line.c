@@ -249,11 +249,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     /* AgsStreamChannel */
     play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-							    "recall_container\0", play_stream_channel_container,
 							    "channel\0", source,
+							    "recall_container\0", play_stream_channel_container,
 							    NULL);
     AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					       AGS_RECALL_PLAYBACK |
 					       AGS_RECALL_PROPAGATE_DONE);
     ags_channel_add_recall(source, (GObject *) play_stream_channel, TRUE);
 
@@ -295,7 +294,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 								     "recall_container\0", recall_stream_channel_container,
 								     "recall_channel\0", recall_stream_channel,
 								     NULL);
-    AGS_RECALL(recall_stream_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(recall_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+						     AGS_RECALL_SEQUENCER |
+						     AGS_RECALL_NOTATION);
     ags_channel_add_recall(source, (GObject *) recall_stream_channel_run, FALSE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -313,7 +314,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 						   NULL);
 
     AGS_RECALL(play_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_PLAYBACK |
 					AGS_RECALL_PROPAGATE_DONE);
     ags_channel_add_recall(source, (GObject *) play_channel, TRUE);
 
@@ -363,7 +363,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     volume_channel = ags_volume_channel_new(source,
 					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
     
-    AGS_RECALL(volume_channel)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(volume_channel)->flags |= (AGS_RECALL_TEMPLATE |
+					  AGS_RECALL_SEQUENCER |
+					  AGS_RECALL_NOTATION);
     ags_channel_add_recall(source, (GObject *) volume_channel, FALSE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -402,7 +404,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									      "recall_channel\0", play_copy_pattern_channel,
 									      NULL);
   
-    AGS_RECALL(play_copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(play_copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+							 AGS_RECALL_SEQUENCER |
+							 AGS_RECALL_NOTATION);
     ags_channel_add_recall(source, (GObject *) play_copy_pattern_channel_run, TRUE);
     
     if(GTK_WIDGET_VISIBLE(drum))
@@ -424,7 +428,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									 "destination\0", destination,
 									 "pattern\0", source->pattern->data,
 									 NULL);
-    AGS_RECALL(recall_copy_pattern_channel)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(recall_copy_pattern_channel)->flags |= (AGS_RECALL_TEMPLATE);
     ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel, FALSE);
       
     if(GTK_WIDGET_VISIBLE(drum))
@@ -438,7 +442,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 										"recall_channel\0", recall_copy_pattern_channel,
 										NULL);
     
-    AGS_RECALL(recall_copy_pattern_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(recall_copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE  |
+							   AGS_RECALL_SEQUENCER |
+							   AGS_RECALL_NOTATION);
     ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel_run, FALSE);
     
     if(GTK_WIDGET_VISIBLE(drum))
@@ -451,7 +457,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 						   "destination\0", destination,
 						   "devout\0", audio->devout,
 						   NULL);
-    AGS_RECALL(copy_channel)->flags |= AGS_RECALL_TEMPLATE;
+    AGS_RECALL(copy_channel)->flags |= (AGS_RECALL_TEMPLATE |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
     ags_channel_add_recall(source, (GObject *) copy_channel, FALSE);
     
     if(GTK_WIDGET_VISIBLE(drum))
