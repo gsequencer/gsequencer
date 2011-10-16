@@ -2544,7 +2544,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	AgsGroupId tmp_group_id;
 
 	tmp_group_id = ags_recall_id_generate_group_id();
-	 
+
 	ags_channel_recursive_play_init_arrange_group_id_down_input(channel,
 								    group_id, child_group_id, tmp_group_id,
 								    1);

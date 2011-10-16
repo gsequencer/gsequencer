@@ -29,7 +29,7 @@
 
 #include <ags/audio/recall/ags_stream_channel_run.h>
 
-#define AGS_TYPE_PLAY_CHANNEL_RUN_MASTER                (ags_play_channel_run_get_type())
+#define AGS_TYPE_PLAY_CHANNEL_RUN_MASTER                (ags_play_channel_run_master_get_type())
 #define AGS_PLAY_CHANNEL_RUN_MASTER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER, AgsPlayChannelRunMaster))
 #define AGS_PLAY_CHANNEL_RUN_MASTER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER, AgsPlayChannelRunMasterClass))
 #define AGS_IS_PLAY_CHANNEL_RUN_MASTER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER))

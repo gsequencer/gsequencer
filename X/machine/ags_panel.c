@@ -28,7 +28,7 @@
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_play_channel_run_master.h>
 
 #include <ags/X/ags_window.h>
 
@@ -180,7 +180,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
     AgsChannel *input, *output;
     AgsRecallContainer *play_channel_container;
     AgsPlayChannel *play_channel;
-    AgsPlayChannelRun *play_channel_run;
+    AgsPlayChannelRunMaster *play_channel_run;
     GtkHBox *hbox;
     guint i;
 
@@ -193,8 +193,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       ags_channel_add_recall_container(input, (GObject *) play_channel_container, TRUE);
       
       play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						     "recall_container\0", play_channel_container,
 						     "channel\0", input,
+						     "recall_container\0", play_channel_container,
 						     "devout\0", AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
 						     "audio_channel\0", i,
 						     NULL);
@@ -206,12 +206,16 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 	ags_connectable_connect(AGS_CONNECTABLE(play_channel));
       
       /* AgsPlayChannelRun */
-      play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
-							    "recall_container\0", play_channel_container,
-							    "recall_channel\0", play_channel,
-							    NULL);
+      play_channel_run = (AgsPlayChannelRunMaster *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN_MASTER,
+								  "channel\0", input,
+								  "recall_container\0", play_channel_container,
+								  "recall_channel\0", play_channel,
+								  NULL);
       
-      AGS_RECALL(play_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(play_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+					      AGS_RECALL_PLAYBACK |
+					      AGS_RECALL_SEQUENCER |
+					      AGS_RECALL_NOTATION);
       ags_channel_add_recall(input, (GObject *) play_channel_run, TRUE);
 
       if(GTK_WIDGET_VISIBLE(panel))
