@@ -149,7 +149,7 @@ ags_append_audio_new(AgsDevout *devout,
   AgsAppendAudio *append_audio;
 
   append_audio = (AgsAppendAudio *) g_object_new(AGS_TYPE_APPEND_AUDIO,
-					     NULL);
+						 NULL);
 
   append_audio->devout = devout;
   append_audio->devout_play = devout_play;
