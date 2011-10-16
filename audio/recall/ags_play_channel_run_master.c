@@ -64,12 +64,9 @@ void ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *pla
 void ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
 						    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 						    AgsRecycling *new_start_region, AgsRecycling *new_end_region);
-void ags_play_channel_run_master_refresh_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
-						      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-						      AgsRecycling *new_start_region, AgsRecycling *new_end_region);
-void ags_play_channel_run_master_refresh_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
-						      AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-						      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+void ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
+						    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
 void ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channel,
 								   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -484,64 +481,6 @@ ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_cha
 }
 
 void
-ags_play_channel_run_master_remap_child_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
-						     AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-						     AgsRecycling *new_start_region, AgsRecycling *new_end_region)
-{
-  AgsChannel *current;
-  AgsRecycling *recycling;
-  GList *list;
-
-  /* remove old */
-  if(old_start_region != NULL){
-    current = NULL;
-    recycling = old_start_region;
-    
-    while(recycling != old_end_region->next){
-      if(current != AGS_CHANNEL(recycling->channel)){
-	current = AGS_CHANNEL(recycling->channel);
-
-	list = ags_recall_get_dependencies(AGS_RECALL(play_channel_run_master));
-
-	while((list = ags_recall_dependency_find_dependency_by_provider(list,
-									G_OBJECT(current))) != NULL){
-	  ags_recall_remove_dependency(AGS_RECALL(play_channel_run_master),
-				       AGS_RECALL(AGS_RECALL_DEPENDENCY(list->data)->dependency));
-
-
-	  list = list->next;
-	}
-      }
-
-      recycling = recycling->next;
-    }
-  }
-
-  /* add new */
-  if(new_start_region != NULL){
-    current = NULL;
-    recycling = old_start_region;
-    
-    while(recycling != new_end_region->next){
-      if(current != AGS_CHANNEL(recycling->channel)){
-	current = AGS_CHANNEL(recycling->channel);
-
-	list = ags_recall_template_find_type(current->recall,
-					     AGS_TYPE_STREAM_CHANNEL_RUN);
-
-	if(list != NULL){
-	  ags_recall_add_dependency(AGS_RECALL(play_channel_run_master),
-				    ags_recall_dependency_new(G_OBJECT(list->data)));
-	  
-	}
-      }
-
-      recycling = recycling->next;
-    }
-  }
-}
-
-void
 ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
 					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 					       AgsRecycling *new_start_region, AgsRecycling *new_end_region)
@@ -606,26 +545,61 @@ ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_cha
 }
 
 void
-ags_play_channel_run_master_refresh_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
-						 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-						 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
+ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_channel_run_master,
+					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+					       AgsRecycling *new_start_region, AgsRecycling *new_end_region)
 {
   AgsChannel *current;
   AgsRecycling *recycling;
+  GList *list;
 
-  /* remove old dependencies */
+  /* remove old */
+  if(old_start_region != NULL){
+    current = NULL;
+    recycling = old_start_region;
+    
+    while(recycling != old_end_region->next){
+      if(current != AGS_CHANNEL(recycling->channel)){
+	current = AGS_CHANNEL(recycling->channel);
+
+	list = ags_recall_get_dependencies(AGS_RECALL(play_channel_run_master));
+
+	while((list = ags_recall_dependency_find_dependency_by_provider(list,
+									G_OBJECT(current))) != NULL){
+	  ags_recall_remove_dependency(AGS_RECALL(play_channel_run_master),
+				       AGS_RECALL(AGS_RECALL_DEPENDENCY(list->data)->dependency));
 
 
-  /* add new dependencies */
-}
+	  list = list->next;
+	}
+      }
 
-void
-ags_play_channel_run_master_refresh_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
-						 AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-						 AgsRecycling *new_start_region, AgsRecycling *new_end_region)
-{
-  AgsRecycling *recycling;
+      recycling = recycling->next;
+    }
+  }
 
+  /* add new */
+  if(new_start_region != NULL){
+    current = NULL;
+    recycling = old_start_region;
+    
+    while(recycling != new_end_region->next){
+      if(current != AGS_CHANNEL(recycling->channel)){
+	current = AGS_CHANNEL(recycling->channel);
+
+	list = ags_recall_template_find_type(current->recall,
+					     AGS_TYPE_STREAM_CHANNEL_RUN);
+
+	if(list != NULL){
+	  ags_recall_add_dependency(AGS_RECALL(play_channel_run_master),
+				    ags_recall_dependency_new(G_OBJECT(list->data)));
+	  
+	}
+      }
+
+      recycling = recycling->next;
+    }
+  }
 }
 
 void
@@ -636,13 +610,13 @@ ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channe
 							      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							      AgsPlayChannelRunMaster *play_channel_run_master)
 {
-  ags_play_channel_run_master_refresh_dependencies(play_channel_run_master,
-						   old_start_changed_region, old_end_changed_region,
-						   new_start_changed_region, new_end_changed_region);
+  ags_play_channel_run_master_remap_dependencies(play_channel_run_master,
+						 old_start_changed_region, old_end_changed_region,
+						 new_start_changed_region, new_end_changed_region);
 
-  ags_play_channel_run_master_refresh_child_source(play_channel_run_master,
-						   old_start_changed_region, old_end_changed_region,
-						   new_start_changed_region, new_end_changed_region);
+  ags_play_channel_run_master_remap_child_source(play_channel_run_master,
+						 old_start_changed_region, old_end_changed_region,
+						 new_start_changed_region, new_end_changed_region);
 }
 
 void

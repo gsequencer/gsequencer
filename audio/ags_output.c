@@ -133,7 +133,6 @@ ags_output_find_first_input_recycling(AgsOutput *output)
 
   audio = AGS_AUDIO(AGS_CHANNEL(output)->audio);
 
-
   if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
     input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->audio_channel);
 
