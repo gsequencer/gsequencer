@@ -399,9 +399,9 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   if(stream == NULL){
     AgsPlayChannelRun *play_channel_run;
 
-    play_channel_run = AGS_PLAY_CHANNEL_RUN(recall->parent->parent);
+    //    play_channel_run = AGS_PLAY_CHANNEL_RUN(recall->parent->parent);
 
-    if((AGS_PLAY_CHANNEL_RUN_TERMINATING & (play_channel_run->flags)) != 0)
+    //    if((AGS_PLAY_CHANNEL_RUN_TERMINATING & (play_channel_run->flags)) != 0)
       ags_recall_done(recall);
 
     return;
