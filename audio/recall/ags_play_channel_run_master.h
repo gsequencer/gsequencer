@@ -35,6 +35,7 @@
 #define AGS_IS_PLAY_CHANNEL_RUN_MASTER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER))
 #define AGS_IS_PLAY_CHANNEL_RUN_MASTER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER))
 #define AGS_PLAY_CHANNEL_RUN_MASTER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER, AgsPlayChannelRunMasterClass))
+#define AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER(strct)     ((AgsPlayChannelRunMasterStreamer *)(strct))
 
 typedef struct _AgsPlayChannelRunMaster AgsPlayChannelRunMaster;
 typedef struct _AgsPlayChannelRunMasterClass AgsPlayChannelRunMasterClass;
@@ -72,6 +73,8 @@ GType ags_play_channel_run_master_get_type();
 
 AgsPlayChannelRunMasterStreamer* ags_play_channel_run_master_streamer_alloc(AgsPlayChannelRunMaster *play_channel_run_master,
 									    AgsStreamChannelRun *stream_channel_run);
+GList* ags_play_channel_run_master_find_streamer(GList *list,
+						 AgsStreamChannelRun *stream_channel_run);
 
 AgsPlayChannelRunMaster* ags_play_channel_run_master_new();
 

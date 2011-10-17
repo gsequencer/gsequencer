@@ -405,14 +405,14 @@ ags_copy_channel_run_connect(AgsRunConnectable *run_connectable)
   copy_channel = AGS_COPY_CHANNEL(run_connectable);
 
   /* destination */
-  gobject = (GObject *) copy_channel->destination;
+  gobject = G_OBJECT(copy_channel->destination);
 
   copy_channel->destination_recycling_changed_handler =
     g_signal_connect(gobject, "recycling_changed\0",
 		     G_CALLBACK(ags_copy_channel_destination_recycling_changed_callback), copy_channel);
 
   /* source */
-  gobject = (GObject *) copy_channel->source;
+  gobject = G_OBJECT(copy_channel->source);
 
   copy_channel->source_recycling_changed_handler =
     g_signal_connect(gobject, "recycling_changed\0",
