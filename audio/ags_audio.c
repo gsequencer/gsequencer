@@ -1559,6 +1559,9 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
 							 group_id,
 							 first_recycling, last_recycling);
+
+  if(recall_id == NULL)
+    printf("group_id = %u\n\0", group_id);
   
   if((AGS_RECALL_ID_AUDIO_RESOLVED & (recall_id->flags)) != 0){
     return;
