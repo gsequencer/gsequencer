@@ -38,8 +38,8 @@
 
 #include <ags/X/ags_menu_bar.h>
 
-#define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY"
-#define AGS_MATRIX_INPUT_LINE_MAPPED_DATA "AGS_MATRIX_INPUT_LINE_MAPPED_DATA"
+#define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY\0"
+#define AGS_MATRIX_INPUT_LINE_MAPPED_DATA "AGS_MATRIX_INPUT_LINE_MAPPED_DATA\0"
 
 #define AGS_MATRIX_CELL_WIDTH   12
 #define AGS_MATRIX_CELL_HEIGHT  10
@@ -581,7 +581,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 								       "channel\0", source,
 								       "recall_container\0", play_stream_channel_container,
-								       "recall_channel", play_stream_channel,
+								       "recall_channel\0", play_stream_channel,
 								       NULL);
 	AGS_RECALL(play_stream_channel_run)->flags |= AGS_RECALL_TEMPLATE;
 	ags_channel_add_recall(source, (GObject *) play_stream_channel_run, FALSE);
@@ -608,7 +608,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	recall_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 									 "channel\0", source,
 									 "recall_container\0", recall_stream_channel_container,
-									 "recall_channel", recall_stream_channel,
+									 "recall_channel\0", recall_stream_channel,
 									 NULL);
 	AGS_RECALL(recall_stream_channel_run)->flags |= AGS_RECALL_TEMPLATE;
 	ags_channel_add_recall(source, (GObject *) recall_stream_channel_run, FALSE);
@@ -696,7 +696,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 								     "channel\0", source,
 								     "recall_container\0", play_stream_channel_container,
-								     "recall_channel", play_stream_channel,
+								     "recall_channel\0", play_stream_channel,
 								     NULL);
       AGS_RECALL(play_stream_channel_run)->flags |= AGS_RECALL_TEMPLATE;
       ags_channel_add_recall(source, (GObject *) play_stream_channel_run, FALSE);
@@ -723,7 +723,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       recall_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 								       "channel\0", source,
 								       "recall_container\0", recall_stream_channel_container,
-								       "recall_channel", recall_stream_channel,
+								       "recall_channel\0", recall_stream_channel,
 								       NULL);
       AGS_RECALL(recall_stream_channel_run)->flags |= AGS_RECALL_TEMPLATE;
       ags_channel_add_recall(source, (GObject *) recall_stream_channel_run, FALSE);

@@ -177,8 +177,8 @@ ags_link_editor_menu_item_file_callback(GtkWidget *widget, AgsLinkEditor *link_e
 
   play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					  "label\0", GTK_STOCK_MEDIA_PLAY,
-					  "use-stock", TRUE,
-					  "use-underline", TRUE,
+					  "use-stock\0", TRUE,
+					  "use-underline\0", TRUE,
 					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(link_editor->file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(link_editor->file_chooser)->action_area, (GtkWidget *) play, 0);
@@ -214,7 +214,7 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
       }
     }else{
     ags_link_editor_file_chooser_response_callback0:
-      gtk_label_set_label(GTK_LABEL(GTK_BIN(link_editor->option)->child), g_strconcat("file://", name, NULL));
+      gtk_label_set_label(GTK_LABEL(GTK_BIN(link_editor->option)->child), g_strconcat("file://\0", name, NULL));
 
       audio_file = ags_audio_file_new();
       audio_file->name = name;

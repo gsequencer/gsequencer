@@ -443,7 +443,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	    set_sync_link = FALSE;
 	    input_pad_last = ags_channel_nth(input, audio->input_lines - (audio_channels - audio->audio_channels));
 	  }else{
-	    fprintf(stdout, "ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined");
+	    fprintf(stdout, "ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
 	    set_sync_link = FALSE;
 	    set_async_link = FALSE;
 	  }
@@ -466,7 +466,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   }
   void ags_audio_set_audio_channels_grow_one(GType type){
     channel = (AgsChannel *) g_object_new(type,
-					  "audio", (GObject *) audio,
+					  "audio\0", (GObject *) audio,
 					  NULL);
 
     if(type == AGS_TYPE_OUTPUT){

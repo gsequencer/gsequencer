@@ -350,7 +350,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
 
     break;
   default:
-    printf("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify");
+    printf("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify\0");
   }
 }
 

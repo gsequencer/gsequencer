@@ -53,7 +53,7 @@ ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   gtk_container_child_get_property(GTK_CONTAINER(GTK_WIDGET(machine)->parent),
 				   GTK_WIDGET(machine),
-				   "position", &val);
+				   "position\0", &val);
 
   if(g_value_get_int (&val) > 0){
     gtk_box_reorder_child(GTK_BOX(GTK_WIDGET(machine)->parent),
@@ -75,7 +75,7 @@ ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *mac
 
   gtk_container_child_get_property(GTK_CONTAINER(GTK_WIDGET(machine)->parent),
 				   GTK_WIDGET(machine),
-				   "position", &val);
+				   "position\0", &val);
 
   if(g_value_get_int (&val) < g_list_length(gtk_container_get_children((GtkContainer *) GTK_WIDGET(machine)->parent)) - 1){
     gtk_box_reorder_child(GTK_BOX(GTK_WIDGET(machine)->parent),

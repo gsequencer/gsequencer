@@ -542,7 +542,7 @@ ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 
     break;
   default:
-    printf("ags_count_beats_audio_run.c - ags_count_beats_audio_run_notify: unknown notify");
+    printf("ags_count_beats_audio_run.c - ags_count_beats_audio_run_notify: unknown notify\0");
   }
 }
 

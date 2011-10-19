@@ -197,7 +197,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(channel_link_collection_editor->link),
 				 cell_renderer,
-				 "text", 0,
+				 "text\0", 0,
 				 NULL);
 
   gtk_combo_box_set_model(channel_link_collection_editor->link,

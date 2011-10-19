@@ -103,8 +103,8 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 
   play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					  "label\0", GTK_STOCK_MEDIA_PLAY,
-					  "use-stock", TRUE,
-					  "use-underline", TRUE,
+					  "use-stock\0", TRUE,
+					  "use-underline\0", TRUE,
 					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, 0);

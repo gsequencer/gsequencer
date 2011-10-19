@@ -64,12 +64,12 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "create\0", (gpointer) check_button);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "overwrite\0", (gpointer) check_button);
 
   gtk_widget_show_all((GtkWidget *) file_chooser);
 

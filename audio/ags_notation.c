@@ -587,7 +587,7 @@ ags_notation_copy_selection(AgsNotation *notation)
 
   while(selection != NULL){
     note = AGS_NOTE(selection->data);
-    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
+    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note\0", NULL);
 
     xmlNewProp(current_note, BAD_CAST "x0\0", BAD_CAST g_strdup_printf("%u\0", note->x[0]));
     xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", note->x[1]));
