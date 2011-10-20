@@ -1734,7 +1734,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   
   if(AGS_IS_OUTPUT(channel)){  
     ags_run_order_add_channel(run_order,
-				channel);
+			      channel);
   }
 }
 

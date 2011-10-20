@@ -40,6 +40,11 @@ struct _AgsInitChannel
   AgsTask task;
 
   AgsChannel *channel;
+  gboolean play_pad;
+
+  AgsGroupId group_id;
+  AgsGroupId child_group_id;
+
   gboolean playback;
   gboolean sequencer;
   gboolean notation;
@@ -52,7 +57,8 @@ struct _AgsInitChannelClass
 
 GType ags_init_channel_get_type();
 
-AgsInitChannel* ags_init_channel_new(AgsChannel *channel,
+AgsInitChannel* ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
+				     AgsGroupId group_id, AgsGroupId child_group_id,
 				     gboolean playback, gboolean sequencer, gboolean notation);
 
 #endif /*__AGS_INIT_CHANNEL_H__*/
