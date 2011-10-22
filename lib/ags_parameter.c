@@ -19,6 +19,12 @@ ags_parameter_grow(GType type,
   va_list ap;
   gchar *error = NULL;
 
+  if(first_property_name == NULL){
+    *new_n_params = 0;
+    *dst = NULL;
+    return;
+  }
+
   if(pspec_pool == NULL){
     g_param_spec_pool_new(FALSE);
   }
@@ -27,6 +33,7 @@ ags_parameter_grow(GType type,
   va_start(ap, first_property_name);
 
   for(i = 0; ; i++){
+    va_arg(ap, void);
     property_name = va_arg(ap, gchar *);
     
     if(property_name == NULL){
@@ -50,11 +57,9 @@ ags_parameter_grow(GType type,
   /* add the new parameters */
   count += n_params;
   va_start(ap, first_property_name);
+  property_name = first_property_name;
 
   for(i = n_params; i < count; i++){
-    property_name = va_arg(ap, gchar *);
-    value = va_arg(ap, GValue);
-
     pspec = g_param_spec_pool_lookup(pspec_pool,
 				     property_name,
 				     type,
@@ -70,6 +75,8 @@ ags_parameter_grow(GType type,
     new_parameter[i].name = property_name;
     G_VALUE_COLLECT_INIT(&new_parameter[i].value, pspec->value_type,
 			 ap, 0, &error);
+
+    property_name = va_arg(ap, gchar *);
   }
     
   va_end(ap);

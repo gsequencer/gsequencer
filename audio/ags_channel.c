@@ -1755,9 +1755,8 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
   GList *list_recall;
   
   recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
-  
-  if(recall_id == NULL || (group_id == 8 && stage == 0))
-    printf("audio::IN[%u]; channel: %u %u\n\0", AGS_AUDIO(channel->audio)->input_lines, channel->audio_channel, channel->pad);
+
+  printf("ags_channel_init_recall@%d - audio::IN[%u]; channel: %lu %lu\n\0", stage, AGS_AUDIO(channel->audio)->input_lines, channel->audio_channel, channel->pad);
   
 
   if(recall_id->parent_group_id == 0)
@@ -1775,10 +1774,10 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     }
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
+      printf("  init: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+
       if(stage == 0){
 	recall->flags &= (~AGS_RECALL_HIDE);
-	if((group_id == 8 && stage == 0))
-	  printf("%s\n\0", G_OBJECT_TYPE_NAME(recall));
 	ags_recall_run_init_pre(recall);
 	recall->flags &= (~AGS_RECALL_REMOVE);
       }else if(stage == 1){
