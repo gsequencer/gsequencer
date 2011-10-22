@@ -69,7 +69,8 @@ void ags_recall_real_cancel(AgsRecall *recall);
 void ags_recall_real_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
-				     AgsRecallID *recall_id);
+				     AgsRecallID *recall_id,
+				     guint n_params, GParameter *parameter);
 
 enum{
   RESOLVE_DEPENDENCIES,
@@ -342,9 +343,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, duplicate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__OBJECT,
-		 G_TYPE_OBJECT, 1,
-		 G_TYPE_OBJECT);
+		 g_cclosure_user_marshal_OBJECT__OBJECT_UINT_POINTER,
+		 G_TYPE_OBJECT, 3,
+		 G_TYPE_OBJECT,
+		 G_TYPE_UINT, G_TYPE_POINTER);
 
   recall_signals[NOTIFY_DEPENDENCY] =
     g_signal_new("notify_dependency\0",
@@ -964,7 +966,8 @@ ags_recall_is_done(GList *recalls, AgsGroupId group_id)
 
 AgsRecall*
 ags_recall_real_duplicate(AgsRecall *recall,
-			  AgsRecallID *recall_id)
+			  AgsRecallID *recall_id,
+			  guint n_params, GParameter *parameter)
 {
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
@@ -973,7 +976,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
   GList *list, *child;
   GValue recall_container_value = {0,};
 
-  copy = g_object_new(G_OBJECT_TYPE(recall), NULL);
+  copy = g_object_newv(G_OBJECT_TYPE(recall), n_params, parameter);
 
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
@@ -1017,7 +1020,7 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[DUPLICATE], 0,
-		recall_id,
+		recall_id, 0, NULL,
 		&copy);
   g_object_unref(G_OBJECT(recall));
 

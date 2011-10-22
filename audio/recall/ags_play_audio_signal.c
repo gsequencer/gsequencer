@@ -445,7 +445,8 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
   AgsPlayAudioSignal *play_audio_signal, *copy;
 
   play_audio_signal = (AgsPlayAudioSignal *) recall;
-  copy = (AgsPlayAudioSignal *) AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsPlayAudioSignal *) AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->duplicate(recall, recall_id,
+												n_params, parameter);
 
   g_object_set(G_OBJECT(copy),
 	       "source\0", play_audio_signal->source,

@@ -46,7 +46,8 @@ void ags_recall_channel_rundisconnect(AgsRunConnectable *run_connectable);
 void ags_recall_channel_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
-					AgsRecallID *recall_id);
+					AgsRecallID *recall_id,
+					guint n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -363,13 +364,15 @@ ags_recall_channel_rundisconnect(AgsConnectable *connectable)
 
 AgsRecall*
 ags_recall_channel_duplicate(AgsRecall *recall,
-			     AgsRecallID *recall_id)
+			     AgsRecallID *recall_id,
+			     guint n_params, GParameter *parameter)
 {
   AgsRecallChannel *recall_channel, *copy;
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
   copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
-											 recall_id));
+											 recall_id,
+											 n_params, parameter));
 
   printf("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
 

@@ -46,7 +46,8 @@ void ags_recall_audio_rundisconnect(AgsRunConnectable *run_connectable);
 void ags_recall_audio_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
-				      AgsRecallID *recall_id);
+				      AgsRecallID *recall_id,
+				      guint n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -359,13 +360,15 @@ ags_recall_audio_finalize(GObject *gobject)
 
 AgsRecall*
 ags_recall_audio_duplicate(AgsRecall *recall,
-			   AgsRecallID *recall_id)
+			   AgsRecallID *recall_id,
+			   guint n_params, GParameter *parameter)
 {
   AgsRecallAudio *recall_audio, *copy;
 
   recall_audio = AGS_RECALL_AUDIO(recall);
   copy = AGS_RECALL_AUDIO(AGS_RECALL_CLASS(ags_recall_audio_parent_class)->duplicate(recall,
-										     recall_id));
+										     recall_id,
+										     n_params, parameter));
 
   printf("ags warning - ags_recall_audio_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
 

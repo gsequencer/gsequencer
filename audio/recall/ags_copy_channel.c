@@ -497,13 +497,10 @@ ags_copy_channel_remove(AgsRecall *recall)
 
 AgsRecall*
 ags_copy_channel_duplicate(AgsRecall *recall,
-			   AgsRecallID *recall_id
+			   AgsRecallID *recall_id,
 			   guint n_params, GParameter *parameter)
 {
   AgsCopyChannel *copy_channel, *copy;
-  GValue devout_value = {0,};
-  GValue destination_value = {0,};
-  GValue source_value = {0,};
 
   copy_channel = (AgsCopyChannel *) recall;
   copy = (AgsCopyChannel *) AGS_RECALL_CLASS(ags_copy_channel_parent_class)->duplicate(recall,

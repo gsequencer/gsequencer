@@ -137,8 +137,7 @@ void ags_recall_remove(AgsRecall *recall);
 gboolean ags_recall_is_done(GList *recalls, AgsGroupId group_id);
 
 AgsRecall* ags_recall_duplicate(AgsRecall *recall,
-				AgsRecallID *recall_id,
-				guint n_params, GParameter *params);
+				AgsRecallID *recall_id);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
 

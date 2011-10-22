@@ -52,7 +52,8 @@ void ags_recall_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_audio_run_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id);
+					  AgsRecallID *recall_id,
+					  guint n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -415,28 +416,20 @@ ags_recall_audio_run_run_disconnect(AgsConnectable *connectable)
 
 AgsRecall*
 ags_recall_audio_run_duplicate(AgsRecall *recall,
-			       AgsRecallID *recall_id)
+			       AgsRecallID *recall_id,
+			       guint n_params, GParameter *parameter)
 {
   AgsRecallAudioRun *recall_audio_run, *copy;
-  AgsRecallChannelRun *recall_channel_run;
-  GList *list;
-  GValue recall_audio_value = {0,};
-  GValue recall_audio_run_value = {0,};
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
-  copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
-											     recall_id));
 
-  /* moved to AGS_PACKABLE->pack
-  /* set recall audio * /
-  g_value_init(&recall_audio_value, G_TYPE_OBJECT);
-  g_value_set_object(&recall_audio_value,
-		     G_OBJECT(recall_audio_run->recall_audio));
-  g_object_set_property(G_OBJECT(copy),
-			"recall_audio\0",
-			&recall_audio_value);
-  g_value_unset(&recall_audio_value);
-  */
+  copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
+											     recall_id,
+											     n_params, parameter));
+
+  g_object_set(G_OBJECT(copy),
+	       "recall_audio\0", recall_audio_run->recall_audio,
+	       NULL);
 
   return((AgsRecall *) copy);
 }

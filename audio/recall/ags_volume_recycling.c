@@ -329,7 +329,7 @@ ags_volume_recycling_duplicate(AgsRecall *recall,
 											       n_params, parameter);
 
   g_object_set(G_OBJECT(copy),
-	       "recycling\0", volume_recycling->recycling
+	       "recycling\0", volume_recycling->recycling,
 	       "volume\0", volume_recycling->volume,
 	       NULL);
 

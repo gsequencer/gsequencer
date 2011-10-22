@@ -519,7 +519,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
-  ags_parameter_grow(n_params, parameter,
+  ags_parameter_grow(AGS_TYPE_RECALL_CHANNEL_RUN,
+		     n_params, parameter,
 		     &new_n_params, &new_parameter,
 		     "channel\0", recall_channel_run->channel,
 		     NULL);
