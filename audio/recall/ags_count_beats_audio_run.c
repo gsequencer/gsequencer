@@ -557,6 +557,7 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   count_beats_audio_run->flags |= AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN;
 }
 
