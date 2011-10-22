@@ -1646,6 +1646,8 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   GList *list_recall_start, *list_recall;
   gboolean matches_reality, immediate_new_level;
   
+  printf("ags_audio_duplicate_recall - audio[%u,%u]\n\0", audio->output_lines, audio->input_lines);
+
   recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
 							 group_id,
 							 first_recycling, last_recycling);
