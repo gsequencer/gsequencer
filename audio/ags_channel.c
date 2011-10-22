@@ -1423,6 +1423,9 @@ ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboole
   }
 }
 
+/**
+ * ags_channel_recursive_play:
+ */
 void
 ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage)
 {
@@ -1517,6 +1520,13 @@ ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage)
 	}
 
 	/* call audio */
+	if(next_group_id != output_recall_id->group_id){
+	  ags_audio_play(audio,
+			 output_recall_id->group_id,
+			 stage,
+			 do_recall);
+	}
+
 	ags_audio_play(audio,
 		       next_group_id,
 		       stage,

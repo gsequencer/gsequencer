@@ -325,21 +325,6 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
       }
     }
   }else{
-    AgsChannel *source;
-    AgsStreamChannel *stream_channel;
-      
-    source = ags_channel_nth(audio->output, pads_old);
-      
-    while(source != NULL){
-      /* AgsStreamChannel */
-      stream_channel = ags_stream_channel_new(source);
-      AGS_RECALL(stream_channel)->flags |= AGS_RECALL_TEMPLATE;
-      
-      source->recall = g_list_append(source->recall, (gpointer) stream_channel);
-      ags_connectable_connect(AGS_CONNECTABLE(stream_channel));
-
-      source = source->next;
-    }
   }
 }
 

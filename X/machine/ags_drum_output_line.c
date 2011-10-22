@@ -213,17 +213,6 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
 
-    /* AgsLoopChannel in channel->recall */
-    loop_channel = ags_loop_channel_new(output,
-					recall_count_beats_audio_run,
-					TRUE);
-    AGS_RECALL(loop_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_SEQUENCER);
-    ags_channel_add_recall(output, (GObject *) loop_channel, FALSE);
-
-    if(GTK_WIDGET_VISIBLE(drum))
-      ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
-
     /* recall for channel->play */
     play_stream_channel_container = ags_recall_container_new();
     ags_channel_add_recall_container(output, (GObject *) play_stream_channel_container, TRUE);

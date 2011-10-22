@@ -161,8 +161,8 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudio in audio->play */
   drum->play_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-						 "recall_container\0", recall_container,
 						 "audio\0", audio,
+						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
@@ -185,8 +185,8 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudio in audio->recall */
   drum->recall_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-						 "recall_container\0", recall_container,
 						 "audio\0", audio,
+						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
@@ -209,8 +209,8 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudio in audio->play */
   drum->play_count_beats_audio =
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							    "recall_container\0", recall_container,
 							    "audio\0", audio,
+							    "recall_container\0", recall_container,
 							    "length\0", 16,
 							    "loop\0", FALSE,
 							    NULL);
@@ -235,8 +235,8 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudio in audio->recall */
   drum->recall_count_beats_audio =
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							    "recall_container\0", recall_container,
 							    "audio\0", audio,
+							    "recall_container\0", recall_container,
 							    "length\0", 16,
 							    "loop\0", FALSE,
 							    NULL);
@@ -262,8 +262,8 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudio in audio->play */
   drum->play_copy_pattern_audio =
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							      "recall_container\0", recall_container,
 							      "audio\0", audio,
+							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
@@ -289,8 +289,8 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudio in audio->recall */
   drum->recall_copy_pattern_audio =
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							      "recall_container\0", recall_container,
 							      "audio\0", audio,
+							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,

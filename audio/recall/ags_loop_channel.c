@@ -355,6 +355,8 @@ ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_loop_channel_resolve_dependencies(AgsRecall *recall)
 {
+  AgsAudio *audio;
+  AgsChannel *channel;
   AgsRecall *template;
   AgsLoopChannel *loop_channel;
   AgsRecallDependency *recall_dependency;
@@ -368,6 +370,9 @@ ags_loop_channel_resolve_dependencies(AgsRecall *recall)
   template = loop_channel->template;
 
   list = template->dependencies;
+
+  channel = loop_channel->channel;
+  audio = AGS_AUDIO(channel->audio);
 
   group_id = recall->recall_id->child_group_id;
 
@@ -402,7 +407,8 @@ ags_loop_channel_duplicate(AgsRecall *recall,
   copy = (AgsLoopChannel *) AGS_RECALL_CLASS(ags_loop_channel_parent_class)->duplicate(recall,
 										       recall_id,
 										       n_params, parameter);
-  
+
+  //TODO:JK this is really ugly
   copy->template = recall;
   copy->channel = loop_channel->channel;
 
@@ -418,7 +424,7 @@ ags_loop_channel_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  //  printf("%u: %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order, nth_run);
+  printf("%u: %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order, nth_run);
 
   if(AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order != nth_run)
     return;
@@ -460,7 +466,7 @@ ags_loop_channel_new(AgsChannel *channel,
     AGS_RECALL(loop_channel)->flags = AGS_RECALL_TEMPLATE;
 
     list = NULL;
-    list = g_list_prepend(list, ags_recall_dependency_new(G_OBJECT(count_beats_audio_run)));
+    //    list = g_list_prepend(list, ags_recall_dependency_new(G_OBJECT(count_beats_audio_run)));
   }
 
   return(loop_channel);
