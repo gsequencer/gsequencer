@@ -1636,6 +1636,7 @@ ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
 			   gboolean playback, gboolean sequencer, gboolean notation,
+			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			   AgsGroupId group_id,
 			   guint audio_signal_level)
 {
@@ -1645,7 +1646,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   GList *list_recall_start, *list_recall;
   gboolean matches_reality, immediate_new_level;
   
-  recall_id = ags_recall_id_find_group_id(audio->recall_id, group_id);
+  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
+							 group_id,
+							 first_recycling, last_recycling);
   
   if(recall_id->parent_group_id == 0)
     list_recall_start = 

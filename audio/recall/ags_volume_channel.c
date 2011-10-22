@@ -317,12 +317,13 @@ ags_volume_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
   AgsVolumeChannel *volume_channel, *copy;
 
-  volume_channel = (AgsVolumeChannel *) recall;  
+  volume_channel = (AgsVolumeChannel *) recall;
   copy = (AgsVolumeChannel *) AGS_RECALL_CLASS(ags_volume_channel_parent_class)->duplicate(recall, recall_id);
 
-  copy->channel = volume_channel->channel;
-
-  copy->volume = volume_channel->volume;
+  g_object_set(G_OBJECT(copy),
+	       "channel\0", volume_channel->channel,
+	       "volume\0", volume_channel->volume,
+	       NULL);
 
   ags_volume_channel_map_volume_recycling(copy);
 

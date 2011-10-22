@@ -31,6 +31,7 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_link_channel.h>
@@ -436,14 +437,18 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
   devout = AGS_DEVOUT(drum->machine.audio->devout);
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
+    AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
 
-    /* do the init stuff here */
-    group_id = ags_audio_recursive_play_init(drum->machine.audio,
-					     FALSE, TRUE, FALSE);
-    drum->machine.audio->devout_play->group_id = group_id;
+    /* create init task */
+    init_audio = ags_init_audio_new(drum->machine.audio,
+				    FALSE, TRUE, FALSE);
 
-    /* create task */
+    /* append AgsInitAudio */
+    ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
+			   AGS_TASK(init_audio));
+
+    /* create append task */
     append_audio = ags_append_audio_new(AGS_DEVOUT(drum->machine.audio->devout),
 					drum->machine.audio->devout_play);
 

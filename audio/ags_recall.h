@@ -102,7 +102,8 @@ struct _AgsRecallClass
   void (*remove)(AgsRecall *recall);
 
   AgsRecall* (*duplicate)(AgsRecall *recall,
-			  AgsRecallID *recall_id); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
+			  AgsRecallID *recall_id,
+			  guint n_params, GParameter *params); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
 
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
 };

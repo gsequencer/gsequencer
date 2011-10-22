@@ -542,13 +542,15 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   }
   */
   /* set recall channel */
-  g_value_init(&recall_channel_value, G_TYPE_OBJECT);
-  g_value_set_object(&recall_channel_value,
-		     G_OBJECT(recall_channel_run->recall_channel));
-  g_object_set_property(G_OBJECT(copy),
-			"recall_channel\0",
-			&recall_channel_value);
-  g_value_unset(&recall_channel_value);
+  //  g_value_init(&recall_channel_value, G_TYPE_OBJECT);
+  //  g_value_set_object(&recall_channel_value,
+  //		     G_OBJECT(recall_channel_run->recall_channel));
+  g_object_set(G_OBJECT(copy),
+	       "channel\0", ,
+	       "recall_container\0", ,
+	       "recall_channel\0", G_OBJECT(recall_channel_run->recall_channel),
+	       NULL);
+  //  g_value_unset(&recall_channel_value);
 
 
   return((AgsRecall *) copy);
