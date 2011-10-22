@@ -48,7 +48,9 @@ void ags_volume_channel_run_connect(AgsRunConnectable *run_connectable);
 void ags_volume_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_volume_channel_finalize(GObject *gobject);
 
-AgsRecall* ags_volume_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_volume_channel_duplicate(AgsRecall *recall,
+					AgsRecallID *recall_id,
+					guint n_params, GParameter *parameter);
 
 void ags_volume_channel_map_volume_recycling(AgsVolumeChannel *volume_channel);
 void ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
@@ -313,12 +315,16 @@ ags_volume_channel_run_disconnect(AgsRunConnectable *run_connectable)
 }
 
 AgsRecall*
-ags_volume_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_volume_channel_duplicate(AgsRecall *recall,
+			     AgsRecallID *recall_id,
+			     guint n_params, GParameter *parameter)
 {
   AgsVolumeChannel *volume_channel, *copy;
 
   volume_channel = (AgsVolumeChannel *) recall;
-  copy = (AgsVolumeChannel *) AGS_RECALL_CLASS(ags_volume_channel_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsVolumeChannel *) AGS_RECALL_CLASS(ags_volume_channel_parent_class)->duplicate(recall,
+											   recall_id,
+											   n_params, parameter);
 
   g_object_set(G_OBJECT(copy),
 	       "channel\0", volume_channel->channel,

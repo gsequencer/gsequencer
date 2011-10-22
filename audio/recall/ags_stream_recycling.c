@@ -45,7 +45,9 @@ void ags_stream_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_recycling_finalize(GObject *gobject);
 
-AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
+					  AgsRecallID *recall_id,
+					  guint n_params, GParameter *parameter);
 
 void ags_stream_recycling_add_audio_signal(AgsStreamRecycling *stream_recycling,
 					   AgsRecycling *recycling,
@@ -316,14 +318,20 @@ ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 }
 
 AgsRecall*
-ags_stream_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_stream_recycling_duplicate(AgsRecall *recall,
+			       AgsRecallID *recall_id,
+			       guint n_params, GParameter *parameter)
 {
   AgsStreamRecycling *stream_recycling, *copy;
 
   stream_recycling = (AgsStreamRecycling *) recall;
-  copy = (AgsStreamRecycling *) AGS_RECALL_CLASS(ags_stream_recycling_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsStreamRecycling *) AGS_RECALL_CLASS(ags_stream_recycling_parent_class)->duplicate(recall,
+											       recall_id,
+											       n_params, parameter);
 
-  copy->recycling = stream_recycling->recycling;
+  g_object_set(G_OBJECT(copy),
+	       "recycling\0", stream_recycling->recycling,
+	       NULL);
 
   return((AgsRecall *) copy);
 }

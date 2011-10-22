@@ -57,7 +57,9 @@ void ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 guint ags_count_beats_audio_run_get_counter(AgsCountable *countable);
 
 void ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall);
-AgsRecall* ags_count_beats_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_count_beats_audio_run_duplicate(AgsRecall *recall,
+					       AgsRecallID *recall_id,
+					       guint n_params, GParameter *parameter);
 void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 						 guint notify_mode,
 						 gint count);
@@ -505,11 +507,15 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_count_beats_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_count_beats_audio_run_duplicate(AgsRecall *recall,
+				    AgsRecallID *recall_id,
+				    guint n_params, GParameter *parameter)
 {
   AgsCountBeatsAudioRun *copy;
 
-  copy = AGS_COUNT_BEATS_AUDIO_RUN(AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->duplicate(recall, recall_id));
+  copy = AGS_COUNT_BEATS_AUDIO_RUN(AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->duplicate(recall,
+												       recall_id,
+												       n_params, parameter));
 
   printf("ags_count_beats_audio_run_duplicate\n\0");
   

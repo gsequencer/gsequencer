@@ -55,7 +55,9 @@ void ags_copy_recycling_finalize(GObject *gobject);
 void ags_copy_recycling_done(AgsRecall *recall);
 void ags_copy_recycling_cancel(AgsRecall *recall);
 void ags_copy_recycling_remove(AgsRecall *recall);
-AgsRecall* ags_copy_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_copy_recycling_duplicate(AgsRecall *recall,
+					AgsRecallID *recall_id,
+					guint n_params, GParameter *parameter);
 
 void ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
 						AgsAudioSignal *audio_signal);
@@ -524,16 +526,24 @@ ags_copy_recycling_remove(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_copy_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_copy_recycling_duplicate(AgsRecall *recall,
+			     AgsRecallID *recall_id,
+			     guint n_params, GParameter *parameter)
 {
   AgsCopyRecycling *copy_recycling, *copy;
 
   copy_recycling = (AgsCopyRecycling *) recall;
-  copy = (AgsCopyRecycling *) AGS_RECALL_CLASS(ags_copy_recycling_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsCopyRecycling *) AGS_RECALL_CLASS(ags_copy_recycling_parent_class)->duplicate(recall,
+											   recall_id,
+											   n_params, parameter);
 
-  copy->devout = copy_recycling->devout;
-  copy->destination = copy_recycling->destination;
-  copy->source = copy_recycling->source;
+  g_object_set(G_OBJECT(copy),
+	       "devout\0", copy_recycling->devout,
+	       "destination\0", copy_recycling->destination,
+	       "source\0", copy_recycling->source,
+	       NULL);
+
+  //FIXME:JK: this is ugly, or isn't it?
   copy->child_destination = copy_recycling->child_destination;
 
   return((AgsRecall *) copy);

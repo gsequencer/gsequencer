@@ -42,7 +42,9 @@ void ags_delay_audio_run_run_pre(AgsRecall *recall);
 void ags_delay_audio_run_done(AgsRecall *recall);
 void ags_delay_audio_run_cancel(AgsRecall *recall);
 void ags_delay_audio_run_remove(AgsRecall *recall);
-AgsRecall* ags_delay_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_delay_audio_run_duplicate(AgsRecall *recall,
+					 AgsRecallID *recall_id,
+					 guint n_params, GParameter *parameter);
 void ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
 enum{
@@ -310,18 +312,23 @@ ags_delay_audio_run_remove(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_delay_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_delay_audio_run_duplicate(AgsRecall *recall,
+			      AgsRecallID *recall_id,
+			      guint n_params, GParameter *parameter)
 {
   AgsDelayAudioRun *delay_audio_run, *copy;
   
   delay_audio_run = (AgsDelayAudioRun *) recall;
-  copy = (AgsDelayAudioRun *) AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsDelayAudioRun *) AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate(recall,
+											    recall_id,
+											    n_params, parameter);
 
   copy->dependency_ref = delay_audio_run->dependency_ref;
 
   copy->hide_ref = delay_audio_run->hide_ref;
   copy->hide_ref_counter = delay_audio_run->hide_ref_counter;
 
+  //TODO:JK: may be you want to make a AgsRecallDependency, but a AgsCountable isn't a AgsRecall at all
   copy->counter = delay_audio_run->counter;
 
   return((AgsRecall *) copy);

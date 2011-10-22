@@ -44,7 +44,9 @@ void ags_copy_pattern_audio_run_run_disconnect(AgsRunConnectable *run_connectabl
 void ags_copy_pattern_audio_run_finalize(GObject *gobject);
 
 void ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall);
-AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
+						AgsRecallID *recall_id,
+						guint n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -320,11 +322,15 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_copy_pattern_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
+				     AgsRecallID *recall_id,
+				     guint n_params, GParameter *parameter)
 {
   AgsCopyPatternAudioRun *copy;
 
-  copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall, recall_id));
+  copy = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall,
+													 recall_id,
+													 n_params, parameter));
 
   return((AgsRecall *) copy);
 }

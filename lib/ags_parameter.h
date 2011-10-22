@@ -22,7 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-GParameter* ags_parameter_resize(guint n_params, GParameter *parameter,
-				 guint new_size);
+void ags_parameter_grow(guint n_params, GParameter *src,
+			guint *new_n_params, GParameter **dst,
+			const gchar *first_property_name, ...);
 
 #endif /*__AGS_PARAMETER_H__*/

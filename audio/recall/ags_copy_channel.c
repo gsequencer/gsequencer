@@ -55,7 +55,9 @@ void ags_copy_channel_run_init_pre(AgsRecall *recall);
 void ags_copy_channel_done(AgsRecall *recall);
 void ags_copy_channel_remove(AgsRecall *recall);
 void ags_copy_channel_cancel(AgsRecall *recall);
-AgsRecall* ags_copy_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_copy_channel_duplicate(AgsRecall *recall,
+				      AgsRecallID *recall_id,
+				      guint n_params, GParameter *parameter);
 
 void ags_copy_channel_map_copy_recycling(AgsCopyChannel *copy_channel);
 void ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
@@ -494,7 +496,9 @@ ags_copy_channel_remove(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_copy_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_copy_channel_duplicate(AgsRecall *recall,
+			   AgsRecallID *recall_id
+			   guint n_params, GParameter *parameter)
 {
   AgsCopyChannel *copy_channel, *copy;
   GValue devout_value = {0,};
@@ -502,29 +506,16 @@ ags_copy_channel_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   GValue source_value = {0,};
 
   copy_channel = (AgsCopyChannel *) recall;
-  copy = (AgsCopyChannel *) AGS_RECALL_CLASS(ags_copy_channel_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsCopyChannel *) AGS_RECALL_CLASS(ags_copy_channel_parent_class)->duplicate(recall,
+										       recall_id,
+										       n_params, parameter);
 
-  g_value_init(&devout_value, G_TYPE_OBJECT);
-  g_value_set_object(&devout_value, G_OBJECT(copy_channel->devout));
-  g_object_set_property(G_OBJECT(copy),
-			"devout\0",
-			&devout_value);
-  g_value_unset(&devout_value);
+  g_object_set(G_OBJECT(copy),
+	       "devout\0", copy_channel->devout,
+	       "destination\0", copy_channel->destination,
+	       "source\0", copy_channel->source,
+	       NULL);
 
-  g_value_init(&destination_value, G_TYPE_OBJECT);
-  g_value_set_object(&destination_value, G_OBJECT(copy_channel->destination));
-  g_object_set_property(G_OBJECT(copy),
-			"destination\0",
-			&destination_value);
-  g_value_unset(&destination_value);
-
-  g_value_init(&source_value, G_TYPE_OBJECT);
-  g_value_set_object(&source_value, G_OBJECT(copy_channel->source));
-  g_object_set_property(G_OBJECT(copy),
-			"source\0",
-			&source_value);
-  g_value_unset(&source_value);
-		     
   //  ags_copy_channel_map_copy_recycling(copy);
 
   return((AgsRecall *) copy);

@@ -55,7 +55,9 @@ void ags_play_recycling_finalize(GObject *gobject);
 
 void ags_play_recycling_done(AgsRecall *recall);
 void ags_play_recycling_cancel(AgsRecall *recall);
-AgsRecall* ags_play_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_play_recycling_duplicate(AgsRecall *recall,
+					AgsRecallID *recall_id,
+					guint n_params, GParameter *parameter);
 
 void ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
 						AgsAudioSignal *audio_signal);
@@ -427,16 +429,22 @@ ags_play_recycling_cancel(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_play_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_play_recycling_duplicate(AgsRecall *recall,
+			     AgsRecallID *recall_id,
+			     guint n_params, GParameter *parameter)
 {
   AgsPlayRecycling *play_recycling, *copy;
 
   play_recycling = (AgsPlayRecycling *) recall;
-  copy = (AgsPlayRecycling *) AGS_RECALL_CLASS(ags_play_recycling_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsPlayRecycling *) AGS_RECALL_CLASS(ags_play_recycling_parent_class)->duplicate(recall,
+											   recall_id,
+											   n_params, parameter);
 
-  copy->devout = play_recycling->devout;
-  copy->source = play_recycling->source;
-  copy->audio_channel = play_recycling->audio_channel;
+  g_object_set(G_OBJECT(copy),
+	       "devout\0", play_recycling->devout,
+	       "source\0", play_recycling->source,
+	       "audio_channel\0", play_recycling->audio_channel,
+	       NULL);
 
   return((AgsRecall *) copy);
 }

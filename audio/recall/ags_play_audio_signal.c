@@ -52,7 +52,9 @@ void ags_play_audio_signal_finalize(GObject *gobject);
 
 void ags_play_audio_signal_run_inter(AgsRecall *recall);
 void ags_play_audio_signal_cancel(AgsRecall *recall);
-AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall,
+					   AgsRecallID *recall_id,
+					   guint n_params, GParameter *parameter);
 
 static gpointer ags_play_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_play_audio_signal_parent_connectable_interface;
@@ -436,7 +438,9 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_play_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_play_audio_signal_duplicate(AgsRecall *recall,
+				AgsRecallID *recall_id,
+				guint n_params, GParameter *parameter)
 {
   AgsPlayAudioSignal *play_audio_signal, *copy;
 

@@ -48,7 +48,8 @@ void ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable);
 
 void ags_loop_channel_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_loop_channel_duplicate(AgsRecall *recall,
-				      AgsRecallID *recall_id);
+				      AgsRecallID *recall_id,
+				      guint n_params, GParameter *parameter);
 
 void ags_loop_channel_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				    guint nth_run,
@@ -392,13 +393,15 @@ ags_loop_channel_resolve_dependencies(AgsRecall *recall)
 
 AgsRecall*
 ags_loop_channel_duplicate(AgsRecall *recall,
-			   AgsRecallID *recall_id)
+			   AgsRecallID *recall_id,
+			   guint n_params, GParameter *parameter)
 {
   AgsLoopChannel *loop_channel, *copy;
 
   loop_channel = AGS_LOOP_CHANNEL(recall);
   copy = (AgsLoopChannel *) AGS_RECALL_CLASS(ags_loop_channel_parent_class)->duplicate(recall,
-										       recall_id);
+										       recall_id,
+										       n_params, parameter);
   
   copy->template = recall;
   copy->channel = loop_channel->channel;

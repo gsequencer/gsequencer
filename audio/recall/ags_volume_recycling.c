@@ -45,7 +45,9 @@ void ags_volume_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_volume_recycling_finalize(GObject *gobject);
 
-AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall,
+					  AgsRecallID *recall_id,
+					  guint n_params, GParameter *parameter);
 
 void ags_volume_recycling_add_audio_signal(AgsVolumeRecycling *volume_recycling,
 					   AgsRecycling *recycling,
@@ -315,16 +317,21 @@ ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 }
 
 AgsRecall*
-ags_volume_recycling_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_volume_recycling_duplicate(AgsRecall *recall,
+			       AgsRecallID *recall_id,
+			       guint n_params, GParameter *parameter)
 {
   AgsVolumeRecycling *volume_recycling, *copy;
 
   volume_recycling = (AgsVolumeRecycling *) recall;
-  copy = (AgsVolumeRecycling *) AGS_RECALL_CLASS(ags_volume_recycling_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsVolumeRecycling *) AGS_RECALL_CLASS(ags_volume_recycling_parent_class)->duplicate(recall,
+											       recall_id,
+											       n_params, parameter);
 
-  copy->recycling = volume_recycling->recycling;
-
-  copy->volume = volume_recycling->volume;
+  g_object_set(G_OBJECT(copy),
+	       "recycling\0", volume_recycling->recycling
+	       "volume\0", volume_recycling->volume,
+	       NULL);
 
   return((AgsRecall *) copy);
 }

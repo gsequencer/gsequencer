@@ -48,7 +48,9 @@ void ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall);
 void ags_copy_pattern_channel_run_done(AgsRecall *recall);
 void ags_copy_pattern_channel_run_cancel(AgsRecall *recall);
 void ags_copy_pattern_channel_run_remove(AgsRecall *recall);
-AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
+						  AgsRecallID *recall_id,
+						  guint n_params, GParameter *parameter);
 
 void ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 						     guint run_order,
@@ -302,11 +304,15 @@ ags_copy_pattern_channel_run_remove(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_copy_pattern_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
+				       AgsRecallID *recall_id,
+				       guint n_params, GParameter *parameter)
 {
   AgsCopyPatternChannelRun *copy;
 
-  copy = AGS_COPY_PATTERN_CHANNEL_RUN(AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->duplicate(recall, recall_id));
+  copy = AGS_COPY_PATTERN_CHANNEL_RUN(AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->duplicate(recall,
+													     recall_id,
+													     n_params, parameter));
 
   /* empty */
 

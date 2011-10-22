@@ -42,7 +42,9 @@ void ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_finalize(GObject *gobject);
 
 void ags_stream_audio_signal_run_post(AgsRecall *recall);
-AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall,
+					     AgsRecallID *recall_id,
+					     guint n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -277,14 +279,20 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_stream_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_stream_audio_signal_duplicate(AgsRecall *recall,
+				  AgsRecallID *recall_id,
+				  guint n_params, GParameter *parameter)
 {
   AgsStreamAudioSignal *stream_audio_signal, *copy;
 
   stream_audio_signal = (AgsStreamAudioSignal *) recall;
-  copy = (AgsStreamAudioSignal *) AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsStreamAudioSignal *) AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->duplicate(recall,
+												    recall_id,
+												    n_params, parameter);
 
-  copy->audio_signal = stream_audio_signal->audio_signal;
+  g_object_set(G_OBJECT(copy),
+	       "audio_signal\0", stream_audio_signal->audio_signal,
+	       NULL);
 
   return((AgsRecall *) copy);
 }

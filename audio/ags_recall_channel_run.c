@@ -54,7 +54,8 @@ void ags_recall_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_recall_channel_run_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
-					    AgsRecallID *recall_id);
+					    AgsRecallID *recall_id,
+					    guint n_params, GParameter *parameter);
 
 void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
 						   guint run_order);
@@ -506,18 +507,25 @@ ags_recall_channel_run_run_disconnect(AgsConnectable *connectable)
 
 AgsRecall*
 ags_recall_channel_run_duplicate(AgsRecall *recall,
-				 AgsRecallID *recall_id)
+				 AgsRecallID *recall_id,
+				 guint n_params, GParameter *parameter)
 {
   AgsRecallChannelRun *recall_channel_run, *copy;
   AgsRecallContainer *container;
   AgsRecallAudioRun *recall_audio_run;
   GList *recall_audio_run_list;
-  GValue recall_audio_run_value = {0,};
-  GValue recall_channel_value = {0,};
+  guint new_n_params;
+  GParameter *new_parameter;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
+
+  ags_parameter_grow(n_params, parameter,
+		     &new_n_params, &new_parameter,
+		     "channel\0", recall_channel_run->channel,
+		     NULL);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
-												 recall_id));
+												 recall_id,
+												 new_n_params, new_parameter));
   
   /* moved to AgsPackable
   container = AGS_RECALL_CONTAINER(recall->container);
@@ -546,8 +554,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   //  g_value_set_object(&recall_channel_value,
   //		     G_OBJECT(recall_channel_run->recall_channel));
   g_object_set(G_OBJECT(copy),
-	       "channel\0", ,
-	       "recall_container\0", ,
 	       "recall_channel\0", G_OBJECT(recall_channel_run->recall_channel),
 	       NULL);
   //  g_value_unset(&recall_channel_value);

@@ -44,7 +44,9 @@ void ags_copy_notation_audio_run_run_disconnect(AgsRunConnectable *run_connectab
 void ags_copy_notation_audio_run_finalize(GObject *gobject);
 
 void ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall);
-AgsRecall* ags_copy_notation_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_copy_notation_audio_run_duplicate(AgsRecall *recall,
+						 AgsRecallID *recall_id,
+						 guint n_params, GParameter *parameter);
 void ags_copy_notation_audio_run_run_init_pre(AgsRecall *recall);
 
 void ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
@@ -351,11 +353,15 @@ ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_copy_notation_audio_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_copy_notation_audio_run_duplicate(AgsRecall *recall,
+				      AgsRecallID *recall_id,
+				      guint n_params, GParameter *parameter)
 {
   AgsCopyNotationAudioRun *copy;
 
-  copy = AGS_COPY_NOTATION_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_notation_audio_run_parent_class)->duplicate(recall, recall_id));
+  copy = AGS_COPY_NOTATION_AUDIO_RUN(AGS_RECALL_CLASS(ags_copy_notation_audio_run_parent_class)->duplicate(recall,
+													   recall_id,
+													   n_params, parameter));
 
   return((AgsRecall *) copy);
 }

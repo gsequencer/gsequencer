@@ -50,7 +50,9 @@ void ags_copy_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_audio_signal_finalize(GObject *gobject);
 
 void ags_copy_audio_signal_run_inter(AgsRecall *recall);
-AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall,
+					   AgsRecallID *recall_id,
+					   guint n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -417,36 +419,22 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 }
 
 AgsRecall*
-ags_copy_audio_signal_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_copy_audio_signal_duplicate(AgsRecall *recall,
+				AgsRecallID *recall_id,
+				guint n_params, GParameter *parameter)
 {
   AgsCopyAudioSignal *copy_audio_signal, *copy;
-  GValue devout_value = {0,};
-  GValue destination_value = {0,};
-  GValue source_value = {0,};
 
   copy_audio_signal = (AgsCopyAudioSignal *) recall;
-  copy = (AgsCopyAudioSignal *) AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsCopyAudioSignal *) AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->duplicate(recall,
+												recall_id,
+												n_params, parameter);
 
-  g_value_init(&devout_value, G_TYPE_OBJECT);
-  g_value_set_object(&devout_value, G_OBJECT(copy_audio_signal->devout));
-  g_object_set_property(G_OBJECT(copy),
-			"devout\0",
-			&devout_value);
-  g_value_unset(&devout_value);
-
-  g_value_init(&destination_value, G_TYPE_OBJECT);
-  g_value_set_object(&destination_value, G_OBJECT(copy_audio_signal->destination));
-  g_object_set_property(G_OBJECT(copy),
-			"destination\0",
-			&destination_value);
-  g_value_unset(&destination_value);
-
-  g_value_init(&source_value, G_TYPE_OBJECT);
-  g_value_set_object(&source_value, G_OBJECT(copy_audio_signal->source));
-  g_object_set_property(G_OBJECT(copy),
-			"source\0",
-			&source_value);
-  g_value_unset(&source_value);
+  g_object_set(G_OBJECT(copy),
+	       "devout\0", copy_audio_signal->devout,
+	       "destination\0", copy_audio_signal->destination,
+	       "source\0", copy_audio_signal->source,
+	       NULL);
 
   return((AgsRecall *) copy);
 }

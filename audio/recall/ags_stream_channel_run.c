@@ -40,7 +40,9 @@ void ags_stream_channel_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_channel_run_finalize(GObject *gobject);
 
-AgsRecall* ags_stream_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id);
+AgsRecall* ags_stream_channel_run_duplicate(AgsRecall *recall,
+					    AgsRecallID *recall_id,
+					    guint n_params, GParameter *parameter);
 
 void ags_stream_channel_run_map_stream_recycling(AgsStreamChannelRun *stream_channel_run);
 void ags_stream_channel_run_remap_stream_recycling(AgsStreamChannelRun *stream_channel_run,
@@ -210,12 +212,16 @@ ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
 }
 
 AgsRecall*
-ags_stream_channel_run_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_stream_channel_run_duplicate(AgsRecall *recall,
+				 AgsRecallID *recall_id,
+				 guint n_params, GParameter *parameter)
 {
   AgsStreamChannelRun *stream_channel_run, *copy;
 
   stream_channel_run = (AgsStreamChannelRun *) recall;  
-  copy = (AgsStreamChannelRun *) AGS_RECALL_CLASS(ags_stream_channel_run_parent_class)->duplicate(recall, recall_id);
+  copy = (AgsStreamChannelRun *) AGS_RECALL_CLASS(ags_stream_channel_run_parent_class)->duplicate(recall,
+												  recall_id,
+												  n_params, parameter);
 
   ags_stream_channel_run_map_stream_recycling(copy);
 
