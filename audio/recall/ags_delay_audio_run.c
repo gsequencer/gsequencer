@@ -265,7 +265,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
       run_order = delay_audio_run->hide_ref_counter;
 
-      printf("delay signal\n\0");
+      //      printf("delay signal\n\0");
 
       ags_delay_audio_run_tic_alloc_output(delay_audio_run,
 					   run_order);
@@ -277,7 +277,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
-      printf("delay counting\n\0");
+      //      printf("delay counting\n\0");
 
       if(delay_audio_run->counter == delay_audio->delay - 1)
 	delay_audio_run->counter = 0;

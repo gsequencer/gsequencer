@@ -143,6 +143,18 @@ ags_init_audio_launch(AgsTask *task)
   group_id = ags_audio_recursive_play_init(init_audio->audio,
 					   init_audio->playback, init_audio->sequencer, init_audio->notation);
   init_audio->audio->devout_play->group_id = group_id;
+
+  if(init_audio->playback){
+    init_audio->audio->devout_play->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
+  }
+
+  if(init_audio->sequencer){
+    init_audio->audio->devout_play->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+  }
+
+  if(init_audio->notation){
+    init_audio->audio->devout_play->flags |= AGS_DEVOUT_PLAY_NOTATION;
+  }
 }
 
 AgsInitAudio*
