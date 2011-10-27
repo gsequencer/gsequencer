@@ -168,12 +168,15 @@ ags_audio_file_open(AgsAudioFile *audio_file)
     if(g_str_has_suffix(audio_file->name, ".wav\0") ||
        g_str_has_suffix(audio_file->name, ".ogg\0") ||
        g_str_has_suffix(audio_file->name, ".flac\0")){
+      guint loop_start, loop_end;
+
       fprintf(stdout, "ags_audio_file_open: using libsndfile\n\0");
       audio_file->file = (GObject *) ags_sndfile_new();
       if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
 			   audio_file->name)){
+	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
 	ags_playable_info(AGS_PLAYABLE(audio_file->file),
-			&(audio_file->channels), &(audio_file->frames));
+			  &(audio_file->channels), &(audio_file->frames), &loop_start, &loop_end);
 	return(TRUE);
       }else{
 	return(FALSE);

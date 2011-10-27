@@ -152,6 +152,8 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 
   audio_signal->length = 0;
   audio_signal->last_frame = 0;
+  audio_signal->loop_start = 0;
+  audio_signal->loop_end = 0;
 
   audio_signal->stream_beginning = NULL;
   audio_signal->stream_current = NULL;

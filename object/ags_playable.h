@@ -36,16 +36,36 @@ struct _AgsPlayableInterface
   GTypeInterface interface;
 
   gboolean (*open)(AgsPlayable *playable, gchar *name);
-  void (*info)(AgsPlayable *playable, guint *channels, guint *frames);
+
+  /* these functions are especially for soundfonts */
+  guint (*level_count)(AgsPlayable *playable);
+  gchar** (*sublevel_names)(AgsPlayable *playable);
+  void (*level_select)(AgsPlayable *playable, guint nth_level, gchar *sublevel_name);
+
+  void (*iter_start)(AgsPlayable *playable);
+  gboolean (*iter_next)(AgsPlayable *playable);
+
+  /* read sample data */
+  void (*info)(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
   short* (*read)(AgsPlayable *playable, guint channel);
+
   void (*close)(AgsPlayable *playable);
 };
 
 GType ags_playable_get_type();
 
 gboolean ags_playable_open(AgsPlayable *playable, gchar *name);
-void ags_playable_info(AgsPlayable *playable, guint *channels, guint *frames);
+
+guint ags_playable_level_count(AgsPlayable *playable);
+gchar** ags_playable_sublevel_names(AgsPlayable *playable);
+void ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name);
+
+void ags_playable_iter_start(AgsPlayable *playable);
+gboolean ags_playable_iter_next(AgsPlayable *playable);
+
+void ags_playable_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
 short* ags_playable_read(AgsPlayable *playable, guint channel);
+
 void ags_playable_close(AgsPlayable *playable);
 
 #endif /*__AGS_PLAYABLE_H__*/

@@ -99,7 +99,7 @@ struct _AgsDevout
   guint pcm_channels;
   guint bits;
   guint buffer_size;
-  guint frequency;
+  guint frequency; // sample_rate
 
   //  guint64 offset; // for timed tasks in AgsChannel
 

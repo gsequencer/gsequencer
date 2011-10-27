@@ -60,15 +60,79 @@ ags_playable_open(AgsPlayable *playable, gchar *name)
   return(ret_val);
 }
 
+guint
+ags_playable_level_count(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+  guint ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), 0);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->level_count, 0);
+  ret_val = playable_interface->level_count(playable);
+
+  return(ret_val);
+}
+
+gchar**
+ags_playable_sublevel_names(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+  gchar **ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), NULL);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->sublevel_names, NULL);
+  ret_val = playable_interface->sublevel_names(playable);
+
+  return(ret_val);
+}
+
 void
-ags_playable_info(AgsPlayable *playable, guint *channels, guint *frames)
+ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_if_fail(playable_interface->level_select);
+  playable_interface->level_select(playable, nth_level, sublevel_name);
+}
+
+void
+ags_playable_iter_start(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_if_fail(playable_interface->iter_start);
+  playable_interface->iter_start(playable);
+}
+
+gboolean
+ags_playable_iter_next(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+  gboolean ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), FALSE);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->iter_next, FALSE);
+  ret_val = playable_interface->iter_next(playable);
+
+  return(ret_val);
+}
+
+void
+ags_playable_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end)
 {
   AgsPlayableInterface *playable_interface;
 
   g_return_if_fail(AGS_IS_PLAYABLE(playable));
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_if_fail(playable_interface->info);
-  playable_interface->info(playable, channels, frames);
+  playable_interface->info(playable, channels, frames, loop_start, loop_end);
 }
 
 short*

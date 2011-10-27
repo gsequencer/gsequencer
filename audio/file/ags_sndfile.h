@@ -35,9 +35,15 @@
 typedef struct _AgsSndfile AgsSndfile;
 typedef struct _AgsSndfileClass AgsSndfileClass;
 
+typedef enum{
+  AGS_SNDFILE_ITER_START    = 1,
+}AgsSndfileFlags;
+
 struct _AgsSndfile
 {
   GObject object;
+
+  guint flags;
 
   SF_INFO *info;
   SNDFILE *file;

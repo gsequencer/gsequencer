@@ -25,13 +25,19 @@ void ags_sndfile_class_init(AgsSndfileClass *sndfile);
 void ags_sndfile_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_sndfile_playable_interface_init(AgsPlayableInterface *playable);
 void ags_sndfile_init(AgsSndfile *sndfile);
+void ags_sndfile_finalize(GObject *gobject);
+
 void ags_sndfile_connect(AgsConnectable *connectable);
 void ags_sndfile_disconnect(AgsConnectable *connectable);
+
 gboolean ags_sndfile_open(AgsPlayable *playable, gchar *name);
-void ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames);
+guint ags_sndfile_level_count(AgsPlayable *playable);
+gchar** ags_sndfile_sublevel_names(AgsPlayable *playable);
+void ags_sndfile_iter_start(AgsPlayable *playable);
+gboolean ags_sndfile_iter_next(AgsPlayable *playable);
+void ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
 short* ags_sndfile_read(AgsPlayable *playable, guint channel);
 void ags_sndfile_close(AgsPlayable *playable);
-void ags_sndfile_finalize(GObject *gobject);
 
 static gpointer ags_sndfile_parent_class = NULL;
 static AgsConnectableInterface *ags_sndfile_parent_connectable_interface;
@@ -111,8 +117,17 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
   ags_sndfile_parent_playable_interface = g_type_interface_peek_parent(playable);
 
   playable->open = ags_sndfile_open;
+
+  playable->level_count = ags_sndfile_level_count;
+  playable->sublevel_names = ags_sndfile_sublevel_names;
+  playable->level_select = NULL;
+
+  playable->iter_start = ags_sndfile_iter_start;
+  playable->iter_next = ags_sndfile_iter_next;
+
   playable->info = ags_sndfile_info;
   playable->read = ags_sndfile_read;
+
   playable->close = ags_sndfile_close;
 }
 
@@ -155,8 +170,46 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
     return(TRUE);
 }
 
+guint
+ags_sndfile_level_count(AgsPlayable *playable)
+{
+  return(1);
+}
+
+gchar**
+ags_sndfile_sublevel_names(AgsPlayable *playable)
+{
+  return(NULL);
+}
+
 void
-ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames)
+ags_sndfile_iter_start(AgsPlayable *playable)
+{
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  sndfile->flags |= AGS_SNDFILE_ITER_START;
+}
+
+gboolean
+ags_sndfile_iter_next(AgsPlayable *playable)
+{
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  if((AGS_SNDFILE_ITER_START & (sndfile->flags)) != 0){
+    sndfile->flags &= (~AGS_SNDFILE_ITER_START);
+
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
+void
+ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end)
 {
   AgsSndfile *sndfile;
 
@@ -164,6 +217,8 @@ ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames)
 
   *channels = sndfile->info->channels;
   *frames = sndfile->info->frames;
+  *loop_start = 0;
+  *loop_end = 0;
 }
 
 short*

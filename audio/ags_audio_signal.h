@@ -54,6 +54,8 @@ struct _AgsAudioSignal
 
   guint length;
   guint last_frame; // the last frame at stream_end
+  guint loop_start;
+  guint loop_end;
 
   GList *stream_beginning;
   GList *stream_current;
