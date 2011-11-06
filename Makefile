@@ -12,7 +12,7 @@ AGS_TASK_OBJECTS = $(AGS_DIR)audio/task/ags_open_file.o $(AGS_DIR)audio/task/ags
 
 AGS_RECALL_OBJECTS = $(AGS_DIR)audio/recall/ags_count_beats_audio.o $(AGS_DIR)audio/recall/ags_count_beats_audio_run.o $(AGS_DIR)audio/recall/ags_loop_channel.o $(AGS_DIR)audio/recall/ags_stream_channel.o $(AGS_DIR)audio/recall/ags_stream_channel_run.o $(AGS_DIR)audio/recall/ags_stream_recycling.o $(AGS_DIR)audio/recall/ags_stream_audio_signal.o $(AGS_DIR)audio/recall/ags_stream.o $(AGS_DIR)audio/recall/ags_copy_pattern_channel_run.o $(AGS_DIR)audio/recall/ags_copy_pattern_audio.o $(AGS_DIR)audio/recall/ags_copy_pattern_audio_run.o $(AGS_DIR)audio/recall/ags_copy_notation_audio.o $(AGS_DIR)audio/recall/ags_copy_notation_audio_run.o $(AGS_DIR)audio/recall/ags_copy_pattern_channel.o $(AGS_DIR)audio/recall/ags_copy_channel.o $(AGS_DIR)audio/recall/ags_copy_recycling.o $(AGS_DIR)audio/recall/ags_copy_audio_signal.o $(AGS_DIR)audio/recall/ags_play_audio_file.o $(AGS_DIR)audio/recall/ags_play_notation.o $(AGS_DIR)audio/recall/ags_play_note.o $(AGS_DIR)audio/recall/ags_play_pattern.o $(AGS_DIR)audio/recall/ags_play_channel.o $(AGS_DIR)audio/recall/ags_play_channel_run.o $(AGS_DIR)audio/recall/ags_play_channel_run_master.o $(AGS_DIR)audio/recall/ags_play_recycling.o $(AGS_DIR)audio/recall/ags_play_audio_signal.o $(AGS_DIR)audio/recall/ags_volume_channel.o $(AGS_DIR)audio/recall/ags_volume_recycling.o $(AGS_DIR)audio/recall/ags_volume_audio_signal.o $(AGS_DIR)audio/recall/ags_delay_audio_run.o $(AGS_DIR)audio/recall/ags_delay_audio.o $(AGS_DIR)audio/recall/ags_amplifier.o $(AGS_DIR)audio/recall/ags_echo.o $(AGS_DIR)audio/recall/ags_remove_audio.o $(AGS_DIR)audio/recall/ags_remove_audio_run.o
 
-AGS_AUDIO_FILE_OBJECTS = $(AGS_DIR)audio/file/ags_audio_file.o $(AGS_DIR)audio/file/ags_audio_file_xml.o $(AGS_DIR)audio/file/ags_sndfile.o $(AGS_DIR)audio/file/ags_soundfont.o
+AGS_AUDIO_FILE_OBJECTS = $(AGS_DIR)audio/file/ags_audio_file.o $(AGS_DIR)audio/file/ags_audio_file_xml.o $(AGS_DIR)audio/file/ags_sndfile.o $(AGS_DIR)audio/file/ags_ipatch.o
 
 
 AGS_FILE_OBJECTS = $(AGS_DIR)file/ags_file.o
@@ -57,10 +57,10 @@ AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
 AGS_SOURCES = $(AGS_DIR)main.[ch] $(AGS_LIB_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
 
 
-LIB_LIBS = `pkg-config --libs alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
+LIB_LIBS = `pkg-config --libs alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile libinstpatch-1.0`
 LIBS = -L$(LINKING_DIR) $(LIB_LIBS)
 
-LIB_CFLAGS = `pkg-config --cflags alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile`
+LIB_CFLAGS = `pkg-config --cflags alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile libinstpatch-1.0`
 CFLAGS = -I$(INCLUDE_DIR) $(LIB_CFLAGS)
 
 
