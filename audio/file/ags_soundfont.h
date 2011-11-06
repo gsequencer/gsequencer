@@ -35,7 +35,9 @@
 
 typedef struct _AgsSoundfont AgsSoundfont;
 typedef struct _AgsSoundfontClass AgsSoundfontClass;
-typedef struct _AgsSoundfontBank AgsSoundfontBank;
+
+typedef struct _AgsSoundfontPreset AgsSoundfontPreset;
+typedef struct _AgsSoundfontInstrument AgsSoundfontInstrument;
 typedef struct _AgsSoundfontSample AgsSoundfontSample;
 
 typedef enum{
@@ -52,9 +54,12 @@ struct _AgsSoundfont
 
   guint selected_level;
 
-  AgsSoundfontBank **bank;
+  AgsSoundfontPreset **preset;
 
-  AgsSoundfontBank *current_bank;
+  AgsSoundfontPreset *current_preset;
+  guint i_instrument;
+
+  AgsSoundfontInstrument *current_instrument;
   guint i_sample;
 
   AgsSoundfontSample *current_sample;
@@ -67,11 +72,17 @@ struct _AgsSoundfontClass
   GObjectClass object;
 };
 
-struct _AgsSoundfontBank
-{
-  gchar *bank_name;
+struct _AgsSoundfontPreset{
+  gchar *preset_name;
 
-  size_t offset;
+  AgsSoundfontInstrument **instrument;
+};
+
+struct _AgsSoundfontInstrument
+{
+  gchar *instrument_name;
+
+  //  size_t offset;
 
   AgsSoundfontSample **sample;
 };
