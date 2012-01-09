@@ -123,8 +123,8 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
 
   /* properties */
   param_spec = g_param_spec_object("count_beats_audio_run\0",
-				   "assigned AgsDelayAudioRun\0",
-				   "the AgsDelayAudioRun which emits beat signal\0",
+				   "assigned AgsCountBeatsAudioRun\0",
+				   "the AgsCountBeatsAudioRun which emits beat signal\0",
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -177,10 +177,10 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
-      AgsDelayAudioRun *count_beats_audio_run;
+      AgsCountBeatsAudioRun *count_beats_audio_run;
       gboolean is_template;
 
-      count_beats_audio_run = (AgsDelayAudioRun *) g_value_get_object(value);
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
 
       if(copy_pattern_audio_run->count_beats_audio_run == count_beats_audio_run)
 	return;
@@ -289,7 +289,7 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   AgsRecall *template;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsRecallDependency *recall_dependency;
-  AgsDelayAudioRun *delay_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
   GList *list;
   AgsGroupId group_id;
   guint i, i_stop;
@@ -301,14 +301,14 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   list = template->dependencies;
   group_id = recall->recall_id->group_id;
 
-  delay_audio_run = NULL;
+  count_beats_audio_run = NULL;
   i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
-    if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
-      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
     }
@@ -317,7 +317,7 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "delay_audio_run\0", delay_audio_run,
+	       "count_beats_audio_run\0", count_beats_audio_run,
 	       NULL);
 }
 
@@ -336,12 +336,12 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
 }
 
 AgsCopyPatternAudioRun*
-ags_copy_pattern_audio_run_new(AgsDelayAudioRun *delay_audio_run)
+ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								   "delay_audio_run\0", delay_audio_run,
+								   "count_beats_audio_run\0", count_beats_audio_run,
 								   NULL);
 
   return(copy_pattern_audio_run);
