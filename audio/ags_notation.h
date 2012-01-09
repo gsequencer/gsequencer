@@ -56,7 +56,9 @@ struct _AgsNotation
   guint maximum_note_length;
 
   GList *notes;
-  guint pads;
+  GList *start_loop;
+  GList *end_loop;
+  guint offset;
 
   GList *selection;
 };

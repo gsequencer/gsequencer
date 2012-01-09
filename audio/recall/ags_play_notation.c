@@ -132,12 +132,6 @@ ags_play_notation_connect(AgsPlayNotation *play_notation)
 void
 ags_play_notation_pre(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 {
-  AgsPlayNotation *play_notation;
-  AgsPlayNote *play_note;
-  GList *current, *next;
-
-  play_notation = (AgsPlayNotation *) recall;
-
   /* -- deprecated -- use relative counters instead
   if((AGS_DEVOUT_PLAY_NOTE & play_notation->devout->flags) == 0)
     return;
@@ -230,6 +224,45 @@ ags_play_notation_play_note_done(AgsRecall *recall, AgsRecallID *recall_id, gpoi
   play_notation->recall.recall = g_list_remove(play_notation->recall.recall, recall);
   g_object_unref(G_OBJECT(recall));
   */
+}
+
+void
+ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run)
+{
+  AgsNotation *notation;
+  AgsPlayNotation *play_notation;
+  AgsAudio *audio;
+  AgsChannel *selected_channel;
+  GList *current_position;
+  AgsNote *note;
+  AgsRecycling *recycling;
+
+  play_notation = (AgsPlayNotation *) recall;
+  notation = play_notation->notation;
+
+  audio = AGS_AUDIO(play_notation->notation->audio);
+  
+  if((AGS_PLAY_NOTATION_DEFAULT & notation->flags) != 0){
+    selected_channel = audio->input;
+  }else{
+    selected_channel = audio->output;
+  }
+
+  current_position = notation->start_loop;
+  note = AGS_NOTE(current_position->data);
+
+  if(current_position != notation->end_loop &&
+     note->x[0] == notation->offset){
+    selected_channel = ags_channel_nth(selected_channel, note->y);
+
+    recycling = selected_channel->first_recycling;
+
+    while(recycling != selected_channel->last_recycling){
+      ags_recycling_add_audio_signal_with_frame_count(recycling,
+						      ags_audio_signal_get_template(recycling->audio_signal),
+						      note->x[1] - note->x[0]);
+    }
+  }
 }
 
 AgsPlayNotation*

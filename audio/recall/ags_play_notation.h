@@ -32,18 +32,24 @@
 typedef struct _AgsPlayNotation AgsPlayNotation;
 typedef struct _AgsPlayNotationClass AgsPlayNotationClass;
 
+typedef enum{
+  AGS_PLAY_NOTATION_DEFAULT  =  1,
+}AgsPlayNotationFlags;
+
 struct _AgsPlayNotation
 {
   AgsRecall recall;
 
+  guint flags;
+
   AgsDevout *devout;
 
-  AgsChannel *channel;
+  //  AgsChannel *channel;
   AgsNotation *notation;
 
   //  double *bpm; now in AgsDevout
 
-  GList *current; // 
+  //  GList *current;
 };
 
 struct _AgsPlayNotationClass

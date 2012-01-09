@@ -99,6 +99,9 @@ void
 ags_navigation_play_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
+  
+
+
   //  AGS_DEVOUT_GET_CLASS(navigation->devout)->run(navigation->devout);
 
   /* empty */

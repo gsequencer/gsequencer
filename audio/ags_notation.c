@@ -134,7 +134,9 @@ ags_notation_init(AgsNotation *notation)
   notation->maximum_note_length = 256;
 
   notation->notes = NULL;
-  notation->pads = 0;
+  notation->start_loop = NULL;
+  notation->end_loop = NULL;
+  notation->offset = 0;
 
   notation->selection = NULL;
 }
