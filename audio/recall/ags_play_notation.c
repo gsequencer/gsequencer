@@ -27,12 +27,15 @@ void ags_play_notation_init(AgsPlayNotation *play_notation);
 void ags_play_notation_finalize(GObject *gobject);
 void ags_play_notation_connect(AgsPlayNotation *play_notation);
 
+void ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall);
 void ags_play_notation_pre(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
 void ags_play_notation_post(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
 void ags_play_notation_stop(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
 void ags_play_notation_cancel(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
 
 void ags_play_notation_play_note_done(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
+
+void ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run);
 
 static gpointer ags_play_notation_parent_class = NULL;
 
@@ -67,11 +70,22 @@ void
 ags_play_notation_class_init(AgsPlayNotationClass *play_notation)
 {
   GObjectClass *gobject;
+  AgsRecall *recall;
 
   ags_play_notation_parent_class = g_type_class_peek_parent(play_notation);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) play_notation;
+
   gobject->finalize = ags_play_notation_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) play_notation;
+
+  recall->resolve_dependencies = ags_copy_pattern_channel_run_resolve_dependencies;
+  recall->done = ags_copy_pattern_channel_run_done;
+  recall->cancel = ags_copy_pattern_channel_run_cancel;
+  recall->remove = ags_copy_pattern_channel_run_remove;
 }
 
 void
@@ -116,17 +130,68 @@ ags_play_notation_connect(AgsPlayNotation *play_notation)
 {
   //  ags_recall_connect((AgsRecall *) play_notation);
 
+  /*
   g_signal_connect((GObject *) play_notation, "run_pre\0",
 		   G_CALLBACK(ags_play_notation_pre), NULL);
 
   g_signal_connect((GObject *) play_notation, "run_post\0",
 		   G_CALLBACK(ags_play_notation_post), NULL);
+  */
 
   g_signal_connect((GObject *) play_notation, "stop\0",
 		   G_CALLBACK(ags_play_notation_stop), NULL);
 
   g_signal_connect((GObject *) play_notation, "cancel\0",
 		   G_CALLBACK(ags_play_notation_cancel), NULL);
+}
+
+void
+ags_play_notation_run_connect(AgsPlayNotation *play_notation)
+{
+  AgsDelayAudioRun *delay_audio_run;
+
+  delay_audio_run = ags;
+
+  g_signal_connect_after(G_OBJECT(delay_audio_run), "tic_count\0",
+			 G_CALLBACK(ags_play_notation_delay_tic_count), play_notation);
+}
+
+void
+ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
+{
+  AgsRecall *template;
+  AgsPlayNotation *play_notation;
+  AgsRecallDependency *recall_dependency;
+  AgsDelayAudioRun *delay_audio_run;
+  GList *list;
+  AgsGroupId group_id;
+  guint i, i_stop;
+
+  play_notation = AGS_PLAY_NOTATION(recall);
+
+  template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run)->data);
+
+  list = template->dependencies;
+  group_id = recall->recall_id->group_id;
+
+  delay_audio_run = NULL;
+  i_stop = 1;
+
+  for(i = 0; i < i_stop && list != NULL;){
+    recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
+
+    if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
+      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+
+      i++;
+    }
+
+    list = list->next;
+  }
+
+  g_object_set(G_OBJECT(recall),
+	       "delay_audio_run\0", delay_audio_run,
+	       NULL);
 }
 
 void
