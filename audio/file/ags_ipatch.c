@@ -43,6 +43,12 @@ static gpointer ags_ipatch_parent_class = NULL;
 static AgsConnectableInterface *ags_ipatch_parent_connectable_interface;
 static AgsPlayableInterface *ags_ipatch_parent_playable_interface;
 
+enum{
+  PROP_0,
+  PROP_FILENAME,
+  PROP_MODE,
+};
+
 GType
 ags_ipatch_get_type()
 {
@@ -134,6 +140,7 @@ ags_ipatch_playable_interface_init(AgsPlayableInterface *playable)
 void
 ags_ipatch_init(AgsIpatch *ipatch)
 {
+  ipatch->file = ipatch_file_new();
 }
 
 void
@@ -153,27 +160,36 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
 }
 
 gboolean
-ags_ipatch_open(AgsPlayable *playable, gchar *name)
+ags_ipatch_open(AgsPlayable *playable, GError **error)
 {
   AgsIpatch *ipatch;
 
   ipatch = AGS_IPATCH(playable);
 
-  //TODO:JK: implement me
+  ipatch->handle = ipatch_file_open(ipatch,
+				    ipatch->filename,
+				    ipatch->mode,
+				    error);
+
+  if(error == NULL){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 guint
 ags_ipatch_level_count(AgsPlayable *playable)
 {
-  //TODO:JK: implement me
+  /* empty */
 
-  return(3);
+  return(0);
 }
 
 gchar**
 ags_ipatch_sublevel_names(AgsPlayable *playable)
 {
-  //TODO:JK: implement me
+  /* empty */
 
   return(NULL);
 }
@@ -185,7 +201,7 @@ ags_ipatch_iter_start(AgsPlayable *playable)
 
   ipatch = AGS_IPATCH(playable);
 
-  //TODO:JK: implement me
+  /* empty */
 }
 
 gboolean
@@ -195,7 +211,7 @@ ags_ipatch_iter_next(AgsPlayable *playable)
 
   ipatch = AGS_IPATCH(playable);
 
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
@@ -205,7 +221,7 @@ ags_ipatch_info(AgsPlayable *playable, guint *channels, guint *frames, guint *lo
 
   ipatch = AGS_IPATCH(playable);
 
-  //TODO:JK: implement me
+  /* empty */
 }
 
 short*
@@ -217,7 +233,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel)
 
   ipatch = AGS_IPATCH(playable);
 
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void
@@ -227,7 +243,7 @@ ags_ipatch_close(AgsPlayable *playable)
 
   ipatch = AGS_IPATCH(playable);
 
-  //TODO:JK: implement me
+  /* empty */
 }
 
 void

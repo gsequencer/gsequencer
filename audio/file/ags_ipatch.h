@@ -37,34 +37,23 @@ typedef struct _AgsIpatchClass AgsIpatchClass;
 
 typedef struct _AgsIpatchSF2Reader AgsIpatchSF2Reader;
 
-typedef enum{
-  AGS_IPATCH_SF2,
-}AgsIpatchMode;
-
 struct _AgsIpatch
 {
   GObject object;
 
-  guint mode;
-
   IpatchFile *file;
-  
-  union AgsIpatchReader{
-    AgsIpatchSF2Reader *sf2_reader;
-  }reader;
+  gchar *filename;
+  gchar *mode;
+
+  IpatchFileHandle *handle;
+  GError *error;
+
+  GObject *reader;
 };
 
 struct _AgsIpatchClass
 {
   GObjectClass object;
-};
-
-struct _AgsIpatchSF2Reader
-{
-  IpatchSF2Reader *reader;
-  IpatchSF2Phdr *preset;
-  IpatchSF2Ihdr *instrument;
-  IpatchSF2Shdr *sample;
 };
 
 GType ags_ipatch_get_type();
