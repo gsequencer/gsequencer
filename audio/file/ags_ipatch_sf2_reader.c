@@ -235,8 +235,12 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  int sf2_phdr_position;
 	  int offset;
 
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &fd_pos0, NULL);
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &offset, NULL);
+	  offset = ;
+	  lseek(fd, SEEK_SET, fd_pos0);
+	  lseek(fd, SEEK_SET, offset);
+
+	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_SET, &fd_pos0, NULL);
+	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_SET, &offset, NULL);
 
 	  read(fd, &sf2_phdr_position, sizeof(int));
 	  sf2_phdr_position -= offset;
@@ -256,9 +260,10 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	if(initial){
 	  int sf2_ihdr_position;
 	  int offset;
-
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &fd_pos0, NULL);
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &offset, NULL);
+	  
+	  offset = ;
+	  lseek(fd, SEEK_SET, fd_pos0);
+	  lseek(fd, SEEK_SET, offset);
 
 	  read(fd, &sf2_phdr_position, sizeof(int));
 	  sf2_phdr_position -= offset;
@@ -279,8 +284,9 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  int sf2_shdr_position;
 	  int offset;
 	
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &fd_pos0, NULL);
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &offset, NULL);
+	  offset = ;
+	  lseek(fd, SEEK_SET, fd_pos0);
+	  lseek(fd, SEEK_SET, offset);
 
 	  read(fd, &sf2_phdr_position, sizeof(int));
 	  sf2_phdr_position -= offset;
