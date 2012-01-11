@@ -23,9 +23,20 @@
 #include <glib-object.h>
 #include <libinstpatch/libinstpatch.h>
 
+typedef enum{
+  AGS_SF2_FILENAME,
+  AGS_SF2_PHDR,
+  AGS_SF2_IHDR,
+  AGS_SF2_SHDR,
+};
+
 struct _AgsIpatchSF2Reader
 {
   GObject object;
+
+  AgsIpatch *ipatch;
+
+  guint nth_level;
 
   IpatchSF2Reader *reader;
   IpatchSF2Phdr *preset;
@@ -33,7 +44,7 @@ struct _AgsIpatchSF2Reader
   IpatchSF2Shdr *sample;
 };
 
-struct _AgsIpatchClass
+struct _AgsIpatchSF2ReaderClass
 {
   GObjectClass object;
 };
