@@ -200,6 +200,8 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   AgsIpatch *ipatch;
   gchar **names, **iter;
   gchar *name;
+  int fd;
+  int fd_pos0;
   gboolean initial;
 
   ags_ipatch_sf2_reader_iter_start(playable);
@@ -211,6 +213,9 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   names[0] = NULL;
   iter = names;
 
+  fd = ipatch_file_get_fd(ipatch->handle);
+
+  fd_pos0 = 0;
   initial = TRUE;
 
   while(ags_ipatch_sf2_iter_next(playable) != FALSE){
@@ -229,12 +234,14 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	if(initial){
 	  int sf2_phdr_position;
 	  int offset;
-	  int position;
 
-	  sf2_phdr_position = ;
-
+	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &fd_pos0, NULL);
 	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &offset, NULL);
-	  ipatch_buf_seek(AGS_SF2_PHDR_POSITION);
+
+	  read(fd, &sf2_phdr_position, sizeof(int));
+	  sf2_phdr_position -= offset;
+
+	  ipatch_buf_seek(sf2_phdr_position);
 	}
 
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
@@ -249,12 +256,14 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	if(initial){
 	  int sf2_ihdr_position;
 	  int offset;
-	  int position;
 
-	  sf2_ihdr_position = ;
-
+	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &fd_pos0, NULL);
 	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &offset, NULL);
-	  ipatch_buf_seek(AGS_SF2_IHDR_POSITION);
+
+	  read(fd, &sf2_phdr_position, sizeof(int));
+	  sf2_phdr_position -= offset;
+
+	  ipatch_buf_seek(sf2_ihdr_position);
 	}
 
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
@@ -269,12 +278,14 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	if(initial){
 	  int sf2_shdr_position;
 	  int offset;
-	  int position;
 	
-	  sf2_shdr_position = ;
-
+	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &fd_pos0, NULL);
 	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_, &offset, NULL);
-	  ipatch_buf_seek(AGS_SF2_SHDR_POSITION);
+
+	  read(fd, &sf2_phdr_position, sizeof(int));
+	  sf2_phdr_position -= offset;
+
+	  ipatch_buf_seek(sf2_shdr_position);
 	}
 
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
