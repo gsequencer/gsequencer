@@ -232,6 +232,11 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	IpatchSF2Phdr phdr;
 
 	if(initial){
+	  ipatch_sf2_get_presets(sfont);
+	  ipatch_container_get_children (IPATCH_CONTAINER (sfont),
+					 IPATCH_TYPE_SF2_PRESET);
+	  
+	  /*
 	  int sf2_phdr_position;
 	  int offset;
 
@@ -246,6 +251,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  sf2_phdr_position -= offset;
 
 	  ipatch_buf_seek(sf2_phdr_position);
+	  */
 	}
 
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
@@ -258,6 +264,11 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	IpatchSF2Ihdr ihdr;
 
 	if(initial){
+	  ipatch_sf2_get_insts(sfont);
+	  ipatch_container_get_children (IPATCH_CONTAINER (sfont),
+					 IPATCH_TYPE_SF2_INST);
+
+	  /*
 	  int sf2_ihdr_position;
 	  int offset;
 	  
@@ -269,6 +280,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  sf2_phdr_position -= offset;
 
 	  ipatch_buf_seek(sf2_ihdr_position);
+	  */
 	}
 
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
@@ -281,6 +293,10 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	IpatchSF2Shdr shdr;
 
 	if(initial){
+	  ipatch_sf2_get_samples(sfont);
+	  ipatch_container_get_children (IPATCH_CONTAINER (sfont),
+					 IPATCH_TYPE_SF2_SAMPLE);
+	  /*
 	  int sf2_shdr_position;
 	  int offset;
 	
@@ -292,6 +308,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  sf2_phdr_position -= offset;
 
 	  ipatch_buf_seek(sf2_shdr_position);
+	  */
 	}
 
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
