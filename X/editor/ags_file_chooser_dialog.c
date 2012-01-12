@@ -98,6 +98,63 @@ ags_file_chooser_dialog_connectable_interface_init(AgsConnectableInterface *conn
 void
 ags_file_chooser_dialog_init(AgsFileChooserDialog *file_chooser_dialog)
 {
+  GtkTable *table;
+  GtkLabel *label;
+
+  table = (GtkTable *) gtk_table_new(2, 3, FALSE);
+  gtk_file_chooser_set_extra_widget(file_chooser_dialog,
+				    GTK_WIDGET(table));
+
+  /* first row - preset */
+  label = (GtkLabel *) gtk_label_new("preset: \0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  file_chooser_dialog->preset = (GtkLabel *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(file_chooser_dialog->preset),
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* second row - instrument */
+  label = (GtkLabel *) gtk_label_new("instrument: \0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  file_chooser_dialog->instrument = (GtkLabel *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(file_chooser_dialog->instrument),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* third row - sample */
+  label = (GtkLabel *) gtk_label_new("sample: \0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  file_chooser_dialog->sample = (GtkLabel *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(file_chooser_dialog->sample),
+		   1, 2,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void

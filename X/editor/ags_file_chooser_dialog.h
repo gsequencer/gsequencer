@@ -39,6 +39,10 @@ typedef struct _AgsFileChooserDialogClass AgsFileChooserDialogClass;
 struct _AgsFileChooserDialog
 {
   GtkFileChooserDialog file_chooser_dialog;
+
+  GtkComboBoxText *preset;
+  GtkComboBoxText *instrument;
+  GtkComboBoxText *sample;
 };
 
 struct _AgsFileChooserDialogClass
