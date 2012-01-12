@@ -37,6 +37,7 @@ struct _AgsIpatchSF2Reader
   AgsIpatch *ipatch;
 
   guint nth_level;
+  gchar *selected_sublevel_name;
 
   IpatchSF2Reader *reader;
 

@@ -31,6 +31,12 @@
 typedef void AgsPlayable;
 typedef struct _AgsPlayableInterface AgsPlayableInterface;
 
+#define AGS_PLAYABLE_ERROR (ags_playable_error_quark())
+
+typedef enum{
+  AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
+}AgsPlayableError;
+
 struct _AgsPlayableInterface
 {
   GTypeInterface interface;
@@ -40,7 +46,7 @@ struct _AgsPlayableInterface
   /* these functions are especially for soundfonts */
   guint (*level_count)(AgsPlayable *playable);
   gchar** (*sublevel_names)(AgsPlayable *playable);
-  void (*level_select)(AgsPlayable *playable, guint nth_level, gchar *sublevel_name);
+  void (*level_select)(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError *error);
 
   void (*iter_start)(AgsPlayable *playable);
   gboolean (*iter_next)(AgsPlayable *playable);
@@ -53,6 +59,8 @@ struct _AgsPlayableInterface
 };
 
 GType ags_playable_get_type();
+
+GQuark ags_playable_error_quark();
 
 gboolean ags_playable_open(AgsPlayable *playable, gchar *name);
 

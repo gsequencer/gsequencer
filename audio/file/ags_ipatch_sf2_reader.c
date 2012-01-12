@@ -158,6 +158,7 @@ ags_ipatch_sf2_reader_init(AgsIpatchSf2Reader *ipatch_sf2_reader)
   ipatch_sf2_reader->ipatch = NULL;
 
   ipatch_sf2_reader->nth_level = 0;
+  ipatch_sf2_reader->selected_sublevel_name = NULL;
 
   ipatch_sf2_reader->reader = NULL;
   ipatch_sf2_reader->preset = NULL;
@@ -410,12 +411,30 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 }
 
 void
-ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name)
+ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
+  if(sublevel_name == NULL){
+    ipatch_sf2_reader->nth_level = 0;
+    ipatch_sf2_reader->selected_sublevel_name = NULL;
+  }else{
+    gchar **sublevel_names;
+
+    sublevel_names = ags_ipatch_sf2_reader_sublevel_names(playable);
+
+    while(!strncmp(sublevel_names, sublevel_names, 20)){
+      sublevel_names++;
+    }
+   
+    if(*sublevel_names != NULL){
+
+    }else{
+      
+    }
+  }
 }
 
 void

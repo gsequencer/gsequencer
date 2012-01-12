@@ -40,6 +40,13 @@ ags_playable_get_type()
   return(ags_type_playable);
 }
 
+
+GQuark
+ags_channel_error_quark()
+{
+  return(g_quark_from_static_string("ags-playable-error-quark\0"));
+}
+
 void
 ags_playable_base_init(AgsPlayableInterface *interface)
 {
@@ -88,15 +95,25 @@ ags_playable_sublevel_names(AgsPlayable *playable)
   return(ret_val);
 }
 
+/**
+ * ags_ipatch_sf2_reader_level_select:
+ * @playable an #AgsPlayable
+ * @nth_level of type guint
+ * @sublevel_name a gchar pointer
+ * @error an error that may occure
+ *
+ * Select a level in an monolythic file where @nth_level and @sublevel_name are equivalent.
+ * If @sublevel_name is NULL @nth_level will be chosen.
+ */
 void
-ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name)
+ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error)
 {
   AgsPlayableInterface *playable_interface;
 
   g_return_if_fail(AGS_IS_PLAYABLE(playable));
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_if_fail(playable_interface->level_select);
-  playable_interface->level_select(playable, nth_level, sublevel_name);
+  playable_interface->level_select(playable, nth_level, sublevel_name, error);
 }
 
 void
