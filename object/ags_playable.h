@@ -46,7 +46,9 @@ struct _AgsPlayableInterface
   /* these functions are especially for soundfonts */
   guint (*level_count)(AgsPlayable *playable);
   gchar** (*sublevel_names)(AgsPlayable *playable);
+
   void (*level_select)(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError *error);
+  void (*level_up)(AgsPlayable *playable, guint levels, GError **error);
 
   void (*iter_start)(AgsPlayable *playable);
   gboolean (*iter_next)(AgsPlayable *playable);
@@ -66,7 +68,9 @@ gboolean ags_playable_open(AgsPlayable *playable, gchar *name);
 
 guint ags_playable_level_count(AgsPlayable *playable);
 gchar** ags_playable_sublevel_names(AgsPlayable *playable);
-void ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name);
+
+void ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);
+void ags_playable_level_up(AgsPlayable *playable, guint levels, GError **error);
 
 void ags_playable_iter_start(AgsPlayable *playable);
 gboolean ags_playable_iter_next(AgsPlayable *playable);

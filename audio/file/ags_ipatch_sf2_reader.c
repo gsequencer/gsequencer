@@ -141,7 +141,9 @@ ags_ipatch_sf2_reader_playable_interface_init(AgsPlayableInterface *playable)
 
   playable->level_count = ags_ipatch_sf2_reader_level_count;
   playable->sublevel_names = ags_ipatch_sf2_reader_sublevel_names;
+
   playable->level_select = ags_ipatch_sf2_reader_level_select;
+  playable->level_up = ags_ipatch_sf2_reader_level_up;
 
   playable->iter_start = ags_ipatch_sf2_reader_iter_start;
   playable->iter_next = ags_ipatch_sf2_reader_iter_next;
@@ -411,7 +413,9 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 }
 
 void
-ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error)
+ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
+				   guint nth_level, gchar *sublevel_name,
+				   GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
@@ -430,10 +434,32 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar
     }
    
     if(*sublevel_names != NULL){
-
+      ipatch_sf2_reader->nth_level++;
     }else{
-      
+      g_set_error(error,
+		  AGS_PLAYABLE_ERROR,
+		  AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
+		  "no level called %s in soundfont2 file: %s\0",
+		  sublevel_name, ipatch_sf2_reader->ipatch->filename);
     }
+  }
+}
+
+void
+ags_ipatch_sf2_reader_iter_level_up(AgsPlayable *playable, guint levels, GError **error)
+{
+  AgsIpatchSF2Reader *ipatch_sf2_reader;
+
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
+
+  if(ipatch_sf2_reader->nth_level >= levels){
+    ipatch_sf2_reader->nth_level -= levels;
+  }else{
+    g_set_error(error,
+		AGS_CHANNEL_ERROR,
+		AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+		"Not able to go %u steps higher in soundfont2 file: %s\0",
+		sublevel_name, ipatch_sf2_reader->ipatch->filename);
   }
 }
 
@@ -458,7 +484,9 @@ ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable)
 }
 
 void
-ags_ipatch_sf2_reader_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end)
+ags_ipatch_sf2_reader_info(AgsPlayable *playable,
+			   guint *channels, guint *frames,
+			   guint *loop_start, guint *loop_end)
 {
   AgsIpatchSf2Reader *ipatch_sf2_reader;
 

@@ -117,6 +117,17 @@ ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *subleve
 }
 
 void
+ags_playable_level_up(AgsPlayable *playable, guint levels, GError **error)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_if_fail(playable_interface->level_up);
+  playable_interface->level_up(playable, levels, error);
+}
+
+void
 ags_playable_iter_start(AgsPlayable *playable)
 {
   AgsPlayableInterface *playable_interface;
