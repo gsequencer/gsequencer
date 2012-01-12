@@ -25,6 +25,14 @@ void ags_ipatch_class_init(AgsIpatchClass *ipatch);
 void ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ipatch_playable_interface_init(AgsPlayableInterface *playable);
 void ags_ipatch_init(AgsIpatch *ipatch);
+void ags_ipatch_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_ipatch_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
 void ags_ipatch_finalize(GObject *gobject);
 
 void ags_ipatch_connect(AgsConnectable *connectable);
@@ -105,6 +113,9 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
 
   gobject = (GObjectClass *) ipatch;
 
+  gobject->set_property = ags_ipatch_set_property;
+  gobject->get_property = ags_ipatch_get_property;
+
   gobject->finalize = ags_ipatch_finalize;
 }
 
@@ -141,6 +152,73 @@ void
 ags_ipatch_init(AgsIpatch *ipatch)
 {
   ipatch->file = ipatch_file_new();
+
+  ipatch->filename = NULL;
+  ipatch->mode = NULL;
+
+  ipatch->handle = NULL;
+  ipatch->error = NULL;
+
+  ipatch->container = container;
+  ipatch->reader = NULL;
+}
+
+void
+ags_ipatch_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsIpatch *ipatch;
+
+  ipatch = AGS_IPATCH(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = (gchar *) g_value_get_pointer(value);
+
+      ipatch->filename = filename;
+    }
+    break;
+  case PROP_MODE:
+    {
+      gchar *mode;
+      
+      mode = (gchar *) g_value_get_pointer(value);
+      
+      ipatch->mode = mode;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_ipatch_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsIpatch *ipatch;
+
+  ipatch = AGS_IPATCH(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    g_value_set_pointer(value, ipatch->filename);
+    break;
+  case PROP_MODE:
+    g_value_set_pointer(value, ipatch->mode);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -170,6 +248,8 @@ ags_ipatch_open(AgsPlayable *playable, GError **error)
 				    ipatch->filename,
 				    ipatch->mode,
 				    error);
+
+  ipatch->container = NULL;
 
   if(error == NULL){
     return(TRUE);

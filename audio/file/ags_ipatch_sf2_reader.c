@@ -25,6 +25,14 @@ void ags_ipatch_sf2_reader_class_init(AgsIpatchSf2ReaderClass *ipatch_sf2_reader
 void ags_ipatch_sf2_reader_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ipatch_sf2_reader_playable_interface_init(AgsPlayableInterface *playable);
 void ags_ipatch_sf2_reader_init(AgsIpatchSf2Reader *ipatch_sf2_reader);
+void ags_ipatch_sf2_reader_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_ipatch_sf2_reader_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
 void ags_ipatch_sf2_reader_finalize(GObject *gobject);
 
 void ags_ipatch_sf2_reader_connect(AgsConnectable *connectable);
@@ -47,6 +55,11 @@ void ags_ipatch_sf2_reader_close(AgsPlayable *playable);
 static gpointer ags_ipatch_sf2_reader_parent_class = NULL;
 static AgsConnectableInterface *ags_ipatch_sf2_reader_parent_connectable_interface;
 static AgsPlayableInterface *ags_ipatch_sf2_reader_parent_playable_interface;
+
+enum{
+  PROP_0,
+  PROP_IPATCH,
+};
 
 GType
 ags_ipatch_sf2_reader_get_type()
@@ -104,6 +117,9 @@ ags_ipatch_sf2_reader_class_init(AgsIpatchSf2ReaderClass *ipatch_sf2_reader)
 
   gobject = (GObjectClass *) ipatch_sf2_reader;
 
+  gobject->set_property = ags_ipatch_sf2_reader_set_property;
+  gobject->get_property = ags_ipatch_sf2_reader_get_property;
+
   gobject->finalize = ags_ipatch_sf2_reader_finalize;
 }
 
@@ -150,6 +166,61 @@ ags_ipatch_sf2_reader_init(AgsIpatchSf2Reader *ipatch_sf2_reader)
 }
 
 void
+ags_ipatch_sf2_reader_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsAudio *audio;
+
+  audio = AGS_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_IPATCH:
+    {
+      AgsDevout *devout;
+
+      ipatch = (AgsDevout *) g_value_get_object(value);
+
+      if(ipatch_sf2_reader->ipatch != NULL){
+	g_object_unref(ipatch_sf2_reader->ipatch);
+      }
+
+      ipatch_sf2_reader->ipatch = ipatch;
+     
+      if(ipatch != NULL){
+	g_object_ref(ipatch);
+	ipatch->reader = ipatch_sf2_reader;
+      }
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_ipatch_sf2_reader_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsIpatchSf2Reader *ipatch_sf2_reader;
+
+  ipatch_sf2_reader = AGS_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_IPATCH:
+    g_value_set_object(value, ipatch_sf2_reader->ipatch);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_ipatch_sf2_reader_connect(AgsConnectable *connectable)
 {
   ags_ipatch_sf2_reader_parent_connectable_interface->connect(connectable);
@@ -185,6 +256,9 @@ ags_ipatch_sf2_reader_open(AgsPlayable *playable, gchar *name)
   ags_ipatch_open(AGS_PLAYABLE(ipatch_file), &error);
 
   ipatch_sf2_reader->reader = ipatch_sf2_reader_new(ipatch_file->handle);
+
+  ipatch_sf2_reader->sf2 = ipatch_sf2_reader_load(ipatch_sf2_reader->reader,
+						  &error);
 }
 
 guint
@@ -198,10 +272,9 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
   AgsIpatch *ipatch;
+  GList *list;
   gchar **names, **iter;
   gchar *name;
-  int fd;
-  int fd_pos0;
   gboolean initial;
 
   ags_ipatch_sf2_reader_iter_start(playable);
@@ -213,9 +286,6 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   names[0] = NULL;
   iter = names;
 
-  fd = ipatch_file_get_fd(ipatch->handle);
-
-  fd_pos0 = 0;
   initial = TRUE;
 
   while(ags_ipatch_sf2_iter_next(playable) != FALSE){
@@ -224,7 +294,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
     switch(ipatch_sf2_reader->nth_level){
     case AGS_SF2_FILENAME:
       {
-	*iter = ags_ipatch_sf2_reader();
+	*iter = ipatch_sf2_reader->ipatch->filename;
 	break;
       }
     case AGS_SF2_PHDR:
@@ -232,9 +302,9 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	IpatchSF2Phdr phdr;
 
 	if(initial){
-	  ipatch_sf2_get_presets(sfont);
-	  ipatch_container_get_children (IPATCH_CONTAINER (sfont),
-					 IPATCH_TYPE_SF2_PRESET);
+	  ipatch_sf2_get_presets(ipatch_sf2_reader->sf2);
+	  list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+					       IPATCH_TYPE_SF2_PRESET);
 	  
 	  /*
 	  int sf2_phdr_position;
@@ -254,19 +324,23 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  */
 	}
 
+	/*
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
 					    phdr);
 
 	ipatch_buf_seek(sizeof(IpatchSF2Phdr));
+	*/
+
+	*iter = ((IpatchSF2Phdr *) (list->data))->name;
       }
     case AGS_SF2_IHDR:
       {
 	IpatchSF2Ihdr ihdr;
 
 	if(initial){
-	  ipatch_sf2_get_insts(sfont);
-	  ipatch_container_get_children (IPATCH_CONTAINER (sfont),
-					 IPATCH_TYPE_SF2_INST);
+	  ipatch_sf2_get_insts(ipatch_sf2_reader->sf2);
+	  list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+					       IPATCH_TYPE_SF2_INST);
 
 	  /*
 	  int sf2_ihdr_position;
@@ -283,19 +357,23 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  */
 	}
 
+	/*
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
 					    ihdr);
 
-	ipatch_buf_seek(sizeof(IpatchSF2Phdr));
+	ipatch_buf_seek(sizeof(IpatchSF2Ihdr));
+	*/
+
+	*iter = ((IpatchSF2Ihdr *) (list->data))->name;
       }
     case AGS_SF2_SHDR:
       {
 	IpatchSF2Shdr shdr;
 
 	if(initial){
-	  ipatch_sf2_get_samples(sfont);
-	  ipatch_container_get_children (IPATCH_CONTAINER (sfont),
-					 IPATCH_TYPE_SF2_SAMPLE);
+	  ipatch_sf2_get_samples(ipatch_sf2_reader->sf2);
+	  list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+					       IPATCH_TYPE_SF2_SAMPLE);
 	  /*
 	  int sf2_shdr_position;
 	  int offset;
@@ -311,16 +389,22 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 	  */
 	}
 
+	/*
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
 					    shdr);
 
-	ipatch_buf_seek(sizeof(IpatchSF2Phdr));
+	ipatch_buf_seek(sizeof(IpatchSF2Shdr));
+	*/
+
+	*iter = ((IpatchSF2Shdr *) (list->data))->name;
       }
     };
 
+    list = list->next;
     (*iter)++;
-    *iter = NULL;
   }
+
+  *iter = NULL;
 
   return(names);
 }

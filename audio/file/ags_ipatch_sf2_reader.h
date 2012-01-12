@@ -39,6 +39,8 @@ struct _AgsIpatchSF2Reader
   guint nth_level;
 
   IpatchSF2Reader *reader;
+
+  IpatchSF2 *sf2;
   IpatchSF2Phdr *preset;
   IpatchSF2Ihdr *instrument;
   IpatchSF2Shdr *sample;

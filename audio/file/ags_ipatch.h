@@ -48,6 +48,7 @@ struct _AgsIpatch
   IpatchFileHandle *handle;
   GError *error;
 
+  IpatchContainer *container;
   GObject *reader;
 };
 
