@@ -23,8 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_table.h>
-
 #define AGS_TYPE_DIAL                (ags_dial_get_type())
 #define AGS_DIAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DIAL, AgsDial))
 #define AGS_DIAL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DIAL, AgsDialClass))

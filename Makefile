@@ -17,7 +17,7 @@ AGS_AUDIO_FILE_OBJECTS = $(AGS_DIR)audio/file/ags_audio_file.o $(AGS_DIR)audio/f
 
 AGS_FILE_OBJECTS = $(AGS_DIR)file/ags_file.o
 
-AGS_WIDGET_OBJECTS = $(AGS_DIR)widget/ags_timebar.o $(AGS_DIR)widget/ags_htimebar.o $(AGS_DIR)widget/ags_table.o $(AGS_DIR)widget/ags_menu.o $(AGS_DIR)widget/ags_option_menu.o
+AGS_WIDGET_OBJECTS = $(AGS_DIR)widget/ags_timebar.o $(AGS_DIR)widget/ags_htimebar.o $(AGS_DIR)widget/ags_table.o $(AGS_DIR)widget/ags_menu.o $(AGS_DIR)widget/ags_option_menu.o $(AGS_DIR)widget/ags_dial.o
 
 AGS_X_OBJECTS = $(AGS_DIR)X/ags_window.o $(AGS_DIR)X/ags_menu_bar.o $(AGS_DIR)X/ags_machine.o $(AGS_DIR)X/ags_pad.o $(AGS_DIR)X/ags_line.o $(AGS_DIR)X/ags_editor.o $(AGS_DIR)X/ags_navigation.o $(AGS_DIR)X/ags_machine_editor.o $(AGS_DIR)X/ags_property_editor.o $(AGS_DIR)X/ags_property_listing_editor.o $(AGS_DIR)X/ags_property_collection_editor.o $(AGS_DIR)X/ags_channel_listing_editor.o $(AGS_DIR)X/ags_channel_link_collection_editor.o $(AGS_DIR)X/ags_channel_resize_editor.o $(AGS_DIR)X/ags_pad_editor.o $(AGS_DIR)X/ags_line_editor.o $(AGS_DIR)X/ags_link_editor.o $(AGS_DIR)X/ags_line_member_editor.o 
 
