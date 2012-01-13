@@ -47,6 +47,8 @@ struct _AgsPlayNotation
   //  AgsChannel *channel;
   AgsNotation *notation;
 
+  AgsDelayAudioRun *delay_audio_run;
+  gulong tic_count_handler;
   //  double *bpm; now in AgsDevout
 
   //  GList *current;

@@ -19,23 +19,23 @@
 #include <ags/audio/recall/ags_play_notation.h>
 
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/recall/ags_play_note.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
 void ags_play_notation_class_init(AgsPlayNotationClass *play_notation);
 void ags_play_notation_init(AgsPlayNotation *play_notation);
 void ags_play_notation_finalize(GObject *gobject);
 void ags_play_notation_connect(AgsPlayNotation *play_notation);
 
-void ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall);
-void ags_play_notation_pre(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
-void ags_play_notation_post(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
-void ags_play_notation_stop(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
-void ags_play_notation_cancel(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
+void ags_play_notation_resolve_dependencies(AgsRecall *recall);
+void ags_play_notation_done(AgsRecall *recall);
+void ags_play_notation_remove(AgsRecall *recall);
+void ags_play_notation_cancel(AgsRecall *recall);
 
-void ags_play_notation_play_note_done(AgsRecall *recall, AgsRecallID *recall_id, gpointer data);
+void ags_play_notation_play_note_done(AgsRecall *recall, AgsPlayNotation *play_notation);
 
-void ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run);
+void ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation);
 
 static gpointer ags_play_notation_parent_class = NULL;
 
@@ -70,7 +70,7 @@ void
 ags_play_notation_class_init(AgsPlayNotationClass *play_notation)
 {
   GObjectClass *gobject;
-  AgsRecall *recall;
+  AgsRecallClass *recall;
 
   ags_play_notation_parent_class = g_type_class_peek_parent(play_notation);
 
@@ -82,10 +82,10 @@ ags_play_notation_class_init(AgsPlayNotationClass *play_notation)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_notation;
 
-  recall->resolve_dependencies = ags_copy_pattern_channel_run_resolve_dependencies;
-  recall->done = ags_copy_pattern_channel_run_done;
-  recall->cancel = ags_copy_pattern_channel_run_cancel;
-  recall->remove = ags_copy_pattern_channel_run_remove;
+  recall->resolve_dependencies = ags_play_notation_resolve_dependencies;
+  recall->done = ags_play_notation_done;
+  recall->cancel = ags_play_notation_cancel;
+  recall->remove = ags_play_notation_remove;
 }
 
 void
@@ -93,12 +93,13 @@ ags_play_notation_init(AgsPlayNotation *play_notation)
 {
   play_notation->devout = NULL;
   
-  play_notation->channel = NULL;
+  //  play_notation->channel = NULL;
   play_notation->notation = NULL;
 
+  play_notation->delay_audio_run = NULL;
   //  play_notation->bpm = NULL;
 
-  play_notation->current = NULL;
+  //  play_notation->current = NULL;
 }
 
 void
@@ -128,36 +129,29 @@ ags_play_notation_finalize(GObject *gobject)
 void
 ags_play_notation_connect(AgsPlayNotation *play_notation)
 {
+  //TODO:JK: set call to parent class
   //  ags_recall_connect((AgsRecall *) play_notation);
-
-  /*
-  g_signal_connect((GObject *) play_notation, "run_pre\0",
-		   G_CALLBACK(ags_play_notation_pre), NULL);
-
-  g_signal_connect((GObject *) play_notation, "run_post\0",
-		   G_CALLBACK(ags_play_notation_post), NULL);
-  */
-
-  g_signal_connect((GObject *) play_notation, "stop\0",
-		   G_CALLBACK(ags_play_notation_stop), NULL);
-
-  g_signal_connect((GObject *) play_notation, "cancel\0",
-		   G_CALLBACK(ags_play_notation_cancel), NULL);
 }
 
 void
 ags_play_notation_run_connect(AgsPlayNotation *play_notation)
 {
-  AgsDelayAudioRun *delay_audio_run;
-
-  delay_audio_run = ags;
-
-  g_signal_connect_after(G_OBJECT(delay_audio_run), "tic_count\0",
-			 G_CALLBACK(ags_play_notation_delay_tic_count), play_notation);
+  if(play_notation->delay_audio_run != NULL){
+    play_notation->tic_count_handler = g_signal_connect_after(G_OBJECT(play_notation->delay_audio_run), "tic_count\0",
+							      G_CALLBACK(ags_play_notation_delay_tic_count), play_notation);
+  }
 }
 
 void
-ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
+ags_play_notation_run_disconnect(AgsPlayNotation *play_notation)
+{
+  if(play_notation->delay_audio_run != NULL){
+    g_signal_handler_disconnect(G_OBJECT(play_notation->delay_audio_run), play_notation->tic_count_handler);
+  }
+}
+
+void
+ags_play_notation_resolve_dependencies(AgsRecall *recall)
 {
   AgsRecall *template;
   AgsPlayNotation *play_notation;
@@ -195,7 +189,7 @@ ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
 }
 
 void
-ags_play_notation_pre(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
+ags_play_notation_pre(AgsRecall *recall)
 {
   /* -- deprecated -- use relative counters instead
   if((AGS_DEVOUT_PLAY_NOTE & play_notation->devout->flags) == 0)
@@ -236,7 +230,7 @@ ags_play_notation_pre(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 }
 
 void
-ags_play_notation_post(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
+ags_play_notation_post(AgsRecall *recall)
 {
   /*
   GList *list, *list_next;
@@ -254,7 +248,7 @@ ags_play_notation_post(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 }
 
 void
-ags_play_notation_stop(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
+ags_play_notation_stop(AgsRecall *recall)
 {
   /*
   GList *list, *list_next;
@@ -274,12 +268,12 @@ ags_play_notation_stop(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 }
 
 void
-ags_play_notation_cancel(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
+ags_play_notation_cancel(AgsRecall *recall)
 {
 }
 
 void
-ags_play_notation_play_note_done(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
+ags_play_notation_play_note_done(AgsRecall *recall, AgsPlayNotation *play_notation)
 {
   /*
   AgsPlayNotation *play_notation;
@@ -292,17 +286,15 @@ ags_play_notation_play_note_done(AgsRecall *recall, AgsRecallID *recall_id, gpoi
 }
 
 void
-ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run)
+ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation)
 {
   AgsNotation *notation;
-  AgsPlayNotation *play_notation;
   AgsAudio *audio;
   AgsChannel *selected_channel;
   GList *current_position;
   AgsNote *note;
   AgsRecycling *recycling;
 
-  play_notation = (AgsPlayNotation *) recall;
   notation = play_notation->notation;
 
   audio = AGS_AUDIO(play_notation->notation->audio);
