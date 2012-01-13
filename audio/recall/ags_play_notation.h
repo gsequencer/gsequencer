@@ -25,6 +25,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_notation.h>
 
+#include <ags/audio/recall/ags_delay_audio_run.h>
+
 #define AGS_TYPE_PLAY_NOTATION             (ags_play_notation_get_type())
 #define AGS_PLAY_NOTATION(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))
 #define AGS_PLAY_NOTATION_CLASS(class)     (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))

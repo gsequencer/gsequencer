@@ -16,19 +16,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_IPATCH_H__
-#define __AGS_IPATCH_H__
+#ifndef __AGS_IPATCH_SF2_READER_H__
+#define __AGS_IPATCH_SF2_READER_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <libinstpatch/libinstpatch.h>
+
+#include <ags/audio/file/ags_ipatch.h>
 
 typedef enum{
   AGS_SF2_FILENAME,
   AGS_SF2_PHDR,
   AGS_SF2_IHDR,
   AGS_SF2_SHDR,
-};
+}AgsSF2Levels;
 
 struct _AgsIpatchSF2Reader
 {
@@ -52,8 +54,8 @@ struct _AgsIpatchSF2ReaderClass
   GObjectClass object;
 };
 
-GType ags_ipatch_get_type();
+GType ags_ipatch_sf2_reader_get_type();
 
-AgsIpatch* ags_ipatch_new();
+AgsIpatchSF2Reader* ags_ipatch_sf2_reader_new();
 
-#endif /*__AGS_IPATCH_H__*/
+#endif /*__AGS_IPATCH_SF2_READER_H__*/

@@ -159,7 +159,7 @@ ags_ipatch_init(AgsIpatch *ipatch)
   ipatch->handle = NULL;
   ipatch->error = NULL;
 
-  ipatch->container = container;
+  ipatch->container = NULL;
   ipatch->reader = NULL;
 }
 
@@ -238,16 +238,18 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
 }
 
 gboolean
-ags_ipatch_open(AgsPlayable *playable, GError **error)
+ags_ipatch_open(AgsPlayable *playable, gchar *name)
 {
   AgsIpatch *ipatch;
+  GError *error;
 
   ipatch = AGS_IPATCH(playable);
 
-  ipatch->handle = ipatch_file_open(ipatch,
+  error = NULL;
+  ipatch->handle = ipatch_file_open(ipatch->file,
 				    ipatch->filename,
 				    ipatch->mode,
-				    error);
+				    &error);
 
   ipatch->container = NULL;
 

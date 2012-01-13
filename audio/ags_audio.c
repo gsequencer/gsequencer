@@ -1259,6 +1259,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
   }
   void ags_audio_set_pads_add_notes(){
+    /* -- useless --
     GList *list;
 
     list = audio->notation;
@@ -1268,6 +1269,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       list = list->next;
     }
+    */
   }
   void ags_audio_set_pads_remove_notes(){
     AgsNotation *notation;
