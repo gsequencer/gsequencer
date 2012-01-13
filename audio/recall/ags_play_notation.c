@@ -228,25 +228,12 @@ ags_play_notation_pre(AgsRecall *recall)
 }
 
 void
-ags_play_notation_post(AgsRecall *recall)
+ags_play_notation_done(AgsRecall *recall)
 {
-  /*
-  GList *list, *list_next;
-
-  list = recall->recall;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    ags_recall_run_inter(AGS_RECALL(list->data), recall_id);
-
-    list = list_next;
-  }
-  */
 }
 
 void
-ags_play_notation_stop(AgsRecall *recall)
+ags_play_notation_remove(AgsRecall *recall)
 {
   /*
   GList *list, *list_next;

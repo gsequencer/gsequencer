@@ -283,9 +283,6 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   GList *list;
   gchar **names, **iter;
   gchar *name;
-  gboolean initial;
-
-  ags_ipatch_sf2_reader_iter_start(playable);
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
   ipatch = ipatch_sf2_reader->ipatch;
@@ -294,9 +291,70 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   names[0] = NULL;
   iter = names;
 
-  initial = TRUE;
+  switch(ipatch_sf2_reader->nth_level){
+  case AGS_SF2_FILENAME:
+    {
+      *iter = ipatch_sf2_reader->ipatch->filename;
+      iter++;
+      *iter = NULL;
+      return(names);
+    }
+  case AGS_SF2_PHDR:
+    {
+      ipatch_sf2_get_presets(ipatch_sf2_reader->sf2);
+      ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+						  IPATCH_TYPE_SF2_PRESET);
 
-  while(ags_ipatch_sf2_iter_next(playable) != FALSE){
+      /*
+	int sf2_phdr_position;
+	int offset;
+	
+	offset = ;
+	lseek(fd, SEEK_SET, fd_pos0);
+	lseek(fd, SEEK_SET, offset);
+	
+	fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_SET, &fd_pos0, NULL);
+	fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_SET, &offset, NULL);
+	
+	read(fd, &sf2_phdr_position, sizeof(int));
+	sf2_phdr_position -= offset;
+	
+	ipatch_buf_seek(sf2_phdr_position);
+      */
+      
+      if(ipatch_list != NULL){
+	list = ipatch_list->items;
+      }else{
+	return(names);
+      }
+    }
+  case AGS_SF2_IHDR:
+    {
+      ipatch_sf2_get_insts(ipatch_sf2_reader->sf2);
+      ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+						  IPATCH_TYPE_SF2_INST);
+      
+      if(ipatch_list != NULL){
+	list = ipatch_list->items;
+      }else{
+	return(names);
+      }
+    }
+  case AGS_SF2_SHDR:
+    {
+      ipatch_sf2_get_samples(ipatch_sf2_reader->sf2);
+      ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+						  IPATCH_TYPE_SF2_SAMPLE);
+      
+      if(ipatch_list != NULL){
+	list = ipatch_list->items;
+      }else{
+	return(names);
+      }
+    }
+  };
+
+  while(list != NULL){
     names = realloc(names, iter - names + 1);
 
     switch(ipatch_sf2_reader->nth_level){
@@ -307,37 +365,6 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
       }
     case AGS_SF2_PHDR:
       {
-	IpatchSF2Phdr phdr;
-
-	if(initial){
-	  ipatch_sf2_get_presets(ipatch_sf2_reader->sf2);
-	  ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
-						      IPATCH_TYPE_SF2_PRESET);
-	  
-	  if(ipatch_list != NULL){
-	    list = ipatch_list->items;
-	  }else{
-	    break;
-	  }
-
-	  /*
-	  int sf2_phdr_position;
-	  int offset;
-
-	  offset = ;
-	  lseek(fd, SEEK_SET, fd_pos0);
-	  lseek(fd, SEEK_SET, offset);
-
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_SET, &fd_pos0, NULL);
-	  fcntl(ipatch_get_fd(ipatch_sf2_reader->ipatch), FD_SET, &offset, NULL);
-
-	  read(fd, &sf2_phdr_position, sizeof(int));
-	  sf2_phdr_position -= offset;
-
-	  ipatch_buf_seek(sf2_phdr_position);
-	  */
-	}
-
 	/*
 	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
 					    phdr);
@@ -349,80 +376,10 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
       }
     case AGS_SF2_IHDR:
       {
-	IpatchSF2Ihdr ihdr;
-
-	if(initial){
-	  ipatch_sf2_get_insts(ipatch_sf2_reader->sf2);
-	  ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
-						      IPATCH_TYPE_SF2_INST);
-
-	  if(ipatch_list != NULL){
-	    list = ipatch_list->items;
-	  }else{
-	    break;
-	  }
-
-	  /*
-	  int sf2_ihdr_position;
-	  int offset;
-	  
-	  offset = ;
-	  lseek(fd, SEEK_SET, fd_pos0);
-	  lseek(fd, SEEK_SET, offset);
-
-	  read(fd, &sf2_phdr_position, sizeof(int));
-	  sf2_phdr_position -= offset;
-
-	  ipatch_buf_seek(sf2_ihdr_position);
-	  */
-	}
-
-	/*
-	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
-					    ihdr);
-
-	ipatch_buf_seek(sizeof(IpatchSF2Ihdr));
-	*/
-
 	*iter = ((IpatchSF2Ihdr *) (list->data))->name;
       }
     case AGS_SF2_SHDR:
       {
-	IpatchSF2Shdr shdr;
-
-	if(initial){
-	  ipatch_sf2_get_samples(ipatch_sf2_reader->sf2);
-	  ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
-						    IPATCH_TYPE_SF2_SAMPLE);
-
-	  if(ipatch_list != NULL){
-	    list = ipatch_list->items;
-	  }else{
-	    break;
-	  }
-
-	  /*
-	  int sf2_shdr_position;
-	  int offset;
-	
-	  offset = ;
-	  lseek(fd, SEEK_SET, fd_pos0);
-	  lseek(fd, SEEK_SET, offset);
-
-	  read(fd, &sf2_phdr_position, sizeof(int));
-	  sf2_phdr_position -= offset;
-
-	  ipatch_buf_seek(sf2_shdr_position);
-	  */
-	}
-
-	/*
-	*iter = ipatch_sf2_reader_load_phdr(ipatch->handle,
-					    shdr);
-
-	ipatch_buf_seek(sizeof(IpatchSF2Shdr));
-	*/
-
 	*iter = ((IpatchSF2Shdr *) (list->data))->name;
       }
     };

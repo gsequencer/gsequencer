@@ -42,7 +42,7 @@ ags_playable_get_type()
 
 
 GQuark
-ags_channel_error_quark()
+ags_playable_error_quark()
 {
   return(g_quark_from_static_string("ags-playable-error-quark\0"));
 }
