@@ -23,9 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/file_chooser_dialog/ags_channel.h>
-#include <ags/audio/ags_run_order.h>
-
 #define AGS_TYPE_FILE_CHOOSER_DIALOG                (ags_file_chooser_dialog_get_type ())
 #define AGS_FILE_CHOOSER_DIALOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_CHOOSER_DIALOG, AgsFileChooserDialog))
 #define AGS_FILE_CHOOSER_DIALOG_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE_CHOOSER_DIALOG, AgsFileChooserDialogClass))

@@ -21,6 +21,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
 
+#include <stdlib.h>
+
 void ags_ipatch_sf2_reader_class_init(AgsIpatchSF2ReaderClass *ipatch_sf2_reader);
 void ags_ipatch_sf2_reader_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ipatch_sf2_reader_playable_interface_init(AgsPlayableInterface *playable);
@@ -42,7 +44,9 @@ gboolean ags_ipatch_sf2_reader_open(AgsPlayable *playable, gchar *name);
 
 guint ags_ipatch_sf2_reader_level_count(AgsPlayable *playable);
 gchar** ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable);
-void ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name);
+
+void ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);
+void ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **error);
 
 void ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable);
 gboolean ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable);
@@ -174,16 +178,16 @@ ags_ipatch_sf2_reader_set_property(GObject *gobject,
 				   const GValue *value,
 				   GParamSpec *param_spec)
 {
-  AgsAudio *audio;
+  AgsIpatchSF2Reader *ipatch_sf2_reader;
 
-  audio = AGS_AUDIO(gobject);
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(gobject);
 
   switch(prop_id){
   case PROP_IPATCH:
     {
-      AgsDevout *devout;
+      AgsIpatch *ipatch;
 
-      ipatch = (AgsDevout *) g_value_get_object(value);
+      ipatch = (AgsIpatch *) g_value_get_object(value);
 
       if(ipatch_sf2_reader->ipatch != NULL){
 	g_object_unref(ipatch_sf2_reader->ipatch);
@@ -193,7 +197,7 @@ ags_ipatch_sf2_reader_set_property(GObject *gobject,
      
       if(ipatch != NULL){
 	g_object_ref(ipatch);
-	ipatch->reader = ipatch_sf2_reader;
+	ipatch->reader = (GObject *) ipatch_sf2_reader;
       }
     }
     break;
@@ -211,7 +215,7 @@ ags_ipatch_sf2_reader_get_property(GObject *gobject,
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
-  ipatch_sf2_reader = AGS_AUDIO(gobject);
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(gobject);
 
   switch(prop_id){
   case PROP_IPATCH:
@@ -275,6 +279,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
   AgsIpatch *ipatch;
+  IpatchList *ipatch_list;
   GList *list;
   gchar **names, **iter;
   gchar *name;
@@ -285,7 +290,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
   ipatch = ipatch_sf2_reader->ipatch;
 
-  names = (gchar *) malloc(1 * sizeof(gchar));
+  names = (gchar **) malloc(1 * sizeof(gchar*));
   names[0] = NULL;
   iter = names;
 
@@ -306,9 +311,15 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 
 	if(initial){
 	  ipatch_sf2_get_presets(ipatch_sf2_reader->sf2);
-	  list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
-					       IPATCH_TYPE_SF2_PRESET);
+	  ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+						      IPATCH_TYPE_SF2_PRESET);
 	  
+	  if(ipatch_list != NULL){
+	    list = ipatch_list->items;
+	  }else{
+	    break;
+	  }
+
 	  /*
 	  int sf2_phdr_position;
 	  int offset;
@@ -342,8 +353,14 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 
 	if(initial){
 	  ipatch_sf2_get_insts(ipatch_sf2_reader->sf2);
-	  list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
-					       IPATCH_TYPE_SF2_INST);
+	  ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+						      IPATCH_TYPE_SF2_INST);
+
+	  if(ipatch_list != NULL){
+	    list = ipatch_list->items;
+	  }else{
+	    break;
+	  }
 
 	  /*
 	  int sf2_ihdr_position;
@@ -375,8 +392,15 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 
 	if(initial){
 	  ipatch_sf2_get_samples(ipatch_sf2_reader->sf2);
-	  list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
-					       IPATCH_TYPE_SF2_SAMPLE);
+	  ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
+						    IPATCH_TYPE_SF2_SAMPLE);
+
+	  if(ipatch_list != NULL){
+	    list = ipatch_list->items;
+	  }else{
+	    break;
+	  }
+
 	  /*
 	  int sf2_shdr_position;
 	  int offset;
@@ -446,7 +470,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
 }
 
 void
-ags_ipatch_sf2_reader_iter_level_up(AgsPlayable *playable, guint levels, GError **error)
+ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
@@ -456,10 +480,10 @@ ags_ipatch_sf2_reader_iter_level_up(AgsPlayable *playable, guint levels, GError 
     ipatch_sf2_reader->nth_level -= levels;
   }else{
     g_set_error(error,
-		AGS_CHANNEL_ERROR,
-		AGS_CHANNEL_ERROR_LOOP_IN_LINK,
+		AGS_PLAYABLE_ERROR,
+		AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
 		"Not able to go %u steps higher in soundfont2 file: %s\0",
-		sublevel_name, ipatch_sf2_reader->ipatch->filename);
+		levels, ipatch_sf2_reader->ipatch->filename);
   }
 }
 
@@ -468,7 +492,7 @@ ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
-  ipatch_sf2_reader = AGS_IPATCH_SF2_READER_SF2_READER(playable);
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
   //TODO:JK: implement me
 }
@@ -478,7 +502,7 @@ ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
-  ipatch_sf2_reader = AGS_IPATCH_SF2_READER_SF2_READER(playable);
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
   //TODO:JK: implement me
 }
@@ -490,7 +514,7 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
-  ipatch_sf2_reader = AGS_IPATCH_SF2_READER_SF2_READER(playable);
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
   //TODO:JK: implement me
 }
@@ -502,7 +526,7 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel)
   short *buffer, *source;
   guint i;
 
-  ipatch_sf2_reader = AGS_IPATCH_SF2_READER_SF2_READER(playable);
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
   //TODO:JK: implement me
 }
@@ -512,7 +536,7 @@ ags_ipatch_sf2_reader_close(AgsPlayable *playable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
 
-  ipatch_sf2_reader = AGS_IPATCH_SF2_READER_SF2_READER(playable);
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
   //TODO:JK: implement me
 }

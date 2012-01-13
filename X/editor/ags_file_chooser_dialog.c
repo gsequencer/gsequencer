@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_file_chooser_dialog.h>
-#include <ags/X/ags_file_chooser_dialog_callbacks.h>
+#include <ags/X/editor/ags_file_chooser_dialog.h>
+#include <ags/X/editor/ags_file_chooser_dialog_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 

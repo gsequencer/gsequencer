@@ -25,6 +25,16 @@
 
 #include <ags/audio/file/ags_ipatch.h>
 
+#define AGS_TYPE_IPATCH_SF2_READER                (ags_ipatch_sf2_reader_get_type())
+#define AGS_IPATCH_SF2_READER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_IPATCH_SF2_READER, AgsIpatchSF2Reader))
+#define AGS_IPATCH_SF2_READER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_IPATCH_SF2_READER, AgsIpatchSF2ReaderClass))
+#define AGS_IS_IPATCH_SF2_READER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_IPATCH_SF2_READER))
+#define AGS_IS_IPATCH_SF2_READER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_IPATCH_SF2_READER))
+#define AGS_IPATCH_SF2_READER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_IPATCH_SF2_READER, AgsIpatchSF2ReaderClass))
+
+typedef struct _AgsIpatchSF2Reader AgsIpatchSF2Reader;
+typedef struct _AgsIpatchSF2ReaderClass AgsIpatchSF2ReaderClass;
+
 typedef enum{
   AGS_SF2_FILENAME,
   AGS_SF2_PHDR,

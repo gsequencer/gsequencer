@@ -47,7 +47,7 @@ struct _AgsPlayableInterface
   guint (*level_count)(AgsPlayable *playable);
   gchar** (*sublevel_names)(AgsPlayable *playable);
 
-  void (*level_select)(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError *error);
+  void (*level_select)(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);
   void (*level_up)(AgsPlayable *playable, guint levels, GError **error);
 
   void (*iter_start)(AgsPlayable *playable);
