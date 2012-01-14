@@ -41,10 +41,7 @@ gboolean ags_dial_button_release(GtkWidget *widget,
 gboolean ags_dial_motion_notify(GtkWidget *widget,
 				GdkEventMotion *event);
 
-void ags_dial_draw(AgsDial *dial,
-		   guint r, 
-		   guint scale_precision,
-		   guint font_size);
+void ags_dial_draw(AgsDial *dial);
 
 static gpointer ags_dial_parent_class = NULL;
 
@@ -100,7 +97,17 @@ ags_dial_init(AgsDial *dial)
 	       "app-paintable\0", TRUE,
 	       NULL);
 
-  dial->flags = 0;
+  dial->flags = AGS_DIAL_WITH_BUTTONS;
+
+  dial->radius = 8;
+  dial->scale_precision = 8;
+  dial->outline_strength = 4;
+
+  dial->font_size = 14;
+  dial->button_width = 0;
+  dial->button_height = 0;
+  dial->margin_left = 4.0;
+  dial->margin_right = 4.0;
 }
 
 void
@@ -109,6 +116,7 @@ ags_dial_realize(GtkWidget *widget)
   AgsDial *dial;
   GdkWindowAttr attributes;
   gint attributes_mask;
+  guint buttons_width;
 
   g_return_if_fail (widget != NULL);
   g_return_if_fail (AGS_IS_DIAL (widget));
@@ -116,6 +124,43 @@ ags_dial_realize(GtkWidget *widget)
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
   dial = AGS_DIAL (widget);
 
+  /* calculate some display dependend fields */
+  buttons_width = 0;
+
+  if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    cairo_t *cr;
+    cairo_text_extents_t te_up, te_down;
+
+    cr = gdk_cairo_create(widget->parent->window);
+    
+    cairo_select_font_face (cr, "Georgia",
+			    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size (cr, (gdouble) dial->font_size);
+    cairo_text_extents (cr, "-\0", &te_down);
+    cairo_text_extents (cr, "+\0", &te_up);
+    
+    if(te_down.width < te_up.width){
+      dial->button_width = te_up.width * 3;
+    }else{
+      dial->button_width = te_down.width * 3;
+    }
+    
+    buttons_width = 2 * dial->button_width;
+
+    if(te_down.height < te_up.height){
+      dial->button_height = te_up.height * 2;
+    }else{
+      dial->button_height = te_down.height * 2;
+    }
+
+    cairo_destroy(cr);
+  }
+  
+  gtk_widget_set_size_request(widget,
+			      2 * dial->radius + 2 * dial->outline_strength + buttons_width,
+			      2 * dial->radius + 2 * dial->outline_strength);
+
+  /*  */
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
   attributes.width = widget->allocation.width;
@@ -137,6 +182,7 @@ ags_dial_realize(GtkWidget *widget)
   gdk_window_set_user_data (widget->window, widget);
 
   gtk_style_set_background (widget->style, widget->window, GTK_STATE_ACTIVE);
+
 
   GTK_WIDGET_CLASS(ags_dial_parent_class)->realize(widget);
 }
@@ -173,7 +219,7 @@ ags_dial_expose(GtkWidget *widget,
 {
   GTK_WIDGET_CLASS(ags_dial_parent_class)->expose_event(widget, event);
 
-  ags_dial_draw(AGS_DIAL(widget), 8, 8, 14);
+  ags_dial_draw(AGS_DIAL(widget));
 
   return(FALSE);
 }
@@ -217,10 +263,7 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
  * draws the widget
  */
 void
-ags_dial_draw(AgsDial *dial,
-	      guint r, 
-	      guint scale_precision,
-	      guint font_size)
+ags_dial_draw(AgsDial *dial)
 {
   GtkWidget *widget;
   GdkWindow *window;
@@ -232,48 +275,40 @@ ags_dial_draw(AgsDial *dial,
   gdouble scale_area, scale_width, scale_inverted_width;
   gdouble starter_angle;
   gdouble translated_value;
+  guint scale_precision;
   guint i;
 
   widget = GTK_WIDGET(dial);
 
   cr = gdk_cairo_create(widget->window);
 
-  radius = (gdouble) r;
-  outline_strength = 4.0;
+  radius = (gdouble) dial->radius;
+  outline_strength = (gdouble) dial->outline_strength;
 
-  margin_left = 4.0;
-  margin_right = 4.0;
+  margin_left = (gdouble) dial->margin_left;
+  margin_right = (gdouble) dial->margin_right;
 
   cairo_select_font_face (cr, "Georgia",
 			  CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size (cr, (gdouble) font_size);
+  cairo_set_font_size (cr, (gdouble) dial->font_size);
   cairo_text_extents (cr, "-\0", &te_down);
   cairo_text_extents (cr, "+\0", &te_up);
 
-  if(te_down.width < te_up.width){
-    button_width = te_up.width * 3;
-  }else{
-    button_width = te_down.width * 3;
-  }
-
-  if(te_down.height < te_up.height){
-    button_height = te_up.height * 2;
-  }else{
-    button_height = te_down.height * 2;
-  }
+  button_width = dial->button_width;
+  button_height = dial->button_height;
 
   /* draw controller button down */
   cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
   cairo_set_line_width(cr, 2.0);
 
   cairo_rectangle(cr,
-		  1.0, (2 * radius) - button_height + outline_strength,
+		  1.0, (2.0 * radius) - button_height + outline_strength,
 		  button_width, button_height);
   cairo_stroke(cr);
 
   cairo_move_to (cr,
-		 1.0 + 0.5 - te_down.width / 2 - te_down.x_bearing + button_width / 2.25,
-		 0.5 - te_down.height / 2 - te_down.y_bearing + (radius * 2) - button_height / 2.0 + outline_strength);
+		 1.0 + 0.5 - te_down.width / 2.0 - te_down.x_bearing + button_width / 2.25,
+		 0.5 - te_down.height / 2.0 - te_down.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
   cairo_show_text (cr, "-\0");
 
   /* background */
@@ -346,7 +381,7 @@ ags_dial_draw(AgsDial *dial,
   unused = 0.25 * 2.0 * M_PI;
   starter_angle = (2.0 * M_PI - unused) * 0.5;
 
-  //  scale_precision = 8;
+  scale_precision = (gdouble) dial->scale_precision;
   scale_inverted_width = (2.0 * (radius + outline_strength) * M_PI - ((radius + outline_strength) * unused)) / scale_precision - 4.0;
   scale_width = (2.0 * (radius + outline_strength) * M_PI - ((radius + outline_strength) * unused)) / scale_precision - scale_inverted_width;
 
@@ -391,8 +426,8 @@ ags_dial_draw(AgsDial *dial,
   cairo_stroke(cr);
 
   cairo_move_to (cr,
-		 1.0 + 0.5 - te_up.width / 2 - te_up.x_bearing + (radius * 2) + margin_left + margin_right + button_width + button_width / 2.25,
-		 0.5 - te_up.height / 2 - te_up.y_bearing + (radius * 2) - button_height / 2.0 + outline_strength);
+		 1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
+		 0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
   cairo_show_text (cr, "+\0");
 }
 
