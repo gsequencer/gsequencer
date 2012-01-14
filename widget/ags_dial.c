@@ -134,7 +134,7 @@ ags_dial_expose(GtkWidget *widget,
 {
   GTK_WIDGET_CLASS(ags_dial_parent_class)->expose_event(widget, event);
 
-  ags_dial_draw(AGS_DIAL(widget), 50, 8, 14);
+  ags_dial_draw(AGS_DIAL(widget), 24, 8, 14);
 
   return(FALSE);
 }
@@ -241,10 +241,10 @@ ags_dial_draw(AgsDial *dial,
 
   cairo_line_to(cr,
 		1.0 + cos((0.65 * M_PI) / (0.35 * M_PI)) + button_width + margin_left + radius,
-		-1 * sin((0.35 * M_PI) / (0.65 * M_PI)) + 57.0);
+		-1 * sin((0.35 * M_PI) / (0.65 * M_PI)) + radius + 2.0 * outline_strength - 1.0);
   cairo_line_to(cr,
 		1.0 + -1 * cos((0.35 * M_PI) / (0.65 * M_PI)) + button_width + margin_left + radius,
-		sin((0.65 * M_PI) / (0.35 * M_PI)) + 57.0);
+		sin((0.65 * M_PI) / (0.35 * M_PI)) + radius + 2.0 * outline_strength - 1.0);
   cairo_line_to(cr,
 		1.0 + button_width + margin_left + radius,
 		57.0);
