@@ -29,7 +29,10 @@ void ags_dial_realize(GtkWidget *widget);
 gint ags_dial_expose(GtkWidget *widget,
 		     GdkEventExpose *event);
 
-void ags_dial_draw(AgsDial *dial);
+void ags_dial_draw(AgsDial *dial,
+		   guint r, 
+		   guint scale_precision,
+		   guint font_size);
 
 static gpointer ags_dial_parent_class = NULL;
 
@@ -131,77 +134,140 @@ ags_dial_expose(GtkWidget *widget,
 {
   GTK_WIDGET_CLASS(ags_dial_parent_class)->expose_event(widget, event);
 
-  ags_dial_draw(AGS_DIAL(widget));
+  ags_dial_draw(AGS_DIAL(widget), 50, 8, 14);
 
   return(FALSE);
 }
 
+/**
+ * ags_dial_draw:
+ * @dial an #AgsDial
+ * @r the radius as a guint
+ * @scale_precision the scale's precision
+ * @font_size the font size of the indicators
+ *
+ * draws the widget
+ */
 void
-ags_dial_draw(AgsDial *dial)
+ags_dial_draw(AgsDial *dial,
+	      guint r, 
+	      guint scale_precision,
+	      guint font_size)
 {
   GtkWidget *widget;
   GdkWindow *window;
   cairo_t *cr;
   cairo_text_extents_t te_up, te_down;
-  GValue value = {0,};
-  guint scale_precision;
+  gdouble button_width, button_height, margin_left, margin_right;
+  gdouble radius, outline_strength;
   gdouble unused;
   gdouble scale_area, scale_width, scale_inverted_width;
-  gdouble starter_angle, stoper_angle;
+  gdouble starter_angle;
   guint i;
 
   widget = GTK_WIDGET(dial);
 
-  /*
-  g_value_init(&value, G_TYPE_OBJECT);
-  window = (GdkWindow *) g_object_get_property(dial,
-					       "window\0",
-					       &value);
-  g_value_unset(&value);
-  */
-
   cr = gdk_cairo_create(widget->window);
+
+  radius = (gdouble) r;
+  outline_strength = 4.0;
+
+  margin_left = 4.0;
+  margin_right = 4.0;
+
+  cairo_select_font_face (cr, "Georgia",
+			  CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_set_font_size (cr, (gdouble) font_size);
+  cairo_text_extents (cr, "-\0", &te_down);
+  cairo_text_extents (cr, "+\0", &te_up);
+
+  if(te_down.width < te_up.width){
+    button_width = te_up.width * 3;
+  }else{
+    button_width = te_down.width * 3;
+  }
+
+  if(te_down.height < te_up.height){
+    button_height = te_up.height * 2;
+  }else{
+    button_height = te_down.height * 2;
+  }
 
   /* draw controller button down */
   cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-  cairo_select_font_face (cr, "Georgia",
-			  CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size (cr, 14.0);
-  cairo_text_extents (cr, "-\0", &te_down);
+  cairo_set_line_width(cr, 1.0);
+
+  cairo_rectangle(cr,
+		  1.0, (2 * radius) - button_height,
+		  button_width, button_height);
+  cairo_stroke(cr);
+
   cairo_move_to (cr,
-		 0.5 - te_down.width / 2 - te_down.x_bearing + 20,
-		 0.5 - te_down.height / 2 - te_down.y_bearing + 100);
+		 1.0 + 0.5 - te_down.width / 2 - te_down.x_bearing + button_width / 2.25,
+		 0.5 - te_down.height / 2 - te_down.y_bearing + (radius * 2) - button_height / 2.0);
   cairo_show_text (cr, "-\0");
 
   /* background */
   cairo_set_source_rgba(cr, 0.9, 0.8, 0.0, 1.0);
-  cairo_arc (cr, 74.0, 54.0, 50.0, -1.0 * M_PI, 1.0 * M_PI);
+  cairo_arc (cr,
+	     1.0 + button_width + margin_left + radius,
+	     radius + outline_strength,
+	     radius,
+	     -1.0 * M_PI,
+	     1.0 * M_PI);
   cairo_fill(cr);
 
   /* light effect */
   cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 0.3);
 
-  cairo_line_to(cr, 74.0, 57.0);
-  cairo_line_to(cr, sin(-1 * (0.35 * M_PI) / (0.65 * M_PI)) + 74.0, cos((0.65 * M_PI) / (0.35 * M_PI)) + 57.0);
-  cairo_line_to(cr, sin((0.65 * M_PI) / (0.35 * M_PI)) + 74.0, -1 * cos((0.35 * M_PI) / (0.65 * M_PI)) + 57.0);
+  cairo_line_to(cr,
+		1.0 + button_width + margin_left + radius,
+		radius + 2.0 * outline_strength - 1.0);
+  cairo_line_to(cr,
+		1.0 + sin(-1 * (0.35 * M_PI) / (0.65 * M_PI)) + button_width + margin_left + radius,
+		cos((0.65 * M_PI) / (0.35 * M_PI)) + radius + 2.0 * outline_strength - 1.0);
+  cairo_line_to(cr,
+		1.0 + sin((0.65 * M_PI) / (0.35 * M_PI)) + button_width + margin_left + radius,
+		-1 * cos((0.35 * M_PI) / (0.65 * M_PI)) + radius + 2.0 * outline_strength - 1.0);
   cairo_close_path(cr);
 
-  cairo_arc (cr, 74.0, 54.0, 50.0, 0.35 * M_PI, 0.65 * M_PI);
+  cairo_arc (cr,
+	     1.0 + button_width + margin_left + radius,
+	     radius + outline_strength,
+	     radius,
+	     0.35 * M_PI,
+	     0.65 * M_PI);
   cairo_fill(cr);
 
-  cairo_line_to(cr, cos((0.65 * M_PI) / (0.35 * M_PI)) + 74.0, -1 * sin((0.35 * M_PI) / (0.65 * M_PI)) + 57.0);
-  cairo_line_to(cr, -1 * cos((0.35 * M_PI) / (0.65 * M_PI)) + 74.0, sin((0.65 * M_PI) / (0.35 * M_PI)) + 57.0);
-  cairo_line_to(cr, 74.0, 57.0);
+  cairo_line_to(cr,
+		1.0 + cos((0.65 * M_PI) / (0.35 * M_PI)) + button_width + margin_left + radius,
+		-1 * sin((0.35 * M_PI) / (0.65 * M_PI)) + 57.0);
+  cairo_line_to(cr,
+		1.0 + -1 * cos((0.35 * M_PI) / (0.65 * M_PI)) + button_width + margin_left + radius,
+		sin((0.65 * M_PI) / (0.35 * M_PI)) + 57.0);
+  cairo_line_to(cr,
+		1.0 + button_width + margin_left + radius,
+		57.0);
   cairo_close_path(cr);
 
-  cairo_arc (cr, 74.0, 54.0, 50.0, -0.65 * M_PI, -0.35 * M_PI);
+  cairo_arc (cr,
+	     1.0 + button_width + margin_left + radius,
+	     radius + outline_strength,
+	     radius,
+	     -0.65 * M_PI,
+	     -0.35 * M_PI);
   cairo_fill(cr);
 
   /* outline */
   cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
   //  cairo_set_line_width(cr, 1.0 - (2.0 / M_PI));
   cairo_set_line_width(cr, 1.0);
-  cairo_arc (cr, 74.0, 54.0, 50.0, -1.0 * M_PI, 1.0 * M_PI);
+  cairo_arc (cr,
+	     1.0 + button_width + margin_left + radius,
+	     radius + outline_strength,
+	     radius,
+	     -1.0 * M_PI,
+	     1.0 * M_PI);
   cairo_stroke(cr);
 
   /* scale */
@@ -213,16 +279,18 @@ ags_dial_draw(AgsDial *dial)
 
   scale_area = 2.0 * M_PI - starter_angle;
 
-  scale_precision = 8;
-  scale_inverted_width = (2.0 * 50.0 * M_PI - (50.0 * unused)) / scale_precision - 4.0;
-  scale_width = (2.0 * 50.0 * M_PI - (50.0 * unused)) / scale_precision - scale_inverted_width;
+  //  scale_precision = 8;
+  scale_inverted_width = (2.0 * radius * M_PI - (radius * unused)) / scale_precision - 4.0;
+  scale_width = (2.0 * radius * M_PI - (radius * unused)) / scale_precision - scale_inverted_width;
 
-  scale_inverted_width /= 50.0;
-  scale_width /= 50.0;
+  scale_inverted_width /= radius;
+  scale_width /= radius;
 
   for(i = 0; i <= scale_precision; i++){
     cairo_arc (cr,
-	       74.0, 54.0, 50.0,
+	       1.0 + button_width + margin_left + radius,
+	       radius + outline_strength,
+	       radius,
 	       starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width),
 	       starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width) + scale_width);
     cairo_stroke(cr);
@@ -230,13 +298,16 @@ ags_dial_draw(AgsDial *dial)
 
   /* draw controller button up */
   cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-  cairo_select_font_face (cr, "Georgia",
-			  CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size (cr, 14.0);
-  cairo_text_extents (cr, "+\0", &te_up);
+  cairo_set_line_width(cr, 1.0);
+
+  cairo_rectangle(cr,
+		  1.0 + (2 * radius) + button_width + margin_left + margin_right, (2 * radius) - button_height,
+		  button_width, button_height);
+  cairo_stroke(cr);
+
   cairo_move_to (cr,
-		 0.5 - te_up.width / 2 - te_up.x_bearing + 140,
-		 0.5 - te_up.height / 2 - te_up.y_bearing + 100);
+		 1.0 + 0.5 - te_up.width / 2 - te_up.x_bearing + (radius * 2) + margin_left + margin_right + button_width + button_width / 2.25,
+		 0.5 - te_up.height / 2 - te_up.y_bearing + (radius * 2) - button_height / 2.0);
   cairo_show_text (cr, "+\0");
 
 }
