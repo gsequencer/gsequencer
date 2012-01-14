@@ -208,14 +208,14 @@ ags_dial_draw(AgsDial *dial)
   cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
   cairo_set_line_width(cr, 3.0);
 
-  unused = 0.75 * 2.0 * M_PI;
-  starter_angle = (2.0 * M_PI - unused) / 0.25;
+  unused = 0.25 * 2.0 * M_PI;
+  starter_angle = (2.0 * M_PI - unused) * 0.5;
 
   scale_area = 2.0 * M_PI - starter_angle;
 
   scale_precision = 8;
-  scale_inverted_width = (2.0 * 50.0 * M_PI - (2.0 * 50.0 * M_PI * (1.0 / unused))) / scale_precision - 4.0;
-  scale_width = (2.0 * 50.0 * M_PI - (2.0 * 50.0 * M_PI * (1.0 / unused))) / scale_precision - scale_inverted_width;
+  scale_inverted_width = (2.0 * 50.0 * M_PI - (50.0 * unused)) / scale_precision - 4.0;
+  scale_width = (2.0 * 50.0 * M_PI - (50.0 * unused)) / scale_precision - scale_inverted_width;
 
   scale_inverted_width /= 50.0;
   scale_width /= 50.0;
