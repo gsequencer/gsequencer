@@ -195,7 +195,7 @@ ags_dial_draw(AgsDial *dial,
 
   /* draw controller button down */
   cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-  cairo_set_line_width(cr, 1.0);
+  cairo_set_line_width(cr, 2.0);
 
   cairo_rectangle(cr,
 		  1.0, (2 * radius) - button_height,
@@ -280,17 +280,17 @@ ags_dial_draw(AgsDial *dial,
   scale_area = 2.0 * M_PI - starter_angle;
 
   //  scale_precision = 8;
-  scale_inverted_width = (2.0 * radius * M_PI - (radius * unused)) / scale_precision - 4.0;
-  scale_width = (2.0 * radius * M_PI - (radius * unused)) / scale_precision - scale_inverted_width;
+  scale_inverted_width = (2.0 * (radius + outline_strength) * M_PI - ((radius + outline_strength) * unused)) / scale_precision - 4.0;
+  scale_width = (2.0 * (radius + outline_strength) * M_PI - ((radius + outline_strength) * unused)) / scale_precision - scale_inverted_width;
 
-  scale_inverted_width /= radius;
-  scale_width /= radius;
+  scale_inverted_width /= (radius + outline_strength);
+  scale_width /= (radius + outline_strength);
 
   for(i = 0; i <= scale_precision; i++){
     cairo_arc (cr,
 	       1.0 + button_width + margin_left + radius,
 	       radius + outline_strength,
-	       radius,
+	       radius + outline_strength / M_PI,
 	       starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width),
 	       starter_angle + ((gdouble) i * scale_inverted_width) + ((gdouble) i * scale_width) + scale_width);
     cairo_stroke(cr);
@@ -298,11 +298,13 @@ ags_dial_draw(AgsDial *dial,
 
   /* draw controller button up */
   cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-  cairo_set_line_width(cr, 1.0);
+  cairo_set_line_width(cr, 2.0);
 
   cairo_rectangle(cr,
-		  1.0 + (2 * radius) + button_width + margin_left + margin_right, (2 * radius) - button_height,
+		  1.0 + (2.0 * radius) + button_width + margin_left + margin_right,
+		  (2.0 * radius) - button_height,
 		  button_width, button_height);
+  cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
   cairo_stroke(cr);
 
   cairo_move_to (cr,
