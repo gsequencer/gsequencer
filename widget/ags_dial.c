@@ -247,8 +247,12 @@ ags_dial_button_press(GtkWidget *widget,
     }
   }
   gboolean ags_dial_button_press_is_up_event(){
-    if(event->x >= border_left + 2 * dial->radius + 2 * dial->outline_strength - dial->button_width &&
-       event->x <= border_left + 2 * dial->radius + 2 * dial->outline_strength &&
+    gint offset;
+
+    offset = border_left + dial->button_width + 2 * dial->radius + dial->margin_left + dial->margin_right;
+
+    if(event->x >= offset &&
+       event->x <= offset + dial->button_width &&
        event->y >= border_top + 2 * dial->radius + 2 * dial->outline_strength - dial->button_height &&
        event->y <= border_top + 2 * dial->radius + 2 * dial->outline_strength){
       return(TRUE);
@@ -313,14 +317,35 @@ ags_dial_button_release(GtkWidget *widget,
   dial = AGS_DIAL(widget);
   dial->flags &= (~AGS_DIAL_MOUSE_BUTTON_PRESSED);
 
-  /* implement me */
-  //TODO:JK:
+  if((AGS_DIAL_BUTTON_DOWN_PRESSED & (dial->flags)) != 0){
+    GtkAdjustment *adjustment;
 
-  /*
-  if(){
-    AGS_DIAL_MOTION_CAPTURING;
+    adjustment = GTK_RANGE(dial)->adjustment;
+
+    if(adjustment->value > adjustment->lower){
+      gtk_adjustment_set_value(adjustment,
+			       adjustment->value - adjustment->step_increment);
+
+      ags_dial_draw(dial);
+    }
+
+    dial->flags &= (~AGS_DIAL_BUTTON_DOWN_PRESSED);
+  }else if((AGS_DIAL_BUTTON_UP_PRESSED & (dial->flags)) != 0){
+    GtkAdjustment *adjustment;
+
+    adjustment = GTK_RANGE(dial)->adjustment;
+
+    if(adjustment->value < adjustment->upper){
+      gtk_adjustment_set_value(adjustment,
+			       adjustment->value + adjustment->step_increment);
+
+      ags_dial_draw(dial);
+    }
+
+    dial->flags &= (~AGS_DIAL_BUTTON_UP_PRESSED);
+  }else if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
+    dial->flags &= (~AGS_DIAL_MOTION_CAPTURING);
   }
-  */
 }
 
 gboolean ags_dial_motion_notify(GtkWidget *widget,
