@@ -228,10 +228,64 @@ gboolean
 ags_dial_button_press(GtkWidget *widget,
 		      GdkEventButton *event)
 {
+  AgsDial *dial;
+  guint border_left, border_top;
+  guint dial_left_position;
+  auto gboolean ags_dial_button_press_is_down_event();
+  auto gboolean ags_dial_button_press_is_up_event();
+  auto gboolean ags_dial_button_press_is_dial_event();
+  gboolean ags_dial_button_press_is_down_event(){
+    if(event->x >= border_left &&
+       event->x <= border_left + dial->button_width &&
+       event->y >= border_top + 2 * dial->radius + 2 * dial->outline_strength - dial->button_height &&
+       event->y <= border_top + 2 * dial->radius + 2 * dial->outline_strength){
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
+  }
+  gboolean ags_dial_button_press_is_up_event(){
+    if(event->x >= border_left + 2 * dial->radius + 2 * dial->outline_strength - dial->button_width &&
+       event->x <= border_left + 2 * dial->radius + 2 * dial->outline_strength &&
+       event->y >= border_top + 2 * dial->radius + 2 * dial->outline_strength - dial->button_height &&
+       event->y <= border_top + 2 * dial->radius + 2 * dial->outline_strength){
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
+  }
+  gboolean ags_dial_button_press_is_dial_event(){
+
+  }
+
   GTK_WIDGET_CLASS(ags_dial_parent_class)->button_press_event(widget, event);
 
-  /* implement me */
-  //TODO:JK:
+  dial = AGS_DIAL(widget);
+  dial->flags |= AGS_DIAL_MOUSE_BUTTON_PRESSED;
+
+  //TODO:JK: retrieve borders
+  //  border_left = ;
+  //  border_right = ;
+
+  if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    if(ags_dial_button_press_is_down_event()){
+      dial->flags |= AGS_DIAL_BUTTON_DOWN_PRESSED;
+    }else if(ags_dial_button_press_is_up_event()){
+      dial->flags |= AGS_DIAL_BUTTON_UP_PRESSED;
+    }else{
+      dial_left_position = border_left + dial->button_width;
+
+      if(ags_dial_button_press_is_dial_event()){
+	dial->flags |= AGS_DIAL_MOTION_CAPTURING;
+      }
+    }
+  }else{
+    dial_left_position = border_left;
+
+    if(ags_dial_button_press_is_dial_event()){
+      dial->flags |= AGS_DIAL_MOTION_CAPTURING;
+    }
+  }
 }
 
 gboolean
@@ -240,8 +294,11 @@ ags_dial_button_release(GtkWidget *widget,
 {
   GTK_WIDGET_CLASS(ags_dial_parent_class)->button_release_event(widget, event);
 
-  /* implement me */
-  //TODO:JK:
+  dial->flags &= (~AGS_DIAL_MOUSE_BUTTON_PRESSED);
+
+  if(){
+    AGS_DIAL_MOTION_CAPTURING;
+  }
 }
 
 gboolean ags_dial_motion_notify(GtkWidget *widget,
