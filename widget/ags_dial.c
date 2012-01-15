@@ -187,6 +187,8 @@ ags_dial_realize(GtkWidget *widget)
 
 
   GTK_WIDGET_CLASS(ags_dial_parent_class)->realize(widget);
+
+  return(FALSE);
 }
 
 void
@@ -215,7 +217,7 @@ ags_dial_size_allocate(GtkWidget *widget,
   //TODO:JK:
 }
 
-gint
+gboolean
 ags_dial_expose(GtkWidget *widget,
 		GdkEventExpose *event)
 {
@@ -301,9 +303,17 @@ ags_dial_button_press(GtkWidget *widget,
     dial_left_position = border_left;
 
     if(ags_dial_button_press_is_dial_event()){
+      dial->gravity_x = event->x;
+      dial->gravity_y = event->y;
+      dial->current_x = event->x;
+      dial->current_y = event->y;
+
+      dial->flags |= AGS_DIAL_MOTION_CAPTURING_INIT;
       dial->flags |= AGS_DIAL_MOTION_CAPTURING;
     }
   }
+
+  return(FALSE);
 }
 
 gboolean
@@ -346,15 +356,40 @@ ags_dial_button_release(GtkWidget *widget,
   }else if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
     dial->flags &= (~AGS_DIAL_MOTION_CAPTURING);
   }
+
+  return(FALSE);
 }
 
 gboolean ags_dial_motion_notify(GtkWidget *widget,
 				GdkEventMotion *event)
 {
+  AgsDial *dial;
+  auto void ags_dial_motion_notify_do_dial();
+  void ags_dial_motion_notify_do_dial(){
+  }
+
   GTK_WIDGET_CLASS(ags_dial_parent_class)->motion_notify_event(widget, event);
 
   /* implement me */
   //TODO:JK:
+
+  dial = AGS_DIAL(widget);
+
+  if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
+    dial->current_x = event->x;
+    dial->current_y = event->y;
+
+    if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+      dial->flags &= (~AGS_DIAL_MOTION_CAPTURING_INIT);
+
+      ags_dial_motion_notify_do_dial();
+    }else{
+      dial->gravity_x = event->x;
+      dial->gravity_y = event->y;
+
+      ags_dial_motion_notify_do_dial();
+    }
+  }
 }
 
 /**
@@ -533,6 +568,8 @@ ags_dial_draw(AgsDial *dial)
 		 1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
 		 0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
   cairo_show_text (cr, "+\0");
+
+  cairo_destroy(cr);
 }
 
 AgsDial*
