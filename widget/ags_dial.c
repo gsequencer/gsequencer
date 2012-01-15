@@ -366,26 +366,28 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
   AgsDial *dial;
   auto void ags_dial_motion_notify_do_dial();
   void ags_dial_motion_notify_do_dial(){
+    /* implement me */
+    //TODO:JK:
+
   }
 
   GTK_WIDGET_CLASS(ags_dial_parent_class)->motion_notify_event(widget, event);
 
-  /* implement me */
-  //TODO:JK:
-
   dial = AGS_DIAL(widget);
 
   if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
-    dial->current_x = event->x;
-    dial->current_y = event->y;
-
     if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+      dial->current_x = event->x;
+      dial->current_y = event->y;
+
       dial->flags &= (~AGS_DIAL_MOTION_CAPTURING_INIT);
 
       ags_dial_motion_notify_do_dial();
     }else{
-      dial->gravity_x = event->x;
-      dial->gravity_y = event->y;
+      dial->gravity_x = dial->current_x;
+      dial->gravity_y = dial->current_y;
+      dial->current_x = event->x;
+      dial->current_y = event->y;
 
       ags_dial_motion_notify_do_dial();
     }
