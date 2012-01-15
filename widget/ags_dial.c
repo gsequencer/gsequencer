@@ -382,22 +382,14 @@ ags_dial_motion_notify(GtkWidget *widget,
     if(dial->gravity_y < dial->current_y){
       if(dial->gravity_x < dial->current_x){
 	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
-
-
       }else{
 	gravity_up = (-1 * (dial->gravity_x - dial->current_x) * dial->tolerance > (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
-
-
       }
     }else{
       if(dial->gravity_x < dial->current_x){
 	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < -1 * (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
-
-
       }else{
 	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
-
-
       }
     }
 
@@ -418,40 +410,6 @@ ags_dial_motion_notify(GtkWidget *widget,
 	usleep(dial->sleep_interval);
       }
     }
-
-    /*
-    gboolean pos_gravity, neg_gravity;
-
-    adjustment = GTK_RANGE(dial)->adjustment;
-
-    pos_gravity = ((dial->gravity_y < dial->current_y * dial->tolerance ||
-		    dial->gravity_y * dial->negated_tolerance < dial->current_y ||
-		    dial->gravity_y == dial->current_y) &&
-		   dial->gravity_x < dial->current_x);
-
-    neg_gravity = ((dial->gravity_y < dial->current_y * dial->tolerance ||
-		    dial->gravity_y * dial->negated_tolerance < dial->current_y ||
-		    dial->gravity_y == dial->current_y) &&
-		   dial->gravity_x < dial->current_x);
-
-    if(dial->gravity_y < dial->current_y){
-      if(adjustment->value > adjustment->lower){
-	gtk_adjustment_set_value(adjustment,
-				 adjustment->value - adjustment->step_increment);
-	
-	ags_dial_draw(dial);
-	usleep(dial->sleep_interval);
-      }
-    }else{
-      if(adjustment->value < adjustment->upper){
-	gtk_adjustment_set_value(adjustment,
-				 adjustment->value + adjustment->step_increment);
-	
-	ags_dial_draw(dial);
-	usleep(dial->sleep_interval);
-      }
-    }
-    */
   }
 
   GTK_WIDGET_CLASS(ags_dial_parent_class)->motion_notify_event(widget, event);

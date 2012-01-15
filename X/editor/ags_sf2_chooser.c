@@ -57,7 +57,7 @@ ags_sf2_chooser_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_sf2_chooser = g_type_register_static(GTK_TYPE_SF2_CHOOSER,
+    ags_type_sf2_chooser = g_type_register_static(GTK_TYPE_VBOX,
 						  "AgsSF2Chooser\0", &ags_sf2_chooser_info,
 						  0);
     
@@ -102,8 +102,9 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
   GtkLabel *label;
 
   table = (GtkTable *) gtk_table_new(2, 3, FALSE);
-  gtk_file_chooser_set_extra_widget(sf2_chooser,
-				    GTK_WIDGET(table));
+  gtk_box_pack_start(GTK_BOX(sf2_chooser), GTK_WIDGET(table), FALSE, FALSE, 0);
+  //  gtk_file_chooser_set_extra_widget(sf2_chooser,
+  //				    GTK_WIDGET(table));
 
   /* first row - preset */
   label = (GtkLabel *) gtk_label_new("preset: \0");

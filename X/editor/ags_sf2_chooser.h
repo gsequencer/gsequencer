@@ -35,7 +35,7 @@ typedef struct _AgsSF2ChooserClass AgsSF2ChooserClass;
 
 struct _AgsSF2Chooser
 {
-  GtkSF2Chooser sf2_chooser;
+  GtkVBox vbox;
 
   GtkComboBoxText *preset;
   GtkComboBoxText *instrument;
@@ -44,7 +44,7 @@ struct _AgsSF2Chooser
 
 struct _AgsSF2ChooserClass
 {
-  GtkSF2ChooserClass sf2_chooser;
+  GtkVBoxClass vbox;;
 };
 
 GType ags_sf2_chooser_get_type();
