@@ -259,10 +259,10 @@ ags_dial_button_press(GtkWidget *widget,
   gboolean ags_dial_button_press_is_dial_event(){
     if(event->x >= dial_left_position &&
        event->x <= dial_left_position + 2 * dial->radius + 2 * dial->outline_strength){
-      if((cos(event->y) <= 0.0 && cos(event->y) >= -1.0) ||
+      if((cos(event->y) < 0.0 && cos(event->y) >= -1.0) ||
 	 (sin(event->y) > 0.0 && sin(event->y) <= 1.0) ||
-	 (cos(event->y) <= 0.0 && sin(event->y) >= -1.0) ||
-	 (sin(event->y) <= 0.0 && cos(event->y) >= -1.0)){
+	 (cos(event->y) < 0.0 && sin(event->y) >= -1.0) ||
+	 (sin(event->y) < 0.0 && cos(event->y) >= -1.0)){
 	return(TRUE);
       }else{
 	return(FALSE);
