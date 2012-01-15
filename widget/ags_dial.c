@@ -116,7 +116,8 @@ ags_dial_realize(GtkWidget *widget)
   AgsDial *dial;
   GdkWindowAttr attributes;
   gint attributes_mask;
-  guint buttons_width;
+  gint buttons_width;
+  gint border_left, border_top;
 
   g_return_if_fail (widget != NULL);
   g_return_if_fail (AGS_IS_DIAL (widget));
@@ -161,6 +162,7 @@ ags_dial_realize(GtkWidget *widget)
 			      2 * dial->radius + 2 * dial->outline_strength);
 
   /*  */
+  //TODO:JK: apply borders of container widgets
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
   attributes.width = widget->allocation.width;
@@ -229,8 +231,8 @@ ags_dial_button_press(GtkWidget *widget,
 		      GdkEventButton *event)
 {
   AgsDial *dial;
-  guint border_left, border_top;
-  guint dial_left_position;
+  gint border_left, border_top;
+  gint dial_left_position;
   auto gboolean ags_dial_button_press_is_down_event();
   auto gboolean ags_dial_button_press_is_up_event();
   auto gboolean ags_dial_button_press_is_dial_event();
@@ -255,7 +257,19 @@ ags_dial_button_press(GtkWidget *widget,
     }
   }
   gboolean ags_dial_button_press_is_dial_event(){
-
+    if(event->x >= dial_left_position &&
+       event->x <= dial_left_position + 2 * dial->radius + 2 * dial->outline_strength){
+      if((cos(event->y) <= 0.0 && cos(event->y) >= -1.0) ||
+	 (sin(event->y) > 0.0 && sin(event->y) <= 1.0) ||
+	 (cos(event->y) <= 0.0 && sin(event->y) >= -1.0) ||
+	 (sin(event->y) <= 0.0 && cos(event->y) >= -1.0)){
+	return(TRUE);
+      }else{
+	return(FALSE);
+      }
+    }else{
+      return(FALSE);
+    }
   }
 
   GTK_WIDGET_CLASS(ags_dial_parent_class)->button_press_event(widget, event);
@@ -264,8 +278,8 @@ ags_dial_button_press(GtkWidget *widget,
   dial->flags |= AGS_DIAL_MOUSE_BUTTON_PRESSED;
 
   //TODO:JK: retrieve borders
-  //  border_left = ;
-  //  border_right = ;
+  border_left = 0;
+  border_top = 0;
 
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
     if(ags_dial_button_press_is_down_event()){
@@ -292,13 +306,21 @@ gboolean
 ags_dial_button_release(GtkWidget *widget,
 			GdkEventButton   *event)
 {
+  AgsDial *dial;
+
   GTK_WIDGET_CLASS(ags_dial_parent_class)->button_release_event(widget, event);
 
+  dial = AGS_DIAL(widget);
   dial->flags &= (~AGS_DIAL_MOUSE_BUTTON_PRESSED);
 
+  /* implement me */
+  //TODO:JK:
+
+  /*
   if(){
     AGS_DIAL_MOTION_CAPTURING;
   }
+  */
 }
 
 gboolean ags_dial_motion_notify(GtkWidget *widget,
