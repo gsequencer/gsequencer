@@ -196,8 +196,6 @@ ags_dial_realize(GtkWidget *widget)
 
 
   GTK_WIDGET_CLASS(ags_dial_parent_class)->realize(widget);
-
-  return(FALSE);
 }
 
 void
@@ -369,8 +367,9 @@ ags_dial_button_release(GtkWidget *widget,
   return(FALSE);
 }
 
-gboolean ags_dial_motion_notify(GtkWidget *widget,
-				GdkEventMotion *event)
+gboolean
+ags_dial_motion_notify(GtkWidget *widget,
+		       GdkEventMotion *event)
 {
   AgsDial *dial;
   auto void ags_dial_motion_notify_do_dial();
@@ -429,6 +428,8 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
       ags_dial_motion_notify_do_dial();
     }
   }
+
+  return(FALSE);
 }
 
 /**
