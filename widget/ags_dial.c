@@ -108,6 +108,15 @@ ags_dial_init(AgsDial *dial)
   dial->button_height = 0;
   dial->margin_left = 4.0;
   dial->margin_right = 4.0;
+
+  dial->tolerance = 0.9;
+  dial->negated_tolerance = 1.1;
+  dial->sleep_interval = 500;
+
+  dial->gravity_x = 0.0;
+  dial->gravity_y = 0.0;
+  dial->current_x = 0.0;
+  dial->current_y = 0.0;
 }
 
 void
@@ -366,8 +375,36 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
   AgsDial *dial;
   auto void ags_dial_motion_notify_do_dial();
   void ags_dial_motion_notify_do_dial(){
-    /* implement me */
-    //TODO:JK:
+    GtkAdjustment *adjustment;
+
+    adjustment = GTK_RANGE(dial)->adjustment;
+
+    if(dial->gravity_y < dial->current_y ||
+       ((dial->gravity_y < dial->current_y * dial->tolerance ||
+	 dial->gravity_y * dial->negated_tolerance < dial->current_y ||
+	 dial->gravity_y == dial->gravity_y) &&
+	dial->gravity_x < dial->current_x) ||
+       ((dial->gravity_y < dial->current_y * dial->tolerance ||
+	 dial->gravity_y * dial->negated_tolerance < dial->current_y ||
+	 dial->gravity_x == dial->gravity_x) &&
+	dial->gravity_x < dial->current_x)){
+
+      if(adjustment->value > adjustment->lower){
+	gtk_adjustment_set_value(adjustment,
+				 adjustment->value - adjustment->step_increment);
+	
+	ags_dial_draw(dial);
+	usleep(dial->sleep_interval);
+      }
+    }else{
+      if(adjustment->value < adjustment->upper){
+	gtk_adjustment_set_value(adjustment,
+				 adjustment->value + adjustment->step_increment);
+	
+	ags_dial_draw(dial);
+	usleep(dial->sleep_interval);
+      }
+    }
 
   }
 
