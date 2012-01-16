@@ -33,9 +33,39 @@
 typedef struct _AgsDial AgsDial;
 typedef struct _AgsDialClass AgsDialClass;
 
+typedef enum{
+  AGS_DIAL_WITH_BUTTONS           = 1,
+  AGS_DIAL_MOUSE_BUTTON_PRESSED   = 1 << 1,
+  AGS_DIAL_BUTTON_DOWN_PRESSED    = 1 << 2,
+  AGS_DIAL_BUTTON_UP_PRESSED      = 1 << 3,
+  AGS_DIAL_MOTION_CAPTURING_INIT  = 1 << 4,
+  AGS_DIAL_MOTION_CAPTURING       = 1 << 5,
+}AgsDialFlags;
+
 struct _AgsDial
 {
   GtkRange range;
+
+  guint flags;
+
+  guint radius;
+  guint outline_strength;
+  guint scale_precision;
+
+  guint font_size;
+  gint button_width;
+  gint button_height;
+  gint margin_left;
+  gint margin_right;
+
+  gdouble tolerance;
+  gdouble negated_tolerance;
+  gint sleep_interval;
+
+  gdouble gravity_x;
+  gdouble gravity_y;
+  gdouble current_x;
+  gdouble current_y;
 };
 
 struct _AgsDialClass
