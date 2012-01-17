@@ -80,8 +80,6 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 void
 ags_ffplayer_open_response_callback(GtkWidget *widget, gint response, AgsFFPlayer *ffplayer)
 {
-
-
   /*
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *overwrite;

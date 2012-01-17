@@ -197,6 +197,21 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 
     channel = machine->audio->input;
 
+    /* check for supported packed audio files */
+    if((AGS_MACHINE_ACCEPT_SOUNDFONT2 & (machine->file_input_flags)) != 0){
+      GSList *slist;
+      AgsFileSelection *file_selection;
+
+      while(slist != NULL){
+	if(g_str_has_suffix(slist->data),
+	   ".sf2\n\0"){
+	}
+
+	slist = slist->next;
+      }
+    }
+
+    /* overwriting existing channels */
     if(overwrite->toggle_button.active){
       if(channel != NULL){
 	for(i = 0; i < machine->audio->input_pads && filenames != NULL; i++){
@@ -244,6 +259,7 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
       }
     }
 
+    /* appending to channels */
     if(create->toggle_button.active && filenames != NULL){
       list_length = g_slist_length(filenames);
 
