@@ -270,7 +270,11 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	    g_list_free(new_entry);
 	  }
 	  
+	  ags_file_selection_set_entry(file_selection->entry,
+				       really_new_entry);
+
 	  /* adding lost files */
+	  //TODO:JK: figure out if you need to copy the GSList of filenames
 	  current_folder = gtk_file_chooser_get_current_folder();
 	  gtk_file_chooser_select_all(file_chooser);
 	  
@@ -281,7 +285,7 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	       g_strcmp0("..\0", current_filename))
 	      continue;
 
-	    if(!ags_file_selection_contains_file(file_selection) &&
+	    if(!ags_file_selection_contains_file(file_selection, current_filename) &&
 	       g_slist_find(filenames, current_filename) == NULL){
 	      gtk_file_chooser_unselect_filename(file_chooser, current_filename);
 	    }
