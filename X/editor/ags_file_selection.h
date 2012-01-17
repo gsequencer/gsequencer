@@ -36,10 +36,13 @@
 
 typedef struct _AgsFileSelection AgsFileSelection;
 typedef struct _AgsFileSelectionClass AgsFileSelectionClass;
+typedef struct _AgsFileSelectionEntry AgsFileSelectionEntry;
 
 struct _AgsFileSelection
 {
   GtkVBox vbox;
+
+  GList *entry;
 
   GtkLabel *chosed;
   GtkLabel *selected;
@@ -48,9 +51,13 @@ struct _AgsFileSelection
 struct _AgsFileSelectionClass
 {
   GtkVBoxClass vbox;
+
+  void (*completed)(AgsFileSelection *file_selection);
 };
 
 GType ags_file_selection_get_type(void);
+
+void ags_file_selection_completed(AgsFileSelection *file_selection);
 
 AgsFileSelection* ags_file_selection_new(GObject *devout);
 

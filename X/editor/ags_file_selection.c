@@ -31,12 +31,16 @@ void ags_file_selection_disconnect(AgsConnectable *connectable);
 static void ags_file_selection_finalize(GObject *gobject);
 void ags_file_selection_show(GtkWidget *widget);
 
-GtkMenu* ags_file_selection_popup_new(AgsFileSelection *file_selection);
+void ags_file_selection_completed(AgsFileSelection *file_selection);
 
-extern void ags_file_read_file_selection(AgsFile *file, AgsFileSelection *file_selection);
-extern void ags_file_write_file_selection(AgsFile *file, AgsFileSelection *file_selection);
+enum{
+  COMPLETED,
+  LAST_SIGNAL,
+};
 
 static gpointer ags_file_selection_parent_class = NULL;
+
+static guint file_selection_signals[LAST_SIGNAL];
 
 GType
 ags_file_selection_get_type(void)
@@ -91,6 +95,18 @@ ags_file_selection_class_init(AgsFileSelectionClass *file_selection)
   widget = (GtkWidgetClass *) file_selection;
 
   widget->show = ags_file_selection_show;
+
+  /* AgsFileSelectionClass */
+  file_selection->completed = ags_file_selection_completed;
+
+  audio_signals[COMPLETED] = 
+    g_signal_new("completed\0",
+		 G_TYPE_FROM_CLASS(file_selection),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileSelectionClass, completed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
