@@ -69,6 +69,10 @@ struct _AgsFileSelectionClass
 
 struct _AgsFileSelectionEntry
 {
+  GtkHBox *hbox;
+
+  GtkWidget *entry;
+
   gboolean chosed;
   gchar *filename;
 };

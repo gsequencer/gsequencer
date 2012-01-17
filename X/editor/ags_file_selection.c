@@ -233,25 +233,40 @@ ags_file_selection_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_file_selection_parent_class)->show(widget);
 }
 
-
-AgsFileSelectionEntry*
-ags_file_selection_entry_alloc()
-{
-  AgsFileSelectionEntry *entry;
-  
-  entry = (AgsFileSelectionEntry *) malloc(sizeof(AgsFileSelectionEntry));
-  
-  entry->chosed = FALSE;
-  entry->filename = NULL;
-
-  return(entry);
-}
-
+/**
+ * ags_file_selection_set_entry:
+ * @file_selection an #AgsFileSelection
+ * @entry a #GList
+ *
+ * Add new entries to the #AgsFileSelection.
+ */
 void
 ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 {
+  GtkHBox *hbox;
+  auto GtkHBox* ags_file_selection_set_entry_new_entry();
+  GtkHBox* ags_file_selection_set_entry_new_entry(){
+    GtkHBox *hbox;
+    GtkButton *remove;
+
+    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+    
+    /* the remove button */
+    remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+    gtk_box_pack_end(GTK_BOX(hbox), GTK_WIDGET(remove), FALSE, FALSE, 0);
+
+    /* and it's callback */
+    g_signal_connect(G_OBJECT(remove), "clicked\0",
+		     G_CALLBACK(ags_file_selection_remove_callback), hbox);
+
+    return(hbox);
+  }
+
   while(entry != NULL){
     if(g_str_has_suffix(entry->filename, ".sf2\0")){
+      hbox = ags_file_selection_set_entry_new_entry();
+
+      ags_file_selection_add(file_selection, (GtkWidget *) hbox);
     }
 
     entry = entry->next;
@@ -273,7 +288,11 @@ ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
 void
 ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget)
 {
-  /* implement me */
+  gtk_box_pack_start(GTK_BOX(file_selection),
+		     widget,
+		     FALSE,
+		     FALSE,
+		     0);
 }
 
 void
@@ -318,6 +337,22 @@ ags_file_selection_completed(AgsFileSelection *file_selection)
   g_signal_emit(G_OBJECT(file_selection),
 		file_selection_signals[COMPLETED], 0);
   g_object_unref((GObject *) file_selection);
+}
+
+AgsFileSelectionEntry*
+ags_file_selection_entry_alloc()
+{
+  AgsFileSelectionEntry *entry;
+  
+  entry = (AgsFileSelectionEntry *) malloc(sizeof(AgsFileSelectionEntry));
+ 
+  entry->hbox = NULL;
+  entry->entry = NULL;
+ 
+  entry->chosed = FALSE;
+  entry->filename = NULL;
+
+  return(entry);
 }
 
 AgsFileSelection*

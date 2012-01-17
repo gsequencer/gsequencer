@@ -7,6 +7,7 @@
 
 #include <ags/X/editor/ags_file_selection.h>
 
+void ags_file_selection_remove_callback(GtkButton *button, GtkHBox *hbox);
 
 #endif /*__AGS_FILE_SELECTION_CALLBACKS_H__*/
 
