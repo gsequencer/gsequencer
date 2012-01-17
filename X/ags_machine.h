@@ -38,14 +38,25 @@ typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
 
 typedef enum{
-  AGS_MACHINE_SOLO,
+  AGS_MACHINE_SOLO              = 1,
+  AGS_MACHINE_IS_EFFECT         = 1 <<  1,
+  AGS_MACHINE_IS_SEQUENCER      = 1 <<  2,
+  AGS_MACHINE_IS_SYNTHESIZER    = 1 <<  3,
+  AGS_MACHINE_TAKES_FILE_INPUT  = 1 <<  4,
 }AgsMachineFlags;
+
+typedef enum{
+  AGS_MACHINE_ACCEPT_WAV          = 1,
+  AGS_MACHINE_ACCEPT_OGG          = 1 <<  1,
+  AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 <<  2,
+}AgsMachineFileInputFlags;
 
 struct _AgsMachine
 {
   GtkHandleBox handle_box;
 
   guint flags;
+  guint file_input_flags;
 
   char *name;
 

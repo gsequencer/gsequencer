@@ -276,6 +276,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 		   G_CALLBACK(ags_drum_open_response_callback), drum);
 }
 
+//TODO:JK: remove because it was moved ags_machine_callbacks.c
 void
 ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 {

@@ -37,4 +37,6 @@ void ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *
 int ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine);
 
+void ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

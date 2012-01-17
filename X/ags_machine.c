@@ -106,6 +106,7 @@ ags_machine_init(AgsMachine *machine)
   GtkFrame *frame;
 
   machine->flags = 0;
+  machine->file_input_flags = 0;
 
   machine->name = NULL;
 
