@@ -184,6 +184,7 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
   AgsAudioSignal *audio_signal_source_old;
   GList *list;
   GSList *filenames;
+  gchar *current_folder;
   guint list_length;
   guint i, j;
   gboolean reset;
@@ -198,11 +199,20 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 
     channel = machine->audio->input;
 
+    current_folder = gtk_file_chooser_get_current_folder();
+
     /* check for supported packed audio files */
     file_selection = (AgsFileSelection *) gtk_file_chooser_get_extra_widget(file_chooser);
 
+    if(file_selection != NULL && g_strcmp0(file_selection->directory, current_directory)){
+      gtk_widget_destroy(file_selection);
+
+      file_selection = NULL;
+    }
+
     if(file_selection == NULL ||
        (AGS_FILE_SELECTION_COMPLETED & (file_selection->flags)) == 0){
+
       if((AGS_MACHINE_ACCEPT_SOUNDFONT2 & (machine->file_input_flags)) != 0){
 	GDir *current_directory;
 	GList *new_entry, *old_entry;	  
@@ -248,7 +258,6 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	  GList *really_new_entry;
 	  GList *list;
 	  GSList *slist;
-	  gchar *current_folder;
 	  
 	  old_entry = file_selection->entry;
 	  list = new_entry;
@@ -275,7 +284,6 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 
 	  /* adding lost files */
 	  //TODO:JK: figure out if you need to copy the GSList of filenames
-	  current_folder = gtk_file_chooser_get_current_folder();
 	  gtk_file_chooser_select_all(file_chooser);
 	  
 	  current_directory = g_dir_open(current_folder);

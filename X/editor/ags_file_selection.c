@@ -251,7 +251,7 @@ void
 ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 {
   while(entry != NULL){
-    if(){
+    if(g_str_has_suffix(entry->filename, ".sf2\0")){
     }
 
     entry = entry->next;
