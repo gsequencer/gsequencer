@@ -167,11 +167,20 @@ ags_file_selection_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_file_selection_parent_class)->finalize(gobject);
 }
 
+void
+ags_file_selection_show(GtkWidget *widget)
+{
+  AgsFileSelection *file_selection;
+
+  file_selection = (AgsFileSelection *) widget;
+
+  GTK_WIDGET_CLASS(ags_file_selection_parent_class)->show(widget);
+}
+
 AgsFileSelection*
 ags_file_selection_new(GObject *devout)
 {
   AgsFileSelection *file_selection;
-  GValue value;
 
   file_selection = (AgsFileSelection *) g_object_new(AGS_TYPE_FILE_SELECTION,
 						     NULL);

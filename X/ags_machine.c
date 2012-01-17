@@ -191,9 +191,11 @@ ags_machine_finalize(GObject *gobject)
 void
 ags_machine_show(GtkWidget *widget)
 {
-  AgsMachine *machine = (AgsMachine *) widget;
+  AgsMachine *machine;
   AgsWindow *window;
   GtkFrame *frame;
+
+  machine = (AgsMachine *) widget;
 
   GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
 
