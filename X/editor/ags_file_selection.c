@@ -31,9 +31,13 @@ void ags_file_selection_disconnect(AgsConnectable *connectable);
 static void ags_file_selection_finalize(GObject *gobject);
 void ags_file_selection_show(GtkWidget *widget);
 
-void ags_file_selection_completed(AgsFileSelection *file_selection);
+void ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget);
+void ags_file_selection_real_remove(AgsFileSelection *file_selection, GtkWidget *widget);
+void ags_file_selection_real_completed(AgsFileSelection *file_selection);
 
 enum{
+  ADD,
+  REMOVE,
   COMPLETED,
   LAST_SIGNAL,
 };
@@ -97,7 +101,29 @@ ags_file_selection_class_init(AgsFileSelectionClass *file_selection)
   widget->show = ags_file_selection_show;
 
   /* AgsFileSelectionClass */
-  file_selection->completed = ags_file_selection_completed;
+  file_selection->add = ags_file_selection_real_add;
+  file_selection->remove = ags_file_selection_real_remove;
+  file_selection->completed = NULL;
+
+  audio_signals[ADD] = 
+    g_signal_new("add\0",
+		 G_TYPE_FROM_CLASS(file_selection),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileSelectionClass, add),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  audio_signals[REMOVE] = 
+    g_signal_new("remove\0",
+		 G_TYPE_FROM_CLASS(file_selection),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileSelectionClass, completed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 
   audio_signals[COMPLETED] = 
     g_signal_new("completed\0",
@@ -211,6 +237,38 @@ ags_file_selection_entry_alloc()
   entry->filename = NULL;
 
   return(entry);
+}
+
+void
+ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
+{
+}
+
+void
+ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget)
+{
+
+}
+
+void
+ags_file_selection_remove(AgsFileSelection *file_selection, GtkWidget *widget)
+{
+}
+
+void
+ags_file_selection_real_remove(AgsFileSelection *file_selection, GtkWidget *widget)
+{
+}
+
+void
+ags_file_selection_completed(AgsFileSelection *file_selection)
+{
+  g_return_if_fail(AGS_IS_FILE_SELECTION(file_selection));
+
+  g_object_ref((GObject *) file_selection);
+  g_signal_emit(G_OBJECT(file_selection),
+		file_selection_signals[COMPLETED], 0);
+  g_object_unref((GObject *) file_selection);
 }
 
 AgsFileSelection*

@@ -53,6 +53,9 @@ struct _AgsFileSelectionClass
 {
   GtkVBoxClass vbox;
 
+  void (*add)(AgsFileSelection *file_selection, GtkWidget *widget);
+  void (*remove)(AgsFileSelection *file_selection, GtkWidget *widget);
+
   void (*completed)(AgsFileSelection *file_selection);
 };
 
@@ -65,6 +68,9 @@ struct _AgsFileSelectionEntry
 GType ags_file_selection_get_type(void);
 
 AgsFileSelectionEntry* ags_file_selection_entry_alloc();
+
+void ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget);
+void ags_file_selection_remove(AgsFileSelection *file_selection, GtkWidget *widget);
 
 void ags_file_selection_completed(AgsFileSelection *file_selection);
 

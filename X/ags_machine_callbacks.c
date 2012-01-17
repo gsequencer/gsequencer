@@ -199,18 +199,52 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 
     /* check for supported packed audio files */
     if((AGS_MACHINE_ACCEPT_SOUNDFONT2 & (machine->file_input_flags)) != 0){
-      GSList *slist;
       AgsFileSelection *file_selection;
+      GList *new_entry, *old_entry;	  
+      GSList *slist;
+
+      new_entry = NULL;
+      found_selectable = FALSE;
 
       while(slist != NULL){
 	if(g_str_has_suffix(slist->data),
 	   ".sf2\n\0"){
+	  AgsFileSelectionEntry *entry;
+
+	  if(new_entry != NULL){
+	    found_selectable = TRUE;
+	  }
+
+	  entry = ags_file_selection_entry_alloc();
+	  entry->filename = slist->data;
+
+	  new_entry = g_list_prepend(new_entry,
+				     entry);
 	}
 
 	slist = slist->next;
       }
+
+      file_selection = (AgsFileSelection *) gtk_file_chooser_get_extra_widget(file_chooser);
+      old_entry = NULL;
+
+      if(file_selection == NULL){
+	if(new_entry != NULL){
+	  file_selection = ags_file_selection_new();
+	  file_selection->entry = new_entry;
+
+	  return;
+	}
+      }else if(AGS_IS_FILE_SELECTION(file_selection)){
+	old_entry = file_selection->entry;
+
+	if(new_entry != NULL){
+
+	}
+      }
     }
 
+    //TODO:JK: move to own function
     /* overwriting existing channels */
     if(overwrite->toggle_button.active){
       if(channel != NULL){
@@ -259,6 +293,7 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
       }
     }
 
+    //TODO:JK: move to own function
     /* appending to channels */
     if(create->toggle_button.active && filenames != NULL){
       list_length = g_slist_length(filenames);
