@@ -40,6 +40,9 @@ typedef struct _AgsFileSelectionClass AgsFileSelectionClass;
 struct _AgsFileSelection
 {
   GtkVBox vbox;
+
+  GtkLabel *chosed;
+  GtkLabel *selected;
 };
 
 struct _AgsFileSelectionClass

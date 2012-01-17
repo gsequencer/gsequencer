@@ -103,7 +103,42 @@ ags_file_selection_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_file_selection_init(AgsFileSelection *file_selection)
 {
+  GtkHBox *hbox;
+  GtkLabel *label;
 
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_end(GTK_BOX(file_selection),
+		   GTK_WIDGET(hbox),
+		   FALSE, FALSE,
+		   0);
+
+  label = gtk_label_new("Choosed: \0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  file_selection->chosed = g_object_new(GTK_TYPE_LABEL,
+					"label\0", g_strdup_printf("%d\0", 0),
+					NULL);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(file_selection->chosed),
+		     FALSE, FALSE,
+		     0);
+
+  label = gtk_label_new("/\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  file_selection->selected = g_object_new(GTK_TYPE_LABEL,
+					  "label\0", g_strdup_printf("%d\0", 0),
+					  NULL);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(file_selectoin->selected),
+		     FALSE, FALSE,
+		     0);
 }
 
 void
