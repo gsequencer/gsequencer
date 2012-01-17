@@ -148,6 +148,10 @@ ags_file_selection_init(AgsFileSelection *file_selection)
   GtkHBox *hbox;
   GtkLabel *label;
 
+  file_selection->flags = 0;
+
+  file_selection->directory = NULL;
+
   file_selection->entry_count = 0;
   file_selection->entry = NULL;
 
@@ -208,6 +212,10 @@ ags_file_selection_finalize(GObject *gobject)
 
   file_selection = (AgsFileSelection *) gobject;
 
+  /* free directory string */
+  if(file_selection->directory != NULL)
+    free(file_selection->directory);
+
   /* free entries */
   ags_list_free_and_free_link(file_selection->entry);
 
@@ -237,6 +245,17 @@ ags_file_selection_entry_alloc()
   entry->filename = NULL;
 
   return(entry);
+}
+
+void
+ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
+{
+  while(entry != NULL){
+    if(){
+    }
+
+    entry = entry->next;
+  }
 }
 
 void
@@ -273,6 +292,21 @@ void
 ags_file_selection_real_remove(AgsFileSelection *file_selection, GtkWidget *widget)
 {
   /* implement me */
+}
+
+gboolean
+ags_file_selection_contains_file(AgsFileSelection *file_selection, gchar *filename)
+{
+  GList *list;
+
+  list = file_selection->entry;
+
+  while(list != NULL){
+    if(!g_strcmp0(list->data, filename))
+      return(TRUE);
+  }
+  
+  return(FALSE);
 }
 
 void

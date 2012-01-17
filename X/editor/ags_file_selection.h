@@ -38,10 +38,18 @@ typedef struct _AgsFileSelection AgsFileSelection;
 typedef struct _AgsFileSelectionClass AgsFileSelectionClass;
 typedef struct _AgsFileSelectionEntry AgsFileSelectionEntry;
 
+typedef enum{
+  AGS_FILE_SELECTION_COMPLETED   = 1,
+}AgsFileSelectionFlags;
+
 struct _AgsFileSelection
 {
   GtkVBox vbox;
   
+  guint flags;
+
+  gchar *directory;
+
   guint entry_count;
   GList *entry;
 
@@ -69,8 +77,12 @@ GType ags_file_selection_get_type(void);
 
 AgsFileSelectionEntry* ags_file_selection_entry_alloc();
 
+void ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry);
+
 void ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget);
 void ags_file_selection_remove(AgsFileSelection *file_selection, GtkWidget *widget);
+
+gboolean ags_file_selection_contains_file(AgsFileSelection *file_selection, gchar *filename);
 
 void ags_file_selection_completed(AgsFileSelection *file_selection);
 

@@ -175,6 +175,7 @@ void
 ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
   GtkFileChooserDialog *file_chooser;
+  AgsFileSelection *file_selection;
   GtkCheckButton *overwrite;
   GtkCheckButton *create;
   AgsChannel *channel;
@@ -198,53 +199,101 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
     channel = machine->audio->input;
 
     /* check for supported packed audio files */
-    if((AGS_MACHINE_ACCEPT_SOUNDFONT2 & (machine->file_input_flags)) != 0){
-      AgsFileSelection *file_selection;
-      GList *new_entry, *old_entry;	  
-      GSList *slist;
+    file_selection = (AgsFileSelection *) gtk_file_chooser_get_extra_widget(file_chooser);
 
-      new_entry = NULL;
-      found_selectable = FALSE;
-
-      while(slist != NULL){
-	if(g_str_has_suffix(slist->data),
-	   ".sf2\n\0"){
-	  AgsFileSelectionEntry *entry;
-
-	  if(new_entry != NULL){
-	    found_selectable = TRUE;
+    if(file_selection == NULL ||
+       (AGS_FILE_SELECTION_COMPLETED & (file_selection->flags)) == 0){
+      if((AGS_MACHINE_ACCEPT_SOUNDFONT2 & (machine->file_input_flags)) != 0){
+	GDir *current_directory;
+	GList *new_entry, *old_entry;	  
+	GSList *slist;
+	gchar *current_filename;
+	
+	new_entry = NULL;
+	found_selectable = FALSE;
+	
+	while(slist != NULL){
+	  if(g_str_has_suffix(slist->data),
+	     ".sf2\n\0"){
+	    AgsFileSelectionEntry *entry;
+	    
+	    if(new_entry != NULL){
+	      found_selectable = TRUE;
+	    }
+	    
+	    entry = ags_file_selection_entry_alloc();
+	    entry->filename = slist->data;
+	  
+	    new_entry = g_list_prepend(new_entry,
+				       entry);
 	  }
-
-	  entry = ags_file_selection_entry_alloc();
-	  entry->filename = slist->data;
-
-	  new_entry = g_list_prepend(new_entry,
-				     entry);
+	  
+	  slist = slist->next;
 	}
+	
+	old_entry = NULL;
+	
+	if(file_selection == NULL){
+	  if(new_entry != NULL){
+	    file_selection = ags_file_selection_new();
+	    gtk_file_chooser_set_extra_widget(file_chooser,
+					      GTK_WIDGET(file_selection));
+	    
+	    ags_file_selection_set_entry(file_selection->entry,
+					 new_entry);
+	    
+	    return;
+	  }
+	}else if(AGS_IS_FILE_SELECTION(file_selection)){
+	  GList *really_new_entry;
+	  GList *list;
+	  GSList *slist;
+	  gchar *current_folder;
+	  
+	  old_entry = file_selection->entry;
+	  list = new_entry;
+	  really_new_entry = NULL;
+	  
+	  /* check against existing entries */
+	  if(new_entry != NULL){
+	    while(list != NULL){
+	      if(g_list_find(old_entry, list->data) == NULL){
+		really_new_entry = g_list_prepend(really_new_entry,
+						  list->data);
+	      }else{
+		free(list->data);
+	      }
+	      
+	      list = list->next;
+	    }
+	    
+	    g_list_free(new_entry);
+	  }
+	  
+	  /* adding lost files */
+	  current_folder = gtk_file_chooser_get_current_folder();
+	  gtk_file_chooser_select_all(file_chooser);
+	  
+	  current_directory = g_dir_open(current_folder);
+	  
+	  while((current_filename = g_dir_read_name(current_directory)) != NULL){
+	    if(g_strcmp0(".\0", current_filename) ||
+	       g_strcmp0("..\0", current_filename))
+	      continue;
 
-	slist = slist->next;
-      }
-
-      file_selection = (AgsFileSelection *) gtk_file_chooser_get_extra_widget(file_chooser);
-      old_entry = NULL;
-
-      if(file_selection == NULL){
-	if(new_entry != NULL){
-	  file_selection = ags_file_selection_new();
-	  file_selection->entry = new_entry;
-
+	    if(!ags_file_selection_contains_file(file_selection) &&
+	       g_slist_find(filenames, current_filename) == NULL){
+	      gtk_file_chooser_unselect_filename(file_chooser, current_filename);
+	    }
+	  }
+	  
+	  g_dir_close(current_directory);
+	  
 	  return;
-	}
-      }else if(AGS_IS_FILE_SELECTION(file_selection)){
-	old_entry = file_selection->entry;
-
-	if(new_entry != NULL){
-
 	}
       }
     }
 
-    //TODO:JK: move to own function
     /* overwriting existing channels */
     if(overwrite->toggle_button.active){
       if(channel != NULL){
@@ -293,7 +342,6 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
       }
     }
 
-    //TODO:JK: move to own function
     /* appending to channels */
     if(create->toggle_button.active && filenames != NULL){
       list_length = g_slist_length(filenames);
