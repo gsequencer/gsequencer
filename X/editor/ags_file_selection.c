@@ -198,7 +198,7 @@ ags_file_selection_connect(AgsConnectable *connectable)
 void
 ags_file_selection_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  /* implement me */
 }
 
 static void
@@ -242,22 +242,37 @@ ags_file_selection_entry_alloc()
 void
 ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
 {
+  g_return_if_fail(AGS_IS_FILE_SELECTION(file_selection));
+
+  g_object_ref((GObject *) file_selection);
+  g_signal_emit(G_OBJECT(file_selection),
+		file_selection_signals[COMPLETED], 0,
+		widget);
+  g_object_unref((GObject *) file_selection);
 }
 
 void
 ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget)
 {
-
+  /* implement me */
 }
 
 void
 ags_file_selection_remove(AgsFileSelection *file_selection, GtkWidget *widget)
 {
+  g_return_if_fail(AGS_IS_FILE_SELECTION(file_selection));
+
+  g_object_ref((GObject *) file_selection);
+  g_signal_emit(G_OBJECT(file_selection),
+		file_selection_signals[COMPLETED], 0,
+		widget);
+  g_object_unref((GObject *) file_selection);
 }
 
 void
 ags_file_selection_real_remove(AgsFileSelection *file_selection, GtkWidget *widget)
 {
+  /* implement me */
 }
 
 void
