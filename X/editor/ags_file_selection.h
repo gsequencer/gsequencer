@@ -41,7 +41,8 @@ typedef struct _AgsFileSelectionEntry AgsFileSelectionEntry;
 struct _AgsFileSelection
 {
   GtkVBox vbox;
-
+  
+  guint entry_count;
   GList *entry;
 
   GtkLabel *chosed;
@@ -55,7 +56,15 @@ struct _AgsFileSelectionClass
   void (*completed)(AgsFileSelection *file_selection);
 };
 
+struct _AgsFileSelectionEntry
+{
+  gboolean chosed;
+  gchar *filename;
+};
+
 GType ags_file_selection_get_type(void);
+
+AgsFileSelectionEntry* ags_file_selection_entry_alloc();
 
 void ags_file_selection_completed(AgsFileSelection *file_selection);
 

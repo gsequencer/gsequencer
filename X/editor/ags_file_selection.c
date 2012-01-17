@@ -122,6 +122,9 @@ ags_file_selection_init(AgsFileSelection *file_selection)
   GtkHBox *hbox;
   GtkLabel *label;
 
+  file_selection->entry_count = 0;
+  file_selection->entry = NULL;
+
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_end(GTK_BOX(file_selection),
 		   GTK_WIDGET(hbox),
@@ -164,7 +167,6 @@ ags_file_selection_connect(AgsConnectable *connectable)
 
   /* AgsFileSelection */
   file_selection = AGS_FILE_SELECTION(connectable);
-
 }
 
 void
@@ -180,6 +182,10 @@ ags_file_selection_finalize(GObject *gobject)
 
   file_selection = (AgsFileSelection *) gobject;
 
+  /* free entries */
+  ags_list_free_and_free_link(file_selection->entry);
+
+  /* call finalize of parent class */
   G_OBJECT_CLASS(ags_file_selection_parent_class)->finalize(gobject);
 }
 
@@ -191,6 +197,20 @@ ags_file_selection_show(GtkWidget *widget)
   file_selection = (AgsFileSelection *) widget;
 
   GTK_WIDGET_CLASS(ags_file_selection_parent_class)->show(widget);
+}
+
+
+AgsFileSelectionEntry*
+ags_file_selection_entry_alloc()
+{
+  AgsFileSelectionEntry *entry;
+  
+  entry = (AgsFileSelectionEntry *) malloc(sizeof(AgsFileSelectionEntry));
+  
+  entry->chosed = FALSE;
+  entry->filename = NULL;
+
+  return(entry);
 }
 
 AgsFileSelection*
