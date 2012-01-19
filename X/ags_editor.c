@@ -88,6 +88,7 @@ ags_editor_init(AgsEditor *editor)
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
+  GtkLabel *label;
   GtkAdjustment *adjustment;
 
   g_signal_connect_after((GObject *) editor, "parent-set\0",
@@ -108,10 +109,16 @@ ags_editor_init(AgsEditor *editor)
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
-  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
+  //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   editor->index_radio = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->index_radio);
+
+  label = (GtkLabel *) gtk_label_new("Notation\0");
+  gtk_box_pack_start(GTK_BOX(editor->index_radio),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
 
   editor->selected = NULL;
 

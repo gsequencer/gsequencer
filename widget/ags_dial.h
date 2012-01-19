@@ -23,6 +23,10 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#define __USE_UNIX98
+
+#include <pthread.h>
+
 #define AGS_TYPE_DIAL                (ags_dial_get_type())
 #define AGS_DIAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DIAL, AgsDial))
 #define AGS_DIAL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DIAL, AgsDialClass))
@@ -35,11 +39,12 @@ typedef struct _AgsDialClass AgsDialClass;
 
 typedef enum{
   AGS_DIAL_WITH_BUTTONS           = 1,
-  AGS_DIAL_MOUSE_BUTTON_PRESSED   = 1 << 1,
-  AGS_DIAL_BUTTON_DOWN_PRESSED    = 1 << 2,
-  AGS_DIAL_BUTTON_UP_PRESSED      = 1 << 3,
-  AGS_DIAL_MOTION_CAPTURING_INIT  = 1 << 4,
-  AGS_DIAL_MOTION_CAPTURING       = 1 << 5,
+  AGS_DIAL_MOUSE_BUTTON_PRESSED   = 1 <<  1,
+  AGS_DIAL_BUTTON_DOWN_PRESSED    = 1 <<  2,
+  AGS_DIAL_BUTTON_UP_PRESSED      = 1 <<  3,
+  AGS_DIAL_MOTION_CAPTURING_INIT  = 1 <<  4,
+  AGS_DIAL_MOTION_CAPTURING       = 1 <<  5,
+  AGS_DIAL_IDLE                   = 1 <<  6,
 }AgsDialFlags;
 
 struct _AgsDial
@@ -60,7 +65,14 @@ struct _AgsDial
 
   gdouble tolerance;
   gdouble negated_tolerance;
+
   gint sleep_interval;
+
+  pthread_t idle_thread;
+  pthread_attr_t idle_thread_attr;
+  pthread_mutex_t idle_mutex;
+  pthread_mutexattr_t idle_mutex_attr;
+  pthread_cond_t idle_cond;
 
   gdouble gravity_x;
   gdouble gravity_y;

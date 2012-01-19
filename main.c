@@ -42,7 +42,6 @@
 
 void ags_init();
 void ags_colors_alloc();
-GList* g_list_last_with_count(GList *list, guint *count);
 
 extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
@@ -254,19 +253,6 @@ ags_colors_alloc()
     meter_style->base[0].blue = 0 * (65535/255);
     meter_style->base[0].pixel = (gulong)(0*65536 + 0*256 + 0);
   }
-}
-
-GList*
-g_list_last_with_count(GList *list, guint *count)
-{
-  guint i;
-
-  for(i = 0; list->next != NULL; i++)
-    list = list->next;
-
-  *count = i;
-
-  return(list);
 }
 
 int
