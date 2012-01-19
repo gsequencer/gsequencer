@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/X/ags_file_selection.h>
-#include <ags/X/ags_file_selection_callbacks.h>
+#include <ags/X/editor/ags_file_selection.h>
+#include <ags/X/editor/ags_file_selection_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -105,7 +105,7 @@ ags_file_selection_class_init(AgsFileSelectionClass *file_selection)
   file_selection->remove = ags_file_selection_real_remove;
   file_selection->completed = NULL;
 
-  audio_signals[ADD] = 
+  file_selection_signals[ADD] = 
     g_signal_new("add\0",
 		 G_TYPE_FROM_CLASS(file_selection),
 		 G_SIGNAL_RUN_LAST,
@@ -115,7 +115,7 @@ ags_file_selection_class_init(AgsFileSelectionClass *file_selection)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
-  audio_signals[REMOVE] = 
+  file_selection_signals[REMOVE] = 
     g_signal_new("remove\0",
 		 G_TYPE_FROM_CLASS(file_selection),
 		 G_SIGNAL_RUN_LAST,
@@ -125,7 +125,7 @@ ags_file_selection_class_init(AgsFileSelectionClass *file_selection)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
-  audio_signals[COMPLETED] = 
+  file_selection_signals[COMPLETED] = 
     g_signal_new("completed\0",
 		 G_TYPE_FROM_CLASS(file_selection),
 		 G_SIGNAL_RUN_LAST,
@@ -161,31 +161,31 @@ ags_file_selection_init(AgsFileSelection *file_selection)
 		   FALSE, FALSE,
 		   0);
 
-  label = gtk_label_new("Choosed: \0");
+  label = (GtkLabel *) gtk_label_new("Choosed: \0");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  file_selection->chosed = g_object_new(GTK_TYPE_LABEL,
-					"label\0", g_strdup_printf("%d\0", 0),
-					NULL);
+  file_selection->chosed = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+						     "label\0", g_strdup_printf("%d\0", 0),
+						     NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(file_selection->chosed),
 		     FALSE, FALSE,
 		     0);
 
-  label = gtk_label_new("/\0");
+  label = (GtkLabel *) gtk_label_new("/\0");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  file_selection->selected = g_object_new(GTK_TYPE_LABEL,
-					  "label\0", g_strdup_printf("%d\0", 0),
-					  NULL);
+  file_selection->selected = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+						       "label\0", g_strdup_printf("%d\0", 0),
+						       NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(file_selectoin->selected),
+		     GTK_WIDGET(file_selection->selected),
 		     FALSE, FALSE,
 		     0);
 }
@@ -263,7 +263,7 @@ ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
   }
 
   while(entry != NULL){
-    if(g_str_has_suffix(entry->filename, ".sf2\0")){
+    if(g_str_has_suffix(AGS_FILE_SELECTION_ENTRY(entry->data)->filename, ".sf2\0")){
       hbox = ags_file_selection_set_entry_new_entry();
 
       ags_file_selection_add(file_selection, (GtkWidget *) hbox);
@@ -356,7 +356,7 @@ ags_file_selection_entry_alloc()
 }
 
 AgsFileSelection*
-ags_file_selection_new(GObject *devout)
+ags_file_selection_new()
 {
   AgsFileSelection *file_selection;
 

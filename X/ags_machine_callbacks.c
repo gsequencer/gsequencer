@@ -21,8 +21,14 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/ags_input.h>
+
+#include <ags/audio/task/ags_link_channel.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
+
+#include <ags/X/editor/ags_file_selection.h>
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 
@@ -188,6 +194,7 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
   guint list_length;
   guint i, j;
   gboolean reset;
+  GError *error;
   GStaticMutex mutex = G_STATIC_MUTEX_INIT;
 
   file_chooser = (GtkFileChooserDialog *) gtk_widget_get_toplevel(widget);
@@ -199,13 +206,13 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 
     channel = machine->audio->input;
 
-    current_folder = gtk_file_chooser_get_current_folder();
+    current_folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(file_chooser));
 
     /* check for supported packed audio files */
-    file_selection = (AgsFileSelection *) gtk_file_chooser_get_extra_widget(file_chooser);
+    file_selection = (AgsFileSelection *) gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(file_chooser));
 
-    if(file_selection != NULL && g_strcmp0(file_selection->directory, current_directory)){
-      gtk_widget_destroy(file_selection);
+    if(file_selection != NULL && g_strcmp0(file_selection->directory, current_folder)){
+      gtk_widget_destroy(GTK_WIDGET(file_selection));
 
       file_selection = NULL;
     }
@@ -220,16 +227,12 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	gchar *current_filename;
 	
 	new_entry = NULL;
-	found_selectable = FALSE;
 	
 	while(slist != NULL){
-	  if(g_str_has_suffix(slist->data),
-	     ".sf2\n\0"){
+	  if(g_str_has_suffix(slist->data,
+			      ".sf2\n\0")){
 	    AgsFileSelectionEntry *entry;
 	    
-	    if(new_entry != NULL){
-	      found_selectable = TRUE;
-	    }
 	    
 	    entry = ags_file_selection_entry_alloc();
 	    entry->filename = slist->data;
@@ -246,10 +249,10 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	if(file_selection == NULL){
 	  if(new_entry != NULL){
 	    file_selection = ags_file_selection_new();
-	    gtk_file_chooser_set_extra_widget(file_chooser,
+	    gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(file_chooser),
 					      GTK_WIDGET(file_selection));
 	    
-	    ags_file_selection_set_entry(file_selection->entry,
+	    ags_file_selection_set_entry(file_selection,
 					 new_entry);
 	    
 	    return;
@@ -279,23 +282,26 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	    g_list_free(new_entry);
 	  }
 	  
-	  ags_file_selection_set_entry(file_selection->entry,
+	  ags_file_selection_set_entry(file_selection,
 				       really_new_entry);
 
 	  /* adding lost files */
 	  //TODO:JK: figure out if you need to copy the GSList of filenames
-	  gtk_file_chooser_select_all(file_chooser);
+	  gtk_file_chooser_select_all(GTK_FILE_CHOOSER(file_chooser));
 	  
-	  current_directory = g_dir_open(current_folder);
+	  current_directory = g_dir_open(current_folder,
+					 0,
+					 &error);
 	  
-	  while((current_filename = g_dir_read_name(current_directory)) != NULL){
+	  while((current_filename = (gchar *) g_dir_read_name(current_directory)) != NULL){
 	    if(g_strcmp0(".\0", current_filename) ||
 	       g_strcmp0("..\0", current_filename))
 	      continue;
 
 	    if(!ags_file_selection_contains_file(file_selection, current_filename) &&
 	       g_slist_find(filenames, current_filename) == NULL){
-	      gtk_file_chooser_unselect_filename(file_chooser, current_filename);
+	      gtk_file_chooser_unselect_filename(GTK_FILE_CHOOSER(file_chooser),
+						 current_filename);
 	    }
 	  }
 	  

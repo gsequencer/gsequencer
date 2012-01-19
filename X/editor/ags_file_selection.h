@@ -34,6 +34,8 @@
 #define AGS_IS_FILE_SELECTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_FILE_SELECTION))
 #define AGS_FILE_SELECTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_FILE_SELECTION, AgsFileSelectionClass))
 
+#define AGS_FILE_SELECTION_ENTRY(strct)        ((AgsFileSelectionEntry *) (strct))
+
 typedef struct _AgsFileSelection AgsFileSelection;
 typedef struct _AgsFileSelectionClass AgsFileSelectionClass;
 typedef struct _AgsFileSelectionEntry AgsFileSelectionEntry;
@@ -90,6 +92,6 @@ gboolean ags_file_selection_contains_file(AgsFileSelection *file_selection, gcha
 
 void ags_file_selection_completed(AgsFileSelection *file_selection);
 
-AgsFileSelection* ags_file_selection_new(GObject *devout);
+AgsFileSelection* ags_file_selection_new();
 
 #endif /*__AGS_FILE_SELECTION_H__*/
