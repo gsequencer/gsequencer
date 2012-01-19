@@ -289,7 +289,7 @@ main(int argc, char **argv)
   window = ags_window_new();
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
-  ags_window_connect(window);
+  ags_connectable_connect(window);
   gtk_widget_show_all((GtkWidget *) window);
 
   gtk_main();
