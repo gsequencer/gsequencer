@@ -274,7 +274,7 @@ ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 }
 
 void
-ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
+ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget)
 {
   g_return_if_fail(AGS_IS_FILE_SELECTION(file_selection));
 
@@ -286,7 +286,7 @@ ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
 }
 
 void
-ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget)
+ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
 {
   gtk_box_pack_start(GTK_BOX(file_selection),
 		     widget,
@@ -310,7 +310,7 @@ ags_file_selection_remove(AgsFileSelection *file_selection, GtkWidget *widget)
 void
 ags_file_selection_real_remove(AgsFileSelection *file_selection, GtkWidget *widget)
 {
-  /* implement me */
+  gtk_widget_destroy(widget);
 }
 
 gboolean
