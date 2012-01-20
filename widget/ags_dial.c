@@ -23,7 +23,6 @@
 
 void ags_dial_class_init(AgsDialClass *dial);
 void ags_dial_init(AgsDial *dial);
-void ags_dial_finalize(GObject *gobject);
 void ags_dial_show(GtkWidget *widget);
 
 void ags_dial_realize(GtkWidget *widget);
@@ -119,32 +118,17 @@ ags_dial_init(AgsDial *dial)
   pthread_attr_init(&dial->idle_thread_attr);
   pthread_attr_setschedpolicy(&dial->idle_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&dial->idle_thread_attr, PTHREAD_INHERIT_SCHED);
-  
+
   pthread_mutexattr_init(&dial->idle_mutex_attr);
   pthread_mutexattr_setprotocol(&dial->idle_mutex_attr, PTHREAD_PRIO_INHERIT);
   pthread_mutex_init(&dial->idle_mutex, &dial->idle_mutex_attr);
-  
+
   pthread_cond_init(&(dial->idle_cond), NULL);
 
   dial->gravity_x = 0.0;
   dial->gravity_y = 0.0;
   dial->current_x = 0.0;
   dial->current_y = 0.0;
-}
-
-void
-ags_dial_finalize(GObject *gobject)
-{
-  AgsDial *dial;
-
-  dial = AGS_DIAL(gobject);
-
-  pthread_attr_destroy(&(dial->idle_thread_attr));
-  pthread_mutex_destroy(&(dial->idle_mutex));
-  pthread_mutexattr_destroy(&(dial->idle_mutex_attr));
-  pthread_cond_destroy(&(dial->idle_cond));
-
-  G_OBJECT_CLASS(ags_dial_parent_class)->finalize(gobject);
 }
 
 void
@@ -411,7 +395,7 @@ ags_dial_motion_notify(GtkWidget *widget,
       if(dial->gravity_x < dial->current_x){
 	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
       }else{
-	gravity_up = (-1 * (dial->gravity_x - dial->current_x) * dial->tolerance > (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
+	gravity_up = (-1 * (dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
       }
     }else{
       if(dial->gravity_x < dial->current_x){
@@ -428,6 +412,7 @@ ags_dial_motion_notify(GtkWidget *widget,
 	
 	ags_dial_draw(dial);
 	pthread_create(&(dial->idle_thread), NULL, &ags_dial_idle, dial);
+	//	usleep(dial->sleep_interval);
       }
     }else{
       if(adjustment->value < adjustment->upper){
@@ -436,6 +421,7 @@ ags_dial_motion_notify(GtkWidget *widget,
 	
 	ags_dial_draw(dial);
 	pthread_create(&(dial->idle_thread), NULL, &ags_dial_idle, dial);
+	//	usleep(dial->sleep_interval);
       }
     }
   }
@@ -446,19 +432,6 @@ ags_dial_motion_notify(GtkWidget *widget,
 
   if((AGS_DIAL_IDLE & (dial->flags)) != 0)
     return(TRUE);
-  
-  /*
-   * This conditional lock is necessary because the keyboard probably needs a sleep interval, too.
-   * Keybinding isn't supported, yet.
-   */
-  pthread_mutex_lock(&(dial->idle_mutex));
-  while((AGS_DIAL_IDLE & (dial->flags)) != 0){
-    pthread_cond_wait(&(dial->idle_cond),
-		      &(dial->idle_mutex));
-  }
-
-  dial->flags |= AGS_DIAL_IDLE;
-  pthread_mutex_unlock(&(dial->idle_mutex));
 
   if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
     if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
