@@ -226,11 +226,12 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	GSList *slist;
 	gchar *current_filename;
 	
+	slist = filenames;
 	new_entry = NULL;
 	
 	while(slist != NULL){
 	  if(g_str_has_suffix(slist->data,
-			      ".sf2\n\0")){
+			      ".sf2\0")){
 	    AgsFileSelectionEntry *entry;
 	    
 	    
@@ -251,16 +252,17 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 	    file_selection = ags_file_selection_new();
 	    gtk_file_chooser_set_extra_widget(GTK_FILE_CHOOSER(file_chooser),
 					      GTK_WIDGET(file_selection));
-	    
+
 	    ags_file_selection_set_entry(file_selection,
 					 new_entry);
+
+	    gtk_widget_show_all(GTK_WIDGET(file_selection));
 	    
 	    return;
 	  }
 	}else if(AGS_IS_FILE_SELECTION(file_selection)){
 	  GList *really_new_entry;
 	  GList *list;
-	  GSList *slist;
 	  
 	  old_entry = file_selection->entry;
 	  list = new_entry;

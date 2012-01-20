@@ -8,5 +8,5 @@ ags_file_selection_remove_callback(GtkButton *button, GtkHBox *hbox)
   file_selection = (AgsFileSelection *) gtk_widget_get_ancestor(GTK_WIDGET(hbox),
 								AGS_TYPE_FILE_SELECTION);
 
-  ags_file_selection_remove(file_selection, GTK_WIDGET(hbox));
+  ags_file_selection_remove_entry(file_selection, GTK_WIDGET(hbox));
 }

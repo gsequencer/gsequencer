@@ -31,13 +31,13 @@ void ags_file_selection_disconnect(AgsConnectable *connectable);
 static void ags_file_selection_finalize(GObject *gobject);
 void ags_file_selection_show(GtkWidget *widget);
 
-void ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget);
-void ags_file_selection_real_remove(AgsFileSelection *file_selection, GtkWidget *widget);
+void ags_file_selection_real_add_entry(AgsFileSelection *file_selection, GtkWidget *widget);
+void ags_file_selection_real_remove_entry(AgsFileSelection *file_selection, GtkWidget *widget);
 void ags_file_selection_real_completed(AgsFileSelection *file_selection);
 
 enum{
-  ADD,
-  REMOVE,
+  ADD_ENTRY,
+  REMOVE_ENTRY,
   COMPLETED,
   LAST_SIGNAL,
 };
@@ -101,25 +101,25 @@ ags_file_selection_class_init(AgsFileSelectionClass *file_selection)
   widget->show = ags_file_selection_show;
 
   /* AgsFileSelectionClass */
-  file_selection->add = ags_file_selection_real_add;
-  file_selection->remove = ags_file_selection_real_remove;
+  file_selection->add_entry = ags_file_selection_real_add_entry;
+  file_selection->remove_entry = ags_file_selection_real_remove_entry;
   file_selection->completed = NULL;
 
-  file_selection_signals[ADD] = 
-    g_signal_new("add\0",
+  file_selection_signals[ADD_ENTRY] = 
+    g_signal_new("add_entry\0",
 		 G_TYPE_FROM_CLASS(file_selection),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsFileSelectionClass, add),
+		 G_STRUCT_OFFSET(AgsFileSelectionClass, add_entry),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
-  file_selection_signals[REMOVE] = 
-    g_signal_new("remove\0",
+  file_selection_signals[REMOVE_ENTRY] = 
+    g_signal_new("remove_entry\0",
 		 G_TYPE_FROM_CLASS(file_selection),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsFileSelectionClass, completed),
+		 G_STRUCT_OFFSET(AgsFileSelectionClass, remove_entry),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
@@ -244,10 +244,14 @@ void
 ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 {
   GtkHBox *hbox;
+  GtkWidget *entry_widget;
+
   auto GtkHBox* ags_file_selection_set_entry_new_entry();
+
   GtkHBox* ags_file_selection_set_entry_new_entry(){
     GtkHBox *hbox;
     GtkButton *remove;
+
 
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
     
@@ -266,7 +270,14 @@ ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
     if(g_str_has_suffix(AGS_FILE_SELECTION_ENTRY(entry->data)->filename, ".sf2\0")){
       hbox = ags_file_selection_set_entry_new_entry();
 
-      ags_file_selection_add(file_selection, (GtkWidget *) hbox);
+      entry_widget = (GtkWidget *) ags_sf2_chooser_new();
+      gtk_box_pack_start(GTK_BOX(hbox),
+			 GTK_WIDGET(entry_widget),
+			 FALSE,
+			 FALSE,
+			 0);
+
+      ags_file_selection_add_entry(file_selection, (GtkWidget *) hbox);
     }
 
     entry = entry->next;
@@ -274,19 +285,19 @@ ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 }
 
 void
-ags_file_selection_add(AgsFileSelection *file_selection, GtkWidget *widget)
+ags_file_selection_add_entry(AgsFileSelection *file_selection, GtkWidget *widget)
 {
   g_return_if_fail(AGS_IS_FILE_SELECTION(file_selection));
 
   g_object_ref((GObject *) file_selection);
   g_signal_emit(G_OBJECT(file_selection),
-		file_selection_signals[COMPLETED], 0,
+		file_selection_signals[ADD_ENTRY], 0,
 		widget);
   g_object_unref((GObject *) file_selection);
 }
 
 void
-ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
+ags_file_selection_real_add_entry(AgsFileSelection *file_selection, GtkWidget *widget)
 {
   gtk_box_pack_start(GTK_BOX(file_selection),
 		     widget,
@@ -296,19 +307,19 @@ ags_file_selection_real_add(AgsFileSelection *file_selection, GtkWidget *widget)
 }
 
 void
-ags_file_selection_remove(AgsFileSelection *file_selection, GtkWidget *widget)
+ags_file_selection_remove_entry(AgsFileSelection *file_selection, GtkWidget *widget)
 {
   g_return_if_fail(AGS_IS_FILE_SELECTION(file_selection));
 
   g_object_ref((GObject *) file_selection);
   g_signal_emit(G_OBJECT(file_selection),
-		file_selection_signals[COMPLETED], 0,
+		file_selection_signals[REMOVE_ENTRY], 0,
 		widget);
   g_object_unref((GObject *) file_selection);
 }
 
 void
-ags_file_selection_real_remove(AgsFileSelection *file_selection, GtkWidget *widget)
+ags_file_selection_real_remove_entry(AgsFileSelection *file_selection, GtkWidget *widget)
 {
   gtk_widget_destroy(widget);
 }

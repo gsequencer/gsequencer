@@ -17,6 +17,7 @@
  */
 
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
+#include <ags/X/ags_machine_callbacks.h>
 
 #include <ags/X/ags_window.h>
 
@@ -74,7 +75,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
   g_signal_connect((GObject *) file_chooser, "response\0",
-		   G_CALLBACK(ags_ffplayer_open_response_callback), file_chooser);
+		   G_CALLBACK(ags_machine_open_response_callback), ffplayer);
 }
 
 void

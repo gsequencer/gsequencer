@@ -117,10 +117,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   g_signal_connect_after((GObject *) ffplayer, "parent_set\0",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
-  ffplayer->machine.audio->flags |= (AGS_AUDIO_INPUT_HAS_RECYCLING |
-				     AGS_AUDIO_INPUT_TAKES_FILE |
-				     AGS_AUDIO_SYNC |
-				     AGS_AUDIO_HAS_NOTATION);
+  AGS_MACHINE(ffplayer)->audio->flags |= (AGS_AUDIO_INPUT_HAS_RECYCLING |
+					  AGS_AUDIO_INPUT_TAKES_FILE |
+					  AGS_AUDIO_SYNC |
+					  AGS_AUDIO_HAS_NOTATION);
+  
+  AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
 
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) ffplayer))->data, (GtkWidget *) table);
