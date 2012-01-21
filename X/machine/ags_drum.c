@@ -472,13 +472,6 @@ ags_drum_connect(AgsConnectable *connectable)
   /* AgsDrum */
   drum = AGS_DRUM(connectable);
 
-  //  g_signal_connect((GObject *) drum, "destroy\0",
-  //		   G_CALLBACK(ags_drum_destroy_callback), (gpointer) drum);
-
-  g_signal_connect((GObject *) drum, "show\0",
-		   G_CALLBACK(ags_drum_show_callback), (gpointer) drum);
-
-
   g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
 

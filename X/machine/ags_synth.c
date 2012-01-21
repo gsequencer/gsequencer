@@ -41,8 +41,9 @@
 void ags_synth_class_init(AgsSynthClass *synth);
 void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_init(AgsSynth *synth);
+void ags_synth_finalize(GObject *gobject);
 void ags_synth_connect(AgsConnectable *connectable);
-void ags_synth_destroy(GtkObject *object);
+void ags_synth_disconnect(AgsConnectable *connectable);
 void ags_synth_show(GtkWidget *widget);
 
 void ags_synth_set_audio_channels(AgsAudio *audio,
@@ -56,6 +57,8 @@ void ags_synth_update(AgsSynth *synth);
 
 extern void ags_file_read_synth(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_synth(AgsFile *file, AgsMachine *machine);
+
+static gpointer ags_synth_parent_class = NULL;
 
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;
 
@@ -98,7 +101,22 @@ ags_synth_get_type(void)
 void
 ags_synth_class_init(AgsSynthClass *synth)
 {
-  AgsMachineClass *machine = (AgsMachineClass *) synth;
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  AgsMachineClass *machine;
+
+  ags_synth_parent_class = g_type_class_peek_parent(synth);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) synth;
+
+  gobject->finalize = ags_synth_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) synth;
+
+  /* AgsMachineClass */
+  machine = (AgsMachineClass *) synth;
 
   //  machine->read_file = ags_file_read_synth;
   //  machine->write_file = ags_file_write_synth;
@@ -112,6 +130,7 @@ ags_synth_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_synth_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_synth_connect;
+  connectable->disconnect = ags_synth_disconnect;
 }
 
 void
@@ -177,13 +196,9 @@ ags_synth_init(AgsSynth *synth)
 }
 
 void
-ags_synth_destroy(GtkObject *object)
+ags_synth_finalize(GObject *gobject)
 {
-}
-
-void
-ags_synth_show(GtkWidget *widget)
-{
+  G_OBJECT_CLASS(ags_synth_parent_class)->finalize(gobject);
 }
 
 void
@@ -195,9 +210,6 @@ ags_synth_connect(AgsConnectable *connectable)
 
   /* AgsSynth */
   synth = AGS_SYNTH(connectable);
-
-  g_signal_connect((GObject *) synth, "destroy\0",
-		   G_CALLBACK(ags_synth_destroy_callback), (gpointer) synth);
 
   g_signal_connect((GObject *) synth->lower, "value-changed\0",
 		   G_CALLBACK(ags_synth_lower_callback), synth);
@@ -214,6 +226,17 @@ ags_synth_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(synth->machine.audio), "set_pads\0",
 			 G_CALLBACK(ags_synth_set_pads), NULL);
+}
+
+void
+ags_synth_disconnect(AgsConnectable *connectable)
+{
+  AgsSynth *synth;
+
+  ags_synth_parent_connectable_interface->disconnect(connectable);
+
+  /* AgsSynth */
+  synth = AGS_SYNTH(connectable);
 }
 
 void

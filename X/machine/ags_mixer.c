@@ -37,8 +37,9 @@
 void ags_mixer_class_init(AgsMixerClass *mixer);
 void ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_init(AgsMixer *mixer);
+void ags_mixer_finalize(GObject *gobject);
 void ags_mixer_connect(AgsConnectable *connectable);
-void ags_mixer_destroy(GtkObject *object);
+void ags_mixer_disconnect(AgsConnectable *connectable);
 void ags_mixer_show(GtkWidget *widget);
 
 void ags_mixer_set_audio_channels(AgsAudio *audio,
@@ -50,6 +51,8 @@ void ags_mixer_set_pads(AgsAudio *audio, GType type,
 
 extern void ags_file_read_mixer(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_mixer(AgsFile *file, AgsMachine *machine);
+
+static gpointer ags_mixer_parent_class = NULL;
 
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
 
@@ -94,13 +97,23 @@ ags_mixer_get_type(void)
 void
 ags_mixer_class_init(AgsMixerClass *mixer)
 {
-  GtkObjectClass *object = (GtkObjectClass *) mixer;
-  GtkWidgetClass *widget = (GtkWidgetClass *) mixer;
-  AgsMachineClass *machine = (AgsMachineClass *) mixer;
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  AgsMachineClass *machine;
 
-  //  object->destroy = ags_mixer_destroy;
+  ags_mixer_parent_class = g_type_class_peek_parent(mixer);
 
+  /* GObjectClass */
+  gobject = (GObjectClass *) mixer;
+
+  gobject->finalize = ags_mixer_finalize;
+
+  /* GtkWidget */
+  widget = (GtkWidgetClass *) mixer;
   //  widget->show = ags_mixer_show;
+
+  /* AgsMachine */
+  machine = (AgsMachineClass *) mixer;
 
   //  machine->read_file = ags_file_read_mixer;
   //  machine->write_file = ags_file_write_mixer;
@@ -114,6 +127,7 @@ ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_mixer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_mixer_connect;
+  connectable->disconnect = ags_mixer_disconnect;
 }
 
 void
@@ -130,6 +144,12 @@ ags_mixer_init(AgsMixer *mixer)
 }
 
 void
+ags_mixer_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_mixer_parent_class)->finalize(gobject);
+}
+
+void
 ags_mixer_connect(AgsConnectable *connectable)
 {
   AgsMixer *mixer;
@@ -139,8 +159,8 @@ ags_mixer_connect(AgsConnectable *connectable)
   /* AgsMixer */
   mixer = AGS_MIXER(connectable);
 
-  g_signal_connect((GObject *) mixer, "destroy\0",
-		   G_CALLBACK(ags_mixer_destroy_callback), (gpointer) mixer);
+  //  g_signal_connect((GObject *) mixer, "destroy\0",
+  //		   G_CALLBACK(ags_mixer_destroy_callback), (gpointer) mixer);
 
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_audio_channels\0",
@@ -151,8 +171,16 @@ ags_mixer_connect(AgsConnectable *connectable)
 }
 
 void
-ags_mixer_destroy(GtkObject *object)
+ags_mixer_disconnect(AgsConnectable *connectable)
 {
+  AgsMixer *mixer;
+
+  ags_mixer_parent_connectable_interface->disconnect(connectable);
+
+  /* AgsMixer */
+  mixer = AGS_MIXER(connectable);
+
+  //TODO:JK: implement me
 }
 
 void

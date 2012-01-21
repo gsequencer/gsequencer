@@ -26,7 +26,6 @@
 #include <ags/X/machine/ags_synth.h>
 
 void ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth);
-gboolean ags_synth_destroy_callback(GtkObject *object, AgsSynth *synth);
 
 void ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth);
 

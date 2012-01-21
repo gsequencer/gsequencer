@@ -47,8 +47,9 @@
 void ags_matrix_class_init(AgsMatrixClass *matrix);
 void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_init(AgsMatrix *matrix);
+void ags_matrix_finalize(GObject *gobject);
 void ags_matrix_connect(AgsConnectable *connectable);
-void ags_matrix_destroy(GtkObject *object);
+void ags_matrix_disconnect(AgsConnectable *connectable);
 void ags_matrix_show(GtkWidget *widget);
 
 void ags_matrix_set_audio_channels(AgsAudio *audio,
@@ -60,6 +61,8 @@ void ags_matrix_set_pads(AgsAudio *audio, GType type,
 
 extern void ags_file_read_matrix(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_matrix(AgsFile *file, AgsMachine *machine);
+
+static gpointer ags_matrix_parent_class = NULL;
 
 static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
 
@@ -107,13 +110,24 @@ ags_matrix_get_type(void)
 void
 ags_matrix_class_init(AgsMatrixClass *matrix)
 {
-  GtkObjectClass *object = (GtkObjectClass *) matrix;
-  GtkWidgetClass *widget = (GtkWidgetClass *) matrix;
-  AgsMachineClass *machine = (AgsMachineClass *) matrix;
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  AgsMachineClass *machine;
 
-  //  object->destroy = ags_matrix_destroy;
+  ags_matrix_parent_class = g_type_class_peek_parent(matrix);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) matrix;
+
+  gobject->finalize = ags_matrix_finalize;
+
+  /* GtkWidget */
+  widget = (GtkWidgetClass *) matrix;
 
   //  widget->show = ags_matrix_show;
+
+  /* AgsMachine */
+  machine = (AgsMachineClass *) matrix;
 
   //  machine->read_file = ags_file_read_matrix;
   //  machine->write_file = ags_file_write_matrix;
@@ -127,6 +141,7 @@ ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_matrix_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_matrix_connect;
+  connectable->disconnect = ags_matrix_disconnect;
 }
 
 void
@@ -408,6 +423,12 @@ ags_matrix_init(AgsMatrix *matrix)
 }
 
 void
+ags_matrix_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_matrix_parent_class)->finalize(gobject);
+}
+
+void
 ags_matrix_connect(AgsConnectable *connectable)
 {
   AgsMatrix *matrix;
@@ -417,9 +438,6 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   /* AgsMatrix */
   matrix = AGS_MATRIX(connectable);
-
-  g_signal_connect((GObject *) matrix, "destroy\0",
-		   G_CALLBACK(ags_matrix_destroy_callback), (gpointer) matrix);
 
   g_signal_connect(G_OBJECT(matrix->run), "clicked\0",
 		   G_CALLBACK(ags_matrix_run_callback), (gpointer) matrix);
@@ -456,8 +474,16 @@ ags_matrix_connect(AgsConnectable *connectable)
 }
 
 void
-ags_matrix_destroy(GtkObject *object)
+ags_matrix_disconnect(AgsConnectable *connectable)
 {
+  AgsMatrix *matrix;
+
+  ags_matrix_parent_connectable_interface->disconnect(connectable);
+
+  /* AgsMatrix */
+  matrix = AGS_MATRIX(connectable);
+
+  //TODO:JK: implement me
 }
 
 void

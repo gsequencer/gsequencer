@@ -26,8 +26,6 @@
 #include <ags/X/machine/ags_drum.h>
 
 void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
-gboolean ags_drum_destroy_callback(GtkObject *object, AgsDrum *drum);
-void ags_drum_show_callback(GtkWidget *widget, AgsDrum *drum);
 
 void ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum); // AgsNavigation->bpm
 

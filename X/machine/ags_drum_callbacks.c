@@ -157,20 +157,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   fprintf(stdout, "ags_drum_parent_set_callback: delay = %d\n\0", delay);
 }
 
-gboolean
-ags_drum_destroy_callback(GtkObject *object, AgsDrum *drum)
-{
-  //  ags_drum_destroy(object);
-
-  return(TRUE);
-}
-
-void
-ags_drum_show_callback(GtkWidget *widget, AgsDrum *drum)
-{
-  ags_drum_show(widget);
-}
-
 void
 ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
 {

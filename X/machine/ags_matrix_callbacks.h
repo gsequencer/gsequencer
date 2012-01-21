@@ -26,7 +26,6 @@
 #include <ags/X/machine/ags_matrix.h>
 
 void ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix);
-gboolean ags_matrix_destroy_callback(GtkObject *object, AgsMatrix *matrix);
 
 void ags_matrix_run_callback(GtkWidget *widget, AgsMatrix *matrix);
 

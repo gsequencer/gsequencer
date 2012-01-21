@@ -27,6 +27,4 @@
 
 void ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel *panel);
 
-gboolean ags_panel_destroy_callback();
-
 #endif /*__AGS_PANEL_CALLBACKS_H__*/

@@ -35,8 +35,9 @@
 void ags_panel_class_init(AgsPanelClass *panel);
 void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_init(AgsPanel *panel);
-void ags_panel_connect(AgsConnectable *connectable);
 static void ags_panel_finalize(GObject *gobject);
+void ags_panel_connect(AgsConnectable *connectable);
+void ags_panel_disconnect(AgsConnectable *connectable);
 void ags_panel_show(GtkWidget *widget);
 
 void ags_panel_set_audio_channels(AgsAudio *audio,
@@ -122,6 +123,7 @@ ags_panel_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_panel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_panel_connect;
+  connectable->disconnect = ags_panel_disconnect;
 }
 
 void
@@ -136,6 +138,13 @@ ags_panel_init(AgsPanel *panel)
 
   panel->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_SYNC);
 }
+
+static void
+ags_panel_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
+}
+
 
 void
 ags_panel_connect(AgsConnectable *connectable)
@@ -155,10 +164,17 @@ ags_panel_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_panel_set_pads), NULL);
 }
 
-static void
-ags_panel_finalize(GObject *gobject)
+void
+ags_panel_disconnect(AgsConnectable *connectable)
 {
-  G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
+  AgsPanel *panel;
+
+  ags_panel_parent_connectable_interface->disconnect(connectable);
+
+  /* AgsPanel */
+  panel = AGS_PANEL(connectable);
+
+  //TODO:JK: implement me
 }
 
 void

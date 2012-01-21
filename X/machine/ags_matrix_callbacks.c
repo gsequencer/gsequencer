@@ -136,14 +136,6 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
 
-gboolean
-ags_matrix_destroy_callback(GtkObject *object, AgsMatrix *matrix)
-{
-  ags_matrix_destroy(object);
-
-  return(TRUE);
-}
-
 void
 ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 {
