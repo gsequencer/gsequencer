@@ -198,7 +198,7 @@ ags_sf2_chooser_show(GtkWidget *widget)
 }
 
 AgsSF2Chooser*
-ags_sf2_chooser_new(GObject *devout)
+ags_sf2_chooser_new()
 {
   AgsSF2Chooser *sf2_chooser;
 

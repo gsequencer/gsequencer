@@ -299,6 +299,10 @@ ags_file_selection_add_entry(AgsFileSelection *file_selection, GtkWidget *widget
 void
 ags_file_selection_real_add_entry(AgsFileSelection *file_selection, GtkWidget *widget)
 {
+  file_selection->entry_count++;
+  gtk_label_set_text(file_selection->selected,
+		     g_strdup_printf("%d\0", file_selection->entry_count));
+
   gtk_box_pack_start(GTK_BOX(file_selection),
 		     widget,
 		     FALSE,
@@ -321,6 +325,10 @@ ags_file_selection_remove_entry(AgsFileSelection *file_selection, GtkWidget *wid
 void
 ags_file_selection_real_remove_entry(AgsFileSelection *file_selection, GtkWidget *widget)
 {
+  file_selection->entry_count--;
+  gtk_label_set_text(file_selection->selected,
+		     g_strdup_printf("%d\0", file_selection->entry_count));
+
   gtk_widget_destroy(widget);
 }
 
