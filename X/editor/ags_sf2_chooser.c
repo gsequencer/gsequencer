@@ -26,10 +26,23 @@
 void ags_sf2_chooser_class_init(AgsSF2ChooserClass *sf2_chooser);
 void ags_sf2_chooser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser);
+void ags_sf2_chooser_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec);
+void ags_sf2_chooser_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec);
+void ags_sf2_chooser_finalize(GObject *gobject);
 void ags_sf2_chooser_connect(AgsConnectable *connectable);
 void ags_sf2_chooser_disconnect(AgsConnectable *connectable);
-void ags_sf2_chooser_finalize(GObject *gobject);
 void ags_sf2_chooser_show(GtkWidget *widget);
+
+enum{
+  PROP_0,
+  PROP_FILENAME,
+};
 
 static gpointer ags_sf2_chooser_parent_class = NULL;
 
@@ -74,13 +87,27 @@ ags_sf2_chooser_class_init(AgsSF2ChooserClass *sf2_chooser)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+  GParamSpec *param_spec;
 
   ags_sf2_chooser_parent_class = g_type_class_peek_parent(sf2_chooser);
 
   /* GtkObjectClass */
   gobject = (GObjectClass *) sf2_chooser;
 
+  gobject->set_property = ags_sf2_chooser_set_property;
+  gobject->get_property = ags_sf2_chooser_get_property;
+
   gobject->finalize = ags_sf2_chooser_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("filename\0",
+				   "assigned filename\0",
+				   "The filename of the selected Soundfont2\0",
+				   G_TYPE_STRING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) sf2_chooser;
@@ -101,10 +128,10 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
   GtkTable *table;
   GtkLabel *label;
 
+  sf2_chooser->filename = NULL;
+
   table = (GtkTable *) gtk_table_new(2, 3, FALSE);
   gtk_box_pack_start(GTK_BOX(sf2_chooser), GTK_WIDGET(table), FALSE, FALSE, 0);
-  //  gtk_file_chooser_set_extra_widget(sf2_chooser,
-  //				    GTK_WIDGET(table));
 
   /* first row - preset */
   label = (GtkLabel *) gtk_label_new("preset: \0");
@@ -115,7 +142,7 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  sf2_chooser->preset = (GtkLabel *) gtk_combo_box_text_new();
+  sf2_chooser->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_table_attach(table,
 		   GTK_WIDGET(sf2_chooser->preset),
 		   1, 2,
@@ -132,7 +159,7 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  sf2_chooser->instrument = (GtkLabel *) gtk_combo_box_text_new();
+  sf2_chooser->instrument = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_table_attach(table,
 		   GTK_WIDGET(sf2_chooser->instrument),
 		   1, 2,
@@ -149,13 +176,72 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  sf2_chooser->sample = (GtkLabel *) gtk_combo_box_text_new();
+  sf2_chooser->sample = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_table_attach(table,
 		   GTK_WIDGET(sf2_chooser->sample),
 		   1, 2,
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+}
+
+void
+ags_sf2_chooser_set_property(GObject *gobject,
+		       guint prop_id,
+		       const GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsSF2Chooser *sf2_chooser;
+
+  sf2_chooser = AGS_SF2_CHOOSER(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = (gchar *) g_value_get_string(value);
+
+      sf2_chooser->filename = filename;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_sf2_chooser_get_property(GObject *gobject,
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsSF2Chooser *sf2_chooser;
+
+  sf2_chooser = AGS_SF2_CHOOSER(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    g_value_set_string(value, sf2_chooser->filename);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_sf2_chooser_finalize(GObject *gobject)
+{
+  AgsSF2Chooser *sf2_chooser;
+
+  sf2_chooser = (AgsSF2Chooser *) gobject;
+
+  //TODO:JK:
+  /* implement me */
+
+  G_OBJECT_CLASS(ags_sf2_chooser_parent_class)->finalize(gobject);
 }
 
 void
@@ -166,25 +252,15 @@ ags_sf2_chooser_connect(AgsConnectable *connectable)
   /* AgsSF2Chooser */
   sf2_chooser = AGS_SF2_CHOOSER(connectable);
 
+  //TODO:JK:
   /* implement me */
 }
 
 void
 ags_sf2_chooser_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
-}
-
-void
-ags_sf2_chooser_finalize(GObject *gobject)
-{
-  AgsSF2Chooser *sf2_chooser;
-
-  sf2_chooser = (AgsSF2Chooser *) gobject;
-
+  //TODO:JK:
   /* implement me */
-
-  G_OBJECT_CLASS(ags_sf2_chooser_parent_class)->finalize(gobject);
 }
 
 void
@@ -194,6 +270,7 @@ ags_sf2_chooser_show(GtkWidget *widget)
 
   GTK_WIDGET_CLASS(ags_sf2_chooser_parent_class)->show(widget);
 
+  //TODO:JK:
   /* perhaps empty */
 }
 
