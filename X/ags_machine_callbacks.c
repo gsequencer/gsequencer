@@ -256,9 +256,10 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 
 	    ags_file_selection_set_entry(file_selection,
 					 new_entry);
+	    ags_connectable_connect(AGS_CONNECTABLE(file_selection));
 
 	    gtk_widget_show_all(GTK_WIDGET(file_selection));
-	    
+
 	    return;
 	  }
 	}else if(AGS_IS_FILE_SELECTION(file_selection)){

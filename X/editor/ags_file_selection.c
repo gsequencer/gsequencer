@@ -282,6 +282,8 @@ ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 			   AGS_FILE_SELECTION_ENTRY(entry->data)->filename);
 
       ags_file_selection_add_entry(file_selection, (GtkWidget *) hbox);
+
+      ags_connectable_connect(AGS_CONNECTABLE(entry_widget));
     }
 
     entry = entry->next;

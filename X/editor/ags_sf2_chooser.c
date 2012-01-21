@@ -268,8 +268,14 @@ ags_sf2_chooser_connect(AgsConnectable *connectable)
   /* AgsSF2Chooser */
   sf2_chooser = AGS_SF2_CHOOSER(connectable);
 
-  //TODO:JK:
-  /* implement me */
+  g_signal_connect(G_OBJECT(sf2_chooser->preset), "changed\0",
+		   G_CALLBACK(ags_sf2_chooser_preset_changed), sf2_chooser);
+
+  g_signal_connect(G_OBJECT(sf2_chooser->instrument), "changed\0",
+		   G_CALLBACK(ags_sf2_chooser_instrument_changed), sf2_chooser);
+
+  g_signal_connect(G_OBJECT(sf2_chooser->sample), "changed\0",
+		   G_CALLBACK(ags_sf2_chooser_sample_changed), sf2_chooser);
 }
 
 void
@@ -357,8 +363,6 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 
     preset++;
   }
-
-  gtk_widget_show_all(GTK_WIDGET(sf2_chooser->preset));
 }
 
 void
