@@ -269,6 +269,8 @@ main(int argc, char **argv)
   g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
+  ipatch_init();
+
   ags_init();
   ags_colors_alloc();
 

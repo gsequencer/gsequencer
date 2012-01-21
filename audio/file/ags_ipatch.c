@@ -121,20 +121,18 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
   gobject->finalize = ags_ipatch_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("filename\0",
+  param_spec = g_param_spec_pointer("filename\0",
 				   "the filename\0",
 				   "The filename to open\0",
-				   G_TYPE_STRING,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
 
-  param_spec = g_param_spec_object("mode\0",
-				   "the mode\0",
-				   "The mode to open the file\0",
-				   G_TYPE_STRING,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("mode\0",
+				    "the mode\0",
+				    "The mode to open the file\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MODE,
 				  param_spec);
@@ -175,7 +173,7 @@ ags_ipatch_init(AgsIpatch *ipatch)
   ipatch->file = ipatch_file_new();
 
   ipatch->filename = NULL;
-  ipatch->mode = NULL;
+  ipatch->mode = AGS_IPATCH_READ;
 
   ipatch->handle = NULL;
   ipatch->error = NULL;
@@ -199,31 +197,16 @@ ags_ipatch_set_property(GObject *gobject,
     {
       gchar *filename;
 
-      filename = (gchar *) g_value_get_string(value);
+      filename = (gchar *) g_value_get_pointer(value);
 
       ipatch->filename = filename;
-
-      if(ipatch->mode != NULL){
-	GError *error;
-
-	error = NULL;
-
-	ipatch->handle = ipatch_file_open(ipatch->file,
-					  ipatch->filename,
-					  ipatch->mode,
-					  &error);
-
-	if(error != NULL){
-	  g_error(error->message);
-	}
-      }
     }
     break;
   case PROP_MODE:
     {
       gchar *mode;
       
-      mode = (gchar *) g_value_get_string(value);
+      mode = (gchar *) g_value_get_pointer(value);
       
       ipatch->mode = mode;
 
@@ -260,10 +243,10 @@ ags_ipatch_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    g_value_set_string(value, ipatch->filename);
+    g_value_set_pointer(value, ipatch->filename);
     break;
   case PROP_MODE:
-    g_value_set_string(value, ipatch->mode);
+    g_value_set_pointer(value, ipatch->mode);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -288,20 +271,37 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
 }
 
 gboolean
-ags_ipatch_open(AgsPlayable *playable, gchar *name)
+ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 {
   AgsIpatch *ipatch;
+  IpatchFileIOFuncs *io_funcs;
   GError *error;
 
   ipatch = AGS_IPATCH(playable);
 
-  error = NULL;
-  ipatch->handle = ipatch_file_open(ipatch->file,
-				    ipatch->filename,
-				    ipatch->mode,
-				    &error);
+  /*
+  io_funcs = (IpatchFileIOFuncs *) g_new(IpatchFileIOFuncs, 1);
+  io_funcs->open = ipatch_file_default_open_method;
+  io_funcs->close = ipatch_file_default_close_method;
+  io_funcs->read = ipatch_file_default_read_method;
+  io_funcs->write = ipatch_file_default_write_method;
+  io_funcs->seek = ipatch_file_default_seek_method;
+  io_funcs->getfd = ipatch_file_default_getfd_method;
+  io_funcs->get_size = ipatch_file_default_get_size_method;
 
-  ipatch->container = NULL;
+  ipatch_file_set_iofuncs_static(ipatch->file,
+				 io_funcs);
+
+  error = NULL;
+  */
+  ipatch->handle = ipatch_file_identify_open(ipatch->filename,
+					     &error);
+
+  if(error != NULL){
+    g_error(error->message);
+  }
+
+  //  ipatch->container = NULL;
 
   if(error == NULL){
     return(TRUE);
@@ -384,6 +384,43 @@ ags_ipatch_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_ipatch_parent_class)->finalize(gobject);
 
   /* empty */
+}
+
+gboolean
+ags_iofuncs_open(IpatchFileHandle *handle, const char *mode, GError **err)
+{
+}
+
+void
+ags_iofuncs_close(IpatchFileHandle *handle)
+{
+}
+
+GIOStatus
+ags_iofuncs_read(IpatchFileHandle *handle, gpointer buf, guint size,
+		 guint *bytes_read, GError **err)
+{
+}
+
+GIOStatus
+ags_iofuncs_write(IpatchFileHandle *handle, gconstpointer buf, guint size,
+		  GError **err)
+{
+}
+
+GIOStatus
+ags_iofuncs_seek(IpatchFileHandle *handle, int offset, GSeekType type, GError **err)
+{
+}
+
+int
+ags_iofuncs_getfd(IpatchFileHandle *handle)
+{
+}
+
+int
+ags_iofuncs_get_size(IpatchFile *file, GError **err)
+{
 }
 
 AgsIpatch*

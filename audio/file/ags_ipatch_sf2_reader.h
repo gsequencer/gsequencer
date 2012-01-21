@@ -36,10 +36,10 @@ typedef struct _AgsIpatchSF2Reader AgsIpatchSF2Reader;
 typedef struct _AgsIpatchSF2ReaderClass AgsIpatchSF2ReaderClass;
 
 typedef enum{
-  AGS_SF2_FILENAME,
-  AGS_SF2_PHDR,
-  AGS_SF2_IHDR,
-  AGS_SF2_SHDR,
+  AGS_SF2_FILENAME = 0,
+  AGS_SF2_PHDR = 1,
+  AGS_SF2_IHDR = 2,
+  AGS_SF2_SHDR = 3,
 }AgsSF2Levels;
 
 struct _AgsIpatchSF2Reader

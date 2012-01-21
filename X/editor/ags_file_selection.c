@@ -23,6 +23,8 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/editor/ags_sf2_chooser.h>
+
 void ags_file_selection_class_init(AgsFileSelectionClass *file_selection);
 void ags_file_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_file_selection_init(AgsFileSelection *file_selection);
@@ -276,6 +278,8 @@ ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 			 FALSE,
 			 FALSE,
 			 0);
+      ags_sf2_chooser_open(AGS_SF2_CHOOSER(entry_widget),
+			   AGS_FILE_SELECTION_ENTRY(entry->data)->filename);
 
       ags_file_selection_add_entry(file_selection, (GtkWidget *) hbox);
     }

@@ -20,6 +20,9 @@
 #include <ags/X/editor/ags_sf2_chooser_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_playable.h>
+
+#include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 #include <ags/X/ags_window.h>
 
@@ -291,17 +294,66 @@ void
 ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 {
   AgsIpatch *ipatch;
+  AgsIpatchSF2Reader *sf2_reader;
+  AgsPlayable *playable;
+  gchar **preset;
+  GError *error;
+  GtkCellRenderer *cell_renderer;
+  auto void ags_sf2_chooser_open_remove_all_from_combo(GtkComboBoxText *combo);
+  void ags_sf2_chooser_open_remove_all_from_combo(GtkComboBoxText *combo_box){
+    GtkListStore *store;
+ 
+    store = gtk_list_store_new (1, G_TYPE_STRING);
+    gtk_combo_box_set_model (GTK_COMBO_BOX (combo_box), GTK_TREE_MODEL (store));
+    g_object_unref (store);
+  }
 
+  /* clear preset, instrument and sample*/
+  ags_sf2_chooser_open_remove_all_from_combo(sf2_chooser->preset);
+  ags_sf2_chooser_open_remove_all_from_combo(sf2_chooser->instrument);
+  ags_sf2_chooser_open_remove_all_from_combo(sf2_chooser->sample);
+
+  /* Ipatch related */
   ipatch = g_object_new(AGS_TYPE_IPATCH,
-			"mode\0", "r\0",
+			"mode\0", AGS_IPATCH_READ,
 			"filename\0", filename,
 			NULL);
+  ags_ipatch_open(ipatch, filename);
+
+  sf2_reader = ags_ipatch_sf2_reader_new();
+  sf2_reader->ipatch =  ipatch;
+  ipatch->reader = (GObject *) sf2_reader;
 
   g_object_set(G_OBJECT(sf2_chooser),
 	       "ipatch\0", ipatch,
 	       NULL);
- 
-  //TODO:JK: fill sf2_chooser->preset
+
+
+  /* fill sf2_chooser->preset */
+  playable = AGS_PLAYABLE(ipatch->reader);
+
+  ags_playable_open(playable, filename);
+
+  error = NULL;
+  ags_playable_level_select(playable,
+			    0, filename,
+			    &error);
+
+  if(error != NULL){
+    g_error(error->message);
+  }
+
+  preset = ags_playable_sublevel_names(playable);
+
+  while(*preset != NULL){
+    gtk_combo_box_text_append_text(sf2_chooser->preset,
+				   *preset);
+
+
+    preset++;
+  }
+
+  gtk_widget_show_all(GTK_WIDGET(sf2_chooser->preset));
 }
 
 void
