@@ -207,6 +207,7 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
     channel = machine->audio->input;
 
     current_folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(file_chooser));
+    //TODO:JK: you need to check against recently used
 
     /* check for supported packed audio files */
     file_selection = (AgsFileSelection *) gtk_file_chooser_get_extra_widget(GTK_FILE_CHOOSER(file_chooser));
@@ -296,8 +297,8 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 					 &error);
 	  
 	  while((current_filename = (gchar *) g_dir_read_name(current_directory)) != NULL){
-	    if(g_strcmp0(".\0", current_filename) ||
-	       g_strcmp0("..\0", current_filename))
+	    if(!g_strcmp0(".\0", current_filename) ||
+	       !g_strcmp0("..\0", current_filename))
 	      continue;
 
 	    if(!ags_file_selection_contains_file(file_selection, current_filename) &&

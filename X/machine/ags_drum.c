@@ -46,8 +46,9 @@
 void ags_drum_class_init(AgsDrumClass *drum);
 void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_init(AgsDrum *drum);
+void ags_drum_finalize(GObject *gobject);
 void ags_drum_connect(AgsConnectable *connectable);
-void ags_drum_destroy(GtkObject *drum);
+void ags_drum_disconnect(AgsConnectable *connectable);
 void ags_drum_show(GtkWidget *widget);
 
 void ags_drum_set_audio_channels(AgsAudio *audio,
@@ -59,6 +60,8 @@ void ags_drum_set_pads(AgsAudio *audio, GType type,
 
 extern void ags_file_read_drum(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_drum(AgsFile *file, AgsMachine *machine);
+
+static gpointer ags_drum_parent_class = NULL;
 
 static AgsConnectableInterface *ags_drum_parent_connectable_interface;
 
@@ -103,7 +106,15 @@ ags_drum_get_type(void)
 void
 ags_drum_class_init(AgsDrumClass *drum)
 {
+  GObjectClass *gobject;
   AgsMachineClass *machine = (AgsMachineClass *) drum;
+
+  ags_drum_parent_class = g_type_class_peek_parent(drum);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) drum;
+
+  gobject->finalize = ags_drum_finalize;
 
   //  machine->read_file = ags_file_read_drum;
   //  machine->write_file = ags_file_write_drum;
@@ -115,6 +126,7 @@ ags_drum_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_drum_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_drum_connect;
+  connectable->disconnect = ags_drum_disconnect;
 }
 
 void
@@ -442,6 +454,12 @@ ags_drum_init(AgsDrum *drum)
 }
 
 void
+ags_drum_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_drum_parent_class)->finalize(gobject);
+}
+
+void
 ags_drum_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
@@ -454,8 +472,8 @@ ags_drum_connect(AgsConnectable *connectable)
   /* AgsDrum */
   drum = AGS_DRUM(connectable);
 
-  g_signal_connect((GObject *) drum, "destroy\0",
-		   G_CALLBACK(ags_drum_destroy_callback), (gpointer) drum);
+  //  g_signal_connect((GObject *) drum, "destroy\0",
+  //		   G_CALLBACK(ags_drum_destroy_callback), (gpointer) drum);
 
   g_signal_connect((GObject *) drum, "show\0",
 		   G_CALLBACK(ags_drum_show_callback), (gpointer) drum);
@@ -517,15 +535,20 @@ ags_drum_connect(AgsConnectable *connectable)
 }
 
 void
-ags_drum_destroy(GtkObject *object)
+ags_drum_disconnect(AgsConnectable *connectable)
 {
   AgsWindow *window;
   AgsDrum *drum;
 
-  drum = AGS_DRUM(object);
+  ags_drum_parent_connectable_interface->disconnect(connectable);
+
+  drum = AGS_DRUM(connectable);
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
   g_signal_handler_disconnect((GObject *) window->navigation->bpm, drum->bpm_handler);
+
+
+  //TODO:JK: implement me
 }
 
 void

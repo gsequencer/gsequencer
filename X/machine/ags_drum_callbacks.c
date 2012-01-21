@@ -160,7 +160,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 gboolean
 ags_drum_destroy_callback(GtkObject *object, AgsDrum *drum)
 {
-  ags_drum_destroy(object);
+  //  ags_drum_destroy(object);
 
   return(TRUE);
 }
