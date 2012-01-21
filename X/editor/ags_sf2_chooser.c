@@ -39,9 +39,11 @@ void ags_sf2_chooser_connect(AgsConnectable *connectable);
 void ags_sf2_chooser_disconnect(AgsConnectable *connectable);
 void ags_sf2_chooser_show(GtkWidget *widget);
 
+void ags_sf2_chooser_update(AgsSF2Chooser *sf2_chooser);
+
 enum{
   PROP_0,
-  PROP_FILENAME,
+  PROP_IPATCH,
 };
 
 static gpointer ags_sf2_chooser_parent_class = NULL;
@@ -100,13 +102,13 @@ ags_sf2_chooser_class_init(AgsSF2ChooserClass *sf2_chooser)
   gobject->finalize = ags_sf2_chooser_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("filename\0",
-				   "assigned filename\0",
-				   "The filename of the selected Soundfont2\0",
-				   G_TYPE_STRING,
+  param_spec = g_param_spec_object("ipatch\0",
+				   "current ipatch\0",
+				   "The current AgsIpatch\0",
+				   AGS_TYPE_IPATCH,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FILENAME,
+				  PROP_IPATCH,
 				  param_spec);
 
   /* GtkWidgetClass */
@@ -128,7 +130,7 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
   GtkTable *table;
   GtkLabel *label;
 
-  sf2_chooser->filename = NULL;
+  sf2_chooser->ipatch = NULL;
 
   table = (GtkTable *) gtk_table_new(2, 3, FALSE);
   gtk_box_pack_start(GTK_BOX(sf2_chooser), GTK_WIDGET(table), FALSE, FALSE, 0);
@@ -196,13 +198,24 @@ ags_sf2_chooser_set_property(GObject *gobject,
   sf2_chooser = AGS_SF2_CHOOSER(gobject);
 
   switch(prop_id){
-  case PROP_FILENAME:
+  case PROP_IPATCH:
     {
-      gchar *filename;
+      AgsIpatch *ipatch;
 
-      filename = (gchar *) g_value_get_string(value);
+      ipatch = (AgsIpatch *) g_value_get_object(value);
 
-      sf2_chooser->filename = filename;
+      if(sf2_chooser->ipatch == ipatch)
+	return;
+
+      if(sf2_chooser->ipatch != NULL){
+	g_object_unref(sf2_chooser->ipatch);
+      }
+	  
+      if(ipatch != NULL){
+	g_object_ref(ipatch);
+      }	
+
+      sf2_chooser->ipatch = ipatch;
     }
     break;
   default:
@@ -222,8 +235,8 @@ ags_sf2_chooser_get_property(GObject *gobject,
   sf2_chooser = AGS_SF2_CHOOSER(gobject);
 
   switch(prop_id){
-  case PROP_FILENAME:
-    g_value_set_string(value, sf2_chooser->filename);
+  case PROP_IPATCH:
+    g_value_set_object(value, sf2_chooser->ipatch);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -272,6 +285,13 @@ ags_sf2_chooser_show(GtkWidget *widget)
 
   //TODO:JK:
   /* perhaps empty */
+}
+
+void
+ags_sf2_chooser_update(AgsSF2Chooser *sf2_chooser)
+{
+  //TODO:JK:
+  /* implement me */
 }
 
 AgsSF2Chooser*
