@@ -292,8 +292,8 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
   ipatch_file_set_iofuncs_static(ipatch->file,
 				 io_funcs);
 
-  error = NULL;
   */
+  error = NULL;
   ipatch->handle = ipatch_file_identify_open(ipatch->filename,
 					     &error);
 
