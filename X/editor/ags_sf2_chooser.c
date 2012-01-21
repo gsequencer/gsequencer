@@ -301,11 +301,16 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   GtkCellRenderer *cell_renderer;
   auto void ags_sf2_chooser_open_remove_all_from_combo(GtkComboBoxText *combo);
   void ags_sf2_chooser_open_remove_all_from_combo(GtkComboBoxText *combo_box){
-    GtkListStore *store;
- 
-    store = gtk_list_store_new (1, G_TYPE_STRING);
-    gtk_combo_box_set_model (GTK_COMBO_BOX (combo_box), GTK_TREE_MODEL (store));
-    g_object_unref (store);
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(combo_box));
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){   
+      do{
+	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+      }while(gtk_tree_model_iter_next(model, &iter));
+    }
   }
 
   /* clear preset, instrument and sample*/
