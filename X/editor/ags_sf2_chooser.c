@@ -93,7 +93,7 @@ ags_sf2_chooser_class_init(AgsSF2ChooserClass *sf2_chooser)
 
   ags_sf2_chooser_parent_class = g_type_class_peek_parent(sf2_chooser);
 
-  /* GtkObjectClass */
+  /* GObjectClass */
   gobject = (GObjectClass *) sf2_chooser;
 
   gobject->set_property = ags_sf2_chooser_set_property;
@@ -285,6 +285,23 @@ ags_sf2_chooser_show(GtkWidget *widget)
 
   //TODO:JK:
   /* perhaps empty */
+}
+
+void
+ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
+{
+  AgsIpatch *ipatch;
+
+  ipatch = g_object_new(AGS_TYPE_IPATCH,
+			"mode\0", "r\0",
+			"filename\0", filename,
+			NULL);
+
+  g_object_set(G_OBJECT(sf2_chooser),
+	       "ipatch\0", ipatch,
+	       NULL);
+ 
+  //TODO:JK: fill sf2_chooser->preset
 }
 
 void

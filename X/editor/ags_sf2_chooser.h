@@ -39,7 +39,6 @@ struct _AgsSF2Chooser
 {
   GtkVBox vbox;
 
-  gchar *filename;
   AgsIpatch *ipatch;
 
   GtkComboBoxText *preset;
@@ -53,6 +52,8 @@ struct _AgsSF2ChooserClass
 };
 
 GType ags_sf2_chooser_get_type();
+
+void ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename);
 
 AgsSF2Chooser* ags_sf2_chooser_new();
 

@@ -108,15 +108,36 @@ void
 ags_ipatch_class_init(AgsIpatchClass *ipatch)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_ipatch_parent_class = g_type_class_peek_parent(ipatch);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) ipatch;
 
   gobject->set_property = ags_ipatch_set_property;
   gobject->get_property = ags_ipatch_get_property;
 
   gobject->finalize = ags_ipatch_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("filename\0",
+				   "the filename\0",
+				   "The filename to open\0",
+				   G_TYPE_STRING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  param_spec = g_param_spec_object("mode\0",
+				   "the mode\0",
+				   "The mode to open the file\0",
+				   G_TYPE_STRING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MODE,
+				  param_spec);
 }
 
 void
@@ -178,18 +199,47 @@ ags_ipatch_set_property(GObject *gobject,
     {
       gchar *filename;
 
-      filename = (gchar *) g_value_get_pointer(value);
+      filename = (gchar *) g_value_get_string(value);
 
       ipatch->filename = filename;
+
+      if(ipatch->mode != NULL){
+	GError *error;
+
+	error = NULL;
+
+	ipatch->handle = ipatch_file_open(ipatch->file,
+					  ipatch->filename,
+					  ipatch->mode,
+					  &error);
+
+	if(error != NULL){
+	  g_error(error->message);
+	}
+      }
     }
     break;
   case PROP_MODE:
     {
       gchar *mode;
       
-      mode = (gchar *) g_value_get_pointer(value);
+      mode = (gchar *) g_value_get_string(value);
       
       ipatch->mode = mode;
+
+      if(ipatch->handle != NULL){
+	GError *error;
+
+	error = NULL;
+
+	ipatch_file_default_open_method(ipatch->handle,
+					mode,
+					&error);
+
+	if(error != NULL){
+	  g_error(error->message);
+	}
+      }
     }
     break;
   default:
@@ -210,10 +260,10 @@ ags_ipatch_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_FILENAME:
-    g_value_set_pointer(value, ipatch->filename);
+    g_value_set_string(value, ipatch->filename);
     break;
   case PROP_MODE:
-    g_value_set_pointer(value, ipatch->mode);
+    g_value_set_string(value, ipatch->mode);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
