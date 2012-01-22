@@ -70,7 +70,7 @@ gboolean ags_playable_open(AgsPlayable *playable, gchar *name);
 
 guint ags_playable_level_count(AgsPlayable *playable);
 guint ags_playable_nth_level(AgsPlayable *playable);
-gchar* ags_playable_selected_level(AgsPlayable);
+gchar* ags_playable_selected_level(AgsPlayable *playable);
 
 gchar** ags_playable_sublevel_names(AgsPlayable *playable);
 void ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);

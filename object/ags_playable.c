@@ -96,7 +96,7 @@ ags_playable_nth_level(AgsPlayable *playable)
 }
 
 gchar*
-ags_playable_selected_level(AgsPlayable)
+ags_playable_selected_level(AgsPlayable *playable)
 {
   AgsPlayableInterface *playable_interface;
   gchar *ret_val;

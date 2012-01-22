@@ -43,8 +43,10 @@ void ags_ipatch_sf2_reader_disconnect(AgsConnectable *connectable);
 gboolean ags_ipatch_sf2_reader_open(AgsPlayable *playable, gchar *name);
 
 guint ags_ipatch_sf2_reader_level_count(AgsPlayable *playable);
-gchar** ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable);
+guint ags_ipatch_sf2_reader_nth_level(AgsPlayable *playable);
+gchar* ags_ipatch_sf2_reader_selected_level(AgsPlayable *playable);
 
+gchar** ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable);
 void ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);
 void ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **error);
 
@@ -144,8 +146,10 @@ ags_ipatch_sf2_reader_playable_interface_init(AgsPlayableInterface *playable)
   playable->open = ags_ipatch_sf2_reader_open;
 
   playable->level_count = ags_ipatch_sf2_reader_level_count;
-  playable->sublevel_names = ags_ipatch_sf2_reader_sublevel_names;
+  playable->nth_level = ags_ipatch_sf2_reader_nth_level;
+  playable->selected_level = ags_ipatch_sf2_reader_selected_level;
 
+  playable->sublevel_names = ags_ipatch_sf2_reader_sublevel_names;
   playable->level_select = ags_ipatch_sf2_reader_level_select;
   playable->level_up = ags_ipatch_sf2_reader_level_up;
 
@@ -274,6 +278,26 @@ ags_ipatch_sf2_reader_level_count(AgsPlayable *playable)
   return(3);
 }
 
+guint
+ags_ipatch_sf2_reader_nth_level(AgsPlayable *playable)
+{
+  AgsIpatchSF2Reader *ipatch_sf2_reader;
+
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
+
+  return(ipatch_sf2_reader->nth_level);
+}
+
+gchar*
+ags_ipatch_sf2_reader_selected_level(AgsPlayable *playable)
+{
+  AgsIpatchSF2Reader *ipatch_sf2_reader;
+
+  ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
+
+  return(ipatch_sf2_reader->selected_sublevel_name);
+}
+
 gchar**
 ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 {
@@ -353,9 +377,9 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
     {
       IpatchContainer *container;
       
-      container = ipatch_sf2_find_inst(ipatch_sf2_reader->sf2,
-				       ipatch_sf2_reader->selected_sublevel_name,
-				       NULL);
+      container = (IpatchContainer *) ipatch_sf2_find_inst(ipatch_sf2_reader->sf2,
+							   ipatch_sf2_reader->selected_sublevel_name,
+							   NULL);
       ipatch_list = ipatch_container_get_children(container, IPATCH_TYPE_SF2_SAMPLE);
       
       if(ipatch_list != NULL){
@@ -422,7 +446,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
     gchar **sublevel_names;
 
     if(ipatch_sf2_reader->nth_level == 0 && !g_strcmp0(ipatch_sf2_reader->ipatch->filename, sublevel_name)){
-      ipatch_sf2_reader->nth_level++;
+      ipatch_sf2_reader->nth_level += 1;
       return;
     }
 
@@ -460,7 +484,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
 
     if(success){
       ipatch_sf2_reader->selected_sublevel_name = sublevel_name;
-      ipatch_sf2_reader->nth_level++;
+      ipatch_sf2_reader->nth_level += 1;
     }else{
       g_set_error(error,
 		  AGS_PLAYABLE_ERROR,

@@ -9,6 +9,7 @@ ags_sf2_chooser_preset_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
   gchar *preset;
   gchar **instrument;
   GError *error;
+  guint nth_level;
 
   /* clear instrument and sample */
   ags_sf2_chooser_remove_all_from_combo(sf2_chooser->instrument);
@@ -18,11 +19,12 @@ ags_sf2_chooser_preset_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
   playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
 
   preset = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
+  nth_level = ags_playable_nth_level(playable);
 
-  if(){
+  if(nth_level != 0){
     error = NULL;
     ags_playable_level_up(playable,
-			  1,
+			  nth_level,
 			  &error);
     
     if(error != NULL){
@@ -57,6 +59,7 @@ ags_sf2_chooser_instrument_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_ch
   gchar *instrument;
   gchar **sample;
   GError *error;
+  guint nth_level;
 
   /* clear sample */
   ags_sf2_chooser_remove_all_from_combo(sf2_chooser->sample);
@@ -66,13 +69,17 @@ ags_sf2_chooser_instrument_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_ch
 
   instrument = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
-  error = NULL;
-  ags_playable_level_up(playable,
-			1,
-			&error);
+  nth_level = ags_playable_nth_level(playable);
 
-  if(error != NULL){
-    g_error(error->message);
+  if(nth_level > 1){
+    error = NULL;
+    ags_playable_level_up(playable,
+			  nth_level - 1,
+			  &error);
+    
+    if(error != NULL){
+      g_error(error->message);
+    }
   }
 
   error = NULL;
@@ -101,19 +108,24 @@ ags_sf2_chooser_sample_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
   AgsPlayable *playable;
   gchar *sample;
   GError *error;
+  guint nth_level;
 
   /* Ipatch related */
   playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
 
   sample = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
-  error = NULL;
-  ags_playable_level_up(playable,
-			1,
-			&error);
+  nth_level = ags_playable_nth_level(playable);
 
-  if(error != NULL){
-    g_error(error->message);
+  if(nth_level != 3){
+    error = NULL;
+    ags_playable_level_up(playable,
+			  1,
+			  &error);
+    
+    if(error != NULL){
+      g_error(error->message);
+    }
   }
 
   error = NULL;
