@@ -304,25 +304,11 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   AgsPlayable *playable;
   gchar **preset;
   GError *error;
-  GtkCellRenderer *cell_renderer;
-  auto void ags_sf2_chooser_open_remove_all_from_combo(GtkComboBoxText *combo);
-  void ags_sf2_chooser_open_remove_all_from_combo(GtkComboBoxText *combo_box){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
-
-    model = gtk_combo_box_get_model(GTK_COMBO_BOX(combo_box));
-
-    if(gtk_tree_model_get_iter_first(model, &iter)){   
-      do{
-	gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-      }while(gtk_tree_model_iter_next(model, &iter));
-    }
-  }
 
   /* clear preset, instrument and sample*/
-  ags_sf2_chooser_open_remove_all_from_combo(sf2_chooser->preset);
-  ags_sf2_chooser_open_remove_all_from_combo(sf2_chooser->instrument);
-  ags_sf2_chooser_open_remove_all_from_combo(sf2_chooser->sample);
+  ags_sf2_chooser_remove_all_from_combo(sf2_chooser->preset);
+  ags_sf2_chooser_remove_all_from_combo(sf2_chooser->instrument);
+  ags_sf2_chooser_remove_all_from_combo(sf2_chooser->sample);
 
   /* Ipatch related */
   ipatch = g_object_new(AGS_TYPE_IPATCH,
@@ -370,6 +356,20 @@ ags_sf2_chooser_update(AgsSF2Chooser *sf2_chooser)
 {
   //TODO:JK:
   /* implement me */
+}
+
+void
+ags_sf2_chooser_remove_all_from_combo(GtkComboBoxText *combo_box){
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(combo_box));
+  
+  if(GTK_IS_LIST_STORE(model) && gtk_tree_model_get_iter_first(model, &iter)){   
+    do{
+      gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+    }while(gtk_tree_model_iter_next(model, &iter));
+  }
 }
 
 AgsSF2Chooser*

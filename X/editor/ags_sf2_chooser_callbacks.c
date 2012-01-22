@@ -10,6 +10,11 @@ ags_sf2_chooser_preset_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
   gchar **instrument;
   GError *error;
 
+  /* clear instrument and sample */
+  ags_sf2_chooser_remove_all_from_combo(sf2_chooser->instrument);
+  ags_sf2_chooser_remove_all_from_combo(sf2_chooser->sample);
+
+  /* Ipatch related */
   playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
 
   preset = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
@@ -42,6 +47,10 @@ ags_sf2_chooser_instrument_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_ch
   gchar **sample;
   GError *error;
 
+  /* clear sample */
+  ags_sf2_chooser_remove_all_from_combo(sf2_chooser->sample);
+
+  /* Ipatch related */
   playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
 
   instrument = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
@@ -69,5 +78,21 @@ ags_sf2_chooser_instrument_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_ch
 void
 ags_sf2_chooser_sample_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_chooser)
 {
-  /* perhaps empty */
+  AgsPlayable *playable;
+  gchar *sample;
+  GError *error;
+
+  /* Ipatch related */
+  playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
+
+  sample = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
+
+  error = NULL;
+  ags_playable_level_select(playable,
+			    0, sample,
+			    &error);
+
+  if(error != NULL){
+    g_error(error->message);
+  }
 }
