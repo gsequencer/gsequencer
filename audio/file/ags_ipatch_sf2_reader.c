@@ -306,6 +306,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   GList *list;
   gchar **names;
   gchar *name;
+  guint sublevel;
   guint i;
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
@@ -314,7 +315,11 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   names = (gchar **) malloc(1 * sizeof(gchar*));
   names[0] = NULL;
 
-  switch(ipatch_sf2_reader->nth_level){
+  sublevel = ipatch_sf2_reader->nth_level + 1;
+
+  printf("ags_ipatch_sf2_reader_sublevel_names: %u\n\0", sublevel);
+
+  switch(sublevel){
   case AGS_SF2_FILENAME:
     {
       names = realloc(names, 2 * sizeof(char*));
@@ -393,7 +398,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
   for(i = 0; list != NULL; i++){
     names = realloc(names, (i + 2) * sizeof(char*));
 
-    switch(ipatch_sf2_reader->nth_level){
+    switch(sublevel){
     case AGS_SF2_PHDR:
       {
 	/*
@@ -445,7 +450,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
     gchar **sublevel_names;
 
     if(ipatch_sf2_reader->nth_level == 0 && !g_strcmp0(ipatch_sf2_reader->ipatch->filename, sublevel_name)){
-      ipatch_sf2_reader->nth_level += 1;
+      ipatch_sf2_reader->nth_level = 0;
       return;
     }
 
