@@ -303,6 +303,8 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   AgsIpatchSF2Reader *sf2_reader;
   AgsPlayable *playable;
   gchar **preset;
+  gchar **instrument;
+  gchar **sample;
   GError *error;
 
   /* clear preset, instrument and sample*/
@@ -324,7 +326,6 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   g_object_set(G_OBJECT(sf2_chooser),
 	       "ipatch\0", ipatch,
 	       NULL);
-
 
   /* fill sf2_chooser->preset */
   playable = AGS_PLAYABLE(ipatch->reader);
@@ -349,6 +350,34 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 
     preset++;
   }
+
+  /* fill sf2_chooser->instrument */
+  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 1;
+  instrument = ags_playable_sublevel_names(playable);
+
+  while(*instrument != NULL){
+    gtk_combo_box_text_append_text(sf2_chooser->instrument,
+				   *instrument);
+
+
+    instrument++;
+  }
+
+
+  /* fill sf2_chooser->sample */
+  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 2;
+  sample = ags_playable_sublevel_names(playable);
+
+  while(*sample != NULL){
+    gtk_combo_box_text_append_text(sf2_chooser->sample,
+				   *sample);
+
+
+    sample++;
+  }
+
+  /* reset nth_level */
+  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 0;
 }
 
 void
