@@ -172,10 +172,9 @@ ags_ipatch_sf2_reader_init(AgsIpatchSF2Reader *ipatch_sf2_reader)
   ipatch_sf2_reader->program = -1;
   ipatch_sf2_reader->selected_sublevel_name = NULL;
 
+  ipatch_sf2_reader->selected = (gchar **) malloc(4 * sizeof(gchar *));
+
   ipatch_sf2_reader->reader = NULL;
-  ipatch_sf2_reader->preset = NULL;
-  ipatch_sf2_reader->instrument = NULL;
-  ipatch_sf2_reader->sample = NULL;
 }
 
 void
@@ -499,11 +498,23 @@ void
 ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
+  guint i;
+
+  if(levels == 0)
+    return;
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
+  printf("debug: %u\n\0", ipatch_sf2_reader->nth_level);
+
   if(ipatch_sf2_reader->nth_level >= levels){
     ipatch_sf2_reader->nth_level -= levels;
+
+    for(i = 0; i < levels; i++){
+      ipatch_sf2_reader->selected[4 - i] = NULL;
+    }
+
+    ipatch_sf2_reader->selected_sublevel_name = ipatch_sf2_reader->selected[4 - i];
   }else{
     g_set_error(error,
 		AGS_PLAYABLE_ERROR,

@@ -53,12 +53,11 @@ struct _AgsIpatchSF2Reader
   int program;
   gchar *selected_sublevel_name;
 
+  gchar **selected;
+
   IpatchSF2Reader *reader;
 
   IpatchSF2 *sf2;
-  IpatchSF2Phdr *preset;
-  IpatchSF2Ihdr *instrument;
-  IpatchSF2Shdr *sample;
 };
 
 struct _AgsIpatchSF2ReaderClass

@@ -21,7 +21,9 @@ ags_sf2_chooser_preset_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
   preset = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
   nth_level = ags_playable_nth_level(playable);
 
-  if(nth_level != 0){
+  printf("nth_level: %u\n\0", nth_level);
+
+  if(nth_level > 1){
     error = NULL;
     ags_playable_level_up(playable,
 			  nth_level,
