@@ -47,14 +47,23 @@ guint ags_ipatch_sf2_reader_nth_level(AgsPlayable *playable);
 gchar* ags_ipatch_sf2_reader_selected_level(AgsPlayable *playable);
 
 gchar** ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable);
-void ags_ipatch_sf2_reader_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);
-void ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **error);
+void ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
+					guint nth_level, gchar *sublevel_name,
+					GError **error);
+void ags_ipatch_sf2_reader_level_up(AgsPlayable *playable,
+				    guint levels,
+				    GError **error);
 
 void ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable);
 gboolean ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable);
 
-void ags_ipatch_sf2_reader_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
-short* ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel);
+void ags_ipatch_sf2_reader_info(AgsPlayable *playable,
+				guint *channels, guint *frames,
+				guint *loop_start, guint *loop_end,
+				GError **error);
+short* ags_ipatch_sf2_reader_read(AgsPlayable *playable,
+				  guint channel,
+				  GError **error);
 
 void ags_ipatch_sf2_reader_close(AgsPlayable *playable);
 

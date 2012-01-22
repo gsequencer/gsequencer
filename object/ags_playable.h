@@ -50,15 +50,24 @@ struct _AgsPlayableInterface
   gchar* (*selected_level)(AgsPlayable *playable);
 
   gchar** (*sublevel_names)(AgsPlayable *playable);
-  void (*level_select)(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);
-  void (*level_up)(AgsPlayable *playable, guint levels, GError **error);
+  void (*level_select)(AgsPlayable *playable,
+		       guint nth_level, gchar *sublevel_name,
+		       GError **error);
+  void (*level_up)(AgsPlayable *playable,
+		   guint levels,
+		   GError **error);
 
   void (*iter_start)(AgsPlayable *playable);
   gboolean (*iter_next)(AgsPlayable *playable);
 
   /* read sample data */
-  void (*info)(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
-  short* (*read)(AgsPlayable *playable, guint channel);
+  void (*info)(AgsPlayable *playable,
+	       guint *channels, guint *frames,
+	       guint *loop_start, guint *loop_end,
+	       GError **error);
+  short* (*read)(AgsPlayable *playable,
+		 guint channel,
+		 GError **error);
 
   void (*close)(AgsPlayable *playable);
 };
