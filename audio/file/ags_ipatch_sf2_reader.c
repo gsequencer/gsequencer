@@ -546,7 +546,8 @@ ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable)
 void
 ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 			   guint *channels, guint *frames,
-			   guint *loop_start, guint *loop_end)
+			   guint *loop_start, guint *loop_end,
+			   GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
   IpatchSF2Sample *sample;
@@ -558,7 +559,6 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
   //TODO:JK: implement me
-  //  *frames = ipatch_sample_data_get_size();
   //  sample = ;
   sample_data = ipatch_sf2_sample_peek_data(sample);
   
@@ -582,7 +582,7 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 }
 
 short*
-ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel)
+ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel, GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
   IpatchSF2Sample *sample;

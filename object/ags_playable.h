@@ -35,6 +35,7 @@ typedef struct _AgsPlayableInterface AgsPlayableInterface;
 
 typedef enum{
   AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
+  AGS_PLAYABLE_ERROR_NO_SAMPLE,
 }AgsPlayableError;
 
 struct _AgsPlayableInterface
@@ -73,14 +74,21 @@ guint ags_playable_nth_level(AgsPlayable *playable);
 gchar* ags_playable_selected_level(AgsPlayable *playable);
 
 gchar** ags_playable_sublevel_names(AgsPlayable *playable);
-void ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error);
+void ags_playable_level_select(AgsPlayable *playable,
+			       guint nth_level, gchar *sublevel_name,
+			       GError **error);
 void ags_playable_level_up(AgsPlayable *playable, guint levels, GError **error);
 
 void ags_playable_iter_start(AgsPlayable *playable);
 gboolean ags_playable_iter_next(AgsPlayable *playable);
 
-void ags_playable_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
-short* ags_playable_read(AgsPlayable *playable, guint channel);
+void ags_playable_info(AgsPlayable *playable,
+		       guint *channels, guint *frames,
+		       guint *loop_start, guint *loop_end,
+		       GError **error);
+short* ags_playable_read(AgsPlayable *playable,
+			 guint channel,
+			 GError **error);
 
 void ags_playable_close(AgsPlayable *playable);
 

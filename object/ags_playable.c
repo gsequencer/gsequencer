@@ -135,7 +135,9 @@ ags_playable_sublevel_names(AgsPlayable *playable)
  * If @sublevel_name is NULL @nth_level will be chosen.
  */
 void
-ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *sublevel_name, GError **error)
+ags_playable_level_select(AgsPlayable *playable,
+			  guint nth_level, gchar *sublevel_name,
+			  GError **error)
 {
   AgsPlayableInterface *playable_interface;
 
@@ -146,7 +148,9 @@ ags_playable_level_select(AgsPlayable *playable, guint nth_level, gchar *subleve
 }
 
 void
-ags_playable_level_up(AgsPlayable *playable, guint levels, GError **error)
+ags_playable_level_up(AgsPlayable *playable,
+		      guint levels,
+		      GError **error)
 {
   AgsPlayableInterface *playable_interface;
 
@@ -182,7 +186,10 @@ ags_playable_iter_next(AgsPlayable *playable)
 }
 
 void
-ags_playable_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end)
+ags_playable_info(AgsPlayable *playable,
+		  guint *channels, guint *frames,
+		  guint *loop_start, guint *loop_end,
+		  GError **error)
 {
   AgsPlayableInterface *playable_interface;
 
@@ -193,7 +200,9 @@ ags_playable_info(AgsPlayable *playable, guint *channels, guint *frames, guint *
 }
 
 short*
-ags_playable_read(AgsPlayable *playable, guint channel)
+ags_playable_read(AgsPlayable *playable,
+		  guint channel,
+		  GError **error)
 {
   AgsPlayableInterface *playable_interface;
 

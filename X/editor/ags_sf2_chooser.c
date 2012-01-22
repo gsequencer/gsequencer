@@ -387,6 +387,24 @@ ags_sf2_chooser_update(AgsSF2Chooser *sf2_chooser)
   /* implement me */
 }
 
+gboolean
+ags_sf2_chooser_completed(AgsSF2Chooser *sf2_chooser)
+{
+  gchar *preset, *instrument, *sample;
+
+  preset = gtk_combo_box_text_get_active_text(sf2_chooser->preset);
+  instrument = gtk_combo_box_text_get_active_text(sf2_chooser->instrument);
+  sample = gtk_combo_box_text_get_active_text(sf2_chooser->sample);
+
+  if(preset != NULL && preset[0] != '\0' &&
+     instrument != NULL && instrument[0] != '\0' &&
+     sample != NULL && sample[0] != '\0'){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
 void
 ags_sf2_chooser_remove_all_from_combo(GtkComboBoxText *combo_box){
   GtkTreeModel *model;

@@ -55,6 +55,8 @@ GType ags_sf2_chooser_get_type();
 
 void ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename);
 
+gboolean ags_sf2_chooser_completed(AgsSF2Chooser *sf2_chooser);
+
 void ags_sf2_chooser_remove_all_from_combo(GtkComboBoxText *combo);
 
 AgsSF2Chooser* ags_sf2_chooser_new();
