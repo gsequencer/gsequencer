@@ -81,6 +81,35 @@ ags_playable_level_count(AgsPlayable *playable)
   return(ret_val);
 }
 
+guint
+ags_playable_nth_level(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+  guint ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), 0);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->nth_level, 0);
+  ret_val = playable_interface->nth_level(playable);
+
+  return(ret_val);
+}
+
+gchar*
+ags_playable_selected_level(AgsPlayable)
+{
+  AgsPlayableInterface *playable_interface;
+  gchar *ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), 0);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->selected_level, 0);
+  ret_val = playable_interface->selected_level(playable);
+
+  return(ret_val);
+
+}
+
 gchar**
 ags_playable_sublevel_names(AgsPlayable *playable)
 {
