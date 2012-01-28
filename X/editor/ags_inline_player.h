@@ -37,14 +37,18 @@ typedef struct _AgsInlinePlayerClass AgsInlinePlayerClass;
 
 struct _AgsInlinePlayer
 {
-  GtkHBox hbox;
+  GtkHBox vbox;
 
   AgsPlayable *playable;
+
+  GtkToggleButton *play;
+  GtkButton *stop;
+  GtkHScale *position;
 };
 
 struct _AgsInlinePlayerClass
 {
-  GtkHBoxClass hbox;
+  GtkHBoxClass vbox;
 };
 
 GType ags_inline_player_get_type();

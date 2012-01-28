@@ -89,7 +89,7 @@
 
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init (AgsFile *file);
-void ags_file_destroy (GObject *gobject);
+void ags_file_finalize(GObject *gobject);
 
 void ags_file_read_audio(AgsFile *file, AgsAudio *audio);
 void ags_file_read_channel(AgsFile *file, AgsAudio *audio);
@@ -188,6 +188,8 @@ void ags_file_write_synth(AgsFile *file, AgsMachine *machine);
 void ags_file_write_oscillator(AgsFile *file, AgsOscillator *oscillator);
 void ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine);
 
+static gpointer ags_file_parent_class = NULL;
+
 GType
 ags_file_get_type (void)
 {
@@ -213,6 +215,14 @@ ags_file_get_type (void)
 void
 ags_file_class_init(AgsFileClass *file)
 {
+  GObjectClass *gobject;
+
+  ags_file_parent_class = g_type_class_peek_parent(file);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) file;
+
+  gobject->finalize = ags_file_finalize;
 }
 
 void
@@ -231,9 +241,9 @@ ags_file_init(AgsFile *file)
 }
 
 void
-ags_file_destroy(GObject *gobject)
+ags_file_finalize(GObject *gobject)
 {
-  AgsFile *file = (AgsFile *) gobject;
+  AgsFile *file;
   void ags_file_destroy_node(xmlNodePtr node){
     xmlNodePtr child;
 
@@ -246,16 +256,19 @@ ags_file_destroy(GObject *gobject)
     }
   }
 
-  if(AGS_FILE_READ & file->flags){
-  }else if(AGS_FILE_WRITE & file->flags){
+  file = (AgsFile *) gobject;
+
+  if((AGS_FILE_READ & (file->flags)) != 0){
+  }else if((AGS_FILE_WRITE & (file->flags)) != 0){
   }else{
-    g_object_unref(gobject);
     return;
   }
 
   xmlFreeDoc(file->doc);
   //  xmlCleanupParser();
   //  xmlMemoryDump();
+
+  G_OBJECT_CLASS(ags_file_parent_class)->finalize(gobject);
 }
 
 void

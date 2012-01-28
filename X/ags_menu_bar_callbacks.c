@@ -82,7 +82,7 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
   file->name = g_strdup(gtk_file_selection_get_filename(file_selection));
   ags_file_read(file);
 
-  ags_file_destroy(file);
+  g_object_unref(G_OBJECT(file));
   gtk_widget_destroy((GtkWidget *) file_selection);
 }
 
@@ -106,7 +106,7 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   file->window = (GtkWidget *) window;
   file->name = g_strdup(window->name);
   ags_file_write(file);
-  ags_file_destroy(file);
+  g_object_unref(G_OBJECT(file));
 }
 
 void
@@ -140,7 +140,7 @@ ags_menu_bar_save_as_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
   file->name = g_strdup(gtk_file_selection_get_filename((GtkFileSelection *) file_selection));
   ags_file_write(file);
 
-  ags_file_destroy(file);
+  g_object_unref(G_OBJECT(file));
   gtk_widget_destroy((GtkWidget *) file_selection);
 }
 

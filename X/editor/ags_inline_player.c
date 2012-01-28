@@ -128,8 +128,7 @@ ags_inline_player_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_inline_player_init(AgsInlinePlayer *inline_player)
 {
-  GtkTable *table;
-  GtkLabel *label;
+  GtkHBox *hbox;
 
   inline_player->playable = NULL;
 

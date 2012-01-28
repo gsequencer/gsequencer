@@ -155,7 +155,7 @@ ags_window_connect(AgsConnectable *connectable)
   window = AGS_WINDOW(connectable);
 
   g_signal_connect(G_OBJECT(window), "delete_event\0",
-		   G_CALLBACK(ags_window_delete_event_callback), (gpointer) window);
+		   G_CALLBACK(ags_window_delete_event_callback), NULL);
 
   ags_menu_bar_connect(window->menu_bar);
   ags_editor_connect(window->editor);
@@ -173,7 +173,6 @@ void
 ags_window_finalize(GObject *gobject)
 {
   AgsWindow *window;
-  GList *list0, *list1;
 
   window = (AgsWindow *) gobject;
 

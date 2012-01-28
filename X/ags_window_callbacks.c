@@ -19,8 +19,32 @@
 #include <ags/X/ags_window_callbacks.h>
 
 gboolean
-ags_window_delete_event_callback(GtkWidget *widget, AgsWindow *window)
+ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 {
+  AgsWindow *window;
+  GtkDialog *dialog; 
+  gint response;
+
+  window = AGS_WINDOW(widget);
+
+  /* ask the user if he wants save to a file */
+  dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
+						GTK_DIALOG_DESTROY_WITH_PARENT,
+						GTK_MESSAGE_QUESTION,
+						GTK_BUTTONS_YES_NO,
+						"Do you want to save '%s'?\0", window->name);
+  response = gtk_dialog_run(dialog);
+
+  if(response == GTK_RESPONSE_YES){
+    AgsFile *file;
+
+    file = ags_file_new();
+    file->window = (GtkWidget *) window;
+    file->name = g_strdup(window->name);
+    ags_file_write(file);
+    g_object_unref(G_OBJECT(file));
+  }
+
   gtk_main_quit();
 
   return(TRUE);

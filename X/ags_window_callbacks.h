@@ -24,6 +24,6 @@
 
 #include <ags/X/ags_window.h>
 
-gboolean ags_window_delete_event_callback(GtkWidget *widget, AgsWindow *window);
+gboolean ags_window_delete_event_callback(GtkWidget *widget, gpointer data);
 
 #endif /*__AGS_WINDOW_CALLBACKS_H__*/
