@@ -23,6 +23,7 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/editor/ags_inline_player.h>
 #include <ags/X/editor/ags_sf2_chooser.h>
 
 void ags_file_selection_class_init(AgsFileSelectionClass *file_selection);
@@ -245,43 +246,59 @@ ags_file_selection_show(GtkWidget *widget)
 void
 ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry)
 {
-  GtkHBox *hbox;
+  GtkTable *table;
   GtkWidget *entry_widget;
 
-  auto GtkHBox* ags_file_selection_set_entry_new_entry();
+  auto GtkTable* ags_file_selection_set_entry_new_entry();
 
-  GtkHBox* ags_file_selection_set_entry_new_entry(){
-    GtkHBox *hbox;
+  GtkTable* ags_file_selection_set_entry_new_entry(){
+    GtkTable *table;
     GtkButton *remove;
+    AgsInlinePlayer *inline_player;
 
+    table = (GtkTable *) gtk_table_new(2, 2, FALSE);
 
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-    
     /* the remove button */
     remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-    gtk_box_pack_end(GTK_BOX(hbox), GTK_WIDGET(remove), FALSE, FALSE, 0);
+    gtk_table_attach(table,
+		     GTK_WIDGET(remove),
+		     1, 2,
+		     0, 1,
+		     GTK_FILL, GTK_FILL,
+		     0, 0);
 
     /* and it's callback */
     g_signal_connect(G_OBJECT(remove), "clicked\0",
-		     G_CALLBACK(ags_file_selection_remove_callback), hbox);
+		     G_CALLBACK(ags_file_selection_remove_callback), table);
 
-    return(hbox);
+    /* create an AgsInlinePlayer */
+    inline_player = ags_inline_player_new();
+    gtk_table_attach(table,
+		     GTK_WIDGET(inline_player),
+		     0, 1,
+		     1, 2,
+		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		     0, 0);    
+
+    return(table);
   }
 
   while(entry != NULL){
     if(g_str_has_suffix(AGS_FILE_SELECTION_ENTRY(entry->data)->filename, ".sf2\0")){
-      hbox = ags_file_selection_set_entry_new_entry();
+      table = ags_file_selection_set_entry_new_entry();
 
       entry_widget = (GtkWidget *) ags_sf2_chooser_new();
-      gtk_box_pack_start(GTK_BOX(hbox),
-			 GTK_WIDGET(entry_widget),
-			 FALSE,
-			 FALSE,
-			 0);
+      gtk_table_attach(table,
+		       GTK_WIDGET(entry_widget),
+		       0, 1,
+		       0, 1,
+		       GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		       0, 0);
+
       ags_sf2_chooser_open(AGS_SF2_CHOOSER(entry_widget),
 			   AGS_FILE_SELECTION_ENTRY(entry->data)->filename);
 
-      ags_file_selection_add_entry(file_selection, (GtkWidget *) hbox);
+      ags_file_selection_add_entry(file_selection, (GtkWidget *) table);
 
       ags_connectable_connect(AGS_CONNECTABLE(entry_widget));
     }

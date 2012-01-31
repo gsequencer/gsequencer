@@ -42,8 +42,8 @@ struct _AgsInlinePlayer
   AgsPlayable *playable;
 
   GtkToggleButton *play;
-  GtkButton *stop;
   GtkHScale *position;
+  GtkVolumeButton *volume;
 };
 
 struct _AgsInlinePlayerClass

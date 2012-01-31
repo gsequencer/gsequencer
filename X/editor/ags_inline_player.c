@@ -132,13 +132,39 @@ ags_inline_player_init(AgsInlinePlayer *inline_player)
 
   inline_player->playable = NULL;
 
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start((GtkBox *) inline_player,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
+
+  inline_player->play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+							 "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_PLAY,
+													   GTK_ICON_SIZE_LARGE_TOOLBAR),
+							 NULL);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) inline_player->play,
+		     FALSE, FALSE,
+		     0);
+
+  inline_player->position = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 1.0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) inline_player->position,
+		     FALSE, FALSE,
+		     0);
+
+  inline_player->volume = (GtkVolumeButton *) gtk_volume_button_new();
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) inline_player->volume,
+		     FALSE, FALSE,
+		     0);
 }
 
 void
 ags_inline_player_set_property(GObject *gobject,
-		       guint prop_id,
-		       const GValue *value,
-		       GParamSpec *param_spec)
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
 {
   AgsInlinePlayer *inline_player;
 
@@ -212,6 +238,8 @@ ags_inline_player_connect(AgsConnectable *connectable)
   /* AgsInlinePlayer */
   inline_player = AGS_INLINE_PLAYER(connectable);
 
+  //TODO:JK: implement me
+  /*
   g_signal_connect(G_OBJECT(inline_player->preset), "changed\0",
 		   G_CALLBACK(ags_inline_player_preset_changed), inline_player);
 
@@ -220,6 +248,7 @@ ags_inline_player_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(inline_player->sample), "changed\0",
 		   G_CALLBACK(ags_inline_player_sample_changed), inline_player);
+  */
 }
 
 void
