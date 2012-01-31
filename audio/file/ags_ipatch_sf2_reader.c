@@ -355,7 +355,6 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
       ipatch_list = ipatch_sf2_get_insts(ipatch_sf2_reader->sf2);
       
       if(ipatch_list != NULL){
-	printf("OK!\n\0");
 	list = ipatch_list->items;
       }else{
 	return(names);

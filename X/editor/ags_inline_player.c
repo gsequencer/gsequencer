@@ -150,7 +150,7 @@ ags_inline_player_init(AgsInlinePlayer *inline_player)
   inline_player->position = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 1.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) inline_player->position,
-		     FALSE, FALSE,
+		     TRUE, TRUE,
 		     0);
 
   inline_player->volume = (GtkVolumeButton *) gtk_volume_button_new();

@@ -139,7 +139,10 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
   gtk_box_pack_start(GTK_BOX(sf2_chooser), GTK_WIDGET(table), FALSE, FALSE, 0);
 
   /* first row - preset */
-  label = (GtkLabel *) gtk_label_new("preset: \0");
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "preset: \0",
+				    "xalign\0", 0.0,
+				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
@@ -156,7 +159,10 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 		   0, 0);
 
   /* second row - instrument */
-  label = (GtkLabel *) gtk_label_new("instrument: \0");
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "instrument: \0",
+				    "xalign\0", 0.0,
+				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
@@ -173,7 +179,10 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
 		   0, 0);
 
   /* third row - sample */
-  label = (GtkLabel *) gtk_label_new("sample: \0");
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "sample: \0",
+				    "xalign\0", 0.0,
+				    NULL);
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
