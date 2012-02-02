@@ -168,15 +168,27 @@ ags_audio_file_open(AgsAudioFile *audio_file)
     if(g_str_has_suffix(audio_file->name, ".wav\0") ||
        g_str_has_suffix(audio_file->name, ".ogg\0") ||
        g_str_has_suffix(audio_file->name, ".flac\0")){
+      GError *error;
       guint loop_start, loop_end;
 
       fprintf(stdout, "ags_audio_file_open: using libsndfile\n\0");
       audio_file->file = (GObject *) ags_sndfile_new();
+
       if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
 			   audio_file->name)){
 	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
+
+	error = NULL;
+
 	ags_playable_info(AGS_PLAYABLE(audio_file->file),
-			  &(audio_file->channels), &(audio_file->frames), &loop_start, &loop_end);
+			  &(audio_file->channels), &(audio_file->frames),
+			  &loop_start, &loop_end,
+			  &error);
+
+	if(error != NULL){
+	  g_error(error->message);
+	}
+
 	return(TRUE);
       }else{
 	return(FALSE);
@@ -196,6 +208,7 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   short *buffer;
   guint length;
   guint i, j, k, i_stop, j_stop;
+  GError *error;
 
   length = (guint) ceil((double)(audio_file->frames) / (double)(audio_file->devout->buffer_size));
 
@@ -228,7 +241,13 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   for(i = audio_file->start_channel; list != NULL; i++){
     audio_signal = AGS_AUDIO_SIGNAL(list->data);
     ags_audio_signal_stream_resize(audio_signal, length);
-    buffer = ags_playable_read(AGS_PLAYABLE(audio_file->file), i);
+
+    error = NULL;
+    buffer = ags_playable_read(AGS_PLAYABLE(audio_file->file), i, &error);
+
+    if(error != NULL){
+      g_error(error->message);
+    }
 
     stream = audio_signal->stream_beginning;
     
