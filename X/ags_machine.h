@@ -81,6 +81,12 @@ GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
 
+GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
+void ags_machine_open_files(AgsMachine *machine,
+			    GSList *filenames,
+			    gboolean overwrite_channels,
+			    gboolean create_channels);
+
 AgsMachine* ags_machine_new(GObject *devout);
 
 #endif /*__AGS_MACHINE_H__*/

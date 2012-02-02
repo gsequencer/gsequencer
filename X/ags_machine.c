@@ -21,6 +21,12 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_input.h>
+
+#include <ags/audio/file/ags_audio_file.h>
+
+#include <ags/audio/task/ags_link_channel.h>
+
 #include <ags/X/ags_window.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
@@ -253,6 +259,151 @@ ags_machine_find_by_name(GList *list, char *name)
   }
 
   return(NULL);
+}
+
+GtkFileChooserDialog*
+ags_machine_file_chooser_dialog_new(AgsMachine *machine)
+{
+  GtkFileChooserDialog *file_chooser;
+  GtkCheckButton *check_button;
+
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
+								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) machine),
+								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
+
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
+  gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  g_object_set_data((GObject *) file_chooser, "create\0", (gpointer) check_button);
+
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
+  gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
+  g_object_set_data((GObject *) file_chooser, "overwrite\0", (gpointer) check_button);
+
+  g_signal_connect((GObject *) file_chooser, "response\0",
+		   G_CALLBACK(ags_machine_open_response_callback), machine);
+}
+
+void
+ags_machine_open_files(AgsMachine *machine,
+		       GSList *filenames,
+		       gboolean overwrite_channels,
+		       gboolean create_channels)
+{
+  AgsLinkChannel *link_channel;
+  AgsChannel *channel;
+  AgsAudioFile *audio_file;
+  AgsAudioSignal *audio_signal_source_old;
+  GList *audio_signal_list;
+  guint i, j;
+  guint list_length;
+  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
+
+  channel = machine->audio->input;
+
+  /* overwriting existing channels */
+  if(overwrite_channels){
+    if(channel != NULL){
+      for(i = 0; i < machine->audio->input_pads && filenames != NULL; i++){
+	audio_file = ags_audio_file_new((gchar *) filenames->data,
+					(AgsDevout *) machine->audio->devout,
+					0, machine->audio->audio_channels);
+	if(!ags_audio_file_open(audio_file)){
+	  filenames = filenames->next;
+	  continue;
+	}
+
+	ags_audio_file_read_audio_signal(audio_file);
+	ags_audio_file_close(audio_file);
+	
+	audio_signal_list = audio_file->audio_signal;
+	
+	for(j = 0; j < machine->audio->audio_channels && audio_signal_list != NULL; j++){
+	  /* create task */
+	  link_channel = ags_link_channel_new(channel, NULL);
+	  
+	  /* append AgsLinkChannel */
+	  // FIXME:JK: has a need for the unavaible task
+	  //	    ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+	  //				   AGS_TASK(link_channel));
+	  
+	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
+	  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+	    // FIXME:JK: create a task
+	  channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
+								 (gpointer) audio_signal_source_old);
+	  channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
+								  audio_signal_list->data);
+
+	  g_object_unref(G_OBJECT(audio_signal_source_old));
+
+	  audio_signal_list = audio_signal_list->next;
+	  channel = channel->next;
+	}
+
+	if(audio_file->channels < machine->audio->audio_channels)
+	  channel = ags_channel_nth(channel,
+				    machine->audio->audio_channels - audio_file->channels);
+	
+	filenames = filenames->next;
+      }
+    }
+  }
+
+  /* appending to channels */
+  if(create_channels && filenames != NULL){
+    list_length = g_slist_length(filenames);
+    
+    ags_audio_set_pads((AgsAudio *) machine->audio, AGS_TYPE_INPUT,
+		       list_length + AGS_AUDIO(machine->audio)->input_pads);
+    channel = ags_channel_nth(AGS_AUDIO(machine->audio)->input,
+			      (AGS_AUDIO(machine->audio)->input_pads - list_length) * AGS_AUDIO(machine->audio)->audio_channels);
+    
+    while(filenames != NULL){
+      audio_file = ags_audio_file_new((gchar *) filenames->data,
+				      (AgsDevout *) machine->audio->devout,
+				      0, machine->audio->audio_channels);
+      if(!ags_audio_file_open(audio_file)){
+	filenames = filenames->next;
+	continue;
+      }
+      
+      ags_audio_file_read_audio_signal(audio_file);
+      ags_audio_file_close(audio_file);
+	
+      audio_signal_list = audio_file->audio_signal;
+      
+      for(j = 0; j < machine->audio->audio_channels && audio_signal_list != NULL; j++){
+	AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
+	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+	
+	g_static_mutex_lock(&mutex);
+	channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
+							       (gpointer) audio_signal_source_old);
+	channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
+								audio_signal_list->data);
+	g_static_mutex_unlock(&mutex);
+	
+	g_object_unref(G_OBJECT(audio_signal_source_old));
+	
+	audio_signal_list = audio_signal_list->next;
+	channel = channel->next;
+      }
+      
+      if(machine->audio->audio_channels > audio_file->channels)
+	channel = ags_channel_nth(channel,
+				  machine->audio->audio_channels - audio_file->channels);
+      
+      filenames = filenames->next;
+    }
+  }
 }
 
 AgsMachine*
