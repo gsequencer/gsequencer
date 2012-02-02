@@ -196,7 +196,7 @@ ags_playable_info(AgsPlayable *playable,
   g_return_if_fail(AGS_IS_PLAYABLE(playable));
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_if_fail(playable_interface->info);
-  playable_interface->info(playable, channels, frames, loop_start, loop_end);
+  playable_interface->info(playable, channels, frames, loop_start, loop_end, error);
 }
 
 short*
@@ -209,7 +209,7 @@ ags_playable_read(AgsPlayable *playable,
   g_return_if_fail(AGS_IS_PLAYABLE(playable));
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_if_fail(playable_interface->read);
-  playable_interface->read(playable, channel);
+  playable_interface->read(playable, channel, error);
 }
 
 void
