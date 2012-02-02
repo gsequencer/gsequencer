@@ -41,14 +41,6 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   window->counter->ffplayer++;
 }
 
-gboolean
-ags_ffplayer_destroy_callback(GtkObject *object, AgsFFPlayer *ffplayer)
-{
-  ags_ffplayer_destroy(object);
-
-  return(TRUE);
-}
-
 void
 ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
 {

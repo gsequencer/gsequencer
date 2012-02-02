@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/audio/file/ags_ipatch.h>
 
 #define AGS_TYPE_FFPLAYER                (ags_ffplayer_get_type())
 #define AGS_FFPLAYER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FFPLAYER, AgsFFPlayer))
@@ -47,6 +48,9 @@ struct _AgsFFPlayer
   
   GtkDrawingArea *drawing_area;
   GtkAdjustment *hadjustment;
+
+  AgsIpatch *sf2_file;
+  GtkComboBoxText *instrument;
 };
 
 struct _AgsFFPlayerClass

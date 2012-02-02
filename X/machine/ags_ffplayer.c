@@ -31,7 +31,8 @@ void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
 void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_init(AgsFFPlayer *ffplayer);
 void ags_ffplayer_connect(AgsConnectable *connectable);
-void ags_ffplayer_destroy(GtkObject *object);
+void ags_ffplayer_disconnect(AgsConnectable *connectable);
+void ags_ffplayer_finalize(GObject *gobject);
 void ags_ffplayer_show(GtkWidget *widget);
 
 void ags_ffplayer_set_audio_channels(AgsAudio *audio,
@@ -43,9 +44,13 @@ void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
+void ags_ffplayer_read_sf2_instruments(AgsFFPlayer *ffplayer, AgsIpatch *sf2_file);
+void ags_ffplayer_read_sf2_instrument(AgsFFPlayer *ffplayer);
+
 extern void ags_file_read_ffplayer(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine);
 
+static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
 GtkStyle *ffplayer_style;
@@ -89,7 +94,24 @@ ags_ffplayer_get_type(void)
 void
 ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
 {
-  AgsMachineClass *machine = (AgsMachineClass *) ffplayer;
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  AgsMachineClass *machine;
+
+  ags_ffplayer_parent_class = g_type_class_peek_parent(ffplayer);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) ffplayer;
+
+  gobject->finalize = ags_ffplayer_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) ffplayer;
+
+  widget->show = ags_ffplayer_show;
+
+  /* AgsMachineClass */
+  machine = (AgsMachineClass *) ffplayer;
 
   //  machine->read_file = ags_file_read_ffplayer;
   //  machine->write_file = ags_file_write_ffplayer;
@@ -111,6 +133,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkTable *table;
   GtkHScrollbar *hscrollbar;
   GtkVBox *vbox;
+  GtkHBox *hbox;
+  GtkLabel *label;
   PangoAttrList *attr_list;
   PangoAttribute *attr;
 
@@ -124,20 +148,45 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
 
-  table = (GtkTable *) gtk_table_new(1, 2, FALSE);
-  gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) ffplayer))->data, (GtkWidget *) table);
+  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  gtk_container_add((GtkContainer *) (gtk_container_get_children((GtkContainer *) ffplayer))->data, (GtkWidget *) table);
 
-  ffplayer->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
-  gtk_table_attach(table, (GtkWidget *) ffplayer->open,
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(hbox),
 		   0, 1,
-		   0, 1,
-		   0, 0,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "instrument\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->instrument = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(ffplayer->instrument),
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->open = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
+					      "label\0", GTK_STOCK_OPEN,
+					      "use-stock\0", TRUE,
+					      NULL);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(ffplayer->open),
+		     FALSE, FALSE,
+		     0);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
   gtk_table_attach(table, (GtkWidget *) vbox,
 		   1, 2,
-		   0, 1,
+		   0, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -155,10 +204,21 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
                          | GDK_POINTER_MOTION_HINT_MASK);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) ffplayer->drawing_area, FALSE, FALSE, 0);
 
-  ffplayer->hadjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 76 * ffplayer->control_width - GTK_WIDGET(ffplayer->drawing_area)->allocation.width, 1.0, (double) ffplayer->control_width, (double) (16 * ffplayer->control_width));
+  ffplayer->hadjustment = (GtkAdjustment *) gtk_adjustment_new(0.0,
+							       0.0,
+							       76 * ffplayer->control_width - GTK_WIDGET(ffplayer->drawing_area)->allocation.width,
+							       1.0,
+							       (double) ffplayer->control_width,
+							       (double) (16 * ffplayer->control_width));
   hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
   gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hscrollbar, FALSE, FALSE, 0);
+}
+
+void
+ags_ffplayer_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_ffplayer_parent_class)->finalize(gobject);
 }
 
 void
@@ -166,11 +226,10 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 {
   AgsFFPlayer *ffplayer;
 
+  ags_ffplayer_parent_connectable_interface->connect(connectable);
+
   /* AgsFFPlayer */
   ffplayer = AGS_FFPLAYER(connectable);
-
-  g_signal_connect((GObject *) ffplayer, "destroy\0",
-		   G_CALLBACK(ags_ffplayer_destroy_callback), (gpointer) ffplayer);
 
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);
@@ -193,13 +252,18 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 }
 
 void
-ags_ffplayer_destroy(GtkObject *object)
+ags_ffplayer_disconnect(AgsConnectable *connectable)
 {
+  ags_ffplayer_parent_connectable_interface->disconnect(connectable);
+
+  //TODO:JK
+  /* implement me */
 }
 
 void
 ags_ffplayer_show(GtkWidget *widget)
 {
+  GTK_WIDGET_CLASS(ags_ffplayer_parent_class)->show(widget);
 }
 
 void
@@ -349,6 +413,18 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
       cairo_stroke(cr);
     }
   }
+}
+
+void
+ags_ffplayer_read_sf2_instruments(AgsFFPlayer *ffplayer, AgsIpatch *sf2_file)
+{
+  
+}
+
+void
+ags_ffplayer_read_sf2_instrument(AgsFFPlayer *ffplayer)
+{
+
 }
 
 AgsFFPlayer*

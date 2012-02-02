@@ -145,7 +145,6 @@ ags_panel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
 }
 
-
 void
 ags_panel_connect(AgsConnectable *connectable)
 {

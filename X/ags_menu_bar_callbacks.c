@@ -156,7 +156,41 @@ ags_menu_bar_save_as_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  gtk_main_quit();
+  AgsWindow *window;
+  GtkDialog *dialog;
+  GtkWidget *cancel_button;
+  gint response;
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
+
+  /* ask the user if he wants save to a file */
+  dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
+						GTK_DIALOG_DESTROY_WITH_PARENT,
+						GTK_MESSAGE_QUESTION,
+						GTK_BUTTONS_YES_NO,
+						"Do you want to save '%s'?\0", window->name);
+  cancel_button = gtk_dialog_add_button(dialog,
+					GTK_STOCK_CANCEL,
+					GTK_RESPONSE_CANCEL);
+  gtk_widget_grab_focus(cancel_button);
+
+  response = gtk_dialog_run(dialog);
+
+  if(response == GTK_RESPONSE_YES){
+    AgsFile *file;
+
+    file = ags_file_new();
+    file->window = (GtkWidget *) window;
+    file->name = g_strdup(window->name);
+    ags_file_write(file);
+    g_object_unref(G_OBJECT(file));
+  }
+
+  if(response != GTK_RESPONSE_CANCEL){
+    gtk_main_quit();
+  }else{
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+  }
 }
 
 
