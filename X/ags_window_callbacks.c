@@ -22,7 +22,8 @@ gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 {
   AgsWindow *window;
-  GtkDialog *dialog; 
+  GtkDialog *dialog;
+  GtkWidget *cancel_button;
   gint response;
 
   window = AGS_WINDOW(widget);
@@ -33,6 +34,11 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 						GTK_MESSAGE_QUESTION,
 						GTK_BUTTONS_YES_NO,
 						"Do you want to save '%s'?\0", window->name);
+  cancel_button = gtk_dialog_add_button(dialog,
+					GTK_STOCK_CANCEL,
+					GTK_RESPONSE_CANCEL);
+  gtk_widget_grab_focus(cancel_button);
+
   response = gtk_dialog_run(dialog);
 
   if(response == GTK_RESPONSE_YES){
@@ -45,7 +51,11 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     g_object_unref(G_OBJECT(file));
   }
 
-  gtk_main_quit();
+  if(response != GTK_RESPONSE_CANCEL){
+    gtk_main_quit();
+  }else{
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+  }
 
   return(TRUE);
 }

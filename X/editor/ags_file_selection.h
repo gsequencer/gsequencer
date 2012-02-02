@@ -71,12 +71,16 @@ struct _AgsFileSelectionClass
 
 struct _AgsFileSelectionEntry
 {
-  GtkHBox *hbox;
+  GtkTable *table;
 
   GtkWidget *entry;
 
   gboolean chosed;
   gchar *filename;
+
+  GtkSpinButton *nth_sample;
+  GtkSpinButton *nth_channel;
+  GtkSpinButton *count;
 };
 
 GType ags_file_selection_get_type(void);
