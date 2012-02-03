@@ -18,13 +18,19 @@
 
 #include <ags/audio/ags_input.h>
 
+#include <ags/object/ags_connectable.h>
+
 void ags_input_class_init (AgsInputClass *input_class);
+void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_input_init (AgsInput *input);
 void ags_input_finalize (GObject *gobject);
+void ags_input_connect(AgsConnectable *connectable);
+void ags_input_disconnect(AgsConnectable *connectable);
 
 extern void ags_file_write_input(AgsFile *file, AgsChannel *channel);
 
 static gpointer ags_input_parent_class = NULL;
+static AgsConnectableInterface *ags_input_parent_connectable_interface;
 
 GType
 ags_input_get_type (void)
@@ -44,10 +50,20 @@ ags_input_get_type (void)
       (GInstanceInitFunc) ags_input_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_input_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_input = g_type_register_static(AGS_TYPE_CHANNEL,
 					    "AgsInput\0",
 					    &ags_input_info,
 					    0);
+
+    g_type_add_interface_static(ags_type_input,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return (ags_type_input);
@@ -69,9 +85,20 @@ ags_input_class_init(AgsInputClass *input)
 }
 
 void
+ags_input_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_input_connectable_parent_interface;
+
+  ags_input_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_input_connect;
+  connectable->disconnect = ags_input_disconnect;
+}
+
+void
 ags_input_init(AgsInput *input)
 {
-  input->file = NULL;
+  input->playable = NULL;
 }
 
 void
@@ -81,15 +108,22 @@ ags_input_finalize(GObject *gobject)
 
   input = AGS_INPUT(gobject);
 
-  if(input->file != NULL)
-    g_object_unref(input->file);
+  if(input->playable != NULL)
+    g_object_unref(G_OBJECT(input->playable));
 
   G_OBJECT_CLASS(ags_input_parent_class)->finalize(gobject);
 }
 
 void
-ags_input_connect(AgsInput *input)
+ags_input_connect(AgsConnectable *connectable)
 {
+  ags_input_parent_connectable_interface->connect(connectable);
+}
+
+void
+ags_input_disconnect(AgsConnectable *connectable)
+{
+  ags_input_parent_connectable_interface->disconnect(connectable);
 }
 
 AgsInput*

@@ -1460,8 +1460,12 @@ ags_file_write_input(AgsFile *file, AgsChannel *channel)
 
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_INPUT), NULL);
 
-  if(input->file != NULL)
-    xmlNewProp(file->current, BAD_CAST "file\0", BAD_CAST (input->file->name));
+  if(input->playable != NULL){
+    //TODO:JK: add support for more file types
+    if(AGS_IS_AUDIO_FILE(input->playable)){
+      xmlNewProp(file->current, BAD_CAST "file\0", BAD_CAST (AGS_AUDIO_FILE(input->playable)->name));
+    }
+  }
 
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }

@@ -330,9 +330,5 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 			   filenames,
 			   overwrite->toggle_button.active,
 			   create->toggle_button.active);
-
-    gtk_widget_destroy((GtkWidget *) file_chooser);
-  }else if(response == GTK_RESPONSE_CANCEL){
-    gtk_widget_destroy((GtkWidget *) file_chooser);
   }
 }

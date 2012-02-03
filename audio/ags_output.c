@@ -24,12 +24,16 @@
 #include <ags/audio/ags_audio.h>
 
 void ags_output_class_init(AgsOutputClass *output_class);
+void ags_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_output_init(AgsOutput *output);
 void ags_output_finalize(GObject *gobject);
+void ags_output_connect(AgsConnectable *connectable);
+void ags_output_disconnect(AgsConnectable *connectable);
 
 extern void ags_file_write_output(AgsFile *file, AgsChannel *channel);
 
 static gpointer ags_output_parent_class = NULL;
+static AgsConnectableInterface *ags_output_parent_connectable_interface;
 
 GType
 ags_output_get_type (void)
@@ -49,10 +53,20 @@ ags_output_get_type (void)
       (GInstanceInitFunc) ags_output_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_output_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_output = g_type_register_static(AGS_TYPE_CHANNEL,
 					     "AgsOutput\0",
 					     &ags_output_info,
 					     0);
+
+    g_type_add_interface_static(ags_type_output,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return (ags_type_output);
@@ -74,6 +88,17 @@ ags_output_class_init(AgsOutputClass *output)
 }
 
 void
+ags_output_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_output_connectable_parent_interface;
+
+  ags_output_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_output_connect;
+  connectable->disconnect = ags_output_disconnect;
+}
+
+void
 ags_output_init(AgsOutput *output)
 {
 }
@@ -82,6 +107,18 @@ void
 ags_output_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_output_parent_class)->finalize(gobject);
+}
+
+void
+ags_output_connect(AgsConnectable *connectable)
+{
+  ags_output_parent_connectable_interface->connect(connectable);
+}
+
+void
+ags_output_disconnect(AgsConnectable *connectable)
+{
+  ags_output_parent_connectable_interface->disconnect(connectable);
 }
 
 GList*

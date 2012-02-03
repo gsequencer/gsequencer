@@ -25,8 +25,10 @@
 #include <ags/audio/ags_input.h>
 
 #include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
-void ags_ffplayer_open_response_callback(GtkWidget *widget, gint response, AgsFFPlayer *ffplayer);
+void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
+						AgsMachine *machine);
 
 void
 ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer)
@@ -47,104 +49,84 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   GtkFileChooserDialog *file_chooser;
 
   file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
+				       FALSE);
+
+  g_signal_connect((GObject *) file_chooser, "response\0",
+		   G_CALLBACK(ags_ffplayer_open_dialog_response_callback), AGS_MACHINE(ffplayer));
+
   gtk_widget_show_all((GtkWidget *) file_chooser);
 }
 
 void
-ags_ffplayer_open_response_callback(GtkWidget *widget, gint response, AgsFFPlayer *ffplayer)
+ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
+					   AgsMachine *machine)
 {
-  /*
+  AgsFFPlayer *ffplayer;
   GtkFileChooserDialog *file_chooser;
-  GtkCheckButton *overwrite;
-  GtkCheckButton *create;
-  AgsChannel *channel;
-  AgsAudioFile *audio_file;
-  GList *list;
-  GSList *filenames;
-  guint i, j;
-  gboolean reset;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_widget_get_toplevel(widget);
+  ffplayer = AGS_FFPLAYER(machine);
+  file_chooser = GTK_FILE_CHOOSER_DIALOG(widget);
 
   if(response == GTK_RESPONSE_ACCEPT){
-    filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data((GObject *) widget, "overwrite\0");
-    create = g_object_get_data((GObject *) widget, "create\0");
+    gchar *filename;
 
-    channel = ffplayer->machine.audio->input;
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
 
-    if(overwrite->toggle_button.active){
-      if(channel == NULL)
-	if(create->toggle_button.active)
-	  goto ags_ffplayer_open_response_callback0;
-	else
-	  return;
+    if(g_str_has_suffix(filename, ".sf2\0")){
+      AgsIpatch *ipatch;
+      AgsIpatchSF2Reader *sf2_reader;
+      AgsPlayable *playable;
+      gchar **preset;
+      gchar **instrument;
+      gchar **sample;
+      GError *error;
 
-      for(i = 0; i < ffplayer->machine.audio->input_pads && filenames != NULL; i++){
-	audio_file = ags_audio_file_new((char *) filenames->data);
-	ags_audio_file_open(audio_file);
-	AGS_AUDIO_FILE_GET_CLASS(audio_file)->read_buffer(audio_file);
-	ags_audio_file_read_audio_signal(audio_file);
-	list = audio_file->audio_signal;
+      /* clear preset, instrument and sample*/
+      ags_combo_box_text_remove_all(ffplayer->instrument);
 
-	for(j = 0; j < ffplayer->machine.audio->audio_channels && list != NULL; j++){
-	  ags_channel_set_link(channel, NULL);
+      /* Ipatch related */
+      ffplayer->ipatch =
+	ipatch = g_object_new(AGS_TYPE_IPATCH,
+			      "mode\0", AGS_IPATCH_READ,
+			      "filename\0", filename,
+			      NULL);
+      ags_ipatch_open(ipatch, filename);
 
-	  channel->first_recycling->audio_signal = g_list_append(channel->first_recycling->audio_signal, list->data);
+      sf2_reader = ags_ipatch_sf2_reader_new();
+      sf2_reader->ipatch =  ipatch;
+      ipatch->reader = (GObject *) sf2_reader;
 
-	  list = list->next;
-	}
+      playable = AGS_PLAYABLE(ipatch->reader);
+      
+      ags_playable_open(playable, filename);
 
-	filenames = filenames->next;
-	channel = channel->next;
+      error = NULL;
+      ags_playable_level_select(playable,
+				0, filename,
+				&error);
+
+      /* fill ffplayer->instrument */
+      AGS_IPATCH_SF2_READER(ipatch->reader)->nth_level = 1;
+      instrument = ags_playable_sublevel_names(playable);
+      
+      while(*instrument != NULL){
+	gtk_combo_box_text_append_text(ffplayer->instrument,
+				       *instrument);
+
+
+	instrument++;
       }
+
+      /* reset nth_level */
+      AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 0;
+
+      /* and show instrument */
+      gtk_widget_show_all(ffplayer->instrument);
     }
-
-    if(create->toggle_button.active){
-    ags_ffplayer_open_response_callback0:
-
-      if(filenames == NULL)
-	return;
-
-      if(channel == NULL)
-	reset = TRUE;
-      else
-	channel = ags_channel_last(channel);
-
-      i = ffplayer->machine.audio->input_pads;
-      ags_audio_set_pads((AgsAudio *) channel->audio, AGS_TYPE_INPUT,
-			 AGS_AUDIO(channel->audio)->input_pads + 1);
-
-      for(; filenames != NULL;){
-	audio_file = ags_audio_file_new((char *) filenames->data);
-	ags_audio_file_open(audio_file);
-	AGS_AUDIO_FILE_GET_CLASS(audio_file)->read_buffer(audio_file);
-	ags_audio_file_read_audio_signal(audio_file);
-	list = audio_file->audio_signal;
-
-	for(j = 0; j < ffplayer->machine.audio->audio_channels && list != NULL; j++){
-	  ags_channel_set_link(channel, NULL);
-
-	  channel->first_recycling->audio_signal = g_list_append(channel->first_recycling->audio_signal, list->data);
-
-	  list = list->next;
-	}
-
-	i++;
-	filenames = filenames->next;
-	channel = channel->next;
-
-	if(filenames != NULL)
-	  ags_audio_set_pads((AgsAudio *) channel->audio, AGS_TYPE_INPUT,
-			     AGS_AUDIO(channel->audio)->input_pads +1);
-      }
-    }
-
-    gtk_widget_destroy((GtkWidget *) file_chooser);
-  }else if(response == GTK_RESPONSE_CANCEL){
-    gtk_widget_destroy((GtkWidget *) file_chooser);
   }
-  */
+
+  gtk_widget_destroy(widget);
 }
 
 gboolean

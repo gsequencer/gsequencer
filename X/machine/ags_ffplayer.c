@@ -171,7 +171,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->instrument = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(ffplayer->instrument),
-		     FALSE, FALSE,
+		     TRUE, FALSE,
 		     0);
 
   ffplayer->open = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,

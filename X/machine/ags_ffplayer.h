@@ -49,7 +49,7 @@ struct _AgsFFPlayer
   GtkDrawingArea *drawing_area;
   GtkAdjustment *hadjustment;
 
-  AgsIpatch *sf2_file;
+  AgsIpatch *ipatch;
   GtkComboBoxText *instrument;
 };
 

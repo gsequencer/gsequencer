@@ -285,9 +285,6 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
   g_object_set_data((GObject *) file_chooser, "overwrite\0", (gpointer) check_button);
 
-  g_signal_connect((GObject *) file_chooser, "response\0",
-		   G_CALLBACK(ags_machine_open_response_callback), machine);
-
   return(file_chooser);
 }
 
