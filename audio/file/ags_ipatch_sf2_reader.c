@@ -535,10 +535,33 @@ void
 ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
+  int count;
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  //TODO:JK: implement me
+  if(ipatch_sf2_reader->nth_level == 0 ||
+     ipatch_sf2_reader->nth_level == 3){
+    ipatch_sf2_reader->iter = NULL;
+    ipatch_sf2_reader->count = 0;
+  }
+  
+  ipatch_sf2_reader->iter = ipatch_iter_alloc();
+
+  if(ipatch_sf2_reader->nth_level == 1){
+    ipatch_list_init_iter(ipatch_sf2_preset_get_zones(ipatch_sf2_find_preset(ipatch_sf2_reader->sf2,
+									     ipatch_sf2_reader->selected_sublevel_name,
+									     ipatch_sf2_reader->bank,
+									     ipatch_sf2_reader->program,
+									     NULL)),
+			  ipatch_sf2_reader->iter);
+  }else if(ipatch_sf2_reader->nth_level == 2){
+    ipatch_list_init_iter(ipatch_sf2_inst_get_zones(ipatch_sf2_find_inst(ipatch_sf2_reader->sf2,
+									 ipatch_sf2_reader->selected_sublevel_name,
+									 NULL)),
+			  ipatch_sf2_reader->iter);
+  }
+
+  ipatch_sf2_reader->count = ipatch_iter_count(ipatch_sf2_reader->iter);
 }
 
 gboolean
@@ -548,7 +571,13 @@ ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable)
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  //TODO:JK: implement me
+  ipatch_sf2_reader->zone = ipatch_sf2_zone_next(ipatch_sf2_reader->iter);
+
+  if(ipatch_sf2_reader->iter != NULL){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 void
@@ -593,31 +622,61 @@ short*
 ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel, GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
-  IpatchSF2Sample *sample;
-  IpatchSampleData *sample_data;
-  IpatchSampleStoreSndFile *sample_store;
-  IpatchList *ipatch_list;
-  GList *list;
-  short *buffer, *source;
-  guint i;
+  short *buffer;
+  GError *this_error;
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  //TODO:JK: implement me
+  if(ipatch_sf2_reader->nth_level == 1 ||
+     ipatch_sf2_reader->nth_level == 2){
 
-  sample_data = ipatch_sf2_sample_peek_data(sample);
-  
-  ipatch_list = ipatch_sample_data_get_samples(sample_data);
-  list = ipatch_list->items;
+    if(ipatch_sf2_reader->zone != NULL){
+      //TODO:JK: get endianess and set it for format
+      ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sf2_reader->zone),
+				   0,
+				   ipatch_sample_get_frame_size(IPATCH_SAMPLE(ipatch_sf2_reader->zone)),
+				   buffer,
+				   IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_STEREO | IPATCH_SAMPLE_SIGNED,
+				   IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+				   &this_error);
+      
+      if(this_error != NULL){
+	g_error(this_error->message);
+      }
 
-  while(list != NULL){
-    sample_store = IPATCH_SAMPLE_STORE_SND_FILE(list->data);
+      *error = this_error;
+      
+      return(buffer);
+    }else{
+      return(NULL);
+    }
+  }else if(ipatch_sf2_reader->nth_level == 3){
+    IpatchSF2Sample *sample;
 
-    ipatch_sample_store_snd_file_init_read(sample_store);
+    sample = ipatch_sf2_find_sample(ipatch_sf2_reader->sf2,
+				    ipatch_sf2_reader->selected_sublevel_name,
+				    NULL);
 
+    if(ipatch_sf2_reader->zone != NULL){
+      //TODO:JK: get endianess and set it for format
+      ipatch_sample_read_transform(IPATCH_SAMPLE(sample),
+				   0,
+				   ipatch_sample_get_frame_size(IPATCH_SAMPLE(sample)),
+				   buffer,
+				   IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_STEREO | IPATCH_SAMPLE_SIGNED,
+				   IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+				   &this_error);
+      
+      if(this_error != NULL){
+	g_error(this_error->message);
+      }
 
-
-    list = list->next;
+      *error = this_error;
+      
+      return(buffer);
+    }else{
+      return(NULL);
+    }
   }
 }
 
