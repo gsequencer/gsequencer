@@ -148,14 +148,13 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
   audio = AGS_MACHINE(ffplayer)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+  audio->flags |= (AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_TAKES_FILE |
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_HAS_NOTATION);
   
+  AGS_MACHINE(ffplayer)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
-
 
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
@@ -169,7 +168,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
-  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) delay_audio, TRUE);
 
   /* create AgsDelayAudioRun in audio->play */
@@ -178,7 +177,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							     "recall_container\0", recall_container,
 							     "recall_audio\0", delay_audio,
 							     NULL);
-  AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
 
   /* audio->recall */
@@ -193,7 +192,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
-  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) delay_audio, FALSE);
 
   /* create AgsDelayAudioRun in audio->recall */
@@ -202,35 +201,29 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							       "recall_container\0", recall_container,
 							       "recall_audio\0", delay_audio,
 							       NULL);
-  AGS_RECALL(recall_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(recall_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) recall_delay_audio_run, FALSE);
 
   /* audio->play */
   /* create AgsCopyPatternAudioRun in audio->play */
   ffplayer->play_notation =
     play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
-						     "recall_container\0", recall_container,
 						     "devout\0", audio->devout,
-						     "notation\0", audio->notation->data,
 						     "delay_audio_run\0", play_delay_audio_run,
 						     NULL);
-  AGS_RECALL(play_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(play_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  ffplayer->play_notation->notation = &(audio->notation);
   ags_audio_add_recall(audio, (GObject *) play_notation, TRUE);
 
   /* audio->recall */
-  /* create AgsRecallContainer for delay related recalls */
-  recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
-
   /* create AgsCopyPatternAudioRun in audio->recall */
   ffplayer->recall_notation =
     recall_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
-						       "recall_container\0", recall_container,
 						       "devout\0", audio->devout,
-						       "notation\0", audio->notation->data,
 						       "delay_audio_run\0", recall_delay_audio_run,
 						       NULL);
-  AGS_RECALL(recall_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(recall_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  ffplayer->recall_notation->notation = &(audio->notation);
   ags_audio_add_recall(audio, (GObject *) recall_notation, FALSE);
 
   /* create widgets */

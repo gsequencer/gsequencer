@@ -53,7 +53,6 @@ void ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, A
 enum{
   PROP_0,
   PROP_DEVOUT,
-  PROP_NOTATION,
   PROP_DELAY_AUDIO_RUN,
 };
 
@@ -92,9 +91,9 @@ ags_play_notation_get_type()
     };
 
     ags_type_play_notation = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-						    "AgsPlayNotation\0",
-						    &ags_play_notation_info,
-						    0);
+							     "AgsPlayNotation\0",
+							     &ags_play_notation_info,
+							     0);
 
     g_type_add_interface_static(ags_type_play_notation,
 				AGS_TYPE_CONNECTABLE,
@@ -133,15 +132,6 @@ ags_play_notation_class_init(AgsPlayNotationClass *play_notation)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_AUDIO_RUN,
-				  param_spec);
-
-  param_spec = g_param_spec_object("notation\0",
-				   "assigned AgsNotation\0",
-				   "the AgsNotation which keeps the notation\0",
-				   AGS_TYPE_NOTATION,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NOTATION,
 				  param_spec);
 
   param_spec = g_param_spec_object("delay_audio_run\0",
@@ -220,27 +210,6 @@ ags_play_notation_set_property(GObject *gobject,
       play_notation->devout = devout;
     }
     break;
-  case PROP_NOTATION:
-    {
-      AgsNotation *notation;
-
-      notation = g_value_get_object(value);
-
-      if(notation == play_notation->notation){
-	return;
-      }
-
-      if(play_notation->notation != NULL){
-	g_object_unref(G_OBJECT(play_notation->notation));
-      }
-
-      if(notation != NULL){
-	g_object_ref(notation);
-      }
-
-      play_notation->notation = notation;
-    }
-    break;
   case PROP_DELAY_AUDIO_RUN:
     {
       AgsDelayAudioRun *delay_audio_run;
@@ -300,11 +269,6 @@ ags_play_notation_get_property(GObject *gobject,
   case PROP_DEVOUT:
     {
       g_value_set_object(value, G_OBJECT(play_notation->devout));
-    }
-    break;
-  case PROP_NOTATION:
-    {
-      g_value_set_object(value, G_OBJECT(play_notation->notation));
     }
     break;
   case PROP_DELAY_AUDIO_RUN:
@@ -446,32 +410,41 @@ ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPla
   GList *current_position;
   AgsNote *note;
   AgsRecycling *recycling;
+  GList *list;
+  guint i;
 
-  notation = play_notation->notation;
+  list = *(play_notation->notation);
 
-  audio = AGS_AUDIO(play_notation->notation->audio);
-  
-  if((AGS_PLAY_NOTATION_DEFAULT & notation->flags) != 0){
-    selected_channel = audio->input;
-  }else{
-    selected_channel = audio->output;
-  }
+  if(list == NULL)
+    return;
 
-  current_position = notation->start_loop;
-  note = AGS_NOTE(current_position->data);
+  audio = AGS_AUDIO(AGS_NOTATION(list->data)->audio);
 
-  if(current_position != notation->end_loop &&
-     note->x[0] == notation->offset){
-    selected_channel = ags_channel_nth(selected_channel, notation->audio_channel);
-    selected_channel = ags_channel_pad_nth(selected_channel, note->y);
-
-    recycling = selected_channel->first_recycling;
-
-    while(recycling != selected_channel->last_recycling){
-      ags_recycling_add_audio_signal_with_frame_count(recycling,
-						      ags_audio_signal_get_template(recycling->audio_signal),
-						      note->x[1] - note->x[0]);
+  for(i = 0; i < audio->audio_channels; i++){  
+    if((AGS_PLAY_NOTATION_DEFAULT & notation->flags) != 0){
+      selected_channel = audio->input;
+    }else{
+      selected_channel = audio->output;
     }
+    
+    current_position = notation->start_loop;
+    note = AGS_NOTE(current_position->data);
+
+    if(current_position != notation->end_loop &&
+       note->x[0] == notation->offset){
+      selected_channel = ags_channel_nth(selected_channel, i);
+      selected_channel = ags_channel_pad_nth(selected_channel, note->y);
+      
+      recycling = selected_channel->first_recycling;
+      
+      while(recycling != selected_channel->last_recycling){
+	ags_recycling_add_audio_signal_with_frame_count(recycling,
+							ags_audio_signal_get_template(recycling->audio_signal),
+							note->x[1] - note->x[0]);
+      }
+    }
+
+    list = list->next;
   }
 }
 

@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
@@ -166,6 +167,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   ags_audio_set_audio_channels(AGS_MACHINE(ffplayer)->audio,
 			       2);
+
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT,
 		     AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->count);
   

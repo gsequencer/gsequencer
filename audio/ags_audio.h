@@ -54,7 +54,8 @@ struct _AgsAudio
   guint flags;
 
   GObject *devout;
-
+  guint level;
+  
   guint sequence_length;
   guint audio_channels;
   guint frequence;

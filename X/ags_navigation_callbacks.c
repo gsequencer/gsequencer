@@ -21,6 +21,9 @@
 #include <ags/object/ags_tactable.h>
 
 #include <ags/audio/task/ags_change_bpm.h>
+#include <ags/audio/task/ags_init_audio.h>
+#include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_cancel_audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -99,12 +102,51 @@ void
 ags_navigation_play_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
-  
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsDevout *devout;
+  AgsInitAudio *init_audio;
+  AgsAppendAudio *append_audio;
+  GList *machines;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+  //FIXME:JK: you may wish better scheduling
+  while(machines != NULL){
+    machine = AGS_MACHINE(machines->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) !=0){
+      devout = AGS_DEVOUT(machine->audio->devout);
+
+      /* create init task */
+      init_audio = ags_init_audio_new(machine->audio,
+				      FALSE, TRUE, FALSE);
+      
+      /* append AgsInitAudio */
+      ags_devout_append_task(devout,
+			     AGS_TASK(init_audio));
+      
+      /* create append task */
+      append_audio = ags_append_audio_new(devout,
+					  machine->audio->devout_play);
+
+      /* append AgsAppendAudio */
+      ags_devout_append_task(devout,
+			     AGS_TASK(append_audio));
+      
+      /* call run */
+      if((AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) == 0)
+	append_audio->devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
+
+      ags_devout_run(devout);
+    }
 
 
-  //  AGS_DEVOUT_GET_CLASS(navigation->devout)->run(navigation->devout);
-
-  /* empty */
+    machines = machines->next;
+  }
 }
 
 void

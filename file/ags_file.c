@@ -352,6 +352,7 @@ ags_file_read_audio(AgsFile *file, AgsAudio *audio)
   xmlChar *prop[2];
   GList *notation;
   gboolean  first_notation;
+  int i;
 
   prop[0] = xmlGetProp(file->current, "audio_channels\0");
 
@@ -373,6 +374,7 @@ ags_file_read_audio(AgsFile *file, AgsAudio *audio)
   file->current = node->children;
 
   first_notation = TRUE;
+  i = 0;
 
   while(file->current != NULL){
     child = file->current;
@@ -390,8 +392,10 @@ ags_file_read_audio(AgsFile *file, AgsAudio *audio)
 	  notation = notation->next;
 	}
 
-	notation->data = (gpointer) ags_notation_new();
+	notation->data = (gpointer) ags_notation_new(i);
 	ags_file_read_notation(file, (AgsNotation *) notation->data);
+
+	i++;
       }
 
     file->current = child->next;

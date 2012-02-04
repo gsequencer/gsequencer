@@ -27,9 +27,12 @@
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
-#define AGS_TYPE_PLAY_NOTATION             (ags_play_notation_get_type())
-#define AGS_PLAY_NOTATION(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))
-#define AGS_PLAY_NOTATION_CLASS(class)     (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))
+#define AGS_TYPE_PLAY_NOTATION                (ags_play_notation_get_type())
+#define AGS_PLAY_NOTATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))
+#define AGS_PLAY_NOTATION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))
+#define AGS_IS_PLAY_NOTATION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PLAY_NOTATION))
+#define AGS_IS_PLAY_NOTATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLAY_NOTATION))
+#define AGS_PLAY_NOTATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PLAY_NOTATION, AgsPlayNotationClass))
 
 typedef struct _AgsPlayNotation AgsPlayNotation;
 typedef struct _AgsPlayNotationClass AgsPlayNotationClass;
@@ -40,14 +43,14 @@ typedef enum{
 
 struct _AgsPlayNotation
 {
-  AgsRecallAudioRun recall_audio_run;
+  AgsRecall recall;
 
   guint flags;
 
   AgsDevout *devout;
 
   //  AgsChannel *channel;
-  AgsNotation *notation;
+  GList **notation;
 
   AgsDelayAudioRun *delay_audio_run;
   gulong tic_count_handler;
@@ -58,7 +61,7 @@ struct _AgsPlayNotation
 
 struct _AgsPlayNotationClass
 {
-  AgsRecallAudioRunClass recall_audio_run;
+  AgsRecallClass recall;
 };
 
 GType ags_play_notation_get_type();

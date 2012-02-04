@@ -177,6 +177,8 @@ ags_audio_init(AgsAudio *audio)
 {
   audio->flags = 0;
 
+  audio->devout = NULL;
+
   audio->sequence_length = 0;
   audio->audio_channels = 0;
   audio->frequence = 0;
@@ -925,6 +927,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     i = audio->audio_channels;
 
+    fprintf(stdout, "ags_audio_set_audio_channels_grow_notation\n\0");
+
     if(audio->audio_channels == 0){
       audio->notation =
 	list = g_list_alloc();
@@ -939,7 +943,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       list = list->next;
 
     ags_audio_set_audio_channels_grow_notation0:
-      list->data = (gpointer) ags_notation_new();
+      list->data = (gpointer) ags_notation_new(i);
     } 
   }
   void ags_audio_set_audio_channels_shrink_notation(){
@@ -1183,20 +1187,38 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	recycling_next->prev = recycling;
     }
   }
-  void ags_audio_set_pads_shrink_zero(){
-    AgsChannel *start, *channel_next;
+  void ags_audio_set_pads_unlink_zero(){
+    AgsChannel *start;
     GError *error;
 
     start = channel;
-    error = NULL;
 
     while(channel != NULL){
+      error = NULL;
       ags_channel_set_link(channel, NULL, &error);
+
+      if(error != NULL){
+	g_error(error->message);
+      }
 
       channel = channel->next;
     }
 
     channel = start;
+  }
+  void ags_audio_set_pads_unlink(){
+    AgsChannel *start;
+
+    start = channel;
+    channel = ags_channel_nth(channel, pads * audio->audio_channels);
+
+    ags_audio_set_pads_unlink_zero();
+
+    channel = start;
+  }
+  void ags_audio_set_pads_shrink_zero(){
+    AgsChannel *channel_next;
+    GError *error;
 
     while(channel != NULL){
       channel_next = channel->next;
@@ -1238,7 +1260,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       list = list->next;
     ags_audio_set_pads_alloc_notation0:
 
-      list->data = (gpointer) ags_notation_new();
+      list->data = (gpointer) ags_notation_new(i);
     }
   }
   void ags_audio_set_pads_free_notation(){
@@ -1277,7 +1299,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     notation_i = audio->notation;
 
-    while(notation != NULL){
+    while(notation_i != NULL){
       notation = AGS_NOTATION(notation_i->data);
       note = notation->notes;
 
@@ -1340,6 +1362,18 @@ ags_audio_real_set_pads(AgsAudio *audio,
       ags_audio_set_pads_grow_one();
       channel =
 	audio->output = start;
+
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	type = AGS_TYPE_INPUT;
+
+	ags_audio_set_pads_grow_one();
+	audio->input = start;
+	audio->input_pads = 1;
+
+	type = AGS_TYPE_OUTPUT;
+	channel = audio->output;
+      }
+
       pads_old =
 	audio->output_pads = 1;
     }else
@@ -1347,21 +1381,82 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     if(pads > audio->output_pads){
       ags_audio_set_pads_grow();
+
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	channel = audio->input;
+	type = AGS_TYPE_INPUT;
+
+	ags_audio_set_pads_grow();
+
+	type = AGS_TYPE_OUTPUT;
+	channel = audio->output;
+      }
     }else if(pads == 0){
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	 audio->notation != NULL)
 	ags_audio_set_pads_free_notation();
 
+      ags_audio_set_pads_unlink_zero();
+
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	type = AGS_TYPE_INPUT;
+	channel = audio->input;
+
+	ags_audio_set_pads_unlink_zero();
+
+	type = AGS_TYPE_OUTPUT;
+	channel = audio->output;
+      }
+
       ags_audio_set_pads_shrink_zero();
       audio->output = NULL;
+
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	type = AGS_TYPE_INPUT;
+	channel = audio->input;
+
+	ags_audio_set_pads_shrink_zero();
+	audio->input = NULL;
+
+	type = AGS_TYPE_OUTPUT;
+	channel = audio->output;
+      }
     }else if(pads < audio->output_pads){
       ags_audio_set_pads_remove_notes();
+
+      ags_audio_set_pads_unlink();
+
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	type = AGS_TYPE_INPUT;
+	channel = audio->input;
+
+	ags_audio_set_pads_unlink();
+
+	type = AGS_TYPE_OUTPUT;
+	channel = audio->output;
+      }
+
       ags_audio_set_pads_shrink();
+
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	type = AGS_TYPE_INPUT;
+	channel = audio->input;
+
+	ags_audio_set_pads_shrink();
+
+	type = AGS_TYPE_OUTPUT;
+	channel = audio->output;
+      }
     }
 
     audio->output_pads = pads;
     audio->output_lines = pads * audio->audio_channels;
-  }else{
+
+    if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+      audio->input_pads = pads;
+      audio->input_lines = pads * audio->audio_channels;
+    }
+  }else if(type == AGS_TYPE_INPUT){
     pads_old = audio->input_pads;
 
     if(pads_old == pads)
@@ -1384,22 +1479,101 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
     
     if(pads_old == 0){
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0 &&
+	 (AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
+	 audio->notation == NULL){
+	ags_audio_set_pads_alloc_notation();
+	ags_audio_set_pads_add_notes();
+      }
+
       ags_audio_set_pads_grow_one();
       channel =
 	audio->input = start;
+
+      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	type = AGS_TYPE_OUTPUT;
+	ags_audio_set_pads_grow_one();
+	audio->output = start;
+
+	type = AGS_TYPE_INPUT;
+	channel = audio->input;
+      }
+
       pads_old =
 	audio->input_pads = 1;
     }else
       channel = audio->input;
 
     if(pads > 1)
-      if(pads > audio->input_pads)
+      if(pads > audio->input_pads){
 	ags_audio_set_pads_grow();
-      else if(pads == 0){
+
+	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	  channel = audio->output;
+	  type = AGS_TYPE_OUTPUT;
+
+	  ags_audio_set_pads_grow();
+
+	  type = AGS_TYPE_INPUT;
+	  channel = audio->input;
+	}
+      }else if(pads == 0){
+	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0 &&
+	   (AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
+	   audio->notation != NULL){
+	  ags_audio_set_pads_free_notation();
+	}
+
+	ags_audio_set_pads_unlink_zero();
+
+	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	  channel = audio->output;
+	  type = AGS_TYPE_OUTPUT;
+
+	  ags_audio_set_pads_unlink_zero();
+	
+	  type = AGS_TYPE_INPUT;
+	  channel = audio->input;
+	}
+
 	ags_audio_set_pads_shrink_zero();
 	audio->input = NULL;
-      }else if(pads < audio->input_pads)
+
+	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	  channel = audio->output;
+	  type = AGS_TYPE_OUTPUT;
+
+	  ags_audio_set_pads_shrink_zero();
+	  audio->output = NULL;
+
+	  type = AGS_TYPE_INPUT;
+	  channel = audio->input;
+	}
+      }else if(pads < audio->input_pads){
+	ags_audio_set_pads_unlink();
+
+	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	  channel = audio->output;
+	  type = AGS_TYPE_OUTPUT;
+
+	  ags_audio_set_pads_unlink();
+
+	  type = AGS_TYPE_INPUT;
+	  channel = audio->input;
+	}
+
 	ags_audio_set_pads_shrink();
+
+	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+	  channel = audio->output;
+	  type = AGS_TYPE_OUTPUT;
+
+	  ags_audio_set_pads_shrink();
+
+	  type = AGS_TYPE_INPUT;
+	  channel = audio->input;
+	}
+      }
 
     if(update_async_link){
       channel = audio->output;
@@ -1419,6 +1593,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     audio->input_pads = pads;
     audio->input_lines = pads * audio->audio_channels;
+
+    if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+      audio->output_pads = pads;
+      audio->output_lines = pads * audio->audio_channels;
+    }
   }
 }
 
