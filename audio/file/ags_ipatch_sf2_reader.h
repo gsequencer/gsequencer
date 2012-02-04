@@ -61,7 +61,7 @@ struct _AgsIpatchSF2Reader
 
   IpatchSF2Zone *zone;
   int count;
-  IpatchIter *iter;
+  GList *iter;
 };
 
 struct _AgsIpatchSF2ReaderClass

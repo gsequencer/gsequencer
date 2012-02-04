@@ -536,6 +536,7 @@ ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
   int count;
+  IpatchIter *copy;
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
@@ -547,23 +548,26 @@ ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
     return;
   }
   
-  ipatch_sf2_reader->iter = ipatch_iter_alloc();
+  ipatch_sf2_reader->iter = NULL;
 
   if(ipatch_sf2_reader->nth_level == 1){
-    ipatch_list_init_iter(ipatch_sf2_preset_get_zones(ipatch_sf2_find_preset(ipatch_sf2_reader->sf2,
-									     ipatch_sf2_reader->selected_sublevel_name,
-									     ipatch_sf2_reader->bank,
-									     ipatch_sf2_reader->program,
-									     NULL)),
-			  ipatch_sf2_reader->iter);
+    ipatch_sf2_reader->iter = ipatch_sf2_preset_get_zones(ipatch_sf2_find_preset(ipatch_sf2_reader->sf2,
+										 ipatch_sf2_reader->selected_sublevel_name,
+										 ipatch_sf2_reader->bank,
+										 ipatch_sf2_reader->program,
+										 NULL))->items;
   }else if(ipatch_sf2_reader->nth_level == 2){
-    ipatch_list_init_iter(ipatch_sf2_inst_get_zones(ipatch_sf2_find_inst(ipatch_sf2_reader->sf2,
-									 ipatch_sf2_reader->selected_sublevel_name,
-									 NULL)),
-			  ipatch_sf2_reader->iter);
+    IpatchSF2Inst *inst;
+    IpatchList *zones;
+
+    inst = ipatch_sf2_find_inst(ipatch_sf2_reader->sf2,
+				ipatch_sf2_reader->selected_sublevel_name,
+				NULL);
+    zones = ipatch_sf2_inst_get_zones(inst);
+    ipatch_sf2_reader->iter = zones->items;
   }
 
-  ipatch_sf2_reader->count = ipatch_iter_count(ipatch_sf2_reader->iter);
+  ipatch_sf2_reader->count = g_list_length(ipatch_sf2_reader->iter);
 }
 
 gboolean
@@ -573,9 +577,10 @@ ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable)
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  ipatch_sf2_reader->zone = ipatch_sf2_zone_next(ipatch_sf2_reader->iter);
+  ipatch_sf2_reader->zone = IPATCH_SF2_ZONE(ipatch_sf2_reader->iter->data);
 
   if(ipatch_sf2_reader->iter != NULL){
+    ipatch_sf2_reader->iter = ipatch_sf2_reader->iter->next;
     return(TRUE);
   }else{
     return(FALSE);
@@ -601,12 +606,13 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
      ipatch_sf2_reader->nth_level == 2){
 
     if(ipatch_sf2_reader->zone != NULL){
-      g_object_get(G_OBJECT(ipatch_sf2_reader->zone),
-		   "format\0", channels,
+      g_object_get(IPATCH_SAMPLE(ipatch_sf2_reader->zone),
+		   //		   "format\0", channels,
 		   "sample-size\0", frames,
 		   "loop-start\0", loop_start,
 		   "loop-end\0", loop_end,
 		   NULL);
+      *channels = 2;
     }else{
       *channels = 0;
       *frames = 0;
@@ -655,6 +661,7 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable,
       frames = ipatch_sample_get_frame_size(IPATCH_SAMPLE(ipatch_sf2_reader->zone));
       buffer = (short *) malloc(2 * frames * sizeof(short));
 
+      this_error = NULL;
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sf2_reader->zone),
 				   0,
 				   frames,
@@ -685,6 +692,8 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable,
 
     if(ipatch_sf2_reader->zone != NULL){
       //TODO:JK: get endianess and set it for format
+      this_error = NULL;
+
       ipatch_sample_read_transform(IPATCH_SAMPLE(sample),
 				   0,
 				   ipatch_sample_get_frame_size(IPATCH_SAMPLE(sample)),
