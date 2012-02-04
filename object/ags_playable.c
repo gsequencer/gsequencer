@@ -18,6 +18,10 @@
 
 #include <ags/object/ags_playable.h>
 
+#include <ags/object/ags_connectable.h>
+
+#include <math.h>
+
 void ags_playable_base_init(AgsPlayableInterface *interface);
 
 GType
@@ -223,3 +227,79 @@ ags_playable_close(AgsPlayable *playable)
   playable_interface->close(playable);
 }
 
+GList*
+ags_playable_read_audio_signal(AgsPlayable *playable,
+			       AgsDevout *devout,
+			       guint start_channel, guint channels_to_read)
+{
+  AgsAudioSignal *audio_signal;
+  GList *stream, *list, *list_beginning;
+  short *buffer;
+  guint channels;
+  guint frames;
+  guint loop_start;
+  guint loop_end;
+  guint length;
+  guint i, j, k, i_stop, j_stop;
+  GError *error;
+
+  ags_playable_info(playable,
+		    &channels, &frames,
+		    &loop_start, &loop_end,
+		    &error);
+
+  length = (guint) ceil((double)(frames) / (double)(devout->buffer_size));
+
+  fprintf(stdout, "ags_playable_read_audio_signal:\n  frames = %u\n  devout->buffer_size = %u\n  length = %u\n\0", frames, devout->buffer_size, length);
+
+  list = NULL;
+  i = start_channel;
+  i_stop = start_channel + channels_to_read;
+
+  for(; i < i_stop; i++){
+    audio_signal = ags_audio_signal_new((GObject *) devout,
+					NULL,
+					NULL);
+    list = g_list_prepend(list, audio_signal);
+
+    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+
+    list->data = (gpointer) audio_signal;
+    audio_signal->devout = (GObject *) devout;
+  }
+
+  list_beginning = list;
+
+  j_stop = (guint) floor((double)(frames) / (double)(devout->buffer_size));
+
+  for(i = start_channel; list != NULL; i++){
+    audio_signal = AGS_AUDIO_SIGNAL(list->data);
+    ags_audio_signal_stream_resize(audio_signal, length);
+
+    error = NULL;
+    buffer = ags_playable_read(playable,
+			       i,
+			       &error);
+
+    if(error != NULL){
+      g_error(error->message);
+    }
+
+    stream = audio_signal->stream_beginning;
+    
+    for(j = 0; j < j_stop; j++){
+      for(k = 0; k < devout->buffer_size; k++)
+	((short *) stream->data)[k] = buffer[j * devout->buffer_size + k];
+      
+      stream = stream->next;
+    }
+    
+    for(k = 0; k < (frames % devout->buffer_size); k++)
+      ((short *) stream->data)[k] = buffer[j * devout->buffer_size + k];
+    
+    free(buffer);
+    list = list->next;
+  }
+
+  return(list_beginning);
+}

@@ -595,34 +595,45 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  //TODO:JK: implement me
-  //  sample = ;
-  sample_data = ipatch_sf2_sample_peek_data(sample);
-  
-  ipatch_list = ipatch_sample_data_get_samples(sample_data);
-  list = ipatch_list->items;
+  if(ipatch_sf2_reader->nth_level == 1 ||
+     ipatch_sf2_reader->nth_level == 2){
 
-  while(list != NULL){
-    sample_store = IPATCH_SAMPLE_STORE_SND_FILE(list->data);
+    if(ipatch_sf2_reader->zone != NULL){
 
-    ipatch_sample_store_snd_file_init_read(sample_store);
-
-    g_object_get(G_OBJECT(sample_store),
+    g_object_get(G_OBJECT(ipatch_sf2_reader->zone),
 		 "format\0", channels,
 		 "sample-size\0", frames,
 		 "loop-start\0", loop_start,
 		 "loop-end\0", loop_end,
 		 NULL);
+    }
+  }else if(ipatch_sf2_reader->nth_level == 3){
+    IpatchSF2Sample *sample;
 
-    list = list->next;
+    sample = ipatch_sf2_find_sample(ipatch_sf2_reader->sf2,
+				    ipatch_sf2_reader->selected_sublevel_name,
+				    NULL);
+
+    if(ipatch_sf2_reader->zone != NULL){
+      //TODO:JK: get endianess and set it for format
+      g_object_get(G_OBJECT(sample),
+		   "format\0", channels,
+		   "sample-size\0", frames,
+		   "loop-start\0", loop_start,
+		   "loop-end\0", loop_end,
+		   NULL);
+    }
   }
 }
 
 short*
-ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel, GError **error)
+ags_ipatch_sf2_reader_read(AgsPlayable *playable,
+			   guint channel,
+			   GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
   short *buffer;
+  guint frames;
   GError *this_error;
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
@@ -632,11 +643,14 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel, GError **error)
 
     if(ipatch_sf2_reader->zone != NULL){
       //TODO:JK: get endianess and set it for format
+      frames = ipatch_sample_get_frame_size(IPATCH_SAMPLE(ipatch_sf2_reader->zone));
+      buffer = (short *) malloc(2 * frames * sizeof(short));
+
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sf2_reader->zone),
 				   0,
-				   ipatch_sample_get_frame_size(IPATCH_SAMPLE(ipatch_sf2_reader->zone)),
+				   frames,
 				   buffer,
-				   IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_STEREO | IPATCH_SAMPLE_SIGNED,
+				   IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO | IPATCH_SAMPLE_SIGNED,
 				   IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
 				   &this_error);
       
@@ -656,6 +670,9 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable, guint channel, GError **error)
     sample = ipatch_sf2_find_sample(ipatch_sf2_reader->sf2,
 				    ipatch_sf2_reader->selected_sublevel_name,
 				    NULL);
+
+    frames = ipatch_sample_get_frame_size(IPATCH_SAMPLE(sample));
+    buffer = (short *) malloc(2 * frames * sizeof(short));
 
     if(ipatch_sf2_reader->zone != NULL){
       //TODO:JK: get endianess and set it for format

@@ -35,8 +35,11 @@ guint ags_sndfile_level_count(AgsPlayable *playable);
 gchar** ags_sndfile_sublevel_names(AgsPlayable *playable);
 void ags_sndfile_iter_start(AgsPlayable *playable);
 gboolean ags_sndfile_iter_next(AgsPlayable *playable);
-void ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
-short* ags_sndfile_read(AgsPlayable *playable, guint channel);
+void ags_sndfile_info(AgsPlayable *playable,
+		      guint *channels, guint *frames,
+		      guint *loop_start, guint *loop_end,
+		      GError **error);
+short* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
 void ags_sndfile_close(AgsPlayable *playable);
 
 static gpointer ags_sndfile_parent_class = NULL;
@@ -209,7 +212,10 @@ ags_sndfile_iter_next(AgsPlayable *playable)
 }
 
 void
-ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end)
+ags_sndfile_info(AgsPlayable *playable,
+		 guint *channels, guint *frames,
+		 guint *loop_start, guint *loop_end,
+		 GError **error)
 {
   AgsSndfile *sndfile;
 
@@ -222,7 +228,7 @@ ags_sndfile_info(AgsPlayable *playable, guint *channels, guint *frames, guint *l
 }
 
 short*
-ags_sndfile_read(AgsPlayable *playable, guint channel)
+ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 {
   AgsSndfile *sndfile;
   short *buffer, *source;

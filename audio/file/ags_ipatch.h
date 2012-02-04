@@ -42,6 +42,9 @@ struct _AgsIpatch
 {
   GObject object;
 
+  AgsDevout *devout;
+  GList *audio_signal;
+
   IpatchFile *file;
   char *filename;
   char *mode;
@@ -59,6 +62,8 @@ struct _AgsIpatchClass
 };
 
 GType ags_ipatch_get_type();
+
+void ags_ipatch_read_audio_signal(AgsIpatch *ipatch);
 
 gboolean ags_iofuncs_open(IpatchFileHandle *handle, const char *mode, GError **err);
 void ags_iofuncs_close(IpatchFileHandle *handle);

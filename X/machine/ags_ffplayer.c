@@ -44,9 +44,6 @@ void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
-void ags_ffplayer_read_sf2_instruments(AgsFFPlayer *ffplayer, AgsIpatch *sf2_file);
-void ags_ffplayer_read_sf2_instrument(AgsFFPlayer *ffplayer);
-
 extern void ags_file_read_ffplayer(AgsFile *file, AgsMachine *machine);
 extern void ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine);
 
@@ -234,6 +231,10 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);
 
+  g_signal_connect((GObject *) ffplayer->instrument, "changed\0",
+		   G_CALLBACK(ags_ffplayer_instrument_changed_callback), (gpointer) ffplayer);
+
+
   g_signal_connect((GObject *) ffplayer->drawing_area, "expose_event\0",
                    G_CALLBACK(ags_ffplayer_drawing_area_expose_callback), (gpointer) ffplayer);
 
@@ -413,18 +414,6 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
       cairo_stroke(cr);
     }
   }
-}
-
-void
-ags_ffplayer_read_sf2_instruments(AgsFFPlayer *ffplayer, AgsIpatch *sf2_file)
-{
-  
-}
-
-void
-ags_ffplayer_read_sf2_instrument(AgsFFPlayer *ffplayer)
-{
-
 }
 
 AgsFFPlayer*

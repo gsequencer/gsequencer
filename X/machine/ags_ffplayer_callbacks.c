@@ -62,9 +62,12 @@ void
 ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 					   AgsMachine *machine)
 {
+  AgsWindow *window;
   AgsFFPlayer *ffplayer;
   GtkFileChooserDialog *file_chooser;
+  AgsDevout *devout;
 
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(machine)));
   ffplayer = AGS_FFPLAYER(machine);
   file_chooser = GTK_FILE_CHOOSER_DIALOG(widget);
 
@@ -91,6 +94,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 			      "mode\0", AGS_IPATCH_READ,
 			      "filename\0", filename,
 			      NULL);
+      ipatch->devout = window->devout;
       ags_ipatch_open(ipatch, filename);
 
       sf2_reader = ags_ipatch_sf2_reader_new();
@@ -119,14 +123,33 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
       }
 
       /* reset nth_level */
-      AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 0;
-
-      /* and show instrument */
-      gtk_widget_show_all(ffplayer->instrument);
+      //      AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 0;
     }
   }
 
+  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
+			   0);
+  
   gtk_widget_destroy(widget);
+}
+
+void
+ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer)
+{
+  gchar *instrument_name;
+  GError *error;
+
+  instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
+
+  error = NULL;
+
+  ags_playable_level_select(AGS_PLAYABLE(ffplayer->ipatch->reader),
+			    0, instrument_name,
+			    &error);
+
+  if(error != NULL){
+    g_error(error->message);
+  }
 }
 
 gboolean

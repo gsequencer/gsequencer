@@ -43,8 +43,12 @@ guint ags_ipatch_level_count(AgsPlayable *playable);
 gchar** ags_ipatch_sublevel_names(AgsPlayable *playable);
 void ags_ipatch_iter_start(AgsPlayable *playable);
 gboolean ags_ipatch_iter_next(AgsPlayable *playable);
-void ags_ipatch_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end);
-short* ags_ipatch_read(AgsPlayable *playable, guint channel);
+void ags_ipatch_info(AgsPlayable *playable,
+		     guint *channels, guint *frames,
+		     guint *loop_start, guint *loop_end,
+		     GError **error);
+short* ags_ipatch_read(AgsPlayable *playable, guint channel,
+		       GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
 
 static gpointer ags_ipatch_parent_class = NULL;
@@ -170,6 +174,9 @@ ags_ipatch_playable_interface_init(AgsPlayableInterface *playable)
 void
 ags_ipatch_init(AgsIpatch *ipatch)
 {
+  ipatch->devout = NULL;
+  ipatch->audio_signal= NULL;
+
   ipatch->file = ipatch_file_new();
 
   ipatch->filename = NULL;
@@ -270,6 +277,7 @@ ags_ipatch_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
+
 gboolean
 ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 {
@@ -347,7 +355,10 @@ ags_ipatch_iter_next(AgsPlayable *playable)
 }
 
 void
-ags_ipatch_info(AgsPlayable *playable, guint *channels, guint *frames, guint *loop_start, guint *loop_end)
+ags_ipatch_info(AgsPlayable *playable,
+		guint *channels, guint *frames,
+		guint *loop_start, guint *loop_end,
+		GError **error)
 {
   AgsIpatch *ipatch;
 
@@ -357,7 +368,8 @@ ags_ipatch_info(AgsPlayable *playable, guint *channels, guint *frames, guint *lo
 }
 
 short*
-ags_ipatch_read(AgsPlayable *playable, guint channel)
+ags_ipatch_read(AgsPlayable *playable, guint channel,
+		GError **error)
 {
   AgsIpatch *ipatch;
   short *buffer, *source;
@@ -384,6 +396,18 @@ ags_ipatch_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_ipatch_parent_class)->finalize(gobject);
 
   /* empty */
+}
+
+void
+ags_ipatch_read_audio_signal(AgsIpatch *ipatch)
+{
+  GList *list;
+
+  list = ags_playable_read_audio_signal(AGS_PLAYABLE(ipatch->reader),
+					ipatch->devout,
+					0, 2);
+
+  ipatch->audio_signal = list;
 }
 
 gboolean
