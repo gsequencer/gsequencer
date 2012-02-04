@@ -96,6 +96,7 @@ enum{
 enum{
   RUN,
   STOP,
+  TIC,
   LAST_SIGNAL,
 };
 
@@ -270,6 +271,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   /* AgsDevoutClass */
   devout->run = ags_devout_real_run;
   devout->stop = ags_devout_real_stop;
+  devout->tic = NULL;
 
   devout_signals[RUN] =
     g_signal_new("run\0",
@@ -285,6 +287,15 @@ ags_devout_class_init(AgsDevoutClass *devout)
 		 G_TYPE_FROM_CLASS (devout),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsDevoutClass, stop),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  devout_signals[TIC] =
+    g_signal_new("tic\0",
+		 G_TYPE_FROM_CLASS (devout),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsDevoutClass, tic),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -946,6 +957,22 @@ ags_devout_stop(AgsDevout *devout)
   g_object_ref((GObject *) devout);
   g_signal_emit(G_OBJECT(devout),
 		devout_signals[STOP], 0);
+  g_object_unref((GObject *) devout);
+}
+
+void
+ags_devout_tic(AgsDevout *devout)
+{
+  g_return_if_fail(AGS_IS_DEVOUT(devout));
+
+  if((AGS_DEVOUT_PLAY & devout->flags) == 0){
+    fprintf(stdout, "ags_devout_tic:  not playing\n\0");
+    return;
+  }
+
+  g_object_ref((GObject *) devout);
+  g_signal_emit(G_OBJECT(devout),
+		devout_signals[TIC], 0);
   g_object_unref((GObject *) devout);
 }
 

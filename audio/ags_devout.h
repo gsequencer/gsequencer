@@ -174,6 +174,7 @@ struct _AgsDevoutClass
 
   void (*run)(AgsDevout *devout);
   void (*stop)(AgsDevout *devout);
+  void (*tic)(AgsDevout *devout);
 
   void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
 };
@@ -198,6 +199,8 @@ void ags_devout_append_tasks(AgsDevout *devout, GList *list);
 
 void ags_devout_run(AgsDevout *devout);
 void ags_devout_stop(AgsDevout *devout);
+void ags_devout_tic(AgsDevout *devout);
+
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 
 AgsDevout* ags_devout_new();

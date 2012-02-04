@@ -91,7 +91,7 @@ ags_play_notation_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_play_notation = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_play_notation = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 						    "AgsPlayNotation\0",
 						    &ags_play_notation_info,
 						    0);
@@ -462,7 +462,8 @@ ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPla
 
   if(current_position != notation->end_loop &&
      note->x[0] == notation->offset){
-    selected_channel = ags_channel_nth(selected_channel, note->y);
+    selected_channel = ags_channel_nth(selected_channel, notation->audio_channel);
+    selected_channel = ags_channel_pad_nth(selected_channel, note->y);
 
     recycling = selected_channel->first_recycling;
 

@@ -46,6 +46,7 @@ struct _AgsNotation
 
   guint flags;
 
+  guint audio_channel;
   GObject *audio;
 
   guint base_frequency;
@@ -113,6 +114,6 @@ void ags_notation_insert_from_clipboard(AgsNotation *notation,
 					gboolean reset_x_offset, guint x_offset,
 					gboolean reset_y_offset, guint y_offset);
 
-AgsNotation* ags_notation_new();
+AgsNotation* ags_notation_new(guint audio_channel);
 
 #endif /*__AGS_NOTATION_H__*/

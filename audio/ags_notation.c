@@ -124,6 +124,7 @@ ags_notation_init(AgsNotation *notation)
 {
   notation->flags = 0;
 
+  notation->audio_channel = 0;
   notation->audio = NULL;
 
   notation->base_frequency = 0;
@@ -887,11 +888,13 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
 }
 
 AgsNotation*
-ags_notation_new()
+ags_notation_new(guint audio_channel)
 {
   AgsNotation *notation;
 
   notation = (AgsNotation *) g_object_new(AGS_TYPE_NOTATION, NULL);
+
+  notation->audio_channel = audio_channel;
 
   return(notation);
 }
