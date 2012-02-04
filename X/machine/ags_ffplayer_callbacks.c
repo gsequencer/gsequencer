@@ -19,6 +19,10 @@
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 #include <ags/X/ags_machine_callbacks.h>
 
+#include <ags/audio/ags_channel.h>
+
+#include <ags/audio/task/ags_link_channel.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/audio/ags_audio.h>
@@ -136,19 +140,67 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 void
 ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer)
 {
+  AgsChannel *channel;
+  AgsLinkChannel *link_channel;
+  AgsAudioSignal *audio_signal_source_old;
   gchar *instrument_name;
+  GList *list;
+  int i;
+  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
   GError *error;
 
   instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
 
   error = NULL;
 
+  AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 2;
   ags_playable_level_select(AGS_PLAYABLE(ffplayer->ipatch->reader),
 			    0, instrument_name,
 			    &error);
 
   if(error != NULL){
     g_error(error->message);
+  }
+
+  ags_playable_iter_start(AGS_PLAYABLE(ffplayer->ipatch->reader));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(ffplayer)->audio,
+			       2);
+  ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT,
+		     AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->count);
+  
+  channel = AGS_MACHINE(ffplayer)->audio->input;
+
+  while(channel != NULL){
+    ags_ipatch_read_audio_signal(ffplayer->ipatch);
+    list = ffplayer->ipatch->audio_signal;
+
+    for(i = 0; i < 2; i++){
+      /* create task */
+      link_channel = ags_link_channel_new(channel, NULL);
+      
+      /* append AgsLinkChannel */
+      // FIXME:JK: has a need for the unavaible task
+      //	    ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
+      //				   AGS_TASK(link_channel));
+      
+      AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      AGS_AUDIO_SIGNAL(list->data)->recycling = (GObject *) channel->first_recycling;
+      audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+      
+      // FIXME:JK: create a task
+      channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal, (gpointer) audio_signal_source_old);
+      channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal, list->data);
+
+      g_object_unref(G_OBJECT(audio_signal_source_old));
+
+      /* iterate */
+      if(list != NULL){
+	list = list->next;
+      }
+
+      channel = channel->next;
+    }
   }
 }
 

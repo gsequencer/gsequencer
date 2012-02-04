@@ -543,6 +543,8 @@ ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
      ipatch_sf2_reader->nth_level == 3){
     ipatch_sf2_reader->iter = NULL;
     ipatch_sf2_reader->count = 0;
+
+    return;
   }
   
   ipatch_sf2_reader->iter = ipatch_iter_alloc();
@@ -599,14 +601,19 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
      ipatch_sf2_reader->nth_level == 2){
 
     if(ipatch_sf2_reader->zone != NULL){
-
-    g_object_get(G_OBJECT(ipatch_sf2_reader->zone),
-		 "format\0", channels,
-		 "sample-size\0", frames,
-		 "loop-start\0", loop_start,
-		 "loop-end\0", loop_end,
-		 NULL);
+      g_object_get(G_OBJECT(ipatch_sf2_reader->zone),
+		   "format\0", channels,
+		   "sample-size\0", frames,
+		   "loop-start\0", loop_start,
+		   "loop-end\0", loop_end,
+		   NULL);
+    }else{
+      *channels = 0;
+      *frames = 0;
+      *loop_start = 0;
+      *loop_end = 0;
     }
+      printf("  channels = %d \n frames = %d  \n\0", *channels, *frames);
   }else if(ipatch_sf2_reader->nth_level == 3){
     IpatchSF2Sample *sample;
 
@@ -622,6 +629,8 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 		   "loop-start\0", loop_start,
 		   "loop-end\0", loop_end,
 		   NULL);
+
+      printf("channels = %d\nframes = %d\0", *channels, *frames);
     }
   }
 }

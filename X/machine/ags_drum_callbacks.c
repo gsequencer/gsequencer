@@ -324,10 +324,12 @@ ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
 
 	    g_object_unref(G_OBJECT(audio_signal_source_old));
 
+	    /* iterate */
 	    list = list->next;
 	    channel = channel->next;
 	  }
 
+	  /* iterate */
 	  if(audio_file->channels < drum->machine.audio->audio_channels)
 	    channel = ags_channel_nth(channel, drum->machine.audio->audio_channels - audio_file->channels);
 

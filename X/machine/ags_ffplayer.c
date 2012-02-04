@@ -138,7 +138,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   g_signal_connect_after((GObject *) ffplayer, "parent_set\0",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
-  AGS_MACHINE(ffplayer)->audio->flags |= (AGS_AUDIO_INPUT_HAS_RECYCLING |
+  AGS_MACHINE(ffplayer)->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+					  AGS_AUDIO_INPUT_HAS_RECYCLING |
 					  AGS_AUDIO_INPUT_TAKES_FILE |
 					  AGS_AUDIO_SYNC |
 					  AGS_AUDIO_HAS_NOTATION);

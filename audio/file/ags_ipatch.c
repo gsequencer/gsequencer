@@ -398,11 +398,20 @@ ags_ipatch_finalize(GObject *gobject)
   /* empty */
 }
 
+/**
+ * ags_ipatch_read_audio_signal:
+ * @ipatch an AgsIpatch
+ * Returns:
+ *
+ * Reads an AgsAudioSignal from current sample and iterates to the next sample. Prior,
+ * you should have called #ags_playable_iter_start.
+ */
 void
 ags_ipatch_read_audio_signal(AgsIpatch *ipatch)
 {
   GList *list;
 
+  ags_playable_iter_next(AGS_PLAYABLE(ipatch->reader));
   list = ags_playable_read_audio_signal(AGS_PLAYABLE(ipatch->reader),
 					ipatch->devout,
 					0, 2);
