@@ -232,6 +232,11 @@ ags_play_notation_set_property(GObject *gobject,
 	if(is_template){
 	  ags_recall_remove_dependency(AGS_RECALL(play_notation),
 				       (AgsRecall *) play_notation->delay_audio_run);
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_notation)->flags)) != 0){
+	    g_signal_handler_disconnect(G_OBJECT(play_notation),
+					play_notation->tic_count_handler);
+	  }
 	}
 
 	g_object_unref(G_OBJECT(play_notation->delay_audio_run));
@@ -243,6 +248,12 @@ ags_play_notation_set_property(GObject *gobject,
 	if(is_template){
 	  ags_recall_add_dependency(AGS_RECALL(play_notation),
 				    ags_recall_dependency_new((GObject *) delay_audio_run));
+	}else{
+	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_notation)->flags)) != 0){
+	    play_notation->tic_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "tic_count\0",
+			       G_CALLBACK(ags_play_notation_delay_tic_count), play_notation);
+	  }
 	}
       }
 
@@ -414,6 +425,8 @@ ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPla
   guint i;
 
   list = *(play_notation->notation);
+
+  printf("tic\n\0");
 
   if(list == NULL)
     return;

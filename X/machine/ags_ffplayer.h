@@ -46,7 +46,6 @@ struct _AgsFFPlayer
 {
   AgsMachine machine;
 
-
   AgsDelayAudio *play_delay_audio;
   AgsDelayAudioRun *play_delay_audio_run;
   AgsPlayNotation *play_notation;

@@ -28,9 +28,10 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synths.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/task/ags_apply_synth.h>
-#include <ags/audio/recall/ags_stream_channel.h>
 
 #include <ags/X/machine/ags_oscillator.h>
 
@@ -136,6 +137,11 @@ ags_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_synth_init(AgsSynth *synth)
 {
+  AgsAudio *audio;
+  AgsRecallContainer *recall_container;
+  AgsDelayAudio *delay_audio;
+  AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
+  AgsPlayNotation *play_notation, *recall_notation;
   GtkMenu *menu;
   GtkVBox *vbox;
   GtkHBox *hbox;
@@ -145,10 +151,87 @@ ags_synth_init(AgsSynth *synth)
   g_signal_connect_after((GObject *) synth, "parent_set\0",
 			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
 
-  synth->machine.audio->flags |= (AGS_AUDIO_ASYNC |
-				  AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-				  AGS_AUDIO_INPUT_HAS_RECYCLING);
+  audio = AGS_MACHINE(synth)->audio;
+  audio->flags |= (AGS_AUDIO_ASYNC |
+		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING);
 
+  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
+
+
+  /* audio->play */
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+
+  /* create AgsDelayAudio in audio->play */
+  synth->play_delay_audio =
+    delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "audio\0", audio,
+						 "recall_container\0", recall_container,
+						 "delay\0", 0,
+						 NULL);
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  ags_audio_add_recall(audio, (GObject *) delay_audio, TRUE);
+
+  /* create AgsDelayAudioRun in audio->play */
+  synth->play_delay_audio_run =
+    play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							     "recall_container\0", recall_container,
+							     "recall_audio\0", delay_audio,
+							     NULL);
+  AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
+
+  /* audio->recall */
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+
+  /* create AgsDelayAudio in audio->recall */
+  synth->recall_delay_audio =
+    delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "audio\0", audio,
+						 "recall_container\0", recall_container,
+						 "delay\0", 0,
+						 NULL);
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  ags_audio_add_recall(audio, (GObject *) delay_audio, FALSE);
+
+  /* create AgsDelayAudioRun in audio->recall */
+  synth->recall_delay_audio_run =
+    recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							       "recall_container\0", recall_container,
+							       "recall_audio\0", delay_audio,
+							       NULL);
+  AGS_RECALL(recall_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  ags_audio_add_recall(audio, (GObject *) recall_delay_audio_run, FALSE);
+
+  /* audio->play */
+  /* create AgsCopyPatternAudioRun in audio->play */
+  synth->play_notation =
+    play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
+						     "devout\0", audio->devout,
+						     "delay_audio_run\0", play_delay_audio_run,
+						     NULL);
+  AGS_RECALL(play_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  play_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
+  synth->play_notation->notation = &(audio->notation);
+  ags_audio_add_recall(audio, (GObject *) play_notation, TRUE);
+
+  /* audio->recall */
+  /* create AgsCopyPatternAudioRun in audio->recall */
+  synth->recall_notation =
+    recall_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
+						       "devout\0", audio->devout,
+						       "delay_audio_run\0", recall_delay_audio_run,
+						       NULL);
+  AGS_RECALL(recall_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  recall_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
+  synth->recall_notation->notation = &(audio->notation);
+  ags_audio_add_recall(audio, (GObject *) recall_notation, FALSE);
+
+  /* create widgets */
   synth->hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) synth))->data, (GtkWidget *) synth->hbox);
 

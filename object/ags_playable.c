@@ -275,6 +275,8 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   for(i = start_channel; list != NULL; i++){
     audio_signal = AGS_AUDIO_SIGNAL(list->data);
     ags_audio_signal_stream_resize(audio_signal, length);
+    audio_signal->loop_start = loop_start;
+    audio_signal->loop_end = loop_end;
 
     error = NULL;
     buffer = ags_playable_read(playable,

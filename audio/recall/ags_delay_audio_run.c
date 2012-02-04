@@ -265,7 +265,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
       run_order = delay_audio_run->hide_ref_counter;
 
-      //      printf("delay signal\n\0");
+      printf("delay signal\n\0");
 
       ags_delay_audio_run_tic_alloc_output(delay_audio_run,
 					   run_order);

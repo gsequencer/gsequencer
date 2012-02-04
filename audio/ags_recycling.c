@@ -239,8 +239,9 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 						     guint frame_count)
 {
   AgsAudioSignal *template;
-  GList *stream, *template_stream;
+  GList *stream, *template_stream, *template_loop;
   guint i, template_i, j, k;
+  guint loop_i, loop_k, loop_start, loop_frames;
 
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
@@ -262,6 +263,16 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
   template_i = 0;
   j = 0;
   k = 0;
+  
+  loop_i = 0;
+  loop_k = 0;
+  loop_start = template->loop_start % AGS_DEVOUT(audio_signal->devout)->buffer_size;
+
+  if(frame_count - template->loop_start - template->loop_end > 0){
+    loop_frames = frame_count - template->loop_start - template->loop_end;
+  }else{
+    loop_frames = 0;
+  }
 
   while(TRUE){
     /* check whether we are done */
@@ -272,6 +283,18 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
     if(i == AGS_DEVOUT(audio_signal->devout)->buffer_size){
       stream = stream->next;
       i = 0;
+    }
+
+    /* loop */
+    if(i >= template->loop_start){
+      if(i < template->loop_end){
+	loop_i++;
+	loop_k++;
+      }else if(loop_i < loop_frames){
+	loop_k = 0;
+	stream = template_loop;
+	template_i = loop_start;
+      }
     }
     
     /* check whether the end of template's current buffer was reached */

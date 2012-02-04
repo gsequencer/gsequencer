@@ -27,8 +27,6 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/recall/ags_play_notation.h>
-
 #include <math.h>
 
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
@@ -135,6 +133,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AgsRecallContainer *recall_container;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
+  AgsRecallAudio *play_audio, *recall_audio;
   AgsPlayNotation *play_notation, *recall_notation;
   GtkTable *table;
   GtkHScrollbar *hscrollbar;
@@ -205,24 +204,46 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ags_audio_add_recall(audio, (GObject *) recall_delay_audio_run, FALSE);
 
   /* audio->play */
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+
+  play_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
+					       "audio\0", audio,
+					       NULL);
+
   /* create AgsCopyPatternAudioRun in audio->play */
   ffplayer->play_notation =
     play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
+						     "recall_container\0", recall_container,
+						     "recall_audio\0", play_audio,
 						     "devout\0", audio->devout,
 						     "delay_audio_run\0", play_delay_audio_run,
 						     NULL);
   AGS_RECALL(play_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  play_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
   ffplayer->play_notation->notation = &(audio->notation);
   ags_audio_add_recall(audio, (GObject *) play_notation, TRUE);
 
   /* audio->recall */
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+
+  recall_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
+						 "audio\0", audio,
+						 NULL);
+
   /* create AgsCopyPatternAudioRun in audio->recall */
   ffplayer->recall_notation =
     recall_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
+						       "recall_container\0", recall_container,
+						       "recall_audio\0", recall_audio,
 						       "devout\0", audio->devout,
 						       "delay_audio_run\0", recall_delay_audio_run,
 						       NULL);
   AGS_RECALL(recall_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  recall_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
   ffplayer->recall_notation->notation = &(audio->notation);
   ags_audio_add_recall(audio, (GObject *) recall_notation, FALSE);
 
