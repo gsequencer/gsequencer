@@ -244,6 +244,7 @@ ags_play_notation_set_property(GObject *gobject,
   case PROP_DELAY_AUDIO_RUN:
     {
       AgsDelayAudioRun *delay_audio_run;
+      gboolean is_template;
 
       delay_audio_run = g_value_get_object(value);
 
@@ -251,12 +252,29 @@ ags_play_notation_set_property(GObject *gobject,
 	return;
       }
 
+      if(play_notation != NULL &&
+	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(play_notation)->flags)) != 0){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
+
       if(play_notation->delay_audio_run != NULL){
+	if(is_template){
+	  ags_recall_remove_dependency(AGS_RECALL(play_notation),
+				       (AgsRecall *) play_notation->delay_audio_run);
+	}
+
 	g_object_unref(G_OBJECT(play_notation->delay_audio_run));
       }
 
       if(delay_audio_run != NULL){
 	g_object_ref(delay_audio_run);
+
+	if(is_template){
+	  ags_recall_add_dependency(AGS_RECALL(play_notation),
+				    ags_recall_dependency_new((GObject *) delay_audio_run));
+	}
       }
 
       play_notation->delay_audio_run = delay_audio_run;
