@@ -161,6 +161,7 @@ ags_drum_init(AgsDrum *drum)
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC);
 
+  drum->machine.flags |= AGS_MACHINE_IS_SEQUENCER;
   drum->flags = 0;
 
   //TODO:JK: move creation of recalls in a own function

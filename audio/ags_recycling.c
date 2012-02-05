@@ -238,35 +238,41 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
 						     AgsAudioSignal *audio_signal,
 						     guint frame_count)
 {
+  AgsDevout *devout;
   AgsAudioSignal *template;
   GList *stream, *template_stream, *template_loop;
-  guint i, template_i, j, k;
-  guint loop_i, loop_k, loop_start, loop_frames;
+  guint k, template_k;
+  guint loop_frames;
+  guint frames_looped_copied, frames_copied;
+  gboolean enter_loop;
 
+  /* some init */
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
   audio_signal->devout = template->devout;
 
+  devout = AGS_DEVOUT(audio_signal->devout);
+
   audio_signal->recycling = (GObject *) recycling;
 
-  ags_audio_signal_stream_resize(audio_signal, (guint) ceil((double) frame_count / (double) AGS_DEVOUT(audio_signal->devout)->buffer_size));
+  /* resize */
+  ags_audio_signal_stream_resize(audio_signal,
+				 (guint) ceil((double) frame_count / (double) devout->buffer_size));
   
   if(template->length == 0)
     return;
 
-  audio_signal->last_frame = frame_count % AGS_DEVOUT(audio_signal->devout)->buffer_size;
+  audio_signal->last_frame = frame_count % devout->buffer_size;
 
+  /* generic copying */
   stream = audio_signal->stream_beginning;
   template_stream = template->stream_beginning;
 
-  i = 0;
-  template_i = 0;
-  j = 0;
-  k = 0;
-  
-  loop_i = 0;
-  loop_k = 0;
-  loop_start = template->loop_start % AGS_DEVOUT(audio_signal->devout)->buffer_size;
+  frames_copied = 0;
+
+  /* loop related copying */
+  template_loop = g_list_nth(template->stream_beginning,
+			     (guint) floor((double)(frame_count - template->loop_start) / devout->buffer_size));
 
   if(frame_count - template->loop_start - template->loop_end > 0){
     loop_frames = frame_count - template->loop_start - template->loop_end;
@@ -274,54 +280,61 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
     loop_frames = 0;
   }
 
-  while(TRUE){
-    /* check whether we are done */
-    if(j == frame_count)
-      goto ags_recycling_add_audio_signal_with_length0;
-    
-    /* check whether the end of stream's current buffer was reached */
-    if(i == AGS_DEVOUT(audio_signal->devout)->buffer_size){
-      stream = stream->next;
-      i = 0;
+  frames_looped_copied = 0;
+  k = 0;
+  template_k = 0;
+
+  enter_loop = TRUE;
+
+  /* the copy loops */
+  while(stream != NULL && template_stream != NULL){
+    if(enter_loop && template->loop_start <= frames_copied && template->loop_end > frames_copied){
+      for(; stream != NULL && frames_looped_copied < loop_frames;){
+	template_stream = template_loop;
+
+	if(k == devout->buffer_size){
+	  k = 0;
+	}
+
+	if(template_k == devout->buffer_size){
+	  template_k = 0;
+	}
+
+	for(;
+	    template_stream != NULL && frames_looped_copied < loop_frames && k < devout->buffer_size && template_k < devout->buffer_size;
+	    k++, template_k++, frames_looped_copied++){
+
+	  /* copy audio data from template to new AgsAudioSignal */
+	  ((short*) stream->data)[k] = ((short*) template_stream->data)[template_k];    
+	}
+      }
+
+      frames_copied += frames_looped_copied;
+      enter_loop = FALSE;
     }
 
-    /* loop */
-    if(i >= template->loop_start){
-      if(i < template->loop_end){
-	loop_i++;
-	loop_k++;
-      }else if(loop_i < loop_frames){
-	loop_k = 0;
-	stream = template_loop;
-	template_i = loop_start;
+
+    for(; stream != NULL && frames_copied < loop_frames;){
+      if(k == devout->buffer_size){
+	k = 0;
+      }
+
+      if(template_k == devout->buffer_size){
+	template_k = 0;
+      }
+
+      for(;
+	  template_stream != NULL && frames_looped_copied < loop_frames && k < devout->buffer_size && template_k < devout->buffer_size;
+	  k++, template_k++, frames_copied++){
+	/* copy audio data from template to new AgsAudioSignal */
+	((short*) stream->data)[k] = ((short*) template_stream->data)[template_k];
       }
     }
-    
-    /* check whether the end of template's current buffer was reached */
-    if(template_i == AGS_DEVOUT(audio_signal->devout)->buffer_size){
-      template_stream = template_stream->next;
-      template_i = 0;
-      k++;
-    }
-    
-    /* check whether the end of the template was reached */
-    if(k == template->length - 1 && template_i == template->last_frame){
-      template_stream = template->stream_beginning;
-      k = 0;
-      template_i = 0;
-    }
-    
-    /* copy audio data from template to new AgsAudioSignal */
-    ((short*) stream->data)[i] = ((short*) template_stream->data)[template_i];
-    
-    /* increase indices */
-    i++;
-    template_i++;
-    j++;
+
+    template_stream = template_stream->next;
+    stream = stream->next;
   }
-
- ags_recycling_add_audio_signal_with_length0:
-
+  
   recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
 }
 

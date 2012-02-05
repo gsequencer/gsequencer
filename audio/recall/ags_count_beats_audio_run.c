@@ -591,6 +591,7 @@ ags_count_beats_audio_run_tic_alloc_output_callback(AgsDelayAudioRun *delay_audi
       if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
 	count_beats_audio_run->flags &= (~AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN);
       }else{
+	printf("ags_count_beats_audio_run_tic_alloc_output_callback: done\n\0");
 	ags_recall_done(AGS_RECALL(count_beats_audio_run));
       }
     }
@@ -614,6 +615,7 @@ ags_count_beats_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
     if(count_beats_audio_run->counter == count_beats_audio->length - 1){
       count_beats_audio_run->counter = 0;
     }else{
+      printf("tic\n\0");
       count_beats_audio_run->counter += 1;
     }
 

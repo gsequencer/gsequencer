@@ -94,6 +94,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 			 (double)window->devout->buffer_size) *
 			(60.0 / bpm) *
 			tact);
+  printf("delay = %u\n\0", delay);
 
   /* AgsDelayAudio */
   list = ags_recall_find_type(audio->play,

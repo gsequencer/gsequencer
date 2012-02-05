@@ -225,7 +225,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 								 "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
 								 "loop\0", FALSE,
 								 NULL);
-  AGS_RECALL(play_count_beats_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(play_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_PERSISTENT);
   ags_audio_add_recall(audio, (GObject *) play_count_beats_audio, TRUE);
 
   /* create AgsCountBeatsAudioRun in audio->play */
@@ -235,7 +235,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 									"recall_audio\0", play_count_beats_audio,
 									"delay_audio_run\0", play_delay_audio_run,
 									NULL);
-  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_PERSISTENT);
   ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
 
   /* audio->recall */
@@ -251,7 +251,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 								   "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
 								   "loop\0", FALSE,
 								   NULL);
-  AGS_RECALL(recall_count_beats_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(recall_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
   ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio, FALSE);
 
   /* create AgsCountBeatsAudioRun in audio->recall */
@@ -261,7 +261,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 									  "recall_audio\0", recall_count_beats_audio,
 									  "delay_audio_run\0", recall_delay_audio_run,
 									  NULL);
-  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_PERSISTENT);
   ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, FALSE);
 
 

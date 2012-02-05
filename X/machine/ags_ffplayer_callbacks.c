@@ -43,7 +43,7 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
 {
   AgsWindow *window;
   AgsAudio *audio;
-  double bpm, tact;
+  double bpm, bps, tact;
   guint delay, length, stream_length;
 
   if(old_parent != NULL)
@@ -59,14 +59,16 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   /* delay related */
   tact = exp2(4.0 - 8.0);
   bpm = window->navigation->bpm->adjustment->value;
+  bps = (60.0 / bpm);
   printf("tact = %f\n\0", tact);
   printf("bpm = %f\n\0", bpm);
   delay = (guint) round(((double)window->devout->frequency /
 			 (double)window->devout->buffer_size) *
-			(60.0 / bpm) *
-			tact);
+			bps);
+  printf("delay = %u\n\0", delay);
 
   /* AgsDelayAudio */
+  //FIXME:JK:
   ffplayer->play_delay_audio->delay = delay;
   ffplayer->recall_delay_audio->delay = delay;
 
