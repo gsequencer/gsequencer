@@ -110,7 +110,6 @@ ags_navigation_play_callback(GtkWidget *widget,
   GList *machines;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-
   machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
   //FIXME:JK: you may wish better scheduling
@@ -128,24 +127,23 @@ ags_navigation_play_callback(GtkWidget *widget,
 				      FALSE, TRUE, FALSE);
       
       /* append AgsInitAudio */
-      ags_devout_append_task(devout,
+      ags_devout_append_task(AGS_DEVOUT(machine->audio->devout),
 			     AGS_TASK(init_audio));
-      
+    
       /* create append task */
-      append_audio = ags_append_audio_new(devout,
+      append_audio = ags_append_audio_new(AGS_DEVOUT(machine->audio->devout),
 					  machine->audio->devout_play);
-
-      /* append AgsAppendAudio */
-      ags_devout_append_task(devout,
-			     AGS_TASK(append_audio));
       
+      /* append AgsAppendAudio */
+      ags_devout_append_task(AGS_DEVOUT(machine->audio->devout),
+			     AGS_TASK(append_audio));
+    
       /* call run */
-      if((AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) == 0)
+      if((AGS_DEVOUT_PLAY_AUDIO & (append_audio->devout->flags)) == 0)
 	append_audio->devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
-
-      ags_devout_run(devout);
+      
+      ags_devout_run(AGS_DEVOUT(machine->audio->devout));
     }
-
 
     machines = machines->next;
   }

@@ -1482,8 +1482,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
       if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0 &&
 	 (AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	 audio->notation == NULL){
+	channel = audio->output;
+	type = AGS_TYPE_OUTPUT;
+
 	ags_audio_set_pads_alloc_notation();
 	ags_audio_set_pads_add_notes();
+
+	type = AGS_TYPE_INPUT;
+	channel = audio->input;
       }
 
       ags_audio_set_pads_grow_one();
@@ -1783,7 +1789,8 @@ ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
 
     recall = AGS_RECALL(list->data);
 
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
+       recall->recall_id == NULL ||
        recall->recall_id->group_id != group_id){
       list = list_next;
 

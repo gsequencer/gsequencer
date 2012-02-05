@@ -376,7 +376,7 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   //  ffplayer->machine.audio->frequence = ;
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(ffplayer->machine.audio, AGS_TYPE_INPUT, 78);
-  ags_audio_set_pads(ffplayer->machine.audio, AGS_TYPE_OUTPUT, 78);
+  //  ags_audio_set_pads(ffplayer->machine.audio, AGS_TYPE_OUTPUT, 78);
 
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }

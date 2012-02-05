@@ -32,6 +32,8 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
+#include <math.h>
+
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 						AgsMachine *machine);
 
@@ -39,13 +41,60 @@ void
 ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
+  AgsAudio *audio;
+  AgsDelayAudio *delay_audio;
+  GList *list;
+  double bpm, tact;
+  guint delay;
 
   if(old_parent != NULL)
     return;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
+  audio = ffplayer->machine.audio;
+  audio->devout = (GObject *) window->devout;
+
   ffplayer->machine.name = g_strdup_printf("Default %d\0", window->counter->ffplayer);
   window->counter->ffplayer++;
+
+  /*
+   * FIXME:JK: the following code is ugly
+   */
+  /* delay related */
+  tact = exp2(4.0 - 8.0);
+  bpm = window->navigation->bpm->adjustment->value;
+  printf("tact = %f\n\0", tact);
+  printf("bpm = %f\n\0", bpm);
+  delay = (guint) round(((double)window->devout->frequency /
+			 (double)window->devout->buffer_size) *
+			(60.0 / bpm) *
+			tact);
+
+  /* AgsDelayAudio */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_DELAY_AUDIO);
+
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
+
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_DELAY_AUDIO);
+
+  if(list != NULL){
+    delay_audio = AGS_DELAY_AUDIO(list->data);
+    delay_audio->delay = delay;
+  }
+
+  /* AgsPlayNotation */
+  g_object_set(G_OBJECT(ffplayer->play_notation),
+	       "devout\0", audio->devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(ffplayer->recall_notation),
+	       "devout\0", audio->devout,
+	       NULL);
 }
 
 void

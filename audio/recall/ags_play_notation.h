@@ -50,7 +50,7 @@ struct _AgsPlayNotation
   AgsDevout *devout;
 
   //  AgsChannel *channel;
-  GList **notation;
+  GList *notation;
 
   AgsDelayAudioRun *delay_audio_run;
   gulong tic_count_handler;
