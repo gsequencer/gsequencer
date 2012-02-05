@@ -400,8 +400,8 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);
 
-  g_signal_connect((GObject *) ffplayer->instrument, "changed\0",
-		   G_CALLBACK(ags_ffplayer_instrument_changed_callback), (gpointer) ffplayer);
+  g_signal_connect_after((GObject *) ffplayer->instrument, "changed\0",
+			 G_CALLBACK(ags_ffplayer_instrument_changed_callback), (gpointer) ffplayer);
 
 
   g_signal_connect((GObject *) ffplayer->drawing_area, "expose_event\0",

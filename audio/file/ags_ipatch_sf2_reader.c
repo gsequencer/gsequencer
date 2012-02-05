@@ -638,7 +638,7 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 		   "loop-end\0", loop_end,
 		   NULL);
 
-      channels = 2;
+      *channels = 2;
     }else{
       *channels = 0;
       *frames = 0;
