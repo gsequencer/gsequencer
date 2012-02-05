@@ -30,6 +30,8 @@
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_play_notation.h>
 
 #define AGS_TYPE_FFPLAYER                (ags_ffplayer_get_type())
@@ -48,10 +50,14 @@ struct _AgsFFPlayer
 
   AgsDelayAudio *play_delay_audio;
   AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsPlayNotation *play_notation;
 
   AgsDelayAudio *recall_delay_audio;
   AgsDelayAudioRun *recall_delay_audio_run;
+  AgsCountBeatsAudio *recall_count_beats_audio;
+  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
   AgsPlayNotation *recall_notation;
 
   GtkButton *open;

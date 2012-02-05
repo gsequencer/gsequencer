@@ -156,7 +156,7 @@ ags_editor_init(AgsEditor *editor)
 
   editor->width = 0;
   editor->height = 0;
-  editor->map_width = 128 * 64;
+  editor->map_width = AGS_EDITOR_MAX_CONTROLS * 64;
   editor->map_height = 0;
 
   editor->control_height = 10;
@@ -171,7 +171,7 @@ ags_editor_init(AgsEditor *editor)
   editor->stop_y = 0;
 
   /* AgsEditorControlCurrent is used by ags_editor_draw_segment */
-  editor->control_current.control_count = 128;
+  editor->control_current.control_count = AGS_EDITOR_MAX_CONTROLS;
   editor->control_current.control_width = 64;
 
   editor->control_current.x0 = 0;
@@ -180,7 +180,7 @@ ags_editor_init(AgsEditor *editor)
   editor->control_current.nth_x = 0;
 
   /* AgsEditorControlUnit is used by ags_editor_draw_notation */
-  editor->control_unit.control_count = 16 * 128;
+  editor->control_unit.control_count = 16 * AGS_EDITOR_MAX_CONTROLS;
   editor->control_unit.control_width = 1 * 4;
 
   editor->control_unit.x0 = 0;

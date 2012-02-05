@@ -48,12 +48,13 @@ AgsRecall* ags_play_notation_duplicate(AgsRecall *recall,
 				       guint n_params, GParameter *parameter);
 
 void ags_play_notation_play_note_done(AgsRecall *recall, AgsPlayNotation *play_notation);
-void ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation);
+void ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation);
 
 enum{
   PROP_0,
   PROP_DEVOUT,
   PROP_DELAY_AUDIO_RUN,
+  PROP_COUNT_BEATS_AUDIO_RUN,
 };
 
 static gpointer ags_play_notation_parent_class = NULL;
@@ -136,11 +137,20 @@ ags_play_notation_class_init(AgsPlayNotationClass *play_notation)
 
   param_spec = g_param_spec_object("delay_audio_run\0",
 				   "assigned AgsDelayAudioRun\0",
-				   "the AgsDelayAudioRun which emits tic_count signal\0",
+				   "the AgsDelayAudioRun which emits tic_alloc_input signal\0",
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_AUDIO_RUN,
+				  param_spec);
+
+  param_spec = g_param_spec_object("count_beats_audio_run\0",
+				   "assigned AgsCountBeatsAudioRun\0",
+				   "the AgsCount_BeatsAudioRun which just counts\0",
+				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_COUNT_BEATS_AUDIO_RUN,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -176,6 +186,8 @@ ags_play_notation_init(AgsPlayNotation *play_notation)
   play_notation->notation = NULL;
 
   play_notation->delay_audio_run = NULL;
+
+  play_notation->count_beats_audio_run = NULL;
 }
 
 void
@@ -235,7 +247,7 @@ ags_play_notation_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_notation)->flags)) != 0){
 	    g_signal_handler_disconnect(G_OBJECT(play_notation),
-					play_notation->tic_count_handler);
+					play_notation->tic_alloc_input_handler);
 	  }
 	}
 
@@ -250,14 +262,53 @@ ags_play_notation_set_property(GObject *gobject,
 				    ags_recall_dependency_new((GObject *) delay_audio_run));
 	}else{
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_notation)->flags)) != 0){
-	    play_notation->tic_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "tic_count\0",
-			       G_CALLBACK(ags_play_notation_delay_tic_count), play_notation);
+	    play_notation->tic_alloc_input_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input\0",
+			       G_CALLBACK(ags_play_notation_delay_tic_alloc_input_callback), play_notation);
 	  }
 	}
       }
 
       play_notation->delay_audio_run = delay_audio_run;
+    }
+    break;
+  case PROP_COUNT_BEATS_AUDIO_RUN:
+    {
+      AgsCountBeatsAudioRun *count_beats_audio_run;
+      gboolean is_template;
+
+      count_beats_audio_run = g_value_get_object(value);
+
+      if(count_beats_audio_run == play_notation->count_beats_audio_run){
+	return;
+      }
+
+      if(count_beats_audio_run != NULL &&
+	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
+
+      if(play_notation->count_beats_audio_run != NULL){
+	if(is_template){
+	  ags_recall_remove_dependency(AGS_RECALL(play_notation),
+				       (AgsRecall *) play_notation->count_beats_audio_run);
+	}
+
+	g_object_unref(G_OBJECT(play_notation->count_beats_audio_run));
+      }
+
+      if(count_beats_audio_run != NULL){
+	g_object_ref(count_beats_audio_run);
+
+	if(is_template){
+	  ags_recall_add_dependency(AGS_RECALL(play_notation),
+				    ags_recall_dependency_new((GObject *) count_beats_audio_run));
+	}
+      }
+
+      play_notation->count_beats_audio_run = count_beats_audio_run;
     }
     break;
   default:
@@ -287,6 +338,11 @@ ags_play_notation_get_property(GObject *gobject,
       g_value_set_object(value, G_OBJECT(play_notation->delay_audio_run));
     }
     break;
+  case PROP_COUNT_BEATS_AUDIO_RUN:
+    {
+      g_value_set_object(value, G_OBJECT(play_notation->count_beats_audio_run));
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -310,6 +366,10 @@ ags_play_notation_finalize(GObject *gobject)
 
   if(play_notation->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(play_notation->delay_audio_run));
+  }
+
+  if(play_notation->count_beats_audio_run != NULL){
+    g_object_unref(G_OBJECT(play_notation->count_beats_audio_run));
   }
 
   G_OBJECT_CLASS(ags_play_notation_parent_class)->finalize(gobject);
@@ -340,8 +400,8 @@ ags_play_notation_run_connect(AgsRunConnectable *run_connectable)
   play_notation = AGS_PLAY_NOTATION(run_connectable);
 
   if(play_notation->delay_audio_run != NULL){
-    play_notation->tic_count_handler = g_signal_connect_after(G_OBJECT(play_notation->delay_audio_run), "tic_count\0",
-							      G_CALLBACK(ags_play_notation_delay_tic_count), play_notation);
+    play_notation->tic_alloc_input_handler = g_signal_connect_after(G_OBJECT(play_notation->delay_audio_run), "tic_alloc_input\0",
+								    G_CALLBACK(ags_play_notation_delay_tic_alloc_input_callback), play_notation);
   }
 }
 
@@ -356,7 +416,7 @@ ags_play_notation_run_disconnect(AgsRunConnectable *run_connectable)
   play_notation = AGS_PLAY_NOTATION(run_connectable);
 
   if(play_notation->delay_audio_run != NULL){
-    g_signal_handler_disconnect(G_OBJECT(play_notation->delay_audio_run), play_notation->tic_count_handler);
+    g_signal_handler_disconnect(G_OBJECT(play_notation->delay_audio_run), play_notation->tic_alloc_input_handler);
   }
 }
 
@@ -367,6 +427,7 @@ ags_play_notation_resolve_dependencies(AgsRecall *recall)
   AgsPlayNotation *play_notation;
   AgsRecallDependency *recall_dependency;
   AgsDelayAudioRun *delay_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
   GList *list;
   AgsGroupId group_id;
   guint i, i_stop;
@@ -379,13 +440,18 @@ ags_play_notation_resolve_dependencies(AgsRecall *recall)
   group_id = recall->recall_id->group_id;
 
   delay_audio_run = NULL;
-  i_stop = 1;
+  count_beats_audio_run = NULL;
+  i_stop = 2;
 
   for(i = 0; i < i_stop && list != NULL;){
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+
+      i++;
+    }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;
     }
@@ -395,6 +461,7 @@ ags_play_notation_resolve_dependencies(AgsRecall *recall)
 
   g_object_set(G_OBJECT(recall),
 	       "delay_audio_run\0", delay_audio_run,
+	       "count_beats_audio_run\0", count_beats_audio_run,
 	       NULL);
 }
 
@@ -409,10 +476,13 @@ ags_play_notation_duplicate(AgsRecall *recall,
 										       recall_id,
 										       n_params, parameter));
 
+  play_notation = AGS_PLAY_NOTATION(recall);
+
   g_object_set(G_OBJECT(play_notation),
 	       "devout\0", play_notation->devout,
 	       NULL);
 
+  //FIXME:JK: write properties
   play_notation = AGS_PLAY_NOTATION(recall);
   copy->notation = play_notation->notation;
 
@@ -420,11 +490,12 @@ ags_play_notation_duplicate(AgsRecall *recall,
 }
 
 void
-ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation)
+ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation)
 {
   AgsNotation *notation;
   AgsAudio *audio;
-  AgsChannel *selected_channel;
+  AgsChannel *selected_channel, *channel;
+  AgsRunOrder *run_order;
   GList *current_position;
   AgsNote *note;
   AgsRecycling *recycling;
@@ -438,39 +509,44 @@ ags_play_notation_delay_tic_count(AgsDelayAudioRun *delay, guint nth_run, AgsPla
 
   audio = AGS_RECALL_AUDIO_RUN(play_notation)->recall_audio->audio;
 
-  for(i = 0; i < audio->audio_channels; i++){
-    notation = AGS_NOTATION(list->data);
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+    run_order = ags_run_order_find_group_id(audio->run_order,
+					    AGS_RECALL(play_notation)->recall_id->child_group_id);
+  }else{
+    run_order = ags_run_order_find_group_id(audio->run_order,
+					    AGS_RECALL(play_notation)->recall_id->group_id);
+  }
 
-    if((AGS_PLAY_NOTATION_DEFAULT & notation->flags) != 0){
-      selected_channel = audio->input;
-    }else{
-      selected_channel = audio->output;
-    }
-    
-    current_position = notation->start_loop;
+  channel = AGS_CHANNEL(g_list_nth(run_order->run_order, nth_run - 1)->data);
+  channel = ags_channel_nth(audio->input, channel->audio_channel);
 
-    if(current_position == NULL){
-      list = list->next;
-      continue;
-    }
+  notation = AGS_NOTATION(g_list_nth(list, channel->audio_channel)->data);
+  current_position = notation->notes; // start_loop
 
+  while(current_position != NULL){
     note = AGS_NOTE(current_position->data);
-
-    if(current_position != notation->end_loop &&
-       note->x[0] == notation->offset){
-      selected_channel = ags_channel_nth(selected_channel, i);
-      selected_channel = ags_channel_pad_nth(selected_channel, note->y);
-      
-      recycling = selected_channel->first_recycling;
-      
-      while(recycling != selected_channel->last_recycling){
-	ags_recycling_add_audio_signal_with_frame_count(recycling,
-							ags_audio_signal_get_template(recycling->audio_signal),
-							note->x[1] - note->x[0]);
+    
+    if(current_position != notation->end_loop){
+      if(note->x[0] == play_notation->count_beats_audio_run->counter){
+	selected_channel = ags_channel_pad_nth(channel, note->y);
+	
+	recycling = selected_channel->first_recycling;
+	
+	printf("playing: %u | %u\n\0", note->x[0], note->y);
+	
+	while(recycling != selected_channel->last_recycling){
+	  ags_recycling_add_audio_signal_with_frame_count(recycling,
+							  ags_audio_signal_get_template(recycling->audio_signal),
+							  note->x[1] - note->x[0]);
+	  
+	  recycling = recycling->next;
+	}
+      }else if(note->x[0] > play_notation->count_beats_audio_run->counter){
+	break;
       }
     }
-
-    list = list->next;
+    
+    current_position = current_position->next;
   }
 }
 

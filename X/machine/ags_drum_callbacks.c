@@ -114,6 +114,8 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 
   /* pattern related */
   length = (guint) drum->length_spin->adjustment->value;
+
+  //FIXME:JK: take prove if (delay + 1) is necessary and not just (delay)
   stream_length = length * (delay + 1) + 1;
 
   /* AgsCountBeats */

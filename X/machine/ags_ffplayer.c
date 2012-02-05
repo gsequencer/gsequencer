@@ -27,6 +27,11 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_channel_run.h>
+
+#include <ags/X/ags_editor.h>
+
 #include <math.h>
 
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
@@ -133,6 +138,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AgsRecallContainer *recall_container;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio, *recall_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
   AgsRecallAudio *play_audio, *recall_audio;
   AgsPlayNotation *play_notation, *recall_notation;
   GtkTable *table;
@@ -150,7 +157,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   audio->flags |= (//AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_TAKES_FILE |
-		   AGS_AUDIO_SYNC |
+		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_HAS_NOTATION);
   
   AGS_MACHINE(ffplayer)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
@@ -204,6 +211,60 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_RECALL(recall_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) recall_delay_audio_run, FALSE);
 
+
+  /* audio->play */
+  /* create AgsRecallContainer for count beats related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+
+  /* create AgsCountBeatsAudio in audio->play */
+  ffplayer->play_count_beats_audio =
+    play_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+								 "audio\0", audio,
+								 "recall_container\0", recall_container,
+								 "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
+								 "loop\0", FALSE,
+								 NULL);
+  AGS_RECALL(play_count_beats_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  ags_audio_add_recall(audio, (GObject *) play_count_beats_audio, TRUE);
+
+  /* create AgsCountBeatsAudioRun in audio->play */
+  ffplayer->play_count_beats_audio_run = 
+    play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									"recall_container\0", recall_container,
+									"recall_audio\0", play_count_beats_audio,
+									"delay_audio_run\0", play_delay_audio_run,
+									NULL);
+  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
+
+  /* audio->recall */
+  /* create AgsRecallContainer for count beats related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+
+  /* create AgsCountBeatsAudio in audio->recall */
+  ffplayer->recall_count_beats_audio =
+    recall_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+								   "audio\0", audio,
+								   "recall_container\0", recall_container,
+								   "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
+								   "loop\0", FALSE,
+								   NULL);
+  AGS_RECALL(recall_count_beats_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio, FALSE);
+
+  /* create AgsCountBeatsAudioRun in audio->recall */
+  ffplayer->recall_count_beats_audio_run = 
+    recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									  "recall_container\0", recall_container,
+									  "recall_audio\0", recall_count_beats_audio,
+									  "delay_audio_run\0", recall_delay_audio_run,
+									  NULL);
+  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, FALSE);
+
+
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
@@ -222,6 +283,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 						     "recall_audio\0", play_audio,
 						     //"devout\0", audio->devout,
 						     "delay_audio_run\0", play_delay_audio_run,
+						     "count_beats_audio_run\0", play_count_beats_audio_run,
 						     NULL);
   AGS_RECALL(play_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
   play_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
@@ -245,6 +307,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 						       "recall_audio\0", recall_audio,
 						       //"devout\0", audio->devout,
 						       "delay_audio_run\0", recall_delay_audio_run,
+						       "count_beats_audio_run\0", recall_count_beats_audio_run,
 						       NULL);
   AGS_RECALL(recall_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
   recall_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
@@ -379,11 +442,95 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				gpointer data)
 {
   AgsFFPlayer *ffplayer;
+  AgsChannel *source;
+  gboolean grow;
 
   ffplayer = AGS_FFPLAYER(audio->machine);
 
   ffplayer->play_notation->notation = audio->notation;
   ffplayer->recall_notation->notation = audio->notation;
+
+  if(audio_channels_old == audio_channels){
+    return;
+  }
+
+  if(audio_channels_old < audio_channels){
+    grow = TRUE;
+  }else{
+    grow = FALSE;
+  }
+
+  if(grow){
+    AgsRecallContainer *play_stream_channel_container, *recall_stream_channel_container;
+    AgsStreamChannel *play_stream_channel, *recall_stream_channel;
+    AgsStreamChannelRun *play_stream_channel_run, *recall_stream_channel_run;
+    
+    source = ags_channel_nth(audio->output, audio_channels_old);
+    
+    while(source != NULL){
+      /* recall for channel->play */
+      play_stream_channel_container = ags_recall_container_new();
+      ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container, TRUE);
+      
+      /* AgsStreamChannel */
+      play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
+							      "channel\0", source,
+							      "recall_container\0", play_stream_channel_container,
+							      NULL);
+      AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE);
+      ags_channel_add_recall(source, (GObject *) play_stream_channel, TRUE);
+      
+      if(GTK_WIDGET_VISIBLE(ffplayer))
+	ags_connectable_connect(AGS_CONNECTABLE(play_stream_channel));
+      
+      /* AgsStreamChannelRun */
+      play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
+								     "channel\0", source,
+								     "recall_container\0", play_stream_channel_container,
+								     "recall_channel\0", play_stream_channel,
+								     NULL);
+      AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+						     AGS_RECALL_PLAYBACK |
+						     AGS_RECALL_SEQUENCER |
+						     AGS_RECALL_NOTATION);
+      ags_channel_add_recall(source, (GObject *) play_stream_channel_run, TRUE);
+      
+      if(GTK_WIDGET_VISIBLE(ffplayer))
+	ags_connectable_connect(AGS_CONNECTABLE(play_stream_channel_run));
+      
+      /* recall for channel->recall */
+      recall_stream_channel_container = ags_recall_container_new();
+      ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container, FALSE);
+      
+      /* AgsStreamChannel */
+      recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
+								"channel\0", source,
+								"recall_container\0", recall_stream_channel_container,
+								NULL);
+      AGS_RECALL(recall_stream_channel)->flags |= (AGS_RECALL_TEMPLATE);
+      ags_channel_add_recall(source, (GObject *) recall_stream_channel, FALSE);
+      
+      if(GTK_WIDGET_VISIBLE(ffplayer))
+	ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel));
+	
+      /* AgsStreamChannelRun */
+      recall_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
+								       "channel\0", source,
+								       "recall_container\0", recall_stream_channel_container,
+								       "recall_channel\0", recall_stream_channel,
+								       NULL);
+      AGS_RECALL(recall_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+						       AGS_RECALL_PLAYBACK |
+						       AGS_RECALL_SEQUENCER |
+						       AGS_RECALL_NOTATION);
+      ags_channel_add_recall(source, (GObject *) recall_stream_channel_run, FALSE);
+      
+      if(GTK_WIDGET_VISIBLE(ffplayer))
+	ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel_run));
+      
+      source = source->next;
+    }
+  }
 }
 
 void
@@ -397,6 +544,14 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 
   ffplayer->play_notation->notation = audio->notation;
   ffplayer->recall_notation->notation = audio->notation;
+
+  if(pads_old == pads){
+    return;
+  }
+
+  if(pads_old < pads){
+  }else{
+  }
 }
 
 void

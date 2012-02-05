@@ -1581,13 +1581,16 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}
       }
 
+    audio->input_pads = pads;
+    audio->input_lines = pads * audio->audio_channels;
+
     if(update_async_link){
       channel = audio->output;
 
       input = audio->input;
-      input_pad_last = ags_channel_nth(audio->input, (audio->input_lines - 1) * audio->audio_channels);
+      input_pad_last = ags_channel_nth(audio->input, audio->input_lines - audio->audio_channels);
 
-      for(j = 0; j < audio->audio_channels; j++){
+      for(j = 0; j < audio->audio_channels && channel != NULL && input != NULL; j++){
 	ags_channel_set_recycling(channel,
 				  input->first_recycling, input_pad_last->last_recycling,
 				  TRUE, FALSE);
@@ -1596,9 +1599,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	input_pad_last = input_pad_last->next;
       }
     }
-
-    audio->input_pads = pads;
-    audio->input_lines = pads * audio->audio_channels;
 
     if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
       audio->output_pads = pads;

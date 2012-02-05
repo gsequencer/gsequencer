@@ -26,6 +26,8 @@
 #include <ags/audio/ags_notation.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #define AGS_TYPE_PLAY_NOTATION                (ags_play_notation_get_type())
 #define AGS_PLAY_NOTATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_NOTATION, AgsPlayNotation))
@@ -53,8 +55,10 @@ struct _AgsPlayNotation
   GList *notation;
 
   AgsDelayAudioRun *delay_audio_run;
-  gulong tic_count_handler;
+  gulong tic_alloc_input_handler;
   //  double *bpm; now in AgsDevout
+
+  AgsCountBeatsAudioRun *count_beats_audio_run;
 
   //  GList *current;
 };

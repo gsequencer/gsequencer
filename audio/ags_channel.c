@@ -978,6 +978,12 @@ ags_channel_set_recycling(AgsChannel *channel,
     if(change_old_first){
       nth_channel = ags_channel_first_with_recycling(input);
 
+      if(nth_channel == NULL){
+	changed_old_first_recycling = NULL;
+	changed_old_last_recycling = NULL;
+	return;
+      }
+
       changed_old_first_recycling = nth_channel->first_recycling;
     }
 

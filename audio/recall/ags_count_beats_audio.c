@@ -88,7 +88,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				 "length in beats\0",
 				 "The length of the stream in beats\0",
 				 1,
-				 128,
+				 4096,
 				 16,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

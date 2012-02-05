@@ -24,6 +24,7 @@
 #include <ags/audio/task/ags_link_channel.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_editor.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -42,10 +43,8 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
 {
   AgsWindow *window;
   AgsAudio *audio;
-  AgsDelayAudio *delay_audio;
-  GList *list;
   double bpm, tact;
-  guint delay;
+  guint delay, length, stream_length;
 
   if(old_parent != NULL)
     return;
@@ -57,9 +56,6 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   ffplayer->machine.name = g_strdup_printf("Default %d\0", window->counter->ffplayer);
   window->counter->ffplayer++;
 
-  /*
-   * FIXME:JK: the following code is ugly
-   */
   /* delay related */
   tact = exp2(4.0 - 8.0);
   bpm = window->navigation->bpm->adjustment->value;
@@ -71,21 +67,16 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
 			tact);
 
   /* AgsDelayAudio */
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_DELAY_AUDIO);
+  ffplayer->play_delay_audio->delay = delay;
+  ffplayer->recall_delay_audio->delay = delay;
 
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
+  /* notation related */
+  length = (guint) AGS_EDITOR_MAX_CONTROLS + 16;
+  stream_length = length * (delay + 1) + 1;
 
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
+  /* AgsCountBeats */
+  ffplayer->play_count_beats_audio->stream_length = stream_length;
+  ffplayer->recall_count_beats_audio->stream_length = stream_length;
 
   /* AgsPlayNotation */
   g_object_set(G_OBJECT(ffplayer->play_notation),

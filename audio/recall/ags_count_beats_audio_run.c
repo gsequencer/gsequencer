@@ -614,7 +614,7 @@ ags_count_beats_audio_run_tic_count_callback(AgsDelayAudioRun *delay_audio_run,
     if(count_beats_audio_run->counter == count_beats_audio->length - 1){
       count_beats_audio_run->counter = 0;
     }else{
-      count_beats_audio_run->counter++;
+      count_beats_audio_run->counter += 1;
     }
 
     count_beats_audio_run->hide_ref_counter = 0;
