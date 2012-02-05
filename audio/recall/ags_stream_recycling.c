@@ -56,9 +56,6 @@ void ags_stream_recycling_add_audio_signal(AgsStreamRecycling *stream_recycling,
 void ags_stream_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 						    AgsAudioSignal *audio_signal,
 						    AgsStreamRecycling *stream_recycling);
-void ags_stream_recycling_add_audio_signal_with_frame_count_callback(AgsRecycling *recycling,
-								     AgsAudioSignal *audio_signal, guint frame_count,
-								     AgsStreamRecycling *stream_recycling);
 
 enum{
   PROP_0,
@@ -197,8 +194,6 @@ ags_stream_recycling_set_property(GObject *gobject,
 	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(stream_recycling)->flags)) != 0){
 	  g_signal_handler_disconnect(gobject,
 				      stream_recycling->add_audio_signal_handler);
-	  g_signal_handler_disconnect(gobject,
-				      stream_recycling->add_audio_signal_with_frame_count_handler);
 	}
 
 	g_object_unref(G_OBJECT(stream_recycling->recycling));
@@ -211,11 +206,6 @@ ags_stream_recycling_set_property(GObject *gobject,
 	  stream_recycling->add_audio_signal_handler =
 	    g_signal_connect_after(gobject, "add_audio_signal\0",
 				   G_CALLBACK(ags_stream_recycling_add_audio_signal_callback), stream_recycling);
-	  
-	  stream_recycling->add_audio_signal_with_frame_count_handler =
-	    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
-				   G_CALLBACK(ags_stream_recycling_add_audio_signal_with_frame_count_callback), stream_recycling);
-
 	}
       }
 
@@ -294,10 +284,6 @@ ags_stream_recycling_run_connect(AgsRunConnectable *run_connectable)
   stream_recycling->add_audio_signal_handler =
     g_signal_connect_after(gobject, "add_audio_signal\0",
 			   G_CALLBACK(ags_stream_recycling_add_audio_signal_callback), stream_recycling);
-
-  stream_recycling->add_audio_signal_with_frame_count_handler =
-    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
-			   G_CALLBACK(ags_stream_recycling_add_audio_signal_with_frame_count_callback), stream_recycling);
 }
 
 void
@@ -313,8 +299,6 @@ ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 
   g_signal_handler_disconnect(gobject,
 			      stream_recycling->add_audio_signal_handler);
-  g_signal_handler_disconnect(gobject,
-			      stream_recycling->add_audio_signal_with_frame_count_handler);
 }
 
 AgsRecall*
@@ -355,19 +339,6 @@ void
 ags_stream_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 					       AgsAudioSignal *audio_signal,
 					       AgsStreamRecycling *stream_recycling)
-{
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(stream_recycling)->recall_id->group_id)
-    ags_stream_recycling_add_audio_signal(stream_recycling,
-					  recycling,
-					  audio_signal);
-}
-
-void
-ags_stream_recycling_add_audio_signal_with_frame_count_callback(AgsRecycling *recycling,
-								AgsAudioSignal *audio_signal, guint frame_count,
-								AgsStreamRecycling *stream_recycling)
 {
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&

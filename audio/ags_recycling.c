@@ -39,16 +39,12 @@ void ags_recycling_finalize(GObject *gobject);
 
 void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 					 AgsAudioSignal *audio_signal);
-void ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
-							  AgsAudioSignal *audio_signal,
-							  guint frame_count);
 
 void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 					    AgsAudioSignal *audio_signal);
 
 enum{
   ADD_AUDIO_SIGNAL,
-  ADD_AUDIO_SIGNAL_WITH_FRAME_COUNT,
   REMOVE_AUDIO_SIGNAL,
   LAST_SIGNAL,
 };
@@ -103,7 +99,6 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
   gobject->finalize = ags_recycling_finalize;
 
   recycling->add_audio_signal = ags_recycling_real_add_audio_signal;
-  recycling->add_audio_signal_with_frame_count = ags_recycling_real_add_audio_signal_with_frame_count;
   recycling->remove_audio_signal = ags_recycling_real_remove_audio_signal;
 
   recycling_signals[ADD_AUDIO_SIGNAL] =
@@ -115,17 +110,6 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
-
-  recycling_signals[ADD_AUDIO_SIGNAL_WITH_FRAME_COUNT] =
-    g_signal_new("add_audio_signal_with_frame_count\0",
-		 G_TYPE_FROM_CLASS (recycling),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecyclingClass, add_audio_signal_with_frame_count),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__OBJECT_UINT,
-		 G_TYPE_NONE, 2,
-		 G_TYPE_OBJECT, G_TYPE_UINT);
-
 
   recycling_signals[REMOVE_AUDIO_SIGNAL] =
     g_signal_new("remove_audio_signal\0",
@@ -203,6 +187,34 @@ void
 ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal)
 {
+  recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
+}
+
+void
+ags_recycling_remove_audio_signal(AgsRecycling *recycling,
+				  AgsAudioSignal *audio_signal)
+{
+  g_return_if_fail(AGS_IS_RECYCLING(recycling));
+
+  g_object_ref((GObject *) recycling);
+  g_signal_emit(G_OBJECT(recycling),
+		recycling_signals[ADD_AUDIO_SIGNAL], 0,
+		audio_signal);
+  g_object_unref((GObject *) recycling);
+}
+
+void
+ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
+				       AgsAudioSignal *audio_signal)
+{
+  recycling->audio_signal = g_list_remove(recycling->audio_signal, (gpointer) audio_signal);
+  g_object_unref(G_OBJECT(audio_signal));
+}
+
+void
+ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
+						AgsAudioSignal *audio_signal)
+{
   AgsAudioSignal *template;
 
   template = ags_audio_signal_get_template(recycling->audio_signal);
@@ -215,28 +227,12 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
   audio_signal->last_frame = template->last_frame;
 
   ags_audio_signal_duplicate_stream(audio_signal, template);
-
-  recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
 }
 
 void
-ags_recycling_add_audio_signal_with_frame_count(AgsRecycling *recycling,
-						AgsAudioSignal *audio_signal,
-						guint frame_count)
-{
-  g_return_if_fail(AGS_IS_RECYCLING(recycling));
-
-  g_object_ref((GObject *) recycling);
-  g_signal_emit(G_OBJECT(recycling),
-		recycling_signals[ADD_AUDIO_SIGNAL], 0,
-		audio_signal, frame_count);
-  g_object_unref((GObject *) recycling);
-}
-
-void
-ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
-						     AgsAudioSignal *audio_signal,
-						     guint frame_count)
+ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
+						   AgsAudioSignal *audio_signal,
+						   guint frame_count)
 {
   AgsDevout *devout;
   AgsAudioSignal *template;
@@ -245,6 +241,8 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint loop_frames;
   guint frames_looped_copied, frames_copied;
   gboolean enter_loop;
+
+  printf("ags_recycling_create_audio_signal_with_frame_count: before\n\0");
 
   /* some init */
   template = ags_audio_signal_get_template(recycling->audio_signal);
@@ -334,29 +332,8 @@ ags_recycling_real_add_audio_signal_with_frame_count(AgsRecycling *recycling,
     template_stream = template_stream->next;
     stream = stream->next;
   }
-  
-  recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
-}
 
-void
-ags_recycling_remove_audio_signal(AgsRecycling *recycling,
-				  AgsAudioSignal *audio_signal)
-{
-  g_return_if_fail(AGS_IS_RECYCLING(recycling));
-
-  g_object_ref((GObject *) recycling);
-  g_signal_emit(G_OBJECT(recycling),
-		recycling_signals[ADD_AUDIO_SIGNAL], 0,
-		audio_signal);
-  g_object_unref((GObject *) recycling);
-}
-
-void
-ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
-				       AgsAudioSignal *audio_signal)
-{
-  recycling->audio_signal = g_list_remove(recycling->audio_signal, (gpointer) audio_signal);
-  g_object_unref(G_OBJECT(audio_signal));
+  printf("ags_recycling_create_audio_signal_with_frame_count: after\n\0");
 }
 
 AgsRecycling*

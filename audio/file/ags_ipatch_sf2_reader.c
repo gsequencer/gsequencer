@@ -577,12 +577,14 @@ ags_ipatch_sf2_reader_iter_next(AgsPlayable *playable)
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  ipatch_sf2_reader->zone = IPATCH_SF2_ZONE(ipatch_sf2_reader->iter->data);
-
   if(ipatch_sf2_reader->iter != NULL){
+    ipatch_sf2_reader->zone = IPATCH_SF2_ZONE(ipatch_sf2_reader->iter->data);
+
     ipatch_sf2_reader->iter = ipatch_sf2_reader->iter->next;
     return(TRUE);
   }else{
+    ipatch_sf2_reader->zone = NULL;
+
     return(FALSE);
   }
 }
@@ -630,14 +632,21 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
     if(ipatch_sf2_reader->zone != NULL){
       //TODO:JK: get endianess and set it for format
       g_object_get(G_OBJECT(sample),
-		   "format\0", channels,
+		   //"format\0", channels,
 		   "sample-size\0", frames,
 		   "loop-start\0", loop_start,
 		   "loop-end\0", loop_end,
 		   NULL);
 
-      printf("channels = %d\nframes = %d\0", *channels, *frames);
+      channels = 2;
+    }else{
+      *channels = 0;
+      *frames = 0;
+      *loop_start = 0;
+      *loop_end = 0;
     }
+
+    printf("channels = %d\nframes = %d\0", *channels, *frames);
   }
 }
 

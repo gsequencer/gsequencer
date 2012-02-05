@@ -495,6 +495,7 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint 
   AgsNotation *notation;
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel;
+  AgsAudioSignal *audio_signal;
   AgsRunOrder *run_order;
   GList *current_position;
   AgsNote *note;
@@ -535,9 +536,18 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint 
 	printf("playing: %u | %u\n\0", note->x[0], note->y);
 	
 	while(recycling != selected_channel->last_recycling){
-	  ags_recycling_add_audio_signal_with_frame_count(recycling,
-							  ags_audio_signal_get_template(recycling->audio_signal),
-							  note->x[1] - note->x[0]);
+	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
+					      (GObject *) recycling,
+					      (GObject *) AGS_RECALL(play_notation)->recall_id);
+	  ags_recycling_create_audio_signal_with_frame_count(recycling,
+							     audio_signal,
+							     note->x[1] - note->x[0]);
+	  ags_audio_signal_connect(audio_signal);
+
+	  printf("adding\n\0");
+
+	  ags_recycling_add_audio_signal(recycling,
+					 audio_signal);
 	  
 	  recycling = recycling->next;
 	}

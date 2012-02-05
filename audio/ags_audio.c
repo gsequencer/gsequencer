@@ -1363,17 +1363,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
       channel =
 	audio->output = start;
 
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	type = AGS_TYPE_INPUT;
-
-	ags_audio_set_pads_grow_one();
-	audio->input = start;
-	audio->input_pads = 1;
-
-	type = AGS_TYPE_OUTPUT;
-	channel = audio->output;
-      }
-
       pads_old =
 	audio->output_pads = 1;
     }else
@@ -1382,15 +1371,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
     if(pads > audio->output_pads){
       ags_audio_set_pads_grow();
 
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	channel = audio->input;
-	type = AGS_TYPE_INPUT;
-
-	ags_audio_set_pads_grow();
-
-	type = AGS_TYPE_OUTPUT;
-	channel = audio->output;
-      }
     }else if(pads == 0){
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	 audio->notation != NULL)
@@ -1398,55 +1378,17 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       ags_audio_set_pads_unlink_zero();
 
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	type = AGS_TYPE_INPUT;
-	channel = audio->input;
-
-	ags_audio_set_pads_unlink_zero();
-
-	type = AGS_TYPE_OUTPUT;
-	channel = audio->output;
-      }
 
       ags_audio_set_pads_shrink_zero();
       audio->output = NULL;
 
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	type = AGS_TYPE_INPUT;
-	channel = audio->input;
-
-	ags_audio_set_pads_shrink_zero();
-	audio->input = NULL;
-
-	type = AGS_TYPE_OUTPUT;
-	channel = audio->output;
-      }
     }else if(pads < audio->output_pads){
       ags_audio_set_pads_remove_notes();
 
       ags_audio_set_pads_unlink();
 
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	type = AGS_TYPE_INPUT;
-	channel = audio->input;
-
-	ags_audio_set_pads_unlink();
-
-	type = AGS_TYPE_OUTPUT;
-	channel = audio->output;
-      }
-
       ags_audio_set_pads_shrink();
 
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	type = AGS_TYPE_INPUT;
-	channel = audio->input;
-
-	ags_audio_set_pads_shrink();
-
-	type = AGS_TYPE_OUTPUT;
-	channel = audio->output;
-      }
     }
 
     audio->output_pads = pads;
@@ -1479,31 +1421,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
     
     if(pads_old == 0){
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0 &&
-	 (AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
-	 audio->notation == NULL){
-	channel = audio->output;
-	type = AGS_TYPE_OUTPUT;
-
-	ags_audio_set_pads_alloc_notation();
-	ags_audio_set_pads_add_notes();
-
-	type = AGS_TYPE_INPUT;
-	channel = audio->input;
-      }
-
       ags_audio_set_pads_grow_one();
       channel =
 	audio->input = start;
-
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	type = AGS_TYPE_OUTPUT;
-	ags_audio_set_pads_grow_one();
-	audio->output = start;
-
-	type = AGS_TYPE_INPUT;
-	channel = audio->input;
-      }
 
       pads_old =
 	audio->input_pads = 1;
@@ -1514,96 +1434,17 @@ ags_audio_real_set_pads(AgsAudio *audio,
       if(pads > audio->input_pads){
 	ags_audio_set_pads_grow();
 
-	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	  channel = audio->output;
-	  type = AGS_TYPE_OUTPUT;
-
-	  ags_audio_set_pads_grow();
-
-	  type = AGS_TYPE_INPUT;
-	  channel = audio->input;
-	}
       }else if(pads == 0){
-	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0 &&
-	   (AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
-	   audio->notation != NULL){
-	  ags_audio_set_pads_free_notation();
-	}
-
 	ags_audio_set_pads_unlink_zero();
-
-	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	  channel = audio->output;
-	  type = AGS_TYPE_OUTPUT;
-
-	  ags_audio_set_pads_unlink_zero();
-	
-	  type = AGS_TYPE_INPUT;
-	  channel = audio->input;
-	}
 
 	ags_audio_set_pads_shrink_zero();
 	audio->input = NULL;
 
-	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	  channel = audio->output;
-	  type = AGS_TYPE_OUTPUT;
-
-	  ags_audio_set_pads_shrink_zero();
-	  audio->output = NULL;
-
-	  type = AGS_TYPE_INPUT;
-	  channel = audio->input;
-	}
       }else if(pads < audio->input_pads){
 	ags_audio_set_pads_unlink();
 
-	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	  channel = audio->output;
-	  type = AGS_TYPE_OUTPUT;
-
-	  ags_audio_set_pads_unlink();
-
-	  type = AGS_TYPE_INPUT;
-	  channel = audio->input;
-	}
-
 	ags_audio_set_pads_shrink();
-
-	if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	  channel = audio->output;
-	  type = AGS_TYPE_OUTPUT;
-
-	  ags_audio_set_pads_shrink();
-
-	  type = AGS_TYPE_INPUT;
-	  channel = audio->input;
-	}
       }
-
-    audio->input_pads = pads;
-    audio->input_lines = pads * audio->audio_channels;
-
-    if(update_async_link){
-      channel = audio->output;
-
-      input = audio->input;
-      input_pad_last = ags_channel_nth(audio->input, audio->input_lines - audio->audio_channels);
-
-      for(j = 0; j < audio->audio_channels && channel != NULL && input != NULL; j++){
-	ags_channel_set_recycling(channel,
-				  input->first_recycling, input_pad_last->last_recycling,
-				  TRUE, FALSE);
-	channel = channel->next;
-	input = input->next;
-	input_pad_last = input_pad_last->next;
-      }
-    }
-
-    if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-      audio->output_pads = pads;
-      audio->output_lines = pads * audio->audio_channels;
-    }
   }
 }
 

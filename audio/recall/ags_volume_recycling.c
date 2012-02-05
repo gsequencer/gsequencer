@@ -56,9 +56,6 @@ void ags_volume_recycling_add_audio_signal(AgsVolumeRecycling *volume_recycling,
 void ags_volume_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 						    AgsAudioSignal *audio_signal,
 						    AgsVolumeRecycling *volume_recycling);
-void ags_volume_recycling_add_audio_signal_with_frame_count_callback(AgsRecycling *recycling,
-								     AgsAudioSignal *audio_signal, guint frame_count,
-								     AgsVolumeRecycling *volume_recycling);
 
 void ags_volume_recycling_volume_audio_signal_done(AgsRecall *recall,
 						   gpointer data);
@@ -295,10 +292,6 @@ ags_volume_recycling_run_connect(AgsRunConnectable *run_connectable)
   volume_recycling->add_audio_signal_handler =
     g_signal_connect_after(gobject, "add_audio_signal\0",
 			   G_CALLBACK(ags_volume_recycling_add_audio_signal_callback), volume_recycling);
-
-  volume_recycling->add_audio_signal_with_frame_count_handler =
-    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
-			   G_CALLBACK(ags_volume_recycling_add_audio_signal_with_frame_count_callback), volume_recycling);
 }
 
 void
@@ -313,7 +306,6 @@ ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(volume_recycling);
 
   g_signal_handler_disconnect(gobject, volume_recycling->add_audio_signal_handler);
-  g_signal_handler_disconnect(gobject, volume_recycling->add_audio_signal_with_frame_count_handler);
 }
 
 AgsRecall*
@@ -354,19 +346,6 @@ void
 ags_volume_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 					       AgsAudioSignal *audio_signal,
 					       AgsVolumeRecycling *volume_recycling)
-{
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(volume_recycling)->recall_id->group_id)
-    ags_volume_recycling_add_audio_signal(volume_recycling,
-					  recycling,
-					  audio_signal);
-}
-
-void
-ags_volume_recycling_add_audio_signal_with_frame_count_callback(AgsRecycling *recycling,
-								AgsAudioSignal *audio_signal, guint frame_count,
-								AgsVolumeRecycling *volume_recycling)
 {
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&

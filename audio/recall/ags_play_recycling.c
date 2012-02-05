@@ -65,9 +65,6 @@ void ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling
 void ags_play_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 							 AgsAudioSignal *audio_signal,
 							 AgsPlayRecycling *play_recycling);
-void ags_play_recycling_source_add_audio_signal_with_frame_count_callback(AgsRecycling *source,
-									  AgsAudioSignal *audio_signal, guint frame_count,
-									  AgsPlayRecycling *play_recycling);
 void ags_play_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 							    AgsAudioSignal *audio_signal,
 							    AgsPlayRecycling *play_recycling);
@@ -248,10 +245,6 @@ ags_play_recycling_run_connect(AgsRunConnectable *run_connectable)
     g_signal_connect_after(gobject, "add_audio_signal\0",
 			   G_CALLBACK(ags_play_recycling_source_add_audio_signal_callback), play_recycling);
 
-  play_recycling->source_add_audio_signal_with_frame_count_handler =
-    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
-			   G_CALLBACK(ags_play_recycling_source_add_audio_signal_with_frame_count_callback), play_recycling);
-
   play_recycling->source_remove_audio_signal_handler =
     g_signal_connect(gobject, "remove_audio_signal\0",
 		     G_CALLBACK(ags_play_recycling_source_remove_audio_signal_callback), play_recycling);
@@ -272,7 +265,6 @@ ags_play_recycling_run_disconnect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(play_recycling->source);
 
   g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_handler);
-  g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_with_frame_count_handler);
 
   g_signal_handler_disconnect(gobject, play_recycling->source_remove_audio_signal_handler);
 }
@@ -325,7 +317,6 @@ ags_play_recycling_set_property(GObject *gobject,
 	  gobject = G_OBJECT(play_recycling->source);
 
 	  g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_handler);
-	  g_signal_handler_disconnect(gobject, play_recycling->source_add_audio_signal_with_frame_count_handler);
 	  
 	  g_signal_handler_disconnect(gobject, play_recycling->source_remove_audio_signal_handler);
 	}
@@ -345,11 +336,7 @@ ags_play_recycling_set_property(GObject *gobject,
 	  play_recycling->source_add_audio_signal_handler =
 	    g_signal_connect_after(gobject, "add_audio_signal\0",
 				   G_CALLBACK(ags_play_recycling_source_add_audio_signal_callback), play_recycling);
-	  
-	  play_recycling->source_add_audio_signal_with_frame_count_handler =
-	    g_signal_connect_after(gobject, "add_audio_signal_with_frame_count\0",
-				   G_CALLBACK(ags_play_recycling_source_add_audio_signal_with_frame_count_callback), play_recycling);
-  
+	    
 	  play_recycling->source_remove_audio_signal_handler =
 	    g_signal_connect(gobject, "remove_audio_signal\0",
 			     G_CALLBACK(ags_play_recycling_source_remove_audio_signal_callback), play_recycling);
@@ -479,23 +466,16 @@ ags_play_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 						    AgsAudioSignal *audio_signal,
 						    AgsPlayRecycling *play_recycling)
 {
+  printf("ags_play_recycling_source_add_audio_signal_callback\n\0");
+
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(play_recycling)->recall_id->group_id)
     ags_play_recycling_source_add_audio_signal(play_recycling,
 					       audio_signal);
-}
-
-void
-ags_play_recycling_source_add_audio_signal_with_frame_count_callback(AgsRecycling *source,
-								AgsAudioSignal *audio_signal, guint frame_count,
-								AgsPlayRecycling *play_recycling)
-{
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(play_recycling)->recall_id->group_id)
-    ags_play_recycling_source_add_audio_signal(play_recycling, 
-					       audio_signal);
+  else{
+    printf("   debug:  retrieved = %u ;  this = %u\n\0", AGS_RECALL_ID(audio_signal->recall_id)->group_id, AGS_RECALL(play_recycling)->recall_id->group_id);
+  }
 }
 
 void
