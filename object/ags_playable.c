@@ -296,9 +296,11 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
       stream = stream->next;
     }
     
-    for(k = 0; k < (frames % devout->buffer_size); k++)
-      ((short *) stream->data)[k] = buffer[j * devout->buffer_size + k];
-    
+    if(frames % devout->buffer_size != 0){
+      for(k = 0; k < frames % devout->buffer_size; k++)
+	((short *) stream->data)[k] = buffer[j * devout->buffer_size + k];
+    }
+
     free(buffer);
     list = list->next;
   }

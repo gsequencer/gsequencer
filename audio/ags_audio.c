@@ -1445,6 +1445,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	ags_audio_set_pads_shrink();
       }
+
+    audio->input_pads = pads;
+    audio->input_lines = pads * audio->audio_channels;
   }
 }
 
