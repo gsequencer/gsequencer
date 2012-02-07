@@ -221,7 +221,7 @@ ags_apply_synth_launch(AgsTask *task)
     current_phase[0] = (guint) ((double) phase * ((double) frequency / (double) current_frequency));
 
     /* settings which needs to be factorized */
-    factor = factor * ags_apply_synth_calculate_factor(frequency, current_frequency, wave);
+    factor = ags_apply_synth_calculate_factor(frequency, current_frequency, wave);
 
     current_attack = (guint) (factor * attack) % (guint) devout->buffer_size;
     current_frame_count = frame_count * factor;
