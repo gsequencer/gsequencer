@@ -843,9 +843,17 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
     ags_editor_change_machine(editor, machine0);
         
     if(machine0 != NULL){
+      guint pads;
+
       gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine0), ": \0", machine0->name, NULL));
 
-      editor->map_height = machine0->audio->input_pads * editor->control_height;
+      if((AGS_AUDIO_NOTATION_DEFAULT & (machine0->audio->flags)) != 0){
+	pads = machine0->audio->input_pads;
+      }else{
+	pads = machine0->audio->output_pads;
+      }
+
+      editor->map_height = pads * editor->control_height;
     
       editor->flags |= AGS_EDITOR_RESETING_VERTICALLY;
       ags_editor_reset_vertically(editor, AGS_EDITOR_RESET_VSCROLLBAR);
