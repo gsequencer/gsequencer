@@ -141,10 +141,13 @@ ags_synth_init(AgsSynth *synth)
   AgsRecallContainer *recall_container;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio, *recall_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
   AgsPlayNotation *play_notation, *recall_notation;
+  AgsRecallAudio *play_audio, *recall_audio;
   GtkMenu *menu;
   GtkVBox *vbox;
-  GtkHBox *hbox;
+  GtkTable *table;
   GtkLabel *label;
   GtkFrame *frame;
 
@@ -158,7 +161,6 @@ ags_synth_init(AgsSynth *synth)
 
   AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
 
-
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
@@ -171,7 +173,7 @@ ags_synth_init(AgsSynth *synth)
 						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
-  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) delay_audio, TRUE);
 
   /* create AgsDelayAudioRun in audio->play */
@@ -180,7 +182,7 @@ ags_synth_init(AgsSynth *synth)
 							     "recall_container\0", recall_container,
 							     "recall_audio\0", delay_audio,
 							     NULL);
-  AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
 
   /* audio->recall */
@@ -195,7 +197,7 @@ ags_synth_init(AgsSynth *synth)
 						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
-  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) delay_audio, FALSE);
 
   /* create AgsDelayAudioRun in audio->recall */
@@ -204,31 +206,109 @@ ags_synth_init(AgsSynth *synth)
 							       "recall_container\0", recall_container,
 							       "recall_audio\0", delay_audio,
 							       NULL);
-  AGS_RECALL(recall_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
+  AGS_RECALL(recall_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
   ags_audio_add_recall(audio, (GObject *) recall_delay_audio_run, FALSE);
 
+
   /* audio->play */
+  /* create AgsRecallContainer for count beats related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+
+  /* create AgsCountBeatsAudio in audio->play */
+  synth->play_count_beats_audio =
+    play_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+								 "audio\0", audio,
+								 "recall_container\0", recall_container,
+								 "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
+								 "loop\0", FALSE,
+								 NULL);
+  AGS_RECALL(play_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_PERSISTENT);
+  ags_audio_add_recall(audio, (GObject *) play_count_beats_audio, TRUE);
+
+  /* create AgsCountBeatsAudioRun in audio->play */
+  synth->play_count_beats_audio_run = 
+    play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									"recall_container\0", recall_container,
+									"recall_audio\0", play_count_beats_audio,
+									"delay_audio_run\0", play_delay_audio_run,
+									NULL);
+  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_PERSISTENT);
+  ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
+
+  /* audio->recall */
+  /* create AgsRecallContainer for count beats related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+
+  /* create AgsCountBeatsAudio in audio->recall */
+  synth->recall_count_beats_audio =
+    recall_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+								   "audio\0", audio,
+								   "recall_container\0", recall_container,
+								   "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
+								   "loop\0", FALSE,
+								   NULL);
+  AGS_RECALL(recall_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio, FALSE);
+
+  /* create AgsCountBeatsAudioRun in audio->recall */
+  synth->recall_count_beats_audio_run = 
+    recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									  "recall_container\0", recall_container,
+									  "recall_audio\0", recall_count_beats_audio,
+									  "delay_audio_run\0", recall_delay_audio_run,
+									  NULL);
+  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_PERSISTENT);
+  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, FALSE);
+
+
+  /* audio->play */
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+
+  play_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
+					       "audio\0", audio,
+					       NULL);
+  AGS_RECALL(play_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
+  ags_audio_add_recall(audio, (GObject *) play_audio, TRUE);
+
   /* create AgsCopyPatternAudioRun in audio->play */
   synth->play_notation =
     play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
-						     "devout\0", audio->devout,
+						     "recall_container\0", recall_container,
+						     "recall_audio\0", play_audio,
+						     //"devout\0", audio->devout,
 						     "delay_audio_run\0", play_delay_audio_run,
+						     "count_beats_audio_run\0", play_count_beats_audio_run,
 						     NULL);
-  AGS_RECALL(play_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
-  play_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
-  synth->play_notation->notation = &(audio->notation);
+  AGS_RECALL(play_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
+  //  play_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
   ags_audio_add_recall(audio, (GObject *) play_notation, TRUE);
 
   /* audio->recall */
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+
+  recall_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
+						 "audio\0", audio,
+						 NULL);
+  AGS_RECALL(recall_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
+  ags_audio_add_recall(audio, (GObject *) recall_audio, FALSE);
+
   /* create AgsCopyPatternAudioRun in audio->recall */
   synth->recall_notation =
     recall_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
-						       "devout\0", audio->devout,
+						       "recall_container\0", recall_container,
+						       "recall_audio\0", recall_audio,
+						       //"devout\0", audio->devout,
 						       "delay_audio_run\0", recall_delay_audio_run,
+						       "count_beats_audio_run\0", recall_count_beats_audio_run,
 						       NULL);
-  AGS_RECALL(recall_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_NOTATION;
-  recall_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
-  synth->recall_notation->notation = &(audio->notation);
+  AGS_RECALL(recall_notation)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER | AGS_RECALL_NOTATION;
+  //  recall_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
   ags_audio_add_recall(audio, (GObject *) recall_notation, FALSE);
 
   /* create widgets */
@@ -250,14 +330,69 @@ ags_synth_init(AgsSynth *synth)
   synth->update = (GtkButton *) gtk_button_new_with_label(g_strdup("update\0"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
-  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
+
+  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) table, FALSE, FALSE, 0);
+
   
-  label = (GtkLabel *) gtk_label_new("lower\0");
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 0);
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "lower\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 
   synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) synth->lower, FALSE, FALSE, 0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(synth->lower),
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "loop start\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  synth->loop_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(synth->loop_start),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "loop end\0",
+				    "xalign\0", 0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  synth->loop_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(synth->loop_end),
+		   1, 2,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 
   frame = (GtkFrame *) gtk_frame_new(g_strdup("amplifier 0\0"));
   gtk_box_pack_start((GtkBox *) synth->hbox, (GtkWidget *) frame, FALSE, FALSE, 0);

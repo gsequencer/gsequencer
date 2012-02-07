@@ -60,6 +60,9 @@ struct _AgsApplySynth
   guint start;
 
   gdouble volume;
+
+  guint loop_start;
+  guint loop_end;
 };
 
 struct _AgsApplySynthClass
@@ -73,6 +76,7 @@ AgsApplySynth* ags_apply_synth_new(AgsChannel *start_channel, guint count,
 				   guint wave,
 				   guint attack, guint frame_count,
 				   guint frequency, guint phase, guint start,
-				   gdouble volume);
+				   gdouble volume,
+				   guint loop_start, guint loop_end);
 
 #endif /*__AGS_APPLY_SYNTH_H__*/

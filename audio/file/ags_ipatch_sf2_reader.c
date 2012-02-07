@@ -552,10 +552,10 @@ ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
 
   if(ipatch_sf2_reader->nth_level == 1){
     ipatch_sf2_reader->iter = ipatch_sf2_preset_get_zones(ipatch_sf2_find_preset(ipatch_sf2_reader->sf2,
-										 ipatch_sf2_reader->selected_sublevel_name,
-										 ipatch_sf2_reader->bank,
-										 ipatch_sf2_reader->program,
-										 NULL))->items;
+										      ipatch_sf2_reader->selected_sublevel_name,
+										      ipatch_sf2_reader->bank,
+										      ipatch_sf2_reader->program,
+										      NULL))->items;
   }else if(ipatch_sf2_reader->nth_level == 2){
     IpatchSF2Inst *inst;
     IpatchList *zones;

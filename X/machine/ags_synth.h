@@ -27,6 +27,8 @@
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_play_notation.h>
 
 #define AGS_TYPE_SYNTH                (ags_synth_get_type())
@@ -45,10 +47,14 @@ struct _AgsSynth
 
   AgsDelayAudio *play_delay_audio;
   AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsPlayNotation *play_notation;
 
   AgsDelayAudio *recall_delay_audio;
   AgsDelayAudioRun *recall_delay_audio_run;
+  AgsCountBeatsAudio *recall_count_beats_audio;
+  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
   AgsPlayNotation *recall_notation;
 
   GtkHBox *hbox;
@@ -56,6 +62,8 @@ struct _AgsSynth
   GtkOptionMenu *oscillator;
 
   GtkSpinButton *lower; // how many channels until to lowest freq
+  GtkSpinButton *loop_start;
+  GtkSpinButton *loop_end;
 
   GtkCheckButton *auto_update;
   GtkButton *update;

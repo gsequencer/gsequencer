@@ -115,6 +115,9 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
   apply_synth->phase = 0;
   apply_synth->start = 0;
   apply_synth->volume = 1.0;
+
+  apply_synth->loop_start = 0;
+  apply_synth->loop_end = 0;
 }
 
 void
@@ -152,8 +155,31 @@ ags_apply_synth_launch(AgsTask *task)
   gint wave;
   guint attack, frame_count, stop, phase, frequency;
   double volume;
-  guint stream_start, last_frame_count, current_frequency, current_phase[2];
+  guint stream_start, last_frame_count;
+  guint current_attack, current_frame_count, current_stop, current_phase[2], current_frequency;
   guint i, j;
+  double factor;
+  double ags_apply_synth_calculate_factor(guint base_frequency, guint wished_frequency, guint wave){
+    double factor;
+
+    //TODO:JK: needs verification
+    switch(wave){
+    case AGS_APPLY_SYNTH_SIN:
+      factor = -1.0 * ((1.0 / base_frequency) - (1.0 / wished_frequency));
+      break;
+    case AGS_APPLY_SYNTH_SAW:
+      factor = -1.0 * ((1.0 / base_frequency) - (1.0 / wished_frequency));
+      break;
+    case AGS_APPLY_SYNTH_SQUARE:
+      factor = -1.0 * ((1.0 / base_frequency) - (1.0 / wished_frequency));
+      break;
+    case AGS_APPLY_SYNTH_TRIANGLE:
+      factor = -1.0 * ((1.0 / base_frequency) - (1.0 / wished_frequency));
+      break;
+    default:
+      printf("ags_apply_synth_calculate_factor: warning no wave selected\n\0");
+    }   
+  }
   void ags_apply_synth_launch_write(guint offset,
 				    guint frequency, guint phase, guint frame_count,
 				    double volume){
@@ -186,27 +212,40 @@ ags_apply_synth_launch(AgsTask *task)
   wave = (gint) apply_synth->wave;
   fprintf(stdout, "wave = %d\n\0", wave);
 
+  /* settings which needs to be initialized for factorizing */
   attack = apply_synth->attack;
   frame_count = apply_synth->frame_count;
   stop = (guint) ceil((double)(attack + frame_count) / (double)devout->buffer_size);
   phase = apply_synth->phase;
-  frequency = apply_synth->frequency;
-  volume = (double) apply_synth->volume;
 
   stream_start = (guint) floor((double)attack / (double)devout->buffer_size);
   attack = attack % (guint) devout->buffer_size;
   
   last_frame_count = (frame_count - devout->buffer_size - attack) % devout->buffer_size;
-  current_phase[0] = (phase + (devout->buffer_size - attack) + i * devout->buffer_size) % frequency;
 
+
+  frequency = apply_synth->frequency;
+  volume = (double) apply_synth->volume;
+
+  factor = 1.0;
 
   for(i = 0; channel != NULL; i++){
+    /* settings which needs to be factorized */
+    factor = ;
+
+    current_phase[0] = (phase + (devout->buffer_size - attack) + i * devout->buffer_size) % frequency;
+
+
+    /*  */
     current_frequency = (guint) ((double) frequency * exp2((double)((apply_synth->start * -1.0) + (double)i) / 12.0));
     current_phase[0] = (guint) ((double) phase * ((double) frequency / (double) current_frequency));
     
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
     
     ags_audio_signal_stream_resize(audio_signal, stop);
+
+    audio_signal->loop_start = (guint) ((double) apply_synth->loop_start) * ;
+    audio_signal->loop_end = (guint) ((double) apply_synth->loop_end) * ;
     
     stream = g_list_nth(audio_signal->stream_beginning, stream_start);
     
@@ -253,7 +292,8 @@ ags_apply_synth_new(AgsChannel *start_channel, guint count,
 		    guint wave,
 		    guint attack, guint frame_count,
 		    guint frequency, guint phase, guint start,
-		    gdouble volume)
+		    gdouble volume,
+		    guint loop_start, guint loop_end)
 {
   AgsApplySynth *apply_synth;
 
@@ -269,6 +309,8 @@ ags_apply_synth_new(AgsChannel *start_channel, guint count,
   apply_synth->phase = phase;
   apply_synth->start = start;
   apply_synth->volume = volume;
-  
+  apply_synth->loop_start = loop_start;
+  apply_synth->loop_end = loop_end;
+
   return(apply_synth);
 }
