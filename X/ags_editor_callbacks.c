@@ -79,8 +79,17 @@ ags_editor_index_callback(GtkRadioButton *radio_button, AgsEditor *editor)
 
   ags_editor_change_machine(editor, machine);
 
-  if(machine != NULL)
-    editor->map_height = machine->audio->input_pads * editor->control_height;
+  if(machine != NULL){
+    guint pads;
+
+    if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
+      pads = machine->audio->input_pads;
+    }else{
+      pads = machine->audio->output_pads;
+    }
+
+    editor->map_height = pads * editor->control_height;
+  }
 
   editor->flags |= AGS_EDITOR_RESETING_VERTICALLY;
   ags_editor_reset_vertically(editor, AGS_EDITOR_RESET_VSCROLLBAR);
@@ -469,6 +478,8 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 	ags_editor_draw_position(editor, cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_editor_draw_position(editor, cr);
+      }else if(AGS_IS_SYNTH(machine)){
+	ags_editor_draw_position(editor, cr);
       }
     }else if((AGS_EDITOR_ADDING_NOTE & (editor->flags)) != 0){
       editor->flags &= (~AGS_EDITOR_ADDING_NOTE);
@@ -485,6 +496,9 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
 	ags_editor_drawing_area_button_release_event_set_control();
 	ags_editor_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
+	ags_editor_drawing_area_button_release_event_set_control();
+	ags_editor_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_SYNTH(machine)){
 	ags_editor_drawing_area_button_release_event_set_control();
 	ags_editor_drawing_area_button_release_event_draw_control(cr);
       }

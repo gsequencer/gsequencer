@@ -157,7 +157,8 @@ ags_synth_init(AgsSynth *synth)
   audio = AGS_MACHINE(synth)->audio;
   audio->flags |= (AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING);
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_HAS_NOTATION);
 
   AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
 
@@ -580,11 +581,15 @@ ags_synth_update(AgsSynth *synth)
   guint wave;
   guint attack, frame_count;
   guint frequency, phase, start;
+  guint loop_start, loop_end;
   gdouble volume;
 
   devout = (AgsDevout *) synth->machine.audio->devout;
 
   start = (guint) gtk_spin_button_get_value_as_int(synth->lower);
+
+  loop_start = (guint) gtk_spin_button_get_value_as_int(synth->loop_start);
+  loop_end = (guint) gtk_spin_button_get_value_as_int(synth->loop_end);
 
   /* write input */
   channel = synth->machine.audio->input;
@@ -605,7 +610,8 @@ ags_synth_update(AgsSynth *synth)
 				      wave,
 				      attack, frame_count,
 				      frequency, phase, start,
-				      volume);
+				      volume,
+				      loop_start, loop_end);
 
     ags_devout_append_task(devout,
 			   AGS_TASK(apply_synth));
@@ -632,7 +638,8 @@ ags_synth_update(AgsSynth *synth)
 				      wave,
 				      attack, frame_count,
 				      frequency, phase, start,
-				      volume);
+				      volume,
+				      loop_start, loop_end);
 
     ags_devout_append_task(devout,
 			   AGS_TASK(apply_synth));
