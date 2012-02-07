@@ -223,10 +223,10 @@ ags_apply_synth_launch(AgsTask *task)
     /* settings which needs to be factorized */
     factor = factor * ags_apply_synth_calculate_factor(frequency, current_frequency, wave);
 
-    current_attack = (factor * attack) % (guint) devout->buffer_size;
+    current_attack = (guint) (factor * attack) % (guint) devout->buffer_size;
     current_frame_count = frame_count * factor;
     current_stop = (guint) ceil((double)(current_attack + current_frame_count) / (double)devout->buffer_size);
-    current_phase = (factor * phase + (devout->buffer_size - current_attack) + i * devout->buffer_size) % current_frequency;
+    current_phase[0] = ((guint)(factor * phase) + (devout->buffer_size - current_attack) + i * devout->buffer_size) % current_frequency;
 
     stream_start = (guint) floor((double)current_attack / (double)devout->buffer_size);
     last_frame_count = (current_frame_count - devout->buffer_size - current_attack) % devout->buffer_size;
