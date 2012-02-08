@@ -144,13 +144,72 @@ ags_audio_set_recycling_launch(AgsTask *task)
 {
   AgsAudioSetRecycling *audio_set_recycling;
   AgsChannel *channel;
+  AgsRecycling *recycling;
+  GList *link;
+  GError *error;
 
   audio_set_recycling = AGS_AUDIO_SET_RECYCLING(task);
 
+  /* unset link */
+  channel = audio_set_recycling->start_channel;
+  link = NULL;
+
+  while(channel != audio_set_recycling->end_channel){
+    link = g_list_prepend(link, channel->link);
+    
+    error = NULL;
+
+    ags_channel_set_link(channel,
+			 NULL,
+			 &error);
+    
+    if(error != NULL){
+      g_error(error->message);
+    }
+    
+    channel = channel->next_pad;
+  }
+
+  link = g_list_reverse(link);
+
+  /* set recycling */
+  channel = audio_set_recycling->start_channel;
+  recycling = audio_set_recycling->first_recycling;
+
+  while(channel != audio_set_recycling->end_channel && recycling != last_recycling->next){
+    link = g_list_prepend(link, channel->link);
+    
+    error = NULL;
+
+    ags_channel_set_recycling(channel,
+			      recycling,
+			      recycling,
+			      TRUE, TRUE);
+    
+    if(error != NULL){
+      g_error(error->message);
+    }
+    
+    channel = channel->next_pad;
+  }
+
+  /* reset link */
   channel = audio_set_recycling->start_channel;
 
+  while(channel != audio_set_recycling->end_channel){
+    error = NULL;
 
-  //TODO:JK:implement me
+    ags_channel_set_link(channel,
+			 AGS_CHANNEL(list->data),
+			 &error);
+    
+    if(error != NULL){
+      g_error(error->message);
+    }
+    
+    channel = channel->next_pad;
+    list = list->next;
+  }
 }
 
 AgsAudioSetRecycling*
