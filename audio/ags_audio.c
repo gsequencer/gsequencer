@@ -409,9 +409,130 @@ ags_audio_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-/*
- * resize
- * AgsInput has to be allocated first
+/**
+ * ags_audio_set_flags:
+ * @audio an AgsAudio
+ * @flags see enum AgsAudioFlags
+ *
+ * Enable a feature of AgsAudio.
+ */
+void
+ags_audio_set_flags(AgsAudio *audio, guint flags)
+{
+  if(audio == NULL || !AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags))){
+    AgsChannel *channel;
+    AgsRecycling *recycling;
+    AgsChannelSetRecycling *channel_set_recycling;
+    int i;
+
+    /* check if output has already recyclings */
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
+      if(audio->output_pads > 0){
+	for(i = 0; i < audio->audio_channels; i++){
+	  channel = ags_channel_nth(audio->output, i);
+
+	  while(channel != NULL){
+	    recycling = ags_recycling_new();
+	    
+	    channel_set_recycling = ags_channel_set_recycling_new(channel,
+								  recycling, recycling);
+
+	    
+	    channel = channel->next_pad;
+	  }
+	}
+      }
+
+      audio->flags |= AGS_AUDIO_OUTPUT_HAS_RECYCLING;
+    }
+
+    /* check if input has already recyclings */
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      if(audio->input_pads > 0){
+	for(i = 0; i < audio->audio_channels; i++){
+	  channel = ags_channel_nth(audio->input, i);
+
+	  while(channel != NULL){
+	    recycling = ags_recycling_new();
+	    
+	    channel_set_recycling = ags_channel_set_recycling_new(channel,
+								  recycling, recycling);
+
+	    channel = channel->next_pad;
+	  }
+	}
+
+      audio->flags |= AGS_AUDIO_INPUT_HAS_RECYCLING;
+    }
+  }
+}
+
+/**
+ * ags_audio_set_flags:
+ * @audio an AgsAudio
+ * @flags see enum AgsAudioFlags
+ *
+ * Disable a feature of AgsAudio.
+ */
+void
+ags_audio_unset_flags(AgsAudio *audio, guint flags)
+{
+  if(audio == NULL || !AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags))){
+    AgsChannel *channel;
+    AgsChannelSetRecycling *channel_set_recycling;
+    int i;
+
+    /* check if input has already no recyclings */
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){      
+      if(audio->input_pads > 0){
+	for(i = 0; i < audio->audio_channels; i++){
+	  channel = ags_channel_nth(audio->input, i);
+	  
+	  while(channel != NULL){
+	    channel_set_recycling = ags_channel_set_recycling_new(channel,
+								  NULL, NULL);
+	    
+	    
+	    channel = channel->next_pad;
+	  }
+	}
+
+	audio->flags &= (~AGS_AUDIO_INPUT_HAS_RECYCLING);
+      }
+
+      /* check if output has already recyclings */
+      if(audio->output_pads > 0){
+	for(i = 0; i < audio->audio_channels; i++){
+	  channel = ags_channel_nth(audio->output, i);
+
+	  while(channel != NULL){
+	    channel_set_recycling = ags_channel_set_recycling_new(channel,
+								  NULL, NULL);
+
+	    
+	    channel = channel->next_pad;
+	  }
+	}
+
+	audio->flags &= (~AGS_AUDIO_OUTPUT_HAS_RECYCLING);
+      }
+    }
+  }
+}
+
+/**
+ * ags_audio_real_set_audio_channels:
+ *
+ *
+ * Resize audio channels AgsInput will be allocated first.
  */
 void
 ags_audio_real_set_audio_channels(AgsAudio *audio,
