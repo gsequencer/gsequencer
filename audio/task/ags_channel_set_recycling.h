@@ -40,6 +40,8 @@ struct _AgsChannelSetRecycling
 {
   AgsTask task;
 
+  AgsChannel *channel;
+
   AgsRecycling *first_recycling;
   AgsRecycling *last_recycling;
 };
@@ -51,7 +53,8 @@ struct _AgsChannelSetRecyclingClass
 
 GType ags_channel_set_recycling_get_type();
 
-AgsChannelSetRecycling* ags_channel_set_recycling_new(AgsRecycling *first_recycling,
+AgsChannelSetRecycling* ags_channel_set_recycling_new(AgsChannel *channel,
+						      AgsRecycling *first_recycling,
 						      AgsRecycling *last_recycling);
 
 #endif /*__AGS_CHANNEL_SET_RECYCLING_H__*/

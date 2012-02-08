@@ -35,6 +35,8 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+#include <ags/audio/task/ags_channel_set_recycling.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -436,7 +438,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	  channel = ags_channel_nth(audio->output, i);
 
 	  while(channel != NULL){
-	    recycling = ags_recycling_new();
+	    recycling = ags_recycling_new(audio->devout);
 	    
 	    channel_set_recycling = ags_channel_set_recycling_new(channel,
 								  recycling, recycling);
@@ -457,7 +459,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	  channel = ags_channel_nth(audio->input, i);
 
 	  while(channel != NULL){
-	    recycling = ags_recycling_new();
+	    recycling = ags_recycling_new(audio->devout);
 	    
 	    channel_set_recycling = ags_channel_set_recycling_new(channel,
 								  recycling, recycling);

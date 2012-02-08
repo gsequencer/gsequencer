@@ -106,6 +106,8 @@ ags_channel_set_recycling_connectable_interface_init(AgsConnectableInterface *co
 void
 ags_channel_set_recycling_init(AgsChannelSetRecycling *channel_set_recycling)
 {
+  channel_set_recycling->channel = NULL;
+
   channel_set_recycling->first_recycling = NULL;
   channel_set_recycling->last_recycling = NULL;
 }
@@ -137,11 +139,28 @@ ags_channel_set_recycling_finalize(GObject *gobject)
 void
 ags_channel_set_recycling_launch(AgsTask *task)
 {
-  //TODO:JK: implement me
+  AgsChannelSetRecycling *channel_set_recycling;
+  AgsChannel *link;
+
+  channel_set_recycling = AGS_CHANNEL_SET_RECYCLING(task);
+
+  link = channel_set_recycling->channel;
+
+  ags_channel_set_link(channel_set_recycling->channel,
+		       NULL);
+
+  ags_channel_set_recycling(channel_set_recycling->channel,
+			    channel_set_recycling->first_recycling,
+			    channel_set_recycling->last_recycling,
+			    TRUE, TRUE);
+
+  ags_channel_set_link(channel_set_recycling->channel,
+		       link);
 }
 
 AgsChannelSetRecycling*
-ags_channel_set_recycling_new(AgsRecycling *first_recycling,
+ags_channel_set_recycling_new(AgsChannel *channel,
+			      AgsRecycling *first_recycling,
 			      AgsRecycling *last_recycling)
 {
   AgsChannelSetRecycling *channel_set_recycling;
