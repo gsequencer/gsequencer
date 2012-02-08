@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_channel_set_recycling.h>
+#include <ags/audio/task/ags_audio_set_recycling.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -176,7 +176,7 @@ ags_audio_set_recycling_launch(AgsTask *task)
   channel = audio_set_recycling->start_channel;
   recycling = audio_set_recycling->first_recycling;
 
-  while(channel != audio_set_recycling->end_channel && recycling != last_recycling->next){
+  while(channel != audio_set_recycling->end_channel && recycling != audio_set_recycling->last_recycling->next){
     link = g_list_prepend(link, channel->link);
     
     error = NULL;
@@ -200,7 +200,7 @@ ags_audio_set_recycling_launch(AgsTask *task)
     error = NULL;
 
     ags_channel_set_link(channel,
-			 AGS_CHANNEL(list->data),
+			 AGS_CHANNEL(link->data),
 			 &error);
     
     if(error != NULL){
@@ -208,7 +208,7 @@ ags_audio_set_recycling_launch(AgsTask *task)
     }
     
     channel = channel->next_pad;
-    list = list->next;
+    link = link->next;
   }
 }
 
