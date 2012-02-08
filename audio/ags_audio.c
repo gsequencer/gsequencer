@@ -430,7 +430,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
     AgsRecycling *recycling;
     AgsChannelSetRecycling *channel_set_recycling;
     int i;
-
+    
     /* check if output has already recyclings */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
       if(audio->output_pads > 0){
@@ -442,13 +442,13 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	    
 	    channel_set_recycling = ags_channel_set_recycling_new(channel,
 								  recycling, recycling);
-
+	    
 	    
 	    channel = channel->next_pad;
 	  }
 	}
       }
-
+      
       audio->flags |= AGS_AUDIO_OUTPUT_HAS_RECYCLING;
     }
 
@@ -468,10 +468,12 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	  }
 	}
 
-      audio->flags |= AGS_AUDIO_INPUT_HAS_RECYCLING;
+	audio->flags |= AGS_AUDIO_INPUT_HAS_RECYCLING;
+      }
     }
   }
 }
+    
 
 /**
  * ags_audio_set_flags:
@@ -486,12 +488,12 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
   if(audio == NULL || !AGS_IS_AUDIO(audio)){
     return;
   }
-
+  
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags))){
     AgsChannel *channel;
     AgsChannelSetRecycling *channel_set_recycling;
     int i;
-
+    
     /* check if input has already no recyclings */
     if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){      
       if(audio->input_pads > 0){
@@ -506,24 +508,24 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 	    channel = channel->next_pad;
 	  }
 	}
-
+	
 	audio->flags &= (~AGS_AUDIO_INPUT_HAS_RECYCLING);
       }
-
+      
       /* check if output has already recyclings */
       if(audio->output_pads > 0){
 	for(i = 0; i < audio->audio_channels; i++){
 	  channel = ags_channel_nth(audio->output, i);
-
+	  
 	  while(channel != NULL){
 	    channel_set_recycling = ags_channel_set_recycling_new(channel,
 								  NULL, NULL);
-
+	    
 	    
 	    channel = channel->next_pad;
 	  }
 	}
-
+	
 	audio->flags &= (~AGS_AUDIO_OUTPUT_HAS_RECYCLING);
       }
     }

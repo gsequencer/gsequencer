@@ -141,13 +141,21 @@ ags_channel_set_recycling_launch(AgsTask *task)
 {
   AgsChannelSetRecycling *channel_set_recycling;
   AgsChannel *link;
+  GError *error;
 
   channel_set_recycling = AGS_CHANNEL_SET_RECYCLING(task);
 
   link = channel_set_recycling->channel;
 
+  error = NULL;
+
   ags_channel_set_link(channel_set_recycling->channel,
-		       NULL);
+		       NULL,
+		       &error);
+
+  if(error != NULL){
+    g_error(error->message);
+  }
 
   ags_channel_set_recycling(channel_set_recycling->channel,
 			    channel_set_recycling->first_recycling,
@@ -155,7 +163,12 @@ ags_channel_set_recycling_launch(AgsTask *task)
 			    TRUE, TRUE);
 
   ags_channel_set_link(channel_set_recycling->channel,
-		       link);
+		       link,
+		       &error);
+
+  if(error != NULL){
+    g_error(error->message);
+  }
 }
 
 AgsChannelSetRecycling*
