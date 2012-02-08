@@ -181,6 +181,8 @@ ags_channel_set_recycling_new(AgsChannel *channel,
   channel_set_recycling = (AgsChannelSetRecycling *) g_object_new(AGS_TYPE_CHANNEL_SET_RECYCLING,
 								  NULL);
 
+  channel_set_recycling->channel = channel;
+
   channel_set_recycling->first_recycling = first_recycling;
   channel_set_recycling->last_recycling = last_recycling;
 
