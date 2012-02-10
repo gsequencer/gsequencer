@@ -43,11 +43,7 @@ struct _AgsAudioSetRecycling
 
   AgsAudio *audio;
 
-  AgsChannel *start_channel;
-  AgsChannel *end_channel;
-
-  AgsRecycling *first_recycling;
-  AgsRecycling *last_recycling;
+  GParameter *parameter;
 };
 
 struct _AgsAudioSetRecyclingClass
@@ -58,10 +54,7 @@ struct _AgsAudioSetRecyclingClass
 GType ags_audio_set_recycling_get_type();
 
 AgsAudioSetRecycling* ags_audio_set_recycling_new(AgsAudio *audio,
-						  AgsChannel *start_channel,
-						  AgsChannel *end_channel,
-						  AgsRecycling *first_recycling,
-						  AgsRecycling *last_recycling);
+						  GParameter *parameter);
 
 #endif /*__AGS_AUDIO_SET_RECYCLING_H__*/
 

@@ -108,11 +108,7 @@ ags_audio_set_recycling_init(AgsAudioSetRecycling *audio_set_recycling)
 {
   audio_set_recycling->audio = NULL;
 
-  audio_set_recycling->start_channel = NULL;
-  audio_set_recycling->end_channel = NULL;
-
-  audio_set_recycling->first_recycling = NULL;
-  audio_set_recycling->last_recycling = NULL;
+  audio_set_recycling->parameter = NULL;
 }
 
 void
@@ -143,81 +139,105 @@ void
 ags_audio_set_recycling_launch(AgsTask *task)
 {
   AgsAudioSetRecycling *audio_set_recycling;
-  AgsChannel *channel;
-  AgsRecycling *recycling;
+  AgsChannel *channel, *start_channel, *end_channel;
+  AgsRecycling *recycling, *start_recycling, *end_recycling;
+  GParameter *parameter;
   GList *link;
   GError *error;
+  int i;
 
+  auto void ags_audio_set_recycling_launch_read_parameter();
+
+  void ags_audio_set_recycling_launch_read_parameter(){
+    int i;
+
+    for(i = 0; i < 4; i++){
+      if(!strncmp("start_channel\0", parameter[i].name, 13)){
+	start_channel = (AgsChannel *) g_value_get_object(&(parameter[i].value));
+      }else if(!strncmp("end_channel\0", parameter[i].name, 11)){
+	end_channel = (AgsChannel *) g_value_get_object(&(parameter[i].value));
+      }else if(!strncmp("start_recycling\0", parameter[i].name, 15)){
+	start_recycling = (AgsRecycling *) g_value_get_object(&(parameter[i].value));
+      }else if(!strncmp("end_recycling\0", parameter[i].name, 13)){
+	end_recycling = (AgsRecycling *) g_value_get_object(&(parameter[i].value));
+      }else{
+	g_error("ags_audio_set_recycling_launch_read_parameter: unknow Parameter");
+      }
+    }
+  }
+
+  parameter = audio_set_recycling->parameter;
   audio_set_recycling = AGS_AUDIO_SET_RECYCLING(task);
 
-  /* unset link */
-  channel = audio_set_recycling->start_channel;
-  link = NULL;
+  for(i = 0; i < audio_set_recycling->audio->audio_channels; i++){
+    ags_audio_set_recycling_launch_read_parameter();
 
-  while(channel != audio_set_recycling->end_channel){
-    link = g_list_prepend(link, channel->link);
-    
-    error = NULL;
+    /* unset link */
+    channel = start_channel;
+    link = NULL;
 
-    ags_channel_set_link(channel,
-			 NULL,
-			 &error);
+    while(channel != end_channel){
+      link = g_list_prepend(link, channel->link);
     
-    if(error != NULL){
-      g_error(error->message);
+      error = NULL;
+
+      ags_channel_set_link(channel,
+			   NULL,
+			   &error);
+    
+      if(error != NULL){
+	g_error(error->message);
+      }
+    
+      channel = channel->next_pad;
     }
+
+    link = g_list_reverse(link);
+
+    /* set recycling */
+    channel = start_channel;
+    recycling = start_recycling;
+
+    while(channel != end_channel && recycling != end_recycling->next){
+      link = g_list_prepend(link, channel->link);
     
-    channel = channel->next_pad;
-  }
+      error = NULL;
 
-  link = g_list_reverse(link);
-
-  /* set recycling */
-  channel = audio_set_recycling->start_channel;
-  recycling = audio_set_recycling->first_recycling;
-
-  while(channel != audio_set_recycling->end_channel && recycling != audio_set_recycling->last_recycling->next){
-    link = g_list_prepend(link, channel->link);
+      ags_channel_set_recycling(channel,
+				recycling,
+				recycling,
+				TRUE, TRUE);
     
-    error = NULL;
-
-    ags_channel_set_recycling(channel,
-			      recycling,
-			      recycling,
-			      TRUE, TRUE);
+      if(error != NULL){
+	g_error(error->message);
+      }
     
-    if(error != NULL){
-      g_error(error->message);
+      channel = channel->next_pad;
     }
+
+    /* reset link */
+    channel = start_channel;
+
+    while(channel != end_channel){
+      error = NULL;
+
+      ags_channel_set_link(channel,
+			   AGS_CHANNEL(link->data),
+			   &error);
     
-    channel = channel->next_pad;
-  }
-
-  /* reset link */
-  channel = audio_set_recycling->start_channel;
-
-  while(channel != audio_set_recycling->end_channel){
-    error = NULL;
-
-    ags_channel_set_link(channel,
-			 AGS_CHANNEL(link->data),
-			 &error);
+      if(error != NULL){
+	g_error(error->message);
+      }
     
-    if(error != NULL){
-      g_error(error->message);
+      channel = channel->next_pad;
+      link = link->next;
     }
-    
-    channel = channel->next_pad;
-    link = link->next;
   }
 }
 
 AgsAudioSetRecycling*
 ags_audio_set_recycling_new(AgsAudio *audio,
-			    AgsChannel *start_channel,
-			    AgsChannel *end_channel,
-			    AgsRecycling *first_recycling,
-			    AgsRecycling *last_recycling)
+			    GParameter *parameter)
 {
   AgsAudioSetRecycling *audio_set_recycling;
 
@@ -226,11 +246,7 @@ ags_audio_set_recycling_new(AgsAudio *audio,
 
   audio_set_recycling->audio = audio;
 
-  audio_set_recycling->start_channel = start_channel;
-  audio_set_recycling->end_channel = end_channel;
-
-  audio_set_recycling->first_recycling = first_recycling;
-  audio_set_recycling->last_recycling = last_recycling;
+  audio_set_recycling->parameter = parameter;
 
   return(audio_set_recycling);
 }

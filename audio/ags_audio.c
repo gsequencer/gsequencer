@@ -440,9 +440,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	  while(channel != NULL){
 	    recycling = ags_recycling_new(audio->devout);
 	    
-	    channel_set_recycling = ags_channel_set_recycling_new(channel,
-								  recycling, recycling);
-	    
+	    //FIXME:JK:
 	    
 	    channel = channel->next_pad;
 	  }
@@ -461,8 +459,8 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 	  while(channel != NULL){
 	    recycling = ags_recycling_new(audio->devout);
 	    
-	    channel_set_recycling = ags_channel_set_recycling_new(channel,
-								  recycling, recycling);
+	    //FIXME:JK:
+	    
 
 	    channel = channel->next_pad;
 	  }
