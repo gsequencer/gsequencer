@@ -35,7 +35,7 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
-#include <ags/audio/task/ags_channel_set_recycling.h>
+#include <ags/audio/task/ags_audio_set_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -421,64 +421,88 @@ ags_audio_disconnect(AgsConnectable *connectable)
 void
 ags_audio_set_flags(AgsAudio *audio, guint flags)
 {
+  auto GParameter* ags_audio_set_flags_set_recycling_parameter(GType type);
+  auto void ags_audio_set_flags_add_recycling_task(GParameter *parameter);
+
+  GParameter* ags_audio_set_flags_set_recycling_parameter(GType type){
+    AgsChannel *channel, *start_channel, *end_channel;
+    AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
+    GParameter *parameter;
+    int i;
+
+    parameter = g_new(GParameter, 4 * audio->audio_channels);
+
+    for(i = 0; i < audio->audio_channels; i++){
+      start_channel =
+	channel = ags_channel_nth(((g_type_is_a(type, AGS_TYPE_INPUT)) ? audio->input: audio->output), i);
+      end_channel = NULL;
+
+      start_recycling =
+	recycling = NULL;
+      end_recycling = NULL;
+	  
+      if(channel != NULL){
+	start_recycling = 
+	  recycling = ags_recycling_new(audio->devout);
+	goto ags_audio_set_flags_OUTPUT_RECYCLING;
+      }
+
+      while(channel != NULL){
+	recycling->next = ags_recycling_new(audio->devout);
+      ags_audio_set_flags_OUTPUT_RECYCLING:
+	recycling->next->prev = recycling;
+	recycling = recycling->next;
+	    	    
+	channel = channel->next_pad;
+      }
+
+      end_channel = ags_channel_pad_last(start_channel);
+      end_recycling = recycling;
+
+      /* setting up parameters */
+      parameter[i].name = "start_channel\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), start_channel);
+
+      parameter[i].name = "end_channel\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), end_channel);
+
+      parameter[i].name = "start_recycling\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), start_recycling);
+
+      parameter[i].name = "end_recycling\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), end_recycling);
+    }
+
+    return(parameter);
+  }
+  void ags_audio_set_flags_add_recycling_task(GParameter *parameter){
+    AgsAudioSetRecycling *audio_set_recycling;
+
+    /* create set recycling task */
+    audio_set_recycling = ags_audio_set_recycling_new(audio,
+						      parameter);
+
+    /* append AgsAudioSetRecycling */
+    ags_devout_append_task(AGS_DEVOUT(audio->devout),
+			   AGS_TASK(audio_set_recycling));
+  }
+
   if(audio == NULL || !AGS_IS_AUDIO(audio)){
     return;
   }
 
   if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags))){
-    AgsChannel *channel, *start_channel, *end_channel;
-    AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
-    AgsChannelSetRecycling *channel_set_recycling;
     GParameter *parameter;
-    int i;
-    
+        
     /* check if output has already recyclings */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
       if(audio->output_pads > 0){
-	parameter = g_new(GParameter, 4 * audio->audio_channels);
-
-	for(i = 0; i < audio->audio_channels; i++){
-	  start_channel =
-	    channel = ags_channel_nth(audio->output, i);
-
-	  recycling =
-	    end_recycling = NULL;
-
-	  if(channel != NULL){
-	    start_recycling = 
-	      recycling = ags_recycling_new(audio->devout);
-	    goto ags_audio_set_flags_OUTPUT_RECYCLING;
-	  }
-
-	  while(channel != NULL){
-	    recycling->next = ags_recycling_new(audio->devout);
-	  ags_audio_set_flags_OUTPUT_RECYCLING:
-	    recycling->next->prev = recycling;
-	    recycling = recycling->next;
-	    	    
-	    channel = channel->next_pad;
-	  }
-
-	  end_channel = ags_channel_pad_last(channel);
-	  end_recycling = recycling;
-
-	  /* setting up parameters */
-	  parameter[i].name = "start_channel\0";
-	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-	  g_value_set_object(&(parameter[i].value), start_channel);
-
-	  parameter[i].name = "end_channel\0";
-	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-	  g_value_set_object(&(parameter[i].value), end_channel);
-
-	  parameter[i].name = "start_recycling\0";
-	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-	  g_value_set_object(&(parameter[i].value), start_recycling);
-
-	  parameter[i].name = "end_recycling\0";
-	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-	  g_value_set_object(&(parameter[i].value), end_recycling);
-	}
+	parameter = ags_audio_set_flags_set_recycling_parameter(AGS_TYPE_OUTPUT);
+	ags_audio_set_flags_add_recycling_task(parameter);
       }
       
       audio->flags |= AGS_AUDIO_OUTPUT_HAS_RECYCLING;
@@ -487,21 +511,11 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
     /* check if input has already recyclings */
     if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
       if(audio->input_pads > 0){
-	for(i = 0; i < audio->audio_channels; i++){
-	  channel = ags_channel_nth(audio->input, i);
-
-	  while(channel != NULL){
-	    recycling = ags_recycling_new(audio->devout);
-	    
-	    //FIXME:JK:
-	    
-
-	    channel = channel->next_pad;
-	  }
-	}
-
-	audio->flags |= AGS_AUDIO_INPUT_HAS_RECYCLING;
+	parameter = ags_audio_set_flags_set_recycling_parameter(AGS_TYPE_INPUT);
+	ags_audio_set_flags_add_recycling_task(parameter);
       }
+
+      audio->flags |= AGS_AUDIO_INPUT_HAS_RECYCLING;
     }
   }
 }
@@ -517,46 +531,76 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 void
 ags_audio_unset_flags(AgsAudio *audio, guint flags)
 {
+  auto GParameter* ags_audio_unset_flags_set_recycling_parameter(GType type);
+  auto void ags_audio_unset_flags_add_recycling_task(GParameter *parameter);
+
+  GParameter* ags_audio_unset_flags_set_recycling_parameter(GType type){
+    AgsChannel *channel, *start_channel, *end_channel;
+    AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
+    GParameter *parameter;
+    int i;
+
+    parameter = g_new(GParameter, 4 * audio->audio_channels);
+
+    for(i = 0; i < audio->audio_channels; i++){
+      start_channel = ags_channel_nth(((g_type_is_a(type, AGS_TYPE_INPUT)) ? audio->input: audio->output), i);
+      end_channel = ags_channel_pad_last(start_channel);
+
+      start_recycling = NULL;
+      end_recycling = NULL;
+
+      /* setting up parameters */
+      parameter[i].name = "start_channel\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), start_channel);
+
+      parameter[i].name = "end_channel\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), end_channel);
+
+      parameter[i].name = "start_recycling\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), start_recycling);
+
+      parameter[i].name = "end_recycling\0";
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value), end_recycling);
+    }
+
+    return(parameter);
+  }
+  void ags_audio_unset_flags_add_recycling_task(GParameter *parameter){
+    AgsAudioSetRecycling *audio_set_recycling;
+
+    /* create set recycling task */
+    audio_set_recycling = ags_audio_set_recycling_new(audio,
+						      parameter);
+
+    /* append AgsAudioSetRecycling */
+    ags_devout_append_task(AGS_DEVOUT(audio->devout),
+			   AGS_TASK(audio_set_recycling));
+  }
+
   if(audio == NULL || !AGS_IS_AUDIO(audio)){
     return;
   }
   
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags))){
-    AgsChannel *channel;
-    AgsChannelSetRecycling *channel_set_recycling;
-    int i;
+    GParameter *parameter;
     
     /* check if input has already no recyclings */
     if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){      
       if(audio->input_pads > 0){
-	for(i = 0; i < audio->audio_channels; i++){
-	  channel = ags_channel_nth(audio->input, i);
-	  
-	  while(channel != NULL){
-	    channel_set_recycling = ags_channel_set_recycling_new(channel,
-								  NULL, NULL);
-	    
-	    
-	    channel = channel->next_pad;
-	  }
-	}
+	parameter = ags_audio_unset_flags_set_recycling_parameter(AGS_TYPE_INPUT);
+	ags_audio_unset_flags_add_recycling_task(parameter);
 	
 	audio->flags &= (~AGS_AUDIO_INPUT_HAS_RECYCLING);
       }
       
       /* check if output has already recyclings */
       if(audio->output_pads > 0){
-	for(i = 0; i < audio->audio_channels; i++){
-	  channel = ags_channel_nth(audio->output, i);
-	  
-	  while(channel != NULL){
-	    channel_set_recycling = ags_channel_set_recycling_new(channel,
-								  NULL, NULL);
-	    
-	    
-	    channel = channel->next_pad;
-	  }
-	}
+	parameter = ags_audio_unset_flags_set_recycling_parameter(AGS_TYPE_OUTPUT);
+	ags_audio_unset_flags_add_recycling_task(parameter);
 	
 	audio->flags &= (~AGS_AUDIO_OUTPUT_HAS_RECYCLING);
       }
