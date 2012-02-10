@@ -426,24 +426,58 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
   }
 
   if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags))){
-    AgsChannel *channel;
-    AgsRecycling *recycling;
+    AgsChannel *channel, *start_channel, *end_channel;
+    AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
     AgsChannelSetRecycling *channel_set_recycling;
+    GParameter *parameter;
     int i;
     
     /* check if output has already recyclings */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
       if(audio->output_pads > 0){
+	parameter = g_new(GParameter, 4 * audio->audio_channels);
+
 	for(i = 0; i < audio->audio_channels; i++){
-	  channel = ags_channel_nth(audio->output, i);
+	  start_channel =
+	    channel = ags_channel_nth(audio->output, i);
+
+	  recycling =
+	    end_recycling = NULL;
+
+	  if(channel != NULL){
+	    start_recycling = 
+	      recycling = ags_recycling_new(audio->devout);
+	    goto ags_audio_set_flags_OUTPUT_RECYCLING;
+	  }
 
 	  while(channel != NULL){
-	    recycling = ags_recycling_new(audio->devout);
-	    
-	    //FIXME:JK:
-	    
+	    recycling->next = ags_recycling_new(audio->devout);
+	  ags_audio_set_flags_OUTPUT_RECYCLING:
+	    recycling->next->prev = recycling;
+	    recycling = recycling->next;
+	    	    
 	    channel = channel->next_pad;
 	  }
+
+	  end_channel = ags_channel_pad_last(channel);
+	  end_recycling = recycling;
+
+	  /* setting up parameters */
+	  parameter[i].name = "start_channel\0";
+	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+	  g_value_set_object(&(parameter[i].value), start_channel);
+
+	  parameter[i].name = "end_channel\0";
+	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+	  g_value_set_object(&(parameter[i].value), end_channel);
+
+	  parameter[i].name = "start_recycling\0";
+	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+	  g_value_set_object(&(parameter[i].value), start_recycling);
+
+	  parameter[i].name = "end_recycling\0";
+	  g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+	  g_value_set_object(&(parameter[i].value), end_recycling);
 	}
       }
       
