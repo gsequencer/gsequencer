@@ -580,6 +580,13 @@ ags_devout_play_alloc()
   return(play);
 }
 
+/**
+ * ags_devout_append_task_pending_thread:
+ * @devout0 an #AgsDevout
+ *
+ * Intended to be called continually as thread to wait until it's
+ * safe to move tasks from pending task's list to launchable.
+ */
 void*
 ags_devout_append_task_pending_thread(void *devout0)
 {
@@ -619,6 +626,13 @@ ags_devout_append_task_pending_thread(void *devout0)
   return(NULL);
 }
 
+/**
+ * ags_devout_append_task:
+ * @devout an #AgsDevout
+ * @task an #AgsTask
+ *
+ * Adds the task to devout.
+ */
 void
 ags_devout_append_task(AgsDevout *devout, AgsTask *task)
 {
@@ -675,6 +689,14 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
   pthread_cond_signal(&(devout->append_task_wait_cond));
 }
 
+/**
+ * ags_devout_append_tasks:
+ * @devout an #AgsDevout
+ * @list a GList with #AgsTask as data
+ *
+ * Concats the list with @devout's internal task list. Don't
+ * free the list you pass. It will be freed for you.
+ */
 void
 ags_devout_append_tasks(AgsDevout *devout, GList *list)
 {
@@ -735,6 +757,13 @@ ags_devout_append_tasks(AgsDevout *devout, GList *list)
   pthread_cond_signal(&(devout->append_task_wait_cond));
 }
 
+/**
+ * ags_devout_play_recall:
+ * @devout an #AgsDevout
+ *
+ * Runs all recalls assigned with @devout. You may want to use
+ * #AgsAppendRecall task to add an #AgsRecall.
+ */
 void
 ags_devout_play_recall(AgsDevout *devout)
 {
@@ -778,6 +807,7 @@ ags_devout_play_recall(AgsDevout *devout)
     ags_recall_child_check_remove(recall);
 
     if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
+      //TODO:JK: check if these mutices can be removed
       //g_static_mutex_lock(&mutex);
       pthread_mutex_lock(&mutex);
       devout->play_recall_ref--;
@@ -802,6 +832,14 @@ ags_devout_play_recall(AgsDevout *devout)
   devout->flags &= (~AGS_DEVOUT_PLAYING_RECALL);
 }
 
+/**
+ * ags_devout_play_channel:
+ * @devout an #AgsDevout
+ *
+ * Runs all recalls descending recursively and ascending till next 
+ * #AgsRecycling around prior added #AgsChannel with #AgsAppendChannel
+ * task.
+ */
 void
 ags_devout_play_channel(AgsDevout *devout)
 {
@@ -837,6 +875,13 @@ ags_devout_play_channel(AgsDevout *devout)
   }
 }
 
+/**
+ * ags_devout_play_audio:
+ * @devout an #AgsDevout
+ *
+ * Like ags_devout_play_channel() except that it runs all channels within
+ * #AgsAudio.
+ */
 void
 ags_devout_play_audio(AgsDevout *devout)
 {
@@ -915,6 +960,12 @@ ags_devout_real_run(AgsDevout *devout)
   pthread_setschedprio(devout->play_functions_thread, 99);
 }
 
+/**
+ * ags_devout_real_run:
+ * @devout an #AgsDevout
+ * 
+ * Starts the sound card output thread.
+ */
 void
 ags_devout_run(AgsDevout *devout)
 {
@@ -937,6 +988,12 @@ ags_devout_real_stop(AgsDevout *devout)
   devout->flags &= ~(AGS_DEVOUT_PLAY);
 }
 
+/**
+ * ags_devout_real_run:
+ * @devout an #AgsDevout
+ * 
+ * Stops the sound card output thread.
+ */
 void
 ags_devout_stop(AgsDevout *devout)
 {
@@ -976,6 +1033,12 @@ ags_devout_tic(AgsDevout *devout)
   g_object_unref((GObject *) devout);
 }
 
+/**
+ * ags_devout_switch_buffer_flag:
+ * @devout an #AgsDevout
+ *
+ * The buffer flag indicates the currently played buffer.
+ */
 void
 ags_devout_switch_buffer_flag(AgsDevout *devout)
 {
