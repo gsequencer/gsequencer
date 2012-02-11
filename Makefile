@@ -68,7 +68,7 @@ $(AGS_DIR)ags: $(AGS_OBJECTS)
 	$(CC) -g -o $(AGS_DIR)ags -ldl -lm -lao $(AGS_OBJECTS) $(LIBS)
 
 
-$(AGS_DIR).c.o: $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES)
+$(AGS_DIR).c.o: $< $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES)
 	$(CC) -g -c $< -o $@ $(CFLAGS)
 
 
@@ -76,38 +76,38 @@ $(AGS_DIR)lib/.c.o: $(AGS_LIB_SOURCES)
 	$(CC) -g -c $< -o $@ $(CFLAGS)
 
 
-$(AGS_DIR)object/.c.o: $(AGS_OBJECT_SOURCES)
+$(AGS_DIR)object/.c.o: $< $(AGS_OBJECT_SOURCES)
 	$(CC) -g -c $< -o $@ $(CFLAGS)
 
 
-$(AGS_DIR)audio/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
+$(AGS_DIR)audio/.c.o: $< $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/$< -o $(AGS_DIR)audio/$@ $(CFLAGS)
 
-$(AGS_DIR)audio/task/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
+$(AGS_DIR)audio/task/.c.o: $< $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/task/$< -o $(AGS_DIR)audio/task/$@ $(CFLAGS)
 
-$(AGS_DIR)audio/recall/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
+$(AGS_DIR)audio/recall/.c.o: $< $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/recall/$< -o $(AGS_DIR)audio/recall/$@ $(CFLAGS)
 
-$(AGS_DIR)audio/audio_file/.c.o: $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
+$(AGS_DIR)audio/audio_file/.c.o: $< $(AGS_AUDIO_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_LIB_SOURCES)
 	$(CC) -g -c $(AGS_DIR)audio/audio_file/$< -o $(AGS_DIR)audio/audio_file/$@ $(CFLAGS)
 
 
-$(AGS_DIR)widget/.c.o: $(AGS_WIDGET_SOURCES)
+$(AGS_DIR)widget/.c.o: $< $(AGS_WIDGET_SOURCES)
 	$(CC) -g -c $(AGS_DIR)X/$< -o $(AGS_DIR)X/$@ $(CFLAGS)
 
 
-$(AGS_DIR)X/.c.o: $(AGS_SOURCES)
+$(AGS_DIR)X/.c.o: $< $(AGS_SOURCES)
 	$(CC) -g -c $(AGS_DIR)X/$< -o $(AGS_DIR)X/$@ $(CFLAGS)
 
-$(AGS_DIR)X/editor/.c.o: $(AGS_SOURCES)
+$(AGS_DIR)X/editor/.c.o: $< $(AGS_SOURCES)
 	$(CC) -g -c $(AGS_DIR)X/editor/$< -o $(AGS_DIR)X/editor/$@ $(CFLAGS)
 
-$(AGS_DIR)X/machine/.c.o: $(AGS_SOURCES)
+$(AGS_DIR)X/machine/.c.o: $< $(AGS_SOURCES)
 	$(CC) -g -c $(AGS_DIR)X/machine/$< -o $(AGS_DIR)X/machine/$@ $(CFLAGS)
 
 
-$(AGS_DIR)file/.c.o: $(AGS_SOURCES)
+$(AGS_DIR)file/.c.o: $< $(AGS_SOURCES)
 	$(CC) -g -c $(AGS_DIR)file/$< -o $(AGS_DIR)file/$@ $(CFLAGS)
 
 

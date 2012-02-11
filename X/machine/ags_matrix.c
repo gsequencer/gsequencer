@@ -181,7 +181,8 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->play */
   matrix->play_delay_audio =
@@ -205,7 +206,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->recall */
   matrix->recall_delay_audio =
@@ -229,7 +230,8 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->play */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->play */
   matrix->play_count_beats_audio =
@@ -255,7 +257,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->recall */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->recall */
   matrix->recall_count_beats_audio =
@@ -282,7 +284,8 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCopyPatternAudio in audio->play */
   matrix->play_copy_pattern_audio =
@@ -309,7 +312,7 @@ ags_matrix_init(AgsMatrix *matrix)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCopyPatternAudio in audio->recall */
   matrix->recall_copy_pattern_audio =
@@ -580,7 +583,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 		
 	/* recall for channel->play */
 	play_stream_channel_container = ags_recall_container_new();
-	ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container, TRUE);
+	play_stream_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+	ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container);
 	
 	/* AgsStreamChannel */
 	play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
@@ -610,7 +614,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	
 	/* recall for channel->recall */
 	recall_stream_channel_container = ags_recall_container_new();
-	ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container, FALSE);
+	ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container);
 	
 	/* AgsStreamChannel */
 	recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
@@ -701,7 +705,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
 		  AGS_MATRIX_INPUT_LINE_MAPPED_DATA)){
       /* recall for channel->play */
       play_stream_channel_container = ags_recall_container_new();
-      ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container, TRUE);
+      play_stream_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container);
       
       /* AgsStreamChannel */
       play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
@@ -731,7 +736,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
 
       /* recall for channel->recall */
       recall_stream_channel_container = ags_recall_container_new();
-      ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container, FALSE);
+      ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container);
       
       /* AgsStreamChannel */
       recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,

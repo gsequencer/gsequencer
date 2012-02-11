@@ -18,6 +18,7 @@
 
 #include <ags/audio/ags_recall_audio_run.h>
 
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
@@ -56,6 +57,11 @@ AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  guint n_params, GParameter *parameter);
 
 enum{
+  GET_CHANNEL_RUN_GROUP_ID,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_RECALL_AUDIO,
 };
@@ -64,6 +70,7 @@ static gpointer ags_recall_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_audio_run_parent_connectable_interface;
 static AgsPackableInterface* ags_recall_audio_run_parent_packable_interface;
 static AgsRunConnectableInterface *ags_recall_audio_run_parent_run_connectable_interface;
+static guint recall_audio_run_signals[LAST_SIGNAL];
 
 GType
 ags_recall_audio_run_get_type()
@@ -153,6 +160,18 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   recall = (AgsRecallClass *) recall_audio_run;
 
   recall->duplicate = ags_recall_audio_run_duplicate;
+
+  /* AgsRecallAudioRunClass */
+  recall_audio_run->get_channel_run_group_id = NULL;
+
+  recall_audio_run_signals[GET_CHANNEL_RUN_GROUP_ID] =
+    g_signal_new("get_channel_run_group_id\0",
+		 G_TYPE_FROM_CLASS (recall_audio_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallAudioRunClass, get_channel_run_group_id),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_ULONG__VOID,
+		 G_TYPE_ULONG, 0);
 }
 
 void
@@ -432,6 +451,22 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 	       NULL);
 
   return((AgsRecall *) copy);
+}
+
+AgsGroupId
+ags_recall_audio_run_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run)
+{
+  AgsGroupId group_id;
+
+  g_return_val_if_fail(AGS_IS_RECALL_AUDIO_RUN(recall_audio_run), G_MAXULONG);
+
+  g_object_ref(G_OBJECT(recall_audio_run));
+  g_signal_emit(G_OBJECT(recall_audio_run),
+		recall_audio_run_signals[GET_CHANNEL_RUN_GROUP_ID], 0,
+		&group_id);
+  g_object_unref(G_OBJECT(recall_audio_run));
+
+  return(group_id);
 }
 
 AgsRecallAudioRun*

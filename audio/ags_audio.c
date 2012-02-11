@@ -201,8 +201,7 @@ ags_audio_init(AgsAudio *audio)
   audio->recall_id = NULL;
   audio->run_order = NULL;
 
-  audio->play_container;
-  audio->recall_container;
+  audio->container;
 
   audio->recall = NULL;
   audio->play = NULL;
@@ -349,16 +348,7 @@ ags_audio_connect(AgsConnectable *connectable)
   }
 
   /* connect recall containers */
-
-  list = audio->play_container;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  list = audio->recall_container;
+  list = audio->container;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -1724,16 +1714,13 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 }
 
 void
-ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play)
+ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
 {
   /*
    * TODO:JK: thread synchronisation
    */
 
-  if(play)
-    audio->play_container = g_list_prepend(audio->play_container, recall_container);
-  else
-    audio->recall_container = g_list_prepend(audio->recall_container, recall_container);
+  audio->container = g_list_prepend(audio->container, recall_container);
 }
 
 void
@@ -1743,10 +1730,7 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container, gb
    * TODO:JK: thread synchronisation
    */
 
-  if(play)
-    audio->play_container = g_list_remove(audio->play_container, recall_container);
-  else
-    audio->recall_container = g_list_remove(audio->recall_container, recall_container);
+  audio->container = g_list_remove(audio->container, recall_container);
 }
 
 void
@@ -1871,7 +1855,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 			   gboolean playback, gboolean sequencer, gboolean notation,
 			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			   AgsGroupId group_id,
-			   guint audio_signal_level)
+			   guint audio_signal_level, gboolean output_orientated)
 {
   AgsRecall *recall;
   AgsRecallID *recall_id;
@@ -1879,13 +1863,13 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   GList *list_recall_start, *list_recall;
   gboolean matches_reality, immediate_new_level;
   
-  printf("ags_audio_duplicate_recall - audio[%u,%u]\n\0", audio->output_lines, audio->input_lines);
+  printf("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
 
   recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
 							 group_id,
 							 first_recycling, last_recycling);
   
-  if(recall_id->parent_group_id == 0)
+  if(audio_signal_level == 0)
     list_recall_start = 
       list_recall = audio->play;
   else
@@ -1919,7 +1903,10 @@ ags_audio_duplicate_recall(AgsAudio *audio,
        AGS_IS_COPY_PATTERN_AUDIO_RUN(recall))
       printf("\n");
 
-    if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
+
+    if(((output_orientated && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0) ||
+	(!output_orientated && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) == 0)) ||
+       (AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_AUDIO(recall) ||
        !matches_reality ||
        !((playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
@@ -1950,7 +1937,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 	recall = ags_recall_duplicate(recall, recall_id);
 	printf("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(recall));
       
-	if(recall_id->parent_group_id == 0)
+	if(audio_signal_level == 0)
 	  audio->play = g_list_append(audio->play, recall);
 	else
 	  audio->recall = g_list_append(audio->recall, recall);

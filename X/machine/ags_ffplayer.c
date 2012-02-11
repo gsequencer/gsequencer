@@ -167,7 +167,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->play */
   ffplayer->play_delay_audio =
@@ -191,7 +192,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->recall */
   ffplayer->recall_delay_audio =
@@ -216,7 +217,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* audio->play */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->play */
   ffplayer->play_count_beats_audio =
@@ -242,7 +244,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* audio->recall */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->recall */
   ffplayer->recall_count_beats_audio =
@@ -269,7 +271,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   play_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
 					       "audio\0", audio,
@@ -293,7 +296,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   recall_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
 						 "audio\0", audio,
@@ -471,7 +474,8 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
     while(source != NULL){
       /* recall for channel->play */
       play_stream_channel_container = ags_recall_container_new();
-      ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container, TRUE);
+      play_stream_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container);
       
       /* AgsStreamChannel */
       play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
@@ -501,7 +505,7 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
       
       /* recall for channel->recall */
       recall_stream_channel_container = ags_recall_container_new();
-      ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container, FALSE);
+      ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container);
       
       /* AgsStreamChannel */
       recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,

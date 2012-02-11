@@ -61,6 +61,7 @@ void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_c
 						   guint run_order);
 
 enum{
+  GET_AUDIO_RUN_GROUP_ID,
   RUN_ORDER_CHANGED,
   LAST_SIGNAL,
 };
@@ -199,6 +200,18 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
+
+  /* AgsRecallChannelRunClass */
+  recall_channel_run->get_channel_run_group_id = NULL;
+
+  recall_channel_run_signals[GET_CHANNEL_RUN_GROUP_ID] =
+    g_signal_new("get_channel_run_group_id\0",
+		 G_TYPE_FROM_CLASS (recall_channel_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, get_channel_run_group_id),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_ULONG__VOID,
+		 G_TYPE_ULONG, 0);
 }
 
 void
@@ -402,7 +415,9 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   list = recall_container->recall_audio_run;
 
   if(AGS_RECALL(packable)->recall_id != NULL){
-    group_id = AGS_RECALL(packable)->recall_id->group_id;
+    group_id = (AGS_RECALL_INPUT_ORIENTATED & (AGS_RECALL(packable)->flags) != 0) ?
+      AGS_RECALL(packable)->recall_id->group_id:
+      AGS_RECALL(packable)->recall_id->child_group_id;
       
     list = ags_recall_find_group_id(list,
 				    group_id);
@@ -425,10 +440,9 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   /* set AgsRecallChannel */
   if(AGS_RECALL_CHANNEL_RUN(packable)->channel != NULL){
     list = recall_container->recall_channel;
-    list = ags_recall_find_provider(list,
-				    G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->channel));
 
-    if(list != NULL){
+    if((list = ags_recall_find_provider(list,
+					G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->channel))) != NULL){
       g_object_set(G_OBJECT(packable),
 		   "recall_channel\0", AGS_RECALL_CHANNEL(list->data),
 		   NULL);
@@ -528,37 +542,29 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 												 recall_id,
 												 new_n_params, new_parameter));
   
-  /* moved to AgsPackable
+  /* moved to AgsPackable * /
   container = AGS_RECALL_CONTAINER(recall->container);
 
   if(container != NULL){
     /* set recall audio run * /
     recall_audio_run_list = container->recall_audio_run;
     recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list,
-						     recall_id->group_id);
+						     recall_id->parent_group_id);
     
     if(recall_audio_run_list != NULL){
       recall_audio_run = AGS_RECALL_AUDIO_RUN(recall_audio_run_list->data);
       
-      g_value_init(&recall_audio_run_value, G_TYPE_OBJECT);
-      g_value_set_object(&recall_audio_run_value,
-			 G_OBJECT(recall_audio_run));
-      g_object_set_property(G_OBJECT(copy),
-			    "recall_audio_run\0",
-			    &recall_audio_run_value);
-      g_value_unset(&recall_audio_run_value);
+      g_object_set(G_OBJECT(copy),
+		   "recall_audio_run\0", G_OBJECT(recall_audio_run),
+		   NULL);
     }
   }
-  */
-  /* set recall channel */
-  //  g_value_init(&recall_channel_value, G_TYPE_OBJECT);
-  //  g_value_set_object(&recall_channel_value,
-  //		     G_OBJECT(recall_channel_run->recall_channel));
+
+  /* set recall channel * /
   g_object_set(G_OBJECT(copy),
 	       "recall_channel\0", G_OBJECT(recall_channel_run->recall_channel),
 	       NULL);
-  //  g_value_unset(&recall_channel_value);
-
+  */
 
   return((AgsRecall *) copy);
 }
@@ -581,6 +587,22 @@ ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run
 		recall_channel_run_signals[RUN_ORDER_CHANGED], 0,
 		run_order);
   g_object_unref(G_OBJECT(recall_channel_run));
+}
+
+AgsGroupId
+ags_recall_channel_run_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsGroupId group_id;
+
+  g_return_val_if_fail(AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run), G_MAXULONG);
+
+  g_object_ref(G_OBJECT(recall_channel_run));
+  g_signal_emit(G_OBJECT(recall_channel_run),
+		recall_channel_run_signals[GET_AUDIO_RUN_GROUP_ID], 0,
+		&group_id);
+  g_object_unref(G_OBJECT(recall_channel_run));
+
+  return(group_id);
 }
 
 guint

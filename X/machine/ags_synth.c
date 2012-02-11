@@ -165,7 +165,8 @@ ags_synth_init(AgsSynth *synth)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->play */
   synth->play_delay_audio =
@@ -189,7 +190,7 @@ ags_synth_init(AgsSynth *synth)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->recall */
   synth->recall_delay_audio =
@@ -214,7 +215,8 @@ ags_synth_init(AgsSynth *synth)
   /* audio->play */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->play */
   synth->play_count_beats_audio =
@@ -240,7 +242,7 @@ ags_synth_init(AgsSynth *synth)
   /* audio->recall */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->recall */
   synth->recall_count_beats_audio =
@@ -267,7 +269,8 @@ ags_synth_init(AgsSynth *synth)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   play_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
 					       "audio\0", audio,
@@ -291,7 +294,7 @@ ags_synth_init(AgsSynth *synth)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   recall_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
 						 "audio\0", audio,

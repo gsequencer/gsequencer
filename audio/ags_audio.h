@@ -77,8 +77,7 @@ struct _AgsAudio
   GList *recall_id;
   GList *run_order;
 
-  GList *recall_container;
-  GList *play_container;
+  GList *container;
 
   GList *recall;
   GList *play;
@@ -119,7 +118,7 @@ void ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order);
 
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
-void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play);
+void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play);
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
 void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
@@ -130,7 +129,7 @@ void ags_audio_duplicate_recall(AgsAudio *audio,
 				gboolean playback, gboolean sequencer, gboolean notation,
 				AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 				AgsGroupId group_id,
-				guint audio_signal_level);
+				guint audio_signal_level, gboolean output_orientated);
 void ags_audio_init_recall(AgsAudio *audio, gint stage,
 			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			   AgsGroupId group_id);

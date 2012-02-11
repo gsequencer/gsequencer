@@ -912,6 +912,10 @@ void
 ags_recall_real_done(AgsRecall *recall)
 {
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
+
+  if(AGS_IS_RUN_CONNECTABLE(recall)){
+    ags_run_connectable_disconnect(AGS_RUN_CONNECTABLE(recall));
+  }
 }
 
 /**
@@ -1090,7 +1094,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
  * creating duplicates from templates, see #AGS_RECALL_TEMPLATE.
  */
 AgsRecall*
-ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
+ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_params, GParameter *parameter */
 {
   AgsRecall *copy;
 

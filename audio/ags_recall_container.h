@@ -35,6 +35,10 @@ typedef struct _AgsRecallContainer AgsRecallContainer;
 typedef struct _AgsRecallContainerClass AgsRecallContainerClass;
 
 typedef enum{
+  AGS_RECALL_CONTAINER_PLAY    =  1,
+}AgsRecallContainerFlags;
+
+typedef enum{
   AGS_RECALL_CONTAINER_FIND_TYPE,
   AGS_RECALL_CONTAINER_FIND_TEMPLATE,
   AGS_RECALL_CONTAINER_FIND_GROUP_ID,
@@ -43,6 +47,8 @@ typedef enum{
 struct _AgsRecallContainer
 {
   GObject object;
+  
+  guint flags;
 
   GType recall_audio_type;
   AgsRecall *recall_audio;

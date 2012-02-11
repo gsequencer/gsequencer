@@ -169,7 +169,8 @@ ags_drum_init(AgsDrum *drum)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->play */
   drum->play_delay_audio =
@@ -193,7 +194,7 @@ ags_drum_init(AgsDrum *drum)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsDelayAudio in audio->recall */
   drum->recall_delay_audio =
@@ -217,7 +218,8 @@ ags_drum_init(AgsDrum *drum)
   /* audio->play */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->play */
   drum->play_count_beats_audio =
@@ -243,7 +245,7 @@ ags_drum_init(AgsDrum *drum)
   /* audio->recall */
   /* create AgsRecallContainer for count beats related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCountBeatsAudio in audio->recall */
   drum->recall_count_beats_audio =
@@ -270,7 +272,8 @@ ags_drum_init(AgsDrum *drum)
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, TRUE);
+  recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCopyPatternAudio in audio->play */
   drum->play_copy_pattern_audio =
@@ -281,7 +284,7 @@ ags_drum_init(AgsDrum *drum)
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
-  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE;
+  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, TRUE);
 
   /* create AgsCopyPatternAudioRun in audio->play */
@@ -297,7 +300,7 @@ ags_drum_init(AgsDrum *drum)
   /* audio->recall */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container, FALSE);
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
   /* create AgsCopyPatternAudio in audio->recall */
   drum->recall_copy_pattern_audio =

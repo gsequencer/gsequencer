@@ -245,7 +245,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   if((AGS_DRUM_INPUT_LINE_MAPPED_RECALL & (drum_input_line->flags)) == 0){
     /* recall for channel->play */
     play_stream_channel_container = ags_recall_container_new();
-    ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container, TRUE);
+    play_stream_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+    ags_channel_add_recall_container(source, (GObject *) play_stream_channel_container);
 
     /* AgsStreamChannel */
     play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
@@ -275,7 +276,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     /* recall for channel->recall */
     recall_stream_channel_container = ags_recall_container_new();
-    ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container, FALSE);
+    ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container);
 
     /* AgsStreamChannel */
     recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
@@ -304,7 +305,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     /* AgsPlayChannel */
     play_channel_container = ags_recall_container_new();
-    ags_channel_add_recall_container(source, (GObject *) play_channel_container, TRUE);
+    play_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+    ags_channel_add_recall_container(source, (GObject *) play_channel_container);
 
     play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
 						   "channel\0", source,

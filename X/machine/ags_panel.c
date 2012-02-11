@@ -205,7 +205,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
     for(i = audio_channels_old; i < audio_channels; i++){
       /* AgsPlayChannel */
       play_channel_container = ags_recall_container_new();
-      ags_channel_add_recall_container(input, (GObject *) play_channel_container, TRUE);
+      play_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_channel_add_recall_container(input, (GObject *) play_channel_container);
       
       play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
 						     "channel\0", input,

@@ -176,6 +176,8 @@ ags_recall_container_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_recall_container_init(AgsRecallContainer *recall_container)
 {
+  recall_container->flags = 0;
+
   recall_container->recall_audio = NULL;
   recall_container->recall_audio_run = NULL;
   recall_container->recall_channel = NULL;

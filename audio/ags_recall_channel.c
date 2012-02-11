@@ -368,11 +368,20 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 			     guint n_params, GParameter *parameter)
 {
   AgsRecallChannel *recall_channel, *copy;
+  guint new_n_params;
+  GParameter *new_parameter;
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
+  /*
+  ags_parameter_grow(AGS_TYPE_RECALL_CHANNEL,
+		     n_params, parameter,
+		     &new_n_params, &new_parameter,
+		     "channel\0", recall_channel->channel,
+		     NULL);
+  */
   copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
 											 recall_id,
-											 n_params, parameter));
+											 new_n_params, new_parameter));
 
   printf("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
