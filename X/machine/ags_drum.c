@@ -179,7 +179,9 @@ ags_drum_init(AgsDrum *drum)
 						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
-  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
+				     AGS_RECALL_SEQUENCER |
+				     AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) delay_audio, TRUE);
 
   /* create AgsDelayAudioRun in audio->play */
@@ -188,7 +190,9 @@ ags_drum_init(AgsDrum *drum)
 							     "recall_container\0", recall_container,
 							     "recall_audio\0", delay_audio,
 							     NULL);
-  AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(play_delay_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+					      AGS_RECALL_SEQUENCER |
+					      AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) play_delay_audio_run, TRUE);
 
   /* audio->recall */
@@ -203,7 +207,9 @@ ags_drum_init(AgsDrum *drum)
 						 "recall_container\0", recall_container,
 						 "delay\0", 0,
 						 NULL);
-  AGS_RECALL(delay_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
+				     AGS_RECALL_SEQUENCER |
+				     AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) delay_audio, FALSE);
 
   /* create AgsDelayAudioRun in audio->recall */
@@ -212,7 +218,9 @@ ags_drum_init(AgsDrum *drum)
 							       "recall_container\0", recall_container,
 							       "recall_audio\0", delay_audio,
 							       NULL);
-  AGS_RECALL(recall_delay_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(recall_delay_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						AGS_RECALL_SEQUENCER |
+						AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) recall_delay_audio_run, FALSE);
 
   /* audio->play */
@@ -229,7 +237,9 @@ ags_drum_init(AgsDrum *drum)
 							    "length\0", 16,
 							    "loop\0", FALSE,
 							    NULL);
-  AGS_RECALL(count_beats_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
+					   AGS_RECALL_SEQUENCER |
+					   AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) count_beats_audio, TRUE);
 
   /* create AgsCountBeatsAudioRun in audio->play */
@@ -239,7 +249,9 @@ ags_drum_init(AgsDrum *drum)
 									"recall_audio\0", count_beats_audio,
 									"delay_audio_run\0", play_delay_audio_run,
 									NULL);
-  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_SEQUENCER |
+						    AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
 
   /* audio->recall */
@@ -255,7 +267,9 @@ ags_drum_init(AgsDrum *drum)
 							    "length\0", 16,
 							    "loop\0", FALSE,
 							    NULL);
-  AGS_RECALL(count_beats_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
+					   AGS_RECALL_SEQUENCER |
+					   AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) count_beats_audio, FALSE);
 
   /* create AgsCountBeatsAudioRun in audio->recall */
@@ -265,7 +279,9 @@ ags_drum_init(AgsDrum *drum)
 									  "recall_audio\0", count_beats_audio,
 									  "delay_audio_run\0", recall_delay_audio_run,
 									  NULL);
-  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, FALSE);
 
 
@@ -284,7 +300,9 @@ ags_drum_init(AgsDrum *drum)
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
-  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(copy_pattern_audio)->flags |= (AGS_RECALL_TEMPLATE |
+					    AGS_RECALL_SEQUENCER |
+					    AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, TRUE);
 
   /* create AgsCopyPatternAudioRun in audio->play */
@@ -294,7 +312,9 @@ ags_drum_init(AgsDrum *drum)
 								     "recall_audio\0", copy_pattern_audio,
 								     "count_beats_audio_run\0", play_count_beats_audio_run,
 								     NULL);
-  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(copy_pattern_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						AGS_RECALL_SEQUENCER |
+						AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, TRUE);
 
   /* audio->recall */
@@ -311,7 +331,9 @@ ags_drum_init(AgsDrum *drum)
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
-  AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(copy_pattern_audio)->flags |= (AGS_RECALL_TEMPLATE |
+					    AGS_RECALL_SEQUENCER |
+					    AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio, FALSE);
 
   /* create AgsCopyPatternAudioRun in audio->recall */
@@ -321,7 +343,9 @@ ags_drum_init(AgsDrum *drum)
 								     "recall_audio\0", copy_pattern_audio,
 								     "count_beats_audio_run\0", recall_count_beats_audio_run,
 								     NULL);
-  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER;
+  AGS_RECALL(copy_pattern_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						AGS_RECALL_SEQUENCER |
+						AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, FALSE);
 
   /* create widgets */

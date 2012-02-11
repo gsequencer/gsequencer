@@ -207,7 +207,8 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 					recall_count_beats_audio_run,
 					TRUE);
     AGS_RECALL(loop_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_SEQUENCER);
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_OUTPUT_ORIENTATED);
     ags_channel_add_recall(output, (GObject *) loop_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
