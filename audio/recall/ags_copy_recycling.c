@@ -619,18 +619,6 @@ ags_copy_recycling_destination_add_audio_signal_callback(AgsRecycling *destinati
 }
 
 void
-ags_copy_recycling_destination_add_audio_signal_with_frame_count_callback(AgsRecycling *destination,
-									  AgsAudioSignal *audio_signal, guint length,
-									  AgsCopyRecycling *copy_recycling)
-{
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(copy_recycling)->recall_id->parent_group_id)
-    ags_copy_recycling_destination_add_audio_signal(copy_recycling,
-						    audio_signal);
-}
-
-void
 ags_copy_recycling_destination_remove_audio_signal_callback(AgsRecycling *destination,
 							    AgsAudioSignal *audio_signal,
 							    AgsCopyRecycling *copy_recycling)

@@ -364,6 +364,7 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
 					    (GObject *) AGS_RECALL(copy_pattern_channel_run)->recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal);
+	audio_signal->stream_current = audio_signal->stream_beginning;
 	ags_audio_signal_connect(audio_signal);
 	
 	ags_recycling_add_audio_signal(recycling,

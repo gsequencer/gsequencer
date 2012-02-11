@@ -220,11 +220,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
   audio_signal->devout = template->devout;
-
   audio_signal->recycling = (GObject *) recycling;
-
-  audio_signal->length = template->length;
-  audio_signal->last_frame = template->last_frame;
 
   ags_audio_signal_duplicate_stream(audio_signal, template);
 }

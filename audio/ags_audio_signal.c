@@ -512,6 +512,9 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal, AgsAudioSignal *
 
     audio_signal->stream_beginning = start;
     audio_signal->stream_end = list;
+
+    audio_signal->length = template->length;
+    audio_signal->last_frame = template->last_frame;
   }
 }
 

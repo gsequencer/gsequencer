@@ -437,11 +437,12 @@ ags_loop_channel_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) recycling,
 					(GObject *) AGS_RECALL(loop_channel)->recall_id);
-    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-    
+    ags_recycling_create_audio_signal_with_defaults(recycling, audio_signal);
+    audio_signal->stream_current = audio_signal->stream_beginning;
+
+    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));    
     ags_recycling_add_audio_signal(recycling,
 				   audio_signal);
-    audio_signal->stream_current = audio_signal->stream_beginning;
     
     
     recycling = recycling->next;
