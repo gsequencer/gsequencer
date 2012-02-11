@@ -56,6 +56,8 @@ AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint n_params, GParameter *parameter);
 
+AgsGroupId ags_recall_audio_run_real_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run);
+
 enum{
   GET_CHANNEL_RUN_GROUP_ID,
   LAST_SIGNAL,
@@ -162,7 +164,7 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   recall->duplicate = ags_recall_audio_run_duplicate;
 
   /* AgsRecallAudioRunClass */
-  recall_audio_run->get_channel_run_group_id = NULL;
+  recall_audio_run->get_channel_run_group_id = ags_recall_audio_run_real_get_channel_run_group_id;
 
   recall_audio_run_signals[GET_CHANNEL_RUN_GROUP_ID] =
     g_signal_new("get_channel_run_group_id\0",
@@ -451,6 +453,39 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 	       NULL);
 
   return((AgsRecall *) copy);
+}
+
+AgsGroupId
+ags_recall_audio_run_real_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run)
+{
+  AgsAudio *audio;
+  AgsRecall *recall;
+  AgsGroupId group_id;
+
+  recall = AGS_RECALL(recall_audio_run);
+
+  if(recall->recall_id == NULL)
+    return(G_MAXULONG);
+
+  audio = AGS_AUDIO(recall_audio_run->recall_audio->audio);
+
+  if((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0){
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      group_id = recall->recall_id->child_group_id;
+    }else{
+      group_id = recall->recall_id->group_id;
+    }
+  }else if((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      group_id = recall->recall_id->parent_group_id;
+    }else{
+      group_id = recall->recall_id->group_id;
+    }
+  }else{
+    group_id = recall->recall_id->group_id;
+  }
+
+  return(group_id);
 }
 
 AgsGroupId

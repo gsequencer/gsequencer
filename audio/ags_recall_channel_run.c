@@ -18,6 +18,7 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
@@ -57,6 +58,7 @@ AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
 					    guint n_params, GParameter *parameter);
 
+AgsGroupId ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run);
 void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
 						   guint run_order);
 
@@ -188,6 +190,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   recall->duplicate = ags_recall_channel_run_duplicate;
 
   /* AgsRecallChannelRunClass */
+  recall_channel_run->get_audio_run_group_id = ags_recall_channel_run_real_get_audio_run_group_id;
   recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
 
   /* signals */
@@ -202,13 +205,13 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 		 G_TYPE_UINT);
 
   /* AgsRecallChannelRunClass */
-  recall_channel_run->get_channel_run_group_id = NULL;
+  recall_channel_run->get_audio_run_group_id = NULL;
 
-  recall_channel_run_signals[GET_CHANNEL_RUN_GROUP_ID] =
-    g_signal_new("get_channel_run_group_id\0",
+  recall_channel_run_signals[GET_AUDIO_RUN_GROUP_ID] =
+    g_signal_new("get_audio_run_group_id\0",
 		 G_TYPE_FROM_CLASS (recall_channel_run),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, get_channel_run_group_id),
+		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, get_audio_run_group_id),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_ULONG__VOID,
 		 G_TYPE_ULONG, 0);
@@ -587,6 +590,39 @@ ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run
 		recall_channel_run_signals[RUN_ORDER_CHANGED], 0,
 		run_order);
   g_object_unref(G_OBJECT(recall_channel_run));
+}
+
+AgsGroupId
+ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsAudio *audio;
+  AgsRecall *recall;
+  AgsGroupId group_id;
+
+  recall = AGS_RECALL(recall_channel_run);
+
+  if(recall->recall_id == NULL)
+    return(G_MAXULONG);
+
+  audio = AGS_AUDIO(recall_channel_run->channel->audio);
+
+  if((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0){
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      group_id = recall->recall_id->parent_group_id;
+    }else{
+      group_id = recall->recall_id->group_id;
+    }
+  }else if((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      group_id = recall->recall_id->child_group_id;
+    }else{
+      group_id = recall->recall_id->group_id;
+    }
+  }else{
+    group_id = recall->recall_id->group_id;
+  }
+
+  return(group_id);
 }
 
 AgsGroupId

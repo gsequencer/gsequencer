@@ -47,11 +47,12 @@ typedef enum{
   AGS_RECALL_DISTINCTS_REAL     = 1 <<  6,
   AGS_RECALL_IS_REAL            = 1 <<  7,
   AGS_RECALL_INPUT_ORIENTATED   = 1 <<  8,
-  AGS_RECALL_PERSISTENT         = 1 <<  9,
-  AGS_RECALL_DONE               = 1 << 10,
-  AGS_RECALL_REMOVE             = 1 << 11,
-  AGS_RECALL_HIDE               = 1 << 12,
-  AGS_RECALL_PROPAGATE_DONE     = 1 << 13, // see ags_recall_real_remove
+  AGS_RECALL_OUTPUT_ORIENTATED  = 1 <<  9,
+  AGS_RECALL_PERSISTENT         = 1 << 10,
+  AGS_RECALL_DONE               = 1 << 11,
+  AGS_RECALL_REMOVE             = 1 << 12,
+  AGS_RECALL_HIDE               = 1 << 13,
+  AGS_RECALL_PROPAGATE_DONE     = 1 << 14, // see ags_recall_real_remove
 }AgsRecallFlags;
 
 typedef enum{
