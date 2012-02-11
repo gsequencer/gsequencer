@@ -700,6 +700,13 @@ ags_recall_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_recall_resolve_dependencies:
+ * @recall an #AgsRecall
+ *
+ * A signal indicating that the inheriting object should resolve
+ * it's dependencies.
+ */
 void
 ags_recall_resolve_dependencies(AgsRecall *recall)
 {
@@ -725,6 +732,12 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
+ *
+ * Prepare for run, this is the pre stage within the preparation.
+ */
 void
 ags_recall_run_init_pre(AgsRecall *recall)
 {
@@ -750,6 +763,12 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
+ *
+ * Prepare for run, this is the inter stage within the preparation.
+ */
 void
 ags_recall_run_init_inter(AgsRecall *recall)
 {
@@ -775,6 +794,12 @@ ags_recall_real_run_init_post(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
+ *
+ * Prepare for run, this is the post stage within the preparation.
+ */
 void
 ags_recall_run_init_post(AgsRecall *recall)
 {
@@ -802,6 +827,12 @@ ags_recall_real_run_pre(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
+ *
+ * Run, this is the pre stage within a run.
+ */
 void
 ags_recall_run_pre(AgsRecall *recall)
 {
@@ -827,6 +858,12 @@ ags_recall_real_run_inter(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
+ *
+ * Run, this is the inter stage within a run.
+ */
 void
 ags_recall_run_inter(AgsRecall *recall)
 {
@@ -854,6 +891,12 @@ ags_recall_real_run_post(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_recall_run_init_pre:
+ * @recall an #AgsRecall
+ *
+ * Run, this is the post stage within a run.
+ */
 void
 ags_recall_run_post(AgsRecall *recall)
 {
@@ -871,6 +914,13 @@ ags_recall_real_done(AgsRecall *recall)
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 }
 
+/**
+ * ags_recall_done:
+ * @recall an #AgsRecall
+ *
+ * The #AgsRecall doesn't want to run anymore, it has been done its
+ * work.
+ */
 void
 ags_recall_done(AgsRecall *recall)
 {
@@ -899,6 +949,12 @@ ags_recall_real_cancel(AgsRecall *recall)
   ags_recall_done(AGS_RECALL(recall));
 }
 
+/**
+ * ags_recall_cancel:
+ * @recall an #AgsRecall
+ *
+ * The #AgsRecall doesn't want to run anymore, it aborts further execution.
+ */
 void
 ags_recall_cancel(AgsRecall *recall)
 {
@@ -934,6 +990,12 @@ ags_recall_real_remove(AgsRecall *recall)
   g_object_unref(recall);
 }
 
+/**
+ * ags_recall_cancel:
+ * @recall an #AgsRecall
+ *
+ * The #AgsRecall will be removed immediately.
+ */
 void
 ags_recall_remove(AgsRecall *recall)
 {
@@ -945,6 +1007,13 @@ ags_recall_remove(AgsRecall *recall)
   g_object_unref(G_OBJECT(recall));
 }
 
+/**
+ * ags_recall_is_done:
+ * @recall an #AgsRecall
+ * @group_id an #AgsGroupId
+ *
+ * Check if recall is over.
+ */
 gboolean
 ags_recall_is_done(GList *recalls, AgsGroupId group_id)
 {
@@ -1010,6 +1079,16 @@ ags_recall_real_duplicate(AgsRecall *recall,
   return(copy);
 }
 
+/**
+ * ags_recall_real_duplicate:
+ * @recall an #AgsRecall
+ * @recall_id an #AgsRecallId
+ * @n_params the count of #parameter entries
+ * @parameter the properties to be passed for instantiating the #AgsRecall
+ *
+ * Should duplicate an #AgsRecall, so it can pass the runs. Mainly used for
+ * creating duplicates from templates, see #AGS_RECALL_TEMPLATE.
+ */
 AgsRecall*
 ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
 {
@@ -1027,6 +1106,14 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id)
   return(copy);
 }
 
+/**
+ * ags_recall_notify_dependency:
+ * @recall an #AgsRecall
+ * @flags
+ * @count
+ *
+ * Notifies a recall that an other depends on it.
+ */
 void
 ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
 {
@@ -1039,6 +1126,13 @@ ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
   g_object_unref(G_OBJECT(recall));
 }
 
+/**
+ * ags_recall_add_dependency:
+ * @recall an #AgsRecall
+ * @recall_dependency an #AgsRecallDependency
+ *
+ * Associate a new dependency for this recall.
+ */
 void
 ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency)
 {
@@ -1053,7 +1147,13 @@ ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_depende
   ags_connectable_connect(AGS_CONNECTABLE(recall_dependency));
 }
 
-
+/**
+ * ags_recall_remove_dependency:
+ * @recall an #AgsRecall
+ * @dependency an #AgsRecall
+ *
+ * Remove a prior associated dependency.
+ */
 void
 ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency)
 {
@@ -1074,12 +1174,25 @@ ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency)
   g_object_unref(G_OBJECT(recall_dependency));
 }
 
+/**
+ * ags_recall_get_dependencies:
+ * @recall an #AgsRecall
+ * Returns: a GList with all dependencies.
+ */
+//FIXME:JK: duplicate the list
 GList*
 ags_recall_get_dependencies(AgsRecall *recall)
 {
   return(recall->dependencies);
 }
 
+/**
+ * ags_recall_add_child:
+ * @parent an #AgsRecall
+ * @child an #AgsRecall
+ *
+ * An #AgsRecall may have children.
+ */
 void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 {
@@ -1132,12 +1245,25 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   }
 }
 
+/**
+ * ags_recall_get_children:
+ * @recall an #AgsRecall
+ * Returns: a GList with all children.
+ */
+//FIXME:JK: duplicate the list
 GList*
 ags_recall_get_children(AgsRecall *recall)
 {
   return(recall->children);
 }
 
+/**
+ * ags_recall_child_check_remove:
+ * @recall an #AgsRecall
+ * 
+ * Looks for the #AGS_RECALL_REMOVE flag. If found in an #AgsRecall
+ * it will be removed from its parent.
+ */
 void
 ags_recall_child_check_remove(AgsRecall *recall)
 {
@@ -1166,6 +1292,14 @@ ags_recall_child_check_remove(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_recall_find_by_effect:
+ * @list a #GList with recalls
+ * @recall_id an #AgsRecallId
+ * @effect the effect name
+ * Returns: a GList
+ *
+ */
 GList*
 ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
 {
@@ -1188,6 +1322,9 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
   return(NULL);
 }
 
+/**
+ *
+ */
 GList*
 ags_recall_find_type(GList *recall_i, GType type)
 {

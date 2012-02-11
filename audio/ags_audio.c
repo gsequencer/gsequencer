@@ -1975,6 +1975,8 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 }
 
 /**
+ * ags_audio_init_recall:
+ *
  *
  */
 void
