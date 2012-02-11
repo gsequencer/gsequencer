@@ -1297,8 +1297,10 @@ ags_recall_child_check_remove(AgsRecall *recall)
  * @list a #GList with recalls
  * @recall_id an #AgsRecallId
  * @effect the effect name
- * Returns: a GList
+ * Returns: a GList, or #NULL if not found
  *
+ * Finds next matching effect name. Intended to be used as
+ * iteration function.
  */
 GList*
 ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
@@ -1323,7 +1325,13 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
 }
 
 /**
- *
+ * ags_recall_find_type:
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * Returns: a #GList containing recalls, or #NULL if not found
+ * 
+ * Finds next matching recall for type. Intended to be used as
+ * iteration function.
  */
 GList*
 ags_recall_find_type(GList *recall_i, GType type)
@@ -1342,6 +1350,14 @@ ags_recall_find_type(GList *recall_i, GType type)
   return(recall_i);
 }
 
+/**
+ * ags_recall_find_template:
+ * @recall_i a #GList containing recalls
+ * Returns: a #GList containing recalls, or #NULL if not found
+ *
+ * Finds next template, see #AGS_RECALL_TEMPLATE flag. Intended to be used as
+ * iteration function.
+ */
 GList*
 ags_recall_find_template(GList *recall_i)
 {
@@ -1359,6 +1375,15 @@ ags_recall_find_template(GList *recall_i)
   return(NULL);
 }
 
+/**
+ * ags_recall_find_template_with_type:
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * Returns: a #GList containing recalls, or #NULL if not found
+ * 
+ * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
+ * Intended to be used as iteration function.
+ */
 GList*
 ags_recall_template_find_type(GList *recall_i, GType type)
 {
@@ -1377,6 +1402,16 @@ ags_recall_template_find_type(GList *recall_i, GType type)
   return(recall_i);
 }
 
+/**
+ * ags_recall_find_type_with_group_id:
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * @group_id an #AgsGroupId
+ * Returns: a #GList containing recalls, or #NULL if not found
+ * 
+ * Finds next matching recall for type which has @group_id, see #AgsRecallId for further
+ * details about #AgsGroupId. Intended to be used as iteration function.
+ */
 GList*
 ags_recall_find_type_with_group_id(GList *recall_i, GType type, AgsGroupId group_id)
 {
@@ -1396,6 +1431,16 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, AgsGroupId group
   return(NULL);
 }
 
+/**
+ * ags_recall_find_group_id:
+ * @recall_i a #GList containing recalls
+ * @type a #GType
+ * @group_id an #AgsGroupId
+ * Returns: a #GList containing recalls, or #NULL if not found
+ * 
+ * Finds next matching recall which has @group_id, see #AgsRecallId for further
+ * details about #AgsGroupId. Intended to be used as iteration function.
+ */
 GList*
 ags_recall_find_group_id(GList *recall_i, AgsGroupId group_id)
 {
@@ -1415,6 +1460,16 @@ ags_recall_find_group_id(GList *recall_i, AgsGroupId group_id)
   return(NULL);
 }
 
+/**
+ * ags_recall_find_type:
+ * @recall_i a #GList containing recalls
+ * @provider a #GObject
+ * Returns: a #GList containing recalls, or #NULL if not found
+ * 
+ * Finds next matching recall for type which has @provider. The @provider may be either an #AgsChannel
+ * or an #AgsAudio object. This function tries to find the corresponding #AgsRecallChannel and #AgsRecallAudio
+ * objects of a #AgsRecall to find. If these recalls contains the @provider, the function will return.
+ */
 GList*
 ags_recall_find_provider(GList *recall_i, GObject *provider)
 {
@@ -1459,6 +1514,15 @@ ags_recall_find_provider(GList *recall_i, GObject *provider)
   return(NULL);
 }
 
+/**
+ * ags_recall_find_type:
+ * @recall_i a #GList containing recalls
+ * @provider a #GObject
+ * @group_id an #AgsGroupId
+ * Returns: a #GList containing recalls, or #NULL if not found
+ * 
+ * Like ags_recall_find_provider() but given additionally @group_id as search parameter.
+ */
 GList*
 ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, AgsGroupId group_id)
 {
