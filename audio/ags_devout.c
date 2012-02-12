@@ -584,25 +584,24 @@ ags_devout_task_thread(void *devout0)
 {
   AgsDevout *devout;
   GList *task;
-  struct timespec idle;
+  //  struct timespec idle;
+  useconds_t idle;
 
   devout = AGS_DEVOUT(devout0);
 
-  idle.tv_sec = 0;
-  idle.tv_nsec = 1000000000000 / devout->frequency * devout->buffer_size / 8;
+  //  idle.tv_sec = 0;
+  //  idle.tv_nsec = 1000 * 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
+  idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
-    /* synchronize with AGS_DEVOUT_WAIT_RECALL */
+    /* synchronize with AGS_DEVOUT_WAIT_PLAY_FUNCTIONS */
     pthread_mutex_lock(&(devout->task_mutex));
-    while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
+    while((AGS_DEVOUT_WAIT_PLAY_FUNCTIONS & (devout->flags)) != 0){
       pthread_cond_wait(&(devout->task_wait_cond),
 			&(devout->task_mutex));
     }
-  
-    pthread_mutex_unlock(&(devout->task_mutex));
 
     /* synchronize with AGS_DEVOUT_WAIT_APPEND_TASK */
-    pthread_mutex_lock(&(devout->task_mutex));
     while(devout->tasks_queued > 0){
       pthread_cond_wait(&(devout->task_wait_cond),
 			&(devout->task_mutex));
@@ -615,7 +614,9 @@ ags_devout_task_thread(void *devout0)
     task = devout->task;
 
     while(task != NULL){
+      printf("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task->data));
       ags_task_launch(AGS_TASK(task->data));
+      devout->task = g_list_remove_link(devout->task, task);
 
       task = task->next;
     }
@@ -634,7 +635,8 @@ ags_devout_task_thread(void *devout0)
 
 
     if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
-      nanosleep(&idle, NULL);
+      //      nanosleep(&idle, NULL);
+      usleep(idle);
     }
   }
 
@@ -707,18 +709,11 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
 		      &(devout->append_task_mutex));
   }
   
-  if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
-    /* launch task */
-    ags_task_launch(task);
-
-    pthread_mutex_unlock(&(devout->append_task_mutex));
-  }else{
-    /* lock other calls */
-    pthread_mutex_unlock(&(devout->append_task_mutex));
-
-    /* append to queue */
-    devout->task = g_list_prepend(devout->task, task);
-  }
+  /* lock other calls */
+  pthread_mutex_unlock(&(devout->append_task_mutex));
+  
+  /* append to queue */
+  devout->task = g_list_prepend(devout->task, task);
 
   /* wake up an other thread */
   devout->tasks_queued -= 1;
@@ -745,22 +740,11 @@ ags_devout_append_tasks(AgsDevout *devout, GList *list)
 		      &(devout->append_task_mutex));
   }
   
-  if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
-    while(list != NULL){
-      /* launch task */
-      ags_task_launch(AGS_TASK(list->data));
-
-      list = list->next;
-    }
-
-    pthread_mutex_unlock(&(devout->append_task_mutex));
-  }else{
-    /* lock other calls */
-    pthread_mutex_unlock(&(devout->append_task_mutex));
-
-    /* concat with queue */
-    devout->task = g_list_concat(devout->task, list);
-  }
+  /* lock other calls */
+  pthread_mutex_unlock(&(devout->append_task_mutex));
+  
+  /* concat with queue */
+  devout->task = g_list_concat(devout->task, list);
 
   /* wake up an other thread */
   devout->tasks_queued -= 1;
@@ -1101,6 +1085,7 @@ ags_devout_play_functions(void *devout0)
   pthread_mutex_lock(&(devout->play_functions_mutex));
   
   while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
+    devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
     pthread_mutex_unlock(&(devout->play_functions_mutex));
     
     /* AgsTask */
@@ -1115,6 +1100,8 @@ ags_devout_play_functions(void *devout0)
 			&(devout->play_functions_mutex));
     }
 
+    /* get lock */
+    devout->flags |= (AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
     pthread_mutex_unlock(&(devout->play_functions_mutex));
     
     /* play recall */

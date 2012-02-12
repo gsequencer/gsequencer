@@ -35,6 +35,7 @@
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_link_channel.h>
+#include <ags/audio/task/ags_start_devout.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -431,6 +432,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
+    AgsStartDevout *start_devout;
 
     /* create init task */
     init_audio = ags_init_audio_new(drum->machine.audio,
@@ -448,11 +450,13 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
 			   AGS_TASK(append_audio));
 
-    /* call run */
-    if((AGS_DEVOUT_PLAY_AUDIO & (append_audio->devout->flags)) == 0)
-      append_audio->devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
-    
-    ags_devout_run(AGS_DEVOUT(drum->machine.audio->devout));
+    /* create start task */
+    start_devout = ags_start_devout_new(AGS_DEVOUT(drum->machine.audio->devout));
+
+    /* append AgsStartDevout */
+    ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
+			   AGS_TASK(start_devout));
+
   }else{
     /* abort code */
     if((AGS_DEVOUT_PLAY_DONE & (drum->machine.audio->devout_play->flags)) == 0){
