@@ -2866,7 +2866,12 @@ ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_reca
 {
   AgsRecall *recall;
   GList *list, *list_next;
+  AgsGroupId group_id;
   
+  if(recall_id != NULL){
+    return;
+  }
+
   if(do_recall)
     list = channel->recall;
   else
@@ -2877,8 +2882,10 @@ ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_reca
 
     recall = AGS_RECALL(list->data);
 
+    group_id = recall_id->group_id;
+
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
-       recall->recall_id->group_id != recall_id->group_id){
+       recall->recall_id->group_id != group_id){
       list = list_next;
       continue;
     }

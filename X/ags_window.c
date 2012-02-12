@@ -160,6 +160,8 @@ ags_window_connect(AgsConnectable *connectable)
   ags_menu_bar_connect(window->menu_bar);
   ags_editor_connect(window->editor);
   ags_navigation_connect(window->navigation);
+
+  pthread_create(&(window->devout->task_thread), NULL, &ags_devout_task_thread, window->devout);
 }
 
 void

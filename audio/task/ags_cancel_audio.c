@@ -155,7 +155,7 @@ ags_cancel_audio_launch(AgsTask *task)
 
   /* set remove flag */
   if(cancel_audio->play != NULL)
-    cancel_audio->play->flags |= AGS_DEVOUT_PLAY_REMOVE;
+    cancel_audio->play->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
 }
 
 AgsCancelAudio*
