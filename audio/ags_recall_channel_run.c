@@ -529,19 +529,16 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   AgsRecallContainer *container;
   AgsRecallAudioRun *recall_audio_run;
   GList *recall_audio_run_list;
-  guint new_n_params;
-  GParameter *new_parameter;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
-  ags_parameter_grow(G_OBJECT_TYPE(recall),
-		     n_params, parameter,
-		     &new_n_params, &new_parameter,
-		     "channel\0", recall_channel_run->channel,
-		     NULL);
+  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
+				 parameter, &n_params,
+				 "channel\0", recall_channel_run->channel,
+				 NULL);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
 												 recall_id,
-												 new_n_params, new_parameter));
+												 n_params, parameter));
 
   //  copy->channel = recall_channel_run->channel;
 

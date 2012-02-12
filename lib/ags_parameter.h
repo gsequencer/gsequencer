@@ -22,9 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-void ags_parameter_grow(GType type,
-			guint n_params, GParameter *src,
-			guint *new_n_params, GParameter **dst,
-			const gchar *first_property_name, ...);
+GParameter*
+ags_parameter_grow(GType type,
+		   GParameter *params, guint *n_params, ...);
 
 #endif /*__AGS_PARAMETER_H__*/
