@@ -32,8 +32,10 @@ ags_parameter_grow(GType type,
   /* count the new properties */
   va_start(ap, first_property_name);
 
-  for(i = 0; ; i++){
-    va_arg(ap, void);
+  for(i = 0; ; ){
+    va_arg(ap, gpointer);
+    i++;
+
     property_name = va_arg(ap, gchar *);
     
     if(property_name == NULL){
@@ -73,6 +75,8 @@ ags_parameter_grow(GType type,
     }
     
     new_parameter[i].name = property_name;
+
+    va_arg(ap, gpointer);
     G_VALUE_COLLECT_INIT(&new_parameter[i].value, pspec->value_type,
 			 ap, 0, &error);
 

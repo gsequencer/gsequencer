@@ -226,10 +226,10 @@ ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
 					   AgsGroupId group_id,
 					   AgsRecycling *first_recycling, AgsRecycling *last_recycling)
 {
-  printf("group_id: %d\0\n", group_id);
+  printf("group_id: %d\n\0", group_id);
 
   while(recall_id_list != NULL){
-    printf("recall_id->group_id: %d\0\n", AGS_RECALL_ID(recall_id_list->data)->group_id);
+    printf("recall_id->group_id: %d\n\0", AGS_RECALL_ID(recall_id_list->data)->group_id);
 
     if(AGS_RECALL_ID(recall_id_list->data)->group_id == group_id &&
        AGS_RECALL_ID(recall_id_list->data)->first_recycling == first_recycling &&
