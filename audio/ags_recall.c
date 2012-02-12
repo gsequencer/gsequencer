@@ -1047,7 +1047,6 @@ ags_recall_real_duplicate(AgsRecall *recall,
   AgsRecallContainer *recall_container;
   AgsRecallHandler *recall_handler, *recall_handler_copy;
   GList *list, *child;
-  GValue recall_container_value = {0,};
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), n_params, parameter);
 
@@ -1058,13 +1057,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
   copy->recall_id = recall_id;
 
   /* set recall container */
-  g_value_init(&recall_container_value, G_TYPE_OBJECT);
-  g_value_set_object(&recall_container_value, recall->container);
-  g_object_set_property(G_OBJECT(copy),
-			"recall_container\0",
-			&recall_container_value);
-
-  g_value_unset(&recall_container_value);
+  g_object_set(G_OBJECT(copy),
+	       "recall_container\0", recall->container,
+	       NULL);
 
   /* duplicate handlers */
   list = recall->handlers;
@@ -1450,8 +1445,13 @@ ags_recall_find_group_id(GList *recall_i, AgsGroupId group_id)
 {
   AgsRecall *recall;
 
+  printf("ags_recall_find_group_id: group_id = %lu\n\0", group_id);
+
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
+
+    if(recall->recall_id != NULL)
+      printf("ags_recall_find_group_id: recall_id->group_id = %lu\n\0", recall->recall_id->group_id);
 
     if(recall->recall_id != NULL &&
        recall->recall_id->group_id == group_id){

@@ -409,6 +409,9 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   if(ags_recall_channel_run_parent_packable_interface->pack(packable, container))
     return(TRUE);
 
+  if(AGS_IS_COPY_PATTERN_CHANNEL_RUN(packable))
+    printf("debug: AGS_IS_COPY_PATTERN_CHANNEL_RUN(packable)\n\0");
+
   recall_container = AGS_RECALL_CONTAINER(container);
 
   recall_container->recall_channel_run = g_list_prepend(recall_container->recall_channel_run,
@@ -605,13 +608,13 @@ ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_c
 
   if((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0){
     if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      group_id = recall->recall_id->parent_group_id;
+      group_id = recall->recall_id->group_id;
     }else{
       group_id = recall->recall_id->group_id;
     }
   }else if((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0){
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      group_id = recall->recall_id->child_group_id;
+      group_id = recall->recall_id->group_id;
     }else{
       group_id = recall->recall_id->group_id;
     }
