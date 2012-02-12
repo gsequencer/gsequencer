@@ -14,7 +14,7 @@ ags_parameter_grow(GType type,
   GParameter *new_parameter;
   GParamSpec *pspec;
   gchar *property_name;
-  GValue value;
+  GValue value = {0,};
   guint i, count;
   va_list ap;
   gchar *error = NULL;
@@ -26,14 +26,14 @@ ags_parameter_grow(GType type,
   }
 
   if(pspec_pool == NULL){
-    g_param_spec_pool_new(FALSE);
+    pspec_pool = g_param_spec_pool_new(TRUE);
   }
 
   /* count the new properties */
   va_start(ap, first_property_name);
 
   for(i = 0; ; ){
-    va_arg(ap, gpointer);
+    va_arg(ap, void);
     i++;
 
     property_name = va_arg(ap, gchar *);
@@ -52,6 +52,7 @@ ags_parameter_grow(GType type,
   /* add the existing parameters */
   for(i = 0; i < n_params; i++){
     new_parameter[i].name = src[i].name;
+    g_value_init(&(new_parameter[i].value), G_TYPE_NONE);
     g_value_copy(&(src[i].value),
 		 &(new_parameter[i].value));
   }
@@ -73,12 +74,13 @@ ags_parameter_grow(GType type,
 		 property_name);
       break;
     }
-    
+ 
     new_parameter[i].name = property_name;
 
-    va_arg(ap, gpointer);
-    G_VALUE_COLLECT_INIT(&new_parameter[i].value, pspec->value_type,
-			 ap, 0, &error);
+    va_arg(ap, void);
+    G_VALUE_COLLECT_INIT(&(new_parameter[i].value), pspec->value_type,
+    			 ap, 0, &error);
+    
 
     property_name = va_arg(ap, gchar *);
   }

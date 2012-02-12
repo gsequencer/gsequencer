@@ -316,7 +316,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   list = recall_container->recall_channel_run;
 
   if(AGS_RECALL(packable)->recall_id != NULL){
-    group_id = AGS_RECALL(packable)->recall_id->group_id;
+    group_id = ags_recall_audio_run_get_channel_run_group_id(AGS_RECALL_AUDIO_RUN(packable));
 
     while((list = ags_recall_find_group_id(list, group_id)) != NULL){
       g_object_set(G_OBJECT(list->data),
@@ -373,7 +373,7 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   list = recall_container->recall_channel_run;
 
   if(AGS_RECALL(packable)->recall_id != NULL){
-    group_id = AGS_RECALL(packable)->recall_id->group_id;
+    group_id = ags_recall_audio_run_get_channel_run_group_id(AGS_RECALL_AUDIO_RUN(packable));
 
     while((list = ags_recall_find_group_id(list, group_id)) != NULL){
       g_object_set(G_OBJECT(list->data),

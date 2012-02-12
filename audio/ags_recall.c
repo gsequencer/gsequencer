@@ -1113,8 +1113,8 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_para
 /**
  * ags_recall_notify_dependency:
  * @recall an #AgsRecall
- * @flags
- * @count
+ * @flags see AgsRecallNotifyDependencyMode
+ * @count how many dependencies
  *
  * Notifies a recall that an other depends on it.
  */

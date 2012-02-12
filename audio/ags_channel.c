@@ -2436,7 +2436,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* resolve audio */
       ags_audio_resolve_recall(audio,
 			       output->first_recycling, output->last_recycling,
-			       group_id);
+			       next_group_id);
       
       ags_audio_resolve_recall(audio,
 			       first_recycling, last_recycling,
@@ -2572,7 +2572,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       ags_audio_init_recall(audio, stage,
 			    output->first_recycling, output->last_recycling,
-			    group_id);
+			    next_group_id);
 
       first_recycling = ags_output_find_first_input_recycling(AGS_OUTPUT(output));
       last_recycling = ags_output_find_last_input_recycling(AGS_OUTPUT(output));
@@ -2741,7 +2741,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
 	ags_audio_resolve_recall(audio,
 				 channel->first_recycling, channel->last_recycling,
-				 group_id);
+				 child_group_id);
 
 	ags_audio_resolve_recall(audio,
 				 first_recycling, last_recycling,
@@ -2761,7 +2761,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	ags_audio_resolve_recall(audio,
 				 channel->first_recycling, channel->last_recycling,
 				 group_id);
-	
+
 	/* go to the root */
 	ags_channel_recursive_play_init_resolve_up_input(channel->link,
 							 group_id);
@@ -2817,7 +2817,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
 	ags_audio_init_recall(audio, stage,
 			      channel->first_recycling, channel->last_recycling,
-			      group_id);
+			      child_group_id);
 
 	first_recycling = ags_output_find_first_input_recycling(AGS_OUTPUT(channel));
 	last_recycling = ags_output_find_last_input_recycling(AGS_OUTPUT(channel));
@@ -3092,6 +3092,7 @@ ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id)
  */
 //TODO:JK: you may want to store querried child id in a tree for optimization
 //FIXME:JK: most iterations run from the root to the leafs, but the up going functions doesn't do it correctly and will be called after down going functions, it should hurt but isn't clean
+//FIXME:JK: group id for audio has changed
 void
 ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 				      AgsChannel *old_channel_link, AgsChannel *old_link_link)
