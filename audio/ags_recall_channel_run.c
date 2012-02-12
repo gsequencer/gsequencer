@@ -529,9 +529,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 				 guint n_params, GParameter *parameter)
 {
   AgsRecallChannelRun *recall_channel_run, *copy;
-  AgsRecallContainer *container;
-  AgsRecallAudioRun *recall_audio_run;
-  GList *recall_audio_run_list;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 

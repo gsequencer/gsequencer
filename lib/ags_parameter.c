@@ -54,11 +54,11 @@ ags_parameter_grow(GType object_type,
           break;
         }
 
-      //      if(params != NULL){
+      if(params != NULL){
 	params = g_renew (GParameter, params, *n_params + 1);
-	//      }else{
-	//	params = g_new(GParameter, *n_params + 1);
-	//      }
+      }else{
+	params = g_new(GParameter, *n_params + 1);
+      }
 
       params[*n_params].name         = param_name;
       params[*n_params].value.g_type = 0;

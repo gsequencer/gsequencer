@@ -715,7 +715,7 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
   pthread_mutex_unlock(&(devout->append_task_mutex));
   
   /* append to queue */
-  devout->task = g_list_prepend(devout->task, task);
+  devout->task = g_list_append(devout->task, task);
 
   /* wake up an other thread */
   devout->tasks_queued -= 1;
@@ -967,7 +967,7 @@ ags_devout_run(AgsDevout *devout)
 {
   g_return_if_fail(AGS_IS_DEVOUT(devout));
 
-  if((AGS_DEVOUT_PLAY & devout->flags) != 0){
+  if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     fprintf(stdout, "ags_devout_run:  allready playing\n\0");
     return;
   }
