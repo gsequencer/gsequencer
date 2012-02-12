@@ -1590,6 +1590,39 @@ ags_recall_remove_handler(AgsRecall *recall,
 				   recall_handler);
 }
 
+AgsGroupId
+ags_recall_get_appropriate_group_id(AgsRecall *recall,
+				    GObject *audio,
+				    AgsRecallID *recall_id,
+				    gboolean called_by_output)
+{
+  AgsGroupId current_group_id;
+
+  if(called_by_output){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
+      if((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0){
+	current_group_id = recall_id->group_id;
+      }else{
+	current_group_id = recall_id->child_group_id;
+      }
+    }else{
+      current_group_id = recall_id->group_id;
+    }
+  }else{
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
+      if((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0){
+	current_group_id = recall_id->group_id;
+      }else{
+	current_group_id = recall_id->parent_group_id;
+      }
+    }else{
+      current_group_id = recall_id->group_id;
+    }
+  }
+
+  return(current_group_id);
+}
+
 AgsRecall*
 ags_recall_new()
 {

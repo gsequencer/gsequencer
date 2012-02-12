@@ -1855,7 +1855,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 			   gboolean playback, gboolean sequencer, gboolean notation,
 			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			   AgsGroupId group_id,
-			   guint audio_signal_level, gboolean output_orientated)
+			   guint audio_signal_level, gboolean called_by_output)
 {
   AgsRecall *recall;
   AgsRecallID *recall_id;
@@ -1904,8 +1904,8 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       printf("\n");
 
 
-    if(((output_orientated && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0) ||
-	(!output_orientated && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) == 0)) ||
+    if(((called_by_output && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0) ||
+	(!called_by_output && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) == 0)) ||
        (AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_AUDIO(recall) ||
        !matches_reality ||
@@ -1933,8 +1933,20 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 	
 	ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
       }else{
+	AgsRecallID *current_recall_id;
+	AgsGroupId current_group_id;
+
+	current_group_id = ags_recall_get_appropriate_group_id(recall,
+							       (GObject *) audio,
+							       recall_id,
+							       called_by_output);
+
+	current_recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
+								       current_group_id,
+								       first_recycling, last_recycling);
+
 	/* duplicate the recall, notify first run and initialize it */
-	recall = ags_recall_duplicate(recall, recall_id);
+	recall = ags_recall_duplicate(recall, current_recall_id);
 	printf("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(recall));
       
 	if(audio_signal_level == 0)

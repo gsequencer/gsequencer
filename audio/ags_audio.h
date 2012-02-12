@@ -129,7 +129,7 @@ void ags_audio_duplicate_recall(AgsAudio *audio,
 				gboolean playback, gboolean sequencer, gboolean notation,
 				AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 				AgsGroupId group_id,
-				guint audio_signal_level, gboolean output_orientated);
+				guint audio_signal_level, gboolean called_by_output);
 void ags_audio_init_recall(AgsAudio *audio, gint stage,
 			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			   AgsGroupId group_id);

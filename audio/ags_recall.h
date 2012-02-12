@@ -174,6 +174,12 @@ void ags_recall_add_handler(AgsRecall *recall,
 void ags_recall_remove_handler(AgsRecall *recall,
 			       AgsRecallHandler *recall_handler);
 
+
+AgsGroupId ags_recall_get_appropriate_group_id(AgsRecall *recall,
+					       GObject *audio,
+					       AgsRecallID *recall_id,
+					       gboolean called_by_output);
+
 AgsRecall* ags_recall_new();
 
 #endif /*__AGS_RECALL_H__*/
