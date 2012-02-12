@@ -616,10 +616,12 @@ ags_devout_task_thread(void *devout0)
     while(task != NULL){
       printf("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task->data));
       ags_task_launch(AGS_TASK(task->data));
-      devout->task = g_list_remove_link(devout->task, task);
 
       task = task->next;
     }
+
+    g_list_free(devout->task);
+    devout->task = NULL;
 
     devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
 
