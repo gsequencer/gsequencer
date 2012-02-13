@@ -424,7 +424,7 @@ ags_loop_channel_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  printf("%u: %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order, nth_run);
+  printf("ags_loop_channel_loop_callback - run_order: %u; %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order, nth_run);
 
   if(AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order != nth_run)
     return;

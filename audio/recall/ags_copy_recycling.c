@@ -263,6 +263,10 @@ ags_copy_recycling_set_property(GObject *gobject,
 
       if(copy_recycling->destination != NULL){
 	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(copy_recycling)->flags)) != 0){
+	  if((AGS_RECALL_TEMPLATE & (AGS_RECALL(copy_recycling)->flags)) != 0){
+	    printf("WARNING!\n\0");
+	  }
+
 	  gobject = G_OBJECT(copy_recycling->destination);
 
 	  g_signal_handler_disconnect(gobject, copy_recycling->destination_add_audio_signal_handler);
@@ -549,7 +553,7 @@ ags_copy_recycling_destination_add_audio_signal(AgsCopyRecycling *copy_recycling
 						AgsAudioSignal *audio_signal)
 {
   printf("ags_copy_recycling_destination_add_audio_signal - channel: %u\n\0",
-	 AGS_CHANNEL(copy_recycling->source->channel)->line);
+  	 AGS_CHANNEL(copy_recycling->source->channel)->line);
 
   copy_recycling->child_destination = audio_signal;
 }
@@ -661,7 +665,6 @@ void
 ags_copy_recycling_copy_audio_signal_done(AgsRecall *recall,
 					  gpointer data)
 {
-  fprintf(stdout, "ags_copy_recycling_copy_audio_signal_done\n\0");
   recall->flags |= AGS_RECALL_REMOVE | AGS_RECALL_HIDE;
 }
 

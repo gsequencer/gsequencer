@@ -1092,13 +1092,16 @@ AgsRecall*
 ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_params, GParameter *parameter */
 {
   AgsRecall *copy;
+  GParameter *params;
 
   g_return_val_if_fail(AGS_IS_RECALL(recall), NULL);
+
+  params = NULL;
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[DUPLICATE], 0,
-		recall_id, 0, NULL,
+		recall_id, 0, params,
 		&copy);
   g_object_unref(G_OBJECT(recall));
 

@@ -349,7 +349,9 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
 			 copy_pattern_audio_run->count_beats_audio_run->counter)){
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
-    printf("channel: %u\n\0", copy_pattern_channel->recall_channel.channel->line);
+    printf("ags_copy_pattern_channel_run_tic_alloc_callback - playing channel: %u; playing pattern: %u\n\0",
+	   copy_pattern_channel->recall_channel.channel->line,
+	   copy_pattern_audio_run->count_beats_audio_run->counter);
 
     /* get source */
     source = copy_pattern_channel->recall_channel.channel;

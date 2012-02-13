@@ -585,6 +585,8 @@ ags_count_beats_audio_run_tic_alloc_output_callback(AgsDelayAudioRun *delay_audi
 
   if(count_beats_audio_run->counter == 0){
     if(count_beats_audio->loop){
+      printf("ags_count_beats_audio_run_tic_alloc_output_callback: loop\n\0");
+
       ags_count_beats_audio_run_loop(count_beats_audio_run,
 				     nth_run);
     }else{
