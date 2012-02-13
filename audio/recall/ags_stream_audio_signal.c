@@ -21,7 +21,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
-#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_recycling.h>
 
 void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signal);
 void ags_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -44,7 +44,8 @@ void ags_stream_audio_signal_finalize(GObject *gobject);
 void ags_stream_audio_signal_run_post(AgsRecall *recall);
 AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
-					     guint n_params, GParameter *parameter);
+					     guint *n_params, GParameter *parameter);
+void ags_stream_audio_signal_remove(AgsRecall *recall);
 
 enum{
   PROP_0,
@@ -134,6 +135,7 @@ ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signa
 
   recall->run_post = ags_stream_audio_signal_run_post;
   recall->duplicate = ags_stream_audio_signal_duplicate;
+  recall->remove = ags_stream_audio_signal_remove;
 }
 
 void
@@ -281,7 +283,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 AgsRecall*
 ags_stream_audio_signal_duplicate(AgsRecall *recall,
 				  AgsRecallID *recall_id,
-				  guint n_params, GParameter *parameter)
+				  guint *n_params, GParameter *parameter)
 {
   AgsStreamAudioSignal *stream_audio_signal, *copy;
 
@@ -295,6 +297,19 @@ ags_stream_audio_signal_duplicate(AgsRecall *recall,
 	       NULL);
 
   return((AgsRecall *) copy);
+}
+
+void
+ags_stream_audio_signal_remove(AgsRecall *recall)
+{
+  AgsStreamAudioSignal *stream_audio_signal;
+
+  stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
+
+  ags_recycling_remove_audio_signal(AGS_STREAM_RECYCLING(recall->parent)->recycling,
+				    stream_audio_signal->audio_signal);
+
+  AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->remove(recall);
 }
 
 AgsStreamAudioSignal*

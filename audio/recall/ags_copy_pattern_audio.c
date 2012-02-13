@@ -37,6 +37,7 @@ void ags_copy_pattern_audio_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_DEVOUT,
+  PROP_TACT,
   PROP_BANK_INDEX_0,
   PROP_BANK_INDEX_1,
 };
@@ -96,6 +97,18 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 				  PROP_DEVOUT,
 				  param_spec);
 
+  param_spec = g_param_spec_double("tact\0",
+				   "current tact\0",
+				   "The current tact of the AgsPattern\0",
+				   1.0 / 16.0,
+				   16.0,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TACT,
+				  param_spec);
+
+
   param_spec = g_param_spec_uint("bank_index_0\0",
 				 "current bank index 0\0",
 				 "The current bank index 0 of the AgsPattern\0",
@@ -125,6 +138,8 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_SEQUENCER;
 
   copy_pattern_audio->devout = NULL;
+
+  copy_pattern_audio->tact = 4.0;
 
   copy_pattern_audio->i = 0;
   copy_pattern_audio->j = 0;
@@ -157,6 +172,15 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 	g_object_ref(devout);
 
       copy_pattern_audio->devout = devout;
+    }
+    break;
+  case PROP_TACT:
+    {
+      gdouble tact;
+
+      tact = g_value_get_double(value);
+
+      copy_pattern_audio->tact = tact;
     }
     break;
   case PROP_BANK_INDEX_0:
@@ -199,6 +223,11 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
       g_value_set_object(value, copy_pattern->devout);
     }
     break;
+  case PROP_TACT:
+    {
+      g_value_set_double(value, copy_pattern->tact);
+    }
+    break;
   case PROP_BANK_INDEX_0:
     {
       g_value_set_uint(value, copy_pattern->i);
@@ -231,12 +260,14 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
 
 AgsCopyPatternAudio*
 ags_copy_pattern_audio_new(AgsDevout *devout,
+			   gdouble tact,
 			   guint i, guint j)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
 							    "devout\0", devout,
+							    "tact\0", tact,
 							    "bank_index_0\0", i,
 							    "bank_index_1\0", j,
 							    NULL);

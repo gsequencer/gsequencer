@@ -57,7 +57,7 @@ void ags_play_recycling_done(AgsRecall *recall);
 void ags_play_recycling_cancel(AgsRecall *recall);
 AgsRecall* ags_play_recycling_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
-					guint n_params, GParameter *parameter);
+					guint *n_params, GParameter *parameter);
 
 void ags_play_recycling_source_add_audio_signal(AgsPlayRecycling *play_recycling,
 						AgsAudioSignal *audio_signal);
@@ -418,7 +418,7 @@ ags_play_recycling_cancel(AgsRecall *recall)
 AgsRecall*
 ags_play_recycling_duplicate(AgsRecall *recall,
 			     AgsRecallID *recall_id,
-			     guint n_params, GParameter *parameter)
+			     guint *n_params, GParameter *parameter)
 {
   AgsPlayRecycling *play_recycling, *copy;
 

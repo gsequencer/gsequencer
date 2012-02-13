@@ -234,7 +234,7 @@ ags_drum_init(AgsDrum *drum)
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
 							    "audio\0", audio,
 							    "recall_container\0", recall_container,
-							    "length\0", 16,
+							    "length\0", 4 * 16,
 							    "loop\0", FALSE,
 							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
@@ -264,7 +264,7 @@ ags_drum_init(AgsDrum *drum)
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
 							    "audio\0", audio,
 							    "recall_container\0", recall_container,
-							    "length\0", 16,
+							    "length\0", 4 * 16,
 							    "loop\0", FALSE,
 							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
@@ -297,6 +297,7 @@ ags_drum_init(AgsDrum *drum)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
+							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
@@ -328,6 +329,7 @@ ags_drum_init(AgsDrum *drum)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
+							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);

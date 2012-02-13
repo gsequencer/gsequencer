@@ -60,7 +60,7 @@ void ags_play_channel_run_master_cancel(AgsRecall *recall);
 void ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_play_channel_run_master_duplicate(AgsRecall *recall,
 						 AgsRecallID *recall_id,
-						 guint n_params, GParameter *parameter);
+						 guint *n_params, GParameter *parameter);
 
 void ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_channel_run_master);
 void ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
@@ -446,7 +446,7 @@ ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
 AgsRecall*
 ags_play_channel_run_master_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
-				      guint n_params, GParameter *parameter)
+				      guint *n_params, GParameter *parameter)
 {
   AgsPlayChannelRunMaster *play_channel_run_master, *copy;
   

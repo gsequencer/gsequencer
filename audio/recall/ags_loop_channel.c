@@ -49,7 +49,7 @@ void ags_loop_channel_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_loop_channel_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_loop_channel_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
-				      guint n_params, GParameter *parameter);
+				      guint *n_params, GParameter *parameter);
 
 void ags_loop_channel_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				    guint nth_run,
@@ -399,7 +399,7 @@ ags_loop_channel_resolve_dependencies(AgsRecall *recall)
 AgsRecall*
 ags_loop_channel_duplicate(AgsRecall *recall,
 			   AgsRecallID *recall_id,
-			   guint n_params, GParameter *parameter)
+			   guint *n_params, GParameter *parameter)
 {
   AgsLoopChannel *loop_channel, *copy;
 

@@ -70,7 +70,7 @@ void ags_recall_real_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 				     AgsRecallID *recall_id,
-				     guint n_params, GParameter *parameter);
+				     guint *n_params, GParameter *parameter);
 
 enum{
   RESOLVE_DEPENDENCIES,
@@ -343,10 +343,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, duplicate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__OBJECT_UINT_POINTER,
+		 g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER,
 		 G_TYPE_OBJECT, 3,
 		 G_TYPE_OBJECT,
-		 G_TYPE_UINT, G_TYPE_POINTER);
+		 G_TYPE_POINTER, G_TYPE_POINTER);
 
   recall_signals[NOTIFY_DEPENDENCY] =
     g_signal_new("notify_dependency\0",
@@ -977,12 +977,15 @@ ags_recall_real_remove(AgsRecall *recall)
 
   fprintf(stdout, "remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
+  ags_run_connectable_disconnect(recall);
+
   if(recall->parent == NULL){
     parent = NULL;
     g_object_unref(recall);
     return;
   }else{
     parent = AGS_RECALL(recall->parent);
+
     parent->children = g_list_remove(parent->children, recall);
   }
 
@@ -1040,7 +1043,7 @@ ags_recall_is_done(GList *recalls, AgsGroupId group_id)
 AgsRecall*
 ags_recall_real_duplicate(AgsRecall *recall,
 			  AgsRecallID *recall_id,
-			  guint n_params, GParameter *parameter)
+			  guint *n_params, GParameter *parameter)
 {
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
@@ -1048,7 +1051,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
   AgsRecallHandler *recall_handler, *recall_handler_copy;
   GList *list, *child;
 
-  copy = g_object_newv(G_OBJECT_TYPE(recall), n_params, parameter);
+  copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
 
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
@@ -1093,15 +1096,17 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_para
 {
   AgsRecall *copy;
   GParameter *params;
+  guint n_params;
 
   g_return_val_if_fail(AGS_IS_RECALL(recall), NULL);
 
   params = NULL;
+  n_params = 0;
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[DUPLICATE], 0,
-		recall_id, 0, params,
+		recall_id, &n_params, params,
 		&copy);
   g_object_unref(G_OBJECT(recall));
 

@@ -47,7 +47,7 @@ void ags_stream_recycling_finalize(GObject *gobject);
 
 AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
-					  guint n_params, GParameter *parameter);
+					  guint *n_params, GParameter *parameter);
 
 void ags_stream_recycling_add_audio_signal(AgsStreamRecycling *stream_recycling,
 					   AgsRecycling *recycling,
@@ -304,7 +304,7 @@ ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 AgsRecall*
 ags_stream_recycling_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
-			       guint n_params, GParameter *parameter)
+			       guint *n_params, GParameter *parameter)
 {
   AgsStreamRecycling *stream_recycling, *copy;
 

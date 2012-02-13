@@ -779,9 +779,16 @@ ags_devout_play_recall(AgsDevout *devout)
   list = devout->play_recall;
 
   if(list == NULL){
-    devout->flags &= (~AGS_DEVOUT_PLAY_RECALL);
-    ags_devout_stop(devout);
+    if((AGS_DEVOUT_PLAY_RECALL_TERMINATING & (devout->flags)) != 0){
+      devout->flags &= (~(AGS_DEVOUT_PLAY_RECALL |
+			  AGS_DEVOUT_PLAY_RECALL_TERMINATING));
+      ags_devout_stop(devout);
+    }else{
+      devout->flags |= AGS_DEVOUT_PLAY_RECALL_TERMINATING;
+    }
   }
+
+  devout->flags &= (~AGS_DEVOUT_PLAY_RECALL_TERMINATING);
 
   while(list != NULL){
     devout_play = (AgsDevoutPlay *) list->data;
@@ -845,6 +852,18 @@ ags_devout_play_channel(AgsDevout *devout)
   gint stage;
   AgsGroupId group_id;
 
+  if(devout->play_channel == NULL){
+    if((AGS_DEVOUT_PLAY_CHANNEL_TERMINATING & (devout->flags)) != 0){
+      devout->flags &= (~(AGS_DEVOUT_PLAY_CHANNEL |
+			  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING));
+      ags_devout_stop(devout);
+    }else{
+      devout->flags |= AGS_DEVOUT_PLAY_CHANNEL_TERMINATING;
+    }
+  }
+
+  devout->flags &= (~AGS_DEVOUT_PLAY_CHANNEL_TERMINATING);
+
   /* entry point */
   devout->flags |= AGS_DEVOUT_PLAYING_CHANNEL;
 
@@ -887,6 +906,18 @@ ags_devout_play_audio(AgsDevout *devout)
   GList *list_play, *list_next_play;
   gint stage;
   AgsGroupId group_id;
+
+  if(devout->play_audio == NULL){
+    if((AGS_DEVOUT_PLAY_AUDIO_TERMINATING & (devout->flags)) != 0){
+      devout->flags &= (~(AGS_DEVOUT_PLAY_AUDIO |
+			  AGS_DEVOUT_PLAY_AUDIO_TERMINATING));
+      ags_devout_stop(devout);
+    }else{
+      devout->flags |= AGS_DEVOUT_PLAY_AUDIO_TERMINATING;
+    }
+  }
+
+  devout->flags &= (~AGS_DEVOUT_PLAY_AUDIO_TERMINATING);
 
   /* entry point */
   devout->flags |= AGS_DEVOUT_PLAYING_AUDIO;

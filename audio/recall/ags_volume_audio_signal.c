@@ -44,7 +44,7 @@ void ags_volume_audio_signal_finalize(GObject *gobject);
 void ags_volume_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
-					     guint n_params, GParameter *parameter);
+					     guint *n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -311,7 +311,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 AgsRecall*
 ags_volume_audio_signal_duplicate(AgsRecall *recall,
 				  AgsRecallID *recall_id,
-				  guint n_params, GParameter *parameter)
+				  guint *n_params, GParameter *parameter)
 {
   AgsVolumeAudioSignal *volume_audio_signal, *copy;
 

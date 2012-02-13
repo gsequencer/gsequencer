@@ -47,7 +47,7 @@ void ags_recall_audio_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
-				      guint n_params, GParameter *parameter);
+				      guint *n_params, GParameter *parameter);
 
 enum{
   PROP_0,
@@ -361,7 +361,7 @@ ags_recall_audio_finalize(GObject *gobject)
 AgsRecall*
 ags_recall_audio_duplicate(AgsRecall *recall,
 			   AgsRecallID *recall_id,
-			   guint n_params, GParameter *parameter)
+			   guint *n_params, GParameter *parameter)
 {
   AgsRecallAudio *recall_audio, *copy;
 

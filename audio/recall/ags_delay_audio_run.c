@@ -44,7 +44,7 @@ void ags_delay_audio_run_cancel(AgsRecall *recall);
 void ags_delay_audio_run_remove(AgsRecall *recall);
 AgsRecall* ags_delay_audio_run_duplicate(AgsRecall *recall,
 					 AgsRecallID *recall_id,
-					 guint n_params, GParameter *parameter);
+					 guint *n_params, GParameter *parameter);
 void ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
 enum{
@@ -314,7 +314,7 @@ ags_delay_audio_run_remove(AgsRecall *recall)
 AgsRecall*
 ags_delay_audio_run_duplicate(AgsRecall *recall,
 			      AgsRecallID *recall_id,
-			      guint n_params, GParameter *parameter)
+			      guint *n_params, GParameter *parameter)
 {
   AgsDelayAudioRun *delay_audio_run, *copy;
   

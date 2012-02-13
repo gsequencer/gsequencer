@@ -50,7 +50,7 @@ void ags_volume_channel_finalize(GObject *gobject);
 
 AgsRecall* ags_volume_channel_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
-					guint n_params, GParameter *parameter);
+					guint *n_params, GParameter *parameter);
 
 void ags_volume_channel_map_volume_recycling(AgsVolumeChannel *volume_channel);
 void ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
@@ -317,7 +317,7 @@ ags_volume_channel_run_disconnect(AgsRunConnectable *run_connectable)
 AgsRecall*
 ags_volume_channel_duplicate(AgsRecall *recall,
 			     AgsRecallID *recall_id,
-			     guint n_params, GParameter *parameter)
+			     guint *n_params, GParameter *parameter)
 {
   AgsVolumeChannel *volume_channel, *copy;
 

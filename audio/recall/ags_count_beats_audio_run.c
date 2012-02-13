@@ -59,7 +59,7 @@ guint ags_count_beats_audio_run_get_counter(AgsCountable *countable);
 void ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_count_beats_audio_run_duplicate(AgsRecall *recall,
 					       AgsRecallID *recall_id,
-					       guint n_params, GParameter *parameter);
+					       guint *n_params, GParameter *parameter);
 void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 						 guint notify_mode,
 						 gint count);
@@ -509,7 +509,7 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
 AgsRecall*
 ags_count_beats_audio_run_duplicate(AgsRecall *recall,
 				    AgsRecallID *recall_id,
-				    guint n_params, GParameter *parameter)
+				    guint *n_params, GParameter *parameter)
 {
   AgsCountBeatsAudioRun *copy;
 

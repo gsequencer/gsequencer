@@ -54,7 +54,7 @@ void ags_recall_audio_run_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
-					  guint n_params, GParameter *parameter);
+					  guint *n_params, GParameter *parameter);
 
 AgsGroupId ags_recall_audio_run_real_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run);
 
@@ -441,7 +441,7 @@ ags_recall_audio_run_run_disconnect(AgsConnectable *connectable)
 AgsRecall*
 ags_recall_audio_run_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
-			       guint n_params, GParameter *parameter)
+			       guint *n_params, GParameter *parameter)
 {
   AgsRecallAudioRun *recall_audio_run, *copy;
 

@@ -50,7 +50,7 @@ void ags_copy_pattern_channel_run_cancel(AgsRecall *recall);
 void ags_copy_pattern_channel_run_remove(AgsRecall *recall);
 AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 						  AgsRecallID *recall_id,
-						  guint n_params, GParameter *parameter);
+						  guint *n_params, GParameter *parameter);
 
 void ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 						     guint run_order,
@@ -306,7 +306,7 @@ ags_copy_pattern_channel_run_remove(AgsRecall *recall)
 AgsRecall*
 ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 				       AgsRecallID *recall_id,
-				       guint n_params, GParameter *parameter)
+				       guint *n_params, GParameter *parameter)
 {
   AgsCopyPatternChannelRun *copy;
 
@@ -340,6 +340,11 @@ ags_copy_pattern_channel_run_tic_alloc_callback(AgsDelayAudioRun *delay_audio_ru
 
   /* get AgsCopyPatternAudioRun */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
+
+  /* check if it's time to play a beat */
+  if(copy_pattern_audio_run->tact_delay != 0){
+    return;
+  }
 
   /* get AgsCopyPatternChannel */
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);

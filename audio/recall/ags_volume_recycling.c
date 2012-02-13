@@ -47,7 +47,7 @@ void ags_volume_recycling_finalize(GObject *gobject);
 
 AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
-					  guint n_params, GParameter *parameter);
+					  guint *n_params, GParameter *parameter);
 
 void ags_volume_recycling_add_audio_signal(AgsVolumeRecycling *volume_recycling,
 					   AgsRecycling *recycling,
@@ -311,7 +311,7 @@ ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 AgsRecall*
 ags_volume_recycling_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
-			       guint n_params, GParameter *parameter)
+			       guint *n_params, GParameter *parameter)
 {
   AgsVolumeRecycling *volume_recycling, *copy;
 

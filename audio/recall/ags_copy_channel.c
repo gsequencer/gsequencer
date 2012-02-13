@@ -57,7 +57,7 @@ void ags_copy_channel_remove(AgsRecall *recall);
 void ags_copy_channel_cancel(AgsRecall *recall);
 AgsRecall* ags_copy_channel_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
-				      guint n_params, GParameter *parameter);
+				      guint *n_params, GParameter *parameter);
 
 void ags_copy_channel_map_copy_recycling(AgsCopyChannel *copy_channel);
 void ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
@@ -498,7 +498,7 @@ ags_copy_channel_remove(AgsRecall *recall)
 AgsRecall*
 ags_copy_channel_duplicate(AgsRecall *recall,
 			   AgsRecallID *recall_id,
-			   guint n_params, GParameter *parameter)
+			   guint *n_params, GParameter *parameter)
 {
   AgsCopyChannel *copy_channel, *copy;
 

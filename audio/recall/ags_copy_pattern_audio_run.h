@@ -40,6 +40,11 @@ struct _AgsCopyPatternAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
 
+  guint hide_ref;
+  guint hide_ref_counter;
+  
+  guint tact_delay;
+
   AgsCountBeatsAudioRun *count_beats_audio_run;
 };
 

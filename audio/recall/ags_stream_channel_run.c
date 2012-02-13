@@ -42,7 +42,7 @@ void ags_stream_channel_run_finalize(GObject *gobject);
 
 AgsRecall* ags_stream_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
-					    guint n_params, GParameter *parameter);
+					    guint *n_params, GParameter *parameter);
 
 void ags_stream_channel_run_map_stream_recycling(AgsStreamChannelRun *stream_channel_run);
 void ags_stream_channel_run_remap_stream_recycling(AgsStreamChannelRun *stream_channel_run,
@@ -214,7 +214,7 @@ ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
 AgsRecall*
 ags_stream_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
-				 guint n_params, GParameter *parameter)
+				 guint *n_params, GParameter *parameter)
 {
   AgsStreamChannelRun *stream_channel_run, *copy;
 

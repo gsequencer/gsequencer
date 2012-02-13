@@ -57,27 +57,33 @@ typedef enum
   AGS_DEVOUT_BUFFER1                        = 1 << 1,
   AGS_DEVOUT_BUFFER2                        = 1 << 2,
   AGS_DEVOUT_BUFFER3                        = 1 << 3,
+
   AGS_DEVOUT_ATTACK_FIRST                   = 1 << 4,
+
   AGS_DEVOUT_PLAY                           = 1 << 5,
+
   AGS_DEVOUT_WAIT_DEVICE                    = 1 << 6,
   AGS_DEVOUT_WAIT_RECALL                    = 1 << 7,
   AGS_DEVOUT_WAIT_PLAY_FUNCTIONS            = 1 << 8,
-
   AGS_DEVOUT_RUN_TASK                       = 1 << 9,
   AGS_DEVOUT_WAIT_TASK                      = 1 << 10,
 
   AGS_DEVOUT_LIBAO                          = 1 << 11,
   AGS_DEVOUT_OSS                            = 1 << 12,
   AGS_DEVOUT_ALSA                           = 1 << 13,
+
   AGS_DEVOUT_PLAY_RECALL                    = 1 << 14,
   AGS_DEVOUT_PLAYING_RECALL                 = 1 << 15,
-  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 16,
-  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 17,
-  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 18,
-  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 19,
-  AGS_DEVOUT_PLAY_NOTE                      = 1 << 20,
+  AGS_DEVOUT_PLAY_RECALL_TERMINATING        = 1 << 16,
+  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 17,
+  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 18,
+  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING       = 1 << 19,
+  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 20,
+  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 21,
+  AGS_DEVOUT_PLAY_AUDIO_TERMINATING         = 1 << 22,
+  AGS_DEVOUT_PLAY_NOTE                      = 1 << 23,
 
-  AGS_DEVOUT_SHUTDOWN                       = 1 << 21,
+  AGS_DEVOUT_SHUTDOWN                       = 1 << 24,
 }AgsDevoutFlags;
 
 typedef enum

@@ -40,6 +40,7 @@ struct _AgsCopyPatternAudio
   AgsRecallAudio recall_audio;
 
   AgsDevout *devout;
+  gdouble tact;
 
   guint i;
   guint j;
@@ -53,6 +54,7 @@ struct _AgsCopyPatternAudioClass
 GType ags_copy_pattern_audio_get_type();
 
 AgsCopyPatternAudio* ags_copy_pattern_audio_new(AgsDevout *devout,
+						gdouble tact,
 						guint i, guint j);
 
 #endif /*__AGS_COPY_PATTERN_AUDIO_H__*/

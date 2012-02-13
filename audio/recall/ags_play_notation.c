@@ -45,7 +45,7 @@ void ags_play_notation_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_notation_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_play_notation_duplicate(AgsRecall *recall,
 				       AgsRecallID *recall_id,
-				       guint n_params, GParameter *parameter);
+				       guint *n_params, GParameter *parameter);
 
 void ags_play_notation_play_note_done(AgsRecall *recall, AgsPlayNotation *play_notation);
 void ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation);
@@ -468,7 +468,7 @@ ags_play_notation_resolve_dependencies(AgsRecall *recall)
 AgsRecall*
 ags_play_notation_duplicate(AgsRecall *recall,
 			    AgsRecallID *recall_id,
-			    guint n_params, GParameter *parameter)
+			    guint *n_params, GParameter *parameter)
 {
   AgsPlayNotation *copy, *play_notation;
 

@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/lib/ags_parameter.h>
+
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
@@ -56,7 +58,7 @@ void ags_recall_channel_run_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
-					    guint n_params, GParameter *parameter);
+					    guint *n_params, GParameter *parameter);
 
 AgsGroupId ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run);
 void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
@@ -526,14 +528,14 @@ ags_recall_channel_run_run_disconnect(AgsConnectable *connectable)
 AgsRecall*
 ags_recall_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
-				 guint n_params, GParameter *parameter)
+				 guint *n_params, GParameter *parameter)
 {
   AgsRecallChannelRun *recall_channel_run, *copy;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, &n_params,
+				 parameter, n_params,
 				 "channel\0", recall_channel_run->channel,
 				 NULL);
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
