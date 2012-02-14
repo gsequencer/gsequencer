@@ -35,6 +35,8 @@
 
 #include <ags/X/machine/ags_drum.h>
 
+#include <math.h>
+
 void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
 void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
@@ -165,7 +167,9 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
       
       if(list != NULL){
 	delay_audio = (AgsDelayAudio *) list->data;
-	stop = ((guint)drum->length_spin->adjustment->value) * (delay_audio->delay + 1);
+	stop = ((guint)(drum->length_spin->adjustment->value *
+			exp2((double) gtk_option_menu_get_history(drum->tact))) *
+		(delay_audio->delay + 1));
       }
     }
     
