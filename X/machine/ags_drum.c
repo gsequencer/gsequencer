@@ -197,7 +197,7 @@ ags_drum_init(AgsDrum *drum)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "delay\0", 0,
+						 "tactable\0", AGS_TACTABLE(drum),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -225,7 +225,7 @@ ags_drum_init(AgsDrum *drum)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "delay\0", 0,
+						 "tactable\0", AGS_TACTABLE(drum),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -519,9 +519,9 @@ ags_drum_connect(AgsConnectable *connectable)
 
   ags_drum_parent_connectable_interface->connect(connectable);
 
-  /* AgsDrum */
   drum = AGS_DRUM(connectable);
 
+  /* AgsDrum */
   g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
 

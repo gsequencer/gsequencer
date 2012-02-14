@@ -40,7 +40,12 @@ struct _AgsDelayAudio
 {
   AgsRecallAudio recall_audio;
 
+  gdouble bpm;
+  gdouble tact;
+  gdouble duration;
+
   guint delay;
+  guint sequencer_delay;
 
   AgsTactable *tactable;
 };

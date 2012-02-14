@@ -17,11 +17,15 @@
  */
 
 #include <ags/audio/recall/ags_delay_audio.h>
-
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
+#include <ags/object/ags_connectable.h>
+
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
+void ags_delay_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);
+void ags_delay_audio_connect(AgsConnectable *connectable);
+void ags_delay_audio_disconnect(AgsConnectable *connectable);
 void ags_delay_audio_set_property(GObject *gobject,
 				  guint prop_id,
 				  const GValue *value,
@@ -36,6 +40,7 @@ enum{
   PROP_0,
   PROP_TACTABLE,
   PROP_DELAY,
+  PROP_SEQUENCER_DELAY,
 };
 
 static gpointer ags_delay_audio_parent_class = NULL;
@@ -58,10 +63,21 @@ ags_delay_audio_get_type()
       (GInstanceInitFunc) ags_delay_audio_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_delay_audio_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_delay_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						  "AgsDelayAudio\0",
 						  &ags_delay_audio_info,
 						  0);
+
+    g_type_add_interface_static(ags_type_delay_audio,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
   }
 
   return(ags_type_delay_audio);
@@ -97,21 +113,51 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				 "delay for timeing\0",
 				 "The delay whenever a tic occures\0",
 				 0,
-				 65536,
+				 65535,
 				 0,
 				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY,
 				  param_spec);
 
+  param_spec = g_param_spec_uint("sequencer_delay\0",
+				 "sequencer delay for timeing\0",
+				 "The sequencer delay whenever a tic occures\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY,
+				  param_spec);
+}
+
+void
+ags_delay_audio_connectable_interface_init(AgsConnectableInterface *connectable)
+{
 }
 
 void
 ags_delay_audio_init(AgsDelayAudio *delay_audio)
 {
+  delay_audio->bpm = 120.0;
+  delay_audio->tact = 1.0 / 4.0;
+  delay_audio->duration = 16.0;
+
   delay_audio->delay = 0;
+  delay_audio->sequencer_delay = 0;
 
   delay_audio->tactable = NULL;
+}
+
+void
+ags_delay_audio_connect(AgsConnectable *connectable)
+{
+}
+
+void
+ags_delay_audio_disconnect(AgsConnectable *connectable)
+{
 }
 
 void
@@ -130,6 +176,13 @@ ags_delay_audio_set_property(GObject *gobject,
       guint delay;
 
       delay_audio->delay = (guint) g_value_get_uint(value);
+    }
+    break;
+  case PROP_SEQUENCER_DELAY:
+    {
+      guint delay;
+
+      delay_audio->sequencer_delay = (guint) g_value_get_uint(value);
     }
     break;
   case PROP_TACTABLE:
@@ -173,6 +226,11 @@ ags_delay_audio_get_property(GObject *gobject,
   case PROP_DELAY:
     {
       g_value_set_uint(value, delay_audio->delay);
+    }
+    break;
+  case PROP_SEQUENCER_DELAY:
+    {
+      g_value_set_uint(value, delay_audio->sequencer_delay);
     }
     break;
   case PROP_TACTABLE:
