@@ -176,18 +176,20 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW);
 
-  audio = drum->machine.audio;
-  devout = AGS_DEVOUT(audio->devout);
-
   bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+  ags_tactable_change_bpm(AGS_TACTABLE(drum), bpm);
 
+  //  audio = drum->machine.audio;
+  //  devout = AGS_DEVOUT(audio->devout);
+
+  //  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+  /*
   delay = (guint) round(((double)devout->frequency /
 			 (double)devout->buffer_size) *
 			(60.0 / bpm) *
 			tact);
-
-  /* AgsDelayAudio */
+  */
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -207,7 +209,7 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
   length = (guint) drum->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCountBeatsAudio */
+  /* AgsCountBeatsAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
@@ -226,7 +228,7 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
     count_beats_audio->stream_length = stream_length;
   }
 
-  /* resize audio signals */
+  /* resize audio signals * /
   channel = drum->machine.audio->output;
 
   while(channel != NULL){
@@ -234,6 +236,7 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
 
     channel = channel->next;
   }
+  */
 }
 
 void
@@ -503,18 +506,23 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
   double bpm, tact;
   guint length, stream_length, delay;
 
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+  ags_tactable_change_tact(AGS_TACTABLE(drum), tact);
+
+  /*
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
   audio = drum->machine.audio;
   devout = AGS_DEVOUT(audio->devout);
+  */
+  //  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
 
-  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+  /*
   delay = (guint) round(((double)devout->frequency /
 			 (double)devout->buffer_size) *
 			(60.0 / bpm) *
 			tact);
 
-  /* AgsDelayAudio */
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -534,7 +542,7 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
   length = (guint) drum->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCountBeatsAudio */
+  /* AgsCountBeatsAudio * /
   list = ags_recall_find_type(drum->machine.audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
@@ -553,7 +561,7 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
     count_beats_audio->stream_length = stream_length;
   }
 
-  /* resize audio signal */
+  /* resize audio signal * /
   channel = drum->machine.audio->output;
 
   while(channel != NULL){
@@ -561,20 +569,27 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
 
     channel = channel->next;
   }
+  */
 }
 
 void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
+  /*
   AgsChannel *channel;
   AgsDelayAudio *delay_audio;
   AgsCountBeatsAudio *count_beats_audio;
   GList *list;
   guint delay, length, stream_length;
+  */
+  gdouble duration;
 
-  channel = drum->machine.audio->output;
+  duration = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  ags_tactable_change_duration(AGS_TACTABLE(drum), duration);
 
-  /* AgsDelayAudio */
+//  channel = drum->machine.audio->output;
+
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(drum->machine.audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -587,7 +602,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCountBeatsAudio */
+  /* AgsCountBeatsAudio * /
   list = ags_recall_find_type(drum->machine.audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
@@ -608,12 +623,13 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
     count_beats_audio->stream_length = stream_length;
   }
 
-  /* resize audio signal */
+  /* resize audio signal * /
   while(channel != NULL){
     ags_channel_resize_audio_signal(channel, stream_length);
 
     channel = channel->next;
   }
+  */
 }
 
 void

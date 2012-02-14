@@ -46,7 +46,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_duration),
 	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+	       g_cclosure_marshal_VOID__DOUBLE,
 	       G_TYPE_NONE, 2,
 	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 
@@ -55,7 +55,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
 	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+	       g_cclosure_marshal_VOID__DOUBLE,
 	       G_TYPE_NONE, 2,
 	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 
@@ -64,40 +64,40 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
 	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+	       g_cclosure_marshal_VOID__DOUBLE,
 	       G_TYPE_NONE, 2,
 	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 }
 
 void
-ags_tactable_change_duration(AgsTactable *tactable, double duration, double old_duration)
+ags_tactable_change_duration(AgsTactable *tactable, double duration)
 {
   AgsTactableInterface *tactable_interface;
 
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
   g_return_if_fail(tactable_interface->change_duration);
-  tactable_interface->change_duration(tactable, duration, old_duration);
+  tactable_interface->change_duration(tactable, duration);
 }
 
 void
-ags_tactable_change_tact(AgsTactable *tactable, double tact, double old_tact)
+ags_tactable_change_tact(AgsTactable *tactable, double tact)
 {
   AgsTactableInterface *tactable_interface;
 
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
   g_return_if_fail(tactable_interface->change_tact);
-  tactable_interface->change_tact(tactable, tact, old_tact);
+  tactable_interface->change_tact(tactable, tact);
 }
 
 void
-ags_tactable_change_bpm(AgsTactable *tactable, double bpm, double old_bpm)
+ags_tactable_change_bpm(AgsTactable *tactable, double bpm)
 {
   AgsTactableInterface *tactable_interface;
 
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
   g_return_if_fail(tactable_interface->change_bpm);
-  tactable_interface->change_bpm(tactable, bpm, old_bpm);
+  tactable_interface->change_bpm(tactable, bpm);
 }
