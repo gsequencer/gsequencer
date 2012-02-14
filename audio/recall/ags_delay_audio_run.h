@@ -39,21 +39,29 @@ struct _AgsDelayAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
 
+  AgsTactable *tactable;
+  AgsAttack *attack;
+
   guint dependency_ref;
 
   guint hide_ref;
   guint hide_ref_counter;
 
   guint counter;
+  guint sequencer_counter;
 };
 
 struct _AgsDelayAudioRunClass
 {
   AgsRecallAudioRunClass recall_audio_run;
 
-  void (*tic_alloc_output)(AgsDelayAudioRun *delay, guint nth_run);
-  void (*tic_alloc_input)(AgsDelayAudioRun *delay, guint nth_run);
-  void (*tic_count)(AgsDelayAudioRun *delay, guint nth_run);
+  void (*notation_alloc_output)(AgsDelayAudioRun *delay, guint nth_run);
+  void (*notation_alloc_input)(AgsDelayAudioRun *delay, guint nth_run);
+  void (*notation_count)(AgsDelayAudioRun *delay, guint nth_run);
+
+  void (*sequencer_alloc_output)(AgsDelayAudioRun *delay, guint nth_run);
+  void (*sequencer_alloc_input)(AgsDelayAudioRun *delay, guint nth_run);
+  void (*sequencer_count)(AgsDelayAudioRun *delay, guint nth_run);
 };
 
 GType ags_delay_audio_run_get_type();

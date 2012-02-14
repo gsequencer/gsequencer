@@ -35,6 +35,7 @@ struct _AgsTactableInterface
 {
   GTypeInterface interface;
 
+  void (*change_tact)(AgsTactable *tactable, gdouble tact, gdouble old_tact);
   void (*change_bpm)(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
 };
 

@@ -23,27 +23,50 @@ void ags_tactable_base_init(AgsTactableInterface *interface);
 GType
 ags_tactable_get_type()
 {
-  static GType ags_type_tactable = 0;
+  static GType tactable_type = 0;
 
-  if(!ags_type_tactable){
-    static const GTypeInfo ags_tactable_info = {
-      sizeof(AgsTactableInterface),
-      (GBaseInitFunc) ags_tactable_base_init,
-      NULL, /* base_finalize */
-    };
-
-    ags_type_tactable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsTactable\0", &ags_tactable_info,
-					       0);
+  if(!tactable_type){
+    tactable_type = g_type_register_static_simple (G_TYPE_INTERFACE,
+						   "AgsTactable\0",
+						   sizeof (AgsTactableInterface),
+						   (GClassInitFunc) ags_tactable_class_init,
+						   0, NULL, 0);
   }
-
-  return(ags_type_tactable);
+  
+  return tactable_type;
 }
 
 void
-ags_tactable_base_init(AgsTactableInterface *interface)
+ags_tactable_class_init(AgsTactableInterface *interface)
 {
-  /* empty */
+  g_signal_new("change_tact\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
+	       NULL, NULL,
+	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+	       G_TYPE_NONE, 2,
+	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+
+  g_signal_new("change_bpm\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
+	       NULL, NULL,
+	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+	       G_TYPE_NONE, 2,
+	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+}
+
+void
+ags_tactable_change_tact(AgsTactable *tactable, double tact, double old_tact)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_if_fail(AGS_IS_TACTABLE(tactable));
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_if_fail(tactable_interface->change_tact);
+  tactable_interface->change_tact(tactable, tact, old_tact);
 }
 
 void

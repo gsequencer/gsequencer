@@ -41,6 +41,10 @@ typedef enum{
   AGS_AUDIO_SIGNAL_STANDALONE           = 1 << 2,
 }AgsAudioSignalFlags;
 
+typedef enum{
+  AGS_ATTACK_SWAP       = 1,
+}AgsAttackFlags;
+
 struct _AgsAudioSignal
 {
   GObject object;
@@ -69,8 +73,11 @@ struct _AgsAudioSignalClass
 
 struct _AgsAttack
 {
+  guint flags;
+
   guint first_start;
   guint first_length;
+
   guint second_start;
   guint second_length;
 };

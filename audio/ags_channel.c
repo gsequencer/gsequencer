@@ -2267,14 +2267,14 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       ags_audio_duplicate_recall(audio,
 				 playback, sequencer, notation,
 				 output->first_recycling, output->last_recycling,
-				 next_group_id,
+				 group_id,
 				 next_audio_signal_level, TRUE);
 
       /* duplicate audio */
       ags_audio_duplicate_recall(audio,
 				 playback, sequencer, notation,
 				 output->first_recycling, output->last_recycling,
-				 next_group_id,
+				 group_id,
 				 next_audio_signal_level, FALSE);
 
       /* call function which duplicates input */

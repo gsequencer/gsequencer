@@ -189,12 +189,16 @@ ags_delay_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *r
 void
 ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 {
+  delay_audio_run->tactable = NULL;
+  delay_audio_run->attack = NULL;
+
   delay_audio_run->dependency_ref = 0;
 
   delay_audio_run->hide_ref = 0;
   delay_audio_run->hide_ref_counter = 0;
 
   delay_audio_run->counter = 0;
+  delay_audio_run->sequencer_counter = 0;
 }
 
 void
