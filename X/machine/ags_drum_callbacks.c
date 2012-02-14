@@ -177,7 +177,8 @@ ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW);
 
   bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  ags_tactable_change_bpm(AGS_TACTABLE(drum), bpm);
+  g_signal_emit_by_name(AGS_TACTABLE(drum), "change_bpm\0",
+			bpm);
 
   //  audio = drum->machine.audio;
   //  devout = AGS_DEVOUT(audio->devout);
@@ -507,7 +508,8 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
   guint length, stream_length, delay;
 
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
-  ags_tactable_change_tact(AGS_TACTABLE(drum), tact);
+  g_signal_emit_by_name(AGS_TACTABLE(drum), "change_tact\0",
+			tact);
 
   /*
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
@@ -585,7 +587,8 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   gdouble duration;
 
   duration = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
-  ags_tactable_change_duration(AGS_TACTABLE(drum), duration);
+  g_signal_emit_by_name(AGS_TACTABLE(drum), "change_duration\0",
+			duration);
 
 //  channel = drum->machine.audio->output;
 

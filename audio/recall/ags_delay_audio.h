@@ -48,6 +48,10 @@ struct _AgsDelayAudio
   guint sequencer_delay;
 
   AgsTactable *tactable;
+  
+  gulong change_bpm_handle;
+  gulong change_tact_handle;
+  gulong change_duration_handle;
 };
 
 struct _AgsDelayAudioClass
