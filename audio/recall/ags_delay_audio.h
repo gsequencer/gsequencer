@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_recall_audio.h>
 
+#include <ags/object/ags_tactable.h>
+
 #define AGS_TYPE_DELAY_AUDIO                (ags_delay_audio_get_type())
 #define AGS_DELAY_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DELAY_AUDIO, AgsDelayAudio))
 #define AGS_DELAY_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DELAY_AUDIO, AgsDelayAudio))
@@ -39,6 +41,8 @@ struct _AgsDelayAudio
   AgsRecallAudio recall_audio;
 
   guint delay;
+
+  AgsTactable *tactable;
 };
 
 struct _AgsDelayAudioClass

@@ -18,7 +18,9 @@
 
 #include <ags/object/ags_tactable.h>
 
-void ags_tactable_base_init(AgsTactableInterface *interface);
+#include <ags/object/ags_marshal.h>
+
+void ags_tactable_class_init(AgsTactableInterface *interface);
 
 GType
 ags_tactable_get_type()
@@ -39,6 +41,15 @@ ags_tactable_get_type()
 void
 ags_tactable_class_init(AgsTactableInterface *interface)
 {
+  g_signal_new("change_duration\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsTactableInterface, change_duration),
+	       NULL, NULL,
+	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+	       G_TYPE_NONE, 2,
+	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+
   g_signal_new("change_tact\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
@@ -56,6 +67,17 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
 	       G_TYPE_NONE, 2,
 	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+}
+
+void
+ags_tactable_change_duration(AgsTactable *tactable, double duration, double old_duration)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_if_fail(AGS_IS_TACTABLE(tactable));
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_if_fail(tactable_interface->change_duration);
+  tactable_interface->change_duration(tactable, duration, old_duration);
 }
 
 void

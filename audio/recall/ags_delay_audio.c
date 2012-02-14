@@ -34,6 +34,7 @@ void ags_delay_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_TACTABLE,
   PROP_DELAY,
 };
 
@@ -83,13 +84,22 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   gobject->finalize = ags_delay_audio_finalize;
 
   /* properties */
+  param_spec = g_param_spec_object("tactable\0",
+				   "assigned tactable\0",
+				   "The tactable it is assigned with\0",
+				   AGS_TYPE_TACTABLE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TACTABLE,
+				  param_spec);
+
   param_spec = g_param_spec_uint("delay\0",
 				 "delay for timeing\0",
 				 "The delay whenever a tic occures\0",
 				 0,
 				 65536,
 				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY,
 				  param_spec);
@@ -100,6 +110,8 @@ void
 ags_delay_audio_init(AgsDelayAudio *delay_audio)
 {
   delay_audio->delay = 0;
+
+  delay_audio->tactable = NULL;
 }
 
 void
@@ -118,6 +130,27 @@ ags_delay_audio_set_property(GObject *gobject,
       guint delay;
 
       delay_audio->delay = (guint) g_value_get_uint(value);
+    }
+    break;
+  case PROP_TACTABLE:
+    {
+      AgsTactable *tactable;
+
+      tactable = (AgsTactable *) g_value_get_object(value);
+
+      if(tactable == delay_audio->tactable){
+	return;
+      }
+
+      if(delay_audio->tactable != NULL){
+	g_object_unref(G_OBJECT(delay_audio->tactable));
+      }
+
+      if(tactable != NULL){
+	g_object_ref(G_OBJECT(tactable));
+      }
+
+      delay_audio->tactable = tactable;
     }
     break;
   default:
@@ -140,6 +173,11 @@ ags_delay_audio_get_property(GObject *gobject,
   case PROP_DELAY:
     {
       g_value_set_uint(value, delay_audio->delay);
+    }
+    break;
+  case PROP_TACTABLE:
+    {
+      g_value_set_object(value, delay_audio->tactable);
     }
     break;
   default:

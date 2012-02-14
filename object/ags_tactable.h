@@ -35,12 +35,15 @@ struct _AgsTactableInterface
 {
   GTypeInterface interface;
 
+  void (*change_duration)(AgsTactable *tactable, gdouble duration, gdouble old_duration);
   void (*change_tact)(AgsTactable *tactable, gdouble tact, gdouble old_tact);
   void (*change_bpm)(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
 };
 
 GType ags_tactable_get_type();
 
+void ags_tactable_change_duration(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
+void ags_tactable_change_tact(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
 void ags_tactable_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
 
 #endif /*__AGS_TACTABLE_H__*/

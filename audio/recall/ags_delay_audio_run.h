@@ -22,7 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 
 #define AGS_TYPE_DELAY_AUDIO_RUN                (ags_delay_audio_run_get_type())
@@ -39,7 +38,6 @@ struct _AgsDelayAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
 
-  AgsTactable *tactable;
   AgsAttack *attack;
 
   guint dependency_ref;
@@ -66,9 +64,13 @@ struct _AgsDelayAudioRunClass
 
 GType ags_delay_audio_run_get_type();
 
-void ags_delay_audio_run_tic_alloc_output(AgsDelayAudioRun *delay, guint nth_run);
-void ags_delay_audio_run_tic_alloc_input(AgsDelayAudioRun *delay, guint nth_run);
-void ags_delay_audio_run_tic_count(AgsDelayAudioRun *delay, guint nth_run);
+void ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay, guint nth_run);
+void ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay, guint nth_run);
+void ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay, guint nth_run);
+
+void ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay, guint nth_run);
+void ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay, guint nth_run);
+void ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay, guint nth_run);
 
 AgsDelayAudioRun* ags_delay_audio_run_new();
 
