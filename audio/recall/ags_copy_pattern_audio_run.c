@@ -375,8 +375,6 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
 
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
-    copy_pattern_audio_run->hide_ref += count;
-    printf("copy_pattern_audio_run->hide_ref: %u\n\0", copy_pattern_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;
@@ -385,6 +383,8 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
   case AGS_RECALL_NOTIFY_CHANNEL:
     break;
   case AGS_RECALL_NOTIFY_CHANNEL_RUN:
+    copy_pattern_audio_run->hide_ref += count;
+    printf("copy_pattern_audio_run->hide_ref: %u\n\0", copy_pattern_audio_run->hide_ref);
     break;
   default:
     printf("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify\0");

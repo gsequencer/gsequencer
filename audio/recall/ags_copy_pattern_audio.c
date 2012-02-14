@@ -139,7 +139,7 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 
   copy_pattern_audio->devout = NULL;
 
-  copy_pattern_audio->tact = 4.0;
+  copy_pattern_audio->tact = 1.0;
 
   copy_pattern_audio->i = 0;
   copy_pattern_audio->j = 0;
