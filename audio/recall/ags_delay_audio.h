@@ -44,6 +44,7 @@ struct _AgsDelayAudio
   gdouble tact;
   gdouble duration;
 
+  guint frames;
   guint delay;
   guint sequencer_delay;
 
@@ -61,6 +62,6 @@ struct _AgsDelayAudioClass
 
 GType ags_delay_audio_get_type();
 
-AgsDelayAudio* ags_delay_audio_new(guint delay);
+AgsDelayAudio* ags_delay_audio_new(AgsTactable *tactable);
 
 #endif /*__AGS_DELAY_AUDIO_H__*/

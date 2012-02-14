@@ -276,9 +276,23 @@ ags_delay_audio_run_finalize(GObject *gobject)
 void
 ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 {
+  AgsDevout *devout;
+  AgsDelayAudio *delay_audio;
+  AgsDelayAudioRun *delay_audio_run;
+
+  /* call parent class */
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_init_pre(recall);
 
+  /* AgsRecall */
   recall->flags |= AGS_RECALL_PERSISTENT;
+
+  /* AgsDelayAudioRun */
+  delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
+  delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
+
+  devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+
+  delay_audio_run->attack = ags_attack_duplicate_from_devout((GObject *) devout);
 }
 
 void
@@ -303,28 +317,52 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       delay_audio_run->hide_ref_counter++;
 
     if(delay_audio_run->counter == 0){
+      AgsDevout *devout;
       guint run_order;
+      guint attack;
+
+      devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
       run_order = delay_audio_run->hide_ref_counter;
+      
+      //TODO:JK: optimize attack calculation
+      attack = (delay_audio_run->attack->first_start +
+		delay_audio_run->counter * delay_audio->frames) % devout->buffer_size;
 
-      //      printf("delay signal\n\0");
+      /* notation speed */
+      ags_delay_audio_run_notation_alloc_output(delay_audio_run, run_order,
+						attack);
+      ags_delay_audio_run_notation_alloc_input(delay_audio_run, run_order,
+					       attack);
+      ags_delay_audio_run_notation_count(delay_audio_run, run_order,
+					 attack);
 
-      ags_delay_audio_run_notation_alloc_output(delay_audio_run,
-					   run_order);
-      ags_delay_audio_run_notation_alloc_input(delay_audio_run,
-					  run_order);
-      ags_delay_audio_run_notation_count(delay_audio_run,
-				    run_order);
+      /* sequencer speed */
+      if(delay_audio_run->sequencer_counter == 0){
+	ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,
+						   attack);
+	ags_delay_audio_run_sequencer_alloc_input(delay_audio_run, run_order,
+						  attack);
+	ags_delay_audio_run_sequencer_count(delay_audio_run, run_order,
+					    attack);
+      }
     }
 
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
       //      printf("delay counting\n\0");
 
-      if(delay_audio_run->counter == delay_audio->delay - 1)
+      if(delay_audio_run->counter == delay_audio->delay - 1){
 	delay_audio_run->counter = 0;
-      else
+
+	if(delay_audio_run->sequencer_counter == delay_audio->sequencer_delay - 1){
+	  delay_audio_run->sequencer_counter = 0;
+	}else{
+	  delay_audio_run->sequencer_counter++;
+	}
+      }else{
 	delay_audio_run->counter++;
+      }
     }
   }
 }
@@ -404,74 +442,80 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
 }
 
 void
-ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run)
+ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					  guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[NOTATION_ALLOC_OUTPUT], 0,
-		nth_run);
+		nth_run, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
 void
-ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run)
+ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					 guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[NOTATION_ALLOC_INPUT], 0,
-		nth_run);
+		nth_run, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
 void
-ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint nth_run)
+ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+				   guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[NOTATION_COUNT], 0,
-		nth_run);
+		nth_run, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
 void
-ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run)
+ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					   guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[SEQUENCER_ALLOC_OUTPUT], 0,
-		nth_run);
+		nth_run, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
 void
-ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run)
+ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					  guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[SEQUENCER_ALLOC_INPUT], 0,
-		nth_run);
+		nth_run, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
 void
-ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint nth_run)
+ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+				    guint attack)
 {
   g_return_if_fail(AGS_IS_DELAY_AUDIO_RUN(delay_audio_run));
 
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[SEQUENCER_COUNT], 0,
-		nth_run);
+		nth_run, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 

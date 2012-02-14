@@ -151,6 +151,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   delay_audio->tact = 1.0 / 4.0;
   delay_audio->duration = 16.0;
 
+  delay_audio->frames = 0;
   delay_audio->delay = 0;
   delay_audio->sequencer_delay = 0;
 
@@ -291,9 +292,10 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble bpm,
 
   devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-  delay_audio->delay = (((double) devout->frequency / (double) devout->buffer_size) *
+  delay_audio->frames = (((double) devout->frequency) *
 			(60.0 / bpm) *
 			delay_audio->tact);
+  delay_audio->delay = (double) delay_audio->frames / (double) devout->buffer_size;
   delay_audio->sequencer_delay = delay_audio->delay * delay_audio->duration;
 
   delay_audio->bpm = bpm;
@@ -307,9 +309,11 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact,
 
   devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-  delay_audio->delay = (((double) devout->frequency / (double) devout->buffer_size) *
+
+  delay_audio->frames = (((double) devout->frequency) *
 			(60.0 / delay_audio->bpm) *
 			tact);
+  delay_audio->delay = (double) delay_audio->frames / (double) devout->buffer_size;
   delay_audio->sequencer_delay = delay_audio->delay * delay_audio->duration;
 
   delay_audio->tact = tact;
@@ -329,12 +333,12 @@ ags_delay_audio_change_duration(AgsTactable *tactable, gdouble duration,
 }
 
 AgsDelayAudio*
-ags_delay_audio_new(guint delay)
+ags_delay_audio_new(AgsTactable *tactable)
 {
   AgsDelayAudio *delay_audio;
 
   delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-					       "delay\0", delay,
+					       "tactable\0", tactable,
 					       NULL);
 
   return(delay_audio);

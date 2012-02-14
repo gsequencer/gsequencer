@@ -313,6 +313,8 @@ ags_attack_alloc(guint first_start, guint first_length,
 
   attack = (AgsAttack *) malloc(sizeof(AgsAttack));
 
+  attack->flags = 0;
+
   attack->first_start = first_start;
   attack->first_length = first_length;
   attack->second_start = second_start;
@@ -330,6 +332,8 @@ ags_attack_duplicate(AgsAttack *attack)
     return(NULL);
 
   copy = (AgsAttack *) malloc(sizeof(AgsAttack));
+
+  copy->flags = 0;
 
   copy->first_start = attack->first_start;
   copy->first_length = attack->first_length;

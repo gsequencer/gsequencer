@@ -42,7 +42,8 @@ typedef enum{
 }AgsAudioSignalFlags;
 
 typedef enum{
-  AGS_ATTACK_SWAP       = 1,
+  AGS_ATTACK_INITIAL_RUN  = 1,
+  AGS_ATTACK_SWAP         = 1 << 1,
 }AgsAttackFlags;
 
 struct _AgsAudioSignal
