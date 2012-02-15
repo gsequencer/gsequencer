@@ -42,7 +42,6 @@ struct _AgsChangeBpm
   AgsDevout *devout;
 
   gdouble bpm;
-  gdouble old_bpm;
 };
 
 struct _AgsChangeBpmClass
@@ -53,6 +52,6 @@ struct _AgsChangeBpmClass
 GType ags_change_bpm_get_type();
 
 AgsChangeBpm* ags_change_bpm_new(AgsDevout *devout,
-				 gdouble bpm, gdouble old_bpm);
+				 gdouble bpm);
 
 #endif /*__AGS_CHANGE_BPM_H__*/

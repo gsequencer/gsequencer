@@ -53,8 +53,8 @@ struct _AgsCountBeatsAudioRun
   guint hide_ref;
   guint hide_ref_counter;
 
-  gulong tic_alloc_output_handler;
-  gulong tic_count_handler;
+  gulong sequencer_alloc_output_handler;
+  gulong sequencer_count_handler;
 
   AgsDelayAudioRun *delay_audio_run;
 };

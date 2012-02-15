@@ -142,6 +142,8 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 void
 ags_delay_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->connect = ags_delay_audio_connect;
+  connectable->disconnect = ags_delay_audio_disconnect;
 }
 
 void

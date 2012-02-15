@@ -106,7 +106,6 @@ ags_change_bpm_init(AgsChangeBpm *change_bpm)
   change_bpm->devout = NULL;
 
   change_bpm->bpm = 0.0;
-  change_bpm->old_bpm = 0.0;
 }
 
 void
@@ -176,7 +175,7 @@ ags_change_bpm_launch(AgsTask *task)
 
   while(list != NULL){
     ags_tactable_change_bpm(AGS_TACTABLE(list->data),
-			    change_bpm->bpm, change_bpm->old_bpm);
+			    change_bpm->bpm);
 
     list = list->next;
   }
@@ -184,7 +183,7 @@ ags_change_bpm_launch(AgsTask *task)
 
 AgsChangeBpm*
 ags_change_bpm_new(AgsDevout *devout,
-		   gdouble bpm, gdouble old_bpm)
+		   gdouble bpm)
 {
   AgsChangeBpm *change_bpm;
 
@@ -193,7 +192,6 @@ ags_change_bpm_new(AgsDevout *devout,
 
   change_bpm->devout = devout;
   change_bpm->bpm = bpm;
-  change_bpm->old_bpm = old_bpm;
 
   return(change_bpm);
 }

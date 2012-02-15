@@ -38,7 +38,7 @@ struct _AgsCopyPatternChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
 
-  gulong tic_alloc_handler;
+  gulong sequencer_alloc_handler;
 };
 
 struct _AgsCopyPatternChannelRunClass
