@@ -98,7 +98,9 @@ void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 void ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels,
 					    short *source, guint schannels, guint size);
 
-void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal, AgsAudioSignal *template);
+void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
+				       AgsAudioSignal *template,
+				       guint attack);
 
 //TODO:JK: rename these functions name it rather find than get
 AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);

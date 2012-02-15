@@ -213,7 +213,8 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 void
 ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
-						AgsAudioSignal *audio_signal)
+						AgsAudioSignal *audio_signal,
+						guint attack)
 {
   AgsAudioSignal *template;
 
@@ -222,13 +223,13 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   audio_signal->devout = template->devout;
   audio_signal->recycling = (GObject *) recycling;
 
-  ags_audio_signal_duplicate_stream(audio_signal, template);
+  ags_audio_signal_duplicate_stream(audio_signal, template, attack);
 }
 
 void
 ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 						   AgsAudioSignal *audio_signal,
-						   guint frame_count)
+						   guint frame_count, guint attack)
 {
   AgsDevout *devout;
   AgsAudioSignal *template;
@@ -275,7 +276,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   }
 
   frames_looped_copied = 0;
-  k = 0;
+  k = attack;
   template_k = 0;
 
   enter_loop = TRUE;
@@ -284,14 +285,17 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   while(stream != NULL && template_stream != NULL){
     if(enter_loop && template->loop_start <= frames_copied && template->loop_end > frames_copied){
       for(; stream != NULL && frames_looped_copied < loop_frames;){
+	template_k = template->loop_start % devout->buffer_size;
 	template_stream = template_loop;
 
 	if(k == devout->buffer_size){
 	  k = 0;
+	  stream = stream->next;
 	}
 
 	if(template_k == devout->buffer_size){
 	  template_k = 0;
+	  template_stream = template_stream->next;
 	}
 
 	for(;
@@ -311,10 +315,12 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     for(; stream != NULL && frames_copied < loop_frames;){
       if(k == devout->buffer_size){
 	k = 0;
+	stream = stream->next;
       }
 
       if(template_k == devout->buffer_size){
 	template_k = 0;
+	template_stream = template_stream->next;
       }
 
       for(;
@@ -324,9 +330,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	((short*) stream->data)[k] = ((short*) template_stream->data)[template_k];
       }
     }
-
-    template_stream = template_stream->next;
-    stream = stream->next;
   }
 
   printf("ags_recycling_create_audio_signal_with_frame_count: after\n\0");

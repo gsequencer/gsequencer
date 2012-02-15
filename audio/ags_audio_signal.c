@@ -479,43 +479,63 @@ ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels, shor
 }
 
 void
-ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal, AgsAudioSignal *template)
+ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
+				  AgsAudioSignal *template,
+				  guint attack)
 {
-  GList *source, *list, *start;
+  GList *template_stream, *stream, *start;
   short *buffer;
   guint size;
-
-  source = template->stream_beginning;
+  guint k, template_k;
 
   if(audio_signal->stream_beginning != NULL)
     ags_audio_signal_stream_resize(audio_signal, 0);
 
-  if(source == NULL){
+  if(template->stream_beginning == NULL){
     audio_signal->stream_beginning = NULL;
     audio_signal->stream_current = NULL;
     audio_signal->stream_end = NULL;
   }else{
-    size = AGS_DEVOUT(audio_signal->devout)->buffer_size * sizeof(short);
+    AgsDevout *devout;
 
-    start = 
-      list = g_list_alloc();
-    goto ags_audio_signal_duplicate_stream0;
+    devout = AGS_DEVOUT(audio_signal->devout);
 
-    while(source != NULL){
-      list->next = g_list_alloc();
-      list->next->prev = list;
-      list = list->next;
-    ags_audio_signal_duplicate_stream0:
+    size = devout->buffer_size * sizeof(short);
 
-      buffer = (short *) malloc(size);
-      memcpy(buffer, (short *) source->data, size);
-      list->data = buffer;
-      
-      source = source->next;
+    ags_audio_signal_stream_resize(audio_signal, template->length);
+    
+    if(attack + template->last_frame > devout->buffer_size){
+      ags_audio_signal_add_stream(audio_signal);
+    }
+
+    stream =
+      start = audio_signal->stream_beginning;
+    template_stream = template->stream_beginning;
+
+    k = attack;
+    template_k = 0;
+
+    while(template_stream != NULL){
+      if(k == devout->buffer_size){
+	k = 0;
+	stream = stream->next;
+      }
+
+      if(template_k == devout->buffer_size){
+	template_k = 0;
+	template_stream = template_stream->next;
+      }
+
+      for(;
+	  template_stream != NULL && k < devout->buffer_size && template_k < devout->buffer_size;
+	  k++, template_k++){
+	/* copy audio data from template to new AgsAudioSignal */
+	((short*) stream->data)[k] = ((short*) template_stream->data)[template_k];
+      }
     }
 
     audio_signal->stream_beginning = start;
-    audio_signal->stream_end = list;
+    audio_signal->stream_end = stream;
 
     audio_signal->length = template->length;
     audio_signal->last_frame = template->last_frame;

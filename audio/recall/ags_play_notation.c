@@ -48,7 +48,9 @@ AgsRecall* ags_play_notation_duplicate(AgsRecall *recall,
 				       guint *n_params, GParameter *parameter);
 
 void ags_play_notation_play_note_done(AgsRecall *recall, AgsPlayNotation *play_notation);
-void ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation);
+void ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
+						      guint nth_run, guint attack,
+						      AgsPlayNotation *play_notation);
 
 enum{
   PROP_0,
@@ -490,7 +492,9 @@ ags_play_notation_duplicate(AgsRecall *recall,
 }
 
 void
-ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint nth_run, AgsPlayNotation *play_notation)
+ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
+						 guint nth_run, guint attack,
+						 AgsPlayNotation *play_notation)
 {
   AgsNotation *notation;
   AgsAudio *audio;
@@ -541,7 +545,8 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay, guint 
 					      (GObject *) AGS_RECALL(play_notation)->recall_id);
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
-							     note->x[1] - note->x[0]);
+							     note->x[1] - note->x[0],
+							     attack);
 	  ags_audio_signal_connect(audio_signal);
 
 	  printf("adding\n\0");

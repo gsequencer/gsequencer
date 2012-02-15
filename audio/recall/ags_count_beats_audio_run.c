@@ -69,10 +69,10 @@ void ags_count_beats_audio_run_loop(AgsCountBeatsAudioRun *count_beats_audio_run
 				    guint nth_run);
 
 void ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							       guint nth_run,
+							       guint nth_run, guint attack,
 							       AgsCountBeatsAudioRun *count_beats_audio_run);
 void ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-							guint nth_run,
+							guint nth_run, guint attack,
 							AgsCountBeatsAudioRun *count_beats_audio_run);
 
 enum{
@@ -576,7 +576,7 @@ ags_count_beats_audio_run_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 
 void
 ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							  guint nth_run,
+							  guint nth_run, guint attack,
 							  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
@@ -602,7 +602,7 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 
 void
 ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-						   guint nth_run,
+						   guint nth_run, guint attack,
 						   AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;

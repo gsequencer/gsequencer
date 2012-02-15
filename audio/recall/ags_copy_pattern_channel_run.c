@@ -52,8 +52,8 @@ AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 						  AgsRecallID *recall_id,
 						  guint *n_params, GParameter *parameter);
 
-void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-							   guint run_order,
+void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run, guint run_order,
+							   guint attack,
 							   AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
 
@@ -321,7 +321,7 @@ ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 
 void
 ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-						      guint run_order,
+						      guint run_order, guint attack,
 						      AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AgsChannel *output, *source;
@@ -370,7 +370,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 					    (GObject *) recycling,
 					    (GObject *) AGS_RECALL(copy_pattern_channel_run)->recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal);
+							audio_signal, attack);
 	audio_signal->stream_current = audio_signal->stream_beginning;
 	ags_audio_signal_connect(audio_signal);
 	
