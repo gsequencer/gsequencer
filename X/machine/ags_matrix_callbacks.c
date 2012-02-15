@@ -256,10 +256,13 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW);
 
-  audio = matrix->machine.audio;
+  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
+ g_signal_emit_by_name(AGS_TACTABLE(matrix), "change_bpm\0",
+			bpm);
+
+  /*  audio = matrix->machine.audio;
   devout = AGS_DEVOUT(audio->devout);
 
-  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
 
   delay = (guint) round(((double)devout->frequency /
@@ -267,7 +270,7 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 			(60.0 / bpm) *
 			tact);
 
-  /* AgsDelayAudio */
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -287,7 +290,7 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   length = (guint) matrix->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCountBeatsAudio */
+  /* AgsCountBeatsAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
@@ -306,7 +309,7 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
     count_beats_audio->stream_length = stream_length;
   }
 
-  /* resize audio signal */
+  /* resize audio signal * /
   channel = audio->output;
 
   while(channel != NULL){
@@ -314,12 +317,21 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
     channel = channel->next;
   }
+  */
 }
 
 void
 ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
-  AgsChannel *channel;
+  gdouble duration;
+
+  duration = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  g_signal_emit_by_name(AGS_TACTABLE(matrix), "change_duration\0",
+			duration);
+
+
+
+  /*  AgsChannel *channel;
   AgsDelayAudio *delay_audio;
   AgsCountBeatsAudio *count_beats_audio;
   GList *list;
@@ -327,7 +339,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   channel = matrix->machine.audio->output;
 
-  /* AgsDelayAudio */
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(matrix->machine.audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -340,7 +352,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCountBeatsAudio */
+  /* AgsCountBeatsAudio * /
   list = ags_recall_find_type(matrix->machine.audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
@@ -361,12 +373,13 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
     count_beats_audio->stream_length = stream_length;
   }
 
-  /* resize audio signal */
+  /* resize audio signal * /
   while(channel != NULL){
     ags_channel_resize_audio_signal(channel, stream_length);
 
     channel = channel->next;
   }
+  */
 }
 
 void
@@ -382,6 +395,11 @@ ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
   double bpm, tact;
   guint length, stream_length, delay;
 
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
+  g_signal_emit_by_name(AGS_TACTABLE(matrix), "change_tact\0",
+			tact);
+
+  /*
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) matrix);
   audio = matrix->machine.audio;
   devout = AGS_DEVOUT(audio->devout);
@@ -393,7 +411,7 @@ ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
 			(60.0 / bpm) *
 			tact);
 
-  /* AgsDelayAudio */
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -413,7 +431,7 @@ ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
   length = (guint) matrix->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCopyPatternAudio */
+  /* AgsCopyPatternAudio * /
   list = ags_recall_find_type(matrix->machine.audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
@@ -432,7 +450,7 @@ ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
     count_beats_audio->stream_length = stream_length;
   }
 
-  /* resize audio signal */
+  /* resize audio signal * /
   channel = matrix->machine.audio->output;
 
   while(channel != NULL){
@@ -440,6 +458,7 @@ ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
 
     channel = channel->next;
   }
+  */
 }
 
 void
