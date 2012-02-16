@@ -266,8 +266,11 @@ ags_matrix_init(AgsMatrix *matrix)
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
 							    "audio\0", audio,
 							    "recall_container\0", recall_container,
-							    "length\0", 16,
 							    "loop\0", FALSE,
+							    "notation_loop_start\0", 0,
+							    "notation_loop_end\0", 64,
+							    "sequencer_loop_start\0", 0,
+							    "sequencer_loop_end\0", 16,
 							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
 					   AGS_RECALL_SEQUENCER |
@@ -294,8 +297,11 @@ ags_matrix_init(AgsMatrix *matrix)
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
 							    "audio\0", audio,
 							    "recall_container\0", recall_container,
-							    "length\0", 16,
 							    "loop\0", FALSE,
+							    "notation_loop_start\0", 0,
+							    "notation_loop_end\0", 64,
+							    "sequencer_loop_start\0", 0,
+							    "sequencer_loop_end\0", 16,
 							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
 					   AGS_RECALL_SEQUENCER |

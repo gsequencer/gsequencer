@@ -38,12 +38,12 @@ struct _AgsCountBeatsAudio
 {
   AgsRecallAudio recall_audio;
 
-  double bpm;
-
-  guint length;
   gboolean loop;
 
-  guint stream_length;
+  guint notation_loop_start;
+  guint notation_loop_end;
+  guint sequencer_loop_start;
+  guint sequencer_loop_end;
 };
 
 struct _AgsCountBeatsAudioClass
@@ -53,8 +53,6 @@ struct _AgsCountBeatsAudioClass
 
 GType ags_count_beats_audio_get_type();
 
-AgsCountBeatsAudio* ags_count_beats_audio_new(double bpm,
-					      guint length,
-					      gboolean loop);
+AgsCountBeatsAudio* ags_count_beats_audio_new(gboolean loop);
 
 #endif /*__AGS_COUNT_BEATS_AUDIO_H__*/

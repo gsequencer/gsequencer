@@ -34,9 +34,11 @@ void ags_count_beats_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_LENGTH,
   PROP_LOOP,
-  PROP_STREAM_LENGTH,
+  PROP_NOTATION_LOOP_START,
+  PROP_NOTATION_LOOP_END,
+  PROP_SEQUENCER_LOOP_START,
+  PROP_SEQUENCER_LOOP_END,
 };
 
 static gpointer ags_count_beats_audio_parent_class = NULL;
@@ -84,17 +86,6 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
   gobject->finalize = ags_count_beats_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("length\0",
-				 "length in beats\0",
-				 "The length of the stream in beats\0",
-				 1,
-				 4096,
-				 16,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_LENGTH,
-				  param_spec);
-
   param_spec = g_param_spec_boolean("loop\0",
 				    "loop playing\0",
 				    "Play in a endless loop\0",
@@ -104,25 +95,61 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_LOOP,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("stream_length\0",
-				 "stream length in buffers\0",
-				 "The length of the stream in buffer count\0",
+  param_spec = g_param_spec_uint("notation_loop_start\0",
+				 "start beat of notation loop\0",
+				 "The start beat of the notation loop\0",
 				 1,
 				 65535,
 				 1,
-				 G_PARAM_READABLE);
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_STREAM_LENGTH,
+				  PROP_NOTATION_LOOP_START,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("notation_loop_end\0",
+				 "end beat of notation loop\0",
+				 "The end beat of the notation loop\0",
+				 1,
+				 65535,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION_LOOP_END,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("sequencer_loop_start\0",
+				 "start beat of loop\0",
+				 "The start beat of the sequencer loop\0",
+				 1,
+				 65535,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEQUENCER_LOOP_START,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("sequencer_loop_end\0",
+				 "end beat of sequencer loop\0",
+				 "The end beat of the sequencer loop\0",
+				 1,
+				 65535,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEQUENCER_LOOP_END,
 				  param_spec);
 }
 
 void
 ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 {
-  count_beats_audio->length = 0;
   count_beats_audio->loop = FALSE;
 
-  count_beats_audio->stream_length = 0;
+  count_beats_audio->notation_loop_start = 0;
+  count_beats_audio->notation_loop_end = 0;
+
+  count_beats_audio->sequencer_loop_start = 0;
+  count_beats_audio->sequencer_loop_end = 0;
 }
 
 void
@@ -136,19 +163,6 @@ ags_count_beats_audio_set_property(GObject *gobject,
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_LENGTH:
-    {
-      guint length;
-
-      length = g_value_get_uint(value);
-
-      count_beats_audio->length = length;
-
-      /*
-       * FIXME:JK: calculate stream_length with length
-       */
-    }
-    break;
   case PROP_LOOP:
     {
       gboolean loop;
@@ -156,6 +170,42 @@ ags_count_beats_audio_set_property(GObject *gobject,
       loop = g_value_get_boolean(value);
 
       count_beats_audio->loop = loop;
+    }
+    break;
+  case PROP_NOTATION_LOOP_START:
+    {
+      guint loop_start;
+
+      loop_start = g_value_get_uint(value);
+
+      count_beats_audio->notation_loop_start = loop_start;
+    }
+    break;
+  case PROP_NOTATION_LOOP_END:
+    {
+      guint loop_end;
+
+      loop_end = g_value_get_uint(value);
+
+      count_beats_audio->notation_loop_end = loop_end;
+    }
+    break;
+  case PROP_SEQUENCER_LOOP_START:
+    {
+      guint loop_start;
+
+      loop_start = g_value_get_uint(value);
+
+      count_beats_audio->sequencer_loop_start = loop_start;
+    }
+    break;
+  case PROP_SEQUENCER_LOOP_END:
+    {
+      guint loop_end;
+
+      loop_end = g_value_get_uint(value);
+
+      count_beats_audio->sequencer_loop_end = loop_end;
     }
     break;
   default:
@@ -175,19 +225,29 @@ ags_count_beats_audio_get_property(GObject *gobject,
   count_beats = AGS_COUNT_BEATS_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_LENGTH:
-    {
-      g_value_set_uint(value, count_beats->length);
-    }
-    break;
   case PROP_LOOP:
     {
       g_value_set_boolean(value, count_beats->loop);
     }
     break;
-  case PROP_STREAM_LENGTH:
+  case PROP_NOTATION_LOOP_START:
     {
-      g_value_set_uint(value, count_beats->stream_length);
+      g_value_set_uint(value, count_beats->notation_loop_start);
+    }
+    break;
+  case PROP_NOTATION_LOOP_END:
+    {
+      g_value_set_uint(value, count_beats->notation_loop_end);
+    }
+    break;
+  case PROP_SEQUENCER_LOOP_START:
+    {
+      g_value_set_uint(value, count_beats->sequencer_loop_start);
+    }
+    break;
+  case PROP_SEQUENCER_LOOP_END:
+    {
+      g_value_set_uint(value, count_beats->sequencer_loop_end);
     }
     break;
   default:
@@ -203,15 +263,11 @@ ags_count_beats_audio_finalize(GObject *gobject)
 }
 
 AgsCountBeatsAudio*
-ags_count_beats_audio_new(double bpm,
-			  guint length,
-			  gboolean loop)
+ags_count_beats_audio_new(gboolean loop)
 {
   AgsCountBeatsAudio *count_beats_audio;
 
   count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							  "bpm\0", bpm,
-							  "length\0", length,
 							  "loop\0", loop,
 							  NULL);
   

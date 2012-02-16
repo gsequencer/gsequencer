@@ -76,9 +76,10 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   length = (guint) AGS_EDITOR_MAX_CONTROLS + 16;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCountBeats */
+  /* AgsCountBeats * /
   ffplayer->play_count_beats_audio->stream_length = stream_length;
   ffplayer->recall_count_beats_audio->stream_length = stream_length;
+  */
 
   /* AgsPlayNotation */
   g_object_set(G_OBJECT(ffplayer->play_notation),

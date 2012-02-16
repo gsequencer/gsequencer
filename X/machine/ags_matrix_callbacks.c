@@ -95,7 +95,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   length = (guint) matrix->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
-  /* AgsCountBeats */
+  /* AgsCountBeats * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
@@ -112,7 +112,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
     count_beats_audio->stream_length = stream_length;
-  }
+    } */
 
   /* AgsCopyPatternAudio */
   list = ags_recall_find_type(audio->play,
