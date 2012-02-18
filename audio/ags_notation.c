@@ -624,6 +624,7 @@ ags_notation_cut_selection(AgsNotation *notation)
 
     if(notes->prev == NULL){
       notation->notes = g_list_remove_link(notes, notes);
+      notes = notation->notes;
     }else{
       GList *next_note;
 
