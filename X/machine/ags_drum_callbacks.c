@@ -86,7 +86,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   /*
    * FIXME:JK: the following code is ugly
    */
-  /* delay related */
+  /* delay related * /
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
   bpm = window->navigation->bpm->adjustment->value;
   printf("tact = %f\n\0", tact);
@@ -97,7 +97,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 			tact);
   printf("delay = %u\n\0", delay);
 
-  /* AgsDelayAudio */
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -114,7 +114,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
     delay_audio->delay = delay;
   }
 
-  /* pattern related */
+  /* pattern related * /
   length = (guint) drum->length_spin->adjustment->value;
 
   //FIXME:JK: take prove if (delay + 1) is necessary and not just (delay)

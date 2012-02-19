@@ -2048,15 +2048,15 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       AgsGroupId next_child_group_id;
 
-      /* add group id to AgsAudio */
-      audio->recall_id = ags_recall_id_add(audio->recall_id,
-					   parent_group_id, group_id, child_group_id,
-					   output->first_recycling, output->last_recycling,
-					   ((recall_level > 1) ? TRUE: FALSE));
-      
       /* generate new group id */
       next_child_group_id = ags_recall_id_generate_group_id();
 
+      /* add group id to AgsAudio */
+      audio->recall_id = ags_recall_id_add(audio->recall_id,
+					   group_id, child_group_id, next_child_group_id,
+					   output->first_recycling, output->last_recycling,
+					   ((recall_level > 1) ? TRUE: FALSE));
+      
       /* add the new group id to AgsAudio */
       audio->recall_id = ags_recall_id_add(audio->recall_id,
 					   group_id, child_group_id, next_child_group_id,

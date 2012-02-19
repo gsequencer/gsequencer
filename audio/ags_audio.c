@@ -1869,6 +1869,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 							 group_id,
 							 first_recycling, last_recycling);
   
+
   if(audio_signal_level == 0)
     list_recall_start = 
       list_recall = audio->play;

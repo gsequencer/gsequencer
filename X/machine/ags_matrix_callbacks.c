@@ -74,7 +74,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 			(60.0 / bpm) *
 			tact);
 
-  /* AgsDelayAudio */
+  /* AgsDelayAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO);
 
@@ -91,7 +91,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
     delay_audio->delay = delay;
   }
 
-  /* pattern related */
+  /* pattern related * /
   length = (guint) matrix->length_spin->adjustment->value;
   stream_length = length * (delay + 1) + 1;
 
@@ -133,7 +133,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
     copy_pattern_audio->devout = window->devout;
   }
 
-  fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
+  //  fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
 
 void

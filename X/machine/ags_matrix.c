@@ -195,9 +195,6 @@ ags_matrix_init(AgsMatrix *matrix)
 
   matrix->flags = 0;
 
-  /*
-   * FIXME:JK: move creation of recalls in a own function
-   */
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
   recall_container = ags_recall_container_new();
@@ -284,7 +281,9 @@ ags_matrix_init(AgsMatrix *matrix)
 									"recall_audio\0", count_beats_audio,
 									"delay_audio_run\0", play_delay_audio_run,
 									NULL);
-  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE | AGS_RECALL_SEQUENCER);
+  AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_SEQUENCER |
+						    AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
 
   /* audio->recall */
@@ -333,6 +332,7 @@ ags_matrix_init(AgsMatrix *matrix)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
+							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
@@ -364,6 +364,7 @@ ags_matrix_init(AgsMatrix *matrix)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
+							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
@@ -383,6 +384,7 @@ ags_matrix_init(AgsMatrix *matrix)
 						AGS_RECALL_SEQUENCER |
 						AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, FALSE);
+
 
   /* create widgets */
   frame = (GtkFrame *) (gtk_container_get_children((GtkContainer *) matrix))->data;
@@ -607,7 +609,9 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       delay_audio = matrix->play_delay_audio;
 
       if(delay_audio != NULL)
-	stop = ((guint)matrix->length_spin->adjustment->value) * (delay_audio->delay + 1);
+	stop = ((guint)(matrix->length_spin->adjustment->value) *
+		exp2((double) gtk_option_menu_get_history(matrix->tact)) * 
+		(delay_audio->delay + 1));
 
 
       while(source != NULL){
