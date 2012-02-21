@@ -158,7 +158,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
     copy_pattern_audio->devout = window->devout;
   }
 
-  fprintf(stdout, "ags_drum_parent_set_callback: delay = %d\n\0", delay);
+  //  fprintf(stdout, "ags_drum_parent_set_callback: delay = %d\n\0", delay);
 }
 
 void

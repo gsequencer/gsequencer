@@ -68,8 +68,12 @@ void ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_
 							AgsCountBeatsAudioRun *count_beats_audio_run);
 
 enum{
+  NOTATION_START,
   NOTATION_LOOP,
+  NOTATION_STOP,
+  SEQUENCER_START,
   SEQUENCER_LOOP,
+  SEQUENCER_STOP,
   LAST_SIGNAL,
 };
 
@@ -195,10 +199,24 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   recall->run_init_pre = ags_count_beats_audio_run_run_init_pre;
 
   /* AgsCountBeatsAudioRunClass */
+  count_beats_audio_run->notation_start = NULL;
   count_beats_audio_run->notation_loop = NULL;
+  count_beats_audio_run->notation_stop = NULL;
+  count_beats_audio_run->sequencer_start = NULL;
   count_beats_audio_run->sequencer_loop = NULL;
+  count_beats_audio_run->sequencer_stop = NULL;
 
   /* signals */
+  count_beats_audio_run_signals[NOTATION_START] =
+    g_signal_new("notation_start\0",
+		 G_TYPE_FROM_CLASS(count_beats_audio_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, notation_start),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
   count_beats_audio_run_signals[NOTATION_LOOP] =
     g_signal_new("notation_loop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
@@ -209,11 +227,41 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
+  count_beats_audio_run_signals[NOTATION_STOP] =
+    g_signal_new("notation_stop\0",
+		 G_TYPE_FROM_CLASS(count_beats_audio_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, notation_stop),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
+  count_beats_audio_run_signals[SEQUENCER_START] =
+    g_signal_new("sequencer_start\0",
+		 G_TYPE_FROM_CLASS(count_beats_audio_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, sequencer_start),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
   count_beats_audio_run_signals[SEQUENCER_LOOP] =
     g_signal_new("sequencer_loop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, sequencer_loop),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
+  count_beats_audio_run_signals[SEQUENCER_STOP] =
+    g_signal_new("sequencer_stop\0",
+		 G_TYPE_FROM_CLASS(count_beats_audio_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, sequencer_stop),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
@@ -538,14 +586,53 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 }
 
 void
+ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audio_run,
+					 guint nth_run)
+{
+  g_return_if_fail(AGS_IS_COUNT_BEATS_AUDIO_RUN(count_beats_audio_run));
+
+  g_object_ref(G_OBJECT(count_beats_audio_run));
+  g_signal_emit(G_OBJECT(count_beats_audio_run),
+		count_beats_audio_run_signals[NOTATION_START], 0,
+		nth_run);
+  g_object_unref(G_OBJECT(count_beats_audio_run));
+}
+
+void
 ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
-						 guint nth_run)
+					guint nth_run)
 {
   g_return_if_fail(AGS_IS_COUNT_BEATS_AUDIO_RUN(count_beats_audio_run));
 
   g_object_ref(G_OBJECT(count_beats_audio_run));
   g_signal_emit(G_OBJECT(count_beats_audio_run),
 		count_beats_audio_run_signals[NOTATION_LOOP], 0,
+		nth_run);
+  g_object_unref(G_OBJECT(count_beats_audio_run));
+}
+
+void
+ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
+					guint nth_run)
+{
+  g_return_if_fail(AGS_IS_COUNT_BEATS_AUDIO_RUN(count_beats_audio_run));
+
+  g_object_ref(G_OBJECT(count_beats_audio_run));
+  g_signal_emit(G_OBJECT(count_beats_audio_run),
+		count_beats_audio_run_signals[NOTATION_STOP], 0,
+		nth_run);
+  g_object_unref(G_OBJECT(count_beats_audio_run));
+}
+
+void
+ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_audio_run,
+					  guint nth_run)
+{
+  g_return_if_fail(AGS_IS_COUNT_BEATS_AUDIO_RUN(count_beats_audio_run));
+
+  g_object_ref(G_OBJECT(count_beats_audio_run));
+  g_signal_emit(G_OBJECT(count_beats_audio_run),
+		count_beats_audio_run_signals[SEQUENCER_START], 0,
 		nth_run);
   g_object_unref(G_OBJECT(count_beats_audio_run));
 }
@@ -559,6 +646,19 @@ ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audi
   g_object_ref(G_OBJECT(count_beats_audio_run));
   g_signal_emit(G_OBJECT(count_beats_audio_run),
 		count_beats_audio_run_signals[SEQUENCER_LOOP], 0,
+		nth_run);
+  g_object_unref(G_OBJECT(count_beats_audio_run));
+}
+
+void
+ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
+					 guint nth_run)
+{
+  g_return_if_fail(AGS_IS_COUNT_BEATS_AUDIO_RUN(count_beats_audio_run));
+
+  g_object_ref(G_OBJECT(count_beats_audio_run));
+  g_signal_emit(G_OBJECT(count_beats_audio_run),
+		count_beats_audio_run_signals[SEQUENCER_STOP], 0,
 		nth_run);
   g_object_unref(G_OBJECT(count_beats_audio_run));
 }
@@ -580,10 +680,22 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 					      nth_run);
     }else{
       if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
+	ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
+						  nth_run);
+
+	ags_count_beats_audio_run_notation_start(count_beats_audio_run,
+						 nth_run);
+
 	count_beats_audio_run->flags &= (~AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN);
       }else{
 	if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
 	  printf("ags_count_beats_audio_run_notation_alloc_output_callback: done\n\0");
+	  ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
+						   nth_run);
+	  
+	  ags_count_beats_audio_run_notation_stop(count_beats_audio_run,
+						  nth_run);
+
 	  ags_recall_done(AGS_RECALL(count_beats_audio_run));
 	}
       }

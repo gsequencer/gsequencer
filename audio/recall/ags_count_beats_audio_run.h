@@ -63,18 +63,36 @@ struct _AgsCountBeatsAudioRun
 struct _AgsCountBeatsAudioRunClass
 {
   AgsRecallAudioRunClass recall_audio_run;
-
+  
+  void (*notation_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint nth_run);
   void (*notation_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
 			guint nth_run);
+  void (*notation_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			guint nth_run);
+  
+  void (*sequencer_start)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			  guint nth_run);
   void (*sequencer_loop)(AgsCountBeatsAudioRun *count_beats_audio_run,
+			 guint nth_run);
+  void (*sequencer_stop)(AgsCountBeatsAudioRun *count_beats_audio_run,
 			 guint nth_run);
 };
 
 GType ags_count_beats_audio_run_get_type();
 
+void ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audio_run,
+					      guint nth_run);
 void ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					     guint nth_run);
+void ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
+					     guint nth_run);
+
+void ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_audio_run,
+					       guint nth_run);
 void ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
+					      guint nth_run);
+void ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 					      guint nth_run);
 
 AgsCountBeatsAudioRun* ags_count_beats_audio_run_new(AgsDelayAudioRun *delay_audio_run);

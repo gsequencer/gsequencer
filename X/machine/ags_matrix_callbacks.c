@@ -64,7 +64,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   matrix->machine.name = g_strdup_printf("Default %d\0", window->counter->matrix);
   window->counter->matrix++;
 
-  /* delay related */
+  /* delay related * /
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
   bpm = window->navigation->bpm->adjustment->value;
   printf("tact = %f\n\0", tact);
@@ -73,7 +73,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 			 (double)window->devout->buffer_size) *
 			(60.0 / bpm) *
 			tact);
-
+  */
   /* AgsDelayAudio * /
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO);

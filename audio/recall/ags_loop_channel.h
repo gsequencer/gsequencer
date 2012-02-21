@@ -43,7 +43,9 @@ struct _AgsLoopChannel
   AgsRecallChannelRun recall_channel_run;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
+  gulong start_handler;
   gulong loop_handler;
+  gulong stop_handler;
 
   AgsChannel *channel;
 
