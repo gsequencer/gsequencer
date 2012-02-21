@@ -472,7 +472,7 @@ ags_loop_channel_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				AgsLoopChannel *loop_channel)
 {
 
-  printf("ags_loop_channel_loop_callback - run_order: %u; %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order, nth_run);
+  printf("ags_loop_channel_start_callback - run_order: %u; %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order, nth_run);
 
   if(AGS_RECALL_CHANNEL_RUN(loop_channel)->run_order == nth_run){
     ags_loop_channel_create_audio_signals(loop_channel);
