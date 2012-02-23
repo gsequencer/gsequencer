@@ -1400,8 +1400,10 @@ ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboole
     recall = AGS_RECALL(list->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
+       recall->recall_id == NULL ||
        recall->recall_id->group_id != recall_id->group_id){
       list = list_next;
+
       continue;
     }
 

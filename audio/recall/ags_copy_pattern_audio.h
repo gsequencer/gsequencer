@@ -40,7 +40,6 @@ struct _AgsCopyPatternAudio
   AgsRecallAudio recall_audio;
 
   AgsDevout *devout;
-  gdouble tact;
 
   guint i;
   guint j;

@@ -309,6 +309,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&
      delay_audio_run->dependency_ref == 0){
     delay_audio_run->counter = 0;
+    delay_audio_run->sequencer_counter = 0;
     ags_recall_done(recall);
   }else{
     AgsDelayAudio *delay_audio;

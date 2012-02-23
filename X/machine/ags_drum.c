@@ -197,6 +197,7 @@ ags_drum_init(AgsDrum *drum)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
+						 "sequencer_delay\0", 4,
 						 "tactable\0", AGS_TACTABLE(drum),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
@@ -225,6 +226,7 @@ ags_drum_init(AgsDrum *drum)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
+						 "sequencer_delay\0", 4,
 						 "tactable\0", AGS_TACTABLE(drum),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |

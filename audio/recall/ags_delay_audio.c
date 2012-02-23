@@ -110,7 +110,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   param_spec = g_param_spec_object("tactable\0",
 				   "assigned tactable\0",
 				   "The tactable it is assigned with\0",
-				   AGS_TYPE_TACTABLE,
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TACTABLE,
@@ -131,11 +131,11 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				 "sequencer delay for timeing\0",
 				 "The sequencer delay whenever a tic occures\0",
 				 0,
-				 65535,
+				 256,
 				 0,
-				 G_PARAM_READABLE);
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DELAY,
+				  PROP_SEQUENCER_DELAY,
 				  param_spec);
 }
 
@@ -155,7 +155,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   delay_audio->frames = 0;
   delay_audio->delay = 0;
-  delay_audio->sequencer_delay = 0;
+  delay_audio->sequencer_delay = 4;
 
   delay_audio->tactable = NULL;
 }

@@ -400,6 +400,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
+  //FIXME:JK: attack probably needs to be removed
   destination = copy_audio_signal->destination;
   stream_destination = destination->stream_current;
   attack = copy_audio_signal->attack;

@@ -1286,8 +1286,10 @@ ags_recall_child_check_remove(AgsRecall *recall)
       list = list->next;
     }
 
-    if((AGS_RECALL_REMOVE & (recall->flags)) != 0)
+    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
       ags_recall_remove(recall);
+      g_object_unref(recall);
+    }
   }
 
   list = recall->children;

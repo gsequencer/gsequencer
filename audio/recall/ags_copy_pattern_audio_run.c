@@ -47,7 +47,6 @@ void ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
 						AgsRecallID *recall_id,
 						guint *n_params, GParameter *parameter);
-void ags_copy_pattern_audio_run_run_post(AgsRecall *recall);
 void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
 enum{
@@ -138,7 +137,6 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
 
   recall->resolve_dependencies = ags_copy_pattern_audio_run_resolve_dependencies;
   recall->duplicate = ags_copy_pattern_audio_run_duplicate;
-  recall->run_post = ags_copy_pattern_audio_run_run_post;
   recall->notify_dependency = ags_copy_pattern_audio_run_notify_dependency;
 }
 
@@ -167,7 +165,6 @@ ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 
   copy_pattern_audio_run->hide_ref = 0;
   copy_pattern_audio_run->hide_ref_counter = 0;
-  copy_pattern_audio_run->tact_delay = 0;
 
   copy_pattern_audio_run->count_beats_audio_run = NULL;
 }
@@ -341,29 +338,6 @@ ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
 													 n_params, parameter));
 
   return((AgsRecall *) copy);
-}
-
-void
-ags_copy_pattern_audio_run_run_post(AgsRecall *recall)
-{
-  AgsCopyPatternAudio *copy_pattern_audio;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
-
-  if(copy_pattern_audio_run->hide_ref != 0){
-    copy_pattern_audio_run->hide_ref_counter += 1;
-  }
-
-  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL_AUDIO_RUN(copy_pattern_audio_run)->recall_audio);
-
-  if(copy_pattern_audio_run->hide_ref != copy_pattern_audio_run->hide_ref_counter){
-    if(copy_pattern_audio_run->tact_delay == (guint)(16.0 * copy_pattern_audio->tact) - 1){
-      copy_pattern_audio_run->tact_delay = 0;
-    }else{
-      copy_pattern_audio_run->tact_delay += 1;
-    }
-  }
 }
 
 void
