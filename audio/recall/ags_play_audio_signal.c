@@ -397,12 +397,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   stream = source->stream_current;
 
   if(stream == NULL){
-    AgsPlayChannelRun *play_channel_run;
-
-    //    play_channel_run = AGS_PLAY_CHANNEL_RUN(recall->parent->parent);
-
-    //    if((AGS_PLAY_CHANNEL_RUN_TERMINATING & (play_channel_run->flags)) != 0)
-      ags_recall_done(recall);
+    ags_recall_done(recall);
 
     return;
   }
@@ -421,18 +416,18 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     buffer1 = devout->buffer[1];
   }
 
-  attack = play_audio_signal->attack;
+  //  attack = play_audio_signal->attack;
   audio_channel = play_audio_signal->audio_channel;
 
-  ags_audio_signal_copy_buffer_to_buffer(&(buffer0[attack->first_start * devout->pcm_channels + audio_channel]), devout->pcm_channels,
+  ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
 					 (short *) stream->data, 1,
-					 attack->first_length);
+					 devout->buffer_size);
 
-  if(attack->first_start != 0){
-    ags_audio_signal_copy_buffer_to_buffer(&(buffer1[audio_channel]), devout->pcm_channels,
-					   &(((short *) stream->data)[attack->first_length]), 1,
-					   attack->first_start);
-  }
+//  if(attack->first_start != 0){
+//    ags_audio_signal_copy_buffer_to_buffer(&(buffer1[audio_channel]), devout->pcm_channels,
+//					   &(((short *) stream->data)[attack->first_length]), 1,
+//					   attack->first_start);
+//  }
 }
 
 AgsRecall*

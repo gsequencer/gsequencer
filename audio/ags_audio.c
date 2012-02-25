@@ -1802,9 +1802,12 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 }
 
 void
-ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
+ags_audio_play(AgsAudio *audio,
+	       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+	       AgsGroupId group_id,
 	       gint stage, gboolean do_recall)
 {
+  AgsRecallID *recall_id;
   AgsRecall *recall;
   GList *list, *list_next;
   
@@ -1813,6 +1816,10 @@ ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
   else
     list = audio->play;
 
+  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
+							 group_id,
+							 first_recycling, last_recycling);
+
   while(list != NULL){
     list_next = list->next;
 
@@ -1820,7 +1827,7 @@ ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       recall->recall_id->group_id != group_id){
+       recall->recall_id->group_id != recall_id->group_id){
       list = list_next;
 
       continue;

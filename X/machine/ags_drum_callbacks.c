@@ -86,14 +86,21 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 
   devout = AGS_DEVOUT(audio->devout);
   bpm = window->navigation->bpm->adjustment->value;
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact)) * 16.0;
+
+  if(bpm > 60.0){
+    bpm = exp2(-1.0 * 60.0 / bpm);
+  }else{
+    bpm = exp2(60.0 / bpm);
+  }
+
+  tact = exp2(8.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
   delay = (((double) devout->frequency / (double) devout->buffer_size) *
-	   (60.0 / bpm) /
+	   bpm / 
 	   16.0);
   drum->play_delay_audio->notation_delay = (guint) floor(delay);
   drum->play_delay_audio->sequencer_delay = (guint) floor(delay * tact);
   delay = (((double) devout->frequency / (double) devout->buffer_size) *
-	   (60.0 / bpm) / 
+	   bpm / 
 	   16.0);
   drum->recall_delay_audio->notation_delay = (guint) floor(delay);
   drum->recall_delay_audio->sequencer_delay = (guint) floor(delay * tact);

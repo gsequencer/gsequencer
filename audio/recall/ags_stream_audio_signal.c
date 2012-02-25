@@ -226,8 +226,8 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(gobject);
 
-  if(stream_audio_signal->audio_signal != NULL)
-    g_object_unref(G_OBJECT(stream_audio_signal->audio_signal));
+  //  if(stream_audio_signal->audio_signal != NULL)
+    //    g_object_unref(G_OBJECT(stream_audio_signal->audio_signal));
 
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->finalize(gobject);
 }

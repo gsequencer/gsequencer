@@ -137,7 +137,9 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 			      AgsGroupId group_id);
 
-void ags_audio_play(AgsAudio *audio, AgsGroupId group_id,
+void ags_audio_play(AgsAudio *audio,
+		    AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+		    AgsGroupId group_id,
 		    gint stage, gboolean do_recall);
 
 guint ags_audio_recursive_play_init(AgsAudio *audio,

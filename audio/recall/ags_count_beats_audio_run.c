@@ -747,14 +747,14 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 						nth_run);
 
       count_beats_audio_run->flags &= (~AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN);
-    }else{
+    }
+
+    if(count_beats_audio->loop &&
+       (AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) == 0){
+      printf("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
+
       ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
 					       nth_run);
-    }
-    
-
-    if(count_beats_audio->loop){
-      printf("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
     }else{
       /* emit stop signals */
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){

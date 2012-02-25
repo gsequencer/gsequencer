@@ -792,6 +792,8 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 
     list = list->next;
   }
+
+  recall->flags |= AGS_RECALL_INITIAL_RUN;
 }
 
 /**
@@ -889,6 +891,10 @@ ags_recall_real_run_post(AgsRecall *recall)
 
     list = list_next;
   }
+
+  if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
+    recall->flags |= AGS_RECALL_INITIAL_RUN;
+  }
 }
 
 /**
@@ -911,6 +917,10 @@ ags_recall_run_post(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
+  if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
+    return;
+  }
+
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 
   if(AGS_IS_RUN_CONNECTABLE(recall)){
@@ -1212,7 +1222,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
 			    AGS_RECALL_SEQUENCER |
 			    AGS_RECALL_NOTATION |
-			    AGS_RECALL_PROPAGATE_DONE);
+			    AGS_RECALL_PROPAGATE_DONE |
+			    AGS_RECALL_INITIAL_RUN);
 
   /* unref old */
   if(child->parent != NULL){

@@ -226,11 +226,7 @@ ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
 					   AgsGroupId group_id,
 					   AgsRecycling *first_recycling, AgsRecycling *last_recycling)
 {
-  printf("group_id: %d\n\0", group_id);
-
   while(recall_id_list != NULL){
-    printf("recall_id->group_id: %d\n\0", AGS_RECALL_ID(recall_id_list->data)->group_id);
-
     if(AGS_RECALL_ID(recall_id_list->data)->group_id == group_id &&
        AGS_RECALL_ID(recall_id_list->data)->first_recycling == first_recycling &&
        AGS_RECALL_ID(recall_id_list->data)->last_recycling == last_recycling){
@@ -239,6 +235,8 @@ ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
 
     recall_id_list = recall_id_list->next;
   }
+
+  printf("ags_recall_id_find_group_id_with_recycling: couldn't find matching recall id\n\0");
 
   return(NULL);
 }
