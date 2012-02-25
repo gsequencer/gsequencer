@@ -36,6 +36,7 @@
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_toggle_pattern_bit.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -108,32 +109,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   /*
    * FIXME:JK: the following code is ugly
    */
-  /* delay related * /
-  printf("tact = %f\n\0", tact);
-  printf("bpm = %f\n\0", bpm);
-  delay = (guint) round(((double)window->devout->frequency /
-			 (double)window->devout->buffer_size) *
-			(60.0 / bpm) *
-			tact);
-  printf("delay = %u\n\0", delay);
-
-  /* AgsDelayAudio * /
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
-
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
-
   /* pattern related * /
   length = (guint) drum->length_spin->adjustment->value;
 
@@ -773,17 +748,40 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   if(drum->selected_pad->pad.group->active){
     AgsChannel *channel, *next_pad;
+    GList *tasks;
 
     channel = drum->selected_pad->pad.channel;
     next_pad = channel->next_pad;
 
+    tasks = NULL;
+
     while(channel != next_pad){
-      ags_pattern_toggle_bit((AgsPattern *) channel->pattern->data, index0, index1, offset);
+      AgsTogglePatternBit *toggle_pattern_bit;
+
+      toggle_pattern_bit = ags_toggle_pattern_bit_new((AgsPattern *) channel->pattern->data,
+						      index0, index1,
+						      offset);
+
+      tasks = g_list_prepend(tasks,
+			     toggle_pattern_bit);
 
       channel = channel->next;
     }
-  }else
-    ags_pattern_toggle_bit((AgsPattern *) drum->selected_pad->pad.selected_line->channel->pattern->data, index0, index1, offset);
+
+    /* append AgsTogglePatternBit */
+    ags_devout_append_tasks(AGS_DEVOUT(drum->machine.audio->devout),
+			    tasks);
+  }else{
+    AgsTogglePatternBit *toggle_pattern_bit;
+    
+    toggle_pattern_bit = ags_toggle_pattern_bit_new((AgsPattern *) drum->selected_pad->pad.selected_line->channel->pattern->data,
+						    index0, index1,
+						    offset);
+
+    /* append AgsTogglePatternBit */
+    ags_devout_append_task(AGS_DEVOUT(drum->machine.audio->devout),
+			   AGS_TASK(toggle_pattern_bit));
+  }
 }
 
 void
