@@ -65,6 +65,7 @@ void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
 {
   AgsWindow *window;
+  AgsDevout *devout;
   AgsAudio *audio;
   AgsDelayAudio *delay_audio;
   AgsCountBeatsAudio *count_beats_audio;
@@ -83,12 +84,21 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   drum->machine.name = g_strdup_printf("Default %d\0", window->counter->drum);
   window->counter->drum++;
 
+  devout = AGS_DEVOUT(audio->devout);
+  bpm = window->navigation->bpm->adjustment->value;
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+
+  drum->play_delay_audio->notation_delay = (guint) round(((double) devout->frequency / (double) devout->buffer_size) *
+							  (60.0 / bpm));
+  drum->play_delay_audio->sequencer_delay = (guint) ((double) drum->play_delay_audio->notation_delay * tact);
+  drum->recall_delay_audio->notation_delay = (guint) round(((double) devout->frequency / (double) devout->buffer_size) *
+							    (60.0 / bpm));
+  drum->recall_delay_audio->sequencer_delay = (guint) ((double) drum->recall_delay_audio->notation_delay * tact);
+
   /*
    * FIXME:JK: the following code is ugly
    */
   /* delay related * /
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
-  bpm = window->navigation->bpm->adjustment->value;
   printf("tact = %f\n\0", tact);
   printf("bpm = %f\n\0", bpm);
   delay = (guint) round(((double)window->devout->frequency /

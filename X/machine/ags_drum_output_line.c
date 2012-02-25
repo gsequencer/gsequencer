@@ -152,12 +152,14 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   if(channel != NULL){
     AgsDrum *drum;
+    AgsDevout *devout;
     AgsAudioSignal *audio_signal;
     AgsDelayAudio *delay_audio;
     GList *list;
     guint stop;
 
     drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
+    devout = AGS_MACHINE(drum)->audio->devout;
 
     stop = 1;
 

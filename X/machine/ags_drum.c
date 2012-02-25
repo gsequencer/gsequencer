@@ -325,7 +325,6 @@ ags_drum_init(AgsDrum *drum)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
-							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
@@ -357,7 +356,6 @@ ags_drum_init(AgsDrum *drum)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
-							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);

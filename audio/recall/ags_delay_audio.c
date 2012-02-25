@@ -155,7 +155,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   delay_audio->frames = 0;
   delay_audio->notation_delay = 0;
-  delay_audio->sequencer_delay = 4;
+  delay_audio->sequencer_delay = 16;
 
   delay_audio->tactable = NULL;
 }
