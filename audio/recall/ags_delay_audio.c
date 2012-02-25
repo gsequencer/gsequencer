@@ -46,7 +46,7 @@ void ags_delay_audio_change_duration(AgsTactable *tactable, gdouble duration,
 enum{
   PROP_0,
   PROP_TACTABLE,
-  PROP_DELAY,
+  PROP_NOTATION_DELAY,
   PROP_SEQUENCER_DELAY,
 };
 
@@ -116,15 +116,15 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				  PROP_TACTABLE,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("delay\0",
-				 "delay for timeing\0",
-				 "The delay whenever a tic occures\0",
+  param_spec = g_param_spec_uint("notation_delay\0",
+				 "notation delay for timeing\0",
+				 "The notation delay whenever a tic occures\0",
 				 0,
 				 65535,
 				 0,
 				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_DELAY,
+				  PROP_NOTATION_DELAY,
 				  param_spec);
 
   param_spec = g_param_spec_uint("sequencer_delay\0",
@@ -154,7 +154,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   delay_audio->duration = 16.0;
 
   delay_audio->frames = 0;
-  delay_audio->delay = 0;
+  delay_audio->notation_delay = 0;
   delay_audio->sequencer_delay = 4;
 
   delay_audio->tactable = NULL;
@@ -171,11 +171,11 @@ ags_delay_audio_set_property(GObject *gobject,
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DELAY:
+  case PROP_NOTATION_DELAY:
     {
       guint delay;
 
-      delay_audio->delay = (guint) g_value_get_uint(value);
+      delay_audio->notation_delay = (guint) g_value_get_uint(value);
     }
     break;
   case PROP_SEQUENCER_DELAY:
@@ -223,9 +223,9 @@ ags_delay_audio_get_property(GObject *gobject,
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DELAY:
+  case PROP_NOTATION_DELAY:
     {
-      g_value_set_uint(value, delay_audio->delay);
+      g_value_set_uint(value, delay_audio->notation_delay);
     }
     break;
   case PROP_SEQUENCER_DELAY:
@@ -297,8 +297,8 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble bpm,
   delay_audio->frames = (((double) devout->frequency) *
 			(60.0 / bpm) *
 			delay_audio->tact);
-  delay_audio->delay = (double) delay_audio->frames / (double) devout->buffer_size;
-  delay_audio->sequencer_delay = delay_audio->delay * delay_audio->duration;
+  delay_audio->notation_delay = (double) delay_audio->frames / (double) devout->buffer_size;
+  delay_audio->sequencer_delay = delay_audio->notation_delay * delay_audio->duration;
 
   delay_audio->bpm = bpm;
 }
@@ -315,8 +315,8 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact,
   delay_audio->frames = (((double) devout->frequency) *
 			(60.0 / delay_audio->bpm) *
 			tact);
-  delay_audio->delay = (double) delay_audio->frames / (double) devout->buffer_size;
-  delay_audio->sequencer_delay = delay_audio->delay * delay_audio->duration;
+  delay_audio->notation_delay = (double) delay_audio->frames / (double) devout->buffer_size;
+  delay_audio->sequencer_delay = delay_audio->notation_delay * delay_audio->duration;
 
   delay_audio->tact = tact;
 }
@@ -329,7 +329,7 @@ ags_delay_audio_change_duration(AgsTactable *tactable, gdouble duration,
 
   devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-  delay_audio->sequencer_delay = (guint) delay_audio->delay * duration;
+  delay_audio->sequencer_delay = (guint) delay_audio->notation_delay * duration;
 
   delay_audio->duration = duration;
 }

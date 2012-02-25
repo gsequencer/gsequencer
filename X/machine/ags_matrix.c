@@ -39,6 +39,8 @@
 
 #include <ags/X/ags_menu_bar.h>
 
+#include <math.h>
+
 #define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY\0"
 #define AGS_MATRIX_INPUT_LINE_MAPPED_DATA "AGS_MATRIX_INPUT_LINE_MAPPED_DATA\0"
 
@@ -612,7 +614,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       if(delay_audio != NULL)
 	stop = ((guint)(matrix->length_spin->adjustment->value) *
 		exp2((double) gtk_option_menu_get_history(matrix->tact)) * 
-		(delay_audio->delay + 1));
+		(delay_audio->notation_delay * delay_audio->sequencer_delay + 1));
 
 
       while(source != NULL){

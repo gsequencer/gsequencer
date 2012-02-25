@@ -49,12 +49,23 @@ ags_countable_base_init(AgsCountableInterface *interface)
 }
 
 guint
-ags_countable_get_counter(AgsCountable *countable)
+ags_countable_get_notation_counter(AgsCountable *countable)
 {
   AgsCountableInterface *countable_interface;
 
   g_return_val_if_fail(AGS_IS_COUNTABLE(countable), -1);
   countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
-  g_return_val_if_fail(countable_interface->get_counter, -1);
-  countable_interface->get_counter(countable);
+  g_return_val_if_fail(countable_interface->get_notation_counter, -1);
+  countable_interface->get_notation_counter(countable);
+}
+
+guint
+ags_countable_get_sequencer_counter(AgsCountable *countable)
+{
+  AgsCountableInterface *countable_interface;
+
+  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), -1);
+  countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
+  g_return_val_if_fail(countable_interface->get_sequencer_counter, -1);
+  countable_interface->get_sequencer_counter(countable);
 }

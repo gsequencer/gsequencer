@@ -35,11 +35,13 @@ struct _AgsCountableInterface
 {
   GTypeInterface interface;
 
-  guint (*get_counter)(AgsCountable *countable);
+  guint (*get_notation_counter)(AgsCountable *countable);
+  guint (*get_sequencer_counter)(AgsCountable *countable);
 };
 
 GType ags_countable_get_type();
 
-guint ags_countable_get_counter(AgsCountable *countable);
+guint ags_countable_get_notation_counter(AgsCountable *countable);
+guint ags_countable_get_sequencer_counter(AgsCountable *countable);
 
 #endif /*__AGS_COUNTABLE_H__*/

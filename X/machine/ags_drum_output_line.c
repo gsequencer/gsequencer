@@ -169,7 +169,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 	delay_audio = (AgsDelayAudio *) list->data;
 	stop = ((guint)(drum->length_spin->adjustment->value *
 			exp2((double) gtk_option_menu_get_history(drum->tact))) *
-		(delay_audio->delay + 1));
+		(delay_audio->sequencer_delay + 1));
       }
     }
     

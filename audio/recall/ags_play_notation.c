@@ -532,7 +532,7 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
     note = AGS_NOTE(current_position->data);
     
     if(current_position != notation->end_loop){
-      if(note->x[0] == play_notation->count_beats_audio_run->counter){
+      if(note->x[0] == play_notation->count_beats_audio_run->notation_counter){
 	selected_channel = ags_channel_pad_nth(channel, note->y);
 	
 	recycling = selected_channel->first_recycling;
@@ -556,7 +556,7 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
 	  
 	  recycling = recycling->next;
 	}
-      }else if(note->x[0] > play_notation->count_beats_audio_run->counter){
+      }else if(note->x[0] > play_notation->count_beats_audio_run->notation_counter){
 	break;
       }
     }

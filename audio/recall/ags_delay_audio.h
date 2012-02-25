@@ -45,7 +45,7 @@ struct _AgsDelayAudio
   gdouble duration;
 
   guint frames;
-  guint delay;
+  guint notation_delay;
   guint sequencer_delay;
 
   AgsTactable *tactable;

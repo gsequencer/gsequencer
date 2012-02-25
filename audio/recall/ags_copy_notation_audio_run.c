@@ -401,7 +401,7 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
     guint length;
 
     note_list = copy_notation_audio_run->current_note;
-    offset = copy_notation_audio_run->count_beats_audio_run->counter;
+    offset = copy_notation_audio_run->count_beats_audio_run->notation_counter;
 
     while(note_list != NULL &&
 	  (note = AGS_NOTE(note_list->data))->x[0] == offset){

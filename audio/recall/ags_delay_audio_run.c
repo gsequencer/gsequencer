@@ -237,7 +237,7 @@ ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
   delay_audio_run->hide_ref = 0;
   delay_audio_run->hide_ref_counter = 0;
 
-  delay_audio_run->counter = 0;
+  delay_audio_run->notation_counter = 0;
   delay_audio_run->sequencer_counter = 0;
 }
 
@@ -308,7 +308,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&
      delay_audio_run->dependency_ref == 0){
-    delay_audio_run->counter = 0;
+    delay_audio_run->notation_counter = 0;
     delay_audio_run->sequencer_counter = 0;
     ags_recall_done(recall);
   }else{
@@ -319,7 +319,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     if(delay_audio_run->hide_ref != 0)
       delay_audio_run->hide_ref_counter++;
 
-    if(delay_audio_run->counter == 0){
+    if(delay_audio_run->notation_counter == 0){
       AgsDevout *devout;
       guint run_order;
       guint attack;
@@ -330,7 +330,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       
       //TODO:JK: optimize attack calculation
       attack = (delay_audio_run->attack->first_start +
-		delay_audio_run->counter * delay_audio->frames) % devout->buffer_size;
+		delay_audio_run->notation_counter * delay_audio->frames) % devout->buffer_size;
 
       /* notation speed */
       ags_delay_audio_run_notation_alloc_output(delay_audio_run, run_order,
@@ -339,32 +339,43 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 					       attack);
       ags_delay_audio_run_notation_count(delay_audio_run, run_order,
 					 attack);
+    }
+
+    if(delay_audio_run->sequencer_counter == 0){
+      AgsDevout *devout;
+      guint run_order;
+      guint attack;
+
+      devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+
+      //TODO:JK: optimize attack calculation
+      attack = (delay_audio_run->attack->first_start +
+		delay_audio_run->sequencer_counter * delay_audio->frames) % devout->buffer_size;
+
+      run_order = delay_audio_run->hide_ref_counter;
 
       /* sequencer speed */
-      if(delay_audio_run->sequencer_counter == 0){
-	ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,
-						   attack);
-	ags_delay_audio_run_sequencer_alloc_input(delay_audio_run, run_order,
-						  attack);
-	ags_delay_audio_run_sequencer_count(delay_audio_run, run_order,
-					    attack);
-      }
+      ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,
+						 attack);
+      ags_delay_audio_run_sequencer_alloc_input(delay_audio_run, run_order,
+						attack);
+      ags_delay_audio_run_sequencer_count(delay_audio_run, run_order,
+					  attack);
     }
 
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
-      //      printf("delay counting\n\0");
 
-      if(delay_audio_run->counter == delay_audio->delay - 1){
-	delay_audio_run->counter = 0;
-
-	if(delay_audio_run->sequencer_counter == delay_audio->sequencer_delay - 1){
-	  delay_audio_run->sequencer_counter = 0;
-	}else{
-	  delay_audio_run->sequencer_counter++;
-	}
+      if(delay_audio_run->notation_counter == delay_audio->notation_delay - 1){
+	delay_audio_run->notation_counter = 0;
       }else{
-	delay_audio_run->counter++;
+	delay_audio_run->notation_counter += 1;
+      }
+
+      if(delay_audio_run->sequencer_counter == delay_audio->sequencer_delay - 1){
+	  delay_audio_run->sequencer_counter = 0;
+      }else{
+	delay_audio_run->sequencer_counter += 1;
       }
     }
   }
@@ -412,7 +423,8 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
   copy->hide_ref_counter = delay_audio_run->hide_ref_counter;
 
   //TODO:JK: may be you want to make a AgsRecallDependency, but a AgsCountable isn't a AgsRecall at all
-  copy->counter = delay_audio_run->counter;
+  copy->notation_counter = delay_audio_run->notation_counter;
+  copy->sequencer_counter = delay_audio_run->sequencer_counter;
 
   return((AgsRecall *) copy);
 }

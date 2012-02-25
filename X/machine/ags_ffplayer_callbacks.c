@@ -69,8 +69,8 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
 
   /* AgsDelayAudio */
   //FIXME:JK:
-  ffplayer->play_delay_audio->delay = delay;
-  ffplayer->recall_delay_audio->delay = delay;
+  //  ffplayer->play_delay_audio->delay = delay;
+  //  ffplayer->recall_delay_audio->delay = delay;
 
   /* notation related */
   length = (guint) AGS_EDITOR_MAX_CONTROLS + 16;
