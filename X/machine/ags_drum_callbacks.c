@@ -719,7 +719,7 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   GList *list;
   guint i, index0, index1, offset;
 
-  if((AGS_DRUM_BLOCK_PATTERN & (drum->flags)) != 0){ /* AGS_DRUM_BLOCK_PATTERN & drum->flags */
+  if((AGS_DRUM_BLOCK_PATTERN & (drum->flags)) != 0){
     printf("AgsDrum pattern is blocked\n\0");
     return;
   }

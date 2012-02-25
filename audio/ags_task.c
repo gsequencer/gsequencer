@@ -27,8 +27,6 @@ void ags_task_connect(AgsConnectable *connectable);
 void ags_task_disconnect(AgsConnectable *connectable);
 void ags_task_finalize(GObject *gobject);
 
-void ags_task_real_launch(AgsTask *task);
-
 enum{
   LAUNCH,
   LAST_SIGNAL,
