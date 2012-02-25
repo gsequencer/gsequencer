@@ -524,7 +524,7 @@ void
 ags_play_recycling_play_audio_signal_done(AgsRecall *recall,
 					  gpointer data)
 {
-  recall->flags |= AGS_RECALL_REMOVE | AGS_RECALL_HIDE;
+  //  recall->flags |= AGS_RECALL_REMOVE | AGS_RECALL_HIDE;
 }
 
 AgsPlayRecycling*
