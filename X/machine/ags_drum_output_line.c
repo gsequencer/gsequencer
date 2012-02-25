@@ -159,20 +159,15 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     guint stop;
 
     drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
-    devout = AGS_MACHINE(drum)->audio->devout;
+    devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
     stop = 1;
 
     if(drum != NULL){
-      list = ags_recall_find_type(AGS_AUDIO(drum->machine.audio)->play,
-				  AGS_TYPE_DELAY_AUDIO);
-      
-      if(list != NULL){
-	delay_audio = (AgsDelayAudio *) list->data;
-	stop = ((guint)(drum->length_spin->adjustment->value *
-			exp2((double) gtk_option_menu_get_history(drum->tact))) *
-		(delay_audio->sequencer_delay + 1));
-      }
+      delay_audio = drum->play_delay_audio;
+      stop = (guint)((drum->length_spin->adjustment->value + 1.0) *
+		     (gdouble) delay_audio->sequencer_delay);
+      printf("ags_drum_output_line_set_channel - delay: %u; stop: %u\n\0", delay_audio->sequencer_delay, stop);
     }
     
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);

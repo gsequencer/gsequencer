@@ -71,8 +71,8 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   AgsCountBeatsAudio *count_beats_audio;
   AgsCopyPatternAudio *copy_pattern_audio;
   GList *list;
-  double bpm, tact;
-  guint delay, length, stream_length;
+  double delay, bpm, tact;
+  guint length, stream_length;
 
   if(old_parent != NULL)
     return;
@@ -86,14 +86,17 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 
   devout = AGS_DEVOUT(audio->devout);
   bpm = window->navigation->bpm->adjustment->value;
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
-
-  drum->play_delay_audio->notation_delay = (guint) round(((double) devout->frequency / (double) devout->buffer_size) *
-							  (60.0 / bpm));
-  drum->play_delay_audio->sequencer_delay = (guint) ((double) drum->play_delay_audio->notation_delay * tact);
-  drum->recall_delay_audio->notation_delay = (guint) round(((double) devout->frequency / (double) devout->buffer_size) *
-							    (60.0 / bpm));
-  drum->recall_delay_audio->sequencer_delay = (guint) ((double) drum->recall_delay_audio->notation_delay * tact);
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact)) * 16.0;
+  delay = (((double) devout->frequency / (double) devout->buffer_size) *
+	   (60.0 / bpm) /
+	   16.0);
+  drum->play_delay_audio->notation_delay = (guint) floor(delay);
+  drum->play_delay_audio->sequencer_delay = (guint) floor(delay * tact);
+  delay = (((double) devout->frequency / (double) devout->buffer_size) *
+	   (60.0 / bpm) / 
+	   16.0);
+  drum->recall_delay_audio->notation_delay = (guint) floor(delay);
+  drum->recall_delay_audio->sequencer_delay = (guint) floor(delay * tact);
 
   /*
    * FIXME:JK: the following code is ugly
