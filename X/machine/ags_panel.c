@@ -234,6 +234,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 					      AGS_RECALL_PLAYBACK |
 					      AGS_RECALL_SEQUENCER |
 					      AGS_RECALL_NOTATION |
+					      AGS_RECALL_PERSISTENT |
 					      AGS_RECALL_OUTPUT_ORIENTATED);
       ags_channel_add_recall(input, (GObject *) play_channel_run, TRUE);
 

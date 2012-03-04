@@ -537,6 +537,8 @@ ags_copy_recycling_source_add_audio_signal(AgsCopyRecycling *copy_recycling,
   printf("ags_copy_recycling_source_add_audio_signal - channel: %u\n\0",
   	 AGS_CHANNEL(copy_recycling->source->channel)->line);
 
+  g_object_ref(audio_signal);
+
   audio_signal->stream_current = audio_signal->stream_beginning;
 
   attack = ags_attack_duplicate_from_devout(G_OBJECT(copy_recycling->devout));
@@ -557,6 +559,8 @@ ags_copy_recycling_destination_add_audio_signal(AgsCopyRecycling *copy_recycling
 {
   printf("ags_copy_recycling_destination_add_audio_signal - channel: %u\n\0",
   	 AGS_CHANNEL(copy_recycling->source->channel)->line);
+
+  g_object_ref(audio_signal);
 
   copy_recycling->child_destination = audio_signal;
 }

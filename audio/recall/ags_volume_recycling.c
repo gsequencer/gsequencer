@@ -335,6 +335,7 @@ ags_volume_recycling_add_audio_signal(AgsVolumeRecycling *volume_recycling,
 {
   AgsVolumeAudioSignal *volume_audio_signal;
 
+  g_object_ref(audio_signal);
   volume_audio_signal = ags_volume_audio_signal_new(audio_signal, volume_recycling->volume);
 
   AGS_RECALL(volume_audio_signal)->flags |= AGS_RECALL_PROPAGATE_DONE;

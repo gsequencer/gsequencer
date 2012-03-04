@@ -513,8 +513,6 @@ ags_copy_channel_duplicate(AgsRecall *recall,
 	       "source\0", copy_channel->source,
 	       NULL);
 
-  //  ags_copy_channel_map_copy_recycling(copy);
-
   return((AgsRecall *) copy);
 }
 

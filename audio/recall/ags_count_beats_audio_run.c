@@ -616,6 +616,8 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->run_init_pre(recall);
+
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   count_beats_audio_run->flags |= AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN;
 }
@@ -745,14 +747,12 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
     if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
       ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
 						nth_run);
-
-      count_beats_audio_run->flags &= (~AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN);
     }
 
     if(count_beats_audio->loop &&
        (AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) == 0){
       printf("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
-
+      
       ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
 					       nth_run);
     }else{
@@ -768,6 +768,10 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 	
 	ags_recall_done(AGS_RECALL(count_beats_audio_run));
       }
+    }
+
+    if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
+      count_beats_audio_run->flags &= (~AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN);
     }
   }
 }

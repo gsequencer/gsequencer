@@ -269,8 +269,6 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 {
   AgsStreamAudioSignal *stream_audio_signal;
 
-  AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
-
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
 
   if(stream_audio_signal->audio_signal->stream_current != NULL){
@@ -278,6 +276,9 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   }else{
     ags_recall_done(recall);
   }
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
 }
 
 AgsRecall*

@@ -327,9 +327,11 @@ ags_stream_recycling_add_audio_signal(AgsStreamRecycling *stream_recycling,
 {
   AgsStreamAudioSignal *stream_audio_signal;
 
+  g_object_ref(audio_signal);
   stream_audio_signal = ags_stream_audio_signal_new(audio_signal);
 
-  if((AGS_RECALL_PLAYBACK & (AGS_RECALL(stream_recycling)->flags)) != 0)
+  if((AGS_RECALL_PLAYBACK & (AGS_RECALL(stream_recycling)->flags)) != 0 &&
+     (AGS_RECALL_PERSISTENT & (AGS_RECALL(stream_recycling)->flags)) != 0)
     AGS_RECALL(stream_audio_signal)->flags |= AGS_RECALL_PROPAGATE_DONE;
 
   ags_recall_add_child(AGS_RECALL(stream_recycling), AGS_RECALL(stream_audio_signal));

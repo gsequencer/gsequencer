@@ -64,7 +64,9 @@ void ags_recall_real_run_pre(AgsRecall *recall);
 void ags_recall_real_run_inter(AgsRecall *recall);
 void ags_recall_real_run_post(AgsRecall *recall);
 
+void ags_recall_real_stop_persistent(AgsRecall *recall);
 void ags_recall_real_done(AgsRecall *recall);
+
 void ags_recall_real_cancel(AgsRecall *recall);
 void ags_recall_real_remove(AgsRecall *recall);
 
@@ -80,6 +82,7 @@ enum{
   RUN_PRE,
   RUN_INTER,
   RUN_POST,
+  STOP_PERSISTENT,
   DONE,
   CANCEL,
   REMOVE,
@@ -230,6 +233,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->run_inter = ags_recall_real_run_inter;
   recall->run_post = ags_recall_real_run_post;
 
+  recall->stop_persistent = ags_recall_real_stop_persistent;
   recall->done = ags_recall_real_done;
 
   recall->cancel = ags_recall_real_cancel;
@@ -308,6 +312,15 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
+
+  recall_signals[STOP_PERSISTENT] =
+    g_signal_new("stop_persistent\0",
+		 G_TYPE_FROM_CLASS (recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallClass, stop_persistent),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[DONE] =
     g_signal_new("done\0",
@@ -833,7 +846,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
  * ags_recall_run_init_pre:
  * @recall an #AgsRecall
  *
- * Run, this is the pre stage within a run.
+ * This is the pre stage within a run.
  */
 void
 ags_recall_run_pre(AgsRecall *recall)
@@ -861,10 +874,10 @@ ags_recall_real_run_inter(AgsRecall *recall)
 }
 
 /**
- * ags_recall_run_init_pre:
+ * ags_recall_run_init_inter:
  * @recall an #AgsRecall
  *
- * Run, this is the inter stage within a run.
+ * This is the inter stage within a run.
  */
 void
 ags_recall_run_inter(AgsRecall *recall)
@@ -893,15 +906,15 @@ ags_recall_real_run_post(AgsRecall *recall)
   }
 
   if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
-    recall->flags |= AGS_RECALL_INITIAL_RUN;
+    recall->flags &= (~AGS_RECALL_INITIAL_RUN);
   }
 }
 
 /**
- * ags_recall_run_init_pre:
+ * ags_recall_run_init_post:
  * @recall an #AgsRecall
  *
- * Run, this is the post stage within a run.
+ * This is the post stage within a run.
  */
 void
 ags_recall_run_post(AgsRecall *recall)
@@ -915,12 +928,45 @@ ags_recall_run_post(AgsRecall *recall)
 }
 
 void
+ags_recall_real_stop_persistent(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[STOP_PERSISTENT], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+/**
+ * ags_recall_stop_persistent:
+ * @recall an #AgsRecall
+ *
+ * Unsets the %AGS_RECALL_PERSISTENT flag set and invokes ags_recall_done().
+ */
+void
+ags_recall_stop_persistent(AgsRecall *recall)
+{
+  recall->flags |= AGS_RECALL_PERSISTENT;
+
+  ags_recall_done(recall);
+}
+
+void
 ags_recall_real_done(AgsRecall *recall)
 {
-  if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
+  if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0 ||
+     (AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
+     (AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     return;
   }
 
+  if((AGS_RECALL_TERMINATING & (recall->flags)) == 0){
+    recall->flags |= AGS_RECALL_TERMINATING;
+    return;
+  }
+
+  printf("ags_recall_done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 
   if(AGS_IS_RUN_CONNECTABLE(recall)){
@@ -1223,6 +1269,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 			    AGS_RECALL_SEQUENCER |
 			    AGS_RECALL_NOTATION |
 			    AGS_RECALL_PROPAGATE_DONE |
+			    AGS_RECALL_PERSISTENT |
 			    AGS_RECALL_INITIAL_RUN);
 
   /* unref old */
