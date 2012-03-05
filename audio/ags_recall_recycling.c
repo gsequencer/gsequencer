@@ -22,18 +22,7 @@
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
 void ags_recall_recyclingconnectable_interface_init(AgsConnectableInterface *connectable);
@@ -220,44 +209,103 @@ ags_recall_recycling_run_connectable_interface_init(AgsRunConnectableInterface *
 void
 ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
 {
-  recall_recycling->channel = NULL;
+  recall_recycling->destination = NULL;
+  recall_recycling->source = NULL;
 
-  recall_recycling->recall_audio_run = NULL;
-  recall_recycling->recall_channel = NULL;
-
-  recall_recycling->run_order = 0;
+  recall_recycling->child_destination = NULL;
+  recall_child->child_source = NULL;
 }
-
 
 void
 ags_recall_recycling_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec)
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
 {
   AgsRecallRecycling *recall_recycling;
 
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_CHANNEL:
+  case PROP_DESTINATION:
     {
-      AgsChannel *channel;
+      AgsRecycling *destination;
 
-      channel = (AgsChannel *) g_value_get_object(value);
+      destination = (AgsRecycling *) g_value_get_object(value);
 
-      if(recall_recycling->channel == channel)
+      if(recall_recycling->destination == destination)
 	return;
 
-      if(recall_recycling->channel != NULL){
-	g_object_unref(G_OBJECT(recall_recycling->channel));
+      if(recall_recycling->destination != NULL){
+	g_object_unref(G_OBJECT(recall_recycling->destination));
       }
 
-      if(channel != NULL){
-	g_object_ref(G_OBJECT(channel));
+      if(destination != NULL){
+	g_object_ref(G_OBJECT(destination));
       }
 
-      recall_recycling->channel = channel;
+      recall_recycling->destination = destination;
+    }
+    break;
+  case PROP_SOURCE:
+    {
+      AgsRecycling *source;
+
+      source = (AgsRecycling *) g_value_get_object(value);
+
+      if(recall_recycling->source == source)
+	return;
+
+      if(recall_recycling->source != NULL){
+	g_object_unref(G_OBJECT(recall_recycling->source));
+      }
+
+      if(source != NULL){
+	g_object_ref(G_OBJECT(source));
+      }
+
+      recall_recycling->source = source;
+    }
+    break;
+  case PROP_CHILD_DESTINATION:
+    {
+      AgsAudioSignal *child_destination;
+
+      child_destination = (AgsRecycling *) g_value_get_object(value);
+
+      if(recall_recycling->child_destination == child_destination)
+	return;
+
+      if(recall_recycling->child_destination != NULL){
+	g_object_unref(G_OBJECT(recall_recycling->child_destination));
+      }
+
+      if(child_destination != NULL){
+	g_object_ref(G_OBJECT(child_destination));
+      }
+
+      recall_recycling->child_destination = child_destination;
+    }
+    break;
+  case PROP_CHILD_SOURCE:
+    {
+      AgsAudioSignal *child_source;
+
+      child_source = (AgsRecycling *) g_value_get_object(value);
+
+      if(recall_recycling->child_source == child_source)
+	return;
+
+      if(recall_recycling->child_source != NULL){
+	g_object_unref(G_OBJECT(recall_recycling->child_source));
+      }
+
+      if(source != NULL){
+	g_object_ref(G_OBJECT(child_source));
+
+	recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
+							child_source);
+      }
     }
     break;
   default:
@@ -277,9 +325,19 @@ ags_recall_recycling_get_property(GObject *gobject,
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_CHANNEL:
+  case PROP_DESTINATION:
     {
-      g_value_set_object(value, recall_recycling->channel);
+      g_value_set_object(value, recall_recycling->destination);
+    }
+    break;
+  case PROP_SOURCE:
+    {
+      g_value_set_object(value, recall_recycling->source);
+    }
+    break;
+  case PROP_CHILD_DESTINATION:
+    {
+      g_value_set_object(value, recall_recycling->child_destination);
     }
     break;
   };
@@ -292,12 +350,19 @@ ags_recall_recycling_finalize(GObject *gobject)
 
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
-  if(recall_recycling->recall_audio_run != NULL)
-    g_object_unref(G_OBJECT(recall_recycling->recall_audio_run));
-  
-  if(recall_recycling->recall_channel != NULL)
-    g_object_unref(G_OBJECT(recall_recycling->recall_channel));
+  if(recall_recycling->destination != NULL)
+    g_object_unref(G_OBJECT(recall_recycling->destination));
 
+  if(recall_recycling->source != NULL)
+    g_object_unref(G_OBJECT(recall_recycling->source));
+
+  if(recall_recycling->child_destination != NULL)
+    g_object_unref(G_OBJECT(recall_recycling->child_destination));
+
+  if(recall_recycling->child_source != NULL)
+    ags_list_free_and_unref_link(recall_recycling->child_source);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_recall_recycling_parent_class)->finalize(gobject);
 }
 
@@ -382,6 +447,7 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
 GList*
 ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling)
 {
+
 }
 
 AgsRecallRecycling*
