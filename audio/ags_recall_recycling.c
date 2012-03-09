@@ -47,6 +47,9 @@ AgsRecall* ags_recall_recycling_duplicate(AgsRecall *recall,
 					  guint *n_params, GParameter *parameter);
 
 
+void ags_recall_recycling_duplicate_list(GList *list,
+					 GList **target);
+
 enum{
   CREATED_RECALL_AUDIO_SIGNAL,
   LAST_SIGNAL,
@@ -415,39 +418,23 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
 												 recall_id,
 												 n_params, parameter));
 
-  //  copy->channel = recall_recycling->channel;
-
-  /* moved to AgsPackable * /
-  container = AGS_RECALL_CONTAINER(recall->container);
-
-  if(container != NULL){
-    /* set recall audio run * /
-    recall_audio_run_list = container->recall_audio_run;
-    recall_audio_run_list = ags_recall_find_group_id(recall_audio_run_list,
-						     recall_id->parent_group_id);
-    
-    if(recall_audio_run_list != NULL){
-      recall_audio_run = AGS_RECALL_AUDIO_RUN(recall_audio_run_list->data);
-      
-      g_object_set(G_OBJECT(copy),
-		   "recall_audio_run\0", G_OBJECT(recall_audio_run),
-		   NULL);
-    }
-  }
-
-  /* set recall channel * /
-  g_object_set(G_OBJECT(copy),
-	       "recall_channel\0", G_OBJECT(recall_recycling->recall_channel),
-	       NULL);
-  */
-
   return((AgsRecall *) copy);
 }
 
 GList*
 ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling)
 {
+  GList *child_source;
 
+  child_source = NULL;
+
+  g_list_foreach(recall_recycling->child_source,
+		 G_FUNC(ags_list_dupcliate_list),
+		 &child_source);
+
+  child_source = g_list_reverse(child_source);
+
+  return(child_source);
 }
 
 AgsRecallRecycling*

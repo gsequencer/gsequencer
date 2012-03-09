@@ -25,4 +25,6 @@
 void ags_list_free_and_free_link(GList *list);
 void ags_list_free_and_unref_link(GList *list);
 
+void ags_list_duplicate_list(gpointer entry, gpointer target);
+
 #endif /*__AGS_LIST_H__*/

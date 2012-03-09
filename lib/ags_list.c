@@ -47,3 +47,14 @@ ags_list_free_and_unref_link(GList *list)
     list = list_next;
   }
 }
+
+void
+ags_list_duplicate_list(gpointer entry, gpointer target)
+{
+  GList *list;
+
+  list = (GList **) target;
+
+  *list = g_list_prepend(*list,
+			 entry);
+}
