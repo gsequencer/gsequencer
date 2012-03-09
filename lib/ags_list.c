@@ -51,7 +51,7 @@ ags_list_free_and_unref_link(GList *list)
 void
 ags_list_duplicate_list(gpointer entry, gpointer target)
 {
-  GList *list;
+  GList **list;
 
   list = (GList **) target;
 
