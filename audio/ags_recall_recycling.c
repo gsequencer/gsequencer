@@ -52,7 +52,6 @@ void ags_recall_recycling_duplicate_list(GList *list,
 					 GList **target);
 
 enum{
-  CREATED_RECALL_AUDIO_SIGNAL,
   LAST_SIGNAL,
 };
 
@@ -175,19 +174,6 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
   recall = (AgsRecallClass *) recall_recycling;
 
   recall->duplicate = ags_recall_recycling_duplicate;
-
-  /* AgsRecallRecyclingClass */
-  recall_recycling->created_recall_audio_signal = ags_recall_recycling_created_recall_audio_signal;
-
-  /* signals */
-  recall_channel_run_signals[CREATED_RECALL_AUDIO_SIGNAL] =
-    g_signal_new("created_recall_audio_signal\0",
-		 G_TYPE_FROM_CLASS (recall_recycling),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, created_recall_audio_signal),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT,
-		 G_TYPE_ULONG, 0);
 }
 
 void

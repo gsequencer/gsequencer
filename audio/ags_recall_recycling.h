@@ -66,9 +66,6 @@ GType ags_recall_recycling_get_type();
 
 GList* ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling);
 
-void ags_recall_recycling_created_recall_audio_signal(AgsRecallRecycling *recall_recycling,
-						      AgsRecallAudioSigna *recall_audio_signal);
-
 AgsRecallRecycling* ags_recall_recycling_new();
 
 #endif /*__AGS_RECALL_RECYCLING_H__*/
