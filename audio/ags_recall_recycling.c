@@ -61,6 +61,7 @@ enum{
   PROP_SOURCE,
   PROP_CHILD_DESTINATION,
   PROP_CHILD_SOURCE,
+  PROP_DEVOUT,
 };
 
 static gpointer ags_recall_recycling_parent_class = NULL;
@@ -134,6 +135,15 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
   gobject->finalize = ags_recall_recycling_finalize;
 
   /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned AgsDevout\0",
+				   "The AgsDevout this recall is assigned with\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
   param_spec = g_param_spec_object("destination\0",
 				   "AgsRecycling destination of this recall\0",
 				   "The AgsRecycling destination of this recall\0",
@@ -217,6 +227,24 @@ ags_recall_recycling_set_property(GObject *gobject,
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
   switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(recall_recycling->devout == devout)
+	return;
+
+      if(recall_recycling->devout != NULL)
+	g_object_unref(G_OBJECT(recall_recycling->devout));
+
+      if(devout != NULL)
+	g_object_ref(G_OBJECT(devout));
+
+      recall_recycling->devout = devout;
+    }
+    break;
   case PROP_DESTINATION:
     {
       AgsRecycling *destination;
@@ -315,6 +343,11 @@ ags_recall_recycling_get_property(GObject *gobject,
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
   switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, recall_recycling->devout);
+    }
+    break;
   case PROP_DESTINATION:
     {
       g_value_set_object(value, recall_recycling->destination);

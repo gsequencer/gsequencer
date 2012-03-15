@@ -384,16 +384,17 @@ ags_recall_audio_signal_duplicate(AgsRecall *recall,
 {
   AgsRecallAudioSignal *recall_audio_signal, *copy;
 
+  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
+				 parameter, n_params,
+				 "devout\0", recall_audio_signal->devout,
+				 "destination\0", recall_audio_signal->destination,
+				 "source\0", recall_audio_signal->source,
+				 NULL);
+
   recall_audio_signal = (AgsRecallAudioSignal *) recall;
   copy = (AgsRecallAudioSignal *) AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->duplicate(recall,
 												    recall_id,
 												    n_params, parameter);
-
-  g_object_set(G_OBJECT(recall),
-	       "devout\0", recall_audio_signal->devout,
-	       "destination\0", recall_audio_signal->destination,
-	       "source\0", recall_audio_signal->source,
-	       NULL);
 
   return((AgsRecall *) recall);
 }

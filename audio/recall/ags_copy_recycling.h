@@ -40,7 +40,7 @@ typedef struct _AgsCopyRecyclingClass AgsCopyRecyclingClass;
 
 struct _AgsCopyRecycling
 {
-  AgsRecall recall;
+  AgsRecallRecycling recall_recycling;
 
   AgsDevout *devout;
 
@@ -59,7 +59,7 @@ struct _AgsCopyRecycling
 
 struct _AgsCopyRecyclingClass
 {
-  AgsRecallClass recall;
+  AgsRecallRecyclingClass recall_recycling;
 };
 
 GType ags_copy_recycling_get_type();
