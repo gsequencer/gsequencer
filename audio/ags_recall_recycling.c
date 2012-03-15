@@ -203,7 +203,7 @@ ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
   recall_recycling->source = NULL;
 
   recall_recycling->child_destination = NULL;
-  recall_child->child_source = NULL;
+  recall_recycling->child_source = NULL;
 }
 
 void
@@ -261,7 +261,7 @@ ags_recall_recycling_set_property(GObject *gobject,
     {
       AgsAudioSignal *child_destination;
 
-      child_destination = (AgsRecycling *) g_value_get_object(value);
+      child_destination = (AgsAudioSignal *) g_value_get_object(value);
 
       if(recall_recycling->child_destination == child_destination)
 	return;
@@ -281,16 +281,16 @@ ags_recall_recycling_set_property(GObject *gobject,
     {
       AgsAudioSignal *child_source;
 
-      child_source = (AgsRecycling *) g_value_get_object(value);
+      child_source = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(recall_recycling->child_source == child_source)
+      if(g_list_find(recall_recycling->child_source, child_source) != NULL)
 	return;
 
       if(recall_recycling->child_source != NULL){
 	g_object_unref(G_OBJECT(recall_recycling->child_source));
       }
 
-      if(source != NULL){
+      if(child_source != NULL){
 	g_object_ref(G_OBJECT(child_source));
 
 	recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
@@ -394,13 +394,28 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
 				 guint *n_params, GParameter *parameter)
 {
   AgsRecallRecycling *recall_recycling, *copy;
+  GList *list;
 
   recall_recycling = AGS_RECALL_RECYCLING(recall);
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "channel\0", recall_recycling->channel,
+				 "destination\0", recall_recycling->destination,
+				 "source\0", recall_recycling->source,
+				 "child_destination\0", recall_recycling->child_destination,
 				 NULL);
+
+  list = recall_recycling->child_source;
+
+  while(list != NULL){
+    parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
+				   parameter, n_params,
+				   "child_source\0", list->data,
+				   NULL);
+
+    list = list->next;
+  }
+
   copy = AGS_RECALL_RECYCLING(AGS_RECALL_CLASS(ags_recall_recycling_parent_class)->duplicate(recall,
 												 recall_id,
 												 n_params, parameter));
@@ -416,7 +431,7 @@ ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling)
   child_source = NULL;
 
   g_list_foreach(recall_recycling->child_source,
-		 G_FUNC(ags_list_dupcliate_list),
+		 (GFunc) ags_list_duplicate_list,
 		 &child_source);
 
   child_source = g_list_reverse(child_source);

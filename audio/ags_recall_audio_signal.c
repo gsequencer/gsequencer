@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/recall/ags_recall_audio_signal.h>
+#include <ags/audio/ags_recall_audio_signal.h>
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
@@ -26,8 +26,6 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/recall/ags_recall_channel.h>
 
 #include <stdlib.h>
 
@@ -381,15 +379,15 @@ ags_recall_audio_signal_finalize(GObject *gobject)
 
 AgsRecall*
 ags_recall_audio_signal_duplicate(AgsRecall *recall,
-				AgsRecallID *recall_id,
-				guint *n_params, GParameter *parameter)
+				  AgsRecallID *recall_id,
+				  guint *n_params, GParameter *parameter)
 {
-  AgsRecallAudioSignal *recall_audio_signal, *recall;
+  AgsRecallAudioSignal *recall_audio_signal, *copy;
 
   recall_audio_signal = (AgsRecallAudioSignal *) recall;
-  recall = (AgsRecallAudioSignal *) AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->duplicate(recall,
-												recall_id,
-												n_params, parameter);
+  copy = (AgsRecallAudioSignal *) AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->duplicate(recall,
+												    recall_id,
+												    n_params, parameter);
 
   g_object_set(G_OBJECT(recall),
 	       "devout\0", recall_audio_signal->devout,
