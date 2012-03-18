@@ -83,6 +83,9 @@ struct _AgsRecall
   AgsRecall *parent;
   GList *children;
 
+  GType child_type;
+  GParameter *child_parameters;
+
   GList *handlers;
 };
 

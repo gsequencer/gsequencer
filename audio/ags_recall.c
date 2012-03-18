@@ -409,6 +409,9 @@ ags_recall_init(AgsRecall *recall)
   recall->parent = NULL;
   recall->children = NULL;
 
+  recall->child_type = G_TYPE_NONE;
+  recall->child_parameters = NULL;
+
   recall->handlers = NULL;
 }
 

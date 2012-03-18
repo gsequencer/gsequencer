@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_recycling.h>
+#include <ags/audio/ags_recall.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recycling.h>
@@ -40,7 +40,7 @@ typedef struct _AgsCopyRecyclingClass AgsCopyRecyclingClass;
 
 struct _AgsCopyRecycling
 {
-  AgsRecallRecycling recall_recycling;
+  AgsRecall recall;
 
   AgsDevout *devout;
 
@@ -59,7 +59,7 @@ struct _AgsCopyRecycling
 
 struct _AgsCopyRecyclingClass
 {
-  AgsRecallRecyclingClass recall_recycling;
+  AgsRecallClass recall;
 };
 
 GType ags_copy_recycling_get_type();
