@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_recycling.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recycling.h>

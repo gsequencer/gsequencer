@@ -24,6 +24,7 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
@@ -40,6 +41,8 @@ typedef struct _AgsRecallRecyclingClass AgsRecallRecyclingClass;
 struct _AgsRecallRecycling
 {
   AgsRecall recall;
+
+  AgsDevout *devout;
 
   AgsRecycling *destination;
   gulong destination_add_audio_signal_handler;
