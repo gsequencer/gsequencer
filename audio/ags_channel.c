@@ -3143,6 +3143,7 @@ ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id)
 //TODO:JK: you may want to store querried child id in a tree for optimization
 //FIXME:JK: most iterations run from the root to the leafs, but the up going functions doesn't do it correctly and will be called after down going functions, it should hurt but isn't clean
 //FIXME:JK: group id for audio has changed
+//FIXME:JK: really needs to be revised!
 void
 ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 				      AgsChannel *old_channel_link, AgsChannel *old_link_link)

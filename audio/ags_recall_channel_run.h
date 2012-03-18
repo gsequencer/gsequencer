@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
 
@@ -41,12 +43,18 @@ struct _AgsRecallChannelRun
 {
   AgsRecall recall;
 
-  AgsChannel *channel;
+  AgsDevout *devout;
 
   AgsRecallChannel *recall_channel;
   AgsRecallAudioRun *recall_audio_run;
 
   guint run_order;
+
+  AgsChannel *destination;
+  gulong destination_recycling_changed_handler;
+
+  AgsChannel *source;
+  gulong source_recycling_changed_handler;
 };
 
 struct _AgsRecallChannelRunClass
