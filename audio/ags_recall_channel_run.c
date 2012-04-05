@@ -836,9 +836,9 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 }
 
 void
-ags_recall_channel_remap_child_destination(AgsRecallChannelRun *recall_channel_run,
-					   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-					   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
+ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_channel_run,
+					       AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+					       AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
 {
   //TODO:JK: implement me
 }
@@ -868,9 +868,9 @@ ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 							 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							 AgsRecallChannelRun *recall_channel_run)
 {
-  ags_recall_channel_refresh_child_source(recall_channel_run,
-					  old_start_changed_region, old_end_changed_region,
-					  new_start_changed_region, new_end_changed_region);
+  ags_recall_channel_run_refresh_child_source(recall_channel_run,
+					      old_start_changed_region, old_end_changed_region,
+					      new_start_changed_region, new_end_changed_region);
 }
 
 void
@@ -881,9 +881,9 @@ ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channe
 							      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							      AgsRecallChannelRun *recall_channel_run)
 {
-  ags_recall_channel_refresh_child_destination(recall_channel_run,
-					       old_start_changed_region, old_end_changed_region,
-					       new_start_changed_region, new_end_changed_region);
+  ags_recall_channel_run_refresh_child_destination(recall_channel_run,
+						   old_start_changed_region, old_end_changed_region,
+						   new_start_changed_region, new_end_changed_region);
 }
 
 AgsRecallChannelRun*

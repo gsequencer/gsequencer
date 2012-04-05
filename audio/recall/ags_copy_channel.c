@@ -37,14 +37,6 @@ void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_copy_channel_init(AgsCopyChannel *copy_channel);
-void ags_copy_channel_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_copy_channel_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
 void ags_copy_channel_connect(AgsConnectable *connectable);
 void ags_copy_channel_disconnect(AgsConnectable *connectable);
 void ags_copy_channel_run_connect(AgsRunConnectable *run_connectable);
@@ -121,9 +113,6 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
 
   /* GObjectClass */
   gobject = (GObjectClass *) copy_channel;
-
-  gobject->set_property = ags_copy_channel_set_property;
-  gobject->get_property = ags_copy_channel_get_property;
 
   gobject->finalize = ags_copy_channel_finalize;
 
