@@ -120,7 +120,7 @@ ags_dial_init(AgsDial *dial)
   pthread_attr_setinheritsched(&dial->idle_thread_attr, PTHREAD_INHERIT_SCHED);
 
   pthread_mutexattr_init(&dial->idle_mutex_attr);
-  pthread_mutexattr_setprotocol(&dial->idle_mutex_attr, PTHREAD_PRIO_INHERIT);
+  //  pthread_mutexattr_setprotocol(&dial->idle_mutex_attr, PTHREAD_PRIO_INHERIT);
   pthread_mutex_init(&dial->idle_mutex, &dial->idle_mutex_attr);
 
   pthread_cond_init(&(dial->idle_cond), NULL);

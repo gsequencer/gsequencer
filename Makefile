@@ -57,10 +57,10 @@ AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
 AGS_SOURCES = $(AGS_DIR)main.[ch] $(AGS_LIB_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
 
 
-LIB_LIBS = `pkg-config --libs alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile libinstpatch-1.0`
+LIB_LIBS = `pkg-config --libs alsa glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile libinstpatch-1.0`
 LIBS = -L$(LINKING_DIR) $(LIB_LIBS)
 
-LIB_CFLAGS = `pkg-config --cflags alsa gthread-2.0 glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile libinstpatch-1.0`
+LIB_CFLAGS = `pkg-config --cflags alsa glib-2.0 gobject-2.0 gdk-2.0 gdk-pixbuf-xlib-2.0 gmodule-2.0 gtk+-2.0 libxml-2.0 sndfile libinstpatch-1.0`
 CFLAGS = -I$(INCLUDE_DIR) $(LIB_CFLAGS)
 
 

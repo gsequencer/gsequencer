@@ -340,7 +340,7 @@ ags_devout_init(AgsDevout *devout)
   pthread_attr_setinheritsched(&devout->play_thread_attr, PTHREAD_INHERIT_SCHED);
   
   pthread_mutexattr_init(&devout->play_mutex_attr);
-  pthread_mutexattr_setprotocol(&devout->play_mutex_attr, PTHREAD_PRIO_INHERIT);
+  //  pthread_mutexattr_setprotocol(&devout->play_mutex_attr, PTHREAD_PRIO_INHERIT);
   pthread_mutex_init(&devout->play_mutex, &devout->play_mutex_attr);
   
   pthread_cond_init(&(devout->play_wait_cond), NULL);
@@ -351,7 +351,7 @@ ags_devout_init(AgsDevout *devout)
   pthread_attr_setinheritsched(&devout->play_functions_thread_attr, PTHREAD_INHERIT_SCHED);
   
   pthread_mutexattr_init(&devout->play_functions_mutex_attr);
-  pthread_mutexattr_setprotocol(&devout->play_functions_mutex_attr, PTHREAD_PRIO_INHERIT);
+  //  pthread_mutexattr_setprotocol(&devout->play_functions_mutex_attr, PTHREAD_PRIO_INHERIT);
   pthread_mutex_init(&devout->play_functions_mutex, &devout->play_functions_mutex_attr);
 
   /* task */
@@ -360,7 +360,7 @@ ags_devout_init(AgsDevout *devout)
   pthread_attr_setinheritsched(&devout->task_thread_attr, PTHREAD_INHERIT_SCHED);
   
   pthread_mutexattr_init(&devout->task_mutex_attr);
-  pthread_mutexattr_setprotocol(&devout->task_mutex_attr, PTHREAD_PRIO_INHERIT);
+  //  pthread_mutexattr_setprotocol(&devout->task_mutex_attr, PTHREAD_PRIO_INHERIT);
   pthread_mutex_init(&(devout->task_mutex), NULL);
 
   pthread_cond_init(&(devout->task_wait_cond), NULL);

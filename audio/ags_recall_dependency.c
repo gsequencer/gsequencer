@@ -145,7 +145,7 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
 
     if((AGS_IS_CHANNEL(provider) &&
 	AGS_IS_RECALL_CHANNEL_RUN(recall_dependency->dependency) &&
-	(AGS_RECALL_CHANNEL_RUN(recall_dependency->dependency)->channel == AGS_CHANNEL(provider))) ||
+	(AGS_RECALL_CHANNEL_RUN(recall_dependency->dependency)->source == AGS_CHANNEL(provider))) ||
        (AGS_IS_AUDIO(provider) &&
 	AGS_IS_RECALL_AUDIO_RUN(recall_dependency->dependency) &&
 	(AGS_RECALL_AUDIO_RUN(recall_dependency->dependency)->recall_audio->audio == AGS_AUDIO(provider)))){

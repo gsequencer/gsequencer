@@ -236,7 +236,7 @@ ags_stream_channel_run_map_stream_recycling(AgsStreamChannelRun *stream_channel_
   AgsStreamRecycling *stream_recycling;
   guint audio_channel;
   
-  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->channel;
+  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->source;
   recycling = channel->first_recycling;
 
   if(recycling == NULL)
