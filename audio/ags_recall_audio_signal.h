@@ -42,6 +42,7 @@ struct _AgsRecallAudioSignal
   AgsRecall recall;
 
   AgsDevout *devout;
+  guint audio_channel;
 
   AgsAudioSignal *destination;
   AgsAttack *attack;

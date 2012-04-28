@@ -22,9 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_audio_signal.h>
 
 #define AGS_TYPE_PLAY_AUDIO_SIGNAL                (ags_play_audio_signal_get_type())
 #define AGS_PLAY_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_AUDIO_SIGNAL, AgsPlayAudioSignal))
@@ -38,18 +36,12 @@ typedef struct _AgsPlayAudioSignalClass AgsPlayAudioSignalClass;
 
 struct _AgsPlayAudioSignal
 {
-  AgsRecall recall;
-
-  AgsAudioSignal *source;
-  guint audio_channel;
-
-  AgsDevout *devout;
-  AgsAttack *attack;
+  AgsRecallAudioSignal recall_audio_signal;
 };
 
 struct _AgsPlayAudioSignalClass
 {
-  AgsRecallClass recall;
+  AgsRecallAudioSignalClass recall_audio_signal;
 };
 
 GType ags_play_audio_signal_get_type();

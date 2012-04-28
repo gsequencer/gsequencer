@@ -36,14 +36,6 @@ void ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal
 void ags_play_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal);
-void ags_play_audio_signal_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_play_audio_signal_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
 void ags_play_audio_signal_connect(AgsConnectable *connectable);
 void ags_play_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_play_audio_signal_run_connect(AgsRunConnectable *run_connectable);
@@ -58,14 +50,6 @@ AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall,
 static gpointer ags_play_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_play_audio_signal_parent_connectable_interface;
 static AgsRunConnectableInterface *ags_play_audio_signal_parent_run_connectable_interface;
-
-enum{
-  PROP_0,
-  PROP_SOURCE,
-  PROP_DEVOUT,
-  PROP_AUDIO_CHANNEL,
-  PROP_ATTACK,
-};
 
 GType
 ags_play_audio_signal_get_type()
@@ -97,7 +81,7 @@ ags_play_audio_signal_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_play_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_play_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							"AgsPlayAudioSignal\0",
 							&ags_play_audio_signal_info,
 							0);
@@ -126,48 +110,7 @@ ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal)
   /* GObjectClass */
   gobject = (GObjectClass *) play_audio_signal;
 
-  gobject->set_property = ags_play_audio_signal_set_property;
-  gobject->get_property = ags_play_audio_signal_get_property;
-
   gobject->finalize = ags_play_audio_signal_finalize;
-
-  /* properties */
-  param_spec = g_param_spec_object("source\0",
-				   "source of input\0",
-				   "The source where this recall will take the audio signal from\0",
-				   AGS_TYPE_AUDIO_SIGNAL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOURCE,
-				  param_spec);
-  
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout this recall is assigned to\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
-  param_spec = g_param_spec_uint("audio_channel\0",
-				 "output to audio channel\0",
-				 "The audio channel to which it should write\0",
-				 0,
-				 65536,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
-				  param_spec);
-
-  param_spec = g_param_spec_pointer("attack\0",
-				    "assigned attack\0",
-				    "The attack that determines to which frame to copy\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_ATTACK,
-				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_audio_signal;
@@ -197,148 +140,13 @@ ags_play_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface 
 void
 ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal)
 {
-  play_audio_signal->source = NULL;
-  play_audio_signal->audio_channel = 0;
-
-  play_audio_signal->devout = NULL;
-  play_audio_signal->attack = NULL;
-}
-
-void
-ags_play_audio_signal_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsPlayAudioSignal *play_audio_signal;
-
-  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(gobject);
-
-  switch(prop_id){
-  case PROP_SOURCE:
-    {
-      AgsAudioSignal *source;
-
-      source = (AgsAudioSignal *) g_value_get_object(value);
-
-      if(play_audio_signal->source == source)
-	return;
-
-      if(play_audio_signal->source != NULL)
-	g_object_unref(play_audio_signal->source);
-
-      if(source != NULL)
-	g_object_ref(G_OBJECT(source));
-
-      play_audio_signal->source = source;
-    }
-    break;
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(play_audio_signal->devout == devout)
-	return;
-
-      if(play_audio_signal->devout != NULL){
-	g_object_unref(play_audio_signal->devout);
-	free(play_audio_signal->attack);
-	play_audio_signal->attack = NULL;
-      }
-
-      if(devout != NULL){
-	g_object_ref(G_OBJECT(devout));
-	play_audio_signal->attack = ags_attack_duplicate_from_devout((GObject *) devout);
-      }
-
-      play_audio_signal->devout = devout;
-    }
-    break;
-  case PROP_AUDIO_CHANNEL:
-    {
-      guint audio_channel;
-
-      audio_channel = (guint) g_value_get_uint(value);
-
-      play_audio_signal->audio_channel = audio_channel;
-    }
-    break;
-  case PROP_ATTACK:
-    {
-      AgsAttack *attack;
-
-      attack = (AgsAttack *) g_value_get_pointer(value);
-
-      if(play_audio_signal->attack == attack)
-	return;
-
-      if(play_audio_signal->attack != NULL){
-	free(play_audio_signal->attack);
-      }
-
-      play_audio_signal->attack = attack;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_play_audio_signal_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec)
-{
-  AgsPlayAudioSignal *play_audio_signal;
-
-  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(gobject);
-
-  switch(prop_id){
-  case PROP_SOURCE:
-    {
-      g_value_set_object(value, play_audio_signal->source);
-    }
-    break;
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, play_audio_signal->devout);
-    }
-    break;
-  case PROP_AUDIO_CHANNEL:
-    {
-      g_value_set_uint(value, play_audio_signal->audio_channel);
-    }
-    break;
-  case PROP_ATTACK:
-    {
-      g_value_set_pointer(value, play_audio_signal->attack);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  AGS_RECALL(play_audio_signal)->child_type = G_TYPE_NONE;
 }
 
 void
 ags_play_audio_signal_finalize(GObject *gobject)
 {
-  AgsPlayAudioSignal *play_audio_signal;
-
-  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(gobject);
-
-  if(play_audio_signal->source != NULL)
-    g_object_unref(play_audio_signal->source);
-
-  if(play_audio_signal->devout != NULL)
-    g_object_unref(play_audio_signal->devout);
-
-  if(play_audio_signal->attack != NULL)
-    free(play_audio_signal->attack);
+  /* empty */
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
@@ -347,8 +155,6 @@ ags_play_audio_signal_finalize(GObject *gobject)
 void
 ags_play_audio_signal_connect(AgsConnectable *connectable)
 {
-  AgsPlayAudioSignal *play_audio_signal;
-  
   ags_play_audio_signal_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -392,8 +198,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
 
-  devout = play_audio_signal->devout;
-  source = AGS_AUDIO_SIGNAL(play_audio_signal->source);
+  devout = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->devout;
+  source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
 
   if(stream == NULL){
@@ -417,7 +223,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   }
 
   //  attack = play_audio_signal->attack;
-  audio_channel = play_audio_signal->audio_channel;
+  audio_channel = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel;
 
   ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
 					 (short *) stream->data, 1,
@@ -435,17 +241,10 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
 				AgsRecallID *recall_id,
 				guint *n_params, GParameter *parameter)
 {
-  AgsPlayAudioSignal *play_audio_signal, *copy;
+  AgsPlayAudioSignal *copy;
 
-  play_audio_signal = (AgsPlayAudioSignal *) recall;
   copy = (AgsPlayAudioSignal *) AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->duplicate(recall, recall_id,
 												n_params, parameter);
-
-  g_object_set(G_OBJECT(copy),
-	       "source\0", play_audio_signal->source,
-	       "audio_channel\0", play_audio_signal->audio_channel,
-	       "devout\0", play_audio_signal->devout,
-	       NULL);
 
   return((AgsRecall *) copy);
 }
