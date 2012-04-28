@@ -18,6 +18,9 @@
 
 #include <ags/audio/recall/ags_volume_audio_signal.h>
 
+#include <ags/lib/ags_list.h>
+#include <ags/lib/ags_parameter.h>
+
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
@@ -48,7 +51,6 @@ AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall,
 
 enum{
   PROP_0,
-  PROP_AUDIO_SIGNAL,
   PROP_VOLUME,
 };
 
@@ -86,7 +88,7 @@ ags_volume_audio_signal_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_volume_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_volume_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							  "AgsVolumeAudioSignal\0",
 							  &ags_volume_audio_signal_info,
 							  0);
@@ -121,15 +123,6 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
   gobject->finalize = ags_volume_audio_signal_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("audio_signal\0",
-				   "volume AgsAudioSignal\0",
-				   "The AgsAudioSignal to apply volume\0",
-				   AGS_TYPE_AUDIO_SIGNAL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_SIGNAL,
-				  param_spec);
-
   param_spec = g_param_spec_pointer("volume\0",
 				    "volume to apply\0",
 				    "The volume to apply on the audio signal\0",
@@ -166,7 +159,6 @@ ags_volume_audio_signal_run_connectable_interface_init(AgsRunConnectableInterfac
 void
 ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal)
 {
-  volume_audio_signal->audio_signal = NULL;
   volume_audio_signal->volume = NULL;
 }
 
@@ -182,23 +174,6 @@ ags_volume_audio_signal_set_property(GObject *gobject,
   volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO_SIGNAL:
-    {
-      AgsAudioSignal *audio_signal;
-
-      audio_signal = (AgsAudioSignal *) g_value_get_object(value);
-
-      if(volume_audio_signal->audio_signal != NULL){
-	g_object_unref(G_OBJECT(volume_audio_signal->audio_signal));
-      }
-
-      if(audio_signal != NULL){
-	g_object_ref(G_OBJECT(audio_signal));
-      }
-
-      volume_audio_signal->audio_signal = audio_signal;
-    }
-    break;
   case PROP_VOLUME:
     {
       volume_audio_signal->volume = g_value_get_pointer(value);
@@ -221,11 +196,6 @@ ags_volume_audio_signal_get_property(GObject *gobject,
   volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO_SIGNAL:
-    {
-      g_value_set_object(value, volume_audio_signal->audio_signal);
-    }
-    break;
   case PROP_VOLUME:
     {
       g_value_set_pointer(value, volume_audio_signal->volume);
@@ -240,20 +210,16 @@ ags_volume_audio_signal_get_property(GObject *gobject,
 void
 ags_volume_audio_signal_finalize(GObject *gobject)
 {
-  AgsVolumeAudioSignal *volume_audio_signal;
-
-  volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(gobject);
-
-  if(volume_audio_signal->audio_signal != NULL)
-    g_object_unref(G_OBJECT(volume_audio_signal->audio_signal));
-
   /* call parent */
   G_OBJECT_CLASS(ags_volume_audio_signal_parent_class)->finalize(gobject);
+
+  /* empty */
 }
 
 void
 ags_volume_audio_signal_connect(AgsConnectable *connectable)
 {
+  /* call parent */
   ags_volume_audio_signal_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -262,6 +228,7 @@ ags_volume_audio_signal_connect(AgsConnectable *connectable)
 void
 ags_volume_audio_signal_disconnect(AgsConnectable *connectable)
 {
+  /* call parent */
   ags_volume_audio_signal_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
@@ -270,6 +237,7 @@ ags_volume_audio_signal_disconnect(AgsConnectable *connectable)
 void
 ags_volume_audio_signal_run_connect(AgsRunConnectable *run_connectable)
 {
+  /* call parent */
   ags_volume_audio_signal_parent_run_connectable_interface->connect(run_connectable);
 
   /* empty */
@@ -278,6 +246,7 @@ ags_volume_audio_signal_run_connect(AgsRunConnectable *run_connectable)
 void
 ags_volume_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
 {
+  /* call parent */
   ags_volume_audio_signal_parent_run_connectable_interface->disconnect(run_connectable);
 
   /* empty */
@@ -292,13 +261,13 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 
   volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(recall);
 
-  if(volume_audio_signal->audio_signal->stream_current != NULL){
+  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsDevout *devout;
     short *buffer;
     guint i;
 
-    devout = AGS_DEVOUT(volume_audio_signal->audio_signal->devout);
-    buffer = (short *) volume_audio_signal->audio_signal->stream_current->data;
+    devout = AGS_DEVOUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source->devout);
+    buffer = (short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
 
     for(i = 0; i < devout->buffer_size; i++){
       buffer[i] = (short) ((0xffff) & (int)((gdouble)volume_audio_signal->volume[0] * (gdouble)buffer[i]));
@@ -316,14 +285,15 @@ ags_volume_audio_signal_duplicate(AgsRecall *recall,
   AgsVolumeAudioSignal *volume_audio_signal, *copy;
 
   volume_audio_signal = (AgsVolumeAudioSignal *) recall;
+
+  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
+				 parameter, n_params,
+				 "volume\0", volume_audio_signal->volume,
+				 NULL);
+
   copy = (AgsVolumeAudioSignal *) AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->duplicate(recall,
 												    recall_id,
 												    n_params, parameter);
-
-  g_object_set(G_OBJECT(copy),
-	       "audio_signal\0", volume_audio_signal->audio_signal,
-	       "volume\0", volume_audio_signal->volume,
-	       NULL);
 
   return((AgsRecall *) copy);
 }
@@ -334,7 +304,6 @@ ags_volume_audio_signal_new(AgsAudioSignal *audio_signal, gdouble *volume)
   AgsVolumeAudioSignal *volume_audio_signal;
 
   volume_audio_signal = (AgsVolumeAudioSignal *) g_object_new(AGS_TYPE_VOLUME_AUDIO_SIGNAL,
-							      "audio_signal\0", audio_signal,
 							      "volume\0", volume,
 							      NULL);
 

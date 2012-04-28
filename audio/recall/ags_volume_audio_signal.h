@@ -22,9 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-
-#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_audio_signal.h>
 
 #define AGS_TYPE_VOLUME_AUDIO_SIGNAL                (ags_volume_audio_signal_get_type())
 #define AGS_VOLUME_AUDIO_SIGNAL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VOLUME_AUDIO_SIGNAL, AgsVolumeAudioSignal))
@@ -38,16 +36,14 @@ typedef struct _AgsVolumeAudioSignalClass AgsVolumeAudioSignalClass;
 
 struct _AgsVolumeAudioSignal
 {
-  AgsRecall recall;
-
-  AgsAudioSignal *audio_signal;
+  AgsRecallAudioSignal recall_audio_signal;
 
   gdouble *volume;
 };
 
 struct _AgsVolumeAudioSignalClass
 {
-  AgsRecallClass recall;
+  AgsRecallAudioSignalClass recall_audio_signal;
 };
 
 GType ags_volume_audio_signal_get_type();
