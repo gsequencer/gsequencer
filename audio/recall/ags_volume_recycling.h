@@ -22,9 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-
-#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_VOLUME_RECYCLING                (ags_volume_recycling_get_type())
 #define AGS_VOLUME_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VOLUME_RECYCLING, AgsVolumeRecycling))
@@ -38,19 +36,14 @@ typedef struct _AgsVolumeRecyclingClass AgsVolumeRecyclingClass;
 
 struct _AgsVolumeRecycling
 {
-  AgsRecall recall;
-
-  AgsRecycling *recycling;
-
-  gulong add_audio_signal_handler;
-  gulong add_audio_signal_with_frame_count_handler;
+  AgsRecallRecycling recall_recycling;
 
   gdouble *volume;
 };
 
 struct _AgsVolumeRecyclingClass
 {
-  AgsRecallClass recall;
+  AgsRecallRecyclingClass recall_recycling;
 };
 
 GType ags_volume_recycling_get_type();

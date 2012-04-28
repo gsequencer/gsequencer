@@ -22,9 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-
-#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_STREAM_RECYCLING                (ags_stream_recycling_get_type())
 #define AGS_STREAM_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STREAM_RECYCLING, AgsStreamRecycling))
@@ -38,17 +36,12 @@ typedef struct _AgsStreamRecyclingClass AgsStreamRecyclingClass;
 
 struct _AgsStreamRecycling
 {
-  AgsRecall recall;
-
-  AgsRecycling *recycling;
-
-  gulong add_audio_signal_handler;
-  gulong add_audio_signal_with_frame_count_handler;
+  AgsRecallRecycling recall_recycling;
 };
 
 struct _AgsStreamRecyclingClass
 {
-  AgsRecallClass recall;
+  AgsRecallRecyclingClass recall_recycling;
 };
 
 GType ags_stream_recycling_get_type();
