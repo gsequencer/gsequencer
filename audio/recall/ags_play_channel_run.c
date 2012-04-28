@@ -509,7 +509,7 @@ void ags_play_channel_run_remap_child_source(AgsPlayChannelRun *play_channel_run
       list = ags_recall_get_children(AGS_RECALL(play_channel_run));
 
       while(list != NULL){
-	if(AGS_PLAY_RECYCLING(list->data)->source == source_recycling){
+	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
 	  recall = AGS_RECALL(list->data);
 	  
 	  recall->flags |= AGS_RECALL_HIDE;

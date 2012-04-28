@@ -297,7 +297,7 @@ ags_copy_channel_remap_child_destination(AgsCopyChannel *copy_channel,
       list = ags_recall_get_children(AGS_RECALL(copy_channel));
 
       while(list != NULL){
-	if(AGS_COPY_RECYCLING(list->data)->destination == destination_recycling){
+	if(AGS_RECALL_RECYCLING(list->data)->destination == destination_recycling){
 	  recall = AGS_RECALL(list->data);
 
 	  recall->flags |= AGS_RECALL_HIDE;
@@ -364,7 +364,7 @@ ags_copy_channel_remap_child_source(AgsCopyChannel *copy_channel,
       list = ags_recall_get_children(AGS_RECALL(copy_channel));
 
       while(list != NULL){
-	if(AGS_COPY_RECYCLING(list->data)->source == source_recycling){
+	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
 	  recall = AGS_RECALL(list->data);
 
 	  recall->flags |= AGS_RECALL_HIDE;

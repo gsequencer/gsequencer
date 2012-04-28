@@ -384,7 +384,7 @@ ags_volume_channel_remap_volume_recycling(AgsVolumeChannel *volume_channel,
       list = ags_recall_get_children(AGS_RECALL(volume_channel));
       
       while(list != NULL){
-	if(AGS_VOLUME_RECYCLING(list->data)->recycling == recycling){
+	if(AGS_RECALL_RECYCLING(list->data)->source == recycling){
 	  recall = AGS_RECALL(list->data);
 	  
 	  recall->flags |= AGS_RECALL_HIDE;

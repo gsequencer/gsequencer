@@ -521,7 +521,7 @@ ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_cha
       list = ags_recall_get_children(AGS_RECALL(play_channel_run_master));
 
       while(list != NULL){
-	if(AGS_PLAY_RECYCLING(list->data)->source == source_recycling){
+	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
 	  recall = AGS_RECALL(list->data);
 	  
 	  recall->flags |= AGS_RECALL_HIDE;

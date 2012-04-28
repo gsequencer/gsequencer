@@ -283,7 +283,7 @@ ags_stream_channel_run_remap_stream_recycling(AgsStreamChannelRun *stream_channe
       list = ags_recall_get_children(AGS_RECALL(stream_channel_run));
       
       while(list != NULL){
-	if(AGS_STREAM_RECYCLING(list->data)->recycling == recycling){
+	if(AGS_RECALL_RECYCLING(list->data)->source == recycling){
 	  recall = AGS_RECALL(list->data);
 
 	  recall->flags |= AGS_RECALL_HIDE;
