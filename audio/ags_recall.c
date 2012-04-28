@@ -88,6 +88,7 @@ enum{
   REMOVE,
   DUPLICATE,
   NOTIFY_DEPENDENCY,
+  CHILD_ADDED,
   LAST_SIGNAL,
 };
 
@@ -243,6 +244,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   recall->notify_dependency = NULL;
 
+  recall->child_added = NULL;
+
   /* signals */
   recall_signals[RESOLVE_DEPENDENCIES] =
     g_signal_new("resolve_dependencies\0",
@@ -370,6 +373,16 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_user_marshal_VOID__UINT_INT,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_INT);
+
+  recall_signals[CHILD_ADDED] =
+    g_signal_new("child_added\0",
+		 G_TYPE_FROM_CLASS (recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallClass, child_added),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 }
 
 void

@@ -25,7 +25,7 @@
 #include <ags/audio/ags_recall.h>
 
 #include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_COPY_RECYCLING                (ags_copy_recycling_get_type())
@@ -40,26 +40,12 @@ typedef struct _AgsCopyRecyclingClass AgsCopyRecyclingClass;
 
 struct _AgsCopyRecycling
 {
-  AgsRecall recall;
-
-  AgsDevout *devout;
-
-  AgsRecycling *destination;
-  gulong destination_add_audio_signal_handler;
-  gulong destination_add_audio_signal_with_frame_count_handler;
-  gulong destination_remove_audio_signal_handler;
-
-  AgsRecycling *source;
-  gulong source_add_audio_signal_handler;
-  gulong source_add_audio_signal_with_frame_count_handler;
-  gulong source_remove_audio_signal_handler;
-
-  AgsAudioSignal *child_destination;
+  AgsRecallRecycling recall_recycling;
 };
 
 struct _AgsCopyRecyclingClass
 {
-  AgsRecallClass recall;
+  AgsRecallRecyclingClass recall_recycling;
 };
 
 GType ags_copy_recycling_get_type();

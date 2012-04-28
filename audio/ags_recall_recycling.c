@@ -25,6 +25,15 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_audio_signal.h>
+
+#include <ags/audio/task/ags_cancel_recall.h>
+
+
 void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
 void ags_recall_recyclingconnectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
@@ -47,13 +56,24 @@ AgsRecall* ags_recall_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
+void ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
+						  AgsAudioSignal *audio_signal,
+						  AgsRecallRecycling *recall_recycling);
+void ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
+						     AgsAudioSignal *audio_signal,
+						     AgsRecallRecycling *recall_recycling);
+void ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destination,
+						       AgsAudioSignal *audio_signal,
+						       AgsRecallRecycling *recall_recycling);
+void ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *destination,
+							  AgsAudioSignal *audio_signal,
+							  AgsRecallRecycling *recall_recycling);
+
+void ags_recall_recycling_recall_audio_signal_done(AgsRecall *recall,
+						   gpointer data);
 
 void ags_recall_recycling_duplicate_list(GList *list,
 					 GList **target);
-
-enum{
-  LAST_SIGNAL,
-};
 
 enum{
   PROP_0,
@@ -67,8 +87,6 @@ enum{
 static gpointer ags_recall_recycling_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_recycling_parent_connectable_interface;
 static AgsRunConnectableInterface *ags_recall_recycling_parent_run_connectable_interface;
-
-static guint recall_recycling_signals[LAST_SIGNAL];
 
 GType
 ags_recall_recycling_get_type()
@@ -184,6 +202,8 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
   recall = (AgsRecallClass *) recall_recycling;
 
   recall->duplicate = ags_recall_recycling_duplicate;
+
+  /* AgsRecallRecyclingClass */
 }
 
 void
@@ -255,11 +275,35 @@ ags_recall_recycling_set_property(GObject *gobject,
 	return;
 
       if(recall_recycling->destination != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(recall_recycling)->flags)) != 0){
+	  if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) != 0){
+	    g_debug("WARNING!\n\0");
+	  }
+
+	  gobject = G_OBJECT(recall_recycling->destination);
+
+	  g_signal_handler_disconnect(gobject, recall_recycling->destination_add_audio_signal_handler);
+	  
+	  g_signal_handler_disconnect(gobject, recall_recycling->destination_remove_audio_signal_handler);
+	}
+
 	g_object_unref(G_OBJECT(recall_recycling->destination));
       }
 
       if(destination != NULL){
 	g_object_ref(G_OBJECT(destination));
+      }
+
+      if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(recall_recycling)->flags)) != 0){
+	gobject = G_OBJECT(destination);
+	
+	recall_recycling->destination_add_audio_signal_handler =
+	  g_signal_connect_after(gobject, "add_audio_signal\0",
+				 G_CALLBACK(ags_recall_recycling_destination_add_audio_signal_callback), recall_recycling);
+	
+	recall_recycling->destination_remove_audio_signal_handler =
+	  g_signal_connect(gobject, "remove_audio_signal\0",
+			   G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
       }
 
       recall_recycling->destination = destination;
@@ -275,6 +319,14 @@ ags_recall_recycling_set_property(GObject *gobject,
 	return;
 
       if(recall_recycling->source != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(recall_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(recall_recycling->source);
+
+	  g_signal_handler_disconnect(gobject, recall_recycling->source_add_audio_signal_handler);
+	  
+	  g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
+	}
+
 	g_object_unref(G_OBJECT(recall_recycling->source));
       }
 
@@ -283,6 +335,21 @@ ags_recall_recycling_set_property(GObject *gobject,
       }
 
       recall_recycling->source = source;
+
+      if(source != NULL){
+	if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(recall_recycling)->flags)) != 0){
+	  gobject = G_OBJECT(source);
+	  
+	  recall_recycling->source_add_audio_signal_handler =
+	    g_signal_connect_after(gobject, "add_audio_signal\0",
+				   G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
+	  
+	  recall_recycling->source_remove_audio_signal_handler =
+	    g_signal_connect(gobject, "remove_audio_signal\0",
+			     G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
+	}
+      }
+
     }
     break;
   case PROP_CHILD_DESTINATION:
@@ -406,25 +473,66 @@ ags_recall_recycling_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_recall_recycling_run_connect(AgsConnectable *connectable)
+ags_recall_recycling_run_connect(AgsRunConnectable *run_connectable)
 {
-  ags_recall_recycling_parent_run_connectable_interface->connect(connectable);
+  AgsRecallRecycling *recall_recycling;
+  GObject *gobject;
 
-  /* empty */
+  ags_recall_recycling_parent_run_connectable_interface->connect(run_connectable);
+
+  /* AgsRecallRecycling */
+  recall_recycling = AGS_RECALL_RECYCLING(run_connectable);
+
+  /* destination */
+  gobject = G_OBJECT(recall_recycling->destination);
+
+  recall_recycling->destination_add_audio_signal_handler =
+    g_signal_connect_after(gobject, "add_audio_signal\0",
+			   G_CALLBACK(ags_recall_recycling_destination_add_audio_signal_callback), recall_recycling);
+      
+  recall_recycling->destination_remove_audio_signal_handler =
+    g_signal_connect(gobject, "remove_audio_signal\0",
+		     G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
+
+  /* source */
+  gobject = G_OBJECT(recall_recycling->source);
+
+  recall_recycling->source_add_audio_signal_handler =
+    g_signal_connect_after(gobject, "add_audio_signal\0",
+			   G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
+
+  recall_recycling->source_remove_audio_signal_handler =
+    g_signal_connect(gobject, "remove_audio_signal\0",
+		     G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
 }
 
 void
-ags_recall_recycling_run_disconnect(AgsConnectable *connectable)
+ags_recall_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 {
-  ags_recall_recycling_parent_run_connectable_interface->disconnect(connectable);
+  AgsRecallRecycling *recall_recycling;
+  GObject *gobject;
 
-  /* empty */
+  ags_recall_recycling_parent_run_connectable_interface->disconnect(run_connectable);
+
+  /* destination */
+  gobject = G_OBJECT(recall_recycling->destination);
+
+  g_signal_handler_disconnect(gobject, recall_recycling->destination_add_audio_signal_handler);
+
+  g_signal_handler_disconnect(gobject, recall_recycling->destination_remove_audio_signal_handler);
+
+  /* source */
+  gobject = G_OBJECT(recall_recycling->source);
+
+  g_signal_handler_disconnect(gobject, recall_recycling->source_add_audio_signal_handler);
+
+  g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
 }
 
 AgsRecall*
 ags_recall_recycling_duplicate(AgsRecall *recall,
-				 AgsRecallID *recall_id,
-				 guint *n_params, GParameter *parameter)
+			       AgsRecallID *recall_id,
+			       guint *n_params, GParameter *parameter)
 {
   AgsRecallRecycling *recall_recycling, *copy;
   GList *list;
@@ -433,9 +541,10 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
+				 "devout\0", recall_recycling->devout,
 				 "destination\0", recall_recycling->destination,
 				 "source\0", recall_recycling->source,
-				 "child_destination\0", recall_recycling->child_destination,
+				 "child_destination\0", recall_recycling->child_destination, 
 				 NULL);
 
   list = recall_recycling->child_source;
@@ -450,8 +559,8 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
   }
 
   copy = AGS_RECALL_RECYCLING(AGS_RECALL_CLASS(ags_recall_recycling_parent_class)->duplicate(recall,
-												 recall_id,
-												 n_params, parameter));
+											     recall_id,
+											     n_params, parameter));
 
   return((AgsRecall *) copy);
 }
@@ -470,6 +579,151 @@ ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling)
   child_source = g_list_reverse(child_source);
 
   return(child_source);
+}
+
+void
+ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
+						      AgsAudioSignal *audio_signal,
+						      AgsRecallRecycling *recall_recycling)
+{
+  AgsRecallAudioSignal *recall_audio_signal;
+  AgsAttack *attack;
+
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
+     audio_signal->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(recall_recycling)->recall_id->group_id){
+    printf("ags_recall_recycling_source_add_audio_signal - channel: %u\n\0",
+	   AGS_CHANNEL(recall_recycling->source->channel)->line);
+
+    g_object_ref(audio_signal);
+    recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
+						    audio_signal);
+
+    audio_signal->stream_current = audio_signal->stream_beginning;
+
+    attack = ags_attack_duplicate_from_devout(G_OBJECT(recall_recycling->devout));
+
+    recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
+				       "child_destination\0", recall_recycling->child_destination,
+				       "audio_signal\0", audio_signal,
+				       "devout\0", recall_recycling->devout,
+				       "attack", attack,
+				       NULL);
+
+    ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
+    g_signal_connect(G_OBJECT(recall_audio_signal), "done\0",
+		     G_CALLBACK(ags_recall_recycling_recall_audio_signal_done), recall_recycling);
+  }
+}
+
+void
+ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
+							 AgsAudioSignal *audio_signal,
+							 AgsRecallRecycling *recall_recycling)
+{
+  AgsDevout *devout;
+  AgsRecall *recall_recycling_recall;
+  AgsCancelRecall *cancel_recall;
+  AgsRecallAudioSignal *recall_audio_signal;
+  GList *list;
+
+  recall_recycling_recall = AGS_RECALL(recall_recycling);
+
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
+     audio_signal->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall_recycling_recall->recall_id->group_id){
+    AgsRecall *recall;
+
+    devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(source->channel)->audio)->devout);
+
+    list = ags_recall_get_children(AGS_RECALL(recall_recycling_recall));
+
+    while(list != NULL){
+      recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(list->data);
+      recall = AGS_RECALL(recall_audio_signal);
+
+      if(recall_audio_signal->source == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
+	cancel_recall = ags_cancel_recall_new(recall,
+					      NULL);
+	
+	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
+
+	break;
+      }
+
+      list = list->next;
+    }
+
+
+    recall_recycling->child_source = g_list_remove(recall_recycling->child_source,
+						   audio_signal);
+    g_object_unref(audio_signal);
+  }
+}
+
+void
+ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destination,
+							   AgsAudioSignal *audio_signal,
+							   AgsRecallRecycling *recall_recycling)
+{
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
+     audio_signal->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(recall_recycling)->recall_id->parent_group_id){
+    printf("ags_recall_recycling_destination_add_audio_signal_callback - channel: %u\n\0",
+	   AGS_CHANNEL(recall_recycling->source->channel)->line);
+    
+    g_object_ref(audio_signal);
+    recall_recycling->child_destination = audio_signal;
+  }
+}
+
+void
+ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *destination,
+							      AgsAudioSignal *audio_signal,
+							      AgsRecallRecycling *recall_recycling)
+{
+  AgsDevout *devout;
+  AgsRecall *recall;
+  AgsCancelRecall *cancel_recall;
+  AgsRecallAudioSignal *recall_audio_signal;
+  GList *list;
+  GValue children_value = {0,};
+
+  recall = AGS_RECALL(recall_recycling);
+
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
+     audio_signal->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->parent_group_id){
+    AgsRecall *recall;
+
+    devout = AGS_DEVOUT(AGS_AUDIO(AGS_CHANNEL(destination->channel)->audio)->devout);;
+
+    list = ags_recall_get_children(AGS_RECALL(recall));
+
+    while(list != NULL){
+      recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(list->data);
+      recall = AGS_RECALL(recall_audio_signal);
+
+      if(recall_audio_signal->destination == audio_signal && (AGS_RECALL_DONE & (recall->flags)) == 0){
+	cancel_recall = ags_cancel_recall_new(recall,
+					      NULL);
+
+	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
+      }
+
+      list = list->next;
+    }
+
+    recall_recycling->child_destination = NULL;
+    g_object_unref(audio_signal);
+  }
+}
+
+void
+ags_recall_recycling_recall_audio_signal_done(AgsRecall *recall,
+					      gpointer data)
+{
+  /* empty */
 }
 
 AgsRecallRecycling*

@@ -46,12 +46,10 @@ struct _AgsRecallRecycling
 
   AgsRecycling *destination;
   gulong destination_add_audio_signal_handler;
-  gulong destination_add_audio_signal_with_frame_count_handler;
   gulong destination_remove_audio_signal_handler;
 
   AgsRecycling *source;
   gulong source_add_audio_signal_handler;
-  gulong source_add_audio_signal_with_frame_count_handler;
   gulong source_remove_audio_signal_handler;
 
   AgsAudioSignal *child_destination;
@@ -61,8 +59,6 @@ struct _AgsRecallRecycling
 struct _AgsRecallRecyclingClass
 {
   AgsRecallClass recall;
-
-  void (*created_recall_audio_signal)(AgsRecallRecycling *recall_recycling);
 };
 
 GType ags_recall_recycling_get_type();
