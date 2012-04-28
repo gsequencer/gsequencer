@@ -21,7 +21,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
-#include <ags/audio/recall/ags_copy_channel.h>
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 
 #include <stdlib.h>
@@ -143,6 +142,7 @@ ags_copy_recycling_run_connectable_interface_init(AgsRunConnectableInterface *ru
 void
 ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 {
+  AGS_RECALL(copy_recycling)->child_type = AGS_TYPE_COPY_AUDIO_SIGNAL;
 }
 
 void
