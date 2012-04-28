@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio_signal.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -39,19 +39,12 @@ typedef struct _AgsCopyAudioSignalClass AgsCopyAudioSignalClass;
 
 struct _AgsCopyAudioSignal
 {
-  AgsRecall recall;
-
-  AgsDevout *devout;
-
-  AgsAudioSignal *destination;
-  AgsAttack *attack;
-
-  AgsAudioSignal *source;
+  AgsRecallAudioSignal recall_audio_signal;
 };
 
 struct _AgsCopyAudioSignalClass
 {
-  AgsRecallClass recall;
+  AgsRecallAudioSignalClass recall_audio_signal;
 };
 
 GType ags_copy_audio_signal_get_type();
