@@ -43,6 +43,7 @@ struct _AgsRecallRecycling
   AgsRecall recall;
 
   AgsDevout *devout;
+  guint audio_channel;
 
   AgsRecycling *destination;
   gulong destination_add_audio_signal_handler;

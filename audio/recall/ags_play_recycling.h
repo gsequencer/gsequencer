@@ -22,11 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_PLAY_RECYCLING                (ags_play_recycling_get_type())
 #define AGS_PLAY_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_RECYCLING, AgsPlayRecycling))
@@ -40,21 +36,12 @@ typedef struct _AgsPlayRecyclingClass AgsPlayRecyclingClass;
 
 struct _AgsPlayRecycling
 {
-  AgsRecall recall;
-
-  AgsDevout *devout;
-
-  AgsRecycling *source;
-  gulong source_add_audio_signal_handler;
-  gulong source_add_audio_signal_with_frame_count_handler;
-  gulong source_remove_audio_signal_handler;
-
-  guint audio_channel;
+  AgsRecallRecycling recall_recycling;
 };
 
 struct _AgsPlayRecyclingClass
 {
-  AgsRecallClass recall;
+  AgsRecallRecyclingClass recall_recycling;
 };
 
 GType ags_play_recycling_get_type();
