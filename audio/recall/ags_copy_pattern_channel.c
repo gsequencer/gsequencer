@@ -227,7 +227,7 @@ ags_copy_pattern_channel_template_find_source_and_destination(GList *recall,
     copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->data);
 
     if(copy_pattern_channel->destination == destination &&
-       AGS_RECALL_CHANNEL(copy_pattern_channel)->channel == source)
+       AGS_RECALL_CHANNEL(copy_pattern_channel)->source == source)
       break;
 
     recall = recall->next;

@@ -188,7 +188,7 @@ ags_stream_channel_run_run_connect(AgsRunConnectable *run_connectable)
 
   stream_channel_run = AGS_STREAM_CHANNEL_RUN(run_connectable);
 
-  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel->channel;
+  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel->source;
 
   stream_channel_run->channel_recycling_changed_handler =
     g_signal_connect(G_OBJECT(channel), "recycling_changed\0",
@@ -205,7 +205,7 @@ ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
 
   stream_channel_run = AGS_STREAM_CHANNEL_RUN(run_connectable);
 
-  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel->channel;
+  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel->source;
 
   g_signal_handler_disconnect(G_OBJECT(channel),
 			      stream_channel_run->channel_recycling_changed_handler);
@@ -267,7 +267,7 @@ ags_stream_channel_run_remap_stream_recycling(AgsStreamChannelRun *stream_channe
   GList *list;
   guint audio_channel;
 
-  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel->channel;
+  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel->source;
   audio_channel = channel->audio_channel;
   
   /* remove old */

@@ -296,7 +296,7 @@ ags_play_channel_run_master_connect(AgsConnectable *connectable)
   play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run_master)->recall_channel);
 
   /* source */
-  gobject = G_OBJECT(AGS_RECALL_CHANNEL(play_channel)->channel);
+  gobject = G_OBJECT(AGS_RECALL_CHANNEL(play_channel)->source);
 
   play_channel_run_master->source_recycling_changed_handler =
     g_signal_connect(gobject, "recycling_changed\0",
@@ -319,7 +319,7 @@ ags_play_channel_run_master_disconnect(AgsConnectable *connectable)
   play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run_master)->recall_channel);
 
   /* source */
-  gobject = G_OBJECT(AGS_RECALL_CHANNEL(play_channel)->channel);
+  gobject = G_OBJECT(AGS_RECALL_CHANNEL(play_channel)->source);
 
   g_signal_handler_disconnect(gobject, play_channel_run_master->source_recycling_changed_handler);
 }
@@ -470,7 +470,7 @@ ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_cha
   play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run_master)->recall_channel);
 
   /* AgsRecycling */
-  source_recycling = AGS_RECALL_CHANNEL(play_channel)->channel->first_recycling;
+  source_recycling = AGS_RECALL_CHANNEL(play_channel)->source->first_recycling;
 
   if(source_recycling != NULL){
     AgsPlayRecycling *play_recycling;
@@ -478,7 +478,7 @@ ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_cha
 
     audio_channel = play_channel->audio_channel;
 
-    while(source_recycling != AGS_RECALL_CHANNEL(play_channel)->channel->last_recycling->next){
+    while(source_recycling != AGS_RECALL_CHANNEL(play_channel)->source->last_recycling->next){
       printf("ags_play_channel_run_master_map_play_recycling\n\0");
 
       play_recycling = ags_play_recycling_new(source_recycling,
@@ -514,7 +514,7 @@ ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_cha
     AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
 
-    devout = AGS_DEVOUT(AGS_AUDIO(AGS_RECALL_CHANNEL(play_channel)->channel->audio)->devout);
+    devout = AGS_DEVOUT(AGS_AUDIO(AGS_RECALL_CHANNEL(play_channel)->source->audio)->devout);
     source_recycling = old_start_region;
 
     while(source_recycling != old_end_region->next){

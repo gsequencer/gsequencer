@@ -61,9 +61,9 @@ AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
 void ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_run,
 					       AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 					       AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
-void ags_recall_channel_remap_child_destination(AgsRecallChannelRun *recall_channel_run,
-						AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-						AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+void ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_channel_run,
+						    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 void ags_recall_channel_run_refresh_child_source(AgsRecallChannelRun *recall_channel_run,
 						 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 						 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
@@ -623,11 +623,11 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   }
 
   /* set AgsRecallChannel */
-  if(AGS_RECALL_CHANNEL_RUN(packable)->recall_channel->channel != NULL){
+  if(AGS_RECALL_CHANNEL_RUN(packable)->recall_channel->source != NULL){
     list = recall_container->recall_channel;
 
     if((list = ags_recall_find_provider(list,
-					G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->recall_channel->channel))) != NULL){
+					G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->recall_channel->source))) != NULL){
       g_object_set(G_OBJECT(packable),
 		   "recall_channel\0", AGS_RECALL_CHANNEL(list->data),
 		   NULL);
@@ -784,7 +784,7 @@ ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_c
   if(recall->recall_id == NULL)
     return(G_MAXULONG);
 
-  audio = AGS_AUDIO(recall_channel_run->recall_channel->channel->audio);
+  audio = AGS_AUDIO(recall_channel_run->recall_channel->source->audio);
 
   if((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0){
     if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){

@@ -209,7 +209,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       ags_channel_add_recall_container(input, (GObject *) play_channel_container);
       
       play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						     "channel\0", input,
+						     "source\0", input,
 						     "recall_container\0", play_channel_container,
 						     "devout\0", AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
 						     "audio_channel\0", i,
@@ -225,7 +225,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       
       /* AgsPlayChannelRun */
       play_channel_run = (AgsPlayChannelRunMaster *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN_MASTER,
-								  "channel\0", input,
+								  "source\0", input,
 								  "recall_container\0", play_channel_container,
 								  "recall_channel\0", play_channel,
 								  NULL);

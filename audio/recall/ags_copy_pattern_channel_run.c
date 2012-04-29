@@ -350,11 +350,11 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
     printf("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\n\0",
-	   copy_pattern_channel->recall_channel.channel->line,
+	   AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
 	   copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
 
     /* get source */
-    source = copy_pattern_channel->recall_channel.channel;
+    source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;
     
     /* create new audio signals */
     recycling = source->first_recycling;

@@ -186,7 +186,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId
     GList *recall_list;
 
     recall_list = ags_recall_find_provider(recall_container->recall_channel,
-					   (GObject *) AGS_RECALL_CHANNEL(dependency)->channel);
+					   (GObject *) AGS_RECALL_CHANNEL(dependency)->source);
 
     if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));
@@ -194,7 +194,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId
     GList *recall_list;
 
     recall_list = ags_recall_find_provider_with_group_id(recall_container->recall_channel_run,
-							 (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->channel,
+							 (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
 							 group_id);
 
     if(recall_list != NULL)

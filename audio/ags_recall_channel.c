@@ -18,6 +18,9 @@
 
 #include <ags/audio/ags_recall_channel.h>
 
+#include <ags/lib/ags_list.h>
+#include <ags/lib/ags_parameter.h>
+
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
@@ -51,7 +54,8 @@ AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 
 enum{
   PROP_0,
-  PROP_CHANNEL,
+  PROP_DESTINATION,
+  PROP_SOURCE,
 };
 
 static gpointer ags_recall_channel_parent_class = NULL;
@@ -128,18 +132,28 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
   /* GObjectClass */
   gobject = (GObjectClass *) recall_channel;
 
-  gobject->finalize = ags_recall_channel_finalize;
-
   gobject->set_property = ags_recall_channel_set_property;
   gobject->get_property = ags_recall_channel_get_property;
 
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel object it is assigned to\0",
+  gobject->finalize = ags_recall_channel_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("destination\0",
+				   "assigned destination channel\0",
+				   "The source channel object it is assigned to\0",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
+				  PROP_DESTINATION,
+				  param_spec);
+
+  param_spec = g_param_spec_object("source\0",
+				   "assigned source channel\0",
+				   "The source channel object it is assigned to\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOURCE,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -180,7 +194,8 @@ ags_recall_channel_run_connectable_interface_init(AgsRunConnectableInterface *ru
 void
 ags_recall_channel_init(AgsRecallChannel *recall_channel)
 {
-  recall_channel->channel = NULL;
+  recall_channel->destination = NULL;
+  recall_channel->source = NULL;
 }
 
 void
@@ -194,22 +209,40 @@ ags_recall_channel_set_property(GObject *gobject,
   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_CHANNEL:
+  case PROP_DESTINATION:
     {
-      AgsChannel *channel;
+      AgsChannel *destination;
 
-      channel = (AgsChannel *) g_value_get_object(value);
+      destination = (AgsChannel *) g_value_get_object(value);
 
-      if(recall_channel->channel == channel)
+      if(recall_channel->destination == destination)
 	return;
 
-      if(recall_channel->channel != NULL)
-	g_object_unref(recall_channel->channel);
+      if(recall_channel->destination != NULL)
+	g_object_unref(recall_channel->destination);
 
-      if(channel != NULL)
-	g_object_ref(channel);
+      if(destination != NULL)
+	g_object_ref(destination);
 
-      recall_channel->channel = channel;
+      recall_channel->destination = destination;
+    }
+    break;
+  case PROP_SOURCE:
+    {
+      AgsChannel *source;
+
+      source = (AgsChannel *) g_value_get_object(value);
+
+      if(recall_channel->source == source)
+	return;
+
+      if(recall_channel->source != NULL)
+	g_object_unref(recall_channel->source);
+
+      if(source != NULL)
+	g_object_ref(source);
+
+      recall_channel->source = source;
     }
     break;
   default:
@@ -229,8 +262,11 @@ ags_recall_channel_get_property(GObject *gobject,
   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_CHANNEL:
-    g_value_set_object(value, recall_channel->channel);
+  case PROP_DESTINATION:
+    g_value_set_object(value, recall_channel->destination);
+    break;
+  case PROP_SOURCE:
+    g_value_set_object(value, recall_channel->source);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -245,8 +281,8 @@ ags_recall_channel_finalize(GObject *gobject)
 
   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
-  if(recall_channel->channel != NULL)
-    g_object_unref(recall_channel->channel);
+  if(recall_channel->source != NULL)
+    g_object_unref(recall_channel->source);
 
   G_OBJECT_CLASS(ags_recall_channel_parent_class)->finalize(gobject);
 }
@@ -284,7 +320,7 @@ ags_recall_channel_pack(AgsPackable *packable, GObject *container)
   /* set in AgsRecallChannelRun */
   list = recall_container->recall_channel_run;
 
-  while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->channel))) != NULL){
+  while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->source))) != NULL){
     g_object_set(G_OBJECT(list->data),
 		 "recall_channel\0", AGS_RECALL_CHANNEL(packable),
 		 NULL);
@@ -319,7 +355,7 @@ ags_recall_channel_unpack(AgsPackable *packable)
   /* unset in AgsRecallChannelRun */
   list = recall_container->recall_channel_run;
 
-  while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->channel))) != NULL){
+  while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->source))) != NULL){
     g_object_set(G_OBJECT(list->data),
 		 "recall_channel\0", NULL,
 		 NULL);
@@ -368,17 +404,15 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 			     guint *n_params, GParameter *parameter)
 {
   AgsRecallChannel *recall_channel, *copy;
-  //  guint new_n_params;
-  //  GParameter *new_parameter;
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
-  /*
-  ags_parameter_grow(AGS_TYPE_RECALL_CHANNEL,
-		     n_params, parameter,
-		     &new_n_params, &new_parameter,
-		     "channel\0", recall_channel->channel,
-		     NULL);
-  */
+
+  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
+				 parameter, n_params,
+				 "destination\0", recall_channel->destination,
+				 "source\0", recall_channel->source,
+				 NULL);
+
   copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
 											 recall_id,
 											 n_params, parameter));
@@ -389,14 +423,14 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 }
 
 GList*
-ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *channel)
+ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
 {
   AgsRecallChannel *recall_channel;
 
   while(recall_channel_i != NULL){
     recall_channel = AGS_RECALL_CHANNEL(recall_channel_i->data);
 
-    if(recall_channel->channel == channel)
+    if(recall_channel->source == source)
       return(recall_channel_i);
 
     recall_channel_i = recall_channel_i->next;
@@ -406,12 +440,11 @@ ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *channel)
 }
 
 AgsRecallChannel*
-ags_recall_channel_new(AgsChannel *channel)
+ags_recall_channel_new()
 {
   AgsRecallChannel *recall_channel;
 
   recall_channel = (AgsRecallChannel *) g_object_new(AGS_TYPE_RECALL_CHANNEL,
-						     "channel\0", channel,
 						     NULL);
 
   return(recall_channel);
