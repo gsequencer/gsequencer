@@ -18,6 +18,8 @@
 
 #include <ags/X/machine/ags_drum_callbacks.h>
 #include <ags/X/machine/ags_drum_input_pad.h>
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_machine_callbacks.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
@@ -57,8 +59,6 @@
 
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
-
-void ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum);
 
 extern const char *AGS_DRUM_INDEX;
 
@@ -262,133 +262,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
   g_signal_connect((GObject *) file_chooser, "response\0",
-		   G_CALLBACK(ags_drum_open_response_callback), drum);
-}
-
-//TODO:JK: remove because it was moved ags_machine_callbacks.c
-void
-ags_drum_open_response_callback(GtkWidget *widget, gint response, AgsDrum *drum)
-{
-  GtkFileChooserDialog *file_chooser;
-  GtkCheckButton *overwrite;
-  GtkCheckButton *create;
-  AgsChannel *channel;
-  AgsLinkChannel *link_channel;
-  AgsAudioFile *audio_file;
-  AgsAudioSignal *audio_signal_source_old;
-  GList *list;
-  GSList *filenames;
-  guint list_length;
-  guint i, j;
-  gboolean reset;
-  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
-
-  file_chooser = (GtkFileChooserDialog *) gtk_widget_get_toplevel(widget);
-
-  if(response == GTK_RESPONSE_ACCEPT){
-    filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data((GObject *) widget, "overwrite\0");
-    create = g_object_get_data((GObject *) widget, "create\0");
-
-    channel = drum->machine.audio->input;
-
-    if(overwrite->toggle_button.active){
-      if(channel != NULL){
-	for(i = 0; i < drum->machine.audio->input_pads && filenames != NULL; i++){
-	  audio_file = ags_audio_file_new((gchar *) filenames->data,
-					  (AgsDevout *) drum->machine.audio->devout,
-					  0, drum->machine.audio->audio_channels);
-	  if(!ags_audio_file_open(audio_file)){
-	    filenames = filenames->next;
-	    continue;
-	  }
-
-	  ags_audio_file_read_audio_signal(audio_file);
-	  ags_audio_file_close(audio_file);
-
-	  list = audio_file->audio_signal;
-
-	  for(j = 0; j < drum->machine.audio->audio_channels && list != NULL; j++){
-	    /* create task */
-	    link_channel = ags_link_channel_new(channel, NULL);
-	    
-	    /* append AgsLinkChannel */
-	    // FIXME:JK: has a need for the unavaible task
-	    //	    ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
-				   //				   AGS_TASK(link_channel));
-
-	    AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	    AGS_AUDIO_SIGNAL(list->data)->recycling = (GObject *) channel->first_recycling;
-	    audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-	    // FIXME:JK: create a task
-	    channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal, (gpointer) audio_signal_source_old);
-	    channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal, list->data);
-
-	    g_object_unref(G_OBJECT(audio_signal_source_old));
-
-	    /* iterate */
-	    list = list->next;
-	    channel = channel->next;
-	  }
-
-	  /* iterate */
-	  if(audio_file->channels < drum->machine.audio->audio_channels)
-	    channel = ags_channel_nth(channel, drum->machine.audio->audio_channels - audio_file->channels);
-
-	  filenames = filenames->next;
-	}
-      }
-    }
-
-    if(create->toggle_button.active && filenames != NULL){
-      list_length = g_slist_length(filenames);
-
-      ags_audio_set_pads((AgsAudio *) drum->machine.audio, AGS_TYPE_INPUT,
-			 list_length + AGS_AUDIO(drum->machine.audio)->input_pads);
-      channel = ags_channel_nth(AGS_AUDIO(drum->machine.audio)->input, (AGS_AUDIO(drum->machine.audio)->input_pads - list_length) * AGS_AUDIO(drum->machine.audio)->audio_channels);
-
-      while(filenames != NULL){
-	audio_file = ags_audio_file_new((gchar *) filenames->data,
-					(AgsDevout *) drum->machine.audio->devout,
-					0, drum->machine.audio->audio_channels);
-	if(!ags_audio_file_open(audio_file)){
-	  filenames = filenames->next;
-	  continue;
-	}
-
-	ags_audio_file_read_audio_signal(audio_file);
-	ags_audio_file_close(audio_file);
-
-	list = audio_file->audio_signal;
-
-	for(j = 0; j < drum->machine.audio->audio_channels && list != NULL; j++){
-	  AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	  AGS_AUDIO_SIGNAL(list->data)->recycling = (GObject *) channel->first_recycling;
-	  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-	  g_static_mutex_lock(&mutex);
-	  channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal, (gpointer) audio_signal_source_old);
-	  channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal, list->data);
-	  g_static_mutex_unlock(&mutex);
-
-	  g_object_unref(G_OBJECT(audio_signal_source_old));
-
-	  list = list->next;
-	  channel = channel->next;
-	}
-
-	if(drum->machine.audio->audio_channels > audio_file->channels)
-	  channel = ags_channel_nth(channel, drum->machine.audio->audio_channels - audio_file->channels);
-
-	filenames = filenames->next;
-      }
-    }
-
-    gtk_widget_destroy((GtkWidget *) file_chooser);
-  }else if(response == GTK_RESPONSE_CANCEL){
-    gtk_widget_destroy((GtkWidget *) file_chooser);
-  }
+		   G_CALLBACK(ags_machine_open_response_callback), drum);
 }
 
 void

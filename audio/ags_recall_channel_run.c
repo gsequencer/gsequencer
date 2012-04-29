@@ -542,15 +542,19 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
 
   ags_recall_channel_run_parent_connectable_interface->connect(connectable);
 
+  g_message("ags_recall_channel_run_connect");
+
   /* AgsCopyChannel */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
   /* destination */
-  gobject = G_OBJECT(recall_channel_run->destination);
-
-  recall_channel_run->destination_recycling_changed_handler =
-    g_signal_connect(gobject, "recycling_changed\0",
-		     G_CALLBACK(ags_recall_channel_run_destination_recycling_changed_callback), recall_channel_run);
+  if(recall_channel_run->destination != NULL){
+    gobject = G_OBJECT(recall_channel_run->destination);
+    
+    recall_channel_run->destination_recycling_changed_handler =
+      g_signal_connect(gobject, "recycling_changed\0",
+		       G_CALLBACK(ags_recall_channel_run_destination_recycling_changed_callback), recall_channel_run);
+  }
 
   /* source */
   gobject = G_OBJECT(recall_channel_run->source);
