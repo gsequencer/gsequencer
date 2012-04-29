@@ -357,6 +357,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       /* sequencer speed */
       ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,
 						 attack);
+
       ags_delay_audio_run_sequencer_alloc_input(delay_audio_run, run_order,
 						attack);
       ags_delay_audio_run_sequencer_count(delay_audio_run, run_order,

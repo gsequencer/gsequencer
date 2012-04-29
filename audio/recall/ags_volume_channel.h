@@ -36,9 +36,6 @@ typedef struct _AgsVolumeChannelClass AgsVolumeChannelClass;
 struct _AgsVolumeChannel{
   AgsRecall recall;
 
-  AgsChannel *channel;
-  gulong channel_recycling_changed_handler;
-
   gdouble *volume;
 };
 

@@ -57,17 +57,17 @@ AgsRecall* ags_recall_recycling_duplicate(AgsRecall *recall,
 					  guint *n_params, GParameter *parameter);
 
 void ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
-						  AgsAudioSignal *audio_signal,
-						  AgsRecallRecycling *recall_recycling);
+							   AgsAudioSignal *audio_signal,
+							   AgsRecallRecycling *recall_recycling);
 void ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
-						     AgsAudioSignal *audio_signal,
-						     AgsRecallRecycling *recall_recycling);
+							      AgsAudioSignal *audio_signal,
+							      AgsRecallRecycling *recall_recycling);
 void ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destination,
-						       AgsAudioSignal *audio_signal,
-						       AgsRecallRecycling *recall_recycling);
+								AgsAudioSignal *audio_signal,
+								AgsRecallRecycling *recall_recycling);
 void ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *destination,
-							  AgsAudioSignal *audio_signal,
-							  AgsRecallRecycling *recall_recycling);
+								   AgsAudioSignal *audio_signal,
+								   AgsRecallRecycling *recall_recycling);
 
 void ags_recall_recycling_recall_audio_signal_done(AgsRecall *recall,
 						   gpointer data);
@@ -621,8 +621,9 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(recall_recycling)->recall_id->group_id){
-    printf("ags_recall_recycling_source_add_audio_signal - channel: %u\n\0",
-	   AGS_CHANNEL(recall_recycling->source->channel)->line);
+    g_message("ags_recall_recycling_source_add_audio_signal - channel: %s[%u]\n\0",
+	      G_OBJECT_TYPE_NAME(recall_recycling),
+	      AGS_CHANNEL(recall_recycling->source->channel)->line);
 
     g_object_ref(audio_signal);
     recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,

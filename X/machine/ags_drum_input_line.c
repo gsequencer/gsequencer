@@ -360,8 +360,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     //		     G_CALLBACK(ags_drum_input_line_play_channel_run_cancel), );
 
     /* AgsVolumeChannel */
-    volume_channel = ags_volume_channel_new(source,
-					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
+    volume_channel = g_object_new(AGS_TYPE_VOLUME_CHANNEL,
+				  "devout\0", audio->devout,
+				  "source\0", source,
+				  "volume\0", &(GTK_RANGE(drum_input_line->volume)->adjustment->value),
+				  NULL);
     
     AGS_RECALL(volume_channel)->flags |= (AGS_RECALL_TEMPLATE |
 					  AGS_RECALL_PLAYBACK |
@@ -373,8 +376,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       ags_connectable_connect(AGS_CONNECTABLE(volume_channel));
 
     /* AgsVolumeChannel */
-    volume_channel = ags_volume_channel_new(source,
-					    &(GTK_RANGE(drum_input_line->volume)->adjustment->value));
+    volume_channel = g_object_new(AGS_TYPE_VOLUME_CHANNEL,
+				  "devout\0", audio->devout,
+				  "source\0", source,
+				  "volume\0", &(GTK_RANGE(drum_input_line->volume)->adjustment->value),
+				  NULL);
     
     AGS_RECALL(volume_channel)->flags |= (AGS_RECALL_TEMPLATE |
 					  AGS_RECALL_SEQUENCER |

@@ -324,7 +324,7 @@ ags_drum_init(AgsDrum *drum)
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
-							      "devout\0", audio->devout,
+							      //"devout\0", audio->devout,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
@@ -355,7 +355,7 @@ ags_drum_init(AgsDrum *drum)
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
-							      "devout\0", audio->devout,
+							      //"devout\0", audio->devout,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);

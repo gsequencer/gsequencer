@@ -141,7 +141,9 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   if(list != NULL){
     copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 
-    copy_pattern_audio->devout = window->devout;
+    g_object_set(G_OBJECT(copy_pattern_audio),
+		 "devout\0", window->devout,
+		 NULL);
   }
 
   list = ags_recall_find_type(drum->machine.audio->recall,
@@ -150,7 +152,9 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   if(list != NULL){
     copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 
-    copy_pattern_audio->devout = window->devout;
+    g_object_set(G_OBJECT(copy_pattern_audio),
+		 "devout\0", window->devout,
+		 NULL);
   }
 
   //  fprintf(stdout, "ags_drum_parent_set_callback: delay = %d\n\0", delay);
