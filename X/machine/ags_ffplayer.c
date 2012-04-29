@@ -175,7 +175,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "delay\0", 0,
+						 "notation_delay\0", 0,
+						 "duration\0", AGS_EDITOR_MAX_CONTROLS + 16,
+						 "tactable\0", AGS_TACTABLE(ffplayer),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -205,7 +207,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "delay\0", 0,
+						 "notation_delay\0", 0,
+						 "duration\0", AGS_EDITOR_MAX_CONTROLS + 16,
+						 "tactable\0", AGS_TACTABLE(ffplayer),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -237,7 +241,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
     play_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
 								 "audio\0", audio,
 								 "recall_container\0", recall_container,
-								 "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
 								 "loop\0", FALSE,
 								 NULL);
   AGS_RECALL(play_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
@@ -269,7 +272,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
     recall_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
 								   "audio\0", audio,
 								   "recall_container\0", recall_container,
-								   "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
 								   "loop\0", FALSE,
 								   NULL);
   AGS_RECALL(recall_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |

@@ -173,7 +173,7 @@ ags_synth_init(AgsSynth *synth)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "delay\0", 0,
+						 "sequencer_delay\0", 0,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -203,7 +203,7 @@ ags_synth_init(AgsSynth *synth)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "delay\0", 0,
+						 "sequencer_delay\0", 0,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |

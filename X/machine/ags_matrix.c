@@ -209,6 +209,8 @@ ags_matrix_init(AgsMatrix *matrix)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
+						 "sequencer_delay", 16,
+						 "duration\0", 16,
 						 "tactable\0", AGS_TACTABLE(matrix),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
@@ -237,6 +239,8 @@ ags_matrix_init(AgsMatrix *matrix)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
+						 "sequencer_delay", 16,
+						 "duration\0", 16,
 						 "tactable\0", AGS_TACTABLE(matrix),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
