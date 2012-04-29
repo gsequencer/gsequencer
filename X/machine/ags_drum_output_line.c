@@ -222,7 +222,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* AgsStreamChannel */
     play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-							    "channel\0", output,
+							    "source\0", output,
 							    "recall_container\0", play_stream_channel_container,
 							    NULL);
     AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -234,9 +234,9 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* AgsStreamChannelRun */
     play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-								   "channel\0", output,
-								   "recall_container\0", play_stream_channel_container,
 								   "recall_channel\0", play_stream_channel,
+								   "source\0", output,
+								   "recall_container\0", play_stream_channel_container,
 								   NULL);
     AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
 						   AGS_RECALL_PLAYBACK |

@@ -644,7 +644,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	
 	/* AgsStreamChannel */
 	play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-								"channel\0", destination,
+								"source\0", destination,
 								"recall_container\0", play_stream_channel_container,
 								NULL);
 	AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -656,9 +656,9 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	
 	/* AgsStreamChannelRun */
 	play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-								       "channel\0", destination,
-								       "recall_container\0", play_stream_channel_container,
 								       "recall_channel\0", play_stream_channel,
+								       "source\0", destination,
+								       "recall_container\0", play_stream_channel_container,
 								       NULL);
 	AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
 						       AGS_RECALL_PLAYBACK |
@@ -675,7 +675,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	
 	/* AgsStreamChannel */
 	recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-								  "channel\0", destination,
+								  "source\0", destination,
 								  "recall_container\0", recall_stream_channel_container,
 								  NULL);
 	AGS_RECALL(recall_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -687,9 +687,9 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	
 	/* AgsStreamChannelRun */
 	recall_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-									 "channel\0", destination,
-									 "recall_container\0", recall_stream_channel_container,
 									 "recall_channel\0", recall_stream_channel,
+									 "source\0", destination,
+									 "recall_container\0", recall_stream_channel_container,
 									 NULL);
 	AGS_RECALL(recall_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
 							 AGS_RECALL_PLAYBACK |
@@ -768,7 +768,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       
       /* AgsStreamChannel */
       play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-							      "channel\0", source,
+							      "source\0", source,
 							      "recall_container\0", play_stream_channel_container,
 							      NULL);
       AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -782,9 +782,9 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       
       /* AgsStreamChannelRun */
       play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-								     "channel\0", source,
-								     "recall_container\0", play_stream_channel_container,
 								     "recall_channel\0", play_stream_channel,
+								     "source\0", source,
+								     "recall_container\0", play_stream_channel_container,
 								     NULL);
       AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
 						     AGS_RECALL_PLAYBACK |
@@ -801,7 +801,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       
       /* AgsStreamChannel */
       recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-								"channel\0", source,
+								"source\0", source,
 								"recall_container\0", recall_stream_channel_container,
 								NULL);
       AGS_RECALL(recall_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -815,9 +815,9 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       
       /* AgsStreamChannelRun */
       recall_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-								       "channel\0", source,
-								       "recall_container\0", recall_stream_channel_container,
 								       "recall_channel\0", recall_stream_channel,
+								       "source\0", source,
+								       "recall_container\0", recall_stream_channel_container,
 								     NULL);
       AGS_RECALL(recall_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
 						       AGS_RECALL_SEQUENCER |
@@ -833,7 +833,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       /* recall for channel->recall */
       /* AgsCopyPatternChannel in channel->recall */
       play_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
-									 "channel\0", source,
+									 "source\0", source,
 									 "recall_container\0", recall_copy_pattern_container,
 									 "destination\0", destination,
 									 "pattern\0", source->pattern->data,
@@ -849,10 +849,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       
       /* AgsCopyPatternChannelRun */
       play_copy_pattern_channel_run = (AgsCopyPatternChannelRun *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
-										"channel\0", source,
+										"recall_channel\0", play_copy_pattern_channel,
+										"source\0", source,
 										"recall_container\0", play_copy_pattern_container,
 										"recall_audio_run\0", play_copy_pattern_audio_run,
-										"recall_channel\0", play_copy_pattern_channel,
 										NULL);
       
       AGS_RECALL(play_copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
@@ -875,7 +875,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       /* recall for channel->play */
       /* AgsCopyPatternChannel in channel->recall */
       recall_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
-									   "channel\0", source,
+									   "source\0", source,
 									   "recall_container\0", recall_copy_pattern_container,
 									   "destination\0", destination,
 									   "pattern\0", source->pattern->data,
@@ -891,10 +891,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
 
       /* AgsCopyPatternChannelRun */
       recall_copy_pattern_channel_run = (AgsCopyPatternChannelRun *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
-										  "channel\0", source,
+										  "recall_channel\0", recall_copy_pattern_channel,
+										  "source\0", source,
 										  "recall_container\0", recall_copy_pattern_container,
 										  "recall_audio_run\0", recall_copy_pattern_audio_run,
-										  "recall_channel\0", recall_copy_pattern_channel,
 										  NULL);
     
       AGS_RECALL(recall_copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE  |

@@ -85,7 +85,7 @@ ags_copy_channel_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						   "AgsCopyChannel\0",
 						   &ags_copy_channel_info,
 						   0);

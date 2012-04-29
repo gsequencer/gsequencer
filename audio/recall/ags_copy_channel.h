@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
@@ -44,7 +44,7 @@ typedef enum{
 
 struct _AgsCopyChannel
 {
-  AgsRecall recall;
+  AgsRecallChannelRun recall_channel_run;
 
   guint flags;
 
@@ -59,7 +59,7 @@ struct _AgsCopyChannel
 
 struct _AgsCopyChannelClass
 {
-  AgsRecallClass recall;
+  AgsRecallChannelRunClass recall_channel_run;
 };
 
 GType ags_copy_channel_get_type();

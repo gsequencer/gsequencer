@@ -140,7 +140,7 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
   /* properties */
   param_spec = g_param_spec_object("destination\0",
 				   "assigned destination channel\0",
-				   "The source channel object it is assigned to\0",
+				   "The destination channel object it is assigned to\0",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
