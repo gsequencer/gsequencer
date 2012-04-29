@@ -56,7 +56,7 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   ffplayer->machine.name = g_strdup_printf("Default %d\0", window->counter->ffplayer);
   window->counter->ffplayer++;
 
-  /* delay related */
+  /* delay related * /
   tact = exp2(4.0 - 8.0);
   bpm = window->navigation->bpm->adjustment->value;
   bps = (60.0 / bpm);
@@ -72,7 +72,7 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   //  ffplayer->play_delay_audio->delay = delay;
   //  ffplayer->recall_delay_audio->delay = delay;
 
-  /* notation related */
+  /* notation related * /
   length = (guint) AGS_EDITOR_MAX_CONTROLS + 16;
   stream_length = length * (delay + 1) + 1;
 

@@ -257,7 +257,7 @@ ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW);
 
   bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
- g_signal_emit_by_name(AGS_TACTABLE(matrix), "change_bpm\0",
+  g_signal_emit_by_name(AGS_TACTABLE(matrix), "change_bpm\0",
 			bpm);
 
   /*  audio = matrix->machine.audio;

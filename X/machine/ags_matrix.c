@@ -210,7 +210,6 @@ ags_matrix_init(AgsMatrix *matrix)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay", 16,
-						 "duration\0", 16,
 						 "tactable\0", AGS_TACTABLE(matrix),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
@@ -240,7 +239,6 @@ ags_matrix_init(AgsMatrix *matrix)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay", 16,
-						 "duration\0", 16,
 						 "tactable\0", AGS_TACTABLE(matrix),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
@@ -339,7 +337,6 @@ ags_matrix_init(AgsMatrix *matrix)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
-							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
@@ -371,7 +368,6 @@ ags_matrix_init(AgsMatrix *matrix)
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      "devout\0", audio->devout,
-							      "tact\0", 1.0 / 4.0,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
