@@ -509,15 +509,17 @@ ags_recall_recycling_run_connect(AgsRunConnectable *run_connectable)
   recall_recycling = AGS_RECALL_RECYCLING(run_connectable);
 
   /* destination */
-  gobject = G_OBJECT(recall_recycling->destination);
+  if(recall_recycling->destination != NULL){
+    gobject = G_OBJECT(recall_recycling->destination);
 
-  recall_recycling->destination_add_audio_signal_handler =
-    g_signal_connect_after(gobject, "add_audio_signal\0",
-			   G_CALLBACK(ags_recall_recycling_destination_add_audio_signal_callback), recall_recycling);
+    recall_recycling->destination_add_audio_signal_handler =
+      g_signal_connect_after(gobject, "add_audio_signal\0",
+			     G_CALLBACK(ags_recall_recycling_destination_add_audio_signal_callback), recall_recycling);
       
-  recall_recycling->destination_remove_audio_signal_handler =
-    g_signal_connect(gobject, "remove_audio_signal\0",
-		     G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
+    recall_recycling->destination_remove_audio_signal_handler =
+      g_signal_connect(gobject, "remove_audio_signal\0",
+		       G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
+  }
 
   /* source */
   gobject = G_OBJECT(recall_recycling->source);
@@ -540,11 +542,13 @@ ags_recall_recycling_run_disconnect(AgsRunConnectable *run_connectable)
   ags_recall_recycling_parent_run_connectable_interface->disconnect(run_connectable);
 
   /* destination */
-  gobject = G_OBJECT(recall_recycling->destination);
-
-  g_signal_handler_disconnect(gobject, recall_recycling->destination_add_audio_signal_handler);
-
-  g_signal_handler_disconnect(gobject, recall_recycling->destination_remove_audio_signal_handler);
+  if(recall_recycling->destination != NULL){
+    gobject = G_OBJECT(recall_recycling->destination);
+    
+    g_signal_handler_disconnect(gobject, recall_recycling->destination_add_audio_signal_handler);
+    
+    g_signal_handler_disconnect(gobject, recall_recycling->destination_remove_audio_signal_handler);
+  }
 
   /* source */
   gobject = G_OBJECT(recall_recycling->source);

@@ -455,105 +455,7 @@ ags_play_channel_run_master_duplicate(AgsRecall *recall,
 													   recall_id,
 													   n_params, parameter);
 
-  ags_play_channel_run_master_map_play_recycling(copy);
-
   return((AgsRecall *) copy);
-}
-
-void
-ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_channel_run_master)
-{
-  AgsPlayChannel *play_channel;
-  AgsRecycling *source_recycling;
-
-  /* AgsPlayChannel */
-  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run_master)->recall_channel);
-
-  /* AgsRecycling */
-  source_recycling = AGS_RECALL_CHANNEL(play_channel)->source->first_recycling;
-
-  if(source_recycling != NULL){
-    AgsPlayRecycling *play_recycling;
-    guint audio_channel;
-
-    audio_channel = play_channel->audio_channel;
-
-    while(source_recycling != AGS_RECALL_CHANNEL(play_channel)->source->last_recycling->next){
-      printf("ags_play_channel_run_master_map_play_recycling\n\0");
-
-      play_recycling = ags_play_recycling_new(source_recycling,
-					      play_channel->devout,
-					      audio_channel);
-
-      ags_recall_add_child(AGS_RECALL(play_channel_run_master), AGS_RECALL(play_recycling));
-
-      source_recycling = source_recycling->next;
-    }
-  }
-}
-
-void
-ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
-					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-					       AgsRecycling *new_start_region, AgsRecycling *new_end_region)
-{
-  AgsPlayChannel *play_channel;
-  AgsRecycling *source_recycling;
-  AgsPlayRecycling *play_recycling;
-  GList *list;
-  guint audio_channel;
-
-  /* AgsPlayChannel */
-  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run_master)->recall_channel);
-
-  audio_channel = play_channel->audio_channel;
-
-  /* remove old */
-  if(old_start_region != NULL){
-    AgsDevout *devout;
-    AgsRecall *recall;
-    AgsCancelRecall *cancel_recall;
-
-    devout = AGS_DEVOUT(AGS_AUDIO(AGS_RECALL_CHANNEL(play_channel)->source->audio)->devout);
-    source_recycling = old_start_region;
-
-    while(source_recycling != old_end_region->next){
-      list = ags_recall_get_children(AGS_RECALL(play_channel_run_master));
-
-      while(list != NULL){
-	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
-	  recall = AGS_RECALL(list->data);
-	  
-	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall,
-						NULL);
-
-	  ags_devout_append_task(devout, (AgsTask *) cancel_recall);
-	}
-
-	list = list->next;
-      }
-
-      source_recycling = source_recycling->next;
-    }
-  }
-
-  /* add new */
-  if(new_start_region != NULL){
-    source_recycling = new_start_region;
-    
-    while(source_recycling != new_end_region->next){
-      printf("ags_play_channel_run_master_remap_play_recycling\n\0");
-
-      play_recycling = ags_play_recycling_new(source_recycling,
-					      play_channel->devout,
-					      audio_channel);
-      
-      ags_recall_add_child(AGS_RECALL(play_channel_run_master), AGS_RECALL(play_recycling));
-      
-      source_recycling = source_recycling->next;
-    }
-  }
 }
 
 void
@@ -655,10 +557,6 @@ ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channe
 						   old_start_changed_region, old_end_changed_region,
 						   new_start_changed_region, new_end_changed_region);
   }
-
-  ags_play_channel_run_master_remap_child_source(play_channel_run_master,
-						 old_start_changed_region, old_end_changed_region,
-						 new_start_changed_region, new_end_changed_region);
 }
 
 void

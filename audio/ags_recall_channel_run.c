@@ -604,9 +604,11 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
   /* destination */
-  gobject = G_OBJECT(recall_channel_run->destination);
+  if(recall_channel_run->destination != NULL){
+    gobject = G_OBJECT(recall_channel_run->destination);
   
-  g_signal_handler_disconnect(gobject, recall_channel_run->destination_recycling_changed_handler);
+    g_signal_handler_disconnect(gobject, recall_channel_run->destination_recycling_changed_handler);
+  }
 
   /* source */
   gobject = G_OBJECT(recall_channel_run->source);
