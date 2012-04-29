@@ -617,94 +617,95 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 		(delay_audio->notation_delay * delay_audio->sequencer_delay + 1));
 
 
-      while(source != NULL){
-	audio_signal = ags_audio_signal_get_template(source->first_recycling->audio_signal);
-	ags_audio_signal_stream_resize(audio_signal, stop);
+      audio_signal = ags_audio_signal_get_template(source->first_recycling->audio_signal);
+      ags_audio_signal_stream_resize(audio_signal, stop);
+      
+      /* get some recalls */
+      play_count_beats_audio_run = matrix->play_count_beats_audio_run;
+      recall_count_beats_audio_run = matrix->recall_count_beats_audio_run;
 
-	/* get some recalls */
-	play_count_beats_audio_run = matrix->play_count_beats_audio_run;
-	recall_count_beats_audio_run = matrix->recall_count_beats_audio_run;
-
-	/* AgsLoopChannel in channel->play */
-	loop_channel = ags_loop_channel_new(destination,
-					    recall_count_beats_audio_run,
-					    TRUE);
-	AGS_RECALL(loop_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					    AGS_RECALL_SEQUENCER |
-					    AGS_RECALL_OUTPUT_ORIENTATED);
-	ags_channel_add_recall(destination, (GObject *) loop_channel, TRUE);
-	
-	if(GTK_WIDGET_VISIBLE(matrix))
-	  ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
-	
-	/* recall for channel->play */
-	play_stream_channel_container = ags_recall_container_new();
-	play_stream_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
-	ags_channel_add_recall_container(destination, (GObject *) play_stream_channel_container);
-	
-	/* AgsStreamChannel */
-	play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-								"source\0", destination,
-								"recall_container\0", play_stream_channel_container,
-								NULL);
-	AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
-						   AGS_RECALL_SEQUENCER);
-	ags_channel_add_recall(destination, (GObject *) play_stream_channel, TRUE);
-	
-	if(GTK_WIDGET_VISIBLE(matrix))
+      /* AgsLoopChannel in channel->play */
+      loop_channel = ags_loop_channel_new(destination,
+					  recall_count_beats_audio_run,
+					  TRUE);
+      AGS_RECALL(loop_channel)->flags |= (AGS_RECALL_TEMPLATE |
+					  AGS_RECALL_SEQUENCER |
+					  AGS_RECALL_OUTPUT_ORIENTATED);
+      ags_channel_add_recall(destination, (GObject *) loop_channel, TRUE);
+      
+      if(GTK_WIDGET_VISIBLE(matrix))
+	ags_connectable_connect(AGS_CONNECTABLE(loop_channel));
+      
+      /* recall for channel->play */
+      play_stream_channel_container = ags_recall_container_new();
+      play_stream_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_channel_add_recall_container(destination, (GObject *) play_stream_channel_container);
+      
+      /* AgsStreamChannel */
+      play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
+							      "source\0", destination,
+							      "recall_container\0", play_stream_channel_container,
+							      NULL);
+      AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
+						 AGS_RECALL_SEQUENCER);
+      ags_channel_add_recall(destination, (GObject *) play_stream_channel, TRUE);
+      
+      if(GTK_WIDGET_VISIBLE(matrix))
 	  ags_connectable_connect(AGS_CONNECTABLE(play_stream_channel));
-	
-	/* AgsStreamChannelRun */
-	play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-								       "recall_channel\0", play_stream_channel,
+      
+      /* AgsStreamChannelRun */
+      play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
+								     "recall_channel\0", play_stream_channel,
+								     "source\0", destination,
+								     "recall_container\0", play_stream_channel_container,
+								     NULL);
+      AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+						     AGS_RECALL_PLAYBACK |
+						     AGS_RECALL_SEQUENCER |
+						     AGS_RECALL_NOTATION);
+      ags_channel_add_recall(destination, (GObject *) play_stream_channel_run, TRUE);
+      
+      if(GTK_WIDGET_VISIBLE(matrix))
+	ags_connectable_connect(AGS_CONNECTABLE(play_stream_channel_run));
+      
+	/* recall for channel->recall */
+      recall_stream_channel_container = ags_recall_container_new();
+      ags_channel_add_recall_container(destination, (GObject *) recall_stream_channel_container);
+      
+      /* AgsStreamChannel */
+      recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
+								"source\0", destination,
+								"recall_container\0", recall_stream_channel_container,
+								NULL);
+      AGS_RECALL(recall_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
+						   AGS_RECALL_SEQUENCER);
+      ags_channel_add_recall(destination, (GObject *) recall_stream_channel, FALSE);
+      
+      if(GTK_WIDGET_VISIBLE(matrix))
+	ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel));
+      
+      /* AgsStreamChannelRun */
+      recall_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
+								       "recall_channel\0", recall_stream_channel,
 								       "source\0", destination,
-								       "recall_container\0", play_stream_channel_container,
+								       "recall_container\0", recall_stream_channel_container,
 								       NULL);
-	AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+      AGS_RECALL(recall_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
 						       AGS_RECALL_PLAYBACK |
 						       AGS_RECALL_SEQUENCER |
 						       AGS_RECALL_NOTATION);
-	ags_channel_add_recall(destination, (GObject *) play_stream_channel_run, TRUE);
-	
-	if(GTK_WIDGET_VISIBLE(matrix))
-	  ags_connectable_connect(AGS_CONNECTABLE(play_stream_channel_run));
-	
-	/* recall for channel->recall */
-	recall_stream_channel_container = ags_recall_container_new();
-	ags_channel_add_recall_container(destination, (GObject *) recall_stream_channel_container);
-	
-	/* AgsStreamChannel */
-	recall_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
-								  "source\0", destination,
-								  "recall_container\0", recall_stream_channel_container,
-								  NULL);
-	AGS_RECALL(recall_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
-						     AGS_RECALL_SEQUENCER);
-	ags_channel_add_recall(destination, (GObject *) recall_stream_channel, FALSE);
-	
-	if(GTK_WIDGET_VISIBLE(matrix))
-	  ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel));
-	
-	/* AgsStreamChannelRun */
-	recall_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
-									 "recall_channel\0", recall_stream_channel,
-									 "source\0", destination,
-									 "recall_container\0", recall_stream_channel_container,
-									 NULL);
-	AGS_RECALL(recall_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-							 AGS_RECALL_PLAYBACK |
-							 AGS_RECALL_SEQUENCER |
-							 AGS_RECALL_NOTATION);
-	ags_channel_add_recall(destination, (GObject *) recall_stream_channel_run, FALSE);
-	
-	if(GTK_WIDGET_VISIBLE(matrix))
-	  ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel_run));
-	
+      ags_channel_add_recall(destination, (GObject *) recall_stream_channel_run, FALSE);
+      
+      if(GTK_WIDGET_VISIBLE(matrix))
+	ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel_run));
+      
 
-	
-	/* depending on destination */
-	ags_matrix_input_map_recall(matrix, pads_old);
-      }
+      
+      /* depending on destination */
+      ags_matrix_input_map_recall(matrix, pads_old);
+      
+      /* iterate */
+      source = source->next;
     }
   }
 }
@@ -834,8 +835,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       /* AgsCopyPatternChannel in channel->recall */
       play_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
 									 "source\0", source,
-									 "recall_container\0", recall_copy_pattern_container,
 									 "destination\0", destination,
+									 "recall_container\0", recall_copy_pattern_container,
 									 "pattern\0", source->pattern->data,
 									 NULL);
       AGS_RECALL(play_copy_pattern_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -876,8 +877,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       /* AgsCopyPatternChannel in channel->recall */
       recall_copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
 									   "source\0", source,
-									   "recall_container\0", recall_copy_pattern_container,
 									   "destination\0", destination,
+									   "recall_container\0", recall_copy_pattern_container,
 									   "pattern\0", source->pattern->data,
 									   NULL);
       AGS_RECALL(recall_copy_pattern_channel)->flags |= (AGS_RECALL_TEMPLATE  |
@@ -918,8 +919,9 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
 					  AGS_RECALL_NOTATION);
       ags_channel_add_recall(source, (GObject *) copy_channel, FALSE);
       
-      if(GTK_WIDGET_VISIBLE(matrix))
+      if(GTK_WIDGET_VISIBLE(matrix)){
 	ags_connectable_connect(AGS_CONNECTABLE(copy_channel));
+      }
       
       destination = destination->next_pad;
     }
@@ -927,7 +929,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
     g_object_set_data(G_OBJECT(source),
 		      AGS_MATRIX_INPUT_LINE_MAPPED_KEY,
 		      AGS_MATRIX_INPUT_LINE_MAPPED_DATA);
-    source = source->next;
+    source = source->next_pad;
   }
 }
 

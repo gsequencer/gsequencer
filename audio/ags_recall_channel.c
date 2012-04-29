@@ -141,103 +141,103 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
   param_spec = g_param_spec_object("destination\0",
 				   "assigned destination channel\0",
 				   "The destination channel object it is assigned to\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DESTINATION,
-				  param_spec);
+				    AGS_TYPE_CHANNEL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+   g_object_class_install_property(gobject,
+				   PROP_DESTINATION,
+				   param_spec);
 
-  param_spec = g_param_spec_object("source\0",
-				   "assigned source channel\0",
-				   "The source channel object it is assigned to\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOURCE,
-				  param_spec);
+   param_spec = g_param_spec_object("source\0",
+				    "assigned source channel\0",
+				    "The source channel object it is assigned to\0",
+				    AGS_TYPE_CHANNEL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+   g_object_class_install_property(gobject,
+				   PROP_SOURCE,
+				   param_spec);
 
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) recall_channel;
+   /* AgsRecallClass */
+   recall = (AgsRecallClass *) recall_channel;
 
-  recall->duplicate = ags_recall_channel_duplicate;
-}
+   recall->duplicate = ags_recall_channel_duplicate;
+ }
 
-void
-ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  AgsConnectableInterface *ags_recall_channel_connectable_parent_interface;
+ void
+ ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable)
+ {
+   AgsConnectableInterface *ags_recall_channel_connectable_parent_interface;
 
-  ags_recall_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+   ags_recall_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
-  connectable->connect = ags_recall_channel_connect;
-  connectable->disconnect = ags_recall_channel_disconnect;
-}
+   connectable->connect = ags_recall_channel_connect;
+   connectable->disconnect = ags_recall_channel_disconnect;
+ }
 
-void
-ags_recall_channel_packable_interface_init(AgsPackableInterface *packable)
-{
-  ags_recall_channel_parent_packable_interface = g_type_interface_peek_parent(packable);
+ void
+ ags_recall_channel_packable_interface_init(AgsPackableInterface *packable)
+ {
+   ags_recall_channel_parent_packable_interface = g_type_interface_peek_parent(packable);
 
-  packable->pack = ags_recall_channel_pack;
-  packable->unpack = ags_recall_channel_unpack;
-}
+   packable->pack = ags_recall_channel_pack;
+   packable->unpack = ags_recall_channel_unpack;
+ }
 
-void
-ags_recall_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
-{
-  ags_recall_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+ void
+ ags_recall_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ {
+   ags_recall_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
 
-  run_connectable->connect = ags_recall_channel_runconnect;
-  run_connectable->disconnect = ags_recall_channel_rundisconnect;
-}
+   run_connectable->connect = ags_recall_channel_runconnect;
+   run_connectable->disconnect = ags_recall_channel_rundisconnect;
+ }
 
-void
-ags_recall_channel_init(AgsRecallChannel *recall_channel)
-{
-  recall_channel->destination = NULL;
-  recall_channel->source = NULL;
-}
+ void
+ ags_recall_channel_init(AgsRecallChannel *recall_channel)
+ {
+   recall_channel->destination = NULL;
+   recall_channel->source = NULL;
+ }
 
-void
-ags_recall_channel_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec)
-{
-  AgsRecallChannel *recall_channel;
+ void
+ ags_recall_channel_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+ {
+   AgsRecallChannel *recall_channel;
 
-  recall_channel = AGS_RECALL_CHANNEL(gobject);
+   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
-  switch(prop_id){
-  case PROP_DESTINATION:
-    {
-      AgsChannel *destination;
+   switch(prop_id){
+   case PROP_DESTINATION:
+     {
+       AgsChannel *destination;
 
-      destination = (AgsChannel *) g_value_get_object(value);
+       destination = (AgsChannel *) g_value_get_object(value);
 
-      if(recall_channel->destination == destination)
-	return;
+       if(recall_channel->destination == destination)
+	 return;
 
-      if(recall_channel->destination != NULL)
-	g_object_unref(recall_channel->destination);
+       if(recall_channel->destination != NULL)
+	 g_object_unref(recall_channel->destination);
 
-      if(destination != NULL)
-	g_object_ref(destination);
+       if(destination != NULL)
+	 g_object_ref(destination);
 
-      recall_channel->destination = destination;
-    }
-    break;
-  case PROP_SOURCE:
-    {
-      AgsChannel *source;
+       recall_channel->destination = destination;
+     }
+     break;
+   case PROP_SOURCE:
+     {
+       AgsChannel *source;
 
-      source = (AgsChannel *) g_value_get_object(value);
+       source = (AgsChannel *) g_value_get_object(value);
 
-      if(recall_channel->source == source)
-	return;
+       if(recall_channel->source == source)
+	 return;
 
-      if(recall_channel->source != NULL)
-	g_object_unref(recall_channel->source);
+       if(recall_channel->source != NULL)
+	 g_object_unref(recall_channel->source);
 
       if(source != NULL)
 	g_object_ref(source);
