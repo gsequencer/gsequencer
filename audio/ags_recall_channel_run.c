@@ -719,6 +719,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
+				 "recall_channel\0", recall_channel_run->recall_channel,
 				 "devout\0", recall_channel_run->devout,
 				 "destination\0", recall_channel_run->destination,
 				 "source\0", recall_channel_run->source,
