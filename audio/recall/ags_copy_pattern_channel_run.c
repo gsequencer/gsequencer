@@ -158,6 +158,7 @@ void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_SEQUENCER;
+  AGS_RECALL(copy_pattern_channel_run)->child_type = G_TYPE_NONE;
 }
 
 void
@@ -193,7 +194,7 @@ ags_copy_pattern_channel_run_run_connect(AgsRunConnectable *run_connectable)
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(run_connectable);
 
   /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(copy_pattern_channel_run->recall_channel_run.recall_audio_run);
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
 
   /* connect sequencer_alloc in AgsDelayAudioRun */
   delay_audio_run = copy_pattern_audio_run->count_beats_audio_run->delay_audio_run;

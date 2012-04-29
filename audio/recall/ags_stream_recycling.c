@@ -190,7 +190,7 @@ ags_stream_recycling_new(AgsRecycling *recycling)
   AgsStreamRecycling *stream_recycling;
 
   stream_recycling = (AgsStreamRecycling *) g_object_new(AGS_TYPE_STREAM_RECYCLING,
-							 "recycling\0", recycling,
+							 "source\0", recycling,
 							 NULL);
 
   return(stream_recycling);

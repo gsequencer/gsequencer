@@ -36,12 +36,12 @@ typedef struct _AgsStreamAudioSignalClass AgsStreamAudioSignalClass;
 
 struct _AgsStreamAudioSignal
 {
-  AgsRecall recall;
+  AgsRecallAudioSignal recall_audio_signal;
 };
 
 struct _AgsStreamAudioSignalClass
 {
-  AgsRecallClass recall;
+  AgsRecallAudioSignalClass recall_audio_signal;
 };
 
 GType ags_stream_audio_signal_get_type();
