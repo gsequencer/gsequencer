@@ -34,6 +34,7 @@
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
@@ -196,7 +197,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsLine *line;
   AgsAudio *audio;
   AgsChannel *source, *destination, *destination_start;
-  AgsRecallContainer *play_copy_pattern_container, *recall_copy_pattern_container, *play_channel_container, *play_stream_channel_container, *recall_stream_channel_container;
+  AgsRecallContainer *play_copy_pattern_container, *recall_copy_pattern_container, *play_channel_container, *play_stream_channel_container, *recall_stream_channel_container, *copy_pattern_channel_container;
   AgsVolumeChannel *volume_channel;
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
@@ -205,6 +206,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsCopyPatternChannel *play_copy_pattern_channel, *recall_copy_pattern_channel;
   AgsCopyPatternChannelRun *play_copy_pattern_channel_run, *recall_copy_pattern_channel_run;
   AgsCopyChannel *copy_channel;
+  AgsCopyChannelRun *copy_channel_run;
   AgsStreamChannel *play_stream_channel, *recall_stream_channel;
   AgsStreamChannelRun *play_stream_channel_run, *recall_stream_channel_run;
   GList *list;
@@ -483,9 +485,12 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       ags_connectable_connect(AGS_CONNECTABLE(recall_copy_pattern_channel_run));
  
     /* recall for channel->recall */
-    /* AgsCopyChannel * /
+    copy_pattern_channel_container = ags_recall_container_new();
+    ags_channel_add_recall_container(source, (GObject *) recall_stream_channel_container);
+
+    /* AgsCopyChannel */
     copy_channel = (AgsCopyChannel *) g_object_new(AGS_TYPE_COPY_CHANNEL,
-						   "devout\0", audio->devout,
+						   "recall_container\0", copy_pattern_channel_container,
 						   "destination\0", destination,
 						   "source\0", source,
 						   NULL);
@@ -496,7 +501,25 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(copy_channel));
-    */
+
+
+    /* AgsCopyChannelRun */
+    copy_channel_run = (AgsCopyChannelRun *) g_object_new(AGS_TYPE_COPY_CHANNEL_RUN,
+							  "recall_channel\0", copy_channel,
+							  "devout\0", audio->devout,
+							  "destination\0", destination,
+							  "source\0", source,
+							  "recall_container\0", copy_pattern_channel_container,
+							  NULL);
+    AGS_RECALL(copy_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
+					    AGS_RECALL_SEQUENCER |
+					    AGS_RECALL_NOTATION);
+    ags_channel_add_recall(source, (GObject *) copy_channel_run, FALSE);
+
+    if(GTK_WIDGET_VISIBLE(drum))
+      ags_connectable_connect(AGS_CONNECTABLE(copy_channel_run));
+
+    /* iterate */
     destination = destination->next_pad;
   }
 

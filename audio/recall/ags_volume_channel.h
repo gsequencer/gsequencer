@@ -22,29 +22,30 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_channel.h>
 
-#include <ags/audio/ags_channel.h>
-
-#define AGS_TYPE_VOLUME_CHANNEL            (ags_volume_channel_get_type())
-#define AGS_VOLUME_CHANNEL(obj)            (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_VOLUME_CHANNEL, AgsVolumeChannel))
-#define AGS_VOLUME_CHANNEL_CLASS(class)    (G_TYPE_CHECK_INSTANCE_CAST(class, AGS_TYPE_VOLUME_CHANNEL, AgsVolumeChannelClass))
+#define AGS_TYPE_VOLUME_CHANNEL                (ags_volume_channel_get_type())
+#define AGS_VOLUME_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VOLUME_CHANNEL, AgsVolumeChannel))
+#define AGS_VOLUME_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_VOLUME_CHANNEL, AgsVolumeChannelClass))
+#define AGS_IS_VOLUME_CHANNEL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_VOLUME_CHANNEL))
+#define AGS_IS_VOLUME_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_VOLUME_CHANNEL))
+#define AGS_VOLUME_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_VOLUME_CHANNEL, AgsVolumeChannelClass))
 
 typedef struct _AgsVolumeChannel AgsVolumeChannel;
 typedef struct _AgsVolumeChannelClass AgsVolumeChannelClass;
 
-struct _AgsVolumeChannel{
-  AgsRecall recall;
-
-  gdouble *volume;
+struct _AgsVolumeChannel
+{
+  AgsRecallChannel recall_channel;
 };
 
-struct _AgsVolumeChannelClass{
-  AgsRecallClass recall;
+struct _AgsVolumeChannelClass
+{
+  AgsRecallChannelClass recall_channel;
 };
 
 GType ags_volume_channel_get_type();
 
-AgsVolumeChannel* ags_volume_channel_new(AgsChannel *channel, gdouble *volume);
+AgsVolumeChannel* ags_volume_channel_new();
 
 #endif /*__AGS_VOLUME_CHANNEL_H__*/

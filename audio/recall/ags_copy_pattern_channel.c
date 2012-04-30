@@ -36,7 +36,6 @@ void ags_copy_pattern_channel_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_DESTINATION,
   PROP_PATTERN,
 };
 
@@ -86,15 +85,6 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
   gobject->finalize = ags_copy_pattern_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("destination\0",
-				   "destination of output\0",
-				   "The destination AgsChannel where it will output to\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DESTINATION,
-				  param_spec);
-
   param_spec = g_param_spec_object("pattern\0",
 				   "pattern to play\0",
 				   "The pattern which has to be played\0",
@@ -110,8 +100,6 @@ ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
 {
   AGS_RECALL(copy_pattern_channel)->flags |= AGS_RECALL_SEQUENCER;
 
-  copy_pattern_channel->destination = NULL;
-
   copy_pattern_channel->pattern = NULL;
 }
 
@@ -126,24 +114,6 @@ ags_copy_pattern_channel_set_property(GObject *gobject,
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_DESTINATION:
-    {
-      AgsChannel *destination;
-
-      destination = (AgsChannel *) g_value_get_object(value);
-
-      if(copy_pattern_channel->destination == destination)
-	return;
-
-      if(copy_pattern_channel->destination != NULL)
-	g_object_unref(G_OBJECT(copy_pattern_channel->destination));
-      
-      if(destination != NULL)
-	g_object_ref(G_OBJECT(destination));
-
-      copy_pattern_channel->destination = destination;
-    }
-    break;
   case PROP_PATTERN:
     {
       AgsPattern *pattern;
@@ -179,11 +149,6 @@ ags_copy_pattern_channel_get_property(GObject *gobject,
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_DESTINATION:
-    {
-      g_value_set_object(value, copy_pattern_channel->destination);
-    }
-    break;
   case PROP_PATTERN:
     {
       g_value_set_object(value, copy_pattern_channel->pattern);
@@ -202,11 +167,8 @@ ags_copy_pattern_channel_finalize(GObject *gobject)
 
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(gobject);
 
-  if(copy_pattern_channel->destination != NULL)
-    g_object_unref(G_OBJECT(copy_pattern_channel->destination));
-
-  if(copy_pattern_channel->pattern != NULL)
-    g_object_unref(G_OBJECT(copy_pattern_channel->pattern));
+  if(AGS_RECALL_CHANNEL(copy_pattern_channel)->destination != NULL)
+    g_object_unref(G_OBJECT(AGS_RECALL_CHANNEL(copy_pattern_channel)->destination));
 
   G_OBJECT_CLASS(ags_copy_pattern_channel_parent_class)->finalize(gobject);
 }
@@ -226,7 +188,7 @@ ags_copy_pattern_channel_template_find_source_and_destination(GList *recall,
 
     copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->data);
 
-    if(copy_pattern_channel->destination == destination &&
+    if(AGS_RECALL_CHANNEL(copy_pattern_channel)->destination == destination &&
        AGS_RECALL_CHANNEL(copy_pattern_channel)->source == source)
       break;
 

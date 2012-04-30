@@ -22,7 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_pattern.h>
@@ -41,9 +40,6 @@ struct _AgsCopyPatternChannel
 {
   AgsRecallChannel recall_channel;
 
-  AgsChannel *destination;
-
-  //  AgsChannel *source; 
   AgsPattern *pattern;
 };
 
