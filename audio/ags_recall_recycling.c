@@ -241,6 +241,8 @@ ags_recall_recycling_run_connectable_interface_init(AgsRunConnectableInterface *
 void
 ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
 {
+  recall_recycling->flags = 0;
+
   recall_recycling->devout = NULL;
   recall_recycling->audio_channel = 0;
 
@@ -702,8 +704,8 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
      audio_signal->recall_id != NULL && AGS_RECALL(recall_recycling)->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == AGS_RECALL(recall_recycling)->recall_id->parent_group_id){
     //    g_message("ags_recall_recycling_destination_add_audio_signal_callback %s[%u]\0",
-	      //	      G_OBJECT_TYPE_NAME(recall_recycling),
-	      //	      AGS_CHANNEL(recall_recycling->source->channel)->line);
+    //	      G_OBJECT_TYPE_NAME(recall_recycling),
+    //	      AGS_CHANNEL(recall_recycling->source->channel)->line);
     
     g_object_ref(audio_signal);
     recall_recycling->child_destination = audio_signal;

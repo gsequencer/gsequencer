@@ -38,9 +38,14 @@
 typedef struct _AgsRecallRecycling AgsRecallRecycling;
 typedef struct _AgsRecallRecyclingClass AgsRecallRecyclingClass;
 
+typedef enum{
+}AgsRecallRecyclingFlags;
+
 struct _AgsRecallRecycling
 {
   AgsRecall recall;
+
+  guint flags;
 
   AgsDevout *devout;
   guint audio_channel;

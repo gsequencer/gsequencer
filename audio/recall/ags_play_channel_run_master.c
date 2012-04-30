@@ -193,6 +193,8 @@ ags_play_channel_run_master_run_connectable_interface_init(AgsRunConnectableInte
 void
 ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_master)
 {
+  AGS_RECALL(play_channel_run_master)->child_type = AGS_TYPE_PLAY_RECYCLING;
+
   play_channel_run_master->flags = 0;
 
   play_channel_run_master->streamer = NULL;
@@ -383,9 +385,17 @@ ags_play_channel_run_master_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_play_channel_run_master_run_init_pre(AgsRecall *recall)
 {
+  AgsRecallChannelRun *recall_channel_run;
+  AgsPlayChannelRunMaster *play_channel_run_master;
+
   AGS_RECALL_CLASS(ags_play_channel_run_master_parent_class)->run_init_pre(recall);
 
-  /* empty */
+  play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(recall);
+  recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
+
+  ags_play_channel_run_master_remap_dependencies(play_channel_run_master,
+						 NULL, NULL,
+						 recall_channel_run->source->first_recycling, recall_channel_run->source->last_recycling);
 }
 
 void
@@ -507,13 +517,13 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
   /* add new */
   if(new_start_region != NULL){
     current = NULL;
-    recycling = old_start_region;
+    recycling = new_start_region;
     
     while(recycling != new_end_region->next){
       if(current != AGS_CHANNEL(recycling->channel)){
 	current = AGS_CHANNEL(recycling->channel);
 
-	list = ags_recall_template_find_type(current->recall,
+	list = ags_recall_template_find_type(current->play,
 					     AGS_TYPE_STREAM_CHANNEL_RUN);
 
 	if(list != NULL){
@@ -571,7 +581,7 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 						    streamer);
 
   if(play_channel_run_master->streamer == NULL){
-    play_channel_run_master->flags |= AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING;
+    //    play_channel_run_master->flags |= AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING;
   }
 }
 

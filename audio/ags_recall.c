@@ -715,14 +715,7 @@ ags_recall_finalize(GObject *gobject)
   }
 
   if(recall->parent != NULL){
-    GValue value = {0,};
-    
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, NULL);
-    g_object_set_property(G_OBJECT(recall->parent),
-			  "parent\0",
-			  &value);
-    g_value_unset(&value);
+    //TODO:JK: implement me
   }
 
   /* call parent */
