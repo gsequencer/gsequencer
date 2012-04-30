@@ -241,7 +241,8 @@ ags_recall_recycling_run_connectable_interface_init(AgsRunConnectableInterface *
 void
 ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
 {
-  recall_recycling->flags = 0;
+  recall_recycling->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
+			      AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 
   recall_recycling->devout = NULL;
   recall_recycling->audio_channel = 0;
@@ -626,10 +627,11 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     //    g_message("ags_recall_recycling_source_add_audio_signal - channel: %s[%u]\n\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling),
     //	      AGS_CHANNEL(recall_recycling->source->channel)->line);
-
-    g_object_ref(audio_signal);
-    recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
-						    audio_signal);
+    if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
+      g_object_ref(audio_signal);
+      recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
+						      audio_signal);
+    }
 
     audio_signal->stream_current = audio_signal->stream_beginning;
 
@@ -690,7 +692,6 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
     recall_recycling->child_source = g_list_remove(recall_recycling->child_source,
 						   audio_signal);
-    g_object_unref(audio_signal);
   }
 }
 
@@ -706,9 +707,24 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
     //    g_message("ags_recall_recycling_destination_add_audio_signal_callback %s[%u]\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling),
     //	      AGS_CHANNEL(recall_recycling->source->channel)->line);
-    
-    g_object_ref(audio_signal);
-    recall_recycling->child_destination = audio_signal;
+
+    if((AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION & (recall_recycling->flags)) != 0){
+      if((AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR & (recall_recycling->flags)) == 0){
+	if(recall_recycling->child_destination != NULL){
+	  g_object_unref(recall_recycling->child_destination);
+	  recall_recycling->child_destination = NULL;
+	}
+      }
+
+      g_object_ref(audio_signal);
+      recall_recycling->child_destination = audio_signal;
+    }
+
+    if((AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR & (recall_recycling->flags)) == 0 &&
+       (AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
+      ags_list_free_and_unref_link(recall_recycling->child_source);
+      recall_recycling->child_source = NULL;
+    }
   }
 }
 
@@ -750,7 +766,6 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
     }
 
     recall_recycling->child_destination = NULL;
-    g_object_unref(audio_signal);
   }
 }
 
