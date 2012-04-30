@@ -118,7 +118,7 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
   recall->duplicate = ags_copy_recycling_duplicate;
 
   /* AgsRecallRecycling */
-  recall_recycling = (AgsRecallRecycling *) copy_recycling;
+  recall_recycling = (AgsRecallRecyclingClass *) copy_recycling;
 }
 
 void

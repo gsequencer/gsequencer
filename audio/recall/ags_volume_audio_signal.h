@@ -37,8 +37,6 @@ typedef struct _AgsVolumeAudioSignalClass AgsVolumeAudioSignalClass;
 struct _AgsVolumeAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
-
-  gdouble *volume;
 };
 
 struct _AgsVolumeAudioSignalClass
@@ -48,6 +46,6 @@ struct _AgsVolumeAudioSignalClass
 
 GType ags_volume_audio_signal_get_type();
 
-AgsVolumeAudioSignal* ags_volume_audio_signal_new(AgsAudioSignal *audio_signal, gdouble *volume);
+AgsVolumeAudioSignal* ags_volume_audio_signal_new(AgsAudioSignal *audio_signal);
 
 #endif /*__AGS_VOLUME_AUDIO_SIGNAL_H__*/

@@ -24,7 +24,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
-#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_volume_channel_run.h>
 
 void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signal);
 void ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -117,19 +117,7 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
   /* GObjectClass */
   gobject = (GObjectClass *) volume_audio_signal;
 
-  gobject->set_property = ags_volume_audio_signal_set_property;
-  gobject->get_property = ags_volume_audio_signal_get_property;
-
   gobject->finalize = ags_volume_audio_signal_finalize;
-
-  /* properties */
-  param_spec = g_param_spec_pointer("volume\0",
-				    "volume to apply\0",
-				    "The volume to apply on the audio signal\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_VOLUME,
-				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) volume_audio_signal;
@@ -159,52 +147,7 @@ ags_volume_audio_signal_run_connectable_interface_init(AgsRunConnectableInterfac
 void
 ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal)
 {
-  volume_audio_signal->volume = NULL;
-}
-
-
-void
-ags_volume_audio_signal_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec)
-{
-  AgsVolumeAudioSignal *volume_audio_signal;
-
-  volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(gobject);
-
-  switch(prop_id){
-  case PROP_VOLUME:
-    {
-      volume_audio_signal->volume = g_value_get_pointer(value);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_volume_audio_signal_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec)
-{
-  AgsVolumeAudioSignal *volume_audio_signal;
-
-  volume_audio_signal = AGS_VOLUME_AUDIO_SIGNAL(gobject);
-
-  switch(prop_id){
-  case PROP_VOLUME:
-    {
-      g_value_set_pointer(value, volume_audio_signal->volume);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  /* empty */
 }
 
 void
@@ -263,14 +206,18 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsDevout *devout;
+    AgsVolumeChannelRun *volume_channel_run;
     short *buffer;
     guint i;
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source->devout);
+
+    volume_channel_run = AGS_VOLUME_CHANNEL_RUN(recall->parent->parent);
+
     buffer = (short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
 
     for(i = 0; i < devout->buffer_size; i++){
-      buffer[i] = (short) ((0xffff) & (int)((gdouble)volume_audio_signal->volume[0] * (gdouble)buffer[i]));
+      buffer[i] = (short) ((0xffff) & (int)((gdouble)volume_channel_run->volume[0] * (gdouble)buffer[i]));
     }
   }else{
     ags_recall_done(recall);
@@ -286,11 +233,6 @@ ags_volume_audio_signal_duplicate(AgsRecall *recall,
 
   volume_audio_signal = (AgsVolumeAudioSignal *) recall;
 
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 "volume\0", volume_audio_signal->volume,
-				 NULL);
-
   copy = (AgsVolumeAudioSignal *) AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->duplicate(recall,
 												    recall_id,
 												    n_params, parameter);
@@ -299,12 +241,11 @@ ags_volume_audio_signal_duplicate(AgsRecall *recall,
 }
 
 AgsVolumeAudioSignal*
-ags_volume_audio_signal_new(AgsAudioSignal *audio_signal, gdouble *volume)
+ags_volume_audio_signal_new(AgsAudioSignal *audio_signal)
 {
   AgsVolumeAudioSignal *volume_audio_signal;
 
   volume_audio_signal = (AgsVolumeAudioSignal *) g_object_new(AGS_TYPE_VOLUME_AUDIO_SIGNAL,
-							      "volume\0", volume,
 							      NULL);
 
   return(volume_audio_signal);

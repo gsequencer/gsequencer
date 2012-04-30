@@ -868,6 +868,7 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
 
       do{
 	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					"recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
 					"devout\0", recall_channel_run->devout,
 					"audio_channel\0", recall_channel_run->audio_channel,
 					"destination\0", destination_recycling,
@@ -944,6 +945,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	       AGS_CHANNEL(destination_recycling->channel)->line,
 	       AGS_CHANNEL(source_recycling->channel)->line);
 	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					"recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
 					"devout\0", recall_channel_run->devout,
 					"audio_channel\0", recall_channel_run->audio_channel,
 					"destination\0", destination_recycling,
@@ -1014,6 +1016,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 
       while(source_recycling != recall_channel_run->source->last_recycling->next){
 	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					"recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
 					"devout\0", recall_channel_run->devout,
 					"audio_channel\0", recall_channel_run->audio_channel,
 					"destination\0", destination_recycling,

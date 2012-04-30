@@ -1129,10 +1129,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
   /* set recall id */
-  copy->recall_id = recall_id;
-
   /* set recall container */
   g_object_set(G_OBJECT(copy),
+	       "recall_id\0", recall_id,
 	       "recall_container\0", recall->container,
 	       NULL);
 

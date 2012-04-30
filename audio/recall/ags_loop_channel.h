@@ -22,11 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_channel_run.h>
-#include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
 
 #define AGS_TYPE_LOOP_CHANNEL                (ags_loop_channel_get_type())
 #define AGS_LOOP_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOOP_CHANNEL, AgsLoopChannel))
@@ -40,27 +36,16 @@ typedef struct _AgsLoopChannelClass AgsLoopChannelClass;
 
 struct _AgsLoopChannel
 {
-  AgsRecallChannelRun recall_channel_run;
-
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-  gulong start_handler;
-  gulong loop_handler;
-  gulong stop_handler;
-
-  AgsChannel *channel;
-
-  AgsRecall *template;
+  AgsRecallChannel recall_channel;
 };
 
 struct _AgsLoopChannelClass
 {
-  AgsRecallChannelRunClass recall_channel_run;
+  AgsRecallChannelClass recall_channel;
 };
 
 GType ags_loop_channel_get_type();
 
-AgsLoopChannel* ags_loop_channel_new(AgsChannel *channel,
-				     AgsCountBeatsAudioRun *count_beats_audio_run,
-				     gboolean is_template);
+AgsLoopChannel* ags_loop_channel_new();
 
 #endif /*__AGS_LOOP_CHANNEL_H__*/

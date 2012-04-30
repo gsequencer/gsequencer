@@ -33,14 +33,6 @@ void ags_volume_recycling_class_init(AgsVolumeRecyclingClass *volume_recycling);
 void ags_volume_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_volume_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling);
-void ags_volume_recycling_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_volume_recycling_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
 void ags_volume_recycling_connect(AgsConnectable *connectable);
 void ags_volume_recycling_disconnect(AgsConnectable *connectable);
 void ags_volume_recycling_run_connect(AgsRunConnectable *run_connectable);
@@ -50,10 +42,6 @@ void ags_volume_recycling_finalize(GObject *gobject);
 AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
-enum{
-  PROP_0,
-  PROP_VOLUME,
-};
 
 static gpointer ags_volume_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_recycling_parent_connectable_interface;
@@ -118,19 +106,7 @@ ags_volume_recycling_class_init(AgsVolumeRecyclingClass *volume_recycling)
   /* GObjectClass */
   gobject = (GObjectClass *) volume_recycling;
 
-  gobject->set_property = ags_volume_recycling_set_property;
-  gobject->get_property = ags_volume_recycling_get_property;
-
   gobject->finalize = ags_volume_recycling_finalize;
-
-  /* properties */
-  param_spec = g_param_spec_pointer("volume\0",
-				    "volume to apply\0",
-				    "The volume to apply on the recycling\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_VOLUME,
-				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) volume_recycling;
@@ -159,51 +135,7 @@ ags_volume_recycling_run_connectable_interface_init(AgsRunConnectableInterface *
 void
 ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling)
 {
-  volume_recycling->volume = NULL;
-}
-
-void
-ags_volume_recycling_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec)
-{
-  AgsVolumeRecycling *volume_recycling;
-
-  volume_recycling = AGS_VOLUME_RECYCLING(gobject);
-
-  switch(prop_id){
-  case PROP_VOLUME:
-    {
-      volume_recycling->volume = g_value_get_pointer(value);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_volume_recycling_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec)
-{
-  AgsVolumeRecycling *volume_recycling;
-
-  volume_recycling = AGS_VOLUME_RECYCLING(gobject);
-
-  switch(prop_id){
-  case PROP_VOLUME:
-    {
-      g_value_set_pointer(value, volume_recycling->volume);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  AGS_RECALL(volume_recycling)->child_type = AGS_TYPE_VOLUME_AUDIO_SIGNAL;
 }
 
 void
@@ -258,11 +190,6 @@ ags_volume_recycling_duplicate(AgsRecall *recall,
 {
   AgsVolumeRecycling *copy;
 
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 "volume\0", AGS_VOLUME_RECYCLING(recall)->volume,
-				 NULL);
-
   copy = (AgsVolumeRecycling *) AGS_RECALL_CLASS(ags_volume_recycling_parent_class)->duplicate(recall,
 											       recall_id,
 											       n_params, parameter);
@@ -271,13 +198,12 @@ ags_volume_recycling_duplicate(AgsRecall *recall,
 }
 
 AgsVolumeRecycling*
-ags_volume_recycling_new(AgsRecycling *recycling, gdouble *volume)
+ags_volume_recycling_new(AgsRecycling *recycling)
 {
   AgsVolumeRecycling *volume_recycling;
 
   volume_recycling = (AgsVolumeRecycling *) g_object_new(AGS_TYPE_VOLUME_RECYCLING,
 							 "source\0", recycling,
-							 "volume\0", volume,
 							 NULL);
 
   return(volume_recycling);

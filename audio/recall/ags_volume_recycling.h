@@ -37,8 +37,6 @@ typedef struct _AgsVolumeRecyclingClass AgsVolumeRecyclingClass;
 struct _AgsVolumeRecycling
 {
   AgsRecallRecycling recall_recycling;
-
-  gdouble *volume;
 };
 
 struct _AgsVolumeRecyclingClass
@@ -48,6 +46,6 @@ struct _AgsVolumeRecyclingClass
 
 GType ags_volume_recycling_get_type();
 
-AgsVolumeRecycling* ags_volume_recycling_new(AgsRecycling *recycling, gdouble *volume);
+AgsVolumeRecycling* ags_volume_recycling_new(AgsRecycling *recycling);
 
 #endif /*__AGS_VOLUME_RECYCLING_H__*/

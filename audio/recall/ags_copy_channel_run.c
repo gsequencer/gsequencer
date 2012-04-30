@@ -21,12 +21,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/task/ags_cancel_recall.h>
 
 #include <ags/audio/recall/ags_copy_recycling.h>
 
@@ -43,10 +39,6 @@ void ags_copy_channel_run_run_connect(AgsRunConnectable *run_connectable);
 void ags_copy_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_copy_channel_run_finalize(GObject *gobject);
 
-void ags_copy_channel_run_run_init_pre(AgsRecall *recall);
-void ags_copy_channel_run_done(AgsRecall *recall);
-void ags_copy_channel_run_remove(AgsRecall *recall);
-void ags_copy_channel_run_cancel(AgsRecall *recall);
 AgsRecall* ags_copy_channel_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
@@ -118,12 +110,6 @@ ags_copy_channel_run_class_init(AgsCopyChannelRunClass *copy_channel_run)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_channel_run;
-
-  recall->run_init_pre = ags_copy_channel_run_run_init_pre;
-  recall->done = ags_copy_channel_run_done;
-  recall->remove = ags_copy_channel_run_remove;
-  recall->cancel = ags_copy_channel_run_cancel;
-  recall->duplicate = ags_copy_channel_run_duplicate;
 }
 
 void
@@ -191,46 +177,13 @@ ags_copy_channel_run_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_copy_channel_run_parent_class)->finalize(gobject);
 }
 
-void
-ags_copy_channel_run_run_init_pre(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_copy_channel_run_parent_class)->run_init_pre(recall);
-
-  /* empty */
-}
-
-void
-ags_copy_channel_run_done(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_copy_channel_run_parent_class)->done(recall);
-  
-  /* empty */
-}
-
-void
-ags_copy_channel_run_cancel(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_copy_channel_run_parent_class)->cancel(recall);
-  
-  /* empty */
-}
-
-void 
-ags_copy_channel_run_remove(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_copy_channel_run_parent_class)->remove(recall);
-  
-  /* empty */
-}
-
 AgsRecall*
 ags_copy_channel_run_duplicate(AgsRecall *recall,
-			   AgsRecallID *recall_id,
-			   guint *n_params, GParameter *parameter)
+			       AgsRecallID *recall_id,
+			       guint *n_params, GParameter *parameter)
 {
-  AgsCopyChannelRun *copy_channel_run, *copy;
+  AgsCopyChannelRun *copy;
 
-  copy_channel_run = (AgsCopyChannelRun *) recall;
   copy = (AgsCopyChannelRun *) AGS_RECALL_CLASS(ags_copy_channel_run_parent_class)->duplicate(recall,
 											      recall_id,
 											      n_params, parameter);
@@ -240,8 +193,8 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
 
 AgsCopyChannelRun*
 ags_copy_channel_run_new(AgsChannel *destination,
-		     AgsChannel *source,
-		     AgsDevout *devout)
+			 AgsChannel *source,
+			 AgsDevout *devout)
 {
   AgsCopyChannelRun *copy_channel_run;
 

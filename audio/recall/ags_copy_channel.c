@@ -18,11 +18,18 @@
 
 #include <ags/audio/recall/ags_copy_channel.h>
 
+#include <ags/object/ags_connectable.h>
+
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
+void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_channel_init(AgsCopyChannel *copy_channel);
+void ags_copy_channel_finalize(GObject *gobject);
+void ags_copy_channel_connect(AgsConnectable *connectable);
+void ags_copy_channel_disconnect(AgsConnectable *connectable);
 void ags_copy_channel_finalize(GObject *gobject);
 
 static gpointer ags_copy_channel_parent_class = NULL;
+static AgsConnectableInterface *ags_copy_channel_parent_connectable_interface;
 
 GType
 ags_copy_channel_get_type()
@@ -41,14 +48,33 @@ ags_copy_channel_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_copy_channel_init,
     };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_channel_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsCopyChannel\0",
 						   &ags_copy_channel_info,
 						   0);
+
+    g_type_add_interface_static(ags_type_copy_channel,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_copy_channel);
+}
+
+void
+ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_copy_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_copy_channel_connect;
+  connectable->disconnect = ags_copy_channel_disconnect;
 }
 
 void
@@ -74,6 +100,22 @@ void
 ags_copy_channel_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_copy_channel_parent_class)->finalize(gobject);
+}
+
+void
+ags_copy_channel_connect(AgsConnectable *connectable)
+{
+  ags_copy_channel_parent_connectable_interface->connect(connectable);
+
+  /* empty */
+}
+
+void
+ags_copy_channel_disconnect(AgsConnectable *connectable)
+{
+  ags_copy_channel_parent_connectable_interface->disconnect(connectable);
+
+  /* empty */
 }
 
 AgsCopyChannel*

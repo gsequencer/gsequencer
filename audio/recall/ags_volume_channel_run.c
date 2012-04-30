@@ -94,7 +94,7 @@ ags_volume_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_volume_channel_run = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_volume_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							 "AgsVolumeChannelRun\0",
 							 &ags_volume_channel_run_info,
 							 0);
@@ -164,6 +164,8 @@ ags_volume_channel_run_run_connectable_interface_init(AgsRunConnectableInterface
 void
 ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run)
 {
+  AGS_RECALL(volume_channel_run)->child_type = AGS_TYPE_VOLUME_RECYCLING;
+
   volume_channel_run->volume = NULL;
 }
 
