@@ -198,7 +198,7 @@ ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 
   g_object_ref((GObject *) recycling);
   g_signal_emit(G_OBJECT(recycling),
-		recycling_signals[ADD_AUDIO_SIGNAL], 0,
+		recycling_signals[REMOVE_AUDIO_SIGNAL], 0,
 		audio_signal);
   g_object_unref((GObject *) recycling);
 }

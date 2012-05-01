@@ -662,10 +662,12 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   AgsRecallAudioSignal *recall_audio_signal;
   GList *list;
 
+  g_debug("ags_recall_recycling_source_remove_audio_signal_callback\0");
+
   recall_recycling_recall = AGS_RECALL(recall_recycling);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL &&
+     audio_signal->recall_id != NULL && recall_recycling_recall->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall_recycling_recall->recall_id->group_id){
     AgsRecall *recall;
 
@@ -692,6 +694,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
     recall_recycling->child_source = g_list_remove(recall_recycling->child_source,
 						   audio_signal);
+    g_object_unref(audio_signal);
   }
 }
 
@@ -766,6 +769,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
     }
 
     recall_recycling->child_destination = NULL;
+    g_object_unref(audio_signal);
   }
 }
 
