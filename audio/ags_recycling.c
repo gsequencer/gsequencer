@@ -160,6 +160,8 @@ ags_recycling_finalize(GObject *gobject)
   AgsRecycling *recycling;
   GList *list, *list_next;
 
+  g_warning("ags_recycling_finalize\0");
+
   recycling = AGS_RECYCLING(gobject);
 
   /* AgsAudioSignal */

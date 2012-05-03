@@ -114,6 +114,8 @@ ags_recall_id_disconnect(AgsConnectable *connectable)
 void
 ags_recall_id_finalize(GObject *gobject)
 {
+  g_warning("ags_recall_id_finalize\0");
+
   G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
 }
 

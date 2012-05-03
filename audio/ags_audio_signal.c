@@ -280,6 +280,8 @@ ags_audio_signal_finalize(GObject *gobject)
 
   ags_list_free_and_free_link(audio_signal->stream_beginning);
 
+  g_message("post: finalize AgsAudioSignal\0");
+
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }
