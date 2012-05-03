@@ -146,7 +146,7 @@ ags_unref_audio_signal_new(AgsAudioSignal *audio_signal)
   unref_audio_signal = (AgsUnrefAudioSignal *) g_object_new(AGS_TYPE_UNREF_AUDIO_SIGNAL,
 							    NULL);
 
-  unref_audio_signal->audio_signal = audio_signal
+  unref_audio_signal->audio_signal = audio_signal;
 
   return(unref_audio_signal);
 }

@@ -32,7 +32,7 @@
 #include <ags/audio/ags_recall_audio_signal.h>
 
 #include <ags/audio/task/ags_cancel_recall.h>
-
+#include <ags/audio/task/ags_unref_audio_signal.h>
 
 void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
 void ags_recall_recyclingconnectable_interface_init(AgsConnectableInterface *connectable);
@@ -659,6 +659,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   AgsDevout *devout;
   AgsRecall *recall_recycling_recall;
   AgsCancelRecall *cancel_recall;
+  AgsUnrefAudioSignal *unref_audio_signal;
   AgsRecallAudioSignal *recall_audio_signal;
   GList *list;
 
@@ -694,7 +695,9 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
     recall_recycling->child_source = g_list_remove(recall_recycling->child_source,
 						   audio_signal);
-    g_object_unref(audio_signal);
+
+    unref_audio_signal = ags_unref_audio_signal_new(audio_signal);
+    ags_devout_append_task(devout, (AgsTask *) unref_audio_signal);
   }
 }
 
@@ -713,10 +716,10 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 
     if((AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION & (recall_recycling->flags)) != 0){
       if((AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR & (recall_recycling->flags)) == 0){
-	if(recall_recycling->child_destination != NULL){
-	  g_object_unref(recall_recycling->child_destination);
-	  recall_recycling->child_destination = NULL;
-	}
+	//	if(recall_recycling->child_destination != NULL){
+	//	  g_object_unref(recall_recycling->child_destination);
+	//	  recall_recycling->child_destination = NULL;
+	//	}
       }
 
       g_object_ref(audio_signal);
@@ -725,7 +728,8 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 
     if((AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR & (recall_recycling->flags)) == 0 &&
        (AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
-      ags_list_free_and_unref_link(recall_recycling->child_source);
+      //      ags_list_free_and_unref_link(recall_recycling->child_source);
+      g_list_free(recall_recycling->child_source);
       recall_recycling->child_source = NULL;
     }
   }
@@ -739,6 +743,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
   AgsDevout *devout;
   AgsRecall *recall;
   AgsCancelRecall *cancel_recall;
+  AgsUnrefAudioSignal *unref_audio_signal;
   AgsRecallAudioSignal *recall_audio_signal;
   GList *list;
   GValue children_value = {0,};
@@ -769,7 +774,9 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
     }
 
     recall_recycling->child_destination = NULL;
-    g_object_unref(audio_signal);
+
+    unref_audio_signal = ags_unref_audio_signal_new(audio_signal);
+    ags_devout_append_task(devout, (AgsTask *) unref_audio_signal);
   }
 }
 
