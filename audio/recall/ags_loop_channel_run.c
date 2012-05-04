@@ -423,6 +423,8 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
     ags_recycling_add_audio_signal(recycling,
 				   audio_signal);
     
+    g_object_unref(audio_signal);
+
     
     recycling = recycling->next;
   }

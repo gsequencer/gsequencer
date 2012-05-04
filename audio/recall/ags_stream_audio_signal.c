@@ -23,6 +23,8 @@
 
 #include <ags/audio/recall/ags_stream_recycling.h>
 
+#include <ags/audio/task/ags_unref_audio_signal.h>
+
 void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signal);
 void ags_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_audio_signal_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
@@ -137,14 +139,23 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 void
 ags_stream_audio_signal_finalize(GObject *gobject)
 {
+  AgsDevout *devout;
   AgsStreamAudioSignal *stream_audio_signal;
   AgsRecallAudioSignal *recall_audio_signal;
+  AgsUnrefAudioSignal *unref_audio_signal;
+  AgsAudioSignal *audio_signal;
 
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(gobject);
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
+  audio_signal = recall_audio_signal->source;
+
   ags_recycling_remove_audio_signal(AGS_RECYCLING(AGS_RECALL_RECYCLING(AGS_RECALL(recall_audio_signal)->parent)->source),
   				    recall_audio_signal->source);
+
+  /* unref audio signal */
+  unref_audio_signal = ags_unref_audio_signal_new(audio_signal);
+  //  ags_devout_append_task(recall_audio_signal->devout, (AgsTask *) unref_audio_signal);
 
   /* call parent */
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->finalize(gobject); 
