@@ -42,6 +42,7 @@ void ags_play_audio_signal_run_connect(AgsRunConnectable *run_connectable);
 void ags_play_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_audio_signal_finalize(GObject *gobject);
 
+void ags_play_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_play_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
@@ -115,6 +116,7 @@ ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_audio_signal;
 
+  recall->run_init_pre = ags_play_audio_signal_run_init_pre;
   recall->run_inter = ags_play_audio_signal_run_inter;
   recall->duplicate = ags_play_audio_signal_duplicate;
 }
@@ -185,6 +187,18 @@ ags_play_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
 }
 
 void
+ags_play_audio_signal_run_init_pre(AgsRecall *recall)
+{
+  AgsPlayAudioSignal *play_audio_signal;
+
+  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
+  AGS_RECALL(play_audio_signal)->flags &= (~AGS_RECALL_PERSISTENT);
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_init_pre(recall);
+}
+
+void
 ags_play_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsPlayAudioSignal *play_audio_signal;
@@ -234,6 +248,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 //					   &(((short *) stream->data)[attack->first_length]), 1,
 //					   attack->first_start);
 //  }
+  /* call parent */
+  AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_inter(recall);
 }
 
 AgsRecall*

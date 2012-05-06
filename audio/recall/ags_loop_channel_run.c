@@ -176,6 +176,8 @@ ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run)
   loop_channel_run->count_beats_audio_run = NULL;
 
   loop_channel_run->template = NULL;
+
+  loop_channel_run->audio_signal = NULL;
 }
 
 void
@@ -422,10 +424,9 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));    
     ags_recycling_add_audio_signal(recycling,
 				   audio_signal);
-    
-    g_object_unref(audio_signal);
+    loop_channel_run->audio_signal = g_list_prepend(loop_channel_run->audio_signal,
+						    audio_signal);
 
-    
     recycling = recycling->next;
   }
 }
@@ -451,7 +452,31 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
   printf("ags_loop_channel_run_loop_callback - run_order: %u; %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order, nth_run);
   
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == nth_run){
+    AgsAudioSignal *audio_signal;
+    GList *list, *start;
+
+    audio_signal = loop_channel_run->audio_signal;
+    start =
+      list = loop_channel_run->audio_signal;
+
     ags_loop_channel_run_create_audio_signals(loop_channel_run);
+
+    while(list != NULL){
+      audio_signal = AGS_AUDIO_SIGNAL(list->data);
+
+      //      ags_recycling_remove_audio_signal(audio_signal->recycling,
+      //					audio_signal);
+      g_object_unref(audio_signal);
+
+      list = list->next;
+    }
+
+    if(start->prev != NULL){
+      start->prev->next = NULL;
+      start->prev = NULL;
+    }
+
+    g_list_free(start);
   }
 }
 

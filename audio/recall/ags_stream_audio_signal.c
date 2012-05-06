@@ -35,6 +35,7 @@ void ags_stream_audio_signal_run_connect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_audio_signal_finalize(GObject *gobject);
 
+void ags_stream_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_stream_audio_signal_run_post(AgsRecall *recall);
 AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
@@ -108,6 +109,7 @@ ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signa
   /* AgsRecallClass */
   recall = (AgsRecallClass *) stream_audio_signal;
 
+  recall->run_init_pre = ags_stream_audio_signal_run_init_pre;
   recall->run_post = ags_stream_audio_signal_run_post;
   recall->duplicate = ags_stream_audio_signal_duplicate;
 }
@@ -195,6 +197,15 @@ ags_stream_audio_signal_run_disconnect(AgsRunConnectable *run_connectable)
   ags_stream_audio_signal_parent_run_connectable_interface->disconnect(run_connectable);
 
   /* empty */
+}
+
+void
+ags_stream_audio_signal_run_init_pre(AgsRecall *recall)
+{
+  recall->flags &= (~AGS_RECALL_PERSISTENT);
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_init_pre(recall);
 }
 
 void

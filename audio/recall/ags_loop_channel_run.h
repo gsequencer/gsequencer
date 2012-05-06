@@ -48,6 +48,8 @@ struct _AgsLoopChannelRun
   gulong stop_handler;
 
   AgsRecall *template;
+
+  GList *audio_signal;
 };
 
 struct _AgsLoopChannelRunClass

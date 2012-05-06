@@ -1781,7 +1781,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
       printf("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
       
       if(recall_id->parent_group_id == 0)
-	  channel->play = g_list_append(channel->play, copy);
+	channel->play = g_list_append(channel->play, copy);
       else
 	channel->recall = g_list_append(channel->recall, copy);
       
