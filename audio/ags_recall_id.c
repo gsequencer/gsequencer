@@ -20,6 +20,7 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <stdlib.h>
 #include <stdio.h>
 
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
@@ -119,6 +120,11 @@ ags_recall_id_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_recall_id_generate_group_id:
+ * 
+ * Generate a new AgsGroupId
+ */
 AgsGroupId
 ags_recall_id_generate_group_id()
 {
@@ -133,10 +139,14 @@ ags_recall_id_generate_group_id()
   return(group_id);
 }
 
-/*
- * output - the AgsChannel to check
- * stage - the current stage to check against
- * returns TRUE if the stage isn't run yet
+/**
+ * ags_recall_id_get_run_stage:
+ * @id the #AgsRecallID to check
+ * @stage the current run stage to check against
+ * Returns: TRUE if the stage isn't run yet otherwise FALSE
+ *
+ * Check if a run stage already has been passed for current run. This
+ * function is intended to handle AGS_AUDIO_ASYNC correctly.
  */
 gboolean
 ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
@@ -160,28 +170,60 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
   return(FALSE);
 }
 
+/**
+ * ags_recall_id_set_run_stage:
+ * @recall_id the #AgsRecallID which has been passed
+ * @stage the run stage the networked channels are in
+ *
+ * Marks the run stage to be passed for audio channel.
+ */
 void
 ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
 {
-  if(stage == 0)
+  guint i;
+
+  if(stage == 0){
     recall_id->flags |= AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE;
-  else if(stage == 1)
+  }else if(stage == 1){
     recall_id->flags |= AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE;
-  else
+  }else{
     recall_id->flags |= AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE;
+  }
 }
 
+/**
+ * ags_recall_id_unset_run_stage:
+ * @recall_id the #AgsRecallID which has been passed
+ * @stage the run stage the networked channels are in
+ *
+ * Unmarks the run stage to be passed for audio channel.
+ */
 void
 ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
 {
-  if(stage == 0)
+  if(stage == 0){
     recall_id->flags &= (~AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE);
-  else if(stage == 1)
+  }else if(stage == 1){
     recall_id->flags &= (~AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE);
-  else
+  }else{
     recall_id->flags &= (~AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE);
+  }
 }
 
+/**
+ * ags_recall_id_add:
+ * @recall_id_list the #GList the new #AgsRecall should be added
+ * @parent_group_id the parent #AgsGroupId
+ * @group_id the #AgsGroupId
+ * @child_group_id the child #AgsGroupId
+ * @first_recycling the first #AgsRecycling this #AgsRecallID belongs to
+ * @last_recycling the last #AgsRecycling this #AgsRecallID belongs to
+ * @higher_level_is_recall set to TRUE if above the next #AgsRecycling is still recall
+ * and not play
+ * Returns: the newly allocated #GList which is the new start of the #GList, too.
+ *
+ * Adds an #AgsRecallID with given properties to the passed #GList.
+ */
 GList*
 ags_recall_id_add(GList *recall_id_list,
 		  AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
@@ -209,6 +251,14 @@ ags_recall_id_add(GList *recall_id_list,
   return(list);
 }
 
+/**
+ * ags_recall_id_find_group_id:
+ * @recall_id_list the #GList to search within
+ * @group_id the #AgsGroupId to search for
+ * Returns: the #AgsRecallID containing @group_id if found otherwise %NULL
+ * 
+ * Find the first occurence of @group_id within a #GList of #AgsRecallID.
+ */
 AgsRecallID*
 ags_recall_id_find_group_id(GList *recall_id_list, AgsGroupId group_id)
 {
@@ -223,6 +273,18 @@ ags_recall_id_find_group_id(GList *recall_id_list, AgsGroupId group_id)
   return(NULL);
 }
 
+/**
+ * ags_recall_id_find_group_id_with_recycling:
+ * @recall_id_list the #GList to search within
+ * @group_id the #AgsGroupId to search for
+ * @first_recycling the first #AgsRecycling
+ * @last_recycling the last #AgsRecycling
+ * Returns: the #AgsRecallID containing @group_id, @first_recycling and @last_recycling
+ * if found otherwise %NULL
+ *
+ * Find the unique occurence of @group_id, @first_recycling and @last_recycling within a
+ * #GList of #AgsRecallID.
+ */
 AgsRecallID*
 ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
 					   AgsGroupId group_id,
@@ -243,6 +305,13 @@ ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
   return(NULL);
 }
 
+/**
+ * ags_recall_id_find_parent_group_id:
+ * @recall_id_list the #GList to search within
+ * @parent_group_id the #AgsGroupId to search for
+ *
+ * Find the first occurence of @parent_group_id within a #GList of #AgsRecallID.
+ */
 AgsRecallID*
 ags_recall_id_find_parent_group_id(GList *recall_id_list, AgsGroupId parent_group_id)
 {
@@ -256,6 +325,15 @@ ags_recall_id_find_parent_group_id(GList *recall_id_list, AgsGroupId parent_grou
   return(NULL);
 }
 
+/**
+ * ags_recall_id_reset_recycling:
+ * @recall_ids
+ * @old_first_recycling
+ * @first_recycling
+ * @last_recycling
+ *
+ *
+ */
 void
 ags_recall_id_reset_recycling(GList *recall_ids,
 			      AgsRecycling *old_first_recycling,

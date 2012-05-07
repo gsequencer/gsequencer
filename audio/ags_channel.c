@@ -1489,7 +1489,6 @@ ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage)
   void ags_channel_recursive_play_output(AgsChannel *output, AgsRecallID *output_recall_id,
 					 gboolean do_recall){
     AgsAudio *audio;
-    AgsChannel *current, *input;
     AgsRecallID *input_recall_id;
     AgsGroupId next_group_id;
     gboolean input_do_recall, input_has_new_group_id;
@@ -1527,7 +1526,7 @@ ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage)
 						 input_do_recall, input_has_new_group_id);
 	}else{
 	  /* unblock sync|async for next run */
-	  if((AGS_CHANNEL_RUNNING & (current->flags)) != 0){
+	  if((AGS_CHANNEL_RUNNING & (output->flags)) != 0){
 	    ags_recall_id_unset_run_stage(output_recall_id, stage);
 	  }
 	}
