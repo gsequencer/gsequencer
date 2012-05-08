@@ -89,8 +89,14 @@ void ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *c
 								   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 								   AgsRecallChannelRun *recall_channel_run);
 
+
+AgsGroupId ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run);
+void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+						   guint run_order);
+
 enum{
   GET_AUDIO_RUN_GROUP_ID,
+  RUN_ORDER_CHANGED,
   LAST_SIGNAL,
 };
 
@@ -246,6 +252,30 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   recall = (AgsRecallClass *) recall_channel_run;
 
   recall->duplicate = ags_recall_channel_run_duplicate;
+
+  /* AgsRecallChannelRunClass */
+  recall_channel_run->get_audio_run_group_id = ags_recall_channel_run_real_get_audio_run_group_id;
+  recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
+
+  /* signals */
+  recall_channel_run_signals[RUN_ORDER_CHANGED] =
+    g_signal_new("run_order_changed\0",
+		 G_TYPE_FROM_CLASS (recall_channel_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, run_order_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
+  recall_channel_run_signals[GET_AUDIO_RUN_GROUP_ID] =
+    g_signal_new("get_audio_run_group_id\0",
+		 G_TYPE_FROM_CLASS (recall_channel_run),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, get_audio_run_group_id),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_ULONG__VOID,
+		 G_TYPE_ULONG, 0);
 }
 
 void
@@ -972,7 +1002,7 @@ ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channe
 }
 
 AgsGroupId
-ags_recall_channel_run_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run)
+ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run)
 {
   AgsAudio *audio;
   AgsRecall *recall;
@@ -1004,6 +1034,43 @@ ags_recall_channel_run_get_audio_run_group_id(AgsRecallChannelRun *recall_channe
   return(group_id);
 }
 
+AgsGroupId
+ags_recall_channel_run_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run)
+{
+  AgsGroupId group_id;
+
+  g_return_val_if_fail(AGS_IS_RECALL_CHANNEL_RUN(recall_channel_run), G_MAXULONG);
+
+  g_object_ref(G_OBJECT(recall_channel_run));
+  g_signal_emit(G_OBJECT(recall_channel_run),
+		recall_channel_run_signals[GET_AUDIO_RUN_GROUP_ID], 0,
+		&group_id);
+  g_object_unref(G_OBJECT(recall_channel_run));
+
+  return(group_id);
+}
+
+void
+ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+					      guint run_order)
+{
+  recall_channel_run->run_order = run_order;
+}
+
+void
+ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+					 guint run_order)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall_channel_run));
+
+  g_object_ref(G_OBJECT(recall_channel_run));
+  g_signal_emit(G_OBJECT(recall_channel_run),
+		recall_channel_run_signals[RUN_ORDER_CHANGED], 0,
+		run_order);
+  g_object_unref(G_OBJECT(recall_channel_run));
+}
+
+/*
 guint
 ags_recall_channel_run_get_run_order(AgsRecallChannelRun *recall_channel_run)
 {
@@ -1022,6 +1089,7 @@ ags_recall_channel_run_get_run_order(AgsRecallChannelRun *recall_channel_run)
 
   return((position != -1) ? (guint) position: 0);
 }
+*/
 
 AgsRecallChannelRun*
 ags_recall_channel_run_new()

@@ -61,11 +61,17 @@ struct _AgsRecallChannelRun
 struct _AgsRecallChannelRunClass
 {
   AgsRecallClass recall;
+
+  AgsGroupId (*get_audio_run_group_id)(AgsRecallChannelRun *recall_channel_run);
+  void (*run_order_changed)(AgsRecallChannelRun *recall_channel_run, guint nth_run);
 };
 
 GType ags_recall_channel_run_get_type();
 
+void ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
+					      guint run_order);
 AgsGroupId ags_recall_channel_run_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run);
+
 guint ags_recall_channel_run_get_run_order(AgsRecallChannelRun *recall_channel_run);
 
 AgsRecallChannelRun* ags_recall_channel_run_new();

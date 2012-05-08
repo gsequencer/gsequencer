@@ -3268,7 +3268,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       play = (recall_id->parent_group_id == 0) ? TRUE: FALSE;
       recall_list = play ? audio->play: audio->recall;
 
-      /* unref AgsRecalls */
+      /* remove AgsRecalls */
       while((list = ags_recall_find_group_id(recall_list, group_id)) != NULL){
 	recall = AGS_RECALL(list->data);
 	
@@ -3277,7 +3277,7 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 	list = list->next;
       }
       
-      /* unref AgsRecallID */
+      /* remove AgsRecallID */
       ags_audio_remove_recall_id(audio, (GObject *) recall_id);
 
       /* iterate */
@@ -3986,6 +3986,14 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       /* reset on AgsAudio */
       ags_audio_reset_group_id(audio,
 			       ags_output_find_first_input_recycling(AGS_OUTPUT(current)), ags_output_find_last_input_recycling(AGS_OUTPUT(current)),
+			       parent_group_id_list, group_id_list, child_group_id_list,
+			       devout_play_list,
+			       audio_signal_level, G_MAXUINT, FALSE,
+			       invalid_group_id_list);
+
+      /* reset new group id on AgsAudio */
+      ags_audio_reset_group_id(audio,
+			       ags_output_find_first_input_recycling(AGS_OUTPUT(current)), ags_output_find_last_input_recycling(AGS_OUTPUT(current)),
 			       next_parent_group_id_list, next_group_id_list, next_child_group_id_list,
 			       devout_play_list,
 			       next_audio_signal_level, G_MAXUINT, FALSE,
@@ -4213,6 +4221,13 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 			       NULL, NULL, NULL,
 			       NULL,
 			       NULL, G_MAXUINT, FALSE,
+			       invalid_group_id_list);
+
+      ags_audio_reset_group_id(audio,
+			       ags_output_find_first_input_recycling(AGS_OUTPUT(current)), ags_output_find_last_input_recycling(AGS_OUTPUT(current)),
+			       NULL, NULL, NULL,
+			       NULL,
+			       NULL, G_MAXUINT, FALSE,
 			       next_invalid_group_id_list);
     }else{
       ags_audio_reset_group_id(audio,
@@ -4412,6 +4427,12 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
     }
         
     /* resolve audio */
+    if(new_level){
+      ags_channel_recursive_reset_audio_resolve_recall(audio,
+						       ags_output_find_first_input_recycling(AGS_OUTPUT(current)), ags_output_find_last_input_recycling(AGS_OUTPUT(current)),
+						       group_id);
+    }
+
     ags_channel_recursive_reset_audio_resolve_recall(audio,
 						     ags_output_find_first_input_recycling(AGS_OUTPUT(current)), ags_output_find_last_input_recycling(AGS_OUTPUT(current)),
 						     next_group_id);
@@ -4583,6 +4604,12 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 						    next_group_id, next_child_group_id);
 
     /* init audio */
+    if(new_level){
+      ags_channel_recursive_reset_audio_init_recall(audio,
+						    ags_output_find_first_input_recycling(AGS_OUTPUT(current)), ags_output_find_last_input_recycling(AGS_OUTPUT(current)),
+						    group_id);
+    }
+
     ags_channel_recursive_reset_audio_init_recall(audio,
 						  ags_output_find_first_input_recycling(AGS_OUTPUT(current)), ags_output_find_last_input_recycling(AGS_OUTPUT(current)),
 						  next_group_id);

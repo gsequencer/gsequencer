@@ -711,18 +711,19 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
 
   if(count_beats_audio_run->notation_counter == 0){
-  /* emit notation signals */
+    /* emit notation signals */
     if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
       ags_count_beats_audio_run_notation_start(count_beats_audio_run,
 					       nth_run);
     }
 
-    if(count_beats_audio->loop &&
-       count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
-      ags_count_beats_audio_run_notation_loop(count_beats_audio_run,
-					      nth_run);
+    if(count_beats_audio->loop){
+      if(count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
+	ags_count_beats_audio_run_notation_loop(count_beats_audio_run,
+						nth_run);
 
-      printf("ags_count_beats_audio_run_notation_alloc_output_callback: loop\n\0");
+	printf("ags_count_beats_audio_run_notation_alloc_output_callback: loop\n\0");
+      }
     }else{
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
 	printf("ags_count_beats_audio_run_notation_alloc_output_callback: done\n\0");
@@ -746,16 +747,18 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   if(count_beats_audio_run->sequencer_counter == 0){
     /* emit sequencer signals */
     if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
+      printf("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
       ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
 						nth_run);
     }
 
-    if(count_beats_audio->loop &&
-       count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
-      printf("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
+    if(count_beats_audio->loop){
+      if(count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
+	printf("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
       
-      ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
-					       nth_run);
+	ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
+						 nth_run);
+      }
     }else{
       /* emit stop signals */
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
