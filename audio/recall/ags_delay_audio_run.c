@@ -326,8 +326,12 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
       devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-      run_order = delay_audio_run->hide_ref_counter;
-      
+      if(delay_audio_run->hide_ref != 0){
+	run_order = delay_audio_run->hide_ref_counter;
+      }else{
+	run_order = 0;
+      }
+
       //TODO:JK: optimize attack calculation
       attack = (delay_audio_run->attack->first_start +
 		delay_audio_run->notation_counter * delay_audio->frames) % devout->buffer_size;
@@ -352,7 +356,14 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       attack = (delay_audio_run->attack->first_start +
 		delay_audio_run->sequencer_counter * delay_audio->frames) % devout->buffer_size;
 
-      run_order = delay_audio_run->hide_ref_counter;
+      if(delay_audio_run->hide_ref != 0){
+	run_order = delay_audio_run->hide_ref_counter;
+      }else{
+	run_order = 0;
+      }
+
+      g_message("ags_delay_audio_run_run_pre: alloc sequencer[%d]\0", run_order);
+
 
       /* sequencer speed */
       ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,

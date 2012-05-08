@@ -331,6 +331,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsCopyPatternChannel *copy_pattern_channel;
   //  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  //  g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback[%d]", run_order);
+  
   //  pthread_mutex_lock(&mutex);
   if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
     return;

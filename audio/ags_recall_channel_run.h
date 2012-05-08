@@ -49,31 +49,23 @@ struct _AgsRecallChannelRun
   AgsRecallChannel *recall_channel;
   AgsRecallAudioRun *recall_audio_run;
 
-  guint run_order;
-
   AgsChannel *destination;
   gulong destination_recycling_changed_handler;
 
   AgsChannel *source;
   gulong source_recycling_changed_handler;
+
+  guint run_order;
 };
 
 struct _AgsRecallChannelRunClass
 {
   AgsRecallClass recall;
-
-  AgsGroupId (*get_audio_run_group_id)(AgsRecallChannelRun *recall_channel_run);
-
-  void (*run_order_changed)(AgsRecallChannelRun *recall_channel_run, guint nth_run);
 };
 
 GType ags_recall_channel_run_get_type();
 
 AgsGroupId ags_recall_channel_run_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run);
-
-void ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-					      guint run_order);
-
 guint ags_recall_channel_run_get_run_order(AgsRecallChannelRun *recall_channel_run);
 
 AgsRecallChannelRun* ags_recall_channel_run_new();

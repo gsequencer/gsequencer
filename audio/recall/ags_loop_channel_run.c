@@ -433,29 +433,33 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 
 void 
 ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
-				    guint nth_run,
+				    guint run_order,
 				    AgsLoopChannelRun *loop_channel_run)
 {
 
-  printf("ags_loop_channel_run_start_callback - run_order: %u; %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order, nth_run);
+  //  printf("ags_loop_channel_run_start_callback - run_order: %u; %u\n\0",
+  //	 AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
+  //	 run_order);
 
-  if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == nth_run){
+  if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
     ags_loop_channel_run_create_audio_signals(loop_channel_run);
   }
 }
 
 void 
 ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
-				   guint nth_run,
+				   guint run_order,
 				   AgsLoopChannelRun *loop_channel_run)
 {
-  printf("ags_loop_channel_run_loop_callback - run_order: %u; %u\n\0", AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order, nth_run);
+  //  printf("ags_loop_channel_run_loop_callback - run_order: %u; %u\n\0",
+  //	 AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
+  //	 run_order);
   
-  if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == nth_run){
+  if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
     AgsAudioSignal *audio_signal;
     GList *list, *start;
 
-    audio_signal = loop_channel_run->audio_signal;
+    //    audio_signal = loop_channel_run->audio_signal;
     start =
       list = loop_channel_run->audio_signal;
 
@@ -482,7 +486,7 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 
 void 
 ags_loop_channel_run_stop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
-				   guint nth_run,
+				   guint run_order,
 				   AgsLoopChannelRun *loop_channel_run)
 {
 }
