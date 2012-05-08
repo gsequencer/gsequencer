@@ -315,7 +315,7 @@ ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *counta
 void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
-  count_beats_audio_run->flags = 0;
+  count_beats_audio_run->first_run_counter = 0;
 
   count_beats_audio_run->recall_ref = 0;
 
@@ -619,7 +619,8 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
   AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->run_init_pre(recall);
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
-  count_beats_audio_run->flags |= AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN;
+
+  count_beats_audio_run->first_run_counter = 0;
 }
 
 void
@@ -711,13 +712,13 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 
   if(count_beats_audio_run->notation_counter == 0){
   /* emit notation signals */
-    if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
+    if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
       ags_count_beats_audio_run_notation_start(count_beats_audio_run,
 					       nth_run);
     }
 
     if(count_beats_audio->loop &&
-       (AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) == 0){
+       count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
       ags_count_beats_audio_run_notation_loop(count_beats_audio_run,
 					      nth_run);
 
@@ -744,13 +745,13 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 
   if(count_beats_audio_run->sequencer_counter == 0){
     /* emit sequencer signals */
-    if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
+    if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
       ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
 						nth_run);
     }
 
     if(count_beats_audio->loop &&
-       (AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) == 0){
+       count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
       printf("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
       
       ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
@@ -770,8 +771,8 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
       }
     }
 
-    if((AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN & (count_beats_audio_run->flags)) != 0){
-      count_beats_audio_run->flags &= (~AGS_COUNT_BEATS_AUDIO_RUN_FIRST_RUN);
+    if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
+      count_beats_audio_run->first_run_counter += 1;
     }
   }
 }
@@ -814,7 +815,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
 
-  if(count_beats_audio_run->hide_ref_counter == 0){
+  if(count_beats_audio_run->hide_ref_counter == count_beats_audio_run->hide_ref){
     if(count_beats_audio->loop){
       if(count_beats_audio_run->sequencer_counter == count_beats_audio->sequencer_loop_end - 1){
 	count_beats_audio_run->sequencer_counter = 0;

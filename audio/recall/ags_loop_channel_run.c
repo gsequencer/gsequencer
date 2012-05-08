@@ -459,7 +459,6 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
     AgsAudioSignal *audio_signal;
     GList *list, *start;
 
-    //    audio_signal = loop_channel_run->audio_signal;
     start =
       list = loop_channel_run->audio_signal;
 

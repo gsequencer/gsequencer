@@ -202,7 +202,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
 
@@ -717,6 +717,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
 				 "recall_channel\0", recall_channel_run->recall_channel,
+				 "audio_channel\0", recall_channel_run->audio_channel,
 				 "devout\0", recall_channel_run->devout,
 				 //				 "audio_channel\0", recall_channel_run->audio_channel,
 				 "destination\0", recall_channel_run->destination,

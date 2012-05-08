@@ -317,7 +317,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     delay_audio = AGS_DELAY_AUDIO(delay_audio_run->recall_audio_run.recall_audio);
 
     if(delay_audio_run->hide_ref != 0)
-      delay_audio_run->hide_ref_counter++;
+      delay_audio_run->hide_ref_counter += 1;
 
     if(delay_audio_run->notation_counter == 0){
       AgsDevout *devout;
@@ -366,6 +366,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
 
       /* sequencer speed */
+      //      g_message("ags_delay_audio_run_run_pre[%d]\0", run_order);
       ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,
 						 attack);
 
