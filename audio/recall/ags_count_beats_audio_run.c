@@ -320,7 +320,8 @@ ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
   count_beats_audio_run->recall_ref = 0;
 
   count_beats_audio_run->hide_ref = 0;
-  count_beats_audio_run->hide_ref_counter = 0;
+  count_beats_audio_run->notation_hide_ref_counter = 0;
+  count_beats_audio_run->sequencer_hide_ref_counter = 0;
 
   count_beats_audio_run->delay_audio_run = NULL;
   count_beats_audio_run->notation_counter = 0;
@@ -577,7 +578,6 @@ ags_count_beats_audio_run_duplicate(AgsRecall *recall,
 												       n_params, parameter));
 
   printf("ags_count_beats_audio_run_duplicate\n\0");
-  
 
   return((AgsRecall *) copy);
 }
@@ -793,10 +793,10 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
    * Block counter for sequencer and notation counter
    */
   if(count_beats_audio_run->hide_ref != 0){
-    count_beats_audio_run->hide_ref_counter++;
+    count_beats_audio_run->notation_hide_ref_counter += 1;
   }
 
-  if(count_beats_audio_run->hide_ref_counter == count_beats_audio_run->hide_ref){
+  if(count_beats_audio_run->notation_hide_ref_counter == count_beats_audio_run->hide_ref){
     if(count_beats_audio->loop){
       if(count_beats_audio_run->notation_counter == count_beats_audio->notation_loop_end - 1){
 	count_beats_audio_run->notation_counter = 0;
@@ -805,7 +805,7 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
       count_beats_audio_run->notation_counter += 1;
     }
 
-    count_beats_audio_run->hide_ref_counter = 0;
+    count_beats_audio_run->notation_hide_ref_counter = 0;
   }
 }
 
@@ -818,7 +818,16 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
 
-  if(count_beats_audio_run->hide_ref_counter == count_beats_audio_run->hide_ref){
+  /* 
+   * Block counter for sequencer and notation counter
+   */
+  if(count_beats_audio_run->hide_ref != 0){
+    count_beats_audio_run->sequencer_hide_ref_counter += 1;
+  }
+
+  if(count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
+    g_message("sequencer: tic\0");
+  
     if(count_beats_audio->loop){
       if(count_beats_audio_run->sequencer_counter == count_beats_audio->sequencer_loop_end - 1){
 	count_beats_audio_run->sequencer_counter = 0;
@@ -828,6 +837,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
     }else{
       count_beats_audio_run->sequencer_counter += 1;
     }
+
+    count_beats_audio_run->sequencer_hide_ref_counter = 0;
   }
 }
 
