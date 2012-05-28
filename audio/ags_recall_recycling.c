@@ -624,7 +624,8 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   recall = AGS_RECALL(recall_recycling);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL && recall->recall_id != NULL){
+     audio_signal->recall_id != NULL && recall->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->group_id){
 
     //    g_message("ags_recall_recycling_source_add_audio_signal - channel: %s[%u]\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling),
@@ -676,7 +677,8 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   recall = AGS_RECALL(recall_recycling);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL && recall->recall_id != NULL){
+     audio_signal->recall_id != NULL && recall->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->group_id){
 
     //    g_message("ags_recall_recycling_source_remove_audio_signal - channel: %s[%u]\n\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling),
@@ -723,7 +725,8 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
   recall = AGS_RECALL(recall_recycling);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL && recall->recall_id != NULL){
+     audio_signal->recall_id != NULL && recall->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->parent_group_id){
     //    g_message("ags_recall_recycling_destination_add_audio_signal_callback %s[%u]\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling),
 
@@ -777,7 +780,8 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 
   //TODO:JK: recall should always have a recall_id but needs a fix
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
-     audio_signal->recall_id != NULL && recall->recall_id != NULL){
+     audio_signal->recall_id != NULL && recall->recall_id != NULL &&
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->parent_group_id){
 
     //    g_message("ags_recall_recycling_destination_remove_audio_signal - channel: %s[%u]\n\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling),
