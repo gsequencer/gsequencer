@@ -62,7 +62,6 @@ AgsRecall* ags_play_channel_run_master_duplicate(AgsRecall *recall,
 						 AgsRecallID *recall_id,
 						 guint *n_params, GParameter *parameter);
 
-void ags_play_channel_run_master_map_play_recycling(AgsPlayChannelRunMaster *play_channel_run_master);
 void ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
 						    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 						    AgsRecycling *new_start_region, AgsRecycling *new_end_region);

@@ -1666,6 +1666,16 @@ ags_recall_remove_handler(AgsRecall *recall,
 				   recall_handler);
 }
 
+/**
+ * ags_recall_get_appropriate_group_id:
+ * @recall the recall to check against
+ * @audio the AgsAudio @recall belongs to
+ * @recall_id the standard #AgsRecallId
+ * @called_by_output
+ * Returns: an AgsGroupId
+ *
+ * Retrieve the appropriate #AgsGroupId for an #AgsRecall.
+ */
 AgsGroupId
 ags_recall_get_appropriate_group_id(AgsRecall *recall,
 				    GObject *audio,

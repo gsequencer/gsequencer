@@ -1827,7 +1827,7 @@ ags_audio_play(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       recall->recall_id->group_id != recall_id->group_id){
+       (recall->recall_id->group_id != recall_id->group_id)){
       list = list_next;
 
       continue;
@@ -1857,6 +1857,21 @@ ags_audio_play(AgsAudio *audio,
   }
 }
 
+/**
+ * ags_audio_duplicate_recall:
+ * @audio an #AgsAudio
+ * @playback duplicate for playback
+ * @sequencer duplicate for sequencer
+ * @notation duplicate for notation
+ * @first_recycling the first #AgsRecycling the #AgsRecall\s belongs to
+ * @last_recycling the last #AgsRecycling the #AgsRecall\s belongs to
+ * @group_id the current #AgsGroupId
+ * @audio_signal_level how many #AgsRecycling\s has been passed until @first_recycling and @last_recycling
+ * were reached.
+ * @called_by_output
+ * 
+ * Duplicate all #AgsRecall templates of this #AgsAudio.
+ */
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
 			   gboolean playback, gboolean sequencer, gboolean notation,

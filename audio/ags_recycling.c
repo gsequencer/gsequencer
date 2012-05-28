@@ -190,7 +190,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal)
 {
   recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
-  audio_signal->recycling = recycling;
+  audio_signal->recycling = (GObject *) recycling;
   g_object_ref(audio_signal);
 }
 

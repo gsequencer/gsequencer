@@ -826,7 +826,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   }
 
   if(count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
-    g_message("sequencer: tic\0");
+    //    g_message("sequencer: tic\0");
   
     if(count_beats_audio->loop){
       if(count_beats_audio_run->sequencer_counter == count_beats_audio->sequencer_loop_end - 1){

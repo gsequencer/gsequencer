@@ -442,7 +442,22 @@ ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run
   //	 run_order);
 
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
+    AgsAudioSignal *audio_signal;
+    GList *list;
+
     ags_loop_channel_run_create_audio_signals(loop_channel_run);
+
+    list = loop_channel_run->audio_signal;
+
+    while(list != NULL){
+      audio_signal = AGS_AUDIO_SIGNAL(list->data);
+
+      g_object_ref(audio_signal);
+      //      g_object_unref(audio_signal);
+
+      list = list->next;
+    }
+
   }
 }
 
@@ -467,14 +482,13 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
     while(list != NULL){
       audio_signal = AGS_AUDIO_SIGNAL(list->data);
 
-      //      ags_recycling_remove_audio_signal(audio_signal->recycling,
-      //					audio_signal);
-      g_object_unref(audio_signal);
+      g_object_ref(audio_signal);
+      //      g_object_unref(audio_signal);
 
       list = list->next;
     }
 
-    if(start->prev != NULL){
+    if(start != NULL && start->prev != NULL){
       start->prev->next = NULL;
       start->prev = NULL;
     }
