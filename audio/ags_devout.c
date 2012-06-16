@@ -970,10 +970,10 @@ ags_devout_real_run(AgsDevout *devout)
   devout->flags |= (AGS_DEVOUT_BUFFER0 | AGS_DEVOUT_PLAY | AGS_DEVOUT_WAIT_DEVICE | AGS_DEVOUT_WAIT_RECALL);
 
   if((AGS_DEVOUT_LIBAO & devout->flags) != 0){
-    pthread_create(&devout->play_thread, NULL, &ags_devout_ao_play, devout);
+    pthread_create(&(devout->play_thread), NULL, &ags_devout_ao_play, devout);
     //devout->play_thread = g_thread_create(ags_devout_ao_play, devout, FALSE, NULL);
   }else if((AGS_DEVOUT_OSS & devout->flags) != 0){
-    pthread_create(&devout->play_thread, NULL, &ags_devout_oss_play, devout);
+    pthread_create(&(devout->play_thread), NULL, &ags_devout_oss_play, devout);
     //devout->play_thread = g_thread_create(ags_devout_play, devout, FALSE, NULL);
   }else if((AGS_DEVOUT_ALSA & devout->flags) != 0){
     pthread_create(&(devout->play_thread), NULL, &ags_devout_alsa_play, devout);
