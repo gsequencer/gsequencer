@@ -35,14 +35,17 @@
 typedef struct _AgsLog AgsLog;
 typedef struct _AgsLogClass AgsLogClass;
 typedef struct _AgsLogMessage AgsLogMessage;
+typedef struct _AgsLogFormatedMessage AgsLogFormatedMessage;
 
 typedef enum{
   AGS_LOG_RUNNING                     = 1,
-  AGS_LOG_OUTPUT_EMPTY                = 1 <<  1,
-  AGS_LOG_QUEUE_EMPTY                 = 1 <<  2,
-  AGS_LOG_EMPTY                       = 1 <<  3,
-  AGS_LOG_COPY_FROM_LOG_TO_QUEUE      = 1 <<  4,
-  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  5,
+  AGS_LOG_SUSPEND_OUTPUT              = 1 <<  1,
+  AGS_LOG_SUSPEND_QUEUE               = 1 <<  2,
+  AGS_LOG_SUSPEND_LOG                 = 1 <<  3,
+  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  4,
+  AGS_LOG_COPY_FROM_LOG_TO_QUEUE      = 1 <<  5,
+  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  6,
+  AGS_LOG_QUEUE_WAITS_FOR_LOG         = 1 <<  7,
 }AgsLogFlags;
 
 struct _AgsLog
@@ -54,6 +57,7 @@ struct _AgsLog
   FILE *file;
 
   struct timespec *log_interval;
+  struct timespec *free_float;
 
   pthread_t broker_thread;
   pthread_attr_t broker_thread_attr;
@@ -92,6 +96,12 @@ struct _AgsLogMessage
   struct timespec *time;
   char *format;
   va_list args;
+};
+
+struct _AgsLogFormatedMessage
+{
+  int length;
+  char *message;
 };
 
 void ags_log_start_queue(AgsLog *log);

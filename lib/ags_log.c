@@ -1,6 +1,9 @@
 #include <ags/lib/ags_log.h>
 
+#include <ags/lib/ags_list.h>
+
 #include <time.h>
+#include <stdio.h>
 #include <string.h>
 
 void ags_log_class_init(AgsLogClass *log);
@@ -25,6 +28,9 @@ enum{
 };
 
 static gpointer ags_log_parent_class = NULL;
+
+#define AGS_LOG_MESSAGE_LENGTH 4096
+#define AGS_LOG_MESSAGE_DATE_LENGTH 19
 
 GType
 ags_log_get_type (void)
@@ -166,7 +172,7 @@ ags_log_broker(void *ptr)
   auto void* ags_log_broker_sleep();
 
   void* ags_log_broker_sleep(){
-    //FIXME:JK: doesn't test if it's behindhand
+    //FIXME:JK: doesn't test if it's behindhand, free_float member is reserved for this issue
     nanosleep(log->log_interval);
 
     pthread_mutex_lock(&(broker_mutex));
@@ -195,7 +201,10 @@ ags_log_broker(void *ptr)
 
     pthread_mutex_lock(&(broker_mutex));
 
-    while(!time_elapsed){
+    while(!time_elapsed &&
+	  log->output_formated_message != NULL &&
+	  log->queue_formated_message != NULL &&
+	  log->log != NULL){
       pthread_cond_wait(&(broker_wait_cond),
 			&(broker_mutex));
     }
@@ -204,16 +213,160 @@ ags_log_broker(void *ptr)
   }
 }
 
+/**
+ * ags_log_output:
+ * @ptr an #AgsLog
+ *
+ * Writes the output_formated_message #GList to file #FILE, which are
+ * members of #AgsLog.
+ */
 void*
 ags_log_output(void *ptr)
 {
+  AgsLogFormatedMessage *formated_message;
+  GList *list;
+  
+  log = AGS_LOG(ptr);
+
+  while((AGS_LOG_RUNNING & (log->flags)) != 0){
+    /* wait until output_formated_message has been set */
+    pthread_mutex_lock(&(log->output_mutex));
+
+    if((AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT & (log->flags)) != 0){
+      log->flags |= AGS_LOG_OUTPUT_WAITS_FOR_QUEUE;
+    }
+
+    while((AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT & (log->flags)) != 0){
+      pthread_cond_wait(&(log->output_wait_cond),
+			&(log->output_mutex));
+    }
+
+    log->flags &= (~AGS_LOG_OUTPUT_WAITS_FOR_QUEUE);
+    pthread_mutex_unlock(&(log->output_mutex));
+
+    /* output output_formated_messages */
+    list = log->output_formated_message;
+
+    while(list != NULL){
+      formated_message = (AgsLogFormatedMessage *) list->data;
+
+      fwrite(formated_message->message, sizeof(char), formated_message->length, log->file);
+
+      list = list->next;
+    }
+
+    /* free output_formated_message */
+    ags_list_free_and_free_link(log->output_formated_message);
+
+    /* wait until log_interval has exceeded */
+    pthread_mutex_lock(&(log->output_mutex));
+    log->output_formated_message = NULL;
+
+    while((AGS_LOG_SUSPEND_OUTPUT & (log->flags)) != 0){
+      pthread_cond_wait(&(log->output_wait_cond),
+			&(log->output_mutex));
+    }
+
+    pthread_mutex_unlock(&(log->output_mutex));
+  }
 }
 
+/**
+ * ags_log_queue:
+ * @ptr an #AgsLog
+ *
+ * Prints #AgsLogMessage to a string and puts it to queue_formated_message
+ * #GList.
+ */
 void*
 ags_log_queue(void *ptr)
 {
-}
+  GList *list;
+  AgsLogMessage *message;
+  AgsLogFormatedMessage *formated_message;
+  time_t time;
+  struct tm *date;
+  char *str;
+  int printed_chars;
 
+  log = AGS_LOG(ptr);
+
+  while((AGS_LOG_RUNNING & (log->flags)) != 0){
+    /* set output_formated_message */
+    pthread_mutex_lock(&(log->queue_mutex));
+    log->flags |= AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT;
+
+    log->output = log->queue_formated_message;
+    log->flags &= (~AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT);
+
+    /* signal output_wait_cond if necessary */
+    if((AGS_LOG_OUTPUT_WAITS_FOR_QUEUE & (log->flags)) != 0){
+      pthread_mutex_unlock(&(log->queue_mutex));
+
+      pthread_cond_signal(&(log->output_wait_cond));
+    }else{
+      pthread_mutex_unlock(&(log->queue_mutex));
+    }
+
+    log->queue_formated_message = NULL;
+
+    /* wait until queue_formated_message has been set */
+    pthread_mutex_lock(&(log->queue_mutex));
+
+    if((AGS_LOG_COPY_FROM_LOG_TO_QUEUE & (log->flags)) != 0){
+      log->flags |= AGS_LOG_QUEUE_WAITS_FOR_LOG;
+    }
+
+    while((AGS_LOG_COPY_FROM_LOG_TO_QUEUE & (log->flags)) != 0){
+      pthread_cond_wait(&(log->queue_wait_cond),
+			&(log->queue_mutex));
+    }
+
+    log->flags &= (~AGS_LOG_QUEUE_WAITS_FOR_LOG);
+    pthread_mutex_unlock(&(log->queue_mutex));
+
+    /* format queue_formated_message */
+    list = log->queue_formated_message;
+
+    while(list != NULL){
+      message = (AgsLogMessage *) list->data;
+
+      formated_message = (AgsLogFormatedMessage *) malloc(sizeof(AgsLogFormatedMessage));
+
+      str =
+	formated_message->message = (char *) malloc((AGS_LOG_MESSAGE_DATE_LENGTH + 5 + AGS_LOG_MESSAGE_LENGTH) * sizeof(char));
+
+      time = message->time->tv_sec;
+      date = localtime(time);
+      strftime(str, AGS_LOG_MESSAGE_DATE_LENGTH * sizeof(char), "%Y-%m-%d %H:%M:%S\0", date);
+      sprintf(&(str[AGS_LOG_MESSAGE_DATE_LENGTH]), ".%.3d \0", message->time->tv_nsec);
+
+      printed_chars = vsnprintf(&(str[AGS_LOG_MESSAGE_DATE_LENGTH + 4]), AGS_LOG_MESSAGE_LENGTH * sizeof(char), message->format, message->args);
+
+      if(printed_chars >= 0){
+	formated_message->length = printed_chars + AGS_LOG_MESSAGE_DATE_LENGTH + 4;
+      }else{
+	formated_message->length = printed_chars - (AGS_LOG_MESSAGE_DATE_LENGTH + 4);
+      }
+
+      log->queue_formated_message = g_list_prepend(log->queue_formated_message,
+						   formated_message);
+
+      list = list->next;
+    }
+
+    /* wait until log_interval has exceeded */
+    pthread_mutex_lock(&(log->queue_mutex));
+    log->queue_formated_message = NULL;
+
+    while((AGS_LOG_SUSPEND_QUEUE & (log->flags)) != 0){
+      pthread_cond_wait(&(log->queue_wait_cond),
+			&(log->queue_mutex));
+    }
+
+    pthread_mutex_unlock(&(log->queue_mutex));
+  }
+}
 
 void
 ags_log_start_queue(AgsLog *log)

@@ -65,7 +65,7 @@ CFLAGS = -I$(INCLUDE_DIR) $(LIB_CFLAGS)
 
 
 $(AGS_DIR)ags: $(AGS_OBJECTS)
-	$(CC) -g -o $(AGS_DIR)ags -ldl -lm -lao $(AGS_OBJECTS) $(LIBS)
+	$(CC) -g -o $(AGS_DIR)ags -ldl -lm -lrt -lao $(AGS_OBJECTS) $(LIBS)
 
 
 $(AGS_DIR).c.o: $< $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES)
