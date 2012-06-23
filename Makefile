@@ -32,7 +32,7 @@ AGS_MACHINE_CALLBACK_OBJECTS = $(AGS_DIR)X/machine/ags_panel_callbacks.o $(AGS_D
 
 AGS_OBJECT_OBJECTS = $(AGS_DIR)object/ags_packable.o $(AGS_DIR)object/ags_tactable.o $(AGS_DIR)object/ags_seekable.o $(AGS_DIR)object/ags_playable.o $(AGS_DIR)object/ags_connectable.o $(AGS_DIR)object/ags_run_connectable.o $(AGS_DIR)object/ags_runnable.o $(AGS_DIR)object/ags_countable.o $(AGS_DIR)object/ags_applicable.o $(AGS_DIR)object/ags_marshal.o
 
-AGS_LIB_OBJECTS = $(AGS_DIR)lib/ags_list.o $(AGS_DIR)lib/ags_parameter.o $(AGS_DIR)lib/ags_combo_box_text.o
+AGS_LIB_OBJECTS = $(AGS_DIR)lib/ags_list.o $(AGS_DIR)lib/ags_parameter.o $(AGS_DIR)lib/ags_combo_box_text.o $(AGS_DIR)lib/ags_log.o
 
 AGS_OBJECTS = $(AGS_DIR)main.o $(AGS_LIB_OBJECTS) $(AGS_OBJECT_OBJECTS) $(AGS_AUDIO_OBJECTS) $(AGS_TASK_OBJECTS) $(AGS_RECALL_OBJECTS) $(AGS_AUDIO_FILE_OBJECTS) $(AGS_FILE_OBJECTS) $(AGS_WIDGET_OBJECTS) $(AGS_X_OBJECTS) $(AGS_X_CALLBACK_OBJECTS) $(AGS_EDITOR_OBJECTS) $(AGS_EDITOR_CALLBACK_OBJECTS) $(AGS_MACHINE_OBJECTS) $(AGS_MACHINE_CALLBACK_OBJECTS)
 

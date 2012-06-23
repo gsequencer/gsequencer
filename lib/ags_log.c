@@ -3,7 +3,7 @@
 #include <ags/lib/ags_list.h>
 
 #include <time.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void ags_log_class_init(AgsLogClass *log);
@@ -195,7 +195,7 @@ ags_log_broker(void *ptr)
 
   void* ags_log_broker_sleep(){
     //FIXME:JK: doesn't test if it's behindhand, free_float member is reserved for this issue
-    nanosleep(log->log_interval);
+    nanosleep(log->log_interval, NULL);
 
     pthread_mutex_lock(&(log->broker_mutex));
     time_elapsed = TRUE;
@@ -280,6 +280,7 @@ ags_log_broker(void *ptr)
 void*
 ags_log_output(void *ptr)
 {
+  AgsLog *log;
   AgsLogFormatedMessage *formated_message;
   GList *list;
   
@@ -348,6 +349,7 @@ ags_log_output(void *ptr)
 void*
 ags_log_queue(void *ptr)
 {
+  AgsLog *log;
   GList *list;
   AgsLogMessage *message;
   AgsLogFormatedMessage *formated_message;
@@ -392,7 +394,7 @@ ags_log_queue(void *ptr)
 	formated_message->message = (char *) malloc((AGS_LOG_MESSAGE_DATE_LENGTH + 5 + AGS_LOG_MESSAGE_LENGTH) * sizeof(char));
 
       time = message->time->tv_sec;
-      date = localtime(time);
+      date = localtime(&time);
       strftime(str, AGS_LOG_MESSAGE_DATE_LENGTH * sizeof(char), "%Y-%m-%d %H:%M:%S\0", date);
       sprintf(&(str[AGS_LOG_MESSAGE_DATE_LENGTH]), ".%.3d \0", message->time->tv_nsec);
 
@@ -481,7 +483,7 @@ ags_log_add_message(AgsLog *log, AgsLogMessage *log_message, pthread_mutex_t mut
     log->suspended_logs += 1;
 
     while((AGS_LOG_SUSPEND_LOG & (log->flags)) != 0){
-      pthread_cond_wait(&(log_message->log_wait_cond),
+      pthread_cond_wait(&(log->log_wait_cond),
 			&mutex);
     }
 
@@ -532,9 +534,9 @@ ags_log_debug(AgsLog *log, char *format, ...)
 
   pthread_mutex_lock(&(log_mutex));
 
-  if((AGS_LOG_SUSPEND & (log->flags)) == 0){
+  if((AGS_LOG_SUSPEND_LOG & (log->flags)) == 0){
     log->active_logs += 1;
-    log->log = g_list_prepend(log->log, log_message);
+    log->log = g_list_prepend(log->log, log_debug);
     log->active_logs -= 1;
 
     pthread_mutex_unlock(&(log_mutex));
@@ -555,7 +557,7 @@ ags_log_message(AgsLog *log, char *format, ...)
   
   log_message = ags_log_message_alloc();
 
-  log_debug->debug = FALSE;
+  log_message->debug = FALSE;
   log_message->format = format;
 
   va_start(args, format);
@@ -568,7 +570,7 @@ ags_log_message(AgsLog *log, char *format, ...)
 
   pthread_mutex_lock(&(log_mutex));
 
-  if((AGS_LOG_SUSPEND & (log->flags)) == 0){
+  if((AGS_LOG_SUSPEND_LOG & (log->flags)) == 0){
     log->active_logs += 1;
     log->log = g_list_prepend(log->log, log_message);
     log->active_logs -= 1;

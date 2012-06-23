@@ -24,6 +24,7 @@
 
 #include <pthread.h>
 #include <time.h>
+#include <stdio.h>
 
 #define AGS_TYPE_LOG                (ags_log_get_type())
 #define AGS_LOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOG, AgsLog))
