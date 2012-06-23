@@ -261,7 +261,7 @@ ags_log_broker(void *ptr)
     while(!time_elapsed &&
 	  log->output_formated_message != NULL &&
 	  log->queue_formated_message != NULL &&
-	  log->log != NULL){
+	  log->active_logs != 0){
       pthread_cond_wait(&(log->broker_wait_cond),
 			&(log->broker_mutex));
     }
@@ -538,6 +538,8 @@ ags_log_debug(AgsLog *log, char *format, ...)
     log->active_logs -= 1;
 
     pthread_mutex_unlock(&(log_mutex));
+
+    pthread_cond_signal(&(log->broker_wait_cond));
   }else{
     ags_log_add_message(log, log_debug, log_mutex);
   }
@@ -572,6 +574,8 @@ ags_log_message(AgsLog *log, char *format, ...)
     log->active_logs -= 1;
 
     pthread_mutex_unlock(&(log_mutex));
+
+    pthread_cond_signal(&(log->broker_wait_cond));
   }else{
     ags_log_add_message(log, log_message, log_mutex);
   }
