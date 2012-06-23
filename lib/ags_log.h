@@ -43,9 +43,8 @@ typedef enum{
   AGS_LOG_SUSPEND_QUEUE               = 1 <<  2,
   AGS_LOG_SUSPEND_LOG                 = 1 <<  3,
   AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  4,
-  AGS_LOG_COPY_FROM_LOG_TO_QUEUE      = 1 <<  5,
-  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  6,
-  AGS_LOG_QUEUE_WAITS_FOR_LOG         = 1 <<  7,
+  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  5,
+  AGS_LOG_OMMIT_DEBUG                 = 1 <<  6,
 }AgsLogFlags;
 
 struct _AgsLog
@@ -61,12 +60,16 @@ struct _AgsLog
 
   pthread_t broker_thread;
   pthread_attr_t broker_thread_attr;
+  pthread_mutex_t broker_mutex;
+  pthread_mutexattr_t broker_mutex_attr;
+  pthread_cond_t broker_wait_cond;
 
   GList *output_formated_message;
   pthread_t output_thread;
   pthread_attr_t output_thread_attr;
   pthread_mutex_t output_mutex;
   pthread_mutexattr_t output_mutex_attr;
+  gboolean output_active;
   pthread_cond_t output_wait_cond;
 
   GList *queue_formated_message;
@@ -75,15 +78,13 @@ struct _AgsLog
   pthread_attr_t queue_thread_attr;
   pthread_mutex_t queue_mutex;
   pthread_mutexattr_t queue_mutex_attr;
+  gboolean queue_active;
   pthread_cond_t queue_wait_cond;
 
-  GList *log_message;
-  pthread_mutex_t log_mutex;
-  pthread_mutexattr_t log_mutex_attr;
+  GList *log;
+  guint active_logs;
+  guint suspended_logs;
   pthread_cond_t log_wait_cond;
-  pthread_mutex_t log_add_mutex;
-  pthread_mutexattr_t log_add_mutex_attr;
-  pthread_cond_t log_add_wait_cond;
 };
 
 struct _AgsLogClass
@@ -93,6 +94,8 @@ struct _AgsLogClass
 
 struct _AgsLogMessage
 {
+  gboolean debug;
+
   struct timespec *time;
   char *format;
   va_list args;
@@ -107,6 +110,7 @@ struct _AgsLogFormatedMessage
 void ags_log_start_queue(AgsLog *log);
 void ags_log_stop_queue(AgsLog *log);
 
+void ags_log_debug(AgsLog *log, char *format, ...);
 void ags_log_message(AgsLog *log, char *format, ...);
 
 #endif /*__AGS_LOG_H__*/
