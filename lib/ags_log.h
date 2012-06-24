@@ -33,19 +33,24 @@
 #define AGS_IS_LOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOG))
 #define AGS_LOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_LOG, AgsLogClass))
 
+extern struct _AgsLog *ags_default_log;
+
+#define ags_default_log ags_default_log
+
 typedef struct _AgsLog AgsLog;
 typedef struct _AgsLogClass AgsLogClass;
 typedef struct _AgsLogMessage AgsLogMessage;
 typedef struct _AgsLogFormatedMessage AgsLogFormatedMessage;
 
 typedef enum{
-  AGS_LOG_RUNNING                     = 1,
-  AGS_LOG_SUSPEND_OUTPUT              = 1 <<  1,
-  AGS_LOG_SUSPEND_QUEUE               = 1 <<  2,
-  AGS_LOG_SUSPEND_LOG                 = 1 <<  3,
-  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  4,
-  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  5,
-  AGS_LOG_OMMIT_DEBUG                 = 1 <<  6,
+  AGS_LOG_STARTING                    = 1,
+  AGS_LOG_RUNNING                     = 1 <<  1,
+  AGS_LOG_SUSPEND_OUTPUT              = 1 <<  2,
+  AGS_LOG_SUSPEND_QUEUE               = 1 <<  3,
+  AGS_LOG_SUSPEND_LOG                 = 1 <<  4,
+  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  5,
+  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  6,
+  AGS_LOG_OMMIT_DEBUG                 = 1 <<  7,
 }AgsLogFlags;
 
 struct _AgsLog
@@ -55,6 +60,7 @@ struct _AgsLog
   guint flags;
 
   FILE *file;
+  pthread_cond_t start_wait_cond;
 
   struct timespec *log_interval;
   struct timespec *free_float;
@@ -63,6 +69,7 @@ struct _AgsLog
   pthread_attr_t broker_thread_attr;
   pthread_mutex_t broker_mutex;
   pthread_mutexattr_t broker_mutex_attr;
+  gboolean broker_waiting;
   pthread_cond_t broker_wait_cond;
 
   GList *output_formated_message;
@@ -71,6 +78,7 @@ struct _AgsLog
   pthread_mutex_t output_mutex;
   pthread_mutexattr_t output_mutex_attr;
   gboolean output_active;
+  gboolean output_awaken;
   pthread_cond_t output_wait_cond;
 
   GList *queue_formated_message;
@@ -80,6 +88,7 @@ struct _AgsLog
   pthread_mutex_t queue_mutex;
   pthread_mutexattr_t queue_mutex_attr;
   gboolean queue_active;
+  gboolean queue_awaken;
   pthread_cond_t queue_wait_cond;
 
   GList *log;

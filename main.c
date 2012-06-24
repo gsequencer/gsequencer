@@ -18,6 +18,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/lib/ags_log.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -30,15 +32,7 @@
 
 #include <ags/audio/ags_synths.h>
 
-//void (*gtk_window_destroy)(GtkObject *object);
-//void (*gtk_window_show)(GtkWidget *widget);
-//extern void gtk_window_show(GtkWidget *widget);
-
-//void (*gtk_handle_box_destroy)(GtkObject *object);
-//void (*gtk_handle_box_show)(GtkWidget *widget);
-
-//void (*gtk_container_destroy)(GtkObject *object);
-//void (*gtk_widget_real_show)(GtkWidget *widget);
+#include <stdio.h>
 
 void ags_init();
 void ags_colors_alloc();
@@ -53,6 +47,10 @@ extern GtkStyle *meter_style;
 void
 ags_init()
 {
+  ags_default_log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
+					    "file\0", stdout,
+					    NULL);
+  ags_log_start_queue(ags_default_log);
 }
 
 void
@@ -273,6 +271,8 @@ main(int argc, char **argv)
 
   ags_init();
   ags_colors_alloc();
+
+  ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 
   window = ags_window_new();
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);

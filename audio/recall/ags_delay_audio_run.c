@@ -246,8 +246,6 @@ ags_delay_audio_run_connect(AgsConnectable *connectable)
 {
   AgsDelayAudioRun *delay_audio_run;
 
-  //  printf("ags_delay_audio_run_connect\n\0");
-
   ags_delay_audio_run_parent_connectable_interface->connect(connectable);
 }
 
