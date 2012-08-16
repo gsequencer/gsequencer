@@ -50,7 +50,7 @@ ags_init()
   ags_default_log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
 					    "file\0", stdout,
 					    NULL);
-  ags_log_start_queue(ags_default_log);
+  //  ags_log_start_queue(ags_default_log);
 }
 
 void

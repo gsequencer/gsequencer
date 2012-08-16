@@ -90,11 +90,15 @@ ags_editor_init(AgsEditor *editor)
   GtkTable *table;
   GtkLabel *label;
   GtkAdjustment *adjustment;
+  GtkHBox *hbox;
+  GtkMenuToolButton *menu_button;
 
   g_signal_connect_after((GObject *) editor, "parent-set\0",
 			 G_CALLBACK(ags_editor_parent_set_callback), editor);
 
   editor->flags = 0;
+
+  editor->popup = ags_editor_popup_new(editor);
 
   editor->toolbar = ags_toolbar_new();
   gtk_box_pack_start((GtkBox *) editor,
@@ -102,7 +106,6 @@ ags_editor_init(AgsEditor *editor)
 		     FALSE, FALSE, 0);
 
   paned = (GtkHPaned *) gtk_hpaned_new();
-  gtk_widget_set_events (GTK_WIDGET (paned), GDK_BUTTON_PRESS_MASK);
   gtk_box_pack_start((GtkBox *) editor,
 		     (GtkWidget *) paned,
 		     TRUE, TRUE, 0);
@@ -112,11 +115,27 @@ ags_editor_init(AgsEditor *editor)
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   editor->index_radio = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_widget_set_events(GTK_WIDGET(editor->index_radio), GDK_BUTTON_PRESS_MASK);
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->index_radio);
 
-  label = (GtkLabel *) gtk_label_new("Notation\0");
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start(GTK_BOX(editor->index_radio),
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new("Notation\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+			     "stock-id\0", GTK_STOCK_EXECUTE,
+			     "menu\0", editor->popup,
+			     NULL);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(menu_button),
 		     FALSE, FALSE,
 		     0);
 
@@ -207,8 +226,6 @@ ags_editor_init(AgsEditor *editor)
 		   1, 2, 2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  editor->popup = ags_editor_popup_new(editor);
 }
 
 void
@@ -222,9 +239,7 @@ ags_editor_connect(AgsEditor *editor)
   g_signal_connect((GObject *) editor, "show\0",
 		   G_CALLBACK(ags_editor_show_callback), (gpointer) editor);
 
-  hpaned = (gtk_container_get_children((GtkContainer *) editor))->next->data;
-
-  g_signal_connect ((GObject *) hpaned, "button_press_event\0",
+  g_signal_connect ((GObject *) editor->index_radio, "button_press_event\0",
                     G_CALLBACK (ags_editor_button_press_callback), (gpointer) editor);
 
   g_signal_connect_after ((GObject *) editor->drawing_area, "expose_event\0",
