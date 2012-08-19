@@ -45,12 +45,19 @@ typedef struct _AgsLogFormatedMessage AgsLogFormatedMessage;
 typedef enum{
   AGS_LOG_STARTING                    = 1,
   AGS_LOG_RUNNING                     = 1 <<  1,
-  AGS_LOG_SUSPEND_OUTPUT              = 1 <<  2,
-  AGS_LOG_SUSPEND_QUEUE               = 1 <<  3,
-  AGS_LOG_SUSPEND_LOG                 = 1 <<  4,
-  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  5,
-  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  6,
-  AGS_LOG_OMMIT_DEBUG                 = 1 <<  7,
+
+  AGS_LOG_TIMER_SLEEPING              = 1 <<  2,
+  AGS_LOG_TIMER_RESETED               = 1 <<  4,
+
+  AGS_LOG_BROKER_SUSPEND              = 1 <<  5,
+  AGS_LOG_BROKER_WAITS_FOR_TIMER      = 1 <<  6,
+  AGS_LOG_OUTPUT_SUSPEND              = 1 <<  7,
+  AGS_LOG_QUEUE_SUSPEND               = 1 <<  8,
+  AGS_LOG_SUSPEND                     = 1 <<  9,
+
+  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 << 10,
+  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 << 11,
+  AGS_LOG_OMMIT_DEBUG                 = 1 << 12,
 }AgsLogFlags;
 
 struct _AgsLog
@@ -64,6 +71,11 @@ struct _AgsLog
 
   struct timespec *log_interval;
   struct timespec *free_float;
+  pthread_t timer_thread;
+  pthread_attr_t timer_thread_attr;
+  pthread_mutex_t timer_mutex;
+  pthread_mutexattr_t timer_mutex_attr;  
+  pthread_cond_t timer_wait_cond;
 
   pthread_t broker_thread;
   pthread_attr_t broker_thread_attr;

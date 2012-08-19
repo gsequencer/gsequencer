@@ -115,7 +115,6 @@ ags_editor_init(AgsEditor *editor)
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   editor->index_radio = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_widget_set_events(GTK_WIDGET(editor->index_radio), GDK_BUTTON_PRESS_MASK);
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->index_radio);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
