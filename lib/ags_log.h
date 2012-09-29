@@ -45,19 +45,13 @@ typedef struct _AgsLogFormatedMessage AgsLogFormatedMessage;
 typedef enum{
   AGS_LOG_STARTING                    = 1,
   AGS_LOG_RUNNING                     = 1 <<  1,
-
-  AGS_LOG_TIMER_SLEEPING              = 1 <<  2,
-  AGS_LOG_TIMER_RESETED               = 1 <<  4,
-
-  AGS_LOG_BROKER_SUSPEND              = 1 <<  5,
-  AGS_LOG_BROKER_WAITS_FOR_TIMER      = 1 <<  6,
-  AGS_LOG_OUTPUT_SUSPEND              = 1 <<  7,
-  AGS_LOG_QUEUE_SUSPEND               = 1 <<  8,
-  AGS_LOG_SUSPEND                     = 1 <<  9,
-
-  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 << 10,
-  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 << 11,
-  AGS_LOG_OMMIT_DEBUG                 = 1 << 12,
+  AGS_LOG_TIMER_SLEEP                 = 1 <<  2,
+  AGS_LOG_OUTPUT_SUSPEND              = 1 <<  3,
+  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  4,
+  AGS_LOG_QUEUE_SUSPEND               = 1 <<  5,
+  AGS_LOG_SUSPEND                     = 1 <<  6,
+  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  7,
+  AGS_LOG_OMMIT_DEBUG                 = 1 <<  8,
 }AgsLogFlags;
 
 struct _AgsLog
@@ -67,6 +61,7 @@ struct _AgsLog
   guint flags;
 
   FILE *file;
+  pthread_mutex_t start_mutex;
   pthread_cond_t start_wait_cond;
 
   struct timespec *log_interval;
@@ -74,14 +69,23 @@ struct _AgsLog
   pthread_t timer_thread;
   pthread_attr_t timer_thread_attr;
   pthread_mutex_t timer_mutex;
-  pthread_mutexattr_t timer_mutex_attr;  
+  pthread_mutexattr_t timer_mutex_attr;
+  gboolean timer_started;
+  gboolean timer_active;
+  gboolean timer_awaken;
   pthread_cond_t timer_wait_cond;
 
   pthread_t broker_thread;
   pthread_attr_t broker_thread_attr;
   pthread_mutex_t broker_mutex;
   pthread_mutexattr_t broker_mutex_attr;
-  gboolean broker_waiting;
+  gboolean broker_started;
+  gboolean broker_active;
+  gboolean broker_awaken;
+  gboolean signaled_timer;
+  gboolean signaled_log;
+  gboolean signaled_queue;
+  gboolean signaled_output;
   pthread_cond_t broker_wait_cond;
 
   GList *output_formated_message;
@@ -89,6 +93,7 @@ struct _AgsLog
   pthread_attr_t output_thread_attr;
   pthread_mutex_t output_mutex;
   pthread_mutexattr_t output_mutex_attr;
+  gboolean output_started;
   gboolean output_active;
   gboolean output_awaken;
   pthread_cond_t output_wait_cond;
@@ -99,6 +104,7 @@ struct _AgsLog
   pthread_attr_t queue_thread_attr;
   pthread_mutex_t queue_mutex;
   pthread_mutexattr_t queue_mutex_attr;
+  gboolean queue_started;
   gboolean queue_active;
   gboolean queue_awaken;
   pthread_cond_t queue_wait_cond;

@@ -23,6 +23,8 @@ void* ags_log_broker(void *ptr);
 void* ags_log_output(void *ptr);
 void* ags_log_queue(void *ptr);
 
+void ags_log_start_threads(AgsLog *log);
+
 AgsLogMessage* ags_log_message_alloc();
 void* ags_log_add_message_thread(void *ptr);
 void ags_log_add_message();
@@ -107,11 +109,15 @@ ags_log_init(AgsLog *log)
 
   /* timer thread related members */  
   log->log_interval = (struct timespec *) malloc(sizeof(struct timespec));
-  log->log_interval->tv_sec = 0;
-  log->log_interval->tv_nsec = 10000000; /* sleep 10 mili seconds */
+  log->log_interval->tv_sec = 1;
+  log->log_interval->tv_nsec = 0;// 10000000; /* sleep 10 mili seconds */
 
   pthread_mutexattr_init(&(log->timer_mutex_attr));
   pthread_mutex_init(&(log->timer_mutex), &(log->broker_mutex_attr));
+
+  log->timer_started = FALSE;
+  log->timer_active = FALSE;
+  log->timer_awaken = FALSE;
 
   pthread_cond_init(&(log->timer_wait_cond), NULL);
 
@@ -119,7 +125,9 @@ ags_log_init(AgsLog *log)
   pthread_mutexattr_init(&(log->broker_mutex_attr));
   pthread_mutex_init(&(log->broker_mutex), &(log->broker_mutex_attr));
 
-  log->broker_waiting = FALSE;
+  log->broker_started = FALSE;
+  log->broker_active = FALSE;
+  log->broker_awaken = FALSE;
 
   pthread_cond_init(&(log->broker_wait_cond), NULL);
 
@@ -129,6 +137,7 @@ ags_log_init(AgsLog *log)
   pthread_mutexattr_init(&(log->output_mutex_attr));
   pthread_mutex_init(&(log->output_mutex), &(log->output_mutex_attr));
 
+  log->output_started = FALSE;
   log->output_active = FALSE;
   log->output_awaken = FALSE;
 
@@ -141,6 +150,7 @@ ags_log_init(AgsLog *log)
   pthread_mutexattr_init(&(log->queue_mutex_attr));
   pthread_mutex_init(&(log->queue_mutex), &(log->queue_mutex_attr));
 
+  log->queue_started = FALSE;
   log->queue_active = FALSE;
   log->queue_awaken = FALSE;
 
@@ -219,37 +229,67 @@ ags_log_timer(void *ptr)
   AgsLog *log;
 
   log = AGS_LOG(ptr);
+  log->timer_active = FALSE;
+  log->signaled_timer = FALSE;
+
+  printf("timer - start\n\0");
+  goto ags_log_timer_SUSPEND;
 
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
-    printf("timer - loop");
+    printf("timer - loop\n\0");
 
-    /* wait until broker is ready */
+    /*  */
     pthread_mutex_lock(&(log->timer_mutex));
-    
-    while((AGS_LOG_TIMER_RESETED & (log->flags)) != 0){
-      pthread_cond_wait(&(log->timer_wait_cond),
-			&(log->timer_mutex));
-    }
-
-    log->flags |= AGS_LOG_TIMER_SLEEPING;
-    log->flags &= (~AGS_LOG_TIMER_RESETED);
+    log->timer_active = TRUE;
     pthread_mutex_unlock(&(log->timer_mutex));
-    
+
     /* run timer */
     //FIXME:JK: doesn't test if it's behindhand, free_float member is reserved for this issue
-    nanosleep(log->log_interval, NULL);
+    //    nanosleep(log->log_interval, NULL);
 
-    /* wake up broker */
+    /*  */
     pthread_mutex_lock(&(log->timer_mutex));
-    log->flags &= (~AGS_LOG_TIMER_SLEEPING);
+    log->timer_active = FALSE;
+    pthread_mutex_unlock(&(log->timer_mutex));
 
-    if((AGS_LOG_BROKER_WAITS_FOR_TIMER & (log->flags)) != 0){
-      pthread_mutex_unlock(&(log->timer_mutex));
-
-      pthread_cond_signal(&(log->broker_wait_cond));
-    }else{
-      pthread_mutex_unlock(&(log->timer_mutex));
+    /* keep in sync with broker */
+  ags_log_timer_SUSPEND:
+    if((AGS_LOG_STARTING & (log->flags)) != 0){
+      log->timer_started = TRUE;
+      pthread_cond_signal(&(log->start_wait_cond));
     }
+
+    if(!log->broker_active){
+      printf("  timer:0\n\0");
+      pthread_cond_signal(&(log->broker_wait_cond));
+
+      pthread_mutex_lock(&(log->timer_mutex));
+      log->timer_awaken = FALSE;
+      
+      while((AGS_LOG_TIMER_SLEEP & (log->flags)) != 0 ||
+	    !log->broker_active ||
+	    !log->signaled_timer){
+	pthread_cond_wait(&(log->timer_wait_cond),
+			  &(log->timer_mutex));
+      }
+    }else{
+      printf("  timer:1\n\0");
+      pthread_mutex_lock(&(log->timer_mutex));
+      log->timer_awaken = FALSE;
+      
+      while((AGS_LOG_TIMER_SLEEP & (log->flags)) != 0){
+	pthread_cond_wait(&(log->timer_wait_cond),
+			  &(log->timer_mutex));
+      }
+      
+    }
+
+    log->flags |= AGS_LOG_TIMER_SLEEP;  
+    log->timer_awaken = TRUE;
+    log->signaled_timer = FALSE;
+    pthread_mutex_unlock(&(log->timer_mutex));
+    printf("  timer:2\n\0");
+    pthread_cond_signal(&(log->broker_wait_cond));
   }
   
   pthread_exit(NULL);
@@ -265,9 +305,16 @@ void*
 ags_log_broker(void *ptr)
 {
   AgsLog *log;
-  gboolean signaled_log, signaled_queue, signaled_output;
 
   log = AGS_LOG(ptr);
+
+  log->flags |= AGS_LOG_TIMER_SLEEP;
+
+  log->signaled_timer =
+    log->signaled_output =
+    log->signaled_queue =
+    log->signaled_log = TRUE;
+  printf("broker - start\n\0");
 
   goto ags_log_broker_SUSPEND;
 
@@ -275,20 +322,29 @@ ags_log_broker(void *ptr)
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
     printf("broker - loop\n\0");
 
-    log->flags |= AGS_LOG_TIMER_RESETED;
-    pthread_cond_signal(&(log->timer_wait_cond));
+    //    log->flags &= ~(AGS_LOG_SUSPEND);
 
-    log->flags &= ~(AGS_LOG_OUTPUT_SUSPEND |
-		    AGS_LOG_QUEUE_SUSPEND |
-		    AGS_LOG_SUSPEND);
-    signaled_log = FALSE;
-    signaled_queue = FALSE;
-    signaled_output = FALSE;
+    log->broker_active = TRUE;
 
-    /* wake up all waiting log requests and wait for them */
+
+    /* wake up queue thread and wait for it * /
+    log->signaled_queue = TRUE;
+    pthread_cond_signal(&(log->queue_wait_cond));
+
     pthread_mutex_lock(&(log->broker_mutex));
 
-    while(log->suspended_logs != 0){
+    while(!log->queue_awaken ||
+    ){
+      pthread_cond_wait(&(log->broker_wait_cond),
+			&(log->broker_mutex));
+    }
+
+    pthread_mutex_unlock(&(log->broker_mutex));
+
+    /* wake up all waiting log requests and wait for them * /
+    pthread_mutex_lock(&(log->broker_mutex));
+
+    while(log->active_logs != 0){
       if(!signaled_log){
 	pthread_mutex_unlock(&(log->broker_mutex));
  	pthread_cond_broadcast(&(log->log_wait_cond));
@@ -305,27 +361,8 @@ ags_log_broker(void *ptr)
  
     //    printf("broker - log\n\0");
 
-    /* wake up queue thread and wait for it */
-    pthread_mutex_lock(&(log->broker_mutex));
-
-    while(!log->queue_awaken){
-      if(!signaled_queue){
-	pthread_mutex_unlock(&(log->broker_mutex));
-	pthread_cond_signal(&(log->queue_wait_cond));
-	pthread_mutex_lock(&(log->broker_mutex));
-
-	signaled_queue = TRUE;
-      }
-
-      pthread_cond_wait(&(log->broker_wait_cond),
-			&(log->broker_mutex));
-    }
-
-    pthread_mutex_unlock(&(log->broker_mutex));
-
-    //    printf("broker - queue\n\0");
-
-    /* wake up output thread and wait for it */
+    /* wake up output thread and wait for it * /
+    log->signaled_output = TRUE;
     pthread_cond_signal(&(log->output_wait_cond));
 
     pthread_mutex_lock(&(log->broker_mutex));
@@ -337,33 +374,78 @@ ags_log_broker(void *ptr)
 
     pthread_mutex_unlock(&(log->broker_mutex));
 
-    //    printf("broker - output\n\0");
+    /* wake up timer thread and wait for it */
+    pthread_mutex_lock(&(log->broker_mutex));
 
-    /* entry point */
+    if(!log->timer_active){
+      pthread_mutex_unlock(&(log->broker_mutex));
+
+      printf("  broker:0\n\0");
+      log->signaled_timer = TRUE;
+      pthread_cond_signal(&(log->timer_wait_cond));
+
+      pthread_mutex_lock(&(log->broker_mutex));
+      
+      while(!log->timer_awaken){
+	pthread_cond_wait(&(log->broker_wait_cond),
+			  &(log->broker_mutex));
+      }
+    
+      printf("  broker:1\n\0");
+      //      pthread_mutex_unlock(&(log->broker_mutex));
+    }else{
+      pthread_mutex_lock(&(log->broker_mutex));
+    }
+
+    /* reset status and entry point */
   ags_log_broker_SUSPEND:
     if((AGS_LOG_STARTING & (log->flags)) != 0){
-      log->broker_waiting = TRUE;
+      log->broker_started = TRUE;
+
+      ags_log_start_threads(log);
+
       pthread_cond_signal(&(log->start_wait_cond));
     }
 
-    /* wait log_interval amount of time */
-    pthread_mutex_lock(&(log->broker_mutex));
+    log->broker_active = FALSE;
 
-    while(((AGS_LOG_TIMER_SLEEPING & (log->flags)) != 0) &&
-	  log->output_formated_message != NULL &&
-	  log->queue_formated_message != NULL &&
-	  (AGS_LOG_STARTING & (log->flags)) != 0){
+    /* wait log_interval amount of time */
+    printf("  broker:2\n\0");
+
+    while(log->timer_active ||
+	  log->output_active ||
+	  log->queue_active ||
+	  log->active_logs != 0){
+
+      //TODO:JK: may be you want set AGS_LOG_TIMER_SLEEP here for better throughput
+
+      /* sleep until all threads are done */
       pthread_cond_wait(&(log->broker_wait_cond),
 			&(log->broker_mutex));
 
-      if((AGS_LOG_TIMER_SLEEPING & (log->flags)) == 0){
+      /* set timer to sleep */
+      if(!log->timer_active){
+	log->flags |= AGS_LOG_TIMER_SLEEP;
+      }
+
+      /* set output to sleep */
+      if(!log->output_active){
+	log->flags |= AGS_LOG_OUTPUT_SUSPEND;
+      }
+
+      /* set queue to sleep */
+      if(!log->queue_active){
+	log->flags |= AGS_LOG_QUEUE_SUSPEND;
+      }
+
+      /* set log to sleep */
+      if(log->active_logs == 0){
 	log->flags |= AGS_LOG_SUSPEND;
       }
     }
 
-    log->flags |= (AGS_LOG_SUSPEND |
-		   AGS_LOG_QUEUE_SUSPEND |
-		   AGS_LOG_OUTPUT_SUSPEND);
+    log->broker_awaken = TRUE;
+    printf("  broker:3\n\0");
     pthread_mutex_unlock(&(log->broker_mutex));
   }
 
@@ -390,9 +472,9 @@ ags_log_output(void *ptr)
   goto ags_log_output_SUSPEND;
 
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
-    printf("output - loop");
+    printf("output - loop\n\0");
 
-    /* wait until output_formated_message has been set */
+    /* wait until output_formated_message has been set * /
     pthread_mutex_lock(&(log->output_mutex));
 
     if((AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT & (log->flags)) != 0){
@@ -428,26 +510,31 @@ ags_log_output(void *ptr)
 
     /* wait until log_interval has exceeded */
   ags_log_output_SUSPEND:
-
-    pthread_mutex_lock(&(log->output_mutex));
-
     if((AGS_LOG_STARTING & (log->flags)) != 0){
-      pthread_mutex_unlock(&(log->output_mutex));
+      log->output_started = TRUE;
       pthread_cond_signal(&(log->start_wait_cond));
-      pthread_mutex_lock(&(log->output_mutex));
     }
 
+    pthread_mutex_lock(&(log->output_mutex));
+    log->output_active = FALSE;
+
+    pthread_mutex_unlock(&(log->output_mutex));
+    pthread_cond_signal(&(log->broker_wait_cond));
+
+    pthread_mutex_lock(&(log->output_mutex));
     log->output_awaken = FALSE;
 
-    while((AGS_LOG_OUTPUT_SUSPEND & (log->flags)) != 0){
+    while((AGS_LOG_OUTPUT_SUSPEND & (log->flags)) != 0 ||
+	  !log->broker_active ||
+	  !log->signaled_output){
       pthread_cond_wait(&(log->output_wait_cond),
 			&(log->output_mutex));
     }
 
     log->output_awaken = TRUE;
+    log->signaled_output = FALSE;
+    log->flags |= AGS_LOG_OUTPUT_SUSPEND;
     pthread_mutex_unlock(&(log->output_mutex));
-
-    /* wake up broker */
     pthread_cond_signal(&(log->broker_wait_cond));
   }
 
@@ -474,18 +561,21 @@ ags_log_queue(void *ptr)
   int printed_chars;
 
   log = AGS_LOG(ptr);
+  log->queue_active = FALSE;
 
   goto ags_log_queue_SUSPEND;
 
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
-    /* set output_formated_message */
+    printf("queue - loop\n\0");
+
+    /* set output_formated_message * /
     pthread_mutex_lock(&(log->queue_mutex));
     log->flags |= AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT;
 
     log->output_formated_message = log->queue_formated_message;
     log->flags &= (~AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT);
 
-    /* signal output_wait_cond if necessary */
+    /* signal output_wait_cond if necessary * /
     if((AGS_LOG_OUTPUT_WAITS_FOR_QUEUE & (log->flags)) != 0){
       pthread_mutex_unlock(&(log->queue_mutex));
 
@@ -497,7 +587,10 @@ ags_log_queue(void *ptr)
     log->queue_formated_message = NULL;
 
     /* format queue_formated_message */
+    pthread_mutex_lock(&(log->queue_mutex));
     log->queue_active = TRUE;
+    pthread_mutex_unlock(&(log->queue_mutex));
+
     list = log->queue_message;
     log->queue_message = NULL;
 
@@ -531,33 +624,34 @@ ags_log_queue(void *ptr)
     }
 
     log->queue_formated_message = NULL;
-    log->queue_active = FALSE;
 
     /* wait until log_interval has exceeded */
   ags_log_queue_SUSPEND:
-
-    pthread_mutex_lock(&(log->queue_mutex));
-
-    //    printf("queue: queue inactive\n\0");
-
     if((AGS_LOG_STARTING & (log->flags)) != 0){
-      pthread_mutex_unlock(&(log->queue_mutex));
+      log->queue_started = TRUE;
       pthread_cond_signal(&(log->start_wait_cond));
-      pthread_mutex_lock(&(log->queue_mutex));
     }
 
+    pthread_mutex_lock(&(log->queue_mutex));
+    log->queue_active = FALSE;
+
+    pthread_mutex_unlock(&(log->queue_mutex));
+    pthread_cond_signal(&(log->broker_wait_cond));
+
+    pthread_mutex_lock(&(log->queue_mutex));
     log->queue_awaken = FALSE;
 
-    while((AGS_LOG_QUEUE_SUSPEND & (log->flags)) != 0){
+    while((AGS_LOG_QUEUE_SUSPEND & (log->flags)) != 0 ||
+	  !log->broker_active ||
+	  !log->signaled_queue){
       pthread_cond_wait(&(log->queue_wait_cond),
 			&(log->queue_mutex));
     }
 
     log->queue_awaken = TRUE;
+    log->signaled_queue = FALSE;
+    log->flags |= AGS_LOG_QUEUE_SUSPEND;
     pthread_mutex_unlock(&(log->queue_mutex));
-
-    /* wake up broker */
-    //    printf("queue: wake up broker\n\0");
     pthread_cond_signal(&(log->broker_wait_cond));
   }
 
@@ -566,62 +660,81 @@ ags_log_queue(void *ptr)
 }
 
 void
+ags_log_start_threads(AgsLog *log){
+  /* */
+  pthread_create(&(log->timer_thread), NULL,
+		 &ags_log_timer, log);
+
+  pthread_mutex_lock(&(log->start_mutex));
+  
+  while(!log->timer_started){
+    pthread_cond_wait(&(log->start_wait_cond),
+		      &(log->start_mutex));
+  }
+
+  pthread_mutex_unlock(&(log->start_mutex));
+
+  /**/
+  log->queue_started = FALSE;
+  pthread_create(&(log->queue_thread), NULL,
+		 &ags_log_queue, log);
+
+  pthread_mutex_lock(&(log->start_mutex));
+
+  while(!log->queue_started){
+    pthread_cond_wait(&(log->start_wait_cond),
+		      &(log->start_mutex));
+  }
+
+  pthread_mutex_unlock(&(log->start_mutex));
+
+  /**/
+  log->output_started = FALSE;
+  pthread_create(&(log->output_thread), NULL,
+		 &ags_log_output, log);
+
+  pthread_mutex_lock(&(log->start_mutex));
+
+  while(!log->output_started){
+    pthread_cond_wait(&(log->start_wait_cond),
+		      &(log->start_mutex));
+  }
+
+  pthread_mutex_unlock(&(log->start_mutex));
+}
+
+void
 ags_log_start_queue(AgsLog *log)
 {
   pthread_mutex_t start_mutex;
   pthread_mutexattr_t start_mutex_attr;
 
-  log->flags |= (AGS_LOG_STARTING |
-		 AGS_LOG_SUSPEND);
-
+  log->flags |= AGS_LOG_STARTING;
+ /*		 AGS_LOG_RUNNING |
+		 AGS_LOG_QUEUE_SUSPEND |
+		 AGS_LOG_OUTPUT_SUSPEND);
   pthread_mutexattr_init(&(start_mutex_attr));
   pthread_mutex_init(&(start_mutex), &(start_mutex_attr));
+  */
 
-  /**/
-  pthread_create(&(log->queue_thread), NULL,
-		 &ags_log_queue, log);
-
-  pthread_mutex_lock(&(start_mutex));
-
-  while((AGS_LOG_QUEUE_SUSPEND & (log->flags)) != 0){
-    pthread_cond_wait(&(log->start_wait_cond),
-		      &start_mutex);
-  }
-
-  pthread_mutex_unlock(&(start_mutex));
-
-  /**/
-  pthread_create(&(log->output_thread), NULL,
-		 &ags_log_output, log);
-
-  pthread_mutex_lock(&(start_mutex));
-
-  while((AGS_LOG_OUTPUT_SUSPEND & (log->flags)) != 0){
-    pthread_cond_wait(&(log->start_wait_cond),
-		      &start_mutex);
-  }
-
-  pthread_mutex_unlock(&(start_mutex));
-
-
-  /**/
-  log->flags |= AGS_LOG_RUNNING;
+  /* */
+  /*
+  log->broker_started = FALSE;
+  log->timer_started = FALSE;
+  */
 
   pthread_create(&(log->broker_thread), NULL,
 		 &ags_log_broker, log);
 
   pthread_mutex_lock(&(start_mutex));
   
-  while(!log->broker_waiting){
+  while(!log->broker_started){
     pthread_cond_wait(&(log->start_wait_cond),
 		      &start_mutex);
   }
 
   log->flags &= ~(AGS_LOG_STARTING);
-  log->broker_waiting = FALSE;
   pthread_mutex_unlock(&(start_mutex));
-
-  pthread_cond_signal(&(log->broker_wait_cond));
 }
 
 void
@@ -666,6 +779,10 @@ ags_log_add_message_thread(void *ptr)
   while((AGS_LOG_SUSPEND & (log->flags)) != 0){
     pthread_cond_wait(&(log->log_wait_cond),
 		      &mutex);
+  }
+
+  if(log->suspended_logs == 0){
+    log->flags |= AGS_LOG_SUSPEND;
   }
   
   log->active_logs += 1;
