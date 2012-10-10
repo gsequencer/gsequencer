@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/widget/gs_menu_item.h>
+#include <ags/widget/ags_menu_item.h>
 
 void ags_menu_item_class_init(AgsMenuItemClass *menu_item);
 void ags_menu_item_init(AgsMenuItem *menu_item);

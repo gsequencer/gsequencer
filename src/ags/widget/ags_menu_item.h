@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_table.h>
+
 #define AGS_TYPE_MENU_ITEM                (ags_menu_get_type())
 #define AGS_MENU_ITEM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MENU_ITEM, AgsMenuItem))
 #define AGS_MENU_ITEM_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MENU_ITEM, AgsMenuItemClass))
