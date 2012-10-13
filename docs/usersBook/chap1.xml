@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <sec1>
+    <title>The navigation</title>
+    <para>
+      <!-- TODO:JK: write introduction -->
+    </para>
+
+    <sec2>
+      <title>BPM</title>
+      <para>
+      <!-- TODO:JK: write section -->
+      </para>
+    </sec2>
+
+    <sec2>
+      <title>Playback controls</title>
+      <para>
+      <!-- TODO:JK: write section -->
+      </para>
+    </sec2>
+
+    <sec2>
+      <title>Song information</title>
+      <para>
+      <!-- TODO:JK: write section -->
+      </para>
+    </sec2>
+
+    <sec2>
+      <title>Loop</title>
+      <para>
+      <!-- TODO:JK: write section -->
+      </para>
+    </sec2>
+
+  </sec1>
+</chapter>

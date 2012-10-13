@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY jkraehemann "Joël Krähemann">
+]>
+<set xmlns="http://docbook.org/ns/docbook"
+      xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>Advanced Gtk+ Sequencer</title>
+  <subtitle>Documentation</subtitle>
+
+  <xi:include href="usersBook.xml"/>
+  <xi:include href="devleopersBook.xml"/>
+
+</set>
