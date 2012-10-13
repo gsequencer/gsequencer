@@ -25,7 +25,7 @@
     October 2005, I decided to reimplement &ags; from scratch in order to get rid of
     inherited burden. And it was one big development process until I was almost satisfied
     with it's design. There was a time in 2007 where I even wanted to replace GObject and
-    Gtk+ dependencies with my own libraries I begun to develop. I'm glad of didnt't doing
+    Gtk+ dependencies with my own libraries I begun to develop. I'm glad of didn't doing
     so.
   </para>
   <para>
