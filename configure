@@ -4506,12 +4506,12 @@ if test -n "$GOBJECT_CFLAGS"; then
     pkg_cv_GOBJECT_CFLAGS="$GOBJECT_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>/dev/null`
+  pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4523,12 +4523,12 @@ if test -n "$GOBJECT_LIBS"; then
     pkg_cv_GOBJECT_LIBS="$GOBJECT_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>/dev/null`
+  pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4549,14 +4549,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>&1`
+	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>&1`
         else
-	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>&1`
+	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GOBJECT_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3) were not met:
+	as_fn_error $? "Package requirements (gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3) were not met:
 
 $GOBJECT_PKG_ERRORS
 
