@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding="utf-8"?>
-<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
   <title>Linking</title>
   <para>
     In this section you get some knowledge about ags internals. Here you get an
@@ -76,10 +77,10 @@
 
 	<itemizedlist mark="circle">
 	  <listitem>
-	    bidirectional linked AgsChannel to an other AgsChannel
+	    Bidirectional linked AgsChannel to an other AgsChannel.
 	  </listitem>
 	  <listitem>
-	    generally you link an AgsOutput to an AgsInput
+	    Generally you link an AgsOutput to an AgsInput.
 	  </listitem>
 	</itemizedlist>
       </listitem>
@@ -90,14 +91,15 @@
 
 	<itemizedlist mark="circle">
 	  <listitem>
-	    bidirectional linked AgsRecycling to an other AgsRecycling on the same level
+	    Gidirectional linked AgsRecycling to an other AgsRecycling on the same
+	    level.
 	  </listitem>
 	  <listitem>
-	    they are linked across AgsAudio objects
+	    They are linked across AgsAudio objects.
 	  </listitem>
 	  <listitem>
-	    same level means the linked AgsRecycling are all child nodes of a parent
-	    AgsRecycling
+	    Same level means the linked AgsRecycling are all child nodes of a parent
+	    AgsRecycling.
 	  </listitem>
 	</itemizedlist>
       </listitem>
@@ -108,11 +110,11 @@
 
 	<itemizedlist mark="circle">
 	  <listitem>
-	    unidirectional linked AgsRecycling to an AgsChannel
+	    Unidirectional linked AgsRecycling to an AgsChannel.
 	  </listitem>
 	  <listitem>
-	    first AgsRecycling of an AgsOutput and last AgsRecycling of an (other)
-	    AgsOutput are linked to an AgsChannel
+	    First AgsRecycling of an AgsOutput and last AgsRecycling of an (other)
+	    AgsOutput are linked to an AgsChannel.
 	  </listitem>
 	</itemizedlist>
       </listitem>
@@ -120,30 +122,54 @@
   </sect1>
 
   <sect1>
-    <title></title>
-    <para>
-      
-    </para>
+    <title>Limitations</title>
+    <itemizedlist mark="bullet">
+      <listitem>
+	You may not create any kind of loops.
+      </listitem>
+      <listitem>
+	You may not set AGS_AUDIO_INPUT_HAS_RECYCLING without setting
+	AGS_AUDIO_OUTPUT_HAS_RECYCLING flag.
+      </listitem>
+    </itemizedlist>
   </sect1>
 
   <sect1>
-    <title></title>
+    <title>Hands-On</title>
     <para>
-      
+      There may be two ways how you can link AgsChannel objects.
     </para>
+
+    <example>
+      <title>Prerequisites</title>
+      <programlisting language="C">
+<xi:include href="../listings/linking_prerequisites.c" parse="text" />
+      </programlisting>
+    </example>
+
+    <para>
+      Assumed you know really what you do, you may be interested in following code.
+    </para>
+
+    <example>
+      <title>Thread-Unsafe way</title>
+      <programlisting language="C">
+<xi:include href="../listings/linking_unsafe.c" parse="text" />
+      </programlisting>
+    </example>
+
+    <para>
+      But generally you wish to create an AgsTask object and let it to link the
+      AgsChannel for you.
+    </para>
+
+    <example>
+      <title>Multithread-Safe way</title>
+      <programlisting language="C">
+<xi:include href="../listings/linking_safe.c" parse="text" />
+      </programlisting>
+    </example>
+
   </sect1>
 
-  <sect1>
-    <title></title>
-    <para>
-      
-    </para>
-  </sect1>
-
-  <sect1>
-    <title></title>
-    <para>
-      
-    </para>
-  </sect1>
 </chapter>
