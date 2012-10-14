@@ -11,10 +11,6 @@ AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lao':
-AC_CHECK_LIB([ao], [main])
-# FIXME: Replace `main' with a function in `-lasound':
-AC_CHECK_LIB([asound], [main])
 # FIXME: Replace `main' with a function in `-lcairo':
 AC_CHECK_LIB([cairo], [main])
 # FIXME: Replace `main' with a function in `-ldl':
@@ -27,10 +23,23 @@ AC_CHECK_LIB([freetype], [main])
 AC_CHECK_LIB([m], [main])
 # FIXME: Replace `main' with a function in `-lrt':
 AC_CHECK_LIB([rt], [main])
-# FIXME: Replace `main' with a function in `-lsndfile':
-AC_CHECK_LIB([sndfile], [main])
-# FIXME: Replace `main' with a function in `-lxml2':
-AC_CHECK_LIB([xml2], [main])
+
+
+PKG_CHECK_MODULES(LIBASOUND2, alsa >= 1.0.25)
+AC_SUBST(LIBASOUND2_CFLAGS)
+AC_SUBST(LIBASOUND2_LIBS)
+
+PKG_CHECK_MODULES(LIBAO, ao >= 1.1.0)
+AC_SUBST(LIBAO_CFLAGS)
+AC_SUBST(LIBAO_LIBS)
+
+PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.8.0)
+AC_SUBST(LIBXML2_CFLAGS)
+AC_SUBST(LIBXML2_LIBS)
+
+PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.25)
+AC_SUBST(SNDFILE_CFLAGS)
+AC_SUBST(SNDFILE_LIBS)
 
 PKG_CHECK_MODULES(LIBINSTPATCH, libinstpatch-1.0 >= 1.0)
 AC_SUBST(LIBINSTPATCH_CFLAGS)
@@ -43,6 +52,10 @@ AC_SUBST(GOBJECT_LIBS)
 PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-xlib-2.0 >= 2.24.0)
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
+
+PKG_CHECK_MODULES(CAIRO, cairo >= 1.12.0)
+AC_SUBST(CAIRO_CFLAGS)
+AC_SUBST(CAIRO_LIBS)
 
 PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24.0)
 AC_SUBST(GTK_CFLAGS)

@@ -1,0 +1,32 @@
+AUTOMAKE_OPTIONS = foreign
+
+# sources
+AGS_DIR = ./src/ags/
+
+AGS_LIB_SOURCES = $(wildcard $(AGS_DIR)lib/*.[ch])
+
+AGS_OBJECT_SOURCES = $(wildcard $(AGS_DIR)object/*.[ch])
+
+AGS_AUDIO_SOURCES = $(wildcard $(AGS_DIR)audio/*.[ch])
+AGS_TASK_SOURCES = $(wildcard $(AGS_DIR)audio/task/*.[ch])
+AGS_RECALL_SOURCES = $(wildcard $(AGS_DIR)audio/recall/*.[ch])
+AGS_AUDIO_FILE_SOURCES = $(wildcard $(AGS_DIR)audio/audio_file/*.[ch])
+
+AGS_WIDGET_SOURCES = $(wildcard $(AGS_DIR)widget/*.[ch])
+
+AGS_X_SOURCES = $(wildcard $(AGS_DIR)X/*.[ch])
+AGS_EDITOR_SOURCES = $(wildcard $(AGS_DIR)X/editor/*.[ch])
+AGS_MACHINE_SOURCES = $(wildcard $(AGS_DIR)X/machine/*.[ch])
+
+AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
+
+# 
+CFLAGS = -Isrc $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(GTK_CFLAGS)
+LIBS = $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(GTK_LIBS)
+
+bin_PROGRAMS = ags
+
+ags_SOURCES = $(AGS_DIR)main.[ch] $(AGS_LIB_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
+
+ags:
+	$(CC) $(CFLAGS) $(ags_SOURCES) -o $(bin_PROGRAMS) $(LIBS)

@@ -629,6 +629,27 @@ LIBOBJS
 EGREP
 GREP
 CPP
+GTK_LIBS
+GTK_CFLAGS
+CAIRO_LIBS
+CAIRO_CFLAGS
+GDKPIXBUF_LIBS
+GDKPIXBUF_CFLAGS
+GOBJECT_LIBS
+GOBJECT_CFLAGS
+LIBINSTPATCH_LIBS
+LIBINSTPATCH_CFLAGS
+SNDFILE_LIBS
+SNDFILE_CFLAGS
+LIBXML2_LIBS
+LIBXML2_CFLAGS
+LIBAO_LIBS
+LIBAO_CFLAGS
+LIBASOUND2_LIBS
+LIBASOUND2_CFLAGS
+PKG_CONFIG_LIBDIR
+PKG_CONFIG_PATH
+PKG_CONFIG
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
@@ -720,6 +741,27 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS
+PKG_CONFIG
+PKG_CONFIG_PATH
+PKG_CONFIG_LIBDIR
+LIBASOUND2_CFLAGS
+LIBASOUND2_LIBS
+LIBAO_CFLAGS
+LIBAO_LIBS
+LIBXML2_CFLAGS
+LIBXML2_LIBS
+SNDFILE_CFLAGS
+SNDFILE_LIBS
+LIBINSTPATCH_CFLAGS
+LIBINSTPATCH_LIBS
+GOBJECT_CFLAGS
+GOBJECT_LIBS
+GDKPIXBUF_CFLAGS
+GDKPIXBUF_LIBS
+CAIRO_CFLAGS
+CAIRO_LIBS
+GTK_CFLAGS
+GTK_LIBS
 CPP'
 
 
@@ -1346,6 +1388,43 @@ Some influential environment variables:
   LIBS        libraries to pass to the linker, e.g. -l<library>
   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
+  PKG_CONFIG  path to pkg-config utility
+  PKG_CONFIG_PATH
+              directories to add to pkg-config's search path
+  PKG_CONFIG_LIBDIR
+              path overriding pkg-config's built-in search path
+  LIBASOUND2_CFLAGS
+              C compiler flags for LIBASOUND2, overriding pkg-config
+  LIBASOUND2_LIBS
+              linker flags for LIBASOUND2, overriding pkg-config
+  LIBAO_CFLAGS
+              C compiler flags for LIBAO, overriding pkg-config
+  LIBAO_LIBS  linker flags for LIBAO, overriding pkg-config
+  LIBXML2_CFLAGS
+              C compiler flags for LIBXML2, overriding pkg-config
+  LIBXML2_LIBS
+              linker flags for LIBXML2, overriding pkg-config
+  SNDFILE_CFLAGS
+              C compiler flags for SNDFILE, overriding pkg-config
+  SNDFILE_LIBS
+              linker flags for SNDFILE, overriding pkg-config
+  LIBINSTPATCH_CFLAGS
+              C compiler flags for LIBINSTPATCH, overriding pkg-config
+  LIBINSTPATCH_LIBS
+              linker flags for LIBINSTPATCH, overriding pkg-config
+  GOBJECT_CFLAGS
+              C compiler flags for GOBJECT, overriding pkg-config
+  GOBJECT_LIBS
+              linker flags for GOBJECT, overriding pkg-config
+  GDKPIXBUF_CFLAGS
+              C compiler flags for GDKPIXBUF, overriding pkg-config
+  GDKPIXBUF_LIBS
+              linker flags for GDKPIXBUF, overriding pkg-config
+  CAIRO_CFLAGS
+              C compiler flags for CAIRO, overriding pkg-config
+  CAIRO_LIBS  linker flags for CAIRO, overriding pkg-config
+  GTK_CFLAGS  C compiler flags for GTK, overriding pkg-config
+  GTK_LIBS    linker flags for GTK, overriding pkg-config
   CPP         C preprocessor
 
 Use these variables to override the choices made by `configure' or to help
@@ -3625,88 +3704,8 @@ fi
 
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lao':
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lao" >&5
-$as_echo_n "checking for main in -lao... " >&6; }
-if ${ac_cv_lib_ao_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lao  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_ao_main=yes
-else
-  ac_cv_lib_ao_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ao_main" >&5
-$as_echo "$ac_cv_lib_ao_main" >&6; }
-if test "x$ac_cv_lib_ao_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBAO 1
-_ACEOF
-
-  LIBS="-lao $LIBS"
-
-fi
-
-# FIXME: Replace `main' with a function in `-lasound':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lasound" >&5
-$as_echo_n "checking for main in -lasound... " >&6; }
-if ${ac_cv_lib_asound_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lasound  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_asound_main=yes
-else
-  ac_cv_lib_asound_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_asound_main" >&5
-$as_echo "$ac_cv_lib_asound_main" >&6; }
-if test "x$ac_cv_lib_asound_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBASOUND 1
-_ACEOF
-
-  LIBS="-lasound $LIBS"
-
-fi
-
 # FIXME: Replace `main' with a function in `-lcairo':
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcairo" >&5
 $as_echo_n "checking for main in -lcairo... " >&6; }
 if ${ac_cv_lib_cairo_main+:} false; then :
@@ -3946,85 +3945,972 @@ _ACEOF
 
 fi
 
-# FIXME: Replace `main' with a function in `-lsndfile':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lsndfile" >&5
-$as_echo_n "checking for main in -lsndfile... " >&6; }
-if ${ac_cv_lib_sndfile_main+:} false; then :
+
+
+
+
+
+
+
+
+
+if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+	if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PKG_CONFIG+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsndfile  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
 
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_sndfile_main=yes
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
 else
-  ac_cv_lib_sndfile_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sndfile_main" >&5
-$as_echo "$ac_cv_lib_sndfile_main" >&6; }
-if test "x$ac_cv_lib_sndfile_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBSNDFILE 1
-_ACEOF
-
-  LIBS="-lsndfile $LIBS"
-
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 fi
 
-# FIXME: Replace `main' with a function in `-lxml2':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lxml2" >&5
-$as_echo_n "checking for main in -lxml2... " >&6; }
-if ${ac_cv_lib_xml2_main+:} false; then :
+
+fi
+if test -z "$ac_cv_path_PKG_CONFIG"; then
+  ac_pt_PKG_CONFIG=$PKG_CONFIG
+  # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxml2  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
+  case $ac_pt_PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
 
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_xml2_main=yes
+  ;;
+esac
+fi
+ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
+if test -n "$ac_pt_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
+$as_echo "$ac_pt_PKG_CONFIG" >&6; }
 else
-  ac_cv_lib_xml2_main=no
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xml2_main" >&5
-$as_echo "$ac_cv_lib_xml2_main" >&6; }
-if test "x$ac_cv_lib_xml2_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBXML2 1
-_ACEOF
 
-  LIBS="-lxml2 $LIBS"
+  if test "x$ac_pt_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_pt_PKG_CONFIG
+  fi
+else
+  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
+fi
 
 fi
+if test -n "$PKG_CONFIG"; then
+	_pkg_min_version=0.9.0
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
+$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
+	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		PKG_CONFIG=""
+	fi
+fi
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBASOUND2" >&5
+$as_echo_n "checking for LIBASOUND2... " >&6; }
+
+if test -n "$LIBASOUND2_CFLAGS"; then
+    pkg_cv_LIBASOUND2_CFLAGS="$LIBASOUND2_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"alsa >= 1.0.25\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "alsa >= 1.0.25") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBASOUND2_CFLAGS=`$PKG_CONFIG --cflags "alsa >= 1.0.25" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBASOUND2_LIBS"; then
+    pkg_cv_LIBASOUND2_LIBS="$LIBASOUND2_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"alsa >= 1.0.25\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "alsa >= 1.0.25") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBASOUND2_LIBS=`$PKG_CONFIG --libs "alsa >= 1.0.25" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBASOUND2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "alsa >= 1.0.25" 2>&1`
+        else
+	        LIBASOUND2_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "alsa >= 1.0.25" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBASOUND2_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (alsa >= 1.0.25) were not met:
+
+$LIBASOUND2_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables LIBASOUND2_CFLAGS
+and LIBASOUND2_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables LIBASOUND2_CFLAGS
+and LIBASOUND2_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	LIBASOUND2_CFLAGS=$pkg_cv_LIBASOUND2_CFLAGS
+	LIBASOUND2_LIBS=$pkg_cv_LIBASOUND2_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBAO" >&5
+$as_echo_n "checking for LIBAO... " >&6; }
+
+if test -n "$LIBAO_CFLAGS"; then
+    pkg_cv_LIBAO_CFLAGS="$LIBAO_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ao >= 1.1.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ao >= 1.1.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBAO_CFLAGS=`$PKG_CONFIG --cflags "ao >= 1.1.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBAO_LIBS"; then
+    pkg_cv_LIBAO_LIBS="$LIBAO_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ao >= 1.1.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ao >= 1.1.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBAO_LIBS=`$PKG_CONFIG --libs "ao >= 1.1.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBAO_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ao >= 1.1.0" 2>&1`
+        else
+	        LIBAO_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ao >= 1.1.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBAO_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (ao >= 1.1.0) were not met:
+
+$LIBAO_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables LIBAO_CFLAGS
+and LIBAO_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables LIBAO_CFLAGS
+and LIBAO_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	LIBAO_CFLAGS=$pkg_cv_LIBAO_CFLAGS
+	LIBAO_LIBS=$pkg_cv_LIBAO_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBXML2" >&5
+$as_echo_n "checking for LIBXML2... " >&6; }
+
+if test -n "$LIBXML2_CFLAGS"; then
+    pkg_cv_LIBXML2_CFLAGS="$LIBXML2_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libxml-2.0 >= 2.8.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libxml-2.0 >= 2.8.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBXML2_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0 >= 2.8.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBXML2_LIBS"; then
+    pkg_cv_LIBXML2_LIBS="$LIBXML2_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libxml-2.0 >= 2.8.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libxml-2.0 >= 2.8.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBXML2_LIBS=`$PKG_CONFIG --libs "libxml-2.0 >= 2.8.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBXML2_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libxml-2.0 >= 2.8.0" 2>&1`
+        else
+	        LIBXML2_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libxml-2.0 >= 2.8.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBXML2_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (libxml-2.0 >= 2.8.0) were not met:
+
+$LIBXML2_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables LIBXML2_CFLAGS
+and LIBXML2_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables LIBXML2_CFLAGS
+and LIBXML2_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	LIBXML2_CFLAGS=$pkg_cv_LIBXML2_CFLAGS
+	LIBXML2_LIBS=$pkg_cv_LIBXML2_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SNDFILE" >&5
+$as_echo_n "checking for SNDFILE... " >&6; }
+
+if test -n "$SNDFILE_CFLAGS"; then
+    pkg_cv_SNDFILE_CFLAGS="$SNDFILE_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"sndfile >= 1.0.25\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "sndfile >= 1.0.25") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_SNDFILE_CFLAGS=`$PKG_CONFIG --cflags "sndfile >= 1.0.25" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$SNDFILE_LIBS"; then
+    pkg_cv_SNDFILE_LIBS="$SNDFILE_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"sndfile >= 1.0.25\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "sndfile >= 1.0.25") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_SNDFILE_LIBS=`$PKG_CONFIG --libs "sndfile >= 1.0.25" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        SNDFILE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "sndfile >= 1.0.25" 2>&1`
+        else
+	        SNDFILE_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "sndfile >= 1.0.25" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$SNDFILE_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (sndfile >= 1.0.25) were not met:
+
+$SNDFILE_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables SNDFILE_CFLAGS
+and SNDFILE_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables SNDFILE_CFLAGS
+and SNDFILE_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	SNDFILE_CFLAGS=$pkg_cv_SNDFILE_CFLAGS
+	SNDFILE_LIBS=$pkg_cv_SNDFILE_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBINSTPATCH" >&5
+$as_echo_n "checking for LIBINSTPATCH... " >&6; }
+
+if test -n "$LIBINSTPATCH_CFLAGS"; then
+    pkg_cv_LIBINSTPATCH_CFLAGS="$LIBINSTPATCH_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libinstpatch-1.0 >= 1.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libinstpatch-1.0 >= 1.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBINSTPATCH_CFLAGS=`$PKG_CONFIG --cflags "libinstpatch-1.0 >= 1.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBINSTPATCH_LIBS"; then
+    pkg_cv_LIBINSTPATCH_LIBS="$LIBINSTPATCH_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libinstpatch-1.0 >= 1.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libinstpatch-1.0 >= 1.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBINSTPATCH_LIBS=`$PKG_CONFIG --libs "libinstpatch-1.0 >= 1.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBINSTPATCH_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libinstpatch-1.0 >= 1.0" 2>&1`
+        else
+	        LIBINSTPATCH_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libinstpatch-1.0 >= 1.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBINSTPATCH_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (libinstpatch-1.0 >= 1.0) were not met:
+
+$LIBINSTPATCH_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables LIBINSTPATCH_CFLAGS
+and LIBINSTPATCH_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables LIBINSTPATCH_CFLAGS
+and LIBINSTPATCH_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	LIBINSTPATCH_CFLAGS=$pkg_cv_LIBINSTPATCH_CFLAGS
+	LIBINSTPATCH_LIBS=$pkg_cv_LIBINSTPATCH_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GOBJECT" >&5
+$as_echo_n "checking for GOBJECT... " >&6; }
+
+if test -n "$GOBJECT_CFLAGS"; then
+    pkg_cv_GOBJECT_CFLAGS="$GOBJECT_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GOBJECT_LIBS"; then
+    pkg_cv_GOBJECT_LIBS="$GOBJECT_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>&1`
+        else
+	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GOBJECT_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12) were not met:
+
+$GOBJECT_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables GOBJECT_CFLAGS
+and GOBJECT_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables GOBJECT_CFLAGS
+and GOBJECT_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	GOBJECT_CFLAGS=$pkg_cv_GOBJECT_CFLAGS
+	GOBJECT_LIBS=$pkg_cv_GOBJECT_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GDKPIXBUF" >&5
+$as_echo_n "checking for GDKPIXBUF... " >&6; }
+
+if test -n "$GDKPIXBUF_CFLAGS"; then
+    pkg_cv_GDKPIXBUF_CFLAGS="$GDKPIXBUF_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.24.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GDKPIXBUF_CFLAGS=`$PKG_CONFIG --cflags "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GDKPIXBUF_LIBS"; then
+    pkg_cv_GDKPIXBUF_LIBS="$GDKPIXBUF_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.24.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GDKPIXBUF_LIBS=`$PKG_CONFIG --libs "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>&1`
+        else
+	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GDKPIXBUF_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (gdk-pixbuf-xlib-2.0 >= 2.24.0) were not met:
+
+$GDKPIXBUF_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables GDKPIXBUF_CFLAGS
+and GDKPIXBUF_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables GDKPIXBUF_CFLAGS
+and GDKPIXBUF_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	GDKPIXBUF_CFLAGS=$pkg_cv_GDKPIXBUF_CFLAGS
+	GDKPIXBUF_LIBS=$pkg_cv_GDKPIXBUF_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for CAIRO" >&5
+$as_echo_n "checking for CAIRO... " >&6; }
+
+if test -n "$CAIRO_CFLAGS"; then
+    pkg_cv_CAIRO_CFLAGS="$CAIRO_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cairo >= 1.12.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "cairo >= 1.12.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_CAIRO_CFLAGS=`$PKG_CONFIG --cflags "cairo >= 1.12.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$CAIRO_LIBS"; then
+    pkg_cv_CAIRO_LIBS="$CAIRO_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cairo >= 1.12.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "cairo >= 1.12.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_CAIRO_LIBS=`$PKG_CONFIG --libs "cairo >= 1.12.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        CAIRO_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "cairo >= 1.12.0" 2>&1`
+        else
+	        CAIRO_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "cairo >= 1.12.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$CAIRO_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (cairo >= 1.12.0) were not met:
+
+$CAIRO_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables CAIRO_CFLAGS
+and CAIRO_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables CAIRO_CFLAGS
+and CAIRO_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	CAIRO_CFLAGS=$pkg_cv_CAIRO_CFLAGS
+	CAIRO_LIBS=$pkg_cv_CAIRO_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GTK" >&5
+$as_echo_n "checking for GTK... " >&6; }
+
+if test -n "$GTK_CFLAGS"; then
+    pkg_cv_GTK_CFLAGS="$GTK_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.24.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 >= 2.24.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GTK_LIBS"; then
+    pkg_cv_GTK_LIBS="$GTK_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.24.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.24.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GTK_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 >= 2.24.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtk+-2.0 >= 2.24.0" 2>&1`
+        else
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtk+-2.0 >= 2.24.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GTK_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (gtk+-2.0 >= 2.24.0) were not met:
+
+$GTK_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables GTK_CFLAGS
+and GTK_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables GTK_CFLAGS
+and GTK_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	GTK_CFLAGS=$pkg_cv_GTK_CFLAGS
+	GTK_LIBS=$pkg_cv_GTK_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
 
 
 # Checks for header files.

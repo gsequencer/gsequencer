@@ -15,6 +15,7 @@
 
 
 
+
 am__make_dryrun = \
   { \
     am__dry=no; \
@@ -48,6 +49,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+bin_PROGRAMS = ags$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -63,8 +65,22 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-SOURCES =
-DIST_SOURCES =
+am__installdirs = "$(DESTDIR)$(bindir)"
+PROGRAMS = $(bin_PROGRAMS)
+am__objects_1 =
+am_ags_OBJECTS = $(am__objects_1) $(am__objects_1) $(am__objects_1) \
+	$(am__objects_1) $(am__objects_1) $(am__objects_1) \
+	$(am__objects_1) $(am__objects_1) $(am__objects_1) \
+	$(am__objects_1) $(am__objects_1)
+ags_OBJECTS = $(am_ags_OBJECTS)
+ags_LDADD = $(LDADD)
+DEFAULT_INCLUDES = -I.
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+SOURCES = $(ags_SOURCES)
+DIST_SOURCES = $(ags_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -91,9 +107,13 @@ AUTOCONF = ${SHELL} /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-c
 AUTOHEADER = ${SHELL} /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-code/missing --run autoheader
 AUTOMAKE = ${SHELL} /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-code/missing --run automake-1.11
 AWK = gawk
+CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  
+CAIRO_LIBS = -lcairo  
 CC = gcc
 CCDEPMODE = depmode=none
-CFLAGS = -g -O2
+
+# 
+CFLAGS = -Isrc $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(GTK_CFLAGS)
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -104,15 +124,29 @@ ECHO_N = -n
 ECHO_T = 
 EGREP = /bin/grep -E
 EXEEXT = 
+GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/libpng12  
+GDKPIXBUF_LIBS = -pthread -lgdk_pixbuf_xlib-2.0 -lgmodule-2.0 -lrt -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  
+GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  
+GOBJECT_LIBS = -Wl,--export-dynamic -pthread -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0  
 GREP = /bin/grep
+GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  
+GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfreetype -lfontconfig -lgobject-2.0 -lglib-2.0  
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
+LIBAO_CFLAGS =  
+LIBAO_LIBS = -lao  
+LIBASOUND2_CFLAGS = -I/usr/include/alsa  
+LIBASOUND2_LIBS = -lasound  
+LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  
+LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lsndfile -lglib-2.0  
 LIBOBJS = 
-LIBS = -lxml2 -lsndfile -lrt -lm -lfreetype -lfontconfig -ldl -lcairo -lasound -lao 
+LIBS = $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(GTK_LIBS)
+LIBXML2_CFLAGS = -I/usr/include/libxml2  
+LIBXML2_LIBS = -lxml2  
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-code/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -125,8 +159,13 @@ PACKAGE_TARNAME = ags
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.3.15-SNAPSHOT
 PATH_SEPARATOR = :
+PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG_LIBDIR = 
+PKG_CONFIG_PATH = 
 SET_MAKE = 
 SHELL = /bin/bash
+SNDFILE_CFLAGS =  
+SNDFILE_LIBS = -lsndfile  
 STRIP = 
 VERSION = 0.3.15-SNAPSHOT
 abs_builddir = /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-code
@@ -171,6 +210,22 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
+AUTOMAKE_OPTIONS = foreign
+
+# sources
+AGS_DIR = ./src/ags/
+AGS_LIB_SOURCES = $(wildcard $(AGS_DIR)lib/*.[ch])
+AGS_OBJECT_SOURCES = $(wildcard $(AGS_DIR)object/*.[ch])
+AGS_AUDIO_SOURCES = $(wildcard $(AGS_DIR)audio/*.[ch])
+AGS_TASK_SOURCES = $(wildcard $(AGS_DIR)audio/task/*.[ch])
+AGS_RECALL_SOURCES = $(wildcard $(AGS_DIR)audio/recall/*.[ch])
+AGS_AUDIO_FILE_SOURCES = $(wildcard $(AGS_DIR)audio/audio_file/*.[ch])
+AGS_WIDGET_SOURCES = $(wildcard $(AGS_DIR)widget/*.[ch])
+AGS_X_SOURCES = $(wildcard $(AGS_DIR)X/*.[ch])
+AGS_EDITOR_SOURCES = $(wildcard $(AGS_DIR)X/editor/*.[ch])
+AGS_MACHINE_SOURCES = $(wildcard $(AGS_DIR)X/machine/*.[ch])
+AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
+ags_SOURCES = $(AGS_DIR)main.[ch] $(AGS_LIB_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -181,15 +236,15 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu Makefile
+	  $(AUTOMAKE) --foreign Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -224,6 +279,52 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p; \
+	  then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
+	; done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' `; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
 tags: TAGS
 TAGS:
 
@@ -395,8 +496,11 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile config.h
+all-am: Makefile $(PROGRAMS) config.h
 installdirs:
+	for dir in "$(DESTDIR)$(bindir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -429,12 +533,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-hdr
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-hdr
 
 dvi: dvi-am
 
@@ -454,7 +559,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-am
 
@@ -484,7 +589,7 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-am
 
@@ -494,23 +599,28 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-binPROGRAMS
 
 .MAKE: all install-am install-strip
 
-.PHONY: all all-am am--refresh check check-am clean clean-generic dist \
-	dist-all dist-bzip2 dist-gzip dist-lzip dist-lzma dist-shar \
-	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-generic distclean-hdr distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am
+.PHONY: all all-am am--refresh check check-am clean clean-binPROGRAMS \
+	clean-generic dist dist-all dist-bzip2 dist-gzip dist-lzip \
+	dist-lzma dist-shar dist-tarZ dist-xz dist-zip distcheck \
+	distclean distclean-compile distclean-generic distclean-hdr \
+	distcleancheck distdir distuninstallcheck dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-binPROGRAMS
 
+
+ags:
+	$(CC) $(CFLAGS) $(ags_SOURCES) -o $(bin_PROGRAMS) $(LIBS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
