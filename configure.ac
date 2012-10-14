@@ -11,8 +11,6 @@ AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lcairo':
-AC_CHECK_LIB([cairo], [main])
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main])
 # FIXME: Replace `main' with a function in `-lfontconfig':
@@ -45,11 +43,11 @@ PKG_CHECK_MODULES(LIBINSTPATCH, libinstpatch-1.0 >= 1.0)
 AC_SUBST(LIBINSTPATCH_CFLAGS)
 AC_SUBST(LIBINSTPATCH_LIBS)
 
-PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12)
+PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3)
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
-PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-xlib-2.0 >= 2.24.0)
+PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-xlib-2.0 >= 2.26.1)
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
 
@@ -57,7 +55,7 @@ PKG_CHECK_MODULES(CAIRO, cairo >= 1.12.0)
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24.0)
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24.10)
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 

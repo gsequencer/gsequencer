@@ -3704,48 +3704,8 @@ fi
 
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lcairo':
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcairo" >&5
-$as_echo_n "checking for main in -lcairo... " >&6; }
-if ${ac_cv_lib_cairo_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lcairo  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_cairo_main=yes
-else
-  ac_cv_lib_cairo_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_cairo_main" >&5
-$as_echo "$ac_cv_lib_cairo_main" >&6; }
-if test "x$ac_cv_lib_cairo_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBCAIRO 1
-_ACEOF
-
-  LIBS="-lcairo $LIBS"
-
-fi
-
 # FIXME: Replace `main' with a function in `-ldl':
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -ldl" >&5
 $as_echo_n "checking for main in -ldl... " >&6; }
 if ${ac_cv_lib_dl_main+:} false; then :
@@ -4546,12 +4506,12 @@ if test -n "$GOBJECT_CFLAGS"; then
     pkg_cv_GOBJECT_CFLAGS="$GOBJECT_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>/dev/null`
+  pkg_cv_GOBJECT_CFLAGS=`$PKG_CONFIG --cflags "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4563,12 +4523,12 @@ if test -n "$GOBJECT_LIBS"; then
     pkg_cv_GOBJECT_LIBS="$GOBJECT_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>/dev/null`
+  pkg_cv_GOBJECT_LIBS=`$PKG_CONFIG --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4589,14 +4549,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>&1`
+	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>&1`
         else
-	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12" 2>&1`
+	        GOBJECT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GOBJECT_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gobject-2.0 >= 2.12 glib-2.0 >= 2.12 gmodule-2.0 >= 2.12 gthread-2.0 >= 2.12) were not met:
+	as_fn_error $? "Package requirements (gobject-2.0 >= 2.32.3 glib-2.0 >= gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3) were not met:
 
 $GOBJECT_PKG_ERRORS
 
@@ -4640,12 +4600,12 @@ if test -n "$GDKPIXBUF_CFLAGS"; then
     pkg_cv_GDKPIXBUF_CFLAGS="$GDKPIXBUF_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.24.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.24.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.26.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.26.1") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GDKPIXBUF_CFLAGS=`$PKG_CONFIG --cflags "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>/dev/null`
+  pkg_cv_GDKPIXBUF_CFLAGS=`$PKG_CONFIG --cflags "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4657,12 +4617,12 @@ if test -n "$GDKPIXBUF_LIBS"; then
     pkg_cv_GDKPIXBUF_LIBS="$GDKPIXBUF_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.24.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.24.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.26.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.26.1") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GDKPIXBUF_LIBS=`$PKG_CONFIG --libs "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>/dev/null`
+  pkg_cv_GDKPIXBUF_LIBS=`$PKG_CONFIG --libs "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4683,14 +4643,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>&1`
+	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>&1`
         else
-	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.24.0" 2>&1`
+	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GDKPIXBUF_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gdk-pixbuf-xlib-2.0 >= 2.24.0) were not met:
+	as_fn_error $? "Package requirements (gdk-pixbuf-xlib-2.0 >= 2.26.1) were not met:
 
 $GDKPIXBUF_PKG_ERRORS
 
@@ -4828,12 +4788,12 @@ if test -n "$GTK_CFLAGS"; then
     pkg_cv_GTK_CFLAGS="$GTK_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.24.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.24.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.24.10\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.24.10") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 >= 2.24.0" 2>/dev/null`
+  pkg_cv_GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 >= 2.24.10" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4845,12 +4805,12 @@ if test -n "$GTK_LIBS"; then
     pkg_cv_GTK_LIBS="$GTK_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.24.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.24.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.24.10\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.24.10") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GTK_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 >= 2.24.0" 2>/dev/null`
+  pkg_cv_GTK_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 >= 2.24.10" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4871,14 +4831,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtk+-2.0 >= 2.24.0" 2>&1`
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtk+-2.0 >= 2.24.10" 2>&1`
         else
-	        GTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtk+-2.0 >= 2.24.0" 2>&1`
+	        GTK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtk+-2.0 >= 2.24.10" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GTK_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gtk+-2.0 >= 2.24.0) were not met:
+	as_fn_error $? "Package requirements (gtk+-2.0 >= 2.24.10) were not met:
 
 $GTK_PKG_ERRORS
 
