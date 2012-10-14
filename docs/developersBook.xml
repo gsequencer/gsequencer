@@ -5,8 +5,8 @@
 <book xmlns="http://docbook.org/ns/docbook"
       xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
   <title>Advanced Gtk+ Sequencer</title>
-  <subtitle>User's Handbook</subtitle>
-
+  <subtitle>Developer's Book</subtitle>
+  
   <info>
       <legalnotice>
 	<para>
@@ -28,7 +28,7 @@
   </info>
 
   <dedication>
-    <para>This book is dedicated to my father &#8224;Hans-Jörg Krähemann.</para>
+    <para>This book is dedicated to my friend.</para>
   </dedication>
 
   <xi:include href="developersBook/preface.xml"/>
