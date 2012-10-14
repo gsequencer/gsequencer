@@ -42,14 +42,14 @@ ags_persistable_read(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node
 }
 
 void
-ags_persistable_read_link(AgsPersistable *persistable)
+ags_persistable_read_link(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node)
 {
   AgsPersistableInterface *persistable_interface;
 
   g_return_if_fail(AGS_IS_PERSISTABLE(persistable));
   persistable_interface = AGS_PERSISTABLE_GET_INTERFACE(persistable);
   g_return_if_fail(persistable_interface->read_link);
-  persistable_interface->read_link(persistable);
+  persistable_interface->read_link(persistable, doc, node);
 }
 
 xmlNodePtr

@@ -10,7 +10,7 @@ AGS_OBJECT_SOURCES = $(wildcard $(AGS_DIR)object/*.[ch])
 AGS_AUDIO_SOURCES = $(wildcard $(AGS_DIR)audio/*.[ch])
 AGS_TASK_SOURCES = $(wildcard $(AGS_DIR)audio/task/*.[ch])
 AGS_RECALL_SOURCES = $(wildcard $(AGS_DIR)audio/recall/*.[ch])
-AGS_AUDIO_FILE_SOURCES = $(wildcard $(AGS_DIR)audio/audio_file/*.[ch])
+AGS_AUDIO_FILE_SOURCES = $(wildcard $(AGS_DIR)audio/file/*.[ch])
 
 AGS_WIDGET_SOURCES = $(wildcard $(AGS_DIR)widget/*.[ch])
 
