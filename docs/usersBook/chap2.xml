@@ -1,1 +1,87 @@
 <?xml version='1.0' encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook">
+  <title>Engines</title>
+  <para>
+    You can add engines by activating the appropriate menu item within
+    the "add" submenu of the "edit" menu item. You may change the properties
+    of an engine by opening the properties dialog from the context menu.
+    From the context menu you may perform some other tasks, too.
+  </para>
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	To move up or down an engine open context menu and activate "up"
+	respectively "down" entry.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	To show or hide an engine open context menu and activate "show"
+	respectively "hide" entry. Note the engines won't be hidden entirely
+	they are just collapsed.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	To rename an engine open context menu and activate "rename" entry.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	To remove an engine open context menu and activate "destroy" entry.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	To open properties dialog open context menu and activate "properties"
+	entry.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <sec1>
+    <title>Panel</title>
+    <para>
+      The panel is used to output to your soundcard.
+    </para>
+  </sec1>
+
+  <sec1>
+    <title>Mixer</title>
+    <para>
+      Bundle audio lines with the mixer and perform toplevel stream manipulation.
+    </para>
+  </sec1>
+
+  <sec1>
+    <title>Drum</title>
+    <para>
+      Produce an audio stream by defining a pattern. The drum supports opening
+      audio files and associate to its input.
+    </para>
+  </sec1>
+
+  <sec1>
+    <title>Matrix</title>
+    <para>
+      Produce an audio stream by defining a pattern. The matrix itselves doesn't
+      have any audio signals on its own input you may rather link it to a synth
+      engine.
+    </para>
+  </sec1>
+
+  <sec1>
+    <title>Synth</title>
+    <para>
+      Produce audio data using its oscillators. 
+    </para>
+  </sec1>
+
+  <sec1>
+    <title>FFPlayer</title>
+    <para>
+      Produce audio data by opening audio containers like Soundfont2 files.
+    </para>
+  </sec1>
+
+</chapter>
