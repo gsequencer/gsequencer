@@ -38,7 +38,7 @@
       With these controls you can play/stop a song or seek to the wished position.
     </para>
     <table>
-      <title>AGS playback controls table.</title>
+      <title>AGS playback controls table</title>
       <tgroup cols="3" align="left" colsep='1' rowsep='1'>
 	<thead>
 	  <row>
