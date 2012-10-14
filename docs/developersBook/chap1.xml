@@ -91,7 +91,7 @@
 
 	<itemizedlist mark="circle">
 	  <listitem>
-	    Gidirectional linked AgsRecycling to an other AgsRecycling on the same
+	    Bidirectional linked AgsRecycling to an other AgsRecycling on the same
 	    level.
 	  </listitem>
 	  <listitem>
