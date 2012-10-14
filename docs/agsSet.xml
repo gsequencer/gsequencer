@@ -5,6 +5,6 @@
   <subtitle>Documentation</subtitle>
 
   <xi:include href="usersBook.xml"/>
-  <xi:include href="devleopersBook.xml"/>
+  <xi:include href="developersBook.xml"/>
 
 </set>
