@@ -1,7 +1,104 @@
 <?xml version='1.0' encoding="utf-8"?>
-<chapter xmlns="http://docbook.org/ns/docbook">
+<!DOCTYPE book [
+<!ENTITY indexMenuIcon "file:///usr/share/icons/gnome/scalable/actions/system-run-symbolic.svg">
+<!ENTITY cursorIcon "file:///usr/share/icons/gnome/scalable/actions/go-jump-symbolic.svg">
+<!ENTITY notesIcon "file:///usr/share/icons/gnome/scalable/mimetypes/audio-x-generic-symbolic.svg">
+<!ENTITY deleteIcon "file:///usr/share/icons/gnome/scalable/actions/edit-delete-symbolic.svg">
+<!ENTITY selectIcon "file:///usr/share/icons/gnome/scalable/actions/edit-select-symbolic.svg">
+<!ENTITY copyIcon "file:///usr/share/icons/gnome/scalable/actions/edit-copy-symbolic.svg">
+<!ENTITY cutIcon "file:///usr/share/icons/gnome/scalable/actions/edit-cut-symbolic.svg">
+<!ENTITY pasteIcon "file:///usr/share/icons/gnome/scalable/actions/edit-paste-symbolic.svg">
+]>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>Editor</title>
   <para>
-    <!-- TODO:JK: write some text -->
+    The editor features a piano roll. After linking an editor index with an enginge
+    You may perform tasks like adding notes or copy, cut and paste them. You may
+    change view segmentation, too.
   </para>
+
+  <sect1>
+    <title>Linking</title>
+    <para>
+      Before you might perform any task with the editor you have to link engines
+      by adding an index. Then you should link it with an engine. That can all be
+      done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
+      index list.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Toolbar</title>
+    <imagedata fileref="../images/ags_toolbar.png" />
+    <para>
+      In the table below are the various buttons explained you may use for editing.
+    </para>
+    <table>
+      <title>AGS editor toolbar controls table.</title>
+      <tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<thead>
+	  <row>
+	    <entry>icon</entry>
+	    <entry>action</entry>
+	    <entry>description</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry><imagedata fileref="&cursorIcon;" /></entry>
+	    <entry>cursor</entry>
+	    <entry>
+	      You may want to set the cursor to paste notes at the position where it
+	      is located.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&notesIcon;" /></entry>
+	    <entry>notes</entry>
+	    <entry>
+	      Add notes by clicking within the piano roll and move to till them having
+	      the wished duration.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&deleteIcon;" /></entry>
+	    <entry>delete</entry>
+	    <entry>
+	      Delete notes by clicking on the note you don't want anymore.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&selectIcon;" /></entry>
+	    <entry>select</entry>
+	    <entry>
+	      Select notes to copy or cut them.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&copyIcon;" /></entry>
+	    <entry>copy</entry>
+	    <entry>
+	      Copy notes to the clipboard.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&cutIcon;" /></entry>
+	    <entry>cut</entry>
+	    <entry>
+	      Cut notes to the clipboard.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&pasteIcon;" /></entry>
+	    <entry>paste</entry>
+	    <entry>
+	      Paste the previously copied or cutted notes at the cursor position or
+	      just insert them where they are/were located. 
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+  </sect1>
+
 </chapter>

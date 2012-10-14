@@ -41,6 +41,7 @@
 
   <sect1>
     <title>Panel</title>
+    <imagedata fileref="../images/ags_panel.png" />
     <para>
       The panel is used to output to your soundcard.
     </para>
@@ -48,6 +49,7 @@
 
   <sect1>
     <title>Mixer</title>
+    <imagedata fileref="../images/ags_mixer.png" />
     <para>
       Bundle audio lines with the mixer and perform toplevel stream manipulation.
     </para>
@@ -55,6 +57,7 @@
 
   <sect1>
     <title>Drum</title>
+    <imagedata fileref="../images/ags_drum.png" />
     <para>
       Produce an audio stream by defining a pattern. The drum supports opening
       audio files and associate to its input.
@@ -63,6 +66,7 @@
 
   <sect1>
     <title>Matrix</title>
+    <imagedata fileref="../images/ags_matrix.png" />
     <para>
       Produce an audio stream by defining a pattern. The matrix itselves doesn't
       have any audio signals on its own input you may rather link it to a synth
@@ -72,6 +76,7 @@
 
   <sect1>
     <title>Synth</title>
+    <imagedata fileref="../images/ags_synth.png" />
     <para>
       Produce audio data using its oscillators. 
     </para>
@@ -79,6 +84,7 @@
 
   <sect1>
     <title>FFPlayer</title>
+    <imagedata fileref="../images/ags_ffplayer.png" />
     <para>
       Produce audio data by opening audio containers like Soundfont2 files.
     </para>
