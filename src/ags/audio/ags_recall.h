@@ -149,6 +149,8 @@ gboolean ags_recall_is_done(GList *recalls, AgsGroupId group_id);
 AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 				AgsRecallID *recall_id);
 
+void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
+
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
 
 void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *dependency);

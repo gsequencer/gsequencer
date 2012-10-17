@@ -156,7 +156,7 @@ ags_stream_audio_signal_finalize(GObject *gobject)
   				    recall_audio_signal->source);
 
   /* unref audio signal */
-  unref_audio_signal = ags_unref_audio_signal_new(audio_signal);
+  //  unref_audio_signal = ags_unref_audio_signal_new(audio_signal);
   //  ags_devout_append_task(recall_audio_signal->devout, (AgsTask *) unref_audio_signal);
 
   /* call parent */

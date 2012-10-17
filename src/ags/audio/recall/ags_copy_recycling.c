@@ -143,6 +143,7 @@ void
 ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 {
   AGS_RECALL(copy_recycling)->child_type = AGS_TYPE_COPY_AUDIO_SIGNAL;
+  AGS_RECALL_RECYCLING(copy_recycling)->flags |= AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION;
 }
 
 void

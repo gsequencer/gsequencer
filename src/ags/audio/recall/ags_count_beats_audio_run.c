@@ -317,6 +317,9 @@ ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   count_beats_audio_run->first_run_counter = 0;
 
+  count_beats_audio_run->notation_counter = 0;
+  count_beats_audio_run->sequencer_counter = 0;
+
   count_beats_audio_run->recall_ref = 0;
 
   count_beats_audio_run->hide_ref = 0;
@@ -324,8 +327,6 @@ ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
   count_beats_audio_run->sequencer_hide_ref_counter = 0;
 
   count_beats_audio_run->delay_audio_run = NULL;
-  count_beats_audio_run->notation_counter = 0;
-  count_beats_audio_run->sequencer_counter = 0;
 }
 
 void ags_count_beats_audio_run_set_property(GObject *gobject,
