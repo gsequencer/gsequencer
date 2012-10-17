@@ -548,6 +548,7 @@ dvi-am:
 html: html-am
 
 html-am:
+	 xmlto xhtml doc/agsSet.xml --skip-validation -o doc/html/
 
 info: info-am
 
@@ -620,7 +621,7 @@ uninstall-am: uninstall-binPROGRAMS
 
 
 ags:
-	$(CC) $(CFLAGS) $(ags_SOURCES) -o $(bin_PROGRAMS) $(LIBS)
+	$(CC) -ggdb $(CFLAGS) $(ags_SOURCES) -o $(bin_PROGRAMS) $(LIBS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

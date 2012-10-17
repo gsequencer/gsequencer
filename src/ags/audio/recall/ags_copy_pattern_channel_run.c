@@ -157,7 +157,8 @@ ags_copy_pattern_channel_run_run_connectable_interface_init(AgsRunConnectableInt
 void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
-  AGS_RECALL(copy_pattern_channel_run)->flags |= AGS_RECALL_SEQUENCER;
+  AGS_RECALL(copy_pattern_channel_run)->flags |= (AGS_RECALL_SEQUENCER |
+						  AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(copy_pattern_channel_run)->child_type = G_TYPE_NONE;
 }
 

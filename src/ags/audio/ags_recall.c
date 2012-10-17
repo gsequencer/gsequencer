@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/lib/ags_parameter.h>
+
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
@@ -28,8 +30,8 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
-
-#include <ags/audio/recall/ags_play_recycling.h>
+#include <ags/audio/ags_recall_recycling.h>
+#include <ags/audio/ags_recall_audio_signal.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -483,7 +485,7 @@ ags_recall_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(recall_id));
       }
 	
-      recall->recall_id = recall_id;
+      ags_recall_set_recall_id(recall, recall_id);
     }
     break;
   case PROP_PARENT:
@@ -748,6 +750,10 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      g_warning("running on template\0");
+    }
+
     ags_recall_run_init_pre(AGS_RECALL(list->data));
 
     list = list->next;
@@ -779,6 +785,10 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      g_warning("running on template\0");
+    }
+
     ags_recall_run_init_inter(AGS_RECALL(list->data));
 
     list = list->next;
@@ -810,6 +820,10 @@ ags_recall_real_run_init_post(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      g_warning("running on template\0");
+    }
+
     ags_recall_run_init_post(AGS_RECALL(list->data));
 
     list = list->next;
@@ -845,6 +859,10 @@ ags_recall_real_run_pre(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      g_warning("running on template\0");
+    }
+
     ags_recall_run_pre(AGS_RECALL(list->data));
 
     list = list->next;
@@ -876,6 +894,10 @@ ags_recall_real_run_inter(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      g_warning("running on template\0");
+    }
+
     ags_recall_run_inter(AGS_RECALL(list->data));
 
     list = list->next;
@@ -908,6 +930,10 @@ ags_recall_real_run_post(AgsRecall *recall)
 
   while(list != NULL){
     list_next = list->next;
+
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      g_warning("running on template\0");
+    }
 
     ags_recall_run_post(AGS_RECALL(list->data));
 
@@ -1116,17 +1142,16 @@ ags_recall_real_duplicate(AgsRecall *recall,
   AgsRecallHandler *recall_handler, *recall_handler_copy;
   GList *list, *child;
 
+  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
+				 parameter, n_params,
+				 "recall_id\0", recall_id,
+				 "recall_container\0", recall->container,
+				 NULL);
+
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
 
   copy->flags = recall->flags;
   copy->flags &= (~AGS_RECALL_TEMPLATE);
-
-  /* set recall id */
-  /* set recall container */
-  g_object_set(G_OBJECT(copy),
-	       "recall_id\0", recall_id,
-	       "recall_container\0", recall->container,
-	       NULL);
 
   /* duplicate handlers */
   list = recall->handlers;
@@ -1175,6 +1200,33 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_para
   g_object_unref(G_OBJECT(recall));
 
   return(copy);
+}
+
+/**
+ * ags_recall_set_recall_id:
+ * @recall an #AgsRecall
+ * @recall_id the #AgsRecallID to set
+ *
+ * Sets the recall id recursively.
+ */
+void
+ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
+{
+  GList *list;
+
+  list = recall->children;
+
+  while(list != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      g_warning("running on template\0");
+    }
+
+    ags_recall_set_recall_id(AGS_RECALL(list->data), recall_id);
+
+    list = list->next;
+  }
+
+  recall->recall_id = recall_id;
 }
 
 /**
@@ -1277,8 +1329,11 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 			    AGS_RECALL_SEQUENCER |
 			    AGS_RECALL_NOTATION |
 			    AGS_RECALL_PROPAGATE_DONE |
-			    AGS_RECALL_PERSISTENT |
 			    AGS_RECALL_INITIAL_RUN);
+
+  if(!AGS_IS_RECALL_AUDIO_SIGNAL(child)){
+    inheritated_flags_mask |= AGS_RECALL_PERSISTENT;
+  }
 
   /* unref old */
   if(child->parent != NULL){

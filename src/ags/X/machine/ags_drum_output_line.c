@@ -248,8 +248,8 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 							    "recall_container\0", play_stream_channel_container,
 							    NULL);
     AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					       AGS_RECALL_SEQUENCER |
-					       AGS_RECALL_PERSISTENT);
+					       AGS_RECALL_SEQUENCER /* |
+					       AGS_RECALL_PERSISTENT */);
     ags_channel_add_recall(output, (GObject *) play_stream_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))

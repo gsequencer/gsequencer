@@ -171,6 +171,7 @@ ags_loop_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *
 void
 ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run)
 {
+  AGS_RECALL(loop_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(loop_channel_run)->child_type = G_TYPE_NONE;
 
   loop_channel_run->count_beats_audio_run = NULL;
@@ -413,7 +414,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   devout = AGS_DEVOUT(AGS_AUDIO(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->audio)->devout);
 
   recycling = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->first_recycling;
- 
+
   while(recycling != AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->last_recycling->next){
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) recycling,
@@ -431,7 +432,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   }
 }
 
-void 
+void
 ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				    guint run_order,
 				    AgsLoopChannelRun *loop_channel_run)
@@ -443,21 +444,44 @@ ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run
 
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
     AgsAudioSignal *audio_signal;
-    GList *list;
+    GList *list, *stop, *start;
+
+    stop = loop_channel_run->audio_signal;
 
     ags_loop_channel_run_create_audio_signals(loop_channel_run);
 
-    list = loop_channel_run->audio_signal;
+    start =
+      list = loop_channel_run->audio_signal;
 
-    while(list != NULL){
+    while(list != stop){
       audio_signal = AGS_AUDIO_SIGNAL(list->data);
 
-      g_object_ref(audio_signal);
-      //      g_object_unref(audio_signal);
+      // g_object_ref(audio_signal);
+      g_object_unref(audio_signal);
 
       list = list->next;
     }
 
+
+    if(stop != NULL){
+      stop->prev = start->prev;
+    }
+
+    if(start->prev != NULL){
+      start->prev->next = stop;
+    }
+
+    if(stop != NULL){
+      stop->prev->next = NULL;
+    }
+
+    start->prev = NULL;
+
+    if(start == loop_channel_run->audio_signal){
+      loop_channel_run->audio_signal = stop;
+    }
+
+    g_list_free(start);
   }
 }
 
@@ -472,25 +496,40 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
   
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
     AgsAudioSignal *audio_signal;
-    GList *list, *start;
+    GList *list, *stop, *start;
+
+    stop = loop_channel_run->audio_signal;
+
+    ags_loop_channel_run_create_audio_signals(loop_channel_run);
 
     start =
       list = loop_channel_run->audio_signal;
 
-    ags_loop_channel_run_create_audio_signals(loop_channel_run);
-
-    while(list != NULL){
+    while(list != stop){
       audio_signal = AGS_AUDIO_SIGNAL(list->data);
 
-      g_object_ref(audio_signal);
-      //      g_object_unref(audio_signal);
+      // g_object_ref(audio_signal);
+      g_object_unref(audio_signal);
 
       list = list->next;
     }
 
-    if(start != NULL && start->prev != NULL){
-      start->prev->next = NULL;
-      start->prev = NULL;
+    if(stop != NULL){
+      stop->prev = start->prev;
+    }
+
+    if(start->prev != NULL){
+      start->prev->next = stop;
+    }
+
+    if(stop != NULL){
+      stop->prev->next = NULL;
+    }
+
+    start->prev = NULL;
+
+    if(start == loop_channel_run->audio_signal){
+      loop_channel_run->audio_signal = stop;
     }
 
     g_list_free(start);

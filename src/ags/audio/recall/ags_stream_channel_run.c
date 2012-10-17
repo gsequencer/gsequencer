@@ -135,6 +135,7 @@ ags_stream_channel_run_run_connectable_interface_init(AgsRunConnectableInterface
 void
 ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run)
 {
+  AGS_RECALL(stream_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(stream_channel_run)->child_type = AGS_TYPE_STREAM_RECYCLING;
 }
 

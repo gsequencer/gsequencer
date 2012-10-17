@@ -133,6 +133,8 @@ ags_copy_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *
 void
 ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run)
 {
+  AGS_RECALL(copy_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
+					  AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(copy_channel_run)->child_type = AGS_TYPE_COPY_RECYCLING;
 }
 

@@ -2654,7 +2654,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	AgsRecycling *first_recycling;
 	AgsRecycling *last_recycling;
-
 	AgsGroupId tmp_group_id;
 
 	tmp_group_id = ags_recall_id_generate_group_id();

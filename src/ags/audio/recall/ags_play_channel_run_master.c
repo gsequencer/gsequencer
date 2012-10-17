@@ -192,6 +192,7 @@ ags_play_channel_run_master_run_connectable_interface_init(AgsRunConnectableInte
 void
 ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_master)
 {
+  AGS_RECALL(play_channel_run_master)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(play_channel_run_master)->child_type = AGS_TYPE_PLAY_RECYCLING;
 
   play_channel_run_master->flags = 0;

@@ -164,6 +164,7 @@ ags_volume_channel_run_run_connectable_interface_init(AgsRunConnectableInterface
 void
 ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run)
 {
+  AGS_RECALL(volume_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(volume_channel_run)->child_type = AGS_TYPE_VOLUME_RECYCLING;
 
   volume_channel_run->volume = NULL;
