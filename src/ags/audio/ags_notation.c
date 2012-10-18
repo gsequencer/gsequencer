@@ -831,7 +831,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 	note->y = y_val;
 
-	printf("adding note at: [%u,%u|%u]\n\0", x0_val, x1_val, y_val);
+	g_message("adding note at: [%u,%u|%u]\n\0", x0_val, x1_val, y_val);
 
 	ags_notation_add_note(notation,
 			      note,

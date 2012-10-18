@@ -243,7 +243,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint frames_looped_copied, frames_copied;
   gboolean enter_loop;
 
-  printf("ags_recycling_create_audio_signal_with_frame_count: before\n\0");
+  g_message("ags_recycling_create_audio_signal_with_frame_count: before\n\0");
 
   /* some init */
   template = ags_audio_signal_get_template(recycling->audio_signal);
@@ -336,7 +336,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     }
   }
 
-  printf("ags_recycling_create_audio_signal_with_frame_count: after\n\0");
+  g_message("ags_recycling_create_audio_signal_with_frame_count: after\n\0");
 }
 
 AgsRecycling*

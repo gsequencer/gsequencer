@@ -537,7 +537,7 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
 	
 	recycling = selected_channel->first_recycling;
 	
-	printf("playing: %u | %u\n\0", note->x[0], note->y);
+	g_message("playing: %u | %u\n\0", note->x[0], note->y);
 	
 	while(recycling != selected_channel->last_recycling){
 	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
@@ -549,7 +549,7 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
 							     attack);
 	  ags_audio_signal_connect(audio_signal);
 
-	  printf("adding\n\0");
+	  g_message("adding\n\0");
 
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);

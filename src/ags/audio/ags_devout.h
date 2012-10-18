@@ -50,6 +50,7 @@
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;
+typedef struct _AgsDevoutAppend AgsDevoutAppend;
 
 typedef enum
 {
@@ -193,6 +194,12 @@ struct _AgsDevoutPlay
 
   AgsGroupId group_id; // if source is an AgsChannel or an AgsAudio
   AgsRecallID *recall_id; // if source is an AgsRecall
+};
+
+struct _AgsDevoutAppend
+{
+  AgsDevout *devout;
+  gpointer data;
 };
 
 GType ags_devout_get_type();

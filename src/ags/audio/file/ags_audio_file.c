@@ -162,7 +162,7 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
 gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
-  fprintf(stdout, "ags_audio_file_open: %s\n\0", audio_file->name);
+  g_message("ags_audio_file_open: %s\n\0", audio_file->name);
 
   if(g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
     if(g_str_has_suffix(audio_file->name, ".wav\0") ||
@@ -171,7 +171,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
       GError *error;
       guint loop_start, loop_end;
 
-      fprintf(stdout, "ags_audio_file_open: using libsndfile\n\0");
+      g_message("ags_audio_file_open: using libsndfile\n\0");
       audio_file->file = (GObject *) ags_sndfile_new();
 
       if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
@@ -194,7 +194,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 	return(FALSE);
       }
     }else{
-      fprintf(stdout, "ags_audio_file_open: unknown file type\n\0");
+      g_message("ags_audio_file_open: unknown file type\n\0");
       return(FALSE);
     }
   }

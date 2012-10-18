@@ -636,7 +636,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	    set_sync_link = FALSE;
 	    input_pad_last = ags_channel_nth(input, audio->input_lines - (audio_channels - audio->audio_channels));
 	  }else{
-	    fprintf(stdout, "ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
+	    g_message("ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
 	    set_sync_link = FALSE;
 	    set_async_link = FALSE;
 	  }
@@ -1118,7 +1118,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     i = audio->audio_channels;
 
-    fprintf(stdout, "ags_audio_set_audio_channels_grow_notation\n\0");
+    g_message("ags_audio_set_audio_channels_grow_notation\n\0");
 
     if(audio->audio_channels == 0){
       audio->notation =
@@ -1435,7 +1435,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     GList *list;
     guint i;
 
-    fprintf(stdout, "ags_audio_set_pads_alloc_notation\n\0");
+    g_message("ags_audio_set_pads_alloc_notation\n\0");
 
     if(audio->audio_channels > 0){
       audio->notation =
@@ -1777,7 +1777,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 							 first_recycling, last_recycling);
 
   if(recall_id == NULL)
-    printf("group_id = %u\n\0", group_id);
+    g_message("group_id = %u\n\0", group_id);
   
   if((AGS_RECALL_ID_AUDIO_RESOLVED & (recall_id->flags)) != 0){
     return;
@@ -1885,7 +1885,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   GList *list_recall_start, *list_recall;
   gboolean matches_reality, immediate_new_level;
   
-  printf("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
+  g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
 
   recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
 							 group_id,
@@ -1924,7 +1924,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     if(AGS_IS_DELAY_AUDIO_RUN(recall) ||
        AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
        AGS_IS_COPY_PATTERN_AUDIO_RUN(recall))
-      printf("\n");
+      g_message("\n");
 
 
     if(((called_by_output && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0) ||
@@ -1970,7 +1970,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
 	/* duplicate the recall, notify first run and initialize it */
 	recall = ags_recall_duplicate(recall, current_recall_id);
-	printf("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+	g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(recall));
       
 	if(audio_signal_level == 0)
 	  audio->play = g_list_append(audio->play, recall);

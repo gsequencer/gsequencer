@@ -187,7 +187,7 @@ ags_apply_synth_launch(AgsTask *task)
       ags_synth_triangle(devout, (short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     default:
-      printf("ags_apply_synth_launch_write: warning no wave selected\n\0");
+      g_warning("ags_apply_synth_launch_write: warning no wave selected\n\0");
     }
   }
 
@@ -196,7 +196,7 @@ ags_apply_synth_launch(AgsTask *task)
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
   
   wave = (gint) apply_synth->wave;
-  fprintf(stdout, "wave = %d\n\0", wave);
+  g_message("wave = %d\n\0", wave);
 
   /* some settings */
   frequency = apply_synth->frequency;
@@ -245,7 +245,7 @@ ags_apply_synth_launch(AgsTask *task)
     stream = g_list_nth(audio_signal->stream_beginning, stream_start);
     
     if(stream->next != NULL){
-      fprintf(stdout, "freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
+      g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
       ags_apply_synth_launch_write(attack,
 				   current_frequency, current_phase[0], AGS_DEVOUT(audio_signal->devout)->buffer_size - attack,
 				   volume);
@@ -263,7 +263,7 @@ ags_apply_synth_launch(AgsTask *task)
     
     for(j = 1; stream->next != NULL; j++){
       current_phase[1] = (j * AGS_DEVOUT(audio_signal->devout)->buffer_size + current_phase[0]) % (devout->frequency / current_frequency);
-      fprintf(stdout, "freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
+      g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
       
       ags_apply_synth_launch_write(0,
 				   frequency, current_phase[1], AGS_DEVOUT(audio_signal->devout)->buffer_size,

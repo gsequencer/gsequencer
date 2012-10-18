@@ -450,7 +450,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     delay_audio_run->hide_ref += count;
-    printf("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
+    g_message("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;
@@ -463,7 +463,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
 
     break;
   default:
-    printf("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify\0");
+    g_message("ags_delay_audio_run.c - ags_delay_audio_run_notify: unknown notify\0");
   }
 }
 

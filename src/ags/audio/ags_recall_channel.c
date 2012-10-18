@@ -417,7 +417,7 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 											 recall_id,
 											 n_params, parameter));
 
-  printf("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   return((AgsRecall *) copy);
 }

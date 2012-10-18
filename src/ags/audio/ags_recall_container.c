@@ -437,7 +437,7 @@ ags_recall_container_find(GList *recall_container,
   }else if(g_type_is_a(type, AGS_TYPE_RECALL_CHANNEL_RUN)){
     mode = 3;
   }else{
-    fprintf(stdout, "ags_recall_container_find: invalid type\n\0");
+    g_message("ags_recall_container_find: invalid type\n\0");
     return(NULL);
   }
 

@@ -797,7 +797,7 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
     AgsRecallRecycling *recall_recycling;
 
     while(source_recycling != recall_channel->source->last_recycling->next){
-      printf("ags_recall_channel_run_map_recall_recycling\n\0");
+      g_message("ags_recall_channel_run_map_recall_recycling\n\0");
 
       do{
 	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,

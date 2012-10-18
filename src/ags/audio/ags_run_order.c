@@ -200,7 +200,7 @@ ags_run_order_changed_input(AgsRunOrder *run_order, AgsChannel *input,
        AGS_RECALL(list->data)->recall_id != NULL &&
        AGS_RECALL(list->data)->recall_id->group_id == group_id &&
        AGS_RECALL_CHANNEL_RUN(list->data)->run_order == old_position){
-      //      printf("ags_run_order_changed_input\n\0");
+      //      g_message("ags_run_order_changed_input\n\0");
       ags_recall_channel_run_run_order_changed(AGS_RECALL_CHANNEL_RUN(list->data),
 					       new_position);
     }

@@ -602,7 +602,7 @@ ags_dial_draw(AgsDial *dial)
   /* draw value */
   translated_value = (gdouble) scale_precision / GTK_RANGE(dial)->adjustment->upper * GTK_RANGE(dial)->adjustment->value;
 
-  //  printf("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
+  //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);
   cairo_set_source_rgba (cr, 0.6, 0.0, 0.0, 1.0);
 

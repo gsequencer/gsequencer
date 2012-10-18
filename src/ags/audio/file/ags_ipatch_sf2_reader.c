@@ -326,7 +326,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 
   sublevel = ipatch_sf2_reader->nth_level + 1;
 
-  printf("ags_ipatch_sf2_reader_sublevel_names: %u\n\0", sublevel);
+  g_message("ags_ipatch_sf2_reader_sublevel_names: %u\n\0", sublevel);
 
   switch(sublevel){
   case AGS_SF2_FILENAME:
@@ -449,7 +449,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
 					  &(ipatch_sf2_reader->bank),
 					  &(ipatch_sf2_reader->program));
 	
-	printf("debug: bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+       g_message("debug: bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
       }else{
 	success = FALSE;
       }
@@ -511,7 +511,7 @@ ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **err
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  printf("debug: %u\n\0", ipatch_sf2_reader->nth_level);
+  g_message("debug: %u\n\0", ipatch_sf2_reader->nth_level);
 
   if(ipatch_sf2_reader->nth_level >= levels){
     ipatch_sf2_reader->nth_level -= levels;
@@ -621,7 +621,7 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
       *loop_start = 0;
       *loop_end = 0;
     }
-      printf("  channels = %d \n frames = %d  \n\0", *channels, *frames);
+    g_message("  channels = %d \n frames = %d  \n\0", *channels, *frames);
   }else if(ipatch_sf2_reader->nth_level == 3){
     IpatchSF2Sample *sample;
 
@@ -646,7 +646,7 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
       *loop_end = 0;
     }
 
-    printf("channels = %d\nframes = %d\0", *channels, *frames);
+    g_message("channels = %d\nframes = %d\0", *channels, *frames);
   }
 }
 

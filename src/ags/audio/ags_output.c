@@ -141,7 +141,7 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
     list_destination->next->prev = list_destination;
     list_destination = list_destination->next;
   ags_copy_pattern_map_destination0:
-    fprintf(stdout, "ags_output_map_audio_signal\n\0");
+    g_message("ags_output_map_audio_signal\n\0");
 
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) output->channel.first_recycling,

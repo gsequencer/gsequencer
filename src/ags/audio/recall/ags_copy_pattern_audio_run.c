@@ -358,10 +358,10 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
     break;
   case AGS_RECALL_NOTIFY_CHANNEL_RUN:
     copy_pattern_audio_run->hide_ref += count;
-    printf("copy_pattern_audio_run->hide_ref: %u\n\0", copy_pattern_audio_run->hide_ref);
+    g_message("copy_pattern_audio_run->hide_ref: %u\n\0", copy_pattern_audio_run->hide_ref);
     break;
   default:
-    printf("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify\0");
+    g_message("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify\0");
   }
 }
 

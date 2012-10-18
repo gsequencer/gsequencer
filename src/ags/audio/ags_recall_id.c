@@ -134,7 +134,7 @@ ags_recall_id_generate_group_id()
   ags_recall_id_counter++;
 
   if(ags_recall_id_counter == G_MAXULONG)
-    fprintf(stderr, "WARNING: ags_recall_id_generate_group_id - counter expired\n\0");
+    g_warning("WARNING: ags_recall_id_generate_group_id - counter expired\n\0");
 
   return(group_id);
 }

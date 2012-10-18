@@ -452,7 +452,7 @@ ags_channel_nth(AgsChannel *channel, guint nth)
   }
 
   if((nth != 0 && i != nth) || channel == NULL)
-    fprintf(stderr, "ags_channel_nth:\n  nth channel does not exist\n  `- stopped @: i = %u; nth = %u\n\0", i, nth);
+    g_message("ags_channel_nth:\n  nth channel does not exist\n  `- stopped @: i = %u; nth = %u\n\0", i, nth);
 
   return(channel);
 }
@@ -506,7 +506,7 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
     channel = channel->next_pad;
 
   if((nth != 0 && i != nth) || channel == NULL)
-    fprintf(stderr, "ags_channel_nth_pad:\n  nth pad does not exist\n  `- stopped @: i = %u; nth = %u\0", i, nth);
+    g_message("ags_channel_nth_pad:\n  nth pad does not exist\n  `- stopped @: i = %u; nth = %u\0", i, nth);
 
   return(channel);
 }
@@ -1777,7 +1777,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
       AgsRecall *copy;
       
       copy = ags_recall_duplicate(recall, recall_id);
-      printf("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
+      g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
       
       if(recall_id->parent_group_id == 0)
 	channel->play = g_list_append(channel->play, copy);
@@ -1814,7 +1814,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
   
   recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
 
-  printf("ags_channel_init_recall@%d - audio::IN[%u]; channel: %lu %lu\n\0", stage, AGS_AUDIO(channel->audio)->input_lines, channel->audio_channel, channel->pad);
+  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %lu %lu\n\0", stage, AGS_AUDIO(channel->audio)->input_lines, channel->audio_channel, channel->pad);
   
 
   if(recall_id->parent_group_id == 0)
@@ -1832,7 +1832,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     }
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
-      printf("  init: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+      g_message("  init: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
       if(stage == 0){
 	recall->flags &= (~AGS_RECALL_HIDE);

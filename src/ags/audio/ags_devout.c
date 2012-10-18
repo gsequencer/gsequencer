@@ -50,7 +50,8 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_finalize(GObject *gobject);
 
-void* ags_devout_append_task_pending_thread(void *devout);
+void* ags_devout_append_task_thread(void *ptr);
+void* ags_devout_append_tasks_thread(void *ptr);
 
 void ags_devout_real_run(AgsDevout *devout);
 void ags_devout_real_stop(AgsDevout *devout);
@@ -614,7 +615,7 @@ ags_devout_task_thread(void *devout0)
     task = devout->task;
 
     while(task != NULL){
-      printf("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task->data));
+      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task->data));
       ags_task_launch(AGS_TASK(task->data));
 
       task = task->next;
@@ -632,7 +633,7 @@ ags_devout_task_thread(void *devout0)
 
     /* signal: allow tasks to be appended */
     if(devout->tasks_queued > 0){
-      pthread_cond_signal(&(devout->append_task_wait_cond));
+      pthread_cond_broadcast(&(devout->append_task_wait_cond));
     }
 
 
@@ -645,51 +646,41 @@ ags_devout_task_thread(void *devout0)
   return(NULL);
 }
 
-/**
- * ags_devout_append_task_pending_thread:
- * @devout0 an #AgsDevout
- *
- * Intended to be called continually as thread to wait until it's
- * safe to move tasks from pending task's list to launchable.
- */
-//FIXME:JK: seems to be buggy, ags_devout_task_thread() is a workaround
 void*
-ags_devout_append_task_pending_thread(void *devout0)
+ags_devout_append_task_thread(void *ptr)
 {
+  AgsDevoutAppend *append;
   AgsDevout *devout;
-  /*
-  devout = AGS_DEVOUT(devout0);
+  AgsTask *task;
 
-  /* synchronize * /
-  pthread_mutex_lock(&(devout->append_task_pending_mutex));
+  append = (AgsDevoutAppend *) ptr;
+
+  devout = append->devout;
+  task = AGS_TASK(append->data);
+
+  free(append);
+
+  /* synchronize: don't access devout->task while reading it */
+  pthread_mutex_lock(&(devout->append_task_mutex));
+  devout->tasks_queued += 1;
+
   while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
-    pthread_cond_wait(&(devout->append_task_pending_wait_cond),
-		      &(devout->append_task_pending_mutex));
+    pthread_cond_wait(&(devout->append_task_wait_cond),
+		      &(devout->append_task_mutex));
   }
+  
+  /* append to queue */
+  devout->task = g_list_append(devout->task, task);
+  
+  /* lock other calls */
+  pthread_mutex_unlock(&(devout->append_task_mutex));
 
-  devout->flags |= AGS_DEVOUT_ANNOUNCE_APPEND_TASK_PENDING;
+  /* wake up an other thread */
+  devout->tasks_queued -= 1;
+  pthread_cond_signal(&(devout->task_wait_cond));
 
-  while((AGS_DEVOUT_WAIT_APPEND_TASK & (devout->flags)) != 0){
-    pthread_cond_wait(&(devout->append_task_pending_wait_cond),
-		      &(devout->append_task_pending_mutex));
-  }
 
-  devout->flags &= (~AGS_DEVOUT_ANNOUNCE_APPEND_TASK_PENDING);
-  devout->flags |= AGS_DEVOUT_WAIT_APPEND_TASK_PENDING;
-  devout->flags &= (~AGS_DEVOUT_APPEND_TASK_PENDING_IS_WAITING);
-
-  pthread_mutex_unlock(&(devout->append_task_pending_mutex));
-
-  /* concat * /
-  devout->task = g_list_concat(devout->task, devout->append_task);
-  devout->append_task = NULL;
-
-  /* wake up other thread * /
-  devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK_PENDING);
-  pthread_cond_broadcast(&(devout->task_wait_cond));
-  pthread_cond_broadcast(&(devout->append_task_wait_cond));
-  */
-  return(NULL);
+  pthread_exit(NULL);
 }
 
 /**
@@ -702,7 +693,34 @@ ags_devout_append_task_pending_thread(void *devout0)
 void
 ags_devout_append_task(AgsDevout *devout, AgsTask *task)
 {
-  /* synchronize: don't access devout->task while reading it */
+  AgsDevoutAppend *append;
+  pthread_t thread;
+
+  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
+
+  append->devout = devout;
+  append->data = task;
+
+  pthread_create(&thread, NULL,
+		 &ags_devout_append_task_thread, append);
+}
+
+
+void*
+ags_devout_append_tasks_thread(void *ptr)
+{
+  AgsDevoutAppend *append;
+  AgsDevout *devout;
+  GList *list;
+
+  append = (AgsDevoutAppend *) ptr;
+
+  devout = append->devout;
+  list = (GList *) append->data;
+
+  free(append);
+
+ /* synchronize: don't access devout->task while reading it */
   pthread_mutex_lock(&(devout->append_task_mutex));
   devout->tasks_queued += 1;
 
@@ -711,15 +729,17 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
 		      &(devout->append_task_mutex));
   }
   
+  /* concat with queue */
+  devout->task = g_list_concat(devout->task, list);
+
   /* lock other calls */
   pthread_mutex_unlock(&(devout->append_task_mutex));
   
-  /* append to queue */
-  devout->task = g_list_append(devout->task, task);
-
   /* wake up an other thread */
   devout->tasks_queued -= 1;
   pthread_cond_signal(&(devout->task_wait_cond));
+
+  pthread_exit(NULL);
 }
 
 /**
@@ -733,24 +753,16 @@ ags_devout_append_task(AgsDevout *devout, AgsTask *task)
 void
 ags_devout_append_tasks(AgsDevout *devout, GList *list)
 {
-  /* synchronize: don't access devout->task while reading it */
-  pthread_mutex_lock(&(devout->append_task_mutex));
-  devout->tasks_queued += 1;
+  AgsDevoutAppend *append;
+  pthread_t thread;
 
-  while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
-    pthread_cond_wait(&(devout->append_task_wait_cond),
-		      &(devout->append_task_mutex));
-  }
-  
-  /* lock other calls */
-  pthread_mutex_unlock(&(devout->append_task_mutex));
-  
-  /* concat with queue */
-  devout->task = g_list_concat(devout->task, list);
+  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
 
-  /* wake up an other thread */
-  devout->tasks_queued -= 1;
-  pthread_cond_signal(&(devout->task_wait_cond));
+  append->devout = devout;
+  append->data = list;
+
+  pthread_create(&thread, NULL,
+		 &ags_devout_append_tasks_thread, append);
 }
 
 /**
@@ -999,7 +1011,7 @@ ags_devout_run(AgsDevout *devout)
   g_return_if_fail(AGS_IS_DEVOUT(devout));
 
   if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-    fprintf(stdout, "ags_devout_run:  allready playing\n\0");
+    g_message("ags_devout_run:  allready playing\n\0");
     return;
   }
 
@@ -1027,14 +1039,14 @@ ags_devout_stop(AgsDevout *devout)
   g_return_if_fail(AGS_IS_DEVOUT(devout));
 
   if((AGS_DEVOUT_PLAY & devout->flags) == 0){
-    fprintf(stdout, "ags_devout_stop:  not playing\n\0");
+    g_message("ags_devout_stop:  not playing\n\0");
     return;
   }
 
   if((AGS_DEVOUT_PLAY_RECALL & (devout->flags)) != 0 ||
      (AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0 ||
      (AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) != 0){
-    fprintf(stdout, "ags_devout_stop:  still playing\n\0");
+    g_message("ags_devout_stop:  still playing\n\0");
     return;
   }
 
@@ -1050,7 +1062,7 @@ ags_devout_tic(AgsDevout *devout)
   g_return_if_fail(AGS_IS_DEVOUT(devout));
 
   if((AGS_DEVOUT_PLAY & devout->flags) == 0){
-    fprintf(stdout, "ags_devout_tic:  not playing\n\0");
+    g_message("ags_devout_tic:  not playing\n\0");
     return;
   }
 
@@ -1106,7 +1118,7 @@ ags_devout_play_functions(void *devout0)
     pthread_mutex_unlock(&(devout->play_functions_mutex));
   }
 
-  fprintf(stdout, "ags_devout_play_functions:  start\n\0");
+  g_message("ags_devout_play_functions:  start\n\0");
   devout = (AgsDevout *) devout0;
   //  ts.tv_sec = 0;
   //  ts.tv_nsec = 1000;
@@ -1144,7 +1156,7 @@ ags_devout_play_functions(void *devout0)
       if(devout->play_recall_ref == 0){
 	devout->flags &= (~AGS_DEVOUT_PLAY_RECALL);
 	ags_devout_stop(devout);
-	fprintf(stdout, "devout->play_recall_ref == 0\n\0");
+	g_message("devout->play_recall_ref == 0\n\0");
       }
     }
 
@@ -1155,7 +1167,7 @@ ags_devout_play_functions(void *devout0)
       if(devout->play_channel_ref == 0){
 	devout->flags &= (~AGS_DEVOUT_PLAY_CHANNEL);
 	ags_devout_stop(devout);
-	fprintf(stdout, "devout->play_channel_ref == 0\n\0");
+	g_message("devout->play_channel_ref == 0\n\0");
       }
     }
     
@@ -1166,7 +1178,7 @@ ags_devout_play_functions(void *devout0)
       if(devout->play_audio_ref == 0){
 	devout->flags &= (~AGS_DEVOUT_PLAY_AUDIO);
 	ags_devout_stop(devout);
-	fprintf(stdout, "devout->play_audio_ref == 0\n\0");
+	g_message("devout->play_audio_ref == 0\n\0");
       }
     }
     
@@ -1270,14 +1282,14 @@ ags_devout_oss_play(void *devout0)
   //  ts.tv_sec = 0;
   //  ts.tv_nsec = 100;
   devout = (AgsDevout *) devout0;
-  fprintf(stdout, "ags_devout_play\n\0");
+  g_message("ags_devout_play\n\0");
 
   while((AGS_DEVOUT_PLAY & devout->flags) != 0){
     if((AGS_DEVOUT_BUFFER0 & devout->flags) != 0){
       memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
       write(devout->out.oss.device_fd, devout->buffer[0], devout->buffer_size * sizeof(short));
 
-      //      fprintf(stdout, "ags_devout_play 0\n\0");
+      //      g_message("ags_devout_play 0\n\0");
 
       //g_static_mutex_lock(&mutex);
       pthread_mutex_lock(&devout->play_mutex);
@@ -1289,7 +1301,7 @@ ags_devout_oss_play(void *devout0)
       memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
       write(devout->out.oss.device_fd, devout->buffer[1], devout->buffer_size * sizeof(short));
 
-      //      fprintf(stdout, "ags_devout_play 1\n\0");
+      //      g_message("ags_devout_play 1\n\0");
 
       //g_static_mutex_lock(&mutex);
       pthread_mutex_lock(&devout->play_mutex);
@@ -1301,7 +1313,7 @@ ags_devout_oss_play(void *devout0)
       memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
       write(devout->out.oss.device_fd, devout->buffer[2], devout->buffer_size * sizeof(short));
 
-      //      fprintf(stdout, "ags_devout_play 2\n\0");
+      //      g_message("ags_devout_play 2\n\0");
 
       //g_static_mutex_lock(&mutex);
       pthread_mutex_lock(&devout->play_mutex);
@@ -1313,7 +1325,7 @@ ags_devout_oss_play(void *devout0)
       memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
       write(devout->out.oss.device_fd, devout->buffer[3], devout->buffer_size * sizeof(short));
 
-      //      fprintf(stdout, "ags_devout_play 3\n\0");
+      //      g_message("ags_devout_play 3\n\0");
 
       //g_static_mutex_lock(&mutex);
       pthread_mutex_lock(&devout->play_mutex);
@@ -1362,7 +1374,7 @@ ags_devout_oss_play(void *devout0)
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
   }
 
-  //  fprintf(stdout, "ags_devout_play: end\n\0");
+  //  g_message("ags_devout_play: end\n\0");
   ags_devout_oss_free(devout);
 
   return(NULL);
@@ -1398,7 +1410,7 @@ ags_devout_ao_init(AgsDevout *devout)
   devout->out.ao.device = ao_open_live(devout->out.ao.driver_ao, format, NULL /* no options */);
 
   if(devout->out.ao.device == NULL){
-    fprintf(stderr, "Error opening device.\n\0");
+    g_message("Error opening device.\n\0");
     exit(1);
   }
 }
@@ -1423,10 +1435,10 @@ ags_devout_ao_play(void *devout0)
   devout = (AgsDevout *) devout0;
   //  ts.tv_sec = 0;
   //  ts.tv_nsec = 100;
-  //  fprintf(stdout, "ags_devout_play:  start\n\0");
+  //  g_message("ags_devout_play:  start\n\0");
 
   while((AGS_DEVOUT_PLAY & devout->flags) != 0){
-    //    fprintf(stdout, "ags_devout_play:\n  loop\n\0");
+    //    g_message("ags_devout_play:\n  loop\n\0");
 
     if((AGS_DEVOUT_BUFFER0 & devout->flags) != 0){
       memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
@@ -1500,7 +1512,7 @@ ags_devout_ao_play(void *devout0)
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
   }
 
-  fprintf(stdout, "ags_devout_play: end\n\0");
+  g_message("ags_devout_play: end\n\0");
   ags_devout_ao_free(devout);
 
   return(NULL);
@@ -1526,7 +1538,7 @@ ags_devout_alsa_init(AgsDevout *devout)
 				     SND_PCM_STREAM_PLAYBACK, 0);
 
   if(devout->out.alsa.rc < 0) {
-    fprintf(stderr, "unable to open pcm device: %s\n\0", snd_strerror(devout->out.alsa.rc));
+    g_message("unable to open pcm device: %s\n\0", snd_strerror(devout->out.alsa.rc));
     exit(1);
   }
 
@@ -1552,32 +1564,37 @@ ags_devout_alsa_init(AgsDevout *devout)
   /* 44100 bits/second sampling rate (CD quality) */
   val = 44100;//(unsigned int) devout->frequency;
   dir = 0;
-  snd_pcm_hw_params_set_rate_near(devout->out.alsa.handle, devout->out.alsa.params,
-                                  &val, &dir);
+  snd_pcm_hw_params_set_rate(devout->out.alsa.handle, devout->out.alsa.params,
+			     val, dir);
 
   /* Set period size to devout->buffer_size frames. */
   frames = 940;//devout->buffer_size;
-  snd_pcm_hw_params_set_period_size_near(devout->out.alsa.handle,
-					 devout->out.alsa.params, &frames, &dir);
+
+  snd_pcm_hw_params_set_period_size(devout->out.alsa.handle,
+				    devout->out.alsa.params, frames, dir);
+
+
+  snd_pcm_hw_params_set_rate_resample(devout->out.alsa.handle,
+				      devout->out.alsa.params, frames);
 
   /* Write the parameters to the driver */
   devout->out.alsa.rc = snd_pcm_hw_params(devout->out.alsa.handle, devout->out.alsa.params);
   if(devout->out.alsa.rc < 0) {
-    fprintf(stderr, "unable to set hw parameters: %s\n\0", snd_strerror(devout->out.alsa.rc));
+    g_message("unable to set hw parameters: %s\n\0", snd_strerror(devout->out.alsa.rc));
     exit(1);
   }
 
   /* Use a buffer large enough to hold one period */
-  snd_pcm_hw_params_get_period_size(devout->out.alsa.params, &frames,
-                                    &dir);
+  //  snd_pcm_hw_params_get_period_size(devout->out.alsa.params, &frames,
+  //                                &dir);
   //  size = frames * 4; /* 2 bytes/sample, 2 channels */
   //   buffer = (char *) malloc(size);
 
-  fprintf(stdout, "%u %u\n\0", frames, dir);
+  //  g_message("%u %u\n\0", frames, dir);
 
   /* We want to loop */
-  snd_pcm_hw_params_get_period_time(devout->out.alsa.params,
-                                    &val, &dir);
+  //  snd_pcm_hw_params_get_period_time(devout->out.alsa.params,
+  //                                  &val, &dir);
 
 }
 
@@ -1607,7 +1624,7 @@ ags_devout_alsa_play(void *devout0)
   //  ts.tv_sec = 0;
   //  ts.tv_nsec = 100;
   devout = (AgsDevout *) devout0;
-  fprintf(stdout, "ags_devout_play\n\0");
+  g_message("ags_devout_play\n\0");
 
   pthread_mutex_lock(&devout->play_mutex);
 
@@ -1621,15 +1638,15 @@ ags_devout_alsa_play(void *devout0)
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
-	fprintf(stderr, "underrun occurred\n");
+	g_message("underrun occurred\n");
 	snd_pcm_prepare(devout->out.alsa.handle);
       }else if(devout->out.alsa.rc < 0){
-	fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+	g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+	g_message("short write, write %d frames\n", devout->out.alsa.rc);
       }
 
-      //      fprintf(stdout, "ags_devout_play 0\n\0");
+      //      g_message("ags_devout_play 0\n\0");
     }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
       memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
@@ -1637,15 +1654,15 @@ ags_devout_alsa_play(void *devout0)
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
-	fprintf(stderr, "underrun occurred\n");
+	g_message("underrun occurred\n");
 	snd_pcm_prepare(devout->out.alsa.handle);
       }else if(devout->out.alsa.rc < 0){
-	fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+	g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+	g_message("short write, write %d frames\n", devout->out.alsa.rc);
       }
 
-      //      fprintf(stdout, "ags_devout_play 1\n\0");
+      //      g_message("ags_devout_play 1\n\0");
     }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
       memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
@@ -1653,15 +1670,15 @@ ags_devout_alsa_play(void *devout0)
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
-	fprintf(stderr, "underrun occurred\n");
+	g_message("underrun occurred\n");
 	snd_pcm_prepare(devout->out.alsa.handle);
       }else if(devout->out.alsa.rc < 0){
-	fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+	g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+	g_message("short write, write %d frames\n", devout->out.alsa.rc);
       }
 
-      //      fprintf(stdout, "ags_devout_play 2\n\0");
+      //      g_message("ags_devout_play 2\n\0");
     }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
       memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
@@ -1669,15 +1686,15 @@ ags_devout_alsa_play(void *devout0)
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
-	fprintf(stderr, "underrun occurred\n");
+	g_message("underrun occurred\n");
 	snd_pcm_prepare(devout->out.alsa.handle);
       }else if(devout->out.alsa.rc < 0){
-	fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+	g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-	fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+	g_message("short write, write %d frames\n", devout->out.alsa.rc);
       }
 
-      //      fprintf(stdout, "ags_devout_play 3\n\0");
+      //      g_message("ags_devout_play 3\n\0");
     }
 
     /*
@@ -1708,12 +1725,12 @@ ags_devout_alsa_play(void *devout0)
     
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      fprintf(stderr, "underrun occurred\n");
+      g_message("underrun occurred\n");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+      g_message("short write, write %d frames\n", devout->out.alsa.rc);
     }
     
     devout->flags &= (~AGS_DEVOUT_BUFFER0);
@@ -1724,12 +1741,12 @@ ags_devout_alsa_play(void *devout0)
     
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      fprintf(stderr, "underrun occurred\n");
+      g_message("underrun occurred\n");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+      g_message("short write, write %d frames\n", devout->out.alsa.rc);
     }
 
     devout->flags &= (~AGS_DEVOUT_BUFFER1);
@@ -1740,12 +1757,12 @@ ags_devout_alsa_play(void *devout0)
     
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      fprintf(stderr, "underrun occurred\n");
+      g_message("underrun occurred\n");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+      g_message("short write, write %d frames\n", devout->out.alsa.rc);
     }
 
     devout->flags &= (~AGS_DEVOUT_BUFFER2);
@@ -1756,18 +1773,18 @@ ags_devout_alsa_play(void *devout0)
     
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      fprintf(stderr, "underrun occurred\n");
+      g_message("underrun occurred\n");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      fprintf(stderr, "error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\n", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      fprintf(stderr, "short write, write %d frames\n", devout->out.alsa.rc);
+      g_message("short write, write %d frames\n", devout->out.alsa.rc);
     }
 
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
   }
 
-  //  fprintf(stdout, "ags_devout_play: end\n\0");
+  //  g_message("ags_devout_play: end\n\0");
   ags_devout_alsa_free(devout);
 
   return(NULL);

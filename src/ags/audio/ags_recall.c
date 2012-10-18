@@ -597,7 +597,7 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
      (container != NULL && !AGS_IS_RECALL_CONTAINER(container)))
     return(TRUE);
 
-  printf("===== packing: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("===== packing: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   recall->container = container;
 
@@ -695,7 +695,7 @@ ags_recall_finalize(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
-  printf("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
+  g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
     ags_connectable_disconnect(AGS_CONNECTABLE(recall));
@@ -854,7 +854,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list;
 
-  //  printf("ags_recall_real_run_pre: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  //  g_message("ags_recall_real_run_pre: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 
@@ -1001,7 +1001,7 @@ ags_recall_real_done(AgsRecall *recall)
     return;
   }
 
-  printf("ags_recall_done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags_recall_done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 
   if(AGS_IS_RUN_CONNECTABLE(recall)){
@@ -1066,7 +1066,7 @@ ags_recall_real_remove(AgsRecall *recall)
 {
   AgsRecall *parent;
 
-  fprintf(stdout, "remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   ags_run_connectable_disconnect(recall);
 
@@ -1576,13 +1576,13 @@ ags_recall_find_group_id(GList *recall_i, AgsGroupId group_id)
 {
   AgsRecall *recall;
 
-  printf("ags_recall_find_group_id: group_id = %lu\n\0", group_id);
+  g_message("ags_recall_find_group_id: group_id = %lu\n\0", group_id);
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
     if(recall->recall_id != NULL)
-      printf("ags_recall_find_group_id: recall_id->group_id = %lu\n\0", recall->recall_id->group_id);
+      g_message("ags_recall_find_group_id: recall_id->group_id = %lu\n\0", recall->recall_id->group_id);
 
     if(recall->recall_id != NULL &&
        recall->recall_id->group_id == group_id){
