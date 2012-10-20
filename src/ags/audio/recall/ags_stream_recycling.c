@@ -36,6 +36,7 @@ void ags_stream_recycling_finalize(GObject *gobject);
 AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
+void ags_stream_recycling_remove(AgsRecall *recall);
 
 static gpointer ags_stream_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_recycling_parent_connectable_interface;
@@ -182,6 +183,11 @@ ags_stream_recycling_duplicate(AgsRecall *recall,
 
 
   return((AgsRecall *) copy);
+}
+
+void
+ags_stream_recycling_remove(AgsRecall *recall)
+{
 }
 
 AgsStreamRecycling*
