@@ -216,7 +216,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
 
-  devout = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->devout;
+  devout = AGS_DEVOUT(AGS_RECALL(play_audio_signal)->devout);
   source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
 

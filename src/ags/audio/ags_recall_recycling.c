@@ -78,7 +78,6 @@ void ags_recall_recycling_duplicate_list(GList *list,
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_AUDIO_CHANNEL,
   PROP_DESTINATION,
   PROP_SOURCE,
@@ -155,15 +154,6 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
   gobject->finalize = ags_recall_recycling_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned AgsDevout\0",
-				   "The AgsDevout this recall is assigned with\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
   param_spec = g_param_spec_uint("audio_channel\0",
 				 "assigned audio Channel\0",
 				 "The audio channel this recall does output to\0",
@@ -246,7 +236,6 @@ ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
   //  recall_recycling->flags = (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
   //			     AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 
-  recall_recycling->devout = NULL;
   recall_recycling->audio_channel = 0;
 
   recall_recycling->destination = NULL;
@@ -267,24 +256,6 @@ ags_recall_recycling_set_property(GObject *gobject,
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(recall_recycling->devout == devout)
-	return;
-
-      if(recall_recycling->devout != NULL)
-	g_object_unref(G_OBJECT(recall_recycling->devout));
-
-      if(devout != NULL)
-	g_object_ref(G_OBJECT(devout));
-
-      recall_recycling->devout = devout;
-    }
-    break;
   case PROP_AUDIO_CHANNEL:
     {
       recall_recycling->audio_channel = g_value_get_uint(value);
@@ -435,11 +406,6 @@ ags_recall_recycling_get_property(GObject *gobject,
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, recall_recycling->devout);
-    }
-    break;
   case PROP_AUDIO_CHANNEL:
     {
       g_value_set_uint(value, recall_recycling->audio_channel);
@@ -575,7 +541,7 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "devout\0", recall_recycling->devout,
+				 "devout\0", recall->devout,
 				 "destination\0", recall_recycling->destination,
 				 "source\0", recall_recycling->source,
 				 NULL);
@@ -652,17 +618,19 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
     //    audio_signal->stream_current = audio_signal->stream_beginning;
 
-    attack = ags_attack_duplicate_from_devout(G_OBJECT(recall_recycling->devout));
+    attack = ags_attack_duplicate_from_devout(G_OBJECT(recall->devout));
 
 
     //    g_message("  -- recall_audio_signal = g_object_new -- destination@%x - source@%x\0", recall_recycling->child_destination, audio_signal);
-    recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
-				       "devout\0", recall_recycling->devout,
-				       "audio_channel\0", recall_recycling->audio_channel,
-				       "destination\0", recall_recycling->child_destination,
-				       "source\0", audio_signal,
-				       "attack", attack,
-				       NULL);
+    if(AGS_RECALL(recall_recycling)->child_type != G_TYPE_NONE){
+      recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
+					 "devout\0", recall->devout,
+					 "audio_channel\0", recall_recycling->audio_channel,
+					 "destination\0", recall_recycling->child_destination,
+					 "source\0", audio_signal,
+					 "attack", attack,
+					 NULL);
+    }
 
     ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
     g_signal_connect(G_OBJECT(recall_audio_signal), "done\0",

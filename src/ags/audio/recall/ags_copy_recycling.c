@@ -246,9 +246,9 @@ ags_copy_recycling_new(AgsRecycling *destination,
   AgsCopyRecycling *copy_recycling;
 
   copy_recycling = (AgsCopyRecycling *) g_object_new(AGS_TYPE_COPY_RECYCLING,
+						     "devout\0", devout,
 						     "destination\0", destination,
 						     "source\0", source,
-						     "devout\0", devout,
 						     NULL);
 
   return(copy_recycling);

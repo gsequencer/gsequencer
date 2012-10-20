@@ -37,10 +37,13 @@ void ags_stream_recycling_run_connect(AgsRunConnectable *run_connectable);
 void ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_stream_recycling_finalize(GObject *gobject);
 
+void ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child);
 AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 void ags_stream_recycling_remove(AgsRecall *recall);
+
+void ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall, AgsStreamRecycling *stream_recycling);
 
 static gpointer ags_stream_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_recycling_parent_connectable_interface;
@@ -172,6 +175,13 @@ void
 ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 {
   ags_stream_recycling_parent_run_connectable_interface->disconnect(run_connectable);
+}
+
+void
+ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child)
+{
+  g_signal_connect(G_OBJECT(child), "done\0",
+		   G_CALLBACK(ags_stream_recycling_stream_audio_signal_done), recall);
 }
 
 AgsRecall*

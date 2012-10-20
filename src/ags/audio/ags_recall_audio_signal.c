@@ -62,9 +62,13 @@ AgsRecall* ags_recall_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
 
+void ags_recall_audio_signal_notify_devout(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
+					   gpointer data);
+void ags_recall_audio_signal_notify_devout_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
+						 gpointer data);
+
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_AUDIO_CHANNEL,
   PROP_DESTINATION,
   PROP_SOURCE,
@@ -151,15 +155,6 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
   recall->run_post = ags_recall_audio_signal_run_post;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout this recall is assigned to\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-  
   param_spec = g_param_spec_uint("audio_channel\0",
 				 "output to audio channel\0",
 				 "The audio channel to which it should write\0",
@@ -224,7 +219,11 @@ ags_recall_audio_signal_run_connectable_interface_init(AgsRunConnectableInterfac
 void
 ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal)
 {
-  recall_audio_signal->devout = NULL;
+  g_signal_connect(G_OBJECT(recall_audio_signal), "notify::devout",
+		   G_CALLBACK(ags_recall_audio_signal_notify_devout), NULL);
+  g_signal_connect_after(G_OBJECT(recall_audio_signal), "notify::devout",
+			 G_CALLBACK(ags_recall_audio_signal_notify_devout_after), NULL);
+
   recall_audio_signal->audio_channel = 0;
 
   recall_audio_signal->source = NULL;
@@ -244,29 +243,6 @@ ags_recall_audio_signal_set_property(GObject *gobject,
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(recall_audio_signal->devout == devout)
-	return;
-
-      if(recall_audio_signal->devout != NULL){
-	g_object_unref(recall_audio_signal->devout);
-	free(recall_audio_signal->attack);
-	recall_audio_signal->attack = NULL;
-      }
-
-      if(devout != NULL){
-	g_object_ref(G_OBJECT(devout));
-	recall_audio_signal->attack = ags_attack_duplicate_from_devout((GObject *) devout);
-      }
-
-      recall_audio_signal->devout = devout;
-    }
-    break;
   case PROP_AUDIO_CHANNEL:
     {
       guint audio_channel;
@@ -344,12 +320,6 @@ ags_recall_audio_signal_get_property(GObject *gobject,
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, recall_audio_signal->devout);
-    }
-    break;
-  default:
   case PROP_AUDIO_CHANNEL:
     {
       g_value_set_uint(value, recall_audio_signal->audio_channel);
@@ -370,6 +340,7 @@ ags_recall_audio_signal_get_property(GObject *gobject,
       g_value_set_pointer(value, recall_audio_signal->attack);
     }
     break;
+  default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
@@ -410,9 +381,6 @@ ags_recall_audio_signal_finalize(GObject *gobject)
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
-  if(recall_audio_signal->devout != NULL)
-    g_object_unref(recall_audio_signal->devout);
-
   if(recall_audio_signal->destination != NULL)
     g_object_unref(recall_audio_signal->destination);
 
@@ -436,7 +404,7 @@ ags_recall_audio_signal_duplicate(AgsRecall *recall,
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall);
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "devout\0", recall_audio_signal->devout,
+				 "devout\0", AGS_RECALL(recall_audio_signal)->devout,
 				 "audio_channel\0", recall_audio_signal->audio_channel,
 				 "destination\0", recall_audio_signal->destination,
 				 "source\0", recall_audio_signal->source,
@@ -549,6 +517,25 @@ ags_recall_audio_signal_run_post(AgsRecall *recall){
 
 }
 
+void
+ags_recall_audio_signal_notify_devout(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
+				      gpointer data)
+{
+  if(AGS_RECALL(recall_audio_signal)->devout != NULL){
+    free(recall_audio_signal->attack);
+    recall_audio_signal->attack = NULL;
+  }
+}
+
+void
+ags_recall_audio_signal_notify_devout_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
+					    gpointer data)
+{
+  if(AGS_RECALL(recall_audio_signal)->devout != NULL){
+    recall_audio_signal->attack = ags_attack_duplicate_from_devout((GObject *) AGS_RECALL(recall_audio_signal)->devout);
+  }
+}
+
 AgsRecallAudioSignal*
 ags_recall_audio_signal_new(AgsAudioSignal *destination,
 			    AgsAudioSignal *source,
@@ -558,11 +545,11 @@ ags_recall_audio_signal_new(AgsAudioSignal *destination,
   AgsRecallAudioSignal *recall_audio_signal;
 
   recall_audio_signal = (AgsRecallAudioSignal *) g_object_new(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							  "destination\0", destination,
-							  "source\0", source,
-							  "devout\0", devout,
-							  "attack\0", attack,
-							  NULL);
+							      "devout\0", devout,
+							      "destination\0", destination,
+							      "source\0", source,
+							      "attack\0", attack,
+							      NULL);
 
   return(recall_audio_signal);
 }

@@ -732,6 +732,10 @@ ags_recall_finalize(GObject *gobject)
 
   g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 
+  if(recall->devout != NULL){
+    g_object_unref(recall->devout);
+  }
+
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
     ags_connectable_disconnect(AGS_CONNECTABLE(recall));
   }
@@ -1180,6 +1184,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
+				 "devout\0", recall->devout,
 				 "recall_id\0", recall_id,
 				 "recall_container\0", recall->container,
 				 NULL);
@@ -1378,6 +1383,9 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     child->parent->children = g_list_remove(child->parent->children, child);
     g_object_unref(child->parent);
     g_object_unref(child);
+    g_object_set(G_OBJECT(child),
+		 "recall_id\0", NULL,
+		 NULL);
   }
 
   /* ref new */
@@ -1389,7 +1397,10 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 
     parent->children = g_list_prepend(parent->children, child);
 
-    child->recall_id = parent->recall_id;
+    g_object_set(G_OBJECT(child),
+		 "devout\0", parent->devout,
+		 "recall_id\0", parent->recall_id,
+		 NULL);
   }
   
   child->parent = parent;

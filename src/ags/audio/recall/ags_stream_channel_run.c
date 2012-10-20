@@ -183,12 +183,7 @@ ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
 
   ags_stream_channel_run_parent_run_connectable_interface->disconnect(run_connectable);
 
-  stream_channel_run = AGS_STREAM_CHANNEL_RUN(run_connectable);
-
-  channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel->source;
-
-  g_signal_handler_disconnect(G_OBJECT(channel),
-			      stream_channel_run->channel_recycling_changed_handler);
+  /* empty */
 }
 
 AgsRecall*

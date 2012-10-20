@@ -195,6 +195,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudio in audio->play */
   drum->play_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "devout\0", audio->devout,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 16,
@@ -208,6 +209,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudioRun in audio->play */
   drum->play_delay_audio_run =
     play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							     "devout\0", audio->devout,
 							     "recall_container\0", recall_container,
 							     "recall_audio\0", delay_audio,
 							     NULL);
@@ -224,6 +226,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudio in audio->recall */
   drum->recall_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "devout\0", audio->devout,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 16,
@@ -254,6 +257,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudio in audio->play */
   drum->play_count_beats_audio =
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							    "devout\0", audio->devout,
 							    "audio\0", audio,
 							    "recall_container\0", recall_container,
 							    "loop\0", FALSE,
@@ -270,6 +274,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudioRun in audio->play */
   drum->play_count_beats_audio_run = 
     play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									"devout\0", audio->devout,
 									"recall_container\0", recall_container,
 									"recall_audio\0", count_beats_audio,
 									"delay_audio_run\0", play_delay_audio_run,
@@ -287,6 +292,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudio in audio->recall */
   drum->recall_count_beats_audio =
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							    "devout\0", audio->devout,
 							    "audio\0", audio,
 							    "recall_container\0", recall_container,
 							    "loop\0", FALSE,
@@ -303,6 +309,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudioRun in audio->recall */
   drum->recall_count_beats_audio_run = 
     recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									  "devout\0", audio->devout,
 									  "recall_container\0", recall_container,
 									  "recall_audio\0", count_beats_audio,
 									  "delay_audio_run\0", recall_delay_audio_run,
@@ -322,6 +329,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudio in audio->play */
   drum->play_copy_pattern_audio =
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
+							      "devout\0", audio->devout,
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
 							      //"devout\0", audio->devout,
@@ -336,6 +344,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudioRun in audio->play */
   drum->play_copy_pattern_audio_run =
     copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								     "devout\0", audio->devout,
 								     "recall_container\0", recall_container,
 								     "recall_audio\0", copy_pattern_audio,
 								     "count_beats_audio_run\0", play_count_beats_audio_run,
@@ -353,9 +362,9 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudio in audio->recall */
   drum->recall_copy_pattern_audio =
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
+							      "devout\0", audio->devout,
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
-							      //"devout\0", audio->devout,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
@@ -367,6 +376,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudioRun in audio->recall */
   drum->recall_copy_pattern_audio_run =
     copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								     "devout\0", audio->devout,
 								     "recall_container\0", recall_container,
 								     "recall_audio\0", copy_pattern_audio,
 								     "count_beats_audio_run\0", recall_count_beats_audio_run,

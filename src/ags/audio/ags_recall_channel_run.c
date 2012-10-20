@@ -102,7 +102,6 @@ enum{
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_AUDIO_CHANNEL,
   PROP_DESTINATION,
   PROP_SOURCE,
@@ -192,15 +191,6 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   gobject->finalize = ags_recall_channel_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout this recall is assigned to\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
   param_spec = g_param_spec_uint("audio_channel\0",
 				 "assigned audio channel\0",
 				 "The audio channel this recall is assigned to\0",
@@ -310,7 +300,6 @@ ags_recall_channel_run_run_connectable_interface_init(AgsRunConnectableInterface
 void
 ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run)
 {
-  recall_channel_run->devout = NULL;
   recall_channel_run->audio_channel = 0;
 
   recall_channel_run->recall_audio_run = NULL;
@@ -334,24 +323,6 @@ ags_recall_channel_run_set_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(recall_channel_run->devout == devout)
-	return;
-
-      if(recall_channel_run->devout != NULL)
-	g_object_unref(G_OBJECT(recall_channel_run->devout));
-
-      if(devout != NULL)
-	g_object_ref(G_OBJECT(devout));
-
-      recall_channel_run->devout = devout;
-    }
-    break;
   case PROP_AUDIO_CHANNEL:
     {
       recall_channel_run->audio_channel = g_value_get_uint(value);
@@ -504,11 +475,6 @@ ags_recall_channel_run_get_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, recall_channel_run->devout);
-    }
-    break;
   case PROP_AUDIO_CHANNEL:
     {
       g_value_set_uint(value, recall_channel_run->audio_channel);
@@ -546,9 +512,6 @@ ags_recall_channel_run_finalize(GObject *gobject)
   AgsRecallChannelRun *recall_channel_run;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
-
-  if(recall_channel_run->devout != NULL)
-    g_object_unref(recall_channel_run->devout);
 
   if(recall_channel_run->recall_audio_run != NULL)
     g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
@@ -752,9 +715,9 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
+				 "devout\0", AGS_RECALL(recall_channel_run)->devout,
 				 "recall_channel\0", recall_channel_run->recall_channel,
 				 "audio_channel\0", recall_channel_run->audio_channel,
-				 "devout\0", recall_channel_run->devout,
 				 //				 "audio_channel\0", recall_channel_run->audio_channel,
 				 "destination\0", recall_channel_run->destination,
 				 "source\0", recall_channel_run->source,
@@ -800,20 +763,22 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
       g_message("ags_recall_channel_run_map_recall_recycling\n\0");
 
       do{
-	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
-					"recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
-					"devout\0", recall_channel_run->devout,
-					"audio_channel\0", recall_channel_run->audio_channel,
-					"destination\0", destination_recycling,
-					"source\0", source_recycling,
-					NULL);
+	if(AGS_RECALL(recall_channel_run)->child_type != G_TYPE_NONE){
+	  recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					  "devout\0", AGS_RECALL(recall_channel_run)->devout,
+					  "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
+					  "audio_channel\0", recall_channel_run->audio_channel,
+					  "destination\0", destination_recycling,
+					  "source\0", source_recycling,
+					  NULL);
+	}
+
+	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
 
 	if(destination_recycling != NULL){
 	  destination_recycling = destination_recycling->next;
 	}
       }while(destination_recycling != NULL);
-
-      ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
 
       source_recycling = source_recycling->next;
     }
@@ -879,16 +844,18 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	source_recycling = new_start_changed_region;
 	
 	while(source_recycling != new_end_changed_region->next){
-	  recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
-					  "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
-					  "devout\0", recall_channel_run->devout,
-					  "audio_channel\0", recall_channel_run->audio_channel,
-					  "destination\0", destination_recycling,
-					  "source\0", source_recycling,
-					  NULL);
-	  
-	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
-	  
+	  if(AGS_RECALL(recall_channel_run)->child_type != G_TYPE_NONE){
+	    recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					    "devout\0", AGS_RECALL(recall_channel_run)->devout,
+					    "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
+					    "audio_channel\0", recall_channel_run->audio_channel,
+					    "destination\0", destination_recycling,
+					    "source\0", source_recycling,
+					    NULL);
+	    
+	    ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	  }
+
 	  source_recycling = source_recycling->next;
 	}
       
@@ -898,16 +865,19 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
       source_recycling = new_start_changed_region;
       
       while(source_recycling != new_end_changed_region->next){
-	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
-					"recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
-					"devout\0", recall_channel_run->devout,
-					"audio_channel\0", recall_channel_run->audio_channel,
-					"destination\0", NULL,
-					"source\0", source_recycling,
-					NULL);
+
+	if(AGS_RECALL(recall_channel_run)->child_type != G_TYPE_NONE){
+	  recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					  "devout\0", AGS_RECALL(recall_channel_run)->devout,
+					  "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
+					  "audio_channel\0", recall_channel_run->audio_channel,
+					  "destination\0", NULL,
+					  "source\0", source_recycling,
+					  NULL);
 	
-	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
-	
+	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	}
+
 	source_recycling = source_recycling->next;
       }
     }
@@ -971,16 +941,18 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	source_recycling = recall_channel_run->source->first_recycling;
 	
 	while(source_recycling != recall_channel_run->source->last_recycling->next){
-	  recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
-					  "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
-					  "devout\0", recall_channel_run->devout,
-					  "audio_channel\0", recall_channel_run->audio_channel,
-					  "destination\0", destination_recycling,
-					  "source\0", source_recycling,
-					  NULL);
+	  if(AGS_RECALL(recall_channel_run)->child_type != G_TYPE_NONE){
+	    recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					    "devout\0", AGS_RECALL(recall_channel_run)->devout,
+					    "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
+					    "audio_channel\0", recall_channel_run->audio_channel,
+					    "destination\0", destination_recycling,
+					    "source\0", source_recycling,
+					    NULL);
 	  
-	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
-	  
+	    ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	  }
+
 	  source_recycling = source_recycling->next;
 	}
 	
@@ -990,15 +962,20 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
       destination_recycling = new_start_changed_region;
       
       while(destination_recycling != new_end_changed_region->next){
-	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
-					"recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
-					"devout\0", recall_channel_run->devout,
-					"audio_channel\0", recall_channel_run->audio_channel,
-					"destination\0", NULL,
-					"source\0", destination_recycling,
-					NULL);
+
+	if(AGS_RECALL(recall_channel_run)->child_type != G_TYPE_NONE){
+	  recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					  "devout\0", AGS_RECALL(recall_channel_run)->devout,
+					  "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
+					  "audio_channel\0", recall_channel_run->audio_channel,
+					  "destination\0", NULL,
+					  "source\0", destination_recycling,
+					  NULL);
 	
-	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	}
+
+	destination_recycling = destination_recycling->next;
       }
     }
   }

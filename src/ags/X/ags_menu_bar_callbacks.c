@@ -210,6 +210,11 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   panel = ags_panel_new(G_OBJECT(window->navigation->devout));
+
+  g_object_set(AGS_MACHINE(panel)->audio,
+	       "devout\0", window->devout,
+	       NULL);
+
   widget = (GtkWidget *) panel;
   gtk_box_pack_start((GtkBox *) window->machines,
 		     widget,
@@ -232,6 +237,10 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsMixer *mixer;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+
+  g_object_set(AGS_MACHINE(mixer)->audio,
+	       "devout\0", window->devout,
+	       NULL);
 
   mixer = ags_mixer_new(G_OBJECT(window->navigation->devout));
   widget = (GtkWidget *) mixer;
@@ -263,6 +272,11 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   drum = ags_drum_new(G_OBJECT(window->navigation->devout));
+
+  g_object_set(AGS_MACHINE(drum)->audio,
+	       "devout\0", window->devout,
+	       NULL);
+
   widget = (GtkWidget*) drum;
   gtk_box_pack_start((GtkBox *) window->machines,
 		     widget,
@@ -323,6 +337,11 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   matrix = ags_matrix_new(G_OBJECT(window->navigation->devout));
+
+  g_object_set(AGS_MACHINE(matrix)->audio,
+	       "devout\0", window->devout,
+	       NULL);
+
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) matrix,
 		     FALSE, FALSE, 0);
@@ -345,6 +364,11 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   synth = ags_synth_new(G_OBJECT(window->navigation->devout));
+
+  g_object_set(AGS_MACHINE(synth)->audio,
+	       "devout\0", window->devout,
+	       NULL);
+
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) synth,
 		     FALSE, FALSE, 0);
@@ -367,6 +391,11 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   ffplayer = ags_ffplayer_new(G_OBJECT(window->navigation->devout));
+
+  g_object_set(AGS_MACHINE(ffplayer)->audio,
+	       "devout\0", window->devout,
+	       NULL);
+
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) ffplayer,
 		     FALSE, FALSE, 0);
@@ -375,8 +404,8 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   //  ffplayer->machine.audio->frequence = ;
   ffplayer->machine.audio->audio_channels = 2;
-  ags_audio_set_pads(ffplayer->machine.audio, AGS_TYPE_INPUT, 78);
-  ags_audio_set_pads(ffplayer->machine.audio, AGS_TYPE_OUTPUT, 1);
+  ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
+  ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
 
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }

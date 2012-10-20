@@ -50,7 +50,6 @@ struct _AgsRecallRecycling
 
   guint flags;
 
-  AgsDevout *devout;
   guint audio_channel;
 
   AgsRecycling *destination;

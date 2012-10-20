@@ -212,6 +212,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* AgsLoopChannel */
     loop_channel = (AgsLoopChannel *) g_object_new(AGS_TYPE_LOOP_CHANNEL,
+						   "devout\0", audio->devout,
 						   "source\0", output,
 						   "recall_container\0", play_loop_channel_container,
 						   NULL);
@@ -225,7 +226,8 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* AgsLoopChannelRun */
     loop_channel_run = (AgsLoopChannelRun *) g_object_new(AGS_TYPE_LOOP_CHANNEL_RUN,
-							  "recall_channel", loop_channel,
+							  "devout\0", audio->devout,
+							  "recall_channel\0", loop_channel,
 							  "source\0", output,
 							  "recall_container\0", play_loop_channel_container,
 							  "count_beats_audio_run\0", recall_count_beats_audio_run,
@@ -245,6 +247,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* AgsStreamChannel */
     play_stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
+							    "devout\0", audio->devout,
 							    "source\0", output,
 							    "recall_container\0", play_stream_channel_container,
 							    NULL);
@@ -258,6 +261,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* AgsStreamChannelRun */
     play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
+								   "devout\0", audio->devout,
 								   "recall_channel\0", play_stream_channel,
 								   "devout\0", audio->devout,
 								   "source\0", output,
@@ -302,9 +306,9 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 						     AGS_RECALL_PERSISTENT);
     ags_channel_add_recall(output, (GObject *) recall_stream_channel_run, FALSE);
     
-    */
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel_run));
+    */
   }
 }
 
