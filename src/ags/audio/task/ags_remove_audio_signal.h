@@ -24,6 +24,7 @@
 
 #include <ags/audio/ags_task.h>
 
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_REMOVE_AUDIO_SIGNAL                (ags_remove_audio_signal_get_type())

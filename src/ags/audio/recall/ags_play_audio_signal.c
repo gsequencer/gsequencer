@@ -195,7 +195,7 @@ ags_play_audio_signal_run_init_pre(AgsRecall *recall)
   //  AGS_RECALL(play_audio_signal)->flags &= (~AGS_RECALL_PERSISTENT);
 
   g_message("playing AgsAudioSignal#%x on AgsDevout[%d]\0",
-	    audio_signal,
+	    AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source,
 	    AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel);
 
   /* call parent */

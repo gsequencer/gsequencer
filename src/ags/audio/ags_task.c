@@ -29,6 +29,8 @@ void ags_task_finalize(GObject *gobject);
 
 enum{
   LAUNCH,
+  FAILURE,
+  EXECUTED,
   LAST_SIGNAL,
 };
 
@@ -79,12 +81,17 @@ ags_task_class_init(AgsTaskClass *task)
 
   ags_task_parent_class = g_type_class_peek_parent(task);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) task;
 
   gobject->finalize = ags_task_finalize;
 
+  /* AgsTaskClass */
   task->launch = NULL;
+  task->failure = NULL;
+  task->executed = NULL;
 
+  /* signals */
   task_signals[LAUNCH] =
     g_signal_new("launch\0",
 		 G_TYPE_FROM_CLASS (task),
@@ -93,6 +100,26 @@ ags_task_class_init(AgsTaskClass *task)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
+
+  task_signals[FAILURE] =
+    g_signal_new("failure\0",
+		 G_TYPE_FROM_CLASS (task),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsTaskClass, failure),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1
+		 G_TYPE_POINTER);
+
+  task_signals[EXECUTED] =
+    g_signal_new("executed\0",
+		 G_TYPE_FROM_CLASS (task),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsTaskClass, executed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
 }
 
 void
