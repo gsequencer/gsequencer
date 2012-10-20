@@ -23,17 +23,17 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <unistd.h>
-#include <sys/types.h>
-
+#define __USE_GNU
 #define __USE_UNIX98
-
 #include <pthread.h>
 
 #include <ao/ao.h>
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #include <alsa/asoundlib.h>
+
+#include <unistd.h>
+#include <sys/types.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_task.h>

@@ -155,6 +155,9 @@ ags_stream_audio_signal_finalize(GObject *gobject)
   ags_recycling_remove_audio_signal(AGS_RECYCLING(AGS_RECALL_RECYCLING(AGS_RECALL(recall_audio_signal)->parent)->source),
   				    recall_audio_signal->source);
 
+  if(recall_audio_signal->source != NULL)
+    g_object_unref(G_OBJECT(recall_audio_signal->source));
+
   /* unref audio signal */
   //  unref_audio_signal = ags_unref_audio_signal_new(audio_signal);
   //  ags_devout_append_task(recall_audio_signal->devout, (AgsTask *) unref_audio_signal);

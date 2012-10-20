@@ -14,7 +14,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
 VPATH = @srcdir@
 am__make_dryrun = \
   { \
@@ -49,7 +48,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = ags$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -65,22 +63,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)"
-PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 =
-am_ags_OBJECTS = $(am__objects_1) $(am__objects_1) $(am__objects_1) \
-	$(am__objects_1) $(am__objects_1) $(am__objects_1) \
-	$(am__objects_1) $(am__objects_1) $(am__objects_1) \
-	$(am__objects_1) $(am__objects_1)
-ags_OBJECTS = $(am_ags_OBJECTS)
-ags_LDADD = $(LDADD)
-DEFAULT_INCLUDES = -I.@am__isrc@
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(ags_SOURCES)
-DIST_SOURCES = $(ags_SOURCES)
+SOURCES =
+DIST_SOURCES =
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -214,18 +198,21 @@ AUTOMAKE_OPTIONS = foreign
 
 # sources
 AGS_DIR = ./src/ags/
-AGS_LIB_SOURCES = $(wildcard $(AGS_DIR)lib/*.[ch])
-AGS_OBJECT_SOURCES = $(wildcard $(AGS_DIR)object/*.[ch])
-AGS_AUDIO_SOURCES = $(wildcard $(AGS_DIR)audio/*.[ch])
-AGS_TASK_SOURCES = $(wildcard $(AGS_DIR)audio/task/*.[ch])
-AGS_RECALL_SOURCES = $(wildcard $(AGS_DIR)audio/recall/*.[ch])
-AGS_AUDIO_FILE_SOURCES = $(wildcard $(AGS_DIR)audio/file/*.[ch])
-AGS_WIDGET_SOURCES = $(wildcard $(AGS_DIR)widget/*.[ch])
-AGS_X_SOURCES = $(wildcard $(AGS_DIR)X/*.[ch])
-AGS_EDITOR_SOURCES = $(wildcard $(AGS_DIR)X/editor/*.[ch])
-AGS_MACHINE_SOURCES = $(wildcard $(AGS_DIR)X/machine/*.[ch])
-AGS_FILE_SOURCES = $(wildcard $(AGS_DIR)file/*.[ch])
-ags_SOURCES = $(AGS_DIR)main.[ch] $(AGS_LIB_SOURCES) $(AGS_OBJECT_SOURCES) $(AGS_AUDIO_SOURCES) $(AGS_TASK_SOURCES) $(AGS_RECALL_SOURCES) $(AGS_AUDIO_FILE_SOURCES) $(AGS_WIDGET_SOURCES) $(AGS_X_SOURCES) $(AGS_EDITOR_SOURCES) $(AGS_MACHINE_SOURCES) $(AGS_FILE_SOURCES)
+BIN_DIR = ./bin/
+AGS_LIB_SRCS = $(wildcard $(AGS_DIR)lib/*.c)
+AGS_OBJECT_SRCS = $(wildcard $(AGS_DIR)object/*.c)
+AGS_AUDIO_SRCS = $(wildcard $(AGS_DIR)audio/*.c)
+AGS_TASK_SRCS = $(wildcard $(AGS_DIR)audio/task/*.c)
+AGS_RECALL_SRCS = $(wildcard $(AGS_DIR)audio/recall/*.c)
+AGS_AUDIO_FILE_SRCS = $(wildcard $(AGS_DIR)audio/file/*.c)
+AGS_WIDGET_SRCS = $(wildcard $(AGS_DIR)widget/*.c)
+AGS_X_SRCS = $(wildcard $(AGS_DIR)X/*.c)
+AGS_EDITOR_SRCS = $(wildcard $(AGS_DIR)X/editor/*.c)
+AGS_MACHINE_SRCS = $(wildcard $(AGS_DIR)X/machine/*.c)
+AGS_FILE_SRCS = $(wildcard $(AGS_DIR)file/*.c)
+ags_SRCS = $(AGS_DIR)main.c $(AGS_LIB_SRCS) $(AGS_OBJECT_SRCS) $(AGS_AUDIO_SRCS) $(AGS_TASK_SRCS) $(AGS_RECALL_SRCS) $(AGS_AUDIO_FILE_SRCS) $(AGS_WIDGET_SRCS) $(AGS_X_SRCS) $(AGS_EDITOR_SRCS) $(AGS_MACHINE_SRCS) $(AGS_FILE_SRCS)
+bin_PROGRAM = ags
+ags_OBJECTS = ${ags_SRCS:.c=.o}
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -279,52 +266,6 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do echo "$$p $$p"; done | \
-	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p; \
-	  then echo "$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n;h' -e 's|.*|.|' \
-	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
-	sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
-	    else { print "f", $$3 "/" $$4, $$1; } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	    } \
-	; done
-
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
-	      -e 's/$$/$(EXEEXT)/' `; \
-	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
-
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-
-mostlyclean-compile:
-	-rm -f *.$(OBJEXT)
-
-distclean-compile:
-	-rm -f *.tab.c
 tags: TAGS
 TAGS:
 
@@ -496,11 +437,8 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) config.h
+all-am: Makefile config.h
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -533,13 +471,12 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
-distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr
+distclean-am: clean-am distclean-generic distclean-hdr
 
 dvi: dvi-am
 
@@ -559,7 +496,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 
 install-html: install-html-am
 
@@ -589,7 +526,7 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-generic
 
 pdf: pdf-am
 
@@ -599,28 +536,30 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am:
 
 .MAKE: all install-am install-strip
 
-.PHONY: all all-am am--refresh check check-am clean clean-binPROGRAMS \
-	clean-generic dist dist-all dist-bzip2 dist-gzip dist-lzip \
-	dist-lzma dist-shar dist-tarZ dist-xz dist-zip distcheck \
-	distclean distclean-compile distclean-generic distclean-hdr \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-binPROGRAMS
+.PHONY: all all-am am--refresh check check-am clean clean-generic dist \
+	dist-all dist-bzip2 dist-gzip dist-lzip dist-lzma dist-shar \
+	dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-generic distclean-hdr distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am
 
 
-ags:
-	$(CC) $(CFLAGS) $(ags_SOURCES) -o $(bin_PROGRAMS) $(LIBS)
+ags: $(ags_OBJECTS)
+	mv $(ags_OBJECTS) $(BIN_DIR)
+	$(CC) $(ags_OBJECTS) -o ../$(bin_PROGRAM) $(LIBS)
+
+$@: $(ags_SRCS)
+	$(CC) -ggdb -c $? -o $@ $(CFLAGS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

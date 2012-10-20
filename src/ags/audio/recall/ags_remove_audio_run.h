@@ -24,6 +24,7 @@
 
 #include <ags/audio/ags_recall_audio_run.h>
 
+#define __USE_UNIX98
 #include <pthread.h>
 
 #define AGS_TYPE_REMOVE_AUDIO_RUN                (ags_remove_audio_run_get_type ())

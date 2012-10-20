@@ -24,7 +24,6 @@
 #include <gtk/gtk.h>
 
 #define __USE_UNIX98
-
 #include <pthread.h>
 
 #define AGS_TYPE_DIAL                (ags_dial_get_type())

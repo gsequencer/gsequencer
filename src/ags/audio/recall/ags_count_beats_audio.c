@@ -89,7 +89,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
   param_spec = g_param_spec_boolean("loop\0",
 				    "loop playing\0",
 				    "Play in a endless loop\0",
-				    TRUE,
+				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LOOP,
@@ -143,7 +143,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 void
 ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 {
-  count_beats_audio->loop = TRUE;
+  count_beats_audio->loop = FALSE;
 
   count_beats_audio->notation_loop_start = 0;
   count_beats_audio->notation_loop_end = 64;

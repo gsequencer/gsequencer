@@ -55,7 +55,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <pthread.h>
 
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"

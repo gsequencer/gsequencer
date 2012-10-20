@@ -30,7 +30,6 @@
 #include <ags/audio/recall/ags_play_channel_run.h>
 
 #include <stdlib.h>
-#include <pthread.h>
 
 void ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal);
 void ags_play_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);

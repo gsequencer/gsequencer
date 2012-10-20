@@ -836,6 +836,9 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	count_beats_audio_run->sequencer_counter += 1;
       }
     }else{
+      if(count_beats_audio_run->sequencer_counter == count_beats_audio->sequencer_loop_end - 1)
+	return;
+
       count_beats_audio_run->sequencer_counter += 1;
     }
 

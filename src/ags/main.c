@@ -15,6 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+#define __USE_UNIX98
+#include <sys/mman.h>
 
 #include <gtk/gtk.h>
 
@@ -271,6 +273,8 @@ main(int argc, char **argv)
 
   ags_init();
   ags_colors_alloc();
+
+  mlockall(MCL_CURRENT | MCL_FUTURE);
 
   ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 
