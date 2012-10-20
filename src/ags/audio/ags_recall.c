@@ -25,6 +25,7 @@
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -96,6 +97,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_DEVOUT,
   PROP_CONTAINER,
   PROP_DEPENDENCY,
   PROP_RECALL_ID,
@@ -180,6 +182,15 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "devout of recall\0",
+				   "The devout which this recall is packed into\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
   param_spec = g_param_spec_object("recall_container\0",
 				   "container of recall\0",
 				   "The container which this recall is packed into\0",
@@ -413,6 +424,7 @@ ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
 
+  recall->devout = NULL;
   recall->container = NULL;
 
   recall->name = NULL;
@@ -441,6 +453,24 @@ ags_recall_set_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(devout == ((AgsDevout *) recall->devout))
+	return;
+
+      if(recall->devout != NULL)
+	g_object_unref(recall->devout);
+
+      if(devout != NULL)
+	g_object_ref(G_OBJECT(devout));
+
+      recall->devout = (GObject *) devout;
+    }
+    break;
   case PROP_CONTAINER:
     {
       AgsRecallContainer *container;
@@ -523,6 +553,11 @@ ags_recall_get_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, recall->devout);
+    }
+    break;
   case PROP_CONTAINER:
     {
       g_value_set_object(value, recall->container);
@@ -1082,8 +1117,9 @@ ags_recall_real_remove(AgsRecall *recall)
 
   if(parent != NULL &&
      (AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
-     parent->children == NULL)
+     parent->children == NULL){
     ags_recall_done(parent);
+  }
 
   g_object_unref(recall);
 }

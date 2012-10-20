@@ -72,6 +72,7 @@ struct _AgsRecall
 
   guint flags;
 
+  GObject *devout;
   GObject *container; // see AgsRecallContainer
 
   char *name;

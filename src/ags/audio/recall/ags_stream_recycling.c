@@ -21,7 +21,11 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 #include <ags/audio/recall/ags_stream_audio_signal.h>
+
+#include <ags/audio/task/ags_remove_audio_signal.h>
 
 void ags_stream_recycling_class_init(AgsStreamRecyclingClass *stream_recycling);
 void ags_stream_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -186,8 +190,15 @@ ags_stream_recycling_duplicate(AgsRecall *recall,
 }
 
 void
-ags_stream_recycling_remove(AgsRecall *recall)
+ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall, AgsStreamRecycling *stream_recycling)
 {
+  AgsRemoveAudioSignal *remove_audio_signal;
+
+  remove_audio_signal = ags_remove_audio_signal_new(AGS_RECALL_RECYCLING(stream_recycling)->source,
+						    AGS_RECALL_AUDIO_SIGNAL(recall)->source);
+
+  ags_devout_append_task(AGS_DEVOUT(recall->devout),
+			 AGS_TASK(remove_audio_signal));
 }
 
 AgsStreamRecycling*

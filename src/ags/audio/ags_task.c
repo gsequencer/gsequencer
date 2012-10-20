@@ -108,7 +108,7 @@ ags_task_class_init(AgsTaskClass *task)
 		 G_STRUCT_OFFSET (AgsTaskClass, failure),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__POINTER,
-		 G_TYPE_NONE, 1
+		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
 
   task_signals[EXECUTED] =
