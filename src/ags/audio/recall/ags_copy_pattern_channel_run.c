@@ -383,7 +383,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	 * unref AgsAudioSignal because AgsCopyPatternChannelRun has no need for it
 	 * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
 	 */
-	//	g_object_unref(audio_signal);
+	// g_object_unref(audio_signal);
 
 	
 	recycling = recycling->next;

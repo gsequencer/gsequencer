@@ -555,7 +555,7 @@ uninstall-am:
 
 
 ags: $(ags_SRCS)
-	$(CC) $(CFLAGS) $(ags_SRCS) -o $(bin_PROGRAM) $(LIBS)
+	$(CC) -ggdb $(CFLAGS) $(ags_SRCS) -o $(bin_PROGRAM) $(LIBS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
