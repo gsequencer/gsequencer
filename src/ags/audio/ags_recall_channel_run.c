@@ -771,9 +771,9 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
 					  "destination\0", destination_recycling,
 					  "source\0", source_recycling,
 					  NULL);
-	}
 
-	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	}
 
 	if(destination_recycling != NULL){
 	  destination_recycling = destination_recycling->next;

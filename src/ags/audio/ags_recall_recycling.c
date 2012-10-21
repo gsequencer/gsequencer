@@ -542,6 +542,7 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
 				 "devout\0", recall->devout,
+				 "audio_channel\0", recall_recycling->audio_channel,
 				 "destination\0", recall_recycling->destination,
 				 "source\0", recall_recycling->source,
 				 NULL);
@@ -630,11 +631,11 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 					 "source\0", audio_signal,
 					 "attack", attack,
 					 NULL);
-    }
 
-    ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
-    g_signal_connect(G_OBJECT(recall_audio_signal), "done\0",
-		     G_CALLBACK(ags_recall_recycling_recall_audio_signal_done), recall_recycling);
+      ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
+      g_signal_connect(G_OBJECT(recall_audio_signal), "done\0",
+		       G_CALLBACK(ags_recall_recycling_recall_audio_signal_done), recall_recycling);
+    }
   }
 }
 
