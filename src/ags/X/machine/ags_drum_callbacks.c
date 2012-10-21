@@ -92,7 +92,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   }else{
     bpm = exp2(60.0 / bpm);
   }
-
   tact = exp2(8.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
   delay = (((double) devout->frequency / (double) devout->buffer_size) *
 	   bpm / 
@@ -104,7 +103,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 	   16.0);
   drum->recall_delay_audio->notation_delay = (guint) floor(delay);
   drum->recall_delay_audio->sequencer_delay = (guint) floor(delay * tact);
-
   /*
    * FIXME:JK: the following code is ugly
    */

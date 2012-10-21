@@ -165,8 +165,8 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     if(drum != NULL){
       delay_audio = drum->play_delay_audio;
+      delay_audio = drum->play_delay_audio;
       stop = (guint)((drum->length_spin->adjustment->value + 1.0) *
-		     delay_audio->duration *
 		     (gdouble) delay_audio->sequencer_delay);
       printf("ags_drum_output_line_set_channel - delay: %u; stop: %u\n\0", delay_audio->sequencer_delay, stop);
     }

@@ -421,6 +421,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 					(GObject *) AGS_RECALL(loop_channel_run)->recall_id);
     ags_recycling_create_audio_signal_with_defaults(recycling, audio_signal, 0);
     audio_signal->stream_current = audio_signal->stream_beginning;
+    g_object_ref(G_OBJECT(audio_signal));
     
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));    
     ags_recycling_add_audio_signal(recycling,
