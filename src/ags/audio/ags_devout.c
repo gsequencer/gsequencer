@@ -594,7 +594,7 @@ ags_devout_task_thread(void *devout0)
   devout = AGS_DEVOUT(devout0);
 
   play_idle.tv_sec = 0;
-  play_idle.tv_nsec = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
+  play_idle.tv_nsec = 10 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
   
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
@@ -603,7 +603,7 @@ ags_devout_task_thread(void *devout0)
 
     /* synchronize with AGS_DEVOUT_WAIT_APPEND_TASK */
     while(devout->tasks_queued > 0){
-      pthread_cond_wait(&(devout->task_wait_play_functions_cond),
+      pthread_cond_wait(&(devout->task_wait_cond),
 			&(devout->task_mutex));
 
       //      if(devout->tasks_queued > 0){
@@ -693,7 +693,7 @@ ags_devout_task_thread(void *devout0)
     }
 
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-      //      nanosleep(&play_idle, NULL);
+      nanosleep(&play_idle, NULL);
     }else{
       usleep(idle);
     }

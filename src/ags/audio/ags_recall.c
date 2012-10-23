@@ -1442,16 +1442,18 @@ ags_recall_get_children(AgsRecall *recall)
 void
 ags_recall_child_check_remove(AgsRecall *recall)
 {
-  GList *list;
+  GList *list, *list_next;
   void ags_recall_check_remove_recursive(AgsRecall *recall){
-    GList *list;
+    GList *list, *list_next;
 
     list = recall->children;
 
     while(list != NULL){
+      list_next = list->next;
+
       ags_recall_check_remove_recursive(AGS_RECALL(list->data));
 
-      list = list->next;
+      list = list_next;
     }
 
     if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
@@ -1463,9 +1465,11 @@ ags_recall_child_check_remove(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    list_next = list->next;
+
     ags_recall_check_remove_recursive(AGS_RECALL(list->data));
     
-    list = list->next;
+    list = list_next;
   }
 }
 
