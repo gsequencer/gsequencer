@@ -617,6 +617,7 @@ ags_devout_task_thread(void *devout0)
 
     /* signal: allow recalls to run */
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
+
       pthread_mutex_lock(&(devout->task_mutex));
       
       if((AGS_DEVOUT_RUN_TASK & (devout->flags)) == 0 && (AGS_DEVOUT_TASK_READY & (devout->flags)) == 0){
@@ -631,7 +632,7 @@ ags_devout_task_thread(void *devout0)
 	pthread_mutex_unlock(&(devout->task_mutex));
 
       }else{
-	devout->flags &= (AGS_DEVOUT_RUN_TASK);
+	devout->flags &= (~AGS_DEVOUT_RUN_TASK);
 	devout->flags &= (~AGS_DEVOUT_TASK_READY);
 	pthread_mutex_unlock(&(devout->task_mutex));
 
@@ -1265,6 +1266,7 @@ ags_devout_play_functions(void *devout0)
       ags_devout_play_functions_timing();
     }else{
       devout->flags &= (~AGS_DEVOUT_WAIT_RECALL);
+      devout->flags &= (~AGS_DEVOUT_WAIT_DEVICE);
       pthread_mutex_unlock(&(devout->play_functions_mutex));
       pthread_cond_signal(&(devout->play_wait_cond));
     }
