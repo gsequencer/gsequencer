@@ -631,6 +631,7 @@ ags_devout_task_thread(void *devout0)
 	pthread_mutex_unlock(&(devout->task_mutex));
 
       }else{
+	devout->flags &= (AGS_DEVOUT_RUN_TASK);
 	devout->flags &= (~AGS_DEVOUT_TASK_READY);
 	pthread_mutex_unlock(&(devout->task_mutex));
 
@@ -1205,6 +1206,7 @@ ags_devout_play_functions(void *devout0)
       
       pthread_mutex_unlock(&(devout->play_functions_mutex));
     }else{
+      devout->flags &= (~AGS_DEVOUT_TASK_READY);
       devout->flags &= (~AGS_DEVOUT_RUN_TASK);
       pthread_mutex_unlock(&(devout->play_functions_mutex));
       
@@ -1770,6 +1772,7 @@ ags_devout_alsa_play(void *devout0)
     }else{
       //g_cond_broadcast(devout->play_functions_cond);
       //g_static_mutex_unlock(&mutex);
+      devout->flags &= (~AGS_DEVOUT_WAIT_RECALL);
       devout->flags &= (~AGS_DEVOUT_WAIT_DEVICE);
       pthread_mutex_unlock(&(devout->play_mutex));
       pthread_cond_signal(&(devout->play_functions_wait_cond));
