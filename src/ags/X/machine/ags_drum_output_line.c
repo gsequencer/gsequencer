@@ -263,7 +263,6 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 								   "devout\0", audio->devout,
 								   "recall_channel\0", play_stream_channel,
-								   "devout\0", audio->devout,
 								   "source\0", output,
 								   "recall_container\0", play_stream_channel_container,
 								   NULL);

@@ -171,9 +171,11 @@ ags_synth_init(AgsSynth *synth)
   /* create AgsDelayAudio in audio->play */
   synth->play_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "devout\0", audio->devout,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 0,
+						 "tactable\0", AGS_TACTABLE(synth),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -184,6 +186,7 @@ ags_synth_init(AgsSynth *synth)
   /* create AgsDelayAudioRun in audio->play */
   synth->play_delay_audio_run =
     play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							     "devout\0", audio->devout,
 							     "recall_container\0", recall_container,
 							     "recall_audio\0", delay_audio,
 							     NULL);
@@ -201,9 +204,11 @@ ags_synth_init(AgsSynth *synth)
   /* create AgsDelayAudio in audio->recall */
   synth->recall_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
+						 "devout\0", audio->devout,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 0,
+						 "tactable\0", AGS_TACTABLE(synth),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -214,6 +219,7 @@ ags_synth_init(AgsSynth *synth)
   /* create AgsDelayAudioRun in audio->recall */
   synth->recall_delay_audio_run =
     recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							       "devout\0", audio->devout,
 							       "recall_container\0", recall_container,
 							       "recall_audio\0", delay_audio,
 							       NULL);
@@ -233,10 +239,14 @@ ags_synth_init(AgsSynth *synth)
   /* create AgsCountBeatsAudio in audio->play */
   synth->play_count_beats_audio =
     play_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+								 "devout\0", audio->devout,
 								 "audio\0", audio,
 								 "recall_container\0", recall_container,
-								 "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
 								 "loop\0", FALSE,
+								 "notation_loop_start\0", 0,
+								 "notation_loop_end\0", 64,
+								 "sequencer_loop_start\0", 0,
+								 "sequencer_loop_end\0", 16,
 								 NULL);
   AGS_RECALL(play_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
 						AGS_RECALL_SEQUENCER |
@@ -247,6 +257,7 @@ ags_synth_init(AgsSynth *synth)
   /* create AgsCountBeatsAudioRun in audio->play */
   synth->play_count_beats_audio_run = 
     play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+									"devout\0", audio->devout,
 									"recall_container\0", recall_container,
 									"recall_audio\0", play_count_beats_audio,
 									"delay_audio_run\0", play_delay_audio_run,
@@ -256,38 +267,6 @@ ags_synth_init(AgsSynth *synth)
 						    AGS_RECALL_PERSISTENT |
 						    AGS_RECALL_OUTPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) play_count_beats_audio_run, TRUE);
-
-  /* audio->recall */
-  /* create AgsRecallContainer for count beats related recalls */
-  recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
-
-  /* create AgsCountBeatsAudio in audio->recall */
-  synth->recall_count_beats_audio =
-    recall_count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-								   "audio\0", audio,
-								   "recall_container\0", recall_container,
-								   "length\0", AGS_EDITOR_MAX_CONTROLS + 16,
-								   "loop\0", FALSE,
-								   NULL);
-  AGS_RECALL(recall_count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
-						  AGS_RECALL_SEQUENCER |
-						  AGS_RECALL_OUTPUT_ORIENTATED);
-  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio, FALSE);
-
-  /* create AgsCountBeatsAudioRun in audio->recall */
-  synth->recall_count_beats_audio_run = 
-    recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-									  "recall_container\0", recall_container,
-									  "recall_audio\0", recall_count_beats_audio,
-									  "delay_audio_run\0", recall_delay_audio_run,
-									  NULL);
-  AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
-						      AGS_RECALL_SEQUENCER |
-						      AGS_RECALL_PERSISTENT |
-						      AGS_RECALL_OUTPUT_ORIENTATED);
-  ags_audio_add_recall(audio, (GObject *) recall_count_beats_audio_run, FALSE);
-
 
   /* audio->play */
   /* create AgsRecallContainer for delay related recalls */
@@ -306,9 +285,9 @@ ags_synth_init(AgsSynth *synth)
   /* create AgsCopyPatternAudioRun in audio->play */
   synth->play_notation =
     play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
+						     "devout\0", audio->devout,
 						     "recall_container\0", recall_container,
 						     "recall_audio\0", play_audio,
-						     //"devout\0", audio->devout,
 						     "delay_audio_run\0", play_delay_audio_run,
 						     "count_beats_audio_run\0", play_count_beats_audio_run,
 						     NULL);
@@ -317,34 +296,6 @@ ags_synth_init(AgsSynth *synth)
 				       AGS_RECALL_NOTATION);
   //  play_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
   ags_audio_add_recall(audio, (GObject *) play_notation, TRUE);
-
-  /* audio->recall */
-  /* create AgsRecallContainer for delay related recalls */
-  recall_container = ags_recall_container_new();
-  ags_audio_add_recall_container(audio, (GObject *) recall_container);
-
-  recall_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
-						 "audio\0", audio,
-						 NULL);
-  AGS_RECALL(recall_audio)->flags |= (AGS_RECALL_TEMPLATE |
-				      AGS_RECALL_SEQUENCER |
-				      AGS_RECALL_NOTATION);
-  ags_audio_add_recall(audio, (GObject *) recall_audio, FALSE);
-
-  /* create AgsCopyPatternAudioRun in audio->recall */
-  synth->recall_notation =
-    recall_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
-						       "recall_container\0", recall_container,
-						       "recall_audio\0", recall_audio,
-						       //"devout\0", audio->devout,
-						       "delay_audio_run\0", recall_delay_audio_run,
-						       "count_beats_audio_run\0", recall_count_beats_audio_run,
-						       NULL);
-  AGS_RECALL(recall_notation)->flags |= (AGS_RECALL_TEMPLATE |
-					 AGS_RECALL_SEQUENCER |
-					 AGS_RECALL_NOTATION);
-  //  recall_notation->flags |= AGS_PLAY_NOTATION_DEFAULT;
-  ags_audio_add_recall(audio, (GObject *) recall_notation, FALSE);
 
   /* create widgets */
   synth->hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -680,133 +631,6 @@ ags_synth_update(AgsSynth *synth)
 
     list_oscillator = list_oscillator->next;
   }
-
-
-  /*
-  AgsChannel *input, *output;
-  AgsAudioSignal *audio_signal;
-  GList *list0 ,*list1;
-  gint wave;
-  guint attack, length, stop, phase, phase_tmp, frequency;
-  double volume;
-  guint attack0, attack1, length0, frequency0, phase0, phase1;
-  guint i, j;
-  void ags_synth_update_write(guint offset, guint frequency, guint phase, guint length, double volume){
-    if(wave == 0){
-      ags_synth_sin(audio_signal->devout, (short *) list1->data, offset, frequency, phase, length, volume);
-    }else if(wave == 1){
-      ags_synth_sin(audio_signal->devout, (short *) list1->data, offset, frequency, phase, length, volume);
-    }else if(wave == 2){
-      ags_synth_saw(audio_signal->devout, (short *) list1->data, offset, frequency, phase, length, volume);
-    }else if(wave == 3){
-      ags_synth_square(audio_signal->devout, (short *) list1->data, offset, frequency, phase, length, volume);
-    }else if(wave == 4){
-      ags_synth_triangle(audio_signal->devout, (short *) list1->data, offset, frequency, phase, length, volume);
-    }else{
-      fprintf(stdout, "no wave selected\n\0");
-    }
-  }
-
-  input = synth->machine.audio->input;
-  list0 = gtk_container_get_children(GTK_CONTAINER(gtk_option_menu_get_menu(synth->oscillator)));
-
-  while(list0 != NULL){
-    oscillator = AGS_OSCILLATOR(list0->data);
-    devout = (AgsDevout *) synth->machine.audio->devout;
-
-    wave = gtk_option_menu_get_history(GTK_OPTION_MENU(oscillator->wave));
-    fprintf(stdout, "wave = %d\n\0", wave);
-
-    attack = (guint) oscillator->attack->adjustment->value;
-    length = (guint) oscillator->length->adjustment->value;
-    stop = (guint) ceil((double)(attack + length) / (double)devout->buffer_size);
-    phase = (guint) oscillator->phase->adjustment->value;
-    frequency = (guint) oscillator->frequency->adjustment->value;
-    volume = (double) oscillator->volume->adjustment->value;
-
-    attack0 = (guint) ceil((double)attack / (double)devout->buffer_size);
-    attack1 = (guint) floor((double)attack / (double)devout->buffer_size);
-    attack = attack % (guint) devout->buffer_size;
-
-    /* write to input * /
-    audio_signal = ags_audio_signal_get_template(input->first_recycling->audio_signal);
-    ags_audio_signal_stream_resize(audio_signal, stop);
-
-    list1 = g_list_nth(audio_signal->stream_beginning, attack1);
-
-    if(list1 != NULL){
-      if(list1->next != NULL)
-	ags_synth_update_write(attack, frequency, phase, AGS_DEVOUT(audio_signal->devout)->buffer_size - attack, volume);
-      else{
-	ags_synth_update_write(attack, frequency, phase, length, volume);
-
-	goto ags_synth_update0;
-      }
-
-      list1 = list1->next;
-    }else
-      continue;
-
-    for(i = 0; list1->next != NULL; i++){
-      phase0 = (phase + (AGS_DEVOUT(audio_signal->devout)->buffer_size - attack) + i * AGS_DEVOUT(audio_signal->devout)->buffer_size) % (devout->frequency / frequency);
-
-      ags_synth_update_write(0, frequency, phase0, AGS_DEVOUT(audio_signal->devout)->buffer_size, volume);
-
-      list1 = list1->next;
-    }
-
-    length0 = (length - (AGS_DEVOUT(audio_signal->devout)->buffer_size - attack)) % AGS_DEVOUT(audio_signal->devout)->buffer_size;
-
-    phase0 = (phase + (AGS_DEVOUT(audio_signal->devout)->buffer_size - attack) + i * AGS_DEVOUT(audio_signal->devout)->buffer_size) % frequency;
-    ags_synth_update_write(0, frequency, phase0, length0, volume);
-
-    /* write to output * /
-  ags_synth_update0:
-    output = synth->machine.audio->output;
-
-    for(i = 0; output != NULL; i++){
-      frequency0 = (guint) ((double) frequency * exp2((double)((synth->lower->adjustment->value * -1.0) + (double)i) / 12.0));
-      phase0 = (guint) ((double) phase * ((double) frequency / (double) frequency0));
-
-      audio_signal = ags_audio_signal_get_template(output->first_recycling->audio_signal);
-
-      ags_audio_signal_stream_resize(audio_signal, stop);
-
-      list1 = g_list_nth(audio_signal->stream_beginning, attack1);
-
-      if(list1->next != NULL){
-       	fprintf(stdout, "freq = %u, phase = %u\n\0", frequency0, phase0);
-	ags_synth_update_write(attack, frequency0, phase0, AGS_DEVOUT(audio_signal->devout)->buffer_size - attack, volume);
-      }else{
-	//	fprintf(stdout, "freq = %d, phase = %d\n\0", frequency0, phase0);
-	ags_synth_update_write(attack, frequency0, phase0, length, volume);
-
-	continue;
-      }
-
-      list1 = list1->next;
-
-
-      for(j = 1; list1->next != NULL; j++){
-	phase1 = (j * AGS_DEVOUT(audio_signal->devout)->buffer_size + phase0) % (devout->frequency / frequency0);
-	fprintf(stdout, "freq = %u, phase = %u\n\0", frequency0, phase1);
-
-	ags_synth_update_write(0, frequency, phase1, AGS_DEVOUT(audio_signal->devout)->buffer_size, volume);
-
-	list1 = list1->next;
-      }
-
-      phase1 = (phase0 + (AGS_DEVOUT(audio_signal->devout)->buffer_size - attack) + j * AGS_DEVOUT(audio_signal->devout)->buffer_size) % frequency0;
-      ags_synth_update_write(0, frequency0, phase1, length0, volume);
-
-
-      output = output->next;
-    }
-
-    input = input->next;
-    list0 = list0->next;
-  }
-*/
 }
 
 AgsSynth*

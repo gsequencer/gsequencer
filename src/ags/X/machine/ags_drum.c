@@ -240,6 +240,7 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudioRun in audio->recall */
   drum->recall_delay_audio_run =
     recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
+							       "devout\0", audio->devout,
 							       "recall_container\0", recall_container,
 							       "recall_audio\0", delay_audio,
 							       NULL);
@@ -332,7 +333,6 @@ ags_drum_init(AgsDrum *drum)
 							      "devout\0", audio->devout,
 							      "audio\0", audio,
 							      "recall_container\0", recall_container,
-							      //"devout\0", audio->devout,
 							      "bank_index_0\0", 0,
 							      "bank_index_1\0", 0,
 							      NULL);
