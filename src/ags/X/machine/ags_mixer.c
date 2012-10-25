@@ -26,8 +26,6 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_recall.h>
 
-#include <ags/audio/recall/ags_volume_channel.h>
-
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
@@ -317,18 +315,13 @@ AgsMixer*
 ags_mixer_new(GObject *devout)
 {
   AgsMixer *mixer;
-  GValue value = {0,};
 
   mixer = (AgsMixer *) g_object_new(AGS_TYPE_MIXER,
 				    NULL);
 
-  if(devout != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
-    g_object_set_property(G_OBJECT(mixer->machine.audio),
-			  "devout\0", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(G_OBJECT(mixer),
+	       "devout\0", devout,
+	       NULL);
 
   return(mixer);
 }

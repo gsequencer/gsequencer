@@ -366,7 +366,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     //		     G_CALLBACK(ags_drum_input_line_play_channel_run_cancel), );
 
     /* volume */
-    /* recall for channel->recall */
+    /* recall for channel->play */
     recall_volume_channel_container = ags_recall_container_new();
     ags_channel_add_recall_container(source, (GObject *) recall_volume_channel_container);
 
@@ -401,7 +401,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(volume_channel_run));
 
-    /* recall for channel->play */
+    /* recall for channel->recall */
     play_volume_channel_container = ags_recall_container_new();
     ags_channel_add_recall_container(source, (GObject *) play_volume_channel_container);
 

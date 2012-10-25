@@ -24,6 +24,7 @@
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/audio/task/ags_start_devout.h>
 
 #include <ags/X/ags_window.h>
 
@@ -107,12 +108,15 @@ ags_navigation_play_callback(GtkWidget *widget,
   AgsDevout *devout;
   AgsInitAudio *init_audio;
   AgsAppendAudio *append_audio;
+  AgsStartDevout *start_devout;
   GList *machines;
+  GList *list;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  //FIXME:JK: you may wish better scheduling
+  list = NULL;
+
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
@@ -125,28 +129,28 @@ ags_navigation_play_callback(GtkWidget *widget,
       /* create init task */
       init_audio = ags_init_audio_new(machine->audio,
 				      FALSE, TRUE, FALSE);
-      
-      /* append AgsInitAudio */
-      ags_devout_append_task(AGS_DEVOUT(machine->audio->devout),
-			     AGS_TASK(init_audio));
+      list = g_list_prepend(list, init_audio);
     
       /* create append task */
       append_audio = ags_append_audio_new(AGS_DEVOUT(machine->audio->devout),
 					  machine->audio->devout_play);
       
-      /* append AgsAppendAudio */
-      ags_devout_append_task(AGS_DEVOUT(machine->audio->devout),
-			     AGS_TASK(append_audio));
-    
-      /* call run */
-      if((AGS_DEVOUT_PLAY_AUDIO & (append_audio->devout->flags)) == 0)
-	append_audio->devout->flags |= AGS_DEVOUT_PLAY_AUDIO;
-      
-      ags_devout_run(AGS_DEVOUT(machine->audio->devout));
+      list = g_list_prepend(list, append_audio);
     }
 
     machines = machines->next;
   }
+
+  /* create start task */
+  if(list != NULL){
+    start_devout = ags_start_devout_new(window->devout);
+    list = g_list_prepend(list, start_devout);
+    list = g_list_reverse(list);
+
+    /* append AgsStartDevout */
+    ags_devout_append_tasks(window->devout,
+			    list);
+  }  
 }
 
 void
