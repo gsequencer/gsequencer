@@ -375,6 +375,7 @@ ags_devout_init(AgsDevout *devout)
   /* */
   devout->task = NULL;
   devout->tasks_queued = 0;
+  devout->tasks_pending = 0;
   devout->tactable = NULL;
 
   devout->play_recall_ref = 0;
@@ -642,56 +643,28 @@ ags_devout_task_thread(void *devout0)
     
     start = 
       task = devout->task;
-    end = g_list_last(task);
+    devout->task = NULL;
     //    devout->flags &= (~AGS_DEVOUT_TASK_READY);
-    pthread_mutex_unlock(&(devout->task_mutex));
-
-    pthread_mutex_lock(&(devout->task_mutex));
     devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
-    pthread_mutex_unlock(&(devout->task_mutex));
 
     /* signal: allow tasks to be appended */
-    pthread_cond_broadcast(&(devout->append_task_wait_cond));
-    
+    if(devout->tasks_pending > 0){
+      pthread_mutex_unlock(&(devout->task_mutex));
+      pthread_cond_broadcast(&(devout->append_task_wait_cond));
+    }else{
+      pthread_mutex_unlock(&(devout->task_mutex));
+    }
+
     /* launch tasks */
     if(task != NULL){
-      while(task != end->next){
+      while(task != NULL){
 	g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task->data));
 	ags_task_launch(AGS_TASK(task->data));
 	
 	task = task->next;
       }
 
-      new_start = NULL;
-
-      if(start->prev != NULL){
-	new_start = g_list_first(start->prev);
-	start->prev->next = NULL;
-      }
-
-      start->prev = NULL;
-
-      old_list = NULL;
-
-      if(end->next != NULL){
-	old_list = end->next;
-
-	end->next->prev = NULL;
-      }
-
-      end->next = NULL;
-
       g_list_free(start);
-      
-      if(old_list != NULL){
-	if(new_start != NULL){
-	  devout->task = g_list_concat(new_start, old_list);
-	}else{
-	  devout->task = old_list;
-	}
-      }else{
-	devout->task = new_start;
-      }
     }
 
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
@@ -720,6 +693,7 @@ ags_devout_append_task_thread(void *ptr)
 
   /* synchronize: don't access devout->task while reading it */
   pthread_mutex_lock(&(devout->append_task_mutex));
+  devout->tasks_pending += 1;
 
   while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
     pthread_cond_wait(&(devout->append_task_wait_cond),
@@ -730,12 +704,12 @@ ags_devout_append_task_thread(void *ptr)
   devout->tasks_queued += 1;
   devout->task = g_list_append(devout->task, task);
   devout->tasks_queued -= 1;
-  
   /* lock other calls */
   pthread_mutex_unlock(&(devout->append_task_mutex));
 
   /* wake up an other thread */
   pthread_mutex_lock(&(devout->append_task_mutex));
+  devout->tasks_pending -= 1;
 
   if((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
     pthread_mutex_unlock(&(devout->append_task_mutex));
@@ -787,6 +761,7 @@ ags_devout_append_tasks_thread(void *ptr)
 
   /* synchronize: don't access devout->task while reading it */
   pthread_mutex_lock(&(devout->append_task_mutex));
+  devout->tasks_pending += 1;
 
   while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
     pthread_cond_wait(&(devout->append_task_wait_cond),
@@ -802,6 +777,7 @@ ags_devout_append_tasks_thread(void *ptr)
   
   /* wake up an other thread */
   pthread_mutex_lock(&(devout->append_task_mutex));
+  devout->tasks_pending -= 1;
 
   if((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
     pthread_mutex_unlock(&(devout->append_task_mutex));

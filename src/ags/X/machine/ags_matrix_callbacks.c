@@ -88,25 +88,6 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   matrix->recall_delay_audio->notation_delay = (guint) floor(delay);
   matrix->recall_delay_audio->sequencer_delay = (guint) floor(delay * tact);
 
-  /* AgsCopyPatternAudio */
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
-
-  if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-
-    copy_pattern_audio->devout = window->devout;
-  }
-
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
-
-  if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-
-    copy_pattern_audio->devout = window->devout;
-  }
-
   //  fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
 

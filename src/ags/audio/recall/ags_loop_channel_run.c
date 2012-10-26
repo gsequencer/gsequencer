@@ -429,8 +429,6 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
     g_message("+++++++++++++++++++++++++\n\nloop channel created: AgsAudioSignal#%x\n\n+++++++++++++++++++++++++\0",
 	      audio_signal);
 
-    //    g_object_unref(G_OBJECT(audio_signal));
-    
     recycling = recycling->next;
   }
 }

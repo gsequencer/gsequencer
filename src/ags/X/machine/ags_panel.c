@@ -225,9 +225,9 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       /* AgsPlayChannelRun */
       play_channel_run = (AgsPlayChannelRunMaster *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN_MASTER,
 								  "devout\0", audio->devout,
+								  "source\0", input,
 								  "recall_channel\0", play_channel,
 								  "audio_channel\0", i,
-								  "source\0", input,
 								  "recall_container\0", play_channel_container,
 								  NULL);
       

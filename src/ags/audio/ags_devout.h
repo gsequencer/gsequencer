@@ -164,6 +164,7 @@ struct _AgsDevout
   pthread_cond_t append_task_wait_cond;
 
   guint tasks_queued;
+  guint tasks_pending;
   GList *task;
   GList *tactable;
 

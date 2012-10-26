@@ -43,7 +43,6 @@ void ags_play_channel_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_AUDIO_CHANNEL,
 };
 
@@ -105,15 +104,6 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
   gobject->finalize = ags_play_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				  "assigned devout\0",
-				  "The devout this recall is assigned to\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
   param_spec = g_param_spec_uint("audio_channel\0",
 				 "assigned audio Channel\0",
 				 "The audio channel this recall does output to\0",
@@ -138,7 +128,6 @@ ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
-  play_channel->devout = NULL;
   play_channel->audio_channel = 0;
 }
 
@@ -154,26 +143,6 @@ ags_play_channel_set_property(GObject *gobject,
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(play_channel->devout == devout)
-	return;
-
-      if(play_channel->devout != NULL){
-	g_object_unref(G_OBJECT(play_channel->devout));
-      }
-
-      if(devout != NULL){
-	g_object_ref(G_OBJECT(devout));
-      }
-
-      play_channel->devout = devout;
-    }
-    break;
   case PROP_AUDIO_CHANNEL:
     {
       play_channel->audio_channel = g_value_get_uint(value);
@@ -196,11 +165,6 @@ ags_play_channel_get_property(GObject *gobject,
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, play_channel->devout);
-    }
-    break;
   case PROP_AUDIO_CHANNEL:
     {
       g_value_set_uint(value, play_channel->audio_channel);
@@ -218,9 +182,6 @@ ags_play_channel_finalize(GObject *gobject)
   AgsPlayChannel *play_channel;
 
   play_channel = AGS_PLAY_CHANNEL(gobject);
-
-  if(play_channel->devout != NULL)
-    g_object_unref(G_OBJECT(play_channel->devout));
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_channel_parent_class)->finalize(gobject);

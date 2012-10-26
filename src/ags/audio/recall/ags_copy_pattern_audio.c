@@ -36,7 +36,6 @@ void ags_copy_pattern_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
   PROP_BANK_INDEX_0,
   PROP_BANK_INDEX_1,
 };
@@ -87,15 +86,6 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
   gobject->finalize = ags_copy_pattern_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "the assigned devout\0",
-				   "The AgsDevout it is assigned to\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
-				  param_spec);
-
   param_spec = g_param_spec_uint("bank_index_0\0",
 				 "current bank index 0\0",
 				 "The current bank index 0 of the AgsPattern\0",
@@ -124,8 +114,6 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 {
   AGS_RECALL(copy_pattern_audio)->flags |= AGS_RECALL_SEQUENCER;
 
-  copy_pattern_audio->devout = NULL;
-
   copy_pattern_audio->i = 0;
   copy_pattern_audio->j = 0;
 }
@@ -141,24 +129,6 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      AgsDevout *devout;
-
-      devout = (AgsDevout *) g_value_get_object(value);
-
-      if(copy_pattern_audio->devout != devout)
-	return;
-
-      if(copy_pattern_audio->devout != NULL)
-	g_object_unref(copy_pattern_audio->devout);
-
-      if(devout != NULL)
-	g_object_ref(devout);
-
-      copy_pattern_audio->devout = devout;
-    }
-    break;
   case PROP_BANK_INDEX_0:
     {
       guint i;
@@ -194,11 +164,6 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
   copy_pattern = AGS_COPY_PATTERN_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, copy_pattern->devout);
-    }
-    break;
   case PROP_BANK_INDEX_0:
     {
       g_value_set_uint(value, copy_pattern->i);
@@ -221,9 +186,6 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
   AgsCopyPatternAudio *copy_pattern_audio;
   
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
-
-  if(copy_pattern_audio->devout != NULL)
-    g_object_unref(copy_pattern_audio->devout);
 
   /* call parent */
   G_OBJECT_CLASS(ags_copy_pattern_audio_parent_class)->finalize(gobject);

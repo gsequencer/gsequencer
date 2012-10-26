@@ -39,8 +39,6 @@ struct _AgsCopyPatternAudio
 {
   AgsRecallAudio recall_audio;
 
-  AgsDevout *devout;
-
   guint i;
   guint j;
 };

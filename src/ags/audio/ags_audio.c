@@ -2131,6 +2131,7 @@ ags_audio_cancel(AgsAudio *audio,
 void
 ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
 {
+  GList *list;
   void ags_audio_set_devout_for_audio_signal(AgsChannel *channel){
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
@@ -2155,6 +2156,44 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
       channel = channel->next;
     }
   }
+  void ags_audio_set_devout_for_recall_recursive(AgsRecall *recall){
+    GList *list;
+    
+    g_object_set(G_OBJECT(recall),
+		 "devout\0", devout,
+		 NULL);
+
+    list = recall->children;
+
+    while(list != NULL){
+      ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
+      
+      list = list->next;
+    }
+  }
+  void ags_audio_set_devout_for_recall(AgsChannel *channel){
+    GList *list;
+
+    while(channel != NULL){
+      list = channel->play;
+
+      while(list != NULL){
+	ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
+
+	list = list->next;
+      }
+
+      list = channel->recall;
+
+      while(list != NULL){
+	ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
+
+	list = list->next;
+      }
+
+      channel = channel->next;
+    }
+  }
 
   if((AgsDevout *) audio->devout == devout)
     return;
@@ -2165,13 +2204,36 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
   if(devout != NULL)
     g_object_ref(devout);
 
+  /* audio */
   audio->devout = (GObject *) devout;
-	
+
+  list = audio->play;
+  
+  while(list != NULL){
+    ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+  
+  list = audio->recall;
+  
+  while(list != NULL){
+    ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+  
+  /* input */	
   if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
     ags_audio_set_devout_for_audio_signal(audio->input);
 
+  ags_audio_set_devout_for_recall(audio->input);
+
+  /* output */
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
     ags_audio_set_devout_for_audio_signal(audio->output);
+
+  ags_audio_set_devout_for_recall(audio->output);
 }
 
 AgsAudio*
