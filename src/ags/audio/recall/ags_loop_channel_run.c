@@ -411,7 +411,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  devout = AGS_DEVOUT(AGS_AUDIO(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->audio)->devout);
+  devout = AGS_DEVOUT(AGS_RECALL(loop_channel_run)->devout);
 
   recycling = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->first_recycling;
 

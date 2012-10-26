@@ -158,6 +158,8 @@ ags_pad_init(AgsPad *pad)
   g_signal_connect((GObject *) pad, "parent_set\0",
 		   G_CALLBACK(ags_pad_parent_set_callback), (gpointer) pad);
 
+  pad->flags = 0;
+
   pad->option = (GtkOptionMenu *) gtk_option_menu_new();
   menu = (GtkMenu *) gtk_menu_new();
 
@@ -231,6 +233,12 @@ ags_pad_connect(AgsConnectable *connectable)
 
   /* AgsPad */
   pad = AGS_PAD(connectable);
+
+  if((AGS_PAD_CONNECTED & (pad->flags)) != 0){
+    return;
+  }
+
+  pad->flags |= AGS_PAD_CONNECTED;
 
   /* GtkObject */
   g_signal_connect((GObject *) pad, "destroy\0",

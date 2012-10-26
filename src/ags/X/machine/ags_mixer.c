@@ -319,7 +319,7 @@ ags_mixer_new(GObject *devout)
   mixer = (AgsMixer *) g_object_new(AGS_TYPE_MIXER,
 				    NULL);
 
-  g_object_set(G_OBJECT(mixer),
+  g_object_set(G_OBJECT(AGS_MACHINE(mixer)->audio),
 	       "devout\0", devout,
 	       NULL);
 

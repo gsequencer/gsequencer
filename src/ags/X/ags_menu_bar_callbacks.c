@@ -205,7 +205,6 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsPanel *panel;
-  GtkWidget *widget;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
@@ -215,25 +214,23 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 	       "devout\0", window->devout,
 	       NULL);
 
-  widget = (GtkWidget *) panel;
   gtk_box_pack_start((GtkBox *) window->machines,
-		     widget,
+		     GTK_WIDGET(panel),
 		     FALSE, FALSE, 0);
 
-  ags_connectable_connect(AGS_CONNECTABLE(widget));
+  ags_connectable_connect(AGS_CONNECTABLE(panel));
+
+  gtk_widget_show_all(GTK_WIDGET(panel));
 
   panel->machine.audio->input_pads =
     panel->machine.audio->output_pads = 1;
   ags_audio_set_audio_channels(panel->machine.audio, 2);
-
-  gtk_widget_show_all(widget);
 }
 
 void
 ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
-  GtkWidget *widget;
   AgsMixer *mixer;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
@@ -243,20 +240,19 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 	       "devout\0", window->devout,
 	       NULL);
 
-  widget = (GtkWidget *) mixer;
   gtk_box_pack_start((GtkBox *) window->machines,
-		     widget,
+		     GTK_WIDGET(mixer),
 		     FALSE, FALSE, 0);
 
   ags_connectable_connect(AGS_CONNECTABLE(mixer));
+
+  gtk_widget_show_all(GTK_WIDGET(mixer));
 
   mixer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_OUTPUT, 1);
-
-  gtk_widget_show_all(widget);
 }
 
 void
@@ -264,10 +260,6 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsDrum *drum;
-  GtkWidget *widget;
-  GList *pad_list;
-  AgsChannel *input, *output;
-  guint i, j;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
@@ -277,55 +269,22 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 	       "devout\0", window->devout,
 	       NULL);
 
-  widget = (GtkWidget*) drum;
   gtk_box_pack_start((GtkBox *) window->machines,
-		     widget,
+		     GTK_WIDGET(drum),
 		     FALSE, FALSE, 0);
 
+  /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(drum));
 
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(drum));
+
+  /* */
   drum->machine.audio->audio_channels = 2;
 
   /* AgsDrumInputPad */
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
-
-  pad_list = gtk_container_get_children(drum->machine.input);
-
-  while(pad_list != NULL){
-    ags_connectable_connect(pad_list->data);
-
-    pad_list = pad_list->next;
-  }
-
-  /* AgsDrumOutputPad */
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  pad_list = gtk_container_get_children(drum->machine.output);
-
-  while(pad_list != NULL){
-    ags_connectable_connect(pad_list->data);
-
-    pad_list = pad_list->next;
-  }
-
-  gtk_widget_show_all(widget);
-
-  /*
-  input = drum->machine.audio->input;
-  output = drum->machine.audio->output;
-
-  for(i = 0; i < 2; i++){
-    for(j = 0; j < 8; j++){
-      printf("input - audio_channel %u; pad %u; line %u\n\0", input->audio_channel, input->pad, input->line);
-      input = input->next;
-    }
-
-    for(j = 0; j < 1; j++){
-      printf("output - audio_channel %u; pad %u; line %u\n\0", output->audio_channel, output->pad, output->line);
-      output = output->next;
-    }
-  }
-  */
 }
 
 void
@@ -348,11 +307,11 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(matrix));
 
+  gtk_widget_show_all((GtkWidget *) matrix);
+
   matrix->machine.audio->audio_channels = 1;
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  gtk_widget_show_all((GtkWidget *) matrix);
 }
 
 void
@@ -375,11 +334,11 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
+  gtk_widget_show_all((GtkWidget *) synth);
+
   synth->machine.audio->audio_channels = 1;
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_INPUT, 2);
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
-
-  gtk_widget_show_all((GtkWidget *) synth);
 }
 
 void
@@ -402,12 +361,12 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
 
+  gtk_widget_show_all((GtkWidget *) ffplayer);
+
   //  ffplayer->machine.audio->frequence = ;
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
-
-  gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 
 

@@ -38,9 +38,15 @@
 typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;
 
+typedef enum{
+  AGS_PAD_CONNECTED   = 1,
+}AgsPadFlags;
+
 struct _AgsPad
 {
   GtkVBox vbox;
+
+  guint flags;
 
   AgsChannel *channel;
   AgsLine *selected_line;

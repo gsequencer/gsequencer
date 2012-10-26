@@ -151,6 +151,7 @@ ags_line_init(AgsLine *line)
 {
   //  g_signal_connect_after((GObject *) line, "parent_set\0",
   //			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
+  line->flags = 0;
 
   line->channel = NULL;
 
@@ -227,6 +228,12 @@ ags_line_connect(AgsConnectable *connectable)
   AgsLine *line;
 
   line = AGS_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (line->flags)) != 0){
+    return;
+  }
+  
+  line->flags |= AGS_LINE_CONNECTED;
 
   /* GtkWidget */
   g_signal_connect((GObject *) line, "destroy\0",

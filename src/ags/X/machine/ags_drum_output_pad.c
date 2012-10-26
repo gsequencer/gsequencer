@@ -108,7 +108,15 @@ ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad)
 void
 ags_drum_output_pad_connect(AgsConnectable *connectable)
 {
+  AgsDrumOutputPad *drum_output_pad;
+
   ags_drum_output_pad_parent_connectable_interface->connect(connectable);
+
+  drum_output_pad = AGS_DRUM_OUTPUT_PAD(connectable);
+
+  if((AGS_PAD_CONNECTED & (AGS_PAD(drum_output_pad)->flags)) != 0){
+    return;
+  }
 
   /* empty */
 }

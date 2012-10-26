@@ -112,6 +112,10 @@ ags_mixer_input_pad_connect(AgsConnectable *connectable)
 
   /* AgsMixerInputPad */
   mixer_input_pad = AGS_MIXER_INPUT_PAD(connectable);
+
+  if((AGS_PAD_CONNECTED & (AGS_PAD(mixer_input_pad)->flags)) != 0){
+    return;
+  }
 }
 
 void

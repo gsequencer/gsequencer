@@ -124,6 +124,14 @@ ags_drum_output_line_destroy(GtkObject *object)
 void
 ags_drum_output_line_connect(AgsConnectable *connectable)
 {
+  AgsDrumOutputLine *drum_output_line;
+
+  drum_output_line = AGS_DRUM_OUTPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(drum_output_line)->flags)) != 0){
+    return;
+  }
+  
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -227,8 +235,8 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     /* AgsLoopChannelRun */
     loop_channel_run = (AgsLoopChannelRun *) g_object_new(AGS_TYPE_LOOP_CHANNEL_RUN,
 							  "devout\0", audio->devout,
-							  "recall_channel\0", loop_channel,
 							  "source\0", output,
+							  "recall_channel\0", loop_channel,
 							  "recall_container\0", play_loop_channel_container,
 							  "count_beats_audio_run\0", recall_count_beats_audio_run,
 							  NULL);
@@ -262,8 +270,8 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     /* AgsStreamChannelRun */
     play_stream_channel_run = (AgsStreamChannelRun *) g_object_new(AGS_TYPE_STREAM_CHANNEL_RUN,
 								   "devout\0", audio->devout,
-								   "recall_channel\0", play_stream_channel,
 								   "source\0", output,
+								   "recall_channel\0", play_stream_channel,
 								   "recall_container\0", play_stream_channel_container,
 								   NULL);
     AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |

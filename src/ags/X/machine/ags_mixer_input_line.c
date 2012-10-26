@@ -124,8 +124,13 @@ ags_mixer_input_line_destroy(GtkObject *object)
 void
 ags_mixer_input_line_connect(AgsConnectable *connectable)
 {
-  AgsMixer *mixer;
   AgsMixerInputLine *mixer_input_line;
+
+  mixer_input_line = AGS_MIXER_INPUT_LINE(connectable);
+
+  if((AGS_LINE_CONNECTED & (AGS_LINE(mixer_input_line)->flags)) != 0){
+    return;
+  }
 
   ags_mixer_input_line_parent_connectable_interface->connect(connectable);
 }

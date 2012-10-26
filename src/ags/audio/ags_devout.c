@@ -336,7 +336,7 @@ ags_devout_init(AgsDevout *devout)
 
   /* play */
   pthread_attr_init(&devout->play_thread_attr);
-  pthread_attr_setschedpolicy(&devout->play_thread_attr, SCHED_RR);
+  //  pthread_attr_setschedpolicy(&devout->play_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&devout->play_thread_attr, PTHREAD_INHERIT_SCHED);
   
   pthread_mutexattr_init(&devout->play_mutex_attr);
@@ -347,7 +347,7 @@ ags_devout_init(AgsDevout *devout)
 
   /* play functions */
   pthread_attr_init(&devout->play_functions_thread_attr);
-  pthread_attr_setschedpolicy(&devout->play_functions_thread_attr, SCHED_RR);
+  //  pthread_attr_setschedpolicy(&devout->play_functions_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&devout->play_functions_thread_attr, PTHREAD_INHERIT_SCHED);
   
   pthread_mutexattr_init(&devout->play_functions_mutex_attr);
@@ -358,7 +358,7 @@ ags_devout_init(AgsDevout *devout)
 
   /* task */
   pthread_attr_init(&devout->task_thread_attr);
-  pthread_attr_setschedpolicy(&devout->task_thread_attr, SCHED_RR);
+  //  pthread_attr_setschedpolicy(&devout->task_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&devout->task_thread_attr, PTHREAD_INHERIT_SCHED);
   
   pthread_mutexattr_init(&devout->task_mutex_attr);
@@ -735,8 +735,15 @@ ags_devout_append_task_thread(void *ptr)
   pthread_mutex_unlock(&(devout->append_task_mutex));
 
   /* wake up an other thread */
-  pthread_cond_signal(&(devout->task_wait_cond));
-  pthread_cond_broadcast(&(devout->append_task_wait_cond));
+  pthread_mutex_lock(&(devout->append_task_mutex));
+
+  if((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+     
+    pthread_cond_signal(&(devout->task_wait_cond));
+  }else{
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+  }
 
   pthread_exit(NULL);
 }
@@ -778,7 +785,7 @@ ags_devout_append_tasks_thread(void *ptr)
 
   free(append);
 
- /* synchronize: don't access devout->task while reading it */
+  /* synchronize: don't access devout->task while reading it */
   pthread_mutex_lock(&(devout->append_task_mutex));
 
   while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
@@ -790,13 +797,19 @@ ags_devout_append_tasks_thread(void *ptr)
   devout->tasks_queued += 1;
   devout->task = g_list_concat(devout->task, list);
   devout->tasks_queued -= 1;
-
   /* lock other calls */
   pthread_mutex_unlock(&(devout->append_task_mutex));
   
   /* wake up an other thread */
-  pthread_cond_signal(&(devout->task_wait_cond));
-  pthread_cond_broadcast(&(devout->append_task_wait_cond));
+  pthread_mutex_lock(&(devout->append_task_mutex));
+
+  if((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0){
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+     
+    pthread_cond_signal(&(devout->task_wait_cond));
+  }else{
+    pthread_mutex_unlock(&(devout->append_task_mutex));
+  }
 
   pthread_exit(NULL);
 }
