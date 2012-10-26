@@ -132,13 +132,13 @@ ags_drum_input_pad_connect(AgsConnectable *connectable)
 {
   AgsDrumInputPad *drum_input_pad;
 
-  ags_drum_input_pad_parent_connectable_interface->connect(connectable);
-
   drum_input_pad = AGS_DRUM_INPUT_PAD(connectable);
 
   if((AGS_PAD_CONNECTED & (AGS_PAD(drum_input_pad)->flags)) != 0){
     return;
   }
+
+  ags_drum_input_pad_parent_connectable_interface->connect(connectable);
 
   /* AgsDrumInputPad */
   g_signal_connect(G_OBJECT(drum_input_pad->open), "clicked\0",
