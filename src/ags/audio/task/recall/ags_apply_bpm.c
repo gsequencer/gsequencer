@@ -32,6 +32,10 @@ void ags_apply_bpm_finalize(GObject *gobject);
 
 void ags_apply_bpm_launch(AgsTask *task);
 
+void ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall);
+void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
+void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
+
 static gpointer ags_apply_bpm_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_bpm_parent_connectable_interface;
 
@@ -103,8 +107,7 @@ ags_apply_bpm_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_apply_bpm_init(AgsApplyBpm *apply_bpm)
 {
-  apply_bpm->delay_audio = NULL;
-
+  apply_bpm->gobject = NULL;
   apply_bpm->bpm = 0.0;
 }
 
@@ -135,19 +138,103 @@ ags_apply_bpm_finalize(GObject *gobject)
 void
 ags_apply_bpm_launch(AgsTask *task)
 {
-  //TODO:JK: implement me
+  AgsApplyBpm *apply_bpm;
+
+  apply_bpm = AGS_APPLY_BPM(task);
+
+  if(AGS_IS_AUDIO(apply_bpm->gobject)){
+    AgsAudio *audio;
+
+    audio = AGS_AUDIO(apply_bpm->gobject);
+
+    ags_apply_bpm_audio(apply_bpm, AGS_AUDIO(apply_bpm->gobject));
+  }else if(AGS_IS_CHANNEL(apply_bpm->gobject)){
+    AgsChannel *channel;
+
+    channel = AGS_CHANNEL(apply_bpm->gobject);
+
+    ags_apply_bpm_channel(apply_bpm, AGS_CHANNEL(apply_bpm->gobject));
+  }else if(AGS_IS_RECALL(apply_bpm->gobject)){
+    AgsRecall *recall;
+
+    recall = AGS_RECALL(apply_bpm->gobject);
+
+    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(apply_bpm->gobject));
+  }else{
+    g_warning("AgsApplyBpm: Not supported gobject");
+  }
+}
+
+void
+ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall)
+{
+  if(AGS_IS_TACTABLE(recall)){
+    ags_tactable_change_bpm(AGS_TACTABLE(recall), apply_bpm->bpm);
+  }
+}
+
+void
+ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
+{
+  AgsChannelIter *iter;
+  guint mode;
+
+  iter = ags_channel_iter_alloc(channel);
+  mode = AGS_CHANNEL_ITER_DIRECTION_AXIS;
+
+  while(ags_channel_iter_next()){
+    GList *list;
+    
+    list = channel->play;
+    
+    while(list != NULL){
+      ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
+      
+      list = list->next;
+    }
+    
+    list = channel->recall;
+    
+    while(list != NULL){
+      ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
+
+      list = list->next;
+    }
+  }
+}
+
+void
+ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
+{
+  AgsChannel *channel;
+
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_apply_bpm_channel(apply_bpm, channel);
+
+    channel = channel->next;
+  }
+
+  channel = audio->input;
+
+  while(channel != NULL){
+    ags_apply_bp,_channel(apply_bpm, channel);
+
+    channel = channel->next;
+  }
 }
 
 AgsApplyBpm*
-ags_apply_bpm_new(AgsDelayAudio *delay_audio,
-			   gdouble bpm)
+ags_apply_bpm_new(GObject *gobject,
+		  gdouble bpm)
 {
   AgsApplyBpm *apply_bpm;
 
   apply_bpm = (AgsApplyBpm *) g_object_new(AGS_TYPE_APPLY_BPM,
 					   NULL);
 
-  apply_bpm->delay_audio = delay_audio;
+  apply_bpm->gobject = gobject;
   apply_bpm->bpm = bpm;
 
   return(apply_bpm);

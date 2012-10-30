@@ -23,35 +23,34 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
 
 #define AGS_TYPE_APPLY_SEQUENCER_LENGTH                (ags_apply_sequencer_length_get_type())
-#define AGS_APPLY_SEQUENCER_LENGTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_SEQUENCER_LENGTH, AgsApplyBpm))
-#define AGS_APPLY_SEQUENCER_LENGTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_APPLY_SEQUENCER_LENGTH, AgsApplyBpmClass))
+#define AGS_APPLY_SEQUENCER_LENGTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_SEQUENCER_LENGTH, AgsApplySequencerLength))
+#define AGS_APPLY_SEQUENCER_LENGTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_APPLY_SEQUENCER_LENGTH, AgsApplySequencerLengthClass))
 #define AGS_IS_APPLY_SEQUENCER_LENGTH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_APPLY_SEQUENCER_LENGTH))
 #define AGS_IS_APPLY_SEQUENCER_LENGTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_APPLY_SEQUENCER_LENGTH))
-#define AGS_APPLY_SEQUENCER_LENGTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_APPLY_SEQUENCER_LENGTH, AgsApplyBpmClass))
+#define AGS_APPLY_SEQUENCER_LENGTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_APPLY_SEQUENCER_LENGTH, AgsApplySequencerLengthClass))
 
-typedef struct _AgsApplyBpm AgsApplyBpm;
-typedef struct _AgsApplyBpmClass AgsApplyBpmClass;
+typedef struct _AgsApplySequencerLength AgsApplySequencerLength;
+typedef struct _AgsApplySequencerLengthClass AgsApplySequencerLengthClass;
 
-struct _AgsApplyBpm
+struct _AgsApplySequencerLength
 {
   AgsTask task;
 
-  AgsCopyPatternAudio *copy_pattern_audio;
+  GObject *gobject;
 
-  gdouble bpm;
+  guint length;
 };
 
-struct _AgsApplyBpmClass
+struct _AgsApplySequencerLengthClass
 {
   AgsTaskClass task;
 };
 
 GType ags_apply_sequencer_length_get_type();
 
-AgsApplyBpm* ags_apply_sequencer_length_new(AgsCopyPatternAudio *copy_pattern_audio,
-					    gdouble bpm);
+AgsApplySequencerLength* ags_apply_sequencer_length_new(GObject *gobject,
+							guint length);
 
 #endif /*__AGS_APPLY_SEQUENCER_LENGTH_H__*/

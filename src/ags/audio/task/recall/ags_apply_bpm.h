@@ -23,7 +23,6 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
-#include <ags/audio/recall/ags_delay_audio.h>
 
 #define AGS_TYPE_APPLY_BPM                (ags_apply_bpm_get_type())
 #define AGS_APPLY_BPM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_BPM, AgsApplyBpm))
@@ -39,7 +38,7 @@ struct _AgsApplyBpm
 {
   AgsTask task;
 
-  AgsDelayAudio *delay_audio;
+  GObject *gobject;
 
   gdouble bpm;
 };
@@ -51,7 +50,7 @@ struct _AgsApplyBpmClass
 
 GType ags_apply_bpm_get_type();
 
-AgsApplyBpm* ags_apply_bpm_new(AgsDelayAudio *delay_audio,
+AgsApplyBpm* ags_apply_bpm_new(GObject *gobject,
 			       gdouble bpm);
 
 #endif /*__AGS_APPLY_BPM_H__*/
