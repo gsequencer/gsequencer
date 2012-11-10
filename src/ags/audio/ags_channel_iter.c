@@ -19,6 +19,7 @@
 #include <ags/audio/ags_channel_iter.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_output.h>
 
 AgsChannelIter*
 ags_channel_iter_alloc(AgsChannel *start)

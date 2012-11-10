@@ -61,9 +61,9 @@ ags_remove_audio_get_type()
 						   &ags_remove_audio_info,
 						   0);
     
-    g_type_remove_interface_static(ags_type_remove_audio,
-				   AGS_TYPE_CONNECTABLE,
-				   &ags_connectable_interface_info);
+    g_type_add_interface_static(ags_type_remove_audio,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
   
   return (ags_type_remove_audio);

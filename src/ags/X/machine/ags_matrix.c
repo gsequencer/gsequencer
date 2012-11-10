@@ -603,8 +603,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       delay_audio = matrix->play_delay_audio;
 
       if(delay_audio != NULL)
-	stop = (guint)((matrix->length_spin->adjustment->value + 1.0) *
-		       (gdouble) delay_audio->sequencer_delay);
+	stop = (guint) ceil(delay_audio->sequencer_duration * delay_audio->sequencer_delay);
 
 
       audio_signal = ags_audio_signal_get_template(source->first_recycling->audio_signal);

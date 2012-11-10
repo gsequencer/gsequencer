@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <math.h>
+
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);
 void ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_loop_channel_init(AgsLoopChannel *loop_channel);
@@ -35,8 +37,8 @@ void ags_loop_channel_connect(AgsConnectable *connectable);
 void ags_loop_channel_disconnect(AgsConnectable *connectable);
 void ags_loop_channel_finalize(GObject *gobject);
 
-void ags_loop_channel_run_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
-							      AgsLoopChannel *loop_channel);
+void ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
+							  AgsLoopChannel *loop_channel);
 
 static gpointer ags_loop_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_loop_channel_parent_connectable_interface;
@@ -88,6 +90,7 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_loop_channel_parent_class = g_type_class_peek_parent(loop_channel);
 
@@ -134,7 +137,7 @@ ags_loop_channel_set_property(GObject *gobject,
 {
   AgsLoopChannel *loop_channel;
 
-  audio = AGS_AUDIO(gobject);
+  loop_channel = AGS_LOOP_CHANNEL(gobject);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO:
@@ -223,7 +226,7 @@ ags_loop_channel_disconnect(AgsConnectable *connectable)
   loop_channel = AGS_LOOP_CHANNEL(connectable);
 
   if(loop_channel->delay_audio != NULL){
-    g_signal_handler_disconnect(G_OBJECT(loop_channel->delay-audio),
+    g_signal_handler_disconnect(G_OBJECT(loop_channel->delay_audio),
 				loop_channel->sequencer_duration_changed_handler);
   }
 }
@@ -234,8 +237,8 @@ ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 						     AgsLoopChannel *loop_channel)
 {
   /* resize audio signal */
-  ags_channel_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel_run)->source,
-				  delay_audio->sequencer_duration);
+  ags_channel_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel)->source,
+				  (guint) ceil(delay_audio->sequencer_duration * delay_audio->sequencer_delay));
 }
 
 AgsLoopChannel*

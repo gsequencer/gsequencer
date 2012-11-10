@@ -40,12 +40,12 @@ struct _AgsDelayAudio
 
   gdouble bpm;
   gdouble tact;
+
+  gdouble notation_delay;
+  gdouble sequencer_delay;
+
   gdouble sequencer_duration;
   gdouble notation_duration;
-
-  guint frames;
-  guint notation_delay;
-  guint sequencer_delay;
 };
 
 struct _AgsDelayAudioClass

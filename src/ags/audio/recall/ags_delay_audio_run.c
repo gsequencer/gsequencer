@@ -29,6 +29,7 @@
 #include <ags/audio/recall/ags_delay_audio.h>
 
 #include <stdlib.h>
+#include <math.h>
 
 void ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay);
 void ags_delay_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -321,6 +322,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       AgsDevout *devout;
       guint run_order;
       guint attack;
+      guint frames;
 
       devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
@@ -331,8 +333,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       }
 
       //TODO:JK: optimize attack calculation
+      frames = (guint) ceil(delay_audio->notation_delay * (gdouble) devout->buffer_size);
       attack = (delay_audio_run->attack->first_start +
-		delay_audio_run->notation_counter * delay_audio->frames) % devout->buffer_size;
+		delay_audio_run->notation_counter * frames) % devout->buffer_size;
 
       /* notation speed */
       ags_delay_audio_run_notation_alloc_output(delay_audio_run, run_order,
@@ -347,12 +350,14 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       AgsDevout *devout;
       guint run_order;
       guint attack;
+      guint frames;
 
       devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
       //TODO:JK: optimize attack calculation
+      frames = (guint) ceil(delay_audio->sequencer_delay * (gdouble) devout->buffer_size);
       attack = (delay_audio_run->attack->first_start +
-		delay_audio_run->sequencer_counter * delay_audio->frames) % devout->buffer_size;
+		delay_audio_run->sequencer_counter * frames) % devout->buffer_size;
 
       if(delay_audio_run->hide_ref != 0){
 	run_order = delay_audio_run->hide_ref_counter;
@@ -377,13 +382,13 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
 
-      if(delay_audio_run->notation_counter == delay_audio->notation_delay - 1){
+      if(delay_audio_run->notation_counter == delay_audio->notation_duration - 1){
 	delay_audio_run->notation_counter = 0;
       }else{
 	delay_audio_run->notation_counter += 1;
       }
 
-      if(delay_audio_run->sequencer_counter == delay_audio->sequencer_delay - 1){
+      if(delay_audio_run->sequencer_counter == delay_audio->sequencer_duration - 1){
 	  delay_audio_run->sequencer_counter = 0;
       }else{
 	delay_audio_run->sequencer_counter += 1;

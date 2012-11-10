@@ -40,8 +40,9 @@
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
+#include <ags/audio/task/recall/ags_apply_bpm.h>
 #include <ags/audio/task/recall/ags_apply_tact.h>
-#include <ags/audio/task/recall/ags_apply_sequencer_duration.h>
+#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -70,12 +71,10 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   AgsWindow *window;
   AgsDevout *devout;
   AgsAudio *audio;
-  AgsDelayAudio *delay_audio;
-  AgsCountBeatsAudio *count_beats_audio;
-  AgsCopyPatternAudio *copy_pattern_audio;
-  GList *list;
-  double delay, bpm, tact;
-  guint length, stream_length;
+  AgsApplyBpm *apply_bpm;
+  AgsApplyTact *apply_tact;
+  AgsApplySequencerLength *apply_sequencer_length;
+  double bpm, tact, length;
 
   if(old_parent != NULL)
     return;
@@ -88,6 +87,8 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   window->counter->drum++;
 
   devout = AGS_DEVOUT(audio->devout);
+
+  /* bpm */
   bpm = window->navigation->bpm->adjustment->value;
 
   if(bpm > 60.0){
@@ -95,42 +96,27 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   }else{
     bpm = exp2(60.0 / bpm);
   }
+
+  apply_bpm = ags_apply_bpm_new(G_OBJECT(AGS_MACHINE(drum)->audio),
+				bpm);
+  ags_devout_append_task(AGS_DEVOUT(window->devout),
+			 AGS_TASK(apply_bpm));
+
+  /* tact */
   tact = exp2(8.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
-  delay = (((double) devout->frequency / (double) devout->buffer_size) *
-	   bpm / 
-	   16.0);
-  drum->play_delay_audio->notation_delay = (guint) floor(delay);
-  drum->play_delay_audio->sequencer_delay = (guint) floor(delay * tact);
-  delay = (((double) devout->frequency / (double) devout->buffer_size) *
-	   bpm / 
-	   16.0);
-  drum->recall_delay_audio->notation_delay = (guint) floor(delay);
-  drum->recall_delay_audio->sequencer_delay = (guint) floor(delay * tact);
 
-  /* AgsCopyPatternAudio */
-  list = ags_recall_find_type(drum->machine.audio->play,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
+  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
+				  tact);
+  ags_devout_append_task(AGS_DEVOUT(window->devout),
+			 AGS_TASK(apply_tact));
 
-  if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+  /* length */
+  length = GTK_SPIN_BUTTON(drum->length_spin)->adjustment->value;
 
-    g_object_set(G_OBJECT(copy_pattern_audio),
-		 "devout\0", window->devout,
-		 NULL);
-  }
-
-  list = ags_recall_find_type(drum->machine.audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO);
-
-  if(list != NULL){
-    copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-
-    g_object_set(G_OBJECT(copy_pattern_audio),
-		 "devout\0", window->devout,
-		 NULL);
-  }
-
-  //  fprintf(stdout, "ags_drum_parent_set_callback: delay = %d\n\0", delay);
+  apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
+							  length);
+  ags_devout_append_task(AGS_DEVOUT(window->devout),
+			 AGS_TASK(apply_sequencer_length));
 }
 
 void
@@ -265,36 +251,36 @@ void
 ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsApplySequencerDuration *apply_sequencer_duration;
+  AgsApplyTact *apply_tact;
   gdouble tact;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
 
-  apply_tact = ags_apply_tact_new(AGS_MACHINE(drum)->audio,
-				  duration);
+  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
+				  tact);
 
   ags_devout_append_task(AGS_DEVOUT(window->devout),
-			 AGS_TASK(apply_sequencer_duration));
+			 AGS_TASK(apply_tact));
 }
 
 void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsApplySequencerDuration *apply_sequencer_duration;
-  gdouble duration;
+  AgsApplySequencerLength *apply_sequencer_length;
+  gdouble length;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
-  duration = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
+  length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
-  apply_sequencer_duration = ags_apply_sequencer_duration_new(AGS_MACHINE(drum)->audio,
-							      duration);
+  apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
+							  length);
 
   ags_devout_append_task(AGS_DEVOUT(window->devout),
-			 AGS_TASK(apply_sequencer_duration));
+			 AGS_TASK(apply_sequencer_length));
 }
 
 void

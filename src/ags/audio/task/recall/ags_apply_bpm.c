@@ -16,10 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_apply_bpm.h>
+#include <ags/audio/task/recall/ags_apply_bpm.h>
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_tactable.h>
+
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
 
 #include <math.h>
 
@@ -140,9 +145,9 @@ void
 ags_apply_bpm_launch(AgsTask *task)
 {
   AgsApplyBpm *apply_bpm;
-
+  
   apply_bpm = AGS_APPLY_BPM(task);
-
+  
   if(AGS_IS_DEVOUT(apply_bpm->gobject)){
     AgsDevout *devout;
 
@@ -153,8 +158,8 @@ ags_apply_bpm_launch(AgsTask *task)
     AgsAudio *audio;
 
     audio = AGS_AUDIO(apply_bpm->gobject);
-
-    ags_apply_bpm_audio(apply_bpm, audio));
+    
+    ags_apply_bpm_audio(apply_bpm, audio);
   }else if(AGS_IS_CHANNEL(apply_bpm->gobject)){
     AgsChannel *channel;
 
@@ -279,8 +284,8 @@ ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout)
   list = devout->audio;
 
   while(list != NULL){
-    ags_apply_bpm_audio(AGS_AUDIO(list->data),
-			apply_bpm->bpm);
+    ags_apply_bpm_audio(apply_bpm,
+			AGS_AUDIO(list->data));
 
     list = list->next;
   }

@@ -16,10 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/task/ags_apply_tact.h>
+#include <ags/audio/task/recall/ags_apply_tact.h>
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_tactable.h>
+
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
 
 #include <math.h>
 
