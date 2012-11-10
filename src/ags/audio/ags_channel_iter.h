@@ -22,35 +22,35 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_channel.h>
+
 typedef struct _AgsChannelIter AgsChannelIter;
 
 typedef enum{
-  AGS_CHANNEL_ITER_AHEAD         =  1,
-}AgsChannelIterFlags;
-
-typedef enum{
-  AGS_CHANNEL_ITER_DIRECTION_AXIS,
-  AGS_CHANNEL_ITER_DIRECTION_INVERSE_AXIS,
-  AGS_CHANNEL_ITER_DIRECTION_LEAVES_TO_ROOT,
+  AGS_CHANNEL_ITER_LEVEL_STRICT,
+  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES,
+  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_ROOT,
+  AGS_CHANNEL_ITER_DIRECTION_LEAFES_TO_ROOT,
   AGS_CHANNEL_ITER_DIRECTION_ROOT_TO_LEAFES,
-}
+};
 
 struct _AgsChannelIter
 {
-  guint flags;
-
   AgsChannel *current_start;
 
   AgsChannelIter *parent;
   GList *children;
+  AgsChannelIter *current_iter;
 
   AgsChannel *current;
 };
 
 AgsChannelIter* ags_channel_iter_alloc(AgsChannel *start);
 
-gboolean ags_channel_iter_prev(AgsChannelIter *iter, guint mode);
-gboolean ags_channel_iter_next(AgsChannelIter *iter, guint mode);
+void ags_channel_iter_free(AgsChannelIter *iter);
+
+AgsChannel* ags_channel_iter_prev(AgsChannelIter *iter, guint mode);
+AgsChannel* ags_channel_iter_next(AgsChannelIter *iter, guint mode);
 
 #endif /*__AGS_CHANNEL_ITER_H__*/
 

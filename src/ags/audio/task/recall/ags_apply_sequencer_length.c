@@ -199,7 +199,26 @@ void
 ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length, AgsAudio *audio)
 {
   AgsChannel *channel;
+  GList *list;
 
+  /* AgsRecall */
+  list = audio->play;
+
+  while(list != NULL){
+    ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->recall;
+
+  while(list != NULL){
+    ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
+
+    list = list->next;
+  }
+
+  /* AgsChannel */
   channel = audio->output;
 
   while(channel != NULL){

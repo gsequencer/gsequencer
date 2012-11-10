@@ -20,7 +20,6 @@
 #include <ags/X/machine/ags_drum_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_tactable.h>
 
 #include <ags/X/machine/ags_drum_input_pad.h>
 #include <ags/X/machine/ags_drum_input_line.h>
@@ -46,7 +45,6 @@
 
 void ags_drum_class_init(AgsDrumClass *drum);
 void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_drum_init(AgsDrum *drum);
 void ags_drum_finalize(GObject *gobject);
 void ags_drum_connect(AgsConnectable *connectable);
@@ -93,12 +91,6 @@ ags_drum_get_type(void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_tactable_interface_info = {
-      (GInterfaceInitFunc) ags_drum_tactable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-    
     ags_type_drum = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsDrum\0", &ags_drum_info,
 					    0);
@@ -106,10 +98,6 @@ ags_drum_get_type(void)
     g_type_add_interface_static(ags_type_drum,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_drum,
-				AGS_TYPE_TACTABLE,
-				&ags_tactable_interface_info);
   }
 
   return(ags_type_drum);
@@ -139,14 +127,6 @@ ags_drum_connectable_interface_init(AgsConnectableInterface *connectable)
 
   connectable->connect = ags_drum_connect;
   connectable->disconnect = ags_drum_disconnect;
-}
-
-void
-ags_drum_tactable_interface_init(AgsTactableInterface *tactable)
-{
-  tactable->change_duration = NULL;
-  tactable->change_tact = NULL;
-  tactable->change_bpm = NULL;
 }
 
 void
@@ -199,7 +179,6 @@ ags_drum_init(AgsDrum *drum)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 16,
-						 "tactable\0", AGS_TACTABLE(drum),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -230,7 +209,6 @@ ags_drum_init(AgsDrum *drum)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 16,
-						 "tactable\0", AGS_TACTABLE(drum),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |

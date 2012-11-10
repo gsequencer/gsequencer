@@ -20,7 +20,6 @@
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_tactable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -37,7 +36,6 @@
 
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
 void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_matrix_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_ffplayer_init(AgsFFPlayer *ffplayer);
 void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
@@ -84,12 +82,6 @@ ags_ffplayer_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-    
-    static const GInterfaceInfo ags_tactable_interface_info = {
-      (GInterfaceInitFunc) ags_matrix_tactable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
 
     ags_type_ffplayer = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsFFPlayer\0", &ags_ffplayer_info,
@@ -98,10 +90,6 @@ ags_ffplayer_get_type(void)
     g_type_add_interface_static(ags_type_ffplayer,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_ffplayer,
-				AGS_TYPE_TACTABLE,
-				&ags_tactable_interface_info);
   }
 
   return(ags_type_ffplayer);
@@ -141,14 +129,6 @@ ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_ffplayer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_ffplayer_connect;
-}
-
-void
-ags_ffplayer_tactable_interface_init(AgsTactableInterface *tactable)
-{
-  tactable->change_duration = NULL;
-  tactable->change_tact = NULL;
-  tactable->change_bpm = NULL;
 }
 
 void
@@ -194,8 +174,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->play_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
-						 "recall_container\0", recall_container,
-						 "tactable\0", AGS_TACTABLE(ffplayer),
+						 "recall_container\0", recall_container
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -225,7 +204,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "tactable\0", AGS_TACTABLE(ffplayer),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |

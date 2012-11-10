@@ -41,14 +41,23 @@ ags_tactable_get_type()
 void
 ags_tactable_class_init(AgsTactableInterface *interface)
 {
-  g_signal_new("change_duration\0",
+  g_signal_new("change_sequencer_duration\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsTactableInterface, change_duration),
+	       G_STRUCT_OFFSET(AgsTactableInterface, change_sequencer_duration),
 	       NULL, NULL,
 	       g_cclosure_marshal_VOID__DOUBLE,
-	       G_TYPE_NONE, 2,
-	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+	       G_TYPE_NONE, 1,
+	       G_TYPE_DOUBLE);
+
+  g_signal_new("change_notation_duration\0",
+	       G_TYPE_FROM_INTERFACE(interface),
+	       G_SIGNAL_RUN_LAST,
+	       G_STRUCT_OFFSET(AgsTactableInterface, change_notation_duration),
+	       NULL, NULL,
+	       g_cclosure_marshal_VOID__DOUBLE,
+	       G_TYPE_NONE, 1,
+	       G_TYPE_DOUBLE);
 
   g_signal_new("change_tact\0",
 	       G_TYPE_FROM_INTERFACE(interface),
@@ -56,8 +65,8 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
 	       NULL, NULL,
 	       g_cclosure_marshal_VOID__DOUBLE,
-	       G_TYPE_NONE, 2,
-	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+	       G_TYPE_NONE, 1,
+	       G_TYPE_DOUBLE);
 
   g_signal_new("change_bpm\0",
 	       G_TYPE_FROM_INTERFACE(interface),
@@ -65,19 +74,30 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
 	       NULL, NULL,
 	       g_cclosure_marshal_VOID__DOUBLE,
-	       G_TYPE_NONE, 2,
-	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+	       G_TYPE_NONE, 1,
+	       G_TYPE_DOUBLE);
 }
 
 void
-ags_tactable_change_duration(AgsTactable *tactable, double duration)
+ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
 {
   AgsTactableInterface *tactable_interface;
 
   g_return_if_fail(AGS_IS_TACTABLE(tactable));
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_if_fail(tactable_interface->change_duration);
-  tactable_interface->change_duration(tactable, duration);
+  g_return_if_fail(tactable_interface->change_sequencer_duration);
+  tactable_interface->change_sequencer_duration(tactable, duration);
+}
+
+void
+ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_if_fail(AGS_IS_TACTABLE(tactable));
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_if_fail(tactable_interface->change_notation_duration);
+  tactable_interface->change_notation_duration(tactable, duration);
 }
 
 void

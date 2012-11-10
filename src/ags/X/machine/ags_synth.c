@@ -175,7 +175,6 @@ ags_synth_init(AgsSynth *synth)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 0,
-						 "tactable\0", AGS_TACTABLE(synth),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -208,7 +207,6 @@ ags_synth_init(AgsSynth *synth)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay\0", 0,
-						 "tactable\0", AGS_TACTABLE(synth),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |

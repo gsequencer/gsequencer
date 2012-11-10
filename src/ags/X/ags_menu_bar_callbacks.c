@@ -25,6 +25,8 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 
+#include <ags/audio/task/ags_add_audio.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -205,10 +207,16 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsPanel *panel;
+  AgsAddAudio *add_audio;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   panel = ags_panel_new(G_OBJECT(window->devout));
+
+  add_audio = ags_add_audio_new(window->devout,
+				AGS_MACHINE(panel)->audio);
+  ags_devout_add_task(window->devout,
+		      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(panel),
@@ -228,10 +236,16 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsMixer *mixer;
+  AgsAddAudio *add_audio;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   mixer = ags_mixer_new(G_OBJECT(window->devout));
+
+  add_audio = ags_add_audio_new(window->devout,
+				AGS_MACHINE(mixer)->audio);
+  ags_devout_add_task(window->devout,
+		      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(mixer),
@@ -253,10 +267,16 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsDrum *drum;
+  AgsAddAudio *add_audio;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   drum = ags_drum_new(G_OBJECT(window->devout));
+
+  add_audio = ags_add_audio_new(window->devout,
+				AGS_MACHINE(drum)->audio);
+  ags_devout_add_task(window->devout,
+		      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(drum),
@@ -281,10 +301,16 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsMatrix *matrix;
+  AgsAddAudio *add_audio;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   matrix = ags_matrix_new(G_OBJECT(window->devout));
+
+  add_audio = ags_add_audio_new(window->devout,
+				AGS_MACHINE(matrix)->audio);
+  ags_devout_add_task(window->devout,
+		      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) matrix,
@@ -304,10 +330,16 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsSynth *synth;
+  AgsAddAudio *add_audio;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   synth = ags_synth_new(G_OBJECT(window->devout));
+
+  add_audio = ags_add_audio_new(window->devout,
+				AGS_MACHINE(synth)->audio);
+  ags_devout_add_task(window->devout,
+		      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) synth,
@@ -327,10 +359,16 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
+  AgsAddAudio *add_audio;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   ffplayer = ags_ffplayer_new(G_OBJECT(window->devout));
+
+  add_audio = ags_add_audio_new(window->devout,
+				AGS_MACHINE(ffplayer)->audio);
+  ags_devout_add_task(window->devout,
+		      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) ffplayer,

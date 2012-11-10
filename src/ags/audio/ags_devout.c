@@ -376,7 +376,7 @@ ags_devout_init(AgsDevout *devout)
   devout->task = NULL;
   devout->tasks_queued = 0;
   devout->tasks_pending = 0;
-  devout->tactable = NULL;
+  devout->audio = NULL;
 
   devout->play_recall_ref = 0;
   devout->play_recall = NULL;
@@ -582,6 +582,22 @@ ags_devout_play_alloc()
   play->group_id = 0;
 
   return(play);
+}
+
+void
+ags_devout_add_audio(AgsDevout *devout, GObject *audio)
+{
+  g_object_ref(G_OBJECT(audio));
+  devout->audio = g_list_prepend(devout->audio,
+				 audio);
+}
+
+void
+ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
+{
+  devout->audio = g_list_remove(devout->audio,
+				audio);
+  g_object_unref(G_OBJECT(audio));
 }
 
 void*

@@ -166,7 +166,7 @@ struct _AgsDevout
   guint tasks_queued;
   guint tasks_pending;
   GList *task;
-  GList *tactable;
+  GList *audio;
 
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall
@@ -209,6 +209,9 @@ struct _AgsDevoutAppend
 GType ags_devout_get_type();
 
 AgsDevoutPlay* ags_devout_play_alloc();
+
+void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
+void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
 
 void* ags_devout_task_thread(void *devout);
 void ags_devout_append_task(AgsDevout *devout, AgsTask *task);

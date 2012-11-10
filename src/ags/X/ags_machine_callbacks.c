@@ -21,6 +21,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/task/ags_remove_audio.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
 
@@ -109,6 +111,16 @@ ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine)
 void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
+  AgsWindow *window;
+  AgsRemoveAudio *remove_audio;
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
+
+  remove_audio = ags_remove_audio_new(window->devout,
+				      machine->audio);
+  ags_devout_append_task(window->devout,
+			 AGS_TASK(remove_audio));
+
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);
 }

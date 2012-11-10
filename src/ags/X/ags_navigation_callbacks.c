@@ -18,13 +18,13 @@
 
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/object/ags_tactable.h>
-
 #include <ags/audio/task/ags_change_bpm.h>
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
+
+#include <ags/audio/task/recall/ags_apply_bpm.h>
 
 #include <ags/X/ags_window.h>
 
@@ -82,7 +82,17 @@ void
 ags_navigation_bpm_callback(GtkWidget *widget,
 			    AgsNavigation *navigation)
 {
-  AgsChangeBpm *change_bpm;
+  AgsWindow *window;
+  AgsApplyBpm *apply_bpm;
+  
+  window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
+					      AGS_TYPE_WINDOW));
+
+  apply_bpm = ags_apply_bpm_new(G_OBJECT(window->devout),
+				navigation->bpm->adjustment->value);
+
+  ags_devout_append_task(AGS_DEVOUT(window->devout),
+			 AGS_TASK(apply_bpm));
 }
 
 void

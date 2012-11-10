@@ -20,7 +20,6 @@
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_tactable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -51,7 +50,6 @@
 
 void ags_matrix_class_init(AgsMatrixClass *matrix);
 void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_matrix_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_matrix_init(AgsMatrix *matrix);
 void ags_matrix_finalize(GObject *gobject);
 void ags_matrix_connect(AgsConnectable *connectable);
@@ -100,12 +98,6 @@ ags_matrix_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-
-    static const GInterfaceInfo ags_tactable_interface_info = {
-      (GInterfaceInitFunc) ags_matrix_tactable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_matrix = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsMatrix\0", &ags_matrix_info,
@@ -114,10 +106,6 @@ ags_matrix_get_type(void)
     g_type_add_interface_static(ags_type_matrix,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_matrix,
-				AGS_TYPE_TACTABLE,
-				&ags_tactable_interface_info);
   }
 
   return(ags_type_matrix);
@@ -158,14 +146,6 @@ ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
 
   connectable->connect = ags_matrix_connect;
   connectable->disconnect = ags_matrix_disconnect;
-}
-
-void
-ags_matrix_tactable_interface_init(AgsTactableInterface *tactable)
-{
-  tactable->change_duration = NULL;
-  tactable->change_tact = NULL;
-  tactable->change_bpm = NULL;
 }
 
 void
@@ -213,7 +193,6 @@ ags_matrix_init(AgsMatrix *matrix)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay", 16,
-						 "tactable\0", AGS_TACTABLE(matrix),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -244,7 +223,6 @@ ags_matrix_init(AgsMatrix *matrix)
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 "sequencer_delay", 16,
-						 "tactable\0", AGS_TACTABLE(matrix),
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |

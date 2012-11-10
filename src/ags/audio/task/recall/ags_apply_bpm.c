@@ -35,6 +35,7 @@ void ags_apply_bpm_launch(AgsTask *task);
 void ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall);
 void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
 void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
+void ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout);
 
 static gpointer ags_apply_bpm_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_bpm_parent_connectable_interface;
@@ -142,24 +143,30 @@ ags_apply_bpm_launch(AgsTask *task)
 
   apply_bpm = AGS_APPLY_BPM(task);
 
-  if(AGS_IS_AUDIO(apply_bpm->gobject)){
+  if(AGS_IS_DEVOUT(apply_bpm->gobject)){
+    AgsDevout *devout;
+
+    devout = AGS_DEVOUT(apply_bpm->gobject);
+
+    ags_apply_bpm_devout(apply_bpm, devout);
+  }else if(AGS_IS_AUDIO(apply_bpm->gobject)){
     AgsAudio *audio;
 
     audio = AGS_AUDIO(apply_bpm->gobject);
 
-    ags_apply_bpm_audio(apply_bpm, AGS_AUDIO(apply_bpm->gobject));
+    ags_apply_bpm_audio(apply_bpm, audio));
   }else if(AGS_IS_CHANNEL(apply_bpm->gobject)){
     AgsChannel *channel;
 
     channel = AGS_CHANNEL(apply_bpm->gobject);
 
-    ags_apply_bpm_channel(apply_bpm, AGS_CHANNEL(apply_bpm->gobject));
+    ags_apply_bpm_channel(apply_bpm, channel);
   }else if(AGS_IS_RECALL(apply_bpm->gobject)){
     AgsRecall *recall;
 
     recall = AGS_RECALL(apply_bpm->gobject);
 
-    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(apply_bpm->gobject));
+    ags_apply_bpm_recall(apply_bpm, recall);
   }else{
     g_warning("AgsApplyBpm: Not supported gobject");
   }
@@ -176,30 +183,22 @@ ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall)
 void
 ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
 {
-  AgsChannelIter *iter;
-  guint mode;
-
-  iter = ags_channel_iter_alloc(channel);
-  mode = AGS_CHANNEL_ITER_DIRECTION_AXIS;
-
-  while(ags_channel_iter_next()){
-    GList *list;
+  GList *list;
     
-    list = channel->play;
+  list = channel->play;
+  
+  while(list != NULL){
+    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
     
-    while(list != NULL){
-      ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
-      
-      list = list->next;
-    }
+    list = list->next;
+  }
+  
+  list = channel->recall;
+  
+  while(list != NULL){
+    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
     
-    list = channel->recall;
-    
-    while(list != NULL){
-      ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
-
-      list = list->next;
-    }
+    list = list->next;
   }
 }
 
@@ -207,7 +206,26 @@ void
 ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 {
   AgsChannel *channel;
+  GList *list;
 
+  /* AgsRecall */
+  list = audio->play;
+    
+  while(list != NULL){
+    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+  
+  list = audio->recall;
+  
+  while(list != NULL){
+    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+  
+  /* AgsChannel */
   channel = audio->output;
 
   while(channel != NULL){
@@ -219,9 +237,52 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
   channel = audio->input;
 
   while(channel != NULL){
-    ags_apply_bp,_channel(apply_bpm, channel);
+    ags_apply_bpm_channel(apply_bpm, channel);
 
     channel = channel->next;
+  }
+}
+
+void
+ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout)
+{
+  AgsAttack *attack;
+  double frames; // delay in frames
+  guint delay, delay_old;
+  GList *list;
+
+  /* AgsDevout */
+  frames = (double) devout->frequency / (60.0 / (double)apply_bpm->bpm / 64.0);
+
+  delay = (guint) floor(floor(frames) / (double) devout->buffer_size);
+
+  delay_old = devout->delay;
+  devout->delay = delay;
+
+  if(devout->delay_counter > devout->delay)
+    devout->delay_counter = devout->delay_counter % devout->delay;
+
+  attack = devout->attack;
+
+  if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0){
+    attack->first_start = attack->first_start;
+    attack->first_length = attack->first_length;
+  }else{
+    attack->first_start = attack->second_start;
+    attack->first_length = attack->second_length;
+  }
+
+  attack->second_start = (attack->first_start + (guint) round(frames)) % devout->buffer_size;
+  attack->second_length = devout->buffer_size - attack->second_start;
+
+  /* AgsAudio */
+  list = devout->audio;
+
+  while(list != NULL){
+    ags_apply_bpm_audio(AGS_AUDIO(list->data),
+			apply_bpm->bpm);
+
+    list = list->next;
   }
 }
 
