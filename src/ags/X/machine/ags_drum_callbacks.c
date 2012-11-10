@@ -40,6 +40,9 @@
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
+#include <ags/audio/task/recall/ags_apply_tact.h>
+#include <ags/audio/task/recall/ags_apply_sequencer_duration.h>
+
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
@@ -128,85 +131,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   }
 
   //  fprintf(stdout, "ags_drum_parent_set_callback: delay = %d\n\0", delay);
-}
-
-void
-ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum)
-{
-  AgsWindow *window;
-  AgsDevout *devout;
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsDelayAudio *delay_audio;
-  AgsCountBeatsAudio *count_beats_audio;
-  GList *list;
-  double bpm, tact;
-  guint delay, length, stream_length;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW);
-
-  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
-  g_signal_emit_by_name(AGS_TACTABLE(drum), "change_bpm\0",
-			bpm);
-
-  //  audio = drum->machine.audio;
-  //  devout = AGS_DEVOUT(audio->devout);
-
-  //  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
-  /*
-  delay = (guint) round(((double)devout->frequency /
-			 (double)devout->buffer_size) *
-			(60.0 / bpm) *
-			tact);
-  */
-  /* AgsDelayAudio * /
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
-
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
-
-  length = (guint) drum->length_spin->adjustment->value;
-  stream_length = length * (delay + 1) + 1;
-
-  /* AgsCountBeatsAudio * /
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-
-  if(list != NULL){
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-
-    count_beats_audio->stream_length = stream_length;
-  }
-
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-
-  if(list != NULL){
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-
-    count_beats_audio->stream_length = stream_length;
-  }
-
-  /* resize audio signals * /
-  channel = drum->machine.audio->output;
-
-  while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, stream_length);
-
-    channel = channel->next;
-  }
-  */
 }
 
 void
@@ -341,141 +265,36 @@ void
 ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsDevout *devout;
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsDelayAudio *delay_audio;
-  AgsCountBeatsAudio *count_beats_audio;
-  GList *list;
-  double bpm, tact;
-  guint length, stream_length, delay;
+  AgsApplySequencerDuration *apply_sequencer_duration;
+  gdouble tact;
+
+  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
-  g_signal_emit_by_name(AGS_TACTABLE(drum), "change_tact\0",
-			tact);
 
-  /*
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
-  audio = AGS_MACHINE(drum)->audio;
-  devout = AGS_DEVOUT(audio->devout);
-  */
-  //  bpm = gtk_adjustment_get_value(window->navigation->bpm->adjustment);
+  apply_tact = ags_apply_tact_new(AGS_MACHINE(drum)->audio,
+				  duration);
 
-  /*
-  delay = (guint) round(((double)devout->frequency /
-			 (double)devout->buffer_size) *
-			(60.0 / bpm) *
-			tact);
-
-  /* AgsDelayAudio * /
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
-
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay_audio->delay = delay;
-  }
-
-  length = (guint) drum->length_spin->adjustment->value;
-  stream_length = length * (delay + 1) + 1;
-
-  /* AgsCountBeatsAudio * /
-  list = ags_recall_find_type(AGS_MACHINE(drum)->audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-
-  if(list != NULL){
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-
-    count_beats_audio->stream_length = stream_length;
-  }
-
-  list = ags_recall_find_type(AGS_MACHINE(drum)->audio->recall,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-
-  if(list != NULL){
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-
-    count_beats_audio->stream_length = stream_length;
-  }
-
-  /* resize audio signal * /
-  channel = AGS_MACHINE(drum)->audio->output;
-
-  while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, stream_length);
-
-    channel = channel->next;
-  }
-  */
+  ags_devout_append_task(AGS_DEVOUT(window->devout),
+			 AGS_TASK(apply_sequencer_duration));
 }
 
 void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
-  /*
-  AgsChannel *channel;
-  AgsDelayAudio *delay_audio;
-  AgsCountBeatsAudio *count_beats_audio;
-  GList *list;
-  guint delay, length, stream_length;
-  */
+  AgsWindow *window;
+  AgsApplySequencerDuration *apply_sequencer_duration;
   gdouble duration;
 
+  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
+
   duration = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
-  g_signal_emit_by_name(AGS_TACTABLE(drum), "change_duration\0",
-			duration);
 
-//  channel = AGS_MACHINE(drum)->audio->output;
+  apply_sequencer_duration = ags_apply_sequencer_duration_new(AGS_MACHINE(drum)->audio,
+							      duration);
 
-  /* AgsDelayAudio * /
-  list = ags_recall_find_type(AGS_MACHINE(drum)->audio->play,
-			      AGS_TYPE_DELAY_AUDIO);
-
-  if(list != NULL){
-    delay_audio = AGS_DELAY_AUDIO(list->data);
-    delay = delay_audio->delay;
-  }else
-    delay = 0;
-
-  length = (guint) GTK_SPIN_BUTTON(spin_button)->adjustment->value;
-  stream_length = length * (delay + 1) + 1;
-
-  /* AgsCountBeatsAudio * /
-  list = ags_recall_find_type(AGS_MACHINE(drum)->audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-
-  if(list != NULL){
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-
-    count_beats_audio->length = length;
-    count_beats_audio->stream_length = stream_length;
-  }
-
-  list = ags_recall_find_type(AGS_MACHINE(drum)->audio->recall,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-
-  if(list != NULL){
-    count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-
-    count_beats_audio->length = length;
-    count_beats_audio->stream_length = stream_length;
-  }
-
-  /* resize audio signal * /
-  while(channel != NULL){
-    ags_channel_resize_audio_signal(channel, stream_length);
-
-    channel = channel->next;
-  }
-  */
+  ags_devout_append_task(AGS_DEVOUT(window->devout),
+			 AGS_TASK(apply_sequencer_duration));
 }
 
 void

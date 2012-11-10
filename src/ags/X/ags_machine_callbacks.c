@@ -114,7 +114,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   AgsWindow *window;
   AgsRemoveAudio *remove_audio;
 
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   remove_audio = ags_remove_audio_new(window->devout,
 				      machine->audio);

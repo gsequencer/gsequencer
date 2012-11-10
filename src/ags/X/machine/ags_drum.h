@@ -74,7 +74,6 @@ struct _AgsDrum
   GtkCheckButton *loop_button;
   GtkSpinButton *length_spin;
   GtkOptionMenu *tact;
-  gulong bpm_handler;
 
   GtkToggleButton *run;
 

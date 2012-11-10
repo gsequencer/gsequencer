@@ -466,8 +466,6 @@ ags_drum_init(AgsDrum *drum)
   drum->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) drum->length_spin, FALSE, FALSE, 0);
 
-  drum->bpm_handler = 0;
-
   drum->pattern =
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 1, 2);
@@ -529,8 +527,6 @@ ags_drum_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_drum_tact_callback), (gpointer) drum);
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
-  drum->bpm_handler = g_signal_connect((GObject *) window->navigation->bpm, "value-changed\0",
-				       G_CALLBACK(ags_drum_bpm_callback), (gpointer) drum);
 
   g_signal_connect_after((GObject *) drum->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum);
@@ -582,8 +578,6 @@ ags_drum_disconnect(AgsConnectable *connectable)
   drum = AGS_DRUM(connectable);
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
-  g_signal_handler_disconnect((GObject *) window->navigation->bpm, drum->bpm_handler);
-
 
   //TODO:JK: implement me
 }

@@ -40,23 +40,24 @@ struct _AgsDelayAudio
 
   gdouble bpm;
   gdouble tact;
-  gdouble duration;
+  gdouble sequencer_duration;
+  gdouble notation_duration;
 
   guint frames;
   guint notation_delay;
   guint sequencer_delay;
-  
-  gulong change_bpm_handle;
-  gulong change_tact_handle;
-  gulong change_duration_handle;
 };
 
 struct _AgsDelayAudioClass
 {
   AgsRecallAudioClass recall_audio;
+
+  void (*sequencer_duration_changed)(AgsDelayAudio *delay_audio);
 };
 
 GType ags_delay_audio_get_type();
+
+void ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio);
 
 AgsDelayAudio* ags_delay_audio_new();
 

@@ -18,7 +18,6 @@
 
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/audio/task/ags_change_bpm.h>
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_cancel_audio.h>

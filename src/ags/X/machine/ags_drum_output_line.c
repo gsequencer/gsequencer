@@ -223,6 +223,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 						   "devout\0", audio->devout,
 						   "source\0", output,
 						   "recall_container\0", play_loop_channel_container,
+						   "delay_audio\0", drum->play_delay_audio,
 						   NULL);
     AGS_RECALL(loop_channel)->flags |= (AGS_RECALL_TEMPLATE |
 					AGS_RECALL_SEQUENCER |

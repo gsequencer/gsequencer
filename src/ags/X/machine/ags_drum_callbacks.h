@@ -27,8 +27,6 @@
 
 void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
 
-void ags_drum_bpm_callback(GtkWidget *spin_button, AgsDrum *drum); // AgsNavigation->bpm
-
 void ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum);
 
 void ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum);

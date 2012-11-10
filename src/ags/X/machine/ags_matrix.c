@@ -624,6 +624,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 						     "devout\0", audio->devout,
 						     "source\0", source,
 						     "recall_container\0", play_loop_channel_container,
+						     "delay_audio\0", delay_audio,
 						     NULL);
       AGS_RECALL(loop_channel)->flags |= (AGS_RECALL_TEMPLATE |
 					  AGS_RECALL_SEQUENCER |

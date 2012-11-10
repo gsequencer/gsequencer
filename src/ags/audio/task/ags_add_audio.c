@@ -137,7 +137,7 @@ ags_add_audio_launch(AgsTask *task)
 
   /* add audio */
   ags_devout_add_audio(add_audio->devout,
-		       add_audio->audio);
+		       G_OBJECT(add_audio->audio));
 }
 
 AgsAddAudio*

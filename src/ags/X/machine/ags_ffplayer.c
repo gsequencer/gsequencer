@@ -174,7 +174,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->play_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
 						 "audio\0", audio,
-						 "recall_container\0", recall_container
+						 "recall_container\0", recall_container,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |

@@ -40,7 +40,13 @@ void ags_delay_audio_finalize(GObject *gobject);
 
 void ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble bpm);
 void ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact);
-void ags_delay_audio_change_duration(AgsTactable *tactable, gdouble duration);
+void ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
+void ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
+
+enum{
+  SEQUENCER_DURATION_CHANGED,
+  LAST_SIGNAL,
+};
 
 enum{
   PROP_0,
@@ -49,6 +55,8 @@ enum{
 };
 
 static gpointer ags_delay_audio_parent_class = NULL;
+
+static guint delay_audio_signals[LAST_SIGNAL];
 
 GType
 ags_delay_audio_get_type()
@@ -135,6 +143,16 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   g_object_class_install_property(gobject,
 				  PROP_SEQUENCER_DELAY,
 				  param_spec);
+
+  /* signals */
+  delay_audio_signals[SEQUENCER_DURATION_CHANGED] = 
+    g_signal_new("sequencer_duration_changed\0",
+		 G_TYPE_FROM_CLASS(audio),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioClass, sequencer_duration_changed),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -147,7 +165,8 @@ ags_delay_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable)
 {
-  tactable->change_duration = ags_delay_audio_change_duration;
+  tactable->change_sequencer_duration = ags_delay_audio_change_sequencer_duration;
+  tactable->change_notation_duration = ags_delay_audio_change_notation_duration;
   tactable->change_tact = ags_delay_audio_change_tact;
   tactable->change_bpm = ags_delay_audio_change_bpm;
 }
@@ -245,6 +264,9 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble bpm)
   delay_audio->sequencer_delay = delay_audio->notation_delay * delay_audio->duration;
 
   delay_audio->bpm = bpm;
+
+  delay_audio->sequencer_duration = delay_audio->sequencer_delay * duration;
+  ags_delay_audio_sequencer_duration_changed(delay_audio);
 }
 
 void
@@ -265,10 +287,13 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact)
   delay_audio->sequencer_delay = delay_audio->notation_delay * delay_audio->duration;
 
   delay_audio->tact = tact;
+
+  delay_audio->sequencer_duration = delay_audio->sequencer_delay * duration;
+  ags_delay_audio_sequencer_duration_changed(delay_audio);
 }
 
 void
-ags_delay_audio_change_duration(AgsTactable *tactable, gdouble duration)
+ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration)
 {
   AgsDevout *devout;
   AgsDelayAudio *delay_audio;
@@ -277,9 +302,32 @@ ags_delay_audio_change_duration(AgsTactable *tactable, gdouble duration)
 
   devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-  delay_audio->sequencer_delay = (guint) delay_audio->notation_delay * duration;
+  delay_audio->sequencer_duration = delay_audio->sequencer_delay * duration;
+  ags_delay_audio_sequencer_duration_changed(delay_audio);
+}
 
-  delay_audio->duration = duration;
+void
+ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration)
+{
+  AgsDevout *devout;
+  AgsDelayAudio *delay_audio;
+  
+  delay_audio = AGS_DELAY_AUDIO(tactable);
+
+  devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+
+  delay_audio->notation_duration = delay_audio->notation_delay * duration;
+}
+
+void
+ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
+{
+  g_return_if_fail(AGS_IS_AUDIO(delay_audio));
+
+  g_object_ref((GObject *) delay_audio);
+  g_signal_emit(G_OBJECT(delay_audio),
+		delay_audio_signals[SEQUENCER_DURATION_CHANGED], 0);
+  g_object_unref((GObject *) delay_audio);
 }
 
 AgsDelayAudio*

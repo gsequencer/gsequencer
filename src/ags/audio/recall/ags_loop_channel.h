@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/recall/ags_delay_audio.h>
 
 #define AGS_TYPE_LOOP_CHANNEL                (ags_loop_channel_get_type())
 #define AGS_LOOP_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOOP_CHANNEL, AgsLoopChannel))
@@ -37,6 +38,9 @@ typedef struct _AgsLoopChannelClass AgsLoopChannelClass;
 struct _AgsLoopChannel
 {
   AgsRecallChannel recall_channel;
+  
+  AgsDelayAudio *delay_audio;
+  gulong sequencer_duration_changed_handler;
 };
 
 struct _AgsLoopChannelClass

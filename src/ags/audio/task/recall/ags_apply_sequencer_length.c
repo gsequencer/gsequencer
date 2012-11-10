@@ -108,7 +108,7 @@ void
 ags_apply_sequencer_length_init(AgsApplySequencerLength *apply_sequencer_length)
 {
   apply_sequencer_length->gobject = NULL;
-  apply_sequencer_length->length = 0;
+  apply_sequencer_length->length = 0.0;
 }
 
 void
@@ -238,7 +238,7 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
 
 AgsApplySequencerLength*
 ags_apply_sequencer_length_new(GObject *gobject,
-			       guint length)
+			       gdouble length)
 {
   AgsApplySequencerLength *apply_sequencer_length;
 
