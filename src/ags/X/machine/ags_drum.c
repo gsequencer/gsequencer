@@ -178,7 +178,6 @@ ags_drum_init(AgsDrum *drum)
 						 "devout\0", audio->devout,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "sequencer_delay\0", 16,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -208,7 +207,6 @@ ags_drum_init(AgsDrum *drum)
 						 "devout\0", audio->devout,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
-						 "sequencer_delay\0", 16,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |

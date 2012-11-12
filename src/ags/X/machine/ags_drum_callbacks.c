@@ -91,11 +91,11 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   /* bpm */
   bpm = window->navigation->bpm->adjustment->value;
 
-  if(bpm > 60.0){
+  /*  if(bpm > 60.0){
     bpm = exp2(-1.0 * 60.0 / bpm);
   }else{
     bpm = exp2(60.0 / bpm);
-  }
+    } */
 
   apply_bpm = ags_apply_bpm_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				bpm);
@@ -103,7 +103,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 			 AGS_TASK(apply_bpm));
 
   /* tact */
-  tact = exp2(8.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
 
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				  tact);

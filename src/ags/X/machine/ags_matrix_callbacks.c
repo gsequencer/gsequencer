@@ -36,9 +36,6 @@
 #include <ags/audio/task/recall/ags_apply_tact.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
-#include <ags/audio/task/recall/ags_apply_tact.h>
-#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
-
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
@@ -79,11 +76,13 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   /* bpm */
   bpm = window->navigation->bpm->adjustment->value;
 
+  /*
   if(bpm > 60.0){
     bpm = exp2(-1.0 * 60.0 / bpm);
   }else{
     bpm = exp2(60.0 / bpm);
   }
+  */
 
   apply_bpm = ags_apply_bpm_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
 				bpm);
@@ -91,7 +90,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 			 AGS_TASK(apply_bpm));
 
   /* tact */
-  tact = exp2(8.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
 
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
 				  tact);

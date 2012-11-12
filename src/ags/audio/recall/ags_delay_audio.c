@@ -156,7 +156,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   delay_audio->bpm = 120.0;
   delay_audio->tact = 1.0 / 4.0;
 
-  delay_audio->notation_delay = 44100.0 / 940.0 * (60.0 / delay_audio->bpm) / 64.0;
+  delay_audio->notation_delay = 44100.0 / 940.0 / (64.0 * delay_audio->bpm / 60.0);
   delay_audio->sequencer_delay = delay_audio->notation_delay * (64.0 * delay_audio->tact);
 
   delay_audio->sequencer_duration = 16.0;
@@ -256,24 +256,21 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact)
 
   devout = AGS_DEVOUT(AGS_RECALL(delay_audio)->devout);
 
-  delay_audio->notation_delay *= (delay_audio->tact / tact);
-  delay_audio->sequencer_delay *= (delay_audio->tact / tact);
+  //  delay_audio->notation_delay *= (delay_audio->tact / tact);
+  delay_audio->sequencer_delay *= (tact / delay_audio->tact);
 
   delay_audio->tact = tact;
 
-  delay_audio->sequencer_duration *= (delay_audio->tact / tact);
+  delay_audio->sequencer_duration *= (tact / delay_audio->tact);
   ags_delay_audio_sequencer_duration_changed(delay_audio);
 }
 
 void
 ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration)
 {
-  AgsDevout *devout;
   AgsDelayAudio *delay_audio;
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
-
-  devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
   delay_audio->sequencer_duration = duration;
   ags_delay_audio_sequencer_duration_changed(delay_audio);
@@ -282,12 +279,9 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
 void
 ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration)
 {
-  AgsDevout *devout;
   AgsDelayAudio *delay_audio;
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
-
-  devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
   delay_audio->notation_duration = duration;
 }
@@ -295,7 +289,7 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 void
 ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
 {
-  g_return_if_fail(AGS_IS_AUDIO(delay_audio));
+  g_return_if_fail(AGS_IS_DELAY_AUDIO(delay_audio));
 
   g_object_ref((GObject *) delay_audio);
   g_signal_emit(G_OBJECT(delay_audio),
