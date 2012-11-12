@@ -156,7 +156,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   delay_audio->bpm = 120.0;
   delay_audio->tact = 1.0 / 4.0;
 
-  delay_audio->notation_delay = 44100.0 / 940.0 / (64.0 * delay_audio->bpm / 60.0);
+  delay_audio->notation_delay = 44100.0 / 940.0 / 64.0 / (delay_audio->bpm / 60.0);
   delay_audio->sequencer_delay = delay_audio->notation_delay * (64.0 * delay_audio->tact);
 
   delay_audio->sequencer_duration = 16.0;

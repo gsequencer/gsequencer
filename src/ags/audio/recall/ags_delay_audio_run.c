@@ -382,13 +382,13 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
 
-      if(delay_audio_run->notation_counter == delay_audio->notation_duration - 1){
+      if(delay_audio_run->notation_counter == (guint) ceil(delay_audio->notation_delay) - 1){
 	delay_audio_run->notation_counter = 0;
       }else{
 	delay_audio_run->notation_counter += 1;
       }
 
-      if(delay_audio_run->sequencer_counter == delay_audio->sequencer_duration - 1){
+      if(delay_audio_run->sequencer_counter == (guint) ceil(delay_audio->sequencer_delay) - 1){
 	  delay_audio_run->sequencer_counter = 0;
       }else{
 	delay_audio_run->sequencer_counter += 1;
