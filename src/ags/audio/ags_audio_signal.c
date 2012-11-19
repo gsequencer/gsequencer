@@ -309,6 +309,18 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
   // empty
 }
 
+/**
+ * ags_attack_alloc:
+ * @first_start a guint indicating the very first frame of the stream.
+ * @first_length a guint telling how many frames remain from @first_start
+ * to the end of a buffer.
+ * @second_start a guint generally just used by #AgsDevout.
+ * @second_length a guint generally just used by #AgsDevout.
+ * Returns: the allocated #AgsAttack.
+ *
+ * Allocs an #AgsAttack you probably never may use this function directly
+ * you rather want to duplicate an existing #AgsAttack.
+ */
 AgsAttack*
 ags_attack_alloc(guint first_start, guint first_length,
 		 guint second_start, guint second_length)
@@ -327,6 +339,13 @@ ags_attack_alloc(guint first_start, guint first_length,
   return(attack);
 }
 
+/**
+ * ags_attack_duplicate:
+ * @attack the #AgsAttack to duplicate.
+ * Returns: the duplicated #AgsAttack.
+ *
+ * Duplicates an #AgsAttack.
+ */
 AgsAttack*
 ags_attack_duplicate(AgsAttack *attack)
 {
@@ -347,15 +366,22 @@ ags_attack_duplicate(AgsAttack *attack)
   return(copy);
 }
 
-
+/**
+ * ags_attack_duplicate_from_devout:
+ * @gobject an #AgsDevout.
+ * Returns: the duplicated #AgsAttack.
+ *
+ * Retrieves streaming offsets of the current stream position
+ * and bpm. 
+ */
 AgsAttack*
-ags_attack_duplicate_from_devout(GObject *devout0)
+ags_attack_duplicate_from_devout(GObject *gobject)
 {
   AgsDevout *devout;
   AgsAttack *copy, *attack;
   GValue attack_value = {0,};
 
-  devout = AGS_DEVOUT(devout0);
+  devout = AGS_DEVOUT(gobject);
 
   g_value_init(&attack_value, G_TYPE_POINTER);
   g_object_get_property(G_OBJECT(devout),
@@ -374,6 +400,46 @@ ags_attack_duplicate_from_devout(GObject *devout0)
   return(copy);
 }
 
+/**
+ * ags_audio_signal_get_length_till_current:
+ * @audio_signal an #AgsAudioSignal
+ * Returns: the counted length.
+ *
+ * Counts the buffers from stream_beginning upto stream_current.
+ */
+guint
+ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal)
+{
+  GList *list, *stop;
+  guint length;
+
+  if(audio_signal == NULL){
+    return(0);
+  }
+
+  list = audio_signal->stream_beginning;
+  length = 0;
+
+  if(audio_signal->stream_current != NULL){
+    stop = audio_signal->stream_current->next;
+  }else{
+    return(0);
+  }
+
+  while(list != stop){
+    length++;
+    list = list->next;
+  }
+
+  return(length);
+}
+
+/**
+ * ags_audio_signal_add_stream:
+ * @audio_signal an #AgsAudioSignal
+ *
+ * Adds a buffer at the end of the stream.
+ */
 void
 ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 {
@@ -398,8 +464,13 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
   audio_signal->length++;
 }
 
-/* 
- *  be carefull with shrinking
+/**
+ * ags_audio_signal_stream_resize:
+ * @audio_signal an #AgsAudioSignal to resize.
+ * @length a guint as the new length.
+ *
+ * Resizes an #AgsAudioSignal's stream but be carefull with shrinking.
+ * This function may crash the application.
  */
 void
 ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
@@ -469,6 +540,40 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
   audio_signal->length = length;
 }
 
+/**
+ * ags_audio_signal_stream_safe_resize:
+ * @audio_signal an #AgsAudioSignal
+ * @length a guint
+ *
+ * Resizes an #AgsAudioSignal's stream but doesn't shrink more than the
+ * current stream position.
+ */
+void
+ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length)
+{
+  guint length_till_current;
+
+  length_till_current = ags_audio_signal_get_length_till_current(audio_signal);
+
+  if(length_till_current < length){
+    ags_audio_signal_stream_resize(audio_signal,
+				   length);
+  }else{
+    ags_audio_signal_stream_resize(audio_signal,
+				   length_till_current);
+  }
+}
+
+/**
+ * ags_audio_signal_copy_buffer_to_buffer:
+ * @destination
+ * @dchannels
+ * @source
+ * @schannels
+ * @size
+ *
+ * Copy a buffer to an other buffer.
+ */
 void
 ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels, short *source, guint schannels, guint size)
 {

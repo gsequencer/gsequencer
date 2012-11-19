@@ -92,8 +92,11 @@ AgsAttack* ags_attack_alloc(guint first_start, guint first_length,
 AgsAttack* ags_attack_duplicate(AgsAttack *attack);
 AgsAttack* ags_attack_duplicate_from_devout(GObject *devout);
 
+guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
+
 void ags_audio_signal_add_stream(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
+void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length);
 
 void ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels,
 					    short *source, guint schannels, guint size);
