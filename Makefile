@@ -90,7 +90,7 @@ AMTAR = $${TAR-tar}
 AUTOCONF = ${SHELL} /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-code/missing --run autoconf
 AUTOHEADER = ${SHELL} /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-code/missing --run autoheader
 AUTOMAKE = ${SHELL} /media/9d8f77de-5a6a-4c93-8fe7-f4f3d53cdadc/Users/joel/ags-code/missing --run automake-1.11
-AWK = gawk
+AWK = mawk
 CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  
 CAIRO_LIBS = -lcairo  
 CC = gcc
@@ -438,7 +438,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile config.h ags
+all-am: Makefile config.h
 installdirs:
 install: install-am
 install-exec: install-exec-am

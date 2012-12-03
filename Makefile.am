@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
+SUBDIRS = src
 
 # sources
 AGS_DIR = ./src/ags/
