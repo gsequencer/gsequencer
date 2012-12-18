@@ -200,10 +200,12 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
     overwrite = g_object_get_data((GObject *) widget, "overwrite\0");
     create = g_object_get_data((GObject *) widget, "create\0");
 
+    /*
     ags_machine_open_files(machine,
 			   filenames,
-			   overwrite->toggle_button.active,
-			   create->toggle_button.active);
+			   GTK_TOGGLE_BUTTON(overwrite)->active,
+			   GTK_TOGGLE_BUTTON(create)->active);
+    */
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);

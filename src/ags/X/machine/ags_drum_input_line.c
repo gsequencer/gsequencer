@@ -588,7 +588,7 @@ ags_drum_input_line_new(AgsChannel *channel)
   AgsDrumInputLine *drum_input_line;
 
   drum_input_line = (AgsDrumInputLine *) g_object_new(AGS_TYPE_DRUM_INPUT_LINE,
-						      "source\0", channel,
+						      "channel\0", channel,
 						      NULL);
 
   return(drum_input_line);

@@ -191,6 +191,8 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     AgsAppendAudio *append_audio;
     AgsStartDevout *start_devout;
 
+    printf("drum: on\n\0");
+
     /* create init task */
     init_audio = ags_init_audio_new(AGS_MACHINE(drum)->audio,
 				    FALSE, TRUE, FALSE);
@@ -215,6 +217,8 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 			   AGS_TASK(start_devout));
 
   }else{
+    printf("drum: off\n\0");
+
     /* abort code */
     if((AGS_DEVOUT_PLAY_DONE & (AGS_MACHINE(drum)->audio->devout_play->flags)) == 0){
       AgsCancelAudio *cancel_audio;

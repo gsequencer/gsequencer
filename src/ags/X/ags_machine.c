@@ -301,7 +301,7 @@ ags_machine_open_files(AgsMachine *machine,
   GList *audio_signal_list;
   guint i, j;
   guint list_length;
-  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
+  //  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
 
   channel = machine->audio->input;
 
@@ -384,12 +384,12 @@ ags_machine_open_files(AgsMachine *machine,
 	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
 	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 	
-	g_static_mutex_lock(&mutex);
+	//	g_static_mutex_lock(&mutex);
 	channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
 							       (gpointer) audio_signal_source_old);
 	channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
 								audio_signal_list->data);
-	g_static_mutex_unlock(&mutex);
+	//	g_static_mutex_unlock(&mutex);
 	
 	g_object_unref(G_OBJECT(audio_signal_source_old));
 	

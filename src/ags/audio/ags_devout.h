@@ -140,6 +140,12 @@ struct _AgsDevout
     }alsa;
   }out;
 
+  pthread_t supervisor_thread;
+  pthread_attr_t supervisor_thread_attr;
+  pthread_mutex_t supervisor_mutex;
+  pthread_mutexattr_t supervisor_mutex_attr;
+  pthread_cond_t supervisor_wait_cond;
+
   pthread_t play_thread;
   pthread_attr_t play_thread_attr;
   pthread_mutex_t play_mutex;
@@ -151,14 +157,14 @@ struct _AgsDevout
   pthread_mutex_t play_functions_mutex;
   pthread_mutexattr_t play_functions_mutex_attr;
   pthread_cond_t play_functions_wait_cond;
-  pthread_cond_t play_functions_wait_task_cond;
+  //  pthread_cond_t play_functions_wait_task_cond;
 
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
   pthread_mutex_t task_mutex;
   pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
-  pthread_cond_t task_wait_play_functions_cond;
+  //  pthread_cond_t task_wait_play_functions_cond;
 
   pthread_mutex_t append_task_mutex;
   pthread_cond_t append_task_wait_cond;
