@@ -49,7 +49,6 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_finalize(GObject *gobject);
 
-void* ags_devout_supervisor_thread(void *ptr);
 void* ags_devout_append_task_thread(void *ptr);
 void* ags_devout_append_tasks_thread(void *ptr);
 
@@ -673,6 +672,7 @@ ags_devout_supervisor_thread(void *devout0)
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     pthread_mutex_lock(&(devout->supervisor_mutex));
+    g_message("loop\0");
 
     devout->flags |= (AGS_DEVOUT_WAIT_SYNC);
 
@@ -1146,10 +1146,8 @@ ags_devout_real_run(AgsDevout *devout)
   memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
   memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
-  devout->flags |= (AGS_DEVOUT_BUFFER0);
-
-  pthread_create(&(devout->supervisor_thread), NULL, &ags_devout_supervisor_thread, devout);
-  pthread_setschedprio(devout->supervisor_thread, 99);
+  devout->flags |= (AGS_DEVOUT_BUFFER0 |
+		    AGS_DEVOUT_WAIT_SYNC);
 
   //devout->play_functions_thread = g_thread_create(ags_devout_play_functions, devout, FALSE, NULL);
   pthread_create(&(devout->play_functions_thread), NULL, &ags_devout_play_functions, devout);
@@ -1575,16 +1573,6 @@ ags_devout_ao_play(void *devout0)
     if((AGS_DEVOUT_COUNT & devout->flags) != 0)
       devout->offset++;
     */
-
-    //g_static_mutex_lock(&mutex);
-    devout->flags &= (~AGS_DEVOUT_WAIT_DEVICE);
-
-    if((AGS_DEVOUT_WAIT_RECALL & devout->flags) != 0){
-      ags_devout_ao_play_timing();
-    }else{
-      //g_cond_signal(devout->play_functions_cond);
-      //g_static_mutex_unlock(&mutex);
-    }
   }
 
   if((AGS_DEVOUT_BUFFER0 & devout->flags) != 0){

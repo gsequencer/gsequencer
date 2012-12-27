@@ -218,7 +218,9 @@ AgsDevoutPlay* ags_devout_play_alloc();
 void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
 
+void* ags_devout_supervisor_thread(void *ptr);
 void* ags_devout_task_thread(void *devout);
+
 void ags_devout_append_task(AgsDevout *devout, AgsTask *task);
 void ags_devout_append_tasks(AgsDevout *devout, GList *list);
 

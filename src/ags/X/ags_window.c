@@ -161,7 +161,11 @@ ags_window_connect(AgsConnectable *connectable)
   ags_editor_connect(window->editor);
   ags_navigation_connect(window->navigation);
 
+  pthread_create(&(window->devout->supervisor_thread), NULL, &ags_devout_supervisor_thread, window->devout);
+  pthread_setschedprio(window->devout->supervisor_thread, 99);
+
   pthread_create(&(window->devout->task_thread), NULL, &ags_devout_task_thread, window->devout);
+  pthread_setschedprio(window->devout->task_thread, 99);
 }
 
 void
