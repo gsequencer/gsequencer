@@ -785,6 +785,7 @@ ags_devout_append_task_thread(void *ptr)
   AgsDevoutAppend *append;
   AgsDevout *devout;
   AgsTask *task;
+  gboolean initial_wait;
 
   append = (AgsDevoutAppend *) ptr;
 
@@ -798,9 +799,14 @@ ags_devout_append_task_thread(void *ptr)
   
   pthread_mutex_lock(&(devout->append_task_mutex));
   devout->tasks_pending += 1;
-  
-  while(((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0 && (AGS_DEVOUT_WAIT_APPEND_TASK & (devout->flags)) != 0) ||
+  initial_wait = FALSE;
+
+  while(((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0 && !initial_wait) ||
 	(AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
+    if(initial_wait){
+      initial_wait = TRUE;
+    }
+
     pthread_cond_wait(&(devout->append_task_wait_cond),
 			&(devout->append_task_mutex));
   }
@@ -852,7 +858,7 @@ ags_devout_append_tasks_thread(void *ptr)
   AgsDevoutAppend *append;
   AgsDevout *devout;
   GList *list;
-
+  gboolean initial_wait;
   append = (AgsDevoutAppend *) ptr;
 
   devout = append->devout;
@@ -865,9 +871,14 @@ ags_devout_append_tasks_thread(void *ptr)
   
   pthread_mutex_lock(&(devout->append_task_mutex));
   devout->tasks_pending += 1;
+  initial_wait = FALSE;
   
-  while(((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0 && (AGS_DEVOUT_WAIT_APPEND_TASK & (devout->flags)) != 0) ||
+  while(((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0 && !initial_wait) ||
 	(AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
+    if(initial_wait){
+      initial_wait = TRUE;
+    }
+
     pthread_cond_wait(&(devout->append_task_wait_cond),
 			&(devout->append_task_mutex));
   }
@@ -1131,8 +1142,7 @@ ags_devout_real_run(AgsDevout *devout)
   memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
   memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
 
-  devout->flags |= (AGS_DEVOUT_BUFFER0 |
-		    AGS_DEVOUT_WAIT_SYNC);
+  devout->flags |= (AGS_DEVOUT_BUFFER0);
 
   //devout->play_functions_thread = g_thread_create(ags_devout_play_functions, devout, FALSE, NULL);
   pthread_create(&(devout->play_functions_thread), NULL, &ags_devout_play_functions, devout);
