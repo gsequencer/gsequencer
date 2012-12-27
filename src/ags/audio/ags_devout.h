@@ -66,9 +66,8 @@ typedef enum
   AGS_DEVOUT_WAIT_DEVICE                    = 1 << 6,
   AGS_DEVOUT_WAIT_RECALL                    = 1 << 7,
   AGS_DEVOUT_WAIT_PLAY_FUNCTIONS            = 1 << 8,
-  AGS_DEVOUT_RUN_TASK                       = 1 << 9,
-  AGS_DEVOUT_WAIT_TASK                      = 1 << 10,
-  AGS_DEVOUT_TASK_READY                     = 1 << 25,
+  AGS_DEVOUT_WAIT_TASK                      = 1 << 9,
+  AGS_DEVOUT_WAIT_APPEND_TASK               = 1 << 10,
 
   AGS_DEVOUT_LIBAO                          = 1 << 11,
   AGS_DEVOUT_OSS                            = 1 << 12,
@@ -86,6 +85,8 @@ typedef enum
   AGS_DEVOUT_PLAY_NOTE                      = 1 << 23,
 
   AGS_DEVOUT_SHUTDOWN                       = 1 << 24,
+
+  AGS_DEVOUT_WAIT_SYNC                      = 1 << 25,
 }AgsDevoutFlags;
 
 typedef enum
@@ -157,14 +158,13 @@ struct _AgsDevout
   pthread_mutex_t play_functions_mutex;
   pthread_mutexattr_t play_functions_mutex_attr;
   pthread_cond_t play_functions_wait_cond;
-  //  pthread_cond_t play_functions_wait_task_cond;
+  pthread_cond_t play_functions_wait_task_cond;
 
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
   pthread_mutex_t task_mutex;
   pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
-  //  pthread_cond_t task_wait_play_functions_cond;
 
   pthread_mutex_t append_task_mutex;
   pthread_cond_t append_task_wait_cond;
