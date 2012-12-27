@@ -158,7 +158,6 @@ struct _AgsDevout
   pthread_mutex_t play_functions_mutex;
   pthread_mutexattr_t play_functions_mutex_attr;
   pthread_cond_t play_functions_wait_cond;
-  pthread_cond_t play_functions_wait_task_cond;
 
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
