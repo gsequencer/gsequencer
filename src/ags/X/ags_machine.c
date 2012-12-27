@@ -301,7 +301,6 @@ ags_machine_open_files(AgsMachine *machine,
   GList *audio_signal_list;
   guint i, j;
   guint list_length;
-  //  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
 
   channel = machine->audio->input;
 
