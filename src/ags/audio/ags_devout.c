@@ -348,6 +348,7 @@ ags_devout_init(AgsDevout *devout)
   
   pthread_cond_init(&(devout->supervisor_wait_cond), NULL);
 
+  devout->wait_sync = 0;
 
   /* play */
   pthread_attr_init(&devout->play_thread_attr);
@@ -726,6 +727,29 @@ ags_devout_supervisor_thread(void *devout0)
 void*
 ags_devout_play_interceptor(void *ptr)
 {
+  AgsDevout *devout;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  devout = AGS_DEVOUT(ptr);
+
+  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
+    pthread_mutex_lock(&mutex);
+
+    while(!devout->play_suspend){
+      pthread_cond_wait(&(devout->play_interceptor_cond),
+			&mutex);
+    }
+
+    devout->play_suspend = FALSE;
+    devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
+    devout->wait_sync -= 1;
+
+    pthread_mutex_unlock(&mutex);
+
+    pthread_cond_signal(&(devout->supervisor_wait_cond));
+  }
+
+  pthread_exit(NULL);
 }
 
 void*
