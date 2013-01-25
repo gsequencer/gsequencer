@@ -741,7 +741,7 @@ ags_devout_play_interceptor(void *ptr)
     }
 
     devout->play_suspend = FALSE;
-    devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
+    devout->flags &= (~AGS_DEVOUT_WAIT_PLAY);
     devout->wait_sync -= 1;
 
     pthread_mutex_unlock(&mutex);
@@ -755,16 +755,85 @@ ags_devout_play_interceptor(void *ptr)
 void*
 ags_devout_play_functions_interceptor(void *ptr)
 {
+  AgsDevout *devout;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  devout = AGS_DEVOUT(ptr);
+
+  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
+    pthread_mutex_lock(&mutex);
+
+    while(!devout->play_functions_suspend){
+      pthread_cond_wait(&(devout->play_functions_interceptor_cond),
+			&mutex);
+    }
+
+    devout->play_functions_suspend = FALSE;
+    devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
+    devout->wait_sync -= 1;
+
+    pthread_mutex_unlock(&mutex);
+
+    pthread_cond_signal(&(devout->supervisor_wait_cond));
+  }
+
+  pthread_exit(NULL);
 }
 
 void*
 ags_devout_task_interceptor(void *ptr)
 {
+  AgsDevout *devout;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  devout = AGS_DEVOUT(ptr);
+
+  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
+    pthread_mutex_lock(&mutex);
+
+    while(!devout->task_suspend){
+      pthread_cond_wait(&(devout->task_interceptor_cond),
+			&mutex);
+    }
+
+    devout->task_suspend = FALSE;
+    devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
+    devout->wait_sync -= 1;
+
+    pthread_mutex_unlock(&mutex);
+
+    pthread_cond_signal(&(devout->supervisor_wait_cond));
+  }
+
+  pthread_exit(NULL);
 }
 
 void*
 ags_devout_append_task_interceptor(void *ptr)
 {
+  AgsDevout *devout;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  devout = AGS_DEVOUT(ptr);
+
+  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
+    pthread_mutex_lock(&mutex);
+
+    while(!devout->append_task_suspend){
+      pthread_cond_wait(&(devout->append_task_interceptor_cond),
+			&mutex);
+    }
+
+    devout->append_task_suspend = FALSE;
+    devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK);
+    devout->wait_sync -= 1;
+
+    pthread_mutex_unlock(&mutex);
+
+    pthread_cond_signal(&(devout->supervisor_wait_cond));
+  }
+
+  pthread_exit(NULL);
 }
 
 void*
@@ -774,7 +843,6 @@ ags_devout_task_thread(void *devout0)
   GList *task, *start, *end, *new_start, *old_list;
   struct timespec play_idle;
   useconds_t idle;
-  gboolean initial_run;
 
   devout = AGS_DEVOUT(devout0);
 
@@ -782,30 +850,27 @@ ags_devout_task_thread(void *devout0)
   play_idle.tv_nsec = 10 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
-  //FIXME:JK: not safe
-  devout->flags |= AGS_DEVOUT_WAIT_TASK;
-  
-  initial_run = TRUE;
-
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
+    /*  */
+    pthread_mutex_lock(&(devout->task_mutex));
+
+    devout->task_suspend = TRUE;
+
+    pthread_mutex_unlock(&(devout->task_mutex));
+
+    pthread_cond_signal(&(devout->task_interceptor_cond));
+
     /* sync */
-    g_message("ping\0");
-
-    if(!initial_run){
-      pthread_mutex_lock(&(devout->task_mutex));
-
-      devout->flags |= AGS_DEVOUT_WAIT_TASK;
-
-      while(((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0 && (AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0) ||
-	    (AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
-	pthread_cond_wait(&(devout->task_wait_cond),
-			  &(devout->task_mutex));
-      }
-
-      pthread_mutex_unlock(&(devout->task_mutex));
-    }else{
-      initial_run = FALSE;
+    pthread_mutex_lock(&(devout->task_mutex));
+    
+    while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
+      pthread_cond_wait(&(devout->task_wait_cond),
+			&(devout->task_mutex));
     }
+    
+    devout->flags |= AGS_DEVOUT_WAIT_TASK;
+
+    pthread_mutex_unlock(&(devout->task_mutex));
 
     start = 
       task = devout->task;
@@ -831,11 +896,6 @@ ags_devout_task_thread(void *devout0)
       usleep(idle);
       printf("################ DEBUG ################\n\0");
     }
-
-    g_message("pong\0");
-
-    /*  */
-    pthread_cond_signal(&(devout->supervisor_wait_cond));
   }
 
   pthread_exit(NULL);
