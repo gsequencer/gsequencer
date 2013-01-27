@@ -63,8 +63,8 @@ typedef enum
 
   AGS_DEVOUT_PLAY                           = 1 << 5,
 
-  AGS_DEVOUT_WAIT_PLAY                      = 1 << 6,
-  //  AGS_DEVOUT_WAIT_RECALL                    = 1 << 7,
+  AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
+  AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
   AGS_DEVOUT_WAIT_PLAY_FUNCTIONS            = 1 << 8,
   AGS_DEVOUT_WAIT_TASK                      = 1 << 9,
   AGS_DEVOUT_WAIT_APPEND_TASK               = 1 << 10,
@@ -240,6 +240,8 @@ void ags_devout_stop(AgsDevout *devout);
 void ags_devout_tic(AgsDevout *devout);
 
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
+
+void ags_devout_start_default_threads(AgsDevout *devout);
 
 AgsDevout* ags_devout_new();
 
