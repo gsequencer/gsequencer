@@ -85,6 +85,12 @@ typedef enum
   AGS_DEVOUT_PLAY_NOTE                      = 1 << 23,
 
   AGS_DEVOUT_SHUTDOWN                       = 1 << 24,
+
+  AGS_DEVOUT_WAIT_PLAY                        = 1 << 25,
+  AGS_DEVOUT_WAIT_PLAY_FUNCTIONS_INTERCEPTOR  = 1 << 26,
+  AGS_DEVOUT_WAIT_TASK                        = 1 << 27,
+  AGS_DEVOUT_WAIT_APPEND_TASK                 = 1 << 28,
+
 }AgsDevoutFlags;
 
 typedef enum

@@ -754,11 +754,24 @@ ags_devout_play_interceptor(void *ptr)
     }
 
     devout->play_suspend = FALSE;
-    devout->wait_sync -= 1;
 
-    pthread_mutex_unlock(&mutex);
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
+      devout->wait_sync -= 1;
+      pthread_mutex_unlock(&mutex);
 
-    pthread_cond_signal(&(devout->supervisor_wait_cond));
+      pthread_cond_signal(&(devout->supervisor_wait_cond));
+    }else{
+      
+
+      while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
+	pthread_cond_wait(&(devout->play_interceptor_wait_cond),
+			  &mutex);
+      }
+
+
+
+      pthread_mutex_unlock(&mutex);
+    }
   }
 
   pthread_exit(NULL);
@@ -781,11 +794,24 @@ ags_devout_play_functions_interceptor(void *ptr)
     }
 
     devout->play_functions_suspend = FALSE;
-    devout->wait_sync -= 1;
 
-    pthread_mutex_unlock(&mutex);
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
+      devout->wait_sync -= 1;
+      pthread_mutex_unlock(&mutex);
 
-    pthread_cond_signal(&(devout->supervisor_wait_cond));
+      pthread_cond_signal(&(devout->supervisor_wait_cond));
+    }else{
+
+
+      while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
+	pthread_cond_wait(&(devout->play_functions_interceptor_wait_cond),
+			  &mutex);
+      }
+
+
+
+      pthread_mutex_unlock(&mutex);
+    }
   }
 
   pthread_exit(NULL);
@@ -815,10 +841,14 @@ ags_devout_task_interceptor(void *ptr)
 
       pthread_cond_signal(&(devout->supervisor_wait_cond));
     }else{
+
+
       while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
 	pthread_cond_wait(&(devout->task_interceptor_wait_cond),
 			  &mutex);
       }
+
+
 
       pthread_mutex_unlock(&mutex);
     }
@@ -852,11 +882,25 @@ ags_devout_append_task_interceptor(void *ptr)
     }
 
     devout->append_task_suspend = FALSE;
-    devout->wait_sync -= 1;
 
-    pthread_mutex_unlock(&mutex);
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
+      devout->wait_sync -= 1;
+      pthread_mutex_unlock(&mutex);
+      
+      pthread_cond_signal(&(devout->supervisor_wait_cond));
+    }else{
 
-    pthread_cond_signal(&(devout->supervisor_wait_cond));
+
+      while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
+	pthread_cond_wait(&(devout->append_task_interceptor_wait_cond),
+			  &mutex);
+      }
+
+
+
+      pthread_mutex_unlock(&mutex);
+
+    }
   }
 
   pthread_exit(NULL);
