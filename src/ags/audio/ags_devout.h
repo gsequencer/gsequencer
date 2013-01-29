@@ -179,6 +179,7 @@ struct _AgsDevout
   pthread_t append_task_interceptor;
   gboolean append_task_suspend;
   pthread_cond_t append_task_interceptor_cond;
+  pthread_cond_t append_task_interceptor_wait_cond;
   pthread_mutex_t append_task_mutex;
   pthread_cond_t append_task_wait_cond;
 

@@ -343,6 +343,9 @@ ags_devout_init(AgsDevout *devout)
   devout->wait_sync = 0;
 
   /* play */
+  pthread_cond_init(&(devout->play_interceptor_cond), NULL);
+  pthread_cond_init(&(devout->play_interceptor_wait_cond), NULL);
+
   pthread_attr_init(&devout->play_thread_attr);
   //  pthread_attr_setschedpolicy(&devout->play_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&devout->play_thread_attr, PTHREAD_INHERIT_SCHED);
@@ -354,6 +357,9 @@ ags_devout_init(AgsDevout *devout)
   pthread_cond_init(&(devout->play_wait_cond), NULL);
 
   /* play functions */
+  pthread_cond_init(&(devout->play_functions_interceptor_cond), NULL);
+  pthread_cond_init(&(devout->play_functions_interceptor_wait_cond), NULL);
+
   pthread_attr_init(&devout->play_functions_thread_attr);
   //  pthread_attr_setschedpolicy(&devout->play_functions_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&devout->play_functions_thread_attr, PTHREAD_INHERIT_SCHED);
@@ -364,6 +370,9 @@ ags_devout_init(AgsDevout *devout)
   pthread_cond_init(&(devout->play_functions_wait_cond), NULL);
 
   /* task */
+  pthread_cond_init(&(devout->task_interceptor_cond), NULL);
+  pthread_cond_init(&(devout->task_interceptor_wait_cond), NULL);
+
   pthread_attr_init(&devout->task_thread_attr);
   //  pthread_attr_setschedpolicy(&devout->task_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&devout->task_thread_attr, PTHREAD_INHERIT_SCHED);
@@ -375,6 +384,9 @@ ags_devout_init(AgsDevout *devout)
   pthread_cond_init(&(devout->task_wait_cond), NULL);
  
   /* append_task */
+  pthread_cond_init(&(devout->append_task_interceptor_cond), NULL);
+  pthread_cond_init(&(devout->append_task_interceptor_wait_cond), NULL);
+
   pthread_mutex_init(&(devout->append_task_mutex), NULL);
   pthread_cond_init(&(devout->append_task_wait_cond), NULL);
 
