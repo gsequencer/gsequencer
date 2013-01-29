@@ -42,8 +42,6 @@ struct _AgsSyncClass
 
 GType ags_sync_get_type();
 
-
-
 AgsSync* ags_sync_new();
 
 #endif /*__AGS_SYNC_H__*/

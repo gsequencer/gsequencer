@@ -16,4 +16,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/thread/ags_sync.h>
+#ifndef __AGS_THREAD_H__
+#define __AGS_THREAD_H__
+
+typedef struct _AgsThread AgsThread;
+typedef struct _AgsThreadClass AgsThreadClass;
+
+struct _AgsThread
+{
+  GObject object;
+
+  guint flags;
+};
+
+struct _AgsThreadClass
+{
+  GObjectClass object;
+};
+
+GType ags_thread_get_type();
+
+AgsThread* ags_thread_new();
+
+#endif /*__AGS_THREAD_H__*/
