@@ -86,10 +86,10 @@ typedef enum
 
   AGS_DEVOUT_SHUTDOWN                       = 1 << 24,
 
-  AGS_DEVOUT_WAIT_PLAY                        = 1 << 25,
+  AGS_DEVOUT_WAIT_PLAY_INTERCEPTOR            = 1 << 25,
   AGS_DEVOUT_WAIT_PLAY_FUNCTIONS_INTERCEPTOR  = 1 << 26,
-  AGS_DEVOUT_WAIT_TASK                        = 1 << 27,
-  AGS_DEVOUT_WAIT_APPEND_TASK                 = 1 << 28,
+  AGS_DEVOUT_WAIT_TASK_INTERCEPTOR            = 1 << 27,
+  AGS_DEVOUT_WAIT_APPEND_TASK_INTERCEPTOR     = 1 << 28,
 
 }AgsDevoutFlags;
 
