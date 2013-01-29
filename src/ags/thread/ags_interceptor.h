@@ -19,14 +19,35 @@
 #ifndef __AGS_INTERCEPTOR_H__
 #define __AGS_INTERCEPTOR_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
+#define __USE_GNU
+#define __USE_UNIX98
+#include <pthread.h>
+
 typedef struct _AgsInterceptor AgsInterceptor;
 typedef struct _AgsInterceptorClass AgsInterceptorClass;
+
+typedef enum{
+  AGS_INTERCEPTOR_WAIT       = 1,
+  AGS_INTERCEPTOR_SYNC_WAIT  = 1 << 1,
+}AgsInterceptorFlags;
 
 struct _AgsInterceptor
 {
   GObject object;
 
   guint flags;
+
+  pthread_cond_t cond;
+
+  pthread_t thread;
+  pthread_mutex_t mutex;
+  pthread_cond_t wait_cond;
+
+  GObject *sync;
+  GObject *thread;
 };
 
 struct _AgsInterceptorClass

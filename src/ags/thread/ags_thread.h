@@ -19,14 +19,33 @@
 #ifndef __AGS_THREAD_H__
 #define __AGS_THREAD_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
+#define __USE_GNU
+#define __USE_UNIX98
+#include <pthread.h>
+
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
+
+typedef enum
+{
+  AGS_THREAD_SUSPEND   = 1,
+  AGS_THREAD_WAIT      = 1 << 1,
+}AgsThreadFlags;
 
 struct _AgsThread
 {
   GObject object;
 
   guint flags;
+
+  pthread_t thread;
+  pthread_mutex_t mutex;
+  pthread_cond_t wait_cond;
+
+  AgsInterceptor *interceptor;
 };
 
 struct _AgsThreadClass

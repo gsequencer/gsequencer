@@ -22,18 +22,16 @@
 typedef struct _AgsSync AgsSync;
 typedef struct _AgsSyncClass AgsSyncClass;
 
-typedef enum
-{
-  
-}AgsSyncFlags;
-
 struct _AgsSync
 {
   GObject object;
 
-  guint flags;
-};
+  pthread_t thread;
+  pthread_mutex_t mutex;
+  pthread_cond_t wait_cond;
 
+  GList *thread;
+};
 
 struct _AgsSyncClass
 {
