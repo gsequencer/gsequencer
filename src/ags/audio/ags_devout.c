@@ -664,6 +664,12 @@ ags_devout_supervisor_thread(void *devout0)
     devout->flags &= (~AGS_DEVOUT_WAIT_PLAY);
     devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
 
+    devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_INTERCEPTOR);
+    devout->flags &= (~AGS_DEVOUT_WAIT_TASK_INTERCEPTOR);
+    devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK_INTERCEPTOR);
+    devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_INTERCEPTOR);
+    devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS_INTERCEPTOR);
+
     pthread_mutex_unlock(&(devout->supervisor_mutex));
 
     /* wake up waiting threads */

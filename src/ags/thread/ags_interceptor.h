@@ -57,6 +57,8 @@ struct _AgsInterceptorClass
 
 GType ags_interceptor_get_type();
 
+void* ags_interceptor_thread(void *ptr);
+
 AgsInterceptor* ags_interceptor_new();
 
 #endif /*__AGS_INTERCEPTOR_H__*/
