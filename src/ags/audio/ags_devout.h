@@ -149,6 +149,7 @@ struct _AgsDevout
   pthread_t play_interceptor;
   gboolean play_suspend;
   pthread_cond_t play_interceptor_cond;
+  pthread_cond_t play_interceptor_wait_cond;
   pthread_t play_thread;
   pthread_attr_t play_thread_attr;
   pthread_mutex_t play_mutex;
@@ -158,6 +159,7 @@ struct _AgsDevout
   pthread_t play_functions_interceptor;
   gboolean play_functions_suspend;
   pthread_cond_t play_functions_interceptor_cond;
+  pthread_cond_t play_functions_interceptor_wait_cond;
   pthread_t play_functions_thread;
   pthread_attr_t play_functions_thread_attr;
   pthread_mutex_t play_functions_mutex;
@@ -167,6 +169,7 @@ struct _AgsDevout
   pthread_t task_interceptor;
   gboolean task_suspend;
   pthread_cond_t task_interceptor_cond;
+  pthread_cond_t task_interceptor_wait_cond;
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
   pthread_mutex_t task_mutex;
