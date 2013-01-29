@@ -19,5 +19,31 @@
 #ifndef __AGS_SYNC_H__
 #define __AGS_SYNC_H__
 
+typedef struct _AgsSync AgsSync;
+typedef struct _AgsSyncClass AgsSyncClass;
+
+typedef enum
+{
+  
+}AgsSyncFlags;
+
+struct _AgsSync
+{
+  GObject object;
+
+  guint flags;
+};
+
+
+struct _AgsSyncClass
+{
+  GObjectClass object;
+};
+
+GType ags_sync_get_type();
+
+
+
+AgsSync* ags_sync_new();
 
 #endif /*__AGS_SYNC_H__*/
