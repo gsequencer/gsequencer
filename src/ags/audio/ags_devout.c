@@ -750,9 +750,10 @@ ags_devout_play_interceptor(void *ptr)
   gboolean signal_supervisor;
 
   devout = AGS_DEVOUT(ptr);
+  
+  pthread_mutex_lock(&mutex);
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
-    pthread_mutex_lock(&mutex);
 
     while(!devout->play_suspend){
       pthread_cond_wait(&(devout->play_interceptor_cond),
@@ -763,21 +764,14 @@ ags_devout_play_interceptor(void *ptr)
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       devout->wait_sync -= 1;
-      pthread_mutex_unlock(&mutex);
 
+      pthread_mutex_unlock(&mutex);
       pthread_cond_signal(&(devout->supervisor_wait_cond));
-    }else{
-      devout->flags |= AGS_DEVOUT_WAIT_PLAY_INTERCEPTOR;
-
-      while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
-	pthread_cond_wait(&(devout->play_interceptor_wait_cond),
-			  &mutex);
-      }
-
-      devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_INTERCEPTOR);
-      pthread_mutex_unlock(&mutex);
+      pthread_mutex_lock(&mutex);
     }
   }
+
+  pthread_mutex_unlock(&mutex);
 
   pthread_exit(NULL);
 }
@@ -790,8 +784,9 @@ ags_devout_play_functions_interceptor(void *ptr)
 
   devout = AGS_DEVOUT(ptr);
 
+  pthread_mutex_lock(&mutex);
+
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
-    pthread_mutex_lock(&mutex);
 
     while(!devout->play_functions_suspend){
       pthread_cond_wait(&(devout->play_functions_interceptor_cond),
@@ -802,22 +797,14 @@ ags_devout_play_functions_interceptor(void *ptr)
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       devout->wait_sync -= 1;
-      pthread_mutex_unlock(&mutex);
 
+      pthread_mutex_unlock(&mutex);
       pthread_cond_signal(&(devout->supervisor_wait_cond));
-    }else{
-      devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS_INTERCEPTOR;
-
-      while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
-	pthread_cond_wait(&(devout->play_functions_interceptor_wait_cond),
-			  &mutex);
-      }
-
-      devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS_INTERCEPTOR);
-
-      pthread_mutex_unlock(&mutex);
+      pthread_mutex_lock(&mutex);
     }
   }
+
+  pthread_mutex_unlock(&mutex);
 
   pthread_exit(NULL);
 }
@@ -830,8 +817,9 @@ ags_devout_task_interceptor(void *ptr)
 
   devout = AGS_DEVOUT(ptr);
 
+  pthread_mutex_lock(&mutex);
+
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
-    pthread_mutex_lock(&mutex);
 
     while(!devout->task_suspend){
       pthread_cond_wait(&(devout->task_interceptor_cond),
@@ -842,22 +830,14 @@ ags_devout_task_interceptor(void *ptr)
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       devout->wait_sync -= 1;
-      pthread_mutex_unlock(&mutex);
 
+      pthread_mutex_unlock(&mutex);
       pthread_cond_signal(&(devout->supervisor_wait_cond));
-    }else{
-      devout->flags |= AGS_DEVOUT_WAIT_TASK_INTERCEPTOR;
-
-      while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
-	pthread_cond_wait(&(devout->task_interceptor_wait_cond),
-			  &mutex);
-      }
-
-      devout->flags &= (~AGS_DEVOUT_WAIT_TASK_INTERCEPTOR);
-
-      pthread_mutex_unlock(&mutex);
+      pthread_mutex_lock(&mutex);
     }
   }
+
+  pthread_mutex_unlock(&mutex);
 
   pthread_exit(NULL);
 }
@@ -872,9 +852,9 @@ ags_devout_append_task_interceptor(void *ptr)
 
   devout = AGS_DEVOUT(ptr);
 
-  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
-    pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&mutex);
 
+  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     task_count = devout->tasks_pending;
     task_counter = 0;
 
@@ -890,21 +870,14 @@ ags_devout_append_task_interceptor(void *ptr)
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       devout->wait_sync -= 1;
-      pthread_mutex_unlock(&mutex);
-      
+
+      pthread_mutex_unlock(&mutex);      
       pthread_cond_signal(&(devout->supervisor_wait_cond));
-    }else{
-      devout->flags |= AGS_DEVOUT_WAIT_APPEND_TASK_INTERCEPTOR;
-
-      while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
-	pthread_cond_wait(&(devout->append_task_interceptor_wait_cond),
-			  &mutex);
-      }
-
-      devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK_INTERCEPTOR);
-      pthread_mutex_unlock(&mutex);
+      pthread_mutex_lock(&mutex);
     }
   }
+
+  pthread_mutex_unlock(&mutex);      
 
   pthread_exit(NULL);
 }
