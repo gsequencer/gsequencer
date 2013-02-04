@@ -344,7 +344,6 @@ ags_devout_init(AgsDevout *devout)
 
   /* play */
   pthread_cond_init(&(devout->play_interceptor_cond), NULL);
-  pthread_cond_init(&(devout->play_interceptor_wait_cond), NULL);
 
   pthread_attr_init(&devout->play_thread_attr);
   //  pthread_attr_setschedpolicy(&devout->play_thread_attr, SCHED_RR);
@@ -358,7 +357,6 @@ ags_devout_init(AgsDevout *devout)
 
   /* play functions */
   pthread_cond_init(&(devout->play_functions_interceptor_cond), NULL);
-  pthread_cond_init(&(devout->play_functions_interceptor_wait_cond), NULL);
 
   pthread_attr_init(&devout->play_functions_thread_attr);
   //  pthread_attr_setschedpolicy(&devout->play_functions_thread_attr, SCHED_RR);
@@ -371,7 +369,6 @@ ags_devout_init(AgsDevout *devout)
 
   /* task */
   pthread_cond_init(&(devout->task_interceptor_cond), NULL);
-  pthread_cond_init(&(devout->task_interceptor_wait_cond), NULL);
 
   pthread_attr_init(&devout->task_thread_attr);
   //  pthread_attr_setschedpolicy(&devout->task_thread_attr, SCHED_RR);
@@ -385,7 +382,6 @@ ags_devout_init(AgsDevout *devout)
  
   /* append_task */
   pthread_cond_init(&(devout->append_task_interceptor_cond), NULL);
-  pthread_cond_init(&(devout->append_task_interceptor_wait_cond), NULL);
 
   pthread_mutex_init(&(devout->append_task_mutex), NULL);
   pthread_cond_init(&(devout->append_task_wait_cond), NULL);
@@ -643,7 +639,7 @@ ags_devout_supervisor_thread(void *devout0)
 
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
-  devout->wait_sync = 1;
+  devout->wait_sync = 0;
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     /* suspend until everything has been done */
@@ -822,6 +818,7 @@ ags_devout_task_interceptor(void *ptr)
 
     devout->task_suspend = FALSE;
 
+    g_message("task interceptor\0");
     devout->wait_sync = devout->wait_sync - 1;
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
@@ -852,7 +849,7 @@ ags_devout_append_task_interceptor(void *ptr)
     task_count = devout->tasks_pending;
     task_counter = 0;
 
-    while(!devout->append_task_suspend &&
+    while(!devout->append_task_suspend ||
 	  task_count != task_counter){
       pthread_cond_wait(&(devout->append_task_interceptor_cond),
 			&mutex);
@@ -862,6 +859,7 @@ ags_devout_append_task_interceptor(void *ptr)
 
     devout->append_task_suspend = FALSE;
 
+    g_message("append task interceptor\0");
     devout->wait_sync = devout->wait_sync - 1;
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
@@ -909,8 +907,7 @@ ags_devout_task_thread(void *devout0)
     pthread_mutex_lock(&(devout->task_mutex));
     devout->flags |= AGS_DEVOUT_WAIT_TASK;
 
-    while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0 ||
-	  ((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0 && ((AGS_DEVOUT_WAIT_TASK & (devout->flags)) != 0))){
+    while((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       pthread_cond_wait(&(devout->task_wait_cond),
 			&(devout->task_mutex));
     }
@@ -937,10 +934,10 @@ ags_devout_task_thread(void *devout0)
     /* sleep if wanted */
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
       //      nanosleep(&play_idle, NULL);
-      printf("################ DEBUG ################\n\0");
+      g_message("################ DEBUG ################\0");
     }else{
       usleep(idle);
-      printf("################ DEBUG ################\n\0");
+      g_message("################ DEBUG ################\0");
     }
   }
 
