@@ -86,11 +86,6 @@ typedef enum
 
   AGS_DEVOUT_SHUTDOWN                       = 1 << 24,
 
-  AGS_DEVOUT_WAIT_PLAY_INTERCEPTOR            = 1 << 25,
-  AGS_DEVOUT_WAIT_PLAY_FUNCTIONS_INTERCEPTOR  = 1 << 26,
-  AGS_DEVOUT_WAIT_TASK_INTERCEPTOR            = 1 << 27,
-  AGS_DEVOUT_WAIT_APPEND_TASK_INTERCEPTOR     = 1 << 28,
-
 }AgsDevoutFlags;
 
 typedef enum
@@ -150,7 +145,7 @@ struct _AgsDevout
   pthread_mutex_t supervisor_mutex;
   pthread_mutexattr_t supervisor_mutex_attr;
   pthread_cond_t supervisor_wait_cond;
-  guint wait_sync;
+  gint wait_sync;
 
   pthread_t play_interceptor;
   gboolean play_suspend;

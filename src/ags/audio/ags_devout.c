@@ -340,7 +340,7 @@ ags_devout_init(AgsDevout *devout)
   
   pthread_cond_init(&(devout->supervisor_wait_cond), NULL);
 
-  devout->wait_sync = 0;
+  devout->wait_sync = 1;
 
   /* play */
   pthread_cond_init(&(devout->play_interceptor_cond), NULL);
@@ -643,7 +643,7 @@ ags_devout_supervisor_thread(void *devout0)
 
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
-  devout->wait_sync = 0;
+  devout->wait_sync = 1;
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     /* suspend until everything has been done */
@@ -664,19 +664,13 @@ ags_devout_supervisor_thread(void *devout0)
     devout->flags &= (~AGS_DEVOUT_WAIT_PLAY);
     devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
 
-    devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_INTERCEPTOR);
-    devout->flags &= (~AGS_DEVOUT_WAIT_TASK_INTERCEPTOR);
-    devout->flags &= (~AGS_DEVOUT_WAIT_APPEND_TASK_INTERCEPTOR);
-    devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_INTERCEPTOR);
-    devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS_INTERCEPTOR);
-
     pthread_mutex_unlock(&(devout->supervisor_mutex));
 
     /* wake up waiting threads */
     /* wake up output thread */
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
       pthread_mutex_lock(&(devout->supervisor_mutex));
-      devout->wait_sync += 1;
+      devout->wait_sync = devout->wait_sync + 1;
       pthread_mutex_unlock(&(devout->supervisor_mutex));
 
       pthread_cond_signal(&(devout->play_wait_cond));
@@ -699,7 +693,7 @@ ags_devout_supervisor_thread(void *devout0)
 
     /* wake up task thread */
     pthread_mutex_lock(&(devout->supervisor_mutex));
-    devout->wait_sync += 1;
+    devout->wait_sync = devout->wait_sync + 1;
     pthread_mutex_unlock(&(devout->supervisor_mutex));
       
     pthread_cond_signal(&(devout->task_wait_cond));
@@ -716,7 +710,7 @@ ags_devout_supervisor_thread(void *devout0)
     /* wake up audio processing functions */
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
       pthread_mutex_lock(&(devout->supervisor_mutex));
-      devout->wait_sync += 1;
+      devout->wait_sync = devout->wait_sync + 1;
       pthread_mutex_unlock(&(devout->supervisor_mutex));
     
       pthread_cond_signal(&(devout->play_functions_wait_cond));
@@ -726,7 +720,7 @@ ags_devout_supervisor_thread(void *devout0)
     pthread_mutex_lock(&(devout->supervisor_mutex));
 
     if(devout->tasks_pending > 0){
-      devout->wait_sync += 1;
+      devout->wait_sync = devout->wait_sync + 1;
       pthread_mutex_unlock(&(devout->supervisor_mutex));
 
       pthread_cond_broadcast(&(devout->append_task_wait_cond));
@@ -762,9 +756,9 @@ ags_devout_play_interceptor(void *ptr)
 
     devout->play_suspend = FALSE;
 
-    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
-      devout->wait_sync -= 1;
+    devout->wait_sync = devout->wait_sync - 1;
 
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       pthread_mutex_unlock(&mutex);
       pthread_cond_signal(&(devout->supervisor_wait_cond));
       pthread_mutex_lock(&mutex);
@@ -795,9 +789,9 @@ ags_devout_play_functions_interceptor(void *ptr)
 
     devout->play_functions_suspend = FALSE;
 
-    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
-      devout->wait_sync -= 1;
+    devout->wait_sync = devout->wait_sync - 1;
 
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       pthread_mutex_unlock(&mutex);
       pthread_cond_signal(&(devout->supervisor_wait_cond));
       pthread_mutex_lock(&mutex);
@@ -828,9 +822,9 @@ ags_devout_task_interceptor(void *ptr)
 
     devout->task_suspend = FALSE;
 
-    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
-      devout->wait_sync -= 1;
+    devout->wait_sync = devout->wait_sync - 1;
 
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       pthread_mutex_unlock(&mutex);
       pthread_cond_signal(&(devout->supervisor_wait_cond));
       pthread_mutex_lock(&mutex);
@@ -868,9 +862,9 @@ ags_devout_append_task_interceptor(void *ptr)
 
     devout->append_task_suspend = FALSE;
 
-    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
-      devout->wait_sync -= 1;
+    devout->wait_sync = devout->wait_sync - 1;
 
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) != 0){
       pthread_mutex_unlock(&mutex);      
       pthread_cond_signal(&(devout->supervisor_wait_cond));
       pthread_mutex_lock(&mutex);
