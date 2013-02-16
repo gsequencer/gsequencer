@@ -623,6 +623,7 @@ ags_devout_supervisor_thread(void *devout0)
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
   devout->wait_sync = 0;
+  devout->wait_sync_task = FALSE;
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     /* suspend until everything has been done */
@@ -675,6 +676,8 @@ ags_devout_supervisor_thread(void *devout0)
 
 	/* wake up task thread */      
 	pthread_cond_signal(&(devout->task_wait_cond));
+      }else{
+	pthread_mutex_unlock(&(devout->supervisor_mutex));
       }
     }
 
