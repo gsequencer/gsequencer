@@ -170,7 +170,7 @@ struct _AgsDevout
   pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
 
-  gboolean append_task_suspend;
+  guint append_task_suspend;
   pthread_mutex_t append_task_mutex;
   pthread_cond_t append_task_wait_cond;
 
