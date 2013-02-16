@@ -64,27 +64,28 @@ typedef enum
   AGS_DEVOUT_PLAY                           = 1 << 5,
 
   AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
-  AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
-  AGS_DEVOUT_WAIT_PLAY_FUNCTIONS            = 1 << 8,
-  AGS_DEVOUT_WAIT_TASK                      = 1 << 9,
-  AGS_DEVOUT_WAIT_APPEND_TASK               = 1 << 10,
+  AGS_DEVOUT_WAIT_SYNC_TASK                 = 1 << 7,
+  AGS_DEVOUT_WAIT_PLAY                      = 1 << 8,
+  AGS_DEVOUT_WAIT_PLAY_FUNCTIONS            = 1 << 9,
+  AGS_DEVOUT_WAIT_TASK                      = 1 << 10,
+  AGS_DEVOUT_WAIT_APPEND_TASK               = 1 << 11,
 
-  AGS_DEVOUT_LIBAO                          = 1 << 11,
-  AGS_DEVOUT_OSS                            = 1 << 12,
-  AGS_DEVOUT_ALSA                           = 1 << 13,
+  AGS_DEVOUT_LIBAO                          = 1 << 12,
+  AGS_DEVOUT_OSS                            = 1 << 13,
+  AGS_DEVOUT_ALSA                           = 1 << 14,
 
-  AGS_DEVOUT_PLAY_RECALL                    = 1 << 14,
-  AGS_DEVOUT_PLAYING_RECALL                 = 1 << 15,
-  AGS_DEVOUT_PLAY_RECALL_TERMINATING        = 1 << 16,
-  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 17,
-  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 18,
-  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING       = 1 << 19,
-  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 20,
-  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 21,
-  AGS_DEVOUT_PLAY_AUDIO_TERMINATING         = 1 << 22,
-  AGS_DEVOUT_PLAY_NOTE                      = 1 << 23,
+  AGS_DEVOUT_PLAY_RECALL                    = 1 << 15,
+  AGS_DEVOUT_PLAYING_RECALL                 = 1 << 16,
+  AGS_DEVOUT_PLAY_RECALL_TERMINATING        = 1 << 17,
+  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 18,
+  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 19,
+  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING       = 1 << 20,
+  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 21,
+  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 22,
+  AGS_DEVOUT_PLAY_AUDIO_TERMINATING         = 1 << 23,
+  AGS_DEVOUT_PLAY_NOTE                      = 1 << 24,
 
-  AGS_DEVOUT_SHUTDOWN                       = 1 << 24,
+  AGS_DEVOUT_SHUTDOWN                       = 1 << 25,
 
 }AgsDevoutFlags;
 
@@ -102,7 +103,7 @@ struct _AgsDevout
 {
   GObject object;
 
-  guint32 flags;
+  guint64 flags;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -146,37 +147,30 @@ struct _AgsDevout
   pthread_mutexattr_t supervisor_mutex_attr;
   pthread_cond_t supervisor_wait_cond;
   gint wait_sync;
+  gboolean wait_sync_task;
 
-  pthread_t play_interceptor;
   gboolean play_suspend;
-  pthread_cond_t play_interceptor_cond;
   pthread_t play_thread;
   pthread_attr_t play_thread_attr;
   pthread_mutex_t play_mutex;
   pthread_mutexattr_t play_mutex_attr;
   pthread_cond_t play_wait_cond;
 
-  pthread_t play_functions_interceptor;
   gboolean play_functions_suspend;
-  pthread_cond_t play_functions_interceptor_cond;
   pthread_t play_functions_thread;
   pthread_attr_t play_functions_thread_attr;
   pthread_mutex_t play_functions_mutex;
   pthread_mutexattr_t play_functions_mutex_attr;
   pthread_cond_t play_functions_wait_cond;
 
-  pthread_t task_interceptor;
   gboolean task_suspend;
-  pthread_cond_t task_interceptor_cond;
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
   pthread_mutex_t task_mutex;
   pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
 
-  pthread_t append_task_interceptor;
   gboolean append_task_suspend;
-  pthread_cond_t append_task_interceptor_cond;
   pthread_mutex_t append_task_mutex;
   pthread_cond_t append_task_wait_cond;
 
