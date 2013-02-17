@@ -684,18 +684,18 @@ ags_devout_supervisor_thread(void *devout0)
     /* wait for task */    
     pthread_mutex_lock(&(devout->supervisor_mutex));
 
-    if(devout->wait_sync_task){
+    if(devout->wait_sync_task && !devout->task_suspend){
       devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_TASK);
 
-      while(devout->wait_sync_task){
+      while(devout->wait_sync_task && !devout->task_suspend){
 	g_message("loop@wait:1\0");
 	
 	pthread_cond_wait(&(devout->supervisor_wait_cond),
 			  &(devout->supervisor_mutex));      
       }
-
-      devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
     }
+
+    devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
 
     pthread_mutex_unlock(&(devout->supervisor_mutex));
   
@@ -766,11 +766,11 @@ ags_devout_task_thread(void *devout0)
     /* suspend */
     pthread_mutex_lock(&(devout->task_mutex));
 
-    if(devout->task_suspend &&
+    if(devout->task_suspend && !devout->wait_sync_task &&
        !initial_run){
       devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
 
-      while(devout->task_suspend){
+      while(devout->task_suspend && !devout->wait_sync_task){
 	pthread_cond_wait(&(devout->task_wait_cond),
 			  &(devout->task_mutex));
       }
@@ -929,8 +929,6 @@ ags_devout_append_tasks_thread(void *ptr)
 
   devout->tasks_queued -= 1;
   devout->tasks_pending -= 1;
-
-  pthread_mutex_unlock(&(devout->append_task_mutex));
 
   /*  */
   if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
@@ -1308,7 +1306,7 @@ ags_devout_play_functions(void *devout0)
 
     devout->wait_sync_task -= 1;
 
-    if((AGS_DEVOUT_WAIT_SYNC_TASK & (devout->flags)) == 0){
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
       pthread_mutex_unlock(&(devout->play_functions_mutex));
 
       pthread_cond_signal(&(devout->supervisor_wait_cond));
@@ -1468,7 +1466,7 @@ ags_devout_alsa_play(void *devout0)
 
     devout->wait_sync_task -= 1;
 
-    if((AGS_DEVOUT_WAIT_SYNC_TASK & (devout->flags)) == 0){
+    if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
       pthread_mutex_unlock(&(devout->play_mutex));
 
       pthread_cond_signal(&(devout->supervisor_wait_cond));
