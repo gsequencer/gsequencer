@@ -141,11 +141,11 @@ struct _AgsDevout
     }alsa;
   }out;
 
-  pthread_t supervisor_thread;
-  pthread_attr_t supervisor_thread_attr;
-  pthread_mutex_t supervisor_mutex;
-  pthread_mutexattr_t supervisor_mutex_attr;
-  pthread_cond_t supervisor_wait_cond;
+  pthread_t main_loop_thread;
+  pthread_attr_t main_loop_thread_attr;
+  pthread_mutex_t main_loop_mutex;
+  pthread_mutexattr_t main_loop_mutex_attr;
+  pthread_cond_t main_loop_wait_cond;
   gint wait_sync;
   gboolean wait_sync_task;
 
@@ -224,7 +224,7 @@ AgsDevoutPlay* ags_devout_play_alloc();
 void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
 
-void* ags_devout_supervisor_thread(void *ptr);
+void* ags_devout_main_loop_thread(void *ptr);
 void* ags_devout_task_thread(void *devout);
 
 void ags_devout_append_task(AgsDevout *devout, AgsTask *task);
