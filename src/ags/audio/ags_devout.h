@@ -147,7 +147,9 @@ struct _AgsDevout
   pthread_mutexattr_t main_loop_mutex_attr;
   pthread_cond_t main_loop_wait_cond;
   gint wait_sync;
+  gint hitted_wait_sync;
   gboolean wait_sync_task;
+  gboolean hitted_wait_sync_task;
 
   gboolean play_suspend;
   pthread_t play_thread;

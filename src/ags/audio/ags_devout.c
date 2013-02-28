@@ -635,6 +635,7 @@ ags_devout_main_loop_thread(void *devout0)
 
     while(devout->wait_sync != 0){
       g_message("loop@0\0");
+
       pthread_cond_wait(&(devout->main_loop_wait_cond),
 			&(devout->main_loop_mutex));
     }
@@ -678,7 +679,7 @@ ags_devout_main_loop_thread(void *devout0)
 
       g_message("loop@start:0\0");
     }else{
-      devout->task_suspend = FALSE;
+      devout->task_suspend = TRUE;
 
       if((AGS_DEVOUT_WAIT_TASK & (devout->flags)) == 0){
 	pthread_mutex_unlock(&(devout->main_loop_mutex));
@@ -693,17 +694,15 @@ ags_devout_main_loop_thread(void *devout0)
     /* wait for task */    
     pthread_mutex_lock(&(devout->main_loop_mutex));
 
-    if(devout->wait_sync_task){
-      devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_TASK);
-
-      while(devout->wait_sync_task && !devout->task_suspend){
-	g_message("loop@wait:1\0");
-	
-	pthread_cond_wait(&(devout->main_loop_wait_cond),
-			  &(devout->main_loop_mutex));      
-      }
+    devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_TASK);
+    
+    while(devout->wait_sync_task){
+      g_message("loop@wait:1\0");
+      
+      pthread_cond_wait(&(devout->main_loop_wait_cond),
+			&(devout->main_loop_mutex));      
     }
-
+  
     devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
 
     pthread_mutex_unlock(&(devout->main_loop_mutex));
@@ -771,7 +770,7 @@ ags_devout_task_thread(void *devout0)
     /* wake up main_loop */
     pthread_mutex_lock(&(devout->task_mutex));
 
-    devout->wait_sync_task = FALSE;
+    devout->task_suspend = FALSE;
 
     if((AGS_DEVOUT_WAIT_SYNC_TASK & (devout->flags)) == 0){
       pthread_mutex_unlock(&(devout->task_mutex));
@@ -784,18 +783,17 @@ ags_devout_task_thread(void *devout0)
     /* suspend */
     pthread_mutex_lock(&(devout->task_mutex));
 
-    if((devout->task_suspend || !devout->wait_sync_task) &&
+    if((!devout->task_suspend) &&
        !initial_run){
       devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
 
-      while(devout->task_suspend || !devout->wait_sync_task){
+      while(devout->task_suspend){
 	pthread_cond_wait(&(devout->task_wait_cond),
 			  &(devout->task_mutex));
       }
     }
 
     devout->flags |= AGS_DEVOUT_WAIT_TASK;
-    devout->task_suspend = TRUE;
 
     pthread_mutex_unlock(&(devout->task_mutex));
 
