@@ -138,7 +138,7 @@ ags_start_devout_launch(AgsTask *task)
   start_devout->devout->flags |= (AGS_DEVOUT_PLAY_AUDIO |
 				  AGS_DEVOUT_PLAY_CHANNEL |
 				  AGS_DEVOUT_PLAY_RECALL);
-  ags_devout_run(start_devout->devout);
+  start_devout->devout->flags |= (AGS_DEVOUT_START_PLAY);
 }
 
 AgsStartDevout*

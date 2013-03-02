@@ -86,7 +86,7 @@ typedef enum
   AGS_DEVOUT_PLAY_NOTE                      = 1 << 24,
 
   AGS_DEVOUT_SHUTDOWN                       = 1 << 25,
-
+  AGS_DEVOUT_START_PLAY                     = 1 << 26,
 }AgsDevoutFlags;
 
 typedef enum

@@ -615,6 +615,7 @@ ags_devout_main_loop_thread(void *devout0)
   AgsDevout *devout;
   gboolean initial_run;
   useconds_t idle;
+  gboolean start_play;
 
   devout = AGS_DEVOUT(devout0);
 
@@ -624,6 +625,9 @@ ags_devout_main_loop_thread(void *devout0)
 
   devout->wait_sync = 0;
   devout->wait_sync_task = FALSE;
+  devout->append_task_suspend = 0;
+
+  start_play = FALSE;
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     /* suspend until everything has been done */
@@ -631,13 +635,17 @@ ags_devout_main_loop_thread(void *devout0)
 
     g_message("loop begin\0");
 
-    devout->flags &= (~AGS_DEVOUT_WAIT_SYNC);
+    if(devout->wait_sync != 0){
+      devout->flags &= (~AGS_DEVOUT_WAIT_SYNC);
+      
+      while(devout->wait_sync != 0){
+	g_message("loop@0\0");
+	
+	pthread_cond_wait(&(devout->main_loop_wait_cond),
+			  &(devout->main_loop_mutex));
+      }
 
-    while(devout->wait_sync != 0){
-      g_message("loop@0\0");
-
-      pthread_cond_wait(&(devout->main_loop_wait_cond),
-			&(devout->main_loop_mutex));
+      g_message("wait_sync: %d\0", devout->wait_sync);
     }
 
     devout->flags |= (AGS_DEVOUT_WAIT_SYNC);
@@ -667,6 +675,7 @@ ags_devout_main_loop_thread(void *devout0)
     pthread_mutex_lock(&(devout->main_loop_mutex));
 
     devout->wait_sync_task = TRUE;
+    devout->task_suspend = FALSE;
 
     /* start task thread if necessary */
     if(initial_run){
@@ -677,35 +686,50 @@ ags_devout_main_loop_thread(void *devout0)
       pthread_create(&(devout->task_thread), NULL, &ags_devout_task_thread, devout);
       pthread_setschedprio(devout->task_thread, 99);
 
+      pthread_mutex_lock(&(devout->main_loop_mutex));
       g_message("loop@start:0\0");
+      
+      /* wait for task */
+      devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_TASK);
+      
+      while(devout->wait_sync_task){
+	g_message("loop@wait:1\0");
+	
+	pthread_cond_wait(&(devout->main_loop_wait_cond),
+			  &(devout->main_loop_mutex));      
+      }
+	
+      g_message("unlocked\0");
+      
+      devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
+      
+      pthread_mutex_unlock(&(devout->main_loop_mutex));
     }else{
-      devout->task_suspend = TRUE;
-
       if((AGS_DEVOUT_WAIT_TASK & (devout->flags)) == 0){
 	pthread_mutex_unlock(&(devout->main_loop_mutex));
 
 	/* wake up task thread */      
 	pthread_cond_signal(&(devout->task_wait_cond));
+
+	devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
       }else{
+	/* wait for task */    
+	devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_TASK);
+	
+	while(devout->wait_sync_task){
+	  g_message("loop@wait:1\0");
+	    
+	  pthread_cond_wait(&(devout->main_loop_wait_cond),
+			    &(devout->main_loop_mutex));      
+	}
+	
+	g_message("unlocked\0");
+
+	devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
+      
 	pthread_mutex_unlock(&(devout->main_loop_mutex));
       }
     }
-
-    /* wait for task */    
-    pthread_mutex_lock(&(devout->main_loop_mutex));
-
-    devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_TASK);
-    
-    while(devout->wait_sync_task){
-      g_message("loop@wait:1\0");
-      
-      pthread_cond_wait(&(devout->main_loop_wait_cond),
-			&(devout->main_loop_mutex));      
-    }
-  
-    devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
-
-    pthread_mutex_unlock(&(devout->main_loop_mutex));
   
     /* wake up audio processing functions */
     pthread_mutex_lock(&(devout->main_loop_mutex));
@@ -722,7 +746,19 @@ ags_devout_main_loop_thread(void *devout0)
 	pthread_mutex_unlock(&(devout->main_loop_mutex));
       }
     }else{
+      if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
+	start_play = TRUE;
+      }
+
       pthread_mutex_unlock(&(devout->main_loop_mutex));
+
+      if(start_play){
+	devout->flags &= (~AGS_DEVOUT_START_PLAY);
+	start_play = FALSE;
+
+	devout->wait_sync = devout->wait_sync + 2;
+	ags_devout_run(devout);
+      }
     }
 
     /* wake up tasks */
@@ -770,32 +806,30 @@ ags_devout_task_thread(void *devout0)
     /* wake up main_loop */
     pthread_mutex_lock(&(devout->task_mutex));
 
-    devout->task_suspend = FALSE;
+    devout->task_suspend = TRUE;
+    devout->wait_sync_task = FALSE;
 
     if((AGS_DEVOUT_WAIT_SYNC_TASK & (devout->flags)) == 0){
       pthread_mutex_unlock(&(devout->task_mutex));
 
       pthread_cond_signal(&(devout->main_loop_wait_cond));
+
+      devout->flags |= AGS_DEVOUT_WAIT_TASK;
     }else{
+      /* suspend */      
+      if(!initial_run){
+	devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
+	
+	while(devout->task_suspend){
+	  pthread_cond_wait(&(devout->task_wait_cond),
+			    &(devout->task_mutex));
+	}
+      }
+
+      devout->flags |= AGS_DEVOUT_WAIT_TASK;
+      
       pthread_mutex_unlock(&(devout->task_mutex));
     }
-
-    /* suspend */
-    pthread_mutex_lock(&(devout->task_mutex));
-
-    if((!devout->task_suspend) &&
-       !initial_run){
-      devout->flags &= (~AGS_DEVOUT_WAIT_TASK);
-
-      while(devout->task_suspend){
-	pthread_cond_wait(&(devout->task_wait_cond),
-			  &(devout->task_mutex));
-      }
-    }
-
-    devout->flags |= AGS_DEVOUT_WAIT_TASK;
-
-    pthread_mutex_unlock(&(devout->task_mutex));
 
     start = 
       task = devout->task;
@@ -851,7 +885,7 @@ ags_devout_append_task_thread(void *ptr)
   initial_wait = TRUE;
   devout->tasks_pending += 1;
 
-  while((devout->append_task_suspend == 0 || (AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0) ||
+  while(devout->append_task_suspend == 0 ||
 	initial_wait){
     initial_wait = FALSE;
 
@@ -927,7 +961,7 @@ ags_devout_append_tasks_thread(void *ptr)
   initial_wait = TRUE;
   devout->tasks_pending += 1;
   
-  while((devout->append_task_suspend == 0 || (AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0) ||
+  while(devout->append_task_suspend == 0 ||
 	initial_wait){
     initial_wait = FALSE;
 
@@ -1201,7 +1235,6 @@ ags_devout_real_run(AgsDevout *devout)
   pthread_setschedprio(devout->play_functions_thread, 99);
 
   pthread_create(&(devout->play_thread), NULL, &ags_devout_alsa_play, devout);
-
   pthread_setschedprio(devout->play_thread, 99);
 }
 
@@ -1320,33 +1353,31 @@ ags_devout_play_functions(void *devout0)
     /* wake up main_loop */
     pthread_mutex_lock(&(devout->play_functions_mutex));
 
+    devout->play_functions_suspend = TRUE;
     devout->wait_sync_task -= 1;
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
       pthread_mutex_unlock(&(devout->play_functions_mutex));
 
       pthread_cond_signal(&(devout->main_loop_wait_cond));
+
+      devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS;
     }else{
+      /* suspend */
+
+      if(!initial_run){
+	devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
+
+	while(devout->play_functions_suspend){
+	  pthread_cond_wait(&(devout->play_functions_wait_cond),
+			    &(devout->play_functions_mutex));
+	}
+      }
+
+      devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS;
+
       pthread_mutex_unlock(&(devout->play_functions_mutex));
     }
-
-    /* suspend */
-    pthread_mutex_lock(&(devout->play_functions_mutex));
-
-    if((devout->play_functions_suspend || (AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0) &&
-       !initial_run){
-      devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
-
-      while(devout->play_functions_suspend || (AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
-	pthread_cond_wait(&(devout->play_functions_wait_cond),
-			  &(devout->play_functions_mutex));
-      }
-    }
-
-    devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS;
-    devout->play_functions_suspend = TRUE;
-
-    pthread_mutex_unlock(&(devout->play_functions_mutex));
 
     /* play channel */
     if((AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0){
@@ -1480,33 +1511,30 @@ ags_devout_alsa_play(void *devout0)
     /* wake up main_loop */
     pthread_mutex_lock(&(devout->play_mutex));
 
+    devout->play_suspend = TRUE;
     devout->wait_sync_task -= 1;
 
     if((AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
       pthread_mutex_unlock(&(devout->play_mutex));
 
       pthread_cond_signal(&(devout->main_loop_wait_cond));
+
+      devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS;
     }else{
+      /* suspend */
+      if(!initial_run){
+	devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
+
+	while(devout->play_suspend){
+	  pthread_cond_wait(&(devout->play_wait_cond),
+			    &(devout->play_mutex));
+	}
+      }
+
+      devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS;
+
       pthread_mutex_unlock(&(devout->play_mutex));
     }
-
-    /* suspend */
-    pthread_mutex_lock(&(devout->play_mutex));
-
-    if((devout->play_suspend || (AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0) &&
-       !initial_run){
-      devout->flags &= (~AGS_DEVOUT_WAIT_PLAY_FUNCTIONS);
-
-      while(devout->play_suspend || (AGS_DEVOUT_WAIT_SYNC & (devout->flags)) == 0){
-	pthread_cond_wait(&(devout->play_wait_cond),
-			  &(devout->play_mutex));
-      }
-    }
-
-    devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS;
-    devout->play_suspend = TRUE;
-
-    pthread_mutex_unlock(&(devout->play_mutex));
 
     /*  */
     if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
