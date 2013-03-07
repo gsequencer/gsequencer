@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ags_parameter.h"
+#include <ags/lib/ags_parameter.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -49,7 +49,7 @@ ags_parameter_grow(GType object_type,
 
       if (! pspec)
         {
-          g_warning ("%s: object class `%s' has no property named `%s'",
+          g_warning ("%s: object class `%s' has no property named `%s'\0",
                      G_STRFUNC, g_type_name (object_type), param_name);
           break;
         }
@@ -69,7 +69,7 @@ ags_parameter_grow(GType object_type,
 
       if (error)
         {
-          g_warning ("%s: %s", G_STRFUNC, error);
+          g_warning ("%s: %s\0", G_STRFUNC, error);
           g_free (error);
           g_value_unset (&params[*n_params].value);
           break;

@@ -403,7 +403,7 @@ ags_recall_channel_run_set_property(GObject *gobject,
       recall_channel_run->destination = destination;
 
       if(destination == recall_channel_run->source)
-	g_warning("destination == recall_channel_run->source");
+	g_warning("destination == recall_channel_run->source\0");
 
       ags_recall_channel_run_remap_child_destination(recall_channel_run,
 						     old_start_region, old_end_region,
@@ -448,7 +448,7 @@ ags_recall_channel_run_set_property(GObject *gobject,
       recall_channel_run->source = source;
 
       if(source == recall_channel_run->destination)
-	g_warning("destination == recall_channel_run->source");
+	g_warning("destination == recall_channel_run->source\0");
 
       ags_recall_channel_run_remap_child_source(recall_channel_run,
 						old_start_region, old_end_region,
@@ -536,7 +536,7 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
 
   ags_recall_channel_run_parent_connectable_interface->connect(connectable);
 
-  g_message("ags_recall_channel_run_connect");
+  g_message("ags_recall_channel_run_connect\0");
 
   /* AgsCopyChannel */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);

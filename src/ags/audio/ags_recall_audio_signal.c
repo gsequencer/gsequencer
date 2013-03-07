@@ -219,9 +219,9 @@ ags_recall_audio_signal_run_connectable_interface_init(AgsRunConnectableInterfac
 void
 ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal)
 {
-  g_signal_connect(G_OBJECT(recall_audio_signal), "notify::devout",
+  g_signal_connect(G_OBJECT(recall_audio_signal), "notify::devout\0",
 		   G_CALLBACK(ags_recall_audio_signal_notify_devout), NULL);
-  g_signal_connect_after(G_OBJECT(recall_audio_signal), "notify::devout",
+  g_signal_connect_after(G_OBJECT(recall_audio_signal), "notify::devout\0",
 			 G_CALLBACK(ags_recall_audio_signal_notify_devout_after), NULL);
 
   recall_audio_signal->audio_channel = 0;

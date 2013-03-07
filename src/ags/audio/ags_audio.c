@@ -1924,7 +1924,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     if(AGS_IS_DELAY_AUDIO_RUN(recall) ||
        AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
        AGS_IS_COPY_PATTERN_AUDIO_RUN(recall))
-      g_message("\n");
+      g_message("\n\0");
 
 
     if(((called_by_output && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0) ||
