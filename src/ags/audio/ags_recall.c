@@ -145,7 +145,7 @@ ags_recall_get_type (void)
     };
 
     ags_type_recall = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsRecall\0",
+					     "AgsRecall",
 					     &ags_recall_info,
 					     0);
 
@@ -182,54 +182,54 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "devout of recall\0",
-				   "The devout which this recall is packed into\0",
+  param_spec = g_param_spec_object("devout",
+				   "devout of recall",
+				   "The devout which this recall is packed into",
 				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recall_container\0",
-				   "container of recall\0",
-				   "The container which this recall is packed into\0",
+  param_spec = g_param_spec_object("recall_container",
+				   "container of recall",
+				   "The container which this recall is packed into",
 				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CONTAINER,
 				  param_spec);
 
-  param_spec = g_param_spec_object("dependency\0",
-				   "dependency of recall\0",
-				   "The dependency that can be added\0",
+  param_spec = g_param_spec_object("dependency",
+				   "dependency of recall",
+				   "The dependency that can be added",
 				   AGS_TYPE_RECALL_DEPENDENCY,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEPENDENCY,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recall_id\0",
-				   "run id of recall\0",
-				   "The recall id of the recall\0",
+  param_spec = g_param_spec_object("recall_id",
+				   "run id of recall",
+				   "The recall id of the recall",
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_ID,
 				  param_spec);
   
-  param_spec = g_param_spec_object("parent\0",
-				   "parent recall of this recall\0",
-				   "The recall should be the parent instance of this recall\0",
+  param_spec = g_param_spec_object("parent",
+				   "parent recall of this recall",
+				   "The recall should be the parent instance of this recall",
 				   AGS_TYPE_RECALL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PARENT,
 				  param_spec);
   
-  param_spec = g_param_spec_object("child\0",
-				   "child of recall\0",
-				   "The child that can be added\0",
+  param_spec = g_param_spec_object("child",
+				   "child of recall",
+				   "The child that can be added",
 				   AGS_TYPE_RECALL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -261,7 +261,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /* signals */
   recall_signals[RESOLVE_DEPENDENCIES] =
-    g_signal_new("resolve_dependencies\0",
+    g_signal_new("resolve_dependencies",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, resolve_dependencies),
@@ -270,7 +270,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_NONE, 0);
 
   recall_signals[RUN_INIT_PRE] =
-    g_signal_new("run_init_pre\0",
+    g_signal_new("run_init_pre",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_pre),
@@ -280,7 +280,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT);
 
   recall_signals[RUN_INIT_INTER] =
-    g_signal_new("run_init_inter\0",
+    g_signal_new("run_init_inter",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_inter),
@@ -290,7 +290,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT);
 
   recall_signals[RUN_INIT_POST] =
-    g_signal_new("run_init_post\0",
+    g_signal_new("run_init_post",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_post),
@@ -300,7 +300,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT);
 
   recall_signals[RUN_PRE] =
-    g_signal_new("run_pre\0",
+    g_signal_new("run_pre",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_pre),
@@ -310,7 +310,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT);
 
   recall_signals[RUN_INTER] =
-    g_signal_new("run_inter\0",
+    g_signal_new("run_inter",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_inter),
@@ -320,7 +320,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT);
 
   recall_signals[RUN_POST] =
-    g_signal_new("run_post\0",
+    g_signal_new("run_post",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_post),
@@ -330,7 +330,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT);
 
   recall_signals[STOP_PERSISTENT] =
-    g_signal_new("stop_persistent\0",
+    g_signal_new("stop_persistent",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, stop_persistent),
@@ -339,7 +339,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_NONE, 0);
 
   recall_signals[DONE] =
-    g_signal_new("done\0",
+    g_signal_new("done",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, done),
@@ -348,7 +348,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_NONE, 0);
 
   recall_signals[CANCEL] =
-    g_signal_new("cancel\0",
+    g_signal_new("cancel",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, cancel),
@@ -358,7 +358,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT);
 
   recall_signals[REMOVE] =
-    g_signal_new("remove\0",
+    g_signal_new("remove",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, remove),
@@ -367,7 +367,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_NONE, 0);
 
   recall_signals[DUPLICATE] =
-    g_signal_new("duplicate\0",
+    g_signal_new("duplicate",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, duplicate),
@@ -378,7 +378,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_POINTER, G_TYPE_POINTER);
 
   recall_signals[NOTIFY_DEPENDENCY] =
-    g_signal_new("notify_dependency\0",
+    g_signal_new("notify_dependency",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, notify_dependency),
@@ -388,7 +388,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT, G_TYPE_INT);
 
   recall_signals[CHILD_ADDED] =
-    g_signal_new("child_added\0",
+    g_signal_new("child_added",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, child_added),
@@ -632,7 +632,7 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
      (container != NULL && !AGS_IS_RECALL_CONTAINER(container)))
     return(TRUE);
 
-  g_message("===== packing: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("===== packing: %s\n", G_OBJECT_TYPE_NAME(recall));
 
   recall->container = container;
 
@@ -730,7 +730,7 @@ ags_recall_finalize(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
-  g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
+  g_message("finalize %s\n", G_OBJECT_TYPE_NAME(gobject));
 
   if(recall->devout != NULL){
     g_object_unref(recall->devout);
@@ -790,7 +790,7 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 
   while(list != NULL){
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template\0");
+      g_warning("running on template");
     }
 
     ags_recall_run_init_pre(AGS_RECALL(list->data));
@@ -825,7 +825,7 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 
   while(list != NULL){
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template\0");
+      g_warning("running on template");
     }
 
     ags_recall_run_init_inter(AGS_RECALL(list->data));
@@ -860,7 +860,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 
   while(list != NULL){
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template\0");
+      g_warning("running on template");
     }
 
     ags_recall_run_init_post(AGS_RECALL(list->data));
@@ -893,13 +893,13 @@ ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list;
 
-  //  g_message("ags_recall_real_run_pre: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  //  g_message("ags_recall_real_run_pre: %s\n", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 
   while(list != NULL){
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template\0");
+      g_warning("running on template");
     }
 
     ags_recall_run_pre(AGS_RECALL(list->data));
@@ -934,7 +934,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
   while(list != NULL){
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template\0");
+      g_warning("running on template");
     }
 
     ags_recall_run_inter(AGS_RECALL(list->data));
@@ -971,7 +971,7 @@ ags_recall_real_run_post(AgsRecall *recall)
     list_next = list->next;
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template\0");
+      g_warning("running on template");
     }
 
     ags_recall_run_post(AGS_RECALL(list->data));
@@ -1040,7 +1040,7 @@ ags_recall_real_done(AgsRecall *recall)
     return;
   }
 
-  g_message("ags_recall_done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags_recall_done: %s\n", G_OBJECT_TYPE_NAME(recall));
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 
   if(AGS_IS_RUN_CONNECTABLE(recall)){
@@ -1105,7 +1105,7 @@ ags_recall_real_remove(AgsRecall *recall)
 {
   AgsRecall *parent;
 
-  g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("remove: %s\n", G_OBJECT_TYPE_NAME(recall));
 
   ags_run_connectable_disconnect(recall);
 
@@ -1184,9 +1184,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "devout\0", recall->devout,
-				 "recall_id\0", recall_id,
-				 "recall_container\0", recall->container,
+				 "devout", recall->devout,
+				 "recall_id", recall_id,
+				 "recall_container", recall->container,
 				 NULL);
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
@@ -1259,7 +1259,7 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
 
   while(list != NULL){
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template\0");
+      g_warning("running on template");
     }
 
     ags_recall_set_recall_id(AGS_RECALL(list->data), recall_id);
@@ -1384,7 +1384,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     g_object_unref(child->parent);
     g_object_unref(child);
     g_object_set(G_OBJECT(child),
-		 "recall_id\0", NULL,
+		 "recall_id", NULL,
 		 NULL);
   }
 
@@ -1398,8 +1398,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     parent->children = g_list_prepend(parent->children, child);
 
     g_object_set(G_OBJECT(child),
-		 "devout\0", parent->devout,
-		 "recall_id\0", parent->recall_id,
+		 "devout", parent->devout,
+		 "recall_id", parent->recall_id,
 		 NULL);
   }
   
@@ -1627,13 +1627,13 @@ ags_recall_find_group_id(GList *recall_i, AgsGroupId group_id)
 {
   AgsRecall *recall;
 
-  g_message("ags_recall_find_group_id: group_id = %lu\n\0", group_id);
+  g_message("ags_recall_find_group_id: group_id = %lu\n", group_id);
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
     if(recall->recall_id != NULL)
-      g_message("ags_recall_find_group_id: recall_id->group_id = %lu\n\0", recall->recall_id->group_id);
+      g_message("ags_recall_find_group_id: recall_id->group_id = %llu\n", (long long unsigned int) recall->recall_id->group_id);
 
     if(recall->recall_id != NULL &&
        recall->recall_id->group_id == group_id){

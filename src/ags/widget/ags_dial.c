@@ -65,7 +65,7 @@ ags_dial_get_type(void)
     };
 
     ags_type_dial = g_type_register_static(GTK_TYPE_RANGE,
-					   "AgsDial\0", &ags_dial_info,
+					   "AgsDial", &ags_dial_info,
 					   0);
   }
 
@@ -95,7 +95,7 @@ void
 ags_dial_init(AgsDial *dial)
 {
   g_object_set(G_OBJECT(dial),
-	       "app-paintable\0", TRUE,
+	       "app-paintable", TRUE,
 	       NULL);
 
   dial->flags = AGS_DIAL_WITH_BUTTONS;
@@ -158,8 +158,8 @@ ags_dial_realize(GtkWidget *widget)
     cairo_select_font_face (cr, "Georgia",
 			    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size (cr, (gdouble) dial->font_size);
-    cairo_text_extents (cr, "-\0", &te_down);
-    cairo_text_extents (cr, "+\0", &te_up);
+    cairo_text_extents (cr, "-", &te_down);
+    cairo_text_extents (cr, "+", &te_up);
     
     if(te_down.width < te_up.width){
       dial->button_width = te_up.width * 3;
@@ -492,8 +492,8 @@ ags_dial_draw(AgsDial *dial)
   cairo_select_font_face (cr, "Georgia",
 			  CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
   cairo_set_font_size (cr, (gdouble) dial->font_size);
-  cairo_text_extents (cr, "-\0", &te_down);
-  cairo_text_extents (cr, "+\0", &te_up);
+  cairo_text_extents (cr, "-", &te_down);
+  cairo_text_extents (cr, "+", &te_up);
 
   button_width = dial->button_width;
   button_height = dial->button_height;
@@ -510,7 +510,7 @@ ags_dial_draw(AgsDial *dial)
   cairo_move_to (cr,
 		 1.0 + 0.5 - te_down.width / 2.0 - te_down.x_bearing + button_width / 2.25,
 		 0.5 - te_down.height / 2.0 - te_down.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-  cairo_show_text (cr, "-\0");
+  cairo_show_text (cr, "-");
 
   /* background */
   cairo_set_source_rgba(cr, 0.9, 0.8, 0.0, 1.0);
@@ -602,7 +602,7 @@ ags_dial_draw(AgsDial *dial)
   /* draw value */
   translated_value = (gdouble) scale_precision / GTK_RANGE(dial)->adjustment->upper * GTK_RANGE(dial)->adjustment->value;
 
-  //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
+  //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);
   cairo_set_source_rgba (cr, 0.6, 0.0, 0.0, 1.0);
 
@@ -629,7 +629,7 @@ ags_dial_draw(AgsDial *dial)
   cairo_move_to (cr,
 		 1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
 		 0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-  cairo_show_text (cr, "+\0");
+  cairo_show_text (cr, "+");
 
   cairo_destroy(cr);
 }
@@ -656,7 +656,7 @@ ags_dial_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
-				  "adjustment\0", adjustment,
+				  "adjustment", adjustment,
 				  NULL);
   
   return(dial);

@@ -55,7 +55,7 @@ ags_open_file_get_type()
     };
 
     ags_type_open_file = g_type_register_static(AGS_TYPE_TASK,
-						"AgsOpenFile\0",
+						"AgsOpenFile",
 						&ags_open_file_info,
 						0);
 

@@ -30,7 +30,7 @@
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
+#define AGS_RENAME_ENTRY "AgsRenameEntry"
 
 
 int
@@ -57,7 +57,7 @@ ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   gtk_container_child_get_property(GTK_CONTAINER(GTK_WIDGET(machine)->parent),
 				   GTK_WIDGET(machine),
-				   "position\0", &val);
+				   "position", &val);
 
   if(g_value_get_int (&val) > 0){
     gtk_box_reorder_child(GTK_BOX(GTK_WIDGET(machine)->parent),
@@ -79,7 +79,7 @@ ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *mac
 
   gtk_container_child_get_property(GTK_CONTAINER(GTK_WIDGET(machine)->parent),
 				   GTK_WIDGET(machine),
-				   "position\0", &val);
+				   "position", &val);
 
   if(g_value_get_int (&val) < g_list_length(gtk_container_get_children((GtkContainer *) GTK_WIDGET(machine)->parent)) - 1){
     gtk_box_reorder_child(GTK_BOX(GTK_WIDGET(machine)->parent),
@@ -131,7 +131,7 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
   GtkDialog *dialog;
   GtkEntry *entry;
 
-  dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("rename\0"),
+  dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("rename"),
 						     (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
 						     GTK_DIALOG_DESTROY_WITH_PARENT,
 						     GTK_STOCK_OK,
@@ -146,7 +146,7 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
 
   gtk_widget_show_all((GtkWidget *) dialog);
 
-  g_signal_connect((GObject *) dialog, "response\0",
+  g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_machine_popup_rename_response_callback), (gpointer) machine);
 
   return(0);
@@ -164,7 +164,7 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data), 0, -1);
     machine->name = text;
 
-    gtk_frame_set_label((GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data, g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL));
+    gtk_frame_set_label((GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data, g_strconcat(G_OBJECT_TYPE_NAME(machine), ": ", text, NULL));
     g_free(text);
   }
 
@@ -197,8 +197,8 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 
   if(response == GTK_RESPONSE_ACCEPT){
     filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data((GObject *) widget, "overwrite\0");
-    create = g_object_get_data((GObject *) widget, "create\0");
+    overwrite = g_object_get_data((GObject *) widget, "overwrite");
+    create = g_object_get_data((GObject *) widget, "create");
 
     ags_machine_open_files(machine,
 			   filenames,
@@ -224,8 +224,8 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 
   if(response == GTK_RESPONSE_ACCEPT){
     filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data((GObject *) widget, "overwrite\0");
-    create = g_object_get_data((GObject *) widget, "create\0");
+    overwrite = g_object_get_data((GObject *) widget, "overwrite");
+    create = g_object_get_data((GObject *) widget, "create");
 
     current_folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(file_chooser));
     //TODO:JK: you need to check against recently used
@@ -254,7 +254,7 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 	
 	while(slist != NULL){
 	  if(g_str_has_suffix(slist->data,
-			      ".sf2\0")){
+			      ".sf2")){
 	    AgsFileSelectionEntry *entry;
 	    
 	    
@@ -320,8 +320,8 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 					 &error);
 	  
 	  while((current_filename = (gchar *) g_dir_read_name(current_directory)) != NULL){
-	    if(!g_strcmp0(".\0", current_filename) ||
-	       !g_strcmp0("..\0", current_filename))
+	    if(!g_strcmp0(".", current_filename) ||
+	       !g_strcmp0("..", current_filename))
 	      continue;
 
 	    if(!ags_file_selection_contains_file(file_selection, current_filename) &&

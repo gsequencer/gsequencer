@@ -89,7 +89,7 @@ ags_copy_pattern_audio_run_get_type()
     };
 
     ags_type_copy_pattern_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-							     "AgsCopyPatternAudioRun\0",
+							     "AgsCopyPatternAudioRun",
 							     &ags_copy_pattern_audio_run_info,
 							     0);
     
@@ -123,9 +123,9 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
   gobject->finalize = ags_copy_pattern_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("count_beats_audio_run\0",
-				   "assigned AgsCountBeatsAudioRun\0",
-				   "the AgsCountBeatsAudioRun which emits beat signal\0",
+  param_spec = g_param_spec_object("count_beats_audio_run",
+				   "assigned AgsCountBeatsAudioRun",
+				   "the AgsCountBeatsAudioRun which emits beat signal",
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -322,7 +322,7 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "count_beats_audio_run\0", count_beats_audio_run,
+	       "count_beats_audio_run", count_beats_audio_run,
 	       NULL);
 }
 
@@ -358,10 +358,10 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
     break;
   case AGS_RECALL_NOTIFY_CHANNEL_RUN:
     copy_pattern_audio_run->hide_ref += count;
-    g_message("copy_pattern_audio_run->hide_ref: %u\n\0", copy_pattern_audio_run->hide_ref);
+    g_message("copy_pattern_audio_run->hide_ref: %u\n", copy_pattern_audio_run->hide_ref);
     break;
   default:
-    g_message("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify\0");
+    g_message("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify");
   }
 }
 
@@ -371,7 +371,7 @@ ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								   "count_beats_audio_run\0", count_beats_audio_run,
+								   "count_beats_audio_run", count_beats_audio_run,
 								   NULL);
 
   return(copy_pattern_audio_run);

@@ -74,7 +74,7 @@ ags_link_editor_get_type(void)
     };
 
     ags_type_link_editor = g_type_register_static(GTK_TYPE_HBOX,
-						  "AgsLinkEditor\0", &ags_link_editor_info,
+						  "AgsLinkEditor", &ags_link_editor_info,
 						  0);
 
     g_type_add_interface_static(ags_type_link_editor,
@@ -115,7 +115,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 {
   GtkCellRenderer *cell_renderer;
 
-  g_signal_connect_after((GObject *) link_editor, "parent_set\0",
+  g_signal_connect_after((GObject *) link_editor, "parent_set",
 			 G_CALLBACK(ags_link_editor_parent_set_callback), (gpointer) link_editor);
 
   link_editor->flags = 0;
@@ -132,7 +132,7 @@ ags_link_editor_init(AgsLinkEditor *link_editor)
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(link_editor->combo),
 				 cell_renderer,
-				 "text\0", 0,
+				 "text", 0,
 				 NULL);
 
   /* link with line */
@@ -154,15 +154,15 @@ ags_link_editor_connect(AgsConnectable *connectable)
   link_editor = AGS_LINK_EDITOR(connectable);
 
   /* GtkObject */
-  g_signal_connect(G_OBJECT(link_editor), "destroy\0",
+  g_signal_connect(G_OBJECT(link_editor), "destroy",
 		   G_CALLBACK(ags_link_editor_destroy_callback), (gpointer) link_editor);
 
   /* GtkWidget */
-  g_signal_connect(G_OBJECT(link_editor), "show\0",
+  g_signal_connect(G_OBJECT(link_editor), "show",
 		   G_CALLBACK(ags_link_editor_show_callback), (gpointer) link_editor);
 
   /* GtkComboBox */
-  g_signal_connect(G_OBJECT(link_editor->combo), "changed\0",
+  g_signal_connect(G_OBJECT(link_editor->combo), "changed",
 		   G_CALLBACK(ags_link_editor_combo_callback), link_editor);
 }
 

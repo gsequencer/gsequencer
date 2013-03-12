@@ -57,7 +57,7 @@ ags_remove_region_from_selection_get_type()
     };
 
     ags_type_remove_region_from_selection = g_type_register_static(AGS_TYPE_TASK,
-								   "AgsRemoveRegionFromSelection\0",
+								   "AgsRemoveRegionFromSelection",
 								   &ags_remove_region_from_selection_info,
 								   0);
 

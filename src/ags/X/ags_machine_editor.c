@@ -94,7 +94,7 @@ ags_machine_editor_get_type(void)
     };
 
     ags_type_machine_editor = g_type_register_static(GTK_TYPE_DIALOG,
-						     "AgsMachineEditor\0", &ags_machine_editor_info,
+						     "AgsMachineEditor", &ags_machine_editor_info,
 						     0);
 
     g_type_add_interface_static(ags_type_machine_editor,
@@ -120,9 +120,9 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
   gobject->set_property = ags_machine_editor_set_property;
   gobject->get_property = ags_machine_editor_get_property;
 
-  param_spec = g_param_spec_object("machine\0",
-				   "assigned machine\0",
-				   "The machine which this machine editor is assigned with\0",
+  param_spec = g_param_spec_object("machine",
+				   "assigned machine",
+				   "The machine which this machine editor is assigned with",
 				   AGS_TYPE_MACHINE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -132,7 +132,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
   machine_editor->set_machine = ags_machine_editor_real_set_machine;
 
   machine_editor_signals[SET_MACHINE] =
-    g_signal_new("set_machine\0",
+    g_signal_new("set_machine",
 		 G_TYPE_FROM_CLASS (machine_editor),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsMachineEditorClass, set_machine),
@@ -163,7 +163,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   GtkNotebook *notebook;
   GtkScrolledWindow *scrolled_window;
 
-  gtk_window_set_title((GtkWindow *) machine_editor, g_strdup("properties\0"));
+  gtk_window_set_title((GtkWindow *) machine_editor, g_strdup("properties"));
 
   machine_editor->flags = 0;
 
@@ -178,14 +178,14 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("output\0")));
+			   (GtkWidget *) gtk_label_new(g_strdup("output")));
 
   /* AgsInput */
   machine_editor->input_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("input\0")));
+			   (GtkWidget *) gtk_label_new(g_strdup("input")));
 
 
   /* AgsOutput link editor */
@@ -193,20 +193,20 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("link output\0")));
+			   (GtkWidget *) gtk_label_new(g_strdup("link output")));
 
   /* AgsInput link editor */
   machine_editor->input_link_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("link input\0")));
+			   (GtkWidget *) gtk_label_new(g_strdup("link input")));
 
   /* resize editor */
   machine_editor->resize_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook, (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("resize channels\0")));
+			   (GtkWidget *) gtk_label_new(g_strdup("resize channels")));
 
   /* GtkButton's in GtkDialog->action_area  */
   machine_editor->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
@@ -279,15 +279,15 @@ ags_machine_editor_connect(AgsConnectable *connectable)
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
   /* GtkObject */
-  g_signal_connect((GObject *) machine_editor, "destroy\0",
+  g_signal_connect((GObject *) machine_editor, "destroy",
 		   G_CALLBACK(ags_machine_editor_destroy_callback), (gpointer) machine_editor);
 
   /* GtkWidget */
-  g_signal_connect((GObject *) machine_editor, "show\0",
+  g_signal_connect((GObject *) machine_editor, "show",
 		   G_CALLBACK(ags_machine_editor_show_callback), (gpointer) machine_editor);
 
   /* GtkNotebook */
-  g_signal_connect((GtkNotebook *) machine_editor->notebook, "switch-page\0",
+  g_signal_connect((GtkNotebook *) machine_editor->notebook, "switch-page",
 		   G_CALLBACK(ags_machine_editor_switch_page_callback), (gpointer) machine_editor);
 
   /* AgsMachineEditor tabs */
@@ -300,19 +300,19 @@ ags_machine_editor_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(machine_editor->resize_editor));
 
   /* AgsMachineEditor buttons */
-  g_signal_connect((GObject *) machine_editor->add, "clicked\0",
+  g_signal_connect((GObject *) machine_editor->add, "clicked",
 		   G_CALLBACK(ags_machine_editor_add_callback), (gpointer) machine_editor);
 
-  g_signal_connect((GObject *) machine_editor->remove, "clicked\0",
+  g_signal_connect((GObject *) machine_editor->remove, "clicked",
 		   G_CALLBACK(ags_machine_editor_remove_callback), (gpointer) machine_editor);
 
-  g_signal_connect((GObject *) machine_editor->apply, "clicked\0",
+  g_signal_connect((GObject *) machine_editor->apply, "clicked",
 		   G_CALLBACK(ags_machine_editor_apply_callback), (gpointer) machine_editor);
 
-  g_signal_connect((GObject *) machine_editor->ok, "clicked\0",
+  g_signal_connect((GObject *) machine_editor->ok, "clicked",
 		   G_CALLBACK(ags_machine_editor_ok_callback), (gpointer) machine_editor);
 
-  g_signal_connect((GObject *) machine_editor->cancel, "clicked\0",
+  g_signal_connect((GObject *) machine_editor->cancel, "clicked",
 		   G_CALLBACK(ags_machine_editor_cancel_callback), (gpointer) machine_editor);
 }
 
@@ -391,7 +391,7 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
   /* output */
   output_link_editor_child_parameter = g_new0(GParameter, 1);
 
-  output_link_editor_child_parameter[0].name = "channel_type\0";
+  output_link_editor_child_parameter[0].name = "channel_type";
 
   g_value_init(&(output_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
   g_value_set_gtype(&(output_link_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
@@ -399,7 +399,7 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
   /* input */
   input_link_editor_child_parameter = g_new0(GParameter, 1);
 
-  input_link_editor_child_parameter[0].name = "channel_type\0";
+  input_link_editor_child_parameter[0].name = "channel_type";
 
   g_value_init(&(input_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
   g_value_set_gtype(&(input_link_editor_child_parameter[0].value), AGS_TYPE_INPUT);
@@ -470,7 +470,7 @@ ags_machine_editor_new(AgsMachine *machine)
   AgsMachineEditor *machine_editor;
 
   machine_editor = (AgsMachineEditor *) g_object_new(AGS_TYPE_MACHINE_EDITOR,
-						     "machine\0", machine,
+						     "machine", machine,
 						     NULL);
 
   return(machine_editor);

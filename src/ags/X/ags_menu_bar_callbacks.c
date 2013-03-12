@@ -62,14 +62,14 @@ ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   GtkFileSelection *file_selection;
 
-  file_selection = (GtkFileSelection *) gtk_file_selection_new(g_strdup("open file\0"));
+  file_selection = (GtkFileSelection *) gtk_file_selection_new(g_strdup("open file"));
   gtk_file_selection_set_select_multiple(file_selection, FALSE);
 
   gtk_widget_show_all((GtkWidget *) file_selection);
 
-  g_signal_connect((GObject *) file_selection->ok_button, "clicked\0",
+  g_signal_connect((GObject *) file_selection->ok_button, "clicked",
 		   G_CALLBACK(ags_menu_bar_open_ok_callback), menu_bar);
-  g_signal_connect((GObject *) file_selection->cancel_button, "clicked\0",
+  g_signal_connect((GObject *) file_selection->cancel_button, "clicked",
 		   G_CALLBACK(ags_menu_bar_open_cancel_callback), menu_bar);
 }
 
@@ -117,14 +117,14 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   GtkFileSelection *file_selection;
 
-  file_selection = (GtkFileSelection *) gtk_file_selection_new(g_strdup("save file as\0"));
+  file_selection = (GtkFileSelection *) gtk_file_selection_new(g_strdup("save file as"));
   gtk_file_selection_set_select_multiple(file_selection, FALSE);
 
   gtk_widget_show_all((GtkWidget *) file_selection);
 
-  g_signal_connect((GObject *) file_selection->ok_button, "clicked\0",
+  g_signal_connect((GObject *) file_selection->ok_button, "clicked",
 		   G_CALLBACK(ags_menu_bar_save_as_ok_callback), (gpointer) menu_bar);
-  g_signal_connect((GObject *) file_selection->cancel_button, "clicked\0",
+  g_signal_connect((GObject *) file_selection->cancel_button, "clicked",
 		   G_CALLBACK(ags_menu_bar_save_as_cancel_callback), (gpointer) menu_bar);
 }
 
@@ -171,7 +171,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_QUESTION,
 						GTK_BUTTONS_YES_NO,
-						"Do you want to save '%s'?\0", window->name);
+						"Do you want to save '%s'?", window->name);
   cancel_button = gtk_dialog_add_button(dialog,
 					GTK_STOCK_CANCEL,
 					GTK_RESPONSE_CANCEL);
@@ -398,11 +398,11 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   struct stat sb;
   static gchar *license;
 
-  gchar *authors[] = { "joel kraehemann\0", NULL }; 
+  gchar *authors[] = { "joel kraehemann", NULL }; 
 
   if(file == NULL){
-    file = fopen("./COPYING\0", "r\0");
-    stat("./COPYING\0", &sb);
+    file = fopen("./COPYING", "r");
+    stat("./COPYING", &sb);
     license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
     fread(license, sizeof(char), sb.st_size, file);
     license[sb.st_size] = '\0';
@@ -410,9 +410,9 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   gtk_show_about_dialog((GtkWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, GTK_TYPE_WINDOW),
-			"program-name\0", "ags\0",
-			"authors\0", authors,
-			"license\0", license,
-			"title\0", "ags\0",
+			"program-name", "ags",
+			"authors", authors,
+			"license", license,
+			"title", "ags",
 			NULL);
 }

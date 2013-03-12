@@ -70,7 +70,7 @@ ags_apply_bpm_get_type()
     };
 
     ags_type_apply_bpm = g_type_register_static(AGS_TYPE_TASK,
-						"AgsApplyBpm\0",
+						"AgsApplyBpm",
 						&ags_apply_bpm_info,
 						0);
     

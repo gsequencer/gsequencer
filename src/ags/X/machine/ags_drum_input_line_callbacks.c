@@ -52,7 +52,7 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
 {
   AgsChannel *channel;
 
-  fprintf(stdout, "ags_drum_input_line_play_channel_run_done\n\0");
+  fprintf(stdout, "ags_drum_input_line_play_channel_run_done\n");
 
   channel = AGS_LINE(drum_input_line)->channel;
 
@@ -61,7 +61,7 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
 			recall->recall_id->group_id)){
     AgsDrumInputPad *drum_input_pad;
 
-    printf("ags_drum_input_line_play_channel_run_done\n\0");
+    printf("ags_drum_input_line_play_channel_run_done\n");
     drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
 
     gtk_toggle_button_set_active(drum_input_pad->play, FALSE);
@@ -72,7 +72,7 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
   AgsChannel *channel;
   AgsPlayChannel *play_channel;
 
-  fprintf(stdout, "ags_drum_input_line_play_channel_done\n\0");
+  fprintf(stdout, "ags_drum_input_line_play_channel_done\n");
 
   play_channel = (AgsPlayChannel *) recall;
   devout = play_channel->devout;
@@ -125,7 +125,7 @@ ags_drum_input_line_copy_pattern_done(AgsRecall *recall, AgsDrumInputLine *drum_
 {
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
-  fprintf(stdout, "ags_drum_input_line_copy_pattern_done\n\0");
+  fprintf(stdout, "ags_drum_input_line_copy_pattern_done\n");
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
   /*

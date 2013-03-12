@@ -59,7 +59,7 @@ ags_recall_id_get_type(void)
     };
 
     ags_type_recall_id = g_type_register_static(G_TYPE_OBJECT,
-						"AgsRecallID\0",
+						"AgsRecallID",
 						&ags_recall_id_info,
 						0);
 
@@ -115,7 +115,7 @@ ags_recall_id_disconnect(AgsConnectable *connectable)
 void
 ags_recall_id_finalize(GObject *gobject)
 {
-  g_warning("ags_recall_id_finalize\0");
+  g_warning("ags_recall_id_finalize");
 
   G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
 }
@@ -134,7 +134,7 @@ ags_recall_id_generate_group_id()
   ags_recall_id_counter++;
 
   if(ags_recall_id_counter == G_MAXULONG)
-    g_warning("WARNING: ags_recall_id_generate_group_id - counter expired\n\0");
+    g_warning("WARNING: ags_recall_id_generate_group_id - counter expired\n");
 
   return(group_id);
 }
@@ -300,7 +300,7 @@ ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
     recall_id_list = recall_id_list->next;
   }
 
-  printf("ags_recall_id_find_group_id_with_recycling: couldn't find matching recall id\n\0");
+  printf("ags_recall_id_find_group_id_with_recycling: couldn't find matching recall id\n");
 
   return(NULL);
 }

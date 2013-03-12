@@ -38,7 +38,7 @@ ags_ruler_get_type()
 
   if(!ags_ruler_type){
     static const GtkTypeInfo ags_ruler_info = {
-      "AgsRuler\0",
+      "AgsRuler",
       sizeof(AgsRuler),
       sizeof(AgsRulerClass),
       (GtkClassInitFunc) ags_ruler_class_init,
@@ -80,7 +80,7 @@ ags_ruler_init(AgsRuler *ruler)
   /*
   ruler->layout = gtk_widget_create_pango_layout(widget, NULL);
 
-  ruler->font_name = "Sans 10\0";
+  ruler->font_name = "Sans 10";
 
   ruler->font_desc = pango_font_description_from_string(ruler->font_name);
   pango_layout_set_font_description(ruler->layout, ruler->font_desc);
@@ -105,10 +105,10 @@ ags_ruler_destroy(GtkObject *object)
 void
 ags_ruler_connect(AgsRuler *ruler)
 {
-  g_signal_connect((GObject *) ruler, "expose_event\0",
+  g_signal_connect((GObject *) ruler, "expose_event",
 		   G_CALLBACK(ags_ruler_expose_event), (gpointer) ruler);
 
-  g_signal_connect((GObject *) ruler, "configure_event\0",
+  g_signal_connect((GObject *) ruler, "configure_event",
 		   G_CALLBACK(ags_ruler_configure_event), (gpointer) ruler);
 }
 

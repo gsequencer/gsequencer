@@ -57,7 +57,7 @@ ags_add_point_to_selection_get_type()
     };
 
     ags_type_add_point_to_selection = g_type_register_static(AGS_TYPE_TASK,
-							     "AgsAddPointToSelection\0",
+							     "AgsAddPointToSelection",
 							     &ags_add_point_to_selection_info,
 							     0);
 

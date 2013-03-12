@@ -78,7 +78,7 @@ ags_copy_channel_run_get_type()
     };
 
     ags_type_copy_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-						       "AgsCopyChannelRun\0",
+						       "AgsCopyChannelRun",
 						       &ags_copy_channel_run_info,
 						       0);
 
@@ -201,9 +201,9 @@ ags_copy_channel_run_new(AgsChannel *destination,
   AgsCopyChannelRun *copy_channel_run;
 
   copy_channel_run = (AgsCopyChannelRun *) g_object_new(AGS_TYPE_COPY_CHANNEL_RUN,
-							"destination\0", destination,
-							"source\0", source,
-							"devout\0", devout,
+							"destination", destination,
+							"source", source,
+							"devout", devout,
 							NULL);
 
   return(copy_channel_run);

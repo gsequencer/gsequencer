@@ -57,7 +57,7 @@ ags_remove_note_get_type()
     };
 
     ags_type_remove_note = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsRemoveNote\0",
+						   "AgsRemoveNote",
 						   &ags_remove_note_info,
 						   0);
 

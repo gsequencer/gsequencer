@@ -42,7 +42,7 @@ ags_option_menu_get_type(void)
     };
 
     ags_type_option_menu = g_type_register_static(GTK_TYPE_HBOX,
-						  "AgsOptionMenu\0", &ags_option_menu_info,
+						  "AgsOptionMenu", &ags_option_menu_info,
 						  0);
   }
 

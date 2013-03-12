@@ -156,7 +156,7 @@ ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
     /* create root node */
-    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio");
     xmlDocSetRootElement(clipboard, audio_node);
 
     /* create notation nodes */
@@ -187,7 +187,7 @@ ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
     }
 
     /* write to clipboard */
-    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -215,7 +215,7 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
 
     xpathCtxt = xmlXPathNewContext(clipboard);
 
-    xpathObj = xmlXPathEvalExpression("/audio/notation\0", xpathCtxt);
+    xpathObj = xmlXPathEvalExpression("/audio/notation", xpathCtxt);
 
     if(xpathObj != NULL){
       int i, size;
@@ -266,20 +266,20 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
       position_x = editor->selected_x;
       position_y = editor->selected_y;
 
-      printf("pasting at position: [%u,%u]\n\0", position_x, position_y);
+      printf("pasting at position: [%u,%u]\n", position_x, position_y);
     }else{
       paste_from_position = FALSE;
     }
 
     /* get xml tree */
     clipboard = xmlReadMemory(buffer, strlen(buffer),
-			      NULL, "UTF-8\0",
+			      NULL, "UTF-8",
 			      0);
     audio_node = xmlDocGetRootElement(clipboard);
     
     /* iterate xml tree */
     while(audio_node != NULL){
-      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
+      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio", audio_node->name, 6)){
 	notation_node = audio_node->children;
 	
 	ags_toolbar_paste_callback_read_notation();

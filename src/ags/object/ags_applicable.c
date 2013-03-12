@@ -35,7 +35,7 @@ ags_applicable_get_type()
     };
 
     ags_type_applicable = g_type_register_static(G_TYPE_INTERFACE,
-						 "AgsApplicable\0", &ags_applicable_info,
+						 "AgsApplicable", &ags_applicable_info,
 						 0);
   }
 

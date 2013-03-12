@@ -65,7 +65,7 @@ ags_mixer_input_line_get_type()
     };
 
     ags_type_mixer_input_line = g_type_register_static(AGS_TYPE_LINE,
-						       "AgsMixerInputLine\0", &ags_mixer_input_line_info,
+						       "AgsMixerInputLine", &ags_mixer_input_line_info,
 						       0);
 
     g_type_add_interface_static(ags_type_mixer_input_line,
@@ -190,9 +190,9 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
 
     /* AgsVolumeChannel */
     volume_channel = (AgsVolumeChannel *) g_object_new(AGS_TYPE_VOLUME_CHANNEL,
-						       "devout\0", audio->devout,
-						       "source\0", source,
-						       "recall_container\0", play_volume_channel_container,
+						       "devout", audio->devout,
+						       "source", source,
+						       "recall_container", play_volume_channel_container,
 						       NULL);
 							      
     AGS_RECALL(volume_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -203,11 +203,11 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
 
     /* AgsVolumeChannelRun */
     volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
-							      "devout\0", audio->devout,
-							      "recall_channel\0", volume_channel,
-							      "source\0", source,
-							      "recall_container\0", play_volume_channel_container,
-							      "volume\0", &(GTK_RANGE(mixer_input_line->volume)->adjustment->value),
+							      "devout", audio->devout,
+							      "recall_channel", volume_channel,
+							      "source", source,
+							      "recall_container", play_volume_channel_container,
+							      "volume", &(GTK_RANGE(mixer_input_line->volume)->adjustment->value),
 							      NULL);
     
     AGS_RECALL(volume_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
@@ -227,7 +227,7 @@ ags_mixer_input_line_new(AgsChannel *channel)
   AgsMixerInputLine *mixer_input_line;
 
   mixer_input_line = (AgsMixerInputLine *) g_object_new(AGS_TYPE_MIXER_INPUT_LINE,
-							"channel\0", channel,
+							"channel", channel,
 							NULL);
 
   return(mixer_input_line);

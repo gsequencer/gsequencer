@@ -33,7 +33,7 @@ ags_connectable_get_type()
     };
 
     ags_type_connectable = g_type_register_static(G_TYPE_INTERFACE,
-						  "AgsConnectable\0", &ags_connectable_info,
+						  "AgsConnectable", &ags_connectable_info,
 						  0);
   }
 

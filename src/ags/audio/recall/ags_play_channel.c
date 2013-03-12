@@ -74,7 +74,7 @@ ags_play_channel_get_type()
     };
 
     ags_type_play_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsPlayChannel\0",
+						   "AgsPlayChannel",
 						   &ags_play_channel_info,
 						   0);
 
@@ -104,9 +104,9 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
   gobject->finalize = ags_play_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("audio_channel\0",
-				 "assigned audio Channel\0",
-				 "The audio channel this recall does output to\0",
+  param_spec = g_param_spec_uint("audio_channel",
+				 "assigned audio Channel",
+				 "The audio channel this recall does output to",
 				 0,
 				 65536,
 				 0,
@@ -212,8 +212,8 @@ ags_play_channel_new(AgsDevout *devout,
   AgsPlayChannel *play_channel;
 
   play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						 "devout\0", devout,
-						 "audio_channel\0", audio_channel,
+						 "devout", devout,
+						 "audio_channel", audio_channel,
 						 NULL);
   
   return(play_channel);

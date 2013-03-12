@@ -66,7 +66,7 @@ ags_log_get_type (void)
     };
 
     ags_type_log = g_type_register_static(G_TYPE_OBJECT,
-					  "AgsLog\0",
+					  "AgsLog",
 					  &ags_log_info,
 					  0);
   }
@@ -89,9 +89,9 @@ ags_log_class_init(AgsLogClass *log)
   gobject->get_property = ags_log_get_property;
 
   /* properties */
-  param_spec = g_param_spec_pointer("file\0",
-				    "output file\0",
-				    "The file to do the output\0",
+  param_spec = g_param_spec_pointer("file",
+				    "output file",
+				    "The file to do the output",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILE,
@@ -232,11 +232,11 @@ ags_log_timer(void *ptr)
   log->timer_active = FALSE;
   log->signaled_timer = FALSE;
 
-  printf("timer - start\n\0");
+  printf("timer - start\n");
   goto ags_log_timer_SUSPEND;
 
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
-    printf("timer - loop\n\0");
+    printf("timer - loop\n");
 
     /*  */
     pthread_mutex_lock(&(log->timer_mutex));
@@ -260,7 +260,7 @@ ags_log_timer(void *ptr)
     }
 
     if(!log->broker_active){
-      printf("  timer:0\n\0");
+      printf("  timer:0\n");
       pthread_cond_signal(&(log->broker_wait_cond));
 
       pthread_mutex_lock(&(log->timer_mutex));
@@ -273,7 +273,7 @@ ags_log_timer(void *ptr)
 			  &(log->timer_mutex));
       }
     }else{
-      printf("  timer:1\n\0");
+      printf("  timer:1\n");
       pthread_mutex_lock(&(log->timer_mutex));
       log->timer_awaken = FALSE;
       
@@ -288,7 +288,7 @@ ags_log_timer(void *ptr)
     log->timer_awaken = TRUE;
     log->signaled_timer = FALSE;
     pthread_mutex_unlock(&(log->timer_mutex));
-    printf("  timer:2\n\0");
+    printf("  timer:2\n");
     pthread_cond_signal(&(log->broker_wait_cond));
   }
   
@@ -314,13 +314,13 @@ ags_log_broker(void *ptr)
     log->signaled_output =
     log->signaled_queue =
     log->signaled_log = TRUE;
-  printf("broker - start\n\0");
+  printf("broker - start\n");
 
   goto ags_log_broker_SUSPEND;
 
   /* start broker */
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
-    printf("broker - loop\n\0");
+    printf("broker - loop\n");
 
     //    log->flags &= ~(AGS_LOG_SUSPEND);
 
@@ -359,7 +359,7 @@ ags_log_broker(void *ptr)
 
     pthread_mutex_unlock(&(log->broker_mutex));
  
-    //    printf("broker - log\n\0");
+    //    printf("broker - log\n");
 
     /* wake up output thread and wait for it * /
     log->signaled_output = TRUE;
@@ -380,7 +380,7 @@ ags_log_broker(void *ptr)
     if(!log->timer_active){
       pthread_mutex_unlock(&(log->broker_mutex));
 
-      printf("  broker:0\n\0");
+      printf("  broker:0\n");
       log->signaled_timer = TRUE;
       pthread_cond_signal(&(log->timer_wait_cond));
 
@@ -391,7 +391,7 @@ ags_log_broker(void *ptr)
 			  &(log->broker_mutex));
       }
     
-      printf("  broker:1\n\0");
+      printf("  broker:1\n");
       //      pthread_mutex_unlock(&(log->broker_mutex));
     }else{
       pthread_mutex_lock(&(log->broker_mutex));
@@ -410,7 +410,7 @@ ags_log_broker(void *ptr)
     log->broker_active = FALSE;
 
     /* wait log_interval amount of time */
-    printf("  broker:2\n\0");
+    printf("  broker:2\n");
 
     while(log->timer_active ||
 	  log->output_active ||
@@ -445,7 +445,7 @@ ags_log_broker(void *ptr)
     }
 
     log->broker_awaken = TRUE;
-    printf("  broker:3\n\0");
+    printf("  broker:3\n");
     pthread_mutex_unlock(&(log->broker_mutex));
   }
 
@@ -472,7 +472,7 @@ ags_log_output(void *ptr)
   goto ags_log_output_SUSPEND;
 
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
-    printf("output - loop\n\0");
+    printf("output - loop\n");
 
     /* wait until output_formated_message has been set * /
     pthread_mutex_lock(&(log->output_mutex));
@@ -566,7 +566,7 @@ ags_log_queue(void *ptr)
   goto ags_log_queue_SUSPEND;
 
   while((AGS_LOG_RUNNING & (log->flags)) != 0){
-    printf("queue - loop\n\0");
+    printf("queue - loop\n");
 
     /* set output_formated_message * /
     pthread_mutex_lock(&(log->queue_mutex));
@@ -604,8 +604,8 @@ ags_log_queue(void *ptr)
 
       time = message->time->tv_sec;
       date = localtime(&time);
-      strftime(str, AGS_LOG_MESSAGE_DATE_LENGTH * sizeof(char), "%Y-%m-%d %H:%M:%S\0", date);
-      sprintf(&(str[AGS_LOG_MESSAGE_DATE_LENGTH]), ".%.3d \0", message->time->tv_nsec);
+      strftime(str, AGS_LOG_MESSAGE_DATE_LENGTH * sizeof(char), "%Y-%m-%d %H:%M:%S", date);
+      sprintf(&(str[AGS_LOG_MESSAGE_DATE_LENGTH]), ".%.3lld ", (long long int) message->time->tv_nsec);
 
       printed_chars = vsnprintf(&(str[AGS_LOG_MESSAGE_DATE_LENGTH + 4]), AGS_LOG_MESSAGE_LENGTH * sizeof(char), message->format, message->args);
 

@@ -51,16 +51,16 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   audio = ffplayer->machine.audio;
   audio->devout = (GObject *) window->devout;
 
-  ffplayer->machine.name = g_strdup_printf("Default %d\0", window->counter->ffplayer);
+  ffplayer->machine.name = g_strdup_printf("Default %d", window->counter->ffplayer);
   window->counter->ffplayer++;
 
   /* AgsPlayNotation */
   g_object_set(G_OBJECT(ffplayer->play_notation),
-	       "devout\0", audio->devout,
+	       "devout", audio->devout,
 	       NULL);
 
   g_object_set(G_OBJECT(ffplayer->recall_notation),
-	       "devout\0", audio->devout,
+	       "devout", audio->devout,
 	       NULL);
 }
 
@@ -73,7 +73,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
 
-  g_signal_connect((GObject *) file_chooser, "response\0",
+  g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_ffplayer_open_dialog_response_callback), AGS_MACHINE(ffplayer));
 
   gtk_widget_show_all((GtkWidget *) file_chooser);
@@ -97,7 +97,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
 
-    if(g_str_has_suffix(filename, ".sf2\0")){
+    if(g_str_has_suffix(filename, ".sf2")){
       AgsIpatch *ipatch;
       AgsIpatchSF2Reader *sf2_reader;
       AgsPlayable *playable;
@@ -112,8 +112,8 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
       /* Ipatch related */
       ffplayer->ipatch =
 	ipatch = g_object_new(AGS_TYPE_IPATCH,
-			      "mode\0", AGS_IPATCH_READ,
-			      "filename\0", filename,
+			      "mode", AGS_IPATCH_READ,
+			      "filename", filename,
 			      NULL);
       ipatch->devout = window->devout;
       ags_ipatch_open(ipatch, filename);
@@ -176,7 +176,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 			    &error);
 
   if(error != NULL){
-    g_error(error->message);
+    g_error("%s", error->message);
   }
 
   ags_playable_iter_start(AGS_PLAYABLE(ffplayer->ipatch->reader));

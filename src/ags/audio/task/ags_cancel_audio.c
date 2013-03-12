@@ -59,7 +59,7 @@ ags_cancel_audio_get_type()
     };
 
     ags_type_cancel_audio = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsCancelAudio\0",
+						   "AgsCancelAudio",
 						   &ags_cancel_audio_info,
 						   0);
     

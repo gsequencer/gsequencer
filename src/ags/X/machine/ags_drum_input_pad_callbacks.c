@@ -43,8 +43,8 @@ void ags_drum_input_pad_open_play_stop(AgsRecall *recall, AgsDrumInputPad *drum_
 void ags_drum_input_pad_open_play_cancel(AgsRecall *recall, AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *pad);
 
-#define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName\0"
-#define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton\0"
+#define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName"
+#define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton"
 
 void
 ags_drum_input_pad_option_callback(GtkOptionMenu *option, AgsDrumInputPad *drum_input_pad)
@@ -78,7 +78,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
     return;
 
   drum_input_pad->file_chooser =
-    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new (g_strdup("Open File\0"),
+    file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new (g_strdup("Open File"),
 									 (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum_input_pad),
 									 GTK_FILE_CHOOSER_ACTION_OPEN,
 									 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -91,7 +91,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_file_chooser_set_extra_widget((GtkFileChooser *) file_chooser, (GtkWidget *) hbox);
   
-  label = (GtkLabel *) gtk_label_new(g_strdup("channel: \0"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("channel: "));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 0);
 
   spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
@@ -102,18 +102,18 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
     gtk_widget_set_sensitive((GtkWidget *) spin_button, FALSE);
 
   play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					  "label\0", GTK_STOCK_MEDIA_PLAY,
-					  "use-stock\0", TRUE,
-					  "use-underline\0", TRUE,
+					  "label", GTK_STOCK_MEDIA_PLAY,
+					  "use-stock", TRUE,
+					  "use-underline", TRUE,
 					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, 0);
 
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
-  g_signal_connect((GObject *) file_chooser, "response\0",
+  g_signal_connect((GObject *) file_chooser, "response",
 		   G_CALLBACK(ags_drum_input_pad_open_response_callback), (gpointer) drum_input_pad);
-  g_signal_connect((GObject *) play, "toggled\0",
+  g_signal_connect((GObject *) play, "toggled",
 		   G_CALLBACK(ags_drum_input_pad_open_play_callback), (gpointer) drum_input_pad);
 }
 
@@ -143,9 +143,9 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
     g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_PLAY_AUDIO_FILE), play_audio_file);
 
-    g_signal_connect((GObject *) play_audio_file, "done\0",
+    g_signal_connect((GObject *) play_audio_file, "done",
 		     G_CALLBACK(ags_drum_input_pad_open_play_done), drum_input_pad);
-    g_signal_connect((GObject *) play_audio_file, "cancel\0",
+    g_signal_connect((GObject *) play_audio_file, "cancel",
 		     G_CALLBACK(ags_drum_input_pad_open_play_cancel), drum_input_pad);
 
     /* AgsAudioFile * /
@@ -166,7 +166,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       ags_audio_file_set_devout(audio_file, devout);
 
       ags_audio_file_open(audio_file);
-      fprintf(stdout, "ags_drum_input_pad_open_play: \n\0");
+      fprintf(stdout, "ags_drum_input_pad_open_play: \n");
       
       AGS_AUDIO_FILE_GET_CLASS(audio_file)->read_buffer(audio_file);
       // ags_audio_file_read_audio_signal will be called later
@@ -182,7 +182,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     AGS_DEVOUT_GET_CLASS(devout)->run((void *) devout);
     g_static_mutex_unlock(&mutex);
   }else{
-    fprintf(stdout, "ags_drum_input_pad_open_file_play_done\n\0");
+    fprintf(stdout, "ags_drum_input_pad_open_file_play_done\n");
 
     if((AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE & (drum_input_pad->flags)) == 0){
       play_audio_file = (AgsPlayAudioFile *) g_object_get_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_PLAY_AUDIO_FILE));

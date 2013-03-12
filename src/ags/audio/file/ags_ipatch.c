@@ -92,7 +92,7 @@ ags_ipatch_get_type()
     };
 
     ags_type_ipatch = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsIpatch\0",
+					     "AgsIpatch",
 					     &ags_ipatch_info,
 					     0);
 
@@ -125,17 +125,17 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
   gobject->finalize = ags_ipatch_finalize;
 
   /* properties */
-  param_spec = g_param_spec_pointer("filename\0",
-				   "the filename\0",
-				   "The filename to open\0",
+  param_spec = g_param_spec_pointer("filename",
+				   "the filename",
+				   "The filename to open",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
 
-  param_spec = g_param_spec_pointer("mode\0",
-				    "the mode\0",
-				    "The mode to open the file\0",
+  param_spec = g_param_spec_pointer("mode",
+				    "the mode",
+				    "The mode to open the file",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MODE,
@@ -227,7 +227,7 @@ ags_ipatch_set_property(GObject *gobject,
 					&error);
 
 	if(error != NULL){
-	  g_error(error->message);
+	  g_error("%s", error->message);
 	}
       }
     }
@@ -306,7 +306,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 					     &error);
 
   if(error != NULL){
-    g_error(error->message);
+    g_error("%s", error->message);
   }
 
   //  ipatch->container = NULL;

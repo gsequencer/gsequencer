@@ -19,7 +19,7 @@
 #ifndef __AGS_MAIN_H__
 #define __AGS_MAIN_H__
 
-#define AGS_VERSION "0.3.15-SNAPSHOT\0"
+#define AGS_VERSION "0.3.15-SNAPSHOT"
 
 #define __AGS_DEBUG__
 

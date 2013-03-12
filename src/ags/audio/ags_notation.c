@@ -32,7 +32,7 @@ void ags_notation_connect(AgsConnectable *connectable);
 void ags_notation_disconnect(AgsConnectable *connectable);
 void ags_notation_finalize(GObject *object);
 
-void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm);
+void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm);
 
 void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						     xmlNodePtr root_node, char *version,
@@ -43,9 +43,9 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 static gpointer ags_notation_parent_class = NULL;
 
-#define AGS_NOTATION_CLIPBOARD_VERSION "0.3.12\0"
-#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
-#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
+#define AGS_NOTATION_CLIPBOARD_VERSION "0.3.12"
+#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml"
+#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano"
 
 GType
 ags_notation_get_type()
@@ -78,7 +78,7 @@ ags_notation_get_type()
     };
 
     ags_type_notation = g_type_register_static(G_TYPE_OBJECT,
-					       "AgsNotation\0",
+					       "AgsNotation",
 					       &ags_notation_info,
 					       0);
 
@@ -129,7 +129,7 @@ ags_notation_init(AgsNotation *notation)
 
   notation->base_frequency = 0;
 
-  notation->tact = g_strdup("1/4\0");
+  notation->tact = g_strdup("1/4");
   notation->bpm = 120;
 
   notation->maximum_note_length = 256;
@@ -171,7 +171,7 @@ ags_notation_finalize(GObject *gobject)
 }
 
 void
-ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm, gdouble old_bpm)
+ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm)
 {
   /* empty */
 }
@@ -570,13 +570,13 @@ ags_notation_copy_selection(AgsNotation *notation)
   selection = notation->selection;
 
   /* create root node */
-  notation_node = xmlNewNode(NULL, BAD_CAST "notation\0");
+  notation_node = xmlNewNode(NULL, BAD_CAST "notation");
 
-  xmlNewProp(notation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
-  xmlNewProp(notation_node, BAD_CAST "type\0", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
-  xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
-  xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-  xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup_printf("%u\0", notation->base_frequency));
+  xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
+  xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+  xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+  xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+  xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup_printf("%u", notation->base_frequency));
 
   selection = notation->selection;
 
@@ -590,11 +590,11 @@ ags_notation_copy_selection(AgsNotation *notation)
 
   while(selection != NULL){
     note = AGS_NOTE(selection->data);
-    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note\0", NULL);
+    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
 
-    xmlNewProp(current_note, BAD_CAST "x0\0", BAD_CAST g_strdup_printf("%u\0", note->x[0]));
-    xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", note->x[1]));
-    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", note->y));
+    xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", note->x[0]));
+    xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", note->x[1]));
+    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", note->y));
 
     if(y_boundary > note->y)
       y_boundary = note->y;
@@ -602,8 +602,8 @@ ags_notation_copy_selection(AgsNotation *notation)
     selection = selection->next;
   }
 
-  xmlNewProp(notation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
-  xmlNewProp(notation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
+  xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
+  xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
 
   return(notation_node);
 }
@@ -725,9 +725,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     }
     
     for(; node != NULL; node = node->next){
-      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note\0", node->name, 5)){
+      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note", node->name, 5)){
 	/* retrieve x0 offset */
-	x0 = xmlGetProp(node, "x0\0");
+	x0 = xmlGetProp(node, "x");
 
 	if(x0 == NULL)
 	  continue;
@@ -744,7 +744,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	}
 
 	/* retrieve x1 offset */
-	x1 = xmlGetProp(node, "x1\0");
+	x1 = xmlGetProp(node, "x1");
 
 	if(x1 == NULL)
 	  continue;
@@ -761,7 +761,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	}
 
 	/* retrieve y offset */
-	y = xmlGetProp(node, "y\0");
+	y = xmlGetProp(node, "y");
 
 	if(y == NULL)
 	  continue;
@@ -831,7 +831,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 	note->y = y_val;
 
-	g_message("adding note at: [%u,%u|%u]\n\0", x0_val, x1_val, y_val);
+	g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
 
 	ags_notation_add_note(notation,
 			      note,
@@ -841,7 +841,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
   }
 
-  if(!xmlStrncmp("0.3.12\0", version, 7)){
+  if(!xmlStrncmp("0.3.12", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }
 }
@@ -857,25 +857,25 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
   char *x_boundary, *y_boundary;
 
   while(notation_node != NULL){
-    if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation\0", notation_node->name, 9))
+    if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation", notation_node->name, 9))
       break;
 
     notation_node = notation_node->next;
   }
 
   if(notation_node != NULL){
-    program = xmlGetProp(notation_node, "program\0");
+    program = xmlGetProp(notation_node, "program");
 
-    if(!xmlStrncmp("ags\0", program, 4)){
-      version = xmlGetProp(notation_node, "version\0");
-      type = xmlGetProp(notation_node, "type\0");
-      format = xmlGetProp(notation_node, "format\0");
+    if(!xmlStrncmp("ags", program, 4)){
+      version = xmlGetProp(notation_node, "version");
+      type = xmlGetProp(notation_node, "type");
+      format = xmlGetProp(notation_node, "format");
 
-      if(!xmlStrncmp("AgsNotationNativePiano\0", format, 22)){
-	base_frequency = xmlGetProp(notation_node, "base_frequency\0");
+      if(!xmlStrncmp("AgsNotationNativePiano", format, 22)){
+	base_frequency = xmlGetProp(notation_node, "base_frequency");
 
-	x_boundary = xmlGetProp(notation_node, "x_boundary\0");
-	y_boundary = xmlGetProp(notation_node, "y_boundary\0");
+	x_boundary = xmlGetProp(notation_node, "x_boundary");
+	y_boundary = xmlGetProp(notation_node, "y_boundary");
 
 	ags_notation_insert_native_piano_from_clipboard(notation,
 							notation_node, version,

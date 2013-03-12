@@ -35,7 +35,7 @@ ags_countable_get_type()
     };
 
     ags_type_countable = g_type_register_static(G_TYPE_INTERFACE,
-						 "AgsCountable\0", &ags_countable_info,
+						 "AgsCountable", &ags_countable_info,
 						 0);
   }
 

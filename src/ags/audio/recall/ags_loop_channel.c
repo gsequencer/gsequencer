@@ -73,7 +73,7 @@ ags_loop_channel_get_type()
     };
     
     ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsLoopChannel\0",
+						   "AgsLoopChannel",
 						   &ags_loop_channel_info,
 						   0);
     
@@ -103,9 +103,9 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
   gobject->finalize = ags_loop_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("delay_audio\0",
-				   "assigned delay-audio\0",
-				   "The delay-audio it is assigned with\0",
+  param_spec = g_param_spec_object("delay_audio",
+				   "assigned delay-audio",
+				   "The delay-audio it is assigned with",
 				   AGS_TYPE_DELAY_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -210,7 +210,7 @@ ags_loop_channel_connect(AgsConnectable *connectable)
   loop_channel = AGS_LOOP_CHANNEL(connectable);
 
   if(loop_channel->delay_audio != NULL){
-    loop_channel->sequencer_duration_changed_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio), "sequencer_duration_changed\0",
+    loop_channel->sequencer_duration_changed_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio), "sequencer_duration_changed",
 									G_CALLBACK(ags_loop_channel_sequencer_duration_changed_callback), loop_channel);
   }
 }

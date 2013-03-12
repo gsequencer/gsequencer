@@ -56,7 +56,7 @@ ags_copy_channel_get_type()
     };
     
     ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						   "AgsCopyChannel\0",
+						   "AgsCopyChannel",
 						   &ags_copy_channel_info,
 						   0);
 
@@ -125,8 +125,8 @@ ags_copy_channel_new(AgsChannel *destination,
   AgsCopyChannel *copy_channel;
 
   copy_channel = (AgsCopyChannel *) g_object_new(AGS_TYPE_COPY_CHANNEL,
-						 "destination\0", destination,
-						 "channel\0", source,
+						 "destination", destination,
+						 "channel", source,
 						 NULL);
 
   return(copy_channel);

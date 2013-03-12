@@ -69,7 +69,7 @@ ags_apply_sequencer_length_get_type()
     };
 
     ags_type_apply_sequencer_length = g_type_register_static(AGS_TYPE_TASK,
-							     "AgsApplySequencerLength\0",
+							     "AgsApplySequencerLength",
 							     &ags_apply_sequencer_length_info,
 							     0);
     

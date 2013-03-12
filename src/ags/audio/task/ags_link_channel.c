@@ -57,7 +57,7 @@ ags_link_channel_get_type()
     };
 
     ags_type_link_channel = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsLinkChannel\0",
+						   "AgsLinkChannel",
 						   &ags_link_channel_info,
 						   0);
 

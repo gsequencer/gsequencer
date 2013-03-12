@@ -40,7 +40,7 @@ ags_table_get_type(void)
     };
 
     ags_type_table = g_type_register_static(GTK_TYPE_TABLE,
-					    "AgsTable\0", &ags_table_info,
+					    "AgsTable", &ags_table_info,
 					    0);
   }
 
@@ -63,9 +63,9 @@ ags_table_new(guint row, guint columns, gboolean homogeneous)
   AgsTable *table;
 
   table = (AgsTable *) g_object_new(AGS_TYPE_TABLE,
-				    "n-rows\0", row,
-				    "n-columns\0", columns,
-				    "homogeneous\0", homogeneous,
+				    "n-rows", row,
+				    "n-columns", columns,
+				    "homogeneous", homogeneous,
 				    NULL);
   
   return(table);

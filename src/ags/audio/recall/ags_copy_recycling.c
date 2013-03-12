@@ -78,7 +78,7 @@ ags_copy_recycling_get_type()
     };
 
     ags_type_copy_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						     "AgsCopyRecycling\0",
+						     "AgsCopyRecycling",
 						     &ags_copy_recycling_info,
 						     0);
 
@@ -246,9 +246,9 @@ ags_copy_recycling_new(AgsRecycling *destination,
   AgsCopyRecycling *copy_recycling;
 
   copy_recycling = (AgsCopyRecycling *) g_object_new(AGS_TYPE_COPY_RECYCLING,
-						     "devout\0", devout,
-						     "destination\0", destination,
-						     "source\0", source,
+						     "devout", devout,
+						     "destination", destination,
+						     "source", source,
 						     NULL);
 
   return(copy_recycling);

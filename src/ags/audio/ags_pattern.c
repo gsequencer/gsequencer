@@ -58,7 +58,7 @@ ags_pattern_get_type (void)
     };
 
     ags_type_pattern = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsPattern\0",
+					      "AgsPattern",
 					      &ags_pattern_info,
 					      0);
 

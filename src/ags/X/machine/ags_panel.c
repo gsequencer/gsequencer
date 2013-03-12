@@ -80,7 +80,7 @@ ags_panel_get_type(void)
     };
     
     ags_type_panel = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsPanel\0", &ags_panel_info,
+					    "AgsPanel", &ags_panel_info,
 					    0);
     
     g_type_add_interface_static(ags_type_panel,
@@ -129,7 +129,7 @@ ags_panel_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_panel_init(AgsPanel *panel)
 {
-  g_signal_connect_after((GObject *) panel, "parent_set\0",
+  g_signal_connect_after((GObject *) panel, "parent_set",
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
@@ -156,10 +156,10 @@ ags_panel_connect(AgsConnectable *connectable)
   panel = AGS_PANEL(connectable);
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_audio_channels",
 			 G_CALLBACK(ags_panel_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(panel->machine.audio), "set_pads",
 			 G_CALLBACK(ags_panel_set_pads), NULL);
 }
 
@@ -209,10 +209,10 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       ags_channel_add_recall_container(input, (GObject *) play_channel_container);
       
       play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						     "devout\0", AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
-						     "source\0", input,
-						     "recall_container\0", play_channel_container,
-						     "audio_channel\0", i,
+						     "devout", AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
+						     "source", input,
+						     "recall_container", play_channel_container,
+						     "audio_channel", i,
 						     NULL);
       
       AGS_RECALL(play_channel)->flags |= (AGS_RECALL_TEMPLATE |
@@ -224,11 +224,11 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       
       /* AgsPlayChannelRun */
       play_channel_run = (AgsPlayChannelRunMaster *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN_MASTER,
-								  "devout\0", audio->devout,
-								  "source\0", input,
-								  "recall_channel\0", play_channel,
-								  "audio_channel\0", i,
-								  "recall_container\0", play_channel_container,
+								  "devout", audio->devout,
+								  "source", input,
+								  "recall_channel", play_channel,
+								  "audio_channel", i,
+								  "recall_container", play_channel_container,
 								  NULL);
       
       AGS_RECALL(play_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
@@ -246,11 +246,11 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
       gtk_box_pack_start((GtkBox *) hbox, 
-			 (GtkWidget *) gtk_label_new(g_strdup_printf("channel %d: \0", i)),
+			 (GtkWidget *) gtk_label_new(g_strdup_printf("channel %d: ", i)),
 			 FALSE, FALSE, 0);
 
       gtk_box_pack_start((GtkBox *) hbox,
-			 (GtkWidget *) gtk_check_button_new_with_label("mute\0"),
+			 (GtkWidget *) gtk_check_button_new_with_label("mute"),
 			 FALSE, FALSE, 0);
 
       if(GTK_WIDGET_VISIBLE((GtkWidget *) panel))
@@ -287,7 +287,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 		   guint pads, guint pads_old,
 		   gpointer data)
 {
-  printf("AgsPanel only audio channels can be adjusted\n\0");
+  printf("AgsPanel only audio channels can be adjusted\n");
 }
 
 AgsPanel*
@@ -303,7 +303,7 @@ ags_panel_new(GObject *devout)
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, devout);
     g_object_set_property(G_OBJECT(panel->machine.audio),
-			  "devout\0", &value);
+			  "devout", &value);
     g_value_unset(&value);
   }
 

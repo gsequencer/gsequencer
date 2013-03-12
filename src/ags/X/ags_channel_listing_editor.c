@@ -73,7 +73,7 @@ ags_channel_listing_editor_get_type(void)
     };
 
     ags_type_channel_listing_editor = g_type_register_static(AGS_TYPE_PROPERTY_LISTING_EDITOR,
-							     "AgsChannelListingEditor\0",
+							     "AgsChannelListingEditor",
 							     &ags_channel_listing_editor_info,
 							     0);
     
@@ -113,7 +113,7 @@ ags_channel_listing_editor_applicable_interface_init(AgsApplicableInterface *app
 void
 ags_channel_listing_editor_init(AgsChannelListingEditor *channel_listing_editor)
 {
-  g_signal_connect_after(G_OBJECT(channel_listing_editor), "parent_set\0",
+  g_signal_connect_after(G_OBJECT(channel_listing_editor), "parent_set",
 			 G_CALLBACK(ags_channel_listing_editor_parent_set_callback), channel_listing_editor);
 
   channel_listing_editor->child = NULL;
@@ -140,7 +140,7 @@ ags_channel_listing_editor_connect(AgsConnectable *connectable)
     /* AgsAudio */
     audio = machine_editor->machine->audio;
 
-    g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
+    g_signal_connect_after(G_OBJECT(audio), "set_pads",
 			   G_CALLBACK(ags_channel_listing_editor_set_pads_callback), channel_listing_editor);
   }
 

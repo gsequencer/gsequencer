@@ -59,7 +59,7 @@ ags_remove_recall_get_type()
     };
 
     ags_type_remove_recall = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsRemoveRecall\0",
+						  "AgsRemoveRecall",
 						  &ags_remove_recall_info,
 						  0);
 

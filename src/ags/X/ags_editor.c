@@ -51,7 +51,7 @@ ags_editor_get_type(void)
 
   if (!editor_type){
     static const GtkTypeInfo editor_info = {
-      "AgsEditor\0",
+      "AgsEditor",
       sizeof(AgsEditor), /* base_init */
       sizeof(AgsEditorClass), /* base_finalize */
       (GtkClassInitFunc) ags_editor_class_init,
@@ -72,7 +72,7 @@ ags_editor_class_init(AgsEditorClass *editor)
   editor->change_machine = ags_editor_real_change_machine;
 
   editor_signals[CHANGE_MACHINE] =
-    g_signal_new("change_machine\0",
+    g_signal_new("change_machine",
                  G_TYPE_FROM_CLASS (editor),
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsEditorClass, change_machine),
@@ -93,7 +93,7 @@ ags_editor_init(AgsEditor *editor)
   GtkHBox *hbox;
   GtkMenuToolButton *menu_button;
 
-  g_signal_connect_after((GObject *) editor, "parent-set\0",
+  g_signal_connect_after((GObject *) editor, "parent-set",
 			 G_CALLBACK(ags_editor_parent_set_callback), editor);
 
   editor->flags = 0;
@@ -123,15 +123,15 @@ ags_editor_init(AgsEditor *editor)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("Notation\0");
+  label = (GtkLabel *) gtk_label_new("Notation");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
   menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-			     "stock-id\0", GTK_STOCK_EXECUTE,
-			     "menu\0", editor->popup,
+			     "stock-id", GTK_STOCK_EXECUTE,
+			     "menu", editor->popup,
 			     NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(menu_button),
@@ -232,34 +232,34 @@ ags_editor_connect(AgsEditor *editor)
 {
   GtkHPaned *hpaned;
 
-  g_signal_connect((GObject *) editor, "destroy\0",
+  g_signal_connect((GObject *) editor, "destroy",
 		   G_CALLBACK(ags_editor_destroy_callback), (gpointer) editor);
 
-  g_signal_connect((GObject *) editor, "show\0",
+  g_signal_connect((GObject *) editor, "show",
 		   G_CALLBACK(ags_editor_show_callback), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->index_radio, "button_press_event\0",
+  g_signal_connect ((GObject *) editor->index_radio, "button_press_event",
                     G_CALLBACK (ags_editor_button_press_callback), (gpointer) editor);
 
-  g_signal_connect_after ((GObject *) editor->drawing_area, "expose_event\0",
+  g_signal_connect_after ((GObject *) editor->drawing_area, "expose_event",
 			  G_CALLBACK (ags_editor_drawing_area_expose_event), (gpointer) editor);
 
-  g_signal_connect_after ((GObject *) editor->drawing_area, "configure_event\0",
+  g_signal_connect_after ((GObject *) editor->drawing_area, "configure_event",
 			  G_CALLBACK (ags_editor_drawing_area_configure_event), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->drawing_area, "button_press_event\0",
+  g_signal_connect ((GObject *) editor->drawing_area, "button_press_event",
                     G_CALLBACK (ags_editor_drawing_area_button_press_event), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->drawing_area, "button_release_event\0",
+  g_signal_connect ((GObject *) editor->drawing_area, "button_release_event",
                     G_CALLBACK (ags_editor_drawing_area_button_release_event), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->drawing_area, "motion_notify_event\0",
+  g_signal_connect ((GObject *) editor->drawing_area, "motion_notify_event",
  		    G_CALLBACK (ags_editor_drawing_area_motion_notify_event), (gpointer) editor);
 
-  g_signal_connect_after ((GObject *) editor->vscrollbar, "value-changed\0",
+  g_signal_connect_after ((GObject *) editor->vscrollbar, "value-changed",
 			  G_CALLBACK (ags_editor_vscrollbar_value_changed), (gpointer) editor);
 
-  g_signal_connect_after ((GObject *) editor->hscrollbar, "value-changed\0",
+  g_signal_connect_after ((GObject *) editor->hscrollbar, "value-changed",
 			  G_CALLBACK (ags_editor_hscrollbar_value_changed), (gpointer) editor);
 
   ags_toolbar_connect(editor->toolbar);
@@ -837,40 +837,40 @@ ags_editor_popup_new(AgsEditor *editor)
   popup = (GtkMenu *) gtk_menu_new();
   g_object_set_data((GObject *) popup, g_type_name(AGS_TYPE_EDITOR), editor);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add tab\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add tab"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove tab\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove tab"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add index\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add index"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove index\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove index"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
   list = gtk_container_get_children((GtkContainer *) popup);
 
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_editor_popup_add_tab_callback), (gpointer) popup);
 
   list = list->next;
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_editor_popup_remove_tab_callback), (gpointer) popup);
 
   list = list->next;
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_editor_popup_add_index_callback), (gpointer) popup);
 
   list = list->next;
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_editor_popup_remove_index_callback), (gpointer) popup);
 
   list = list->next;
-  g_signal_connect(G_OBJECT(list->data), "activate\0",
+  g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_editor_popup_link_index_callback), (gpointer) popup);
 
   gtk_widget_show_all((GtkWidget *) popup);

@@ -82,7 +82,7 @@ ags_play_audio_signal_get_type()
     };
 
     ags_type_play_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsPlayAudioSignal\0",
+							"AgsPlayAudioSignal",
 							&ags_play_audio_signal_info,
 							0);
 
@@ -193,8 +193,8 @@ ags_play_audio_signal_run_init_pre(AgsRecall *recall)
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
   //  AGS_RECALL(play_audio_signal)->flags &= (~AGS_RECALL_PERSISTENT);
 
-  g_message("=======================\n\nplaying AgsAudioSignal#%x on AgsDevout[%d]\n\n=======================\0",
-	    AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source,
+  g_message("=======================\n\nplaying AgsAudioSignal#%llx on AgsDevout[%d]\n\n=======================",
+	    (long long unsigned int) AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source,
 	    AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel);
 
   /* call parent */
@@ -277,10 +277,10 @@ ags_play_audio_signal_new(AgsAudioSignal *source,
   AgsPlayAudioSignal *play_audio_signal;
 
   play_audio_signal = (AgsPlayAudioSignal *) g_object_new(AGS_TYPE_PLAY_AUDIO_SIGNAL,
-							  "source\0", source,
-							  "devout\0", devout,
-							  "audio_channel\0", audio_channel,
-							  "attack\0", attack,
+							  "source", source,
+							  "devout", devout,
+							  "audio_channel", audio_channel,
+							  "attack", attack,
 							  NULL);
 
   return(play_audio_signal);

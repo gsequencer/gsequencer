@@ -57,7 +57,7 @@ ags_free_selection_get_type()
     };
 
     ags_type_free_selection = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsFreeSelection\0",
+						     "AgsFreeSelection",
 						     &ags_free_selection_info,
 						     0);
 

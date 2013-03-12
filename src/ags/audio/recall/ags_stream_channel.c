@@ -55,7 +55,7 @@ ags_stream_channel_get_type()
     };
 
     ags_type_stream_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						     "AgsStreamChannel\0",
+						     "AgsStreamChannel",
 						     &ags_stream_channel_info,
 						     0);
 

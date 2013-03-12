@@ -8,10 +8,10 @@ devout = AGS_WINDOW(gtk_widget_get_toblevel(widget))->devout;
 
 /* create AgsAudio objects */
 master_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-					 "devout\0", devout,
+					 "devout", devout,
 					 NULL);
 slave_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-					"devout\0", devout,
+					"devout", devout,
 					NULL);
 
 /* assign AgsAudioSignal objects to master_audio and slave_audio */

@@ -54,7 +54,7 @@ ags_play_note_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_play_note_init,
     };
-    ags_type_play_note = g_type_register_static(AGS_TYPE_RECALL, "AgsPlayNote\0", &ags_play_note_info, 0);
+    ags_type_play_note = g_type_register_static(AGS_TYPE_RECALL, "AgsPlayNote", &ags_play_note_info, 0);
   }
   return (ags_type_play_note);
 }
@@ -107,13 +107,13 @@ ags_play_note_connect(AgsPlayNote *play_note)
 {
   //  ags_recall_connect(AGS_RECALL(play_note));
 
-  g_signal_connect((GObject *) play_note, "run_inter\0",
+  g_signal_connect((GObject *) play_note, "run_inter",
 		   G_CALLBACK(ags_play_note), NULL);
 
-  g_signal_connect((GObject *) play_note, "stop\0",
+  g_signal_connect((GObject *) play_note, "stop",
 		   G_CALLBACK(ags_play_note_stop), NULL);
 
-  g_signal_connect((GObject *) play_note, "cancel\0",
+  g_signal_connect((GObject *) play_note, "cancel",
 		   G_CALLBACK(ags_play_note_cancel), NULL);
 }
 
@@ -139,7 +139,7 @@ ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, g
     AGS_RECALL(play_audio_signal)->parent = (GObject *) play_note;
 
     ags_play_audio_signal_connect(play_audio_signal);
-    g_signal_connect((GObject *) play_audio_signal, "done\0",
+    g_signal_connect((GObject *) play_audio_signal, "done",
 		     G_CALLBACK(ags_play_note_play_audio_signal_done), NULL);
 
     if(first_recall){
@@ -189,7 +189,7 @@ ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, g
 
     play_note->recall.recall = g_list_concat(play_note->recall.recall, start_play_audio_signal);
   }else{
-    g_signal_emit_by_name((GObject *) recall, "done\0", recall_id);
+    g_signal_emit_by_name((GObject *) recall, "done", recall_id);
   }
 */
 }
@@ -204,7 +204,7 @@ ags_play_note(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
   g_static_mutex_lock(&mutex);
 
   if(recall->recall == NULL){
-    g_signal_emit_by_name((GObject *) recall, "done\0", recall_id);
+    g_signal_emit_by_name((GObject *) recall, "done", recall_id);
     g_static_mutex_unlock(&mutex);
   }else{
     g_static_mutex_unlock(&mutex);
@@ -214,7 +214,7 @@ ags_play_note(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
     while(list != NULL){
       list_next = list->next;
 
-      g_signal_emit_by_name(G_OBJECT(list->data), "run_inter\0", recall_id);
+      g_signal_emit_by_name(G_OBJECT(list->data), "run_inter", recall_id);
 
       list = list_next;
     }
@@ -261,7 +261,7 @@ ags_play_note_play_audio_signal_done(AgsRecall *recall, AgsRecallID *recall_id, 
   g_object_unref(G_OBJECT(play_audio_signal));
 
   if(play_note->recall.recall == NULL){
-    g_signal_emit_by_name((GObject *) play_note, "done\0", recall_id);
+    g_signal_emit_by_name((GObject *) play_note, "done", recall_id);
   }
   */
 }

@@ -57,7 +57,7 @@ ags_input_get_type (void)
     };
 
     ags_type_input = g_type_register_static(AGS_TYPE_CHANNEL,
-					    "AgsInput\0",
+					    "AgsInput",
 					    &ags_input_info,
 					    0);
 
@@ -132,7 +132,7 @@ ags_input_new(GObject *audio)
   AgsInput *input;
 
   input = (AgsInput *) g_object_new(AGS_TYPE_INPUT,
-				    "audio\0", audio,
+				    "audio", audio,
 				    NULL);
 
   return(input);

@@ -69,7 +69,7 @@ ags_machine_get_type(void)
     };
 
     ags_type_machine = g_type_register_static(GTK_TYPE_HANDLE_BOX,
-					      "AgsMachine\0", &ags_machine_info,
+					      "AgsMachine", &ags_machine_info,
 					      0);
     
     g_type_add_interface_static(ags_type_machine,
@@ -145,7 +145,7 @@ ags_machine_connect(AgsConnectable *connectable)
   /* GtkObject * /
 
   /* GtkWidget */
-  g_signal_connect(G_OBJECT (machine), "button_press_event\0",
+  g_signal_connect(G_OBJECT (machine), "button_press_event",
 		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
 
   /* AgsPad - input */
@@ -223,7 +223,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
 		    
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "NULL\0",
+		     0, "NULL",
 		     1, NULL,
 		     -1);
 
@@ -234,7 +234,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
       if(list->data != machine){
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
-			   0, g_strdup_printf("%s: %s\0", 
+			   0, g_strdup_printf("%s: %s", 
 					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
 					      AGS_MACHINE(list->data)->name),
 			   1, list->data,
@@ -267,7 +267,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) machine),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
@@ -275,15 +275,15 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "create\0", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "overwrite\0", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
 
   return(file_chooser);
 }
@@ -383,12 +383,10 @@ ags_machine_open_files(AgsMachine *machine,
 	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
 	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 	
-	//	g_static_mutex_lock(&mutex);
 	channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
 							       (gpointer) audio_signal_source_old);
 	channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
 								audio_signal_list->data);
-	//	g_static_mutex_unlock(&mutex);
 	
 	g_object_unref(G_OBJECT(audio_signal_source_old));
 	
@@ -417,7 +415,7 @@ ags_machine_new(GObject *devout)
   g_value_init(&value, G_TYPE_OBJECT);
   g_value_set_object(&value, devout);
   g_object_set_property(G_OBJECT(machine->audio),
-			"devout\0", &value);
+			"devout", &value);
   g_value_unset(&value);
 
   return(machine);
@@ -432,54 +430,54 @@ ags_machine_popup_new(AgsMachine *machine)
 
   popup = (GtkMenu *) gtk_menu_new();
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move up\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move up"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move down\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("move down"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("hide\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("hide"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("show\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("show"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("destroy\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("destroy"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("rename\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("rename"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("properties\0"));
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("properties"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
   list = gtk_container_get_children((GtkContainer *) popup);
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_move_up_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_move_down_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_hide_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_show_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_destroy_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_rename_activate_callback), (gpointer) machine);
   list = list->next;
 
-  g_signal_connect((GObject*) list->data, "activate\0",
+  g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_properties_activate_callback), (gpointer) machine);
 
   gtk_widget_show_all((GtkWidget*) popup);

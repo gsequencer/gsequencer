@@ -147,9 +147,7 @@ struct _AgsDevout
   pthread_mutexattr_t main_loop_mutex_attr;
   pthread_cond_t main_loop_wait_cond;
   gint wait_sync;
-  gint hitted_wait_sync;
   gboolean wait_sync_task;
-  gboolean hitted_wait_sync_task;
 
   gboolean play_suspend;
   gboolean play_awake;
@@ -175,16 +173,20 @@ struct _AgsDevout
   pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
 
-  guint append_task_suspend;
-  pthread_cond_t append_task_wait_cond;
-
-  guint append_tasks_suspend;
-  pthread_cond_t append_tasks_wait_cond;
-
   guint task_queued;
   guint task_pending;
+  guint append_task_suspend;
+  pthread_mutex_t append_task_mutex;
+  pthread_mutexattr_t append_task_mutex_attr;
+  pthread_cond_t append_task_wait_cond;
+
   guint tasks_queued;
   guint tasks_pending;
+  guint append_tasks_suspend;
+  pthread_mutex_t append_tasks_mutex;
+  pthread_mutexattr_t append_tasks_mutex_attr;
+  pthread_cond_t append_tasks_wait_cond;
+
   GList *task;
   GList *audio;
 

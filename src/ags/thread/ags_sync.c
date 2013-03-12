@@ -46,7 +46,7 @@ ags_sync_get_type (void)
     };
 
     ags_type_sync = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsSync\0",
+					   "AgsSync",
 					   &ags_sync_info,
 					   0);
   }

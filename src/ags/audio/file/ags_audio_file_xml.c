@@ -39,7 +39,7 @@ ags_audio_file_xml_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_audio_file_xml_init,
     };
-    ags_type_audio_file_xml = g_type_register_static(G_TYPE_OBJECT, "AgsAudioFileXml\0", &ags_audio_file_xml_info, 0);
+    ags_type_audio_file_xml = g_type_register_static(G_TYPE_OBJECT, "AgsAudioFileXml", &ags_audio_file_xml_info, 0);
   }
   return (ags_type_audio_file_xml);
 }

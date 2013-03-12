@@ -59,7 +59,7 @@ ags_remove_audio_signal_get_type()
     };
 
     ags_type_remove_audio_signal = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsRemoveAudioSignal\0",
+						  "AgsRemoveAudioSignal",
 						  &ags_remove_audio_signal_info,
 						  0);
 

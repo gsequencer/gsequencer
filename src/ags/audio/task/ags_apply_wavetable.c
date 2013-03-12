@@ -55,7 +55,7 @@ ags_apply_wavetable_get_type()
     };
 
     ags_type_apply_wavetable = g_type_register_static(AGS_TYPE_TASK,
-						      "AgsApplyWavetable\0",
+						      "AgsApplyWavetable",
 						      &ags_apply_wavetable_info,
 						      0);
 

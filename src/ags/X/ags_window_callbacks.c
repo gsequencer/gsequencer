@@ -33,7 +33,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_QUESTION,
 						GTK_BUTTONS_YES_NO,
-						"Do you want to save '%s'?\0", window->name);
+						"Do you want to save '%s'?", window->name);
   cancel_button = gtk_dialog_add_button(dialog,
 					GTK_STOCK_CANCEL,
 					GTK_RESPONSE_CANCEL);

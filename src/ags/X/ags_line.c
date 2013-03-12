@@ -82,7 +82,7 @@ ags_line_get_type(void)
     };
 
     ags_type_line = g_type_register_static(GTK_TYPE_MENU_ITEM,
-					   "AgsLine\0", &ags_line_info,
+					   "AgsLine", &ags_line_info,
 					   0);
 
     g_type_add_interface_static(ags_type_line,
@@ -107,18 +107,18 @@ ags_line_class_init(AgsLineClass *line)
   gobject->set_property = ags_line_set_property;
   gobject->get_property = ags_line_get_property;
 
-  param_spec = g_param_spec_object("pad\0",
-				   "parent pad\0",
-				   "The pad which is its parent\0",
+  param_spec = g_param_spec_object("pad",
+				   "parent pad",
+				   "The pad which is its parent",
 				   AGS_TYPE_PAD,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PAD,
 				  param_spec);
 
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
+  param_spec = g_param_spec_object("channel",
+				   "assigned channel",
+				   "The channel it is assigned with",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -129,7 +129,7 @@ ags_line_class_init(AgsLineClass *line)
   line->set_channel = ags_line_real_set_channel;
 
   line_signals[SET_CHANNEL] =
-    g_signal_new("set_channel\0",
+    g_signal_new("set_channel",
 		 G_TYPE_FROM_CLASS(line),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, set_channel),
@@ -149,7 +149,7 @@ ags_line_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_line_init(AgsLine *line)
 {
-  //  g_signal_connect_after((GObject *) line, "parent_set\0",
+  //  g_signal_connect_after((GObject *) line, "parent_set",
   //			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
   line->flags = 0;
 
@@ -236,10 +236,10 @@ ags_line_connect(AgsConnectable *connectable)
   line->flags |= AGS_LINE_CONNECTED;
 
   /* GtkWidget */
-  g_signal_connect((GObject *) line, "destroy\0",
+  g_signal_connect((GObject *) line, "destroy",
 		   G_CALLBACK(ags_line_destroy_callback), (gpointer) line);
 
-  g_signal_connect((GObject *) line, "show\0",
+  g_signal_connect((GObject *) line, "show",
 		   G_CALLBACK(ags_line_show_callback), (gpointer) line);
 }
 
@@ -266,7 +266,7 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
   line->channel = channel;
 
-  gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
+  gtk_label_set_label(line->label, g_strdup_printf("line %d", channel->audio_channel));
 }
 
 void
@@ -287,8 +287,8 @@ ags_line_new(GtkWidget *pad, AgsChannel *channel)
   AgsLine *line;
 
   line = (AgsLine *) g_object_new(AGS_TYPE_LINE,
-				  "pad\0", pad,
-				  "channel\0", channel,
+				  "pad", pad,
+				  "channel", channel,
 				  NULL);
 
   return(line);

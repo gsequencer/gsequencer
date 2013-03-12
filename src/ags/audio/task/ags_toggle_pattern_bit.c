@@ -57,7 +57,7 @@ ags_toggle_pattern_bit_get_type()
     };
 
     ags_type_toggle_pattern_bit = g_type_register_static(AGS_TYPE_TASK,
-							 "AgsTogglePatternBit\0",
+							 "AgsTogglePatternBit",
 							 &ags_toggle_pattern_bit_info,
 							 0);
 

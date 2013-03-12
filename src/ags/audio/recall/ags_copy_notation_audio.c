@@ -58,7 +58,7 @@ ags_copy_notation_audio_get_type()
     };
 
     ags_type_copy_notation_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-							  "AgsCopyNotationAudio\0",
+							  "AgsCopyNotationAudio",
 							  &ags_copy_notation_audio_info,
 							  0);
   }
@@ -83,18 +83,18 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
   gobject->finalize = ags_copy_notation_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("notation\0",
-				   "the assigned notation\0",
-				   "The AgsNotation it is assigned to\0",
+  param_spec = g_param_spec_object("notation",
+				   "the assigned notation",
+				   "The AgsNotation it is assigned to",
 				   AGS_TYPE_NOTATION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTATION,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("audio_channel\0",
-				 "the audio channel to play\0",
-				 "The audio channel to play of audio object\0",
+  param_spec = g_param_spec_uint("audio_channel",
+				 "the audio channel to play",
+				 "The audio channel to play of audio object",
 				 0,
 				 65535,
 				 0,
@@ -221,9 +221,9 @@ ags_copy_notation_audio_new(AgsDevout *devout,
   AgsCopyNotationAudio *copy_notation_audio;
 
   copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
-							      "devout\0", devout,
-							      "notation\0", notation,
-							      "audio_channel\0", audio_channel,
+							      "devout", devout,
+							      "notation", notation,
+							      "audio_channel", audio_channel,
 							      NULL);
   
   return(copy_notation_audio);

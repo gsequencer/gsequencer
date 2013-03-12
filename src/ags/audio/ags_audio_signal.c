@@ -75,7 +75,7 @@ ags_audio_signal_get_type(void)
     };
 
     ags_type_audio_signal = g_type_register_static(G_TYPE_OBJECT,
-						   "AgsAudioSignal\0",
+						   "AgsAudioSignal",
 						   &ags_audio_signal_info,
 						   0);
 
@@ -104,27 +104,27 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   gobject->finalize = ags_audio_signal_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("devout",
+				   "assigned devout",
+				   "The devout it is assigned with",
 				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recycling\0",
-				   "assigned recycling\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("recycling",
+				   "assigned recycling",
+				   "The devout it is assigned with",
 				   AGS_TYPE_RECYCLING,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECYCLING,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recall-id\0",
-				   "assigned recall id\0",
-				   "The recall id it is assigned with\0",
+  param_spec = g_param_spec_object("recall-id",
+				   "assigned recall id",
+				   "The recall id it is assigned with",
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -264,10 +264,10 @@ ags_audio_signal_finalize(GObject *gobject)
 
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
-  g_message("finalize AgsAudioSignal\0");
+  g_message("finalize AgsAudioSignal");
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0)
-    g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
+    g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n");
 
   if(audio_signal->devout != NULL)
     g_object_unref(audio_signal->devout);
@@ -280,7 +280,7 @@ ags_audio_signal_finalize(GObject *gobject)
 
   ags_list_free_and_free_link(audio_signal->stream_beginning);
 
-  g_message("post: finalize AgsAudioSignal\0");
+  g_message("post: finalize AgsAudioSignal");
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
@@ -385,7 +385,7 @@ ags_attack_duplicate_from_devout(GObject *gobject)
 
   g_value_init(&attack_value, G_TYPE_POINTER);
   g_object_get_property(G_OBJECT(devout),
-			"attack\0",
+			"attack",
 			&attack_value);
   attack = g_value_get_pointer(&attack_value);
   g_value_unset(&attack_value);
@@ -444,7 +444,6 @@ void
 ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 {
   GList *stream, *end_old;
-  static GStaticMutex mutex = G_STATIC_MUTEX_INIT;
 
   stream = g_list_alloc();
   stream->data = (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
@@ -884,9 +883,9 @@ ags_audio_signal_new(GObject *devout,
   AgsAudioSignal *audio_signal;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "devout\0", devout,
-						 "recycling\0", recycling,
-						 "recall-id\0", recall_id,
+						 "devout", devout,
+						 "recycling", recycling,
+						 "recall-id", recall_id,
 						 NULL);
 
   return(audio_signal);
@@ -901,9 +900,9 @@ ags_audio_signal_new_with_length(GObject *devout,
   AgsAudioSignal *audio_signal, *template;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "devout\0", devout,
-						 "recycling\0", recycling,
-						 "recall-id\0", recall_id,
+						 "devout", devout,
+						 "recycling", recycling,
+						 "recall-id", recall_id,
 						 NULL);
 
   template = ags_audio_signal_get_template(AGS_RECYCLING(recycling)->audio_signal);

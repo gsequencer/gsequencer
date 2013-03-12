@@ -37,7 +37,7 @@ ags_property_listing_editor_get_type(void)
     };
 
     ags_type_property_listing_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
-							      "AgsPropertyListingEditor\0",
+							      "AgsPropertyListingEditor",
 							      &ags_property_listing_editor_info,
 							      0);
     

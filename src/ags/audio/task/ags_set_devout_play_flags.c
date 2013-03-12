@@ -57,7 +57,7 @@ ags_set_devout_play_flags_get_type()
     };
 
     ags_type_set_devout_play_flags = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsSetDevoutPlayFlags\0",
+						   "AgsSetDevoutPlayFlags",
 						   &ags_set_devout_play_flags_info,
 						   0);
 

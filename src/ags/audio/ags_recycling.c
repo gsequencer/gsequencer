@@ -77,7 +77,7 @@ ags_recycling_get_type (void)
     };
 
     ags_type_recycling = g_type_register_static(G_TYPE_OBJECT,
-						"AgsRecycling\0",
+						"AgsRecycling",
 						&ags_recycling_info, 0);
 
     g_type_add_interface_static(ags_type_recycling,
@@ -102,7 +102,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
   recycling->remove_audio_signal = ags_recycling_real_remove_audio_signal;
 
   recycling_signals[ADD_AUDIO_SIGNAL] =
-    g_signal_new("add_audio_signal\0",
+    g_signal_new("add_audio_signal",
 		 G_TYPE_FROM_CLASS (recycling),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecyclingClass, add_audio_signal),
@@ -112,7 +112,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 		 G_TYPE_OBJECT);
 
   recycling_signals[REMOVE_AUDIO_SIGNAL] =
-    g_signal_new("remove_audio_signal\0",
+    g_signal_new("remove_audio_signal",
 		 G_TYPE_FROM_CLASS (recycling),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecyclingClass, remove_audio_signal),
@@ -160,7 +160,7 @@ ags_recycling_finalize(GObject *gobject)
   AgsRecycling *recycling;
   GList *list, *list_next;
 
-  g_warning("ags_recycling_finalize\0");
+  g_warning("ags_recycling_finalize");
 
   recycling = AGS_RECYCLING(gobject);
 
@@ -243,7 +243,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint frames_looped_copied, frames_copied;
   gboolean enter_loop;
 
-  g_message("ags_recycling_create_audio_signal_with_frame_count: before\n\0");
+  g_message("ags_recycling_create_audio_signal_with_frame_count: before\n");
 
   /* some init */
   template = ags_audio_signal_get_template(recycling->audio_signal);
@@ -336,7 +336,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     }
   }
 
-  g_message("ags_recycling_create_audio_signal_with_frame_count: after\n\0");
+  g_message("ags_recycling_create_audio_signal_with_frame_count: after\n");
 }
 
 AgsRecycling*

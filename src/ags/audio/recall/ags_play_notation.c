@@ -94,7 +94,7 @@ ags_play_notation_get_type()
     };
 
     ags_type_play_notation = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
-						    "AgsPlayNotation\0",
+						    "AgsPlayNotation",
 						    &ags_play_notation_info,
 						    0);
 
@@ -128,27 +128,27 @@ ags_play_notation_class_init(AgsPlayNotationClass *play_notation)
   gobject->finalize = ags_play_notation_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned AgsDevout\0",
-				   "the AgsDevout\0",
+  param_spec = g_param_spec_object("devout",
+				   "assigned AgsDevout",
+				   "the AgsDevout",
 				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_object("delay_audio_run\0",
-				   "assigned AgsDelayAudioRun\0",
-				   "the AgsDelayAudioRun which emits tic_alloc_input signal\0",
+  param_spec = g_param_spec_object("delay_audio_run",
+				   "assigned AgsDelayAudioRun",
+				   "the AgsDelayAudioRun which emits tic_alloc_input signal",
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
 
-  param_spec = g_param_spec_object("count_beats_audio_run\0",
-				   "assigned AgsCountBeatsAudioRun\0",
-				   "the AgsCount_BeatsAudioRun which just counts\0",
+  param_spec = g_param_spec_object("count_beats_audio_run",
+				   "assigned AgsCountBeatsAudioRun",
+				   "the AgsCount_BeatsAudioRun which just counts",
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -265,7 +265,7 @@ ags_play_notation_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_notation)->flags)) != 0){
 	    play_notation->tic_alloc_input_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input\0",
+	      g_signal_connect(G_OBJECT(delay_audio_run), "tic_alloc_input",
 			       G_CALLBACK(ags_play_notation_delay_tic_alloc_input_callback), play_notation);
 	  }
 	}
@@ -402,7 +402,7 @@ ags_play_notation_run_connect(AgsRunConnectable *run_connectable)
   play_notation = AGS_PLAY_NOTATION(run_connectable);
 
   if(play_notation->delay_audio_run != NULL){
-    play_notation->tic_alloc_input_handler = g_signal_connect_after(G_OBJECT(play_notation->delay_audio_run), "tic_alloc_input\0",
+    play_notation->tic_alloc_input_handler = g_signal_connect_after(G_OBJECT(play_notation->delay_audio_run), "tic_alloc_input",
 								    G_CALLBACK(ags_play_notation_delay_tic_alloc_input_callback), play_notation);
   }
 }
@@ -462,8 +462,8 @@ ags_play_notation_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "delay_audio_run\0", delay_audio_run,
-	       "count_beats_audio_run\0", count_beats_audio_run,
+	       "delay_audio_run", delay_audio_run,
+	       "count_beats_audio_run", count_beats_audio_run,
 	       NULL);
 }
 
@@ -481,7 +481,7 @@ ags_play_notation_duplicate(AgsRecall *recall,
   play_notation = AGS_PLAY_NOTATION(recall);
 
   g_object_set(G_OBJECT(play_notation),
-	       "devout\0", play_notation->devout,
+	       "devout", play_notation->devout,
 	       NULL);
 
   //FIXME:JK: write properties
@@ -537,7 +537,7 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
 	
 	recycling = selected_channel->first_recycling;
 	
-	g_message("playing: %u | %u\n\0", note->x[0], note->y);
+	g_message("playing: %u | %u\n", note->x[0], note->y);
 	
 	while(recycling != selected_channel->last_recycling){
 	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
@@ -549,7 +549,7 @@ ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
 							     attack);
 	  ags_audio_signal_connect(audio_signal);
 
-	  g_message("adding\n\0");
+	  g_message("adding\n");
 
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);

@@ -19,7 +19,7 @@
 #ifndef __AGS_TOOLBAR_MODE_STOCK_H__
 #define __AGS_TOOLBAR_MODE_STOCK_H__
 
-#define AGS_TOOLBAR_MODE_SINGLE_CHANNEL "single channel\0"
-#define AGS_TOOLBAR_MODE_GROUP_CHANNELS "group channels\0"
+#define AGS_TOOLBAR_MODE_SINGLE_CHANNEL "single channel"
+#define AGS_TOOLBAR_MODE_GROUP_CHANNELS "group channels"
 
 #endif /*__AGS_TOOLBAR_MODE_STOCK_H__*/

@@ -55,7 +55,7 @@ ags_volume_channel_get_type()
     };
 
     ags_type_volume_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-						     "AgsVolumeChannel\0",
+						     "AgsVolumeChannel",
 						     &ags_volume_channel_info,
 						     0);
     

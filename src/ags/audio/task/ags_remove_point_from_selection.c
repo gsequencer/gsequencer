@@ -57,7 +57,7 @@ ags_remove_point_from_selection_get_type()
     };
 
     ags_type_remove_point_from_selection = g_type_register_static(AGS_TYPE_TASK,
-								  "AgsRemovePointFromSelection\0",
+								  "AgsRemovePointFromSelection",
 								  &ags_remove_point_from_selection_info,
 								  0);
     

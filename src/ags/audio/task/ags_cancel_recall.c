@@ -57,7 +57,7 @@ ags_cancel_recall_get_type()
     };
 
     ags_type_cancel_recall = g_type_register_static(AGS_TYPE_TASK,
-						    "AgsCancelRecall\0",
+						    "AgsCancelRecall",
 						    &ags_cancel_recall_info,
 						    0);
     

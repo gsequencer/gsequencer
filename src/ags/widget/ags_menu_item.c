@@ -40,7 +40,7 @@ ags_menu_item_get_type(void)
     };
 
     ags_type_menu_item = g_type_register_static(AGS_TYPE_TABLE,
-					   "AgsMenuItem\0", &ags_menu_item_info,
+					   "AgsMenuItem", &ags_menu_item_info,
 					   0);
   }
 
