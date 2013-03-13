@@ -327,11 +327,11 @@ ags_devout_init(AgsDevout *devout)
 				    0, devout->buffer_size);
 
   /* main_loop */
-  pthread_attr_init(&devout->main_loop_thread_attr);
+  pthread_attr_init(&(devout->main_loop_thread_attr));
   pthread_attr_setinheritsched(&devout->main_loop_thread_attr, PTHREAD_INHERIT_SCHED);
   
-  pthread_mutexattr_init(&devout->main_loop_mutex_attr);
-  pthread_mutex_init(&devout->main_loop_mutex, &devout->main_loop_mutex_attr);
+  pthread_mutexattr_init(&(devout->main_loop_mutex_attr));
+  pthread_mutex_init(&(devout->main_loop_mutex), &(devout->main_loop_mutex_attr));
   
   pthread_cond_init(&(devout->main_loop_wait_cond), NULL);
 
@@ -342,10 +342,6 @@ ags_devout_init(AgsDevout *devout)
   //  pthread_attr_setschedpolicy(&devout->play_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&(devout->play_thread_attr), PTHREAD_INHERIT_SCHED);
   
-  pthread_mutexattr_init(&(devout->play_mutex_attr));
-  //  pthread_mutexattr_setprotocol(&devout->play_mutex_attr, PTHREAD_PRIO_INHERIT);
-  pthread_mutex_init(&(devout->play_mutex), &(devout->play_mutex_attr));
-  
   pthread_cond_init(&(devout->play_wait_cond), NULL);
 
   /* play functions */
@@ -353,9 +349,6 @@ ags_devout_init(AgsDevout *devout)
   //  pthread_attr_setschedpolicy(&devout->play_functions_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&(devout->play_functions_thread_attr), PTHREAD_INHERIT_SCHED);
   
-  pthread_mutexattr_init(&(devout->play_functions_mutex_attr));
-  //  pthread_mutexattr_setprotocol(&devout->play_functions_mutex_attr, PTHREAD_PRIO_INHERIT);
-  pthread_mutex_init(&(devout->play_functions_mutex), &(devout->play_functions_mutex_attr));
   pthread_cond_init(&(devout->play_functions_wait_cond), NULL);
 
   /* task */
@@ -363,19 +356,11 @@ ags_devout_init(AgsDevout *devout)
   //  pthread_attr_setschedpolicy(&devout->task_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&(devout->task_thread_attr), PTHREAD_INHERIT_SCHED);
   
-  pthread_mutexattr_init(&(devout->task_mutex_attr));
-  //  pthread_mutexattr_setprotocol(&devout->task_mutex_attr, PTHREAD_PRIO_INHERIT);
-  pthread_mutex_init(&(devout->task_mutex), NULL);
-
   pthread_cond_init(&(devout->task_wait_cond), NULL);
  
   /* append_task */
-  pthread_mutexattr_init(&(devout->append_task_mutex_attr));
-  pthread_mutex_init(&(devout->append_task_mutex), NULL);  
   pthread_cond_init(&(devout->append_task_wait_cond), NULL);
 
-  pthread_mutexattr_init(&(devout->append_tasks_mutex_attr));
-  pthread_mutex_init(&(devout->append_tasks_mutex), NULL);  
   pthread_cond_init(&(devout->append_tasks_wait_cond), NULL);
 
   /* */
@@ -543,23 +528,19 @@ ags_devout_finalize(GObject *gobject)
   pthread_attr_destroy(&(devout->main_loop_thread_attr));
   pthread_mutex_destroy(&(devout->main_loop_mutex));
   pthread_mutexattr_destroy(&(devout->main_loop_mutex_attr));
+  pthread_cond_destroy(&(devout->main_loop_wait_cond));
 
   pthread_attr_destroy(&(devout->play_thread_attr));
-  pthread_mutex_destroy(&(devout->play_mutex));
-  pthread_mutexattr_destroy(&(devout->play_mutex_attr));
   pthread_cond_destroy(&(devout->play_wait_cond));
 
   pthread_attr_destroy(&(devout->play_functions_thread_attr));
-  pthread_mutex_destroy(&(devout->play_functions_mutex));
-  pthread_mutexattr_destroy(&(devout->play_functions_mutex_attr));
   pthread_cond_destroy(&(devout->play_functions_wait_cond));
 
   pthread_attr_destroy(&(devout->task_thread_attr));
-  pthread_mutex_destroy(&(devout->task_mutex));
-  pthread_mutexattr_destroy(&(devout->task_mutex_attr));
   pthread_cond_destroy(&(devout->task_wait_cond));
 
   pthread_cond_destroy(&(devout->append_task_wait_cond));
+
   pthread_cond_destroy(&(devout->append_tasks_wait_cond));
 
   /* free AgsTask lists */
@@ -653,7 +634,7 @@ ags_devout_main_loop_thread(void *devout0)
     /* suspend until everything has been done */
     pthread_mutex_lock(&(devout->main_loop_mutex));
 
-    g_message("loop begin");
+    //    g_message("loop begin");
 
     if(devout->wait_sync != 0){
       devout->flags &= (~AGS_DEVOUT_WAIT_SYNC);
@@ -662,10 +643,10 @@ ags_devout_main_loop_thread(void *devout0)
 	pthread_cond_wait(&(devout->main_loop_wait_cond),
 			  &(devout->main_loop_mutex));
 
-	g_message("loop@0[%d]", devout->wait_sync);	
+	//	g_message("loop@0[%d]", devout->wait_sync);	
       }
 
-      g_message("ags_devout_main_loop_thread@generic: unlocked");
+      //      g_message("ags_devout_main_loop_thread@generic: unlocked");
     }
 
     devout->flags |= (AGS_DEVOUT_WAIT_SYNC);
@@ -694,7 +675,7 @@ ags_devout_main_loop_thread(void *devout0)
 
     /* start task thread if necessary */
     if(initial_run){
-      g_message("loop@start:");
+      //      g_message("loop@start:");
       pthread_mutex_unlock(&(devout->main_loop_mutex));
 
       pthread_create(&(devout->task_thread), NULL, &ags_devout_task_thread, devout);
@@ -720,14 +701,14 @@ ags_devout_main_loop_thread(void *devout0)
       devout->flags &= (~AGS_DEVOUT_WAIT_SYNC_TASK);
       
       while((AGS_DEVOUT_WAIT_SYNC_TASK & (devout->flags)) == 0){
-	g_message("loop@wait:1");
+	//	g_message("loop@wait:1");
 	
 	pthread_cond_wait(&(devout->main_loop_wait_cond),
 			  &(devout->main_loop_mutex));      
       }
     }
 
-    g_message("ags_devout_main_loop_thread@task: unlocked");
+    //    g_message("ags_devout_main_loop_thread@task: unlocked");
 
     devout->flags |= AGS_DEVOUT_WAIT_SYNC_TASK;
 
@@ -831,7 +812,7 @@ ags_devout_task_thread(void *devout0)
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     /* sync */
     /* wake up main_loop */
-    pthread_mutex_lock(&(devout->task_mutex));
+    pthread_mutex_lock(&(devout->main_loop_mutex));
 
     if(!initial_run){
       devout->wait_sync_task = FALSE;
@@ -852,14 +833,14 @@ ags_devout_task_thread(void *devout0)
 	
       while((AGS_DEVOUT_WAIT_TASK & (devout->flags)) == 0){
 	pthread_cond_wait(&(devout->task_wait_cond),
-			  &(devout->task_mutex));
+			  &(devout->main_loop_mutex));
       }
     }
 
     devout->task_suspend = TRUE;
     devout->task_awake = TRUE;
 
-    g_message("devout->task_suspend: unlocked");
+    //    g_message("devout->task_suspend: unlocked");
 
     devout->flags |= AGS_DEVOUT_WAIT_TASK;
 
@@ -867,12 +848,12 @@ ags_devout_task_thread(void *devout0)
       task = devout->task;
     devout->task = NULL;
       
-    pthread_mutex_unlock(&(devout->task_mutex));
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
 
     /* launch tasks */
     if(task != NULL){
       while(task != NULL){
-	g_message("ags_devout_task_thread - launching task: %s\n", G_OBJECT_TYPE_NAME(task->data));
+	//	g_message("ags_devout_task_thread - launching task: %s\n", G_OBJECT_TYPE_NAME(task->data));
 	ags_task_launch(AGS_TASK(task->data));
 	
 	task = task->next;
@@ -884,10 +865,10 @@ ags_devout_task_thread(void *devout0)
     /* sleep if wanted */
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
       //      nanosleep(&play_idle, NULL);
-      g_message("################ DEBUG ################");
+      //      g_message("################ DEBUG ################");
     }else{
       usleep(idle);
-      g_message("################ DEBUG ################");
+      //      g_message("################ DEBUG ################");
     }
 
     if(initial_run){
@@ -914,10 +895,8 @@ ags_devout_append_task_thread(void *ptr)
 
   free(append);
 
-  pthread_mutex_init(&mutex, NULL);
-
   /* sync */
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&(devout->main_loop_mutex));
 
   initial_wait = TRUE;
   devout->task_pending = devout->task_pending + 1;
@@ -927,14 +906,14 @@ ags_devout_append_task_thread(void *ptr)
     initial_wait = FALSE;
 
     pthread_cond_wait(&(devout->append_task_wait_cond),
-			&mutex);
+		      &(devout->main_loop_mutex));
   }
 
   /*  */
   devout->append_task_suspend = devout->append_task_suspend - 1;
   devout->wait_sync = devout->wait_sync - 1;
 
-  g_message("ags_devout_append_task_thread ------------------------- %d", devout->append_task_suspend);
+  //  g_message("ags_devout_append_task_thread ------------------------- %d", devout->append_task_suspend);
 
   /* append to queue */
   devout->task_queued = devout->task_queued + 1;
@@ -948,9 +927,7 @@ ags_devout_append_task_thread(void *ptr)
     pthread_cond_signal(&(devout->main_loop_wait_cond));
   }
 
-  pthread_mutex_unlock(&mutex);
-
-  pthread_mutex_destroy(&mutex);
+  pthread_mutex_unlock(&(devout->main_loop_mutex));
 
   /*  */
   pthread_exit(NULL);
@@ -995,10 +972,8 @@ ags_devout_append_tasks_thread(void *ptr)
 
   free(append);
 
-  pthread_mutex_init(&mutex, NULL);
-
   /* sync */
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&(devout->main_loop_mutex));
 
   initial_wait = TRUE;
   devout->tasks_pending = devout->tasks_pending + 1;
@@ -1008,7 +983,7 @@ ags_devout_append_tasks_thread(void *ptr)
     initial_wait = FALSE;
 
     pthread_cond_wait(&(devout->append_tasks_wait_cond),
-			&mutex);
+		      &(devout->main_loop_mutex));
   }
   
   /*  */  
@@ -1027,9 +1002,7 @@ ags_devout_append_tasks_thread(void *ptr)
     pthread_cond_signal(&(devout->main_loop_wait_cond));
   }
 
-  pthread_mutex_unlock(&mutex);
-
-  pthread_mutex_destroy(&mutex);
+  pthread_mutex_unlock(&(devout->main_loop_mutex));
 
   /*  */
   pthread_exit(NULL);
@@ -1117,11 +1090,9 @@ ags_devout_play_recall(AgsDevout *devout)
     if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
       //TODO:JK: check if these mutices can be removed
       //g_static_mutex_lock(&mutex);
-      pthread_mutex_lock(&mutex);
       devout->play_recall_ref = devout->play_recall_ref - 1;
       devout->play_recall = g_list_remove(devout->play_recall, (gpointer) recall);
       //g_static_mutex_unlock(&mutex);
-      pthread_mutex_unlock(&mutex);
 
       ags_recall_remove(recall);
     }
@@ -1385,7 +1356,7 @@ ags_devout_play_functions(void *devout0)
   GList *task, *task_next;
   gboolean initial_run;
 
-  g_message("ags_devout_play_functions:  start\n");
+  //  g_message("ags_devout_play_functions:  start\n");
   devout = (AgsDevout *) devout0;
   
   initial_run = TRUE;
@@ -1393,9 +1364,9 @@ ags_devout_play_functions(void *devout0)
   while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     /* sync */
     /* wake up main_loop */
-    pthread_mutex_lock(&(devout->play_functions_mutex));
+    pthread_mutex_lock(&(devout->main_loop_mutex));
     
-    g_message("ags_devout_play_functions");
+    //    g_message("ags_devout_play_functions");
 
     if(!initial_run){
       devout->play_functions_suspend = TRUE;
@@ -1414,16 +1385,16 @@ ags_devout_play_functions(void *devout0)
       
       while((AGS_DEVOUT_WAIT_PLAY_FUNCTIONS & (devout->flags)) == 0){
 	pthread_cond_wait(&(devout->play_functions_wait_cond),
-			  &(devout->play_functions_mutex));
+			  &(devout->main_loop_mutex));
       }
     }
 
     devout->play_functions_awake = TRUE;
-    g_message("ags_devout_play_functions: unlocked");
+    //    g_message("ags_devout_play_functions: unlocked");
 
     devout->flags |= AGS_DEVOUT_WAIT_PLAY_FUNCTIONS;
     
-    pthread_mutex_unlock(&(devout->play_functions_mutex));
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
 
     /* play channel */
     if((AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0){
@@ -1554,9 +1525,9 @@ ags_devout_alsa_play(void *devout0)
   while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     /* sync */
     /* wake up main_loop */
-    pthread_mutex_lock(&(devout->play_mutex));
+    pthread_mutex_lock(&(devout->main_loop_mutex));
 
-    g_message("ags_devout_alsa_play");
+    //    g_message("ags_devout_alsa_play");
 
     if(!initial_run){
       devout->play_suspend = TRUE;
@@ -1575,16 +1546,16 @@ ags_devout_alsa_play(void *devout0)
 
       while((AGS_DEVOUT_WAIT_PLAY & (devout->flags)) == 0){
 	pthread_cond_wait(&(devout->play_wait_cond),
-			  &(devout->play_mutex));
+			  &(devout->main_loop_mutex));
       }
     }
 
     devout->play_awake = TRUE;
-    g_message("ags_devout_alsa_play: unlocked");
+    //    g_message("ags_devout_alsa_play: unlocked");
 
     devout->flags |= AGS_DEVOUT_WAIT_PLAY;
 
-    pthread_mutex_unlock(&(devout->play_mutex));
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
 
     /*  */
     if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){

@@ -153,38 +153,28 @@ struct _AgsDevout
   gboolean play_awake;
   pthread_t play_thread;
   pthread_attr_t play_thread_attr;
-  pthread_mutex_t play_mutex;
-  pthread_mutexattr_t play_mutex_attr;
   pthread_cond_t play_wait_cond;
 
   gboolean play_functions_suspend;
   gboolean play_functions_awake;
   pthread_t play_functions_thread;
   pthread_attr_t play_functions_thread_attr;
-  pthread_mutex_t play_functions_mutex;
-  pthread_mutexattr_t play_functions_mutex_attr;
   pthread_cond_t play_functions_wait_cond;
 
   gboolean task_suspend;
   gboolean task_awake;
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
-  pthread_mutex_t task_mutex;
-  pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
 
   guint task_queued;
   guint task_pending;
   guint append_task_suspend;
-  pthread_mutex_t append_task_mutex;
-  pthread_mutexattr_t append_task_mutex_attr;
   pthread_cond_t append_task_wait_cond;
 
   guint tasks_queued;
   guint tasks_pending;
   guint append_tasks_suspend;
-  pthread_mutex_t append_tasks_mutex;
-  pthread_mutexattr_t append_tasks_mutex_attr;
   pthread_cond_t append_tasks_wait_cond;
 
   GList *task;
