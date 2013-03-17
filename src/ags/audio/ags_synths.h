@@ -25,17 +25,17 @@
 
 #include <ags/audio/ags_devout.h>
 
-void ags_synth_sin(AgsDevout *devout, short *buffer, guint offset,
+void ags_synth_sin(AgsDevout *devout, signed short *buffer, guint offset,
 		   guint freq, guint phase, guint length,
 		   double volume);
 
-void ags_synth_saw(AgsDevout *devout, short *buffer, guint offset,
+void ags_synth_saw(AgsDevout *devout, signed short *buffer, guint offset,
 		   guint freq, guint phase, guint length,
 		   double volume);
-void ags_synth_triangle(AgsDevout *devout, short *buffer, guint offset,
+void ags_synth_triangle(AgsDevout *devout, signed short *buffer, guint offset,
 			guint freq, guint phase, guint length,
 			double volume);
-void ags_synth_square(AgsDevout *devout, short *buffer, guint offset,
+void ags_synth_square(AgsDevout *devout, signed short *buffer, guint offset,
 		      guint freq, guint phase, guint length,
 		      double volume);
 

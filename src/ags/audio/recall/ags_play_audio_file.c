@@ -328,7 +328,7 @@ ags_play_audio_file_run_inter(AgsRecall *recall)
 
   /*
   AgsPlayAudioFile *play_audio_file;
-  short *buffer;
+  signed short *buffer;
   guint i0, i1, j, stop;
   gboolean play_done;
 

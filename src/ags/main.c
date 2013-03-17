@@ -262,7 +262,7 @@ main(int argc, char **argv)
   AgsMatrix *matrix;
   AgsSynth *synth;
   AgsChannel *in, *out;
-  short *buffer;
+  signed short *buffer;
 
   LIBXML_TEST_VERSION;
 

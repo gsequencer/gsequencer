@@ -61,9 +61,9 @@ void ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 				guint *channels, guint *frames,
 				guint *loop_start, guint *loop_end,
 				GError **error);
-short* ags_ipatch_sf2_reader_read(AgsPlayable *playable,
-				  guint channel,
-				  GError **error);
+signed short* ags_ipatch_sf2_reader_read(AgsPlayable *playable,
+					 guint channel,
+					 GError **error);
 
 void ags_ipatch_sf2_reader_close(AgsPlayable *playable);
 
@@ -650,13 +650,13 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
   }
 }
 
-short*
+signed short*
 ags_ipatch_sf2_reader_read(AgsPlayable *playable,
 			   guint channel,
 			   GError **error)
 {
   AgsIpatchSF2Reader *ipatch_sf2_reader;
-  short *buffer;
+  signed short *buffer;
   guint frames;
   GError *this_error;
 
@@ -668,7 +668,7 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable,
     if(ipatch_sf2_reader->zone != NULL){
       //TODO:JK: get endianess and set it for format
       frames = ipatch_sample_get_frame_size(IPATCH_SAMPLE(ipatch_sf2_reader->zone));
-      buffer = (short *) malloc(2 * frames * sizeof(short));
+      buffer = (signed short *) malloc(2 * frames * sizeof(signed short));
 
       this_error = NULL;
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sf2_reader->zone),
@@ -697,7 +697,7 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable,
 				    NULL);
 
     frames = ipatch_sample_get_frame_size(IPATCH_SAMPLE(sample));
-    buffer = (short *) malloc(2 * frames * sizeof(short));
+    buffer = (signed short *) malloc(2 * frames * sizeof(signed short));
 
     if(ipatch_sf2_reader->zone != NULL){
       //TODO:JK: get endianess and set it for format

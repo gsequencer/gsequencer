@@ -39,7 +39,7 @@ void ags_sndfile_info(AgsPlayable *playable,
 		      guint *channels, guint *frames,
 		      guint *loop_start, guint *loop_end,
 		      GError **error);
-short* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
+signed short* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
 void ags_sndfile_close(AgsPlayable *playable);
 
 static gpointer ags_sndfile_parent_class = NULL;
@@ -227,24 +227,24 @@ ags_sndfile_info(AgsPlayable *playable,
   *loop_end = 0;
 }
 
-short*
+signed short*
 ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 {
   AgsSndfile *sndfile;
-  short *buffer, *source;
+  signed short *buffer, *source;
   guint i;
 
   sndfile = AGS_SNDFILE(playable);
 
-  source = (short *) malloc(sndfile->info->channels *
-			    sndfile->info->frames *
-			    sizeof(short));
-
+  source = (signed short *) malloc((size_t) sndfile->info->channels *
+				   sndfile->info->frames *
+				   sizeof(signed short));
+  
   sf_seek(sndfile->file, 0, SEEK_SET);
   sf_read_short(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
 
-  buffer = (short *) malloc(sndfile->info->frames *
-			    sizeof(short));
+  buffer = (signed short *) malloc((size_t) sndfile->info->frames *
+				   sizeof(signed short));
 
   for(i = 0; i < sndfile->info->frames; i++){
     buffer[i] = source[i * sndfile->info->channels + channel];

@@ -317,11 +317,11 @@ ags_devout_init(AgsDevout *devout)
 
   //  devout->note_offset = 0;
 
-  devout->buffer = (short **) malloc(4 * sizeof(short*));
-  devout->buffer[0] = (short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(short));
-  devout->buffer[1] = (short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(short));
-  devout->buffer[2] = (short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(short));
-  devout->buffer[3] = (short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(short));
+  devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
+  devout->buffer[0] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  devout->buffer[1] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  devout->buffer[2] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  devout->buffer[3] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
 
   devout->bpm = 0.0;
   devout->delay = 0;
@@ -1308,10 +1308,10 @@ ags_devout_real_run(AgsDevout *devout)
   /* start */
   ags_devout_alsa_init(devout);
 
-  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
-  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
-  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
-  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(short));
+  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
 
   devout->flags |= (AGS_DEVOUT_BUFFER0 |
 		    AGS_DEVOUT_PLAY);
@@ -1572,11 +1572,13 @@ ags_devout_alsa_init(AgsDevout *devout)
   /* Set period size to devout->buffer_size frames. */
   frames = 128;//devout->buffer_size;
 
+  snd_pcm_hw_params_set_buffer_size(devout->out.alsa.handle,
+				    devout->out.alsa.params, frames);
+
   snd_pcm_hw_params_set_period_size(devout->out.alsa.handle,
 				    devout->out.alsa.params, frames, dir);
 
-
-  //  snd_pcm_hw_params_set_rate_resample(devout->out.alsa.handle,
+  //snd_pcm_hw_params_set_rate_resample(devout->out.alsa.handle,
   //				      devout->out.alsa.params, frames);
 
   /* Write the parameters to the driver */
@@ -1652,9 +1654,9 @@ ags_devout_alsa_play(void *devout0)
 
     /*  */
     if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-      memset(devout->buffer[3], 0, 256 * sizeof(short));
+      memset(devout->buffer[3], 0, (size_t) 256 * sizeof(signed short));
 
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[0], 128);
+      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[0], (snd_pcm_sframes_t) 128);
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
@@ -1668,9 +1670,9 @@ ags_devout_alsa_play(void *devout0)
 
       //      g_message("ags_devout_play 0\n");
     }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-      memset(devout->buffer[0], 0, 256 * sizeof(short));
+      memset(devout->buffer[0], 0, (size_t) 256 * sizeof(signed short));
 
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[1], 128);
+      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[1], (snd_pcm_sframes_t) 128);
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
@@ -1684,9 +1686,9 @@ ags_devout_alsa_play(void *devout0)
 
       //      g_message("ags_devout_play 1\n");
     }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-      memset(devout->buffer[1], 0, 256 * sizeof(short));
+      memset(devout->buffer[1], 0, (size_t) 256 * sizeof(signed short));
 
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[2], 128);
+      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[2], (snd_pcm_sframes_t) 128);
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
@@ -1700,9 +1702,9 @@ ags_devout_alsa_play(void *devout0)
 
       //      g_message("ags_devout_play 2\n");
     }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-      memset(devout->buffer[2], 0, 256 * sizeof(short));
+      memset(devout->buffer[2], 0, (size_t) 256 * sizeof(signed short));
 
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[3], 128);
+      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[3], (snd_pcm_sframes_t) 128);
 
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
@@ -1729,7 +1731,7 @@ ags_devout_alsa_play(void *devout0)
   }
 
   if((AGS_DEVOUT_BUFFER0 & devout->flags) != 0){
-    memset(devout->buffer[3], 0, 256 * sizeof(short));
+    memset(devout->buffer[3], 0, 256 * sizeof(signed short));
 
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[0], 128);
     
@@ -1745,7 +1747,7 @@ ags_devout_alsa_play(void *devout0)
     
     devout->flags &= (~AGS_DEVOUT_BUFFER0);
   }else if((AGS_DEVOUT_BUFFER1 & devout->flags) != 0){
-    memset(devout->buffer[0], 0, 256 * sizeof(short));
+    memset(devout->buffer[0], 0, 256 * sizeof(signed short));
 
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[1], 128);
     
@@ -1761,7 +1763,7 @@ ags_devout_alsa_play(void *devout0)
 
     devout->flags &= (~AGS_DEVOUT_BUFFER1);
   }else if((AGS_DEVOUT_BUFFER2 & devout->flags) != 0){
-    memset(devout->buffer[1], 0, 256 * sizeof(short));
+    memset(devout->buffer[1], 0, 256 * sizeof(signed short));
 
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[2], 128);
     
@@ -1777,7 +1779,7 @@ ags_devout_alsa_play(void *devout0)
 
     devout->flags &= (~AGS_DEVOUT_BUFFER2);
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[2], 0, 256 * sizeof(short));
+    memset(devout->buffer[2], 0, 256 * sizeof(signed short));
 
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[3], 128);
     

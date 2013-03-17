@@ -85,7 +85,7 @@ struct _AgsAttack
 
 GType ags_audio_signal_get_type();
 
-short* ags_stream_alloc(guint buffer_size);
+signed short* ags_stream_alloc(guint buffer_size);
 
 AgsAttack* ags_attack_alloc(guint first_start, guint first_length,
 			    guint second_start, guint second_length);
@@ -98,8 +98,8 @@ void ags_audio_signal_add_stream(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length);
 
-void ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels,
-					    short *source, guint schannels, guint size);
+void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
+					    signed short *source, guint schannels, guint size);
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template,

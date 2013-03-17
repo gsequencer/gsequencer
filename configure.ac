@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.68])
 AC_INIT([ags], [0.3.16-SNAPSHOT], [joel@weedlight.ch])
 AM_INIT_AUTOMAKE([ags], [0.3.15-SNAPSHOT])
 AC_CONFIG_SRCDIR([src/ags/main.c])

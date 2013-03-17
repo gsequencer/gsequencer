@@ -209,7 +209,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsRecycling *recycling;
   AgsAudioSignal *source;
   GList *stream;
-  short *buffer0, *buffer1;
+  signed short *buffer0, *buffer1;
   AgsAttack *attack;
   guint audio_channel;
 
@@ -243,12 +243,12 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   audio_channel = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel;
 
   ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
-					 (short *) stream->data, 1,
+					 (signed short *) stream->data, 1,
 					 devout->buffer_size);
 
 //  if(attack->first_start != 0){
 //    ags_audio_signal_copy_buffer_to_buffer(&(buffer1[audio_channel]), devout->pcm_channels,
-//					   &(((short *) stream->data)[attack->first_length]), 1,
+//					   &(((signed short *) stream->data)[attack->first_length]), 1,
 //					   attack->first_start);
 //  }
   /* call parent */

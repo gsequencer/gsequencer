@@ -214,13 +214,13 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   if(stream_destination->next == NULL)
     ags_audio_signal_add_stream(destination);
 
-  ags_audio_signal_copy_buffer_to_buffer((short *) stream_destination->data, 1,
-					 (short *) stream_source->data, 1,
+  ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
+					 (signed short *) stream_source->data, 1,
 					 attack->first_length);
 
   //  if(attack->first_start != 0){
-  //    ags_audio_signal_copy_buffer_to_buffer((short *) stream_destination->data, 1,
-  //					   &(((short *) stream_source->data)[attack->first_length]), 1,
+  //    ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
+  //					   &(((signed short *) stream_source->data)[attack->first_length]), 1,
   //					   attack->first_start);
   //  }
 }

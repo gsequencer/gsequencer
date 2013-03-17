@@ -171,20 +171,20 @@ ags_apply_synth_launch(AgsTask *task)
 				    double volume){
     switch(wave){
     case AGS_APPLY_SYNTH_SIN:
-      ags_synth_sin(devout, (short *) stream->data,
+      ags_synth_sin(devout, (signed short *) stream->data,
 		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SAW:
-      ags_synth_saw(devout, (short *) stream->data,
+      ags_synth_saw(devout, (signed short *) stream->data,
 		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SQUARE:
-      ags_synth_square(devout, (short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_square(devout, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     case AGS_APPLY_SYNTH_TRIANGLE:
-      ags_synth_triangle(devout, (short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_triangle(devout, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     default:
       g_warning("ags_apply_synth_launch_write: warning no wave selected\n");

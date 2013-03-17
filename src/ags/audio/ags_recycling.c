@@ -307,7 +307,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	    k++, template_k++, frames_looped_copied++){
 
 	  /* copy audio data from template to new AgsAudioSignal */
-	  ((short*) stream->data)[k] = ((short*) template_stream->data)[template_k];    
+	  ((signed short*) stream->data)[k] = ((signed short*) template_stream->data)[template_k];    
 	}
       }
 
@@ -331,7 +331,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	  template_stream != NULL && frames_looped_copied < loop_frames && k < devout->buffer_size && template_k < devout->buffer_size;
 	  k++, template_k++, frames_copied++){
 	/* copy audio data from template to new AgsAudioSignal */
-	((short*) stream->data)[k] = ((short*) template_stream->data)[template_k];
+	((signed short*) stream->data)[k] = ((signed short*) template_stream->data)[template_k];
       }
     }
   }

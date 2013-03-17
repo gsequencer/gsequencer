@@ -286,13 +286,13 @@ ags_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }
 
-short*
+signed short*
 ags_stream_alloc(guint buffer_size)
 {
-  short *buffer;
+  signed short *buffer;
 
-  buffer = (short *) malloc(buffer_size * sizeof(short));
-  memset(buffer, 0, buffer_size * sizeof(short));
+  buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
+  memset(buffer, 0, buffer_size * sizeof(signed short));
 
   return(buffer);
 }
@@ -530,7 +530,7 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 
     while(stream != NULL){
       stream_next = stream->next;
-      free((short *) stream->data);
+      free((signed short *) stream->data);
       g_list_free1(stream);
       stream = stream_next;
     }
@@ -574,12 +574,12 @@ ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length)
  * Copy a buffer to an other buffer.
  */
 void
-ags_audio_signal_copy_buffer_to_buffer(short *destination, guint dchannels, short *source, guint schannels, guint size)
+ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels, signed short *source, guint schannels, guint size)
 {
   guint i;
 
   for(i = 0; i < size; i++){
-    destination[0] = (short) ((0xffff) & ((int)destination[0] + (int)source[0]));
+    destination[0] = (signed short) ((0xffff) & ((int)destination[0] + (int)source[0]));
 
     destination += dchannels;
     source += schannels;
@@ -592,7 +592,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				  guint attack)
 {
   GList *template_stream, *stream, *start;
-  short *buffer;
+  signed short *buffer;
   guint size;
   guint k, template_k;
 
@@ -608,7 +608,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
     devout = AGS_DEVOUT(audio_signal->devout);
 
-    size = devout->buffer_size * sizeof(short);
+    size = devout->buffer_size * sizeof(signed short);
 
     ags_audio_signal_stream_resize(audio_signal, template->length);
     
@@ -638,7 +638,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 	  template_stream != NULL && k < devout->buffer_size && template_k < devout->buffer_size;
 	  k++, template_k++){
 	/* copy audio data from template to new AgsAudioSignal */
-	((short*) stream->data)[k] = ((short*) template_stream->data)[template_k];
+	((signed short*) stream->data)[k] = ((signed short*) template_stream->data)[template_k];
       }
     }
 
@@ -726,7 +726,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 {
   AgsDevout *devout;
   GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
-  short *template_buffer, *audio_signal_buffer;
+  signed short *template_buffer, *audio_signal_buffer;
   guint buffer_size;
   guint template_length, mod_template_length, mod_template_length_odd;
   guint remaining_length;
@@ -754,11 +754,11 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 
   /* write buffers */
   for(i = 0; i < length - buffer_size; i += buffer_size){
-    audio_signal_buffer = (short *) malloc(buffer_size * sizeof(short));
+    audio_signal_buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
     audio_signal_stream = g_list_prepend(audio_signal_stream,
 					 audio_signal_buffer);
 
-    template_buffer = (short *) template_stream->data;
+    template_buffer = (signed short *) template_stream->data;
 
     if(template_length < buffer_size){
       ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer, 1,

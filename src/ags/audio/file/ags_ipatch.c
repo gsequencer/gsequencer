@@ -47,8 +47,8 @@ void ags_ipatch_info(AgsPlayable *playable,
 		     guint *channels, guint *frames,
 		     guint *loop_start, guint *loop_end,
 		     GError **error);
-short* ags_ipatch_read(AgsPlayable *playable, guint channel,
-		       GError **error);
+signed short* ags_ipatch_read(AgsPlayable *playable, guint channel,
+			      GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
 
 static gpointer ags_ipatch_parent_class = NULL;
@@ -367,12 +367,12 @@ ags_ipatch_info(AgsPlayable *playable,
   /* empty */
 }
 
-short*
+signed short*
 ags_ipatch_read(AgsPlayable *playable, guint channel,
 		GError **error)
 {
   AgsIpatch *ipatch;
-  short *buffer, *source;
+  signed short *buffer, *source;
   guint i;
 
   ipatch = AGS_IPATCH(playable);

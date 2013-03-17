@@ -117,7 +117,7 @@ struct _AgsDevout
   //  guint note_counter;
   //  guint note_offset; // corresponds to AgsNote->x
 
-  short** buffer;
+  signed short** buffer;
 
   double bpm; // beats per minute
   guint delay; // delay between tic change

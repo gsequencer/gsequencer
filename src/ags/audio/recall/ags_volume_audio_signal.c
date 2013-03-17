@@ -207,17 +207,17 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsDevout *devout;
     AgsVolumeChannelRun *volume_channel_run;
-    short *buffer;
+    signed short *buffer;
     guint i;
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source->devout);
 
     volume_channel_run = AGS_VOLUME_CHANNEL_RUN(recall->parent->parent);
 
-    buffer = (short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
+    buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
 
     for(i = 0; i < devout->buffer_size; i++){
-      buffer[i] = (short) ((0xffff) & (int)((gdouble)volume_channel_run->volume[0] * (gdouble)buffer[i]));
+      buffer[i] = (signed short) ((0xffff) & (int)((gdouble)volume_channel_run->volume[0] * (gdouble)buffer[i]));
     }
   }else{
     ags_recall_done(recall);

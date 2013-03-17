@@ -67,9 +67,9 @@ struct _AgsPlayableInterface
 	       guint *channels, guint *frames,
 	       guint *loop_start, guint *loop_end,
 	       GError **error);
-  short* (*read)(AgsPlayable *playable,
-		 guint channel,
-		 GError **error);
+  signed short* (*read)(AgsPlayable *playable,
+			guint channel,
+			GError **error);
 
   void (*close)(AgsPlayable *playable);
 };
@@ -97,9 +97,9 @@ void ags_playable_info(AgsPlayable *playable,
 		       guint *channels, guint *frames,
 		       guint *loop_start, guint *loop_end,
 		       GError **error);
-short* ags_playable_read(AgsPlayable *playable,
-			 guint channel,
-			 GError **error);
+signed short* ags_playable_read(AgsPlayable *playable,
+				guint channel,
+				GError **error);
 
 void ags_playable_close(AgsPlayable *playable);
 
