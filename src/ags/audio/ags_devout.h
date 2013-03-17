@@ -68,7 +68,7 @@ typedef enum
   AGS_DEVOUT_WAIT_PLAY                      = 1 << 8,
   AGS_DEVOUT_WAIT_PLAY_FUNCTIONS            = 1 << 9,
   AGS_DEVOUT_WAIT_TASK                      = 1 << 10,
-  AGS_DEVOUT_WAIT_APPEND_TASK               = 1 << 11,
+  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 11,
 
   AGS_DEVOUT_LIBAO                          = 1 << 12,
   AGS_DEVOUT_OSS                            = 1 << 13,
