@@ -64,11 +64,12 @@ typedef enum
   AGS_DEVOUT_PLAY                           = 1 << 5,
 
   AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
-  AGS_DEVOUT_WAIT_SYNC_TASK                 = 1 << 7,
-  AGS_DEVOUT_WAIT_PLAY                      = 1 << 8,
-  AGS_DEVOUT_WAIT_PLAY_FUNCTIONS            = 1 << 9,
-  AGS_DEVOUT_WAIT_TASK                      = 1 << 10,
-  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 11,
+  AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
+  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 8,
+
+  AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 9,
+  AGS_DEVOUT_TASK_WAIT_PLAY_FUNCTIONS       = 1 << 10,
+  AGS_DEVOUT_TASK_SYNC_SIGNALED             = 1 << 11,
 
   AGS_DEVOUT_LIBAO                          = 1 << 12,
   AGS_DEVOUT_OSS                            = 1 << 13,
@@ -147,25 +148,23 @@ struct _AgsDevout
   pthread_mutexattr_t main_loop_mutex_attr;
   pthread_cond_t main_loop_wait_cond;
   gint wait_sync;
-  gboolean wait_sync_task;
 
   gboolean play_suspend;
-  gboolean play_awake;
   pthread_t play_thread;
   pthread_attr_t play_thread_attr;
   pthread_cond_t play_wait_cond;
 
+  pthread_t task_thread;
+  pthread_attr_t task_thread_attr;
+  pthread_mutex_t task_mutex;
+  pthread_mutexattr_t task_mutex_attr;
+  pthread_cond_t task_wait_cond;
+  int wait_task_sync;
+
   gboolean play_functions_suspend;
-  gboolean play_functions_awake;
   pthread_t play_functions_thread;
   pthread_attr_t play_functions_thread_attr;
   pthread_cond_t play_functions_wait_cond;
-
-  gboolean task_suspend;
-  gboolean task_awake;
-  pthread_t task_thread;
-  pthread_attr_t task_thread_attr;
-  pthread_cond_t task_wait_cond;
 
   guint task_queued;
   guint task_pending;
