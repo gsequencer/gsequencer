@@ -68,26 +68,27 @@ typedef enum
   AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 8,
 
   AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 9,
-  AGS_DEVOUT_TASK_WAIT_PLAY_FUNCTIONS       = 1 << 10,
-  AGS_DEVOUT_TASK_SYNC_SIGNALED             = 1 << 11,
+  AGS_DEVOUT_TASK_WAIT                      = 1 << 10,
+  AGS_DEVOUT_TASK_WAIT_PLAY_FUNCTIONS       = 1 << 11,
+  AGS_DEVOUT_TASK_SYNC_SIGNALED             = 1 << 12,
 
-  AGS_DEVOUT_LIBAO                          = 1 << 12,
-  AGS_DEVOUT_OSS                            = 1 << 13,
-  AGS_DEVOUT_ALSA                           = 1 << 14,
+  AGS_DEVOUT_LIBAO                          = 1 << 13,
+  AGS_DEVOUT_OSS                            = 1 << 14,
+  AGS_DEVOUT_ALSA                           = 1 << 15,
 
-  AGS_DEVOUT_PLAY_RECALL                    = 1 << 15,
-  AGS_DEVOUT_PLAYING_RECALL                 = 1 << 16,
-  AGS_DEVOUT_PLAY_RECALL_TERMINATING        = 1 << 17,
-  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 18,
-  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 19,
-  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING       = 1 << 20,
-  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 21,
-  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 22,
-  AGS_DEVOUT_PLAY_AUDIO_TERMINATING         = 1 << 23,
-  AGS_DEVOUT_PLAY_NOTE                      = 1 << 24,
+  AGS_DEVOUT_PLAY_RECALL                    = 1 << 16,
+  AGS_DEVOUT_PLAYING_RECALL                 = 1 << 17,
+  AGS_DEVOUT_PLAY_RECALL_TERMINATING        = 1 << 18,
+  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 19,
+  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 20,
+  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING       = 1 << 21,
+  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 22,
+  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 23,
+  AGS_DEVOUT_PLAY_AUDIO_TERMINATING         = 1 << 24,
+  AGS_DEVOUT_PLAY_NOTE                      = 1 << 25,
 
-  AGS_DEVOUT_SHUTDOWN                       = 1 << 25,
-  AGS_DEVOUT_START_PLAY                     = 1 << 26,
+  AGS_DEVOUT_SHUTDOWN                       = 1 << 26,
+  AGS_DEVOUT_START_PLAY                     = 1 << 27,
 }AgsDevoutFlags;
 
 typedef enum
@@ -159,6 +160,8 @@ struct _AgsDevout
   pthread_mutex_t task_mutex;
   pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
+  pthread_cond_t task_sync_wait_cond;
+  gboolean task_suspend;
   int wait_task_sync;
 
   gboolean play_functions_suspend;
