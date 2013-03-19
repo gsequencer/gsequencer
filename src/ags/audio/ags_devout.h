@@ -65,10 +65,10 @@ typedef enum
 
   AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
   AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
-  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 8,
+  AGS_DEVOUT_WAIT_TASK                      = 1 << 8,
+  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 9,
 
-  AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 9,
-  AGS_DEVOUT_TASK_WAIT                      = 1 << 10,
+  AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 10,
   AGS_DEVOUT_TASK_WAIT_PLAY_FUNCTIONS       = 1 << 11,
   AGS_DEVOUT_TASK_SYNC_SIGNALED             = 1 << 12,
 
