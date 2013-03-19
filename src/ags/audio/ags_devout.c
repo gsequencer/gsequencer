@@ -95,7 +95,7 @@ enum{
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
 
-/* dangerous */
+/* dangerous - produces a lot of output */
 static gboolean DEBUG_DEVOUT = TRUE;
 
 GType
@@ -642,7 +642,9 @@ ags_devout_main_loop_thread(void *devout0)
     if(devout->wait_sync != 0 &&
        !initial_run){
       	
-      while(devout->wait_sync != 0){
+      while(devout->wait_sync != 0 &&
+	    !(devout->play_suspend &&
+	      devout->task_suspend)){
 	devout->flags &= (~AGS_DEVOUT_WAIT_SYNC);
 	devout->flags &= (~AGS_DEVOUT_SYNC_SIGNALED);
 
@@ -888,7 +890,8 @@ ags_devout_task_thread(void *devout0)
     /* suspend for play_functions */
     if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
       if(devout->wait_task_sync != 0){
-	while(devout->wait_task_sync != 0){
+	while(devout->wait_task_sync != 0 &&
+	      !(devout->play_functions_suspend)){
 	  devout->flags &= (~AGS_DEVOUT_TASK_WAIT_SYNC);
 	  devout->flags &= (~AGS_DEVOUT_TASK_SYNC_SIGNALED);	  
 	
