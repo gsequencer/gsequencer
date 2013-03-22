@@ -585,7 +585,7 @@ PACKAGE_STRING='ags 0.3.16-SNAPSHOT'
 PACKAGE_BUGREPORT='joel@weedlight.ch'
 PACKAGE_URL=''
 
-ac_unique_file="src/ags/main.c"
+ac_unique_file="src"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>

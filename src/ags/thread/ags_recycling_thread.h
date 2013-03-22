@@ -19,19 +19,22 @@
 #ifndef __AGS_RECYCLING_THREAD_H__
 #define __AGS_RECYCLING_THREAD_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 typedef struct _AgsRecyclingThread AgsRecyclingThread;
 typedef struct _AgsRecyclingThreadClass AgsRecyclingThreadClass;
 
 struct _AgsRecyclingThread
 {
-  AgsThread thread;
+  //  AgsThread thread;
 
-  AgsRecycling *recycling;
+  //  AgsRecycling *recycling;
 };
 
 struct _AgsRecyclingThreadClass
 {
-  AgsThreadClass thread;
+  //  AgsThreadClass thread;
 };
 
 GType ags_recycling_thread_get_type();

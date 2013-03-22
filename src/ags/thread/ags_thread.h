@@ -26,35 +26,5 @@
 #define __USE_UNIX98
 #include <pthread.h>
 
-typedef struct _AgsThread AgsThread;
-typedef struct _AgsThreadClass AgsThreadClass;
-
-typedef enum
-{
-  AGS_THREAD_SUSPEND   = 1,
-  AGS_THREAD_WAIT      = 1 << 1,
-}AgsThreadFlags;
-
-struct _AgsThread
-{
-  GObject object;
-
-  guint flags;
-
-  pthread_t thread;
-  pthread_mutex_t mutex;
-  pthread_cond_t wait_cond;
-
-  AgsInterceptor *interceptor;
-};
-
-struct _AgsThreadClass
-{
-  GObjectClass object;
-};
-
-GType ags_thread_get_type();
-
-AgsThread* ags_thread_new();
 
 #endif /*__AGS_THREAD_H__*/

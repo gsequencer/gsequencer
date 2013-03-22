@@ -46,8 +46,8 @@ struct _AgsInterceptor
   pthread_mutex_t mutex;
   pthread_cond_t wait_cond;
 
-  GObject *sync;
-  GObject *thread;
+  //  GObject *sync;
+  //  GObject *thread;
 };
 
 struct _AgsInterceptorClass

@@ -4,7 +4,7 @@
 AC_PREREQ([2.68])
 AC_INIT([ags], [0.3.16-SNAPSHOT], [joel@weedlight.ch])
 AM_INIT_AUTOMAKE([ags], [0.3.15-SNAPSHOT])
-AC_CONFIG_SRCDIR([src/ags/main.c])
+AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.

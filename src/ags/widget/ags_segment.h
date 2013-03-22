@@ -38,7 +38,7 @@ typedef enum{
   AGS_SEGMENT_COLOR_RED       = 1 <<  1,
   AGS_SEGMENT_COLOR_BLUE      = 1 <<  2,
   AGS_SGEMENT_COLOR_GREEN     = 1 <<  3,
-};
+}AGS_SEGMENT_FLAGS;
 
 typedef enum{
   AGS_SEGMENT_UPPER_LEFT                = 1,
