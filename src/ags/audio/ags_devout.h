@@ -66,11 +66,11 @@ typedef enum
   AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
   AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
   AGS_DEVOUT_WAIT_TASK                      = 1 << 8,
-  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 9,
+  //  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 9,
 
-  AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 10,
-  AGS_DEVOUT_TASK_WAIT_PLAY_FUNCTIONS       = 1 << 11,
-  AGS_DEVOUT_TASK_SYNC_SIGNALED             = 1 << 12,
+  //  AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 10,
+  //  AGS_DEVOUT_TASK_WAIT_PLAY_FUNCTIONS       = 1 << 11,
+  //  AGS_DEVOUT_TASK_SYNC_SIGNALED             = 1 << 12,
 
   AGS_DEVOUT_LIBAO                          = 1 << 13,
   AGS_DEVOUT_OSS                            = 1 << 14,
@@ -155,19 +155,10 @@ struct _AgsDevout
   pthread_attr_t play_thread_attr;
   pthread_cond_t play_wait_cond;
 
+  gboolean task_suspend;
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
-  pthread_mutex_t task_mutex;
-  pthread_mutexattr_t task_mutex_attr;
   pthread_cond_t task_wait_cond;
-  pthread_cond_t task_sync_wait_cond;
-  gboolean task_suspend;
-  int wait_task_sync;
-
-  gboolean play_functions_suspend;
-  pthread_t play_functions_thread;
-  pthread_attr_t play_functions_thread_attr;
-  pthread_cond_t play_functions_wait_cond;
 
   guint task_queued;
   guint task_pending;
@@ -177,6 +168,7 @@ struct _AgsDevout
   guint tasks_queued;
   guint tasks_pending;
   guint append_tasks_suspend;
+
   pthread_cond_t append_tasks_wait_cond;
 
   GList *task;
