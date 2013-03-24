@@ -63,9 +63,12 @@ typedef enum
 
   AGS_DEVOUT_PLAY                           = 1 << 5,
 
-  AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
-  AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
-  AGS_DEVOUT_WAIT_TASK                      = 1 << 8,
+  AGS_DEVOUT_BARRIER0                       = 1 << 6,
+  AGS_DEVOUT_BARRIER1                       = 1 << 7,
+
+  //  AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
+  //  AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
+  //  AGS_DEVOUT_WAIT_TASK                      = 1 << 8,
   //  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 9,
 
   //  AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 10,
@@ -147,29 +150,25 @@ struct _AgsDevout
   pthread_attr_t main_loop_thread_attr;
   pthread_mutex_t main_loop_mutex;
   pthread_mutexattr_t main_loop_mutex_attr;
-  pthread_cond_t main_loop_wait_cond;
-  gint wait_sync;
+  pthread_mutex_t barrier_mutex;
+  pthread_mutexattr_t barrier_mutex_attr;
+  pthread_barrier_t main_loop_barrier[2];
+  GList *sync_mutices;
+  unsigned int wait_sync;
 
-  gboolean play_suspend;
   pthread_t play_thread;
   pthread_attr_t play_thread_attr;
-  pthread_cond_t play_wait_cond;
 
-  gboolean task_suspend;
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;
-  pthread_cond_t task_wait_cond;
+  pthread_mutex_t task_mutex;
+  pthread_mutexattr_t task_mutex_attr;
 
   guint task_queued;
   guint task_pending;
-  guint append_task_suspend;
-  pthread_cond_t append_task_wait_cond;
 
   guint tasks_queued;
   guint tasks_pending;
-  guint append_tasks_suspend;
-
-  pthread_cond_t append_tasks_wait_cond;
 
   GList *task;
   GList *audio;
