@@ -153,7 +153,6 @@ struct _AgsDevout
   pthread_mutex_t barrier_mutex;
   pthread_mutexattr_t barrier_mutex_attr;
   pthread_barrier_t main_loop_barrier[2];
-  GList *sync_mutices;
   unsigned int wait_sync;
 
   pthread_t play_thread;

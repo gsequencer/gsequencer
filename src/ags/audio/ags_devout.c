@@ -338,7 +338,6 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutexattr_init(&(devout->barrier_mutex_attr));
   pthread_mutex_init(&(devout->barrier_mutex), &(devout->barrier_mutex_attr));
 
-  devout->sync_mutices = NULL;
   devout->wait_sync = 0;
 
   /* play */
@@ -594,7 +593,7 @@ ags_devout_main_loop_thread(void *devout0)
 
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
-  devout->wait_sync = 0;
+  devout->wait_sync = 1;
   devout->flags |= AGS_DEVOUT_BARRIER0;
 
   /* task */
@@ -606,51 +605,24 @@ ags_devout_main_loop_thread(void *devout0)
     }
 
     if(!initial_run){
-      GList *sync_mutices;
-
-      pthread_mutex_lock(&(devout->barrier_mutex));
-
       if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
+	pthread_barrier_init(&(devout->main_loop_barrier[1]), NULL, devout->wait_sync + 1);
 	pthread_barrier_wait(&(devout->main_loop_barrier[0]));
 
-	pthread_barrier_init(&(devout->main_loop_barrier[1]), NULL, devout->wait_sync + 1);
-
-	pthread_mutex_lock(&(devout->main_loop_mutex));
 	devout->flags &= ~(AGS_DEVOUT_BARRIER0);
 	devout->flags |= AGS_DEVOUT_BARRIER1;
-	pthread_mutex_unlock(&(devout->main_loop_mutex));
       }else{
+	pthread_barrier_init(&(devout->main_loop_barrier[0]), NULL, devout->wait_sync + 1);
 	pthread_barrier_wait(&(devout->main_loop_barrier[1]));
 
-	pthread_barrier_init(&(devout->main_loop_barrier[0]), NULL, devout->wait_sync + 1);
-
-	pthread_mutex_lock(&(devout->main_loop_mutex));
 	devout->flags &= ~(AGS_DEVOUT_BARRIER1);
 	devout->flags |= AGS_DEVOUT_BARRIER0;
-	pthread_mutex_unlock(&(devout->main_loop_mutex));
-      }
-
-      sync_mutices = devout->sync_mutices;
-      pthread_mutex_unlock(&(devout->barrier_mutex));
-
-      while(sync_mutices != NULL){
-	pthread_mutex_lock(((pthread_mutex_t*) sync_mutices->data));
-
-	sync_mutices = sync_mutices->next;
       }
 
       if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
 	pthread_barrier_destroy(&(devout->main_loop_barrier[1]));
       }else{
 	pthread_barrier_destroy(&(devout->main_loop_barrier[0]));
-      }
-
-      sync_mutices = devout->sync_mutices;
-
-      while(sync_mutices != NULL){
-	pthread_mutex_unlock(((pthread_mutex_t*) sync_mutices->data));
-
-	sync_mutices = sync_mutices->next;
       }
     }else{
       pthread_barrier_init(&(devout->main_loop_barrier[0]), NULL, devout->wait_sync + 1);
@@ -669,11 +641,6 @@ ags_devout_main_loop_thread(void *devout0)
       if(DEBUG_DEVOUT){
 	g_message("loop@start:task");
       }
-
-      pthread_mutex_lock(&(devout->main_loop_mutex));
-      devout->sync_mutices = g_list_prepend(devout->sync_mutices, (gpointer) &(devout->task_mutex));
-      devout->wait_sync++;
-      pthread_mutex_unlock(&(devout->main_loop_mutex));
 
       pthread_create(&(devout->task_thread), NULL, &ags_devout_task_thread, devout);
       pthread_setschedprio(devout->task_thread, 99);
@@ -709,6 +676,7 @@ ags_devout_task_thread(void *devout0)
   useconds_t idle;
   gboolean initial_run;
   gboolean start_play;
+  guint barrier;
 
   devout = AGS_DEVOUT(devout0);
 
@@ -717,6 +685,7 @@ ags_devout_task_thread(void *devout0)
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
   initial_run = TRUE;
+  barrier = 0;
 
   start_play = FALSE;
 
@@ -727,15 +696,13 @@ ags_devout_task_thread(void *devout0)
 	g_message("################ DEBUG ################");
       }
 
-      pthread_mutex_lock(&(devout->task_mutex));
-
-      if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
+      if(barrier == 0){
 	pthread_barrier_wait(&(devout->main_loop_barrier[0]));
+	barrier = 1;
       }else{
 	pthread_barrier_wait(&(devout->main_loop_barrier[1]));
+	barrier = 0;
       }
-
-      pthread_mutex_unlock(&(devout->task_mutex));
     }
 
     /*  */
