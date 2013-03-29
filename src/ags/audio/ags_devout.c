@@ -766,11 +766,14 @@ ags_devout_append_task_thread(void *ptr)
   /* sync */
   pthread_mutex_lock(&(devout->main_loop_mutex));
   devout->task_pending = devout->task_pending + 1;
-  pthread_mutex_unlock(&(devout->main_loop_mutex));
 
   if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
+
     pthread_barrier_wait(&(devout->main_loop_barrier[0]));
   }else{
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
+
     pthread_barrier_wait(&(devout->main_loop_barrier[1]));
   }
 
