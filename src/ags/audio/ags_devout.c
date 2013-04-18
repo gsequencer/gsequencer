@@ -619,6 +619,12 @@ ags_devout_main_loop_thread(void *devout0)
 	devout->flags |= AGS_DEVOUT_BARRIER0;
       }
 
+      devout->wait_sync -= (devout->task_pending + devout->tasks_pending);
+      devout->task_pending = 0;
+      devout->tasks_pending = 0;
+
+      pthread_mutex_unlock(&(devout->main_loop_mutex));
+
       if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
 	pthread_barrier_destroy(&(devout->main_loop_barrier[1]));
       }else{
@@ -656,8 +662,6 @@ ags_devout_main_loop_thread(void *devout0)
     if(devout->tasks_pending > 0){
       devout->wait_sync += devout->tasks_pending;
     }
-
-    pthread_mutex_unlock(&(devout->main_loop_mutex));
 
     if(initial_run){
       initial_run = FALSE;
@@ -770,11 +774,11 @@ ags_devout_append_task_thread(void *ptr)
   if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
     pthread_mutex_unlock(&(devout->main_loop_mutex));
 
-    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
+    pthread_barrier_wait(&(devout->main_loop_barrier[1]));
   }else{
     pthread_mutex_unlock(&(devout->main_loop_mutex));
 
-    pthread_barrier_wait(&(devout->main_loop_barrier[1]));
+    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
   }
 
   /*  */
@@ -838,12 +842,15 @@ ags_devout_append_tasks_thread(void *ptr)
   /* sync */
   pthread_mutex_lock(&(devout->main_loop_mutex));
   devout->tasks_pending = devout->tasks_pending + 1;
-  pthread_mutex_unlock(&(devout->main_loop_mutex));
 
   if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-  }else{
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
+
     pthread_barrier_wait(&(devout->main_loop_barrier[1]));
+  }else{
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
+
+    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
   }
 
   /*  */  

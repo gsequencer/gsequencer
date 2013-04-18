@@ -34,6 +34,7 @@
 
 #include <ags/audio/ags_synths.h>
 
+#include <libintl.h>
 #include <stdio.h>
 
 void ags_init();

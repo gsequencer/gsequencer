@@ -19,12 +19,7 @@
 #ifndef __AGS_MENU_BAR_H__
 #define __AGS_MENU_BAR_H__
 
-#include <glib.h>
-#include <glib-object.h>
 #include <gtk/gtk.h>
-#include <gtk/gtkmenubar.h>
-#include <gtk/gtkmenu.h>
-#include <gtk/gtkmenuitem.h>
 
 #define AGS_TYPE_MENU_BAR                (ags_menu_bar_get_type())
 #define AGS_MENU_BAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MENUBAR, AgsMenuBar))

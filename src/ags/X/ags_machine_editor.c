@@ -185,7 +185,7 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_notebook_append_page(notebook,
 			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(g_strdup("input")));
+			   (GtkWidget *) gtk_label_new(g_strdup(gettext("input"))));
 
 
   /* AgsOutput link editor */

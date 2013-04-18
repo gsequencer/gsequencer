@@ -19,9 +19,6 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_bar_callbacks.h>
 
-#include <glib/glist.h>
-#include <gtk/gtkmenushell.h>
-
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_init(AgsMenuBar *menu_bar);
 void ags_menu_bar_connect(AgsMenuBar *menu_bar);

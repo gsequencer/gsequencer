@@ -19,10 +19,7 @@
 #ifndef __AGS_RECYCLING_H__
 #define __AGS_RECYCLING_H__
 
-#include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
-#include <glib/glist.h>
 
 #include <ags/audio/ags_audio_signal.h>
 
