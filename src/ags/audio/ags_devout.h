@@ -170,6 +170,7 @@ struct _AgsDevout
   guint tasks_pending;
 
   GList *task;
+
   GList *audio;
 
   guint play_recall_ref;

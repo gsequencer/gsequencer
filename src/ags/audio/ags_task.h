@@ -39,6 +39,8 @@ struct _AgsTask
   char *name;
 
   guint start;
+
+  pthread_mutex_t sync_task_mutex;
 };
 
 struct _AgsTaskClass
