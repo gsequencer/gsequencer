@@ -120,6 +120,8 @@ ags_task_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_task_init(AgsTask *task)
 {
+  task->flags = 0;
+
   task->name = NULL;
 
   task->start = 0;

@@ -170,6 +170,7 @@ struct _AgsDevout
   guint tasks_pending;
 
   GList *task;
+  guint task_count;
 
   GList *audio;
 

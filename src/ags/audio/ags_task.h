@@ -19,7 +19,8 @@
 #ifndef __AGS_TASK_H__
 #define __AGS_TASK_H__
 
-#include <glib.h>
+#include <pthread.h>
+
 #include <glib-object.h>
 
 #define AGS_TYPE_TASK                (ags_task_get_type())
@@ -32,15 +33,21 @@
 typedef struct _AgsTask AgsTask;
 typedef struct _AgsTaskClass AgsTaskClass;
 
+typedef enum{
+  AGS_TASK_LOCKED = 1,
+}AgsTaskFlags;
+
 struct _AgsTask
 {
   GObject object;
+
+  guint flags;
 
   char *name;
 
   guint start;
 
-  pthread_mutex_t sync_task_mutex;
+  pthread_cond_t wait_sync_task_cond;
 };
 
 struct _AgsTaskClass
