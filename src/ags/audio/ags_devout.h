@@ -150,8 +150,8 @@ struct _AgsDevout
   pthread_attr_t main_loop_thread_attr;
   pthread_mutex_t main_loop_mutex;
   pthread_mutexattr_t main_loop_mutex_attr;
-  pthread_mutex_t barrier_mutex;
-  pthread_mutexattr_t barrier_mutex_attr;
+  pthread_mutex_t main_loop_inject_mutex;
+  pthread_mutexattr_t main_loop_inject_mutex_attr;
   pthread_barrier_t main_loop_barrier[2];
   unsigned int wait_sync;
 
