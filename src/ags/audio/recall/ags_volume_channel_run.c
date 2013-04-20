@@ -95,7 +95,7 @@ ags_volume_channel_run_get_type()
     };
 
     ags_type_volume_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							 "AgsVolumeChannelRun",
+							 "AgsVolumeChannelRun\0",
 							 &ags_volume_channel_run_info,
 							 0);
 
@@ -129,9 +129,9 @@ ags_volume_channel_run_class_init(AgsVolumeChannelRunClass *volume_channel_run)
   gobject->finalize = ags_volume_channel_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_pointer("volume",
-				    "volume to apply",
-				    "The volume to apply on the channel",
+  param_spec = g_param_spec_pointer("volume\0",
+				    "volume to apply\0",
+				    "The volume to apply on the channel\0",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_VOLUME,
@@ -265,7 +265,7 @@ ags_volume_channel_run_duplicate(AgsRecall *recall,
   
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "volume", volume_channel_run->volume,
+				 "volume\0", volume_channel_run->volume,
 				 NULL);
   copy = (AgsVolumeChannelRun *) AGS_RECALL_CLASS(ags_volume_channel_run_parent_class)->duplicate(recall,
 												  recall_id,
@@ -280,8 +280,8 @@ ags_volume_channel_run_new(AgsChannel *channel, gdouble *volume)
   AgsVolumeChannelRun *volume_channel_run;
 
   volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
-							    "source", channel,
-							    "volume", volume,
+							    "source\0", channel,
+							    "volume\0", volume,
 							    NULL);
 
   return(volume_channel_run);

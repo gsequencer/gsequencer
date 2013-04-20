@@ -44,7 +44,7 @@ ags_garbage_collector_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_garbage_collector_init,
     };
-    ags_type_garbage_collector = g_type_register_static (G_TYPE_OBJECT, "AgsGarbageCollector", &ags_garbage_collector_info, 0);
+    ags_type_garbage_collector = g_type_register_static (G_TYPE_OBJECT, "AgsGarbageCollector\0", &ags_garbage_collector_info, 0);
   }
   return(ags_type_garbage_collector);
 }

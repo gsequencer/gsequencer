@@ -32,7 +32,7 @@ ags_menu_bar_get_type(void)
 
   if(!menu_bar_type){
     static const GtkTypeInfo menu_bar_info = {
-      "AgsMenuBar",
+      "AgsMenuBar\0",
       sizeof(AgsMenuBar), /* base_init */
       sizeof(AgsMenuBarClass), /* base_finalize */
       (GtkClassInitFunc) ags_menu_bar_class_init,
@@ -99,22 +99,22 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   menu_bar->add = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->add);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Panel"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Panel\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Mixer"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Mixer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Drum"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Drum\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Matrix"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Matrix\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Synth"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Synth\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer"));
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REMOVE, NULL);
@@ -137,71 +137,71 @@ ags_menu_bar_connect(AgsMenuBar *menu_bar)
   GList *list0, *list1, *list2;
 
   /* File */
-  g_signal_connect((GObject *) menu_bar, "destroy",
+  g_signal_connect((GObject *) menu_bar, "destroy\0",
 		   G_CALLBACK(ags_menu_bar_destroy_callback), (gpointer) menu_bar);
 
-  g_signal_connect((GObject *) menu_bar, "show",
+  g_signal_connect((GObject *) menu_bar, "show\0",
 		   G_CALLBACK(ags_menu_bar_show_callback), (gpointer) menu_bar);
 
   list0 = GTK_MENU_SHELL(menu_bar)->children;
 
   list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect (G_OBJECT (list1->data), "activate",
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_open_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate",
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_save_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate",
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_save_as_callback), (gpointer) menu_bar);
   list1 = list1->next->next;
 
-  g_signal_connect (G_OBJECT (list1->data), "activate",
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_quit_callback), (gpointer) menu_bar);
 
   /* Edit */
   list0 = list0->next;
   list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect (G_OBJECT (list1->data), "activate",
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_callback), (gpointer) menu_bar);
   list2 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
   list1 = list1->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate",
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_panel_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate",
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_mixer_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate",
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_drum_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate",
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_matrix_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate",
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_synth_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect (G_OBJECT (list2->data), "activate",
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
 
-  g_signal_connect (G_OBJECT (list1->data), "activate",
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_remove_callback), (gpointer) menu_bar);
 
   /* Help */
   list0 = list0->next;
   list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect (G_OBJECT (list1->data), "activate",
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_about_callback), (gpointer) menu_bar);
 }
 
@@ -236,49 +236,49 @@ ags_zoom_menu_new()
   menu = (GtkMenu *) gtk_menu_new();
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("16:1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("16:1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("8:1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("8:1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("4:1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("4:1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("2:1"));
-  gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
-  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
-
-
-  item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("2:1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:2"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:1\0"));
+  gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
+  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+
+
+  item = (GtkMenuItem *) gtk_menu_item_new();
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:2\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:4"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:4\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:8"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:8\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:16"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:16\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
@@ -295,49 +295,49 @@ ags_tact_menu_new()
   menu = (GtkMenu *) gtk_menu_new();
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("16/1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("16/1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("8/1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("8/1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("4/1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("4/1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("2/1"));
-  gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
-  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
-
-
-  item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1:1"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("2/1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/2"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1:1\0"));
+  gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
+  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+
+
+  item = (GtkMenuItem *) gtk_menu_item_new();
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/2\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/4"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/4\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/8"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/8\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new();
-  label = (GtkLabel *) gtk_label_new(g_strdup("1/16"));
+  label = (GtkLabel *) gtk_label_new(g_strdup("1/16\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 

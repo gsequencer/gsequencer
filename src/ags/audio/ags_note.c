@@ -56,7 +56,7 @@ ags_note_get_type()
     };
 
     ags_type_note = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsNote",
+					   "AgsNote\0",
 					   &ags_note_info,
 					   0);
     

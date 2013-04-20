@@ -61,7 +61,7 @@ ags_task_get_type()
     };
 
     ags_type_task = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsTask",
+					   "AgsTask\0",
 					   &ags_task_info,
 					   0);
 
@@ -91,7 +91,7 @@ ags_task_class_init(AgsTaskClass *task)
 
   /* signals */
   task_signals[LAUNCH] =
-    g_signal_new("launch",
+    g_signal_new("launch\0",
 		 G_TYPE_FROM_CLASS (task),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsTaskClass, launch),
@@ -100,7 +100,7 @@ ags_task_class_init(AgsTaskClass *task)
 		 G_TYPE_NONE, 0);
 
   task_signals[FAILURE] =
-    g_signal_new("failure",
+    g_signal_new("failure\0",
 		 G_TYPE_FROM_CLASS (task),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsTaskClass, failure),

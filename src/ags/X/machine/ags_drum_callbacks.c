@@ -83,7 +83,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   audio = drum->machine.audio;
   audio->devout = (GObject *) window->devout;
 
-  drum->machine.name = g_strdup_printf("Default %d", window->counter->drum);
+  drum->machine.name = g_strdup_printf("Default %d\0", window->counter->drum);
   window->counter->drum++;
 
   devout = AGS_DEVOUT(audio->devout);
@@ -125,7 +125,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files\0"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) drum),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
@@ -133,19 +133,19 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "create", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "create\0", (gpointer) check_button);
 
-  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links"));
+  check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "overwrite", (gpointer) check_button);
+  g_object_set_data((GObject *) file_chooser, "overwrite\0", (gpointer) check_button);
 
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
-  g_signal_connect((GObject *) file_chooser, "response",
+  g_signal_connect((GObject *) file_chooser, "response\0",
 		   G_CALLBACK(ags_machine_open_response_callback), drum);
 }
 
@@ -191,7 +191,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     AgsAppendAudio *append_audio;
     AgsStartDevout *start_devout;
 
-    printf("drum: on\n");
+    printf("drum: on\n\0");
 
     /* create init task */
     init_audio = ags_init_audio_new(AGS_MACHINE(drum)->audio,
@@ -217,7 +217,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 			   AGS_TASK(start_devout));
 
   }else{
-    printf("drum: off\n");
+    printf("drum: off\n\0");
 
     /* abort code */
     if((AGS_DEVOUT_PLAY_DONE & (AGS_MACHINE(drum)->audio->devout_play->flags)) == 0){
@@ -242,7 +242,7 @@ ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum
 { 
   //  AgsDelay *delay;
 
-  fprintf(stdout, "ags_drum_run_delay_done\n");
+  fprintf(stdout, "ags_drum_run_delay_done\n\0");
 
   //  delay = AGS_DELAY(recall);
   //  drum = AGS_DRUM(AGS_AUDIO(delay->recall.parent)->machine);
@@ -377,7 +377,7 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   guint i, index0, index1, offset;
 
   if((AGS_DRUM_BLOCK_PATTERN & (drum->flags)) != 0){
-    printf("AgsDrum pattern is blocked\n");
+    printf("AgsDrum pattern is blocked\n\0");
     return;
   }
 

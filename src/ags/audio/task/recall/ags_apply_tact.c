@@ -69,7 +69,7 @@ ags_apply_tact_get_type()
     };
 
     ags_type_apply_tact = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsApplyTact",
+						 "AgsApplyTact\0",
 						 &ags_apply_tact_info,
 						 0);
     
@@ -166,7 +166,7 @@ ags_apply_tact_launch(AgsTask *task)
 
     ags_apply_tact_recall(apply_tact, recall);
   }else{
-    g_warning("AgsApplyTact: Not supported gobject");
+    g_warning("AgsApplyTact: Not supported gobject\0");
   }
 }
 

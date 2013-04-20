@@ -60,7 +60,7 @@ ags_copy_pattern_channel_get_type()
     };
 
     ags_type_copy_pattern_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
-							   "AgsCopyPatternChannel",
+							   "AgsCopyPatternChannel\0",
 							   &ags_copy_pattern_channel_info,
 							   0);
   }
@@ -85,9 +85,9 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
   gobject->finalize = ags_copy_pattern_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("pattern",
-				   "pattern to play",
-				   "The pattern which has to be played",
+  param_spec = g_param_spec_object("pattern\0",
+				   "pattern to play\0",
+				   "The pattern which has to be played\0",
 				   AGS_TYPE_PATTERN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -206,9 +206,9 @@ ags_copy_pattern_channel_new(AgsChannel *destination,
   AgsCopyPatternChannel *copy_pattern_channel;
 
   copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
-								"destination", destination,
-								"channel", source,
-								"pattern", pattern,
+								"destination\0", destination,
+								"channel\0", source,
+								"pattern\0", pattern,
 								NULL);
 
   return(copy_pattern_channel);

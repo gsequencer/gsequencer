@@ -83,7 +83,7 @@ ags_pad_get_type(void)
     };
 
     ags_type_pad = g_type_register_static(GTK_TYPE_VBOX,
-					  "AgsPad", &ags_pad_info,
+					  "AgsPad\0", &ags_pad_info,
 					  0);
 
     g_type_add_interface_static(ags_type_pad,
@@ -108,9 +108,9 @@ ags_pad_class_init(AgsPadClass *pad)
   gobject->set_property = ags_pad_set_property;
   gobject->get_property = ags_pad_get_property;
 
-  param_spec = g_param_spec_object("channel",
-				   "assigned channel",
-				   "The channel it is assigned with",
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel it is assigned with\0",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -122,7 +122,7 @@ ags_pad_class_init(AgsPadClass *pad)
   pad->resize_lines = ags_pad_real_resize_lines;
 
   pad_signals[SET_CHANNEL] =
-    g_signal_new("set_channel",
+    g_signal_new("set_channel\0",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, set_channel),
@@ -132,7 +132,7 @@ ags_pad_class_init(AgsPadClass *pad)
 		 G_TYPE_OBJECT);
 
   pad_signals[RESIZE_LINES] =
-    g_signal_new("resize_lines",
+    g_signal_new("resize_lines\0",
 		 G_TYPE_FROM_CLASS(pad),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, resize_lines),
@@ -155,7 +155,7 @@ ags_pad_init(AgsPad *pad)
   GtkMenu *menu;
   GtkHBox *hbox;
 
-  g_signal_connect((GObject *) pad, "parent_set",
+  g_signal_connect((GObject *) pad, "parent_set\0",
 		   G_CALLBACK(ags_pad_parent_set_callback), (gpointer) pad);
 
   pad->flags = 0;
@@ -169,13 +169,13 @@ ags_pad_init(AgsPad *pad)
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
-  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("G"));
+  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("G\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->group, FALSE, FALSE, 0);
 
-  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("M"));
+  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("M\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->mute, FALSE, FALSE, 0);
 
-  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("S"));
+  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("S\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->solo, FALSE, FALSE, 0);
 }
 
@@ -241,25 +241,25 @@ ags_pad_connect(AgsConnectable *connectable)
   pad->flags |= AGS_PAD_CONNECTED;
 
   /* GtkObject */
-  g_signal_connect((GObject *) pad, "destroy",
+  g_signal_connect((GObject *) pad, "destroy\0",
 		   G_CALLBACK(ags_pad_destroy_callback), (gpointer) pad);
 
   /* GtkWidget */
-  g_signal_connect((GObject *) pad, "show",
+  g_signal_connect((GObject *) pad, "show\0",
 		   G_CALLBACK(ags_pad_show_callback), (gpointer) pad);
 
   /* GtkOptionMenu */
-  g_signal_connect((GObject *) pad->option, "changed",
+  g_signal_connect((GObject *) pad->option, "changed\0",
 		   G_CALLBACK(ags_pad_option_changed_callback), (gpointer) pad);
 
   /* GtkButton */
-  g_signal_connect_after((GObject *) pad->group, "clicked",
+  g_signal_connect_after((GObject *) pad->group, "clicked\0",
 			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
 
-  g_signal_connect_after((GObject *) pad->mute, "clicked",
+  g_signal_connect_after((GObject *) pad->mute, "clicked\0",
 			 G_CALLBACK(ags_pad_mute_clicked_callback), (gpointer) pad);
 
-  g_signal_connect_after((GObject *) pad->solo, "clicked",
+  g_signal_connect_after((GObject *) pad->solo, "clicked\0",
 			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
 
   /* AgsLine */
@@ -289,7 +289,7 @@ ags_pad_show(GtkWidget *widget)
 {
   AgsPad *pad;
 
-  fprintf(stdout, "ags_pad_show\n");
+  fprintf(stdout, "ags_pad_show\n\0");
 
   pad = AGS_PAD(widget);
 
@@ -323,7 +323,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   AgsChannel *channel;
   guint i;
 
-  //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n", audio_channels, audio_channels_old);
+  //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
   if(audio_channels > audio_channels_old){
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
@@ -332,8 +332,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     /* create AgsLine */
     for(i = audio_channels_old; i < audio_channels; i++){
       line = (AgsLine *) g_object_new(line_type,
-				      "pad", pad,
-				      "channel", channel,
+				      "pad\0", pad,
+				      "channel\0", channel,
 				      NULL);
       channel->line_widget = (GtkWidget *) line;
       gtk_menu_shell_insert((GtkMenuShell *) pad->option->menu,
@@ -392,7 +392,7 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 {
   g_return_if_fail(AGS_IS_PAD(pad));
 
-  //  fprintf(stdout, "ags_pad_resize_lines: audio_channels = %u ; audio_channels_old = %u\n", audio_channels, audio_channels_old);
+  //  fprintf(stdout, "ags_pad_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
   g_object_ref((GObject *) pad);
   g_signal_emit(G_OBJECT(pad),

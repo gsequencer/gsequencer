@@ -100,7 +100,7 @@ ags_recall_channel_get_type()
     };
 
     ags_type_recall_channel = g_type_register_static(AGS_TYPE_RECALL,
-						     "AgsRecallChannel",
+						     "AgsRecallChannel\0",
 						     &ags_recall_channel_info,
 						     0);
 
@@ -138,18 +138,18 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
   gobject->finalize = ags_recall_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("destination",
-				   "assigned destination channel",
-				   "The destination channel object it is assigned to",
+  param_spec = g_param_spec_object("destination\0",
+				   "assigned destination channel\0",
+				   "The destination channel object it is assigned to\0",
 				    AGS_TYPE_CHANNEL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
    g_object_class_install_property(gobject,
 				   PROP_DESTINATION,
 				   param_spec);
 
-   param_spec = g_param_spec_object("source",
-				    "assigned source channel",
-				    "The source channel object it is assigned to",
+   param_spec = g_param_spec_object("source\0",
+				    "assigned source channel\0",
+				    "The source channel object it is assigned to\0",
 				    AGS_TYPE_CHANNEL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
    g_object_class_install_property(gobject,
@@ -322,7 +322,7 @@ ags_recall_channel_pack(AgsPackable *packable, GObject *container)
 
   while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->source))) != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "recall_channel", AGS_RECALL_CHANNEL(packable),
+		 "recall_channel\0", AGS_RECALL_CHANNEL(packable),
 		 NULL);
 
     list = list->next;
@@ -357,7 +357,7 @@ ags_recall_channel_unpack(AgsPackable *packable)
 
   while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->source))) != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "recall_channel", NULL,
+		 "recall_channel\0", NULL,
 		 NULL);
 
     list = list->next;
@@ -409,15 +409,15 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "destination", recall_channel->destination,
-				 "source", recall_channel->source,
+				 "destination\0", recall_channel->destination,
+				 "source\0", recall_channel->source,
 				 NULL);
 
   copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
 											 recall_id,
 											 n_params, parameter));
 
-  g_message("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   return((AgsRecall *) copy);
 }

@@ -78,7 +78,7 @@ ags_volume_recycling_get_type()
     };
 
     ags_type_volume_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						       "AgsVolumeRecycling",
+						       "AgsVolumeRecycling\0",
 						       &ags_volume_recycling_info,
 						       0);
 
@@ -203,7 +203,7 @@ ags_volume_recycling_new(AgsRecycling *recycling)
   AgsVolumeRecycling *volume_recycling;
 
   volume_recycling = (AgsVolumeRecycling *) g_object_new(AGS_TYPE_VOLUME_RECYCLING,
-							 "source", recycling,
+							 "source\0", recycling,
 							 NULL);
 
   return(volume_recycling);

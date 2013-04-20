@@ -65,7 +65,7 @@ ags_mixer_input_pad_get_type()
     };
 
     ags_type_mixer_input_pad = g_type_register_static(AGS_TYPE_PAD,
-						      "AgsMixerInputPad", &ags_mixer_input_pad_info,
+						      "AgsMixerInputPad\0", &ags_mixer_input_pad_info,
 						      0);
 
     g_type_add_interface_static(ags_type_mixer_input_pad,
@@ -156,7 +156,7 @@ ags_mixer_input_pad_new(AgsChannel *channel)
   AgsMixerInputPad *mixer_input_pad;
 
   mixer_input_pad = (AgsMixerInputPad *) g_object_new(AGS_TYPE_MIXER_INPUT_PAD,
-						      "channel", channel,
+						      "channel\0", channel,
 						      NULL);
   
   return(mixer_input_pad);

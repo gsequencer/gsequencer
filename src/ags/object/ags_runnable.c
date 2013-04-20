@@ -35,7 +35,7 @@ ags_runnable_get_type()
     };
 
     ags_type_runnable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsRunnable", &ags_runnable_info,
+					       "AgsRunnable\0", &ags_runnable_info,
 					       0);
   }
 

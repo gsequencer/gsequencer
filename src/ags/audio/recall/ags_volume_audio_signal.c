@@ -89,7 +89,7 @@ ags_volume_audio_signal_get_type()
     };
 
     ags_type_volume_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							  "AgsVolumeAudioSignal",
+							  "AgsVolumeAudioSignal\0",
 							  &ags_volume_audio_signal_info,
 							  0);
 

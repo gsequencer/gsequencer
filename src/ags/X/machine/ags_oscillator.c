@@ -56,7 +56,7 @@ ags_oscillator_get_type(void)
     };
     
     ags_type_oscillator = g_type_register_static(GTK_TYPE_MENU_ITEM,
-						 "AgsOscillator",
+						 "AgsOscillator\0",
 						 &ags_oscillator_info,
 						 0);
     
@@ -99,7 +99,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_container_add((GtkContainer *) oscillator->frame, (GtkWidget *) table);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("wave"),
+			    (GtkWidget *) gtk_label_new("wave\0"),
 			    0, 1, 0, 1);
 
   /* wave */
@@ -114,34 +114,34 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(oscillator->wave),
 				 cell_renderer,
-				 "text", 0,
+				 "text\0", 0,
 				 NULL);
 
   model = gtk_list_store_new(1, G_TYPE_STRING);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "sin",
+		     0, "sin\0",
 		     -1);
 
   /*  gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "cos",
+		     0, "cos\0",
 		     -1);  */
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "sawtooth",
+		     0, "sawtooth\0",
 		     -1);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "square",
+		     0, "square\0",
 		     -1);
 
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "triangle",
+		     0, "triangle\0",
 		     -1);
 
   gtk_combo_box_set_model(oscillator->wave, GTK_TREE_MODEL(model));
@@ -149,35 +149,35 @@ ags_oscillator_init(AgsOscillator *oscillator)
 
   /* other controls */
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("attack"),
+			    (GtkWidget *) gtk_label_new("attack\0"),
 			    2, 3, 0, 1);
   oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->attack->adjustment->value = 0.0;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->attack, 3, 4, 0, 1);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("length"),
+			    (GtkWidget *) gtk_label_new("length\0"),
 			    4, 5, 0, 1);
   oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->frame_count->adjustment->value = 44100.0 / 27.5;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("phase"),
+			    (GtkWidget *) gtk_label_new("phase\0"),
 			    0, 1, 1, 2);
   oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->phase->adjustment->value = 0.0;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->phase, 1, 2, 1, 2);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("frequency"),
+			    (GtkWidget *) gtk_label_new("frequency\0"),
 			    2, 3, 1, 2);
   oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->frequency->adjustment->value = 27.5;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frequency, 3, 4, 1, 2);
 
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) gtk_label_new("volume"),
+			    (GtkWidget *) gtk_label_new("volume\0"),
 			    4, 5, 1, 2);
   oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
   oscillator->volume->adjustment->value = 0.8;
@@ -191,22 +191,22 @@ ags_oscillator_connect(AgsConnectable *connectable)
 
   oscillator = AGS_OSCILLATOR(connectable);
 
-  oscillator->wave_handler = g_signal_connect(G_OBJECT(oscillator->wave), "changed",
+  oscillator->wave_handler = g_signal_connect(G_OBJECT(oscillator->wave), "changed\0",
 					      G_CALLBACK(ags_oscillator_wave_callback), oscillator);
 
-  oscillator->attack_handler = g_signal_connect(G_OBJECT(oscillator->attack), "value-changed",
+  oscillator->attack_handler = g_signal_connect(G_OBJECT(oscillator->attack), "value-changed\0",
 						G_CALLBACK(ags_oscillator_attack_callback), oscillator);
   
-  oscillator->frame_count_handler = g_signal_connect(G_OBJECT(oscillator->frame_count), "value-changed",
+  oscillator->frame_count_handler = g_signal_connect(G_OBJECT(oscillator->frame_count), "value-changed\0",
 						     G_CALLBACK(ags_oscillator_frame_count_callback), oscillator);
 
-  oscillator->frequency_handler = g_signal_connect(G_OBJECT(oscillator->frequency), "value-changed",
+  oscillator->frequency_handler = g_signal_connect(G_OBJECT(oscillator->frequency), "value-changed\0",
 						   G_CALLBACK(ags_oscillator_frequency_callback), oscillator);
 
-  oscillator->phase_handler = g_signal_connect(G_OBJECT(oscillator->phase), "value-changed",
+  oscillator->phase_handler = g_signal_connect(G_OBJECT(oscillator->phase), "value-changed\0",
 					       G_CALLBACK(ags_oscillator_phase_callback), oscillator);
 
-  oscillator->volume_handler = g_signal_connect(G_OBJECT(oscillator->volume), "value-changed",
+  oscillator->volume_handler = g_signal_connect(G_OBJECT(oscillator->volume), "value-changed\0",
 						G_CALLBACK(ags_oscillator_volume_callback), oscillator);
 }
 

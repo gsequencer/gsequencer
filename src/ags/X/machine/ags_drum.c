@@ -92,7 +92,7 @@ ags_drum_get_type(void)
     };
 
     ags_type_drum = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsDrum", &ags_drum_info,
+					    "AgsDrum\0", &ags_drum_info,
 					    0);
     
     g_type_add_interface_static(ags_type_drum,
@@ -150,7 +150,7 @@ ags_drum_init(AgsDrum *drum)
   guint stream_length;
   int i, j;
 
-  g_signal_connect_after((GObject *) drum, "parent_set",
+  g_signal_connect_after((GObject *) drum, "parent_set\0",
 			 G_CALLBACK(ags_drum_parent_set_callback), (gpointer) drum);
 
 
@@ -175,9 +175,9 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudio in audio->play */
   drum->play_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-						 "devout", audio->devout,
-						 "audio", audio,
-						 "recall_container", recall_container,
+						 "devout\0", audio->devout,
+						 "audio\0", audio,
+						 "recall_container\0", recall_container,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -187,9 +187,9 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudioRun in audio->play */
   drum->play_delay_audio_run =
     play_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
-							     "devout", audio->devout,
-							     "recall_audio", delay_audio,
-							     "recall_container", recall_container,
+							     "devout\0", audio->devout,
+							     "recall_audio\0", delay_audio,
+							     "recall_container\0", recall_container,
 							     NULL);
   AGS_RECALL(play_delay_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 					      AGS_RECALL_SEQUENCER |
@@ -204,9 +204,9 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudio in audio->recall */
   drum->recall_delay_audio =
     delay_audio = (AgsDelayAudio *) g_object_new(AGS_TYPE_DELAY_AUDIO,
-						 "devout", audio->devout,
-						 "audio", audio,
-						 "recall_container", recall_container,
+						 "devout\0", audio->devout,
+						 "audio\0", audio,
+						 "recall_container\0", recall_container,
 						 NULL);
   AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE |
 				     AGS_RECALL_SEQUENCER |
@@ -216,9 +216,9 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsDelayAudioRun in audio->recall */
   drum->recall_delay_audio_run =
     recall_delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
-							       "devout", audio->devout,
-							       "recall_audio", delay_audio,
-							       "recall_container", recall_container,
+							       "devout\0", audio->devout,
+							       "recall_audio\0", delay_audio,
+							       "recall_container\0", recall_container,
 							       NULL);
   AGS_RECALL(recall_delay_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 						AGS_RECALL_SEQUENCER |
@@ -234,14 +234,14 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudio in audio->play */
   drum->play_count_beats_audio =
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							    "devout", audio->devout,
-							    "audio", audio,
-							    "recall_container", recall_container,
-							    "loop", FALSE,
-							    "notation_loop_start", 0,
-							    "notation_loop_end", 64,
-							    "sequencer_loop_start", 0,
-							    "sequencer_loop_end", 16,
+							    "devout\0", audio->devout,
+							    "audio\0", audio,
+							    "recall_container\0", recall_container,
+							    "loop\0", FALSE,
+							    "notation_loop_start\0", 0,
+							    "notation_loop_end\0", 64,
+							    "sequencer_loop_start\0", 0,
+							    "sequencer_loop_end\0", 16,
 							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
 					   AGS_RECALL_SEQUENCER |
@@ -251,10 +251,10 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudioRun in audio->play */
   drum->play_count_beats_audio_run = 
     play_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-									"devout", audio->devout,
-									"recall_audio", count_beats_audio,
-									"recall_container", recall_container,
-									"delay_audio_run", play_delay_audio_run,
+									"devout\0", audio->devout,
+									"recall_audio\0", count_beats_audio,
+									"recall_container\0", recall_container,
+									"delay_audio_run\0", play_delay_audio_run,
 									NULL);
   AGS_RECALL(play_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 						    AGS_RECALL_SEQUENCER |
@@ -269,14 +269,14 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudio in audio->recall */
   drum->recall_count_beats_audio =
     count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							    "devout", audio->devout,
-							    "audio", audio,
-							    "recall_container", recall_container,
-							    "loop", FALSE,
-							    "notation_loop_start", 0,
-							    "notation_loop_end", 64,
-							    "sequencer_loop_start", 0,
-							    "sequencer_loop_end", 16,
+							    "devout\0", audio->devout,
+							    "audio\0", audio,
+							    "recall_container\0", recall_container,
+							    "loop\0", FALSE,
+							    "notation_loop_start\0", 0,
+							    "notation_loop_end\0", 64,
+							    "sequencer_loop_start\0", 0,
+							    "sequencer_loop_end\0", 16,
 							    NULL);
   AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE |
 					   AGS_RECALL_SEQUENCER |
@@ -286,10 +286,10 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCountBeatsAudioRun in audio->recall */
   drum->recall_count_beats_audio_run = 
     recall_count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-									  "devout", audio->devout,
-									  "recall_audio", count_beats_audio,
-									  "recall_container", recall_container,
-									  "delay_audio_run", recall_delay_audio_run,
+									  "devout\0", audio->devout,
+									  "recall_audio\0", count_beats_audio,
+									  "recall_container\0", recall_container,
+									  "delay_audio_run\0", recall_delay_audio_run,
 									  NULL);
   AGS_RECALL(recall_count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 						      AGS_RECALL_SEQUENCER |
@@ -306,11 +306,11 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudio in audio->play */
   drum->play_copy_pattern_audio =
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							      "devout", audio->devout,
-							      "audio", audio,
-							      "recall_container", recall_container,
-							      "bank_index_0", 0,
-							      "bank_index_1", 0,
+							      "devout\0", audio->devout,
+							      "audio\0", audio,
+							      "recall_container\0", recall_container,
+							      "bank_index_0\0", 0,
+							      "bank_index_1\0", 0,
 							      NULL);
   AGS_RECALL(copy_pattern_audio)->flags |= (AGS_RECALL_TEMPLATE |
 					    AGS_RECALL_SEQUENCER |
@@ -320,10 +320,10 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudioRun in audio->play */
   drum->play_copy_pattern_audio_run =
     copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								     "devout", audio->devout,
-								     "recall_audio", copy_pattern_audio,
-								     "recall_container", recall_container,
-								     "count_beats_audio_run", play_count_beats_audio_run,
+								     "devout\0", audio->devout,
+								     "recall_audio\0", copy_pattern_audio,
+								     "recall_container\0", recall_container,
+								     "count_beats_audio_run\0", play_count_beats_audio_run,
 								     NULL);
   AGS_RECALL(copy_pattern_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 						AGS_RECALL_SEQUENCER |
@@ -338,11 +338,11 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudio in audio->recall */
   drum->recall_copy_pattern_audio =
     copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							      "devout", audio->devout,
-							      "audio", audio,
-							      "recall_container", recall_container,
-							      "bank_index_0", 0,
-							      "bank_index_1", 0,
+							      "devout\0", audio->devout,
+							      "audio\0", audio,
+							      "recall_container\0", recall_container,
+							      "bank_index_0\0", 0,
+							      "bank_index_1\0", 0,
 							      NULL);
   AGS_RECALL(copy_pattern_audio)->flags |= (AGS_RECALL_TEMPLATE |
 					    AGS_RECALL_SEQUENCER |
@@ -352,10 +352,10 @@ ags_drum_init(AgsDrum *drum)
   /* create AgsCopyPatternAudioRun in audio->recall */
   drum->recall_copy_pattern_audio_run =
     copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								     "devout", audio->devout,
-								     "recall_audio", copy_pattern_audio,
-								     "recall_container", recall_container,
-								     "count_beats_audio_run", recall_count_beats_audio_run,
+								     "devout\0", audio->devout,
+								     "recall_audio\0", copy_pattern_audio,
+								     "recall_container\0", recall_container,
+								     "count_beats_audio_run\0", recall_count_beats_audio_run,
 								     NULL);
   AGS_RECALL(copy_pattern_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 						AGS_RECALL_SEQUENCER |
@@ -383,32 +383,32 @@ ags_drum_init(AgsDrum *drum)
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) drum->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
-  frame = (GtkFrame *) gtk_frame_new("kit");
+  frame = (GtkFrame *) gtk_frame_new("kit\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame, FALSE, FALSE, 0);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) frame, (GtkWidget *) vbox);
 
   gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) gtk_label_new("default"), 
+		     (GtkWidget *) gtk_label_new("default\0"), 
 		     FALSE, FALSE, 0);
  
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN)),
 		     FALSE, FALSE, 0);
 
-  frame = (GtkFrame *) gtk_frame_new("Pattern");
+  frame = (GtkFrame *) gtk_frame_new("Pattern\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame, FALSE, FALSE, 0);
 
   table0 = (GtkTable *) gtk_table_new(16, 3, FALSE);
   gtk_container_add((GtkContainer*) frame, (GtkWidget *) table0);
 
-  drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop"));
+  drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->loop_button,
 			    0, 1, 1, 2);
 
-  drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("run"));
+  drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("run\0"));
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->run,
 			    1, 2, 1, 2);
@@ -459,7 +459,7 @@ ags_drum_init(AgsDrum *drum)
 		   6, 7, 0, 1,
 		   GTK_EXPAND, GTK_EXPAND,
 		   0, 0);
-  gtk_box_pack_start((GtkBox*) hbox, gtk_label_new(g_strdup("length")), FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox*) hbox, gtk_label_new(g_strdup("length\0")), FALSE, FALSE, 0);
   drum->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 64.0, 1.0);
   drum->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) drum->length_spin, FALSE, FALSE, 0);
@@ -477,19 +477,19 @@ ags_drum_init(AgsDrum *drum)
   drum->offset = (GtkVBox*) gtk_vbox_new(FALSE, 0);
   gtk_table_attach_defaults(table0, (GtkWidget *) drum->offset, 15, 16, 0, 3);
 
-  radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup("1-16"));
+  radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup("1-16\0"));
   gtk_box_pack_start((GtkBox*) drum->offset, (GtkWidget *) radio_button, FALSE, FALSE, 0);
 
   gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("17-32")),
+		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("17-32\0")),
 		     FALSE, FALSE, 0);
 
   gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("33-48")),
+		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("33-48\0")),
 		     FALSE, FALSE, 0);
 
   gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("49-64")),
+		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("49-64\0")),
 		     FALSE, FALSE, 0);
 }
 
@@ -512,37 +512,37 @@ ags_drum_connect(AgsConnectable *connectable)
   drum = AGS_DRUM(connectable);
 
   /* AgsDrum */
-  g_signal_connect((GObject *) drum->open, "clicked",
+  g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
 
-  g_signal_connect((GObject *) drum->loop_button, "clicked",
+  g_signal_connect((GObject *) drum->loop_button, "clicked\0",
 		   G_CALLBACK(ags_drum_loop_button_callback), (gpointer) drum);
 
-  g_signal_connect((GObject *) drum->run, "clicked",
+  g_signal_connect((GObject *) drum->run, "clicked\0",
 		   G_CALLBACK(ags_drum_run_callback), (gpointer) drum);
 
-  g_signal_connect((GObject *) drum->tact, "changed",
+  g_signal_connect((GObject *) drum->tact, "changed\0",
 		   G_CALLBACK(ags_drum_tact_callback), (gpointer) drum);
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
 
-  g_signal_connect_after((GObject *) drum->length_spin, "value-changed",
+  g_signal_connect_after((GObject *) drum->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum);
 
   for(i = 0; i < 12; i++){
-    g_signal_connect(G_OBJECT(drum->index1[i]), "clicked",
+    g_signal_connect(G_OBJECT(drum->index1[i]), "clicked\0",
 		     G_CALLBACK(ags_drum_index1_callback), (gpointer) drum);
   }
 
   for(i = 0; i < 4; i++){
-    g_signal_connect(G_OBJECT(drum->index0[i]), "clicked",
+    g_signal_connect(G_OBJECT(drum->index0[i]), "clicked\0",
 		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
 
   list = gtk_container_get_children((GtkContainer *) drum->pattern);
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked",
+    g_signal_connect(G_OBJECT(list->data), "clicked\0",
 		     G_CALLBACK(ags_drum_pad_callback), (gpointer) drum);
 
     list = list->next;
@@ -551,17 +551,17 @@ ags_drum_connect(AgsConnectable *connectable)
   list = gtk_container_get_children((GtkContainer *) drum->offset);
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked",
+    g_signal_connect(G_OBJECT(list->data), "clicked\0",
 		     G_CALLBACK(ags_drum_offset_callback), (gpointer) drum);
 		   
     list = list->next;
   }
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_audio_channels",
+  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_drum_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_pads",
+  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_pads\0",
 			 G_CALLBACK(ags_drum_set_pads), NULL);
 }
 
@@ -824,7 +824,7 @@ ags_drum_set_pattern(AgsDrum *drum)
   guint i;
 
   if(drum->selected_pad == NULL || drum->selected_pad->pad.selected_line == NULL){
-    printf("no selected pad or line\n");
+    printf("no selected pad or line\n\0");
     return;
   }
 
@@ -873,7 +873,7 @@ ags_drum_new(GObject *devout)
     g_value_set_object(&value, devout);
 
     g_object_set_property(G_OBJECT(drum->machine.audio),
-			  "devout", &value);
+			  "devout\0", &value);
     g_value_unset(&value);
   }
 

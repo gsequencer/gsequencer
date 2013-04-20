@@ -69,7 +69,7 @@ ags_property_collection_editor_get_type(void)
     };
 
     ags_type_property_collection_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
-								 "AgsPropertyCollectionEditor", &ags_property_collection_editor_info,
+								 "AgsPropertyCollectionEditor\0", &ags_property_collection_editor_info,
 								 0);
     
     g_type_add_interface_static(ags_type_property_collection_editor,
@@ -140,7 +140,7 @@ ags_property_collection_editor_connect(AgsConnectable *connectable)
   /* AgsPropertyCollectionEditor */
   property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(connectable);
 
-  g_signal_connect(G_OBJECT(property_collection_editor->add_collection), "clicked",
+  g_signal_connect(G_OBJECT(property_collection_editor->add_collection), "clicked\0",
 		   G_CALLBACK(ags_property_collection_editor_add_collection_callback), property_collection_editor);
 }
 
@@ -176,7 +176,7 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
   list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
 
   while(list != NULL){
-    child = GTK_WIDGET(g_object_get_data(G_OBJECT(list->data), "AgsChild"));
+    child = GTK_WIDGET(g_object_get_data(G_OBJECT(list->data), "AgsChild\0"));
     ags_applicable_apply(AGS_APPLICABLE(child));
 
     list = list->next;

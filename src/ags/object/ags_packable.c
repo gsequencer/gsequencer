@@ -33,7 +33,7 @@ ags_packable_get_type()
     };
 
     ags_type_packable = g_type_register_static(G_TYPE_INTERFACE,
-						  "AgsPackable", &ags_packable_info,
+						  "AgsPackable\0", &ags_packable_info,
 						  0);
   }
 

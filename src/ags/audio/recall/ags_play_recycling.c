@@ -82,7 +82,7 @@ ags_play_recycling_get_type()
     };
 
     ags_type_play_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						     "AgsPlayRecycling",
+						     "AgsPlayRecycling\0",
 						     &ags_play_recycling_info,
 						     0);
 
@@ -229,9 +229,9 @@ ags_play_recycling_new(AgsRecycling *source,
   AgsPlayRecycling *play_recycling;
 
   play_recycling = (AgsPlayRecycling *) g_object_new(AGS_TYPE_PLAY_RECYCLING,
-						     "source", source,
-						     "devout", devout,
-						     "audio_channel", audio_channel,
+						     "source\0", source,
+						     "devout\0", devout,
+						     "audio_channel\0", audio_channel,
 						     NULL);
 
   return(play_recycling);

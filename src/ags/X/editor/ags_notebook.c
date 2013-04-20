@@ -37,7 +37,7 @@ ags_notebook_get_type(void)
 
   if (!notebook_type){
     static const GtkTypeInfo notebook_info = {
-      "AgsNotebook",
+      "AgsNotebook\0",
       sizeof(AgsNotebook), /* base_init */
       sizeof(AgsNotebookClass), /* base_finalize */
       (GtkClassInitFunc) ags_notebook_class_init,
@@ -71,13 +71,13 @@ ags_notebook_connect(AgsNotebook *notebook)
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
 
-  g_signal_connect((GObject *) notebook, "destroy",
+  g_signal_connect((GObject *) notebook, "destroy\0",
 		   G_CALLBACK(ags_notebook_destroy_callback), (gpointer) notebook);
 
-  g_signal_connect((GObject *) notebook, "show",
+  g_signal_connect((GObject *) notebook, "show\0",
 		   G_CALLBACK(ags_notebook_show_callback), (gpointer) notebook);
 
-  g_signal_connect((GObject *) editor, "change_machine",
+  g_signal_connect((GObject *) editor, "change_machine\0",
 		   G_CALLBACK(ags_notebook_change_machine_callback), notebook);
 }
 

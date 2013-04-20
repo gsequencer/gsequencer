@@ -49,7 +49,7 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
 
     for(; i < stop; i++){
       ruler = ags_ruler_new();
-      gtk_notebook_append_page((GtkNotebook *) notebook, (GtkWidget *) ruler, gtk_label_new(g_strdup_printf("channel %d", i)));
+      gtk_notebook_append_page((GtkNotebook *) notebook, (GtkWidget *) ruler, gtk_label_new(g_strdup_printf("channel %d\0", i)));
 
       if(GTK_WIDGET_VISIBLE(GTK_WIDGET(notebook)))
 	ags_ruler_connect(ruler);

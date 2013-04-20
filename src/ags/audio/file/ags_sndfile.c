@@ -77,7 +77,7 @@ ags_sndfile_get_type()
     };
 
     ags_type_sndfile = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsSndfile",
+					      "AgsSndfile\0",
 					      &ags_sndfile_info,
 					      0);
 

@@ -29,7 +29,7 @@ ags_tactable_get_type()
 
   if(!tactable_type){
     tactable_type = g_type_register_static_simple (G_TYPE_INTERFACE,
-						   "AgsTactable",
+						   "AgsTactable\0",
 						   sizeof (AgsTactableInterface),
 						   (GClassInitFunc) ags_tactable_class_init,
 						   0, NULL, 0);
@@ -41,7 +41,7 @@ ags_tactable_get_type()
 void
 ags_tactable_class_init(AgsTactableInterface *interface)
 {
-  g_signal_new("change_sequencer_duration",
+  g_signal_new("change_sequencer_duration\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_sequencer_duration),
@@ -50,7 +50,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_TYPE_NONE, 1,
 	       G_TYPE_DOUBLE);
 
-  g_signal_new("change_notation_duration",
+  g_signal_new("change_notation_duration\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_notation_duration),
@@ -59,7 +59,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_TYPE_NONE, 1,
 	       G_TYPE_DOUBLE);
 
-  g_signal_new("change_tact",
+  g_signal_new("change_tact\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
@@ -68,7 +68,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 	       G_TYPE_NONE, 1,
 	       G_TYPE_DOUBLE);
 
-  g_signal_new("change_bpm",
+  g_signal_new("change_bpm\0",
 	       G_TYPE_FROM_INTERFACE(interface),
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),

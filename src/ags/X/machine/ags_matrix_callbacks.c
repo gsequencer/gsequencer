@@ -66,7 +66,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   audio = matrix->machine.audio;
   audio->devout = (GObject *) window->devout;
 
-  matrix->machine.name = g_strdup_printf("Default %d", window->counter->matrix);
+  matrix->machine.name = g_strdup_printf("Default %d\0", window->counter->matrix);
   window->counter->matrix++;
 
   devout = AGS_DEVOUT(audio->devout);
@@ -104,7 +104,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
   ags_devout_append_task(AGS_DEVOUT(window->devout),
 			 AGS_TASK(apply_sequencer_length));
 
-  //  fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n", delay_audio->delay);
+  //  fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
 
 void
@@ -287,7 +287,7 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 void
 ags_matrix_run_delay_done(AgsRecall *recall, AgsMatrix *matrix)
 {
-  fprintf(stdout, "ags_matrix_run_delay_done\n");
+  fprintf(stdout, "ags_matrix_run_delay_done\n\0");
 
   //  delay = AGS_DELAY(recall);
   //  matrix = AGS_MATRIX(AGS_AUDIO(delay->recall.parent)->machine);

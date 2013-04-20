@@ -63,7 +63,7 @@ ags_audio_set_recycling_get_type()
     };
 
     ags_type_audio_set_recycling = g_type_register_static(AGS_TYPE_TASK,
-							    "AgsAudioSetRecycling",
+							    "AgsAudioSetRecycling\0",
 							    &ags_audio_set_recycling_info,
 							    0);
 
@@ -152,16 +152,16 @@ ags_audio_set_recycling_launch(AgsTask *task)
     int i;
 
     for(i = 0; i < 4; i++){
-      if(!strncmp("start_channel", parameter[i].name, 13)){
+      if(!strncmp("start_channel\0", parameter[i].name, 13)){
 	start_channel = (AgsChannel *) g_value_get_object(&(parameter[i].value));
-      }else if(!strncmp("end_channel", parameter[i].name, 11)){
+      }else if(!strncmp("end_channel\0", parameter[i].name, 11)){
 	end_channel = (AgsChannel *) g_value_get_object(&(parameter[i].value));
-      }else if(!strncmp("start_recycling", parameter[i].name, 15)){
+      }else if(!strncmp("start_recycling\0", parameter[i].name, 15)){
 	start_recycling = (AgsRecycling *) g_value_get_object(&(parameter[i].value));
-      }else if(!strncmp("end_recycling", parameter[i].name, 13)){
+      }else if(!strncmp("end_recycling\0", parameter[i].name, 13)){
 	end_recycling = (AgsRecycling *) g_value_get_object(&(parameter[i].value));
       }else{
-	g_error("ags_audio_set_recycling_launch_read_parameter: unknow Parameter");
+	g_error("ags_audio_set_recycling_launch_read_parameter: unknow Parameter\0");
       }
     }
   }
@@ -186,7 +186,7 @@ ags_audio_set_recycling_launch(AgsTask *task)
 			   &error);
     
       if(error != NULL){
-	g_error("%s", error->message);
+	g_error("%s\0", error->message);
       }
     
       channel = channel->next_pad;
@@ -209,7 +209,7 @@ ags_audio_set_recycling_launch(AgsTask *task)
 				TRUE, TRUE);
     
       if(error != NULL){
-	g_error("%s", error->message);
+	g_error("%s\0", error->message);
       }
     
       channel = channel->next_pad;
@@ -226,7 +226,7 @@ ags_audio_set_recycling_launch(AgsTask *task)
 			   &error);
     
       if(error != NULL){
-	g_error("%s", error->message);
+	g_error("%s\0", error->message);
       }
     
       channel = channel->next_pad;

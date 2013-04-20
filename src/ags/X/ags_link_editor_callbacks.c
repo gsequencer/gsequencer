@@ -152,7 +152,7 @@ ags_link_editor_menu_item_file_callback(GtkWidget *widget, AgsLinkEditor *link_e
   if(link_editor->file_chooser != NULL)
     return(0);
 
-  link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("select audio file"),
+  link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("select audio file\0"),
 										   (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) link_editor),
 										   GTK_FILE_CHOOSER_ACTION_OPEN,
 										   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -164,10 +164,10 @@ ags_link_editor_menu_item_file_callback(GtkWidget *widget, AgsLinkEditor *link_e
   tmp = (char *) gtk_label_get_label(GTK_LABEL(GTK_BIN(widget)->child));
   tmp = g_strdup(tmp + 7);
 
-  if(g_strcmp0(tmp, "")){
+  if(g_strcmp0(tmp, "\0")){
     char *tmp0;
 
-    tmp0 = g_strrstr(tmp, "/");
+    tmp0 = g_strrstr(tmp, "/\0");
     name = g_strdup(tmp0 + 1);
     dir = g_strndup(tmp, tmp0 - tmp);
 
@@ -176,18 +176,18 @@ ags_link_editor_menu_item_file_callback(GtkWidget *widget, AgsLinkEditor *link_e
   }
 
   play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					  "label", GTK_STOCK_MEDIA_PLAY,
-					  "use-stock", TRUE,
-					  "use-underline", TRUE,
+					  "label\0", GTK_STOCK_MEDIA_PLAY,
+					  "use-stock\0", TRUE,
+					  "use-underline\0", TRUE,
 					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(link_editor->file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(link_editor->file_chooser)->action_area, (GtkWidget *) play, 0);
 
   gtk_widget_show_all((GtkWidget *) link_editor->file_chooser);
 
-  g_signal_connect((GObject *) link_editor->file_chooser, "response",
+  g_signal_connect((GObject *) link_editor->file_chooser, "response\0",
 		   G_CALLBACK(ags_link_editor_file_chooser_response_callback), (gpointer) link_editor);
-  g_signal_connect((GObject *) play, "toggled",
+  g_signal_connect((GObject *) play, "toggled\0",
 		   G_CALLBACK(ags_link_editor_file_chooser_play_callback), (gpointer) link_editor);
   */
 }
@@ -214,7 +214,7 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
       }
     }else{
     ags_link_editor_file_chooser_response_callback0:
-      gtk_label_set_label(GTK_LABEL(GTK_BIN(link_editor->option)->child), g_strconcat("file://", name, NULL));
+      gtk_label_set_label(GTK_LABEL(GTK_BIN(link_editor->option)->child), g_strconcat("file://\0", name, NULL));
 
       audio_file = ags_audio_file_new();
       audio_file->name = name;
@@ -263,9 +263,9 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
 
     g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_PLAY_AUDIO_FILE), play_audio_file);
 
-    g_signal_connect((GObject *) play_audio_file, "done",
+    g_signal_connect((GObject *) play_audio_file, "done\0",
 		     G_CALLBACK(ags_link_editor_file_chooser_play_done), link_editor);
-    g_signal_connect((GObject *) play_audio_file, "cancel",
+    g_signal_connect((GObject *) play_audio_file, "cancel\0",
 		     G_CALLBACK(ags_link_editor_file_chooser_play_cancel), link_editor);
 
     /* AgsAudioFile * /

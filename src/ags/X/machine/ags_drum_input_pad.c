@@ -66,7 +66,7 @@ ags_drum_input_pad_get_type()
     };
 
     ags_type_drum_input_pad = g_type_register_static(AGS_TYPE_PAD,
-						     "AgsDrumInputPad", &ags_drum_input_pad_info,
+						     "AgsDrumInputPad\0", &ags_drum_input_pad_info,
 						     0);
 
     g_type_add_interface_static(ags_type_drum_input_pad,
@@ -121,7 +121,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   gtk_container_add((GtkContainer *) drum_input_pad->play, (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_PLAY, GTK_ICON_SIZE_BUTTON));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum_input_pad->play, TRUE, TRUE, 0);
 
-  drum_input_pad->edit = (GtkToggleButton *) gtk_toggle_button_new_with_label("edit");
+  drum_input_pad->edit = (GtkToggleButton *) gtk_toggle_button_new_with_label("edit\0");
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) drum_input_pad->edit, FALSE, FALSE, 0);
 
   drum_input_pad->file_chooser = NULL;
@@ -141,16 +141,16 @@ ags_drum_input_pad_connect(AgsConnectable *connectable)
   ags_drum_input_pad_parent_connectable_interface->connect(connectable);
 
   /* AgsDrumInputPad */
-  g_signal_connect(G_OBJECT(drum_input_pad->open), "clicked",
+  g_signal_connect(G_OBJECT(drum_input_pad->open), "clicked\0",
 		   G_CALLBACK(ags_drum_input_pad_open_callback), (gpointer) drum_input_pad);
 
-  g_signal_connect_after(G_OBJECT(drum_input_pad->play), "toggled",
+  g_signal_connect_after(G_OBJECT(drum_input_pad->play), "toggled\0",
 			 G_CALLBACK(ags_drum_input_pad_play_callback), (gpointer) drum_input_pad);
 
-  g_signal_connect(G_OBJECT(AGS_PAD(drum_input_pad)->option), "changed",
+  g_signal_connect(G_OBJECT(AGS_PAD(drum_input_pad)->option), "changed\0",
 		   G_CALLBACK(ags_drum_input_pad_option_callback), (gpointer) drum_input_pad);
 
-  g_signal_connect(G_OBJECT(drum_input_pad->edit), "clicked",
+  g_signal_connect(G_OBJECT(drum_input_pad->edit), "clicked\0",
 		   G_CALLBACK(ags_drum_input_pad_edit_callback), (gpointer) drum_input_pad);
 }
 
@@ -192,7 +192,7 @@ ags_drum_input_pad_new(AgsChannel *channel)
   AgsDrumInputPad *drum_input_pad;
 
   drum_input_pad = (AgsDrumInputPad *) g_object_new(AGS_TYPE_DRUM_INPUT_PAD,
-						    "channel", channel,
+						    "channel\0", channel,
 						    NULL);
 
   return(drum_input_pad);

@@ -32,7 +32,7 @@ ags_line_member_editor_get_type(void)
 
   if (!line_member_editor_type){
     static const GtkTypeInfo line_member_editor_info = {
-      "AgsLineMemberEditor",
+      "AgsLineMemberEditor\0",
       sizeof(AgsLineMemberEditor), /* base_init */
       sizeof(AgsLineMemberEditorClass), /* base_finalize */
       (GtkClassInitFunc) ags_line_member_editor_class_init,
@@ -66,10 +66,10 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 void
 ags_line_member_editor_connect(AgsLineMemberEditor *line_member_editor)
 {
-  g_signal_connect((GObject *) line_member_editor, "destroy",
+  g_signal_connect((GObject *) line_member_editor, "destroy\0",
 		   G_CALLBACK(ags_line_member_editor_destroy_callback), (gpointer) line_member_editor);
 
-  g_signal_connect((GObject *) line_member_editor, "show",
+  g_signal_connect((GObject *) line_member_editor, "show\0",
 		   G_CALLBACK(ags_line_member_editor_show_callback), (gpointer) line_member_editor);
 }
 

@@ -111,7 +111,7 @@ ags_recall_audio_run_get_type()
     };
 
     ags_type_recall_audio_run = g_type_register_static(AGS_TYPE_RECALL,
-						       "AgsRecallAudioRun",
+						       "AgsRecallAudioRun\0",
 						       &ags_recall_audio_run_info,
 						       0);
 
@@ -149,9 +149,9 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   gobject->finalize = ags_recall_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("recall_audio",
-				   "AgsRecallAudio of this recall",
-				   "The AgsRecallAudio which this recall needs",
+  param_spec = g_param_spec_object("recall_audio\0",
+				   "AgsRecallAudio of this recall\0",
+				   "The AgsRecallAudio which this recall needs\0",
 				   AGS_TYPE_RECALL_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -167,7 +167,7 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   recall_audio_run->get_channel_run_group_id = ags_recall_audio_run_real_get_channel_run_group_id;
 
   recall_audio_run_signals[GET_CHANNEL_RUN_GROUP_ID] =
-    g_signal_new("get_channel_run_group_id",
+    g_signal_new("get_channel_run_group_id\0",
 		 G_TYPE_FROM_CLASS (recall_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallAudioRunClass, get_channel_run_group_id),
@@ -302,7 +302,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
     return(TRUE);
 
   if(AGS_IS_COPY_PATTERN_AUDIO_RUN(packable))
-    g_message("debug: AGS_IS_COPY_PATTERN_AUDIO_RUN(packable)\n");
+    g_message("debug: AGS_IS_COPY_PATTERN_AUDIO_RUN(packable)\n\0");
 
   recall_container = AGS_RECALL_CONTAINER(container);
   recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run,
@@ -312,7 +312,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 
   /* set AgsRecallAudio */
   g_object_set(G_OBJECT(recall_audio_run),
-	       "recall_audio", recall_container->recall_audio,
+	       "recall_audio\0", recall_container->recall_audio,
 	       NULL);
 
   /* set in AgsRecallChannelRun */
@@ -323,7 +323,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
 
     while((list = ags_recall_find_group_id(list, group_id)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall_audio_run", AGS_RECALL_AUDIO_RUN(packable),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
 
       list= list->next;
@@ -331,7 +331,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
     while((list = ags_recall_find_template(list)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall_audio_run", AGS_RECALL_AUDIO_RUN(packable),
+		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
 
       list= list->next;
@@ -369,7 +369,7 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
 
   /* unset AgsRecallAudio */
   g_object_set(G_OBJECT(recall_audio_run),
-	       "recall_audio", NULL,
+	       "recall_audio\0", NULL,
 	       NULL);
 
   /* unset in AgsRecallChannelRun */
@@ -380,7 +380,7 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
 
     while((list = ags_recall_find_group_id(list, group_id)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall_audio_run", NULL,
+		   "recall_audio_run\0", NULL,
 		   NULL);
 
       list= list->next;
@@ -388,7 +388,7 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
     while((list = ags_recall_find_template(list)) != NULL){
       g_object_set(G_OBJECT(list->data),
-		   "recall_audio_run", NULL,
+		   "recall_audio_run\0", NULL,
 		   NULL);
 
       list= list->next;
@@ -452,7 +452,7 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 											     n_params, parameter));
 
   g_object_set(G_OBJECT(copy),
-	       "recall_audio", recall_audio_run->recall_audio,
+	       "recall_audio\0", recall_audio_run->recall_audio,
 	       NULL);
 
   return((AgsRecall *) copy);

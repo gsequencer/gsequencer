@@ -295,7 +295,7 @@ ags_editor_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *
       }
     }
 
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
   }
   void ags_editor_drawing_area_button_release_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
@@ -555,7 +555,7 @@ ags_editor_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *
 
     list_notation = machine->audio->notation;
 
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
   }
   void ags_editor_drawing_area_motion_notify_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
@@ -760,7 +760,7 @@ ags_editor_popup_add_index_callback(GtkWidget *widget, GtkMenu *popup)
   radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(editor->selected, g_strdup(AGS_EDITOR_DEFAULT));
   g_object_set_data((GObject *) radio_button, (char *) g_type_name(AGS_TYPE_MACHINE), NULL);
   g_object_set_data((GObject *) radio_button, (char *) g_type_name(AGS_TYPE_CHANNEL), GUINT_TO_POINTER(0));
-  g_signal_connect((GObject *) radio_button, "toggled",
+  g_signal_connect((GObject *) radio_button, "toggled\0",
 		   G_CALLBACK(ags_editor_index_callback), editor);
   gtk_box_pack_start((GtkBox *) editor->index_radio, (GtkWidget *) radio_button, FALSE, FALSE, 0);
 
@@ -790,7 +790,7 @@ ags_editor_popup_link_index_callback(GtkWidget *widget, GtkMenu *popup)
   editor = AGS_EDITOR(g_object_get_data((GObject *) popup, (char *) g_type_name(AGS_TYPE_EDITOR)));
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) editor);
 
-  dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("select machine"),
+  dialog = (GtkDialog *) gtk_dialog_new_with_buttons(g_strdup("select machine\0"),
 						     (GtkWindow *) window,
 						     GTK_DIALOG_DESTROY_WITH_PARENT,
 						     GTK_STOCK_OK,
@@ -799,7 +799,7 @@ ags_editor_popup_link_index_callback(GtkWidget *widget, GtkMenu *popup)
 						     GTK_RESPONSE_REJECT,
 						     NULL);
   g_object_set_data((GObject *) dialog, g_type_name(AGS_TYPE_EDITOR), editor);
-  g_signal_connect_after((GObject *) dialog, "response",
+  g_signal_connect_after((GObject *) dialog, "response\0",
 			 G_CALLBACK(ags_editor_link_index_response_callback), editor);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
@@ -821,7 +821,7 @@ ags_editor_popup_link_index_callback(GtkWidget *widget, GtkMenu *popup)
     radio_button = (GtkRadioButton *) gtk_radio_button_new_from_widget(radio_button0);
   ags_editor_popup_link_index_callback0:
     machine = AGS_MACHINE(list->data);
-    gtk_button_set_label((GtkButton *) radio_button, g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine), ": ", machine->name, NULL));
+    gtk_button_set_label((GtkButton *) radio_button, g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine), ": \0", machine->name, NULL));
     g_object_set_data((GObject *) radio_button, (char *) g_type_name(AGS_TYPE_MACHINE), list->data);
     gtk_box_pack_start((GtkBox *) vbox_radio, (GtkWidget *) radio_button, FALSE, FALSE, 0);
 
@@ -859,7 +859,7 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
     if(machine0 != NULL){
       guint pads;
 
-      gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine0), ": ", machine0->name, NULL));
+      gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine0), ": \0", machine0->name, NULL));
 
       if((AGS_AUDIO_NOTATION_DEFAULT & (machine0->audio->flags)) != 0){
 	pads = machine0->audio->input_pads;

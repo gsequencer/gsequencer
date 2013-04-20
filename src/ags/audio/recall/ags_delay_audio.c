@@ -79,7 +79,7 @@ ags_delay_audio_get_type()
     };
 
     ags_type_delay_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-						  "AgsDelayAudio",
+						  "AgsDelayAudio\0",
 						  &ags_delay_audio_info,
 						  0);
 
@@ -108,9 +108,9 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   gobject->finalize = ags_delay_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("notation_delay",
-				 "notation delay for timeing",
-				 "The notation delay whenever a tic occures",
+  param_spec = g_param_spec_uint("notation_delay\0",
+				 "notation delay for timeing\0",
+				 "The notation delay whenever a tic occures\0",
 				 0,
 				 65535,
 				 0,
@@ -119,9 +119,9 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 				  PROP_NOTATION_DELAY,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("sequencer_delay",
-				 "sequencer delay for timeing",
-				 "The sequencer delay whenever a tic occures",
+  param_spec = g_param_spec_uint("sequencer_delay\0",
+				 "sequencer delay for timeing\0",
+				 "The sequencer delay whenever a tic occures\0",
 				 0,
 				 256,
 				 0,
@@ -132,7 +132,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 
   /* signals */
   delay_audio_signals[SEQUENCER_DURATION_CHANGED] = 
-    g_signal_new("sequencer_duration_changed",
+    g_signal_new("sequencer_duration_changed\0",
 		 G_TYPE_FROM_CLASS(delay_audio),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioClass, sequencer_duration_changed),

@@ -34,7 +34,7 @@ ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth
     return;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-  synth->machine.name = g_strdup_printf("Default %d", window->counter->synth);
+  synth->machine.name = g_strdup_printf("Default %d\0", window->counter->synth);
   window->counter->synth++;
 }
 

@@ -62,7 +62,7 @@ ags_count_beats_audio_get_type()
     };
     
     ags_type_count_beats_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-							"AgsCountBeatsAudio",
+							"AgsCountBeatsAudio\0",
 							&ags_count_beats_audio_info,
 							0);
   }
@@ -86,18 +86,18 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
   gobject->finalize = ags_count_beats_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_boolean("loop",
-				    "loop playing",
-				    "Play in a endless loop",
+  param_spec = g_param_spec_boolean("loop\0",
+				    "loop playing\0",
+				    "Play in a endless loop\0",
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LOOP,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("notation_loop_start",
-				 "start beat of notation loop",
-				 "The start beat of the notation loop",
+  param_spec = g_param_spec_uint("notation_loop_start\0",
+				 "start beat of notation loop\0",
+				 "The start beat of the notation loop\0",
 				 0,
 				 65535,
 				 0,
@@ -106,9 +106,9 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_NOTATION_LOOP_START,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("notation_loop_end",
-				 "end beat of notation loop",
-				 "The end beat of the notation loop",
+  param_spec = g_param_spec_uint("notation_loop_end\0",
+				 "end beat of notation loop\0",
+				 "The end beat of the notation loop\0",
 				 0,
 				 65535,
 				 64,
@@ -117,9 +117,9 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_NOTATION_LOOP_END,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("sequencer_loop_start",
-				 "start beat of loop",
-				 "The start beat of the sequencer loop",
+  param_spec = g_param_spec_uint("sequencer_loop_start\0",
+				 "start beat of loop\0",
+				 "The start beat of the sequencer loop\0",
 				 0,
 				 65535,
 				 0,
@@ -128,9 +128,9 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
 				  PROP_SEQUENCER_LOOP_START,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("sequencer_loop_end",
-				 "end beat of sequencer loop",
-				 "The end beat of the sequencer loop",
+  param_spec = g_param_spec_uint("sequencer_loop_end\0",
+				 "end beat of sequencer loop\0",
+				 "The end beat of the sequencer loop\0",
 				 16,
 				 65535,
 				 16,
@@ -268,7 +268,7 @@ ags_count_beats_audio_new(gboolean loop)
   AgsCountBeatsAudio *count_beats_audio;
 
   count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
-							  "loop", loop,
+							  "loop\0", loop,
 							  NULL);
   
   return(count_beats_audio);

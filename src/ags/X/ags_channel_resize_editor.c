@@ -72,7 +72,7 @@ ags_channel_resize_editor_get_type(void)
     };
 
     ags_type_channel_resize_editor = g_type_register_static(AGS_TYPE_PROPERTY_EDITOR,
-							    "AgsChannelResizeEditor",
+							    "AgsChannelResizeEditor\0",
 							    &ags_channel_resize_editor_info,
 							    0);
     
@@ -133,7 +133,7 @@ ags_channel_resize_editor_init(AgsChannelResizeEditor *channel_resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("audio channels");
+  label = (GtkLabel *) gtk_label_new("audio channels\0");
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -160,7 +160,7 @@ ags_channel_resize_editor_init(AgsChannelResizeEditor *channel_resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("outputs");
+  label = (GtkLabel *) gtk_label_new("outputs\0");
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 
@@ -187,7 +187,7 @@ ags_channel_resize_editor_init(AgsChannelResizeEditor *channel_resize_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("inputs");
+  label = (GtkLabel *) gtk_label_new("inputs\0");
   gtk_container_add(GTK_CONTAINER(alignment),
 		    GTK_WIDGET(label));
 

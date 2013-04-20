@@ -103,7 +103,7 @@ ags_audio_get_type (void)
     };
 
     ags_type_audio = g_type_register_static(G_TYPE_OBJECT,
-					    "AgsAudio", &ags_audio_info,
+					    "AgsAudio\0", &ags_audio_info,
 					    0);
 
     g_type_add_interface_static(ags_type_audio,
@@ -131,9 +131,9 @@ ags_audio_class_init(AgsAudioClass *audio)
   gobject->finalize = ags_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout",
-				   "assigned devout",
-				   "The devout it is assigned with",
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
 				   AGS_TYPE_DEVOUT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,7 +146,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /* signals */
   audio_signals[SET_AUDIO_CHANNELS] = 
-    g_signal_new("set_audio_channels",
+    g_signal_new("set_audio_channels\0",
 		 G_TYPE_FROM_CLASS(audio),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_audio_channels),
@@ -156,7 +156,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   audio_signals[SET_PADS] = 
-    g_signal_new("set_pads",
+    g_signal_new("set_pads\0",
 		 G_TYPE_FROM_CLASS(audio),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_pads),
@@ -636,7 +636,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	    set_sync_link = FALSE;
 	    input_pad_last = ags_channel_nth(input, audio->input_lines - (audio_channels - audio->audio_channels));
 	  }else{
-	    g_message("ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined");
+	    g_message("ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
 	    set_sync_link = FALSE;
 	    set_async_link = FALSE;
 	  }
@@ -659,7 +659,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   }
   void ags_audio_set_audio_channels_grow_one(GType type){
     channel = (AgsChannel *) g_object_new(type,
-					  "audio", (GObject *) audio,
+					  "audio\0", (GObject *) audio,
 					  NULL);
 
     if(type == AGS_TYPE_OUTPUT){
@@ -699,7 +699,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     for(j = 1; j < pads; j++){
       channel->next =
 	channel->next_pad = (AgsChannel *) g_object_new(type,
-							"audio", (GObject *) audio,
+							"audio\0", (GObject *) audio,
 							NULL);
       channel->next->prev = channel;
       channel = channel->next;
@@ -750,7 +750,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
      */
     start =
       channel = (AgsChannel *) g_object_new(type,
-					    "audio", (GObject *) audio,
+					    "audio\0", (GObject *) audio,
 					    NULL);
 
     channel->audio_channel = audio->audio_channels;
@@ -796,7 +796,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     for(j = audio->audio_channels + 1; j < audio_channels; j++){
       channel->next = (AgsChannel *) g_object_new(type,
-						  "audio", (GObject *) audio,
+						  "audio\0", (GObject *) audio,
 						  NULL);
       channel->next->prev = channel;
       channel = channel->next;
@@ -876,7 +876,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       /* alloc new AgsChannel's */
       start =
 	channel = (AgsChannel *) g_object_new(type,
-					      "audio", (GObject *) audio,
+					      "audio\0", (GObject *) audio,
 					      NULL);
 
       next_channel = prev_channel->next;
@@ -891,7 +891,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       for(; j < audio_channels; j++){
 	channel->next = (AgsChannel *) g_object_new(type,
-						    "audio", (GObject *) audio,
+						    "audio\0", (GObject *) audio,
 						    NULL);
 
 	channel->next->prev = channel;
@@ -954,7 +954,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     start =
       channel = (AgsChannel *) g_object_new(type,
-					    "audio", (GObject *) audio,
+					    "audio\0", (GObject *) audio,
 					    NULL);
 
     prev_channel->next = start;
@@ -965,7 +965,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     for(; j < audio_channels; j++){
       channel->next = (AgsChannel *) g_object_new(type,
-						  "audio", (GObject *) audio,
+						  "audio\0", (GObject *) audio,
 						  NULL);
 
       channel->next->prev = channel;
@@ -1118,7 +1118,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     i = audio->audio_channels;
 
-    g_message("ags_audio_set_audio_channels_grow_notation\n");
+    g_message("ags_audio_set_audio_channels_grow_notation\n\0");
 
     if(audio->audio_channels == 0){
       audio->notation =
@@ -1241,7 +1241,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
   void ags_audio_set_pads_grow_one(){
     start =
       channel = (AgsChannel *) g_object_new(type,
-					    "audio", (GObject *) audio,
+					    "audio\0", (GObject *) audio,
 					    NULL);
 
     if(alloc_recycling){
@@ -1272,7 +1272,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     for(j = 1; j < audio->audio_channels; j++){
       channel->next = (AgsChannel *) g_object_new(type,
-						  "audio", (GObject *) audio,
+						  "audio\0", (GObject *) audio,
 						  NULL);
       channel->next->prev = channel;
       channel = channel->next;
@@ -1329,7 +1329,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       for(j = 0; j < audio->audio_channels; j++){
 	channel->next = (AgsChannel *) g_object_new(type,
-						    "audio", (GObject *) audio,
+						    "audio\0", (GObject *) audio,
 						    NULL);
 	channel->next->prev = channel;
 	channel = channel->next;
@@ -1389,7 +1389,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       ags_channel_set_link(channel, NULL, &error);
 
       if(error != NULL){
-	g_error("%s", error->message);
+	g_error("%s\0", error->message);
       }
 
       channel = channel->next;
@@ -1435,7 +1435,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     GList *list;
     guint i;
 
-    g_message("ags_audio_set_pads_alloc_notation\n");
+    g_message("ags_audio_set_pads_alloc_notation\n\0");
 
     if(audio->audio_channels > 0){
       audio->notation =
@@ -1777,7 +1777,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 							 first_recycling, last_recycling);
 
   if(recall_id == NULL)
-    g_message("group_id = %llu\n", (long long unsigned int) group_id);
+    g_message("group_id = %llu\n\0", (long long unsigned int) group_id);
   
   if((AGS_RECALL_ID_AUDIO_RESOLVED & (recall_id->flags)) != 0){
     return;
@@ -1885,7 +1885,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   GList *list_recall_start, *list_recall;
   gboolean matches_reality, immediate_new_level;
   
-  g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n", audio->output_lines, audio->input_lines);
+  g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
 
   recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
 							 group_id,
@@ -1924,7 +1924,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     if(AGS_IS_DELAY_AUDIO_RUN(recall) ||
        AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
        AGS_IS_COPY_PATTERN_AUDIO_RUN(recall))
-      g_message("\n");
+      g_message("\n\0");
 
 
     if(((called_by_output && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0) ||
@@ -1970,7 +1970,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
 	/* duplicate the recall, notify first run and initialize it */
 	recall = ags_recall_duplicate(recall, current_recall_id);
-	g_message("duplicated: %s\n", G_OBJECT_TYPE_NAME(recall));
+	g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(recall));
       
 	if(audio_signal_level == 0)
 	  audio->play = g_list_append(audio->play, recall);
@@ -2147,7 +2147,7 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
 	g_value_init(&value, G_TYPE_OBJECT);
 	g_value_set_object(&value, devout);
 	g_object_set_property(G_OBJECT(audio_signal),
-			      "devout", &value);
+			      "devout\0", &value);
 	g_value_unset(&value);
 
 	recycling = recycling->next;
@@ -2160,7 +2160,7 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
     GList *list;
     
     g_object_set(G_OBJECT(recall),
-		 "devout", devout,
+		 "devout\0", devout,
 		 NULL);
 
     list = recall->children;
@@ -2242,7 +2242,7 @@ ags_audio_new(AgsDevout *devout)
   AgsAudio *audio;
 
   audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-				    "devout", devout,
+				    "devout\0", devout,
 				    NULL);
 
   return(audio);

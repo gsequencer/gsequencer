@@ -63,7 +63,7 @@ ags_channel_set_recycling_get_type()
     };
 
     ags_type_channel_set_recycling = g_type_register_static(AGS_TYPE_TASK,
-							    "AgsChannelSetRecycling",
+							    "AgsChannelSetRecycling\0",
 							    &ags_channel_set_recycling_info,
 							    0);
 
@@ -154,7 +154,7 @@ ags_channel_set_recycling_launch(AgsTask *task)
 		       &error);
 
   if(error != NULL){
-    g_error("%s", error->message);
+    g_error("%s\0", error->message);
   }
 
   ags_channel_set_recycling(channel_set_recycling->channel,
@@ -167,7 +167,7 @@ ags_channel_set_recycling_launch(AgsTask *task)
 		       &error);
 
   if(error != NULL){
-    g_error("%s", error->message);
+    g_error("%s\0", error->message);
   }
 }
 

@@ -64,7 +64,7 @@ ags_drum_output_pad_get_type()
     };
 
     ags_type_drum_output_pad = g_type_register_static(AGS_TYPE_PAD,
-						      "AgsDrumOutputPad", &ags_drum_output_pad_info,
+						      "AgsDrumOutputPad\0", &ags_drum_output_pad_info,
 						      0);
     
     g_type_add_interface_static(ags_type_drum_output_pad,
@@ -159,7 +159,7 @@ ags_drum_output_pad_new(AgsChannel *channel)
   AgsDrumOutputPad *drum_output_pad;
 
   drum_output_pad = (AgsDrumOutputPad *) g_object_new(AGS_TYPE_DRUM_OUTPUT_PAD,
-						      "channel", channel,
+						      "channel\0", channel,
 						      NULL);
 
   return(drum_output_pad);

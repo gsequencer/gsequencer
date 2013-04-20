@@ -105,7 +105,7 @@ ags_play_channel_run_get_type()
     };
 
     ags_type_play_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-						       "AgsPlayChannelRun",
+						       "AgsPlayChannelRun\0",
 						       &ags_play_channel_run_info,
 						       0);
 
@@ -139,9 +139,9 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   gobject->finalize = ags_play_channel_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("stream_channel_run",
-				   "assigned AgsStreamChannelRun",
-				   "the assigned AgsStreamChannelRun",
+  param_spec = g_param_spec_object("stream_channel_run\0",
+				   "assigned AgsStreamChannelRun\0",
+				   "the assigned AgsStreamChannelRun\0",
 				   AGS_TYPE_STREAM_CHANNEL_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -238,7 +238,7 @@ ags_play_channel_run_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
 	    play_channel_run->done_handler =
-	      g_signal_connect(G_OBJECT(stream_channel_run), "done",
+	      g_signal_connect(G_OBJECT(stream_channel_run), "done\0",
 			       G_CALLBACK(ags_play_channel_run_stream_channel_done_callback), play_channel_run);
 	  }
 	}
@@ -318,7 +318,7 @@ ags_play_channel_run_run_connect(AgsRunConnectable *run_connectable)
   gobject = G_OBJECT(play_channel_run->stream_channel_run);
 
   play_channel_run->done_handler =
-    g_signal_connect(gobject, "done",
+    g_signal_connect(gobject, "done\0",
 		     G_CALLBACK(ags_play_channel_run_stream_channel_done_callback), play_channel_run);
 }
 
@@ -402,7 +402,7 @@ ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "stream_channel_run", stream_channel_run,
+	       "stream_channel_run\0", stream_channel_run,
 	       NULL);
 }
 
@@ -434,7 +434,7 @@ ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)
   AgsPlayChannelRun *play_channel_run;
 
   play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
-							"stream_channel_run", stream_channel_run,
+							"stream_channel_run\0", stream_channel_run,
 							NULL);
   
   return(play_channel_run);

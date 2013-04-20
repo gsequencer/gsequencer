@@ -36,7 +36,7 @@ ags_property_editor_get_type(void)
     };
 
     ags_type_property_editor = g_type_register_static(GTK_TYPE_VBOX,
-						      "AgsPropertyEditor", &ags_property_editor_info,
+						      "AgsPropertyEditor\0", &ags_property_editor_info,
 						      0);
     
     g_type_add_interface_static(ags_type_property_editor,
@@ -64,7 +64,7 @@ ags_property_editor_init(AgsPropertyEditor *property_editor)
 {
   property_editor->flags = 0;
 
-  property_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled");
+  property_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label("enabled\0");
   gtk_box_pack_start(GTK_BOX(property_editor),
 		     GTK_WIDGET(property_editor->enabled),
 		     FALSE, FALSE,
@@ -80,7 +80,7 @@ ags_property_editor_connect(AgsConnectable *connectable)
   /* AgsPropertyEditor */
   property_editor = AGS_PROPERTY_EDITOR(connectable);
 
-  g_signal_connect_after(G_OBJECT(property_editor->enabled), "toggled",
+  g_signal_connect_after(G_OBJECT(property_editor->enabled), "toggled\0",
 			 G_CALLBACK(ags_property_editor_enable_callback), property_editor);
 }
 

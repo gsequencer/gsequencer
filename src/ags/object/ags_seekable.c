@@ -33,7 +33,7 @@ ags_seekable_get_type()
     };
 
     ags_type_seekable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsSeekable", &ags_seekable_info,
+					       "AgsSeekable\0", &ags_seekable_info,
 					       0);
   }
 

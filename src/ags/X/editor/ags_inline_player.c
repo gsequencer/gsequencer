@@ -74,7 +74,7 @@ ags_inline_player_get_type(void)
     };
 
     ags_type_inline_player = g_type_register_static(GTK_TYPE_VBOX,
-						  "AgsInlinePlayer", &ags_inline_player_info,
+						  "AgsInlinePlayer\0", &ags_inline_player_info,
 						  0);
     
     g_type_add_interface_static(ags_type_inline_player,
@@ -103,9 +103,9 @@ ags_inline_player_class_init(AgsInlinePlayerClass *inline_player)
   gobject->finalize = ags_inline_player_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("playable",
-				   "playable for player",
-				   "The AgsPlayable to use within the AgsInlinePlayer",
+  param_spec = g_param_spec_object("playable\0",
+				   "playable for player\0",
+				   "The AgsPlayable to use within the AgsInlinePlayer\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -139,7 +139,7 @@ ags_inline_player_init(AgsInlinePlayer *inline_player)
 		     0);
 
   inline_player->play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-							 "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_PLAY,
+							 "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_PLAY,
 													   GTK_ICON_SIZE_LARGE_TOOLBAR),
 							 NULL);
   gtk_box_pack_start((GtkBox *) hbox,
@@ -240,13 +240,13 @@ ags_inline_player_connect(AgsConnectable *connectable)
 
   //TODO:JK: implement me
   /*
-  g_signal_connect(G_OBJECT(inline_player->preset), "changed",
+  g_signal_connect(G_OBJECT(inline_player->preset), "changed\0",
 		   G_CALLBACK(ags_inline_player_preset_changed), inline_player);
 
-  g_signal_connect(G_OBJECT(inline_player->instrument), "changed",
+  g_signal_connect(G_OBJECT(inline_player->instrument), "changed\0",
 		   G_CALLBACK(ags_inline_player_instrument_changed), inline_player);
 
-  g_signal_connect(G_OBJECT(inline_player->sample), "changed",
+  g_signal_connect(G_OBJECT(inline_player->sample), "changed\0",
 		   G_CALLBACK(ags_inline_player_sample_changed), inline_player);
   */
 }

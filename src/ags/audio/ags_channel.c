@@ -94,7 +94,7 @@ ags_channel_get_type (void)
     };
 
     ags_type_channel = g_type_register_static(G_TYPE_OBJECT,
-					      "AgsChannel",
+					      "AgsChannel\0",
 					      &ags_channel_info, 0);
 
     g_type_add_interface_static(ags_type_channel,
@@ -122,9 +122,9 @@ ags_channel_class_init(AgsChannelClass *channel)
   gobject->finalize = ags_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio it is assigned with",
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -138,7 +138,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 
   /* signals */
   channel_signals[RECYCLING_CHANGED] =
-    g_signal_new("recycling_changed",
+    g_signal_new("recycling_changed\0",
 		 G_TYPE_FROM_CLASS (channel),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsChannelClass, recycling_changed),
@@ -161,7 +161,7 @@ ags_channel_connectable_interface_init(AgsConnectableInterface *connectable)
 GQuark
 ags_channel_error_quark()
 {
-  return(g_quark_from_static_string("ags-channel-error-quark"));
+  return(g_quark_from_static_string("ags-channel-error-quark\0"));
 }
 
 void
@@ -452,7 +452,7 @@ ags_channel_nth(AgsChannel *channel, guint nth)
   }
 
   if((nth != 0 && i != nth) || channel == NULL)
-    g_message("ags_channel_nth:\n  nth channel does not exist\n  `- stopped @: i = %u; nth = %u\n", i, nth);
+    g_message("ags_channel_nth:\n  nth channel does not exist\n  `- stopped @: i = %u; nth = %u\n\0", i, nth);
 
   return(channel);
 }
@@ -506,7 +506,7 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
     channel = channel->next_pad;
 
   if((nth != 0 && i != nth) || channel == NULL)
-    g_message("ags_channel_nth_pad:\n  nth pad does not exist\n  `- stopped @: i = %u; nth = %u", i, nth);
+    g_message("ags_channel_nth_pad:\n  nth pad does not exist\n  `- stopped @: i = %u; nth = %u\0", i, nth);
 
   return(channel);
 }
@@ -669,16 +669,16 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	  g_set_error(error,
 		      AGS_CHANNEL_ERROR,
 		      AGS_CHANNEL_ERROR_LOOP_IN_LINK,
-		      "failed to link channel %u from %s with channel %u from %s",
+		      "failed to link channel %u from %s with channel %u from %s\0",
 		      channel->line, G_OBJECT_TYPE_NAME(audio),
 		      link->line, G_OBJECT_TYPE_NAME(link->audio));
 	else
 	  g_set_error(error,
 		      AGS_CHANNEL_ERROR,
 		      AGS_CHANNEL_ERROR_LOOP_IN_LINK,
-		      "failed to link channel %u from %s with channel %u from %s",
+		      "failed to link channel %u from %s with channel %u from %s\0",
 		      channel->line, G_OBJECT_TYPE_NAME(audio),
-		      0, "NULL");
+		      0, "NULL\0");
 
 	return;
       }
@@ -1517,7 +1517,7 @@ ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage)
 	  /* block sync|async for this run */
 	  ags_channel_recall_id_set(output, output_recall_id->group_id, TRUE,
 				    AGS_CHANNEL_RECALL_ID_RUN_STAGE,
-				    "stage", stage,
+				    "stage\0", stage,
 				    NULL);
 
 	  /* run in AGS_AUDIO_ASYNC mode */
@@ -1777,7 +1777,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
       AgsRecall *copy;
       
       copy = ags_recall_duplicate(recall, recall_id);
-      g_message("duplicated: %s\n", G_OBJECT_TYPE_NAME(copy));
+      g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
       
       if(recall_id->parent_group_id == 0)
 	channel->play = g_list_append(channel->play, copy);
@@ -1814,7 +1814,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
   
   recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
 
-  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %llu %llu\n", stage, AGS_AUDIO(channel->audio)->input_lines, (long long unsigned int) channel->audio_channel, (long long unsigned int) channel->pad);
+  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %llu %llu\n\0", stage, AGS_AUDIO(channel->audio)->input_lines, (long long unsigned int) channel->audio_channel, (long long unsigned int) channel->pad);
   
 
   if(recall_id->parent_group_id == 0)
@@ -1832,7 +1832,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     }
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
-      g_message("  init: %s\n", G_OBJECT_TYPE_NAME(recall));
+      g_message("  init: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
       if(stage == 0){
 	recall->flags &= (~AGS_RECALL_HIDE);
@@ -4824,7 +4824,7 @@ ags_channel_new(GObject *audio)
   AgsChannel *channel;
 
   channel = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
-					"audio", audio,
+					"audio\0", audio,
 					NULL);
 
   return(channel);

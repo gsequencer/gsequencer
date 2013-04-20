@@ -80,7 +80,7 @@ ags_stream_recycling_get_type()
     };
 
     ags_type_stream_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
-						       "AgsStreamRecycling",
+						       "AgsStreamRecycling\0",
 						       &ags_stream_recycling_info,
 						       0);
 
@@ -180,7 +180,7 @@ ags_stream_recycling_run_disconnect(AgsRunConnectable *run_connectable)
 void
 ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child)
 {
-  g_signal_connect(G_OBJECT(child), "done",
+  g_signal_connect(G_OBJECT(child), "done\0",
 		   G_CALLBACK(ags_stream_recycling_stream_audio_signal_done), recall);
 }
 
@@ -217,7 +217,7 @@ ags_stream_recycling_new(AgsRecycling *recycling)
   AgsStreamRecycling *stream_recycling;
 
   stream_recycling = (AgsStreamRecycling *) g_object_new(AGS_TYPE_STREAM_RECYCLING,
-							 "source", recycling,
+							 "source\0", recycling,
 							 NULL);
 
   return(stream_recycling);

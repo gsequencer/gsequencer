@@ -37,7 +37,7 @@ ags_playable_get_type()
     };
 
     ags_type_playable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsPlayable", &ags_playable_info,
+					       "AgsPlayable\0", &ags_playable_info,
 					       0);
   }
 
@@ -48,7 +48,7 @@ ags_playable_get_type()
 GQuark
 ags_playable_error_quark()
 {
-  return(g_quark_from_static_string("ags-playable-error-quark"));
+  return(g_quark_from_static_string("ags-playable-error-quark\0"));
 }
 
 void
@@ -250,7 +250,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 
   length = (guint) ceil((double)(frames) / (double)(devout->buffer_size));
 
-  g_message("ags_playable_read_audio_signal:\n  frames = %u\n  devout->buffer_size = %u\n  length = %u\n", frames, devout->buffer_size, length);
+  g_message("ags_playable_read_audio_signal:\n  frames = %u\n  devout->buffer_size = %u\n  length = %u\n\0", frames, devout->buffer_size, length);
 
   list = NULL;
   i = start_channel;
@@ -284,7 +284,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 			       &error);
 
     if(error != NULL){
-      g_error("%s", error->message);
+      g_error("%s\0", error->message);
     }
 
     stream = audio_signal->stream_beginning;

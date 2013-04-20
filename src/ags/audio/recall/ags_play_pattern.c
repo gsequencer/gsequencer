@@ -59,7 +59,7 @@ ags_play_pattern_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_play_pattern_init,
     };
-    ags_type_play_pattern = g_type_register_static(AGS_TYPE_RECALL, "AgsPlayPattern", &ags_play_pattern_info, 0);
+    ags_type_play_pattern = g_type_register_static(AGS_TYPE_RECALL, "AgsPlayPattern\0", &ags_play_pattern_info, 0);
   }
   return (ags_type_play_pattern);
 }
@@ -111,7 +111,7 @@ ags_play_pattern(AgsRecall *recall, AgsRecallID *recall_id)
 
   play_pattern = (AgsPlayPattern *) recall;
   delay = play_pattern->delay;
-  //  fprintf(stdout, "ags_play_pattern\n");
+  //  fprintf(stdout, "ags_play_pattern\n\0");
 
   pthread_mutex_lock(&mutex);
 
@@ -139,11 +139,11 @@ ags_play_pattern(AgsRecall *recall, AgsRecallID *recall_id)
     pthread_mutex_unlock(&mutex);
 
     if(delay->counter == 0){
-      //      fprintf(stdout, "  (AGS_RECALL_DELAY & recall->flags) == 0\n");
+      //      fprintf(stdout, "  (AGS_RECALL_DELAY & recall->flags) == 0\n\0");
     ags_play_pattern0:
 
       if(ags_pattern_get_bit(play_pattern->pattern, play_pattern->i, play_pattern->j, play_pattern->bit)){
-	//	fprintf(stdout, "  ags_pattern_get_bit(play_pattern->pattern, play_pattern->i, play_pattern->j, play_pattern->bit)\n");
+	//	fprintf(stdout, "  ags_pattern_get_bit(play_pattern->pattern, play_pattern->i, play_pattern->j, play_pattern->bit)\n\0");
 	play_channel = ags_play_channel_new(play_pattern->channel);
 
 	play_channel->recall.parent = (GObject *) play_pattern;

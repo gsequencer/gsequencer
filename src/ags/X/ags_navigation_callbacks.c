@@ -131,7 +131,7 @@ ags_navigation_play_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-      printf("found machine to play!\n");
+      printf("found machine to play!\n\0");
 
       devout = AGS_DEVOUT(machine->audio->devout);
 

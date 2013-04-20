@@ -57,7 +57,7 @@ ags_start_devout_get_type()
     };
 
     ags_type_start_devout = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsStartDevout",
+						   "AgsStartDevout\0",
 						   &ags_start_devout_info,
 						   0);
 

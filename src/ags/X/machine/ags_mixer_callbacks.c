@@ -29,6 +29,6 @@ ags_mixer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMixer
     return;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-  mixer->machine.name = g_strdup_printf("Default %d", window->counter->mixer);
+  mixer->machine.name = g_strdup_printf("Default %d\0", window->counter->mixer);
   window->counter->mixer++;
 }

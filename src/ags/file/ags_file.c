@@ -207,7 +207,7 @@ ags_file_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_init,
     };
-    ags_type_file = g_type_register_static (G_TYPE_OBJECT, "AgsFile", &ags_file_info, 0);
+    ags_type_file = g_type_register_static (G_TYPE_OBJECT, "AgsFile\0", &ags_file_info, 0);
   }
   return (ags_type_file);
 }
@@ -281,18 +281,18 @@ ags_file_write(AgsFile *file)
 
   file->doc = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
   file->doc->standalone = FALSE;
-  dtd = xmlCreateIntSubset(file->doc, BAD_CAST ("ags"), NULL, BAD_CAST (file->dtd));
+  dtd = xmlCreateIntSubset(file->doc, BAD_CAST ("ags\0"), NULL, BAD_CAST (file->dtd));
 
-  file->current = xmlNewNode(NULL, BAD_CAST "ags");
-  //  file->current = xmlNewDocNode(file->doc, NULL, BAD_CAST "ags", NULL);
+  file->current = xmlNewNode(NULL, BAD_CAST "ags\0");
+  //  file->current = xmlNewDocNode(file->doc, NULL, BAD_CAST "ags\0", NULL);
   xmlDocSetRootElement(file->doc, file->current);
 
-  xmlSetProp(file->current, BAD_CAST "version", BAD_CAST g_strdup(AGS_VERSION));
-  xmlSetProp(file->current, BAD_CAST "embedded_audio", BAD_CAST g_strdup(AGS_FILE_FALSE));
+  xmlSetProp(file->current, BAD_CAST "version\0", BAD_CAST g_strdup(AGS_VERSION));
+  xmlSetProp(file->current, BAD_CAST "embedded_audio\0", BAD_CAST g_strdup(AGS_FILE_FALSE));
 
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
-  //  dtd = (xmlDtd *) xmlParseDTD(NULL, "~/ags/file/ags_file.dtd");
+  //  dtd = (xmlDtd *) xmlParseDTD(NULL, "~/ags/file/ags_file.dtd\0");
   //  xmlAddChild((xmlNodePtr ) file->doc, (xmlNodePtr ) dtd);
 
   ags_file_write_window(file);
@@ -300,7 +300,7 @@ ags_file_write(AgsFile *file)
   //  xmlSaveFormatFileEnc(file->name, file->doc, file->encoding, TRUE);
   xmlDocDumpFormatMemoryEnc(file->doc, &buffer, &size, file->encoding, TRUE);
 
-  file_out = fopen(file->name, "w+");
+  file_out = fopen(file->name, "w+\0");
   fwrite(buffer, size, sizeof(xmlChar), file_out);
   fclose(file_out);
 }
@@ -315,31 +315,31 @@ ags_file_read(AgsFile *file)
   file->doc = xmlReadFile(file->name, NULL, 0);
 
   if(file->doc == NULL){
-    printf("ags_file_read():\n  couldn't parse file: %s\n", file->name);
+    printf("ags_file_read():\n  couldn't parse file: %s\n\0", file->name);
     return;
   }
 
   file->current = xmlDocGetRootElement(file->doc);
 
   while(file->current != NULL){
-    if(file->current->type == XML_ELEMENT_NODE && !xmlStrncmp("ags", file->current->name, 3))
+    if(file->current->type == XML_ELEMENT_NODE && !xmlStrncmp("ags\0", file->current->name, 3))
       break;
 
     file->current = file->current->next;
   }
 
   if(file->current != NULL)
-    string = xmlGetProp(file->current, "version");
+    string = xmlGetProp(file->current, "version\0");
   else{
-    g_printf("ags_file_read():\n  invalid format by opening file: %s\nexiting\n", file->name);
+    g_printf("ags_file_read():\n  invalid format by opening file: %s\nexiting\n\0", file->name);
     return;
   }
 
   if(string != NULL){
     if(xmlStrncmp(string, AGS_VERSION, 8))
-      g_printf("version doesn't match\nfile version: %s\nprogram version %s\n", string, AGS_VERSION);
+      g_printf("version doesn't match\nfile version: %s\nprogram version %s\n\0", string, AGS_VERSION);
   }else
-    g_printf("ags_file_read():\n  no version attribute in file: %s\n", file->name);
+    g_printf("ags_file_read():\n  no version attribute in file: %s\n\0", file->name);
 
   file->current = file->current->children;
   ags_file_read_window(file);
@@ -354,18 +354,18 @@ ags_file_read_audio(AgsFile *file, AgsAudio *audio)
   gboolean  first_notation;
   int i;
 
-  prop[0] = xmlGetProp(file->current, "audio_channels");
+  prop[0] = xmlGetProp(file->current, "audio_channels\0");
 
   if(prop[0] != NULL)
     audio->audio_channels = atoi(prop[0]);
   //    ags_audio_set_audio_channels(audio, atoi(prop[0]));
 
-  prop[0] = xmlGetProp(file->current, "output_pads");
+  prop[0] = xmlGetProp(file->current, "output_pads\0");
 
   if(prop[0] != NULL)
     ags_audio_set_pads(audio, AGS_TYPE_OUTPUT, atoi(prop[0]));
 
-  prop[0] = xmlGetProp(file->current, "input_pads");
+  prop[0] = xmlGetProp(file->current, "input_pads\0");
   
   if(prop[0] != NULL)
     ags_audio_set_pads(audio, AGS_TYPE_INPUT, atoi(prop[0]));
@@ -411,14 +411,14 @@ ags_file_read_channel(AgsFile *file, AgsAudio *audio)
   GList *recall, *pattern;
   gboolean io, second_run, recycling, first_recall, first_pattern, is_input, is_output;
 
-  prop[0] = xmlGetProp(file->current->children, "pad");
-  prop[1] = xmlGetProp(file->current->children, "audio_channel");
+  prop[0] = xmlGetProp(file->current->children, "pad\0");
+  prop[1] = xmlGetProp(file->current->children, "audio_channel\0");
 
   if(prop[0] == NULL || prop[1] == NULL)
     return;
 
-  prop[0] = xmlGetProp(file->current->children, "link_name");
-  prop[1] = xmlGetProp(file->current->children, "link_line");
+  prop[0] = xmlGetProp(file->current->children, "link_name\0");
+  prop[1] = xmlGetProp(file->current->children, "link_line\0");
 
   node = file->current;
 
@@ -566,7 +566,7 @@ ags_file_read_input(AgsFile *file, AgsInput *input)
 {
   xmlChar *prop;
 
-  prop = xmlGetProp(file->current, "file");
+  prop = xmlGetProp(file->current, "file\0");
   //  ags_input_set_file(input, g_strdup(prop));
 }
 
@@ -598,7 +598,7 @@ ags_file_read_audio_signal(AgsFile *file, AgsAudioSignal *audio_signal)
     child = file->current;
 
     if(file->current->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(file->current->name, "AgsStream", 9)){
+      if(!xmlStrncmp(file->current->name, "AgsStream\0", 9)){
 	if(!stream_init){
 	  list =
 	    audio_signal->stream_beginning = g_list_alloc();
@@ -637,25 +637,25 @@ ags_file_read_pattern(AgsFile *file, AgsPattern *pattern)
   gboolean human_readable;
   guint i, j, k;
    
-  prop[0] = xmlGetProp(file->current, "dim0");
-  prop[1] = xmlGetProp(file->current, "dim1");
-  prop[2] = xmlGetProp(file->current, "lenght");
+  prop[0] = xmlGetProp(file->current, "dim0\0");
+  prop[1] = xmlGetProp(file->current, "dim1\0");
+  prop[2] = xmlGetProp(file->current, "lenght\0");
 
   ags_pattern_set_dim(pattern, atoi(prop[0]), atoi(prop[1]), atoi(prop[2]));
 
   node = file->current->children;
 
   while(node != NULL){
-    if(node->type == XML_ELEMENT_NODE && !xmlStrncmp(node->name, "AgsPatternData", 14)){
-      prop[0] = xmlGetProp(node, "coding");
+    if(node->type == XML_ELEMENT_NODE && !xmlStrncmp(node->name, "AgsPatternData\0", 14)){
+      prop[0] = xmlGetProp(node, "coding\0");
       
       if(prop != NULL){
-	human_readable = (gboolean) !xmlStrncmp(prop[0], "human readable", 14);
+	human_readable = (gboolean) !xmlStrncmp(prop[0], "human readable\0", 14);
       }else
 	human_readable = TRUE;
 
-      i = atoi(xmlGetProp(node, "index0"));
-      j = atoi(xmlGetProp(node, "index1"));
+      i = atoi(xmlGetProp(node, "index0\0"));
+      j = atoi(xmlGetProp(node, "index1\0"));
        
       content = xmlNodeGetContent(node);
 
@@ -680,15 +680,15 @@ ags_file_read_notation(AgsFile *file, AgsNotation *notation)
   xmlNodePtr node, child;
   xmlChar *prop;
 
-  prop = xmlGetProp(file->current, "raster");
+  prop = xmlGetProp(file->current, "raster\0");
 
   if(prop)
     notation->flags |= ((!xmlStrncmp(prop, AGS_FILE_TRUE, 4)) ? AGS_NOTATION_RASTER: 0);
 
-  prop = xmlGetProp(file->current, "tact");
+  prop = xmlGetProp(file->current, "tact\0");
   notation->tact = g_strdup(prop);
 
-  prop = xmlGetProp(file->current, "bpm");
+  prop = xmlGetProp(file->current, "bpm\0");
    
   if(prop)
     notation->bpm = atoi(prop);
@@ -700,7 +700,7 @@ ags_file_read_notation(AgsFile *file, AgsNotation *notation)
     child = file->current;
 
     if(node->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child->name, "AgsNote", 7)){
+      if(!xmlStrncmp(child->name, "AgsNote\0", 7)){
 	note = ags_note_new();
 	ags_file_read_note(file, note);
 	ags_notation_add_note(notation,
@@ -719,13 +719,13 @@ ags_file_read_note(AgsFile *file, AgsNote *note)
   xmlNodePtr node, child;
   xmlChar *prop;
 
-  prop = xmlGetProp(file->current, "x0");
+  prop = xmlGetProp(file->current, "x0\0");
   note->x[0] = atoi(prop);
 
-  prop = xmlGetProp(file->current, "x1");
+  prop = xmlGetProp(file->current, "x1\0");
   note->x[1] = atoi(prop);
 
-  prop = xmlGetProp(file->current, "y");
+  prop = xmlGetProp(file->current, "y\0");
   note->y = atoi(prop);
 }
 
@@ -734,49 +734,49 @@ ags_file_read_devout(AgsFile *file, AgsDevout *devout)
 {
   xmlChar *prop;
 
-  prop = xmlGetProp(file->current, "pcm_channels");
+  prop = xmlGetProp(file->current, "pcm_channels\0");
 
   if(prop != NULL)
     devout->pcm_channels = atoi(prop);
   else
     devout->pcm_channels = 2;
 
-  prop = xmlGetProp(file->current, "dsp_channels");
+  prop = xmlGetProp(file->current, "dsp_channels\0");
 
   if(prop != NULL)
     devout->dsp_channels = atoi(prop);
   else
     devout->dsp_channels = 2;
 
-  prop = xmlGetProp(file->current, "bits");
+  prop = xmlGetProp(file->current, "bits\0");
 
   if(prop != NULL)
     devout->bits = atoi(prop);
   else
     devout->bits = 16;
 
-  prop = xmlGetProp(file->current, "buffer_size");
+  prop = xmlGetProp(file->current, "buffer_size\0");
 
   if(prop != NULL)
     devout->buffer_size = atoi(prop);
   else
     devout->buffer_size = 512;
 
-  prop = xmlGetProp(file->current, "frequency");
+  prop = xmlGetProp(file->current, "frequency\0");
 
   if(prop != NULL)
     devout->frequency = atoi(prop);
   else
     devout->frequency = 16;
   /*
-  prop = xmlGetProp(file->current, "system");
+  prop = xmlGetProp(file->current, "system\0");
 
   if(prop != NULL)
     devout->system = g_strdup(prop);
   else
     devout->system = AGS_DEVOUT_OSS;
 
-  prop = xmlGetProp(file->current, "device");
+  prop = xmlGetProp(file->current, "device\0");
 
   if(prop != NULL)
     devout->device = g_strdup(prop);
@@ -792,10 +792,10 @@ ags_file_read_recall(AgsFile *file, AgsRecall *recall)
   xmlChar *prop;
   xmlNodePtr node, child;
 
-  recall->effect = xmlGetProp(file->current, "effect");
-  recall->name = xmlGetProp(file->current, "name");
+  recall->effect = xmlGetProp(file->current, "effect\0");
+  recall->name = xmlGetProp(file->current, "name\0");
 
-  prop = xmlGetProp(file->current, "control_count");
+  prop = xmlGetProp(file->current, "control_count\0");
 
   if(prop != NULL){
     recall->control_count = atoi(prop);
@@ -895,7 +895,7 @@ ags_file_read_window(AgsFile *file)
       if(!menu_bar && !xmlStrncmp(g_type_name(AGS_TYPE_MENU_BAR), file->current->name, 10)){
 	menu_bar = TRUE;
 	ags_file_read_menu_bar(file, (AgsMenuBar *) window->menu_bar);
-      }else if(!machines && !xmlStrncmp("AgsMachines", file->current->name, 11)){
+      }else if(!machines && !xmlStrncmp("AgsMachines\0", file->current->name, 11)){
 	machines = TRUE;
 	file->current = file->current->children;
 
@@ -914,7 +914,7 @@ ags_file_read_window(AgsFile *file)
 	navigation = TRUE;
 	ags_file_read_navigation(file, window->navigation);
       }else
-	g_printf("ignoring unrecognized element: %s\n", file->current->name);
+	g_printf("ignoring unrecognized element: %s\n\0", file->current->name);
     }
 
     file->current = child->next;
@@ -977,7 +977,7 @@ ags_file_read_machine(AgsFile *file)
 	  continue;
 	}
 
-	machine->name = xmlGetProp(node, "name");
+	machine->name = xmlGetProp(node, "name\0");
 	gtk_box_pack_start((GtkBox *) AGS_WINDOW(file->window)->machines, (GtkWidget *) machine, FALSE, FALSE, 0);
 
 	instance = TRUE;
@@ -998,7 +998,7 @@ ags_file_read_pad(AgsFile *file, AgsPad *pad)
   GList *list0;
   xmlChar *prop;
 
-  prop = xmlGetProp(node, "show_grouping");
+  prop = xmlGetProp(node, "show_grouping\0");
 
   /*
   if(prop != NULL)
@@ -1006,14 +1006,14 @@ ags_file_read_pad(AgsFile *file, AgsPad *pad)
       gtk_widget_show((GtkWidget *) pad->hbox);
   */
 
-  prop = xmlGetProp(node, "groupe_pad");
+  prop = xmlGetProp(node, "groupe_pad\0");
 
   if(prop != NULL){
     if(!xmlStrncmp(prop, AGS_FILE_TRUE, 4)){
     }
   }
 
-  prop = xmlGetProp(node, "groupe_channel");
+  prop = xmlGetProp(node, "groupe_channel\0");
 
   if(prop != NULL)
     if(!xmlStrncmp(prop, AGS_FILE_TRUE, 4)){
@@ -1047,10 +1047,10 @@ ags_file_read_line(AgsFile *file, AgsLine *line)
     gboolean all_positions = FALSE;
     gboolean connect = TRUE;
 
-    prop[0] = xmlGetProp(file->current, "visualization");
+    prop[0] = xmlGetProp(file->current, "visualization\0");
 
     if(prop[0] == NULL){
-      g_printf("AgsLineMember has no visualization\n");
+      g_printf("AgsLineMember has no visualization\n\0");
       return;
     }
 
@@ -1063,10 +1063,10 @@ ags_file_read_line(AgsFile *file, AgsLine *line)
     else
       return;
 
-    prop[0] = xmlGetProp(file->current, "left_attach");
-    prop[1] = xmlGetProp(file->current, "right_attach");
-    prop[2] = xmlGetProp(file->current, "top_attach");
-    prop[3] = xmlGetProp(file->current, "bottom_attach");
+    prop[0] = xmlGetProp(file->current, "left_attach\0");
+    prop[1] = xmlGetProp(file->current, "right_attach\0");
+    prop[2] = xmlGetProp(file->current, "top_attach\0");
+    prop[3] = xmlGetProp(file->current, "bottom_attach\0");
 
     if(prop[0] == NULL || prop[1] == NULL || prop[2] == NULL || prop[3] == NULL)
       gtk_container_add((GtkContainer *) line->table, widget);
@@ -1077,9 +1077,9 @@ ags_file_read_line(AgsFile *file, AgsLine *line)
 		       GTK_FILL, GTK_FILL,
 		       2, 2);
 
-    prop[0] = xmlGetProp(file->current, "effect");
-    prop[1] = xmlGetProp(file->current, "recall_name");
-    prop[2] = xmlGetProp(file->current, "control");
+    prop[0] = xmlGetProp(file->current, "effect\0");
+    prop[1] = xmlGetProp(file->current, "recall_name\0");
+    prop[2] = xmlGetProp(file->current, "control\0");
 
     if(prop[0] == NULL || prop[1] == NULL || prop[2] == NULL)
       return;
@@ -1088,8 +1088,8 @@ ags_file_read_line(AgsFile *file, AgsLine *line)
     //    line_member->recall->control[atoi(prop[2])] = &(GTK_RANGE(widget)->adjustment->value);
   }
 
-  prop[0] = xmlGetProp(file->current, "rows");
-  prop[1] = xmlGetProp(file->current, "cols");
+  prop[0] = xmlGetProp(file->current, "rows\0");
+  prop[1] = xmlGetProp(file->current, "cols\0");
 
   if(prop[0] != NULL && prop[1]){
     rows = g_strtod(prop[0], NULL);
@@ -1103,7 +1103,7 @@ ags_file_read_line(AgsFile *file, AgsLine *line)
   while(file->current != NULL){
     child = file->current;
 
-    if(file->current->type == XML_ELEMENT_NODE && !xmlStrncmp(file->current->name, "AgsLineMember", 13))
+    if(file->current->type == XML_ELEMENT_NODE && !xmlStrncmp(file->current->name, "AgsLineMember\0", 13))
       ags_file_read_line_member();
 
     file->current = child->next;
@@ -1141,19 +1141,19 @@ ags_file_read_toolbar(AgsFile *file, AgsToolbar *toolbar)
   xmlChar *prop;
   guint i;
 
-  prop = xmlGetProp(file->current, "mode");
+  prop = xmlGetProp(file->current, "mode\0");
 
   list0 = gtk_container_get_children((GtkContainer *) toolbar);
 
   if(prop != NULL){
-    if(!xmlStrncmp(prop, "edit", 4)){
+    if(!xmlStrncmp(prop, "edit\0", 4)){
       gtk_toggle_button_set_active((GtkToggleButton *) list0->data, TRUE);
       list0 = g_list_nth(list0, 3);
-    }else if(!xmlStrncmp(prop, "clear", 5)){
+    }else if(!xmlStrncmp(prop, "clear\0", 5)){
       list0 = list0->next;
       gtk_toggle_button_set_active((GtkToggleButton *) list0->data, TRUE);
       list0 = list0->next->next;
-    }else if(!xmlStrncmp(prop, "select", 6)){
+    }else if(!xmlStrncmp(prop, "select\0", 6)){
       list0 = list0->next->next;
       gtk_toggle_button_set_active((GtkToggleButton *) list0->data, TRUE);
       list0 = list0->next;
@@ -1162,7 +1162,7 @@ ags_file_read_toolbar(AgsFile *file, AgsToolbar *toolbar)
 
   list0 = g_list_nth(list0, 3);
 
-  prop = xmlGetProp(file->current, "tic");
+  prop = xmlGetProp(file->current, "tic\0");
   list0 = list0->next;
 
   if(prop != NULL){
@@ -1178,7 +1178,7 @@ ags_file_read_toolbar(AgsFile *file, AgsToolbar *toolbar)
     gtk_option_menu_set_history((GtkOptionMenu *) list0->data, i);
   }
 
-  prop = xmlGetProp(file->current, "zoom");
+  prop = xmlGetProp(file->current, "zoom\0");
   list0 = list0->next->next;
 
   if(prop != NULL){
@@ -1210,7 +1210,7 @@ ags_file_read_navigation(AgsFile *file, AgsNavigation *navigation)
   list1 = gtk_container_get_children((GtkContainer *) list0->next->data);
   list0 = gtk_container_get_children((GtkContainer *) list0->data);
 
-  prop = xmlGetProp(file->current, "expandet");
+  prop = xmlGetProp(file->current, "expandet\0");
 
   if(prop != NULL)
     if(!xmlStrncmp(prop, AGS_FILE_TRUE, 4)){
@@ -1219,69 +1219,69 @@ ags_file_read_navigation(AgsFile *file, AgsNavigation *navigation)
     }
 
   list0 = list0->next->next;
-  prop = xmlGetProp(file->current, "bpm");
+  prop = xmlGetProp(file->current, "bpm\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list0->data)->adjustment, g_strtod(prop, NULL));
 
   list0 = g_list_nth(list0, 7);
-  prop = xmlGetProp(file->current, "loop");
+  prop = xmlGetProp(file->current, "loop\0");
 
   if(prop != NULL)
     if(!xmlStrncmp(prop, AGS_FILE_TRUE, 4))
       gtk_toggle_button_set_active((GtkToggleButton *) list0->data, TRUE);
 
   list0 = list0->next->next;
-  prop = xmlGetProp(file->current, "position_min");
+  prop = xmlGetProp(file->current, "position_min\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list0->data)->adjustment, g_strtod(prop, NULL));
 
   list0 = list0->next;
-  prop = xmlGetProp(file->current, "position_sec");
+  prop = xmlGetProp(file->current, "position_sec\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list0->data)->adjustment, g_strtod(prop, NULL));
 
   list0 = list0->next->next;
-  prop = xmlGetProp(file->current, "duration_min");
+  prop = xmlGetProp(file->current, "duration_min\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list0->data)->adjustment, g_strtod(prop, NULL));
 
   list0 = list0->next;
-  prop = xmlGetProp(file->current, "duration_sec");
+  prop = xmlGetProp(file->current, "duration_sec\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list0->data)->adjustment, g_strtod(prop, NULL));
 
 
   list1 = list1->next;
-  prop = xmlGetProp(file->current, "loop_left_min");
+  prop = xmlGetProp(file->current, "loop_left_min\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list1->data)->adjustment, g_strtod(prop, NULL));
 
   list1 = list1->next;
-  prop = xmlGetProp(file->current, "loop_left_sec");
+  prop = xmlGetProp(file->current, "loop_left_sec\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list1->data)->adjustment, g_strtod(prop, NULL));
 
   list1 = list1->next->next;
-  prop = xmlGetProp(file->current, "loop_right_min");
+  prop = xmlGetProp(file->current, "loop_right_min\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list1->data)->adjustment, g_strtod(prop, NULL));
 
   list1 = list1->next;
-  prop = xmlGetProp(file->current, "loop_right_sec");
+  prop = xmlGetProp(file->current, "loop_right_sec\0");
 
   if(prop != NULL)
     gtk_adjustment_set_value(GTK_SPIN_BUTTON(list1->data)->adjustment, g_strtod(prop, NULL));
 
   list1 = list1->next;
-  prop = xmlGetProp(file->current, "raster");
+  prop = xmlGetProp(file->current, "raster\0");
 
   if(prop != NULL)
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(list1->data), TRUE);
@@ -1358,10 +1358,10 @@ ags_file_write_audio(AgsFile *file, AgsAudio *audio)
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_AUDIO), NULL);
 
-  xmlNewProp(node, BAD_CAST "audio_channels", BAD_CAST g_strdup_printf("%d", audio->audio_channels));
-  xmlNewProp(node, BAD_CAST "output_pads", BAD_CAST g_strdup_printf("%d", audio->output_pads));
-  xmlNewProp(node, BAD_CAST "input_pads", BAD_CAST g_strdup_printf("%d", audio->input_pads));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(node, BAD_CAST "audio_channels\0", BAD_CAST g_strdup_printf("%d\0", audio->audio_channels));
+  xmlNewProp(node, BAD_CAST "output_pads\0", BAD_CAST g_strdup_printf("%d\0", audio->output_pads));
+  xmlNewProp(node, BAD_CAST "input_pads\0", BAD_CAST g_strdup_printf("%d\0", audio->input_pads));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   channel = audio->output;
 
@@ -1404,11 +1404,11 @@ ags_file_write_channel(AgsFile *file, AgsChannel *channel)
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_CHANNEL), NULL);
 
-  xmlNewProp(node, BAD_CAST "pad", g_strdup_printf("%d", channel->pad));
-  xmlNewProp(node, BAD_CAST "audio_channel", g_strdup_printf("%d", channel->audio_channel));
-  xmlNewProp(node, BAD_CAST "link_name", g_strdup((channel->link != NULL) ? AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine)->name: "NULL"));
-  xmlNewProp(node, BAD_CAST "link_line", g_strdup_printf("%d", ((channel->link != NULL) ? channel->link->line: 0)));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(node, BAD_CAST "pad\0", g_strdup_printf("%d\0", channel->pad));
+  xmlNewProp(node, BAD_CAST "audio_channel\0", g_strdup_printf("%d\0", channel->audio_channel));
+  xmlNewProp(node, BAD_CAST "link_name\0", g_strdup((channel->link != NULL) ? AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine)->name: "NULL\0"));
+  xmlNewProp(node, BAD_CAST "link_line\0", g_strdup_printf("%d\0", ((channel->link != NULL) ? channel->link->line: 0)));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   if(AGS_IS_OUTPUT(channel)){
     is_output = TRUE;
@@ -1454,7 +1454,7 @@ void
 ags_file_write_output(AgsFile *file, AgsChannel *channel)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_OUTPUT), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1467,11 +1467,11 @@ ags_file_write_input(AgsFile *file, AgsChannel *channel)
   if(input->playable != NULL){
     //TODO:JK: add support for more file types
     if(AGS_IS_AUDIO_FILE(input->playable)){
-      xmlNewProp(file->current, BAD_CAST "file", BAD_CAST (AGS_AUDIO_FILE(input->playable)->name));
+      xmlNewProp(file->current, BAD_CAST "file\0", BAD_CAST (AGS_AUDIO_FILE(input->playable)->name));
     }
   }
 
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1484,12 +1484,12 @@ ags_file_write_recycling(AgsFile *file, AgsRecycling *recycling)
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_RECYCLING), NULL);
 
   /*
-  xmlNewProp(node, NULL, BAD_CAST "toplevel", BAD_CAST ((AGS_RECYCLING_TOPLEVEL & recycling->flags) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
-  xmlNewProp(node, NULL, BAD_CAST "owns_signal", BAD_CAST ((AGS_RECYCLING_OWNS_SIGNAL & recycling->flags) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
-  xmlNewProp(node, NULL, BAD_CAST "current_recall", BAD_CAST g_strdup_printf("%d",
+  xmlNewProp(node, NULL, BAD_CAST "toplevel\0", BAD_CAST ((AGS_RECYCLING_TOPLEVEL & recycling->flags) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
+  xmlNewProp(node, NULL, BAD_CAST "owns_signal\0", BAD_CAST ((AGS_RECYCLING_OWNS_SIGNAL & recycling->flags) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
+  xmlNewProp(node, NULL, BAD_CAST "current_recall\0", BAD_CAST g_strdup_printf("%d\0",
 									       g_list_position(recycling->current)));
   */
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   list = recycling->audio_signal;
 
@@ -1510,7 +1510,7 @@ ags_file_write_audio_signal(AgsFile *file, AgsAudioSignal *audio_signal)
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_AUDIO_SIGNAL), NULL);
 
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   list = audio_signal->stream_beginning;
 
@@ -1528,7 +1528,7 @@ ags_file_write_stream(AgsFile *file, gpointer stream, guint buffer_size)
   xmlChar *content;
   int length;
 
-  file->current = xmlNewChild(file->current, NULL, BAD_CAST "AgsStream", NULL);
+  file->current = xmlNewChild(file->current, NULL, BAD_CAST "AgsStream\0", NULL);
   length = buffer_size * (sizeof(guint) / sizeof(xmlChar));
 
   content = (xmlChar *) malloc(length);
@@ -1546,18 +1546,18 @@ ags_file_write_pattern(AgsFile *file, AgsPattern *pattern)
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PATTERN), NULL);
 
-  xmlNewProp(node, BAD_CAST "dim0", BAD_CAST g_strdup_printf("%d", pattern->dim[0]));
-  xmlNewProp(node, BAD_CAST "dim1", BAD_CAST g_strdup_printf("%d", pattern->dim[1]));
-  xmlNewProp(node, BAD_CAST "lenght", BAD_CAST g_strdup_printf("%d", pattern->dim[2]));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(node, BAD_CAST "dim0\0", BAD_CAST g_strdup_printf("%d\0", pattern->dim[0]));
+  xmlNewProp(node, BAD_CAST "dim1\0", BAD_CAST g_strdup_printf("%d\0", pattern->dim[1]));
+  xmlNewProp(node, BAD_CAST "lenght\0", BAD_CAST g_strdup_printf("%d\0", pattern->dim[2]));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   for(i = 0; i < pattern->dim[0]; i++)
     for(j = 0; j < pattern->dim[1]; j++){
-      file->current = xmlNewChild(node, NULL, BAD_CAST "AgsPatternData", NULL);
+      file->current = xmlNewChild(node, NULL, BAD_CAST "AgsPatternData\0", NULL);
 
-      xmlNewProp(file->current, BAD_CAST "coding", BAD_CAST g_strdup("human readable"));
-      xmlNewProp(file->current, BAD_CAST "index0", BAD_CAST g_strdup_printf("%d", i));
-      xmlNewProp(file->current, BAD_CAST "index1", BAD_CAST g_strdup_printf("%d", j));
+      xmlNewProp(file->current, BAD_CAST "coding\0", BAD_CAST g_strdup("human readable\0"));
+      xmlNewProp(file->current, BAD_CAST "index0\0", BAD_CAST g_strdup_printf("%d\0", i));
+      xmlNewProp(file->current, BAD_CAST "index1\0", BAD_CAST g_strdup_printf("%d\0", j));
 
       content = g_string_sized_new(pattern->dim[2] + 1);
 
@@ -1580,10 +1580,10 @@ ags_file_write_notation(AgsFile *file, AgsNotation *notation)
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_NOTATION), NULL);
 
-  xmlNewProp(node, BAD_CAST "raster", BAD_CAST g_strdup((AGS_NOTATION_RASTER & notation->flags) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
-  xmlNewProp(node, BAD_CAST "tact", BAD_CAST g_strdup(notation->tact));
-  xmlNewProp(node, BAD_CAST "bpm", BAD_CAST g_strdup_printf("%d\n", notation->bpm));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(node, BAD_CAST "raster\0", BAD_CAST g_strdup((AGS_NOTATION_RASTER & notation->flags) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
+  xmlNewProp(node, BAD_CAST "tact\0", BAD_CAST g_strdup(notation->tact));
+  xmlNewProp(node, BAD_CAST "bpm\0", BAD_CAST g_strdup_printf("%d\n\0", notation->bpm));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   list = notation->notes;
 
@@ -1601,11 +1601,11 @@ ags_file_write_note(AgsFile *file, AgsNote *note)
   xmlNodePtr node, child;
 
   node =
-    file->current = xmlNewChild(file->current, NULL, BAD_CAST "AgsNote", NULL);
+    file->current = xmlNewChild(file->current, NULL, BAD_CAST "AgsNote\0", NULL);
 
-  xmlNewProp(file->current, BAD_CAST "x0", BAD_CAST g_strdup_printf("%d", note->x[0]));
-  xmlNewProp(file->current, BAD_CAST "x1", BAD_CAST g_strdup_printf("%d", note->x[1]));
-  xmlNewProp(file->current, BAD_CAST "y", BAD_CAST g_strdup_printf("%d", note->y));
+  xmlNewProp(file->current, BAD_CAST "x0\0", BAD_CAST g_strdup_printf("%d\0", note->x[0]));
+  xmlNewProp(file->current, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%d\0", note->x[1]));
+  xmlNewProp(file->current, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%d\0", note->y));
 }
 
 void
@@ -1613,14 +1613,14 @@ ags_file_write_devout(AgsFile *file, AgsDevout *devout)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_DEVOUT), NULL);
 
-  xmlNewProp(file->current, BAD_CAST "pcm_channels", BAD_CAST g_strdup_printf("%d", devout->pcm_channels));
-  xmlNewProp(file->current, BAD_CAST "dsp_channels", BAD_CAST g_strdup_printf("%d", devout->dsp_channels));
-  xmlNewProp(file->current, BAD_CAST "bits", BAD_CAST g_strdup_printf("%d", devout->bits));
-  xmlNewProp(file->current, BAD_CAST "buffer_size", BAD_CAST g_strdup_printf("%d", devout->buffer_size));
-  xmlNewProp(file->current, BAD_CAST "frequency", BAD_CAST g_strdup_printf("%d", devout->frequency));
-  //  xmlNewProp(file->current, BAD_CAST "system", BAD_CAST g_strdup(devout->system));
-  //  xmlNewProp(file->current, BAD_CAST "device", BAD_CAST g_strdup(devout->device));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(file->current, BAD_CAST "pcm_channels\0", BAD_CAST g_strdup_printf("%d\0", devout->pcm_channels));
+  xmlNewProp(file->current, BAD_CAST "dsp_channels\0", BAD_CAST g_strdup_printf("%d\0", devout->dsp_channels));
+  xmlNewProp(file->current, BAD_CAST "bits\0", BAD_CAST g_strdup_printf("%d\0", devout->bits));
+  xmlNewProp(file->current, BAD_CAST "buffer_size\0", BAD_CAST g_strdup_printf("%d\0", devout->buffer_size));
+  xmlNewProp(file->current, BAD_CAST "frequency\0", BAD_CAST g_strdup_printf("%d\0", devout->frequency));
+  //  xmlNewProp(file->current, BAD_CAST "system\0", BAD_CAST g_strdup(devout->system));
+  //  xmlNewProp(file->current, BAD_CAST "device\0", BAD_CAST g_strdup(devout->device));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1630,10 +1630,10 @@ ags_file_write_task(AgsFile *file, AgsTask *task)
 
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_TASK), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
-  xmlNewProp(file->current, BAD_CAST "name", BAD_CAST g_strdup(task->name));
-  xmlNewProp(file->current, BAD_CAST "start", BAD_CAST g_strdup_printf("%d", task->start));
+  xmlNewProp(file->current, BAD_CAST "name\0", BAD_CAST g_strdup(task->name));
+  xmlNewProp(file->current, BAD_CAST "start\0", BAD_CAST g_strdup_printf("%d\0", task->start));
 }
 
 void
@@ -1645,10 +1645,10 @@ ags_file_write_recall(AgsFile *file, AgsRecall *recall)
 
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_RECALL), NULL);
 
-  xmlNewProp(file->current, BAD_CAST "effect", BAD_CAST g_strdup(recall->effect));
-  xmlNewProp(file->current, BAD_CAST "name", BAD_CAST g_strdup(recall->name));
-  xmlNewProp(file->current, BAD_CAST "control_count", BAD_CAST g_strdup_printf("%d", recall->control_count));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(file->current, BAD_CAST "effect\0", BAD_CAST g_strdup(recall->effect));
+  xmlNewProp(file->current, BAD_CAST "name\0", BAD_CAST g_strdup(recall->name));
+  xmlNewProp(file->current, BAD_CAST "control_count\0", BAD_CAST g_strdup_printf("%d\0", recall->control_count));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   if(!xmlStrncmp(recall->effect, AGS_COPY_STREAM_TO_STREAM, 25))
     ags_file_write_copy_stream_to_stream(file, recall);
@@ -1665,49 +1665,49 @@ void
 ags_file_write_play_pattern(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PLAY_PATTERN), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
 ags_file_write_play_channel(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PLAY_CHANNEL_RUN), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
 ags_file_write_play_audio_signal(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PLAY_AUDIO_SIGNAL), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
 ags_file_write_volume_channel(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_VOLUME_CHANNEL), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
 ags_file_write_copy_pattern(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
 ags_file_write_copy_channel(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_COPY_CHANNEL), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
 ags_file_write_copy_audio_signal(AgsFile *file, AgsRecall *recall)
 {
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_COPY_AUDIO_SIGNAL), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1718,12 +1718,12 @@ ags_file_write_window(AgsFile *file)
 
   node = 
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_WINDOW), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   ags_file_write_menu_bar(file, AGS_WINDOW(file->window)->menu_bar);
 
   node1 =
-    file->current = xmlNewChild(node, NULL, BAD_CAST "AgsMachines", NULL);
+    file->current = xmlNewChild(node, NULL, BAD_CAST "AgsMachines\0", NULL);
   list = gtk_container_get_children((GtkContainer *) AGS_WINDOW(file->window)->machines);
 
   while(list != NULL){
@@ -1734,7 +1734,7 @@ ags_file_write_window(AgsFile *file)
   }
 
   file->current = node;
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   ags_file_write_editor(file, AGS_WINDOW(file->window)->editor);
 
@@ -1746,7 +1746,7 @@ void
 ags_file_write_menu_bar(AgsFile *file, AgsMenuBar *menu_bar)
 {
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_MENU_BAR), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1756,8 +1756,8 @@ ags_file_write_machine(AgsFile *file, AgsMachine *machine)
 
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_MACHINE), NULL);
-  xmlNewProp(node, BAD_CAST "name", BAD_CAST g_strdup(machine->name));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(node, BAD_CAST "name\0", BAD_CAST g_strdup(machine->name));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   ags_file_write_audio(file, (AgsAudio *) machine->audio);
   file->current = node;
@@ -1786,16 +1786,16 @@ ags_file_write_pad(AgsFile *file, AgsPad *pad)
     file->current = xmlNewChild(file->current, NULL, g_type_name(AGS_TYPE_PAD), NULL);
 
   /*
-  xmlNewProp(file->current, BAD_CAST "show_grouping", BAD_CAST g_strdup((GTK_WIDGET_VISIBLE(pad->hbox) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+  xmlNewProp(file->current, BAD_CAST "show_grouping\0", BAD_CAST g_strdup((GTK_WIDGET_VISIBLE(pad->hbox) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   list = gtk_container_get_children((GtkContainer *) pad->hbox);
-  xmlNewProp(file->current, BAD_CAST "groupe_pad", BAD_CAST g_strdup((GTK_TOGGLE_BUTTON(list->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+  xmlNewProp(file->current, BAD_CAST "groupe_pad\0", BAD_CAST g_strdup((GTK_TOGGLE_BUTTON(list->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   list = list->next;
-  xmlNewProp(file->current, BAD_CAST "groupe_pad", BAD_CAST g_strdup((GTK_TOGGLE_BUTTON(list->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+  xmlNewProp(file->current, BAD_CAST "groupe_pad\0", BAD_CAST g_strdup((GTK_TOGGLE_BUTTON(list->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
   */
 
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   list = gtk_container_get_children((GtkContainer *) pad->option->menu);
 
@@ -1817,8 +1817,8 @@ ags_file_write_line(AgsFile *file, AgsLine *line)
 
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_LINE), NULL);
 
-  xmlNewProp(file->current, BAD_CAST "rows", g_strdup_printf("%d", line->table->nrows));
-  xmlNewProp(file->current, BAD_CAST "cols", g_strdup_printf("%d", line->table->ncols));
+  xmlNewProp(file->current, BAD_CAST "rows\0", g_strdup_printf("%d\0", line->table->nrows));
+  xmlNewProp(file->current, BAD_CAST "cols\0", g_strdup_printf("%d\0", line->table->ncols));
 
   list = line->table->children;
 
@@ -1834,24 +1834,24 @@ ags_file_write_line(AgsFile *file, AgsLine *line)
       continue;
     }
 
-    node = xmlNewChild(file->current, NULL, BAD_CAST "AgsLineMember", NULL);
+    node = xmlNewChild(file->current, NULL, BAD_CAST "AgsLineMember\0", NULL);
 
-    line_member = (AgsLineMember *) g_object_get_data(G_OBJECT(list->data), "AgsLineMember");
+    line_member = (AgsLineMember *) g_object_get_data(G_OBJECT(list->data), "AgsLineMember\0");
 
-    //    xmlNewProp(node, BAD_CAST "effect", BAD_CAST g_strdup(line_member->recall->effect));
-    xmlNewProp(node, BAD_CAST "recall_name", BAD_CAST g_strdup(line_member->recall->name));
-    xmlNewProp(node, BAD_CAST "control", BAD_CAST g_strdup_printf("%d", line_member->control));
+    //    xmlNewProp(node, BAD_CAST "effect\0", BAD_CAST g_strdup(line_member->recall->effect));
+    xmlNewProp(node, BAD_CAST "recall_name\0", BAD_CAST g_strdup(line_member->recall->name));
+    xmlNewProp(node, BAD_CAST "control\0", BAD_CAST g_strdup_printf("%d\0", line_member->control));
 
-    xmlNewProp(node, BAD_CAST "visualization", BAD_CAST g_strdup(range));
+    xmlNewProp(node, BAD_CAST "visualization\0", BAD_CAST g_strdup(range));
 
-    xmlNewProp(node, BAD_CAST "left_attach", BAD_CAST g_strdup_printf("%d", ((GtkTableChild*) list->data)->left_attach));
-    xmlNewProp(node, BAD_CAST "right_attach", BAD_CAST g_strdup_printf("%d", ((GtkTableChild*) list->data)->right_attach));
-    xmlNewProp(node, BAD_CAST "top_attach", BAD_CAST g_strdup_printf("%d", ((GtkTableChild*) list->data)->top_attach));
-    xmlNewProp(node, BAD_CAST "bottom_attach", BAD_CAST g_strdup_printf("%d", ((GtkTableChild*) list->data)->bottom_attach));
+    xmlNewProp(node, BAD_CAST "left_attach\0", BAD_CAST g_strdup_printf("%d\0", ((GtkTableChild*) list->data)->left_attach));
+    xmlNewProp(node, BAD_CAST "right_attach\0", BAD_CAST g_strdup_printf("%d\0", ((GtkTableChild*) list->data)->right_attach));
+    xmlNewProp(node, BAD_CAST "top_attach\0", BAD_CAST g_strdup_printf("%d\0", ((GtkTableChild*) list->data)->top_attach));
+    xmlNewProp(node, BAD_CAST "bottom_attach\0", BAD_CAST g_strdup_printf("%d\0", ((GtkTableChild*) list->data)->bottom_attach));
 
     list = list->next;
   }
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1861,7 +1861,7 @@ ags_file_write_editor(AgsFile *file, AgsEditor *editor)
 
   node =
     file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_EDITOR), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 
   ags_file_write_toolbar(file, editor->toolbar);
 
@@ -1880,45 +1880,45 @@ ags_file_write_navigation(AgsFile *file, AgsNavigation *navigation)
 
   file->current = xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_NAVIGATION), NULL);
 
-  xmlNewProp(file->current, BAD_CAST "expandet", ((GTK_ARROW(list2->data)->arrow_type == GTK_ARROW_DOWN) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
+  xmlNewProp(file->current, BAD_CAST "expandet\0", ((GTK_ARROW(list2->data)->arrow_type == GTK_ARROW_DOWN) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
   list1 = list1->next->next;
 
-  xmlNewProp(file->current, BAD_CAST "bpm", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "bpm\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = g_list_nth(list1, 7);
 
-  xmlNewProp(file->current, BAD_CAST "loop", BAD_CAST g_strdup((GTK_TOGGLE_BUTTON(list1->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+  xmlNewProp(file->current, BAD_CAST "loop\0", BAD_CAST g_strdup((GTK_TOGGLE_BUTTON(list1->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
   list1 = list1->next->next;
 
-  xmlNewProp(file->current, BAD_CAST "position_min", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "position_min\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = list1->next;
 
-  xmlNewProp(file->current, BAD_CAST "position_sec", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "position_sec\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = list1->next->next;
 
-  xmlNewProp(file->current, BAD_CAST "duration_min", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "duration_min\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = list1->next;
 
-  xmlNewProp(file->current, BAD_CAST "duration_sec", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "duration_sec\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   //  list1 = list1->next;
 
   /*expansion*/
   list1 = gtk_container_get_children((GtkContainer *) list0->next->data);
 
   list1 = list1->next;
-  xmlNewProp(file->current, BAD_CAST "loop_left_min", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "loop_left_min\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = list1->next;
 
-  xmlNewProp(file->current, BAD_CAST "loop_left_sec", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "loop_left_sec\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = list1->next->next;
 
-  xmlNewProp(file->current, BAD_CAST "loop_right_min", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "loop_right_min\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = list1->next;
 
-  xmlNewProp(file->current, BAD_CAST "loop_right_sec", BAD_CAST g_strdup_printf("%f", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
+  xmlNewProp(file->current, BAD_CAST "loop_right_sec\0", BAD_CAST g_strdup_printf("%f\0", (double) GTK_SPIN_BUTTON(list1->data)->adjustment->value));
   list1 = list1->next;
 
-  xmlNewProp(file->current, BAD_CAST "raster", g_strdup((GTK_TOGGLE_BUTTON(list1->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNewProp(file->current, BAD_CAST "raster\0", g_strdup((GTK_TOGGLE_BUTTON(list1->data)->active ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1954,18 +1954,18 @@ ags_file_write_toolbar(AgsFile *file, AgsToolbar *toolbar)
   list0 = gtk_container_get_children((GtkContainer *) toolbar);
 
   if(GTK_TOGGLE_BUTTON(list0->data)->active)
-    xmlNewProp(file->current, BAD_CAST "mode", BAD_CAST g_strdup("edit"));
+    xmlNewProp(file->current, BAD_CAST "mode\0", BAD_CAST g_strdup("edit\0"));
   else if(GTK_TOGGLE_BUTTON(list0->next->data)->active)
-    xmlNewProp(file->current, BAD_CAST "mode", BAD_CAST g_strdup("clear"));
+    xmlNewProp(file->current, BAD_CAST "mode\0", BAD_CAST g_strdup("clear\0"));
   else if(GTK_TOGGLE_BUTTON(list0->next->next->data)->active)
-    xmlNewProp(file->current, BAD_CAST "mode", BAD_CAST g_strdup("select"));
+    xmlNewProp(file->current, BAD_CAST "mode\0", BAD_CAST g_strdup("select\0"));
 
   list0 = g_list_nth(list0, 7);
-  //  xmlNewProp(file->current, BAD_CAST "tic", BAD_CAST g_strdup(gtk_label_get_text(GTK_LABEL(GTK_BIN(GTK_OPTION_MENU(list0->data)->menu_item)->child))));
+  //  xmlNewProp(file->current, BAD_CAST "tic\0", BAD_CAST g_strdup(gtk_label_get_text(GTK_LABEL(GTK_BIN(GTK_OPTION_MENU(list0->data)->menu_item)->child))));
 
   list0 = list0->next->next;
-  //  xmlNewProp(file->current, BAD_CAST "zoom", BAD_CAST g_strdup(gtk_label_get_text(GTK_LABEL(GTK_BIN(GTK_OPTION_MENU(list0->data)->menu_item)->child))));
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  //  xmlNewProp(file->current, BAD_CAST "zoom\0", BAD_CAST g_strdup(gtk_label_get_text(GTK_LABEL(GTK_BIN(GTK_OPTION_MENU(list0->data)->menu_item)->child))));
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1979,7 +1979,7 @@ ags_file_write_panel(AgsFile *file, AgsMachine *machine)
   AgsPanel *panel;
 
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_PANEL), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1988,7 +1988,7 @@ ags_file_write_mixer(AgsFile *file, AgsMachine *machine)
   AgsMixer *mixer;
 
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_MIXER), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -1997,7 +1997,7 @@ ags_file_write_drum(AgsFile *file, AgsMachine *machine)
   AgsDrum *drum;
 
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_DRUM), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -2006,7 +2006,7 @@ ags_file_write_matrix(AgsFile *file, AgsMachine *machine)
   AgsMatrix *matrix;
 
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_MATRIX), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -2015,14 +2015,14 @@ ags_file_write_synth(AgsFile *file, AgsMachine *machine)
   AgsSynth *synth;
 
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_SYNTH), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
 ags_file_write_oscillator(AgsFile *file, AgsOscillator *oscillator)
 {
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_OSCILLATOR), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 void
@@ -2031,7 +2031,7 @@ ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine)
   AgsFFPlayer *ffplayer;
 
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_FFPLAYER), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n");
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
 AgsFile*

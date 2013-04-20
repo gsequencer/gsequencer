@@ -38,7 +38,7 @@ ags_ruler_get_type()
 
   if(!ags_ruler_type){
     static const GtkTypeInfo ags_ruler_info = {
-      "AgsRuler",
+      "AgsRuler\0",
       sizeof(AgsRuler),
       sizeof(AgsRulerClass),
       (GtkClassInitFunc) ags_ruler_class_init,
@@ -105,10 +105,10 @@ ags_ruler_destroy(GtkObject *object)
 void
 ags_ruler_connect(AgsRuler *ruler)
 {
-  g_signal_connect((GObject *) ruler, "expose_event",
+  g_signal_connect((GObject *) ruler, "expose_event\0",
 		   G_CALLBACK(ags_ruler_expose_event), (gpointer) ruler);
 
-  g_signal_connect((GObject *) ruler, "configure_event",
+  g_signal_connect((GObject *) ruler, "configure_event\0",
 		   G_CALLBACK(ags_ruler_configure_event), (gpointer) ruler);
 }
 

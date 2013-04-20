@@ -107,7 +107,7 @@ ags_ipatch_sf2_reader_get_type()
     };
 
     ags_type_ipatch_sf2_reader = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsIpatchSF2Reader",
+					     "AgsIpatchSF2Reader\0",
 					     &ags_ipatch_sf2_reader_info,
 					     0);
 
@@ -276,7 +276,7 @@ ags_ipatch_sf2_reader_open(AgsPlayable *playable, gchar *filename)
 						  &error);
 
   if(error != NULL){
-    g_error("%s", error->message);
+    g_error("%s\0", error->message);
   }
 }
 
@@ -326,7 +326,7 @@ ags_ipatch_sf2_reader_sublevel_names(AgsPlayable *playable)
 
   sublevel = ipatch_sf2_reader->nth_level + 1;
 
-  g_message("ags_ipatch_sf2_reader_sublevel_names: %u\n", sublevel);
+  g_message("ags_ipatch_sf2_reader_sublevel_names: %u\n\0", sublevel);
 
   switch(sublevel){
   case AGS_SF2_FILENAME:
@@ -449,7 +449,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
 					  &(ipatch_sf2_reader->bank),
 					  &(ipatch_sf2_reader->program));
 	
-       g_message("debug: bank %d program %d\n", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+       g_message("debug: bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
       }else{
 	success = FALSE;
       }
@@ -494,7 +494,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
       g_set_error(error,
 		  AGS_PLAYABLE_ERROR,
 		  AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
-		  "no level called %s in soundfont2 file: %s",
+		  "no level called %s in soundfont2 file: %s\0",
 		  sublevel_name, ipatch_sf2_reader->ipatch->filename);
     }
   }
@@ -511,7 +511,7 @@ ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **err
 
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(playable);
 
-  g_message("debug: %u\n", ipatch_sf2_reader->nth_level);
+  g_message("debug: %u\n\0", ipatch_sf2_reader->nth_level);
 
   if(ipatch_sf2_reader->nth_level >= levels){
     ipatch_sf2_reader->nth_level -= levels;
@@ -526,7 +526,7 @@ ags_ipatch_sf2_reader_level_up(AgsPlayable *playable, guint levels, GError **err
     g_set_error(error,
 		AGS_PLAYABLE_ERROR,
 		AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
-		"Not able to go %u steps higher in soundfont2 file: %s",
+		"Not able to go %u steps higher in soundfont2 file: %s\0",
 		levels, ipatch_sf2_reader->ipatch->filename);
   }
 }
@@ -609,10 +609,10 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
 
     if(ipatch_sf2_reader->zone != NULL){
       g_object_get(IPATCH_SAMPLE(ipatch_sf2_reader->zone),
-		   //		   "format", channels,
-		   "sample-size", frames,
-		   "loop-start", loop_start,
-		   "loop-end", loop_end,
+		   //		   "format\0", channels,
+		   "sample-size\0", frames,
+		   "loop-start\0", loop_start,
+		   "loop-end\0", loop_end,
 		   NULL);
       *channels = 2;
     }else{
@@ -621,7 +621,7 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
       *loop_start = 0;
       *loop_end = 0;
     }
-    g_message("  channels = %d \n frames = %d  \n", *channels, *frames);
+    g_message("  channels = %d \n frames = %d  \n\0", *channels, *frames);
   }else if(ipatch_sf2_reader->nth_level == 3){
     IpatchSF2Sample *sample;
 
@@ -632,10 +632,10 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
     if(ipatch_sf2_reader->zone != NULL){
       //TODO:JK: get endianess and set it for format
       g_object_get(G_OBJECT(sample),
-		   //"format", channels,
-		   "sample-size", frames,
-		   "loop-start", loop_start,
-		   "loop-end", loop_end,
+		   //"format\0", channels,
+		   "sample-size\0", frames,
+		   "loop-start\0", loop_start,
+		   "loop-end\0", loop_end,
 		   NULL);
 
       *channels = 2;
@@ -646,7 +646,7 @@ ags_ipatch_sf2_reader_info(AgsPlayable *playable,
       *loop_end = 0;
     }
 
-    g_message("channels = %d\nframes = %d", *channels, *frames);
+    g_message("channels = %d\nframes = %d\0", *channels, *frames);
   }
 }
 
@@ -680,7 +680,7 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable,
 				   &this_error);
       
       if(this_error != NULL){
-	g_error("%s", this_error->message);
+	g_error("%s\0", this_error->message);
       }
 
       *error = this_error;
@@ -712,7 +712,7 @@ ags_ipatch_sf2_reader_read(AgsPlayable *playable,
 				   &this_error);
       
       if(this_error != NULL){
-	g_error("%s", this_error->message);
+	g_error("%s\0", this_error->message);
       }
 
       *error = this_error;

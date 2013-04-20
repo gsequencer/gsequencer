@@ -57,7 +57,7 @@ ags_append_recall_get_type()
     };
 
     ags_type_append_recall = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsAppendRecall",
+						  "AgsAppendRecall\0",
 						  &ags_append_recall_info,
 						  0);
 

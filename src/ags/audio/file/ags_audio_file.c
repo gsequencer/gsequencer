@@ -72,7 +72,7 @@ ags_audio_file_get_type()
     };
 
     ags_type_audio_file = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsAudioFile",
+						 "AgsAudioFile\0",
 						 &ags_audio_file_info,
 						 0);
 
@@ -162,16 +162,16 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
 gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
-  g_message("ags_audio_file_open: %s\n", audio_file->name);
+  g_message("ags_audio_file_open: %s\n\0", audio_file->name);
 
   if(g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
-    if(g_str_has_suffix(audio_file->name, ".wav") ||
-       g_str_has_suffix(audio_file->name, ".ogg") ||
-       g_str_has_suffix(audio_file->name, ".flac")){
+    if(g_str_has_suffix(audio_file->name, ".wav\0") ||
+       g_str_has_suffix(audio_file->name, ".ogg\0") ||
+       g_str_has_suffix(audio_file->name, ".flac\0")){
       GError *error;
       guint loop_start, loop_end;
 
-      g_message("ags_audio_file_open: using libsndfile\n");
+      g_message("ags_audio_file_open: using libsndfile\n\0");
       audio_file->file = (GObject *) ags_sndfile_new();
 
       if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
@@ -186,7 +186,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 			  &error);
 
 	if(error != NULL){
-	  g_error("%s", error->message);
+	  g_error("%s\0", error->message);
 	}
 
 	return(TRUE);
@@ -194,7 +194,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 	return(FALSE);
       }
     }else{
-      g_message("ags_audio_file_open: unknown file type\n");
+      g_message("ags_audio_file_open: unknown file type\n\0");
       return(FALSE);
     }
   }

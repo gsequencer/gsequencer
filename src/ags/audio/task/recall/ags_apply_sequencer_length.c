@@ -69,7 +69,7 @@ ags_apply_sequencer_length_get_type()
     };
 
     ags_type_apply_sequencer_length = g_type_register_static(AGS_TYPE_TASK,
-							     "AgsApplySequencerLength",
+							     "AgsApplySequencerLength\0",
 							     &ags_apply_sequencer_length_info,
 							     0);
     
@@ -166,7 +166,7 @@ ags_apply_sequencer_length_launch(AgsTask *task)
 
     ags_apply_sequencer_length_recall(apply_sequencer_length, recall);
   }else{
-    g_warning("AgsApplySequencerLength: Not supported gobject");
+    g_warning("AgsApplySequencerLength: Not supported gobject\0");
   }
 }
 

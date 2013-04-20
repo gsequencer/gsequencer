@@ -81,7 +81,7 @@ ags_copy_audio_signal_get_type()
     };
 
     ags_type_copy_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							"AgsCopyAudioSignal",
+							"AgsCopyAudioSignal\0",
 							&ags_copy_audio_signal_info,
 							0);
 
@@ -248,10 +248,10 @@ ags_copy_audio_signal_new(AgsAudioSignal *destination,
   AgsCopyAudioSignal *copy_audio_signal;
 
   copy_audio_signal = (AgsCopyAudioSignal *) g_object_new(AGS_TYPE_COPY_AUDIO_SIGNAL,
-							  "destination", destination,
-							  "source", source,
-							  "devout", devout,
-							  "attack", attack,
+							  "destination\0", destination,
+							  "source\0", source,
+							  "devout\0", devout,
+							  "attack\0", attack,
 							  NULL);
 
   return(copy_audio_signal);

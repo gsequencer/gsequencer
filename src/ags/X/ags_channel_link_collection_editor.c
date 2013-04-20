@@ -85,7 +85,7 @@ ags_channel_link_collection_editor_get_type(void)
     };
 
     ags_type_channel_link_collection_editor = g_type_register_static(GTK_TYPE_TABLE,
-								     "AgsChannelLinkCollectionEditor",
+								     "AgsChannelLinkCollectionEditor\0",
 								     &ags_channel_link_collection_editor_info,
 								     0);
     
@@ -112,9 +112,9 @@ ags_channel_link_collection_editor_class_init(AgsChannelLinkCollectionEditorClas
   gobject->set_property = ags_channel_link_collection_editor_set_property;
   gobject->get_property = ags_channel_link_collection_editor_get_property;
 
-  param_spec = g_param_spec_gtype("channel type",
-				   "assigned channel type",
-				   "The channel type which this channel link collection editor is assigned with",
+  param_spec = g_param_spec_gtype("channel type\0",
+				   "assigned channel type\0",
+				   "The channel type which this channel link collection editor is assigned with\0",
 				   G_TYPE_NONE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,7 +146,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
   GtkListStore *model;
   GtkTreeIter iter;
 
-  g_signal_connect_after(GTK_WIDGET(channel_link_collection_editor), "parent_set",
+  g_signal_connect_after(GTK_WIDGET(channel_link_collection_editor), "parent_set\0",
 			 G_CALLBACK(ags_channel_link_collection_editor_parent_set_callback), channel_link_collection_editor);
 
   gtk_table_resize(GTK_TABLE(channel_link_collection_editor),
@@ -166,7 +166,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("link");
+  label = (GtkLabel *) gtk_label_new("link\0");
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
 
@@ -187,7 +187,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 		    
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "NULL",
+		     0, "NULL\0",
 		     1, NULL,
 		     -1);
   
@@ -197,7 +197,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 			     FALSE); 
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(channel_link_collection_editor->link),
 				 cell_renderer,
-				 "text", 0,
+				 "text\0", 0,
 				 NULL);
 
   gtk_combo_box_set_model(channel_link_collection_editor->link,
@@ -213,7 +213,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first line");
+  label = (GtkLabel *) gtk_label_new("first line\0");
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -240,7 +240,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("first link line");
+  label = (GtkLabel *) gtk_label_new("first link line\0");
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -266,7 +266,7 @@ ags_channel_link_collection_editor_init(AgsChannelLinkCollectionEditor *channel_
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("count");
+  label = (GtkLabel *) gtk_label_new("count\0");
   gtk_container_add(GTK_CONTAINER(alignment), GTK_WIDGET(label));
 
   alignment = (GtkAlignment *) gtk_alignment_new(0.0, 0.5,
@@ -332,13 +332,13 @@ ags_channel_link_collection_editor_connect(AgsConnectable *connectable)
   /* AgsChannelLinkCollectionEditor */
   channel_link_collection_editor = AGS_CHANNEL_LINK_COLLECTION_EDITOR(connectable);
 
-  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->link), "changed",
+  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->link), "changed\0",
 			 G_CALLBACK(ags_channel_link_collection_editor_link_callback), channel_link_collection_editor);
 
-  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->first_line), "value-changed",
+  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->first_line), "value-changed\0",
 			 G_CALLBACK(ags_channel_link_collection_editor_first_line_callback), channel_link_collection_editor);
 
-  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->first_link), "value-changed",
+  g_signal_connect_after(G_OBJECT(channel_link_collection_editor->first_link), "value-changed\0",
 			 G_CALLBACK(ags_channel_link_collection_editor_first_link_callback), channel_link_collection_editor);
 }
 
@@ -535,7 +535,7 @@ ags_channel_link_collection_editor_new(GType channel_type)
   AgsChannelLinkCollectionEditor *channel_link_collection_editor;
 
   channel_link_collection_editor = (AgsChannelLinkCollectionEditor *) g_object_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR,
-										   "channel_type", channel_type,
+										   "channel_type\0", channel_type,
 										   NULL);
   
   return(channel_link_collection_editor);

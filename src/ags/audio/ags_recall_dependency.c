@@ -62,7 +62,7 @@ ags_recall_dependency_get_type(void)
     };
 
     ags_type_recall_dependency = g_type_register_static(G_TYPE_OBJECT,
-							"AgsRecallDependency",
+							"AgsRecallDependency\0",
 							&ags_recall_dependency_info,
 							0);
     

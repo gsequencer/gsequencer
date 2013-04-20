@@ -40,7 +40,7 @@ ags_stream_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_stream_init,
     };
-    ags_type_stream = g_type_register_static(G_TYPE_OBJECT, "AgsStream", &ags_stream_info, 0);
+    ags_type_stream = g_type_register_static(G_TYPE_OBJECT, "AgsStream\0", &ags_stream_info, 0);
   }
   return (ags_type_stream);
 }
@@ -74,7 +74,7 @@ ags_stream(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
   if(audio_signal->stream_current == NULL)
     if(devout->offset < audio_signal->stream_end){
       //      AGS_RECALL_GET_CLASS(recall)->done(recall, recall_id);
-      g_signal_emit_by_name((GObject *) recall, "done", recall_id);
+      g_signal_emit_by_name((GObject *) recall, "done\0", recall_id);
     }else{
       ags_audio_signal_add_stream(audio_signal);
     }
@@ -85,7 +85,7 @@ ags_stream(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
     list = recall->recall;
 
     while(list != NULL){
-      g_signal_emit_by_name((GObject *) recall, "run_stream", recall_id);
+      g_signal_emit_by_name((GObject *) recall, "run_stream\0", recall_id);
 
       list = list->next;
     }

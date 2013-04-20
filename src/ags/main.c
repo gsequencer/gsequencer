@@ -51,7 +51,7 @@ void
 ags_init()
 {
   ags_default_log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-					    "file", stdout,
+					    "file\0", stdout,
 					    NULL);
   //  ags_log_start_queue(ags_default_log);
 }
@@ -277,7 +277,7 @@ main(int argc, char **argv)
 
   mlockall(MCL_CURRENT | MCL_FUTURE);
 
-  // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n");
+  // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 
   window = ags_window_new();
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);

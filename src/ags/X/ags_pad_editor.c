@@ -80,7 +80,7 @@ ags_pad_editor_get_type(void)
     };
 
     ags_type_pad_editor = g_type_register_static(GTK_TYPE_VBOX,
-						 "AgsPadEditor", &ags_pad_editor_info,
+						 "AgsPadEditor\0", &ags_pad_editor_info,
 						 0);
 
     g_type_add_interface_static(ags_type_pad_editor,
@@ -106,9 +106,9 @@ ags_pad_editor_class_init(AgsPadEditorClass *pad_editor)
   gobject->set_property = ags_pad_editor_set_property;
   gobject->get_property = ags_pad_editor_get_property;
 
-  param_spec = g_param_spec_object("channel",
-				   "assigned channel",
-				   "The channel which this pad editor is assigned with",
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel which this pad editor is assigned with\0",
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -199,16 +199,16 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 
   pad_editor = AGS_PAD_EDITOR(connectable);
 
-  g_signal_connect((GObject *) pad_editor, "destroy",
+  g_signal_connect((GObject *) pad_editor, "destroy\0",
 		   G_CALLBACK(ags_pad_editor_destroy_callback), (gpointer) pad_editor);
 
-  g_signal_connect((GObject *) pad_editor, "show",
+  g_signal_connect((GObject *) pad_editor, "show\0",
 		   G_CALLBACK(ags_pad_editor_show_callback), (gpointer) pad_editor);
 
   /* AgsAudio */
   audio = AGS_AUDIO(pad_editor->pad->audio);
 
-  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels",
+  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
 
   /* AgsLineEditor */
@@ -308,7 +308,7 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
     AgsChannel *next_pad;
 
     gtk_expander_set_label(pad_editor->line_editor_expander,
-			   g_strdup_printf("pad: %u", channel->pad));
+			   g_strdup_printf("pad: %u\0", channel->pad));
 
     pad_editor->line_editor = (GtkVBox *) gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
@@ -337,7 +337,7 @@ ags_pad_editor_new(AgsChannel *channel)
   AgsPadEditor *pad_editor;
 
   pad_editor = (AgsPadEditor *) g_object_new(AGS_TYPE_PAD_EDITOR,
-					     "channel", channel,
+					     "channel\0", channel,
 					     NULL);
 
   return(pad_editor);

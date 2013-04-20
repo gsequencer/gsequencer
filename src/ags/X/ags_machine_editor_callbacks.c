@@ -61,9 +61,9 @@ ags_machine_editor_add_callback(GtkWidget *button, AgsMachineEditor *machine_edi
 {
   /*
   if(gtk_notebook_get_current_page(machine_editor->notebook) == 0)
-    g_signal_emit_by_name((GObject *) machine_editor, "add_output", NULL);
+    g_signal_emit_by_name((GObject *) machine_editor, "add_output\0", NULL);
   else
-    g_signal_emit_by_name((GObject *) machine_editor, "add_input", NULL);
+    g_signal_emit_by_name((GObject *) machine_editor, "add_input\0", NULL);
   */
 
   return(0);
@@ -74,9 +74,9 @@ ags_machine_editor_remove_callback(GtkWidget *button, AgsMachineEditor *machine_
 {
   /*
   if(gtk_notebook_get_current_page(machine_editor->notebook) == 0)
-    g_signal_emit_by_name((GObject *) machine_editor, "remove_output", NULL);
+    g_signal_emit_by_name((GObject *) machine_editor, "remove_output\0", NULL);
   else
-    g_signal_emit_by_name((GObject *) machine_editor, "remove_input", NULL);
+    g_signal_emit_by_name((GObject *) machine_editor, "remove_input\0", NULL);
   */
 
   return(0);

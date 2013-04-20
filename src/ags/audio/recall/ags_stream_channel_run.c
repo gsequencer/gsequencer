@@ -79,7 +79,7 @@ ags_stream_channel_run_get_type()
     };
 
     ags_type_stream_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
-							 "AgsStreamChannelRun",
+							 "AgsStreamChannelRun\0",
 							 &ags_stream_channel_run_info,
 							 0);
 

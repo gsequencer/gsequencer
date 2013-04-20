@@ -38,7 +38,7 @@ ags_meter_get_type(void)
 
   if (!meter_type){
     static const GtkTypeInfo meter_info = {
-      "AgsMeter",
+      "AgsMeter\0",
       sizeof(AgsMeter), /* base_init */
       sizeof(AgsMeterClass), /* base_finalize */
       (GtkClassInitFunc) ags_meter_class_init,
@@ -77,16 +77,16 @@ ags_meter_init(AgsMeter *meter)
 void
 ags_meter_connect(AgsMeter *meter)
 {
-  g_signal_connect((GObject *) meter, "destroy",
+  g_signal_connect((GObject *) meter, "destroy\0",
 		   G_CALLBACK(ags_meter_destroy_callback), (gpointer) meter);
 
-  g_signal_connect_after((GObject *) meter, "show",
+  g_signal_connect_after((GObject *) meter, "show\0",
 			 G_CALLBACK(ags_meter_show_callback), (gpointer) meter);
 
-  g_signal_connect((GObject *) meter, "expose_event",
+  g_signal_connect((GObject *) meter, "expose_event\0",
   		   G_CALLBACK(ags_meter_expose_event), (gpointer) meter);
 
-  g_signal_connect((GObject *) meter, "configure_event",
+  g_signal_connect((GObject *) meter, "configure_event\0",
   		   G_CALLBACK(ags_meter_configure_event), (gpointer) meter);
 }
 

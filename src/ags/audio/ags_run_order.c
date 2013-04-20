@@ -64,7 +64,7 @@ ags_run_order_get_type(void)
     };
 
     ags_type_run_order = g_type_register_static(G_TYPE_OBJECT,
-						"AgsRunOrder",
+						"AgsRunOrder\0",
 						&ags_run_order_info,
 						0);
   }
@@ -88,9 +88,9 @@ ags_run_order_class_init(AgsRunOrderClass *run_order)
   gobject->finalize = ags_run_order_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("recall_id",
-				   "recall id of AgsRunOrder",
-				   "The recall id of the AgsRunOrder",
+  param_spec = g_param_spec_object("recall_id\0",
+				   "recall id of AgsRunOrder\0",
+				   "The recall id of the AgsRunOrder\0",
 				   AGS_TYPE_RECALL_ID,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -200,7 +200,7 @@ ags_run_order_changed_input(AgsRunOrder *run_order, AgsChannel *input,
        AGS_RECALL(list->data)->recall_id != NULL &&
        AGS_RECALL(list->data)->recall_id->group_id == group_id &&
        AGS_RECALL_CHANNEL_RUN(list->data)->run_order == old_position){
-      //      g_message("ags_run_order_changed_input\n");
+      //      g_message("ags_run_order_changed_input\n\0");
       ags_recall_channel_run_run_order_changed(AGS_RECALL_CHANNEL_RUN(list->data),
 					       new_position);
     }
@@ -364,7 +364,7 @@ ags_run_order_new(AgsRecallID *recall_id)
   AgsRunOrder *run_order;
 
   run_order = (AgsRunOrder *) g_object_new(AGS_TYPE_RUN_ORDER,
-					   "recall_id", recall_id,
+					   "recall_id\0", recall_id,
 					   NULL);
 
   return(run_order);

@@ -61,7 +61,7 @@ ags_copy_pattern_audio_get_type()
     };
 
     ags_type_copy_pattern_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
-							 "AgsCopyPatternAudio",
+							 "AgsCopyPatternAudio\0",
 							 &ags_copy_pattern_audio_info,
 							 0);
   }
@@ -86,9 +86,9 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
   gobject->finalize = ags_copy_pattern_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("bank_index_0",
-				 "current bank index 0",
-				 "The current bank index 0 of the AgsPattern",
+  param_spec = g_param_spec_uint("bank_index_0\0",
+				 "current bank index 0\0",
+				 "The current bank index 0 of the AgsPattern\0",
 				 0,
 				 256,
 				 0,
@@ -97,9 +97,9 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 				  PROP_BANK_INDEX_0,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("bank_index_1",
-				 "current bank index 1",
-				 "The current bank index 1 of the AgsPattern",
+  param_spec = g_param_spec_uint("bank_index_1\0",
+				 "current bank index 1\0",
+				 "The current bank index 1 of the AgsPattern\0",
 				 0,
 				 256,
 				 0,
@@ -199,10 +199,10 @@ ags_copy_pattern_audio_new(AgsDevout *devout,
   AgsCopyPatternAudio *copy_pattern_audio;
 
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "devout", devout,
-							    "tact", tact,
-							    "bank_index_0", i,
-							    "bank_index_1", j,
+							    "devout\0", devout,
+							    "tact\0", tact,
+							    "bank_index_0\0", i,
+							    "bank_index_1\0", j,
 							    NULL);
 
   return(copy_pattern_audio);

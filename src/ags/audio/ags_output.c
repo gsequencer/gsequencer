@@ -60,7 +60,7 @@ ags_output_get_type (void)
     };
 
     ags_type_output = g_type_register_static(AGS_TYPE_CHANNEL,
-					     "AgsOutput",
+					     "AgsOutput\0",
 					     &ags_output_info,
 					     0);
 
@@ -141,7 +141,7 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
     list_destination->next->prev = list_destination;
     list_destination = list_destination->next;
   ags_copy_pattern_map_destination0:
-    g_message("ags_output_map_audio_signal\n");
+    g_message("ags_output_map_audio_signal\n\0");
 
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) output->channel.first_recycling,
@@ -217,7 +217,7 @@ ags_output_new(GObject *audio)
   AgsOutput *output;
 
   output = (AgsOutput *) g_object_new(AGS_TYPE_OUTPUT,
-				      "audio", audio,
+				      "audio\0", audio,
 				      NULL);
 
   return(output);

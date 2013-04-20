@@ -17,7 +17,7 @@ ags_persistable_get_type()
     };
 
     ags_type_persistable = g_type_register_static(G_TYPE_INTERFACE,
-						 "AgsPersistable", &ags_persistable_info,
+						 "AgsPersistable\0", &ags_persistable_info,
 						 0);
   }
 

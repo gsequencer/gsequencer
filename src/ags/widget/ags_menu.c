@@ -40,7 +40,7 @@ ags_menu_get_type(void)
     };
 
     ags_type_menu = g_type_register_static(GTK_TYPE_WINDOW,
-					   "AgsMenu", &ags_menu_info,
+					   "AgsMenu\0", &ags_menu_info,
 					   0);
   }
 
@@ -60,7 +60,7 @@ ags_menu_init(AgsMenu *menu)
   g_value_init(&window_type_value, G_TYPE_ENUM);
   g_value_set_enum(&window_type_value, GTK_WINDOW_POPUP);
   g_object_set_property(G_OBJECT(menu),
-			"type",
+			"type\0",
 			&window_type_value);
   g_value_unset(&window_type_value);
 

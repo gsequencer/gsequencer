@@ -57,7 +57,7 @@ ags_append_audio_get_type()
     };
 
     ags_type_append_audio = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsAppendAudio",
+						   "AgsAppendAudio\0",
 						   &ags_append_audio_info,
 						   0);
 

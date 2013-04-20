@@ -46,7 +46,7 @@ ags_toolbar_get_type(void)
 
   if (!toolbar_type){
     static const GtkTypeInfo toolbar_info = {
-      "AgsToolbar",
+      "AgsToolbar\0",
       sizeof(AgsToolbar), /* base_init */
       sizeof(AgsToolbarClass), /* base_finalize */
       (GtkClassInitFunc) ags_toolbar_class_init,
@@ -75,50 +75,50 @@ ags_toolbar_init(AgsToolbar *toolbar)
   GtkMenuItem *item;
 
   toolbar->position = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-						       "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_LARGE_TOOLBAR),
-						       "relief", GTK_RELIEF_NONE,
+						       "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_LARGE_TOOLBAR),
+						       "relief\0", GTK_RELIEF_NONE,
 						       NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->position, "position cursor", NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->position, "position cursor\0", NULL);
 
   toolbar->edit = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-						   "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_LARGE_TOOLBAR),
-						   "relief", GTK_RELIEF_NONE,
-						   "active", TRUE,
+						   "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_LARGE_TOOLBAR),
+						   "relief\0", GTK_RELIEF_NONE,
+						   "active\0", TRUE,
 						   NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->edit, "edit notes", NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->edit, "edit notes\0", NULL);
   toolbar->selected_edit_mode = toolbar->edit;
 
   toolbar->clear = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-						    "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CLEAR, GTK_ICON_SIZE_LARGE_TOOLBAR),
-						    "relief", GTK_RELIEF_NONE,
+						    "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CLEAR, GTK_ICON_SIZE_LARGE_TOOLBAR),
+						    "relief\0", GTK_RELIEF_NONE,
 						    NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->clear, "clear notes", NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->clear, "clear notes\0", NULL);
 
   toolbar->select = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-						     "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL, GTK_ICON_SIZE_LARGE_TOOLBAR),
-						     "relief", GTK_RELIEF_NONE,
+						     "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL, GTK_ICON_SIZE_LARGE_TOOLBAR),
+						     "relief\0", GTK_RELIEF_NONE,
 						     NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->select, "select notes", NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->select, "select notes\0", NULL);
 
   toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					     "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_COPY, GTK_ICON_SIZE_LARGE_TOOLBAR),
-					     "relief", GTK_RELIEF_NONE,
+					     "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_COPY, GTK_ICON_SIZE_LARGE_TOOLBAR),
+					     "relief\0", GTK_RELIEF_NONE,
 					     NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->copy, "copy notes", NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->copy, "copy notes\0", NULL);
 
   toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					    "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CUT, GTK_ICON_SIZE_LARGE_TOOLBAR),
-					    "relief", GTK_RELIEF_NONE,
+					    "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CUT, GTK_ICON_SIZE_LARGE_TOOLBAR),
+					    "relief\0", GTK_RELIEF_NONE,
 					    NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->cut, "cut notes", NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->cut, "cut notes\0", NULL);
 
   toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					      "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_PASTE, GTK_ICON_SIZE_LARGE_TOOLBAR),
-					      "relief", GTK_RELIEF_NONE,
+					      "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_PASTE, GTK_ICON_SIZE_LARGE_TOOLBAR),
+					      "relief\0", GTK_RELIEF_NONE,
 					      NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->paste, "paste notes", NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->paste, "paste notes\0", NULL);
 
-  label = (GtkLabel *) gtk_label_new("zoom");
+  label = (GtkLabel *) gtk_label_new("zoom\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
   toolbar->zoom_history = 6;
@@ -127,7 +127,7 @@ ags_toolbar_init(AgsToolbar *toolbar)
   gtk_option_menu_set_history(toolbar->zoom, 6);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->zoom, NULL , NULL);
 
-  label = (GtkLabel *) gtk_label_new("tact");
+  label = (GtkLabel *) gtk_label_new("tact\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
   toolbar->tact_history = 4;
@@ -136,7 +136,7 @@ ags_toolbar_init(AgsToolbar *toolbar)
   gtk_option_menu_set_history(toolbar->tact, 4);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->tact, NULL, NULL);
 
-  label = (GtkLabel *) gtk_label_new("mode");
+  label = (GtkLabel *) gtk_label_new("mode\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
   menu = (GtkMenu *) gtk_menu_new();
@@ -157,45 +157,45 @@ ags_toolbar_connect(AgsToolbar *toolbar)
 {
   GList *list;
 
-  g_signal_connect((GObject *) toolbar, "destroy",
+  g_signal_connect((GObject *) toolbar, "destroy\0",
 		   G_CALLBACK(ags_toolbar_destroy_callback), (gpointer) toolbar);
 
-  g_signal_connect((GObject *) toolbar, "show",
+  g_signal_connect((GObject *) toolbar, "show\0",
 		   G_CALLBACK(ags_toolbar_show_callback), (gpointer) toolbar);
 
-  g_signal_connect_after((GObject *) toolbar->position, "toggled",
+  g_signal_connect_after((GObject *) toolbar->position, "toggled\0",
 			 G_CALLBACK(ags_toolbar_position_callback), (gpointer) toolbar);
 
-  g_signal_connect_after((GObject *) toolbar->edit, "toggled",
+  g_signal_connect_after((GObject *) toolbar->edit, "toggled\0",
 			 G_CALLBACK(ags_toolbar_edit_callback), (gpointer) toolbar);
 
-  g_signal_connect_after((GObject *) toolbar->clear, "toggled",
+  g_signal_connect_after((GObject *) toolbar->clear, "toggled\0",
 			 G_CALLBACK(ags_toolbar_clear_callback), (gpointer) toolbar);
 
-  g_signal_connect_after((GObject *) toolbar->select, "toggled",
+  g_signal_connect_after((GObject *) toolbar->select, "toggled\0",
 			 G_CALLBACK(ags_toolbar_select_callback), (gpointer) toolbar);
 
-  g_signal_connect((GObject *) toolbar->copy, "clicked",
+  g_signal_connect((GObject *) toolbar->copy, "clicked\0",
 		   G_CALLBACK(ags_toolbar_copy_or_cut_callback), (gpointer) toolbar);
 
-  g_signal_connect((GObject *) toolbar->cut, "clicked",
+  g_signal_connect((GObject *) toolbar->cut, "clicked\0",
 		   G_CALLBACK(ags_toolbar_copy_or_cut_callback), (gpointer) toolbar);
 
-  g_signal_connect((GObject *) toolbar->paste, "clicked",
+  g_signal_connect((GObject *) toolbar->paste, "clicked\0",
 		   G_CALLBACK(ags_toolbar_paste_callback), (gpointer) toolbar);
 
-  g_signal_connect_after((GObject *) toolbar->zoom, "changed",
+  g_signal_connect_after((GObject *) toolbar->zoom, "changed\0",
 			 G_CALLBACK(ags_toolbar_zoom_callback), (gpointer) toolbar);
 
-  g_signal_connect_after((GObject *) toolbar->tact, "changed",
+  g_signal_connect_after((GObject *) toolbar->tact, "changed\0",
 			 G_CALLBACK(ags_toolbar_tact_callback), (gpointer) toolbar);
 
   list = gtk_container_get_children((GtkContainer *) gtk_option_menu_get_menu(toolbar->mode));
-  g_signal_connect((GObject *) list->data, "activate",
+  g_signal_connect((GObject *) list->data, "activate\0",
 		   G_CALLBACK(ags_toolbar_mode_default_callback), (gpointer) toolbar);
 
   list = list->next;
-  g_signal_connect((GObject *) list->data, "activate",
+  g_signal_connect((GObject *) list->data, "activate\0",
 		   G_CALLBACK(ags_toolbar_mode_group_channels_callback), (gpointer) toolbar);
 }
 

@@ -57,7 +57,7 @@ ags_add_region_to_selection_get_type()
     };
 
     ags_type_add_region_to_selection = g_type_register_static(AGS_TYPE_TASK,
-							      "AgsAddRegionToSelection",
+							      "AgsAddRegionToSelection\0",
 							      &ags_add_region_to_selection_info,
 							      0);
 

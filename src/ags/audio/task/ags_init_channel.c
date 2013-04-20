@@ -57,7 +57,7 @@ ags_init_channel_get_type()
     };
 
     ags_type_init_channel = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsInitChannel",
+						   "AgsInitChannel\0",
 						   &ags_init_channel_info,
 						   0);
 

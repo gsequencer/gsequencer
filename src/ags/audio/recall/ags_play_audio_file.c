@@ -87,7 +87,7 @@ ags_play_audio_file_get_type()
     };
 
     ags_type_play_audio_file = g_type_register_static(AGS_TYPE_RECALL,
-						      "AgsPlayAudioFile",
+						      "AgsPlayAudioFile\0",
 						      &ags_play_audio_file_info,
 						      0);
 
@@ -121,27 +121,27 @@ ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file)
   gobject->finalize = ags_play_audio_file_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("devout",
-				  "assigned devout",
-				  "The devout this recall is assigned to",
+  param_spec = g_param_spec_gtype("devout\0",
+				  "assigned devout\0",
+				  "The devout this recall is assigned to\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("audio_file",
-				  "assigned audio file",
-				  "The audio file this recall is assigned to",
+  param_spec = g_param_spec_gtype("audio_file\0",
+				  "assigned audio file\0",
+				  "The audio file this recall is assigned to\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_FILE,
 				  param_spec);
 
-  param_spec = g_param_spec_gtype("current",
-				  "current frame",
-				  "The current frame this recall is playing",
+  param_spec = g_param_spec_gtype("current\0",
+				  "current frame\0",
+				  "The current frame this recall is playing\0",
 				   G_TYPE_UINT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -362,7 +362,7 @@ ags_play_audio_file_run_inter(AgsRecall *recall)
   play_audio_file->current = i0;
 
   if(play_done)
-    g_signal_emit_by_name((GObject *) recall, "done", recall_id);
+    g_signal_emit_by_name((GObject *) recall, "done\0", recall_id);
   */
 }
 
@@ -385,8 +385,8 @@ ags_play_audio_file_new(AgsAudioFile *audio_file,
   AgsPlayAudioFile *play_audio_file;
 
   play_audio_file = (AgsPlayAudioFile *) g_object_new(AGS_TYPE_PLAY_AUDIO_FILE,
-						      "audio_file", audio_file,
-						      "devout", devout,
+						      "audio_file\0", audio_file,
+						      "devout\0", devout,
 						      NULL);
 
   return(play_audio_file);

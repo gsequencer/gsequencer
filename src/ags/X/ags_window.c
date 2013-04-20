@@ -59,7 +59,7 @@ ags_window_get_type()
     };
 
     ags_type_window = g_type_register_static(GTK_TYPE_WINDOW,
-					      "AgsWindow", &ags_window_info,
+					      "AgsWindow\0", &ags_window_info,
 					      0);
     
     g_type_add_interface_static(ags_type_window,
@@ -105,9 +105,9 @@ ags_window_init(AgsWindow *window)
 
   window->devout = ags_devout_new();
 
-  window->name = g_strdup("unnamed");
+  window->name = g_strdup("unnamed\0");
 
-  gtk_window_set_title((GtkWindow *) window, g_strconcat("ags - ", window->name, NULL));
+  gtk_window_set_title((GtkWindow *) window, g_strconcat("ags - \0", window->name, NULL));
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
@@ -154,7 +154,7 @@ ags_window_connect(AgsConnectable *connectable)
 
   window = AGS_WINDOW(connectable);
 
-  g_signal_connect(G_OBJECT(window), "delete_event",
+  g_signal_connect(G_OBJECT(window), "delete_event\0",
 		   G_CALLBACK(ags_window_delete_event_callback), NULL);
 
   ags_menu_bar_connect(window->menu_bar);

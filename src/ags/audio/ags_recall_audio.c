@@ -96,7 +96,7 @@ ags_recall_audio_get_type()
     };
 
     ags_type_recall_audio = g_type_register_static(AGS_TYPE_RECALL,
-						   "AgsRecallAudio",
+						   "AgsRecallAudio\0",
 						   &ags_recall_audio_info,
 						   0);
 
@@ -133,9 +133,9 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
   gobject->set_property = ags_recall_audio_set_property;
   gobject->get_property = ags_recall_audio_get_property;
 
-  param_spec = g_param_spec_object("audio",
-				   "assigned audio",
-				   "The audio object it is assigned to",
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio object it is assigned to\0",
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -271,7 +271,7 @@ ags_recall_audio_pack(AgsPackable *packable, GObject *container)
 
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "recall_audio", AGS_RECALL_AUDIO(packable),
+		 "recall_audio\0", AGS_RECALL_AUDIO(packable),
 		 NULL);
 
     list = list->next;
@@ -306,7 +306,7 @@ ags_recall_audio_unpack(AgsPackable *packable)
 
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "recall_audio", NULL,
+		 "recall_audio\0", NULL,
 		 NULL);
 
     list = list->next;
@@ -370,7 +370,7 @@ ags_recall_audio_duplicate(AgsRecall *recall,
 										     recall_id,
 										     n_params, parameter));
 
-  g_message("ags warning - ags_recall_audio_duplicate: you shouldn't do this %s\n", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags warning - ags_recall_audio_duplicate: you shouldn't do this %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   return((AgsRecall *) copy);
 }
@@ -381,7 +381,7 @@ ags_recall_audio_new(AgsAudio *audio)
   AgsRecallAudio *recall_audio;
 
   recall_audio = (AgsRecallAudio *) g_object_new(AGS_TYPE_RECALL_AUDIO,
-						 "audio", audio,
+						 "audio\0", audio,
 						 NULL);
 
   return(recall_audio);

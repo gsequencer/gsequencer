@@ -70,7 +70,7 @@ ags_apply_bpm_get_type()
     };
 
     ags_type_apply_bpm = g_type_register_static(AGS_TYPE_TASK,
-						"AgsApplyBpm",
+						"AgsApplyBpm\0",
 						&ags_apply_bpm_info,
 						0);
     
@@ -173,7 +173,7 @@ ags_apply_bpm_launch(AgsTask *task)
 
     ags_apply_bpm_recall(apply_bpm, recall);
   }else{
-    g_warning("AgsApplyBpm: Not supported gobject");
+    g_warning("AgsApplyBpm: Not supported gobject\0");
   }
 }
 

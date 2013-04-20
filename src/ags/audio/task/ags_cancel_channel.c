@@ -57,7 +57,7 @@ ags_cancel_channel_get_type()
     };
 
     ags_type_cancel_channel = g_type_register_static(AGS_TYPE_TASK,
-						     "AgsCancelChannel",
+						     "AgsCancelChannel\0",
 						     &ags_cancel_channel_info,
 						     0);
     
