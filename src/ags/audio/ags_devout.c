@@ -604,17 +604,19 @@ ags_devout_main_loop_thread(void *devout0)
     pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
     pthread_mutex_lock(&(devout->main_loop_inject_mutex));
 
+    /*  */
     pthread_mutex_lock(&(devout->main_loop_mutex));
 
     task_pending = devout->task_pending;
     tasks_pending = devout->tasks_pending;
 
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
+
+    /*  */
     devout->task_pending = 0;
     devout->tasks_pending = 0;
 
     devout->task_count = task_pending + tasks_pending;
-
-    pthread_mutex_unlock(&(devout->main_loop_mutex));
   }
 
   devout = AGS_DEVOUT(devout0);
@@ -634,7 +636,7 @@ ags_devout_main_loop_thread(void *devout0)
     /* suspend until everything has been done */
     
     if(DEBUG_DEVOUT){
-      g_message("loop begin");
+      //      g_message("loop begin");
     }
 
     if(!initial_run){
@@ -753,7 +755,7 @@ ags_devout_task_thread(void *devout0)
     /* sync */
     if(!initial_run){
       if(DEBUG_DEVOUT){
-	g_message("################ DEBUG ################");
+	//	g_message("################ DEBUG ################");
       }
 
       if(barrier == 0){
@@ -838,6 +840,8 @@ ags_devout_append_task_thread(void *ptr)
 
   /* sync */
   pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+  pthread_mutex_lock(&(devout->main_loop_mutex));
+
   devout->task_pending = devout->task_pending + 1;
 
   /* append to queue */
@@ -848,6 +852,7 @@ ags_devout_append_task_thread(void *ptr)
   devout->task_queued = devout->task_queued - 1;
 
   /*  */
+  pthread_mutex_unlock(&(devout->main_loop_mutex));
   pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
   /*  */
@@ -909,6 +914,8 @@ ags_devout_append_tasks_thread(void *ptr)
 
   /* sync */
   pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+  pthread_mutex_lock(&(devout->main_loop_mutex));
+
   devout->tasks_pending = devout->tasks_pending + 1;
 
   /* concat with queue */
@@ -919,6 +926,7 @@ ags_devout_append_tasks_thread(void *ptr)
   devout->tasks_queued = devout->tasks_queued - 1;
 
   /*  */
+  pthread_mutex_unlock(&(devout->main_loop_mutex));
   pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
   /*  */

@@ -19,7 +19,6 @@
 #ifndef __AGS_ADD_AUDIO_H__
 #define __AGS_ADD_AUDIO_H__
 
-#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
