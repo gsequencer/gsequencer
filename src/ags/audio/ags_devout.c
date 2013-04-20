@@ -593,7 +593,7 @@ ags_devout_main_loop_thread(void *devout0)
   AgsDevout *devout;
   AgsTask *task;
   GList *list, *list_prev;
-  guint task_pending, tasks_pending, task_count;
+  guint task_pending, tasks_pending;
   guint i;
   gboolean initial_run;
   useconds_t idle;
@@ -612,7 +612,6 @@ ags_devout_main_loop_thread(void *devout0)
     devout->task_pending = 0;
     devout->tasks_pending = 0;
 
-    task_count = devout->task_count;
     devout->task_count = task_pending + tasks_pending;
 
     pthread_mutex_unlock(&(devout->main_loop_mutex));
@@ -630,8 +629,6 @@ ags_devout_main_loop_thread(void *devout0)
   task_pending = 0;
   tasks_pending = 0;
 
-  task_count = 0;
-
   /* task */
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     /* suspend until everything has been done */
@@ -647,8 +644,7 @@ ags_devout_main_loop_thread(void *devout0)
 
 	/*  */
 	pthread_barrier_init(&(devout->main_loop_barrier[1]), NULL, devout->wait_sync +
-			     1 +
-			     devout->task_count);
+			     1);
 
 	/*  */
 	pthread_barrier_wait(&(devout->main_loop_barrier[0]));
@@ -661,8 +657,7 @@ ags_devout_main_loop_thread(void *devout0)
 
 	/*  */
 	pthread_barrier_init(&(devout->main_loop_barrier[0]), NULL, devout->wait_sync +
-			     1 +
-			     devout->task_count);
+			     1);
 
 	/*  */
 	pthread_barrier_wait(&(devout->main_loop_barrier[1]));
@@ -705,7 +700,7 @@ ags_devout_main_loop_thread(void *devout0)
 
     pthread_mutex_unlock(&(devout->main_loop_mutex));
 
-    for(i = 0; i < task_count; i++){
+    for(i = 0; i < devout->task_count; i++){
       task = AGS_TASK(list->data);
 
       pthread_mutex_lock(&(devout->task_mutex));
@@ -742,7 +737,6 @@ ags_devout_task_thread(void *devout0)
   gboolean initial_run;
   gboolean start_play;
   guint barrier;
-  guint current_task_count, task_count;
 
   devout = AGS_DEVOUT(devout0);
 
@@ -754,8 +748,6 @@ ags_devout_task_thread(void *devout0)
   start_play = FALSE;
 
   barrier = 0;
-  task_count = 0;
-  current_task_count = 0;
 
   while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     /* sync */
@@ -773,9 +765,6 @@ ags_devout_task_thread(void *devout0)
       }
     }
 
-    current_task_count = task_count;
-    task_count = devout->task_count;
-
     /*  */
     pthread_mutex_lock(&(devout->main_loop_mutex));
     list = g_list_last(devout->task);
@@ -786,7 +775,7 @@ ags_devout_task_thread(void *devout0)
       AgsTask *task;
       int i;
 
-      for(i = 0; i < current_task_count; i++){
+      for(i = 0; i < devout->task_count; i++){
 	task = AGS_TASK(list->data);
 
 	if(DEBUG_DEVOUT){
@@ -798,10 +787,9 @@ ags_devout_task_thread(void *devout0)
 	pthread_mutex_lock(&(devout->task_mutex));
     
 	task->flags &= (~AGS_TASK_LOCKED);
+	pthread_cond_signal(&(task->wait_sync_task_cond));
 
 	pthread_mutex_unlock(&(devout->task_mutex));
-
-	pthread_cond_signal(&(task->wait_sync_task_cond));
 
 
 	list = list->prev;
@@ -860,15 +848,7 @@ ags_devout_append_task_thread(void *ptr)
   devout->task_queued = devout->task_queued - 1;
 
   /*  */
-  if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-    pthread_barrier_wait(&(devout->main_loop_barrier[1]));
-  }else{
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-  }
+  pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
   /*  */
   //  g_message("ags_devout_append_task_thread ------------------------- %d", devout->append_task_suspend);
@@ -939,15 +919,7 @@ ags_devout_append_tasks_thread(void *ptr)
   devout->tasks_queued = devout->tasks_queued - 1;
 
   /*  */
-  if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-    pthread_barrier_wait(&(devout->main_loop_barrier[1]));
-  }else{
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-  }
+  pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
   /*  */
   pthread_exit(NULL);
