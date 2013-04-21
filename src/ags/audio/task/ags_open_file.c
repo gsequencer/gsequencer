@@ -26,6 +26,7 @@ void ags_open_file_init(AgsOpenFile *open_file);
 void ags_open_file_connect(AgsConnectable *connectable);
 void ags_open_file_disconnect(AgsConnectable *connectable);
 void ags_open_file_finalize(GObject *gobject);
+void ags_open_file_launch(AgsTask *task);
 
 static gpointer ags_open_file_parent_class = NULL;
 static AgsConnectableInterface *ags_open_file_parent_connectable_interface;
@@ -71,12 +72,19 @@ void
 ags_open_file_class_init(AgsOpenFileClass *open_file)
 {
   GObjectClass *gobject;
+  AgsTaskClass *task;
 
   ags_open_file_parent_class = g_type_class_peek_parent(open_file);
 
+  /* GObject */
   gobject = (GObjectClass *) open_file;
 
   gobject->finalize = ags_open_file_finalize;
+
+  /* AgsTask */
+  task = (AgsTaskClass *) open_file;
+
+  task->launch = ags_open_file_launch;
 }
 
 void
@@ -91,6 +99,10 @@ ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_open_file_init(AgsOpenFile *open_file)
 {
+  open_file->audio = NULL;
+  open_file->filenames = NULL;
+  open_file->overwrite_channels = FALSE;
+  open_file->create_channels = FALSE;
 }
 
 void
@@ -123,6 +135,11 @@ ags_open_file_launch(AgsTask *task)
   AgsOpenFile *open_file;
 
   open_file = AGS_OPEN_FILE(task);
+
+  ags_audio_file_open(open_file->audio,
+		      open_file->filenames,
+		      open_file->overwrite_channels,
+		      open_file->create_channels);
 }
 
 AgsOpenFile*
