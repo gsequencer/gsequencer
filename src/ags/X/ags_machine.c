@@ -25,7 +25,7 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/audio/task/ags_link_channel.h>
+#include <ags/audio/task/ags_open_file.h>
 
 #include <ags/X/ags_window.h>
 
@@ -294,113 +294,16 @@ ags_machine_open_files(AgsMachine *machine,
 		       gboolean overwrite_channels,
 		       gboolean create_channels)
 {
-  AgsLinkChannel *link_channel;
-  AgsChannel *channel;
-  AgsAudioFile *audio_file;
-  AgsAudioSignal *audio_signal_source_old;
-  GList *audio_signal_list;
-  guint i, j;
-  guint list_length;
+  AgsOpenFile *open_file;
 
-  channel = machine->audio->input;
+  open_file = ags_open_file_new(machine->audio,
+				filenames,
+				overwrite_channels,
+				create_channels);
 
-  /* overwriting existing channels */
-  if(overwrite_channels){
-    if(channel != NULL){
-      for(i = 0; i < machine->audio->input_pads && filenames != NULL; i++){
-	audio_file = ags_audio_file_new((gchar *) filenames->data,
-					(AgsDevout *) machine->audio->devout,
-					0, machine->audio->audio_channels);
-	if(!ags_audio_file_open(audio_file)){
-	  filenames = filenames->next;
-	  continue;
-	}
+  ags_devout_append_task(AGS_DEVOUT(machine->audio->devout),
+			 AGS_TASK(open_file));
 
-	ags_audio_file_read_audio_signal(audio_file);
-	ags_audio_file_close(audio_file);
-	
-	audio_signal_list = audio_file->audio_signal;
-	
-	for(j = 0; j < machine->audio->audio_channels && audio_signal_list != NULL; j++){
-	  /* create task */
-	  link_channel = ags_link_channel_new(channel, NULL);
-	  
-	  /* append AgsLinkChannel */
-	  // FIXME:JK: has a need for the unavaible task
-	  //	    ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
-	  //				   AGS_TASK(link_channel));
-	  
-	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
-	  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-	    // FIXME:JK: create a task
-	  channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
-								 (gpointer) audio_signal_source_old);
-	  channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
-								  audio_signal_list->data);
-
-	  g_object_unref(G_OBJECT(audio_signal_source_old));
-
-	  audio_signal_list = audio_signal_list->next;
-	  channel = channel->next;
-	}
-
-	if(audio_file->channels < machine->audio->audio_channels)
-	  channel = ags_channel_nth(channel,
-				    machine->audio->audio_channels - audio_file->channels);
-	
-	filenames = filenames->next;
-      }
-    }
-  }
-
-  /* appending to channels */
-  if(create_channels && filenames != NULL){
-    list_length = g_slist_length(filenames);
-    
-    ags_audio_set_pads((AgsAudio *) machine->audio, AGS_TYPE_INPUT,
-		       list_length + AGS_AUDIO(machine->audio)->input_pads);
-    channel = ags_channel_nth(AGS_AUDIO(machine->audio)->input,
-			      (AGS_AUDIO(machine->audio)->input_pads - list_length) * AGS_AUDIO(machine->audio)->audio_channels);
-    
-    while(filenames != NULL){
-      audio_file = ags_audio_file_new((gchar *) filenames->data,
-				      (AgsDevout *) machine->audio->devout,
-				      0, machine->audio->audio_channels);
-      if(!ags_audio_file_open(audio_file)){
-	filenames = filenames->next;
-	continue;
-      }
-      
-      ags_audio_file_read_audio_signal(audio_file);
-      ags_audio_file_close(audio_file);
-	
-      audio_signal_list = audio_file->audio_signal;
-      
-      for(j = 0; j < machine->audio->audio_channels && audio_signal_list != NULL; j++){
-	AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
-	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-	
-	channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
-							       (gpointer) audio_signal_source_old);
-	channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
-								audio_signal_list->data);
-	
-	g_object_unref(G_OBJECT(audio_signal_source_old));
-	
-	audio_signal_list = audio_signal_list->next;
-	channel = channel->next;
-      }
-      
-      if(machine->audio->audio_channels > audio_file->channels)
-	channel = ags_channel_nth(channel,
-				  machine->audio->audio_channels - audio_file->channels);
-      
-      filenames = filenames->next;
-    }
-  }
 }
 
 AgsMachine*

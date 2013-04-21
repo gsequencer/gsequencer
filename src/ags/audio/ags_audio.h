@@ -150,6 +150,11 @@ void ags_audio_cancel(AgsAudio *audio,
 		      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
 		      gboolean do_recall);
 
+void ags_audio_open_files(AgsAudio *audio,
+			  GSList *filenames,
+			  gboolean overwrite_channels,
+			  gboolean create_channels);
+
 AgsAudio* ags_audio_new();
 
 #endif /*__AGS_AUDIO_H__*/

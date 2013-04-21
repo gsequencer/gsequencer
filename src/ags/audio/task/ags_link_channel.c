@@ -140,6 +140,10 @@ ags_link_channel_launch(AgsTask *task)
   /* link channel */
   ags_channel_set_link(link_channel->channel, link_channel->link,
 		       &(link_channel->error));
+
+  if(link_channel->error != NULL){
+    g_message(link_channel->error->message);
+  }
 }
 
 AgsLinkChannel*

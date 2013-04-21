@@ -267,7 +267,6 @@ main(int argc, char **argv)
 
   LIBXML_TEST_VERSION;
 
-  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
   ipatch_init();

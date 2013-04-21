@@ -117,13 +117,29 @@ ags_open_file_finalize(GObject *gobject)
   /* empty */
 }
 
+void
+ags_open_file_launch(AgsTask *task)
+{
+  AgsOpenFile *open_file;
+
+  open_file = AGS_OPEN_FILE(task);
+}
+
 AgsOpenFile*
-ags_open_file_new()
+ags_open_file_new(AgsAudio *audio,
+		  GSList *filenames,
+		  gboolean overwrite_channels,
+		  gboolean create_channels)
 {
   AgsOpenFile *open_file;
 
   open_file = (AgsOpenFile *) g_object_new(AGS_TYPE_OPEN_FILE,
 					   NULL);
+
+  open_file->audio = audio;
+  open_file->filenames = filenames;
+  open_file->overwrite_channels = overwrite_channels;
+  open_file->create_channels = create_channels;
 
   return(open_file);
 }

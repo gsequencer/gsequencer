@@ -31,6 +31,8 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 
+#include <ags/audio/file/ags_audio_file.h>
+
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
@@ -2234,6 +2236,123 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
     ags_audio_set_devout_for_audio_signal(audio->output);
 
   ags_audio_set_devout_for_recall(audio->output);
+}
+
+void
+ags_audio_open_files(AgsAudio *audio,
+		     GSList *filenames,
+		     gboolean overwrite_channels,
+		     gboolean create_channels)
+{
+  AgsChannel *channel;
+  AgsAudioFile *audio_file;
+  AgsAudioSignal *audio_signal_source_old;
+  GList *audio_signal_list;
+  guint i, j;
+  guint list_length;
+  GError *error;
+
+  channel = audio->input;
+
+  /* overwriting existing channels */
+  if(overwrite_channels){
+    if(channel != NULL){
+      for(i = 0; i < audio->input_pads && filenames != NULL; i++){
+	audio_file = ags_audio_file_new((gchar *) filenames->data,
+					(AgsDevout *) audio->devout,
+					0, audio->audio_channels);
+	if(!ags_audio_file_open(audio_file)){
+	  filenames = filenames->next;
+	  continue;
+	}
+
+	ags_audio_file_read_audio_signal(audio_file);
+	ags_audio_file_close(audio_file);
+	
+	audio_signal_list = audio_file->audio_signal;
+	
+	for(j = 0; j < audio->audio_channels && audio_signal_list != NULL; j++){
+	  /* create task */
+	  error = NULL;
+
+	  ags_channel_set_link(channel, NULL,
+			       &error);
+
+	  if(error != NULL){
+	    g_message(error->message);
+	  }
+
+	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
+	  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+	    // FIXME:JK: create a task
+	  channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
+								 (gpointer) audio_signal_source_old);
+	  channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
+								  audio_signal_list->data);
+
+	  g_object_unref(G_OBJECT(audio_signal_source_old));
+
+	  audio_signal_list = audio_signal_list->next;
+	  channel = channel->next;
+	}
+
+	if(audio_file->channels < audio->audio_channels)
+	  channel = ags_channel_nth(channel,
+				    audio->audio_channels - audio_file->channels);
+	
+	filenames = filenames->next;
+      }
+    }
+  }
+
+  /* appending to channels */
+  if(create_channels && filenames != NULL){
+    list_length = g_slist_length(filenames);
+    
+    ags_audio_set_pads((AgsAudio *) audio, AGS_TYPE_INPUT,
+		       list_length + AGS_AUDIO(audio)->input_pads);
+    channel = ags_channel_nth(AGS_AUDIO(audio)->input,
+			      (AGS_AUDIO(audio)->input_pads - list_length) * AGS_AUDIO(audio)->audio_channels);
+    
+    while(filenames != NULL){
+      audio_file = ags_audio_file_new((gchar *) filenames->data,
+				      (AgsDevout *) audio->devout,
+				      0, audio->audio_channels);
+      if(!ags_audio_file_open(audio_file)){
+	filenames = filenames->next;
+	continue;
+      }
+      
+      ags_audio_file_read_audio_signal(audio_file);
+      ags_audio_file_close(audio_file);
+	
+      audio_signal_list = audio_file->audio_signal;
+      
+      for(j = 0; j < audio->audio_channels && audio_signal_list != NULL; j++){
+	AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
+	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+	
+	channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
+							       (gpointer) audio_signal_source_old);
+	channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
+								audio_signal_list->data);
+	
+	g_object_unref(G_OBJECT(audio_signal_source_old));
+	
+	audio_signal_list = audio_signal_list->next;
+	channel = channel->next;
+      }
+      
+      if(audio->audio_channels > audio_file->channels)
+	channel = ags_channel_nth(channel,
+				  audio->audio_channels - audio_file->channels);
+      
+      filenames = filenames->next;
+    }
+  }
 }
 
 AgsAudio*

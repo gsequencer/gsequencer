@@ -19,10 +19,10 @@
 #ifndef __AGS_OPEN_FILE_H__
 #define __AGS_OPEN_FILE_H__
 
-#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/audio/ags_task.h>
+#include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_OPEN_FILE                (ags_open_file_get_type())
 #define AGS_OPEN_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_FILE, AgsOpenFile))
@@ -37,6 +37,13 @@ typedef struct _AgsOpenFileClass AgsOpenFileClass;
 struct _AgsOpenFile
 {
   AgsTask task;
+
+  AgsAudio *audio;
+
+  GSList *filenames;
+
+  gboolean overwrite_channels;
+  gboolean create_channels;
 };
 
 struct _AgsOpenFileClass
@@ -46,6 +53,9 @@ struct _AgsOpenFileClass
 
 GType ags_open_file_get_type();
 
-AgsOpenFile* ags_open_file_new();
+AgsOpenFile* ags_open_file_new(AgsAudio *audio,
+			       GSList *filenames,
+			       gboolean overwrite_channels,
+			       gboolean create_channels);
 
 #endif /*__AGS_OPEN_FILE_H__*/
