@@ -637,31 +637,11 @@ ags_devout_main_loop_thread(void *devout0)
   guint i;
   gboolean initial_run;
   useconds_t idle;
+  GError *error;
 
   auto void ags_devout_main_loop_thread_inject_task();
 
   void ags_devout_main_loop_thread_inject_task(){
-    AgsDevoutGate *gate;
-    GError *error;
-
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-    pthread_mutex_lock(&(devout->main_loop_inject_mutex));
-
-    /* gate */
-    gate = ags_devout_gate_alloc();
-    
-    if(initial_run){
-      ags_devout_gate_control(devout,
-			      gate,
-			      TRUE, FALSE,
-			      &error);
-    }else{
-      ags_devout_gate_control(devout,
-			      gate,
-			      TRUE, TRUE,
-			      &error);
-    }
-
     /* tasks */
     pthread_mutex_lock(&(devout->main_loop_mutex));
 
@@ -755,11 +735,35 @@ ags_devout_main_loop_thread(void *devout0)
       pthread_setschedprio(devout->task_thread, 99);
     }
 
+    /* retrieve tasks */
     pthread_mutex_lock(&(devout->main_loop_mutex));
   
     list = devout->task;
 
     pthread_mutex_unlock(&(devout->main_loop_mutex));
+
+    /*  */
+    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
+
+    /* gate */
+    gate = ags_devout_gate_alloc();
+    
+    if(initial_run){
+      ags_devout_gate_control(devout,
+			      gate,
+			      TRUE, FALSE,
+			      &error);
+    }else{
+      ags_devout_gate_control(devout,
+			      gate,
+			      TRUE, FALSE,
+			      &error);
+
+      ags_devout_gate_control(devout,
+			      (AgsDevoutGate *) devout->gate->data,
+			      FALSE, TRUE,
+			      &error);
+    }
 
     for(i = 0; i < devout->task_count; i++){
       task = AGS_TASK(list->data);
@@ -784,6 +788,9 @@ ags_devout_main_loop_thread(void *devout0)
 
       list = list_next;
     }
+
+    /*  */
+    pthread_mutex_lock(&(devout->main_loop_inject_mutex));
     
     if(initial_run){
       initial_run = FALSE;
@@ -1698,32 +1705,32 @@ ags_devout_gate_control(AgsDevout *devout,
 			GError **error)
 {
   if(push && pop){
-    AgsDevoutGateControl *gate_control;
+    AgsDevoutGateControl *push_gate_control, *pop_gate_control;
     pthread_t push_thread, pop_thread;
     void *retval;
     GError *pop_error, *push_error;
 
     /* push */
-    gate_control = ags_devout_gate_control_alloc();
+    push_gate_control = ags_devout_gate_control_alloc();
     push_error = NULL;
 
-    gate_control->devout = devout;
-    gate_control->gate = gate;
-    gate_control->error = &push_error;
+    push_gate_control->devout = devout;
+    push_gate_control->gate = gate;
+    push_gate_control->error = &push_error;
 
     pthread_create(&push_thread, NULL,
-		   &ags_devout_gate_control_push, gate_control);
+		   &ags_devout_gate_control_push, push_gate_control);
 
     /* pop */
-    gate_control = ags_devout_gate_control_alloc();
+    pop_gate_control = ags_devout_gate_control_alloc();
     pop_error = NULL;
 
-    gate_control->devout = devout;
-    gate_control->gate = gate;
-    gate_control->error = &pop_error;
+    pop_gate_control->devout = devout;
+    pop_gate_control->gate = gate;
+    pop_gate_control->error = &pop_error;
 
-    pthread_create(&push_thread, NULL,
-		   &ags_devout_gate_control_pop, gate_control);
+    pthread_create(&pop_thread, NULL,
+		   &ags_devout_gate_control_pop, pop_gate_control);
 
     /* wait until pop has finished */
     pthread_join(pop_thread, &retval);
@@ -1731,7 +1738,7 @@ ags_devout_gate_control(AgsDevout *devout,
     AgsDevoutGate *gate_next;
     pthread_mutex_t fifo_mutex;
 
-    if(devout->gate->next == NULL){
+    if(devout->gate == NULL || devout->gate->next == NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_EMPTY_GATE,
