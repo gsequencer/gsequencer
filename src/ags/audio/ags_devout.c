@@ -1547,10 +1547,11 @@ ags_devout_alsa_play(void *devout0)
     }
   }
   
+  //TODO:JK: check whether this is safe in conscience with barrier
   /* decrement barrier */
   gate = ags_devout_fifo_lock_gate(devout);
   devout->wait_sync -= 1;
-  gate = ags_devout_fifo_unlock_gate(devout);
+  ags_devout_fifo_unlock_gate(devout, gate);
 
   if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
     pthread_barrier_wait(&(devout->main_loop_barrier[0]));
