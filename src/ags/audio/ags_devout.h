@@ -105,6 +105,12 @@ typedef enum
   AGS_DEVOUT_PLAY_NOTATION          = 1 <<  5,
 }AgsDevoutPlayFlags;
 
+#define AGS_CHANNEL_ERROR (ags_channel_error_quark())
+
+typedef enum{
+  AGS_DEVOUT_ERROR_EMPTY_GATE,
+}AgsDevoutError;
+
 struct _AgsDevout
 {
   GObject object;
@@ -229,6 +235,8 @@ struct _AgsDevoutGate
 
 GType ags_devout_get_type();
 
+GQuark ags_devout_error_quark();
+
 AgsDevoutPlay* ags_devout_play_alloc();
 AgsDevoutGate* ags_devout_gate_alloc();
 
@@ -249,9 +257,8 @@ void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 
 void ags_devout_start_default_threads(AgsDevout *devout);
 
-
 AgsDevoutGate* ags_devout_gate_control(AgsDevout *devout,
-				       AgsDevoutGate *devout_gate,
+				       AgsDevoutGate *gate,
 				       gboolean push, gboolean pop);
 AgsDevoutGate* ags_devout_fifo_lock_gate(AgsDevout *devout);
 void ags_devout_fifo_unlock_gate(AgsDevout *devout, AgsDevoutGate *gate);

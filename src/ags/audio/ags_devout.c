@@ -296,6 +296,12 @@ ags_devout_class_init(AgsDevoutClass *devout)
 		 G_TYPE_NONE, 0);
 }
 
+GQuark
+ags_devout_error_quark()
+{
+  return(g_quark_from_static_string("ags-devout-error-quark\0"));
+}
+
 void
 ags_devout_init(AgsDevout *devout)
 {
@@ -579,7 +585,8 @@ ags_devout_gate_alloc()
 
   gate = (AgsDevoutGate *) malloc(sizeof(AgsGate));
 
-  pthread_mutex_init(&(gate->fifo_mutex), NULL);
+  gate->ready = FALSE;
+  pthread_cond_init(&(gate->wait), NULL);
   pthread_mutex_init(&(gate->lock_mutex), NULL);
 
   return(gate);
@@ -1597,18 +1604,22 @@ ags_devout_start_default_threads(AgsDevout *devout)
 
 AgsDevoutGate*
 ags_devout_gate_control(AgsDevout *devout,
-			AgsDevoutGate *devout_gate,
+			AgsDevoutGate *gate,
 			gboolean push, gboolean pop,
 			GError **error)
 {
   if(push && pop){
+    
   }else if(pop){
     AgsDevoutGate *gate_next;
     
     gate_next = (AgsDevoutGate *) devout->gate->next;
     
     if(gate_next == NULL){
-      //TODO:JK: implement me
+      g_set_error(error,
+		  AGS_DEVOUT_ERROR,
+		  AGS_DEVOUT_ERROR_EMPTY_GATE,
+		  "gate control reports empty gate\0");
     }
 
     pthread_mutex_lock(&(devout->fifo_mutex));
@@ -1618,7 +1629,6 @@ ags_devout_gate_control(AgsDevout *devout,
     pthread_mutex_unlock(&(gate->lock_mutex));
     pthread_mutex_unlock(&(devout->fifo_mutex));
   }else if(push){
-    AgsDevoutGate *gate;
     pthread_mutex_t gate_mutex;
 
     /* prepare for inject */
