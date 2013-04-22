@@ -136,16 +136,16 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("open in new channel\0"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "create\0", (gpointer) check_button);
+  g_object_set_data(G_OBJECT(file_chooser), "create\0", (gpointer) check_button);
 
   check_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("overwrite existing links\0"));
   gtk_toggle_button_set_active((GtkToggleButton *) check_button, TRUE);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->vbox, (GtkWidget *) check_button, FALSE, FALSE, 0);
-  g_object_set_data((GObject *) file_chooser, "overwrite\0", (gpointer) check_button);
+  g_object_set_data(G_OBJECT(file_chooser), "overwrite\0", (gpointer) check_button);
 
-  gtk_widget_show_all((GtkWidget *) file_chooser);
+  gtk_widget_show_all(GTK_WIDGET(file_chooser));
 
-  g_signal_connect((GObject *) file_chooser, "response\0",
+  g_signal_connect(G_OBJECT(file_chooser), "response\0",
 		   G_CALLBACK(ags_machine_open_response_callback), drum);
 }
 

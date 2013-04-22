@@ -186,19 +186,19 @@ ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *ma
 }
 
 void
-ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine)
 {
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *overwrite;
   GtkCheckButton *create;
   GSList *filenames;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_widget_get_toplevel(widget);
+  file_chooser = GTK_FILE_CHOOSER_DIALOG(dialog);
 
   if(response == GTK_RESPONSE_ACCEPT){
     filenames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(file_chooser));
-    overwrite = g_object_get_data((GObject *) widget, "overwrite\0");
-    create = g_object_get_data((GObject *) widget, "create\0");
+    overwrite = g_object_get_data(G_OBJECT(dialog), "overwrite\0");
+    create = g_object_get_data(G_OBJECT(dialog), "create\0");
 
     ags_machine_open_files(machine,
 			   filenames,
@@ -206,7 +206,7 @@ ags_machine_open_response_callback(GtkWidget *widget, gint response, AgsMachine 
 			   GTK_TOGGLE_BUTTON(create)->active);
   }
 
-  gtk_widget_destroy((GtkWidget *) file_chooser);
+  gtk_widget_destroy(GTK_WIDGET(file_chooser));
 }
 
 void

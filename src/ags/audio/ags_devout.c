@@ -339,6 +339,13 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutexattr_init(&(devout->main_loop_inject_mutex_attr));
   pthread_mutex_init(&(devout->main_loop_inject_mutex), &(devout->main_loop_mutex_attr));
 
+  /* gate */
+  devout->gate = g_slist_alloc();
+  devout->gate->data = ags_gate_alloc();
+
+  devout->refresh_gate = 0;
+
+  /*  */
   devout->wait_sync = 0;
 
   /* play */
@@ -563,6 +570,19 @@ ags_devout_play_alloc()
   play->group_id = 0;
 
   return(play);
+}
+
+AgsDevoutGate*
+ags_devout_gate_alloc()
+{
+  AgsDevoutGate *gate;
+
+  gate = (AgsDevoutGate *) malloc(sizeof(AgsGate));
+
+  pthread_mutex_init(&(gate->fifo_mutex), NULL);
+  pthread_mutex_init(&(gate->lock_mutex), NULL);
+
+  return(gate);
 }
 
 void
@@ -1379,6 +1399,7 @@ void*
 ags_devout_alsa_play(void *devout0)
 {
   AgsDevout *devout;
+  AgsGate *gate;
   gboolean initial_run;
 
   devout = (AgsDevout *) devout0;
@@ -1389,11 +1410,18 @@ ags_devout_alsa_play(void *devout0)
 
   initial_run = TRUE;
 
+  gate = ags_devout_fifo_lock_gate(devout);
+  devout->wait_sync += 1;
+
   while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     /* sync */
     /* wake up main_loop */
     if(DEBUG_DEVOUT){
       g_message("ags_devout_alsa_play\0");
+    }
+
+    if(initial_run){
+      ags_devout_fifo_unlock_gate(devout, gate);
     }
     
     if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
@@ -1565,6 +1593,83 @@ ags_devout_start_default_threads(AgsDevout *devout)
   /* start main_loop */
   pthread_create(&(devout->main_loop_thread), NULL, &ags_devout_main_loop_thread, devout);
   pthread_setschedprio(devout->main_loop_thread, 99);
+}
+
+AgsDevoutGate*
+ags_devout_gate_control(AgsDevout *devout,
+			AgsDevoutGate *devout_gate,
+			gboolean push, gboolean pop,
+			GError **error)
+{
+  if(push && pop){
+  }else if(pop){
+    AgsDevoutGate *gate_next;
+    
+    gate_next = (AgsDevoutGate *) devout->gate->next;
+    
+    if(gate_next == NULL){
+      //TODO:JK: implement me
+    }
+
+    pthread_mutex_lock(&(devout->fifo_mutex));
+    
+    pthread_cond_signal(&(gate_next->wait));
+    
+    pthread_mutex_unlock(&(gate->lock_mutex));
+    pthread_mutex_unlock(&(devout->fifo_mutex));
+  }else if(push){
+    AgsDevoutGate *gate;
+    pthread_mutex_t gate_mutex;
+
+    /* prepare for inject */
+    pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+    
+    /* announce lock */
+    devout->refresh_gate += 1;
+    devout->gate = g_slist_append(devout->gate, gate);
+    
+    /* finished inject */
+    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
+    
+    /* lock when ready */
+    pthread_mutex_lock(&(devout->fifo_mutex));
+    
+    while(!gate->ready){
+      pthread_cond_wait(&(gate->wait),
+			&(devout->fifo_mutex));
+    }
+    
+    /* join fifo as next and lock gate */
+    pthread_mutex_lock(&(gate->lock_mutex));
+    gate_mutex = devout->gate_mutex;
+    
+    pthread_mutex_lock(&(gate_mutex));
+    
+    devout->gate_mutex = gate->lock_mutex;
+    pthread_mutex_unlock(&(devout->gate_mutex));
+    
+    pthread_mutex_unlock(&(gate_mutex));
+  
+    /* release fifo mutex */
+    pthread_mutex_unlock(&(devout->fifo_mutex));
+  }
+}
+
+AgsDevoutGate*
+ags_devout_fifo_lock_gate(AgsDevout *devout)
+{
+  AgsDevoutGate *gate;
+
+  gate = ags_devout_gate_alloc();
+
+
+  return(gate);
+}
+
+void
+ags_devout_fifo_unlock_gate(AgsDevout *devout, AgsDevoutGate *gate)
+{
+
 }
 
 AgsDevout*
