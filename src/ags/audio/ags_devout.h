@@ -105,7 +105,7 @@ typedef enum
   AGS_DEVOUT_PLAY_NOTATION          = 1 <<  5,
 }AgsDevoutPlayFlags;
 
-#define AGS_CHANNEL_ERROR (ags_channel_error_quark())
+#define AGS_DEVOUT_ERROR (ags_devout_error_quark())
 
 typedef enum{
   AGS_DEVOUT_ERROR_EMPTY_GATE,
@@ -259,7 +259,8 @@ void ags_devout_start_default_threads(AgsDevout *devout);
 
 AgsDevoutGate* ags_devout_gate_control(AgsDevout *devout,
 				       AgsDevoutGate *gate,
-				       gboolean push, gboolean pop);
+				       gboolean push, gboolean pop,
+				       GError **error);
 AgsDevoutGate* ags_devout_fifo_lock_gate(AgsDevout *devout);
 void ags_devout_fifo_unlock_gate(AgsDevout *devout, AgsDevoutGate *gate);
 

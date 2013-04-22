@@ -347,9 +347,10 @@ ags_devout_init(AgsDevout *devout)
 
   /* gate */
   devout->gate = g_slist_alloc();
-  devout->gate->data = ags_gate_alloc();
+  devout->gate->data = (gpointer) ags_devout_gate_alloc();
 
   devout->refresh_gate = 0;
+  pthread_mutex_init(&(devout->fifo_mutex), NULL);
 
   /*  */
   devout->wait_sync = 0;
@@ -583,7 +584,7 @@ ags_devout_gate_alloc()
 {
   AgsDevoutGate *gate;
 
-  gate = (AgsDevoutGate *) malloc(sizeof(AgsGate));
+  gate = (AgsDevoutGate *) malloc(sizeof(AgsDevoutGate));
 
   gate->ready = FALSE;
   pthread_cond_init(&(gate->wait), NULL);
@@ -1406,7 +1407,7 @@ void*
 ags_devout_alsa_play(void *devout0)
 {
   AgsDevout *devout;
-  AgsGate *gate;
+  AgsDevoutGate *gate;
   gboolean initial_run;
 
   devout = (AgsDevout *) devout0;
