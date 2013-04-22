@@ -92,6 +92,18 @@ enum{
   LAST_SIGNAL,
 };
 
+struct _AgsDevoutGateControl{
+  AgsDevout *devout;
+  AgsDevoutGate *gate;
+  GError **error;
+};
+
+typedef struct _AgsDevoutGateControl AgsDevoutGateControl;
+
+AgsDevoutGateControl* ags_devout_gate_control_alloc();
+void* ags_devout_gate_control_pop(void *ptr);
+void* ags_devout_gate_control_push(void *ptr);
+
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
 
@@ -346,8 +358,7 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutex_init(&(devout->main_loop_inject_mutex), &(devout->main_loop_mutex_attr));
 
   /* gate */
-  devout->gate = g_slist_alloc();
-  devout->gate->data = (gpointer) ags_devout_gate_alloc();
+  devout->gate = NULL;
 
   devout->refresh_gate = 0;
   pthread_mutex_init(&(devout->fifo_mutex), NULL);
@@ -619,6 +630,7 @@ void*
 ags_devout_main_loop_thread(void *devout0)
 {
   AgsDevout *devout;
+  AgsDevoutGate *gate;
   AgsTask *task;
   GList *list, *list_next;
   guint task_pending, tasks_pending;
@@ -629,10 +641,28 @@ ags_devout_main_loop_thread(void *devout0)
   auto void ags_devout_main_loop_thread_inject_task();
 
   void ags_devout_main_loop_thread_inject_task(){
+    AgsDevoutGate *gate;
+    GError *error;
+
     pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
     pthread_mutex_lock(&(devout->main_loop_inject_mutex));
 
-    /*  */
+    /* gate */
+    gate = ags_devout_gate_alloc();
+    
+    if(initial_run){
+      ags_devout_gate_control(devout,
+			      gate,
+			      TRUE, FALSE,
+			      &error);
+    }else{
+      ags_devout_gate_control(devout,
+			      gate,
+			      TRUE, TRUE,
+			      &error);
+    }
+
+    /* tasks */
     pthread_mutex_lock(&(devout->main_loop_mutex));
 
     task_pending = devout->task_pending;
@@ -640,10 +670,11 @@ ags_devout_main_loop_thread(void *devout0)
 
     pthread_mutex_unlock(&(devout->main_loop_mutex));
 
-    /*  */
+    /* reset tasks */
     devout->task_pending = 0;
     devout->tasks_pending = 0;
 
+    /* sync tasks */
     devout->task_count = task_pending + tasks_pending;
   }
 
@@ -1437,13 +1468,13 @@ ags_devout_alsa_play(void *devout0)
     }else{
       pthread_barrier_wait(&(devout->main_loop_barrier[1]));
     }
-
+    
     /*  */
     if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
       memset(devout->buffer[3], 0, (size_t) 256 * sizeof(signed short));
-
+      
       devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[0], (snd_pcm_sframes_t) 128);
-
+      
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
 	g_message("underrun occurred\n\0");
@@ -1453,13 +1484,13 @@ ags_devout_alsa_play(void *devout0)
       }else if(devout->out.alsa.rc != (int) 128) {
 	g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
       }
-
+      
       //      g_message("ags_devout_play 0\n\0");
     }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
       memset(devout->buffer[0], 0, (size_t) 256 * sizeof(signed short));
 
       devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[1], (snd_pcm_sframes_t) 128);
-
+      
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
 	g_message("underrun occurred\n\0");
@@ -1469,13 +1500,13 @@ ags_devout_alsa_play(void *devout0)
       }else if(devout->out.alsa.rc != (int) 128) {
 	g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
       }
-
+      
       //      g_message("ags_devout_play 1\n\0");
     }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
       memset(devout->buffer[1], 0, (size_t) 256 * sizeof(signed short));
-
+      
       devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[2], (snd_pcm_sframes_t) 128);
-
+      
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
 	g_message("underrun occurred\n\0");
@@ -1489,9 +1520,9 @@ ags_devout_alsa_play(void *devout0)
       //      g_message("ags_devout_play 2\n\0");
     }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
       memset(devout->buffer[2], 0, (size_t) 256 * sizeof(signed short));
-
+      
       devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[3], (snd_pcm_sframes_t) 128);
-
+      
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
 	g_message("underrun occurred\n\0");
@@ -1504,18 +1535,30 @@ ags_devout_alsa_play(void *devout0)
 
       //      g_message("ags_devout_play 3\n\0");
     }
-
+    
     /*
-    if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
+      if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
       devout->offset++;
     */
     ags_devout_switch_buffer_flag(devout);
-
+    
     if(initial_run){
       initial_run = FALSE;
     }
   }
+  
+  /* decrement barrier */
+  gate = ags_devout_fifo_lock_gate(devout);
+  devout->wait_sync -= 1;
+  gate = ags_devout_fifo_unlock_gate(devout);
 
+  if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
+    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
+  }else{
+    pthread_barrier_wait(&(devout->main_loop_barrier[1]));
+  }
+  
+  /* flush */
   if((AGS_DEVOUT_BUFFER0 & devout->flags) != 0){
     memset(devout->buffer[3], 0, 256 * sizeof(signed short));
 
@@ -1603,6 +1646,50 @@ ags_devout_start_default_threads(AgsDevout *devout)
   pthread_setschedprio(devout->main_loop_thread, 99);
 }
 
+AgsDevoutGateControl*
+ags_devout_gate_control_alloc()
+{
+  AgsDevoutGateControl *gate_control;
+
+  gate_control = (AgsDevoutGateControl *) malloc(sizeof(AgsDevoutGateControl));
+
+  gate_control->devout = NULL;
+  gate_control->gate = NULL;
+  gate_control->error = NULL;
+
+  return(gate_control);
+}
+
+void*
+ags_devout_gate_control_push(void *ptr)
+{
+  AgsDevoutGateControl *gate_control;
+
+  gate_control = (AgsDevoutGateControl *) ptr;
+
+  ags_devout_gate_control(gate_control->devout,
+			  gate_control->gate,
+			  TRUE, FALSE,
+			  gate_control->error);
+
+  pthread_exit(NULL);
+}
+
+void*
+ags_devout_gate_control_pop(void *ptr)
+{
+  AgsDevoutGateControl *gate_control;
+
+  gate_control = (AgsDevoutGateControl *) ptr;
+
+  ags_devout_gate_control(gate_control->devout,
+			  (AgsDevoutGate *) gate_control->devout->gate->data,
+			  FALSE, TRUE,
+			  gate_control->error);
+
+  pthread_exit(NULL);
+}
+
 AgsDevoutGate*
 ags_devout_gate_control(AgsDevout *devout,
 			AgsDevoutGate *gate,
@@ -1610,27 +1697,64 @@ ags_devout_gate_control(AgsDevout *devout,
 			GError **error)
 {
   if(push && pop){
-    
+    AgsDevoutGateControl *gate_control;
+    pthread_t push_thread, pop_thread;
+    void *retval;
+    GError *pop_error, *push_error;
+
+    /* push */
+    gate_control = ags_devout_gate_control_alloc();
+    push_error = NULL;
+
+    gate_control->devout = devout;
+    gate_control->gate = gate;
+    gate_control->error = &push_error;
+
+    pthread_create(&push_thread, NULL,
+		   &ags_devout_gate_control_push, gate_control);
+
+    /* pop */
+    gate_control = ags_devout_gate_control_alloc();
+    pop_error = NULL;
+
+    gate_control->devout = devout;
+    gate_control->gate = gate;
+    gate_control->error = &pop_error;
+
+    pthread_create(&push_thread, NULL,
+		   &ags_devout_gate_control_pop, gate_control);
+
+    /* wait until pop has finished */
+    pthread_join(pop_thread, &retval);
   }else if(pop){
     AgsDevoutGate *gate_next;
-    
-    gate_next = (AgsDevoutGate *) devout->gate->next;
-    
-    if(gate_next == NULL){
+    pthread_mutex_t fifo_mutex;
+
+    if(devout->gate->next == NULL){
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_EMPTY_GATE,
 		  "gate control reports empty gate\0");
     }
 
-    pthread_mutex_lock(&(devout->fifo_mutex));
+    gate_next = (AgsDevoutGate *) devout->gate->next->data;
     
+    fifo_mutex = devout->fifo_mutex;
+    pthread_mutex_lock(&(fifo_mutex));
+
+    devout->gate = g_slist_remove(devout->gate,
+				  gate);
+
+    devout->fifo_mutex = gate_next->lock_mutex;
     pthread_cond_signal(&(gate_next->wait));
-    
+
     pthread_mutex_unlock(&(gate->lock_mutex));
-    pthread_mutex_unlock(&(devout->fifo_mutex));
+    pthread_mutex_unlock(&(fifo_mutex));
   }else if(push){
     pthread_mutex_t gate_mutex;
+    pthread_mutex_t fifo_mutex;
+
+    fifo_mutex = devout->fifo_mutex;
 
     /* prepare for inject */
     pthread_mutex_lock(&(devout->main_loop_inject_mutex));
@@ -1639,15 +1763,15 @@ ags_devout_gate_control(AgsDevout *devout,
     devout->refresh_gate += 1;
     devout->gate = g_slist_append(devout->gate, gate);
     
+    /* lock when ready */
+    pthread_mutex_lock(&(fifo_mutex));
+
     /* finished inject */
     pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-    
-    /* lock when ready */
-    pthread_mutex_lock(&(devout->fifo_mutex));
-    
+        
     while(!gate->ready){
       pthread_cond_wait(&(gate->wait),
-			&(devout->fifo_mutex));
+			&(fifo_mutex));
     }
     
     /* join fifo as next and lock gate */
@@ -1662,7 +1786,7 @@ ags_devout_gate_control(AgsDevout *devout,
     pthread_mutex_unlock(&(gate_mutex));
   
     /* release fifo mutex */
-    pthread_mutex_unlock(&(devout->fifo_mutex));
+    pthread_mutex_unlock(&(fifo_mutex));
   }
 }
 
@@ -1670,9 +1794,15 @@ AgsDevoutGate*
 ags_devout_fifo_lock_gate(AgsDevout *devout)
 {
   AgsDevoutGate *gate;
+  GError *error;
 
   gate = ags_devout_gate_alloc();
+  error = NULL;
 
+  ags_devout_gate_control(devout,
+			  gate,
+			  TRUE, FALSE,
+			  &error);
 
   return(gate);
 }
@@ -1680,7 +1810,14 @@ ags_devout_fifo_lock_gate(AgsDevout *devout)
 void
 ags_devout_fifo_unlock_gate(AgsDevout *devout, AgsDevoutGate *gate)
 {
+  GError *error;
 
+  error = NULL;
+  
+  ags_devout_gate_control(devout,
+			  gate,
+			  FALSE, TRUE,
+			  &error);
 }
 
 AgsDevout*
