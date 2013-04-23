@@ -749,6 +749,7 @@ ags_devout_main_loop_thread(void *devout0)
     gate = ags_devout_gate_alloc();
     
     if(initial_run){
+      gate->ready = TRUE;
       ags_devout_gate_control(devout,
 			      gate,
 			      TRUE, FALSE,
@@ -756,12 +757,7 @@ ags_devout_main_loop_thread(void *devout0)
     }else{
       ags_devout_gate_control(devout,
 			      gate,
-			      TRUE, FALSE,
-			      &error);
-
-      ags_devout_gate_control(devout,
-			      (AgsDevoutGate *) devout->gate->data,
-			      FALSE, TRUE,
+			      TRUE, TRUE,
 			      &error);
     }
 
@@ -1745,17 +1741,26 @@ ags_devout_gate_control(AgsDevout *devout,
 		  "gate control reports empty gate\0");
     }
 
-    gate_next = (AgsDevoutGate *) devout->gate->next->data;
-    
-    /* lock fifo */
-    fifo_mutex = devout->fifo_mutex;
-    pthread_mutex_lock(&(fifo_mutex));
+    g_message("POP\0");
+
+    /*  */
+    pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+
+    gate_next = (AgsDevoutGate *) devout->gate->next->data;    
 
     /* join fifo with next */
     devout->gate = g_slist_remove(devout->gate,
 				  gate);
     devout->gate_mutex = gate_next->lock_mutex;
-  
+    devout->refresh_gate -= 1;
+
+    /* lock fifo */
+    fifo_mutex = devout->fifo_mutex;
+    pthread_mutex_lock(&(fifo_mutex));
+
+    /*  */
+    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
+
     /* wake up waiting */
     gate_next->ready = TRUE;
 
@@ -1764,10 +1769,9 @@ ags_devout_gate_control(AgsDevout *devout,
     /* unlock fifo */
     pthread_mutex_unlock(&(fifo_mutex));
   }else if(push){
-    pthread_mutex_t gate_mutex;
     pthread_mutex_t fifo_mutex;
 
-    fifo_mutex = devout->fifo_mutex;
+    g_message("PUSH\0");
 
     /* prepare for inject */
     pthread_mutex_lock(&(devout->main_loop_inject_mutex));
@@ -1777,6 +1781,7 @@ ags_devout_gate_control(AgsDevout *devout,
     devout->gate = g_slist_append(devout->gate, gate);
     
     /* lock when ready */
+    fifo_mutex = devout->fifo_mutex;
     pthread_mutex_lock(&(fifo_mutex));
 
     /* finished inject */
