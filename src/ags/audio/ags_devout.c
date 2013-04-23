@@ -348,6 +348,13 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutexattr_init(&(devout->main_loop_inject_mutex_attr));
   pthread_mutex_init(&(devout->main_loop_inject_mutex), &(devout->main_loop_mutex_attr));
 
+  /* fifo */
+  devout->push = ags_devout_fifo_io_alloc();
+  devout->push->devout = devout;
+
+  devout->pop = ags_devout_fifo_io_alloc();
+  devout->pop->devout = devout;
+
   /* gate */
   devout->gate = NULL;
 
@@ -600,6 +607,19 @@ ags_devout_fifo_io_alloc()
   return(io);
 }
 
+AgsDevoutGateControl*
+ags_devout_gate_control_alloc()
+{
+  AgsDevoutGateControl *control;
+
+  control = (AgsDevoutGateControl *) malloc(sizeof(AgsDevoutGateControl));
+
+  control->gate = NULL;
+  control->error = NULL;
+
+  return(control);
+}
+
 AgsDevoutGate*
 ags_devout_gate_alloc()
 {
@@ -607,25 +627,15 @@ ags_devout_gate_alloc()
 
   gate = (AgsDevoutGate *) malloc(sizeof(AgsDevoutGate));
 
+  gate->active = FALSE;
   gate->ready = FALSE;
+
   pthread_cond_init(&(gate->wait), NULL);
   pthread_cond_init(&(gate->state), NULL);
+
   pthread_mutex_init(&(gate->lock_mutex), NULL);
 
   return(gate);
-}
-
-AgsDevoutGateControl*
-ags_devout_gate_control_alloc()
-{
-  AgsDevoutGateControl *gate_control;
-
-  gate_control = (AgsDevoutGateControl *) malloc(sizeof(AgsDevoutGateControl));
-
-  gate_control->gate = NULL;
-  gate_control->error = NULL;
-
-  return(gate_control);
 }
 
 void
@@ -774,11 +784,13 @@ ags_devout_main_loop_thread(void *devout0)
     
     if(initial_run){
       gate->ready = TRUE;
+      error = NULL;
       ags_devout_gate_control(devout,
 			      gate,
 			      TRUE, FALSE,
 			      &error);
     }else{
+      error = NULL;
       ags_devout_gate_control(devout,
 			      gate,
 			      TRUE, TRUE,
@@ -1696,7 +1708,7 @@ ags_devout_gate_control_push(void *ptr)
 
   devout = io->devout;
 
-  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) != 0){
+  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     pthread_mutex_lock(&(io->mutex));
 
     while(io->sleep){
@@ -1704,6 +1716,7 @@ ags_devout_gate_control_push(void *ptr)
 			&(io->mutex));
     }
 
+    io->sleep = TRUE;
     pthread_mutex_unlock(&(io->mutex));
 
     control = io->push;
@@ -1711,7 +1724,13 @@ ags_devout_gate_control_push(void *ptr)
     gate = control->gate;
     error = control->error;
 
-    g_message("PUSH\0");
+    /* trigger state */
+    pthread_mutex_lock(&(gate->lock_mutex));
+
+    gate->active = TRUE;
+    pthread_cond_signal(&(gate->state));
+
+    pthread_mutex_unlock(&(gate->lock_mutex));
 
     /* prepare for inject */
     pthread_mutex_lock(&(devout->main_loop_inject_mutex));
@@ -1719,14 +1738,14 @@ ags_devout_gate_control_push(void *ptr)
     /* announce lock */
     devout->refresh_gate += 1;
     devout->gate = g_slist_append(devout->gate, gate);
+
+    /* finished inject */
+    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
     
     /* lock when ready */
     fifo_mutex = devout->fifo_mutex;
     pthread_mutex_lock(&(fifo_mutex));
 
-    /* finished inject */
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-        
     while(!gate->ready){
       pthread_cond_wait(&(gate->wait),
 			&(fifo_mutex));
@@ -1734,6 +1753,8 @@ ags_devout_gate_control_push(void *ptr)
 
     /* release fifo mutex */
     pthread_mutex_unlock(&(fifo_mutex));
+
+    g_message("PUSH\0");
   }
 }
 
@@ -1752,7 +1773,7 @@ ags_devout_gate_control_pop(void *ptr)
 
   devout = io->devout;
 
-  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) != 0){
+  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
     pthread_mutex_lock(&(io->mutex));
 
     while(io->sleep){
@@ -1760,6 +1781,7 @@ ags_devout_gate_control_pop(void *ptr)
 			&(io->mutex));
     }
 
+    io->sleep = TRUE;
     pthread_mutex_unlock(&(io->mutex));
 
     control = io->pop;
@@ -1768,13 +1790,29 @@ ags_devout_gate_control_pop(void *ptr)
     error = control->error;
 
     if(devout->gate == NULL || devout->gate->next == NULL){
-      g_set_error(error,
-		  AGS_DEVOUT_ERROR,
-		  AGS_DEVOUT_ERROR_EMPTY_GATE,
-		  "gate control reports empty gate\0");
-    }
+      if(devout->push != NULL &&
+	 devout->push->push != NULL &&
+	 devout->push->push->gate != NULL &&
+	 (AgsDevoutGate *) devout->gate->data != devout->push->push->gate){
+	AgsDevoutGate *next_push;
 
-    g_message("POP\0");
+	next_push = devout->push->push->gate;
+
+	pthread_mutex_lock(&(next_push->lock_mutex));
+
+	while(!next_push->active){
+	  pthread_cond_wait(&(next_push->state),
+			    &(next_push->lock_mutex));
+	}
+
+	pthread_mutex_lock(&(next_push->lock_mutex));
+      }else{
+	g_set_error(error,
+		    AGS_DEVOUT_ERROR,
+		    AGS_DEVOUT_ERROR_EMPTY_GATE,
+		    "gate control reports empty gate\0");
+      }
+    }
 
     /*  */
     pthread_mutex_lock(&(devout->main_loop_inject_mutex));
@@ -1787,12 +1825,12 @@ ags_devout_gate_control_pop(void *ptr)
     devout->gate_mutex = gate_next->lock_mutex;
     devout->refresh_gate -= 1;
 
+    /*  */
+    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
+
     /* lock fifo */
     fifo_mutex = devout->fifo_mutex;
     pthread_mutex_lock(&(fifo_mutex));
-
-    /*  */
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
     /* wake up waiting */
     gate_next->ready = TRUE;
@@ -1809,6 +1847,8 @@ ags_devout_gate_control_pop(void *ptr)
     pthread_cond_signal(&(gate->state));
 
     pthread_mutex_unlock(&(gate->lock_mutex));
+
+    g_message("POP\0");
   }
 
   pthread_exit(NULL);
@@ -1825,44 +1865,52 @@ ags_devout_gate_control(AgsDevout *devout,
   void *retval;
   GError *pop_error, *push_error;
 
+  if(pop){
+    pop_gate_control = ags_devout_gate_control_alloc();
+    pop_error = NULL;
+
+    pop_gate_control->gate = (AgsDevoutGate *) devout->gate->data;
+    pop_gate_control->error = &pop_error;
+
+    /* pop */
+    pthread_mutex_lock(&(devout->pop->mutex));
+
+    devout->pop->pop = pop_gate_control;
+  }
+
   if(push){
-    /* push */
     push_gate_control = ags_devout_gate_control_alloc();
     push_error = NULL;
 
     push_gate_control->gate = gate;
     push_gate_control->error = &push_error;
 
+    /* push */
     pthread_mutex_lock(&(devout->push->mutex));
 
     devout->push->push = push_gate_control;
-    devout->push->sleep = FALSE;
-    pthread_cond_signal(&(devout->push->cond));
-
-    pthread_mutex_unlock(&(devout->push->mutex));
   }
 
   if(pop){
     /* pop */
-    pop_gate_control = ags_devout_gate_control_alloc();
-    pop_error = NULL;
-
-    pop_gate_control->gate = gate;
-    pop_gate_control->error = &pop_error;
-
-    pthread_mutex_lock(&(devout->pop->mutex));
-
-    devout->pop->pop = pop_gate_control;
     devout->pop->sleep = FALSE;
     pthread_cond_signal(&(devout->pop->cond));
 
     pthread_mutex_unlock(&(devout->pop->mutex));
+  }
 
-    /* wait until pop has finished */    
+  if(push){
+    /* push */
+    devout->push->sleep = FALSE;
+    pthread_cond_signal(&(devout->push->cond));
+
+    pthread_mutex_unlock(&(devout->push->mutex));
+
+    /* wait until push has finished */    
     /* lock when ready */
     pthread_mutex_lock(&(gate->lock_mutex));
 
-    while(gate->ready){
+    while(!gate->ready){
       pthread_cond_wait(&(gate->state),
 			&(gate->lock_mutex));
     }

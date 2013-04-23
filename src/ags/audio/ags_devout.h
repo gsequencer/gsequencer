@@ -242,18 +242,20 @@ struct _AgsDevoutFifoIO{
   AgsDevoutGateControl *pop;
 };
 
+struct _AgsDevoutGateControl{
+  AgsDevoutGate *gate;
+  GError **error;
+};
+
 struct _AgsDevoutGate
 {
+  gboolean active;
   gboolean ready;
+
   pthread_cond_t wait;
   pthread_cond_t state;
 
   pthread_mutex_t lock_mutex;  
-};
-
-struct _AgsDevoutGateControl{
-  AgsDevoutGate *gate;
-  GError **error;
 };
 
 GType ags_devout_get_type();
