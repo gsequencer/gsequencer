@@ -352,8 +352,13 @@ ags_devout_init(AgsDevout *devout)
   devout->push = ags_devout_fifo_io_alloc();
   devout->push->devout = devout;
 
+  pthread_mutex_init(&(devout->push_inject_mutex), NULL);
+
   devout->pop = ags_devout_fifo_io_alloc();
   devout->pop->devout = devout;
+
+  pthread_mutexattr_init(&(devout->main_loop_inject_mutex_attr));
+  pthread_mutex_init(&(devout->pop_inject_mutex), NULL);
 
   /* gate */
   devout->gate = NULL;
@@ -368,6 +373,9 @@ ags_devout_init(AgsDevout *devout)
   pthread_attr_init(&(devout->play_thread_attr));
   //  pthread_attr_setschedpolicy(&devout->play_thread_attr, SCHED_RR);
   pthread_attr_setinheritsched(&(devout->play_thread_attr), PTHREAD_INHERIT_SCHED);
+
+  pthread_mutex_init(&(devout->play_mutex), NULL);
+  pthread_cond_init(&(devout->start_play_cond), NULL);
 
   /* task */
   pthread_attr_init(&(devout->task_thread_attr));
@@ -752,13 +760,6 @@ ags_devout_main_loop_thread(void *devout0)
     }
 
     /* Wake up waiting threads */
-    /* wake up output thread */
-    if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
-      devout->flags &= (~AGS_DEVOUT_START_PLAY);
-  
-      ags_devout_run(devout);
-    }
-    
     /* start task thread if necessary */
     if(initial_run){
       if(DEBUG_DEVOUT){
@@ -780,6 +781,7 @@ ags_devout_main_loop_thread(void *devout0)
     pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
     /* gate */
+    /* buggy
     gate = ags_devout_gate_alloc();
     
     if(initial_run){
@@ -796,6 +798,7 @@ ags_devout_main_loop_thread(void *devout0)
 			      TRUE, TRUE,
 			      &error);
     }
+    */
 
     for(i = 0; i < devout->task_count; i++){
       task = AGS_TASK(list->data);
@@ -840,7 +843,6 @@ ags_devout_task_thread(void *devout0)
   struct timespec play_idle;
   useconds_t idle;
   gboolean initial_run;
-  gboolean start_play;
   guint barrier;
 
   devout = AGS_DEVOUT(devout0);
@@ -850,7 +852,6 @@ ags_devout_task_thread(void *devout0)
   idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
 
   initial_run = TRUE;
-  start_play = FALSE;
 
   barrier = 0;
 
@@ -994,6 +995,7 @@ ags_devout_append_tasks_thread(void *ptr)
   AgsDevout *devout;
   GList *start, *list;
   gboolean initial_wait;
+  guint count;
   int ret;
 
   append = (AgsDevoutAppend *) ptr;
@@ -1003,11 +1005,13 @@ ags_devout_append_tasks_thread(void *ptr)
     list = (GList *) append->data;
 
   free(append);
+  count = 0;
 
   /* lock */
   while(list != NULL){
     pthread_cond_init(&(AGS_TASK(list->data)->wait_sync_task_cond), NULL);
     AGS_TASK(list->data)->flags |= AGS_TASK_LOCKED;
+    count++;
 
     list = list->next;
   }
@@ -1018,14 +1022,14 @@ ags_devout_append_tasks_thread(void *ptr)
   pthread_mutex_lock(&(devout->main_loop_inject_mutex));
   pthread_mutex_lock(&(devout->main_loop_mutex));
 
-  devout->tasks_pending = devout->tasks_pending + 1;
+  devout->tasks_pending = devout->tasks_pending + count;
 
   /* concat with queue */
-  devout->tasks_queued = devout->tasks_queued + 1;
+  devout->tasks_queued = devout->tasks_queued + count;
 
   devout->task = g_list_concat(devout->task, list);
 
-  devout->tasks_queued = devout->tasks_queued - 1;
+  devout->tasks_queued = devout->tasks_queued - count;
 
   /*  */
   pthread_mutex_unlock(&(devout->main_loop_mutex));
@@ -1479,6 +1483,7 @@ ags_devout_alsa_play(void *devout0)
   AgsDevout *devout;
   AgsDevoutGate *gate;
   gboolean initial_run;
+  guint barrier;
 
   devout = (AgsDevout *) devout0;
 
@@ -1488,8 +1493,23 @@ ags_devout_alsa_play(void *devout0)
 
   initial_run = TRUE;
 
-  gate = ags_devout_fifo_lock_gate(devout);
+  pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+
+  pthread_mutex_lock(&(devout->play_mutex));
+
+  devout->flags &= (~AGS_DEVOUT_START_PLAY);
+  pthread_cond_signal(&(devout->start_play_cond));
+
+  pthread_mutex_unlock(&(devout->play_mutex));
+
+  if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
+    barrier = 1;
+  }else{
+    barrier = 0;
+  }
+
   devout->wait_sync += 1;
+  pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
   while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
     /* sync */
@@ -1498,14 +1518,14 @@ ags_devout_alsa_play(void *devout0)
       g_message("ags_devout_alsa_play\0");
     }
 
-    if(initial_run){
-      ags_devout_fifo_unlock_gate(devout, gate);
-    }
-    
-    if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-      pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-    }else{
-      pthread_barrier_wait(&(devout->main_loop_barrier[1]));
+    if(!initial_run){    
+      if(barrier == 0){
+	pthread_barrier_wait(&(devout->main_loop_barrier[0]));
+	barrier = 1;
+      }else{
+	pthread_barrier_wait(&(devout->main_loop_barrier[1]));
+	barrier = 0;
+      }
     }
     
     /*  */
@@ -1725,12 +1745,12 @@ ags_devout_gate_control_push(void *ptr)
     error = control->error;
 
     /* trigger state */
-    pthread_mutex_lock(&(gate->lock_mutex));
+    pthread_mutex_lock(&(devout->fifo_mutex));
 
     gate->active = TRUE;
     pthread_cond_signal(&(gate->state));
 
-    pthread_mutex_unlock(&(gate->lock_mutex));
+    pthread_mutex_unlock(&(devout->fifo_mutex));
 
     /* prepare for inject */
     pthread_mutex_lock(&(devout->main_loop_inject_mutex));
@@ -1743,15 +1763,15 @@ ags_devout_gate_control_push(void *ptr)
     pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
     
     /* lock when ready */
-    pthread_mutex_lock(&(gate->lock_mutex));
+    pthread_mutex_lock(&(devout->fifo_mutex));
 
     while(!gate->ready){
       pthread_cond_wait(&(gate->wait),
-			&(gate->lock_mutex));
+			&(devout->fifo_mutex));
     }
 
     /* release fifo mutex */
-    pthread_mutex_unlock(&(gate->lock_mutex));
+    pthread_mutex_unlock(&(devout->fifo_mutex));
 
     g_message("PUSH\0");
   }
@@ -1795,14 +1815,14 @@ ags_devout_gate_control_pop(void *ptr)
 
 	next_push = devout->push->push->gate;
 
-	pthread_mutex_lock(&(next_push->lock_mutex));
+	pthread_mutex_lock(&(devout->fifo_mutex));
 
 	while(!next_push->active){
 	  pthread_cond_wait(&(next_push->state),
-			    &(next_push->lock_mutex));
+			    &(devout->fifo_mutex));
 	}
 
-	pthread_mutex_unlock(&(next_push->lock_mutex));
+	pthread_mutex_unlock(&(devout->fifo_mutex));
       }else{
 	g_set_error(error,
 		    AGS_DEVOUT_ERROR,
@@ -1829,22 +1849,22 @@ ags_devout_gate_control_pop(void *ptr)
     pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
 
     /* lock fifo */
-    pthread_mutex_lock(&(gate_next->lock_mutex));
+    pthread_mutex_lock(&(devout->fifo_mutex));
 
     /* wake up waiting */
     gate_next->ready = TRUE;
-    pthread_cond_signal(&(gate_next->wait));
 
     /* unlock fifo */
-    pthread_mutex_unlock(&(gate_next->lock_mutex));
+    pthread_mutex_unlock(&(devout->fifo_mutex));
+    pthread_cond_signal(&(gate_next->wait));
 
     /* trigger gate state */
-    pthread_mutex_lock(&(gate->lock_mutex));
+    pthread_mutex_lock(&(devout->fifo_mutex));
 
     gate->active = FALSE;
-    pthread_cond_signal(&(gate->state));
 
-    pthread_mutex_unlock(&(gate->lock_mutex));
+    pthread_mutex_unlock(&(devout->fifo_mutex));
+    pthread_cond_signal(&(gate->state));
 
     /*  */
     g_message("POP\0");
@@ -1865,6 +1885,8 @@ ags_devout_gate_control(AgsDevout *devout,
   GError *pop_error, *push_error;
 
   if(pop){
+    pthread_mutex_lock(&(devout->pop_inject_mutex));
+
     pop_gate_control = ags_devout_gate_control_alloc();
     pop_error = NULL;
 
@@ -1873,6 +1895,8 @@ ags_devout_gate_control(AgsDevout *devout,
   }
 
   if(push){
+    pthread_mutex_lock(&(devout->push_inject_mutex));
+
     push_gate_control = ags_devout_gate_control_alloc();
     push_error = NULL;
 
@@ -1886,9 +1910,11 @@ ags_devout_gate_control(AgsDevout *devout,
 
     devout->pop->pop = pop_gate_control;
     devout->pop->sleep = FALSE;
-    pthread_cond_signal(&(devout->pop->cond));
 
     pthread_mutex_unlock(&(devout->pop->mutex));
+    pthread_cond_signal(&(devout->pop->cond));
+
+    pthread_mutex_unlock(&(devout->pop_inject_mutex));
   }
 
   if(push){
@@ -1897,22 +1923,23 @@ ags_devout_gate_control(AgsDevout *devout,
 
     devout->push->push = push_gate_control;
     devout->push->sleep = FALSE;
-    pthread_cond_signal(&(devout->push->cond));
 
     /*  */
     pthread_mutex_unlock(&(devout->push->mutex));
+    pthread_cond_signal(&(devout->push->cond));
 
     /* wait until push has finished */    
     /* lock when ready */
-    pthread_mutex_lock(&(gate->lock_mutex));
+    pthread_mutex_lock(&(devout->fifo_mutex));
 
     while(!gate->ready){
       pthread_cond_wait(&(gate->state),
-			&(gate->lock_mutex));
+			&(devout->fifo_mutex));
     }
 
     /* release gate mutex */
-    pthread_mutex_unlock(&(gate->lock_mutex));
+    pthread_mutex_unlock(&(devout->fifo_mutex));
+    pthread_mutex_unlock(&(devout->push_inject_mutex));
   }
 }
 

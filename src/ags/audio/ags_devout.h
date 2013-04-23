@@ -164,7 +164,9 @@ struct _AgsDevout
   pthread_barrier_t main_loop_barrier[2];
 
   AgsDevoutFifoIO *push;
+  pthread_mutex_t push_inject_mutex;
   AgsDevoutFifoIO *pop;
+  pthread_mutex_t pop_inject_mutex;
 
   GSList *gate;
   guint refresh_gate;
@@ -175,6 +177,8 @@ struct _AgsDevout
 
   pthread_t play_thread;
   pthread_attr_t play_thread_attr;
+  pthread_mutex_t play_mutex;
+  pthread_cond_t start_play_cond;
 
   pthread_t task_thread;
   pthread_attr_t task_thread_attr;

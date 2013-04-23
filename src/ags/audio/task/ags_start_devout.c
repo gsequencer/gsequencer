@@ -131,14 +131,28 @@ void
 ags_start_devout_launch(AgsTask *task)
 {
   AgsStartDevout *start_devout;
+  AgsDevout *devout;
 
   start_devout = AGS_START_DEVOUT(task);
 
+  devout = start_devout->devout;
+
   /* append to AgsDevout */
-  start_devout->devout->flags |= (AGS_DEVOUT_PLAY_AUDIO |
-				  AGS_DEVOUT_PLAY_CHANNEL |
-				  AGS_DEVOUT_PLAY_RECALL);
-  start_devout->devout->flags |= (AGS_DEVOUT_START_PLAY);
+  devout->flags |= (AGS_DEVOUT_PLAY_AUDIO |
+		    AGS_DEVOUT_PLAY_CHANNEL |
+		    AGS_DEVOUT_PLAY_RECALL);
+  devout->flags |= (AGS_DEVOUT_START_PLAY);
+
+  ags_devout_run(devout);
+
+  pthread_mutex_lock(&(devout->play_mutex));
+
+  while((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
+    pthread_cond_wait(&(devout->start_play_cond),
+		      &(devout->play_mutex));
+  }
+
+  pthread_mutex_unlock(&(devout->play_mutex));
 }
 
 AgsStartDevout*

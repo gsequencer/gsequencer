@@ -139,7 +139,7 @@ ags_append_audio_launch(AgsTask *task)
   append_audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
   append_audio->devout->play_audio = g_list_append(append_audio->devout->play_audio,
 						   append_audio->devout_play);
-  append_audio->devout->play_audio_ref = append_audio->devout->play_audio_ref + 1;
+  append_audio->devout->play_audio_ref += 1;
 }
 
 AgsAppendAudio*
