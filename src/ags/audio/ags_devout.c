@@ -1830,13 +1830,12 @@ ags_devout_gate_control(AgsDevout *devout,
     push_gate_control = ags_devout_gate_control_alloc();
     push_error = NULL;
 
-    push_gate_control->devout = devout;
     push_gate_control->gate = gate;
     push_gate_control->error = &push_error;
 
     pthread_mutex_lock(&(devout->push->mutex));
 
-    devout->push->control = push_gate_control;
+    devout->push->push = push_gate_control;
     devout->push->sleep = FALSE;
     pthread_cond_signal(&(devout->push->cond));
 
@@ -1848,13 +1847,12 @@ ags_devout_gate_control(AgsDevout *devout,
     pop_gate_control = ags_devout_gate_control_alloc();
     pop_error = NULL;
 
-    pop_gate_control->devout = devout;
     pop_gate_control->gate = gate;
     pop_gate_control->error = &pop_error;
 
     pthread_mutex_lock(&(devout->pop->mutex));
 
-    devout->pop->control = pop_gate_control;
+    devout->pop->pop = pop_gate_control;
     devout->pop->sleep = FALSE;
     pthread_cond_signal(&(devout->pop->cond));
 
@@ -1865,7 +1863,7 @@ ags_devout_gate_control(AgsDevout *devout,
     pthread_mutex_lock(&(gate->lock_mutex));
 
     while(gate->ready){
-      pthread_cond_wait(&(gate->state_cond),
+      pthread_cond_wait(&(gate->state),
 			&(gate->lock_mutex));
     }
 

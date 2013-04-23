@@ -163,8 +163,8 @@ struct _AgsDevout
   pthread_mutexattr_t main_loop_inject_mutex_attr;
   pthread_barrier_t main_loop_barrier[2];
 
-  AgsDevoutFifoIO push;
-  AgsDevoutFifoIO pop;
+  AgsDevoutFifoIO *push;
+  AgsDevoutFifoIO *pop;
 
   GSList *gate;
   guint refresh_gate;

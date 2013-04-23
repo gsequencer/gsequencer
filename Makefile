@@ -53,7 +53,7 @@ subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in AUTHORS COPYING ChangeLog INSTALL NEWS \
-	README depcomp install-sh missing
+	README install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -335,17 +335,17 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/weedlight/ags-code/missing aclocal-1.13
+ACLOCAL = ${SHELL} /home/weedlight/workspace/ags-code/missing aclocal-1.13
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/weedlight/ags-code/missing autoconf
-AUTOHEADER = ${SHELL} /home/weedlight/ags-code/missing autoheader
-AUTOMAKE = ${SHELL} /home/weedlight/ags-code/missing automake-1.13
+AUTOCONF = ${SHELL} /home/weedlight/workspace/ags-code/missing autoconf
+AUTOHEADER = ${SHELL} /home/weedlight/workspace/ags-code/missing autoheader
+AUTOMAKE = ${SHELL} /home/weedlight/workspace/ags-code/missing automake-1.13
 AWK = gawk
 CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libdrm -I/usr/include/libpng16 -I/usr/X11/include 
 CAIRO_LIBS = -lcairo 
 CC = gcc
-CCDEPMODE = depmode=gcc3
+CCDEPMODE = depmode=none
 CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
@@ -381,7 +381,7 @@ LIBS = -lrt -lm -lfreetype -lfontconfig -ldl
 LIBXML2_CFLAGS = -I/usr/include/libxml2 
 LIBXML2_LIBS = -lxml2 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/weedlight/ags-code/missing makeinfo
+MAKEINFO = ${SHELL} /home/weedlight/workspace/ags-code/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = ags
@@ -401,10 +401,10 @@ SNDFILE_CFLAGS =
 SNDFILE_LIBS = -lsndfile 
 STRIP = 
 VERSION = 0.3.15-SNAPSHOT
-abs_builddir = /home/weedlight/ags-code
-abs_srcdir = /home/weedlight/ags-code
-abs_top_builddir = /home/weedlight/ags-code
-abs_top_srcdir = /home/weedlight/ags-code
+abs_builddir = /home/weedlight/workspace/ags-code
+abs_srcdir = /home/weedlight/workspace/ags-code
+abs_top_builddir = /home/weedlight/workspace/ags-code
+abs_top_srcdir = /home/weedlight/workspace/ags-code
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -423,7 +423,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/weedlight/ags-code/install-sh
+install_sh = ${SHELL} /home/weedlight/workspace/ags-code/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
