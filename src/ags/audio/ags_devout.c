@@ -1747,16 +1747,21 @@ ags_devout_gate_control(AgsDevout *devout,
 
     gate_next = (AgsDevoutGate *) devout->gate->next->data;
     
+    /* lock fifo */
     fifo_mutex = devout->fifo_mutex;
     pthread_mutex_lock(&(fifo_mutex));
 
+    /* join fifo with next */
     devout->gate = g_slist_remove(devout->gate,
 				  gate);
+    devout->gate_mutex = gate_next->lock_mutex;
+  
+    /* wake up waiting */
+    gate_next->ready = TRUE;
 
-    devout->fifo_mutex = gate_next->lock_mutex;
     pthread_cond_signal(&(gate_next->wait));
 
-    pthread_mutex_unlock(&(gate->lock_mutex));
+    /* unlock fifo */
     pthread_mutex_unlock(&(fifo_mutex));
   }else if(push){
     pthread_mutex_t gate_mutex;
@@ -1781,18 +1786,7 @@ ags_devout_gate_control(AgsDevout *devout,
       pthread_cond_wait(&(gate->wait),
 			&(fifo_mutex));
     }
-    
-    /* join fifo as next and lock gate */
-    pthread_mutex_lock(&(gate->lock_mutex));
-    gate_mutex = devout->gate_mutex;
-    
-    pthread_mutex_lock(&(gate_mutex));
-    
-    devout->gate_mutex = gate->lock_mutex;
-    pthread_mutex_unlock(&(devout->gate_mutex));
-    
-    pthread_mutex_unlock(&(gate_mutex));
-  
+
     /* release fifo mutex */
     pthread_mutex_unlock(&(fifo_mutex));
   }
