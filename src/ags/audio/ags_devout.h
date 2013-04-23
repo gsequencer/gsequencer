@@ -51,7 +51,9 @@ typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;
 typedef struct _AgsDevoutAppend AgsDevoutAppend;
+typedef struct _AgsDevoutFifoIO AgsDevoutFifoIO;
 typedef struct _AgsDevoutGate AgsDevoutGate;
+typedef struct _AgsDevoutGateControl AgsDevoutGateControl;
 
 typedef enum
 {
@@ -161,6 +163,9 @@ struct _AgsDevout
   pthread_mutexattr_t main_loop_inject_mutex_attr;
   pthread_barrier_t main_loop_barrier[2];
 
+  AgsDevoutFifoIO push;
+  AgsDevoutFifoIO pop;
+
   GSList *gate;
   guint refresh_gate;
   pthread_mutex_t fifo_mutex;
@@ -225,12 +230,30 @@ struct _AgsDevoutAppend
   gpointer data;
 };
 
+struct _AgsDevoutFifoIO{
+  AgsDevout *devout;
+
+  pthread_t thread;
+  pthread_cond_t cond;
+  pthread_mutex_t mutex;
+  gboolean sleep;
+
+  AgsDevoutGateControl *push;
+  AgsDevoutGateControl *pop;
+};
+
 struct _AgsDevoutGate
 {
   gboolean ready;
   pthread_cond_t wait;
+  pthread_cond_t state;
 
   pthread_mutex_t lock_mutex;  
+};
+
+struct _AgsDevoutGateControl{
+  AgsDevoutGate *gate;
+  GError **error;
 };
 
 GType ags_devout_get_type();
@@ -238,7 +261,9 @@ GType ags_devout_get_type();
 GQuark ags_devout_error_quark();
 
 AgsDevoutPlay* ags_devout_play_alloc();
+AgsDevoutFifoIO* ags_devout_fifo_io_alloc();
 AgsDevoutGate* ags_devout_gate_alloc();
+AgsDevoutGateControl* ags_devout_gate_control_alloc();
 
 void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
