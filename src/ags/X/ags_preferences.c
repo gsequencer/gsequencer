@@ -96,6 +96,8 @@ ags_preferences_init(AgsPreferences *preferences)
 {
   GtkNotebook *notebook;
 
+  preferences->flags = 0;
+
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       g_strdup("preferences\0"));
 
@@ -107,6 +109,10 @@ ags_preferences_init(AgsPreferences *preferences)
   gtk_notebook_append_page(notebook,
 			   GTK_WIDGET(preferences->audio_preferences),
 			   gtk_label_new("audio\0"));
+
+  gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
+			       gtk_button_new_from_stock(GTK_STOCK_OK),
+			       GTK_RESPONSE_OK);
 }
 
 void
@@ -117,6 +123,12 @@ ags_preferences_connect(AgsConnectable *connectable)
   preferences = AGS_PREFERENCES(connectable);
 
   ags_connectable_connect(preferences->audio_preferences);
+
+  g_signal_connect(G_OBJECT(preferences), "response\0",
+		   G_CALLBACK(ags_preferences_response_callback), NULL);
+
+  g_signal_connect(G_OBJECT(preferences), "close\0",
+		   G_CALLBACK(ags_preferences_close_callback), NULL);
 }
 
 void

@@ -646,6 +646,56 @@ ags_devout_gate_alloc()
   return(gate);
 }
 
+GList*
+ags_devout_list_cards()
+{
+  snd_ctl_t *card_handle;
+  snd_ctl_card_info_t *card_info;
+  GList *list;
+  char str[65];
+  int card_num;
+  int error;
+
+  list = NULL;
+  card_num = -1;
+
+  while(TRUE){
+    error = snd_card_next(&card_num);
+
+    if(card_num < 0){
+      break;
+    }
+
+    if(error < 0){
+      continue;
+    }
+
+    sprintf(str, "hw:%i\0", card_num);
+    error = snd_ctl_open(&card_handle, str,0 );
+
+    if(error < 0){
+      continue;
+    }
+
+    snd_ctl_card_info_alloca(&card_info);
+    error = snd_ctl_card_info(card_handle, card_info);
+
+    if(error < 0){
+      continue;
+    }
+
+    list = g_list_prepend(list, g_strdup(snd_ctl_card_info_get_name(card_info)));
+
+    snd_ctl_close(card_handle);
+  }
+
+  snd_config_update_free_global();
+
+  list = g_list_reverse(list);
+
+  return(list);
+}
+
 void
 ags_devout_add_audio(AgsDevout *devout, GObject *audio)
 {

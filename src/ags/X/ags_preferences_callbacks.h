@@ -23,5 +23,7 @@
 
 #include <ags/X/ags_preferences.h>
 
+void ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data);
+void ags_preferences_close_callback(GtkDialog *dialog, gpointer user_data);
 
 #endif /*__AGS_PREFERENCES_CALLBACKS_H__*/

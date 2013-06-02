@@ -271,6 +271,8 @@ AgsDevoutFifoIO* ags_devout_fifo_io_alloc();
 AgsDevoutGate* ags_devout_gate_alloc();
 AgsDevoutGateControl* ags_devout_gate_control_alloc();
 
+GList *ags_devout_list_cards();
+
 void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
 

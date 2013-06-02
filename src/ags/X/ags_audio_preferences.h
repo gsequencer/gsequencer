@@ -34,6 +34,11 @@ typedef struct _AgsAudioPreferencesClass AgsAudioPreferencesClass;
 struct _AgsAudioPreferences
 {
   GtkVBox vbox;
+
+  GtkComboBox *card;
+  GtkSpinButton *audio_channels;
+  GtkSpinButton *samplerate;
+  GtkSpinButton *buffer_size;
 };
 
 struct _AgsAudioPreferencesClass

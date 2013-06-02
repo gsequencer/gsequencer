@@ -33,9 +33,15 @@
 typedef struct _AgsPreferences AgsPreferences;
 typedef struct _AgsPreferencesClass AgsPreferencesClass;
 
+typedef enum{
+  AGS_PREFERENCES_SHUTDOWN               = 1,
+}AgsPreferencesFlags;
+
 struct _AgsPreferences
 {
   GtkDialog dialog;
+
+  guint flags;
 
   AgsAudioPreferences *audio_preferences;
 };

@@ -17,3 +17,19 @@
  */
 
 #include <ags/X/ags_preferences_callbacks.h>
+
+void
+ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data)
+{
+  if(response_id == GTK_RESPONSE_OK){
+    //TODO:JK: implement me
+  }
+
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+void
+ags_preferences_close_callback(GtkDialog *dialog, gpointer user_data)
+{
+  AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
+}

@@ -397,7 +397,7 @@ ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
-  gtk_widget_show_all(GTK_WIDGET(window->preferences));
+  window->preferences = ;
 }
 
 void
