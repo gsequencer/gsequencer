@@ -99,7 +99,7 @@ static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
 
 /* dangerous - produces a lot of output */
-static gboolean DEBUG_DEVOUT = TRUE;
+static gboolean DEBUG_DEVOUT = FALSE;
 
 GType
 ags_devout_get_type (void)
