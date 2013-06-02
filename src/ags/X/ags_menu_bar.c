@@ -120,6 +120,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REMOVE, NULL);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
+			(GtkWidget*) gtk_separator_menu_item_new());
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
+
   /* Help */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, NULL);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
@@ -196,6 +202,11 @@ ags_menu_bar_connect(AgsMenuBar *menu_bar)
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_remove_callback), (gpointer) menu_bar);
+  list1 = list1->next;
+  list1 = list1->next;
+
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_preferences_callback), (gpointer) menu_bar);
 
   /* Help */
   list0 = list0->next;

@@ -136,6 +136,8 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
+  window->preferences = ags_preferences_new();
+
   window->selected = NULL;
   window->counter = (AgsMachineCounter *) malloc(sizeof(AgsMachineCounter));
   window->counter->everything = 0;
@@ -160,6 +162,7 @@ ags_window_connect(AgsConnectable *connectable)
   ags_menu_bar_connect(window->menu_bar);
   ags_editor_connect(window->editor);
   ags_navigation_connect(window->navigation);
+  ags_connectable_connect(AGS_CONNECTABLE(window->preferences));
   ags_devout_start_default_threads(window->devout);
 }
 

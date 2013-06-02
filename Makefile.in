@@ -152,6 +152,8 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_connectable.$(OBJEXT) ags-ags_packable.$(OBJEXT) \
 	ags-ags_preferences.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
+	ags-ags_audio_preferences.$(OBJEXT) \
+	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
 	ags-ags_pad_editor_callbacks.$(OBJEXT) \
 	ags-ags_pad_callbacks.$(OBJEXT) \
 	ags-ags_channel_listing_editor.$(OBJEXT) \
@@ -627,6 +629,10 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/X/ags_preferences.h \
 	./src/ags/X/ags_preferences_callbacks.c \
 	./src/ags/X/ags_preferences_callbacks.h \
+	./src/ags/X/ags_audio_preferences.c \
+	./src/ags/X/ags_audio_preferences.h \
+	./src/ags/X/ags_audio_preferences_callbacks.c \
+	./src/ags/X/ags_audio_preferences_callbacks.h \
 	./src/ags/X/ags_pad_editor_callbacks.c \
 	./src/ags/X/ags_pad_callbacks.c \
 	./src/ags/X/ags_channel_listing_editor.c \
@@ -897,6 +903,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_audio_file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_audio_file_xml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_audio_preferences.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_audio_preferences_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_audio_set_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_cancel_audio.Po@am__quote@
@@ -2775,6 +2783,34 @@ ags-ags_preferences_callbacks.obj: ./src/ags/X/ags_preferences_callbacks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_preferences_callbacks.c' object='ags-ags_preferences_callbacks.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_preferences_callbacks.obj `if test -f './src/ags/X/ags_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_preferences_callbacks.c'; fi`
+
+ags-ags_audio_preferences.o: ./src/ags/X/ags_audio_preferences.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_audio_preferences.o -MD -MP -MF $(DEPDIR)/ags-ags_audio_preferences.Tpo -c -o ags-ags_audio_preferences.o `test -f './src/ags/X/ags_audio_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_audio_preferences.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_audio_preferences.Tpo $(DEPDIR)/ags-ags_audio_preferences.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_audio_preferences.c' object='ags-ags_audio_preferences.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_audio_preferences.o `test -f './src/ags/X/ags_audio_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_audio_preferences.c
+
+ags-ags_audio_preferences.obj: ./src/ags/X/ags_audio_preferences.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_audio_preferences.obj -MD -MP -MF $(DEPDIR)/ags-ags_audio_preferences.Tpo -c -o ags-ags_audio_preferences.obj `if test -f './src/ags/X/ags_audio_preferences.c'; then $(CYGPATH_W) './src/ags/X/ags_audio_preferences.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_audio_preferences.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_audio_preferences.Tpo $(DEPDIR)/ags-ags_audio_preferences.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_audio_preferences.c' object='ags-ags_audio_preferences.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_audio_preferences.obj `if test -f './src/ags/X/ags_audio_preferences.c'; then $(CYGPATH_W) './src/ags/X/ags_audio_preferences.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_audio_preferences.c'; fi`
+
+ags-ags_audio_preferences_callbacks.o: ./src/ags/X/ags_audio_preferences_callbacks.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_audio_preferences_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_audio_preferences_callbacks.Tpo -c -o ags-ags_audio_preferences_callbacks.o `test -f './src/ags/X/ags_audio_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_audio_preferences_callbacks.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_audio_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_audio_preferences_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_audio_preferences_callbacks.c' object='ags-ags_audio_preferences_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_audio_preferences_callbacks.o `test -f './src/ags/X/ags_audio_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_audio_preferences_callbacks.c
+
+ags-ags_audio_preferences_callbacks.obj: ./src/ags/X/ags_audio_preferences_callbacks.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_audio_preferences_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_audio_preferences_callbacks.Tpo -c -o ags-ags_audio_preferences_callbacks.obj `if test -f './src/ags/X/ags_audio_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_audio_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_audio_preferences_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_audio_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_audio_preferences_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_audio_preferences_callbacks.c' object='ags-ags_audio_preferences_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_audio_preferences_callbacks.obj `if test -f './src/ags/X/ags_audio_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_audio_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_audio_preferences_callbacks.c'; fi`
 
 ags-ags_pad_editor_callbacks.o: ./src/ags/X/ags_pad_editor_callbacks.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_pad_editor_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_pad_editor_callbacks.Tpo -c -o ags-ags_pad_editor_callbacks.o `test -f './src/ags/X/ags_pad_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_pad_editor_callbacks.c

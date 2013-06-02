@@ -21,6 +21,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_audio_preferences.h>
+
 #define AGS_TYPE_PREFERENCES                (ags_preferences_get_type())
 #define AGS_PREFERENCES(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PREFERENCES, AgsPreferences))
 #define AGS_PREFERENCES_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PREFERENCES, AgsPreferencesClass))
@@ -34,6 +36,8 @@ typedef struct _AgsPreferencesClass AgsPreferencesClass;
 struct _AgsPreferences
 {
   GtkDialog dialog;
+
+  AgsAudioPreferences *audio_preferences;
 };
 
 struct _AgsPreferencesClass

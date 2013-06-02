@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,8 +82,6 @@ ags_preferences_class_init(AgsPreferencesClass *preferences)
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) preferences;
-
-  widget->show = ags_preferences_show;
 }
 
 void
@@ -96,11 +94,29 @@ ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_preferences_init(AgsPreferences *preferences)
 {
+  GtkNotebook *notebook;
+
+  gtk_window_set_title(GTK_WINDOW(preferences),
+		       g_strdup("preferences\0"));
+
+  notebook = (GtkNotebook *) gtk_notebook_new();
+  gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
+		    GTK_WIDGET(notebook));
+
+  preferences->audio_preferences = ags_audio_preferences_new();
+  gtk_notebook_append_page(notebook,
+			   GTK_WIDGET(preferences->audio_preferences),
+			   gtk_label_new("audio\0"));
 }
 
 void
 ags_preferences_connect(AgsConnectable *connectable)
 {
+  AgsPreferences *preferences;
+
+  preferences = AGS_PREFERENCES(connectable);
+
+  ags_connectable_connect(preferences->audio_preferences);
 }
 
 void
