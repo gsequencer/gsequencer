@@ -34,7 +34,7 @@ static void ags_audio_preferences_finalize(GObject *gobject);
 void ags_audio_preferences_show(GtkWidget *widget);
 
 void ags_audio_preferences_reset(AgsAudioPreferences *audio_preferences);
-void* ags_audio_preferences_poll(void *ptr);
+void* ags_audio_preferences_refresh(void *ptr);
 
 static gpointer ags_audio_preferences_parent_class = NULL;
 
@@ -234,8 +234,7 @@ ags_audio_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_audio_preferences_parent_class)->show(widget);
 
   /* poll */
-  pthread_create(&thread, NULL,
-		 &ags_audio_preferences_poll, audio_preferences);
+  ags_audio_preferences_refresh(audio_preferences);
 }
 
 void
@@ -244,7 +243,7 @@ ags_audio_preferences_reset(AgsAudioPreferences *audio_preferences)
 }
 
 void*
-ags_audio_preferences_poll(void *ptr)
+ags_audio_preferences_refresh(void *ptr)
 {
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences;
@@ -257,30 +256,27 @@ ags_audio_preferences_poll(void *ptr)
   preferences = AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							AGS_TYPE_PREFERENCES));
 
-  while((AGS_PREFERENCES_SHUTDOWN & (preferences->flags)) == 0){
-    list = ags_devout_list_cards();
-    model = gtk_list_store_new(1, G_TYPE_STRING);
+  g_object_ref(preferences);
+
+  list = ags_devout_list_cards();
+  model = gtk_list_store_new(1, G_TYPE_STRING);
     
-    while(list != NULL){
-      gtk_list_store_append(model, &iter);
-      gtk_list_store_set(model, &iter,
-			 0, g_strdup_printf(list->data),
-			 -1);
+  while(list != NULL){
+    gtk_list_store_append(model, &iter);
+    gtk_list_store_set(model, &iter,
+		       0, g_strdup_printf(list->data),
+		       -1);
       
-      list = list->next;
-    }
-    
-    gtk_combo_box_set_model(audio_preferences->card,
-			    GTK_TREE_MODEL(model));
-
-    /* reset */
-    ags_audio_preferences_reset(audio_preferences);
-    
-    /* sleep for a second */
-    usleep(1000000);
+    list = list->next;
   }
+    
+  gtk_combo_box_set_model(audio_preferences->card,
+			  GTK_TREE_MODEL(model));
 
-  pthread_exit(NULL);
+  /* reset */
+  ags_audio_preferences_reset(audio_preferences);
+
+  g_object_unref(preferences);
 }
 
 AgsAudioPreferences*

@@ -98,8 +98,12 @@ ags_preferences_init(AgsPreferences *preferences)
 
   preferences->flags = 0;
 
+  preferences->window = NULL;
+
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       g_strdup("preferences\0"));
+  gtk_window_set_deletable(GTK_WINDOW(preferences),
+			   TRUE);
 
   notebook = (GtkNotebook *) gtk_notebook_new();
   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
