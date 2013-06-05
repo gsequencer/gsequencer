@@ -272,6 +272,8 @@ AgsDevoutGate* ags_devout_gate_alloc();
 AgsDevoutGateControl* ags_devout_gate_control_alloc();
 
 GList *ags_devout_list_cards();
+void ags_devout_card_info(char *card_name,
+			  guint *audio_channels, guint *samplerate, guint *buffer_size);
 
 void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);

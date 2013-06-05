@@ -697,6 +697,62 @@ ags_devout_list_cards()
 }
 
 void
+ags_devout_pcm_info(char *card_name,
+		    guint *channels_min, guint *channels_max,
+		    guint *rate_min, guint *rate_max,
+		    guint *buffer_size_min, guint *buffer_size_max)
+{
+  int rc;
+  snd_pcm_t *handle;
+  snd_pcm_hw_params_t *params;
+  unsigned int val;
+  int dir;
+  snd_pcm_uframes_t frames;
+  int err;
+
+  /* Open PCM device for playback. */
+  rc = snd_pcm_open_fallback(&handle, NULL,
+			     NULL, card_name,
+			     SND_PCM_STREAM_PLAYBACK, 0);
+
+  if(rc < 0) {
+    g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
+    exit(1);
+  }
+
+  /* Allocate a hardware parameters object. */
+  snd_pcm_hw_params_alloca(&params);
+
+  /* Fill it in with default values. */
+  snd_pcm_hw_params_any(handle, params);
+
+  /* channels */
+  snd_pcm_hw_params_get_channels_min(params, &val);
+  *channels_min = val;
+
+  snd_pcm_hw_params_get_channels_max(params, &val);
+  *channels_max = val;
+
+  /* samplerate */
+  dir = 0;
+  snd_pcm_hw_params_get_rate_min(params, &val, &dir);
+  *rate_min = val;
+
+  dir = 0;
+  snd_pcm_hw_params_get_rate_max(params, &val, &dir);
+  *rate_max = val;
+
+  /* buffer size */
+  dir = 0;
+  snd_pcm_hw_params_get_buffer_size_min(params, &frames);
+  *buffer_size_min = frames;
+
+  dir = 0;
+  snd_pcm_hw_params_get_buffer_size_max(params, &frames);
+  *buffer_size_max = frames;
+}
+
+void
 ags_devout_add_audio(AgsDevout *devout, GObject *audio)
 {
   g_object_ref(G_OBJECT(audio));
