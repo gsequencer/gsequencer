@@ -697,10 +697,11 @@ ags_devout_list_cards()
 }
 
 void
-ags_devout_pcm_info(char *card_name,
+ags_devout_pcm_info(char *card_id,
 		    guint *channels_min, guint *channels_max,
 		    guint *rate_min, guint *rate_max,
-		    guint *buffer_size_min, guint *buffer_size_max)
+		    guint *buffer_size_min, guint *buffer_size_max,
+		    GError **error)
 {
   int rc;
   snd_pcm_t *handle;
@@ -711,13 +712,18 @@ ags_devout_pcm_info(char *card_name,
   int err;
 
   /* Open PCM device for playback. */
-  rc = snd_pcm_open_fallback(&handle, NULL,
-			     NULL, card_name,
-			     SND_PCM_STREAM_PLAYBACK, 0);
+  rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
   if(rc < 0) {
     g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
-    exit(1);
+
+    g_set_error(error,
+		AGS_DEVOUT_ERROR,
+		AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		"unable to open pcm device: %s\n\0",
+		snd_strerror(rc));
+
+    return;
   }
 
   /* Allocate a hardware parameters object. */

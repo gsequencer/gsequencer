@@ -17,3 +17,9 @@
  */
 
 #include <ags/X/ags_audio_preferences_callbacks.h>
+
+void
+ags_audio_preferences_card_changed_callback(GtkComboBox *combo, AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_reset(audio_preferences);
+}

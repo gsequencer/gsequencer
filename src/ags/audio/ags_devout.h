@@ -110,6 +110,7 @@ typedef enum
 #define AGS_DEVOUT_ERROR (ags_devout_error_quark())
 
 typedef enum{
+  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
   AGS_DEVOUT_ERROR_EMPTY_GATE,
 }AgsDevoutError;
 
@@ -272,8 +273,11 @@ AgsDevoutGate* ags_devout_gate_alloc();
 AgsDevoutGateControl* ags_devout_gate_control_alloc();
 
 GList *ags_devout_list_cards();
-void ags_devout_card_info(char *card_name,
-			  guint *audio_channels, guint *samplerate, guint *buffer_size);
+void ags_devout_pcm_info(char *card_id,
+			 guint *channels_min, guint *channels_max,
+			 guint *rate_min, guint *rate_max,
+			 guint *buffer_size_min, guint *buffer_size_max,
+			 GError **error);
 
 void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
 void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);

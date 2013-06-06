@@ -23,5 +23,6 @@
 
 #include <ags/X/ags_audio_preferences.h>
 
+void ags_audio_preferences_card_changed_callback(GtkComboBox *combo, AgsAudioPreferences *audio_preferences);
 
 #endif /*__AGS_AUDIO_PREFERENCES_CALLBACKS_H__*/
