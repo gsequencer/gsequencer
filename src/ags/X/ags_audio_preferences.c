@@ -140,6 +140,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(audio_preferences->card),
 				 cell_renderer,
 				 "text\0", 0,
+				 "text\0", 1,
 				 NULL);
   gtk_combo_box_set_active(audio_preferences->card, 0);
   

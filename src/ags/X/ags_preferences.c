@@ -106,6 +106,9 @@ ags_preferences_init(AgsPreferences *preferences)
 			   TRUE);
 
   notebook = (GtkNotebook *) gtk_notebook_new();
+  g_object_set(G_OBJECT(notebook),
+	       "tab-pos\0", GTK_POS_LEFT,
+	       NULL);
   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(preferences)->vbox),
 		    GTK_WIDGET(notebook));
 

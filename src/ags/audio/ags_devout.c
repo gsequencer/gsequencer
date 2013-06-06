@@ -756,6 +756,8 @@ ags_devout_pcm_info(char *card_id,
   dir = 0;
   snd_pcm_hw_params_get_buffer_size_max(params, &frames);
   *buffer_size_max = frames;
+
+  snd_pcm_close(handle);
 }
 
 void
