@@ -23,6 +23,7 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 void ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preferences);
@@ -247,13 +248,45 @@ ags_audio_preferences_show(GtkWidget *widget)
 void
 ags_audio_preferences_reset(AgsAudioPreferences *audio_preferences)
 {
-  guint channels_min, channels_max;
-  guint rate_min, rate_max;
-  guint buffer_size_min, buffer_size_max;
+  AgsWindow *window;
+  AgsPreferences *preferences;
+  AgsDevout *devout;
+  char *device;
+  int card_num;
+  guint channels, channels_min, channels_max;
+  guint rate, rate_min, rate_max;
+  guint buffer_size, buffer_size_min, buffer_size_max;
   GError *error;
+
+  /*  */
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+
+  devout = window->devout;
+  g_object_get(G_OBJECT(devout),
+	       "device\0", &device,
+	       "pcm_channels\0", &channels,
+	       "frequency\0", &rate,
+	       "buffer_size\0", &buffer_size,
+	       NULL);
+
 
   error = NULL;
 
+  /*  */
+  sprintf(device, "hw:%i\0", &card_num);
+  gtk_combo_box_set_active(audio_preferences->card,
+			   card_num);
+
+  gtk_spin_button_set_value(audio_preferences->audio_channels,
+			    (gdouble) channels);
+  gtk_spin_button_set_value(audio_preferences->samplerate,
+			    (gdouble) rate);
+  gtk_spin_button_set_value(audio_preferences->buffer_size,
+			    (gdouble) buffer_size);
+
+  /*  */
   ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
 		      &channels_min, &channels_max,
 		      &rate_min, &rate_max,
@@ -272,16 +305,19 @@ ags_audio_preferences_reset(AgsAudioPreferences *audio_preferences)
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(GTK_WIDGET(dialog));
 
-    gtk_spin_button_set_range(audio_preferences->audio_channels, 0, 24);
-    gtk_spin_button_set_range(audio_preferences->samplerate, 1, 192000);
-    gtk_spin_button_set_range(audio_preferences->buffer_size, 1, 65535);
+    gtk_spin_button_set_range(audio_preferences->audio_channels, 0.0, 24.0);
+    gtk_spin_button_set_range(audio_preferences->samplerate, 1.0, 192000.0);
+    gtk_spin_button_set_range(audio_preferences->buffer_size, 1.0, 65535.0);
 
     return;
   }
 
-  gtk_spin_button_set_range(audio_preferences->audio_channels, channels_min, channels_max);
-  gtk_spin_button_set_range(audio_preferences->samplerate, rate_min, rate_max);
-  gtk_spin_button_set_range(audio_preferences->buffer_size, buffer_size_min, buffer_size_max);
+  gtk_spin_button_set_range(audio_preferences->audio_channels,
+			    channels_min, channels_max);
+  gtk_spin_button_set_range(audio_preferences->samplerate,
+			    rate_min, rate_max);
+  gtk_spin_button_set_range(audio_preferences->buffer_size,
+			    buffer_size_min, buffer_size_max);
 }
 
 void*

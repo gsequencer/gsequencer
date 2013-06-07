@@ -779,8 +779,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/thread/ags_recycling_thread.h \
 	./src/ags/thread/ags_thread.c
 AM_CPPFLAGS = -I./src/
-ags_CFLAGS = `pkg-config --cflags alsa sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
-ags_LDFLAGS = `pkg-config --libs alsa sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
+ags_CFLAGS = `pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
+ags_LDFLAGS = `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

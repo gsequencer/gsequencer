@@ -23,6 +23,14 @@
 
 #include <ags/X/ags_audio_preferences.h>
 
-void ags_audio_preferences_card_changed_callback(GtkComboBox *combo, AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
+						 AgsAudioPreferences *audio_preferences);
+
+void ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
+						  AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
+					      AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
+					       AgsAudioPreferences *audio_preferences);
 
 #endif /*__AGS_AUDIO_PREFERENCES_CALLBACKS_H__*/

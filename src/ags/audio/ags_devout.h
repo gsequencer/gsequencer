@@ -150,6 +150,7 @@ struct _AgsDevout
       char *device;
     }oss;
     struct _AgsAlsa{
+      char *device;
       int rc;
       snd_pcm_t *handle;
       snd_pcm_hw_params_t *params;

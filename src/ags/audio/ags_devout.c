@@ -71,6 +71,7 @@ void ags_devout_alsa_free(AgsDevout *devout);
 
 enum{
   PROP_0,
+  PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
   PROP_BITS,
@@ -145,6 +146,15 @@ ags_devout_class_init(AgsDevoutClass *devout)
   gobject->finalize = ags_devout_finalize;
 
   /* properties */
+  param_spec = g_param_spec_string("device\0",
+				   "the device identifier\0",
+				   "The device to perform output to\0",
+				   "hw:0\0",
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVICE,
+				  param_spec);
+  
   param_spec = g_param_spec_uint("dsp_channels\0",
 				 "count of DSP channels\0",
 				 "The count of DSP channels to use\0",
@@ -422,6 +432,10 @@ ags_devout_set_property(GObject *gobject,
    */
   
   switch(prop_id){
+  case PROP_DEVICE:
+    {
+    }
+    break;
   case PROP_DSP_CHANNELS:
     {
     }
@@ -483,6 +497,17 @@ ags_devout_get_property(GObject *gobject,
   devout = AGS_DEVOUT(gobject);
   
   switch(prop_id){
+  case PROP_DEVICE:
+    {
+      if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
+	g_value_set_string(value, ao_driver_info(devout->out.ao.driver_ao)->name);
+      }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+	g_value_set_string(value, devout->out.oss.device);
+      }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+	g_value_set_string(value, devout->out.alsa.device);
+      }
+    }
+    break;
   case PROP_DSP_CHANNELS:
     {
       g_value_set_uint(value, devout->dsp_channels);
