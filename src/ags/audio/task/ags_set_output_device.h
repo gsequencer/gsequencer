@@ -24,6 +24,8 @@
 
 #include <ags/audio/ags_task.h>
 
+#include <ags/audio/ags_devout.h>
+
 #define AGS_TYPE_SET_OUTPUT_DEVICE                (ags_set_output_device_get_type())
 #define AGS_SET_OUTPUT_DEVICE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_OUTPUT_DEVICE, AgsSetOutputDevice))
 #define AGS_SET_OUTPUT_DEVICE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SET_OUTPUT_DEVICE, AgsSetOutputDeviceClass))
@@ -37,6 +39,9 @@ typedef struct _AgsSetOutputDeviceClass AgsSetOutputDeviceClass;
 struct _AgsSetOutputDevice
 {
   AgsTask task;
+
+  AgsDevout *devout;
+  char *card_id;
 };
 
 struct _AgsSetOutputDeviceClass
@@ -46,6 +51,7 @@ struct _AgsSetOutputDeviceClass
 
 GType ags_set_output_device_get_type();
 
-AgsSetOutputDevice* ags_set_output_device_new();
+AgsSetOutputDevice* ags_set_output_device_new(AgsDevout *devout,
+					      char *card_id);
 
 #endif /*__AGS_SET_OUTPUT_DEVICE_H__*/

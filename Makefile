@@ -69,8 +69,12 @@ PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_recall_channel.$(OBJEXT) \
 	ags-ags_recall_audio_run.$(OBJEXT) ags-ags_pattern.$(OBJEXT) \
-	ags-ags_channel_iter.$(OBJEXT) ags-ags_init_channel.$(OBJEXT) \
-	ags-ags_append_recall.$(OBJEXT) \
+	ags-ags_channel_iter.$(OBJEXT) \
+	ags-ags_set_output_device.$(OBJEXT) \
+	ags-ags_set_audio_channels.$(OBJEXT) \
+	ags-ags_set_buffer_size.$(OBJEXT) \
+	ags-ags_set_samplerate.$(OBJEXT) \
+	ags-ags_init_channel.$(OBJEXT) ags-ags_append_recall.$(OBJEXT) \
 	ags-ags_set_devout_play_flags.$(OBJEXT) \
 	ags-ags_link_channel.$(OBJEXT) \
 	ags-ags_remove_region_from_selection.$(OBJEXT) \
@@ -412,6 +416,14 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/audio/ags_recall_audio_run.c \
 	./src/ags/audio/ags_pattern.c ./src/ags/audio/ags_recall.h \
 	./src/ags/audio/ags_channel_iter.c \
+	./src/ags/audio/task/ags_set_output_device.h \
+	./src/ags/audio/task/ags_set_output_device.c \
+	./src/ags/audio/task/ags_set_audio_channels.h \
+	./src/ags/audio/task/ags_set_audio_channels.c \
+	./src/ags/audio/task/ags_set_buffer_size.h \
+	./src/ags/audio/task/ags_set_buffer_size.c \
+	./src/ags/audio/task/ags_set_samplerate.h \
+	./src/ags/audio/task/ags_set_samplerate.c \
 	./src/ags/audio/task/ags_audio_set_recycling.h \
 	./src/ags/audio/task/ags_init_channel.c \
 	./src/ags/audio/task/ags_append_recall.c \
@@ -1059,7 +1071,11 @@ include ./$(DEPDIR)/ags-ags_run_order.Po
 include ./$(DEPDIR)/ags-ags_runnable.Po
 include ./$(DEPDIR)/ags-ags_seekable.Po
 include ./$(DEPDIR)/ags-ags_segment.Po
+include ./$(DEPDIR)/ags-ags_set_audio_channels.Po
+include ./$(DEPDIR)/ags-ags_set_buffer_size.Po
 include ./$(DEPDIR)/ags-ags_set_devout_play_flags.Po
+include ./$(DEPDIR)/ags-ags_set_output_device.Po
+include ./$(DEPDIR)/ags-ags_set_samplerate.Po
 include ./$(DEPDIR)/ags-ags_sf2_chooser.Po
 include ./$(DEPDIR)/ags-ags_sf2_chooser_callbacks.Po
 include ./$(DEPDIR)/ags-ags_sndfile.Po
@@ -1187,6 +1203,62 @@ ags-ags_channel_iter.obj: ./src/ags/audio/ags_channel_iter.c
 #	source='./src/ags/audio/ags_channel_iter.c' object='ags-ags_channel_iter.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_iter.obj `if test -f './src/ags/audio/ags_channel_iter.c'; then $(CYGPATH_W) './src/ags/audio/ags_channel_iter.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_channel_iter.c'; fi`
+
+ags-ags_set_output_device.o: ./src/ags/audio/task/ags_set_output_device.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_output_device.o -MD -MP -MF $(DEPDIR)/ags-ags_set_output_device.Tpo -c -o ags-ags_set_output_device.o `test -f './src/ags/audio/task/ags_set_output_device.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_output_device.c
+	$(am__mv) $(DEPDIR)/ags-ags_set_output_device.Tpo $(DEPDIR)/ags-ags_set_output_device.Po
+#	source='./src/ags/audio/task/ags_set_output_device.c' object='ags-ags_set_output_device.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_output_device.o `test -f './src/ags/audio/task/ags_set_output_device.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_output_device.c
+
+ags-ags_set_output_device.obj: ./src/ags/audio/task/ags_set_output_device.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_output_device.obj -MD -MP -MF $(DEPDIR)/ags-ags_set_output_device.Tpo -c -o ags-ags_set_output_device.obj `if test -f './src/ags/audio/task/ags_set_output_device.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_output_device.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_output_device.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_set_output_device.Tpo $(DEPDIR)/ags-ags_set_output_device.Po
+#	source='./src/ags/audio/task/ags_set_output_device.c' object='ags-ags_set_output_device.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_output_device.obj `if test -f './src/ags/audio/task/ags_set_output_device.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_output_device.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_output_device.c'; fi`
+
+ags-ags_set_audio_channels.o: ./src/ags/audio/task/ags_set_audio_channels.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_audio_channels.o -MD -MP -MF $(DEPDIR)/ags-ags_set_audio_channels.Tpo -c -o ags-ags_set_audio_channels.o `test -f './src/ags/audio/task/ags_set_audio_channels.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_audio_channels.c
+	$(am__mv) $(DEPDIR)/ags-ags_set_audio_channels.Tpo $(DEPDIR)/ags-ags_set_audio_channels.Po
+#	source='./src/ags/audio/task/ags_set_audio_channels.c' object='ags-ags_set_audio_channels.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_audio_channels.o `test -f './src/ags/audio/task/ags_set_audio_channels.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_audio_channels.c
+
+ags-ags_set_audio_channels.obj: ./src/ags/audio/task/ags_set_audio_channels.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_audio_channels.obj -MD -MP -MF $(DEPDIR)/ags-ags_set_audio_channels.Tpo -c -o ags-ags_set_audio_channels.obj `if test -f './src/ags/audio/task/ags_set_audio_channels.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_audio_channels.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_audio_channels.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_set_audio_channels.Tpo $(DEPDIR)/ags-ags_set_audio_channels.Po
+#	source='./src/ags/audio/task/ags_set_audio_channels.c' object='ags-ags_set_audio_channels.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_audio_channels.obj `if test -f './src/ags/audio/task/ags_set_audio_channels.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_audio_channels.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_audio_channels.c'; fi`
+
+ags-ags_set_buffer_size.o: ./src/ags/audio/task/ags_set_buffer_size.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_buffer_size.o -MD -MP -MF $(DEPDIR)/ags-ags_set_buffer_size.Tpo -c -o ags-ags_set_buffer_size.o `test -f './src/ags/audio/task/ags_set_buffer_size.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_buffer_size.c
+	$(am__mv) $(DEPDIR)/ags-ags_set_buffer_size.Tpo $(DEPDIR)/ags-ags_set_buffer_size.Po
+#	source='./src/ags/audio/task/ags_set_buffer_size.c' object='ags-ags_set_buffer_size.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_buffer_size.o `test -f './src/ags/audio/task/ags_set_buffer_size.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_buffer_size.c
+
+ags-ags_set_buffer_size.obj: ./src/ags/audio/task/ags_set_buffer_size.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_buffer_size.obj -MD -MP -MF $(DEPDIR)/ags-ags_set_buffer_size.Tpo -c -o ags-ags_set_buffer_size.obj `if test -f './src/ags/audio/task/ags_set_buffer_size.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_buffer_size.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_buffer_size.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_set_buffer_size.Tpo $(DEPDIR)/ags-ags_set_buffer_size.Po
+#	source='./src/ags/audio/task/ags_set_buffer_size.c' object='ags-ags_set_buffer_size.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_buffer_size.obj `if test -f './src/ags/audio/task/ags_set_buffer_size.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_buffer_size.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_buffer_size.c'; fi`
+
+ags-ags_set_samplerate.o: ./src/ags/audio/task/ags_set_samplerate.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_samplerate.o -MD -MP -MF $(DEPDIR)/ags-ags_set_samplerate.Tpo -c -o ags-ags_set_samplerate.o `test -f './src/ags/audio/task/ags_set_samplerate.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_samplerate.c
+	$(am__mv) $(DEPDIR)/ags-ags_set_samplerate.Tpo $(DEPDIR)/ags-ags_set_samplerate.Po
+#	source='./src/ags/audio/task/ags_set_samplerate.c' object='ags-ags_set_samplerate.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_samplerate.o `test -f './src/ags/audio/task/ags_set_samplerate.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_set_samplerate.c
+
+ags-ags_set_samplerate.obj: ./src/ags/audio/task/ags_set_samplerate.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_samplerate.obj -MD -MP -MF $(DEPDIR)/ags-ags_set_samplerate.Tpo -c -o ags-ags_set_samplerate.obj `if test -f './src/ags/audio/task/ags_set_samplerate.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_samplerate.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_samplerate.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_set_samplerate.Tpo $(DEPDIR)/ags-ags_set_samplerate.Po
+#	source='./src/ags/audio/task/ags_set_samplerate.c' object='ags-ags_set_samplerate.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_samplerate.obj `if test -f './src/ags/audio/task/ags_set_samplerate.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_samplerate.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_samplerate.c'; fi`
 
 ags-ags_init_channel.o: ./src/ags/audio/task/ags_init_channel.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_init_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_init_channel.Tpo -c -o ags-ags_init_channel.o `test -f './src/ags/audio/task/ags_init_channel.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_init_channel.c

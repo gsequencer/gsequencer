@@ -100,7 +100,8 @@ ags_set_output_device_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_set_output_device_init(AgsSetOutputDevice *set_output_device)
 {
-  //TODO:JK: implement me
+  set_output_device->devout = NULL;
+  set_output_device->card_id = NULL;
 }
 
 void
@@ -130,20 +131,32 @@ ags_set_output_device_finalize(GObject *gobject)
 void
 ags_set_output_device_launch(AgsTask *task)
 {
+  AgsDevout *devout;
   AgsSetOutputDevice *set_output_device;
+  char *card_id;
 
   set_output_device = AGS_SET_OUTPUT_DEVICE(task);
 
-  //TODO:JK: implement me
+  devout = set_output_device->devout;
+  card_id = set_output_device->card_id;
+
+  /* perform task */
+  g_object_set(G_OBJECT(devout),
+	       "device\0", card_id,
+	       NULL);
 }
 
 AgsSetOutputDevice*
-ags_set_output_device_new()
+ags_set_output_device_new(AgsDevout *devout,
+			  char *card_id)
 {
   AgsSetOutputDevice *set_output_device;
 
   set_output_device = (AgsSetOutputDevice *) g_object_new(AGS_TYPE_SET_OUTPUT_DEVICE,
 							  NULL);
+
+  set_output_device->devout = devout;
+  set_output_device->card_id = card_id;
 
   return(set_output_device);
 }
