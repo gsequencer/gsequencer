@@ -100,7 +100,8 @@ ags_set_audio_channels_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels)
 {
-  //TODO:JK: implement me
+  set_audio_channels->devout = NULL;
+  set_audio_channels->audio_channels = 0;
 }
 
 void
@@ -134,16 +135,22 @@ ags_set_audio_channels_launch(AgsTask *task)
 
   set_audio_channels = AGS_SET_AUDIO_CHANNELS(task);
 
-  //TODO:JK: implement me
+  g_object_set(G_OBJECT(set_audio_channels->devout),
+	       "pcm_channels\0", set_audio_channels->audio_channels,
+	       NULL);
 }
 
 AgsSetAudioChannels*
-ags_set_audio_channels_new()
+ags_set_audio_channels_new(AgsDevout *devout, guint audio_channels)
 {
   AgsSetAudioChannels *set_audio_channels;
 
   set_audio_channels = (AgsSetAudioChannels *) g_object_new(AGS_TYPE_SET_AUDIO_CHANNELS,
 							    NULL);
+
+
+  set_audio_channels->devout = devout;
+  set_audio_channels->audio_channels = audio_channels;
 
   return(set_audio_channels);
 }

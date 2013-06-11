@@ -64,10 +64,14 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
-  
-  g_object_set(G_OBJECT(devout),
-	       "pcm_channels\0", (guint) gtk_spin_button_get_value(spin_button),
-	       NULL);
+
+  /* create set output device task */
+  set_audio_channels = ags_set_audio_channels_new(devout,
+						  (guint) gtk_spin_button_get_value(spin_button));
+
+  /* append AgsSetAudioChannels */
+  ags_devout_append_task(devout,
+			 AGS_TASK(set_audio_channels));
 }
 
 void
@@ -76,15 +80,19 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
 {
   AgsWindow *window;
   AgsDevout *devout;
-  AgsSetSamplerate *ags_set_samplerate;
+  AgsSetSamplerate *set_samplerate;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
   
-  g_object_set(G_OBJECT(devout),
-	       "frequency\0", (guint) gtk_spin_button_get_value(spin_button),
-	       NULL);
+  /* create set output device task */
+  set_samplerate = ags_set_samplerate_new(devout,
+					  (guint) gtk_spin_button_get_value(spin_button));
+
+  /* append AgsSetSamplerate */
+  ags_devout_append_task(devout,
+			 AGS_TASK(set_samplerate));
 }
 
 void
@@ -99,7 +107,11 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
 									 AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
 
-  g_object_set(G_OBJECT(devout),
-	       "buffer_size\0", (guint) gtk_spin_button_get_value(spin_button),
-	       NULL);
+  /* create set output device task */
+  set_buffer_size = ags_set_buffer_size_new(devout,
+					    (guint) gtk_spin_button_get_value(spin_button));
+
+  /* append AgsSetBufferSize */
+  ags_devout_append_task(devout,
+			 AGS_TASK(set_buffer_size));
 }

@@ -404,8 +404,6 @@ ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window->preferences = ags_preferences_new();
   window->preferences->window = GTK_WINDOW(window);
-  gtk_window_set_transient_for(GTK_WINDOW(window->preferences),
-			       GTK_WINDOW(window));
   ags_connectable_connect(AGS_CONNECTABLE(window->preferences));
   gtk_widget_show_all(GTK_WIDGET(window->preferences));
 }

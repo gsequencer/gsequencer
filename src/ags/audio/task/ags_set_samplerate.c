@@ -100,7 +100,8 @@ ags_set_samplerate_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_set_samplerate_init(AgsSetSamplerate *set_samplerate)
 {
-  //TODO:JK: implement me
+  set_samplerate->devout = NULL;
+  set_samplerate->samplerate = 44100;
 }
 
 void
@@ -134,16 +135,21 @@ ags_set_samplerate_launch(AgsTask *task)
 
   set_samplerate = AGS_SET_SAMPLERATE(task);
 
-  //TODO:JK: implement me
+  g_object_set(G_OBJECT(set_samplerate->devout),
+	       "frequency\0", (guint) set_samplerate->samplerate,
+	       NULL);
 }
 
 AgsSetSamplerate*
-ags_set_samplerate_new()
+ags_set_samplerate_new(AgsDevout *devout, guint samplerate)
 {
   AgsSetSamplerate *set_samplerate;
 
   set_samplerate = (AgsSetSamplerate *) g_object_new(AGS_TYPE_SET_SAMPLERATE,
 						     NULL);
+
+  set_samplerate->devout = devout;
+  set_samplerate->samplerate = samplerate;
 
   return(set_samplerate);
 }

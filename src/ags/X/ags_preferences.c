@@ -131,11 +131,8 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(preferences->audio_preferences);
 
-  g_signal_connect(G_OBJECT(preferences), "response\0",
-		   G_CALLBACK(ags_preferences_response_callback), NULL);
-
-  g_signal_connect(G_OBJECT(preferences), "close\0",
-		   G_CALLBACK(ags_preferences_close_callback), NULL);
+  g_signal_connect_after(G_OBJECT(preferences), "response\0",
+			 G_CALLBACK(ags_preferences_response_callback), NULL);
 }
 
 void

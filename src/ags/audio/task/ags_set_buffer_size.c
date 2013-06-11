@@ -100,7 +100,8 @@ ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size)
 {
-  //TODO:JK: implement me
+  set_buffer_size->devout = NULL;
+  set_buffer_size->buffer_size = 128;
 }
 
 void
@@ -134,16 +135,21 @@ ags_set_buffer_size_launch(AgsTask *task)
 
   set_buffer_size = AGS_SET_BUFFER_SIZE(task);
 
-  //TODO:JK: implement me
+  g_object_set(G_OBJECT(set_buffer_size->devout),
+	       "buffer_size\0", set_buffer_size->buffer_size,
+	       NULL);
 }
 
 AgsSetBufferSize*
-ags_set_buffer_size_new()
+ags_set_buffer_size_new(AgsDevout *devout, guint buffer_size)
 {
   AgsSetBufferSize *set_buffer_size;
 
   set_buffer_size = (AgsSetBufferSize *) g_object_new(AGS_TYPE_SET_BUFFER_SIZE,
 						      NULL);
+
+  set_buffer_size->devout = devout;
+  set_buffer_size->buffer_size = buffer_size;
 
   return(set_buffer_size);
 }

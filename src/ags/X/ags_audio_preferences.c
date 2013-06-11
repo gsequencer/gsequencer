@@ -275,7 +275,7 @@ ags_audio_preferences_reset(AgsAudioPreferences *audio_preferences)
   error = NULL;
 
   /*  */
-  sprintf(device, "hw:%i\0", &card_num);
+  device = g_strdup_printf("hw:%i\0", card_num);
   gtk_combo_box_set_active(audio_preferences->card,
 			   card_num);
 

@@ -27,13 +27,7 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
     //TODO:JK: implement me
   }
 
-  AGS_WINDOW(AGS_PREFERENCES(dialog)->window)->preferences = NULL;
-  gtk_widget_destroy(GTK_WIDGET(dialog));
-}
-
-void
-ags_preferences_close_callback(GtkDialog *dialog, gpointer user_data)
-{
   AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
   AGS_WINDOW(AGS_PREFERENCES(dialog)->window)->preferences = NULL;
+  gtk_widget_destroy(GTK_WIDGET(dialog));
 }
