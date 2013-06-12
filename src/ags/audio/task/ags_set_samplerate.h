@@ -24,8 +24,6 @@
 
 #include <ags/audio/ags_task.h>
 
-#include <ags/audio/ags_devout.h>
-
 #define AGS_TYPE_SET_SAMPLERATE                (ags_set_samplerate_get_type())
 #define AGS_SET_SAMPLERATE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_SAMPLERATE, AgsSetSamplerate))
 #define AGS_SET_SAMPLERATE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SET_SAMPLERATE, AgsSetSamplerateClass))
@@ -40,7 +38,7 @@ struct _AgsSetSamplerate
 {
   AgsTask task;
 
-  AgsDevout *devout;
+  GObject *gobject;
   guint samplerate;
 };
 
@@ -51,6 +49,7 @@ struct _AgsSetSamplerateClass
 
 GType ags_set_samplerate_get_type();
 
-AgsSetSamplerate* ags_set_samplerate_new(AgsDevout *devout, guint samplerate);
+AgsSetSamplerate* ags_set_samplerate_new(GObject *gobject,
+					 guint samplerate);
 
 #endif /*__AGS_SET_SAMPLERATE_H__*/

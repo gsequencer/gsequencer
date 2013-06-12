@@ -24,8 +24,6 @@
 
 #include <ags/audio/ags_task.h>
 
-#include <ags/audio/ags_devout.h>
-
 #define AGS_TYPE_SET_BUFFER_SIZE                (ags_set_buffer_size_get_type())
 #define AGS_SET_BUFFER_SIZE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_BUFFER_SIZE, AgsSetBufferSize))
 #define AGS_SET_BUFFER_SIZE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SET_BUFFER_SIZE, AgsSetBufferSizeClass))
@@ -40,7 +38,7 @@ struct _AgsSetBufferSize
 {
   AgsTask task;
 
-  AgsDevout *devout;
+  GObject *gobject;
   guint buffer_size;
 };
 
@@ -51,6 +49,7 @@ struct _AgsSetBufferSizeClass
 
 GType ags_set_buffer_size_get_type();
 
-AgsSetBufferSize* ags_set_buffer_size_new(AgsDevout *devout, guint buffer_size);
+AgsSetBufferSize* ags_set_buffer_size_new(GObject *gobject,
+					  guint buffer_size);
 
 #endif /*__AGS_SET_BUFFER_SIZE_H__*/

@@ -85,9 +85,9 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
-  
+
   /* create set output device task */
-  set_samplerate = ags_set_samplerate_new(devout,
+  set_samplerate = ags_set_samplerate_new(G_OBJECT(devout),
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
@@ -108,7 +108,7 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
   devout = AGS_DEVOUT(window->devout);
 
   /* create set output device task */
-  set_buffer_size = ags_set_buffer_size_new(devout,
+  set_buffer_size = ags_set_buffer_size_new(G_OBJECT(devout),
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */

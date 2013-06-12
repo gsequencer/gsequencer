@@ -20,6 +20,12 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+
 void ags_set_samplerate_class_init(AgsSetSamplerateClass *set_samplerate);
 void ags_set_samplerate_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_samplerate_init(AgsSetSamplerate *set_samplerate);
@@ -28,6 +34,12 @@ void ags_set_samplerate_disconnect(AgsConnectable *connectable);
 void ags_set_samplerate_finalize(GObject *gobject);
 
 void ags_set_samplerate_launch(AgsTask *task);
+
+void ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal *audio_signal);
+void ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *recycling);
+void ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel);
+void ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio);
+void ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout);
 
 static gpointer ags_set_samplerate_parent_class = NULL;
 static AgsConnectableInterface *ags_set_samplerate_parent_connectable_interface;
@@ -100,7 +112,7 @@ ags_set_samplerate_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_set_samplerate_init(AgsSetSamplerate *set_samplerate)
 {
-  set_samplerate->devout = NULL;
+  set_samplerate->gobject = NULL;
   set_samplerate->samplerate = 44100;
 }
 
@@ -135,20 +147,53 @@ ags_set_samplerate_launch(AgsTask *task)
 
   set_samplerate = AGS_SET_SAMPLERATE(task);
 
-  g_object_set(G_OBJECT(set_samplerate->devout),
+  //TODO:JK: implement me
+}
+
+void
+ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal *audio_signal)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *recycling)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout)
+{
+  g_object_set(G_OBJECT(devout),
 	       "frequency\0", (guint) set_samplerate->samplerate,
 	       NULL);
+
+  //TODO:JK: implement me
 }
 
 AgsSetSamplerate*
-ags_set_samplerate_new(AgsDevout *devout, guint samplerate)
+ags_set_samplerate_new(GObject *gobject,
+		       guint samplerate)
 {
   AgsSetSamplerate *set_samplerate;
 
   set_samplerate = (AgsSetSamplerate *) g_object_new(AGS_TYPE_SET_SAMPLERATE,
 						     NULL);
 
-  set_samplerate->devout = devout;
+  set_samplerate->gobject = gobject;
   set_samplerate->samplerate = samplerate;
 
   return(set_samplerate);

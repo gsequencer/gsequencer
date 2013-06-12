@@ -20,6 +20,12 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+
 void ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size);
 void ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size);
@@ -28,6 +34,12 @@ void ags_set_buffer_size_disconnect(AgsConnectable *connectable);
 void ags_set_buffer_size_finalize(GObject *gobject);
 
 void ags_set_buffer_size_launch(AgsTask *task);
+
+void ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSignal *audio_signal);
+void ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling);
+void ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *channel);
+void ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio);
+void ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout);
 
 static gpointer ags_set_buffer_size_parent_class = NULL;
 static AgsConnectableInterface *ags_set_buffer_size_parent_connectable_interface;
@@ -100,7 +112,7 @@ ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size)
 {
-  set_buffer_size->devout = NULL;
+  set_buffer_size->gobject = NULL;
   set_buffer_size->buffer_size = 128;
 }
 
@@ -135,20 +147,53 @@ ags_set_buffer_size_launch(AgsTask *task)
 
   set_buffer_size = AGS_SET_BUFFER_SIZE(task);
 
-  g_object_set(G_OBJECT(set_buffer_size->devout),
+  //TODO:JK: implement me
+}
+
+void
+ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSignal *audio_signal)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *channel)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout)
+{
+  g_object_set(G_OBJECT(devout),
 	       "buffer_size\0", set_buffer_size->buffer_size,
 	       NULL);
+
+  //TODO:JK: implement me
 }
 
 AgsSetBufferSize*
-ags_set_buffer_size_new(AgsDevout *devout, guint buffer_size)
+ags_set_buffer_size_new(GObject *gobject,
+			guint buffer_size)
 {
   AgsSetBufferSize *set_buffer_size;
 
   set_buffer_size = (AgsSetBufferSize *) g_object_new(AGS_TYPE_SET_BUFFER_SIZE,
 						      NULL);
 
-  set_buffer_size->devout = devout;
+  set_buffer_size->gobject = gobject;
   set_buffer_size->buffer_size = buffer_size;
 
   return(set_buffer_size);
