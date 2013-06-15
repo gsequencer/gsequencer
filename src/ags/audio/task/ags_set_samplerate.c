@@ -144,10 +144,23 @@ void
 ags_set_samplerate_launch(AgsTask *task)
 {
   AgsSetSamplerate *set_samplerate;
+  GObject *gobject;
 
   set_samplerate = AGS_SET_SAMPLERATE(task);
 
-  //TODO:JK: implement me
+  gobject = set_samplerate->gobject;
+
+  if(AGS_IS_DEVOUT(gobject)){
+    ags_set_samplerate_devout(set_samplerate, AGS_DEVOUT(gobject));
+  }else if(AGS_IS_AUDIO(gobject)){
+    ags_set_samplerate_audio(set_samplerate, AGS_AUDIO(gobject));
+  }else if(AGS_IS_CHANNEL(gobject)){
+    ags_set_samplerate_channel(set_samplerate, AGS_CHANNEL(gobject));
+  }else if(AGS_IS_RECYCLING(gobject)){
+    ags_set_samplerate_recycling(set_samplerate, AGS_RECYCLING(gobject));
+  }else if(AGS_IS_AUDIO_SIGNAL(gobject)){
+    ags_set_samplerate_audio_signal(set_samplerate, AGS_AUDIO_SIGNAL(gobject));
+  }
 }
 
 void
@@ -159,29 +172,72 @@ ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal
 void
 ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *recycling)
 {
-  //TODO:JK: implement me
+  GList *list;
+  
+  list = recycling->audio_signal;
+
+  while(list != NULL){
+    ags_set_samplerate_audio_signal(set_samplerate, AGS_AUDIO_SIGNAL(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel)
 {
-  //TODO:JK: implement me
+  AgsRecycling *recycling;
+
+  recycling = channel->first_recycling;
+  
+  while(recycling != NULL){
+    ags_set_samplerate_recycling(set_samplerate, recycling);
+
+    recycling = recycling->next;
+  }
 }
 
 void
 ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
 {
-  //TODO:JK: implement me
+  AgsChannel *channel;
+
+  /* AgsOutput */
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_set_samplerate_channel(set_samplerate, channel);
+
+    channel = channel->next;
+  }
+
+  /* AgsInput */
+  channel = audio->input;
+
+  while(channel != NULL){
+    ags_set_samplerate_channel(set_samplerate, channel);
+
+    channel = channel->next;
+  }
 }
 
 void
 ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout)
 {
+  GList *list;
+
   g_object_set(G_OBJECT(devout),
 	       "frequency\0", (guint) set_samplerate->samplerate,
 	       NULL);
 
-  //TODO:JK: implement me
+  /* AgsAudio */
+  list = devout->audio;
+
+  while(list != NULL){
+    ags_set_samplerate_audio(set_samplerate, AGS_AUDIO(list->data));
+
+    list = list->next;
+  }
 }
 
 AgsSetSamplerate*

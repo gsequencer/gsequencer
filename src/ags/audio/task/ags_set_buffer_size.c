@@ -144,10 +144,23 @@ void
 ags_set_buffer_size_launch(AgsTask *task)
 {
   AgsSetBufferSize *set_buffer_size;
+  GObject *gobject;
 
   set_buffer_size = AGS_SET_BUFFER_SIZE(task);
 
-  //TODO:JK: implement me
+  gobject = set_buffer_size->gobject;
+
+  if(AGS_IS_DEVOUT(gobject)){
+    ags_set_buffer_size_devout(set_buffer_size, AGS_DEVOUT(gobject));
+  }else if(AGS_IS_AUDIO(gobject)){
+    ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(gobject));
+  }else if(AGS_IS_CHANNEL(gobject)){
+    ags_set_buffer_size_channel(set_buffer_size, AGS_CHANNEL(gobject));
+  }else if(AGS_IS_RECYCLING(gobject)){
+    ags_set_buffer_size_recycling(set_buffer_size, AGS_RECYCLING(gobject));
+  }else if(AGS_IS_AUDIO_SIGNAL(gobject)){
+    ags_set_buffer_size_audio_signal(set_buffer_size, AGS_AUDIO_SIGNAL(gobject));
+  }
 }
 
 void
@@ -159,29 +172,73 @@ ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSign
 void
 ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling)
 {
-  //TODO:JK: implement me
+  GList *list;
+  
+  list = recycling->audio_signal;
+
+  while(list != NULL){
+    ags_set_buffer_size_audio_signal(set_buffer_size, AGS_AUDIO_SIGNAL(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *channel)
 {
-  //TODO:JK: implement me
+  AgsRecycling *recycling;
+
+  recycling = channel->first_recycling;
+  
+  while(recycling != NULL){
+    ags_set_buffer_size_recycling(set_buffer_size, recycling);
+
+    recycling = recycling->next;
+  }
 }
 
 void
 ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio)
 {
-  //TODO:JK: implement me
+  AgsChannel *channel;
+
+  /* AgsOutput */
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_set_buffer_size_channel(set_buffer_size, channel);
+
+    channel = channel->next;
+  }
+
+  /* AgsInput */
+  channel = audio->input;
+
+  while(channel != NULL){
+    ags_set_buffer_size_channel(set_buffer_size, channel);
+
+    channel = channel->next;
+  }
 }
 
 void
 ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout)
 {
+  GList *list;
+
+  /*  */
   g_object_set(G_OBJECT(devout),
 	       "buffer_size\0", set_buffer_size->buffer_size,
 	       NULL);
 
-  //TODO:JK: implement me
+  /* AgsAudio */
+  list = devout->audio;
+
+  while(list != NULL){
+    ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(list->data));
+
+    list = list->next;
+  }
 }
 
 AgsSetBufferSize*
