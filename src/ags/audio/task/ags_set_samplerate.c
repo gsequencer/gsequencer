@@ -166,7 +166,8 @@ ags_set_samplerate_launch(AgsTask *task)
 void
 ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal *audio_signal)
 {
-  //TODO:JK: implement me
+  ags_audio_signal_morph_samplerate(audio_signal,
+				    set_samplerate->samplerate);
 }
 
 void

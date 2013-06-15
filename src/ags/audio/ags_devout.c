@@ -323,8 +323,8 @@ ags_devout_init(AgsDevout *devout)
   devout->dsp_channels = 2;
   devout->pcm_channels = 2;
   devout->bits = 16;
-  devout->buffer_size = 128;
-  devout->frequency = 44100;
+  devout->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
   /*

@@ -41,6 +41,9 @@ void ags_audio_signal_finalize(GObject *gobject);
 void ags_audio_signal_connect(AgsConnectable *connectable);
 void ags_audio_signal_disconnect(AgsConnectable *connectable);
 
+void ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
+void ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
+
 enum{
   PROP_0,
   PROP_DEVOUT,
@@ -48,7 +51,14 @@ enum{
   PROP_RECALL_ID,
 };
 
+enum{
+  REALLOC_BUFFER_SIZE,
+  MORPH_SAMPLERATE,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_audio_signal_parent_class = NULL;
+static guint audio_signal_signals[LAST_SIGNAL];
 
 GType
 ags_audio_signal_get_type(void)
@@ -131,6 +141,29 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  PROP_RECALL_ID,
 				  param_spec);
 
+  /*  */
+  audio_signal->realloc_buffer_size = ags_audio_signal_real_realloc_buffer_size;
+  audio_signal->morph_samplerate = ags_audio_signal_real_morph_samplerate;
+
+  audio_signal_signals[REALLOC_BUFFER_SIZE] =
+    g_signal_new("realloc_buffer_size\0",
+		 G_TYPE_FROM_CLASS (audio_signal),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsAudioSignalClass, realloc_buffer_size),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
+  audio_signal_signals[MORPH_SAMPLERATE] =
+    g_signal_new("morph_samplerate\0",
+		 G_TYPE_FROM_CLASS (audio_signal),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsAudioSignalClass, morph_samplerate),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 }
 
 void
@@ -149,6 +182,9 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
+
+  audio_signal->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
+  audio_signal->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
 
   audio_signal->length = 0;
   audio_signal->last_frame = 0;
@@ -561,6 +597,62 @@ ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length)
     ags_audio_signal_stream_resize(audio_signal,
 				   length_till_current);
   }
+}
+
+void
+ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
+{
+  guint old_buffer_size;
+
+  old_buffer_size = audio_signal->buffer_size;
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_signal_realloc_buffer_size:
+ * @audio_signal
+ * @buffer_size
+ *
+ * Realloc the stream to the new buffer size. 
+ */
+void
+ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
+{
+  g_return_if_fail(AGS_IS_AUDIO_SIGNAL(audio_signal));
+  g_object_ref(G_OBJECT(audio_signal));
+  g_signal_emit(G_OBJECT(audio_signal),
+		audio_signal_signals[REALLOC_BUFFER_SIZE], 0,
+		buffer_size);
+  g_object_unref(G_OBJECT(audio_signal));
+}
+
+void
+ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
+{
+  guint old_samplerate;
+
+  old_samplerate = audio_signal->samplerate;
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_signal_morph_samplerate:
+ * @audio_signal
+ * @samplerate
+ *
+ * Morph audio quality to new samplerate.
+ */
+void
+ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
+{
+  g_return_if_fail(AGS_IS_AUDIO_SIGNAL(audio_signal));
+  g_object_ref(G_OBJECT(audio_signal));
+  g_signal_emit(G_OBJECT(audio_signal),
+		audio_signal_signals[MORPH_SAMPLERATE], 0,
+		samplerate);
+  g_object_unref(G_OBJECT(audio_signal));
 }
 
 /**

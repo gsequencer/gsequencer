@@ -296,12 +296,12 @@ ags_audio_preferences_reset(AgsAudioPreferences *audio_preferences)
   if(error != NULL){
     GtkMessageDialog *dialog;
 
-    dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-											AGS_TYPE_PREFERENCES),
-						  GTK_DIALOG_MODAL,
-						  GTK_MESSAGE_ERROR,
-						  GTK_BUTTONS_CLOSE,
-						  error->message);
+    dialog = (GtkMessageDialog *) gtk_message_dialog_new((GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+											       AGS_TYPE_PREFERENCES),
+							 GTK_DIALOG_MODAL,
+							 GTK_MESSAGE_ERROR,
+							 GTK_BUTTONS_CLOSE,
+							 error->message);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(GTK_WIDGET(dialog));
 

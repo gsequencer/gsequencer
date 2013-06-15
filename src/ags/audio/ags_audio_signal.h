@@ -54,6 +54,9 @@ struct _AgsAudioSignal
   GObject *recycling;
   GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal
 
+  guint samplerate;
+  guint buffer_size;
+
   guint length;
   guint last_frame; // the last frame at stream_end
   guint loop_start;
@@ -67,6 +70,9 @@ struct _AgsAudioSignal
 struct _AgsAudioSignalClass
 {
   GObjectClass object;
+
+  void (*realloc_buffer_size)(AgsAudioSignal *audio_signal, guint buffer_size);
+  void (*morph_samplerate)(AgsAudioSignal *audio_signal, guint samplerate);
 };
 
 struct _AgsAttack
@@ -94,6 +100,9 @@ guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
 void ags_audio_signal_add_stream(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length);
+
+void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
+void ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
 
 void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
 					    signed short *source, guint schannels, guint size);

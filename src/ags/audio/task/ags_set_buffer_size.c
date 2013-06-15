@@ -166,7 +166,8 @@ ags_set_buffer_size_launch(AgsTask *task)
 void
 ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSignal *audio_signal)
 {
-  //TODO:JK: implement me
+  ags_audio_signal_realloc_buffer_size(audio_signal,
+				       set_buffer_size->buffer_size);
 }
 
 void

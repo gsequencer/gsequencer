@@ -47,6 +47,9 @@
 
 #define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
 
+#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100)
+#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (128)
+
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;
