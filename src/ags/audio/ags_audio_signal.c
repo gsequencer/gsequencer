@@ -18,6 +18,7 @@
 
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -42,7 +43,7 @@ void ags_audio_signal_connect(AgsConnectable *connectable);
 void ags_audio_signal_disconnect(AgsConnectable *connectable);
 
 void ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
-void ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
+void ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 
 enum{
   PROP_0,
@@ -161,9 +162,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsAudioSignalClass, morph_samplerate),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_user_marshal_VOID__UINT_DOUBLE,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT, G_TYPE_DOUBLE);
 }
 
 void
@@ -617,35 +618,35 @@ ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
 
   i_old = 0;
   i_current = 0;
-
+  
   while(old != NULL){
     ((signed short *) current->data)[i_current] = ((signed short *) old->data)[i_old];
-
+    
     if(i_current == buffer_size){
       current = g_list_prepend(current,
 			       ags_stream_alloc(buffer_size));
-
+      
       i_current = 0;
-
+      
       counter++;
     }
-
+    
     if(i_old == old_buffer_size){
       old = old->next;
-
+      
       i_old = 0;
     }
-
+    
     i_current++;
     i_old++;
   }
-
-  memset(((signed short *) current->data), 0, sizeof((buffer_size - i_current) * (signed short)));
-
+  
+  memset(((signed short *) current->data), 0, (buffer_size - i_current) * sizeof(signed short));
+  
   /*  */
   audio_signal->length = counter;
   audio_signal->last_frame = i_current;
-
+  
   audio_signal->stream_end = current;
   audio_signal->stream_beginning = g_list_reverse(current);
 }
@@ -669,14 +670,14 @@ ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_
 }
 
 void
-ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
+ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph)
 {
   GList *current, *old; 
   guint old_samplerate;
   guint counter;
   guint i_old, i_current;
   guint j_old, j_current;
-  guint k_old, k_current;
+  double k_old, k_current;
   double factor, value;
 
   old = audio_signal->stream_beginning;
@@ -692,15 +693,22 @@ ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint sampl
 
   factor = samplerate / old_samplerate;
 
+  if(k_morph == 0.0){
+    k_morph = (samplerate < old_smaplerate) ? 2.0 * factor: 0.5 * factor;
+  }
+
   while(old != NULL){
     for(j_old = 0, j_current = 0; (((samplerate < old_samplerate) && (j_old < floor(1 / factor))) ||
 				   (j_current < floor(factor))); j_old++, j_current++){
-      if(factor < 1.0){
-	//TODO:JK: implement me
-	//	value = ;
+      if((k_morph < 1.0 && factor < 1.0) ||
+	 (k_morph < 1.0 && factor > 1.0)){
+	for(k_old = 0.0, k_current = 0.0; (factor); k_old++, k_current++){
+	  value = ;
+	}
       }else{
-	//TODO:JK: implement me
-	//	value = ;
+	for(k_old = 0.0, k_current = 0.0; ; k_old++, k_current++){
+	  value = ;
+	}
       }
     }
 
@@ -741,13 +749,13 @@ ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint sampl
  * Morph audio quality to new samplerate.
  */
 void
-ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
+ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph)
 {
   g_return_if_fail(AGS_IS_AUDIO_SIGNAL(audio_signal));
   g_object_ref(G_OBJECT(audio_signal));
   g_signal_emit(G_OBJECT(audio_signal),
 		audio_signal_signals[MORPH_SAMPLERATE], 0,
-		samplerate);
+		samplerate, k_morph);
   g_object_unref(G_OBJECT(audio_signal));
 }
 

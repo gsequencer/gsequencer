@@ -72,7 +72,7 @@ struct _AgsAudioSignalClass
   GObjectClass object;
 
   void (*realloc_buffer_size)(AgsAudioSignal *audio_signal, guint buffer_size);
-  void (*morph_samplerate)(AgsAudioSignal *audio_signal, guint samplerate);
+  void (*morph_samplerate)(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 };
 
 struct _AgsAttack
@@ -102,7 +102,7 @@ void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length);
 
 void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
-void ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
+void ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 
 void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
 					    signed short *source, guint schannels, guint size);

@@ -167,7 +167,7 @@ void
 ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal *audio_signal)
 {
   ags_audio_signal_morph_samplerate(audio_signal,
-				    set_samplerate->samplerate);
+				    set_samplerate->samplerate, 0.0);
 }
 
 void
