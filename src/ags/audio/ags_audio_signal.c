@@ -672,13 +672,14 @@ ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_
 void
 ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph)
 {
-  GList *current, *old; 
+  GList *current, *old, *tmp; 
   guint old_samplerate;
   guint counter;
   guint i_old, i_current;
   guint j_old, j_current;
   double k_old, k_current;
-  double factor, value;
+  guint frame;
+  double factor, value, preview;
 
   old = audio_signal->stream_beginning;
   old_samplerate = audio_signal->samplerate;
@@ -694,21 +695,27 @@ ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint sampl
   factor = samplerate / old_samplerate;
 
   if(k_morph == 0.0){
-    k_morph = (samplerate < old_smaplerate) ? 2.0 * factor: 0.5 * factor;
+    k_morph = (samplerate < old_samplerate) ? 2.0 * factor: 0.5 * factor;
   }
 
   while(old != NULL){
-    for(j_old = 0, j_current = 0; (((samplerate < old_samplerate) && (j_old < floor(1 / factor))) ||
-				   (j_current < floor(factor))); j_old++, j_current++){
-      if((k_morph < 1.0 && factor < 1.0) ||
-	 (k_morph < 1.0 && factor > 1.0)){
-	for(k_old = 0.0, k_current = 0.0; (factor); k_old++, k_current++){
-	  value = ;
-	}
-      }else{
-	for(k_old = 0.0, k_current = 0.0; ; k_old++, k_current++){
-	  value = ;
-	}
+    value = (double) (((signed short *) old->data)[i_old]);
+
+    for(j_old = 0, j_current = 0; (((samplerate < old_samplerate) && (j_old < ceil(1.0 / factor))) ||
+				   (j_current < ceil(factor))); j_old++, j_current++){
+      preview = 0.0;
+
+      for(frame = 0; frame < ceil(factor); frame++){
+	//	preview += ;
+      }
+
+      for(frame = 0; frame < ceil(factor); frame++){
+	//	preview += ;
+      }
+
+      for(k_old = 0.0, k_current = 0.0; (((k_morph < 1.0) && (k_old < ceil(1.0 / k_morph))) ||
+					 (k_current < ceil(k_morph))); k_old++, k_current++){
+	//	value = value * ( / );
       }
     }
 
