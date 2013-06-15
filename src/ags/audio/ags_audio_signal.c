@@ -602,11 +602,52 @@ ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length)
 void
 ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
 {
+  GList *current, *old; 
   guint old_buffer_size;
+  guint counter;
+  guint i_old, i_current;
 
+  old = audio_signal->stream_beginning;
   old_buffer_size = audio_signal->buffer_size;
 
-  //TODO:JK: implement me
+  current = NULL;
+  current = g_list_prepend(current,
+			   ags_stream_alloc(buffer_size));
+  counter = 0;
+
+  i_old = 0;
+  i_current = 0;
+
+  while(old != NULL){
+    ((signed short *) current->data)[i_current] = ((signed short *) old->data)[i_old];
+
+    if(i_current == buffer_size){
+      current = g_list_prepend(current,
+			       ags_stream_alloc(buffer_size));
+
+      i_current = 0;
+
+      counter++;
+    }
+
+    if(i_old == old_buffer_size){
+      old = old->next;
+
+      i_old = 0;
+    }
+
+    i_current++;
+    i_old++;
+  }
+
+  memset(((signed short *) current->data), 0, sizeof((buffer_size - i_current) * (signed short)));
+
+  /*  */
+  audio_signal->length = counter;
+  audio_signal->last_frame = i_current;
+
+  audio_signal->stream_end = current;
+  audio_signal->stream_beginning = g_list_reverse(current);
 }
 
 /**
@@ -630,11 +671,66 @@ ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_
 void
 ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 {
+  GList *current, *old; 
   guint old_samplerate;
+  guint counter;
+  guint i_old, i_current;
+  guint j_old, j_current;
+  guint k_old, k_current;
+  double factor, value;
 
+  old = audio_signal->stream_beginning;
   old_samplerate = audio_signal->samplerate;
 
-  //TODO:JK: implement me
+  current = NULL;
+  current = g_list_prepend(current,
+			   ags_stream_alloc(audio_signal->buffer_size));
+  counter = 0;
+
+  i_old = 0;
+  i_current = 0;
+
+  factor = samplerate / old_samplerate;
+
+  while(old != NULL){
+    for(j_old = 0, j_current = 0; (((samplerate < old_samplerate) && (j_old < floor(1 / factor))) ||
+				   (j_current < floor(factor))); j_old++, j_current++){
+      if(factor < 1.0){
+	//TODO:JK: implement me
+	//	value = ;
+      }else{
+	//TODO:JK: implement me
+	//	value = ;
+      }
+    }
+
+    ((signed short *) current->data)[i_current] = value;
+
+    if(i_current == samplerate){
+      current = g_list_prepend(current,
+			       ags_stream_alloc(audio_signal->buffer_size));
+
+      i_current = 0;
+
+      counter++;
+    }
+
+    if(i_old == old_samplerate){
+      old = old->next;
+
+      i_old = 0;
+    }
+
+    i_current++;
+    i_old++;
+  }
+
+  /*  */
+  audio_signal->length = counter;
+  audio_signal->last_frame = i_current;
+
+  audio_signal->stream_end = current;
+  audio_signal->stream_beginning = g_list_reverse(current);
 }
 
 /**
