@@ -327,6 +327,7 @@ ags_devout_init(AgsDevout *devout)
   devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
+  devout->out.alsa.device = g_strdup("hw:0\0");
   /*
   devout->offset = 0;
 
@@ -434,6 +435,17 @@ ags_devout_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_DEVICE:
     {
+      char *device;
+
+      device = g_value_get_string(value);
+
+      if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
+	//TODO:JK: implement me
+      }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+	devout->out.oss.device = device;
+      }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+	devout->out.alsa.device = device;
+      }
     }
     break;
   case PROP_DSP_CHANNELS:
@@ -814,7 +826,7 @@ ags_devout_main_loop_thread(void *devout0)
   AgsDevoutGate *gate;
   AgsTask *task;
   GList *list, *list_next;
-  guint task_pending, tasks_pending;
+  guint task_pending, tasks_pending, task_count;
   guint i;
   gboolean initial_run;
   useconds_t idle;
@@ -836,7 +848,11 @@ ags_devout_main_loop_thread(void *devout0)
     devout->tasks_pending = 0;
 
     /* sync tasks */
+    pthread_mutex_lock(&(devout->main_loop_mutex));
+
     devout->task_count = task_pending + tasks_pending;
+
+    pthread_mutex_unlock(&(devout->main_loop_mutex));
   }
 
   devout = AGS_DEVOUT(devout0);
@@ -913,6 +929,7 @@ ags_devout_main_loop_thread(void *devout0)
     pthread_mutex_lock(&(devout->main_loop_mutex));
   
     list = devout->task;
+    task_count = devout->task_count;
 
     pthread_mutex_unlock(&(devout->main_loop_mutex));
 
@@ -939,7 +956,7 @@ ags_devout_main_loop_thread(void *devout0)
     }
     */
 
-    for(i = 0; i < devout->task_count; i++){
+    for(i = 0; i < task_count; i++){
       task = AGS_TASK(list->data);
 
       pthread_mutex_lock(&(devout->task_mutex));
@@ -981,6 +998,7 @@ ags_devout_task_thread(void *devout0)
   GList *list;
   struct timespec play_idle;
   useconds_t idle;
+  guint task_count;
   gboolean initial_run;
   guint barrier;
 
@@ -1013,6 +1031,7 @@ ags_devout_task_thread(void *devout0)
     /*  */
     pthread_mutex_lock(&(devout->main_loop_mutex));
     list = devout->task;
+    task_count = devout->task_count;
     pthread_mutex_unlock(&(devout->main_loop_mutex));
     
     /* launch tasks */
@@ -1020,7 +1039,7 @@ ags_devout_task_thread(void *devout0)
       AgsTask *task;
       int i;
 
-      for(i = 0; i < devout->task_count; i++){
+      for(i = 0; i < task_count; i++){
 	task = AGS_TASK(list->data);
 
 	if(DEBUG_DEVOUT){
@@ -1440,7 +1459,7 @@ ags_devout_run(AgsDevout *devout)
 void
 ags_devout_real_stop(AgsDevout *devout)
 {
-  devout->flags &= ~(AGS_DEVOUT_PLAY);
+  //  devout->flags &= ~(AGS_DEVOUT_PLAY);
 }
 
 /**
@@ -1563,7 +1582,7 @@ ags_devout_alsa_init(AgsDevout *devout)
   int err;
 
   /* Open PCM device for playback. */
-  devout->out.alsa.rc = snd_pcm_open(&devout->out.alsa.handle, "default\0",
+  devout->out.alsa.rc = snd_pcm_open(&devout->out.alsa.handle, devout->out.alsa.device,
 				     SND_PCM_STREAM_PLAYBACK, 0);
 
   if(devout->out.alsa.rc < 0) {

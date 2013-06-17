@@ -26,5 +26,57 @@
 #define __USE_UNIX98
 #include <pthread.h>
 
+#define AGS_TYPE_THREAD                (ags_thread_get_type())
+#define AGS_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD, AgsThread))
+#define AGS_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_THREAD, AgsThread))
+#define AGS_IS_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD))
+#define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
+#define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
+
+typedef struct _AgsThread AgsThread;
+typedef struct _AgsThreadClass AgsThreadClass;
+
+typedef enum{
+  AGS_THREAD_RUNNING                 = 1,
+  AGS_THREAD_IDLE                    = 1 << 1,
+  AGS_THREAD_LOCKED                  = 1 << 2,
+  AGS_THREAD_WAITING_FOR_PARENT      = 1 << 3,
+  AGS_THREAD_WAITING_FOR_SIBLING     = 1 << 4,
+  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 << 5,
+}AgsThreadFlags;
+
+struct _AgsThread
+{
+  GObject object;
+
+  guint flags;
+
+  pthread_t thread;
+  pthread_mutex_t mutex;
+  pthread_cond_t cond;
+
+  AgsThread *parent;
+
+  AgsThread *next;
+  AgsThread *prev;
+
+  AgsThread *children;
+
+  GObject *data;
+};
+
+struct _AgsThreadClass
+{
+  GObjectClass object;
+
+  void (*run)(AgsThread *thread);
+};
+
+GType ags_thread_get_type();
+
+void ags_thread_start(AgsThread *thread);
+void ags_thread_run(AgsThread *thread);
+
+AgsThread* ags_thread_new(GObject *data);
 
 #endif /*__AGS_THREAD_H__*/
