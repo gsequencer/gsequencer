@@ -38,7 +38,6 @@ enum{
 };
 
 static gpointer ags_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_thread_parent_connectable_interface;
 static guint thread_signals[LAST_SIGNAL];
 
 GType
@@ -65,7 +64,7 @@ ags_thread_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_thread = g_type_register_static(AGS_TYPE_THREAD,
+    ags_type_thread = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsThread\0",
 					     &ags_thread_info,
 					     0);
@@ -117,8 +116,6 @@ ags_thread_class_init(AgsThreadClass *thread)
 void
 ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_thread_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
   connectable->connect = ags_thread_connect;
   connectable->disconnect = ags_thread_disconnect;
 }
@@ -146,16 +143,12 @@ ags_thread_init(AgsThread *thread)
 void
 ags_thread_connect(AgsConnectable *connectable)
 {
-  ags_thread_parent_connectable_interface->connect(connectable);
-
   /* empty */
 }
 
 void
 ags_thread_disconnect(AgsConnectable *connectable)
 {
-  ags_thread_parent_connectable_interface->disconnect(connectable);
-
   /* empty */
 }
 
