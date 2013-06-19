@@ -37,6 +37,9 @@ typedef struct _AgsDevoutThreadClass AgsDevoutThreadClass;
 struct _AgsDevoutThread
 {
   AgsThread thread;
+
+  GObject *devout;
+  pthread_cond_t start_play_cond;
 };
 
 struct _AgsDevoutThreadClass
@@ -46,6 +49,6 @@ struct _AgsDevoutThreadClass
 
 GType ags_devout_thread_get_type();
 
-AgsDevoutThread* ags_devout_thread_new();
+AgsDevoutThread* ags_devout_thread_new(GObject *devout);
 
 #endif /*__AGS_DEVOUT_THREAD_H__*/

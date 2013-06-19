@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_audio_loop.h>
+
 void ags_append_recall_class_init(AgsAppendRecallClass *append_recall);
 void ags_append_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_recall_init(AgsAppendRecall *append_recall);
@@ -100,7 +102,7 @@ ags_append_recall_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_append_recall_init(AgsAppendRecall *append_recall)
 {
-  append_recall->devout = NULL;
+  append_recall->audio_loop = NULL;
   append_recall->devout_play = NULL;
 }
 
@@ -132,18 +134,21 @@ void
 ags_append_recall_launch(AgsTask *task)
 {
   AgsAppendRecall *append_recall;
+  AgsAudioLoop *audio_loop;
 
   append_recall = AGS_APPEND_RECALL(task);
 
+  audio_loop = AGS_AUDIO_LOOP(append_recall->audio_loop);
+
   /* append to AgsDevout */
   append_recall->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  append_recall->devout->play_recall = g_list_append(append_recall->devout->play_recall,
-						     append_recall->devout_play);
-  append_recall->devout->play_recall_ref++;
+  audio_loop->play_recall = g_list_append(audio_loop->play_recall,
+					  append_recall->devout_play);
+  audio_loop->play_recall_ref += 1;
 }
 
 AgsAppendRecall*
-ags_append_recall_new(AgsDevout *devout,
+ags_append_recall_new(GObject *audio_loop,
 		      AgsDevoutPlay *devout_play)
 {
   AgsAppendRecall *append_recall;
@@ -151,7 +156,7 @@ ags_append_recall_new(AgsDevout *devout,
   append_recall = (AgsAppendRecall *) g_object_new(AGS_TYPE_APPEND_RECALL,
 						   NULL);
   
-  append_recall->devout = devout;
+  append_recall->audio_loop = audio_loop;
   append_recall->devout_play = devout_play;
 
   return(append_recall);

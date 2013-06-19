@@ -34,9 +34,24 @@
 typedef struct _AgsAudioLoop AgsAudioLoop;
 typedef struct _AgsAudioLoopClass AgsAudioLoopClass;
 
+typedef enum{
+  AGS_AUDIO_LOOP_PLAY_RECALL                    = 1,
+  AGS_AUDIO_LOOP_PLAYING_RECALL                 = 1 << 1,
+  AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING        = 1 << 2,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL                   = 1 << 3,
+  AGS_AUDIO_LOOP_PLAYING_CHANNEL                = 1 << 4,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 << 5,
+  AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 << 6,
+  AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 << 7,
+  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 8,
+  AGS_AUDIO_LOOP_PLAY_NOTE                      = 1 << 9,
+}AgsAudioLoopFlags;
+
 struct _AgsAudioLoop
 {
   AgsThread thread;
+
+  guint flags;
 
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall
@@ -54,6 +69,15 @@ struct _AgsAudioLoopClass
 };
 
 GType ags_audio_loop_get_type();
+
+void ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio);
+void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
+
+void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
+void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
+
+void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *recall);
+void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall);
 
 AgsAudioLoop* ags_audio_loop_new();
 

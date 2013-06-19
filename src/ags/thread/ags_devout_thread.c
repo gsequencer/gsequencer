@@ -100,6 +100,11 @@ ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_devout_thread_init(AgsDevoutThread *devout_thread)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(devout_thread);
+
+  thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
 }
 
 void
@@ -133,12 +138,14 @@ ags_devout_thread_run(AgsThread *thread)
 }
 
 AgsDevoutThread*
-ags_devout_thread_new()
+ags_devout_thread_new(GObject *devout)
 {
   AgsDevoutThread *devout_thread;
 
   devout_thread = (AgsDevoutThread *) g_object_new(AGS_TYPE_DEVOUT_THREAD,
 						   NULL);
+
+  devout_thread->devout = devout;
 
   return(devout_thread);
 }

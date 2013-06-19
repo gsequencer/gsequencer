@@ -100,6 +100,12 @@ ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_task_thread_init(AgsTaskThread *task_thread)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(task_thread);
+
+  thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
+
   task_thread->queued = 0;
   task_thread->pending = 0;
 
@@ -133,6 +139,18 @@ ags_task_thread_finalize(GObject *gobject)
 
 void
 ags_task_thread_run(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_task_thread_append_task(AgsDevout *devout, AgsTask *task)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_task_thread_append_tasks(AgsDevout *devout, GList *list)
 {
   //TODO:JK: implement me
 }

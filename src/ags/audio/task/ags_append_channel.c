@@ -100,7 +100,7 @@ ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_append_channel_init(AgsAppendChannel *append_channel)
 {
-  append_channel->devout = NULL;
+  append_channel->audio_loop = NULL;
   append_channel->devout_play = NULL;
 }
 
@@ -132,18 +132,21 @@ void
 ags_append_channel_launch(AgsTask *task)
 {
   AgsAppendChannel *append_channel;
+  AgsAudioLoop *audio_loop;
 
   append_channel = AGS_APPEND_CHANNEL(task);
 
+  audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
+
   /* append to AgsDevout */
   append_channel->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  append_channel->devout->play_channel = g_list_append(append_channel->devout->play_channel,
-						       append_channel->devout_play);
-  append_channel->devout->play_channel_ref++;
+  audio_loop->play_channel = g_list_append(audio_loop->play_channel,
+					   append_channel->devout_play);
+  audio_loop->play_channel_ref++;
 }
 
 AgsAppendChannel*
-ags_append_channel_new(AgsDevout *devout,
+ags_append_channel_new(GObject *audio_loop,
 		       AgsDevoutPlay *devout_play)
 {
   AgsAppendChannel *append_channel;
@@ -151,7 +154,7 @@ ags_append_channel_new(AgsDevout *devout,
   append_channel = (AgsAppendChannel *) g_object_new(AGS_TYPE_APPEND_CHANNEL,
 						     NULL);
 
-  append_channel->devout = devout;
+  append_channel->audio_loop = audio_loop;
   append_channel->devout_play = devout_play;
 
   return(append_channel);

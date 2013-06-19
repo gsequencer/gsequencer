@@ -100,7 +100,7 @@ ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_append_audio_init(AgsAppendAudio *append_audio)
 {
-  append_audio->devout = NULL;
+  append_audio->audio_loop = NULL;
   append_audio->devout_play = NULL;
 }
 
@@ -132,18 +132,21 @@ void
 ags_append_audio_launch(AgsTask *task)
 {
   AgsAppendAudio *append_audio;
+  AgsAudioLoop *audio_loop;
 
   append_audio = AGS_APPEND_AUDIO(task);
 
+  audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
+
   /* append to AgsDevout */
   append_audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  append_audio->devout->play_audio = g_list_append(append_audio->devout->play_audio,
-						   append_audio->devout_play);
-  append_audio->devout->play_audio_ref += 1;
+  audio_loop->play_audio = g_list_append(audio_loop->play_audio,
+					 append_audio->devout_play);
+  audio_loop->play_audio_ref += 1;
 }
 
 AgsAppendAudio*
-ags_append_audio_new(AgsDevout *devout,
+ags_append_audio_new(GObject *audio_loop,
 		     AgsDevoutPlay *devout_play)
 {
   AgsAppendAudio *append_audio;
@@ -151,7 +154,7 @@ ags_append_audio_new(AgsDevout *devout,
   append_audio = (AgsAppendAudio *) g_object_new(AGS_TYPE_APPEND_AUDIO,
 						 NULL);
 
-  append_audio->devout = devout;
+  append_audio->audio_loop = audio_loop;
   append_audio->devout_play = devout_play;
 
   return(append_audio);

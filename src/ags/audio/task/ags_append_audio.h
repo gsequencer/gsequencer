@@ -39,7 +39,7 @@ struct _AgsAppendAudio
 {
   AgsTask task;
 
-  AgsDevout *devout;
+  GObject *audio_loop;
   AgsDevoutPlay *devout_play;
 };
 
@@ -50,7 +50,7 @@ struct _AgsAppendAudioClass
 
 GType ags_append_audio_get_type();
 
-AgsAppendAudio* ags_append_audio_new(AgsDevout *devout,
+AgsAppendAudio* ags_append_audio_new(GObject *audio_loop,
 				     AgsDevoutPlay *play);
 
 #endif /*__AGS_APPEND_AUDIO_H__*/

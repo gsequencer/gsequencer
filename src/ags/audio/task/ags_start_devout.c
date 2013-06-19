@@ -20,6 +20,9 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_devout_thread.h>
+
 void ags_start_devout_class_init(AgsStartDevoutClass *start_devout);
 void ags_start_devout_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_start_devout_init(AgsStartDevout *start_devout);
@@ -132,27 +135,32 @@ ags_start_devout_launch(AgsTask *task)
 {
   AgsStartDevout *start_devout;
   AgsDevout *devout;
+  AgsAudioLoop *audio_loop;
+  AgsDevoutThread *devout_thread;
 
   start_devout = AGS_START_DEVOUT(task);
 
   devout = start_devout->devout;
 
+  audio_loop = devout->audio_loop;
+  devout_thread = devout->devout_thread;
+
   /* append to AgsDevout */
-  devout->flags |= (AGS_DEVOUT_PLAY_AUDIO |
-		    AGS_DEVOUT_PLAY_CHANNEL |
-		    AGS_DEVOUT_PLAY_RECALL);
+  audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
+			AGS_AUDIO_LOOP_PLAY_CHANNEL |
+			AGS_AUDIO_LOOP_PLAY_RECALL);
   devout->flags |= (AGS_DEVOUT_START_PLAY);
 
   ags_devout_run(devout);
 
-  pthread_mutex_lock(&(devout->play_mutex));
+  pthread_mutex_lock(&(AGS_THREAD(devout_thread)->mutex));
 
   while((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
-    pthread_cond_wait(&(devout->start_play_cond),
-		      &(devout->play_mutex));
+    pthread_cond_wait(&(devout_thread->start_play_cond),
+		      &(AGS_THREAD(devout_thread)->mutex));
   }
 
-  pthread_mutex_unlock(&(devout->play_mutex));
+  pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->mutex));
 }
 
 AgsStartDevout*

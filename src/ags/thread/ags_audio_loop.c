@@ -100,6 +100,14 @@ ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(audio_loop);
+
+  thread->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
+
+  audio_loop->flags = 0;
+
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
 
@@ -136,6 +144,42 @@ ags_audio_loop_finalize(GObject *gobject)
 
 void
 ags_audio_loop_run(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *recall)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall)
 {
   //TODO:JK: implement me
 }

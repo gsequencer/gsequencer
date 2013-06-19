@@ -35,8 +35,11 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_devout_thread.h>
+
 #include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_task.h>
 
 #define AGS_TYPE_DEVOUT                (ags_devout_get_type())
 #define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))
@@ -69,35 +72,12 @@ typedef enum
 
   AGS_DEVOUT_PLAY                           = 1 << 5,
 
-  AGS_DEVOUT_BARRIER0                       = 1 << 6,
-  AGS_DEVOUT_BARRIER1                       = 1 << 7,
+  AGS_DEVOUT_LIBAO                          = 1 << 6,
+  AGS_DEVOUT_OSS                            = 1 << 7,
+  AGS_DEVOUT_ALSA                           = 1 << 8,
 
-  //  AGS_DEVOUT_WAIT_SYNC                      = 1 << 6,
-  //  AGS_DEVOUT_WAIT_PLAY                      = 1 << 7,
-  //  AGS_DEVOUT_WAIT_TASK                      = 1 << 8,
-  //  AGS_DEVOUT_SYNC_SIGNALED                  = 1 << 9,
-
-  //  AGS_DEVOUT_TASK_WAIT_SYNC                 = 1 << 10,
-  //  AGS_DEVOUT_TASK_WAIT_PLAY_FUNCTIONS       = 1 << 11,
-  //  AGS_DEVOUT_TASK_SYNC_SIGNALED             = 1 << 12,
-
-  AGS_DEVOUT_LIBAO                          = 1 << 13,
-  AGS_DEVOUT_OSS                            = 1 << 14,
-  AGS_DEVOUT_ALSA                           = 1 << 15,
-
-  AGS_DEVOUT_PLAY_RECALL                    = 1 << 16,
-  AGS_DEVOUT_PLAYING_RECALL                 = 1 << 17,
-  AGS_DEVOUT_PLAY_RECALL_TERMINATING        = 1 << 18,
-  AGS_DEVOUT_PLAY_CHANNEL                   = 1 << 19,
-  AGS_DEVOUT_PLAYING_CHANNEL                = 1 << 20,
-  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING       = 1 << 21,
-  AGS_DEVOUT_PLAY_AUDIO                     = 1 << 22,
-  AGS_DEVOUT_PLAYING_AUDIO                  = 1 << 23,
-  AGS_DEVOUT_PLAY_AUDIO_TERMINATING         = 1 << 24,
-  AGS_DEVOUT_PLAY_NOTE                      = 1 << 25,
-
-  AGS_DEVOUT_SHUTDOWN                       = 1 << 26,
-  AGS_DEVOUT_START_PLAY                     = 1 << 27,
+  AGS_DEVOUT_SHUTDOWN                       = 1 << 9,
+  AGS_DEVOUT_START_PLAY                     = 1 << 10,
 }AgsDevoutFlags;
 
 typedef enum
@@ -160,8 +140,6 @@ struct _AgsDevout
     }alsa;
   }out;
 
-  pthread_t main_loop_thread;
-  pthread_attr_t main_loop_thread_attr;
   pthread_mutex_t main_loop_mutex;
   pthread_mutexattr_t main_loop_mutex_attr;
   pthread_mutex_t main_loop_inject_mutex;
@@ -180,35 +158,11 @@ struct _AgsDevout
 
   unsigned int wait_sync;
 
-  pthread_t play_thread;
-  pthread_attr_t play_thread_attr;
-  pthread_mutex_t play_mutex;
-  pthread_cond_t start_play_cond;
-
-  pthread_t task_thread;
-  pthread_attr_t task_thread_attr;
-  pthread_mutex_t task_mutex;
-  pthread_mutexattr_t task_mutex_attr;
-
-  guint task_queued;
-  guint task_pending;
-
-  guint tasks_queued;
-  guint tasks_pending;
-
-  GList *task;
-  guint task_count;
-
   GList *audio;
 
-  guint play_recall_ref;
-  GList *play_recall; // play AgsRecall
-
-  guint play_channel_ref;
-  GList *play_channel; // play AgsChannel
-
-  guint play_audio_ref;
-  GList *play_audio; // play AgsAudio
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+  AgsDevoutThread *devout_thread;
 };
 
 struct _AgsDevoutClass
@@ -282,15 +236,6 @@ void ags_devout_pcm_info(char *card_id,
 			 guint *rate_min, guint *rate_max,
 			 guint *buffer_size_min, guint *buffer_size_max,
 			 GError **error);
-
-void ags_devout_add_audio(AgsDevout *devout, GObject *audio);
-void ags_devout_remove_audio(AgsDevout *devout, GObject *audio);
-
-void* ags_devout_main_loop_thread(void *ptr);
-void* ags_devout_task_thread(void *devout);
-
-void ags_devout_append_task(AgsDevout *devout, AgsTask *task);
-void ags_devout_append_tasks(AgsDevout *devout, GList *list);
 
 void ags_devout_run(AgsDevout *devout);
 void ags_devout_stop(AgsDevout *devout);

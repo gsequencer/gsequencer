@@ -380,41 +380,13 @@ ags_devout_init(AgsDevout *devout)
   /*  */
   devout->wait_sync = 0;
 
-  /* play */
-  pthread_attr_init(&(devout->play_thread_attr));
-  //  pthread_attr_setschedpolicy(&devout->play_thread_attr, SCHED_RR);
-  pthread_attr_setinheritsched(&(devout->play_thread_attr), PTHREAD_INHERIT_SCHED);
-
-  pthread_mutex_init(&(devout->play_mutex), NULL);
-  pthread_cond_init(&(devout->start_play_cond), NULL);
-
-  /* task */
-  pthread_attr_init(&(devout->task_thread_attr));
-  pthread_attr_setinheritsched(&(devout->task_thread_attr), PTHREAD_INHERIT_SCHED);
-
-  pthread_mutexattr_init(&(devout->task_mutex_attr));
-  pthread_mutex_init(&(devout->task_mutex), &(devout->task_mutex_attr));
- 
-  /* */
-  devout->task_queued = 0;
-  devout->task_pending = 0;
-
-  devout->tasks_queued = 0;
-  devout->tasks_pending = 0;
-
-  devout->task = NULL;
-  devout->task_count = 0;
-
+  /* all AgsAudio */
   devout->audio = NULL;
 
-  devout->play_recall_ref = 0;
-  devout->play_recall = NULL;
-
-  devout->play_channel_ref = 0;
-  devout->play_channel = NULL;
-
-  devout->play_audio_ref = 0;
-  devout->play_audio = NULL;
+  /* threads */
+  devout->audio_loop = ags_audio_loop_new();
+  devout->task_thread = ags_task_thread_new();
+  devout->devout_thread = ags_devout_thread_new(G_OBJECT(devout));
 }
 
 
@@ -1635,28 +1607,23 @@ ags_devout_alsa_init(AgsDevout *devout)
   }
 }
 
-void*
-ags_devout_alsa_play(void *devout0)
+void
+ags_devout_alsa_play(AgsDevout *devout)
 {
-  AgsDevout *devout;
+  AgsDevoutThread *devout_thread;
   AgsDevoutGate *gate;
-  gboolean initial_run;
-  guint barrier;
-
-  devout = (AgsDevout *) devout0;
-
+ 
   if(DEBUG_DEVOUT){
     g_message("ags_devout_play\n\0");
   }
 
+  devout_thread = devout->devout_thread;
   initial_run = TRUE;
 
   pthread_mutex_lock(&(devout->main_loop_inject_mutex));
 
-  pthread_mutex_lock(&(devout->play_mutex));
-
   devout->flags &= (~AGS_DEVOUT_START_PLAY);
-  pthread_cond_signal(&(devout->start_play_cond));
+  pthread_cond_signal(&(devout_thread->start_play_cond));
 
   pthread_mutex_unlock(&(devout->play_mutex));
 
@@ -1859,9 +1826,8 @@ ags_devout_alsa_free(AgsDevout *devout)
 void
 ags_devout_start_default_threads(AgsDevout *devout)
 {
-  /* start main_loop */
-  pthread_create(&(devout->main_loop_thread), NULL, &ags_devout_main_loop_thread, devout);
-  pthread_setschedprio(devout->main_loop_thread, 99);
+  /* start audio_loop */
+  ags_thread_start(AGS_THREAD(devout->audio_loop));
 
   /* start fifo - push */
   pthread_create(&(devout->push->thread), NULL, &ags_devout_gate_control_push, devout->push);

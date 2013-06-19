@@ -80,6 +80,7 @@ struct _AgsThreadClass
 
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
+  void (*stop)(AgsThread *thread);
 };
 
 GType ags_thread_get_type();
@@ -93,6 +94,7 @@ gboolean ags_thread_children_is_locked(AgsThread *thread);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
+void ags_thread_stop(AgsThread *thread);
 
 AgsThread* ags_thread_new(GObject *data);
 

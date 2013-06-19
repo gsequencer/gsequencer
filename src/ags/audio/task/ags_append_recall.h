@@ -40,7 +40,7 @@ struct _AgsAppendRecall
 {
   AgsTask task;
 
-  AgsDevout *devout;
+  GObject *audio_loop;
   AgsDevoutPlay *devout_play;
 };
 
@@ -51,7 +51,7 @@ struct _AgsAppendRecallClass
 
 GType ags_append_recall_get_type();
 
-AgsAppendRecall* ags_append_recall_new(AgsDevout *devout,
+AgsAppendRecall* ags_append_recall_new(GObject *audio_loop,
 				       AgsDevoutPlay *devout_play);
 
 #endif /*__AGS_APPEND_RECALL_H__*/

@@ -30,10 +30,12 @@ void ags_thread_finalize(GObject *gobject);
 void ags_thread_real_start(AgsThread *thread);
 void* ags_thread_loop(void *ptr);
 void ags_thread_real_run(AgsThread *thread);
+void ags_thread_real_stop(AgsThread *thread);
 
 enum{
   START,
   RUN,
+  STOP,
   LAST_SIGNAL,
 };
 
@@ -92,6 +94,7 @@ ags_thread_class_init(AgsThreadClass *thread)
   /* AgsThread */
   thread->start = ags_thread_real_start;
   thread->run = NULL;
+  thread->stop = ags_thread_real_stop;
 
   /* signals */
   thread_signals[START] =
@@ -108,6 +111,15 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 G_TYPE_FROM_CLASS (thread),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsThreadClass, run),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  thread_signals[STOP] =
+    g_signal_new("stop\0",
+		 G_TYPE_FROM_CLASS (thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsThreadClass, stop),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -417,6 +429,23 @@ ags_thread_run(AgsThread *thread)
   g_object_ref(G_OBJECT(thread));
   g_signal_emit(G_OBJECT(thread),
 		thread_signals[RUN], 0);
+  g_object_unref(G_OBJECT(thread));
+}
+
+void
+ags_thread_real_stop(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_stop(AgsThread *thread)
+{
+  g_return_if_fail(AGS_IS_THREAD(thread));
+
+  g_object_ref(G_OBJECT(thread));
+  g_signal_emit(G_OBJECT(thread),
+		thread_signals[STOP], 0);
   g_object_unref(G_OBJECT(thread));
 }
 
