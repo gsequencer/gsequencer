@@ -40,9 +40,14 @@ typedef enum{
   AGS_THREAD_RUNNING                 = 1,
   AGS_THREAD_IDLE                    = 1 << 1,
   AGS_THREAD_LOCKED                  = 1 << 2,
-  AGS_THREAD_WAITING_FOR_PARENT      = 1 << 3,
-  AGS_THREAD_WAITING_FOR_SIBLING     = 1 << 4,
-  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 << 5,
+  AGS_THREAD_WAIT_FOR_PARENT         = 1 << 3,
+  AGS_THREAD_WAIT_FOR_SIBLING        = 1 << 4,
+  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 << 5,
+  AGS_THREAD_WAIT_FOR_BARRIER        = 1 << 6,
+  AGS_THREAD_WAITING_FOR_PARENT      = 1 << 7,
+  AGS_THREAD_WAITING_FOR_SIBLING     = 1 << 8,
+  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 << 9,
+  AGS_THREAD_WAITING_FOR_BARRIER     = 1 << 10,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -54,6 +59,10 @@ struct _AgsThread
   pthread_t thread;
   pthread_mutex_t mutex;
   pthread_cond_t cond;
+
+  pthread_barrier_t barrier[2];
+  gboolean first_barrier;
+  int wait_count[2];
 
   AgsThread *parent;
 
@@ -69,10 +78,18 @@ struct _AgsThreadClass
 {
   GObjectClass object;
 
+  void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
 };
 
 GType ags_thread_get_type();
+
+AgsThread* ags_thread_get_toplevel(AgsThread *thread);
+AgsThread* ags_thread_first(AgsThread *thread);
+
+gboolean ags_thread_parental_is_locked(AgsThread *thread);
+gboolean ags_thread_sibling_is_locked(AgsThread *thread);
+gboolean ags_thread_children_is_locked(AgsThread *thread);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
