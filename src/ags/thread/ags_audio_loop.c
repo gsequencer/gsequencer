@@ -29,6 +29,10 @@ void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_run(AgsThread *thread);
 
+void ags_audio_loop_play_recall(AgsAudioLoop *audio_loop);
+void ags_audio_loop_play_channel(AgsAudioLoop *audio_loop);
+void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
+
 static gpointer ags_audio_loop_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_loop_parent_connectable_interface;
 
@@ -108,6 +112,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->flags = 0;
 
+  audio_loop->devout = NULL;
+
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
 
@@ -137,15 +143,254 @@ ags_audio_loop_disconnect(AgsConnectable *connectable)
 void
 ags_audio_loop_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_audio_loop_parent_class)->finalize(gobject);
+  AgsAudioLoop *audio_loop;
 
-  /* empty */
+  audio_loop = AGS_AUDIO_LOOP(gobject);
+
+  /* free AgsDevoutPlay lists */
+  ags_list_free_and_free_link(audio_loop->play_recall);
+  ags_list_free_and_free_link(audio_loop->play_channel);
+  ags_list_free_and_free_link(audio_loop->play_audio);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_loop_parent_class)->finalize(gobject);
 }
 
 void
 ags_audio_loop_run(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsAudioLoop *audio_loop;
+
+  AGS_THREAD_CLASS(ags_audio_loop_parent_class)->run(thread);
+
+  audio_loop = AGS_AUDIO_LOOP(thread);
+
+  if(DEBUG_DEVOUT){
+    g_message("ags_devout_play_functions: unlocked\0");
+  }
+  
+  /* play channel */
+  if((AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) != 0){
+    ags_audio_loop_play_channel(audio_loop);
+      
+    if(audio_loop->play_channel_ref == 0){
+      audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_CHANNEL);
+      ags_thread_stop(AGS_THREAD(AGS_DEVOUT(audio_loop->devout)->devout_thread));
+      g_message("audio_loop->play_channel_ref == 0\n\0");
+    }
+  }
+    
+  /* play audio */
+  if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) != 0){
+    ags_audio_loop_play_audio(audio_loop);
+      
+    if(audio_loop->play_audio_ref == 0){
+      audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
+      ags_thread_stop(AGS_THREAD(AGS_DEVOUT(audio_loop->devout)->devout_thread));
+      g_message("audio_loop->play_audio_ref == 0\n\0");
+    }
+  }
+    
+  /* determine if attack should be switched */
+  audio_loop->devout->delay_counter = audio_loop->devout->delay_counter + 1;
+      
+  if(audio_loop->delay_counter == audio_loop->delay){
+    if((AGS_AUDIO_LOOP_ATTACK_FIRST & (audio_loop->flags)) != 0)
+      audio_loop->flags &= (~AGS_AUDIO_LOOP_ATTACK_FIRST);
+    else
+      audio_loop->flags |= AGS_AUDIO_LOOP_ATTACK_FIRST;
+      
+    audio_loop->devout->delay_counter = 0;
+  }
+}
+
+/**
+ * ags_audio_loop_play_recall:
+ * @audio_loop an #AgsAudioLoop
+ *
+ * Runs all recalls assigned with @audio_loop. You may want to use
+ * #AgsAppendRecall task to add an #AgsRecall.
+ */
+void
+ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
+{
+  AgsDevoutPlay *devout_play;
+  AgsRecall *recall;
+  AgsRecallID *recall_id;
+  GList *list, *list_next;
+  guint stage;
+
+  audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_RECALL;
+  stage = 0;
+
+ ags_audio_loop_play_recall0:
+
+  list = audio_loop->play_recall;
+
+  if(list == NULL){
+    if((AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING & (audio_loop->flags)) != 0){
+      audio_loop->flags &= (~(AGS_AUDIO_LOOP_PLAY_RECALL |
+			      AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING));
+    }else{
+      audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING;
+    }
+  }
+
+  audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING);
+
+  while(list != NULL){
+    devout_play = (AgsDevoutPlay *) list->data;
+    recall = AGS_RECALL(devout_play->source);
+    recall_id = devout_play->recall_id;
+    list_next = list->next;
+
+
+    if((AGS_RECALL_HIDE & (recall->flags)) == 0){
+      if(stage == 0){
+	ags_recall_run_pre(recall);
+      }else if(stage == 1){
+	ags_recall_run_inter(recall);
+      }else{
+	ags_recall_run_post(recall);
+      }
+    }
+
+    ags_recall_child_check_remove(recall);
+
+    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
+      //TODO:JK: check if these mutices can be removed
+      audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
+      audio_loop->play_recall = g_list_remove(audio_loop->play_recall, (gpointer) recall);
+
+      ags_recall_remove(recall);
+    }
+
+    list = list_next;
+  }
+
+  if(stage == 0){
+    stage = 1;
+    goto ags_audio_loop_play_recall0;
+  }else if(stage == 1){
+    stage = 2;
+    goto ags_audio_loop_play_recall0;
+  }
+
+  audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAYING_RECALL);
+}
+
+/**
+ * ags_audio_loop_play_channel:
+ * @audio_loop an #AgsAudioLoop
+ *
+ * Runs all recalls descending recursively and ascending till next 
+ * #AgsRecycling around prior added #AgsChannel with #AgsAppendChannel
+ * task.
+ */
+void
+ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
+{
+  AgsDevoutPlay *play;
+  AgsChannel *channel;
+  GList *list_play, *list_next_play;
+  gint stage;
+  AgsGroupId group_id;
+
+  if(audio_loop->play_channel == NULL){
+    if((AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING & (audio_loop->flags)) != 0){
+      audio_loop->flags &= (~(AGS_AUDIO_LOOP_PLAY_CHANNEL |
+			      AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING));
+    }else{
+      audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING;
+    }
+  }
+
+  audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING);
+
+  /* entry point */
+  audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_CHANNEL;
+
+  /* run the 3 stages */
+  for(stage = 0; stage < 3; stage++){
+    list_play = audio_loop->play_channel;
+
+    while(list_play != NULL){
+      list_next_play = list_play->next;
+
+      play = (AgsDevoutPlay *) list_play->data;
+      channel = AGS_CHANNEL(play->source);
+      group_id = play->group_id;
+
+      ags_channel_recursive_play(channel, group_id, stage);
+
+      if((AGS_AUDIO_LOOP_PLAY_REMOVE & (play->flags)) != 0){
+	audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
+	audio_loop->play_channel = g_list_remove(audio_loop->play_channel, (gpointer) play);
+      }
+
+      list_play = list_next_play;
+    }
+  }
+}
+
+/**
+ * ags_audio_loop_play_audio:
+ * @audio_loop an #AgsAudioLoop
+ *
+ * Like ags_audio_loop_play_channel() except that it runs all channels within
+ * #AgsAudio.
+ */
+void
+ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
+{
+  AgsDevoutPlay *play;
+  AgsAudio *audio;
+  AgsChannel *output;
+  GList *list_play, *list_next_play;
+  gint stage;
+  AgsGroupId group_id;
+
+  if(audio_loop->play_audio == NULL){
+    if((AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING & (audio_loop->flags)) != 0){
+      audio_loop->flags &= (~(AGS_AUDIO_LOOP_PLAY_AUDIO |
+			      AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING));
+    }else{
+      audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING;
+    }
+  }
+
+  audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING);
+
+  /* entry point */
+  audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_AUDIO;
+
+  /* run the 3 stages */
+  for(stage = 0; stage < 3; stage++){
+    list_play = audio_loop->play_audio;
+
+    while(list_play != NULL){
+      list_next_play = list_play->next;
+
+      play = (AgsDevoutPlay *) list_play->data;
+      audio = AGS_AUDIO(play->source);
+      group_id = play->group_id;
+
+      output = audio->output;
+
+      while(output != NULL){
+	ags_channel_recursive_play(output, group_id, stage);
+	
+	output = output->next;
+      }
+
+      if((AGS_AUDIO_LOOP_PLAY_REMOVE & (play->flags)) != 0){
+	audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
+	audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play);
+      }
+
+      list_play = list_next_play;
+    }
+  }
 }
 
 void
@@ -185,12 +430,14 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall)
 }
 
 AgsAudioLoop*
-ags_audio_loop_new()
+ags_audio_loop_new(GObject *devout)
 {
   AgsAudioLoop *audio_loop;
 
   audio_loop = (AgsAudioLoop *) g_object_new(AGS_TYPE_AUDIO_LOOP,
 					     NULL);
+
+  audio_loop->devout = devout;
 
   return(audio_loop);
 }

@@ -56,7 +56,6 @@
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;
-typedef struct _AgsDevoutAppend AgsDevoutAppend;
 typedef struct _AgsDevoutFifoIO AgsDevoutFifoIO;
 typedef struct _AgsDevoutGate AgsDevoutGate;
 typedef struct _AgsDevoutGateControl AgsDevoutGateControl;
@@ -140,12 +139,6 @@ struct _AgsDevout
     }alsa;
   }out;
 
-  pthread_mutex_t main_loop_mutex;
-  pthread_mutexattr_t main_loop_mutex_attr;
-  pthread_mutex_t main_loop_inject_mutex;
-  pthread_mutexattr_t main_loop_inject_mutex_attr;
-  pthread_barrier_t main_loop_barrier[2];
-
   AgsDevoutFifoIO *push;
   pthread_mutex_t push_inject_mutex;
   AgsDevoutFifoIO *pop;
@@ -185,12 +178,6 @@ struct _AgsDevoutPlay
 
   AgsGroupId group_id; // if source is an AgsChannel or an AgsAudio
   AgsRecallID *recall_id; // if source is an AgsRecall
-};
-
-struct _AgsDevoutAppend
-{
-  AgsDevout *devout;
-  gpointer data;
 };
 
 struct _AgsDevoutFifoIO{

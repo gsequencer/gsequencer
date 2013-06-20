@@ -27,7 +27,9 @@ void ags_devout_thread_connect(AgsConnectable *connectable);
 void ags_devout_thread_disconnect(AgsConnectable *connectable);
 void ags_devout_thread_finalize(GObject *gobject);
 
+void ags_devout_thread_start(AgsThread *thread);
 void ags_devout_thread_run(AgsThread *thread);
+void ags_devout_thread_stop(AgsThread *thread);
 
 static gpointer ags_devout_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_devout_thread_parent_connectable_interface;
@@ -86,6 +88,7 @@ ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread)
   thread = (AgsThreadClass *) devout_thread;
 
   thread->run = ags_devout_thread_run;
+  thread->stop = ags_devout_thread_stop;
 }
 
 void
@@ -132,9 +135,63 @@ ags_devout_thread_finalize(GObject *gobject)
 }
 
 void
+ags_devout_thread_start(AgsThread *thread)
+{
+  AgsDevout *devout;
+  AgsDevoutThread *devout_thread;
+
+  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
+
+  devout_thread = AGS_DEVOUT_THREAD(thread);
+
+  devout = AGS_DEVOUT(devout_thread->devout);
+
+  ags_devout_alsa_init(devout);
+
+  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+
+  devout->flags |= (AGS_DEVOUT_BUFFER0 |
+		    AGS_DEVOUT_PLAY);
+}
+
+void
 ags_devout_thread_run(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+  AgsDevoutThread *devout_thread;
+
+  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->run(thread);
+
+  devout_thread = AGS_DEVOUT_THREAD(thread);
+
+  devout = AGS_DEVOUT(devout_thread->devout);
+
+  ags_devout_run(devout);
+}
+
+void
+ags_devout_thread_stop(AgsThread *thread)
+{
+  AgsDevout *devout;
+  AgsDevoutThread *devout_thread;
+
+  devout_thread = AGS_DEVOUT_THREAD(thread);
+
+  devout = AGS_DEVOUT(devout_thread->devout);
+
+  if((AGS_DEVOUT_PLAY_RECALL & (devout->flags)) != 0 ||
+     (AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0 ||
+     (AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) != 0){
+    g_message("ags_devout_stop:  still playing\n\0");
+    return;
+  }
+
+  ags_devout_stop(devout);
+
+  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->stop(thread);
 }
 
 AgsDevoutThread*

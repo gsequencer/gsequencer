@@ -125,6 +125,8 @@ ags_task_init(AgsTask *task)
   task->name = NULL;
 
   task->start = 0;
+
+  pthread_cond_init(&(task->wait_sync_task_cond), NULL);
 }
 
 void

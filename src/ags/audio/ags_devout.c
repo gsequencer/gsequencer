@@ -49,24 +49,17 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_finalize(GObject *gobject);
 
-void* ags_devout_append_task_thread(void *ptr);
-void* ags_devout_append_tasks_thread(void *ptr);
-
 void ags_devout_real_run(AgsDevout *devout);
 void ags_devout_real_stop(AgsDevout *devout);
 
 void ags_devout_real_change_bpm(AgsDevout *devout, double bpm);
-
-void ags_devout_play_recall(AgsDevout *devout);
-void ags_devout_play_channel(AgsDevout *devout);
-void ags_devout_play_audio(AgsDevout *devout);
 
 void ags_devout_switch_buffer_flag(AgsDevout *devout);
 
 void ags_devout_play_functions(AgsDevout *devout);
 
 void ags_devout_alsa_init(AgsDevout *devout);
-void* ags_devout_alsa_play(void *devout);
+void ags_devout_alsa_play(AgsDevout *devout);
 void ags_devout_alsa_free(AgsDevout *devout);
 
 enum{
@@ -349,16 +342,6 @@ ags_devout_init(AgsDevout *devout)
   devout->attack = ags_attack_alloc(0, devout->buffer_size,
 				    0, devout->buffer_size);
 
-  /* main_loop */
-  pthread_attr_init(&(devout->main_loop_thread_attr));
-  pthread_attr_setinheritsched(&devout->main_loop_thread_attr, PTHREAD_INHERIT_SCHED);
-  
-  pthread_mutexattr_init(&(devout->main_loop_mutex_attr));
-  pthread_mutex_init(&(devout->main_loop_mutex), &(devout->main_loop_mutex_attr));
-
-  pthread_mutexattr_init(&(devout->main_loop_inject_mutex_attr));
-  pthread_mutex_init(&(devout->main_loop_inject_mutex), &(devout->main_loop_mutex_attr));
-
   /* fifo */
   devout->push = ags_devout_fifo_io_alloc();
   devout->push->devout = devout;
@@ -368,7 +351,6 @@ ags_devout_init(AgsDevout *devout)
   devout->pop = ags_devout_fifo_io_alloc();
   devout->pop->devout = devout;
 
-  pthread_mutexattr_init(&(devout->main_loop_inject_mutex_attr));
   pthread_mutex_init(&(devout->pop_inject_mutex), NULL);
 
   /* gate */
@@ -384,8 +366,8 @@ ags_devout_init(AgsDevout *devout)
   devout->audio = NULL;
 
   /* threads */
-  devout->audio_loop = ags_audio_loop_new();
-  devout->task_thread = ags_task_thread_new();
+  devout->audio_loop = ags_audio_loop_new(G_OBJECT(devout));
+  devout->task_thread = ags_task_thread_new(G_OBJECT(devout));
   devout->devout_thread = ags_devout_thread_new(G_OBJECT(devout));
 }
 
@@ -558,28 +540,10 @@ ags_devout_finalize(GObject *gobject)
   /* free AgsAttack */
   free(devout->attack);
 
-  /* free thread related structs */
-  pthread_attr_destroy(&(devout->main_loop_thread_attr));
-
-  pthread_mutex_destroy(&(devout->main_loop_mutex));
-  pthread_mutexattr_destroy(&(devout->main_loop_mutex_attr));
-
-  pthread_mutex_destroy(&(devout->main_loop_inject_mutex));
-  pthread_mutexattr_destroy(&(devout->main_loop_inject_mutex_attr));
-
-  pthread_attr_destroy(&(devout->play_thread_attr));
-
-  pthread_attr_destroy(&(devout->task_thread_attr));
-  pthread_mutex_destroy(&(devout->task_mutex));
-  pthread_mutexattr_destroy(&(devout->task_mutex_attr));
-
-  /* free AgsTask lists */
-  ags_list_free_and_unref_link(devout->task);
-
-  /* free AgsDevoutPlay lists */
-  ags_list_free_and_free_link(devout->play_recall);
-  ags_list_free_and_free_link(devout->play_channel);
-  ags_list_free_and_free_link(devout->play_audio);
+  /*  */
+  g_object_unref(G_OBJECT(devout->audio_loop));
+  g_object_unref(G_OBJECT(devout->task_thread));
+  g_object_unref(G_OBJECT(devout->devout_thread));
 
   /* call parent */
   G_OBJECT_CLASS(ags_devout_parent_class)->finalize(gobject);
@@ -785,625 +749,12 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
   g_object_unref(G_OBJECT(audio));
 }
 
-/**
- * ags_devout_main_loop_thread:
- * 
- *
- *
- */
-void*
-ags_devout_main_loop_thread(void *devout0)
-{
-  AgsDevout *devout;
-  AgsDevoutGate *gate;
-  AgsTask *task;
-  GList *list, *list_next;
-  guint task_pending, tasks_pending, task_count;
-  guint i;
-  gboolean initial_run;
-  useconds_t idle;
-  GError *error;
-
-  auto void ags_devout_main_loop_thread_inject_task();
-
-  void ags_devout_main_loop_thread_inject_task(){
-    /* tasks */
-    pthread_mutex_lock(&(devout->main_loop_mutex));
-
-    task_pending = devout->task_pending;
-    tasks_pending = devout->tasks_pending;
-
-    pthread_mutex_unlock(&(devout->main_loop_mutex));
-
-    /* reset tasks */
-    devout->task_pending = 0;
-    devout->tasks_pending = 0;
-
-    /* sync tasks */
-    pthread_mutex_lock(&(devout->main_loop_mutex));
-
-    devout->task_count = task_pending + tasks_pending;
-
-    pthread_mutex_unlock(&(devout->main_loop_mutex));
-  }
-
-  devout = AGS_DEVOUT(devout0);
-
-  initial_run = TRUE;
-
-  idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
-
-  devout->wait_sync = 1;
-  devout->flags |= AGS_DEVOUT_BARRIER0;
-
-  task_pending = 0;
-  tasks_pending = 0;
-
-  /* task */
-  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
-    /* suspend until everything has been done */
-    
-    if(DEBUG_DEVOUT){
-      //      g_message("loop begin\0");
-    }
-
-    if(!initial_run){
-      if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-	/*  */
-	ags_devout_main_loop_thread_inject_task();
-
-	/*  */
-	pthread_barrier_init(&(devout->main_loop_barrier[1]), NULL, devout->wait_sync +
-			     1);
-
-	/*  */
-	pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-
-	devout->flags &= ~(AGS_DEVOUT_BARRIER0);
-	devout->flags |= AGS_DEVOUT_BARRIER1;
-      }else{
-	/*  */
-	ags_devout_main_loop_thread_inject_task();
-
-	/*  */
-	pthread_barrier_init(&(devout->main_loop_barrier[0]), NULL, devout->wait_sync +
-			     1);
-
-	/*  */
-	pthread_barrier_wait(&(devout->main_loop_barrier[1]));
-
-	devout->flags &= ~(AGS_DEVOUT_BARRIER1);
-	devout->flags |= AGS_DEVOUT_BARRIER0;
-      }
-
-      if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-	pthread_barrier_destroy(&(devout->main_loop_barrier[1]));
-      }else{
-	pthread_barrier_destroy(&(devout->main_loop_barrier[0]));
-      }
-    }else{
-      pthread_mutex_lock(&(devout->main_loop_inject_mutex));
-      pthread_barrier_init(&(devout->main_loop_barrier[0]), NULL, devout->wait_sync + 1);
-    }
-
-    /* Wake up waiting threads */
-    /* start task thread if necessary */
-    if(initial_run){
-      if(DEBUG_DEVOUT){
-	g_message("loop@start:task\0");
-      }
-
-      pthread_create(&(devout->task_thread), NULL, &ags_devout_task_thread, devout);
-      pthread_setschedprio(devout->task_thread, 99);
-    }
-
-    /* retrieve tasks */
-    pthread_mutex_lock(&(devout->main_loop_mutex));
-  
-    list = devout->task;
-    task_count = devout->task_count;
-
-    pthread_mutex_unlock(&(devout->main_loop_mutex));
-
-    /*  */
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-    /* gate */
-    /* buggy
-    gate = ags_devout_gate_alloc();
-    
-    if(initial_run){
-      gate->ready = TRUE;
-      error = NULL;
-      ags_devout_gate_control(devout,
-			      gate,
-			      TRUE, FALSE,
-			      &error);
-    }else{
-      error = NULL;
-      ags_devout_gate_control(devout,
-			      gate,
-			      TRUE, TRUE,
-			      &error);
-    }
-    */
-
-    for(i = 0; i < task_count; i++){
-      task = AGS_TASK(list->data);
-
-      pthread_mutex_lock(&(devout->task_mutex));
-
-      while((AGS_TASK_LOCKED & (task->flags)) != 0){
-	pthread_cond_wait(&(task->wait_sync_task_cond),
-			  &(devout->task_mutex));
-      }
-
-      pthread_mutex_unlock(&(devout->task_mutex));
-
-      list_next = list->next;
-
-
-      pthread_mutex_lock(&(devout->main_loop_mutex));
-
-      devout->task = g_list_remove_link(devout->task, list);
-
-      pthread_mutex_unlock(&(devout->main_loop_mutex));
-
-      list = list_next;
-    }
-
-    /*  */
-    pthread_mutex_lock(&(devout->main_loop_inject_mutex));
-    
-    if(initial_run){
-      initial_run = FALSE;
-    }
-  }
-
-  pthread_exit(NULL);
-}
-
-void*
-ags_devout_task_thread(void *devout0)
-{
-  AgsDevout *devout;
-  GList *list;
-  struct timespec play_idle;
-  useconds_t idle;
-  guint task_count;
-  gboolean initial_run;
-  guint barrier;
-
-  devout = AGS_DEVOUT(devout0);
-
-  play_idle.tv_sec = 0;
-  play_idle.tv_nsec = 10 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
-  idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
-
-  initial_run = TRUE;
-
-  barrier = 0;
-
-  while((AGS_DEVOUT_SHUTDOWN & (devout->flags)) == 0){
-    /* sync */
-    if(!initial_run){
-      if(DEBUG_DEVOUT){
-	//	g_message("################ DEBUG ################\0");
-      }
-
-      if(barrier == 0){
-	pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-	barrier = 1;
-      }else{
-	pthread_barrier_wait(&(devout->main_loop_barrier[1]));
-	barrier = 0;
-      }
-    }
-
-    /*  */
-    pthread_mutex_lock(&(devout->main_loop_mutex));
-    list = devout->task;
-    task_count = devout->task_count;
-    pthread_mutex_unlock(&(devout->main_loop_mutex));
-    
-    /* launch tasks */
-    if(list != NULL){
-      AgsTask *task;
-      int i;
-
-      for(i = 0; i < task_count; i++){
-	task = AGS_TASK(list->data);
-
-	if(DEBUG_DEVOUT){
-	  g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
-	}
-
-	ags_task_launch(task);
-
-	pthread_mutex_lock(&(devout->task_mutex));
-    
-	task->flags &= (~AGS_TASK_LOCKED);
-	pthread_cond_signal(&(task->wait_sync_task_cond));
-
-	pthread_mutex_unlock(&(devout->task_mutex));
-
-	list = list->next;
-      }
-    }
-
-    /* sleep if wanted */
-    if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-      /* calls audio processing functions */
-      ags_devout_play_functions(devout);
-
-      //      nanosleep(&play_idle, NULL);
-      //      g_message("################ DEBUG ################\0");
-    }else{
-      //FIXME:JK: this isn't very efficient
-      usleep(idle);
-    }
-
-    if(initial_run){
-      initial_run = FALSE;
-    }
-  }
-
-  pthread_exit(NULL);
-}
-
-void*
-ags_devout_append_task_thread(void *ptr)
-{
-  AgsDevoutAppend *append;
-  AgsDevout *devout;
-  AgsTask *task;
-  gboolean initial_wait;
-  int ret;
-
-  append = (AgsDevoutAppend *) ptr;
-
-  devout = append->devout;
-  task = AGS_TASK(append->data);
-
-  free(append);
-
-  /* lock */
-  task->flags |= AGS_TASK_LOCKED;
-  pthread_cond_init(&(task->wait_sync_task_cond), NULL);
-
-  /* sync */
-  pthread_mutex_lock(&(devout->main_loop_inject_mutex));
-  pthread_mutex_lock(&(devout->main_loop_mutex));
-
-  devout->task_pending = devout->task_pending + 1;
-
-  /* append to queue */
-  devout->task_queued = devout->task_queued + 1;
-
-  devout->task = g_list_append(devout->task, task);
-    
-  devout->task_queued = devout->task_queued - 1;
-
-  /*  */
-  pthread_mutex_unlock(&(devout->main_loop_mutex));
-  pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-  /*  */
-  //  g_message("ags_devout_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
-
-  /*  */
-  pthread_exit(NULL);
-}
-
-/**
- * ags_devout_append_task:
- * @devout an #AgsDevout
- * @task an #AgsTask
- *
- * Adds the task to devout.
- */
-void
-ags_devout_append_task(AgsDevout *devout, AgsTask *task)
-{
-  AgsDevoutAppend *append;
-  pthread_t thread;
-
-  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
-
-  append->devout = devout;
-  append->data = task;
-
-  pthread_create(&thread, NULL,
-		 &ags_devout_append_task_thread, append);
-}
-
-
-void*
-ags_devout_append_tasks_thread(void *ptr)
-{
-  AgsDevoutAppend *append;
-  AgsDevout *devout;
-  GList *start, *list;
-  gboolean initial_wait;
-  guint count;
-  int ret;
-
-  append = (AgsDevoutAppend *) ptr;
-
-  devout = append->devout;
-  start = 
-    list = (GList *) append->data;
-
-  free(append);
-  count = 0;
-
-  /* lock */
-  while(list != NULL){
-    pthread_cond_init(&(AGS_TASK(list->data)->wait_sync_task_cond), NULL);
-    AGS_TASK(list->data)->flags |= AGS_TASK_LOCKED;
-    count++;
-
-    list = list->next;
-  }
-
-  list = start;
-
-  /* sync */
-  pthread_mutex_lock(&(devout->main_loop_inject_mutex));
-  pthread_mutex_lock(&(devout->main_loop_mutex));
-
-  devout->tasks_pending = devout->tasks_pending + count;
-
-  /* concat with queue */
-  devout->tasks_queued = devout->tasks_queued + count;
-
-  devout->task = g_list_concat(devout->task, list);
-
-  devout->tasks_queued = devout->tasks_queued - count;
-
-  /*  */
-  pthread_mutex_unlock(&(devout->main_loop_mutex));
-  pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-  /*  */
-  pthread_exit(NULL);
-}
-
-/**
- * ags_devout_append_tasks:
- * @devout an #AgsDevout
- * @list a GList with #AgsTask as data
- *
- * Concats the list with @devout's internal task list. Don't
- * free the list you pass. It will be freed for you.
- */
-void
-ags_devout_append_tasks(AgsDevout *devout, GList *list)
-{
-  AgsDevoutAppend *append;
-  pthread_t thread;
-
-  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
-
-  append->devout = devout;
-  append->data = list;
-
-  pthread_create(&thread, NULL,
-		 &ags_devout_append_tasks_thread, append);
-}
-
-/**
- * ags_devout_play_recall:
- * @devout an #AgsDevout
- *
- * Runs all recalls assigned with @devout. You may want to use
- * #AgsAppendRecall task to add an #AgsRecall.
- */
-void
-ags_devout_play_recall(AgsDevout *devout)
-{
-  AgsDevoutPlay *devout_play;
-  AgsRecall *recall;
-  AgsRecallID *recall_id;
-  GList *list, *list_next;
-  guint stage;
-
-  devout->flags |= AGS_DEVOUT_PLAYING_RECALL;
-  stage = 0;
-
- ags_devout_play_recall0:
-
-  list = devout->play_recall;
-
-  if(list == NULL){
-    if((AGS_DEVOUT_PLAY_RECALL_TERMINATING & (devout->flags)) != 0){
-      devout->flags &= (~(AGS_DEVOUT_PLAY_RECALL |
-			  AGS_DEVOUT_PLAY_RECALL_TERMINATING));
-      ags_devout_stop(devout);
-    }else{
-      devout->flags |= AGS_DEVOUT_PLAY_RECALL_TERMINATING;
-    }
-  }
-
-  devout->flags &= (~AGS_DEVOUT_PLAY_RECALL_TERMINATING);
-
-  while(list != NULL){
-    devout_play = (AgsDevoutPlay *) list->data;
-    recall = AGS_RECALL(devout_play->source);
-    recall_id = devout_play->recall_id;
-    list_next = list->next;
-
-
-    if((AGS_RECALL_HIDE & (recall->flags)) == 0){
-      if(stage == 0){
-	ags_recall_run_pre(recall);
-      }else if(stage == 1){
-	ags_recall_run_inter(recall);
-      }else{
-	ags_recall_run_post(recall);
-      }
-    }
-
-    ags_recall_child_check_remove(recall);
-
-    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
-      //TODO:JK: check if these mutices can be removed
-      devout->play_recall_ref = devout->play_recall_ref - 1;
-      devout->play_recall = g_list_remove(devout->play_recall, (gpointer) recall);
-
-      ags_recall_remove(recall);
-    }
-
-    list = list_next;
-  }
-
-  if(stage == 0){
-    stage = 1;
-    goto ags_devout_play_recall0;
-  }else if(stage == 1){
-    stage = 2;
-    goto ags_devout_play_recall0;
-  }
-
-  devout->flags &= (~AGS_DEVOUT_PLAYING_RECALL);
-}
-
-/**
- * ags_devout_play_channel:
- * @devout an #AgsDevout
- *
- * Runs all recalls descending recursively and ascending till next 
- * #AgsRecycling around prior added #AgsChannel with #AgsAppendChannel
- * task.
- */
-void
-ags_devout_play_channel(AgsDevout *devout)
-{
-  AgsDevoutPlay *play;
-  AgsChannel *channel;
-  GList *list_play, *list_next_play;
-  gint stage;
-  AgsGroupId group_id;
-
-  if(devout->play_channel == NULL){
-    if((AGS_DEVOUT_PLAY_CHANNEL_TERMINATING & (devout->flags)) != 0){
-      devout->flags &= (~(AGS_DEVOUT_PLAY_CHANNEL |
-			  AGS_DEVOUT_PLAY_CHANNEL_TERMINATING));
-      ags_devout_stop(devout);
-    }else{
-      devout->flags |= AGS_DEVOUT_PLAY_CHANNEL_TERMINATING;
-    }
-  }
-
-  devout->flags &= (~AGS_DEVOUT_PLAY_CHANNEL_TERMINATING);
-
-  /* entry point */
-  devout->flags |= AGS_DEVOUT_PLAYING_CHANNEL;
-
-  /* run the 3 stages */
-  for(stage = 0; stage < 3; stage++){
-    list_play = devout->play_channel;
-
-    while(list_play != NULL){
-      list_next_play = list_play->next;
-
-      play = (AgsDevoutPlay *) list_play->data;
-      channel = AGS_CHANNEL(play->source);
-      group_id = play->group_id;
-
-      ags_channel_recursive_play(channel, group_id, stage);
-
-      if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
-	devout->play_channel_ref = devout->play_channel_ref - 1;
-	devout->play_channel = g_list_remove(devout->play_channel, (gpointer) play);
-      }
-
-      list_play = list_next_play;
-    }
-  }
-}
-
-/**
- * ags_devout_play_audio:
- * @devout an #AgsDevout
- *
- * Like ags_devout_play_channel() except that it runs all channels within
- * #AgsAudio.
- */
-void
-ags_devout_play_audio(AgsDevout *devout)
-{
-  AgsDevoutPlay *play;
-  AgsAudio *audio;
-  AgsChannel *output;
-  GList *list_play, *list_next_play;
-  gint stage;
-  AgsGroupId group_id;
-
-  if(devout->play_audio == NULL){
-    if((AGS_DEVOUT_PLAY_AUDIO_TERMINATING & (devout->flags)) != 0){
-      devout->flags &= (~(AGS_DEVOUT_PLAY_AUDIO |
-			  AGS_DEVOUT_PLAY_AUDIO_TERMINATING));
-      ags_devout_stop(devout);
-    }else{
-      devout->flags |= AGS_DEVOUT_PLAY_AUDIO_TERMINATING;
-    }
-  }
-
-  devout->flags &= (~AGS_DEVOUT_PLAY_AUDIO_TERMINATING);
-
-  /* entry point */
-  devout->flags |= AGS_DEVOUT_PLAYING_AUDIO;
-
-  /* run the 3 stages */
-  for(stage = 0; stage < 3; stage++){
-    list_play = devout->play_audio;
-
-    while(list_play != NULL){
-      list_next_play = list_play->next;
-
-      play = (AgsDevoutPlay *) list_play->data;
-      audio = AGS_AUDIO(play->source);
-      group_id = play->group_id;
-
-      output = audio->output;
-
-      while(output != NULL){
-	ags_channel_recursive_play(output, group_id, stage);
-	
-	output = output->next;
-      }
-
-      if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
-	devout->play_audio_ref = devout->play_audio_ref - 1;
-	devout->play_audio = g_list_remove(devout->play_audio, (gpointer) play);
-      }
-
-      list_play = list_next_play;
-    }
-  }
-}
-
 void
 ags_devout_real_run(AgsDevout *devout)
 {
-  if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-    return;
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    ags_devout_alsa_play(devout);
   }
-
-  /* start */
-  ags_devout_alsa_init(devout);
-
-  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-
-  devout->flags |= (AGS_DEVOUT_BUFFER0 |
-		    AGS_DEVOUT_PLAY);
-
-  pthread_create(&(devout->play_thread), NULL, &ags_devout_alsa_play, devout);
-  pthread_setschedprio(devout->play_thread, 99);
 }
 
 /**
@@ -1416,12 +767,6 @@ void
 ags_devout_run(AgsDevout *devout)
 {
   g_return_if_fail(AGS_IS_DEVOUT(devout));
-
-  if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-    g_message("ags_devout_run:  allready playing\n\0");
-    return;
-  }
-
   g_object_ref((GObject *) devout);
   g_signal_emit(G_OBJECT(devout),
 		devout_signals[RUN], 0);
@@ -1431,7 +776,19 @@ ags_devout_run(AgsDevout *devout)
 void
 ags_devout_real_stop(AgsDevout *devout)
 {
-  //  devout->flags &= ~(AGS_DEVOUT_PLAY);
+  AgsDevoutThread *devout_thread;
+
+  devout_thread = devout->devout_thread;
+
+  ags_thread_lock(AGS_THREAD(devout_thread));
+
+  devout->flags &= ~(AGS_DEVOUT_PLAY);
+
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    ags_devout_alsa_free(devout);
+  }
+
+  ags_thread_unlock(AGS_THREAD(devout_thread));
 }
 
 /**
@@ -1447,13 +804,6 @@ ags_devout_stop(AgsDevout *devout)
 
   if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
     g_message("ags_devout_stop:  not playing\n\0");
-    return;
-  }
-
-  if((AGS_DEVOUT_PLAY_RECALL & (devout->flags)) != 0 ||
-     (AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0 ||
-     (AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) != 0){
-    g_message("ags_devout_stop:  still playing\n\0");
     return;
   }
 
@@ -1500,48 +850,6 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
   }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
     devout->flags |= AGS_DEVOUT_BUFFER0;
-  }
-}
-
-void
-ags_devout_play_functions(AgsDevout *devout)
-{
-  if(DEBUG_DEVOUT){
-    g_message("ags_devout_play_functions: unlocked\0");
-  }
-  
-  /* play channel */
-  if((AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0){
-    ags_devout_play_channel(devout);
-      
-    if(devout->play_channel_ref == 0){
-      devout->flags &= (~AGS_DEVOUT_PLAY_CHANNEL);
-      ags_devout_stop(devout);
-      g_message("devout->play_channel_ref == 0\n\0");
-    }
-  }
-    
-  /* play audio */
-  if((AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) != 0){
-    ags_devout_play_audio(devout);
-      
-    if(devout->play_audio_ref == 0){
-      devout->flags &= (~AGS_DEVOUT_PLAY_AUDIO);
-      ags_devout_stop(devout);
-      g_message("devout->play_audio_ref == 0\n\0");
-    }
-  }
-    
-  /* determine if attack should be switched */
-  devout->delay_counter = devout->delay_counter + 1;
-      
-  if(devout->delay_counter == devout->delay){
-    if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
-      devout->flags &= (~AGS_DEVOUT_ATTACK_FIRST);
-    else
-      devout->flags |= AGS_DEVOUT_ATTACK_FIRST;
-      
-    devout->delay_counter = 0;
   }
 }
 
@@ -1618,137 +926,25 @@ ags_devout_alsa_play(AgsDevout *devout)
   }
 
   devout_thread = devout->devout_thread;
-  initial_run = TRUE;
 
-  pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+  ags_thread_lock(AGS_THREAD(devout_thread));
 
   devout->flags &= (~AGS_DEVOUT_START_PLAY);
   pthread_cond_signal(&(devout_thread->start_play_cond));
 
-  pthread_mutex_unlock(&(devout->play_mutex));
+  ags_thread_unlock(AGS_THREAD(devout_thread));
 
-  if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-    barrier = 1;
-  }else{
-    barrier = 0;
+  if(DEBUG_DEVOUT){
+    g_message("ags_devout_alsa_play\0");
   }
 
-  devout->wait_sync += 1;
-  pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
-
-  while((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-    /* sync */
-    /* wake up main_loop */
-    if(DEBUG_DEVOUT){
-      g_message("ags_devout_alsa_play\0");
-    }
-
-    if(!initial_run){    
-      if(barrier == 0){
-	pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-	barrier = 1;
-      }else{
-	pthread_barrier_wait(&(devout->main_loop_barrier[1]));
-	barrier = 0;
-      }
-    }
     
-    /*  */
-    if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-      memset(devout->buffer[3], 0, (size_t) 256 * sizeof(signed short));
+  /*  */
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    memset(devout->buffer[3], 0, (size_t) 256 * sizeof(signed short));
       
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[0], (snd_pcm_sframes_t) 128);
+    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[0], (snd_pcm_sframes_t) 128);
       
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	g_message("underrun occurred\n\0");
-	snd_pcm_prepare(devout->out.alsa.handle);
-      }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
-      }else if(devout->out.alsa.rc != (int) 128) {
-	g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
-      }
-      
-      //      g_message("ags_devout_play 0\n\0");
-    }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-      memset(devout->buffer[0], 0, (size_t) 256 * sizeof(signed short));
-
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[1], (snd_pcm_sframes_t) 128);
-      
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	g_message("underrun occurred\n\0");
-	snd_pcm_prepare(devout->out.alsa.handle);
-      }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
-      }else if(devout->out.alsa.rc != (int) 128) {
-	g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
-      }
-      
-      //      g_message("ags_devout_play 1\n\0");
-    }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-      memset(devout->buffer[1], 0, (size_t) 256 * sizeof(signed short));
-      
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[2], (snd_pcm_sframes_t) 128);
-      
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	g_message("underrun occurred\n\0");
-	snd_pcm_prepare(devout->out.alsa.handle);
-      }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
-      }else if(devout->out.alsa.rc != (int) 128) {
-	g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
-      }
-
-      //      g_message("ags_devout_play 2\n\0");
-    }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-      memset(devout->buffer[2], 0, (size_t) 256 * sizeof(signed short));
-      
-      devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[3], (snd_pcm_sframes_t) 128);
-      
-      if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
-	g_message("underrun occurred\n\0");
-	snd_pcm_prepare(devout->out.alsa.handle);
-      }else if(devout->out.alsa.rc < 0){
-	g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
-      }else if(devout->out.alsa.rc != (int) 128) {
-	g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
-      }
-
-      //      g_message("ags_devout_play 3\n\0");
-    }
-    
-    /*
-      if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
-      devout->offset++;
-    */
-    ags_devout_switch_buffer_flag(devout);
-    
-    if(initial_run){
-      initial_run = FALSE;
-    }
-  }
-  
-  //TODO:JK: check whether this is safe in conscience with barrier
-  /* decrement barrier */
-  gate = ags_devout_fifo_lock_gate(devout);
-  devout->wait_sync -= 1;
-  ags_devout_fifo_unlock_gate(devout, gate);
-
-  if((AGS_DEVOUT_BARRIER0 & (devout->flags)) != 0){
-    pthread_barrier_wait(&(devout->main_loop_barrier[0]));
-  }else{
-    pthread_barrier_wait(&(devout->main_loop_barrier[1]));
-  }
-  
-  /* flush */
-  if((AGS_DEVOUT_BUFFER0 & devout->flags) != 0){
-    memset(devout->buffer[3], 0, 256 * sizeof(signed short));
-
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[0], 128);
-    
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
       g_message("underrun occurred\n\0");
@@ -1758,13 +954,29 @@ ags_devout_alsa_play(AgsDevout *devout)
     }else if(devout->out.alsa.rc != (int) 128) {
       g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
     }
-    
-    devout->flags &= (~AGS_DEVOUT_BUFFER0);
-  }else if((AGS_DEVOUT_BUFFER1 & devout->flags) != 0){
-    memset(devout->buffer[0], 0, 256 * sizeof(signed short));
+      
+    //      g_message("ags_devout_play 0\n\0");
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    memset(devout->buffer[0], 0, (size_t) 256 * sizeof(signed short));
 
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[1], 128);
-    
+    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[1], (snd_pcm_sframes_t) 128);
+      
+    if(devout->out.alsa.rc == -EPIPE){
+      /* EPIPE means underrun */
+      g_message("underrun occurred\n\0");
+      snd_pcm_prepare(devout->out.alsa.handle);
+    }else if(devout->out.alsa.rc < 0){
+      g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
+    }else if(devout->out.alsa.rc != (int) 128) {
+      g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
+    }
+      
+    //      g_message("ags_devout_play 1\n\0");
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    memset(devout->buffer[1], 0, (size_t) 256 * sizeof(signed short));
+      
+    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[2], (snd_pcm_sframes_t) 128);
+      
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
       g_message("underrun occurred\n\0");
@@ -1775,28 +987,12 @@ ags_devout_alsa_play(AgsDevout *devout)
       g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
     }
 
-    devout->flags &= (~AGS_DEVOUT_BUFFER1);
-  }else if((AGS_DEVOUT_BUFFER2 & devout->flags) != 0){
-    memset(devout->buffer[1], 0, 256 * sizeof(signed short));
-
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[2], 128);
-    
-    if(devout->out.alsa.rc == -EPIPE){
-      /* EPIPE means underrun */
-      g_message("underrun occurred\n\0");
-      snd_pcm_prepare(devout->out.alsa.handle);
-    }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
-    }else if(devout->out.alsa.rc != (int) 128) {
-      g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
-    }
-
-    devout->flags &= (~AGS_DEVOUT_BUFFER2);
+    //      g_message("ags_devout_play 2\n\0");
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[2], 0, 256 * sizeof(signed short));
-
-    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[3], 128);
-    
+    memset(devout->buffer[2], 0, (size_t) 256 * sizeof(signed short));
+      
+    devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle, devout->buffer[3], (snd_pcm_sframes_t) 128);
+      
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
       g_message("underrun occurred\n\0");
@@ -1807,13 +1003,14 @@ ags_devout_alsa_play(AgsDevout *devout)
       g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
     }
 
-    devout->flags &= (~AGS_DEVOUT_BUFFER3);
+    //      g_message("ags_devout_play 3\n\0");
   }
-
-  //  g_message("ags_devout_play: end\n\0");
-  ags_devout_alsa_free(devout);
-
-  pthread_exit(NULL);
+    
+  /*
+    if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
+    devout->offset++;
+  */
+  ags_devout_switch_buffer_flag(devout);
 }
 
 void
@@ -1877,14 +1074,14 @@ ags_devout_gate_control_push(void *ptr)
     pthread_mutex_unlock(&(devout->fifo_mutex));
 
     /* prepare for inject */
-    pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+    ags_thread_lock(AGS_THREAD(devout->devout_thread));
     
     /* announce lock */
     devout->refresh_gate += 1;
     devout->gate = g_slist_append(devout->gate, (gpointer) gate);
 
     /* finished inject */
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
+    ags_thread_unlock(AGS_THREAD(devout->devout_thread));
     
     /* lock when ready */
     pthread_mutex_lock(&(devout->fifo_mutex));
@@ -1956,7 +1153,7 @@ ags_devout_gate_control_pop(void *ptr)
     }
 
     /*  */
-    pthread_mutex_lock(&(devout->main_loop_inject_mutex));
+    ags_thread_lock(AGS_THREAD(devout->devout_thread));
 
     gate =  (AgsDevoutGate *) g_slist_nth_data(devout->gate, 0);
     error = control->error;
@@ -1970,7 +1167,7 @@ ags_devout_gate_control_pop(void *ptr)
     devout->refresh_gate -= 1;
 
     /*  */
-    pthread_mutex_unlock(&(devout->main_loop_inject_mutex));
+    ags_thread_unlock(AGS_THREAD(devout->devout_thread));
 
     /* lock fifo */
     pthread_mutex_lock(&(devout->fifo_mutex));

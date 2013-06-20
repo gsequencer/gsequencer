@@ -85,6 +85,9 @@ struct _AgsThreadClass
 
 GType ags_thread_get_type();
 
+void ags_thread_lock(AgsThread *thread);
+void ags_thread_unlock(AgsThread *thread);
+
 AgsThread* ags_thread_get_toplevel(AgsThread *thread);
 AgsThread* ags_thread_first(AgsThread *thread);
 

@@ -167,9 +167,45 @@ ags_thread_disconnect(AgsConnectable *connectable)
 void
 ags_thread_finalize(GObject *gobject)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(gobject);
+
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
 
   /* empty */
+  pthread_mutex_destroy(&(thread->mutex));
+  pthread_cond_destroy(&(thread->cond));
+
+}
+
+void
+ags_thread_lock(AgsThread *thread)
+{
+  pthread_mutex_t mutex;
+  
+  mutex = ags_thread_get_toplevel(thread)->mutex;
+
+  pthread_mutex_lock(mutex);
+
+  pthread_mutex_lock(thread->mutex);
+  thread->flags |= AGS_THREAD_LOCKED;
+
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_thread_unlock(AgsThread *thread)
+{
+  pthread_mutex_t mutex;
+  
+  mutex = ags_thread_get_toplevel(thread)->mutex;
+
+  pthread_mutex_lock(mutex);
+  thread->flags &= (~AGS_THREAD_LOCKED);
+  pthread_mutex_unlock(thread->mutex);
+
+  pthread_mutex_unlock(mutex);
 }
 
 /**
@@ -419,6 +455,8 @@ ags_thread_loop(void *ptr)
       initial_run = FALSE;
     }
   }
+
+  pthread_exit(NULL);
 }
 
 void

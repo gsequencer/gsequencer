@@ -53,6 +53,8 @@ struct _AgsAudioLoop
 
   guint flags;
 
+  GObject *devout;
+
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall
 
@@ -79,6 +81,6 @@ void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *recall);
 void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall);
 
-AgsAudioLoop* ags_audio_loop_new();
+AgsAudioLoop* ags_audio_loop_new(GObject *devout);
 
 #endif /*__AGS_AUDIO_LOOP_H__*/

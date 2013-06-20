@@ -457,10 +457,11 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     }
 
     /* call run */
-    if((AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) == 0)
-      devout->flags |= AGS_DEVOUT_PLAY_CHANNEL;
+    if((AGS_AUDIO_LOOP_PLAY_CHANNEL & (devout->flags)) == 0){
+      devout->audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_CHANNEL;
+    }
 
-    ags_devout_run(devout);
+    ags_thread_start(devout->devout_thread);
   }else{
     AgsCancelChannel *cancel_channel;
 

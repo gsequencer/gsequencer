@@ -29,6 +29,9 @@ void ags_task_thread_finalize(GObject *gobject);
 
 void ags_task_thread_run(AgsThread *thread);
 
+void* ags_devout_append_task_thread(void *ptr);
+void* ags_devout_append_tasks_thread(void *ptr);
+
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
 
@@ -106,6 +109,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
 
+  task_thread->devout = devout;
+
   task_thread->queued = 0;
   task_thread->pending = 0;
 
@@ -132,36 +137,230 @@ ags_task_thread_disconnect(AgsConnectable *connectable)
 void
 ags_task_thread_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_task_thread_parent_class)->finalize(gobject);
+  AgsTaskThread *task_thread;
 
-  /* empty */
+  task_thread = AGS_TASK_THREAD(gobject);
+
+  /* free AgsTask lists */
+  ags_list_free_and_unref_link(task_thread->exec);
+  ags_list_free_and_unref_link(task_thread->queue);
+
+  /*  */
+  G_OBJECT_CLASS(ags_task_thread_parent_class)->finalize(gobject);
 }
 
 void
 ags_task_thread_run(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+  AgsTaskThread *task_thread;
+  GList *list;
+  struct timespec play_idle;
+  useconds_t idle;
+  guint prev_pending;
+
+  AGS_THREAD_CLASS(ags_task_thread_parent_class)->run(thread);
+
+  task_thread = AGS_TASK_THREAD(thread);
+  devout = AGS_DEVOUT(task_thread->devout);
+
+  play_idle.tv_sec = 0;
+  play_idle.tv_nsec = 10 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
+  idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
+
+  /*  */
+  ags_thread_lock(thread);
+
+  list = 
+    task_thread->exec = task_thread->queue;
+  task_thread->queue = NULL;
+
+  prev_pending = task_thread->pending;
+  task_thread->pending = g_list_length(list);
+  task_thread->queued -= prev_pending;
+
+  ags_thread_unlock(thread);
+
+  /* launch tasks */
+  if(list != NULL){
+    AgsTask *task;
+    int i;
+
+    for(i = 0; i < task_count; i++){
+      task = AGS_TASK(list->data);
+
+      if(DEBUG_DEVOUT){
+	g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+      }
+
+      ags_task_launch(task);
+
+      list = list->next;
+    }
+  }
+
+  /* sleep if wanted */
+  if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
+    /* calls audio processing functions */
+    //    ags_devout_play_functions(devout);
+
+    //      nanosleep(&play_idle, NULL);
+    //      g_message("################ DEBUG ################\0");
+  }else{
+    //FIXME:JK: this isn't very efficient
+    usleep(idle);
+  }
 }
 
-void
-ags_task_thread_append_task(AgsDevout *devout, AgsTask *task)
+void*
+ags_devout_append_task_thread(void *ptr)
 {
-  //TODO:JK: implement me
+  AgsTask *task;
+  AgsTaskThread *task_thread;
+  AgsTaskThreadAppend *append;
+  gboolean initial_wait;
+  int ret;
+
+  append = (AgsTaskThreadAppend *) ptr;
+
+  task_thread = append->task_thread;
+  task = AGS_TASK(append->data);
+
+  free(append);
+
+  /* lock */
+  ags_thread_lock(AGS_THREAD(task_thread));
+
+  task->flags |= AGS_TASK_LOCKED;
+
+  while((AGS_TASK_LOCKED & (task->flags)) != 0){
+    pthread_cond_wait(&(task->wait_sync_task_cond),
+		      &(AGS_THREAD(task_thread)->mutex));
+  }
+
+  /* append to queue */
+  devout->task_queued += 1;
+
+  devout->queue = g_list_append(devout->queue, task);
+
+  /*  */
+  ags_thread_unlock(AGS_THREAD(task_thread));
+
+  /*  */
+  //  g_message("ags_devout_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
+
+  /*  */
+  pthread_exit(NULL);
 }
 
+/**
+ * ags_task_thread_append_task:
+ * @task_thread an #AgsTaskThread
+ * @task an #AgsTask
+ *
+ * Adds the task to @task_thread.
+ */
 void
-ags_task_thread_append_tasks(AgsDevout *devout, GList *list)
+ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 {
-  //TODO:JK: implement me
+  AgsDevoutAppend *append;
+  pthread_t thread;
+
+  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
+
+  append->devout = devout;
+  append->data = task;
+
+  pthread_create(&thread, NULL,
+		 &ags_devout_append_task_thread, append);
+}
+
+void*
+ags_devout_append_tasks_thread(void *ptr)
+{
+  AgsTask *task;
+  AgsTaskThread *task_thread;
+  AgsTaskThreadAppend *append;
+  GList *start, *list;
+  gboolean initial_wait;
+  guint count;
+  int ret;
+
+  append = (AgsDevoutAppend *) ptr;
+
+  devout = append->devout;
+  start = 
+    list = (GList *) append->data;
+
+  free(append);
+  count = 0;
+
+  /* lock */
+  while(list != NULL){
+    task = AGS_TASK(list->data);
+
+    task->flags |= AGS_TASK_LOCKED;
+    count++;
+
+    ags_thread_lock(AGS_THREAD(task_thread));
+
+    task->flags |= AGS_TASK_LOCKED;
+
+    while((AGS_TASK_LOCKED & (task->flags)) != 0){
+      pthread_cond_wait(&(task->wait_sync_task_cond),
+			&(AGS_THREAD(task_thread)->mutex));
+    }
+
+
+    list = list->next;
+  }
+
+  list = start;
+
+  /* append to queue */
+  devout->task_queued += count;
+
+  devout->queue = g_list_concat(devout->queue, list);
+
+  /*  */
+  ags_thread_unlock(AGS_THREAD(task_thread));
+
+  /*  */
+  pthread_exit(NULL);
+}
+
+/**
+ * ags_task_thread_append_tasks:
+ * @task_thread an #AgsTaskThread
+ * @list a GList with #AgsTask as data
+ *
+ * Concats the list with @task_thread's internal task list. Don't
+ * free the list you pass. It will be freed for you.
+ */
+void
+ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
+{
+  AgsDevoutAppend *append;
+  pthread_t thread;
+
+  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
+
+  append->devout = devout;
+  append->data = list;
+
+  pthread_create(&thread, NULL,
+		 &ags_devout_append_tasks_thread, append);
 }
 
 AgsTaskThread*
-ags_task_thread_new()
+ags_task_thread_new(GObject *devout)
 {
   AgsTaskThread *task_thread;
 
   task_thread = (AgsTaskThread *) g_object_new(AGS_TYPE_TASK_THREAD,
 					       NULL);
+
+  task_thread->devout = devout;
 
   return(task_thread);
 }

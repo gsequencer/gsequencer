@@ -153,14 +153,14 @@ ags_start_devout_launch(AgsTask *task)
 
   ags_devout_run(devout);
 
-  pthread_mutex_lock(&(AGS_THREAD(devout_thread)->mutex));
+  ags_thread_lock(AGS_THREAD(devout_thread));
 
   while((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
     pthread_cond_wait(&(devout_thread->start_play_cond),
 		      &(AGS_THREAD(devout_thread)->mutex));
   }
 
-  pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->mutex));
+  ags_thread_unlock(AGS_THREAD(devout_thread));
 }
 
 AgsStartDevout*
