@@ -7,4 +7,4 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c ./src/ags/audio/ags_task.c ./src/a
 
 AM_CPPFLAGS=-I./src/
 ags_CFLAGS=`pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
-ags_LDFLAGS=`pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
+ags_LDFLAGS=-ldl `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`

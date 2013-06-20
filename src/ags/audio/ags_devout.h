@@ -19,19 +19,18 @@
 #ifndef __AGS_DEVOUT_H__
 #define __AGS_DEVOUT_H__
 
+#define _GNU_SOURCE
+#include <pthread.h>
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <sys/types.h>
+
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #include <alsa/asoundlib.h>
 
 #include <ao/ao.h>
-
-#define __USE_GNU
-#define __USE_UNIX98
-#include <pthread.h>
-
-#include <glib-object.h>
-
-#include <unistd.h>
-#include <sys/types.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>

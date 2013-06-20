@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device);
 void ags_set_output_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_output_device_init(AgsSetOutputDevice *set_output_device);
@@ -137,7 +139,7 @@ ags_set_output_device_launch(AgsTask *task)
 
   set_output_device = AGS_SET_OUTPUT_DEVICE(task);
 
-  devout = set_output_device->devout;
+  devout = AGS_DEVOUT(set_output_device->devout);
   card_id = set_output_device->card_id;
 
   /* perform task */
@@ -147,7 +149,7 @@ ags_set_output_device_launch(AgsTask *task)
 }
 
 AgsSetOutputDevice*
-ags_set_output_device_new(AgsDevout *devout,
+ags_set_output_device_new(GObject *devout,
 			  char *card_id)
 {
   AgsSetOutputDevice *set_output_device;

@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread);
 void ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_devout_thread_init(AgsDevoutThread *devout_thread);
@@ -176,15 +178,17 @@ void
 ags_devout_thread_stop(AgsThread *thread)
 {
   AgsDevout *devout;
+  AgsAudioLoop *audio_loop;
   AgsDevoutThread *devout_thread;
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
   devout = AGS_DEVOUT(devout_thread->devout);
+  audio_loop = devout->audio_loop;
 
-  if((AGS_DEVOUT_PLAY_RECALL & (devout->flags)) != 0 ||
-     (AGS_DEVOUT_PLAY_CHANNEL & (devout->flags)) != 0 ||
-     (AGS_DEVOUT_PLAY_AUDIO & (devout->flags)) != 0){
+  if((AGS_AUDIO_LOOP_PLAY_RECALL & (devout->flags)) != 0 ||
+     (AGS_AUDIO_LOOP_PLAY_CHANNEL & (devout->flags)) != 0 ||
+     (AGS_AUDIO_LOOP_PLAY_AUDIO & (devout->flags)) != 0){
     g_message("ags_devout_stop:  still playing\n\0");
     return;
   }

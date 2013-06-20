@@ -20,6 +20,10 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
+#include <math.h>
+
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);
 void ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_task_thread_init(AgsTaskThread *task_thread);
@@ -34,6 +38,8 @@ void* ags_devout_append_tasks_thread(void *ptr);
 
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
+
+extern gboolean DEBUG_DEVOUT;
 
 GType
 ags_task_thread_get_type()
@@ -109,7 +115,7 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
 
-  task_thread->devout = devout;
+  task_thread->devout = NULL;
 
   task_thread->queued = 0;
   task_thread->pending = 0;
@@ -186,7 +192,7 @@ ags_task_thread_run(AgsThread *thread)
     AgsTask *task;
     int i;
 
-    for(i = 0; i < task_count; i++){
+    for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
       if(DEBUG_DEVOUT){
@@ -239,9 +245,9 @@ ags_devout_append_task_thread(void *ptr)
   }
 
   /* append to queue */
-  devout->task_queued += 1;
+  task_thread->queued += 1;
 
-  devout->queue = g_list_append(devout->queue, task);
+  task_thread->queue = g_list_append(task_thread->queue, task);
 
   /*  */
   ags_thread_unlock(AGS_THREAD(task_thread));
@@ -263,12 +269,12 @@ ags_devout_append_task_thread(void *ptr)
 void
 ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 {
-  AgsDevoutAppend *append;
+  AgsTaskThreadAppend *append;
   pthread_t thread;
 
-  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
+  append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
-  append->devout = devout;
+  append->task_thread = task_thread;
   append->data = task;
 
   pthread_create(&thread, NULL,
@@ -286,9 +292,9 @@ ags_devout_append_tasks_thread(void *ptr)
   guint count;
   int ret;
 
-  append = (AgsDevoutAppend *) ptr;
+  append = (AgsTaskThreadAppend *) ptr;
 
-  devout = append->devout;
+  task_thread = append->task_thread;
   start = 
     list = (GList *) append->data;
 
@@ -318,9 +324,9 @@ ags_devout_append_tasks_thread(void *ptr)
   list = start;
 
   /* append to queue */
-  devout->task_queued += count;
+  task_thread->queued += count;
 
-  devout->queue = g_list_concat(devout->queue, list);
+  task_thread->queue = g_list_concat(task_thread->queue, list);
 
   /*  */
   ags_thread_unlock(AGS_THREAD(task_thread));
@@ -340,12 +346,12 @@ ags_devout_append_tasks_thread(void *ptr)
 void
 ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 {
-  AgsDevoutAppend *append;
+  AgsTaskThreadAppend *append;
   pthread_t thread;
 
-  append = (AgsDevoutAppend *) malloc(sizeof(AgsDevoutAppend));
+  append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
-  append->devout = devout;
+  append->task_thread = task_thread;
   append->data = list;
 
   pthread_create(&thread, NULL,
