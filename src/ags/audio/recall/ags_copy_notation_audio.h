@@ -19,9 +19,9 @@
 #ifndef __AGS_COPY_NOTATION_AUDIO_H__
 #define __AGS_COPY_NOTATION_AUDIO_H__
 
-#include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_notation.h>
 

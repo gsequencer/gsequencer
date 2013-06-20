@@ -19,7 +19,6 @@
 #ifndef __AGS_RUN_ORDER_H__
 #define __AGS_RUN_ORDER_H__
 
-#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_id.h>

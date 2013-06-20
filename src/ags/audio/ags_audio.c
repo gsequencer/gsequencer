@@ -198,7 +198,7 @@ ags_audio_init(AgsAudio *audio)
   audio->notation = NULL;
 
   audio->devout_play = ags_devout_play_alloc();
-  audio->devout_play->source = (GObject *) audio;
+  AGS_DEVOUT_PLAY(audio->devout_play)->source = (GObject *) audio;
 
   audio->recall_id = NULL;
   audio->run_order = NULL;

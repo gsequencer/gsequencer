@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_init_audio_class_init(AgsInitAudioClass *init_audio);
 void ags_init_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_init_audio_init(AgsInitAudio *init_audio);
@@ -142,18 +144,18 @@ ags_init_audio_launch(AgsTask *task)
   /* init audio */
   group_id = ags_audio_recursive_play_init(init_audio->audio,
 					   init_audio->playback, init_audio->sequencer, init_audio->notation);
-  init_audio->audio->devout_play->group_id = group_id;
+  AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->group_id = group_id;
 
   if(init_audio->playback){
-    init_audio->audio->devout_play->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
+    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
   }
 
   if(init_audio->sequencer){
-    init_audio->audio->devout_play->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
   }
 
   if(init_audio->notation){
-    init_audio->audio->devout_play->flags |= AGS_DEVOUT_PLAY_NOTATION;
+    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
   }
 }
 

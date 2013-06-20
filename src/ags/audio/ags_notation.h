@@ -19,7 +19,6 @@
 #ifndef __AGS_NOTATION_H__
 #define __AGS_NOTATION_H__
 
-#include <glib.h>
 #include <glib-object.h>
 #include <libxml/tree.h>
 

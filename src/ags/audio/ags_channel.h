@@ -19,17 +19,13 @@
 #ifndef __AGS_CHANNEL_H__
 #define __AGS_CHANNEL_H__
 
-#include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_notation.h>
-
-#include <ags/file/ags_file.h>
 
 #include <stdarg.h>
 
@@ -77,7 +73,7 @@ struct _AgsChannel
 
   char *note;
 
-  AgsDevoutPlay *devout_play;
+  gpointer devout_play;
 
   GList *recall_id; // there may be several recall's running
   GList *container;
@@ -100,8 +96,6 @@ struct _AgsChannel
 struct _AgsChannelClass
 {
   GObjectClass object;
-
-  void (*write_file)(AgsFile *file, AgsChannel *channel);
 
   void (*recycling_changed)(AgsChannel *channel,
 			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,

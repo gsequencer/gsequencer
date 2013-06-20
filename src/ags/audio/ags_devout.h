@@ -19,18 +19,16 @@
 #ifndef __AGS_DEVOUT_H__
 #define __AGS_DEVOUT_H__
 
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
+#define ALSA_PCM_NEW_HW_PARAMS_API
+#include <alsa/asoundlib.h>
+
+#include <ao/ao.h>
 
 #define __USE_GNU
 #define __USE_UNIX98
 #include <pthread.h>
 
-#include <ao/ao.h>
-
-#define ALSA_PCM_NEW_HW_PARAMS_API
-#include <alsa/asoundlib.h>
+#include <glib-object.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -138,7 +136,7 @@ struct _AgsDevout
       snd_pcm_hw_params_t *params;
     }alsa;
   }out;
-
+  
   AgsDevoutFifoIO *push;
   pthread_mutex_t push_inject_mutex;
   AgsDevoutFifoIO *pop;

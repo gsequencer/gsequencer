@@ -18,14 +18,6 @@
 
 #include <ags/audio/ags_devout.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_audio_signal.h>
-
-#include <ags/audio/recall/ags_play_channel.h>
-
-#include <ags/audio/file/ags_audio_file.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -74,9 +66,6 @@ enum{
   PROP_BPM,
   PROP_ATTACK,
   PROP_TASK,
-  PROP_PLAY_RECALL,
-  PROP_PLAY_CHANNEL,
-  PROP_PLAY_AUDIO,
 };
 
 enum{
@@ -242,33 +231,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_TASK,
 				  param_spec);
 
-  param_spec = g_param_spec_object("play_recall\0",
-				   "recall to run\0",
-				   "A recall to run\0",
-				   AGS_TYPE_RECALL,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PLAY_RECALL,
-				  param_spec);
-
-  param_spec = g_param_spec_object("play_channel\0",
-				   "channel to run\0",
-				   "A channel to run\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PLAY_CHANNEL,
-				  param_spec);
-
-  param_spec = g_param_spec_object("play_audio\0",
-				   "audio to run\0",
-				   "A audio to run\0",
-				   AGS_TYPE_AUDIO,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PLAY_AUDIO,
-				  param_spec);
-
   /* AgsDevoutClass */
   devout->run = ags_devout_real_run;
   devout->stop = ags_devout_real_stop;
@@ -382,9 +344,7 @@ ags_devout_set_property(GObject *gobject,
 
   devout = AGS_DEVOUT(gobject);
 
-  /*
-   * TODO:JK: implement set functionality
-   */
+  //TODO:JK: implement set functionality
   
   switch(prop_id){
   case PROP_DEVICE:
@@ -431,18 +391,6 @@ ags_devout_set_property(GObject *gobject,
     }
     break;
   case PROP_TASK:
-    {
-    }
-    break;
-  case PROP_PLAY_RECALL:
-    {
-    }
-    break;
-  case PROP_PLAY_CHANNEL:
-    {
-    }
-    break;
-  case PROP_PLAY_AUDIO:
     {
     }
     break;

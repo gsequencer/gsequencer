@@ -19,7 +19,6 @@
 #ifndef __AGS_AUDIO_H__
 #define __AGS_AUDIO_H__
 
-#include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
@@ -72,7 +71,7 @@ struct _AgsAudio
 
   GList *notation;
 
-  AgsDevoutPlay *devout_play;
+  gpointer devout_play;
 
   GList *recall_id;
   GList *run_order;

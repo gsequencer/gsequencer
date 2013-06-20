@@ -23,6 +23,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_run_connectable.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 

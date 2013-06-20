@@ -130,7 +130,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 
     /* create append task */
     append_audio = ags_append_audio_new(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout),
-					AGS_MACHINE(matrix)->audio->devout_play);
+					AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
 
     /* append AgsAppendAudio */
     ags_devout_append_task(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout),
@@ -144,19 +144,19 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 			   AGS_TASK(start_devout));
   }else{
     /* abort code */
-    if((AGS_DEVOUT_PLAY_DONE & (AGS_MACHINE(matrix)->audio->devout_play->flags)) == 0){
+    if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags)) == 0){
       AgsCancelAudio *cancel_audio;
 
       /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_MACHINE(matrix)->audio->devout_play->group_id,
-					  AGS_MACHINE(matrix)->audio->devout_play);
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->group_id,
+					  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
 
       /* append AgsAppendAudio */
       ags_devout_append_task(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout),
 			     AGS_TASK(cancel_audio));
     }else{
-      AGS_MACHINE(matrix)->audio->devout_play->flags |= AGS_DEVOUT_PLAY_REMOVE;
-      AGS_MACHINE(matrix)->audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_DONE);
+      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
+      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
     }
   }
 }
@@ -292,7 +292,7 @@ ags_matrix_run_delay_done(AgsRecall *recall, AgsMatrix *matrix)
   //  delay = AGS_DELAY(recall);
   //  matrix = AGS_MATRIX(AGS_AUDIO(delay->recall.parent)->machine);
   //  matrix->block_run = TRUE;
-  AGS_MACHINE(matrix)->audio->devout_play->flags |= AGS_DEVOUT_PLAY_DONE;
+  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
   gtk_toggle_button_set_active(matrix->run, FALSE);
 
 }
@@ -329,7 +329,7 @@ ags_matrix_play_done(AgsRecall *recall, AgsMatrix *matrix)
 
   if(matrix->play_ref == AGS_MACHINE(matrix)->audio->output_lines){
     matrix->play_ref = 0;
-    AGS_MACHINE(matrix)->audio->devout_play->flags |= AGS_DEVOUT_PLAY_DONE;
+    AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
     gtk_toggle_button_set_active(matrix->run, FALSE);
   }
   */

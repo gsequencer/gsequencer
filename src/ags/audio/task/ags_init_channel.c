@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_init_channel_class_init(AgsInitChannelClass *init_channel);
 void ags_init_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_init_channel_init(AgsInitChannel *init_channel);
@@ -165,7 +167,7 @@ ags_init_channel_launch(AgsTask *task)
       
       while(channel != next_pad){
 	if(stage == 0)
-	  channel->devout_play->group_id = init_channel->group_id;
+	  AGS_DEVOUT_PLAY(channel->devout_play)->group_id = init_channel->group_id;
 	
 	ags_channel_recursive_play_init(channel, stage,
 					arrange_group_id, duplicate_templates, TRUE, FALSE, FALSE, resolve_dependencies,
@@ -176,7 +178,7 @@ ags_init_channel_launch(AgsTask *task)
       }
     }
   }else{
-    init_channel->channel->devout_play->group_id = init_channel->group_id;
+    AGS_DEVOUT_PLAY(init_channel->channel->devout_play)->group_id = init_channel->group_id;
 
     ags_channel_recursive_play_init(init_channel->channel, -1,
 				    TRUE, TRUE, TRUE, FALSE, FALSE, TRUE,

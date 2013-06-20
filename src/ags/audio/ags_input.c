@@ -27,8 +27,6 @@ void ags_input_finalize (GObject *gobject);
 void ags_input_connect(AgsConnectable *connectable);
 void ags_input_disconnect(AgsConnectable *connectable);
 
-extern void ags_file_write_input(AgsFile *file, AgsChannel *channel);
-
 static gpointer ags_input_parent_class = NULL;
 static AgsConnectableInterface *ags_input_parent_connectable_interface;
 
@@ -81,7 +79,6 @@ ags_input_class_init(AgsInputClass *input)
   gobject->finalize = ags_input_finalize;
   
   channel = (AgsChannelClass *) input;
-  channel->write_file = ags_file_write_input;
 }
 
 void

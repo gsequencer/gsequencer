@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_tactable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_delay_audio_init(AgsDelayAudio *delay_audio);

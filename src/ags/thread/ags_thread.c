@@ -186,12 +186,12 @@ ags_thread_lock(AgsThread *thread)
   
   mutex = ags_thread_get_toplevel(thread)->mutex;
 
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(&mutex);
 
-  pthread_mutex_lock(thread->mutex);
+  pthread_mutex_lock(&(thread->mutex));
   thread->flags |= AGS_THREAD_LOCKED;
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(&mutex);
 }
 
 void
@@ -201,11 +201,11 @@ ags_thread_unlock(AgsThread *thread)
   
   mutex = ags_thread_get_toplevel(thread)->mutex;
 
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(&mutex);
   thread->flags &= (~AGS_THREAD_LOCKED);
-  pthread_mutex_unlock(thread->mutex);
+  pthread_mutex_unlock(&(thread->mutex));
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(&mutex);
 }
 
 /**

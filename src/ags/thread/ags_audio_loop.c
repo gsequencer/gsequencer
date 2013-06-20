@@ -20,9 +20,21 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
+
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
 void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_loop_init(AgsAudioLoop *audio_loop);
+void ags_audio_loop_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_audio_loop_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 void ags_audio_loop_connect(AgsConnectable *connectable);
 void ags_audio_loop_disconnect(AgsConnectable *connectable);
 void ags_audio_loop_finalize(GObject *gobject);
@@ -33,8 +45,17 @@ void ags_audio_loop_play_recall(AgsAudioLoop *audio_loop);
 void ags_audio_loop_play_channel(AgsAudioLoop *audio_loop);
 void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
 
+enum{
+  PROP_0,
+  PROP_PLAY_RECALL,
+  PROP_PLAY_CHANNEL,
+  PROP_PLAY_AUDIO,
+};
+
 static gpointer ags_audio_loop_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_loop_parent_connectable_interface;
+
+extern gboolean DEBUG_DEVOUT;
 
 GType
 ags_audio_loop_get_type()
@@ -78,18 +99,52 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
+  GParamSpec *param_spec;
 
   ags_audio_loop_parent_class = g_type_class_peek_parent(audio_loop);
 
   /* GObject */
   gobject = (GObjectClass *) audio_loop;
 
+  gobject->set_property = ags_audio_loop_set_property;
+  gobject->get_property = ags_audio_loop_get_property;
+
   gobject->finalize = ags_audio_loop_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("play_recall\0",
+				   "recall to run\0",
+				   "A recall to run\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_RECALL,
+				  param_spec);
+
+  param_spec = g_param_spec_object("play_channel\0",
+				   "channel to run\0",
+				   "A channel to run\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_CHANNEL,
+				  param_spec);
+
+  param_spec = g_param_spec_object("play_audio\0",
+				   "audio to run\0",
+				   "A audio to run\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_AUDIO,
+				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) audio_loop;
 
   thread->run = ags_audio_loop_run;
+
+  /* AgsAudioLoop */
 }
 
 void
@@ -122,6 +177,92 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->play_audio_ref = 0;
   audio_loop->play_audio = NULL;
+}
+
+
+void
+ags_audio_loop_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsAudioLoop *audio_loop;
+
+  audio_loop = AGS_AUDIO_LOOP(gobject);
+
+  switch(prop_id){
+  case PROP_PLAY_RECALL:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_pointer(value);
+
+      if(recall != NULL){
+	audio_loop->play_recall = g_list_prepend(audio_loop->play_recall,
+						 recall);
+      }
+    }
+    break;
+  case PROP_PLAY_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_pointer(value);
+
+      if(channel != NULL){
+	audio_loop->play_channel = g_list_prepend(audio_loop->play_channel,
+						  channel);
+      }
+    }
+    break;
+  case PROP_PLAY_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_pointer(value);
+
+      if(audio != NULL){
+	audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
+						audio);
+      }
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_audio_loop_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsAudioLoop *audio_loop;
+
+  audio_loop = AGS_AUDIO_LOOP(gobject);
+
+  switch(prop_id){
+  case PROP_PLAY_RECALL:
+    {
+      g_value_set_pointer(value, audio_loop->play_recall);
+    }
+    break;
+  case PROP_PLAY_CHANNEL:
+    {
+      g_value_set_pointer(value, audio_loop->play_channel);
+    }
+    break;
+  case PROP_PLAY_AUDIO:
+    {
+      g_value_set_pointer(value, audio_loop->play_audio);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -160,10 +301,13 @@ void
 ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
+  AgsDevout *devout;
 
   AGS_THREAD_CLASS(ags_audio_loop_parent_class)->run(thread);
 
   audio_loop = AGS_AUDIO_LOOP(thread);
+
+  devout = AGS_DEVOUT(audio_loop->devout);
 
   if(DEBUG_DEVOUT){
     g_message("ags_devout_play_functions: unlocked\0");
@@ -192,15 +336,15 @@ ags_audio_loop_run(AgsThread *thread)
   }
     
   /* determine if attack should be switched */
-  audio_loop->devout->delay_counter = audio_loop->devout->delay_counter + 1;
+  devout->delay_counter += 1;
       
-  if(audio_loop->delay_counter == audio_loop->delay){
-    if((AGS_AUDIO_LOOP_ATTACK_FIRST & (audio_loop->flags)) != 0)
-      audio_loop->flags &= (~AGS_AUDIO_LOOP_ATTACK_FIRST);
+  if(devout->delay_counter == devout->delay){
+    if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
+      devout->flags &= (~AGS_DEVOUT_ATTACK_FIRST);
     else
-      audio_loop->flags |= AGS_AUDIO_LOOP_ATTACK_FIRST;
+      devout->flags |= AGS_DEVOUT_ATTACK_FIRST;
       
-    audio_loop->devout->delay_counter = 0;
+    devout->delay_counter = 0;
   }
 }
 
@@ -323,7 +467,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 
       ags_channel_recursive_play(channel, group_id, stage);
 
-      if((AGS_AUDIO_LOOP_PLAY_REMOVE & (play->flags)) != 0){
+      if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
 	audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
 	audio_loop->play_channel = g_list_remove(audio_loop->play_channel, (gpointer) play);
       }
@@ -383,7 +527,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	output = output->next;
       }
 
-      if((AGS_AUDIO_LOOP_PLAY_REMOVE & (play->flags)) != 0){
+      if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
 	audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
 	audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play);
       }

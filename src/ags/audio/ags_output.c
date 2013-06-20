@@ -30,8 +30,6 @@ void ags_output_finalize(GObject *gobject);
 void ags_output_connect(AgsConnectable *connectable);
 void ags_output_disconnect(AgsConnectable *connectable);
 
-extern void ags_file_write_output(AgsFile *file, AgsChannel *channel);
-
 static gpointer ags_output_parent_class = NULL;
 static AgsConnectableInterface *ags_output_parent_connectable_interface;
 
@@ -84,7 +82,6 @@ ags_output_class_init(AgsOutputClass *output)
   gobject->finalize = ags_output_finalize;
 
   channel = (AgsChannelClass *) output;
-  channel->write_file = ags_file_write_output;
 }
 
 void

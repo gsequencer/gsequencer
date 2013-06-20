@@ -24,6 +24,7 @@
 #include <ags/object/ags_run_connectable.h>
 #include <ags/object/ags_marshal.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -53,8 +54,6 @@ void ags_channel_get_property(GObject *gobject,
 void ags_channel_connect(AgsConnectable *connectable);
 void ags_channel_disconnect(AgsConnectable *connectable);
 static void ags_channel_finalize(GObject *gobject);
-
-extern void ags_file_write_channel(AgsFile *file, AgsChannel *channel);
 
 enum{
   RECYCLING_CHANGED,
@@ -132,8 +131,6 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /* AgsChannelClass */
-  channel->write_file = ags_file_write_channel;
-
   channel->recycling_changed = NULL;
 
   /* signals */
@@ -183,7 +180,7 @@ ags_channel_init(AgsChannel *channel)
   channel->note = NULL;
 
   channel->devout_play = ags_devout_play_alloc();
-  channel->devout_play->source = (GObject *) channel;
+  AGS_DEVOUT_PLAY(channel->devout_play)->source = (GObject *) channel;
 
   channel->recall_id = NULL;
 
@@ -3667,11 +3664,11 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       while(current != NULL){
 	/* collect group id and the recalls purpose */
 	if(current->devout_play != NULL &&
-	   ((AGS_DEVOUT_PLAY_PLAYBACK & (current->devout_play->flags)) != 0 ||
-	    (AGS_DEVOUT_PLAY_SEQUENCER & (current->devout_play->flags)) != 0 ||
-	    (AGS_DEVOUT_PLAY_NOTATION & (current->devout_play->flags)) != 0)){
+	   ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	    (AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	    (AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0)){
 	  list = g_list_prepend(list,
-				(collect_group_id ? AGS_GROUP_ID_TO_POINTER(current->devout_play->group_id): current->devout_play));
+				(collect_group_id ? AGS_GROUP_ID_TO_POINTER(AGS_DEVOUT_PLAY(current->devout_play)->group_id): current->devout_play));
 	}
 	/* go down */
 	list = ags_channel_tillrecycling_collect_devout_play_down(current->link,
@@ -3685,11 +3682,11 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
       /* collect group id and the recalls purpose */
       if(current->devout_play != NULL &&
-	 ((AGS_DEVOUT_PLAY_PLAYBACK & (current->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_SEQUENCER & (current->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_NOTATION & (current->devout_play->flags)) != 0)){
+	 ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0)){
 	list = g_list_prepend(list,
-			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(current->devout_play->group_id): current->devout_play));
+			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(AGS_DEVOUT_PLAY(current->devout_play)->group_id): current->devout_play));
       }
 
       /* go down */
@@ -3710,20 +3707,20 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
     /* collect devout play */
     if(current->devout_play != NULL &&
-       ((AGS_DEVOUT_PLAY_PLAYBACK & (current->devout_play->flags)) != 0 ||
-	(AGS_DEVOUT_PLAY_SEQUENCER & (current->devout_play->flags)) != 0 ||
-	(AGS_DEVOUT_PLAY_NOTATION & (current->devout_play->flags)) != 0)){
+       ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	(AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	(AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0)){
       list = g_list_prepend(list,
-			    (collect_group_id ? AGS_GROUP_ID_TO_POINTER(current->devout_play->group_id): current->devout_play));
+			    (collect_group_id ? AGS_GROUP_ID_TO_POINTER(AGS_DEVOUT_PLAY(current->devout_play)->group_id): current->devout_play));
     }
 
     /* collect devout play */
     if(audio->devout_play != NULL &&
-       ((AGS_DEVOUT_PLAY_PLAYBACK & (audio->devout_play->flags)) != 0 ||
-	(AGS_DEVOUT_PLAY_SEQUENCER & (audio->devout_play->flags)) != 0 ||
-	(AGS_DEVOUT_PLAY_NOTATION & (audio->devout_play->flags)) != 0)){
+       ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
+	(AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
+	(AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0)){
       list = g_list_prepend(list,
-			    (collect_group_id ? AGS_GROUP_ID_TO_POINTER(audio->devout_play->group_id): audio->devout_play));
+			    (collect_group_id ? AGS_GROUP_ID_TO_POINTER(AGS_DEVOUT_PLAY(audio->devout_play)->group_id): audio->devout_play));
     }
     
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
@@ -3775,11 +3772,11 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       }
 
       if(current->devout_play != NULL &&
-	 ((AGS_DEVOUT_PLAY_PLAYBACK & (current->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_SEQUENCER & (current->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_NOTATION & (current->devout_play->flags)) != 0)){
+	 ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0)){
 	list = g_list_prepend(list,
-			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(current->devout_play->group_id): current->devout_play));
+			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(AGS_DEVOUT_PLAY(current->devout_play)->group_id): current->devout_play));
 
 	if(retrieve_audio_signal_level){
 	  level_list = g_list_prepend(level_list,
@@ -3794,11 +3791,11 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
       }
 
       if(audio->devout_play != NULL &&
-	 ((AGS_DEVOUT_PLAY_PLAYBACK & (audio->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_SEQUENCER & (audio->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_NOTATION & (audio->devout_play->flags)) != 0)){
+	 ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0)){
 	list = g_list_prepend(list,
-			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(audio->devout_play->group_id): audio->devout_play));
+			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(AGS_DEVOUT_PLAY(audio->devout_play)->group_id): audio->devout_play));
 
 	if(retrieve_audio_signal_level){
 	  level_list = g_list_prepend(level_list,
@@ -3817,11 +3814,11 @@ ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
 
     ags_channel_recursive_collect_devout_play_upOUTPUT:
       if(current->devout_play != NULL &&
-	 ((AGS_DEVOUT_PLAY_PLAYBACK & (current->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_SEQUENCER & (current->devout_play->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_NOTATION & (current->devout_play->flags)) != 0)){
+	 ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 ||
+	  (AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0)){
 	list = g_list_prepend(list,
-			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(current->devout_play->group_id): current->devout_play));
+			      (collect_group_id ? AGS_GROUP_ID_TO_POINTER(AGS_DEVOUT_PLAY(current->devout_play)->group_id): current->devout_play));
 
 	if(retrieve_audio_signal_level){
 	  level_list = g_list_prepend(level_list,
