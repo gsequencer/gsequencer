@@ -90,8 +90,8 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   apply_bpm = ags_apply_bpm_new(G_OBJECT(window->devout),
 				navigation->bpm->adjustment->value);
 
-  ags_devout_append_task(AGS_DEVOUT(window->devout),
-			 AGS_TASK(apply_bpm));
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+			      AGS_TASK(apply_bpm));
 }
 
 void
@@ -157,8 +157,8 @@ ags_navigation_play_callback(GtkWidget *widget,
     list = g_list_reverse(list);
 
     /* append AgsStartDevout */
-    ags_devout_append_tasks(window->devout,
-			    list);
+    ags_task_thread_append_tasks(window->devout->task_thread,
+				 list);
   }  
 }
 

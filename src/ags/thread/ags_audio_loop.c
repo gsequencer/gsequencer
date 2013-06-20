@@ -56,7 +56,7 @@ enum{
 static gpointer ags_audio_loop_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_loop_parent_connectable_interface;
 
-extern gboolean DEBUG_DEVOUT;
+static gboolean DEBUG = FALSE;
 
 GType
 ags_audio_loop_get_type()
@@ -310,7 +310,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(audio_loop->devout);
 
-  if(DEBUG_DEVOUT){
+  if(DEBUG){
     g_message("ags_devout_play_functions: unlocked\0");
   }
   

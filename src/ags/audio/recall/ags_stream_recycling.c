@@ -207,8 +207,8 @@ ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall, AgsStreamRecycl
   remove_audio_signal = ags_remove_audio_signal_new(AGS_RECALL_RECYCLING(stream_recycling)->source,
 						    AGS_RECALL_AUDIO_SIGNAL(recall)->source);
 
-  ags_devout_append_task(AGS_DEVOUT(recall->devout),
-			 AGS_TASK(remove_audio_signal));
+  ags_task_thread_append_task(AGS_DEVOUT(recall->devout)->task_thread,
+			      AGS_TASK(remove_audio_signal));
 }
 
 AgsStreamRecycling*

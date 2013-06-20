@@ -99,15 +99,15 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 
   apply_bpm = ags_apply_bpm_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				bpm);
-  ags_devout_append_task(AGS_DEVOUT(window->devout),
-			 AGS_TASK(apply_bpm));
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+			      AGS_TASK(apply_bpm));
 
   /* tact */
   tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
 
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				  tact);
-  ags_devout_append_task(AGS_DEVOUT(window->devout),
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
 			 AGS_TASK(apply_tact));
 
   /* length */
@@ -115,8 +115,8 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 							  length);
-  ags_devout_append_task(AGS_DEVOUT(window->devout),
-			 AGS_TASK(apply_sequencer_length));
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+			      AGS_TASK(apply_sequencer_length));
 }
 
 void
@@ -205,16 +205,16 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 				    FALSE, TRUE, FALSE);
 
     /* append AgsInitAudio */
-    ags_devout_append_task(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout),
-			   AGS_TASK(init_audio));
+    ags_task_thread_append_task(task_thread,
+				AGS_TASK(init_audio));
 
     /* create append task */
     append_audio = ags_append_audio_new(G_OBJECT(audio_loop),
 					AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play));
 
     /* append AgsAppendAudio */
-    ags_devout_append_task(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout),
-			   AGS_TASK(append_audio));
+    ags_task_thread_append_task(task_thread,
+				AGS_TASK(append_audio));
 
     /* create start task */
     start_devout = ags_start_devout_new(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout));
@@ -272,8 +272,8 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				  tact);
 
-  ags_devout_append_task(AGS_DEVOUT(window->devout),
-			 AGS_TASK(apply_tact));
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+			      AGS_TASK(apply_tact));
 }
 
 void
@@ -290,8 +290,8 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 							  length);
 
-  ags_devout_append_task(AGS_DEVOUT(window->devout),
-			 AGS_TASK(apply_sequencer_length));
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+			      AGS_TASK(apply_sequencer_length));
 }
 
 void
@@ -433,8 +433,8 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
     }
 
     /* append AgsTogglePatternBit */
-    ags_devout_append_tasks(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout),
-			    tasks);
+    ags_task_thread_append_tasks(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->task_thread,
+				 tasks);
   }else{
     AgsTogglePatternBit *toggle_pattern_bit;
     
@@ -443,8 +443,8 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 						    offset);
 
     /* append AgsTogglePatternBit */
-    ags_devout_append_task(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout),
-			   AGS_TASK(toggle_pattern_bit));
+    ags_task_thread_append_task(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->task_thread,
+				AGS_TASK(toggle_pattern_bit));
   }
 }
 

@@ -301,8 +301,8 @@ ags_machine_open_files(AgsMachine *machine,
 				overwrite_channels,
 				create_channels);
 
-  ags_devout_append_task(AGS_DEVOUT(machine->audio->devout),
-			 AGS_TASK(open_file));
+  ags_task_thread_append_task(AGS_DEVOUT(machine->audio->devout)->task_thread,
+			      AGS_TASK(open_file));
 
 }
 

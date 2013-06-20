@@ -674,7 +674,8 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
        	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
 					      NULL);
 	
-	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
+	ags_task_thread_append_task(devout->task_thread,
+				    (AgsTask *) cancel_recall);
 
 	break;
       }
@@ -767,7 +768,8 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
 					      NULL);
 
-	ags_devout_append_task(devout, (AgsTask *) cancel_recall);
+	ags_task_thread_append_task(devout->task_thread,
+				    (AgsTask *) cancel_recall);
       }
 
       list = list->next;

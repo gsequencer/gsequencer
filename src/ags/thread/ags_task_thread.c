@@ -39,7 +39,7 @@ void* ags_devout_append_tasks_thread(void *ptr);
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
 
-extern gboolean DEBUG_DEVOUT;
+static gboolean DEBUG;
 
 GType
 ags_task_thread_get_type()
@@ -195,7 +195,7 @@ ags_task_thread_run(AgsThread *thread)
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
-      if(DEBUG_DEVOUT){
+      if(DEBUG){
 	g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
       }
 

@@ -118,8 +118,8 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   remove_audio = ags_remove_audio_new(window->devout,
 				      machine->audio);
-  ags_devout_append_task(window->devout,
-			 AGS_TASK(remove_audio));
+  ags_task_thread_append_task(window->devout->task_thread,
+			      AGS_TASK(remove_audio));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);

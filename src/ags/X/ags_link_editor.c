@@ -214,8 +214,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, NULL);
       
       /* append AgsLinkChannel */
-      ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
-			     AGS_TASK(link_channel));
+      ags_task_thread_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->task_thread,
+				  AGS_TASK(link_channel));
     }else{
       guint link_line;
 
@@ -232,8 +232,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, link);
       
       /* append AgsLinkChannel */
-      ags_devout_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout),
-			     AGS_TASK(link_channel));
+      ags_task_thread_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->task_thread,
+				  AGS_TASK(link_channel));
     }
   }
 }
