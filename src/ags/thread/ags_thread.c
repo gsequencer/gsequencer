@@ -20,17 +20,34 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_thread_class_init(AgsThreadClass *thread);
 void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_init(AgsThread *thread);
+void ags_thread_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_thread_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
 void ags_thread_connect(AgsConnectable *connectable);
 void ags_thread_disconnect(AgsConnectable *connectable);
 void ags_thread_finalize(GObject *gobject);
+
+void ags_thread_set_devout(AgsThread *thread, GObject *devout);
 
 void ags_thread_real_start(AgsThread *thread);
 void* ags_thread_loop(void *ptr);
 void ags_thread_real_run(AgsThread *thread);
 void ags_thread_real_stop(AgsThread *thread);
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+};
 
 enum{
   START,
@@ -83,13 +100,27 @@ void
 ags_thread_class_init(AgsThreadClass *thread)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_thread_parent_class = g_type_class_peek_parent(thread);
 
   /* GObject */
   gobject = (GObjectClass *) thread;
 
+  gobject->set_property = ags_thread_set_property;
+  gobject->get_property = ags_thread_get_property;
+
   gobject->finalize = ags_thread_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "devout assigned to\0",
+				   "The AgsDevout it is assigned to.\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
 
   /* AgsThread */
   thread->start = ags_thread_real_start;
@@ -144,12 +175,67 @@ ags_thread_init(AgsThread *thread)
   thread->wait_count[0] = 1;
   thread->wait_count[1] = 1;
 
+  thread->devout = NULL;
+
   thread->parent = NULL;
   thread->next = NULL;
   thread->prev = NULL;
   thread->children = NULL;
 
   thread->data = NULL;
+}
+
+void
+ags_thread_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsThread *thread;
+
+  thread = AGS_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(thread->devout != NULL){
+	g_object_unref(G_OBJECT(thread->devout));
+      }
+
+      if(devout != NULL){
+	g_object_ref(G_OBJECT(devout));
+      }
+
+      thread->devout = devout;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_thread_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsThread *thread;
+
+  thread = AGS_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      g_value_set_object(value, G_OBJECT(thread->devout));
+    }
+    break;
+  }
 }
 
 void
@@ -177,6 +263,11 @@ ags_thread_finalize(GObject *gobject)
   pthread_mutex_destroy(&(thread->mutex));
   pthread_cond_destroy(&(thread->cond));
 
+}
+
+void
+ags_thread_set_devout(AgsThread *thread, GObject *devout)
+{
 }
 
 void
@@ -374,6 +465,12 @@ ags_thread_loop(void *ptr)
       }
 
       thread->flags &= (~AGS_THREAD_WAITING_FOR_PARENT);
+
+      if((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
+	pthread_cond_signal(&(thread->cond));
+      }else{
+	pthread_cond_broadcast(&(thread->cond));
+      }
     }
 
     /* sibling */
@@ -388,6 +485,12 @@ ags_thread_loop(void *ptr)
       }
 
       thread->flags &= (~AGS_THREAD_WAITING_FOR_SIBLING);
+
+      if((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) == 0){
+	pthread_cond_signal(&(thread->cond));
+      }else{
+	pthread_cond_broadcast(&(thread->cond));
+      }
     }
 
     /* children */
@@ -402,6 +505,12 @@ ags_thread_loop(void *ptr)
       }
 
       thread->flags &= (~AGS_THREAD_WAITING_FOR_CHILDREN);
+
+      if((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) == 0){
+	pthread_cond_signal(&(thread->cond));
+      }else{
+	pthread_cond_broadcast(&(thread->cond));
+      }
     }
 
     pthread_mutex_unlock(&mutex);

@@ -329,10 +329,9 @@ ags_devout_init(AgsDevout *devout)
 
   /* threads */
   devout->audio_loop = ags_audio_loop_new(G_OBJECT(devout));
-  devout->task_thread = ags_task_thread_new(G_OBJECT(devout));
-  devout->devout_thread = ags_devout_thread_new(G_OBJECT(devout));
+  devout->task_thread = AGS_TASK_THREAD(devout->audio_loop->task_thread);
+  devout->devout_thread = AGS_DEVOUT_THREAD(devout->audio_loop->devout_thread);
 }
-
 
 void
 ags_devout_set_property(GObject *gobject,
@@ -351,7 +350,7 @@ ags_devout_set_property(GObject *gobject,
     {
       char *device;
 
-      device = g_value_get_string(value);
+      device = (char *) g_value_get_string(value);
 
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
 	//TODO:JK: implement me

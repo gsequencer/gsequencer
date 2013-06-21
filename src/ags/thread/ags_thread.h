@@ -22,8 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#define __USE_GNU
-#define __USE_UNIX98
+#define _GNU_SOURCE
 #include <pthread.h>
 
 #define AGS_TYPE_THREAD                (ags_thread_get_type())
@@ -48,6 +47,9 @@ typedef enum{
   AGS_THREAD_WAITING_FOR_SIBLING     = 1 << 8,
   AGS_THREAD_WAITING_FOR_CHILDREN    = 1 << 9,
   AGS_THREAD_WAITING_FOR_BARRIER     = 1 << 10,
+  AGS_THREAD_BROADCAST_PARENT        = 1 << 11,
+  AGS_THREAD_BROADCAST_SIBLING       = 1 << 12,
+  AGS_THREAD_BROADCAST_CHILDREN      = 1 << 13,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -64,6 +66,7 @@ struct _AgsThread
   gboolean first_barrier;
   int wait_count[2];
 
+  GObject *devout;
   AgsThread *parent;
 
   AgsThread *next;

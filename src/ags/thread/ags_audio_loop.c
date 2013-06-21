@@ -40,6 +40,7 @@ void ags_audio_loop_connect(AgsConnectable *connectable);
 void ags_audio_loop_disconnect(AgsConnectable *connectable);
 void ags_audio_loop_finalize(GObject *gobject);
 
+void ags_audio_loop_start(AgsThread *thread);
 void ags_audio_loop_run(AgsThread *thread);
 
 void ags_audio_loop_play_recall(AgsAudioLoop *audio_loop);
@@ -168,7 +169,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->flags = 0;
 
-  audio_loop->devout = NULL;
+  audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
+  audio_loop->devout_thread = (AgsThread *) ags_devout_thread_new(NULL);
 
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
@@ -179,7 +181,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->play_audio_ref = 0;
   audio_loop->play_audio = NULL;
 }
-
 
 void
 ags_audio_loop_set_property(GObject *gobject,
@@ -299,6 +300,16 @@ ags_audio_loop_finalize(GObject *gobject)
 }
 
 void
+ags_audio_loop_start(AgsThread *thread)
+{
+  AgsAudioLoop *audio_loop;
+
+  audio_loop = AGS_AUDIO_LOOP(thread);
+
+  ags_thread_start(audio_loop->task_thread);
+}
+
+void
 ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
@@ -308,7 +319,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  devout = AGS_DEVOUT(audio_loop->devout);
+  devout = AGS_DEVOUT(AGS_THREAD(audio_loop)->devout);
 
   if(DEBUG){
     g_message("ags_devout_play_functions: unlocked\0");
@@ -320,7 +331,7 @@ ags_audio_loop_run(AgsThread *thread)
       
     if(audio_loop->play_channel_ref == 0){
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_CHANNEL);
-      ags_thread_stop(AGS_THREAD(AGS_DEVOUT(audio_loop->devout)->devout_thread));
+      ags_thread_stop(AGS_THREAD(devout->devout_thread));
       g_message("audio_loop->play_channel_ref == 0\n\0");
     }
   }
@@ -331,7 +342,7 @@ ags_audio_loop_run(AgsThread *thread)
       
     if(audio_loop->play_audio_ref == 0){
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
-      ags_thread_stop(AGS_THREAD(AGS_DEVOUT(audio_loop->devout)->devout_thread));
+      ags_thread_stop(AGS_THREAD(devout->devout_thread));
       g_message("audio_loop->play_audio_ref == 0\n\0");
     }
   }
@@ -580,9 +591,8 @@ ags_audio_loop_new(GObject *devout)
   AgsAudioLoop *audio_loop;
 
   audio_loop = (AgsAudioLoop *) g_object_new(AGS_TYPE_AUDIO_LOOP,
+					     "devout\0", devout,
 					     NULL);
-
-  audio_loop->devout = devout;
 
   return(audio_loop);
 }

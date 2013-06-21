@@ -52,7 +52,8 @@ struct _AgsAudioLoop
 
   guint flags;
 
-  GObject *devout;
+  AgsThread *task_thread;
+  AgsThread *devout_thread;
 
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall
