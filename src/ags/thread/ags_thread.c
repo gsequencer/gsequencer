@@ -861,8 +861,8 @@ ags_thread_unlock_children(AgsThread *thread,
     current = ags_thread_last(child);
 
     while(current != NULL){
-      ags_thread_lock_children_recursive(current->children,
-					 toplevel_mutex);
+      ags_thread_unlock_children_recursive(current->children,
+					   toplevel_mutex);
 
       pthread_mutex_lock(&toplevel_mutex);
       current->flags &= (~AGS_THREAD_WAITING_FOR_PARENT);
