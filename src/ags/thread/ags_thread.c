@@ -258,19 +258,28 @@ ags_thread_finalize(GObject *gobject)
 
   thread = AGS_THREAD(gobject);
 
-  G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
-
-  /* empty */
   pthread_mutex_destroy(&(thread->mutex));
   pthread_cond_destroy(&(thread->cond));
+  g_list_free(thread->unlocked);
 
+  g_object_unref(G_OBJECT(thread->devout));
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
 }
 
 void
 ags_thread_set_devout(AgsThread *thread, GObject *devout)
 {
+  //TODO:JK: implement me
 }
 
+/**
+ * ags_thread_lock:
+ * @thread an #AgsThread
+ * 
+ * Locks the threads own mutex and sets the appropriate flag.
+ */
 void
 ags_thread_lock(AgsThread *thread)
 {
@@ -286,6 +295,12 @@ ags_thread_lock(AgsThread *thread)
   pthread_mutex_unlock(&mutex);
 }
 
+/**
+ * ags_thread_lock:
+ * @thread an #AgsThread
+ *
+ * Unlocks the threads own mutex and unsets the appropriate flag.
+ */
 void
 ags_thread_unlock(AgsThread *thread)
 {
@@ -302,7 +317,8 @@ ags_thread_unlock(AgsThread *thread)
 
 /**
  * ags_thread_get_toplevel:
- * @thread
+ * @thread an #AgsThread
+ * Returns: the toplevevel #AgsThread
  *
  * Retrieve toplevel thread.
  */
@@ -322,7 +338,8 @@ ags_thread_get_toplevel(AgsThread *thread)
 
 /**
  * ags_thread_first:
- * @thread
+ * @thread an #AgsThread
+ * Returns: the very first #AgsThread withing same tree level
  *
  * Retrieve first sibling.
  */
@@ -342,7 +359,8 @@ ags_thread_first(AgsThread *thread)
 
 /**
  * ags_thread_parental_is_locked:
- * @thread
+ * @thread an #AgsThread
+ * Returns: TRUE if locked otherwise FALSE
  *
  * Check the AGS_THREAD_LOCKED flag in parental levels.
  */
@@ -368,6 +386,13 @@ ags_thread_parental_is_locked(AgsThread *thread)
   return(FALSE);
 }
 
+/**
+ * ags_thread_sibling_is_locked:
+ * @thread an #AgsThread
+ * Returns: TRUE if locked otherwise FALSE
+ *
+ * Check the AGS_THREAD_LOCKED flag within sibling.
+ */
 gboolean
 ags_thread_sibling_is_locked(AgsThread *thread)
 {
@@ -388,6 +413,14 @@ ags_thread_sibling_is_locked(AgsThread *thread)
   return(FALSE);
 }
 
+
+/**
+ * ags_thread_sibling_is_locked:
+ * @thread an #AgsThread
+ * Returns: TRUE if locked otherwise FALSE
+ *
+ * Check the AGS_THREAD_LOCKED flag within sibling.
+ */
 gboolean
 ags_thread_children_is_locked(AgsThread *thread)
 {
@@ -422,6 +455,14 @@ ags_thread_children_is_locked(AgsThread *thread)
   return(ags_thread_children_is_locked_recursive(thread->children));
 }
 
+/**
+ * ags_thread_parental_is_unlocked:
+ * @thread an #AgsThread
+ * @lock the mutex that holds the lock
+ * Returns: TRUE if mutex isn't locked otherwise FALSE
+ *
+ * Searches the tree for @lock to be unlocked within parental levels.
+ */
 gboolean
 ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
 {
@@ -442,6 +483,14 @@ ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
   return(TRUE);
 }
 
+/**
+ * ags_thread_sibling_is_unlocked:
+ * @thread an #AgsThread
+ * @lock the mutex that holds the lock
+ * Returns: TRUE if mutex isn't locked otherwise FALSE
+ *
+ * Searches the tree for @lock to be unlocked within same level.
+ */
 gboolean
 ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
 {
@@ -464,6 +513,14 @@ ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
   return(TRUE);
 }
 
+/**
+ * ags_thread_children_is_unlocked:
+ * @thread an #AgsThread
+ * @lock the mutex that holds the lock
+ * Returns: TRUE if mutex isn't locked otherwise FALSE
+ *
+ * Searches the tree for @lock to be unlocked within children.
+ */
 gboolean
 ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
 {
@@ -494,6 +551,13 @@ ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
   return(ags_thread_children_is_unlocked_recursive(thread->children, lock));
 }
 
+/**
+ * ags_thread_signal_parent:
+ * @thread an #AgsThread
+ * @broadcast whether to perforam a signal or to broadcast
+ *
+ * Signals the tree in higher levels.
+ */
 void
 ags_thread_signal_parent(AgsThread *thread, gboolean broadcast)
 {
@@ -514,6 +578,13 @@ ags_thread_signal_parent(AgsThread *thread, gboolean broadcast)
   }
 }
 
+/**
+ * ags_thread_signal_sibling:
+ * @thread an #AgsThread
+ * @broadcast whether to perforam a signal or to broadcast
+ *
+ * Signals the tree on same level.
+ */
 void
 ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
 {
@@ -532,6 +603,13 @@ ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
   }
 }
 
+/**
+ * ags_thread_signal_children:
+ * @thread an #AgsThread
+ * @broadcast whether to perforam a signal or to broadcast
+ *
+ * Signals the tree in lower levels.
+ */
 void
 ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 {
@@ -571,6 +649,12 @@ ags_thread_real_start(AgsThread *thread)
 		 &ags_thread_loop, thread);
 }
 
+/**
+ * ags_thread_start:
+ * @thread the #AgsThread instance
+ *
+ * Start the thread.
+ */
 void
 ags_thread_start(AgsThread *thread)
 {
@@ -715,6 +799,13 @@ ags_thread_loop(void *ptr)
   pthread_exit(NULL);
 }
 
+/**
+ * ags_thread_run:
+ * @thread the #AgsThread instance
+ * 
+ * Only for internal use of ags_thread_loop but you may want to set the your very own
+ * class function namely your threads routine.
+ */
 void
 ags_thread_run(AgsThread *thread)
 {
@@ -729,9 +820,15 @@ ags_thread_run(AgsThread *thread)
 void
 ags_thread_real_stop(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  thread->flags &= (~AGS_THREAD_RUNNING);
 }
 
+/**
+ * ags_thread_stop:
+ * @thread the #AgsThread instance
+ * 
+ * Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.
+ */
 void
 ags_thread_stop(AgsThread *thread)
 {
