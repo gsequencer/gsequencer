@@ -339,7 +339,7 @@ ags_thread_get_toplevel(AgsThread *thread)
 /**
  * ags_thread_first:
  * @thread an #AgsThread
- * Returns: the very first #AgsThread withing same tree level
+ * Returns: the very first #AgsThread within same tree level
  *
  * Retrieve first sibling.
  */
@@ -357,6 +357,13 @@ ags_thread_first(AgsThread *thread)
   return(thread);
 }
 
+/**
+ * ags_thread_last:
+ * @thread an #AgsThread
+ * Returns: the very last @AgsThread within same tree level
+ * 
+ * Retrieve last sibling.
+ */
 AgsThread*
 ags_thread_last(AgsThread *thread)
 {
@@ -569,6 +576,13 @@ ags_thread_children_is_unlocked(AgsThread *thread,
   return(ags_thread_children_is_unlocked_recursive(thread->children, lock));
 }
 
+/**
+ * ags_thread_next_parent_locked:
+ * @thread an #AgsThread
+ * @parent the parent #AgsThread where to stop.
+ * 
+ * Retrieve next locked thread above @thread.
+ */
 AgsThread*
 ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
 {
@@ -588,6 +602,12 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
   return(NULL);
 }
 
+/**
+ * ags_thread_next_sibling_locked:
+ * @thread an #AgsThread
+ *
+ * Retrieve next locked thread neighbooring @thread
+ */
 AgsThread*
 ags_thread_next_sibling_locked(AgsThread *thread)
 {
@@ -613,6 +633,12 @@ ags_thread_next_sibling_locked(AgsThread *thread)
   return(NULL);
 }
 
+/**
+ * ags_thread_next_children_locked:
+ * @thread an #AgsThread
+ * 
+ * Retrieve next locked thread following @thread
+ */
 AgsThread*
 ags_thread_next_children_locked(AgsThread *thread)
 {
@@ -640,6 +666,14 @@ ags_thread_next_children_locked(AgsThread *thread)
   return(ags_thread_next_children_locked(thread->children));
 }
 
+/**
+ * ags_thread_lock_parent:
+ * @thread an #AgsThread
+ * @parent the parent #AgsThread where to stop.
+ * @toplevel_mutex the main posix mutex
+ *
+ * Lock parent tree structure.
+ */
 void
 ags_thread_lock_parent(AgsThread *thread, AgsThread *parent,
 		       pthread_mutex_t toplevel_mutex)
@@ -663,6 +697,13 @@ ags_thread_lock_parent(AgsThread *thread, AgsThread *parent,
   }
 }
 
+/**
+ * ags_thread_lock_sibling:
+ * @thread an #AgsThread
+ * @toplevel_mutex the main posix mutex
+ *
+ * Lock sibling tree structure.
+ */
 void
 ags_thread_lock_sibling(AgsThread *thread,
 			pthread_mutex_t toplevel_mutex)
@@ -692,6 +733,13 @@ ags_thread_lock_sibling(AgsThread *thread,
   }
 }
 
+/**
+ * ags_thread_lock_children:
+ * @thread an #AgsThread
+ * @toplevel_mutex the main posix mutex
+ *
+ * Lock child tree structure.
+ */
 void
 ags_thread_lock_children(AgsThread *thread,
 			 pthread_mutex_t toplevel_mutex)
@@ -723,6 +771,14 @@ ags_thread_lock_children(AgsThread *thread,
 				     toplevel_mutex);
 }
 
+/**
+ * ags_thread_unlock_parent:
+ * @thread an #AgsThread
+ * @parent the parent #AgsThread where to stop.
+ * @toplevel_mutex the main posix mutex
+ *
+ * Unlock parent tree structure.
+ */
 void
 ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent,
 			 pthread_mutex_t toplevel_mutex)
@@ -746,6 +802,13 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent,
   }
 }
 
+/**
+ * ags_thread_unlock_sibling:
+ * @thread an #AgsThread
+ * @toplevel_mutex the main posix mutex
+ *
+ * Unlock sibling tree structure.
+ */
 void
 ags_thread_unlock_sibling(AgsThread *thread,
 			  pthread_mutex_t toplevel_mutex)
@@ -775,6 +838,13 @@ ags_thread_unlock_sibling(AgsThread *thread,
   }
 }
 
+/**
+ * ags_thread_unlock_children:
+ * @thread an #AgsThread
+ * @toplevel_mutex the main posix mutex
+ *
+ * Unlock child tree structure.
+ */
 void
 ags_thread_unlock_children(AgsThread *thread,
 			   pthread_mutex_t toplevel_mutex)
@@ -806,6 +876,14 @@ ags_thread_unlock_children(AgsThread *thread,
 				       toplevel_mutex);
 }
 
+/**
+ * ags_thread_wait_parent:
+ * @thread an #AgsThread
+ * @parent the parent #AgsThread where to stop.
+ * @toplevel_mutex the main posix mutex
+ *
+ * Wait on parent tree structure.
+ */
 void
 ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
 		       pthread_mutex_t toplevel_mutex)
@@ -859,6 +937,13 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
   }
 }
 
+/**
+ * ags_thread_wait_sibling:
+ * @thread an #AgsThread
+ * @toplevel_mutex the main posix mutex
+ *
+ * Wait on sibling tree structure.
+ */
 void
 ags_thread_wait_sibling(AgsThread *thread,
 			pthread_mutex_t toplevel_mutex)
@@ -916,6 +1001,13 @@ ags_thread_wait_sibling(AgsThread *thread,
   }
 }
 
+/**
+ * ags_thread_wait_children:
+ * @thread an #AgsThread
+ * @toplevel_mutex the main posix mutex
+ *
+ * Wait on child tree structure.
+ */
 void
 ags_thread_wait_children(AgsThread *thread,
 			 pthread_mutex_t toplevel_mutex)
@@ -1216,6 +1308,13 @@ ags_thread_stop(AgsThread *thread)
   g_object_unref(G_OBJECT(thread));
 }
 
+/**
+ * ags_thread_new:
+ * @data an #GObject
+ *
+ * Create a new #AgsThread you may provide an #GObject as @data
+ * to your thread routine.
+ */
 AgsThread*
 ags_thread_new(GObject *data)
 {
