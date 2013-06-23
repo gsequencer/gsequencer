@@ -61,6 +61,7 @@ struct _AgsThread
   pthread_t thread;
   pthread_mutex_t mutex;
   pthread_cond_t cond;
+  GList *unlocked;
 
   pthread_barrier_t barrier[2];
   gboolean first_barrier;
@@ -97,6 +98,14 @@ AgsThread* ags_thread_first(AgsThread *thread);
 gboolean ags_thread_parental_is_locked(AgsThread *thread);
 gboolean ags_thread_sibling_is_locked(AgsThread *thread);
 gboolean ags_thread_children_is_locked(AgsThread *thread);
+
+gboolean ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
+gboolean ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
+gboolean ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
+
+void ags_thread_signal_parent(AgsThread *thread, gboolean broadcast);
+void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
+void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);

@@ -170,6 +170,7 @@ ags_thread_init(AgsThread *thread)
 
   pthread_mutex_init(&(thread->mutex), NULL);
   pthread_cond_init(&(thread->cond), NULL);
+  thread->unlocked = NULL;
 
   thread->first_barrier = TRUE;
   thread->wait_count[0] = 1;
@@ -415,6 +416,66 @@ ags_thread_children_is_locked(AgsThread *thread)
   }
 
   return(ags_thread_children_is_locked_recursive(thread->children));
+}
+
+gboolean
+ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+gboolean
+ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+gboolean
+ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+void
+ags_thread_signal_parent(AgsThread *thread, gboolean broadcast)
+{
+  auto void ags_thrad_signal_parent_recursive(AgsThread *thread, gboolean broadcast);
+
+  void ags_thrad_signal_parent_recursive(AgsThread *thread, gboolean broadcast){
+    //TODO:JK: implement me
+  }
+
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
+{
+  auto void ags_thrad_signal_parent_recursive(AgsThread *thread, gboolean broadcast);
+
+  void ags_thrad_signal_parent_recursive(AgsThread *thread, gboolean broadcast){
+    //TODO:JK: implement me
+  }
+
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
+{
+  auto void ags_thrad_signal_parent_recursive(AgsThread *thread, gboolean broadcast);
+
+  void ags_thrad_signal_parent_recursive(AgsThread *thread, gboolean broadcast){
+    //TODO:JK: implement me
+  }
+
+  //TODO:JK: implement me
 }
 
 void
