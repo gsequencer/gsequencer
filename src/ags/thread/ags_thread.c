@@ -896,47 +896,41 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
     return;
   }
 
-  if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0 &&
-     ags_thread_parental_is_locked(thread, parent)){
+  /* set flag */
+  thread->flags |= AGS_THREAD_WAITING_FOR_PARENT; 
+  
+  pthread_mutex_unlock(&toplevel_mutex);
     
-    /* set flag */
+  /* wait parent */
+  current = ags_thread_next_parent_locked(thread, parent);
+    
+  while(current != parent &&
+	!ags_thread_parental_is_unlocked(thread, parent,
+					 toplevel_mutex)){
+    pthread_cond_wait(&(current->cond),
+		      &(current->mutex));
+
     pthread_mutex_lock(&toplevel_mutex);
 
-    thread->flags |= AGS_THREAD_WAITING_FOR_PARENT; 
+    if((AGS_THREAD_LOCKED & (current->flags)) == 0){
+      current = current->parent;
+    }
 
     pthread_mutex_unlock(&toplevel_mutex);
-
-    /* wait parent */
-    current = ags_thread_next_parent_locked(thread, parent);
+  }
     
-    while(current != parent &&
-	  !ags_thread_parental_is_unlocked(thread, parent,
-					   toplevel_mutex)){
-      pthread_cond_wait(&(current->cond),
-			&(current->mutex));
+  /* unset flag */
+  pthread_mutex_lock(&toplevel_mutex);
 
-      pthread_mutex_lock(&toplevel_mutex);
+  thread->flags &= (~AGS_THREAD_WAITING_FOR_PARENT);
 
-      if((AGS_THREAD_LOCKED & (current->flags)) == 0){
-	current = current->parent;
-      }
-
-      pthread_mutex_unlock(&toplevel_mutex);
-    }
+  pthread_mutex_unlock(&toplevel_mutex);
     
-    /* unset flag */
-    pthread_mutex_lock(&toplevel_mutex);
-
-    thread->flags &= (~AGS_THREAD_WAITING_FOR_PARENT);
-
-    pthread_mutex_unlock(&toplevel_mutex);
-    
-    /* signal/broadcast */
-    if((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
-      pthread_cond_signal(&(thread->cond));
-    }else{
-      pthread_cond_broadcast(&(thread->cond));
-    }
+  /* signal/broadcast */
+  if((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
+    pthread_cond_signal(&(thread->cond));
+  }else{
+    pthread_cond_broadcast(&(thread->cond));
   }
 }
 
@@ -957,50 +951,45 @@ ags_thread_wait_sibling(AgsThread *thread,
     return;
   }
 
-  if((AGS_THREAD_WAIT_FOR_SIBLING & (thread->flags)) != 0 &&
-     ags_thread_sibling_is_locked(thread)){
-    /* set flags */
+  /* set flags */
+  thread->flags |= AGS_THREAD_WAITING_FOR_SIBLING;
+  
+  pthread_mutex_unlock(&toplevel_mutex);
+  
+  /* wait sibling */
+  current = ags_thread_first(thread);
+  
+  while(ags_thread_sibling_is_locked(thread)){
+    if(current == thread){
+      current = current->next;
+      
+      continue;
+    }
+    
+    pthread_cond_wait(&(thread->cond),
+		      &(thread->mutex));
+
     pthread_mutex_lock(&toplevel_mutex);
 
-    thread->flags |= AGS_THREAD_WAITING_FOR_SIBLING;
-
-    pthread_mutex_unlock(&toplevel_mutex);
-
-    /* wait sibling */
-    current = ags_thread_first(thread);
-
-    while(ags_thread_sibling_is_locked(thread)){
-      if(current == thread){
-	current = current->next;
-
-	continue;
-      }
-
-      pthread_cond_wait(&(thread->cond),
-			&(thread->mutex));
-
-      pthread_mutex_lock(&toplevel_mutex);
-
-      if((AGS_THREAD_LOCKED & (current->flags)) == 0){
-	current = current->next;
-      }
-
-      pthread_mutex_unlock(&toplevel_mutex);
+    if((AGS_THREAD_LOCKED & (current->flags)) == 0){
+      current = current->next;
     }
 
-    /* unset flags */
-    pthread_mutex_lock(&toplevel_mutex);
-
-    thread->flags &= (~AGS_THREAD_WAITING_FOR_SIBLING);
-
     pthread_mutex_unlock(&toplevel_mutex);
+  }
 
-    /* signal/broadcast */
-    if((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) == 0){
-      pthread_cond_signal(&(thread->cond));
-    }else{
-      pthread_cond_broadcast(&(thread->cond));
-    }
+  /* unset flags */
+  pthread_mutex_lock(&toplevel_mutex);
+
+  thread->flags &= (~AGS_THREAD_WAITING_FOR_SIBLING);
+
+  pthread_mutex_unlock(&toplevel_mutex);
+
+  /* signal/broadcast */
+  if((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) == 0){
+    pthread_cond_signal(&(thread->cond));
+  }else{
+    pthread_cond_broadcast(&(thread->cond));
   }
 }
 
@@ -1043,32 +1032,27 @@ ags_thread_wait_children(AgsThread *thread,
     return;
   }
 
-  if((AGS_THREAD_WAIT_FOR_CHILDREN & (thread->flags)) != 0 &&
-     ags_thread_children_is_locked(thread)){
-    /* set flags */
-    pthread_mutex_lock(&toplevel_mutex);
+  /* set flags */
+  thread->flags |= AGS_THREAD_WAITING_FOR_CHILDREN;
 
-    thread->flags |= AGS_THREAD_WAITING_FOR_CHILDREN;
+  pthread_mutex_unlock(&toplevel_mutex);
 
-    pthread_mutex_unlock(&toplevel_mutex);
+  /* wait children */
+  ags_thread_wait_children_recursive(thread->children,
+				     toplevel_mutex);
 
-    /* wait children */
-    ags_thread_wait_children_recursive(thread->children,
-				       toplevel_mutex);
+  /* unset flags */
+  pthread_mutex_lock(&toplevel_mutex);
 
-    /* unset flags */
-    pthread_mutex_lock(&toplevel_mutex);
+  thread->flags &= (~AGS_THREAD_WAITING_FOR_CHILDREN);
 
-    thread->flags &= (~AGS_THREAD_WAITING_FOR_CHILDREN);
+  pthread_mutex_unlock(&toplevel_mutex);
 
-    pthread_mutex_unlock(&toplevel_mutex);
-
-    /* signal/broadcast */
-    if((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) == 0){
-      pthread_cond_signal(&(thread->cond));
-    }else{
-      pthread_cond_broadcast(&(thread->cond));
-    }
+  /* signal/broadcast */
+  if((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) == 0){
+    pthread_cond_signal(&(thread->cond));
+  }else{
+    pthread_cond_broadcast(&(thread->cond));
   }
 }
 
@@ -1207,14 +1191,23 @@ ags_thread_loop(void *ptr)
     pthread_mutex_lock(&mutex);
 
     /* parent */
-    ags_thread_wait_parent(thread, NULL,
-			   mutex);
+    if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0 &&
+       ags_thread_parental_is_locked(thread, parent)){
+      ags_thread_wait_parent(thread, NULL,
+			     mutex);
+    }
 
     /* sibling */
-    ags_thread_wait_sibling(thread, mutex);
+    if((AGS_THREAD_WAIT_FOR_SIBLING & (thread->flags)) != 0 &&
+       ags_thread_sibling_is_locked(thread)){
+      ags_thread_wait_sibling(thread, mutex);
+    }
 
     /* children */
-    ags_thread_wait_children(thread, mutex);
+    if((AGS_THREAD_WAIT_FOR_CHILDREN & (thread->flags)) != 0 &&
+       ags_thread_children_is_locked(thread)){
+      ags_thread_wait_children(thread, mutex);
+    }
 
     /* unlock */
     pthread_mutex_unlock(&mutex);
