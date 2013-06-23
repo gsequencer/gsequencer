@@ -211,7 +211,7 @@ ags_thread_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(devout));
       }
 
-      thread->devout = devout;
+      thread->devout = G_OBJECT(devout);
     }
     break;
   default:
@@ -381,12 +381,14 @@ ags_thread_last(AgsThread *thread)
 /**
  * ags_thread_parental_is_locked:
  * @thread an #AgsThread
+ * @parent where to stop iteration
  * Returns: TRUE if locked otherwise FALSE
  *
  * Check the AGS_THREAD_LOCKED flag in parental levels.
  */
 gboolean
-ags_thread_parental_is_locked(AgsThread *thread)
+ags_thread_parental_is_locked(AgsThread *thread,
+			      AgsThread *parent)
 {
   AgsThread *current;
 
@@ -396,7 +398,7 @@ ags_thread_parental_is_locked(AgsThread *thread)
 
   current = thread->parent;
 
-  while(current != NULL){
+  while(current != parent){
     if((AGS_THREAD_LOCKED & (current->flags)) != 0){
       return(TRUE);
     }
@@ -498,7 +500,7 @@ ags_thread_parental_is_unlocked(AgsThread *thread, AgsThread *parent,
   current = thread->parent;
 
   while(current != parent){
-    if(g_list_find(current->unlocked, lock) == NULL){
+    if(g_list_find(current->unlocked, PTHREAD_MUTEX_TO_POINTER(lock)) == NULL){
       return(FALSE);
     }
   }
@@ -527,7 +529,7 @@ ags_thread_sibling_is_unlocked(AgsThread *thread,
   current = ags_thread_first(thread);
 
   while(current != NULL){
-    if(g_list_find(current->unlocked, lock) == NULL){
+    if(g_list_find(current->unlocked, PTHREAD_MUTEX_TO_POINTER(lock)) == NULL){
       return(FALSE);
     }
 
@@ -549,9 +551,9 @@ gboolean
 ags_thread_children_is_unlocked(AgsThread *thread,
 				pthread_mutex_t lock)
 {
-  auto void ags_thread_children_is_unlocked_recursive(AgsThread *child, pthread_mutex_t lock);
+  auto gboolean ags_thread_children_is_unlocked_recursive(AgsThread *child, pthread_mutex_t lock);
 
-  void ags_thread_children_is_unlocked_recursive(AgsThread *child, pthread_mutex_t lock){
+  gboolean ags_thread_children_is_unlocked_recursive(AgsThread *child, pthread_mutex_t lock){
     AgsThread *current;
 
     if(thread == NULL){
@@ -559,7 +561,7 @@ ags_thread_children_is_unlocked(AgsThread *thread,
     }
     
     while(current != NULL){
-      if(g_list_find(current->unlocked, lock) == NULL){
+      if(g_list_find(current->unlocked, PTHREAD_MUTEX_TO_POINTER(lock)) == NULL){
 	return(FALSE);
       }
 
@@ -592,7 +594,7 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
 
   while(current != parent){
     if((AGS_THREAD_WAITING_FOR_CHILDREN & (current->flags)) != 0 &&
-       g_list_find(current->unlocked, thread->mutex) == NULL){
+       g_list_find(current->unlocked, PTHREAD_MUTEX_TO_POINTER(thread->mutex)) == NULL){
       return(current);
     }
 
@@ -623,7 +625,7 @@ ags_thread_next_sibling_locked(AgsThread *thread)
     }
 
     if((AGS_THREAD_WAITING_FOR_SIBLING & (thread->flags)) != 0 &&
-       g_list_find(current->unlocked, thread->mutex) == NULL){
+       g_list_find(current->unlocked, PTHREAD_MUTEX_TO_POINTER(thread->mutex)) == NULL){
       return(current);
     }
 
@@ -653,7 +655,7 @@ ags_thread_next_children_locked(AgsThread *thread)
       ags_thread_next_children_locked_recursive(current->children);
 
       if((AGS_THREAD_WAITING_FOR_PARENT & (current->flags)) != 0 &&
-	 g_list_find(current->unlocked, thread->mutex) == NULL){
+	 g_list_find(current->unlocked, PTHREAD_MUTEX_TO_POINTER(thread->mutex)) == NULL){
 	return(current);
       }
 
@@ -687,9 +689,9 @@ ags_thread_lock_parent(AgsThread *thread, AgsThread *parent,
   current = thread->parent;
 
   while(current != parent){
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
     current->flags |= AGS_THREAD_WAITING_FOR_CHILDREN;
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     ags_thread_lock(current);
 
@@ -723,9 +725,9 @@ ags_thread_lock_sibling(AgsThread *thread,
       continue;
     }
 
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
     current->flags |= AGS_THREAD_WAITING_FOR_SIBLING;
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     ags_thread_lock(current);
 
@@ -757,9 +759,9 @@ ags_thread_lock_children(AgsThread *thread,
       ags_thread_lock_children_recursive(current->children,
 					 toplevel_mutex);
 
-      pthread_mutex_lock(toplevel_mutex);
+      pthread_mutex_lock(&toplevel_mutex);
       current->flags |= AGS_THREAD_WAITING_FOR_PARENT;
-      pthread_mutex_unlock(toplevel_mutex);
+      pthread_mutex_unlock(&toplevel_mutex);
       
       ags_thread_lock(current);
     
@@ -792,9 +794,9 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent,
   current = thread->parent;
 
   while(current != parent){
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
     current->flags &= (~AGS_THREAD_WAITING_FOR_CHILDREN);
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     ags_thread_unlock(current);
 
@@ -828,9 +830,9 @@ ags_thread_unlock_sibling(AgsThread *thread,
       continue;
     }
 
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
     current->flags &= (~AGS_THREAD_WAITING_FOR_SIBLING);
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     ags_thread_unlock(current);
 
@@ -862,9 +864,9 @@ ags_thread_unlock_children(AgsThread *thread,
       ags_thread_lock_children_recursive(current->children,
 					 toplevel_mutex);
 
-      pthread_mutex_lock(toplevel_mutex);
+      pthread_mutex_lock(&toplevel_mutex);
       current->flags &= (~AGS_THREAD_WAITING_FOR_PARENT);
-      pthread_mutex_unlock(toplevel_mutex);
+      pthread_mutex_unlock(&toplevel_mutex);
       
       ags_thread_unlock(current);
     
@@ -895,38 +897,39 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
   }
 
   if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0 &&
-     ags_thread_parental_is_locked(thread)){
+     ags_thread_parental_is_locked(thread, parent)){
     
     /* set flag */
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
 
     thread->flags |= AGS_THREAD_WAITING_FOR_PARENT; 
 
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     /* wait parent */
     current = ags_thread_next_parent_locked(thread, parent);
     
     while(current != parent &&
-	  !ags_thread_parental_is_unlocked(thread, thread->mutex)){
+	  !ags_thread_parental_is_unlocked(thread, parent,
+					   toplevel_mutex)){
       pthread_cond_wait(&(current->cond),
 			&(current->mutex));
 
-      pthread_mutex_lock(toplevel_mutex);
+      pthread_mutex_lock(&toplevel_mutex);
 
       if((AGS_THREAD_LOCKED & (current->flags)) == 0){
 	current = current->parent;
       }
 
-      pthread_mutex_unlock(toplevel_mutex);
+      pthread_mutex_unlock(&toplevel_mutex);
     }
     
     /* unset flag */
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
 
     thread->flags &= (~AGS_THREAD_WAITING_FOR_PARENT);
 
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
     
     /* signal/broadcast */
     if((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
@@ -957,11 +960,11 @@ ags_thread_wait_sibling(AgsThread *thread,
   if((AGS_THREAD_WAIT_FOR_SIBLING & (thread->flags)) != 0 &&
      ags_thread_sibling_is_locked(thread)){
     /* set flags */
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
 
     thread->flags |= AGS_THREAD_WAITING_FOR_SIBLING;
 
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     /* wait sibling */
     current = ags_thread_first(thread);
@@ -974,23 +977,23 @@ ags_thread_wait_sibling(AgsThread *thread,
       }
 
       pthread_cond_wait(&(thread->cond),
-			&mutex);
+			&(thread->mutex));
 
-      pthread_mutex_lock(toplevel_mutex);
+      pthread_mutex_lock(&toplevel_mutex);
 
       if((AGS_THREAD_LOCKED & (current->flags)) == 0){
 	current = current->next;
       }
 
-      pthread_mutex_unlock(toplevel_mutex);
+      pthread_mutex_unlock(&toplevel_mutex);
     }
 
     /* unset flags */
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
 
     thread->flags &= (~AGS_THREAD_WAITING_FOR_SIBLING);
 
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     /* signal/broadcast */
     if((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) == 0){
@@ -1014,7 +1017,7 @@ ags_thread_wait_children(AgsThread *thread,
 {
   AgsThread *current;
 
-  void ags_thread_wait_children_recursive(AgsThread *child,
+  auto void ags_thread_wait_children_recursive(AgsThread *child,
 					  pthread_mutex_t toplevel_mutex);
   
   void ags_thread_wait_children_recursive(AgsThread *child,
@@ -1024,15 +1027,15 @@ ags_thread_wait_children(AgsThread *thread,
 					 toplevel_mutex);
 
       pthread_cond_wait(&(child->cond),
-			&(child->mutex);
+			&(child->mutex));
       
-      pthread_mutex_lock(toplevel_mutex);
+      pthread_mutex_lock(&toplevel_mutex);
       
       if((AGS_THREAD_LOCKED & (child->flags)) == 0){
 	child = child->next;
       }
       
-      pthread_mutex_unlock(toplevel_mutex);
+      pthread_mutex_unlock(&toplevel_mutex);
     }
   }
 
@@ -1043,22 +1046,22 @@ ags_thread_wait_children(AgsThread *thread,
   if((AGS_THREAD_WAIT_FOR_CHILDREN & (thread->flags)) != 0 &&
      ags_thread_children_is_locked(thread)){
     /* set flags */
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
 
     thread->flags |= AGS_THREAD_WAITING_FOR_CHILDREN;
 
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     /* wait children */
     ags_thread_wait_children_recursive(thread->children,
 				       toplevel_mutex);
 
     /* unset flags */
-    pthread_mutex_lock(toplevel_mutex);
+    pthread_mutex_lock(&toplevel_mutex);
 
     thread->flags &= (~AGS_THREAD_WAITING_FOR_CHILDREN);
 
-    pthread_mutex_unlock(toplevel_mutex);
+    pthread_mutex_unlock(&toplevel_mutex);
 
     /* signal/broadcast */
     if((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) == 0){
@@ -1077,7 +1080,8 @@ ags_thread_wait_children(AgsThread *thread,
  * Signals the tree in higher levels.
  */
 void
-ags_thread_signal_parent(AgsThread *thread, gboolean broadcast)
+ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
+			 gboolean broadcast)
 {
   AgsThread *current;
 
@@ -1203,7 +1207,8 @@ ags_thread_loop(void *ptr)
     pthread_mutex_lock(&mutex);
 
     /* parent */
-    ags_thread_wait_parent(thread, mutex);
+    ags_thread_wait_parent(thread, NULL,
+			   mutex);
 
     /* sibling */
     ags_thread_wait_sibling(thread, mutex);
