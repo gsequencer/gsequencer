@@ -349,16 +349,20 @@ ags_thread_first(AgsThread *thread)
 gboolean
 ags_thread_parental_is_locked(AgsThread *thread)
 {
+  AgsThread *current;
+
   if(thread == NULL){
     return(FALSE);
   }
 
-  while(thread->parent != NULL){
-    if((AGS_THREAD_LOCKED & (thread->flags)) != 0){
+  current = thread->parent;
+
+  while(current != NULL){
+    if((AGS_THREAD_LOCKED & (current->flags)) != 0){
       return(TRUE);
     }
 
-    thread = thread->parent;
+    current = current->parent;
   }
 
   return(FALSE);
@@ -457,7 +461,7 @@ ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
     current = current->next;
   }
 
-  return(ags_thread_sibling_is_unlocked_recursive(thread, lock));
+  return(TRUE);
 }
 
 gboolean
