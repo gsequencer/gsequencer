@@ -945,7 +945,9 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
   pthread_mutex_unlock(&toplevel_mutex);
     
   /* wait parent */
-  current = ags_thread_next_parent_locked(thread, parent);
+  ags_thread_lock(thread->parent);
+
+  current = thread->parent;
     
   while(current != parent &&
 	!ags_thread_parental_is_unlocked(thread, parent,
@@ -953,14 +955,26 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
     pthread_cond_wait(&(current->cond),
 		      &(current->mutex));
 
-    pthread_mutex_lock(&toplevel_mutex);
+    if(&(toplevel_mutex) != &(current->mutex)){
+      pthread_mutex_lock(&toplevel_mutex);
+    }
 
     if((AGS_THREAD_LOCKED & (current->flags)) == 0){
+      if(current->parent != NULL){
+	ags_thread_lock(current->parent);
+      }
+    
+      ags_thread_unlock(current);
+
       current = current->parent;
     }
 
-    pthread_mutex_unlock(&toplevel_mutex);
+    if(&(toplevel_mutex) != &(current->mutex)){
+      pthread_mutex_unlock(&toplevel_mutex);
+    }
   }
+
+  ags_thread_unlock(current);
     
   /* unset flag */
   pthread_mutex_lock(&toplevel_mutex);
@@ -1054,7 +1068,7 @@ ags_thread_wait_children(AgsThread *thread,
   AgsThread *current;
 
   auto void ags_thread_wait_children_recursive(AgsThread *child,
-					  pthread_mutex_t toplevel_mutex);
+					       pthread_mutex_t toplevel_mutex);
   
   void ags_thread_wait_children_recursive(AgsThread *child,
 					  pthread_mutex_t toplevel_mutex){
