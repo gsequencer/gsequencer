@@ -1192,7 +1192,7 @@ ags_thread_loop(void *ptr)
 
     /* parent */
     if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0 &&
-       ags_thread_parental_is_locked(thread, parent)){
+       ags_thread_parental_is_locked(thread, NULL)){
       ags_thread_wait_parent(thread, NULL,
 			     mutex);
     }
