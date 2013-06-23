@@ -641,37 +641,105 @@ ags_thread_next_children_locked(AgsThread *thread)
 }
 
 void
-ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
+ags_thread_lock_parent(AgsThread *thread, AgsThread *parent,
+		       pthread_mutex_t toplevel_mutex)
+{
+  AgsThread *current;
+
+  if(thread == NULL){
+    return;
+  }
+
+  current = thread->parent;
+
+  while(current != parent){
+    pthread_mutex_lock(toplevel_mutex);
+    current->flags |= AGS_THREAD_WAITING_FOR_CHILDREN;
+    pthread_mutex_unlock(toplevel_mutex);
+
+    ags_thread_lock(current);
+
+    current = current->parent;
+  }
+}
+
+void
+ags_thread_lock_sibling(AgsThread *thread,
+			pthread_mutex_t toplevel_mutex)
+{
+  AgsThread *current;
+
+  if(thread == NULL){
+    return;
+  }
+
+  current = ags_thread_first(thread);
+
+  while(current != NULL){
+    if(current == thread){
+      current = current->next;
+    
+      continue;
+    }
+
+    pthread_mutex_lock(toplevel_mutex);
+    current->flags |= AGS_THREAD_WAITING_FOR_SIBLING;
+    pthread_mutex_unlock(toplevel_mutex);
+
+    ags_thread_lock(current);
+
+    current = current->next;
+  }
+}
+
+void
+ags_thread_lock_children(AgsThread *thread,
+			 pthread_mutex_t toplevel_mutex)
+{
+  auto void ags_thread_lock_children_recursive(AgsThread *child,
+					       pthread_mutex_t toplevel_mutex);
+  
+  void ags_thread_lock_children_recursive(AgsThread *child,
+					  pthread_mutex_t toplevel_mutex){
+    AgsThread *current;
+
+    current = ags_thread_last(child);
+
+    while(current != NULL){
+      ags_thread_lock_children_recursive(current->children,
+					 toplevel_mutex);
+
+      pthread_mutex_lock(toplevel_mutex);
+      current->flags |= AGS_THREAD_WAITING_FOR_PARENT;
+      pthread_mutex_unlock(toplevel_mutex);
+      
+      ags_thread_lock(current);
+    
+      current = current->prev;
+    }
+  }
+  
+  ags_thread_lock_children_recursive(thread->children,
+				     toplevel_mutex);
+}
+
+void
+ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent,
+			 pthread_mutex_t toplevel_mutex)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_thread_lock_sibling(AgsThread *thread)
+ags_thread_unlock_sibling(AgsThread *thread,
+			  pthread_mutex_t toplevel_mutex)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_thread_lock_children(AgsThread *thread)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_thread_unlock_sibling(AgsThread *thread)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_thread_unlock_children(AgsThread *thread)
+ags_thread_unlock_children(AgsThread *thread,
+			   pthread_mutex_t toplevel_mutex)
 {
   //TODO:JK: implement me
 }
