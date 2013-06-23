@@ -103,6 +103,10 @@ gboolean ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock
 gboolean ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
 gboolean ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
 
+void ags_thread_wait_parent(AgsThread *thread);
+void ags_thread_wait_sibling(AgsThread *thread);
+void ags_thread_wait_children(AgsThread *thread);
+
 void ags_thread_signal_parent(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);

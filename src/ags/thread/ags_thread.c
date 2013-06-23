@@ -551,6 +551,24 @@ ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
   return(ags_thread_children_is_unlocked_recursive(thread->children, lock));
 }
 
+void
+ags_thread_wait_parent(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_wait_sibling(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_wait_children(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_thread_signal_parent:
  * @thread an #AgsThread
@@ -804,7 +822,7 @@ ags_thread_loop(void *ptr)
  * @thread the #AgsThread instance
  * 
  * Only for internal use of ags_thread_loop but you may want to set the your very own
- * class function namely your threads routine.
+ * class function namely your thread's routine.
  */
 void
 ags_thread_run(AgsThread *thread)
