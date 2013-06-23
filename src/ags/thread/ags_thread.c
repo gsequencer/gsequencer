@@ -378,6 +378,49 @@ ags_thread_last(AgsThread *thread)
   return(thread);
 }
 
+void
+ags_thread_remove_child(AgsThread *thread, AgsThread *child)
+{
+  if(thread == NULL || child == NULL){
+    return;
+  }
+
+  if(child->prev != NULL){
+    child->prev = child->next;
+  }
+
+  if(child->next != NULL){
+    child->next = child->prev;
+  }
+
+  child->parent = NULL;
+  child->prev = NULL;
+  child->next = NULL;
+}
+
+void
+ags_thread_add_child(AgsThread *thread, AgsThread *child)
+{
+  if(thread == NULL || child == NULL){
+    return;
+  }
+  
+  if(child->parent != NULL){
+    ags_thread_remove_child(child->parent, child);
+  }
+
+  if(thread->children == NULL){
+    thread->children = child;
+  }else{
+    AgsThread *sibling;
+
+    sibling = ags_thread_last(thread->children);
+
+    sibling->next = thread;
+    thread->prev = sibling;
+  }
+}
+
 /**
  * ags_thread_parental_is_locked:
  * @thread an #AgsThread
@@ -1195,6 +1238,8 @@ ags_thread_loop(void *ptr)
   initial_run = TRUE;
 
   while((AGS_THREAD_RUNNING & (thread->flags)) != 0){
+    g_message("%s\0", G_OBJECT_TYPE_NAME(thread));
+
     mutex = ags_thread_get_toplevel(thread)->mutex;
 
     /* lock */

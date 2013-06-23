@@ -31,6 +31,7 @@ void ags_task_thread_connect(AgsConnectable *connectable);
 void ags_task_thread_disconnect(AgsConnectable *connectable);
 void ags_task_thread_finalize(GObject *gobject);
 
+void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
 
 void* ags_devout_append_task_thread(void *ptr);
@@ -94,6 +95,7 @@ ags_task_thread_class_init(AgsTaskThreadClass *task_thread)
   /* AgsThread */
   thread = (AgsThreadClass *) task_thread;
 
+  thread->start = ags_task_thread_start;
   thread->run = ags_task_thread_run;
 }
 
@@ -156,6 +158,13 @@ ags_task_thread_finalize(GObject *gobject)
 }
 
 void
+ags_task_thread_start(AgsThread *thread)
+{
+  thread->flags |= AGS_THREAD_RUNNING;
+  AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
+}
+
+void
 ags_task_thread_run(AgsThread *thread)
 {
   AgsDevout *devout;
@@ -165,18 +174,17 @@ ags_task_thread_run(AgsThread *thread)
   useconds_t idle;
   guint prev_pending;
 
-  AGS_THREAD_CLASS(ags_task_thread_parent_class)->run(thread);
-
   task_thread = AGS_TASK_THREAD(thread);
   devout = AGS_DEVOUT(task_thread->devout);
 
   play_idle.tv_sec = 0;
-  play_idle.tv_nsec = 10 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
-  idle = 1000 * round(1000.0 * (double) devout->buffer_size  / (double) devout->frequency / 8.0);
+  play_idle.tv_nsec = 10 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+  idle = 1000 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
 
   /*  */
   ags_thread_lock(thread);
 
+  g_list_free(task_thread->exec);
   list = 
     task_thread->exec = task_thread->queue;
   task_thread->queue = NULL;
