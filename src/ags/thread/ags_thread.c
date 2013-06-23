@@ -927,6 +927,8 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
   pthread_mutex_unlock(&toplevel_mutex);
     
   /* signal/broadcast */
+  pthread_mutex_lock(&toplevel_mutex);
+
   if((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
     pthread_cond_signal(&(thread->cond));
   }else{
@@ -986,6 +988,8 @@ ags_thread_wait_sibling(AgsThread *thread,
   pthread_mutex_unlock(&toplevel_mutex);
 
   /* signal/broadcast */
+  pthread_mutex_lock(&toplevel_mutex);
+
   if((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) == 0){
     pthread_cond_signal(&(thread->cond));
   }else{
@@ -1049,6 +1053,8 @@ ags_thread_wait_children(AgsThread *thread,
   pthread_mutex_unlock(&toplevel_mutex);
 
   /* signal/broadcast */
+  pthread_mutex_lock(&toplevel_mutex);
+
   if((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) == 0){
     pthread_cond_signal(&(thread->cond));
   }else{
@@ -1151,8 +1157,12 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 void
 ags_thread_real_start(AgsThread *thread)
 {
+  if(thread == NULL){
+    return;
+  }
+
   pthread_create(&(thread->thread), NULL,
-		 &ags_thread_loop, thread);
+		 &(ags_thread_loop), thread);
 }
 
 /**

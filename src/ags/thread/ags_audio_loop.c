@@ -144,6 +144,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   /* AgsThread */
   thread = (AgsThreadClass *) audio_loop;
 
+  thread->start = ags_audio_loop_start;
   thread->run = ags_audio_loop_run;
 
   /* AgsAudioLoop */
@@ -306,7 +307,10 @@ ags_audio_loop_start(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
+  AGS_THREAD(audio_loop)->flags |= AGS_THREAD_RUNNING;
   ags_thread_start(audio_loop->task_thread);
+
+  AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
 }
 
 void
@@ -314,8 +318,6 @@ ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
   AgsDevout *devout;
-
-  AGS_THREAD_CLASS(ags_audio_loop_parent_class)->run(thread);
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
