@@ -357,6 +357,20 @@ ags_thread_first(AgsThread *thread)
   return(thread);
 }
 
+AgsThread*
+ags_thread_last(AgsThread *thread)
+{
+  if(thread == NULL){
+    return(NULL);
+  }
+
+  while(thread->next != NULL){
+    thread = thread->next;
+  }
+
+  return(thread);
+}
+
 /**
  * ags_thread_parental_is_locked:
  * @thread an #AgsThread
@@ -458,13 +472,15 @@ ags_thread_children_is_locked(AgsThread *thread)
 /**
  * ags_thread_parental_is_unlocked:
  * @thread an #AgsThread
+ * @parent where to stop iteration
  * @lock the mutex that holds the lock
  * Returns: TRUE if mutex isn't locked otherwise FALSE
  *
  * Searches the tree for @lock to be unlocked within parental levels.
  */
 gboolean
-ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
+ags_thread_parental_is_unlocked(AgsThread *thread, AgsThread *parent,
+				pthread_mutex_t lock)
 {
   AgsThread *current;
 
@@ -474,7 +490,7 @@ ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
 
   current = thread->parent;
 
-  while(current != NULL){
+  while(current != parent){
     if(g_list_find(current->unlocked, lock) == NULL){
       return(FALSE);
     }
@@ -492,7 +508,8 @@ ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
  * Searches the tree for @lock to be unlocked within same level.
  */
 gboolean
-ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
+ags_thread_sibling_is_unlocked(AgsThread *thread,
+			       pthread_mutex_t lock)
 {
   AgsThread *current;
 
@@ -522,7 +539,8 @@ ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
  * Searches the tree for @lock to be unlocked within children.
  */
 gboolean
-ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
+ags_thread_children_is_unlocked(AgsThread *thread,
+				pthread_mutex_t lock)
 {
   auto void ags_thread_children_is_unlocked_recursive(AgsThread *thread, pthread_mutex_t lock);
 
@@ -552,25 +570,78 @@ ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
 }
 
 AgsThread*
-ags_thread_next_parent_locked(AgsThread *thread)
+ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
 {
-  //TODO:JK: implement me
+  AgsThread *current;
+
+  current = thread->parent;
+
+  while(current != parent){
+    if((AGS_THREAD_WAITING_FOR_CHILDREN & (current->flags)) != 0 &&
+       g_list_find(current->unlocked, thread->mutex) == NULL){
+      return(current);
+    }
+
+    current = current->parent;
+  }
+
+  return(NULL);
 }
 
 AgsThread*
 ags_thread_next_sibling_locked(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsThread *current;
+
+  current = ags_thread_first(thread);
+
+  while(current != NULL){
+    if(current == thread){
+      current = current->next;
+      
+      continue;
+    }
+
+    if((AGS_THREAD_WAITING_FOR_SIBLING & (thread->flags)) != 0 &&
+       g_list_find(current->unlocked, thread->mutex) == NULL){
+      return(current);
+    }
+
+    current = current->next;
+  }
+
+  return(NULL);
 }
 
 AgsThread*
 ags_thread_next_children_locked(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  auto AgsThread* ags_thread_next_children_locked_recursive(AgsThread *thread);
+
+  AgsThread* ags_thread_next_children_locked_recursive(AgsThread *thread){
+    AgsThread *current;
+
+    current = ags_thread_last(thread);
+
+    while(current != NULL){
+      ags_thread_next_children_locked_recursive(current->children);
+
+      if((AGS_THREAD_WAITING_FOR_PARENT & (current->flags)) != 0 &&
+	 g_list_find(current->unlocked, thread->mutex) == NULL){
+	return(current);
+      }
+
+      current = current->prev;
+    }
+
+    return(NULL);
+  }
+
+  return(ags_thread_next_children_locked(thread->children));
 }
 
 void
-ags_thread_lock_parent(AgsThread *thread)
+ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
 {
   //TODO:JK: implement me
 }
@@ -588,7 +659,7 @@ ags_thread_lock_children(AgsThread *thread)
 }
 
 void
-ags_thread_unlock_parent(AgsThread *thread)
+ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
 {
   //TODO:JK: implement me
 }

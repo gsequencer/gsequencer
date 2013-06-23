@@ -94,32 +94,45 @@ void ags_thread_unlock(AgsThread *thread);
 
 AgsThread* ags_thread_get_toplevel(AgsThread *thread);
 AgsThread* ags_thread_first(AgsThread *thread);
+AgsThread* ags_thread_last(AgsThread *thread);
 
-gboolean ags_thread_parental_is_locked(AgsThread *thread);
+gboolean ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent);
 gboolean ags_thread_sibling_is_locked(AgsThread *thread);
 gboolean ags_thread_children_is_locked(AgsThread *thread);
 
-gboolean ags_thread_parental_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
-gboolean ags_thread_sibling_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
-gboolean ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock);
+gboolean ags_thread_parental_is_unlocked(AgsThread *thread, AgsThread *parent,
+					 pthread_mutex_t lock);
+gboolean ags_thread_sibling_is_unlocked(AgsThread *thread,
+					pthread_mutex_t lock);
+gboolean ags_thread_children_is_unlocked(AgsThread *thread,
+					 pthread_mutex_t lock);
 
-AgsThread* ags_thread_next_parent_locked(AgsThread *thread);
+AgsThread* ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent);
 AgsThread* ags_thread_next_sibling_locked(AgsThread *thread);
 AgsThread* ags_thread_next_children_locked(AgsThread *thread);
 
-void ags_thread_lock_parent(AgsThread *thread);
-void ags_thread_lock_sibling(AgsThread *thread);
-void ags_thread_lock_children(AgsThread *thread);
+void ags_thread_lock_parent(AgsThread *thread, AgsThread *parent,
+			    pthread_mutex_t toplevel_mutex);
+void ags_thread_lock_sibling(AgsThread *thread,
+			     pthread_mutex_t toplevel_mutex);
+void ags_thread_lock_children(AgsThread *thread,
+			      pthread_mutex_t toplevel_mutex);
 
-void ags_thread_unlock_parent(AgsThread *thread);
-void ags_thread_unlock_sibling(AgsThread *thread);
-void ags_thread_unlock_children(AgsThread *thread);
+void ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent,
+			      pthread_mutex_t toplevel_mutex);
+void ags_thread_unlock_sibling(AgsThread *thread,
+			       pthread_mutex_t toplevel_mutex);
+void ags_thread_unlock_children(AgsThread *thread,
+				pthread_mutex_t toplevel_mutex);
 
-void ags_thread_wait_parent(AgsThread *thread, pthread_mutex_t toplevel_mutex);
-void ags_thread_wait_sibling(AgsThread *thread, pthread_mutex_t toplevel_mutex);
-void ags_thread_wait_children(AgsThread *thread, pthread_mutex_t toplevel_mutex);
+void ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
+			    pthread_mutex_t toplevel_mutex);
+void ags_thread_wait_sibling(AgsThread *thread,
+			     pthread_mutex_t toplevel_mutex);
+void ags_thread_wait_children(AgsThread *thread,
+			      pthread_mutex_t toplevel_mutex);
 
-void ags_thread_signal_parent(AgsThread *thread, gboolean broadcast);
+void ags_thread_signal_parent(AgsThread *thread, AgsThread *parent, gboolean broadcast);
 void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
