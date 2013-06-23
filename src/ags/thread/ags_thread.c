@@ -493,55 +493,71 @@ ags_thread_children_is_unlocked(AgsThread *thread, pthread_mutex_t lock)
 void
 ags_thread_signal_parent(AgsThread *thread, gboolean broadcast)
 {
-  auto void ags_thread_signal_parent_recursive(AgsThread *thread, gboolean broadcast);
+  AgsThread *current;
 
-  void ags_thread_signal_parent_recursive(AgsThread *thread, gboolean broadcast){
-    AgsThread *current;
+  current = thread->parent;
 
-    if(thread == NULL){
-      return;
+  while(current != NULL){
+    if((AGS_THREAD_WAIT_FOR_CHILDREN & (current->flags)) != 0){
+      if(!broadcast){
+	pthread_cond_signal(&(current->cond));
+      }else{
+	pthread_cond_broadcast(&(current->cond));
+      }
     }
 
-    //TODO:JK: implement me
+    current = current->parent;
   }
-
-  ags_thread_signal_parent_recursive(thread, broadcast);
 }
 
 void
 ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
 {
-  auto void ags_thread_signal_parent_recursive(AgsThread *thread, gboolean broadcast);
+  AgsThread *current;
 
-  void ags_thread_signal_parent_recursive(AgsThread *thread, gboolean broadcast){
-    AgsThread *current;
+  current = ags_thread_first(thread);
 
-    if(thread == NULL){
-      return;
+  while(current != NULL){
+    if((AGS_THREAD_WAIT_FOR_SIBLING & (current->flags)) != 0){
+      if(!broadcast){
+	pthread_cond_signal(&(current->cond));
+      }else{
+	pthread_cond_broadcast(&(current->cond));
+      }
     }
-
-    //TODO:JK: implement me
   }
-
-  ags_thread_signal_sibling(thread, broadcast);
 }
 
 void
 ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 {
-  auto void ags_thread_signal_parent_recursive(AgsThread *thread, gboolean broadcast);
+  auto void ags_thread_signal_children_recursive(AgsThread *thread, gboolean broadcast);
 
-  void ags_thread_signal_parent_recursive(AgsThread *thread, gboolean broadcast){
+  void ags_thread_signal_children_recursive(AgsThread *thread, gboolean broadcast){
     AgsThread *current;
 
     if(thread == NULL){
       return;
     }
 
-    //TODO:JK: implement me
+    current = thread;
+
+    while(current != NULL){
+      if((AGS_THREAD_WAIT_FOR_PARENT & (current->flags)) != 0){
+	if(!broadcast){
+	  pthread_cond_signal(&(current->cond));
+	}else{
+	  pthread_cond_broadcast(&(current->cond));
+	}
+      }
+      
+      ags_thread_signal_children_recursive(current, broadcast);
+
+      current = current->next;
+    }
   }
 
-  ags_thread_signal_children(thread, broadcast);
+  ags_thread_signal_children(thread->children, broadcast);
 }
 
 void
