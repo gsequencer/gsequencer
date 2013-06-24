@@ -804,7 +804,6 @@ ags_thread_lock_children(AgsThread *thread)
  * ags_thread_unlock_parent:
  * @thread an #AgsThread
  * @parent the parent #AgsThread where to stop.
- * @toplevel_mutex the main posix mutex
  *
  * Unlock parent tree structure.
  */
@@ -830,7 +829,6 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
 /**
  * ags_thread_unlock_sibling:
  * @thread an #AgsThread
- * @toplevel_mutex the main posix mutex
  *
  * Unlock sibling tree structure.
  */
@@ -905,15 +903,9 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
   }
 
   /* set flag */
-  ags_thread_lock(thread);
-
   thread->flags |= AGS_THREAD_WAITING_FOR_PARENT; 
-  
-  ags_thread_unlock(thread);
 
   /* wait parent */
-  ags_thread_lock(thread->parent);
-
   current = thread->parent;
     
   while((current != NULL && current != parent) &&
@@ -921,40 +913,23 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
     pthread_cond_wait(&(current->cond),
 		      &(current->mutex));
 
-    if((AGS_THREAD_LOCKED & (current->flags)) == 0){
-      ags_thread_unlock(current);
-
-      if(current->parent != NULL && current->parent != parent){
-	ags_thread_lock(current->parent);
-      }
-    
+    if((AGS_THREAD_LOCKED & (current->flags)) == 0){    
       current = current->parent;
     }
   }
 
-  ags_thread_unlock(current);
-    
   /* unset flag */
-  ags_thread_lock(thread);
-
   thread->flags &= (~AGS_THREAD_WAITING_FOR_PARENT);
 
-  ags_thread_unlock(thread);
-    
   /* signal/broadcast */
-  ags_thread_lock(thread);
-
   ags_thread_signal_parent(thread, NULL,
 			   ((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) != 0));
 
-  ags_thread_signal_sibling(thread,
-			   ((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) != 0));
+  //  ags_thread_signal_sibling(thread,
+  //			   ((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) != 0));
 
-  ags_thread_signal_children(thread,
-			     ((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) != 0));
-
-
-  ags_thread_unlock(thread);
+  //  ags_thread_signal_children(thread,
+  //			     ((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) != 0));
 }
 
 /**
@@ -973,24 +948,14 @@ ags_thread_wait_sibling(AgsThread *thread)
   }
 
   /* set flags */
-  ags_thread_lock(thread);
-
   thread->flags |= AGS_THREAD_WAITING_FOR_SIBLING;
-  
-  ags_thread_unlock(thread);
   
   /* wait sibling */
   current = ags_thread_first(thread);
 
-  ags_thread_lock(current);
-
   while(current != NULL &&
 	((AGS_THREAD_LOCKED & (current->flags)) != 0 || current->next != NULL)){
     if(current == thread){
-      ags_thread_unlock(current);
-
-      ags_thread_lock(current->next);
-
       current = current->next;
       
       continue;
@@ -1000,36 +965,22 @@ ags_thread_wait_sibling(AgsThread *thread)
 		      &(current->mutex));
 
     if((AGS_THREAD_LOCKED & (current->flags)) == 0){
-      ags_thread_unlock(current);
-
-      ags_thread_lock(current->next);
-
       current = current->next;
     }
   }
 
-  ags_thread_unlock(current);
-
   /* unset flags */
-  ags_thread_lock(thread);
-
   thread->flags &= (~AGS_THREAD_WAITING_FOR_SIBLING);
 
-  ags_thread_unlock(thread);
-
   /* signal/broadcast */
-  ags_thread_lock(thread);
-
-  ags_thread_signal_parent(thread, NULL,
-			   ((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) != 0));
+  //  ags_thread_signal_parent(thread, NULL,
+  //			   ((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) != 0));
 
   ags_thread_signal_sibling(thread,
 			   ((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) != 0));
 
-  ags_thread_signal_children(thread,
-			     ((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) != 0));
-
-  ags_thread_unlock(thread);
+  //  ags_thread_signal_children(thread,
+  //			     ((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) != 0));
 }
 
 /**
@@ -1050,24 +1001,17 @@ ags_thread_wait_children(AgsThread *thread)
       return;
     }
 
-    ags_thread_lock(child);
-
     while(child!= NULL &&
 	  ((AGS_THREAD_LOCKED & (child->flags)) != 0 || current->next != NULL)){
       pthread_cond_wait(&(child->cond),
 			&(child->mutex));
      
       if((AGS_THREAD_LOCKED & (child->flags)) == 0){
-	ags_thread_unlock(child);
-
 	ags_thread_wait_children_recursive(child->children);
 
-	ags_thread_lock(child->next);
 	child = child->next;
       }
     }
-
-    ags_thread_unlock(child);
   }
 
   if(thread == NULL){
@@ -1075,35 +1019,23 @@ ags_thread_wait_children(AgsThread *thread)
   }
 
   /* set flags */
-  ags_thread_lock(thread);
-
   thread->flags |= AGS_THREAD_WAITING_FOR_CHILDREN;
-
-  ags_thread_unlock(thread);
 
   /* wait children */
   ags_thread_wait_children_recursive(thread->children);
 
   /* unset flags */
-  ags_thread_lock(thread);
-
   thread->flags &= (~AGS_THREAD_WAITING_FOR_CHILDREN);
 
-  ags_thread_unlock(thread);
-
   /* signal/broadcast */
-  ags_thread_lock(thread);
+  //  ags_thread_signal_parent(thread, NULL,
+  //			   ((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) != 0));
 
-  ags_thread_signal_parent(thread, NULL,
-			   ((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) != 0));
-
-  ags_thread_signal_sibling(thread,
-			   ((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) != 0));
+  //  ags_thread_signal_sibling(thread,
+  //			   ((AGS_THREAD_BROADCAST_SIBLING & (thread->flags)) != 0));
 
   ags_thread_signal_children(thread,
 			     ((AGS_THREAD_BROADCAST_CHILDREN & (thread->flags)) != 0));
-
-  ags_thread_unlock(thread);
 }
 
 /**
@@ -1240,7 +1172,7 @@ ags_thread_loop(void *ptr)
   thread = AGS_THREAD(ptr);
 
   while((AGS_THREAD_RUNNING & (thread->flags)) != 0){
-    //    g_message("%s\0", G_OBJECT_TYPE_NAME(thread));
+    g_message("%s\0", G_OBJECT_TYPE_NAME(thread));
 
     /* lock */
     ags_thread_lock(thread);
@@ -1251,7 +1183,6 @@ ags_thread_loop(void *ptr)
       pthread_cond_signal(&(thread->start_cond));      
     }
 
-    ags_thread_unlock(thread);
 
     ags_thread_lock(thread);
 
@@ -1259,29 +1190,41 @@ ags_thread_loop(void *ptr)
 	 AGS_IS_AUDIO_LOOP(thread))){
       /* Parent */
       if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0){
+	ags_thread_unlock(thread);
+
 	ags_thread_lock_parent(thread, NULL);
 
 	ags_thread_wait_parent(thread, NULL);
 
 	ags_thread_unlock_parent(thread, NULL);
+
+	ags_thread_lock(thread);
       }
 
       /* sibling */
       if((AGS_THREAD_WAIT_FOR_SIBLING & (thread->flags)) != 0){
+	ags_thread_unlock(thread);
+
 	ags_thread_lock_sibling(thread);
 
 	ags_thread_wait_sibling(thread);
 
 	ags_thread_unlock_sibling(thread);
+
+	ags_thread_lock(thread);
       }
 
       /* children */
       if((AGS_THREAD_WAIT_FOR_CHILDREN & (thread->flags)) != 0){
+	ags_thread_unlock(thread);
+
 	ags_thread_lock_children(thread);
 
 	ags_thread_wait_children(thread);
 
 	ags_thread_unlock_children(thread);
+
+	ags_thread_lock(thread);
       }
     }
     
