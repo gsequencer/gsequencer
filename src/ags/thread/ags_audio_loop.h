@@ -53,6 +53,7 @@ struct _AgsAudioLoop
   guint flags;
 
   AgsThread *task_thread;
+
   AgsThread *devout_thread;
 
   guint play_recall_ref;

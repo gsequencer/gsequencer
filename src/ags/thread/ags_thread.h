@@ -52,6 +52,7 @@ typedef enum{
   AGS_THREAD_BROADCAST_PARENT        = 1 << 11,
   AGS_THREAD_BROADCAST_SIBLING       = 1 << 12,
   AGS_THREAD_BROADCAST_CHILDREN      = 1 << 13,
+  AGS_THREAD_INITIAL_RUN             = 1 << 14,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -62,6 +63,8 @@ struct _AgsThread
 
   pthread_t thread;
   pthread_mutex_t mutex;
+  pthread_mutexattr_t mutexattr;
+  pthread_cond_t start_cond;
   pthread_cond_t cond;
   GList *unlocked;
 
@@ -116,26 +119,17 @@ AgsThread* ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent);
 AgsThread* ags_thread_next_sibling_locked(AgsThread *thread);
 AgsThread* ags_thread_next_children_locked(AgsThread *thread);
 
-void ags_thread_lock_parent(AgsThread *thread, AgsThread *parent,
-			    pthread_mutex_t toplevel_mutex);
-void ags_thread_lock_sibling(AgsThread *thread,
-			     pthread_mutex_t toplevel_mutex);
-void ags_thread_lock_children(AgsThread *thread,
-			      pthread_mutex_t toplevel_mutex);
+void ags_thread_lock_parent(AgsThread *thread, AgsThread *parent);
+void ags_thread_lock_sibling(AgsThread *thread);
+void ags_thread_lock_children(AgsThread *thread);
 
-void ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent,
-			      pthread_mutex_t toplevel_mutex);
-void ags_thread_unlock_sibling(AgsThread *thread,
-			       pthread_mutex_t toplevel_mutex);
-void ags_thread_unlock_children(AgsThread *thread,
-				pthread_mutex_t toplevel_mutex);
+void ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent);
+void ags_thread_unlock_sibling(AgsThread *thread);
+void ags_thread_unlock_children(AgsThread *thread);
 
-void ags_thread_wait_parent(AgsThread *thread, AgsThread *parent,
-			    pthread_mutex_t toplevel_mutex);
-void ags_thread_wait_sibling(AgsThread *thread,
-			     pthread_mutex_t toplevel_mutex);
-void ags_thread_wait_children(AgsThread *thread,
-			      pthread_mutex_t toplevel_mutex);
+void ags_thread_wait_parent(AgsThread *thread, AgsThread *parent);
+void ags_thread_wait_sibling(AgsThread *thread);
+void ags_thread_wait_children(AgsThread *thread);
 
 void ags_thread_signal_parent(AgsThread *thread, AgsThread *parent, gboolean broadcast);
 void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);

@@ -974,12 +974,12 @@ ags_devout_start_default_threads(AgsDevout *devout)
   ags_thread_start(AGS_THREAD(devout->audio_loop));
 
   /* start fifo - push */
-  pthread_create(&(devout->push->thread), NULL, &ags_devout_gate_control_push, devout->push);
-  pthread_setschedprio(devout->push->thread, 99);
+  //  pthread_create(&(devout->push->thread), NULL, &ags_devout_gate_control_push, devout->push);
+  //  pthread_setschedprio(devout->push->thread, 99);
 
   /* start fifo - pop */
-  pthread_create(&(devout->pop->thread), NULL, &ags_devout_gate_control_pop, devout->pop);
-  pthread_setschedprio(devout->pop->thread, 99);
+  //  pthread_create(&(devout->pop->thread), NULL, &ags_devout_gate_control_pop, devout->pop);
+  //  pthread_setschedprio(devout->pop->thread, 99);
 }
 
 void*

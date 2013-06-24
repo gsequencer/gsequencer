@@ -34,8 +34,8 @@ void ags_task_thread_finalize(GObject *gobject);
 void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
 
-void* ags_devout_append_task_thread(void *ptr);
-void* ags_devout_append_tasks_thread(void *ptr);
+void* ags_task_thread_append_task_thread(void *ptr);
+void* ags_task_thread_append_tasks_thread(void *ptr);
 
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
@@ -160,7 +160,12 @@ ags_task_thread_finalize(GObject *gobject)
 void
 ags_task_thread_start(AgsThread *thread)
 {
+  ags_thread_lock(thread);
+
   thread->flags |= AGS_THREAD_RUNNING;
+
+  ags_thread_unlock(thread);
+
   AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
 }
 
@@ -170,16 +175,21 @@ ags_task_thread_run(AgsThread *thread)
   AgsDevout *devout;
   AgsTaskThread *task_thread;
   GList *list;
-  struct timespec play_idle;
-  useconds_t idle;
+  static struct timespec play_idle;
+  static useconds_t idle;
   guint prev_pending;
+  static gboolean initialized = FALSE;
 
   task_thread = AGS_TASK_THREAD(thread);
   devout = AGS_DEVOUT(task_thread->devout);
 
-  play_idle.tv_sec = 0;
-  play_idle.tv_nsec = 10 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
-  idle = 1000 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+  if(!initialized){
+    play_idle.tv_sec = 0;
+    play_idle.tv_nsec = 10 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+    idle = 1000 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+
+    initialized = TRUE;
+  }
 
   /*  */
   ags_thread_lock(thread);
@@ -214,20 +224,23 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /* sleep if wanted */
-  if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
-    /* calls audio processing functions */
-    //    ags_devout_play_functions(devout);
+  ags_thread_lock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
 
-    //      nanosleep(&play_idle, NULL);
-    //      g_message("################ DEBUG ################\0");
+  if((AGS_THREAD_RUNNING & (AGS_THREAD(AGS_AUDIO_LOOP(thread->parent)->devout_thread)->flags)) != 0){
+    ags_thread_unlock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
+
+    //FIXME:JK: this isn't very efficient
+    nanosleep(&play_idle, NULL);
   }else{
+    ags_thread_unlock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
+
     //FIXME:JK: this isn't very efficient
     usleep(idle);
   }
 }
 
 void*
-ags_devout_append_task_thread(void *ptr)
+ags_task_thread_append_task_thread(void *ptr)
 {
   AgsTask *task;
   AgsTaskThread *task_thread;
@@ -261,7 +274,7 @@ ags_devout_append_task_thread(void *ptr)
   ags_thread_unlock(AGS_THREAD(task_thread));
 
   /*  */
-  //  g_message("ags_devout_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
+  //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
 
   /*  */
   pthread_exit(NULL);
@@ -286,11 +299,11 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   append->data = task;
 
   pthread_create(&thread, NULL,
-		 &ags_devout_append_task_thread, append);
+		 &ags_task_thread_append_task_thread, append);
 }
 
 void*
-ags_devout_append_tasks_thread(void *ptr)
+ags_task_thread_append_tasks_thread(void *ptr)
 {
   AgsTask *task;
   AgsTaskThread *task_thread;
@@ -363,7 +376,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   append->data = list;
 
   pthread_create(&thread, NULL,
-		 &ags_devout_append_tasks_thread, append);
+		 &ags_task_thread_append_tasks_thread, append);
 }
 
 AgsTaskThread*
