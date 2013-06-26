@@ -539,6 +539,14 @@ ags_thread_is_tree_syncing(AgsThread *thread)
   return(FALSE);
 }
 
+gboolean
+ags_thread_is_tree_in_sync(AgsThread *thread)
+{
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
 void
 ags_thread_main_loop_unlock_children(AgsThread *thread)
 {
@@ -1182,7 +1190,30 @@ ags_thread_loop(void *ptr)
 
       thread->parent->flags |= AGS_THREAD_TREE_SYNC;
     }else{
+      ags_thread_lock(thread);
+
+      while((AGS_THREAD_MAIN_LOOP_WAIT & (thread->flags)) != 0 &&
+	    !ags_thread_is_tree_in_sync(thread)){
+	pthread_cond_wait(&(thread->cond),
+			  &(thread->mutex));
+      }
+
       ags_thread_main_loop_unlock_children(thread);
+
+      ags_thread_unlock(thread);
+    }
+
+    if(ags_thread_is_tree_in_sync(thread)){
+      AgsThread *main_loop;
+      
+      main_loop = ags_thread_get_toplevel(thread);
+
+      ags_thread_lock(thread);
+
+      main_loop->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);      
+      pthread_cond_signal(&(thread->cond));
+      
+      ags_thread_unlock(thread);
     }
 
     while(thread->parent != NULL && (!is_in_sync ||

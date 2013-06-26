@@ -54,6 +54,8 @@ typedef enum{
   AGS_THREAD_BROADCAST_CHILDREN      = 1 << 13,
   AGS_THREAD_INITIAL_RUN             = 1 << 14,
   AGS_THREAD_TREE_SYNC               = 1 << 15,
+  AGS_THREAD_MAIN_LOOP_WAIT          = 1 << 16,
+  AGS_THREAD_WAIT                    = 1 << 17,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -110,6 +112,7 @@ gboolean ags_thread_sibling_is_locked(AgsThread *thread);
 gboolean ags_thread_children_is_locked(AgsThread *thread);
 
 gboolean ags_thread_is_tree_syncing(AgsThread *thread);
+gboolean ags_thread_is_tree_in_sync(AgsThread *thread);
 void ags_thread_main_loop_unlock_children(AgsThread *thread);
 
 AgsThread* ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent);
