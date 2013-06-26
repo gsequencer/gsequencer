@@ -542,9 +542,32 @@ ags_thread_is_tree_syncing(AgsThread *thread)
 gboolean
 ags_thread_is_tree_in_sync(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsThread *main_loop;
 
-  return(TRUE);
+  auto gboolean ags_thread_is_tree_in_sync(AgsThread *child);
+
+  gboolean ags_thread_is_tree_in_sync(AgsThread *child){
+    AgsThread *current;
+
+    current = child;
+
+    while(current != NULL){
+
+      if((AGS_THREAD_WAIT & (current->flags)) == 0 &&
+	 ((AGS_THREAD_TREE_SYNC & (current->flags) == 0 &&
+	   (AGS_THREAD_WAIT & (current->flags)) == 0))){
+	   return(FALSE);
+      }
+
+      ags_thread_is_tree_in_sync(child->children);
+
+      current = current->next;
+    }
+  }
+
+  main_loop = ags_thread_get_toplevel(thread);
+
+  return(ags_thread_is_tree_in_sync(main_loop->children));
 }
 
 void
