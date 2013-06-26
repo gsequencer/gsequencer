@@ -542,7 +542,33 @@ ags_thread_is_tree_syncing(AgsThread *thread)
 void
 ags_thread_main_loop_unlock_children(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  auto void ags_thread_main_loop_unlock_children_recursive(AgsThread *child);
+
+  void ags_thread_main_loop_unlock_children_recursive(AgsThread *child){
+    AgsThread *current;
+
+    if(child == NULL){
+      return;
+    }
+
+    current = child;
+
+    while(child != NULL){
+      child->flags &= (~AGS_THREAD_TREE_SYNC);
+
+      ags_thread_main_loop_unlock_children_recursive(child->children);
+
+      if((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
+	pthread_cond_signal(&(child->cond));
+      }else{
+	pthread_cond_broadcast(&(child->cond));
+      }
+
+      child = child->next;
+    }
+  }
+
+  ags_thread_main_loop_unlock_children_recursive(thread->children);
 }
 
 /**
