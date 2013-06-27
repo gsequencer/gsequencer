@@ -87,7 +87,6 @@ typedef enum
 
 typedef enum{
   AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-  AGS_DEVOUT_ERROR_EMPTY_GATE,
 }AgsDevoutError;
 
 struct _AgsDevout
@@ -133,18 +132,6 @@ struct _AgsDevout
     }alsa;
   }out;
   
-  AgsDevoutFifoIO *push;
-  pthread_mutex_t push_inject_mutex;
-  AgsDevoutFifoIO *pop;
-  pthread_mutex_t pop_inject_mutex;
-
-  GSList *gate;
-  guint refresh_gate;
-  pthread_mutex_t fifo_mutex;
-  pthread_mutex_t gate_mutex;
-
-  unsigned int wait_sync;
-
   GList *audio;
 
   AgsAudioLoop *audio_loop;
@@ -174,26 +161,11 @@ struct _AgsDevoutPlay
   AgsRecallID *recall_id; // if source is an AgsRecall
 };
 
-struct _AgsDevoutFifoIO{
-  AgsDevout *devout;
-
-  pthread_t thread;
-  pthread_cond_t cond;
-  pthread_mutex_t mutex;
-  gboolean sleep;
-
-  AgsDevoutGateControl *push;
-  AgsDevoutGateControl *pop;
-};
-
 GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
 
 AgsDevoutPlay* ags_devout_play_alloc();
-AgsDevoutFifoIO* ags_devout_fifo_io_alloc();
-AgsDevoutGate* ags_devout_gate_alloc();
-AgsDevoutGateControl* ags_devout_gate_control_alloc();
 
 GList *ags_devout_list_cards();
 void ags_devout_pcm_info(char *card_id,

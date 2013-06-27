@@ -301,26 +301,6 @@ ags_devout_init(AgsDevout *devout)
   devout->attack = ags_attack_alloc(0, devout->buffer_size,
 				    0, devout->buffer_size);
 
-  /* fifo */
-  devout->push = ags_devout_fifo_io_alloc();
-  devout->push->devout = devout;
-
-  pthread_mutex_init(&(devout->push_inject_mutex), NULL);
-
-  devout->pop = ags_devout_fifo_io_alloc();
-  devout->pop->devout = devout;
-
-  pthread_mutex_init(&(devout->pop_inject_mutex), NULL);
-
-  /* gate */
-  devout->gate = NULL;
-
-  devout->refresh_gate = 0;
-  pthread_mutex_init(&(devout->fifo_mutex), NULL);
-
-  /*  */
-  devout->wait_sync = 0;
-
   /* all AgsAudio */
   devout->audio = NULL;
 
@@ -511,56 +491,6 @@ ags_devout_play_alloc()
   play->group_id = 0;
 
   return(play);
-}
-
-AgsDevoutFifoIO*
-ags_devout_fifo_io_alloc()
-{
-  AgsDevoutFifoIO *io;
-
-  io = (AgsDevoutFifoIO *) malloc(sizeof(AgsDevoutFifoIO));
-
-  io->devout = NULL;
-
-  pthread_cond_init(&(io->cond), NULL);
-  pthread_mutex_init(&(io->mutex), NULL);
-  io->sleep = TRUE;
-
-  io->push = NULL;
-  io->pop = NULL;
-
-  return(io);
-}
-
-AgsDevoutGateControl*
-ags_devout_gate_control_alloc()
-{
-  AgsDevoutGateControl *control;
-
-  control = (AgsDevoutGateControl *) malloc(sizeof(AgsDevoutGateControl));
-
-  control->gate = NULL;
-  control->error = NULL;
-
-  return(control);
-}
-
-AgsDevoutGate*
-ags_devout_gate_alloc()
-{
-  AgsDevoutGate *gate;
-
-  gate = (AgsDevoutGate *) malloc(sizeof(AgsDevoutGate));
-
-  gate->active = FALSE;
-  gate->ready = FALSE;
-
-  pthread_cond_init(&(gate->wait), NULL);
-  pthread_cond_init(&(gate->state), NULL);
-
-  pthread_mutex_init(&(gate->lock_mutex), NULL);
-
-  return(gate);
 }
 
 GList*
@@ -863,7 +793,6 @@ void
 ags_devout_alsa_play(AgsDevout *devout)
 {
   AgsDevoutThread *devout_thread;
-  AgsDevoutGate *gate;
  
   if(DEBUG_DEVOUT){
     g_message("ags_devout_play\n\0");
