@@ -53,9 +53,6 @@
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;
-typedef struct _AgsDevoutFifoIO AgsDevoutFifoIO;
-typedef struct _AgsDevoutGate AgsDevoutGate;
-typedef struct _AgsDevoutGateControl AgsDevoutGateControl;
 
 typedef enum
 {
@@ -189,22 +186,6 @@ struct _AgsDevoutFifoIO{
   AgsDevoutGateControl *pop;
 };
 
-struct _AgsDevoutGateControl{
-  AgsDevoutGate *gate;
-  GError **error;
-};
-
-struct _AgsDevoutGate
-{
-  gboolean active;
-  gboolean ready;
-
-  pthread_cond_t wait;
-  pthread_cond_t state;
-
-  pthread_mutex_t lock_mutex;  
-};
-
 GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
@@ -228,13 +209,6 @@ void ags_devout_tic(AgsDevout *devout);
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 
 void ags_devout_start_default_threads(AgsDevout *devout);
-
-AgsDevoutGate* ags_devout_gate_control(AgsDevout *devout,
-				       AgsDevoutGate *gate,
-				       gboolean push, gboolean pop,
-				       GError **error);
-AgsDevoutGate* ags_devout_fifo_lock_gate(AgsDevout *devout);
-void ags_devout_fifo_unlock_gate(AgsDevout *devout, AgsDevoutGate *gate);
 
 AgsDevout* ags_devout_new();
 

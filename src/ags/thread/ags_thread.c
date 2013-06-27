@@ -599,6 +599,9 @@ ags_thread_main_loop_unlock_children(AgsThread *thread)
     }
   }
 
+  main_loop->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);      
+  pthread_cond_signal(&(thread->cond));
+      
   ags_thread_main_loop_unlock_children_recursive(thread->children);
 }
 
@@ -1215,13 +1218,17 @@ ags_thread_loop(void *ptr)
     }else{
       ags_thread_lock(thread);
 
-      while((AGS_THREAD_MAIN_LOOP_WAIT & (thread->flags)) != 0 &&
-	    !ags_thread_is_tree_in_sync(thread)){
-	pthread_cond_wait(&(thread->cond),
-			  &(thread->mutex));
+      if(ags_thread_tree_is_in_sync(thread)){
+	ags_thread_main_loop_unlock_children(thread);
+      }else{
+	while((AGS_THREAD_MAIN_LOOP_WAIT & (thread->flags)) != 0 &&
+	      !ags_thread_is_tree_in_sync(thread)){
+	  pthread_cond_wait(&(thread->cond),
+			    &(thread->mutex));
+	}	
       }
 
-      ags_thread_main_loop_unlock_children(thread);
+      thread->flags |= AGS_THREAD_MAIN_LOOP_WAIT;
 
       ags_thread_unlock(thread);
     }
@@ -1233,9 +1240,8 @@ ags_thread_loop(void *ptr)
 
       ags_thread_lock(thread);
 
-      main_loop->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);      
-      pthread_cond_signal(&(thread->cond));
-      
+      ags_thread_main_loop_unlock_children(main_loop);
+
       ags_thread_unlock(thread);
     }
 

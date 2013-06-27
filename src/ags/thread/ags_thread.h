@@ -75,7 +75,8 @@ struct _AgsThread
   gboolean first_barrier;
   int wait_count[2];
 
-  GObject *devout;
+  AgsGate *gate;
+  GObject *devout; //WARNING: will be removed after refactoring
   AgsThread *parent;
 
   AgsThread *next;
