@@ -1241,8 +1241,8 @@ ags_thread_loop(void *ptr)
 
   void ags_thread_main_loop_sync(AgsThread *thread){
 
-    while(((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0 &&
-	   !ags_thread_is_tree_in_sync(thread)) ||
+    while((((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0 &&
+	    !ags_thread_is_tree_in_sync(thread))) ||
 	  (AGS_THREAD_WAIT & (thread->flags)) != 0){
       pthread_cond_wait(&(thread->cond),
 			&(thread->mutex));
