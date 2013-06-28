@@ -561,9 +561,8 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
 
       (*wait_count)--;
 
-      if((AGS_THREAD_WAIT & (current->flags)) == 0 &&
-	 ((AGS_THREAD_TREE_SYNC & (current->flags) == 0 &&
-	   (AGS_THREAD_WAIT & (current->flags)) == 0))){
+      if(((AGS_THREAD_WAIT & (current->flags)) != 0) &&
+	 ((AGS_THREAD_TREE_SYNC & (current->flags)) != 0)){
 	(*wait_count)++;
       }
 
@@ -591,7 +590,9 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
   if(main_loop != thread){
     wait_count--;
 
-    if((AGS_THREAD_TREE_SYNC & (main_loop->flags)) == 0){
+    if(((AGS_THREAD_TREE_SYNC & (main_loop->flags)) != 0 &&
+	(AGS_THREAD_WAIT & (main_loop->flags)) != 0) ||
+       (AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0){
       wait_count++;
     }
   }
@@ -600,7 +601,8 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
   
   g_message("locks: %d\0", wait_count);
 
-  if(wait_count == 0){
+  if(wait_count == 0 ||
+     (wait_count == -1 && ((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0))){
     g_message("synced\0");
     return(TRUE);
   }else{
@@ -612,6 +614,8 @@ void
 ags_thread_unlock_all(AgsThread *thread)
 {
   AgsThread *main_loop;
+
+  g_message("unlock all\0");
 
   main_loop = ags_thread_get_toplevel(thread);
   main_loop->flags &= (~AGS_THREAD_WAIT);
@@ -1223,8 +1227,6 @@ ags_thread_loop(void *ptr)
 
   void ags_thread_loop_sync(AgsThread *thread){
 
-    thread->flags |= AGS_THREAD_WAIT;
-
     while(!ags_thread_is_tree_in_sync(thread) &&
 	  ((AGS_THREAD_WAIT & (thread->flags)) != 0)){
       pthread_cond_wait(&(thread->cond),
@@ -1235,8 +1237,6 @@ ags_thread_loop(void *ptr)
   }
 
   void ags_thread_main_loop_sync(AgsThread *thread){
-
-    thread->flags |= AGS_THREAD_WAIT;
 
     while(((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0 ||
 	   !ags_thread_is_tree_in_sync(thread)) &&
@@ -1289,11 +1289,10 @@ ags_thread_loop(void *ptr)
 
     g_message("tree sync: %s\0", G_OBJECT_TYPE_NAME(thread));
 
+    thread->flags |= AGS_THREAD_WAIT;
     thread->flags |= AGS_THREAD_TREE_SYNC;
 
     if(ags_thread_is_tree_in_sync(thread)){
-      ags_thread_unlock_all(thread);
-
       if(thread->parent == NULL){
 	if((AGS_THREAD_INITIAL_RUN & (thread->flags)) == 0){
 	  thread->flags |= AGS_THREAD_MAIN_LOOP_WAIT;
@@ -1309,7 +1308,7 @@ ags_thread_loop(void *ptr)
     }else{
       if(thread->parent == NULL){
 	thread->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);
-	thread->flags &= (~AGS_THREAD_WAIT);
+	//	thread->flags &= (~AGS_THREAD_WAIT);
 	ags_thread_main_loop_sync(thread);
       }else{
 	thread->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);
