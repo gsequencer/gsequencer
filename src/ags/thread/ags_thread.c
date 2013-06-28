@@ -600,6 +600,7 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
   ags_thread_is_tree_in_sync(main_loop->children, &wait_count);
   
   if(wait_count == 0){
+    g_message("synced\0");
     return(TRUE);
   }else{
     return(FALSE);
@@ -1292,9 +1293,11 @@ ags_thread_loop(void *ptr)
 
       if(thread->parent == NULL){
 	thread->flags |= AGS_THREAD_MAIN_LOOP_WAIT;
-	ags_thread_main_loop_sync(thread);
+	thread->flags &= (~AGS_THREAD_WAIT);
+	//	ags_thread_main_loop_sync(thread);
       }else{
-	thread->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);
+	thread->flags &= (~AGS_THREAD_WAIT);
+	ags_thread_unlock_all(thread);
 	ags_thread_loop_sync(thread);
       }
     }else{
