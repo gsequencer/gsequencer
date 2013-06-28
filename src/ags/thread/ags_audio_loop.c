@@ -164,8 +164,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
   audio_loop->flags = 0;
 
-  audio_loop->initial_passed = FALSE;
-
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
 
@@ -378,8 +376,6 @@ ags_audio_loop_run(AgsThread *thread)
       pthread_cond_wait(&(audio_loop->task_thread->start_cond),
 			&(audio_loop->task_thread->mutex));
     }
-
-    audio_loop->initial_passed = TRUE;
   }
   
   ags_thread_unlock(audio_loop->task_thread);

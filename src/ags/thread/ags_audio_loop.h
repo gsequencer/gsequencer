@@ -52,8 +52,6 @@ struct _AgsAudioLoop
 
   guint flags;
 
-  gboolean initial_passed;
-
   AgsThread *task_thread;
 
   AgsThread *devout_thread;
