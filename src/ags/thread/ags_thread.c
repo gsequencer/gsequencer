@@ -600,6 +600,7 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
   ags_thread_is_tree_in_sync(main_loop->children, &wait_count);
   
   if(wait_count == -1){
+    main_loop->flags &= (~AGS_THREAD_WAIT);
     return(TRUE);
   }else{
     return(FALSE);
@@ -613,8 +614,12 @@ ags_thread_unlock_all(AgsThread *thread)
 
   main_loop = ags_thread_get_toplevel(thread);
 
-  main_loop->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);
-  pthread_cond_signal(&(thread->cond));
+  if(thread != main_loop){
+    main_loop->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);
+    pthread_cond_signal(&(thread->cond));
+  }else{
+    main_loop->flags |= AGS_THREAD_WAIT;
+  }
 }
 
 void
@@ -1221,13 +1226,15 @@ ags_thread_loop(void *ptr)
 
   void ags_thread_loop_sync(AgsThread *thread){
 
-    while((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0 &&
-	  !ags_thread_is_tree_in_sync(thread)){
+    while(((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0 &&
+	   !ags_thread_is_tree_in_sync(thread)) ||
+	  (thread->parent == NULL &&
+	   (AGS_THREAD_WAIT & (thread->flags)) != 0)){
       pthread_cond_wait(&(thread->cond),
 			&(thread->mutex));
     }
 
-    thread &= (~AGS_THREAD_TREE_SYNC);
+    thread->flags &= (~AGS_THREAD_TREE_SYNC);
 
     if(thread->parent == NULL){
       ags_thread_main_loop_unlock_children(thread);
