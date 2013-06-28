@@ -113,6 +113,7 @@ gboolean ags_thread_children_is_locked(AgsThread *thread);
 
 gboolean ags_thread_is_tree_syncing(AgsThread *thread);
 gboolean ags_thread_is_tree_in_sync(AgsThread *thread);
+void ags_thread_unlock_all(AgsThread *thread);
 void ags_thread_main_loop_unlock_children(AgsThread *thread);
 
 AgsThread* ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent);

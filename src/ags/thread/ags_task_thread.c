@@ -115,8 +115,6 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread = AGS_THREAD(task_thread);
 
-  thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
-
   task_thread->devout = NULL;
 
   task_thread->queued = 0;

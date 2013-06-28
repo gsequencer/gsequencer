@@ -567,7 +567,8 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
 	(*wait_count)++;
       }
 
-      if((*wait_count) <= -2){
+      if((*wait_count) != -1 ||
+	 (*wait_count) != 0){
 	return(FALSE);
       }
 
@@ -576,10 +577,11 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
       current = current->next;
     }
 
-    if((*wait_count) <= -2){
-      return(FALSE);
-    }else{
+    if((*wait_count) == -1 ||
+       (*wait_count) != 0){
       return(TRUE);
+    }else{
+      return(FALSE);
     }
   }
 
@@ -589,8 +591,7 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
   if(main_loop != thread){
     wait_count--;
 
-    if((AGS_THREAD_WAIT & (main_loop->flags)) == 0 &&
-       ((AGS_THREAD_TREE_SYNC & (main_loop->flags) == 0 &&
+    if(((AGS_THREAD_TREE_SYNC & (main_loop->flags) == 0 ||
 	 (AGS_THREAD_WAIT & (main_loop->flags)) == 0))){
       wait_count++;
     }
@@ -598,11 +599,22 @@ ags_thread_is_tree_in_sync(AgsThread *thread)
 
   ags_thread_is_tree_in_sync(main_loop->children, &wait_count);
   
-  if(wait_count <= -2){
-    return(FALSE);
-  }else{
+  if(wait_count == -1){
     return(TRUE);
+  }else{
+    return(FALSE);
   }
+}
+
+void
+ags_thread_unlock_all(AgsThread *thread)
+{
+  AgsThread *main_loop;
+
+  main_loop = ags_thread_get_toplevel(thread);
+
+  main_loop->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);
+  pthread_cond_signal(&(thread->cond));
 }
 
 void
@@ -638,10 +650,15 @@ ags_thread_main_loop_unlock_children(AgsThread *thread)
 
   main_loop = ags_thread_get_toplevel(thread);
   main_loop->flags &= (~AGS_THREAD_MAIN_LOOP_WAIT);
+  main_loop->flags &= (~AGS_THREAD_TREE_SYNC);
 
-  pthread_cond_signal(&(thread->cond));
+  if((AGS_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
+    pthread_cond_signal(&(main_loop->cond));
+  }else{
+    pthread_cond_broadcast(&(main_loop->cond));
+  }
       
-  ags_thread_main_loop_unlock_children_recursive(thread->children);
+  ags_thread_main_loop_unlock_children_recursive(main_loop->children);
 }
 
 /**
@@ -1196,23 +1213,29 @@ ags_thread_start(AgsThread *thread)
 void*
 ags_thread_loop(void *ptr)
 {
-  AgsThread *thread;
+  AgsThread *thread, *main_loop;
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
+  
+  auto void ags_thread_loop_sync(AgsThread *thread);
+
+  void ags_thread_loop_sync(AgsThread *thread){
+
+    while((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0 &&
+	  !ags_thread_is_tree_in_sync(thread)){
+      pthread_cond_wait(&(thread->cond),
+			&(thread->mutex));
+    }
+
+    thread &= (~AGS_THREAD_TREE_SYNC);
+
+    if(thread->parent == NULL){
+      ags_thread_main_loop_unlock_children(thread);
+    }
+  }
 
   thread = AGS_THREAD(ptr);
-
-  /* signal AgsAudioLoop */
-  if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0 &&
-     AGS_IS_TASK_THREAD(thread)){
-    
-    ags_thread_lock(thread);
-    
-    thread->flags &= (~AGS_THREAD_INITIAL_RUN);
-    pthread_cond_signal(&(thread->start_cond));
-
-    ags_thread_unlock(thread);
-  }
+  main_loop = ags_thread_get_toplevel(thread);
   
   while((AGS_THREAD_RUNNING & (thread->flags)) != 0){
 
@@ -1248,58 +1271,21 @@ ags_thread_loop(void *ptr)
     /* run in hierarchy */
     ags_thread_lock(thread);
 
-    g_message("tree sync\0");
+    g_message("tree sync: %s\0", G_OBJECT_TYPE_NAME(thread));
 
-    if(thread->parent != NULL){
-      is_in_sync = FALSE;
-
-      thread->parent->flags |= AGS_THREAD_TREE_SYNC;
-    }else{
-      if(ags_thread_is_tree_in_sync(thread)){
-	ags_thread_main_loop_unlock_children(thread);
-      }else{
-	while((AGS_THREAD_MAIN_LOOP_WAIT & (thread->flags)) != 0 &&
-	      !ags_thread_is_tree_in_sync(thread)){
-	  pthread_cond_wait(&(thread->cond),
-			    &(thread->mutex));
-	}	
-      }
-
-      thread->flags |= AGS_THREAD_MAIN_LOOP_WAIT;
-    }
-
-    ags_thread_unlock(thread);
+    thread->flags |= AGS_THREAD_TREE_SYNC;
 
     if(ags_thread_is_tree_in_sync(thread)){
-      AgsThread *main_loop;
-      
-      main_loop = ags_thread_get_toplevel(thread);
+      ags_thread_unlock_all(thread);
 
-      ags_thread_lock(thread);
-
-      ags_thread_main_loop_unlock_children(main_loop);
-
-      ags_thread_unlock(thread);
+      ags_thread_loop_sync(thread);
     }else{
-      ags_thread_lock(thread);
-
-      while(thread->parent != NULL && (!is_in_sync ||
-				       ags_thread_is_tree_syncing(thread))){
-	pthread_cond_wait(&(thread->cond),
-			  &(thread->mutex));
-	
-	if(!is_in_sync && (thread->parent->parent == NULL ||
-			   (AGS_THREAD_TREE_SYNC & (thread->parent->parent->flags)) != 0)){
-	  is_in_sync = TRUE;
-	}
-      }
-	
-      ags_thread_unlock(thread);
+      ags_thread_loop_sync(thread);
     }
 
-    /* lock parent */
-    ags_thread_lock(thread);
+    thread->flags |= AGS_THREAD_MAIN_LOOP_WAIT;
 
+    /* lock parent */
     /* set idle flag */
     thread->flags |= AGS_THREAD_IDLE;
 
@@ -1309,12 +1295,9 @@ ags_thread_loop(void *ptr)
 
       wait_for_parent = TRUE;
 
-      ags_thread_unlock(thread);
       thread->flags |= AGS_THREAD_WAITING_FOR_PARENT;
       ags_thread_lock_parent(thread, NULL);
     }else{
-      ags_thread_unlock(thread);
-
       wait_for_parent = FALSE;
     }
 
@@ -1338,8 +1321,6 @@ ags_thread_loop(void *ptr)
       if(AGS_IS_AUDIO_LOOP(thread) &&
 	 AGS_AUDIO_LOOP(thread)->initial_passed){
 	AGS_AUDIO_LOOP(thread)->initial_passed = FALSE;
-
-	ags_thread_unlock(thread);
       }
 
       wait_for_children = TRUE;
@@ -1377,10 +1358,15 @@ ags_thread_loop(void *ptr)
 
 	ags_thread_wait_children(thread);
       }
-  }
+    }
+
+    ags_thread_unlock(thread);
 
     /* run */
     ags_thread_run(thread);
+
+    /**/
+    ags_thread_lock(thread);
 
     /* unset idle flag */
     thread->flags &= (~AGS_THREAD_IDLE);
@@ -1411,12 +1397,17 @@ ags_thread_loop(void *ptr)
 
     /* unset initial run */
     if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
-      ags_thread_lock(thread);
-
       thread->flags &= (~AGS_THREAD_INITIAL_RUN);
 
-      ags_thread_unlock(thread);
+      /* signal AgsAudioLoop */
+      if(AGS_IS_TASK_THREAD(thread)){
+    
+	thread->flags &= (~AGS_THREAD_INITIAL_RUN);
+	pthread_cond_signal(&(thread->start_cond));
+      }
     }
+
+    ags_thread_unlock(thread);
   }
 
   pthread_exit(NULL);

@@ -162,12 +162,6 @@ ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
-  AgsThread *thread;
-
-  thread = AGS_THREAD(audio_loop);
-
-  thread->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
-
   audio_loop->flags = 0;
 
   audio_loop->initial_passed = FALSE;
