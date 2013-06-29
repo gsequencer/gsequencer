@@ -48,7 +48,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = ags$(EXEEXT)
+bin_PROGRAMS = ags$(EXEEXT) test$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
@@ -226,6 +226,11 @@ ags_OBJECTS = $(am_ags_OBJECTS)
 ags_LDADD = $(LDADD)
 ags_LINK = $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am_test_OBJECTS = test-ags_test_thread.$(OBJEXT)
+test_OBJECTS = $(am_test_OBJECTS)
+test_LDADD = $(LDADD)
+test_LINK = $(CCLD) $(test_CFLAGS) $(CFLAGS) $(test_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -234,8 +239,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(ags_SOURCES)
-DIST_SOURCES = $(ags_SOURCES)
+SOURCES = $(ags_SOURCES) $(test_SOURCES)
+DIST_SOURCES = $(ags_SOURCES) $(test_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -797,9 +802,12 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/thread/ags_task_thread.c \
 	./src/ags/thread/ags_devout_thread.h \
 	./src/ags/thread/ags_devout_thread.c
+test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
 ags_CFLAGS = `pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
 ags_LDFLAGS = -ldl `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
+test_CFLAGS = ${ags_CFLAGS}
+test_LDFLAGS = ${ags_LDFLAGS}
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -897,6 +905,9 @@ clean-binPROGRAMS:
 ags$(EXEEXT): $(ags_OBJECTS) $(ags_DEPENDENCIES) $(EXTRA_ags_DEPENDENCIES) 
 	@rm -f ags$(EXEEXT)
 	$(ags_LINK) $(ags_OBJECTS) $(ags_LDADD) $(LIBS)
+test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) $(EXTRA_test_DEPENDENCIES) 
+	@rm -f test$(EXEEXT)
+	$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1115,6 +1126,7 @@ include ./$(DEPDIR)/ags-ags_volume_recycling.Po
 include ./$(DEPDIR)/ags-ags_window.Po
 include ./$(DEPDIR)/ags-ags_window_callbacks.Po
 include ./$(DEPDIR)/ags-main.Po
+include ./$(DEPDIR)/test-ags_test_thread.Po
 
 .c.o:
 	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -4083,6 +4095,20 @@ ags-ags_devout_thread.obj: ./src/ags/thread/ags_devout_thread.c
 #	source='./src/ags/thread/ags_devout_thread.c' object='ags-ags_devout_thread.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_devout_thread.obj `if test -f './src/ags/thread/ags_devout_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_devout_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_devout_thread.c'; fi`
+
+test-ags_test_thread.o: ./src/ags/test/ags_test_thread.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -MT test-ags_test_thread.o -MD -MP -MF $(DEPDIR)/test-ags_test_thread.Tpo -c -o test-ags_test_thread.o `test -f './src/ags/test/ags_test_thread.c' || echo '$(srcdir)/'`./src/ags/test/ags_test_thread.c
+	$(am__mv) $(DEPDIR)/test-ags_test_thread.Tpo $(DEPDIR)/test-ags_test_thread.Po
+#	source='./src/ags/test/ags_test_thread.c' object='test-ags_test_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -c -o test-ags_test_thread.o `test -f './src/ags/test/ags_test_thread.c' || echo '$(srcdir)/'`./src/ags/test/ags_test_thread.c
+
+test-ags_test_thread.obj: ./src/ags/test/ags_test_thread.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -MT test-ags_test_thread.obj -MD -MP -MF $(DEPDIR)/test-ags_test_thread.Tpo -c -o test-ags_test_thread.obj `if test -f './src/ags/test/ags_test_thread.c'; then $(CYGPATH_W) './src/ags/test/ags_test_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/test/ags_test_thread.c'; fi`
+	$(am__mv) $(DEPDIR)/test-ags_test_thread.Tpo $(DEPDIR)/test-ags_test_thread.Po
+#	source='./src/ags/test/ags_test_thread.c' object='test-ags_test_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -c -o test-ags_test_thread.obj `if test -f './src/ags/test/ags_test_thread.c'; then $(CYGPATH_W) './src/ags/test/ags_test_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/test/ags_test_thread.c'; fi`
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
