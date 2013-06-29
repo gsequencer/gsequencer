@@ -1300,7 +1300,23 @@ ags_thread_loop(void *ptr)
     
     ags_thread_main_loop_unlock_children(thread, tic);
     
-    thread->flags &= (~AGS_THREAD_TREE_SYNC_0);
+    switch(tic){
+    case 0:
+      {
+	thread->flags &= (~AGS_THREAD_TREE_SYNC_0);
+      break;
+      }
+    case 1:
+      {
+	thread->flags &= (~AGS_THREAD_TREE_SYNC_1);
+	break;
+      }
+    case 2:
+      {
+	thread->flags &= (~AGS_THREAD_TREE_SYNC_2);
+	break;
+      }
+    }    
   }
 
 
