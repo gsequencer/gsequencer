@@ -19,6 +19,7 @@
 #include <ags/thread/ags_audio_loop.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_main_loop.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -27,6 +28,7 @@
 
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
 void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop);
 void ags_audio_loop_init(AgsAudioLoop *audio_loop);
 void ags_audio_loop_set_property(GObject *gobject,
 				 guint prop_id,
@@ -38,6 +40,7 @@ void ags_audio_loop_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_audio_loop_connect(AgsConnectable *connectable);
 void ags_audio_loop_disconnect(AgsConnectable *connectable);
+guint ags_audio_loop_get_tic(AgsMainLoop *main_loop);
 void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_start(AgsThread *thread);
@@ -83,6 +86,12 @@ ags_audio_loop_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_main_loop_interface_info = {
+      (GInterfaceInitFunc) ags_audio_loop_main_loop_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_audio_loop = g_type_register_static(AGS_TYPE_THREAD,
 						 "AgsAudioLoop\0",
 						 &ags_audio_loop_info,
@@ -91,6 +100,10 @@ ags_audio_loop_get_type()
     g_type_add_interface_static(ags_type_audio_loop,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_audio_loop,
+				AGS_TYPE_MAIN_LOOP,
+				&ags_main_loop_interface_info);
   }
   
   return (ags_type_audio_loop);
@@ -157,6 +170,12 @@ ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable)
 
   connectable->connect = ags_audio_loop_connect;
   connectable->disconnect = ags_audio_loop_disconnect;
+}
+
+void
+ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
+{
+  main_loop->get_tic = ags_audio_loop_get_tic;
 }
 
 void
@@ -281,6 +300,12 @@ ags_audio_loop_disconnect(AgsConnectable *connectable)
   ags_audio_loop_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+guint
+ags_audio_loop_get_tic(AgsMainLoop *main_loop)
+{
+  return(AGS_AUDIO_LOOP(main_loop)->tic);
 }
 
 void
