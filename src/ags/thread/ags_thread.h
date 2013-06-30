@@ -114,7 +114,6 @@ gboolean ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent);
 gboolean ags_thread_sibling_is_locked(AgsThread *thread);
 gboolean ags_thread_children_is_locked(AgsThread *thread);
 
-gboolean ags_thread_is_current_fallen_behind(AgsThread *current, guint tic);
 gboolean ags_thread_is_current_ready(AgsThread *current, guint tic);
 gboolean ags_thread_is_tree_ready(AgsThread *thread, guint  current_tic);
 gboolean ags_thread_is_tree_in_sync(AgsThread *thread, guint tic);
