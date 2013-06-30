@@ -190,7 +190,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->flags = 0;
 
   audio_loop->tic = 0;
-  audio_loop->last_sync = 2;
+  audio_loop->last_sync = 0;
   
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
