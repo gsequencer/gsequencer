@@ -1493,12 +1493,7 @@ ags_thread_loop(void *ptr)
       }
     }
 
-    ags_thread_unlock(thread);
-
-    /* lock parent */
     /* set idle flag */
-    ags_thread_lock(thread);
-
     thread->flags |= AGS_THREAD_IDLE;
 
     if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0){
