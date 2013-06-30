@@ -36,10 +36,12 @@ struct _AgsMainLoopInterface
   GTypeInterface interface;
   
   guint (*get_tic)(AgsMainLoop *main_loop);
+  guint (*last_sync)(AgsMainLoop *main_loop);
 };
 
 GType ags_main_loop_get_type();
 
 guint ags_main_loop_get_tic(AgsMainLoop *main_loop);
+guint ags_main_loop_last_sync(AgsMainLoop *main_loop);
 
 #endif /*__AGS_MAIN_LOOP_H__*/
