@@ -525,11 +525,75 @@ ags_thread_children_is_locked(AgsThread *thread)
 }
 
 gboolean
-ags_thread_is_tree_ready(AgsThread *thread, guint tic)
+ags_thread_is_tree_ready(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsThread *main_loop;
+  guint current_tic;
 
-  return(TRUE);
+  auto gboolean ags_thread_is_tree_ready_check_current(AgsThread *current, guint current_tic);
+  auto gboolean ags_thread_is_tree_ready_recursive(AgsThread *child);
+
+  gboolean ags_thread_is_tree_ready_check_current(AgsThread *current, guint current_tic){
+    switch(current_tic){
+    case 0:
+      {
+	if((AGS_THREAD_TREE_SYNC_1 & (main_loop->flags)) != 0){
+	  return(FALSE);
+	}else if((AGS_THREAD_TREE_SYNC_2 & (main_loop->flags)) != 0){
+	  return(FALSE);
+	}
+
+	break;
+      }
+    case 1:
+      {
+	if((AGS_THREAD_TREE_SYNC_2 & (main_loop->flags)) != 0){
+	  return(FALSE);
+	}else if((AGS_THREAD_TREE_SYNC_0 & (main_loop->flags)) != 0){
+	  return(FALSE);
+	}
+
+	break;
+      }
+    case 2:
+      {
+	if((AGS_THREAD_TREE_SYNC_0 & (main_loop->flags)) != 0){
+	  return(FALSE);
+	}else if((AGS_THREAD_TREE_SYNC_1 & (main_loop->flags)) != 0){
+	  return(FALSE);
+	}
+
+	break;
+      }
+    }
+
+    return(TRUE);
+  }
+
+  gboolean ags_thread_is_tree_ready_recursive(AgsThread *child){
+    AgsThread *current;
+
+    current = child;
+
+    while(current != NULL){
+      if(!ags_thread_is_tree_ready_check_current(current, current_tic)){
+	return(FALSE);
+      }
+
+      current = current->next;
+    }
+
+    return(TRUE);
+  }
+
+  main_loop = ags_thread_get_toplevel(thread);
+  current_tic = ags_main_loop_get_tic(main_loop);
+
+  if(!ags_thread_is_tree_ready_check_current(main_loop, current_tic)){
+    return(FALSE);
+  }
+
+  return(ags_thread_is_tree_ready_recursive(thread->children));
 }
 
 gboolean
@@ -597,14 +661,16 @@ ags_thread_is_tree_in_sync(AgsThread *thread, guint tic)
 
   last_sync = ags_main_loop_get_last_sync(AGS_MAIN_LOOP(main_loop));
 
-  if(ags_thread_is_tree_ready(thread, tic)){
-    if(last_sync == 0 && tic == 2){
-      return(TRUE);
-    }else if(last_sync == 1 && tic == 0){
-      return(TRUE);
-    }else if(last_sync == 2 && tic == 1){
-      return(TRUE);
-    }
+  if(!ags_thread_is_tree_ready(main_loop)){
+    return(FALSE);
+  }
+
+  if(last_sync == 0 && tic == 2){
+    return(TRUE);
+  }else if(last_sync == 1 && tic == 0){
+    return(TRUE);
+  }else if(last_sync == 2 && tic == 1){
+    return(TRUE);
   }
 
   if((AGS_THREAD_INITIAL_RUN & (main_loop->flags)) == 0){
