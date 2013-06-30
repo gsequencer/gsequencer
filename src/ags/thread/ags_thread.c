@@ -611,7 +611,10 @@ ags_thread_is_tree_in_sync(AgsThread *thread, guint tic)
   printf("locks: %d\n\0", wait_count);
 
   if(wait_count == 0 ||
-     (wait_count == -1 && ((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0))){
+     (wait_count == -1 &&
+      (tic == 0 && (AGS_THREAD_WAIT_0 & (main_loop->flags)) != 0) ||
+      (tic == 1 && (AGS_THREAD_WAIT_1 & (main_loop->flags)) != 0) ||
+      (tic == 2 && (AGS_THREAD_WAIT_2 & (main_loop->flags)) != 0))){
     printf("synced\n\0");
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
     return(TRUE);
@@ -1262,7 +1265,7 @@ ags_thread_loop(void *ptr)
     while(!ags_thread_is_tree_in_sync(thread, tic) &&
 	  ((tic == 0 && (AGS_THREAD_WAIT_0 & (thread->flags)) != 0) ||
 	   (tic == 1 && (AGS_THREAD_WAIT_1 & (thread->flags)) != 0) ||
-	   (tic == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0)))){
+	   (tic == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0))){
       pthread_cond_wait(&(thread->cond),
 			&(thread->mutex));
     }
@@ -1290,12 +1293,10 @@ ags_thread_loop(void *ptr)
     while(!ags_thread_is_tree_in_sync(thread, tic) &&
 	  ((tic == 0 && (AGS_THREAD_WAIT_0 & (thread->flags)) != 0) ||
 	   (tic == 1 && (AGS_THREAD_WAIT_1 & (thread->flags)) != 0) ||
-	   (tic == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0)))){
+	   (tic == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0))){
       pthread_cond_wait(&(thread->cond),
 			&(thread->mutex));
     }
-    
-    ags_thread_main_loop_unlock_children(thread, tic);
     
     switch(tic){
     case 0:
@@ -1388,10 +1389,10 @@ ags_thread_loop(void *ptr)
 
     if(ags_thread_is_tree_in_sync(thread, tic)){
       if(thread->parent == NULL){
-	ags_main_loop_unlock_children(thread);
+	ags_thread_main_loop_unlock_children(thread, tic);
 	ags_thread_main_loop_sync(thread);
       }else{
-	ags_main_loop_unlock_children(thread);
+	ags_thread_main_loop_unlock_children(thread, tic);
 	ags_thread_loop_sync(thread);
       }
     }else{
