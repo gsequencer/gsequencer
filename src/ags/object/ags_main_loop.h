@@ -35,7 +35,9 @@ struct _AgsMainLoopInterface
 {
   GTypeInterface interface;
   
+  void (*set_tic)(AgsMainLoop *main_loop, guint tic);
   guint (*get_tic)(AgsMainLoop *main_loop);
+
   void (*set_last_sync)(AgsMainLoop *main_loop, guint last_sync);
   guint (*get_last_sync)(AgsMainLoop *main_loop);
 };

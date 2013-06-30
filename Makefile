@@ -149,12 +149,12 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_timebar.$(OBJEXT) ags-ags_segment.$(OBJEXT) \
 	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
 	ags-ags_table.$(OBJEXT) ags-ags_run_connectable.$(OBJEXT) \
-	ags-ags_countable.$(OBJEXT) ags-ags_applicable.$(OBJEXT) \
-	ags-ags_runnable.$(OBJEXT) ags-ags_persistable.$(OBJEXT) \
-	ags-ags_seekable.$(OBJEXT) ags-ags_playable.$(OBJEXT) \
-	ags-ags_marshal.$(OBJEXT) ags-ags_tactable.$(OBJEXT) \
-	ags-ags_connectable.$(OBJEXT) ags-ags_packable.$(OBJEXT) \
-	ags-ags_main_loop.$(OBJEXT) ags-ags_preferences.$(OBJEXT) \
+	ags-ags_countable.$(OBJEXT) ags-ags_main_loop.$(OBJEXT) \
+	ags-ags_applicable.$(OBJEXT) ags-ags_runnable.$(OBJEXT) \
+	ags-ags_persistable.$(OBJEXT) ags-ags_seekable.$(OBJEXT) \
+	ags-ags_playable.$(OBJEXT) ags-ags_marshal.$(OBJEXT) \
+	ags-ags_tactable.$(OBJEXT) ags-ags_connectable.$(OBJEXT) \
+	ags-ags_packable.$(OBJEXT) ags-ags_preferences.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) \
 	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
@@ -626,6 +626,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/object/ags_marshal.h \
 	./src/ags/object/ags_run_connectable.c \
 	./src/ags/object/ags_countable.c \
+	./src/ags/object/ags_main_loop.h \
+	./src/ags/object/ags_main_loop.c \
 	./src/ags/object/ags_applicable.c \
 	./src/ags/object/ags_runnable.c \
 	./src/ags/object/ags_connectable.h \
@@ -643,8 +645,6 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/object/ags_connectable.c \
 	./src/ags/object/ags_packable.c \
 	./src/ags/object/ags_run_connectable.h \
-	./src/ags/object/ags_main_loop.h \
-	./src/ags/object/ags_main_loop.c \
 	./src/ags/object/ags_packable.h ./src/ags/X/ags_preferences.c \
 	./src/ags/X/ags_preferences.h \
 	./src/ags/X/ags_preferences_callbacks.c \
@@ -2727,6 +2727,20 @@ ags-ags_countable.obj: ./src/ags/object/ags_countable.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_countable.obj `if test -f './src/ags/object/ags_countable.c'; then $(CYGPATH_W) './src/ags/object/ags_countable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_countable.c'; fi`
 
+ags-ags_main_loop.o: ./src/ags/object/ags_main_loop.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_main_loop.o -MD -MP -MF $(DEPDIR)/ags-ags_main_loop.Tpo -c -o ags-ags_main_loop.o `test -f './src/ags/object/ags_main_loop.c' || echo '$(srcdir)/'`./src/ags/object/ags_main_loop.c
+	$(am__mv) $(DEPDIR)/ags-ags_main_loop.Tpo $(DEPDIR)/ags-ags_main_loop.Po
+#	source='./src/ags/object/ags_main_loop.c' object='ags-ags_main_loop.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_main_loop.o `test -f './src/ags/object/ags_main_loop.c' || echo '$(srcdir)/'`./src/ags/object/ags_main_loop.c
+
+ags-ags_main_loop.obj: ./src/ags/object/ags_main_loop.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_main_loop.obj -MD -MP -MF $(DEPDIR)/ags-ags_main_loop.Tpo -c -o ags-ags_main_loop.obj `if test -f './src/ags/object/ags_main_loop.c'; then $(CYGPATH_W) './src/ags/object/ags_main_loop.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_main_loop.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_main_loop.Tpo $(DEPDIR)/ags-ags_main_loop.Po
+#	source='./src/ags/object/ags_main_loop.c' object='ags-ags_main_loop.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_main_loop.obj `if test -f './src/ags/object/ags_main_loop.c'; then $(CYGPATH_W) './src/ags/object/ags_main_loop.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_main_loop.c'; fi`
+
 ags-ags_applicable.o: ./src/ags/object/ags_applicable.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_applicable.o -MD -MP -MF $(DEPDIR)/ags-ags_applicable.Tpo -c -o ags-ags_applicable.o `test -f './src/ags/object/ags_applicable.c' || echo '$(srcdir)/'`./src/ags/object/ags_applicable.c
 	$(am__mv) $(DEPDIR)/ags-ags_applicable.Tpo $(DEPDIR)/ags-ags_applicable.Po
@@ -2852,20 +2866,6 @@ ags-ags_packable.obj: ./src/ags/object/ags_packable.c
 #	source='./src/ags/object/ags_packable.c' object='ags-ags_packable.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_packable.obj `if test -f './src/ags/object/ags_packable.c'; then $(CYGPATH_W) './src/ags/object/ags_packable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_packable.c'; fi`
-
-ags-ags_main_loop.o: ./src/ags/object/ags_main_loop.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_main_loop.o -MD -MP -MF $(DEPDIR)/ags-ags_main_loop.Tpo -c -o ags-ags_main_loop.o `test -f './src/ags/object/ags_main_loop.c' || echo '$(srcdir)/'`./src/ags/object/ags_main_loop.c
-	$(am__mv) $(DEPDIR)/ags-ags_main_loop.Tpo $(DEPDIR)/ags-ags_main_loop.Po
-#	source='./src/ags/object/ags_main_loop.c' object='ags-ags_main_loop.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_main_loop.o `test -f './src/ags/object/ags_main_loop.c' || echo '$(srcdir)/'`./src/ags/object/ags_main_loop.c
-
-ags-ags_main_loop.obj: ./src/ags/object/ags_main_loop.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_main_loop.obj -MD -MP -MF $(DEPDIR)/ags-ags_main_loop.Tpo -c -o ags-ags_main_loop.obj `if test -f './src/ags/object/ags_main_loop.c'; then $(CYGPATH_W) './src/ags/object/ags_main_loop.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_main_loop.c'; fi`
-	$(am__mv) $(DEPDIR)/ags-ags_main_loop.Tpo $(DEPDIR)/ags-ags_main_loop.Po
-#	source='./src/ags/object/ags_main_loop.c' object='ags-ags_main_loop.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_main_loop.obj `if test -f './src/ags/object/ags_main_loop.c'; then $(CYGPATH_W) './src/ags/object/ags_main_loop.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_main_loop.c'; fi`
 
 ags-ags_preferences.o: ./src/ags/X/ags_preferences.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_preferences.o -MD -MP -MF $(DEPDIR)/ags-ags_preferences.Tpo -c -o ags-ags_preferences.o `test -f './src/ags/X/ags_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_preferences.c

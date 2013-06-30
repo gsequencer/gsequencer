@@ -40,6 +40,7 @@ void ags_audio_loop_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_audio_loop_connect(AgsConnectable *connectable);
 void ags_audio_loop_disconnect(AgsConnectable *connectable);
+void ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_audio_loop_get_tic(AgsMainLoop *main_loop);
 void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_audio_loop_get_last_sync(AgsMainLoop *main_loop);
@@ -177,6 +178,7 @@ ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
+  main_loop->set_tic = ags_audio_loop_set_tic;
   main_loop->get_tic = ags_audio_loop_get_tic;
   main_loop->set_last_sync = ags_audio_loop_set_last_sync;
   main_loop->get_last_sync = ags_audio_loop_get_last_sync;
@@ -188,7 +190,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->flags = 0;
 
   audio_loop->tic = 0;
-  audio_loop->get_last_sync = 2;
+  audio_loop->last_sync = 2;
   
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
@@ -305,6 +307,12 @@ ags_audio_loop_disconnect(AgsConnectable *connectable)
   ags_audio_loop_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic)
+{
+  AGS_AUDIO_LOOP(main_loop)->tic = tic;
 }
 
 guint

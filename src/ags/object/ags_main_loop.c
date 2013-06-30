@@ -33,10 +33,10 @@ ags_main_loop_get_type()
       (GBaseInitFunc) ags_main_loop_base_init,
       NULL, /* base_finalize */
     };
-
+    
     ags_type_main_loop = g_type_register_static(G_TYPE_INTERFACE,
-						 "AgsMainLoop\0", &ags_main_loop_info,
-						 0);
+						"AgsMainLoop\0", &ags_main_loop_info,
+						0);
   }
 
   return(ags_type_main_loop);
@@ -46,6 +46,17 @@ void
 ags_main_loop_base_init(AgsMainLoopInterface *interface)
 {
   /* empty */
+}
+
+void
+ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->set_tic);
+  main_loop_interface->set_tic(main_loop, tic);
 }
 
 guint
