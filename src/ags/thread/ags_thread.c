@@ -525,6 +525,14 @@ ags_thread_children_is_locked(AgsThread *thread)
 }
 
 gboolean
+ags_thread_is_tree_ready(AgsThread *thread, guint tic)
+{
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
+gboolean
 ags_thread_is_tree_in_sync(AgsThread *thread, guint tic)
 {
   AgsThread *main_loop;
@@ -588,13 +596,15 @@ ags_thread_is_tree_in_sync(AgsThread *thread, guint tic)
   wait_count = 0;
 
   last_sync = ags_main_loop_get_last_sync(AGS_MAIN_LOOP(main_loop));
-  
-  if(last_sync == 0 && tic == 2){
-    return(TRUE);
-  }else if(last_sync == 1 && tic == 0){
-    return(TRUE);
-  }else if(last_sync == 2 && tic == 1){
-    return(TRUE);
+
+  if(ags_thread_is_tree_ready(thread, tic)){
+    if(last_sync == 0 && tic == 2){
+      return(TRUE);
+    }else if(last_sync == 1 && tic == 0){
+      return(TRUE);
+    }else if(last_sync == 2 && tic == 1){
+      return(TRUE);
+    }
   }
 
   if((AGS_THREAD_INITIAL_RUN & (main_loop->flags)) == 0){
