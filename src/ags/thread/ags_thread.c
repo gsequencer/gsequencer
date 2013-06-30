@@ -524,7 +524,7 @@ ags_thread_children_is_locked(AgsThread *thread)
 }
 
 gboolean
-ags_thread_is_tree_syncing(AgsThread *thread, gboolean even_tic)
+ags_thread_is_tree_syncing(AgsThread *thread, guint tic)
 {
   AgsThread *main_loop;
   AgsThread *current;
@@ -533,13 +533,27 @@ ags_thread_is_tree_syncing(AgsThread *thread, gboolean even_tic)
   main_loop = ags_thread_get_toplevel(thread);
 
   while(current != NULL){
-    if(even_tic){
-      if((AGS_THREAD_TREE_SYNC_0 & (main_loop->flags)) != 0){
-	return(TRUE);
+
+    switch(tic){
+    case 0:
+      {
+	if((AGS_THREAD_TREE_SYNC_0 & (current->flags)) != 0){
+	  return(TRUE);
+	}
+	break;
       }
-    }else{
-      if((AGS_THREAD_TREE_SYNC_1 & (main_loop->flags)) != 0){
-	return(TRUE);
+    case 1:
+      {
+	if((AGS_THREAD_TREE_SYNC_1 & (current->flags)) != 0){
+	  return(TRUE);
+	}
+      }
+    case 2:
+      {
+	if((AGS_THREAD_TREE_SYNC_2 & (current->flags)) != 0){
+	  return(TRUE);
+	}
+	break;
       }
     }
 
@@ -550,10 +564,11 @@ ags_thread_is_tree_syncing(AgsThread *thread, gboolean even_tic)
 }
 
 gboolean
-ags_thread_is_tree_in_sync(AgsThread *thread, gboolean tic)
+ags_thread_is_tree_in_sync(AgsThread *thread, guint tic)
 {
-  AgsThread *main_loop;
+  AgsMainLoop *main_loop;
   guint wait_count;
+  guint last_sync;
 
   auto void ags_thread_is_tree_in_sync(AgsThread *child, guint *wait_count);
 
@@ -610,7 +625,17 @@ ags_thread_is_tree_in_sync(AgsThread *thread, gboolean tic)
 
   main_loop = ags_thread_get_toplevel(thread);
   wait_count = 0;
+
+  last_sync = ags_main_loop_get_last_sync(AGS_MAIN_LOOP(main_loop));
   
+  if(last_sync == 0 && tic == 2){
+    return(TRUE);
+  }else if(last_sync == 1 && tic == 0){
+    return(TRUE);
+  }else if(last_sync == 2 && tic == 1){
+    return(TRUE);
+  }
+
   if((AGS_THREAD_INITIAL_RUN & (main_loop->flags)) == 0){
     wait_count--;
   }
@@ -627,6 +652,7 @@ ags_thread_is_tree_in_sync(AgsThread *thread, gboolean tic)
   if(wait_count == 0 ||
      (wait_count == -1 && ((AGS_THREAD_MAIN_LOOP_WAIT & (main_loop->flags)) != 0))){
     printf("synced\n\0");
+    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
     return(TRUE);
   }else{
     return(FALSE);
@@ -646,7 +672,7 @@ ags_thread_unlock_all(AgsThread *thread)
 }
 
 void
-ags_thread_main_loop_unlock_children(AgsThread *thread, gboolean tic)
+ags_thread_main_loop_unlock_children(AgsThread *thread, guint tic)
 {
   AgsThread *main_loop;
 

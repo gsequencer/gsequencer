@@ -53,7 +53,8 @@ struct _AgsAudioLoop
   guint flags;
 
   guint tic;
-
+  guint last_sync;
+  
   AgsThread *task_thread;
 
   AgsThread *devout_thread;
