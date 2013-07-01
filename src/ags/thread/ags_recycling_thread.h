@@ -41,11 +41,15 @@ struct _AgsRecyclingThread
   AgsThread thread;
 
   GObject *recycling;
+  pthread_mutex_t iteration_mutex;
+  pthread_cond_t iteration_cond;
 };
 
 struct _AgsRecyclingThreadClass
 {
   AgsThreadClass thread;
+
+  void (*iterate)(AgsThread *thread);
 };
 
 GType ags_recycling_thread_get_type();
