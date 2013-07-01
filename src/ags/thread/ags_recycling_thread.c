@@ -31,7 +31,7 @@ void ags_recycling_thread_connect(AgsConnectable *connectable);
 void ags_recycling_thread_disconnect(AgsConnectable *connectable);
 void ags_recycling_thread_finalize(GObject *gobject);
 
-void ags_recycling_thread_run(AgsThread *thread);
+void ags_recycling_thread_start(AgsThread *thread);
 
 static gpointer ags_recycling_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_recycling_thread_parent_connectable_interface;
@@ -89,7 +89,16 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
   /* AgsThread */
   thread = (AgsThreadClass *) recycling_thread;
 
-  thread->run = ags_recycling_thread_run;
+  thread->start = ags_recycling_thread_start;
+
+  /* AgsRecyclingThread */
+  recycling_thread->run_init_pre = ags_recycling_thread_run_init_pre;
+  recycling_thread->run_init_inter = ags_recycling_thread_run_init_inter;
+  recycling_thread->run_init_post = ags_recycling_thread_run_init_post;
+
+  recycling_thread->run_pre = ags_recycling_thread_run_pre;
+  recycling_thread->run_inter = ags_recycling_thread_run_inter;
+  recycling_thread->run_post = ags_recycling_thread_run_post;
 }
 
 void
@@ -105,14 +114,22 @@ void
 ags_recycling_thread_init(AgsRecyclingThread *recycling_thread)
 {
   recycling_thread->recycling = NULL;
+  pthread_mutex_init(&(recycling_thread->iteration_mutex), NULL);
+  pthread_cond_init(&(recycling_thread->iteration_cond), NULL);
+
+  recycling_thread->stage = 0;
 }
 
 void
 ags_recycling_thread_connect(AgsConnectable *connectable)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(connectable);
+
   ags_recycling_thread_parent_connectable_interface->connect(connectable);
 
-  /* empty */
+
 }
 
 void
@@ -135,10 +152,83 @@ ags_recycling_thread_finalize(GObject *gobject)
 }
 
 void
-ags_recycling_thread_run(AgsThread *thread)
+ags_recycling_thread_start(AgsThread *thread)
+{
+  AGS_THREAD_CLASS(ags_recycling_thread_parent_class)->start(thread);
+}
+
+void
+ags_recycling_thread_iterate(AgsRecyclingThread *recycling_thread)
+{
+  pthread_mutex_lock(&(recycling_thread->iteration_mutex));
+
+  while((AGS_RECYCLING_THREAD_WAIT & (recycling_thread->flags)) != 0 &&
+	(AGS_RECYCLING_THREAD_DONE & (recycling_thread->flags)) == 0){
+    pthread_cond_wait(&(recycling_thread->iteration_cond),
+		      &(recycling_thread->iteration_mutex));
+  }
+  
+  recycling_thread->flags |= AGS_RECYCLING_THREAD_WAIT;
+  recycling_thread->flags |= AGS_RECYCLING_THREAD_DONE;
+
+  switch(recycling_thread->stage)
+    {
+    case 0:
+      {
+	ags_recycling_thread_run_pre(recycling_thread);
+	break;
+      }
+    case 1:
+      {
+	ags_recycling_thread_run_inter(recycling_thread);
+	break;
+      }
+    case 2:
+      {
+	ags_recycling_thread_run_post(recycling_thread);
+	break;
+      }
+    }
+
+  pthread_mutex_unlock(&(recycling_thread->iteration_mutex));
+}
+
+void
+ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread)
 {
   //TODO:JK: implement me
 }
+
+void
+ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread)
+{
+  //TODO:JK: implement me
+}
+
 
 AgsRecyclingThread*
 ags_recycling_thread_new(GObject *recycling)
