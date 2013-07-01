@@ -22,23 +22,34 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/thread/ags_thread.h>
+
+#include <ags/audio/ags_recycling.h>
+
+#define AGS_TYPE_RECYCLING_THREAD                (ags_recycling_thread_get_type())
+#define AGS_RECYCLING_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThread))
+#define AGS_RECYCLING_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThread))
+#define AGS_IS_RECYCLING_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RECYCLING_THREAD))
+#define AGS_IS_RECYCLING_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECYCLING_THREAD))
+#define AGS_RECYCLING_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThreadClass))
+
 typedef struct _AgsRecyclingThread AgsRecyclingThread;
 typedef struct _AgsRecyclingThreadClass AgsRecyclingThreadClass;
 
 struct _AgsRecyclingThread
 {
-  //  AgsThread thread;
+  AgsThread thread;
 
-  //  AgsRecycling *recycling;
+  GObject *recycling;
 };
 
 struct _AgsRecyclingThreadClass
 {
-  //  AgsThreadClass thread;
+  AgsThreadClass thread;
 };
 
 GType ags_recycling_thread_get_type();
 
-AgsRecyclingThread* ags_recycling_thread_new();
+AgsRecyclingThread* ags_recycling_thread_new(GObject *recycling);
 
 #endif /*__AGS_RECYCLING_THREAD_H__*/

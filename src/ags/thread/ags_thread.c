@@ -1387,6 +1387,8 @@ ags_thread_loop(void *ptr)
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
+
+      g_message("tree sync: %s\n\0", G_OBJECT_TYPE_NAME(thread));
     }else{
       guint next_tic;
 
@@ -1421,6 +1423,8 @@ ags_thread_loop(void *ptr)
 	  break;
 	}
       }
+
+      g_message("tree sync: %s\n\0", G_OBJECT_TYPE_NAME(thread));
 
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
@@ -1470,8 +1474,6 @@ ags_thread_loop(void *ptr)
 
     /* run in hierarchy */
     ags_thread_lock(thread);
-
-    g_message("tree sync: %s\n\0", G_OBJECT_TYPE_NAME(thread));
 
     ags_thread_loop_sync(thread);
 
