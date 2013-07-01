@@ -175,17 +175,29 @@ ags_recycling_thread_iterate(AgsRecyclingThread *recycling_thread)
     {
     case 0:
       {
-	ags_recycling_thread_run_pre(recycling_thread);
+	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
+	  ags_recycling_thread_run_init_pre(recycling_thread);
+	}else{
+	  ags_recycling_thread_run_pre(recycling_thread);
+	}
 	break;
       }
     case 1:
       {
-	ags_recycling_thread_run_inter(recycling_thread);
+	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
+	  ags_recycling_thread_run_init_inter(recycling_thread);
+	}else{
+	  ags_recycling_thread_run_inter(recycling_thread);
+	}
 	break;
       }
     case 2:
       {
-	ags_recycling_thread_run_post(recycling_thread);
+	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
+	  ags_recycling_thread_run_init_post(recycling_thread);
+	}else{
+	  ags_recycling_thread_run_post(recycling_thread);
+	}
 	break;
       }
     }
