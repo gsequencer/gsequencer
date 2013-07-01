@@ -18,6 +18,7 @@
 
 #include <ags/thread/ags_thread.h>
 
+#include <ags/object/ags_tree_iterator.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
@@ -26,6 +27,7 @@
 #include <stdio.h>
 
 void ags_thread_class_init(AgsThreadClass *thread);
+void ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree);
 void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_init(AgsThread *thread);
 void ags_thread_set_property(GObject *gobject,
@@ -36,6 +38,7 @@ void ags_thread_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
+void ags_thread_iterate_nested(AgsTreeIterator *tree);
 void ags_thread_connect(AgsConnectable *connectable);
 void ags_thread_disconnect(AgsConnectable *connectable);
 void ags_thread_finalize(GObject *gobject);
@@ -80,6 +83,12 @@ ags_thread_get_type()
       (GInstanceInitFunc) ags_thread_init,
     };
 
+    static const GInterfaceInfo ags_tree_iterator_interface_info = {
+      (GInterfaceInitFunc) ags_thread_tree_iterator_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_connectable_interface_info = {
       (GInterfaceInitFunc) ags_thread_connectable_interface_init,
       NULL, /* interface_finalize */
@@ -91,6 +100,10 @@ ags_thread_get_type()
 					     &ags_thread_info,
 					     0);
     
+    g_type_add_interface_static(ags_type_thread,
+				AGS_TYPE_TREE_ITERATOR,
+				&ags_tree_iterator_interface_info);
+
     g_type_add_interface_static(ags_type_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
@@ -157,6 +170,12 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
+}
+
+void
+ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree)
+{
+  tree->iterate_nested = ags_thread_iterate_nested;
 }
 
 void
@@ -243,6 +262,11 @@ ags_thread_get_property(GObject *gobject,
     }
     break;
   }
+}
+
+void
+ags_thread_iterate_nested(AgsTreeIterator *tree)
+{
 }
 
 void

@@ -150,11 +150,12 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
 	ags-ags_table.$(OBJEXT) ags-ags_run_connectable.$(OBJEXT) \
 	ags-ags_countable.$(OBJEXT) ags-ags_main_loop.$(OBJEXT) \
-	ags-ags_applicable.$(OBJEXT) ags-ags_runnable.$(OBJEXT) \
-	ags-ags_persistable.$(OBJEXT) ags-ags_seekable.$(OBJEXT) \
-	ags-ags_playable.$(OBJEXT) ags-ags_marshal.$(OBJEXT) \
-	ags-ags_tactable.$(OBJEXT) ags-ags_connectable.$(OBJEXT) \
-	ags-ags_packable.$(OBJEXT) ags-ags_preferences.$(OBJEXT) \
+	ags-ags_applicable.$(OBJEXT) ags-ags_tree_iterator.$(OBJEXT) \
+	ags-ags_runnable.$(OBJEXT) ags-ags_persistable.$(OBJEXT) \
+	ags-ags_seekable.$(OBJEXT) ags-ags_playable.$(OBJEXT) \
+	ags-ags_marshal.$(OBJEXT) ags-ags_tactable.$(OBJEXT) \
+	ags-ags_connectable.$(OBJEXT) ags-ags_packable.$(OBJEXT) \
+	ags-ags_preferences.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) \
 	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
@@ -629,6 +630,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/object/ags_main_loop.h \
 	./src/ags/object/ags_main_loop.c \
 	./src/ags/object/ags_applicable.c \
+	./src/ags/object/ags_tree_iterator.c \
+	./src/ags/object/ags_tree_iterator.h \
 	./src/ags/object/ags_runnable.c \
 	./src/ags/object/ags_connectable.h \
 	./src/ags/object/ags_applicable.h \
@@ -1121,6 +1124,7 @@ include ./$(DEPDIR)/ags-ags_timebar.Po
 include ./$(DEPDIR)/ags-ags_toggle_pattern_bit.Po
 include ./$(DEPDIR)/ags-ags_toolbar.Po
 include ./$(DEPDIR)/ags-ags_toolbar_callbacks.Po
+include ./$(DEPDIR)/ags-ags_tree_iterator.Po
 include ./$(DEPDIR)/ags-ags_unref_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_volume_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_volume_channel.Po
@@ -2754,6 +2758,20 @@ ags-ags_applicable.obj: ./src/ags/object/ags_applicable.c
 #	source='./src/ags/object/ags_applicable.c' object='ags-ags_applicable.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_applicable.obj `if test -f './src/ags/object/ags_applicable.c'; then $(CYGPATH_W) './src/ags/object/ags_applicable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_applicable.c'; fi`
+
+ags-ags_tree_iterator.o: ./src/ags/object/ags_tree_iterator.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_tree_iterator.o -MD -MP -MF $(DEPDIR)/ags-ags_tree_iterator.Tpo -c -o ags-ags_tree_iterator.o `test -f './src/ags/object/ags_tree_iterator.c' || echo '$(srcdir)/'`./src/ags/object/ags_tree_iterator.c
+	$(am__mv) $(DEPDIR)/ags-ags_tree_iterator.Tpo $(DEPDIR)/ags-ags_tree_iterator.Po
+#	source='./src/ags/object/ags_tree_iterator.c' object='ags-ags_tree_iterator.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_tree_iterator.o `test -f './src/ags/object/ags_tree_iterator.c' || echo '$(srcdir)/'`./src/ags/object/ags_tree_iterator.c
+
+ags-ags_tree_iterator.obj: ./src/ags/object/ags_tree_iterator.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_tree_iterator.obj -MD -MP -MF $(DEPDIR)/ags-ags_tree_iterator.Tpo -c -o ags-ags_tree_iterator.obj `if test -f './src/ags/object/ags_tree_iterator.c'; then $(CYGPATH_W) './src/ags/object/ags_tree_iterator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_tree_iterator.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_tree_iterator.Tpo $(DEPDIR)/ags-ags_tree_iterator.Po
+#	source='./src/ags/object/ags_tree_iterator.c' object='ags-ags_tree_iterator.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_tree_iterator.obj `if test -f './src/ags/object/ags_tree_iterator.c'; then $(CYGPATH_W) './src/ags/object/ags_tree_iterator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_tree_iterator.c'; fi`
 
 ags-ags_runnable.o: ./src/ags/object/ags_runnable.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_runnable.o -MD -MP -MF $(DEPDIR)/ags-ags_runnable.Tpo -c -o ags-ags_runnable.o `test -f './src/ags/object/ags_runnable.c' || echo '$(srcdir)/'`./src/ags/object/ags_runnable.c

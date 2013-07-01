@@ -16,3 +16,45 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <ags/object/ags_tree_iterator.h>
+
+#include <stdio.h>
+
+void ags_tree_iterator_base_init(AgsTreeIteratorInterface *interface);
+
+GType
+ags_tree_iterator_get_type()
+{
+  static GType ags_type_tree_iterator = 0;
+
+  if(!ags_type_tree_iterator){
+    static const GTypeInfo ags_tree_iterator_info = {
+      sizeof(AgsTreeIteratorInterface),
+      (GBaseInitFunc) ags_tree_iterator_base_init,
+      NULL, /* base_finalize */
+    };
+
+    ags_type_tree_iterator = g_type_register_static(G_TYPE_INTERFACE,
+						 "AgsTreeIterator\0", &ags_tree_iterator_info,
+						 0);
+  }
+
+  return(ags_type_tree_iterator);
+}
+
+void
+ags_tree_iterator_base_init(AgsTreeIteratorInterface *interface)
+{
+  /* empty */
+}
+
+void
+ags_tree_iterator_iterate_nested(AgsTreeIterator *tree_iterator)
+{
+  AgsTreeIteratorInterface *tree_iterator_interface;
+
+  g_return_if_fail(AGS_IS_TREE_ITERATOR(tree_iterator));
+  tree_iterator_interface = AGS_TREE_ITERATOR_GET_INTERFACE(tree_iterator);
+  g_return_if_fail(tree_iterator_interface->iterate_nested);
+  tree_iterator_interface->iterate_nested(tree_iterator);
+}
