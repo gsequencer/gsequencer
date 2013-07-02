@@ -21,8 +21,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/performance/ags_devout.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
@@ -106,7 +104,9 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 {
   performance_preferences->super_threaded = gtk_check_button_new_with_label("Super Threaded\0");
   gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(performance_preferences->super_threaded));
+		     GTK_WIDGET(performance_preferences->super_threaded),
+		     FALSE, FALSE,
+		     0);
 }
 
 void
