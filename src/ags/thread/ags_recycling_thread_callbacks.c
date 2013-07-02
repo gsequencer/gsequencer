@@ -17,3 +17,8 @@
  */
 #include <ags/thread/ags_recycling_thread_callbacks.h>
 
+void
+ags_recycling_thread_iterate_callback(AgsRecyclingThread *thread, gpointer user_data)
+{
+  
+}

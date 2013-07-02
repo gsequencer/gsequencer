@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __AGS_RECYCLING_THREAD_CALLBACKS_H__
-#define __AGS_RECYCLING_THREAD_CALLBACKS_H__
 
-#include <glib-object.h>
+#include <ags/X/ags_performance_preferences_callbacks.h>
 
-void ags_recycling_thread_iterate_callback(AgsRecyclingThread *thread);
-
-#endif /* __AGS_RECYCLING_THREAD_CALLBACKS_H__ */

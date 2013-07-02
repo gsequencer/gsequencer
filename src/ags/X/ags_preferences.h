@@ -22,6 +22,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_audio_preferences.h>
+#include <ags/X/ags_performance_preferences.h>
 
 #define AGS_TYPE_PREFERENCES                (ags_preferences_get_type())
 #define AGS_PREFERENCES(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PREFERENCES, AgsPreferences))
@@ -46,6 +47,7 @@ struct _AgsPreferences
   GtkWindow *window;
 
   AgsAudioPreferences *audio_preferences;
+  AgsPerformancePreferences *performance_preferences;
 };
 
 struct _AgsPreferencesClass
