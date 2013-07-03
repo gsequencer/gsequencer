@@ -21,6 +21,9 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
 
 #include <math.h>
 
@@ -169,7 +172,7 @@ ags_recycling_thread_iterate(AgsRecyclingThread *recycling_thread)
   }
   
   recycling_thread->flags |= AGS_RECYCLING_THREAD_WAIT;
-  recycling_thread->flags |= AGS_RECYCLING_THREAD_DONE;
+  recycling_thread->flags &= (~AGS_RECYCLING_THREAD_DONE);
 
   switch(recycling_thread->stage)
     {
@@ -208,37 +211,446 @@ ags_recycling_thread_iterate(AgsRecyclingThread *recycling_thread)
 void
 ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio, *current_audio;
+  AgsChannel *channel, *current_channel;
+  AgsRecycling *recycling, *current_recycling;
+  GList *list;
+
+  auto void ags_recycling_thread_run_init_pre_loop(GList *recall);
+
+  void ags_recycling_thread_run_init_pre_loop(GList *recall){
+    while(list != NULL){
+      ags_recall_run_init_pre(AGS_RECALL(list->data));
+
+      list = list->next;
+    }
+  }
+
+  recycling = AGS_RECYCLING(recycling_thread->recycling);
+
+  channel =
+    current_channel = AGS_CHANNEL(recycling->channel);
+
+  while(current_channel != channel->parent){
+    /* AgsInput */
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+
+    /* AgsAudio */
+    current_audio = AGS_AUDIO(current_channel->audio);
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+
+      ags_recycling_thread_run_init_pre_loop(list);
+    }else{
+      if(recycling->parent->parent == NULL){
+	//FIXME:JK: runs to deep into tree
+	list = current_channel->play;
+	ags_recycling_thread_run_init_pre_loop(list);	
+      }
+
+      list = current_channel->recall;
+      ags_recycling_thread_run_init_pre_loop(list);
+    }
+
+
+    /* AgsOutput */
+    if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->audio_channel);
+    }else{
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->line);
+    }
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_init_pre_loop(list);
+
+    /* iterate */
+    current_channel = current_channel->parent;
+  }
 }
 
 void
 ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio, *current_audio;
+  AgsChannel *channel, *current_channel;
+  AgsRecycling *recycling, *current_recycling;
+  GList *list;
+
+  auto void ags_recycling_thread_run_init_inter_loop(GList *recall);
+
+  void ags_recycling_thread_run_init_inter_loop(GList *recall){
+    while(list != NULL){
+      ags_recall_run_init_inter(AGS_RECALL(list->data));
+
+      list = list->next;
+    }
+  }
+
+  recycling = AGS_RECYCLING(recycling_thread->recycling);
+
+  channel =
+    current_channel = AGS_CHANNEL(recycling->channel);
+
+  while(current_channel != channel->parent){
+    /* AgsInput */
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_init_inter_loop(list);
+
+    /* AgsAudio */
+    current_audio = AGS_AUDIO(current_channel->audio);
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+
+      ags_recycling_thread_run_init_inter_loop(list);
+    }else{
+      if(recycling->parent->parent == NULL){
+	//FIXME:JK: runs to deep into tree
+	list = current_channel->play;
+	ags_recycling_thread_run_init_inter_loop(list);	
+      }
+
+      list = current_channel->recall;
+      ags_recycling_thread_run_init_inter_loop(list);
+    }
+
+
+    /* AgsOutput */
+    if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->audio_channel);
+    }else{
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->line);
+    }
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_init_inter_loop(list);
+
+    /* iterate */
+    current_channel = current_channel->parent;
+  }
 }
 
 void
 ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio, *current_audio;
+  AgsChannel *channel, *current_channel;
+  AgsRecycling *recycling, *current_recycling;
+  GList *list;
+
+  auto void ags_recycling_thread_run_init_post_loop(GList *recall);
+
+  void ags_recycling_thread_run_init_post_loop(GList *recall){
+    while(list != NULL){
+      ags_recall_run_init_post(AGS_RECALL(list->data));
+
+      list = list->next;
+    }
+  }
+
+  recycling = AGS_RECYCLING(recycling_thread->recycling);
+
+  channel =
+    current_channel = AGS_CHANNEL(recycling->channel);
+
+  while(current_channel != channel->parent){
+    /* AgsInput */
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_init_post_loop(list);
+
+    /* AgsAudio */
+    current_audio = AGS_AUDIO(current_channel->audio);
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+
+      ags_recycling_thread_run_init_post_loop(list);
+    }else{
+      if(recycling->parent->parent == NULL){
+	//FIXME:JK: runs to deep into tree
+	list = current_channel->play;
+	ags_recycling_thread_run_init_post_loop(list);	
+      }
+
+      list = current_channel->recall;
+      ags_recycling_thread_run_init_post_loop(list);
+    }
+
+
+    /* AgsOutput */
+    if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->audio_channel);
+    }else{
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->line);
+    }
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_init_post_loop(list);
+
+    /* iterate */
+    current_channel = current_channel->parent;
+  }
 }
 
 void
 ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio, *current_audio;
+  AgsChannel *channel, *current_channel;
+  AgsRecycling *recycling, *current_recycling;
+  GList *list;
+
+  auto void ags_recycling_thread_run_pre_loop(GList *recall);
+
+  void ags_recycling_thread_run_pre_loop(GList *recall){
+    while(list != NULL){
+      ags_recall_run(AGS_RECALL(list->data));
+      ags_recall_run_inter(AGS_RECALL(list->data));
+      ags_recall_run_post(AGS_RECALL(list->data));
+
+      list = list->next;
+    }
+  }
+
+  recycling = AGS_RECYCLING(recycling_thread->recycling);
+
+  channel =
+    current_channel = AGS_CHANNEL(recycling->channel);
+
+  while(current_channel != channel->parent){
+    /* AgsInput */
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_pre_loop(list);
+
+    /* AgsAudio */
+    current_audio = AGS_AUDIO(current_channel->audio);
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+
+      ags_recycling_thread_run_pre_loop(list);
+    }else{
+      if(recycling->parent->parent == NULL){
+	//FIXME:JK: runs to deep into tree
+	list = current_channel->play;
+	ags_recycling_thread_run_pre_loop(list);	
+      }
+
+      list = current_channel->recall;
+      ags_recycling_thread_run_pre_loop(list);
+    }
+
+
+    /* AgsOutput */
+    if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->audio_channel);
+    }else{
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->line);
+    }
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_pre_loop(list);
+
+    /* iterate */
+    current_channel = current_channel->parent;
+  }
 }
 
 void
 ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio, *current_audio;
+  AgsChannel *channel, *current_channel;
+  AgsRecycling *recycling, *current_recycling;
+  GList *list;
+
+  auto void ags_recycling_thread_run_inter_loop(GList *recall);
+
+  void ags_recycling_thread_run_inter_loop(GList *recall){
+    while(list != NULL){
+      ags_recall_run_inter(AGS_RECALL(list->data));
+
+      list = list->next;
+    }
+  }
+
+  recycling = AGS_RECYCLING(recycling_thread->recycling);
+
+  channel =
+    current_channel = AGS_CHANNEL(recycling->channel);
+
+  while(current_channel != channel->parent){
+    /* AgsInput */
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_inter_loop(list);
+
+    /* AgsAudio */
+    current_audio = AGS_AUDIO(current_channel->audio);
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+
+      ags_recycling_thread_run_inter_loop(list);
+    }else{
+      if(recycling->parent->parent == NULL){
+	//FIXME:JK: runs to deep into tree
+	list = current_channel->play;
+	ags_recycling_thread_run_inter_loop(list);	
+      }
+
+      list = current_channel->recall;
+      ags_recycling_thread_run_inter_loop(list);
+    }
+
+
+    /* AgsOutput */
+    if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->audio_channel);
+    }else{
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->line);
+    }
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_inter_loop(list);
+
+    /* iterate */
+    current_channel = current_channel->parent;
+  }
 }
 
 void
 ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio, *current_audio;
+  AgsChannel *channel, *current_channel;
+  AgsRecycling *recycling, *current_recycling;
+  GList *list;
+
+  auto void ags_recycling_thread_run_post_loop(GList *recall);
+
+  void ags_recycling_thread_run_post_loop(GList *recall){
+    while(list != NULL){
+      ags_recall_run_post(AGS_RECALL(list->data));
+
+      list = list->next;
+    }
+  }
+
+  recycling = AGS_RECYCLING(recycling_thread->recycling);
+
+  channel =
+    current_channel = AGS_CHANNEL(recycling->channel);
+
+  while(current_channel != channel->parent){
+    /* AgsInput */
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_post_loop(list);	
+
+    /* AgsAudio */
+    current_audio = AGS_AUDIO(current_channel->audio);
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+
+      ags_recycling_thread_run_post_loop(list);
+    }else{
+      if(recycling->parent->parent == NULL){
+	//FIXME:JK: runs to deep into tree
+	list = current_channel->play;
+	ags_recycling_thread_run_post_loop(list);	
+      }
+
+      list = current_channel->recall;
+      ags_recycling_thread_run_post_loop(list);
+    }
+
+
+    /* AgsOutput */
+    if((AGS_AUDIO_ASYNC & (current_audio->flags)) != 0){
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->audio_channel);
+    }else{
+      current_channel = ags_channel_nth(current_audio->output,
+					current_channel->line);
+    }
+
+    if(recycling->parent == NULL){
+      list = current_channel->play;
+    }else{
+      list = current_channel->recall;
+    }
+
+    ags_recycling_thread_run_post_loop(list);
+
+    /* iterate */
+    current_channel = current_channel->parent;
+  }
 }
 
 

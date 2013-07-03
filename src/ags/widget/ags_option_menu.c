@@ -59,10 +59,8 @@ ags_option_menu_class_init(AgsOptionMenuClass *option_menu)
 void
 ags_option_menu_init(AgsOptionMenu *option_menu)
 {
-
-
   option_menu->menu = NULL;
-  option_menu->menu_item = NULL;
+  option_menu->active_item = NULL;
   option_menu->focus = NULL;
 }
 
@@ -71,7 +69,8 @@ ags_option_menu_new()
 {
   AgsOptionMenu *option_menu;
 
-  option_menu = (AgsOptionMenu *) g_object_new(AGS_TYPE_OPTION_MENU, NULL);
+  option_menu = (AgsOptionMenu *) g_object_new(AGS_TYPE_OPTION_MENU,
+					       NULL);
   
   return(option_menu);
 }

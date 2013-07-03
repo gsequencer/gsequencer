@@ -43,7 +43,7 @@ struct _AgsOptionMenu
   AgsTable *table;
 
   GtkWidget *menu;
-  GList *menu_item;
+  GList *active_item;
   GtkWidget *focus;
 };
 

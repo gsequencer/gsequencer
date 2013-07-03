@@ -24,8 +24,6 @@
 
 #include <ags/thread/ags_thread.h>
 
-#include <ags/audio/ags_recycling.h>
-
 #define AGS_TYPE_RECYCLING_THREAD                (ags_recycling_thread_get_type())
 #define AGS_RECYCLING_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThread))
 #define AGS_RECYCLING_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThread))
