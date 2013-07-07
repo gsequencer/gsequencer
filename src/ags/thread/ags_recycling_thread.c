@@ -19,6 +19,7 @@
 #include <ags/thread/ags_recycling_thread.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_tree_iterator.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -42,6 +43,8 @@ void ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTree
 void ags_recycling_thread_finalize(GObject *gobject);
 
 void ags_recycling_thread_start(AgsThread *thread);
+
+void ags_recycling_thread_iterate_inverse(AgsRecyclingThread *recycling_thread);
 
 static gpointer ags_recycling_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_recycling_thread_parent_connectable_interface;
@@ -70,6 +73,12 @@ ags_recycling_thread_get_type()
       NULL, /* interface_data */
     };
     
+    static const GInterfaceInfo ags_tree_iterator_interface_info = {
+      (GInterfaceInitFunc) ags_recycling_thread_tree_iterator_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
     ags_type_recycling_thread = g_type_register_static(AGS_TYPE_THREAD,
 						       "AgsRecyclingThread\0",
 						       &ags_recycling_thread_info,
@@ -78,6 +87,10 @@ ags_recycling_thread_get_type()
     g_type_add_interface_static(ags_type_recycling_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_recycling_thread,
+				AGS_TYPE_TREE_ITERATOR,
+				&ags_tree_iterator_interface_info);
   }
   
   return (ags_type_recycling_thread);
@@ -124,7 +137,7 @@ void
 ags_recycling_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree)
 {
   tree->set_inverse_mode = ags_recycling_thread_set_inverse_mode;
-  tree->get_inverse_mode = ags_recycling_thread_get_inverse_mode;
+  tree->is_inverse_mode = ags_recycling_thread_is_inverse_mode;
 
   tree->iterate = ags_recycling_thread_iterate;
   tree->iterate_nested = ags_recycling_thread_iterate_nested;
@@ -190,6 +203,7 @@ ags_recycling_thread_iterate(AgsTreeIterator *tree)
 
   recycling_thread = AGS_RECYCLING_THREAD(tree);
 
+  /* iterate sibling */
   //TODO:JK: implement me
 }
 
@@ -208,7 +222,7 @@ ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *cu
 {
   AgsRecyclingThread *recycling_thread;
 
-  recycling_thread = AGS_RECYCLING_THREAD(tree);
+  recycling_thread = AGS_RECYCLING_THREAD(current);
 
   //TODO:JK: implement me
 }
@@ -218,7 +232,7 @@ ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeItera
 {
   AgsRecyclingThread *recycling_thread;
 
-  recycling_thread = AGS_RECYCLING_THREAD(tree);
+  recycling_thread = AGS_RECYCLING_THREAD(current);
 
   //TODO:JK: implement me
 }
@@ -241,7 +255,7 @@ ags_recycling_thread_start(AgsThread *thread)
 }
 
 void
-ags_recycling_thread_iterate(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_iterate_inverse(AgsRecyclingThread *recycling_thread)
 {
   pthread_mutex_lock(&(recycling_thread->iteration_mutex));
 
@@ -311,7 +325,7 @@ ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->link){
+  while(current_channel != AGS_CHANNEL(recycling->parent->channel)){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -384,7 +398,7 @@ ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->link){
+  while(current_channel != AGS_CHANNEL(recycling->parent->channel)){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -458,7 +472,7 @@ ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->link){
+  while(current_channel != AGS_CHANNEL(recycling->parent->channel)){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -532,7 +546,7 @@ ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->link){
+  while(current_channel != AGS_CHANNEL(recycling->parent->channel)){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -606,7 +620,7 @@ ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->link){
+  while(current_channel != AGS_CHANNEL(recycling->parent->channel)){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -680,7 +694,7 @@ ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->link){
+  while(current_channel != AGS_CHANNEL(recycling->parent->channel)){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;

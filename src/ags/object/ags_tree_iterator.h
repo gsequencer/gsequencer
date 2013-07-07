@@ -35,7 +35,7 @@ struct _AgsTreeIteratorInterface
 {
   GTypeInterface interface;
 
-  void (*set_inverse_mode)(AgsTreeIterator *tree);
+  void (*set_inverse_mode)(AgsTreeIterator *tree, gboolean mode);
   gboolean (*is_inverse_mode)(AgsTreeIterator *tree);
   
   void (*iterate)(AgsTreeIterator *tree);

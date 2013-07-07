@@ -58,8 +58,6 @@ struct _AgsRecyclingThreadClass
 {
   AgsThreadClass thread;
 
-  void (*iterate)(AgsThread *thread, guint stage);
-
   void (*run_init_pre)(AgsRecyclingThread *recycling_thread);
   void (*run_init_inter)(AgsRecyclingThread *recycling_thread);
   void (*run_init_post)(AgsRecyclingThread *recycling_thread);
@@ -70,8 +68,6 @@ struct _AgsRecyclingThreadClass
 };
 
 GType ags_recycling_thread_get_type();
-
-void ags_recycling_thread_iterate(AgsRecyclingThread *recycling_thread);
 
 void ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread);
 void ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread);
