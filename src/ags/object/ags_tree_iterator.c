@@ -71,45 +71,53 @@ ags_tree_iterator_is_inverse_mode(AgsTreeIterator *tree_iterator)
 }
 
 void
-ags_tree_iterator_iterate(AgsTreeIterator *tree_iterator)
+ags_tree_iterator_iterate(AgsTreeIterator *tree_iterator,
+			  gpointer node_id)
 {
   AgsTreeIteratorInterface *tree_iterator_interface;
 
   g_return_if_fail(AGS_IS_TREE_ITERATOR(tree_iterator));
   tree_iterator_interface = AGS_TREE_ITERATOR_GET_INTERFACE(tree_iterator);
   g_return_if_fail(tree_iterator_interface->iterate);
-  tree_iterator_interface->iterate(tree_iterator);
+  tree_iterator_interface->iterate(tree_iterator,
+				   node_id);
 }
 
 void
-ags_tree_iterator_iterate_nested(AgsTreeIterator *tree_iterator)
+ags_tree_iterator_iterate_nested(AgsTreeIterator *tree_iterator,
+				 gpointer node_id)
 {
   AgsTreeIteratorInterface *tree_iterator_interface;
 
   g_return_if_fail(AGS_IS_TREE_ITERATOR(tree_iterator));
   tree_iterator_interface = AGS_TREE_ITERATOR_GET_INTERFACE(tree_iterator);
   g_return_if_fail(tree_iterator_interface->iterate_nested);
-  tree_iterator_interface->iterate_nested(tree_iterator);
+  tree_iterator_interface->iterate_nested(tree_iterator,
+					  node_id);
 }
 
 void
-ags_tree_iterator_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current)
+ags_tree_iterator_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+			       gpointer node_id)
 {
   AgsTreeIteratorInterface *tree_iterator_interface;
 
   g_return_if_fail(AGS_IS_TREE_ITERATOR(toplevel));
   tree_iterator_interface = AGS_TREE_ITERATOR_GET_INTERFACE(toplevel);
   g_return_if_fail(tree_iterator_interface->iterate);
-  tree_iterator_interface->safe_iterate(toplevel, current);
+  tree_iterator_interface->safe_iterate(toplevel, current,
+					node_id);
 }
 
 void
-ags_tree_iterator_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current)
+ags_tree_iterator_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+				      gpointer node_id)
 {
   AgsTreeIteratorInterface *tree_iterator_interface;
 
   g_return_if_fail(AGS_IS_TREE_ITERATOR(toplevel));
   tree_iterator_interface = AGS_TREE_ITERATOR_GET_INTERFACE(toplevel);
   g_return_if_fail(tree_iterator_interface->iterate);
-  tree_iterator_interface->safe_iterate_nested(toplevel, current);
+  tree_iterator_interface->safe_iterate_nested(toplevel, current,
+					       node_id);
 }

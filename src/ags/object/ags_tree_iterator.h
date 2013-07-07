@@ -38,11 +38,15 @@ struct _AgsTreeIteratorInterface
   void (*set_inverse_mode)(AgsTreeIterator *tree, gboolean mode);
   gboolean (*is_inverse_mode)(AgsTreeIterator *tree);
   
-  void (*iterate)(AgsTreeIterator *tree);
-  void (*iterate_nested)(AgsTreeIterator *tree);
+  void (*iterate)(AgsTreeIterator *tree,
+		  gpointer node_id);
+  void (*iterate_nested)(AgsTreeIterator *tree,
+			 gpointer node_id);
 
-  void (*safe_iterate)(AgsTreeIterator *toplevel, AgsTreeIterator *current);
-  void (*safe_iterate_nested)(AgsTreeIterator *toplevel, AgsTreeIterator *current);
+  void (*safe_iterate)(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+		       gpointer node_id);
+  void (*safe_iterate_nested)(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+			      gpointer node_id);
 };
 
 GType ags_tree_iterator_get_type();
@@ -50,10 +54,14 @@ GType ags_tree_iterator_get_type();
 void ags_tree_iterator_set_inverse_mode(AgsTreeIterator *tree, gboolean mode);
 gboolean ags_tree_iterator_is_inverse_mode(AgsTreeIterator *tree);
 
-void ags_tree_iterator_iterate(AgsTreeIterator *tree);
-void ags_tree_iterator_iterate_nested(AgsTreeIterator *tree);
+void ags_tree_iterator_iterate(AgsTreeIterator *tree,
+			       gpointer node_id);
+void ags_tree_iterator_iterate_nested(AgsTreeIterator *tree,
+				      gpointer node_id);
 
-void ags_tree_iterator_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current);
-void ags_tree_iterator_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current);
+void ags_tree_iterator_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+				    gpointer node_id);
+void ags_tree_iterator_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+					   gpointer node_id);
 
 #endif /*__AGS_TREE_ITERATOR_H__*/
