@@ -725,7 +725,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       if(set_parent_to_null)
 	recycling->parent = NULL;
       else
-	recycling->parent = (GObject *) output;
+	recycling->parent = output->first_recycling;
 
       recycling = recycling->next;
     }
@@ -778,7 +778,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       if(set_parent_to_null)
 	recycling->parent = NULL;
       else
-	recycling->parent = (GObject *) output;
+	recycling->parent = output->first_recycling;
 
       recycling = recycling->next;
     }
@@ -811,7 +811,7 @@ ags_channel_set_recycling(AgsChannel *channel,
   AgsRecycling *changed_old_first_recycling, *changed_old_last_recycling;
   AgsChannel *prev_channel, *next_channel;
   AgsRecycling *nth_recycling, *next_recycling, *stop_recycling;
-  GObject *parent;
+  AgsRecycling *parent;
   gboolean replace_first, replace_last;
   gboolean find_prev, find_next;
   gboolean change_old_last, change_old_first;
@@ -1000,9 +1000,9 @@ ags_channel_set_recycling(AgsChannel *channel,
 
     if(output->link != NULL)
       if(ags_channel_set_recycling_emit_changed(output->link))
-	parent = (GObject *) output;
+	parent = output->first_recycling;
     else
-      parent = (GObject *) output;
+      parent = output->first_recycling;
   }
   gboolean ags_channel_set_recycling_emit_changed(AgsChannel *input){
     AgsAudio *audio;
@@ -1025,7 +1025,7 @@ ags_channel_set_recycling(AgsChannel *channel,
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
       ags_channel_set_recycling_emit_changed_output(output);
     else
-      parent = (GObject *) output;
+      parent = output->first_recycling;
 
     return(FALSE);
   }
@@ -1176,7 +1176,7 @@ ags_channel_set_recycling(AgsChannel *channel,
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
       ags_channel_set_recycling_emit_changed_output(output);
     else
-      parent = (GObject *) output;
+      parent = output->first_recycling;
   }else{
     ags_channel_set_recycling_emit_changed_output(channel);
   }

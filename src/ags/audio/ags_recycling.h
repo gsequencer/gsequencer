@@ -43,7 +43,7 @@ struct _AgsRecycling
 
   GObject *channel;
 
-  GObject *parent; // AGS_TYPE_CHANNEL
+  AgsRecycling *parent;
 
   AgsRecycling *next;
   AgsRecycling *prev;

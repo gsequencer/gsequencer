@@ -623,18 +623,18 @@ S["GREP"]="/usr/bin/grep"
 S["CPP"]="gcc -E"
 S["GTK_LIBS"]="-lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfreetype -lfontconfig -lgobje"\
 "ct-2.0 -lglib-2.0  "
-S["GTK_CFLAGS"]="-pthread -I/usr/include/gtk-2.0 -I/usr/lib64/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/includ"\
-"e/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng15 -I/usr/in"\
-"clude/libdrm -I/usr/include/harfbuzz  "
+S["GTK_CFLAGS"]="-pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/"\
+"pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng15 -I/usr/includ"\
+"e/libdrm -I/usr/include/harfbuzz  "
 S["CAIRO_LIBS"]="-lcairo  "
-S["CAIRO_CFLAGS"]="-I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng15 "\
-"-I/usr/include/libdrm  "
-S["GDKPIXBUF_LIBS"]="-pthread -lgdk_pixbuf_xlib-2.0 -lgmodule-2.0 -lrt -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  "
-S["GDKPIXBUF_CFLAGS"]="-pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/libpng15  "
-S["GOBJECT_LIBS"]="-Wl,--export-dynamic -pthread -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0  "
-S["GOBJECT_CFLAGS"]="-pthread -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include  "
+S["CAIRO_CFLAGS"]="-I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng15 -I"\
+"/usr/include/libdrm  "
+S["GDKPIXBUF_LIBS"]="-pthread -lgdk_pixbuf_xlib-2.0 -lgmodule-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  "
+S["GDKPIXBUF_CFLAGS"]="-pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/libpng15  "
+S["GOBJECT_LIBS"]="-Wl,--export-dynamic -pthread -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lglib-2.0  "
+S["GOBJECT_CFLAGS"]="-pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  "
 S["LIBINSTPATCH_LIBS"]="-linstpatch-1.0 -lgobject-2.0 -lsndfile -lglib-2.0  "
-S["LIBINSTPATCH_CFLAGS"]="-I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include  "
+S["LIBINSTPATCH_CFLAGS"]="-I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include  "
 S["SNDFILE_LIBS"]="-lsndfile  "
 S["SNDFILE_CFLAGS"]=" "
 S["LIBXML2_LIBS"]="-lxml2  "
@@ -663,6 +663,10 @@ S["CPPFLAGS"]=""
 S["LDFLAGS"]=""
 S["CFLAGS"]="-g -O2"
 S["CC"]="gcc"
+S["AM_BACKSLASH"]="\\"
+S["AM_DEFAULT_VERBOSITY"]="1"
+S["AM_DEFAULT_V"]="$(AM_DEFAULT_VERBOSITY)"
+S["AM_V"]="$(V)"
 S["am__untar"]="$${TAR-tar} xf -"
 S["am__tar"]="$${TAR-tar} chof - \"$$tardir\""
 S["AMTAR"]="$${TAR-tar}"
@@ -674,12 +678,12 @@ S["MKDIR_P"]="/usr/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]=""
 S["install_sh"]="${SHELL} /home/joel/ags-code/install-sh"
-S["MAKEINFO"]="${SHELL} /home/joel/ags-code/missing --run makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/joel/ags-code/missing --run autoheader"
-S["AUTOMAKE"]="${SHELL} /home/joel/ags-code/missing --run automake-1.12"
-S["AUTOCONF"]="${SHELL} /home/joel/ags-code/missing --run autoconf"
-S["ACLOCAL"]="${SHELL} /home/joel/ags-code/missing --run aclocal-1.12"
-S["VERSION"]="0.3.15-SNAPSHOT"
+S["MAKEINFO"]="${SHELL} /home/joel/ags-code/missing makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/joel/ags-code/missing autoheader"
+S["AUTOMAKE"]="${SHELL} /home/joel/ags-code/missing automake-1.13"
+S["AUTOCONF"]="${SHELL} /home/joel/ags-code/missing autoconf"
+S["ACLOCAL"]="${SHELL} /home/joel/ags-code/missing aclocal-1.13"
+S["VERSION"]="0.3.16-SNAPSHOT"
 S["PACKAGE"]="ags"
 S["CYGPATH_W"]="echo"
 S["am__isrc"]=""
@@ -772,7 +776,7 @@ D["PACKAGE_STRING"]=" \"ags 0.3.16-SNAPSHOT\""
 D["PACKAGE_BUGREPORT"]=" \"joel@weedlight.ch\""
 D["PACKAGE_URL"]=" \"\""
 D["PACKAGE"]=" \"ags\""
-D["VERSION"]=" \"0.3.15-SNAPSHOT\""
+D["VERSION"]=" \"0.3.16-SNAPSHOT\""
 D["HAVE_LIBDL"]=" 1"
 D["HAVE_LIBFONTCONFIG"]=" 1"
 D["HAVE_LIBFREETYPE"]=" 1"
@@ -1126,7 +1130,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
   case $ac_file$ac_mode in
     "depfiles":C) test x"$AMDEP_TRUE" != x"" || {
-  # Autoconf 2.62 quotes --file arguments for eval, but not when files
+  # Older Autoconf quotes --file arguments for eval, but not when files
   # are listed without --file.  Let's play safe and only enable the eval
   # if we detect the quoting.
   case $CONFIG_FILES in
@@ -1177,7 +1181,7 @@ $as_echo X"$mf" |
     DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
     test -z "$DEPDIR" && continue
     am__include=`sed -n 's/^am__include = //p' < "$mf"`
-    test -z "am__include" && continue
+    test -z "$am__include" && continue
     am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
     # Find all dependency output files, they are included files with
     # $(DEPDIR) in their names.  We invoke sed twice because it is the

@@ -231,7 +231,7 @@ ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->parent){
+  while(current_channel != channel->link){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -277,7 +277,7 @@ ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread)
     ags_recycling_thread_run_init_pre_loop(list);
 
     /* iterate */
-    current_channel = current_channel->parent;
+    current_channel = current_channel->link;
   }
 }
 
@@ -304,7 +304,7 @@ ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->parent){
+  while(current_channel != channel->link){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -351,7 +351,7 @@ ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread)
     ags_recycling_thread_run_init_inter_loop(list);
 
     /* iterate */
-    current_channel = current_channel->parent;
+    current_channel = current_channel->link;
   }
 }
 
@@ -378,7 +378,7 @@ ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->parent){
+  while(current_channel != channel->link){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -425,7 +425,7 @@ ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread)
     ags_recycling_thread_run_init_post_loop(list);
 
     /* iterate */
-    current_channel = current_channel->parent;
+    current_channel = current_channel->link;
   }
 }
 
@@ -441,9 +441,7 @@ ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
 
   void ags_recycling_thread_run_pre_loop(GList *recall){
     while(list != NULL){
-      ags_recall_run(AGS_RECALL(list->data));
-      ags_recall_run_inter(AGS_RECALL(list->data));
-      ags_recall_run_post(AGS_RECALL(list->data));
+      ags_recall_run_pre(AGS_RECALL(list->data));
 
       list = list->next;
     }
@@ -454,7 +452,7 @@ ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->parent){
+  while(current_channel != channel->link){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -501,7 +499,7 @@ ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
     ags_recycling_thread_run_pre_loop(list);
 
     /* iterate */
-    current_channel = current_channel->parent;
+    current_channel = current_channel->link;
   }
 }
 
@@ -528,7 +526,7 @@ ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->parent){
+  while(current_channel != channel->link){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -575,7 +573,7 @@ ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread)
     ags_recycling_thread_run_inter_loop(list);
 
     /* iterate */
-    current_channel = current_channel->parent;
+    current_channel = current_channel->link;
   }
 }
 
@@ -602,7 +600,7 @@ ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread)
   channel =
     current_channel = AGS_CHANNEL(recycling->channel);
 
-  while(current_channel != channel->parent){
+  while(current_channel != channel->link){
     /* AgsInput */
     if(recycling->parent == NULL){
       list = current_channel->play;
@@ -649,7 +647,7 @@ ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread)
     ags_recycling_thread_run_post_loop(list);
 
     /* iterate */
-    current_channel = current_channel->parent;
+    current_channel = current_channel->link;
   }
 }
 
