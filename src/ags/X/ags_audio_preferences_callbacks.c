@@ -42,11 +42,11 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   devout = AGS_DEVOUT(window->devout);
 
   /* create set output device task */
-  set_output_device = ags_set_output_device_new(devout,
+  set_output_device = ags_set_output_device_new((GObject *) devout,
 						gtk_combo_box_get_active_text(audio_preferences->card));
 
   /* append AgsSetOutputDevice */
-  ags_task_thread_append_task(devout,
+  ags_task_thread_append_task(devout->task_thread,
 			      AGS_TASK(set_output_device));
   
   /* reset dialog */
@@ -70,7 +70,7 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
 						  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetAudioChannels */
-  ags_task_thread_append_task(devout,
+  ags_task_thread_append_task(devout->task_thread,
 			      AGS_TASK(set_audio_channels));
 }
 
@@ -87,11 +87,11 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
   devout = AGS_DEVOUT(window->devout);
 
   /* create set output device task */
-  set_samplerate = ags_set_samplerate_new(G_OBJECT(devout),
+  set_samplerate = ags_set_samplerate_new((GObject *) devout,
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
-  ags_task_thread_append_task(devout,
+  ags_task_thread_append_task(devout->task_thread,
 			      AGS_TASK(set_samplerate));
 }
 
@@ -108,7 +108,7 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
   devout = AGS_DEVOUT(window->devout);
 
   /* create set output device task */
-  set_buffer_size = ags_set_buffer_size_new(G_OBJECT(devout),
+  set_buffer_size = ags_set_buffer_size_new((GObject *) devout,
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */

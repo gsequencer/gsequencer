@@ -33,6 +33,8 @@
 #define AGS_POINTER_TO_GROUP_ID(ptr)      ((AgsGroupId)(gulong)(ptr))
 #define AGS_GROUP_ID_TO_POINTER(id)       ((gpointer)(AgsGroupId)(id))
 
+#define AGS_GROUP_ID_NOT_EXISTIBLE 0
+
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 typedef gulong AgsGroupId;
