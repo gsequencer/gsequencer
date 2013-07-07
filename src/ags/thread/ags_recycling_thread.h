@@ -50,6 +50,8 @@ struct _AgsRecyclingThread
   pthread_cond_t iteration_cond;
 
   guint stage;
+
+  gboolean tree_mode;
 };
 
 struct _AgsRecyclingThreadClass

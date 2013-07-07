@@ -166,38 +166,60 @@ ags_recycling_thread_disconnect(AgsConnectable *connectable)
 void
 ags_recycling_thread_set_inverse_mode(AgsTreeIterator *tree, gboolean mode)
 {
-  //TODO:JK: implement me
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(tree);
+
+  recycling_thread->tree_mode = !mode;
 }
 
 gboolean
 ags_recycling_thread_is_inverse_mode(AgsTreeIterator *tree)
 {
-  //TODO:JK: implement me
-  
-  return(FALSE);
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(tree);
+
+  return(!recycling_thread->tree_mode);
 }
 
 void
 ags_recycling_thread_iterate(AgsTreeIterator *tree)
 {
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(tree);
+
   //TODO:JK: implement me
 }
 
 void
 ags_recycling_thread_iterate_nested(AgsTreeIterator *tree)
 {
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(tree);
+
   //TODO:JK: implement me
 }
 
 void
 ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current)
 {
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(tree);
+
   //TODO:JK: implement me
 }
 
 void
 ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current)
 {
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(tree);
+
   //TODO:JK: implement me
 }
 
