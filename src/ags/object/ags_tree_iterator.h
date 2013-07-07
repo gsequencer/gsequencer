@@ -34,12 +34,26 @@ typedef struct _AgsTreeIteratorInterface AgsTreeIteratorInterface;
 struct _AgsTreeIteratorInterface
 {
   GTypeInterface interface;
+
+  void (*set_inverse_mode)(AgsTreeIterator *tree);
+  gboolean (*is_inverse_mode)(AgsTreeIterator *tree);
   
+  void (*iterate)(AgsTreeIterator *tree);
   void (*iterate_nested)(AgsTreeIterator *tree);
+
+  void (*safe_iterate)(AgsTreeIterator *toplevel, AgsTreeIterator *current);
+  void (*safe_iterate_nested)(AgsTreeIterator *toplevel, AgsTreeIterator *current);
 };
 
 GType ags_tree_iterator_get_type();
 
+void ags_tree_iterator_set_inverse_mode(AgsTreeIterator *tree, gboolean mode);
+gboolean ags_tree_iterator_is_inverse_mode(AgsTreeIterator *tree);
+
+void ags_tree_iterator_iterate(AgsTreeIterator *tree);
 void ags_tree_iterator_iterate_nested(AgsTreeIterator *tree);
+
+void ags_tree_iterator_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current);
+void ags_tree_iterator_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current);
 
 #endif /*__AGS_TREE_ITERATOR_H__*/
