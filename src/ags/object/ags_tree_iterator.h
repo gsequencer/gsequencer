@@ -42,7 +42,7 @@ struct _AgsTreeIteratorInterface
 		  gpointer node_id);
   void (*iterate_nested)(AgsTreeIterator *tree,
 			 gpointer node_id);
-
+  
   void (*safe_iterate)(AgsTreeIterator *toplevel, AgsTreeIterator *current,
 		       gpointer node_id);
   void (*safe_iterate_nested)(AgsTreeIterator *toplevel, AgsTreeIterator *current,
