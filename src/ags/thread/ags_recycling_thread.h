@@ -58,24 +58,39 @@ struct _AgsRecyclingThreadClass
 {
   AgsThreadClass thread;
 
-  void (*run_init_pre)(AgsRecyclingThread *recycling_thread);
-  void (*run_init_inter)(AgsRecyclingThread *recycling_thread);
-  void (*run_init_post)(AgsRecyclingThread *recycling_thread);
+  void (*run_init_pre)(AgsRecyclingThread *recycling_thread,
+		       GObject *recall_id);
+  void (*run_init_inter)(AgsRecyclingThread *recycling_thread,
+			 GObject *recall_id);
+  void (*run_init_post)(AgsRecyclingThread *recycling_thread,
+			GObject *recall_id);
 
-  void (*run_pre)(AgsRecyclingThread *recycling_thread);
-  void (*run_inter)(AgsRecyclingThread *recycling_thread);
-  void (*run_post)(AgsRecyclingThread *recycling_thread);
+  void (*run_pre)(AgsRecyclingThread *recycling_thread,
+		  GObject *recall_id);
+  void (*run_inter)(AgsRecyclingThread *recycling_thread,
+		    GObject *recall_id);
+  void (*run_post)(AgsRecyclingThread *recycling_thread,
+		   GObject *recall_id);
 };
 
 GType ags_recycling_thread_get_type();
 
-void ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread);
-void ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread);
-void ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread);
+void ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread,
+				       GObject *recall_id);
+void ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread,
+					 GObject *recall_id);
+void ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread,
+					GObject *recall_id);
 
-void ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread);
-void ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread);
-void ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread);
+void ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread,
+				  GObject *recall_id);
+void ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread,
+				    GObject *recall_id);
+void ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread,
+				   GObject *recall_id);
+
+void ags_recycling_thread_start_iterate(AgsRecyclingThread *recycling_thread,
+					GObject *recall_id);
 
 AgsRecyclingThread* ags_recycling_thread_new(GObject *recycling);
 

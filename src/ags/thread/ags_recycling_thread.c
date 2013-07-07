@@ -25,6 +25,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_id.h>
 
 #include <math.h>
 
@@ -36,10 +37,14 @@ void ags_recycling_thread_connect(AgsConnectable *connectable);
 void ags_recycling_thread_disconnect(AgsConnectable *connectable);
 void ags_recycling_thread_set_inverse_mode(AgsTreeIterator *tree, gboolean mode);
 gboolean ags_recycling_thread_is_inverse_mode(AgsTreeIterator *tree);
-void ags_recycling_thread_iterate(AgsTreeIterator *tree);
-void ags_recycling_thread_iterate_nested(AgsTreeIterator *tree);
-void ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current);
-void ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current);
+void ags_recycling_thread_iterate(AgsTreeIterator *tree,
+				  gpointer node_id);
+void ags_recycling_thread_iterate_nested(AgsTreeIterator *tree,
+					 gpointer node_id);
+void ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+				       gpointer node_id);
+void ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+					      gpointer node_id);
 void ags_recycling_thread_finalize(GObject *gobject);
 
 void ags_recycling_thread_start(AgsThread *thread);
@@ -197,7 +202,8 @@ ags_recycling_thread_is_inverse_mode(AgsTreeIterator *tree)
 }
 
 void
-ags_recycling_thread_iterate(AgsTreeIterator *tree)
+ags_recycling_thread_iterate(AgsTreeIterator *tree,
+			     gpointer node_id)
 {
   AgsRecyclingThread *recycling_thread;
 
@@ -208,7 +214,8 @@ ags_recycling_thread_iterate(AgsTreeIterator *tree)
 }
 
 void
-ags_recycling_thread_iterate_nested(AgsTreeIterator *tree)
+ags_recycling_thread_iterate_nested(AgsTreeIterator *tree,
+				    gpointer node_id)
 {
   AgsRecyclingThread *recycling_thread;
 
@@ -218,7 +225,8 @@ ags_recycling_thread_iterate_nested(AgsTreeIterator *tree)
 }
 
 void
-ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current)
+ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+				  gpointer node_id)
 {
   AgsRecyclingThread *recycling_thread;
 
@@ -228,7 +236,8 @@ ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *cu
 }
 
 void
-ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current)
+ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current,
+					 gpointer node_id)
 {
   AgsRecyclingThread *recycling_thread;
 
@@ -255,7 +264,8 @@ ags_recycling_thread_start(AgsThread *thread)
 }
 
 void
-ags_recycling_thread_iterate_inverse(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_start_iterate(AgsRecyclingThread *recycling_thread,
+				   GObject *recall_id)
 {
   pthread_mutex_lock(&(recycling_thread->iteration_mutex));
 
@@ -273,27 +283,33 @@ ags_recycling_thread_iterate_inverse(AgsRecyclingThread *recycling_thread)
     case 0:
       {
 	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
-	  ags_recycling_thread_run_init_pre(recycling_thread);
+	  ags_recycling_thread_run_init_pre(recycling_thread,
+					    recall_id);
 	}else{
-	  ags_recycling_thread_run_pre(recycling_thread);
+	  ags_recycling_thread_run_pre(recycling_thread,
+				       recall_id);
 	}
 	break;
       }
     case 1:
       {
 	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
-	  ags_recycling_thread_run_init_inter(recycling_thread);
+	  ags_recycling_thread_run_init_inter(recycling_thread,
+					      recall_id);
 	}else{
-	  ags_recycling_thread_run_inter(recycling_thread);
+	  ags_recycling_thread_run_inter(recycling_thread,
+					 recall_id);
 	}
 	break;
       }
     case 2:
       {
 	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
-	  ags_recycling_thread_run_init_post(recycling_thread);
+	  ags_recycling_thread_run_init_post(recycling_thread,
+					     recall_id);
 	}else{
-	  ags_recycling_thread_run_post(recycling_thread);
+	  ags_recycling_thread_run_post(recycling_thread,
+					recall_id);
 	}
 	break;
       }
@@ -303,7 +319,8 @@ ags_recycling_thread_iterate_inverse(AgsRecyclingThread *recycling_thread)
 }
 
 void
-ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread,
+				  GObject *recall_id)
 {
   AgsAudio *audio, *current_audio;
   AgsChannel *channel, *current_channel;
@@ -376,7 +393,8 @@ ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread)
 }
 
 void
-ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread,
+				    GObject *recall_id)
 {
   AgsAudio *audio, *current_audio;
   AgsChannel *channel, *current_channel;
@@ -450,7 +468,8 @@ ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread)
 }
 
 void
-ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread,
+				   GObject *recall_id)
 {
   AgsAudio *audio, *current_audio;
   AgsChannel *channel, *current_channel;
@@ -524,7 +543,8 @@ ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread)
 }
 
 void
-ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread,
+			     GObject *recall_id)
 {
   AgsAudio *audio, *current_audio;
   AgsChannel *channel, *current_channel;
@@ -598,7 +618,8 @@ ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread)
 }
 
 void
-ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread,
+			       GObject *recall_id)
 {
   AgsAudio *audio, *current_audio;
   AgsChannel *channel, *current_channel;
@@ -672,7 +693,8 @@ ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread)
 }
 
 void
-ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread,
+			      GObject *recall_id)
 {
   AgsAudio *audio, *current_audio;
   AgsChannel *channel, *current_channel;
