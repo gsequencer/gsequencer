@@ -48,10 +48,6 @@ struct _AgsRecyclingThread
   GObject *recycling;
   pthread_mutex_t iteration_mutex;
   pthread_cond_t iteration_cond;
-
-  guint stage;
-
-  gboolean tree_mode;
 };
 
 struct _AgsRecyclingThreadClass
@@ -88,9 +84,6 @@ void ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread,
 				    GObject *recall_id);
 void ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread,
 				   GObject *recall_id);
-
-void ags_recycling_thread_start_iterate(AgsRecyclingThread *recycling_thread,
-					GObject *recall_id);
 
 AgsRecyclingThread* ags_recycling_thread_new(GObject *recycling);
 
