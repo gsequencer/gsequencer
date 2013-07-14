@@ -49,7 +49,8 @@ void ags_recycling_thread_finalize(GObject *gobject);
 
 void ags_recycling_thread_start(AgsThread *thread);
 
-void ags_recycling_thread_iterate_inverse(AgsRecyclingThread *recycling_thread);
+void ags_recycling_thread_iterate_loop_action(AgsRecyclingThread *recycling_thread,
+					      AgsRecallID *recall_id);
 
 static gpointer ags_recycling_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_recycling_thread_parent_connectable_interface;
@@ -145,10 +146,10 @@ ags_recycling_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree
   tree->is_inverse_mode = ags_recycling_thread_is_inverse_mode;
 
   tree->iterate = ags_recycling_thread_iterate;
-  tree->iterate_nested = ags_recycling_thread_iterate_nested;
+  tree->iterate_nested = NULL;
 
   tree->safe_iterate = ags_recycling_thread_safe_iterate;
-  tree->safe_iterate_nested = ags_recycling_thread_safe_iterate_nested;
+  tree->safe_iterate_nested = NULL;
 }
 
 void
@@ -214,30 +215,8 @@ ags_recycling_thread_iterate(AgsTreeIterator *tree,
 }
 
 void
-ags_recycling_thread_iterate_nested(AgsTreeIterator *tree,
-				    gpointer node_id)
-{
-  AgsRecyclingThread *recycling_thread;
-
-  recycling_thread = AGS_RECYCLING_THREAD(tree);
-
-  //TODO:JK: implement me
-}
-
-void
 ags_recycling_thread_safe_iterate(AgsTreeIterator *toplevel, AgsTreeIterator *current,
 				  gpointer node_id)
-{
-  AgsRecyclingThread *recycling_thread;
-
-  recycling_thread = AGS_RECYCLING_THREAD(current);
-
-  //TODO:JK: implement me
-}
-
-void
-ags_recycling_thread_safe_iterate_nested(AgsTreeIterator *toplevel, AgsTreeIterator *current,
-					 gpointer node_id)
 {
   AgsRecyclingThread *recycling_thread;
 
@@ -264,10 +243,14 @@ ags_recycling_thread_start(AgsThread *thread)
 }
 
 void
-ags_recycling_thread_start_iterate(AgsRecyclingThread *recycling_thread,
-				   GObject *recall_id)
+ags_recycling_thread_loop_action(AgsRecyclingThread *recycling_thread,
+				 gpointer node_id)
 {
+  AgsRecallID *recall_id;
+
   pthread_mutex_lock(&(recycling_thread->iteration_mutex));
+
+  recall_id = AGS_RECALL_ID(node_id);
 
   while((AGS_RECYCLING_THREAD_WAIT & (recycling_thread->flags)) != 0 &&
 	(AGS_RECYCLING_THREAD_DONE & (recycling_thread->flags)) == 0){
@@ -284,10 +267,10 @@ ags_recycling_thread_start_iterate(AgsRecyclingThread *recycling_thread,
       {
 	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
 	  ags_recycling_thread_run_init_pre(recycling_thread,
-					    recall_id);
+					    (GObject *) recall_id);
 	}else{
 	  ags_recycling_thread_run_pre(recycling_thread,
-				       recall_id);
+				       (GObject *) recall_id);
 	}
 	break;
       }
@@ -295,10 +278,10 @@ ags_recycling_thread_start_iterate(AgsRecyclingThread *recycling_thread,
       {
 	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
 	  ags_recycling_thread_run_init_inter(recycling_thread,
-					      recall_id);
+					      (GObject *) recall_id);
 	}else{
 	  ags_recycling_thread_run_inter(recycling_thread,
-					 recall_id);
+					 (GObject *) recall_id);
 	}
 	break;
       }
@@ -306,10 +289,10 @@ ags_recycling_thread_start_iterate(AgsRecyclingThread *recycling_thread,
       {
 	if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(recycling_thread)->flags)) != 0){
 	  ags_recycling_thread_run_init_post(recycling_thread,
-					     recall_id);
+					     (GObject *) recall_id);
 	}else{
 	  ags_recycling_thread_run_post(recycling_thread,
-					recall_id);
+					(GObject *) recall_id);
 	}
 	break;
       }

@@ -38,7 +38,8 @@ void ags_thread_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
-void ags_thread_iterate_nested(AgsTreeIterator *tree);
+void ags_thread_iterate_nested(AgsTreeIterator *tree,
+			       gpointer node_id);
 void ags_thread_connect(AgsConnectable *connectable);
 void ags_thread_disconnect(AgsConnectable *connectable);
 void ags_thread_finalize(GObject *gobject);
@@ -265,8 +266,10 @@ ags_thread_get_property(GObject *gobject,
 }
 
 void
-ags_thread_iterate_nested(AgsTreeIterator *tree)
+ags_thread_iterate_nested(AgsTreeIterator *tree,
+			  gpointer node_id)
 {
+  //TODO:JK: implement me
 }
 
 void
