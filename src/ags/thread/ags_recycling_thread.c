@@ -37,16 +37,21 @@ void ags_recycling_thread_finalize(GObject *gobject);
 
 void ags_recycling_thread_start(AgsThread *thread);
 
-void ags_recycling_thread_real_play(AgsRecyclingThread *recycling_thread,
-				    GObject *current,
-				    AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-				    AgsRecallID *recall_id,
-				    gint stage, gboolean do_recall);
+void ags_recycling_thread_real_play_channel(AgsRecyclingThread *recycling_thread,
+					    GObject *channel,
+					    AgsRecallID *recall_id,
+					    gint stage, gboolean do_recall);
+void ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
+					  GObject *output, GObject *audio,
+					  AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+					  AgsRecallID *recall_id, AgsGroupId next_group_id,
+					  gint stage, gboolean do_recall);
 
 void ags_recycling_thread_fifo(AgsRecyclingThread *thread);
 
 enum{
-  PLAY,
+  PLAY_AUDIO,
+  PLAY_CHANNEL,
   LAST_SIGNAL,
 };
 
@@ -111,20 +116,35 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
   thread->start = ags_recycling_thread_start;
 
   /* AgsRecyclingThread */
-  recycling_thread->play = ags_recycling_thread_play;
+  recycling_thread->play_channel = ags_recycling_thread_play_channel;
+  recycling_thread->play_audio = ags_recycling_thread_play_audio;
 
   /* signals */
-  recycling_thread_signals[PLAY] = 
-    g_signal_new("play\0",
+  recycling_thread_signals[PLAY_CHANNEL] = 
+    g_signal_new("play_channel\0",
 		 G_TYPE_FROM_CLASS(recycling_thread),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsRecycling_ThreadClass, play),
+		 G_STRUCT_OFFSET(AgsRecyclingThreadClass, play_channel),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_INT_BOOLEAN,
-		 G_TYPE_NONE, 6,
+		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN,
+		 G_TYPE_NONE, 5,
+		 G_TYPE_OBJECT,
+		 G_TYPE_OBJECT,
+		 G_TYPE_OBJECT,
+		 G_TYPE_INT, G_TYPE_BOOLEAN);
+
+  recycling_thread_signals[PLAY_AUDIO] = 
+    g_signal_new("play_audio\0",
+		 G_TYPE_FROM_CLASS(recycling_thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecyclingThreadClass, play_audio),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN,
+		 G_TYPE_NONE, 9,
 		 G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
-		 G_TYPE_OBJECT,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT,
+		 G_TYPE_OBJECT, G_TYPE_UINT,
 		 G_TYPE_INT, G_TYPE_BOOLEAN);
 }
 
@@ -203,6 +223,16 @@ ags_recycling_thread_play_channel(AgsRecyclingThread *recycling_thread,
 				  AgsRecallID *recall_id,
 				  gint stage, gboolean do_recall)
 {
+  g_return_if_fail(AGS_IS_RECYCLING_THREAD(recycling_thread));
+  g_return_if_fail(AGS_IS_CHANNEL(channel));
+
+  g_object_ref((GObject *) recycling_thread);
+  g_signal_emit(G_OBJECT(recycling_thread),
+		recycling_thread_signals[PLAY_CHANNEL], 0,
+		channel,
+		recall_id,
+		stage, do_recall);
+  g_object_unref((GObject *) recycling_thread);
 }
 
 void
@@ -236,19 +266,19 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 }
 
 void
-ags_recycling_thread_play(AgsRecyclingThread *recycling_thread,
-			  GObject *output, GObject *audio,
-			  AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			  AgsRecallID *recall_id, AgsGroupId next_group_id,
-			  gint stage, gboolean do_recall)
+ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
+				GObject *output, GObject *audio,
+				AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+				AgsRecallID *recall_id, AgsGroupId next_group_id,
+				gint stage, gboolean do_recall)
 {
   g_return_if_fail(AGS_IS_RECYCLING_THREAD(recycling_thread));
-  g_return_if_fail(AGS_IS_AUDIO(current) &&
-		   AGS_IS_CHANNEL(output));
+  g_return_if_fail(AGS_IS_AUDIO(audio));
+  g_return_if_fail(AGS_IS_CHANNEL(output));
 
   g_object_ref((GObject *) recycling_thread);
   g_signal_emit(G_OBJECT(recycling_thread),
-		recycling_thread_signals[PLAY], 0,
+		recycling_thread_signals[PLAY_CHANNEL], 0,
 		output, audio,
 		first_recycling, last_recycling,
 		recall_id, next_group_id,

@@ -63,7 +63,7 @@ struct _AgsRecyclingThreadClass
   void (*play_audio)(AgsRecyclingThread *recycling_thread,
 		     GObject *output, GObject *audio,
 		     AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-		     AgsRecallID *recall_id,
+		     AgsRecallID *recall_id, AgsGroupId next_group_id,
 		     gint stage, gboolean do_recall);
 };
 
@@ -77,7 +77,7 @@ void ags_recycling_thread_play_channel(AgsRecyclingThread *recycling_thread,
 void ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
 				     GObject *output, GObject *audio,
 				     AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-				     AgsRecallID *recall_id,
+				     AgsRecallID *recall_id, AgsGroupId next_group_id,
 				     gint stage, gboolean do_recall);
 
 AgsRecyclingThread* ags_recycling_thread_new(GObject *recycling);
