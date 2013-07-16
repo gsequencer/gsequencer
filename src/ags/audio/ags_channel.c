@@ -1429,10 +1429,50 @@ ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboole
 }
 
 /**
- * ags_channel_recursive_play:
+ * ags_channel_recursive_play_threaded:
+ * @channel
+ * @group_id
+ * @stage
+ *
+ *
  */
 void
-ags_channel_recursive_play(AgsChannel *channel, AgsGroupId group_id, gint stage)
+ags_channel_recursive_play_threaded(AgsChannel *channel,
+				    AgsGroupId group_id, gint stage)
+{
+  AgsRecallID *recall_id;
+
+  auto void ags_channel_recursive_play_input_sync(AgsChannel *input, AgsRecallID *input_recall_id,
+						  gboolean do_recall);
+  auto void ags_channel_recursive_play_output(AgsChannel *output, AgsRecallID *output_recall_id,
+					      gboolean do_recall);
+  auto void ags_channel_recursive_play_up(AgsChannel *channel, AgsRecallID *recall_id);
+
+  void ags_channel_recursive_play_input_sync(AgsChannel *input, AgsRecallID *input_recall_id,
+					     gboolean do_recall){
+    //TODO:JK: implement me
+  }
+  void ags_channel_recursive_play_output(AgsChannel *output, AgsRecallID *output_recall_id, gboolean do_recall){
+    //TODO:JK: implement me
+  }
+  void ags_channel_recursive_play_up(AgsChannel *channel, AgsRecallID *recall_id){
+    //TODO:JK: implement me
+  }
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_channel_recursive_play:
+ * @channel
+ * @group_id
+ * @stage
+ *
+ *
+ */
+void
+ags_channel_recursive_play(AgsChannel *channel,
+			   AgsGroupId group_id, gint stage)
 {
   AgsRecallID *recall_id;
 

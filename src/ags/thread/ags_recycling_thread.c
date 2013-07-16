@@ -37,10 +37,23 @@ void ags_recycling_thread_finalize(GObject *gobject);
 
 void ags_recycling_thread_start(AgsThread *thread);
 
+void ags_recycling_thread_real_play(AgsRecyclingThread *recycling_thread,
+				    GObject *current,
+				    AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+				    AgsRecallID *recall_id,
+				    gint stage, gboolean do_recall);
+
 void ags_recycling_thread_fifo(AgsRecyclingThread *thread);
+
+enum{
+  PLAY,
+  LAST_SIGNAL,
+};
 
 static gpointer ags_recycling_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_recycling_thread_parent_connectable_interface;
+
+static guint recycling_thread_signals[LAST_SIGNAL];
 
 GType
 ags_recycling_thread_get_type()
@@ -98,13 +111,21 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
   thread->start = ags_recycling_thread_start;
 
   /* AgsRecyclingThread */
-  recycling_thread->run_init_pre = ags_recycling_thread_run_init_pre;
-  recycling_thread->run_init_inter = ags_recycling_thread_run_init_inter;
-  recycling_thread->run_init_post = ags_recycling_thread_run_init_post;
+  recycling_thread->play = ags_recycling_thread_play;
 
-  recycling_thread->run_pre = ags_recycling_thread_run_pre;
-  recycling_thread->run_inter = ags_recycling_thread_run_inter;
-  recycling_thread->run_post = ags_recycling_thread_run_post;
+  /* signals */
+  recycling_thread_signals[PLAY] = 
+    g_signal_new("play\0",
+		 G_TYPE_FROM_CLASS(recycling_thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecycling_ThreadClass, play),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_INT_BOOLEAN,
+		 G_TYPE_NONE, 6,
+		 G_TYPE_OBJECT,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT,
+		 G_TYPE_OBJECT,
+		 G_TYPE_INT, G_TYPE_BOOLEAN);
 }
 
 void
@@ -162,45 +183,32 @@ ags_recycling_thread_start(AgsThread *thread)
 }
 
 void
-ags_recycling_thread_run_init_pre(AgsRecyclingThread *recycling_thread,
-				  GObject *recall_id)
+ags_recycling_thread_real_play(AgsRecyclingThread *recycling_thread,
+			       GObject *current,
+			       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+			       AgsRecallID *recall_id,
+			       gint stage, gboolean do_recall)
 {
-  ags_recycling_thread_fifo(recycling_thread);
+    //TODO:JK: implement me
 }
 
 void
-ags_recycling_thread_run_init_inter(AgsRecyclingThread *recycling_thread,
-				    GObject *recall_id)
+ags_recycling_thread_play(AgsRecyclingThread *recycling_thread,
+			  GObject *current,
+			  AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+			  AgsRecallID *recall_id,
+			  gint stage, gboolean do_recall)
 {
-  ags_recycling_thread_fifo(recycling_thread);
-}
+  g_return_if_fail(AGS_IS_RECYCLING_THREAD(recycling_thread));
 
-void
-ags_recycling_thread_run_init_post(AgsRecyclingThread *recycling_thread,
-				   GObject *recall_id)
-{
-  ags_recycling_thread_fifo(recycling_thread);
-}
-
-void
-ags_recycling_thread_run_pre(AgsRecyclingThread *recycling_thread,
-			     GObject *recall_id)
-{
-  ags_recycling_thread_fifo(recycling_thread);
-}
-
-void
-ags_recycling_thread_run_inter(AgsRecyclingThread *recycling_thread,
-			       GObject *recall_id)
-{
-  ags_recycling_thread_fifo(recycling_thread);
-}
-
-void
-ags_recycling_thread_run_post(AgsRecyclingThread *recycling_thread,
-			      GObject *recall_id)
-{
-  ags_recycling_thread_fifo(recycling_thread);
+  g_object_ref((GObject *) recycling_thread);
+  g_signal_emit(G_OBJECT(recycling_thread),
+		recycling_thread_signals[PLAY], 0,
+		current,
+		first_recycling, last_recycling,
+		recall_id,
+		stage, do_recall);
+  g_object_unref((GObject *) recycling_thread);
 }
 
 void

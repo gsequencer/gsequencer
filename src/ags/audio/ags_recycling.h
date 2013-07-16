@@ -42,6 +42,7 @@ struct _AgsRecycling
   GObject object;
 
   GObject *channel;
+  GObject *recycling_thread;
 
   AgsRecycling *parent;
 

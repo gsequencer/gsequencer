@@ -23,6 +23,8 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_recycling_thread.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -135,6 +137,7 @@ ags_recycling_init(AgsRecycling *recycling)
   //  recycling->flags = 0;
 
   recycling->channel = NULL;
+  recycling->recycling_thread = (GObject *) ags_recycling_thread_new();
 
   recycling->parent = NULL;
 
