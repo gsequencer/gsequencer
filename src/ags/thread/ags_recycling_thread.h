@@ -35,8 +35,9 @@ typedef struct _AgsRecyclingThread AgsRecyclingThread;
 typedef struct _AgsRecyclingThreadClass AgsRecyclingThreadClass;
 
 typedef enum{
-  AGS_RECYCLING_THREAD_WAIT      = 1,
-  AGS_RECYCLING_THREAD_DONE      = 1 << 1,
+  AGS_RECYCLING_THREAD_RUNNING   = 1,
+  AGS_RECYCLING_THREAD_WAIT      = 1 << 1,
+  AGS_RECYCLING_THREAD_DONE      = 1 << 2,
 }AgsRecyclingThreadFlags;
 
 struct _AgsRecyclingThread
@@ -54,20 +55,30 @@ struct _AgsRecyclingThreadClass
 {
   AgsThreadClass thread;
 
-  void (*play)(AgsRecyclingThread *recycling_thread,
-	       GObject *current,
-	       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-	       AgsRecallID *recall_id,
-	       gint stage, gboolean do_recall);
+  void (*play_channel)(AgsRecyclingThread *recycling_thread,
+		       GObject *channel,
+		       AgsRecallID *recall_id,
+		       gint stage, gboolean do_recall);
+
+  void (*play_audio)(AgsRecyclingThread *recycling_thread,
+		     GObject *output, GObject *audio,
+		     AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+		     AgsRecallID *recall_id,
+		     gint stage, gboolean do_recall);
 };
 
 GType ags_recycling_thread_get_type();
 
-void ags_recycling_thread_play(AgsRecyclingThread *recycling_thread,
-			       AgsChannel *channel,
-			       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			       AgsRecallID *recall_id,
-			       gint stage, gboolean do_recall);
+void ags_recycling_thread_play_channel(AgsRecyclingThread *recycling_thread,
+				       GObject *channel,
+				       AgsRecallID *recall_id,
+				       gint stage, gboolean do_recall);
+
+void ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
+				     GObject *output, GObject *audio,
+				     AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+				     AgsRecallID *recall_id,
+				     gint stage, gboolean do_recall);
 
 AgsRecyclingThread* ags_recycling_thread_new(GObject *recycling);
 

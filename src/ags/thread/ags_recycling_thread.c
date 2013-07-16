@@ -183,30 +183,75 @@ ags_recycling_thread_start(AgsThread *thread)
 }
 
 void
-ags_recycling_thread_real_play(AgsRecyclingThread *recycling_thread,
-			       GObject *current,
-			       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			       AgsRecallID *recall_id,
-			       gint stage, gboolean do_recall)
+ags_recycling_thread_real_play_channel(AgsRecyclingThread *recycling_thread,
+				       GObject *channel,
+				       AgsRecallID *recall_id,
+				       gint stage, gboolean do_recall)
 {
-    //TODO:JK: implement me
+  while((AGS_RECYCLING_THREAD_RUNNING & (recycling_thread->flags)) != 0){
+    ags_recycling_thread_fifo(recycling_thread);
+
+    ags_channel_play(AGS_CHANNEL(channel),
+		     recall_id,
+		     stage, do_recall);
+  }
+}
+
+void
+ags_recycling_thread_play_channel(AgsRecyclingThread *recycling_thread,
+				  GObject *channel,
+				  AgsRecallID *recall_id,
+				  gint stage, gboolean do_recall)
+{
+}
+
+void
+ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
+				     GObject *output, GObject *audio,
+				     AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+				     AgsRecallID *recall_id, AgsGroupId next_group_id,
+				     gint stage, gboolean do_recall)
+{
+  while((AGS_RECYCLING_THREAD_RUNNING & (recycling_thread->flags)) != 0){
+    ags_recycling_thread_fifo(recycling_thread);
+
+    if(next_group_id != recall_id->group_id){
+      AgsRecycling *next_first_recycling, *next_last_recycling;
+      
+      next_first_recycling = ags_output_find_first_input_recycling(AGS_OUTPUT(output));
+      next_last_recycling = ags_output_find_last_input_recycling(AGS_OUTPUT(output));
+      
+      ags_audio_play(audio,
+		     next_first_recycling, next_last_recycling,
+		     recall_id,
+		     stage,
+		     input_do_recall);
+    }
+    
+    ags_audio_play(audio,
+		   first_recycling, last_recycling,
+		   recall_id,
+		   stage, do_recall);    
+  }
 }
 
 void
 ags_recycling_thread_play(AgsRecyclingThread *recycling_thread,
-			  GObject *current,
+			  GObject *output, GObject *audio,
 			  AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			  AgsRecallID *recall_id,
+			  AgsRecallID *recall_id, AgsGroupId next_group_id,
 			  gint stage, gboolean do_recall)
 {
   g_return_if_fail(AGS_IS_RECYCLING_THREAD(recycling_thread));
+  g_return_if_fail(AGS_IS_AUDIO(current) &&
+		   AGS_IS_CHANNEL(output));
 
   g_object_ref((GObject *) recycling_thread);
   g_signal_emit(G_OBJECT(recycling_thread),
 		recycling_thread_signals[PLAY], 0,
-		current,
+		output, audio,
 		first_recycling, last_recycling,
-		recall_id,
+		recall_id, next_group_id,
 		stage, do_recall);
   g_object_unref((GObject *) recycling_thread);
 }
