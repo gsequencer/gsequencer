@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_iterator_thread.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -31,6 +33,14 @@
 void ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread);
 void ags_recycling_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recycling_thread_init(AgsRecyclingThread *recycling_thread);
+void ags_recycling_thread_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_recycling_thread_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_recycling_thread_connect(AgsConnectable *connectable);
 void ags_recycling_thread_disconnect(AgsConnectable *connectable);
 void ags_recycling_thread_finalize(GObject *gobject);
@@ -48,6 +58,11 @@ void ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 					  gint stage, gboolean do_recall);
 
 void ags_recycling_thread_fifo(AgsRecyclingThread *thread);
+
+enum{
+  PROP_0,
+  PROP_ITERATOR_THREAD,
+};
 
 enum{
   PLAY_AUDIO,
@@ -87,7 +102,7 @@ ags_recycling_thread_get_type()
     ags_type_recycling_thread = g_type_register_static(AGS_TYPE_THREAD,
 						       "AgsRecyclingThread\0",
 						       &ags_recycling_thread_info,
-						    0);
+						       0);
     
     g_type_add_interface_static(ags_type_recycling_thread,
 				AGS_TYPE_CONNECTABLE,
@@ -102,13 +117,27 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
+  GParamSpec *param_spec;
 
   ags_recycling_thread_parent_class = g_type_class_peek_parent(recycling_thread);
 
   /* GObject */
   gobject = (GObjectClass *) recycling_thread;
 
+  gobject->set_property = ags_recycling_thread_set_property;
+  gobject->get_property = ags_recycling_thread_get_property;
+
   gobject->finalize = ags_recycling_thread_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("iterator_thread\0",
+				   "assigned iterator thread\0",
+				   "The iterator thread object it is assigned to\0",
+				    AGS_TYPE_ITERATOR_THREAD,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+   g_object_class_install_property(gobject,
+				   PROP_ITERATOR_THREAD,
+				   param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) recycling_thread;
@@ -160,9 +189,69 @@ ags_recycling_thread_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_recycling_thread_init(AgsRecyclingThread *recycling_thread)
 {
+  recycling_thread->flags = 0;
+
+  recycling_thread->iterator_thread = NULL;
+
   recycling_thread->recycling = NULL;
   pthread_mutex_init(&(recycling_thread->iteration_mutex), NULL);
   pthread_cond_init(&(recycling_thread->iteration_cond), NULL);
+}
+
+
+void
+ags_recycling_thread_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec)
+{
+   AgsRecyclingThread *recycling_thread;
+
+   recycling_thread = AGS_RECYCLING_THREAD(gobject);
+
+   switch(prop_id){
+   case PROP_ITERATOR_THREAD:
+     {
+       AgsChannel *iterator_thread;
+
+       iterator_thread = (AgsChannel *) g_value_get_object(value);
+
+       if(recycling_thread->iterator_thread == iterator_thread)
+	 return;
+
+       if(recycling_thread->iterator_thread != NULL)
+	 g_object_unref(recycling_thread->iterator_thread);
+
+       if(iterator_thread != NULL)
+	 g_object_ref(iterator_thread);
+
+       recycling_thread->iterator_thread = iterator_thread;
+     }
+     break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_recycling_thread_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec)
+{
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_ITERATOR_THREAD:
+    g_value_set_object(value, recycling_thread->iterator_thread);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -174,7 +263,7 @@ ags_recycling_thread_connect(AgsConnectable *connectable)
 
   ags_recycling_thread_parent_connectable_interface->connect(connectable);
 
-
+  /* empty */
 }
 
 void

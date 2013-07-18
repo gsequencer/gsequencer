@@ -24,6 +24,8 @@
 
 #include <ags/thread/ags_thread.h>
 
+#include <ags/audio/ags_recall_id.h>
+
 #define AGS_TYPE_RECYCLING_THREAD                (ags_recycling_thread_get_type())
 #define AGS_RECYCLING_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThread))
 #define AGS_RECYCLING_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThread))
@@ -45,6 +47,8 @@ struct _AgsRecyclingThread
   AgsThread thread;
 
   guint flags;
+
+  AgsThread *iterator_thread;
 
   GObject *recycling;
   pthread_mutex_t iteration_mutex;
