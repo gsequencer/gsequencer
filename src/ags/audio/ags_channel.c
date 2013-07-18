@@ -24,6 +24,8 @@
 #include <ags/object/ags_run_connectable.h>
 #include <ags/object/ags_marshal.h>
 
+#include <ags/thread/ags_recycling_thread.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
@@ -193,6 +195,8 @@ ags_channel_init(AgsChannel *channel)
   channel->link = NULL;
   channel->first_recycling = NULL;
   channel->last_recycling = NULL;
+
+  channel->recycling_thread = (GObject *) ags_recycling_thread_new();
 
   channel->pattern = NULL;
   channel->notation = NULL;

@@ -85,6 +85,7 @@ struct _AgsChannel
   AgsChannel *link;
   AgsRecycling *first_recycling;
   AgsRecycling *last_recycling;
+  GObject *recycling_thread;
 
   GList *pattern;
   AgsNotation *notation;

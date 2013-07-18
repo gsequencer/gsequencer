@@ -18,6 +18,8 @@
 
 #include <ags/thread/ags_iterator_thread.h>
 
+#include <ags/thread/ags_recycling_thread.h>
+
 void ags_iterator_thread_class_init(AgsIteratorThreadClass *iterator_thread);
 void ags_iterator_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_iterator_thread_init(AgsIteratorThread *iterator_thread);
@@ -27,8 +29,16 @@ void ags_iterator_thread_finalize(GObject *gobject);
 
 void ags_iterator_thread_start(AgsThread *thread);
 
+gboolean ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
+						 AgsThread *current);
+
 static gpointer ags_iterator_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_iterator_thread_parent_connectable_interface;
+
+enum{
+  CHILDREN_READY,
+  LAST_SIGNAL,
+};
 
 GType
 ags_iterator_thread_get_type()
@@ -84,6 +94,21 @@ ags_iterator_thread_class_init(AgsIteratorThreadClass *iterator_thread)
   thread = (AgsThreadClass *) iterator_thread;
 
   thread->start = ags_iterator_thread_start;
+
+  /* AgsIteratorThread */
+  iterator_thread->children_ready = ags_iterator_thread_real_children_ready;
+
+  /* signals */
+  recycling_thread_signals[CHILDREN_READY] = 
+    g_signal_new("children_ready\0",
+		 G_TYPE_FROM_CLASS(recycling_thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecyclingThreadClass, children_ready),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT,
+		 G_TYPE_BOOLEAN, 2,
+		 G_TYPE_OBJECT,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -99,6 +124,8 @@ void
 ags_iterator_thread_init(AgsIteratorThread *iterator_thread)
 {
   iterator_thread->flags = 0;
+
+  iterator_thread->recycling_thread = NULL;
 }
 
 void
@@ -136,6 +163,35 @@ void
 ags_iterator_thread_start(AgsThread *thread)
 {
   AGS_THREAD_CLASS(ags_iterator_thread_parent_class)->start(thread);
+}
+
+gboolean
+ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
+					AgsThread *current)
+{
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(current);
+
+  pthread_mutex_lock(&(recycling_thread->iteration_mutex));
+
+  recycling_thread->flags &= (~AGS_RECYCLING_THREAD_WAIT);
+  pthread_cond_signal(&(recycling_thread->iteration_cond));
+
+  pthread_mutex_unlock(&(recycling_thread->iteration_mutex));
+}
+
+void
+ags_iterator_thread_children_ready(AgsIteratorThread *iterator_thread,
+				   AgsThread *current)
+{
+  g_return_if_fail(AGS_IS_ITERATOR_THREAD(iterator_thread));
+
+  g_object_ref((GObject *) iterator_thread);
+  g_signal_emit(G_OBJECT(iterator_thread),
+		iterator_thread_signals[PLAY_CHANNEL], 0,
+		current);
+  g_object_unref((GObject *) iterator_thread);
 }
 
 AgsIteratorThread*
