@@ -24,6 +24,8 @@
 
 #include <ags/thread/ags_thread.h>
 
+#include <ags/audio/ags_channel.h>
+
 #define AGS_TYPE_ITERATOR_THREAD                (ags_iterator_thread_get_type())
 #define AGS_ITERATOR_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ITERATOR_THREAD, AgsIteratorThread))
 #define AGS_ITERATOR_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_ITERATOR_THREAD, AgsIteratorThread))
@@ -45,10 +47,14 @@ struct _AgsIteratorThread
 
   guint flags;
 
-  AgsThread *recycling_thread;
-
   pthread_mutex_t iteration_mutex;
   pthread_cond_t iteration_cond;
+
+  AgsThread *recycling_thread;
+
+  AgsChannel *channel;
+  AgsGroupId group_id;
+  gint stage;
 };
 
 struct _AgsIteratorThreadClass

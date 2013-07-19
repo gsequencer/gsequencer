@@ -94,7 +94,7 @@ struct _AgsDevout
 {
   GObject object;
 
-  guint64 flags;
+  guint flags;
 
   guint dsp_channels;
   guint pcm_channels;

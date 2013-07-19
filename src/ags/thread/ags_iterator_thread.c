@@ -28,6 +28,7 @@ void ags_iterator_thread_disconnect(AgsConnectable *connectable);
 void ags_iterator_thread_finalize(GObject *gobject);
 
 void ags_iterator_thread_start(AgsThread *thread);
+void ags_iterator_thread_run(AgsThread *thread);
 
 gboolean ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
 						 AgsThread *current);
@@ -126,6 +127,10 @@ ags_iterator_thread_init(AgsIteratorThread *iterator_thread)
   iterator_thread->flags = 0;
 
   iterator_thread->recycling_thread = NULL;
+
+  iterator_thread->channel = NULL;
+  iterator_thread->group_id = 0;
+  iterator_thread->stage = 0;
 }
 
 void
@@ -165,6 +170,20 @@ ags_iterator_thread_start(AgsThread *thread)
   AGS_THREAD_CLASS(ags_iterator_thread_parent_class)->start(thread);
 }
 
+void
+ags_iterator_thread_run(AgsThread *thread)
+{
+  AgsIteratorThread *iterator_thread;
+
+  iterator_thread = AGS_ITERATOR_THREAD(thread);
+
+  AGS_THREAD_CLASS(ags_iterator_thread_parent_class)->run(thread);
+
+  ags_channel_recursive_play_threaded(iterator_thread->channel,
+				      iterator_thread->group_id,
+				      iterator_thread->stage);
+}
+
 gboolean
 ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
 					AgsThread *current)
@@ -195,14 +214,18 @@ ags_iterator_thread_children_ready(AgsIteratorThread *iterator_thread,
 }
 
 AgsIteratorThread*
-ags_iterator_thread_new(GObject *iterator)
+ags_iterator_thread_new(AgsChannel *channel,
+			AgsGroupId group_id,
+			gint stage)
 {
   AgsIteratorThread *iterator_thread;
   
   iterator_thread = (AgsIteratorThread *) g_object_new(AGS_TYPE_ITERATOR_THREAD,
 						       NULL);
 
-  iterator_thread->iterator = iterator;
+  iterator_thread->channel = channel;
+  iterator_thread->group_id = group_id;
+  iterator_thread->stage = stage;
 
   return(iterator_thread);
 }
