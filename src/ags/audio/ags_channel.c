@@ -1481,8 +1481,8 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 				      input_recall_id,
 				      stage, do_recall);
 
-
-    //TODO:JK: implement me
+    ags_iterator_thread_children_ready(AGS_RECYCLING_THREAD(input->recycling_thread)->iterator_thread,
+				       input->recycling_thread);
   }
   void ags_channel_recursive_play_input_async_threaded(AgsChannel *input,
 						       AgsGroupId output_group_id,
@@ -1518,7 +1518,8 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
       input = input->next_pad;
     }
 
-    //TODO:JK: implement me
+    ags_iterator_thread_children_ready(AGS_RECYCLING_THREAD(input->recycling_thread)->iterator_thread,
+				       input->recycling_thread);
   }
   void ags_channel_recursive_play_output_threaded(AgsChannel *output, AgsRecallID *output_recall_id, gboolean do_recall){
     AgsAudio *audio;
@@ -1649,7 +1650,8 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 				      output_recall_id,
 				      stage, do_recall);
 
-    //TODO:JK: implement me
+    ags_iterator_thread_children_ready(AGS_RECYCLING_THREAD(output->recycling_thread)->iterator_thread,
+				       output->recycling_thread);
   }
   void ags_channel_recursive_play_up_threaded(AgsChannel *channel, AgsRecallID *recall_id){
     AgsAudio *audio;
@@ -1684,6 +1686,8 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 					output_recall_id,
 					stage, do_recall);
 
+      ags_iterator_thread_children_ready(AGS_RECYCLING_THREAD(channel->recycling_thread)->iterator_thread,
+					 channel->recycling_thread);
 
       /* play audio */
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
@@ -1708,10 +1712,11 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 					output_recall_id,
 					stage, do_recall);
 
+      ags_iterator_thread_children_ready(AGS_RECYCLING_THREAD(channel->recycling_thread)->iterator_thread,
+					 channel->recycling_thread);
+
       channel = channel->link;
     }
-
-    //TODO:JK: implement me
   }
 
   /* entry point */
