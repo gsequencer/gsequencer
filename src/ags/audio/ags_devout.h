@@ -81,6 +81,7 @@ typedef enum
   AGS_DEVOUT_PLAY_PLAYBACK          = 1 <<  3,
   AGS_DEVOUT_PLAY_SEQUENCER         = 1 <<  4,
   AGS_DEVOUT_PLAY_NOTATION          = 1 <<  5,
+  AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 <<  6,
 }AgsDevoutPlayFlags;
 
 #define AGS_DEVOUT_ERROR (ags_devout_error_quark())
