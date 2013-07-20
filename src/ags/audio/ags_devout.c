@@ -486,6 +486,9 @@ ags_devout_play_alloc()
   play = (AgsDevoutPlay *) malloc(sizeof(AgsDevoutPlay));
 
   play->flags = 0;
+
+  play->iterator_thread = ags_iterator_thread_new();
+
   play->source = NULL;
   play->audio_channel = 0;
   play->group_id = 0;

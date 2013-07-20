@@ -37,7 +37,7 @@ typedef struct _AgsIteratorThread AgsIteratorThread;
 typedef struct _AgsIteratorThreadClass AgsIteratorThreadClass;
 
 typedef enum{
-  AGS_ITERATOR_THREAD_RUNNING   = 1,
+  AGS_ITERATOR_THREAD_DONE      = 1,
   AGS_ITERATOR_THREAD_WAIT      = 1 << 1,
 }AgsIteratorThreadFlags;
 
@@ -46,6 +46,9 @@ struct _AgsIteratorThread
   AgsThread thread;
 
   guint flags;
+
+  pthread_mutex_t tic_mutex;
+  pthread_cond_t tic_cond;
 
   pthread_mutex_t iteration_mutex;
   pthread_cond_t iteration_cond;

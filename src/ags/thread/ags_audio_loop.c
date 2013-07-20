@@ -550,7 +550,12 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       channel = AGS_CHANNEL(play->source);
       group_id = play->group_id;
 
-      ags_channel_recursive_play(channel, group_id, stage);
+      if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
+	ags_channel_recursive_play(channel, group_id, stage);
+      }else{
+	play->iterator_thread->flags |= AGS_ITERATOR_THREAD_DONE;
+	pthread_cond_signal(&(play->iterator_thread->tic_cond));
+      }
 
       if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
 	audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
@@ -607,8 +612,13 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       output = audio->output;
 
       while(output != NULL){
-	ags_channel_recursive_play(output, group_id, stage);
-	
+	if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
+	  ags_channel_recursive_play(output, group_id, stage);
+	}else{
+	  play->iterator_thread->flags |= AGS_ITERATOR_THREAD_DONE;
+	  pthread_cond_signal(&(play->iterator_thread->tic_cond));
+	}
+
 	output = output->next;
       }
 
