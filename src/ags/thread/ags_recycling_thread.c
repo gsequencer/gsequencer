@@ -394,14 +394,12 @@ ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread)
 }
 
 AgsRecyclingThread*
-ags_recycling_thread_new(GObject *recycling)
+ags_recycling_thread_new()
 {
   AgsRecyclingThread *recycling_thread;
   
   recycling_thread = (AgsRecyclingThread *) g_object_new(AGS_TYPE_RECYCLING_THREAD,
 							 NULL);
-
-  recycling_thread->recycling = recycling;
 
   return(recycling_thread);
 }

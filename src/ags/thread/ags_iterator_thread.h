@@ -50,9 +50,6 @@ struct _AgsIteratorThread
   pthread_mutex_t tic_mutex;
   pthread_cond_t tic_cond;
 
-  pthread_mutex_t iteration_mutex;
-  pthread_cond_t iteration_cond;
-
   AgsThread *recycling_thread;
 
   AgsChannel *channel;
@@ -73,6 +70,6 @@ GType ags_iterator_thread_get_type();
 gboolean ags_iterator_thread_children_ready(AgsIteratorThread *iterator_thread,
 					    AgsThread *current);
 
-AgsIteratorThread* ags_iterator_thread_new(GObject *iterator);
+AgsIteratorThread* ags_iterator_thread_new();
 
 #endif /*__AGS_ITERATOR_THREAD_H__*/

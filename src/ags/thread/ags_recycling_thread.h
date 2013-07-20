@@ -50,7 +50,6 @@ struct _AgsRecyclingThread
 
   AgsThread *iterator_thread;
 
-  GObject *recycling;
   pthread_mutex_t iteration_mutex;
   pthread_cond_t iteration_cond;
 };
@@ -84,6 +83,6 @@ void ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
 				     AgsRecallID *recall_id, AgsGroupId next_group_id,
 				     gint stage, gboolean do_recall);
 
-AgsRecyclingThread* ags_recycling_thread_new(GObject *recycling);
+AgsRecyclingThread* ags_recycling_thread_new();
 
 #endif /*__AGS_RECYCLING_THREAD_H__*/

@@ -152,8 +152,9 @@ void ags_channel_resolve_recall(AgsChannel *channel,
 void ags_channel_play(AgsChannel *channel,
 		      AgsRecallID *recall_id, gint stage,
 		      gboolean do_recall);
-void ags_channel_recursive_play_threaded(AgsChannel *channel, AgsRecyclingThread *recycling_thread,
-					 AgsGroupId group_id, gint stage);
+void
+ags_channel_recursive_play_threaded(AgsChannel *channel,
+				    AgsGroupId group_id, gint stage)
 void ags_channel_recursive_play(AgsChannel *channel,
 				AgsGroupId group_id, gint stage);
 void ags_channel_duplicate_recall(AgsChannel *channel,

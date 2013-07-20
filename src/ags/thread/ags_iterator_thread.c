@@ -129,9 +129,6 @@ ags_iterator_thread_init(AgsIteratorThread *iterator_thread)
   pthread_mutex_init(&(iterator_thread->tic_mutex), NULL);
   pthread_cond_init(&(iterator_thread->tic_cond), NULL);
 
-  pthread_mutex_init(&(iterator_thread->iteration_mutex), NULL);
-  pthread_cond_init(&(iterator_thread->iteration_cond), NULL);
-
   iterator_thread->recycling_thread = NULL;
 
   iterator_thread->channel = NULL;
