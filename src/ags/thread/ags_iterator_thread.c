@@ -111,7 +111,7 @@ ags_iterator_thread_class_init(AgsIteratorThreadClass *iterator_thread)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsIteratorThreadClass, children_ready),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT,
+		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT,
 		 G_TYPE_BOOLEAN, 2,
 		 G_TYPE_OBJECT,
 		 G_TYPE_OBJECT);
