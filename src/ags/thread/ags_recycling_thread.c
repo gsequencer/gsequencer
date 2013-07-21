@@ -18,12 +18,14 @@
 
 #include <ags/thread/ags_recycling_thread.h>
 
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_iterator_thread.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -193,7 +195,6 @@ ags_recycling_thread_init(AgsRecyclingThread *recycling_thread)
 
   recycling_thread->iterator_thread = NULL;
 
-  recycling_thread->recycling = NULL;
   pthread_mutex_init(&(recycling_thread->iteration_mutex), NULL);
   pthread_cond_init(&(recycling_thread->iteration_cond), NULL);
 }
@@ -212,9 +213,9 @@ ags_recycling_thread_set_property(GObject *gobject,
    switch(prop_id){
    case PROP_ITERATOR_THREAD:
      {
-       AgsChannel *iterator_thread;
+       AgsThread *iterator_thread;
 
-       iterator_thread = (AgsChannel *) g_value_get_object(value);
+       iterator_thread = (AgsThread *) g_value_get_object(value);
 
        if(recycling_thread->iterator_thread == iterator_thread)
 	 return;
@@ -340,16 +341,15 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
       next_first_recycling = ags_output_find_first_input_recycling(AGS_OUTPUT(output));
       next_last_recycling = ags_output_find_last_input_recycling(AGS_OUTPUT(output));
       
-      ags_audio_play(audio,
+      ags_audio_play(AGS_AUDIO(audio),
 		     next_first_recycling, next_last_recycling,
-		     recall_id,
-		     stage,
-		     input_do_recall);
+		     recall_id->group_id,
+		     stage, do_recall);
     }
     
-    ags_audio_play(audio,
+    ags_audio_play(AGS_AUDIO(audio),
 		   first_recycling, last_recycling,
-		   recall_id,
+		   recall_id->group_id,
 		   stage, do_recall);    
   }
 }

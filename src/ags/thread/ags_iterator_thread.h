@@ -60,15 +60,15 @@ struct _AgsIteratorThread
 struct _AgsIteratorThreadClass
 {
   AgsThreadClass thread;
-
-  gboolean (*children_ready)(AgsIteratorThread *iterator_thread,
-			     AgsThread *current);
+  
+  void (*children_ready)(AgsIteratorThread *iterator_thread,
+			 AgsThread *current);
 };
 
 GType ags_iterator_thread_get_type();
 
-gboolean ags_iterator_thread_children_ready(AgsIteratorThread *iterator_thread,
-					    AgsThread *current);
+void ags_iterator_thread_children_ready(AgsIteratorThread *iterator_thread,
+					AgsThread *current);
 
 AgsIteratorThread* ags_iterator_thread_new();
 

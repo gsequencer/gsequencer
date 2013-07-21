@@ -18,6 +18,9 @@
 
 #include <ags/thread/ags_iterator_thread.h>
 
+#include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
+
 #include <ags/thread/ags_recycling_thread.h>
 
 void ags_iterator_thread_class_init(AgsIteratorThreadClass *iterator_thread);
@@ -30,16 +33,18 @@ void ags_iterator_thread_finalize(GObject *gobject);
 void ags_iterator_thread_start(AgsThread *thread);
 void ags_iterator_thread_run(AgsThread *thread);
 
-gboolean ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
-						 AgsThread *current);
-
-static gpointer ags_iterator_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_iterator_thread_parent_connectable_interface;
+void ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
+					     AgsThread *current);
 
 enum{
   CHILDREN_READY,
   LAST_SIGNAL,
 };
+
+static gpointer ags_iterator_thread_parent_class = NULL;
+static AgsConnectableInterface *ags_iterator_thread_parent_connectable_interface;
+
+static guint iterator_thread_signals[LAST_SIGNAL];
 
 GType
 ags_iterator_thread_get_type()
@@ -100,11 +105,11 @@ ags_iterator_thread_class_init(AgsIteratorThreadClass *iterator_thread)
   iterator_thread->children_ready = ags_iterator_thread_real_children_ready;
 
   /* signals */
-  recycling_thread_signals[CHILDREN_READY] = 
+  iterator_thread_signals[CHILDREN_READY] = 
     g_signal_new("children_ready\0",
-		 G_TYPE_FROM_CLASS(recycling_thread),
+		 G_TYPE_FROM_CLASS(iterator_thread),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsRecyclingThreadClass, children_ready),
+		 G_STRUCT_OFFSET(AgsIteratorThreadClass, children_ready),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT,
 		 G_TYPE_BOOLEAN, 2,
@@ -206,7 +211,7 @@ ags_iterator_thread_run(AgsThread *thread)
 				      iterator_thread->stage);
 }
 
-gboolean
+void
 ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
 					AgsThread *current)
 {
@@ -230,7 +235,7 @@ ags_iterator_thread_children_ready(AgsIteratorThread *iterator_thread,
 
   g_object_ref((GObject *) iterator_thread);
   g_signal_emit(G_OBJECT(iterator_thread),
-		iterator_thread_signals[PLAY_CHANNEL], 0,
+		iterator_thread_signals[CHILDREN_READY], 0,
 		current);
   g_object_unref((GObject *) iterator_thread);
 }
