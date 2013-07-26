@@ -36,7 +36,7 @@ void ags_stream_channel_run_dynamic_connectable_interface_init(AgsDynamicConnect
 void ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run);
 void ags_stream_channel_run_connect(AgsConnectable *connectable);
 void ags_stream_channel_run_disconnect(AgsConnectable *connectable);
-void ags_stream_channel_dynamic_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_stream_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_channel_run_finalize(GObject *gobject);
 
@@ -67,7 +67,7 @@ ags_stream_channel_run_get_type()
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_stream_channel_dynamic_connectable_interface_init,
+      (GInterfaceInitFunc) ags_stream_channel_run_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -167,21 +167,21 @@ ags_stream_channel_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_stream_channel_run_run_connect(AgsDynamicConnectable *run_connectable)
+ags_stream_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   /* call parent */
-  ags_stream_channel_run_parent_dynamic_connectable_interface->connect_dynamic(run_connectable);
+  ags_stream_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
 }
 
 void
-ags_stream_channel_run_run_disconnect(AgsDynamicConnectable *run_connectable)
+ags_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsChannel *channel;
   AgsStreamChannelRun *stream_channel_run;
 
-  ags_stream_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(run_connectable);
+  ags_stream_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* empty */
 }

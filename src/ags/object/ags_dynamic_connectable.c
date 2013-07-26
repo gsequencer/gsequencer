@@ -55,8 +55,8 @@ ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
 
   g_return_if_fail(AGS_IS_DYNAMIC_CONNECTABLE(connectable));
   connectable_interface = AGS_DYNAMIC_CONNECTABLE_GET_INTERFACE(connectable);
-  g_return_if_fail(connectable_interface->connect);
-  connectable_interface->connect(connectable);
+  g_return_if_fail(connectable_interface->connect_dynamic);
+  connectable_interface->connect_dynamic(connectable);
 }
 
 void
@@ -66,6 +66,6 @@ ags_dynamic_connectable_disconnect_dynamic(AgsDynamicConnectable *connectable)
 
   g_return_if_fail(AGS_IS_DYNAMIC_CONNECTABLE(connectable));
   connectable_interface = AGS_DYNAMIC_CONNECTABLE_GET_INTERFACE(connectable);
-  g_return_if_fail(connectable_interface->disconnect);
-  connectable_interface->connect(connectable);
+  g_return_if_fail(connectable_interface->disconnect_dynamic);
+  connectable_interface->disconnect_dynamic(connectable);
 }

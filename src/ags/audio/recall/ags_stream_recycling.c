@@ -166,13 +166,13 @@ ags_stream_recycling_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_stream_recycling_dynamic_connect(AgsDynamicConnectable *dynamic_connectable)
+ags_stream_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   ags_stream_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
 void
-ags_stream_recycling_run_disconnect(AgsDynamicConnectable *dynamic_connectable)
+ags_stream_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   ags_stream_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }

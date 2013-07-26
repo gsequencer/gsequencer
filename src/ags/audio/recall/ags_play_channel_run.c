@@ -303,7 +303,7 @@ ags_play_channel_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_play_channel_run_dynamic_connect(AgsDynamicConnectable *dynamic_connectable)
+ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
@@ -323,7 +323,7 @@ ags_play_channel_run_dynamic_connect(AgsDynamicConnectable *dynamic_connectable)
 }
 
 void
-ags_play_channel_run_dynamic_disconnect(AgsDynamicConnectable *dynamic_connectable)
+ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;

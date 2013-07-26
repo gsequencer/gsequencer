@@ -672,7 +672,7 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   list = recall->children;
 
   while(list != NULL){
-    ags_run_connectable_connect(AGS_RUN_CONNECTABLE(list->data));
+    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(list->data));
 
     list = list->next;
   }
@@ -704,7 +704,7 @@ ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   list = recall->children;
 
   while(list != NULL){
-    ags_dynamic_connectable_disconnect(AGS_DYNAMIC_CONNECTABLE(list->data));
+    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(list->data));
 
     list = list->next;
   }
@@ -741,7 +741,7 @@ ags_recall_finalize(GObject *gobject)
   }
 
   if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0){
-    ags_dynamic_connectable_disconnect(AGS_DYNAMIC_CONNECTABLE(recall));
+    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
   }
 
   if(recall->name != NULL)
@@ -1044,7 +1044,7 @@ ags_recall_real_done(AgsRecall *recall)
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 
   if(AGS_IS_DYNAMIC_CONNECTABLE(recall)){
-    ags_dynamic_connectable_disconnect(AGS_DYNAMIC_CONNECTABLE(recall));
+    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
   }
 }
 
@@ -1107,7 +1107,7 @@ ags_recall_real_remove(AgsRecall *recall)
 
   g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
-  ags_dynamic_connectable_disconnect(recall);
+  ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
 
   if(recall->parent == NULL){
     parent = NULL;
@@ -1414,7 +1414,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     ags_recall_run_init_inter(AGS_RECALL(child));
     ags_recall_run_init_post(AGS_RECALL(child));
 
-    ags_dynamic_connectable_connect(AGS_DYNAMIC_CONNECTABLE(child));
+    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(child));
     
     child->flags |= AGS_RECALL_RUN_INITIALIZED;
   }
