@@ -58,6 +58,10 @@ PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.24.10])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
+PKG_CHECK_MODULES([XMLRPC], [xmlrpc >= 0.27.1])
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/ioctl.h unistd.h])
 
