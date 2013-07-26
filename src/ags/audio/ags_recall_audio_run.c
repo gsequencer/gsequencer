@@ -21,7 +21,7 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -32,9 +32,9 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
-void ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable);
+void ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_audio_run_packable_interface_init(AgsPackableInterface *packable);
-void ags_recall_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_recall_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run);
 void ags_recall_audio_run_set_property(GObject *gobject,
 				       guint prop_id,
@@ -45,11 +45,11 @@ void ags_recall_audio_run_get_property(GObject *gobject,
 				       GValue *value,
 				       GParamSpec *param_spec);
 void ags_recall_audio_run_connect(AgsConnectable *connectable);
+void ags_recall_audio_run_disconnect(AgsConnectable *connectable);
 gboolean ags_recall_audio_run_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_audio_run_unpack(AgsPackable *packable);
-void ags_recall_audio_run_disconnect(AgsConnectable *connectable);
-void ags_recall_audio_run_run_connect(AgsRunConnectable *run_connectable);
-void ags_recall_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_recall_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_recall_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_audio_run_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
@@ -71,7 +71,7 @@ enum{
 static gpointer ags_recall_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_audio_run_parent_connectable_interface;
 static AgsPackableInterface* ags_recall_audio_run_parent_packable_interface;
-static AgsRunConnectableInterface *ags_recall_audio_run_parent_run_connectable_interface;
+static AgsDynamicConnectableInterface *ags_recall_audio_run_parent_dynamic_connectable_interface;
 static guint recall_audio_run_signals[LAST_SIGNAL];
 
 GType
@@ -105,7 +105,7 @@ ags_recall_audio_run_get_type()
     };
 
     static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_run_run_connectable_interface_init,
+      (GInterfaceInitFunc) ags_recall_audio_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -195,12 +195,12 @@ ags_recall_audio_run_packable_interface_init(AgsPackableInterface *packable)
 }
 
 void
-ags_recall_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ags_recall_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
-  ags_recall_audio_run_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+  ags_recall_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  run_connectable->connect = ags_recall_audio_run_run_connect;
-  run_connectable->disconnect = ags_recall_audio_run_run_disconnect;
+  dynamic_connectable->connect_dynamic = ags_recall_audio_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_recall_audio_run_disconnect_dynamic;
 }
 
 void
@@ -285,8 +285,24 @@ ags_recall_audio_run_finalize(GObject *gobject)
 void
 ags_recall_audio_run_connect(AgsConnectable *connectable)
 {
-  ags_recall_audio_run_parent_connectable_interface->connect(connectable);
+  /* empty */
+}
 
+void
+ags_recall_audio_run_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_recall_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
+{
+  /* empty */
+}
+
+void
+ags_recall_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
+{
   /* empty */
 }
 
@@ -415,6 +431,14 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
 }
 
 void
+ags_recall_audio_run_connect(AgsConnectable *connectable)
+{
+  ags_recall_audio_run_parent_connectable_interface->connect(connectable);
+
+  /* empty */
+}
+
+void
 ags_recall_audio_run_disconnect(AgsConnectable *connectable)
 {
   ags_recall_audio_run_parent_connectable_interface->disconnect(connectable);
@@ -423,17 +447,17 @@ ags_recall_audio_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_recall_audio_run_run_connect(AgsConnectable *connectable)
+ags_recall_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  ags_recall_audio_run_parent_run_connectable_interface->connect(connectable);
+  ags_recall_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
 }
 
 void
-ags_recall_audio_run_run_disconnect(AgsConnectable *connectable)
+ags_recall_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  ags_recall_audio_run_parent_run_connectable_interface->disconnect(connectable);
+  ags_recall_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* empty */
 }

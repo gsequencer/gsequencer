@@ -176,7 +176,7 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_menu.$(OBJEXT) ags-ags_htimebar.$(OBJEXT) \
 	ags-ags_timebar.$(OBJEXT) ags-ags_segment.$(OBJEXT) \
 	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
-	ags-ags_table.$(OBJEXT) ags-ags_run_connectable.$(OBJEXT) \
+	ags-ags_table.$(OBJEXT) ags-ags_dynamic_connectable.$(OBJEXT) \
 	ags-ags_countable.$(OBJEXT) ags-ags_main_loop.$(OBJEXT) \
 	ags-ags_applicable.$(OBJEXT) ags-ags_tree_iterator.$(OBJEXT) \
 	ags-ags_runnable.$(OBJEXT) ags-ags_persistable.$(OBJEXT) \
@@ -448,6 +448,8 @@ SNDFILE_CFLAGS = @SNDFILE_CFLAGS@
 SNDFILE_LIBS = @SNDFILE_LIBS@
 STRIP = @STRIP@
 VERSION = @VERSION@
+XMLRPC_CFLAGS = @XMLRPC_CFLAGS@
+XMLRPC_LIBS = @XMLRPC_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -703,7 +705,7 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/widget/ags_menu.h ./src/ags/widget/ags_option_menu.c \
 	./src/ags/widget/ags_htimebar.h ./src/ags/widget/ags_table.c \
 	./src/ags/object/ags_marshal.h \
-	./src/ags/object/ags_run_connectable.c \
+	./src/ags/object/ags_dynamic_connectable.c \
 	./src/ags/object/ags_countable.c \
 	./src/ags/object/ags_main_loop.h \
 	./src/ags/object/ags_main_loop.c \
@@ -725,7 +727,7 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/object/ags_tactable.c \
 	./src/ags/object/ags_connectable.c \
 	./src/ags/object/ags_packable.c \
-	./src/ags/object/ags_run_connectable.h \
+	./src/ags/object/ags_dynamic_connectable.h \
 	./src/ags/object/ags_packable.h ./src/ags/X/ags_preferences.c \
 	./src/ags/X/ags_preferences.h \
 	./src/ags/X/ags_preferences_callbacks.c \
@@ -1072,6 +1074,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_drum_output_line_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_drum_output_pad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_drum_output_pad_callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_dynamic_connectable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_echo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_editor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_editor_callbacks.Po@am__quote@
@@ -1183,7 +1186,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_remove_region_from_selection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ruler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ruler_callbacks.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_run_connectable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_run_order.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_runnable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_seekable.Po@am__quote@
@@ -2794,19 +2796,19 @@ ags-ags_table.obj: ./src/ags/widget/ags_table.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_table.obj `if test -f './src/ags/widget/ags_table.c'; then $(CYGPATH_W) './src/ags/widget/ags_table.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_table.c'; fi`
 
-ags-ags_run_connectable.o: ./src/ags/object/ags_run_connectable.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_run_connectable.o -MD -MP -MF $(DEPDIR)/ags-ags_run_connectable.Tpo -c -o ags-ags_run_connectable.o `test -f './src/ags/object/ags_run_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_run_connectable.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_run_connectable.Tpo $(DEPDIR)/ags-ags_run_connectable.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/object/ags_run_connectable.c' object='ags-ags_run_connectable.o' libtool=no @AMDEPBACKSLASH@
+ags-ags_dynamic_connectable.o: ./src/ags/object/ags_dynamic_connectable.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_dynamic_connectable.o -MD -MP -MF $(DEPDIR)/ags-ags_dynamic_connectable.Tpo -c -o ags-ags_dynamic_connectable.o `test -f './src/ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_dynamic_connectable.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_dynamic_connectable.Tpo $(DEPDIR)/ags-ags_dynamic_connectable.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/object/ags_dynamic_connectable.c' object='ags-ags_dynamic_connectable.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_run_connectable.o `test -f './src/ags/object/ags_run_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_run_connectable.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_dynamic_connectable.o `test -f './src/ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_dynamic_connectable.c
 
-ags-ags_run_connectable.obj: ./src/ags/object/ags_run_connectable.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_run_connectable.obj -MD -MP -MF $(DEPDIR)/ags-ags_run_connectable.Tpo -c -o ags-ags_run_connectable.obj `if test -f './src/ags/object/ags_run_connectable.c'; then $(CYGPATH_W) './src/ags/object/ags_run_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_run_connectable.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_run_connectable.Tpo $(DEPDIR)/ags-ags_run_connectable.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/object/ags_run_connectable.c' object='ags-ags_run_connectable.obj' libtool=no @AMDEPBACKSLASH@
+ags-ags_dynamic_connectable.obj: ./src/ags/object/ags_dynamic_connectable.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_dynamic_connectable.obj -MD -MP -MF $(DEPDIR)/ags-ags_dynamic_connectable.Tpo -c -o ags-ags_dynamic_connectable.obj `if test -f './src/ags/object/ags_dynamic_connectable.c'; then $(CYGPATH_W) './src/ags/object/ags_dynamic_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_dynamic_connectable.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_dynamic_connectable.Tpo $(DEPDIR)/ags-ags_dynamic_connectable.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/object/ags_dynamic_connectable.c' object='ags-ags_dynamic_connectable.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_run_connectable.obj `if test -f './src/ags/object/ags_run_connectable.c'; then $(CYGPATH_W) './src/ags/object/ags_run_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_run_connectable.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_dynamic_connectable.obj `if test -f './src/ags/object/ags_dynamic_connectable.c'; then $(CYGPATH_W) './src/ags/object/ags_dynamic_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_dynamic_connectable.c'; fi`
 
 ags-ags_countable.o: ./src/ags/object/ags_countable.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_countable.o -MD -MP -MF $(DEPDIR)/ags-ags_countable.Tpo -c -o ags-ags_countable.o `test -f './src/ags/object/ags_countable.c' || echo '$(srcdir)/'`./src/ags/object/ags_countable.c

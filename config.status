@@ -621,6 +621,8 @@ S["LIBOBJS"]=""
 S["EGREP"]="/usr/bin/grep -E"
 S["GREP"]="/usr/bin/grep"
 S["CPP"]="gcc -E"
+S["XMLRPC_LIBS"]="-lxmlrpc  "
+S["XMLRPC_CFLAGS"]="-I/usr/include/libxml2  "
 S["GTK_LIBS"]="-lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfreetype -lfontconfig -lgobje"\
 "ct-2.0 -lglib-2.0  "
 S["GTK_CFLAGS"]="-pthread -I/usr/include/gtk-2.0 -I/usr/lib64/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/includ"\

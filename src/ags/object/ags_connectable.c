@@ -47,6 +47,17 @@ ags_connectable_base_init(AgsConnectableInterface *interface)
 }
 
 void
+ags_connectable_add_to_registry(AgsConnectable *connectable)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+  g_return_if_fail(connectable_interface->add_to_registry);
+  connectable_interface->add_to_registry(connectable);
+}
+
+void
 ags_connectable_connect(AgsConnectable *connectable)
 {
   AgsConnectableInterface *connectable_interface;
