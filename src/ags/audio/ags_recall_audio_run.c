@@ -93,7 +93,7 @@ ags_recall_audio_run_get_type()
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_runconnectable_interface_init,
+      (GInterfaceInitFunc) ags_recall_audio_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -104,7 +104,7 @@ ags_recall_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
       (GInterfaceInitFunc) ags_recall_audio_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
@@ -124,8 +124,8 @@ ags_recall_audio_run_get_type()
 				&ags_packable_interface_info);
 
     g_type_add_interface_static(ags_type_recall_audio_run,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_recall_audio_run);
@@ -285,24 +285,32 @@ ags_recall_audio_run_finalize(GObject *gobject)
 void
 ags_recall_audio_run_connect(AgsConnectable *connectable)
 {
+  ags_recall_audio_run_parent_connectable_interface->connect(connectable);
+
   /* empty */
 }
 
 void
 ags_recall_audio_run_disconnect(AgsConnectable *connectable)
 {
+  ags_recall_audio_run_parent_connectable_interface->disconnect(connectable);
+
   /* empty */
 }
 
 void
 ags_recall_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  ags_recall_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
+
   /* empty */
 }
 
 void
 ags_recall_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  ags_recall_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
+
   /* empty */
 }
 
@@ -428,38 +436,6 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   g_object_unref(recall_container);
 
   return(FALSE);
-}
-
-void
-ags_recall_audio_run_connect(AgsConnectable *connectable)
-{
-  ags_recall_audio_run_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_recall_audio_run_disconnect(AgsConnectable *connectable)
-{
-  ags_recall_audio_run_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_recall_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_recall_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_recall_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_recall_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
 }
 
 AgsRecall*

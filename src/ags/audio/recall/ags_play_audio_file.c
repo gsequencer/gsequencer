@@ -19,13 +19,11 @@
 #include <ags/audio/recall/ags_play_audio_file.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
 
 #include <ags/audio/ags_recall_id.h>
 
 void ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file);
 void ags_play_audio_file_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_audio_file_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_audio_file_init(AgsPlayAudioFile *play_audio_file);
 void ags_play_audio_file_set_property(GObject *gobject,
 				      guint prop_id,
@@ -37,8 +35,6 @@ void ags_play_audio_file_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_play_audio_file_connect(AgsConnectable *connectable);
 void ags_play_audio_file_disconnect(AgsConnectable *connectable);
-void ags_play_audio_file_run_connect(AgsRunConnectable *run_connectable);
-void ags_play_audio_file_run_disconnect(AgsRunConnectable *run_connectable);
 void ags_play_audio_file_finalize(GObject *gobject);
 
 void ags_play_audio_file_run_inter(AgsRecall *recall);
@@ -54,7 +50,6 @@ enum{
 
 static gpointer ags_play_audio_file_parent_class = NULL;
 static AgsConnectableInterface *ags_play_audio_file_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_play_audio_file_parent_run_connectable_interface;
 
 GType
 ags_play_audio_file_get_type()
@@ -80,12 +75,6 @@ ags_play_audio_file_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_play_audio_file_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_play_audio_file = g_type_register_static(AGS_TYPE_RECALL,
 						      "AgsPlayAudioFile\0",
 						      &ags_play_audio_file_info,
@@ -94,10 +83,6 @@ ags_play_audio_file_get_type()
     g_type_add_interface_static(ags_type_play_audio_file,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_audio_file,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
   }
 
   return (ags_type_play_audio_file);
@@ -161,15 +146,6 @@ ags_play_audio_file_connectable_interface_init(AgsConnectableInterface *connecta
 
   connectable->connect = ags_play_audio_file_connect;
   connectable->disconnect = ags_play_audio_file_disconnect;
-}
-
-void
-ags_play_audio_file_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
-{
-  ags_play_audio_file_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
-
-  run_connectable->connect = ags_play_audio_file_run_connect;
-  run_connectable->disconnect = ags_play_audio_file_run_disconnect;
 }
 
 void
@@ -287,22 +263,6 @@ void
 ags_play_audio_file_disconnect(AgsConnectable *connectable)
 {
   ags_play_audio_file_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_play_audio_file_run_connect(AgsRunConnectable *run_connectable)
-{
-  ags_play_audio_file_parent_run_connectable_interface->connect(run_connectable);
-
-  /* empty */
-}
-
-void
-ags_play_audio_file_run_disconnect(AgsRunConnectable *run_connectable)
-{
-  ags_play_audio_file_parent_run_connectable_interface->disconnect(run_connectable);
 
   /* empty */
 }

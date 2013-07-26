@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
 #include <ags/object/ags_seekable.h>
 
@@ -29,7 +29,7 @@
 
 void ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_audio_run);
 void ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_count_beats_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_count_beats_audio_run_seekable_interface_init(AgsSeekableInterface *seekable);
 void ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *countable);
 void ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run);
@@ -44,8 +44,8 @@ void ags_count_beats_audio_run_get_property(GObject *gobject,
 void ags_count_beats_audio_run_finalize(GObject *gobject);
 void ags_count_beats_audio_run_connect(AgsConnectable *connectable);
 void ags_count_beats_audio_run_disconnect(AgsConnectable *connectable);
-void ags_count_beats_audio_run_run_connect(AgsRunConnectable *run_connectable);
-void ags_count_beats_audio_run_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_count_beats_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_count_beats_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 				    guint steps,
 				    gboolean forward);
@@ -87,7 +87,7 @@ enum{
 
 static gpointer ags_count_beats_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_count_beats_audio_run_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_count_beats_audio_run_parent_run_connectable_interface;
+static AgsDynamicConnectableInterface *ags_count_beats_audio_run_parent_dynamic_connectable_interface;
 
 static guint count_beats_audio_run_signals[LAST_SIGNAL];
 
@@ -115,8 +115,8 @@ ags_count_beats_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_count_beats_audio_run_run_connectable_interface_init,
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_count_beats_audio_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -143,8 +143,8 @@ ags_count_beats_audio_run_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_count_beats_audio_run,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_COUNTABLE,
@@ -291,12 +291,12 @@ ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterface *co
 }
 
 void
-ags_count_beats_audio_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
-  ags_count_beats_audio_run_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+  ags_count_beats_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  run_connectable->connect = ags_count_beats_audio_run_run_connect;
-  run_connectable->disconnect = ags_count_beats_audio_run_run_disconnect;
+  dynamic_connectable->connect_dynamic = ags_count_beats_audio_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_count_beats_audio_run_disconnect_dynamic;
 }
 
 void
@@ -476,14 +476,14 @@ ags_count_beats_audio_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_count_beats_audio_run_run_connect(AgsRunConnectable *run_connectable)
+ags_count_beats_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
-  ags_count_beats_audio_run_parent_run_connectable_interface->connect(run_connectable);
+  ags_count_beats_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* AgsCountBeats */
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(run_connectable);
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(dynamic_connectable);
 
   count_beats_audio_run->sequencer_alloc_output_handler =
     g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "sequencer_alloc_output\0",
@@ -495,14 +495,14 @@ ags_count_beats_audio_run_run_connect(AgsRunConnectable *run_connectable)
 }
 
 void
-ags_count_beats_audio_run_run_disconnect(AgsRunConnectable *run_connectable)
+ags_count_beats_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
-  ags_count_beats_audio_run_parent_run_connectable_interface->connect(run_connectable);
+  ags_count_beats_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* AgsCountBeats */
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(run_connectable);
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(dynamic_connectable);
 
   g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run), count_beats_audio_run->sequencer_alloc_output_handler);
   g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run), count_beats_audio_run->sequencer_count_handler);

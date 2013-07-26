@@ -21,7 +21,7 @@
 #include <ags/lib/ags_list.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_marshal.h>
 
 #include <ags/audio/ags_devout.h>
@@ -2040,7 +2040,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
       }else{
 	ags_recall_run_init_post(recall);
 	
-	ags_run_connectable_connect(AGS_RUN_CONNECTABLE(recall));
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
 	//	  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
       }
     }

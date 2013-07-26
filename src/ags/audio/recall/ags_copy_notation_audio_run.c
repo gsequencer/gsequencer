@@ -284,7 +284,7 @@ ags_copy_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
   copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(dynamic_connectable);
 
   /* call parent */
-  ags_copy_notation_audio_run_parent_dynamic_connectable_interface->connect(dynamic_connectable);
+  ags_copy_notation_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* connect tic_alloc in AgsDelayAudioRun */
   delay_audio_run = copy_notation_audio_run->count_beats_audio_run->delay_audio_run;
@@ -304,7 +304,7 @@ ags_copy_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_co
   copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(dynamic_connectable);
 
   /* call parent */
-  ags_copy_notation_audio_run_parent_dynamic_connectable_interface->connect(dynamic_connectable);
+  ags_copy_notation_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* disconnect tic_alloc in AgsDelayAudioRun */
   delay_audio_run = copy_notation_audio_run->count_beats_audio_run->delay_audio_run;

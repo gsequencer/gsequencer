@@ -21,7 +21,7 @@
 #include <ags/lib/ags_list.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -36,7 +36,7 @@
 
 void ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run);
 void ags_loop_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_loop_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_loop_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run);
 void ags_loop_channel_run_set_property(GObject *gobject,
 				       guint prop_id,
@@ -49,8 +49,8 @@ void ags_loop_channel_run_get_property(GObject *gobject,
 void ags_loop_channel_run_finalize(GObject *gobject);
 void ags_loop_channel_run_connect(AgsConnectable *connectable);
 void ags_loop_channel_run_disconnect(AgsConnectable *connectable);
-void ags_loop_channel_run_run_connect(AgsRunConnectable *run_connectable);
-void ags_loop_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_loop_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_loop_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 
 void ags_loop_channel_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_loop_channel_run_duplicate(AgsRecall *recall,
@@ -77,7 +77,7 @@ enum{
 
 static gpointer ags_loop_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_loop_channel_run_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_loop_channel_run_parent_run_connectable_interface;
+static AgsDynamicConnectableInterface *ags_loop_channel_run_parent_dynamic_connectable_interface;
 
 GType
 ags_loop_channel_run_get_type()
@@ -103,8 +103,8 @@ ags_loop_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_loop_channel_run_run_connectable_interface_init,
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_loop_channel_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -118,8 +118,8 @@ ags_loop_channel_run_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_loop_channel_run,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
   }
 
   return (ags_type_loop_channel_run);
@@ -169,12 +169,12 @@ ags_loop_channel_run_connectable_interface_init(AgsConnectableInterface *connect
 }
 
 void
-ags_loop_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ags_loop_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
-  ags_loop_channel_run_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+  ags_loop_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  run_connectable->connect = ags_loop_channel_run_run_connect;
-  run_connectable->disconnect = ags_loop_channel_run_run_disconnect;
+  dynamic_connectable->connect_dynamic = ags_loop_channel_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_loop_channel_run_disconnect_dynamic;
 }
 
 void
@@ -341,13 +341,13 @@ ags_loop_channel_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_loop_channel_run_run_connect(AgsRunConnectable *run_connectable)
+ags_loop_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsLoopChannelRun *loop_channel_run;
 
-  ags_loop_channel_run_parent_run_connectable_interface->connect(run_connectable);
+  ags_loop_channel_run_parent_dynamic_connectable_interface->connect(dynamic_connectable);
 
-  loop_channel_run = AGS_LOOP_CHANNEL_RUN(run_connectable);
+  loop_channel_run = AGS_LOOP_CHANNEL_RUN(dynamic_connectable);
 
   if(loop_channel_run->count_beats_audio_run != NULL){
     AgsDelayAudio *delay_audio;
@@ -375,13 +375,13 @@ ags_loop_channel_run_run_connect(AgsRunConnectable *run_connectable)
 }
 
 void
-ags_loop_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
+ags_loop_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsLoopChannelRun *loop_channel_run;
 
-  ags_loop_channel_run_parent_run_connectable_interface->disconnect(run_connectable);
+  ags_loop_channel_run_parent_dynamic_connectable_interface->disconnect(dynamic_connectable);
 
-  loop_channel_run = AGS_LOOP_CHANNEL_RUN(run_connectable);
+  loop_channel_run = AGS_LOOP_CHANNEL_RUN(dynamic_connectable);
 
   if(loop_channel_run->count_beats_audio_run != NULL){
     AgsDelayAudio *delay_audio;

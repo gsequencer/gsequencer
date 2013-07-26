@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_play_channel_run.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -37,7 +37,7 @@
 
 void ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run);
 void ags_play_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_play_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run);
 void ags_play_channel_run_set_property(GObject *gobject,
 				       guint prop_id,
@@ -49,8 +49,8 @@ void ags_play_channel_run_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_play_channel_run_connect(AgsConnectable *connectable);
 void ags_play_channel_run_disconnect(AgsConnectable *connectable);
-void ags_play_channel_run_run_connect(AgsRunConnectable *run_connectable);
-void ags_play_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_play_channel_run_finalize(GObject *gobject);
 
 void ags_play_channel_run_run_init_pre(AgsRecall *recall);
@@ -72,7 +72,7 @@ enum{
 
 static gpointer ags_play_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_run_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_play_channel_run_parent_run_connectable_interface;
+static AgsDynamicConnectableInterface *ags_play_channel_run_parent_dynamic_connectable_interface;
 
 GType
 ags_play_channel_run_get_type()
@@ -98,8 +98,8 @@ ags_play_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_play_channel_run_run_connectable_interface_init,
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_play_channel_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -114,8 +114,8 @@ ags_play_channel_run_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_play_channel_run,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_play_channel_run);
@@ -168,12 +168,12 @@ ags_play_channel_run_connectable_interface_init(AgsConnectableInterface *connect
 }
 
 void
-ags_play_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ags_play_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
-  ags_play_channel_run_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+  ags_play_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  run_connectable->connect = ags_play_channel_run_run_connect;
-  run_connectable->disconnect = ags_play_channel_run_run_disconnect;
+  dynamic_connectable->connect_dynamic = ags_play_channel_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_play_channel_run_disconnect_dynamic;
 }
 
 void
@@ -303,16 +303,16 @@ ags_play_channel_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_play_channel_run_run_connect(AgsRunConnectable *run_connectable)
+ags_play_channel_run_dynamic_connect(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   GObject *gobject;
 
-  ags_play_channel_run_parent_run_connectable_interface->connect(run_connectable);
+  ags_play_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* AgsPlayChannelRun */
-  play_channel_run = AGS_PLAY_CHANNEL_RUN(run_connectable);
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(dynamic_connectable);
 
   /* stream_channel_run */
   gobject = G_OBJECT(play_channel_run->stream_channel_run);
@@ -323,16 +323,16 @@ ags_play_channel_run_run_connect(AgsRunConnectable *run_connectable)
 }
 
 void
-ags_play_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
+ags_play_channel_run_dynamic_disconnect(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   GObject *gobject;
 
-  ags_play_channel_run_parent_run_connectable_interface->disconnect(run_connectable);
+  ags_play_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* AgsPlayChannelRun */
-  play_channel_run = AGS_PLAY_CHANNEL_RUN(run_connectable);
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(dynamic_connectable);
 
   /* AgsPlayChannel */
   play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run)->recall_channel);

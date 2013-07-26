@@ -23,14 +23,12 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
-#include <ags/object/ags_run_connectable.h>
 
 #include <ags/audio/ags_recall_container.h>
 
 void ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel);
 void ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_channel_packable_interface_init(AgsPackableInterface *packable);
-void ags_recall_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_recall_channel_init(AgsRecallChannel *recall_channel);
 void ags_recall_channel_set_property(GObject *gobject,
 				     guint prop_id,
@@ -44,8 +42,6 @@ void ags_recall_channel_connect(AgsConnectable *connectable);
 void ags_recall_channel_disconnect(AgsConnectable *connectable);
 gboolean ags_recall_channel_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_channel_unpack(AgsPackable *packable);
-void ags_recall_channel_runconnect(AgsRunConnectable *run_connectable);
-void ags_recall_channel_rundisconnect(AgsRunConnectable *run_connectable);
 void ags_recall_channel_finalize(GObject *gobject);
 
 AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
@@ -61,7 +57,6 @@ enum{
 static gpointer ags_recall_channel_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_channel_parent_connectable_interface;
 static AgsPackableInterface* ags_recall_channel_parent_packable_interface;
-static AgsRunConnectableInterface *ags_recall_channel_parent_run_connectable_interface;
 
 GType
 ags_recall_channel_get_type()
@@ -93,12 +88,6 @@ ags_recall_channel_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_channel = g_type_register_static(AGS_TYPE_RECALL,
 						     "AgsRecallChannel\0",
 						     &ags_recall_channel_info,
@@ -111,10 +100,6 @@ ags_recall_channel_get_type()
     g_type_add_interface_static(ags_type_recall_channel,
 				AGS_TYPE_PACKABLE,
 				&ags_packable_interface_info);
-    
-    g_type_add_interface_static(ags_type_recall_channel,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
   }
 
   return(ags_type_recall_channel);
@@ -180,15 +165,6 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
 
    packable->pack = ags_recall_channel_pack;
    packable->unpack = ags_recall_channel_unpack;
- }
-
- void
- ags_recall_channel_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
- {
-   ags_recall_channel_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
-
-   run_connectable->connect = ags_recall_channel_runconnect;
-   run_connectable->disconnect = ags_recall_channel_rundisconnect;
  }
 
  void
@@ -380,22 +356,6 @@ ags_recall_channel_unpack(AgsPackable *packable)
   g_object_unref(recall_container);
 
   return(FALSE);
-}
-
-void
-ags_recall_channel_runconnect(AgsConnectable *connectable)
-{
-  ags_recall_channel_parent_run_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_recall_channel_rundisconnect(AgsConnectable *connectable)
-{
-  ags_recall_channel_parent_run_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 AgsRecall*

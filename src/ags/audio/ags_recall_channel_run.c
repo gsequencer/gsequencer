@@ -135,7 +135,7 @@ ags_recall_channel_run_get_type()
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_channel_runconnectable_interface_init,
+      (GInterfaceInitFunc) ags_recall_channel_run_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -293,8 +293,8 @@ ags_recall_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableI
 {
   ags_recall_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  dynamic_connectable->connect = ags_recall_channel_run_dynamic_connect;
-  dynamic_connectable->disconnect = ags_recall_channel_run_dynamic_disconnect;
+  dynamic_connectable->connect_dynamic = ags_recall_channel_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_recall_channel_run_disconnect_dynamic;
 }
 
 void
