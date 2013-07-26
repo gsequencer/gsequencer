@@ -158,8 +158,8 @@ ags_copy_notation_audio_run_dynamic_connectable_interface_init(AgsDynamicConnect
 {
   ags_copy_notation_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  dynamic_connectable->connect = ags_copy_notation_audio_run_connect_dynamic;
-  dynamic_connectable->disconnect = ags_copy_notation_audio_run_disconnect_dynamic;
+  dynamic_connectable->connect_dynamic = ags_copy_notation_audio_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_copy_notation_audio_run_disconnect_dynamic;
 }
 
 void

@@ -35,8 +35,8 @@ void ags_copy_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectab
 void ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run);
 void ags_copy_channel_run_connect(AgsConnectable *connectable);
 void ags_copy_channel_run_disconnect(AgsConnectable *connectable);
-void ags_copy_channel_run_dynamic_connect(AgsDynamicConnectable *dynamic_connectable);
-void ags_copy_channel_run_dynamic_disconnect(AgsDynamicConnectable *dynamic_connectable);
+void ags_copy_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_copy_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_channel_run_finalize(GObject *gobject);
 
 AgsRecall* ags_copy_channel_run_duplicate(AgsRecall *recall,
@@ -126,8 +126,8 @@ ags_copy_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 {
   ags_copy_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  dynamic_connectable->connect = ags_copy_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect = ags_copy_channel_run_disconnect_dynamic;
+  dynamic_connectable->connect_dynamic = ags_copy_channel_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_copy_channel_run_disconnect_dynamic;
 }
 
 void
