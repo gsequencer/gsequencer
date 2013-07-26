@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_copy_channel_run.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_id.h>

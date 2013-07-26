@@ -187,7 +187,7 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   AgsDelayAudioRun *delay_audio_run;
 
-  ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->connect(dynamic_connectable);
+  ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   //  g_message("ags_copy_pattern_channel_run_dynamic_connect\n\0");
 
@@ -213,7 +213,7 @@ ags_copy_pattern_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_c
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   AgsDelayAudioRun *delay_audio_run;
 
-  ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->disconnect(dynamic_connectable);
+  ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* AgsCopyPatternChannelRun */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(dynamic_connectable);

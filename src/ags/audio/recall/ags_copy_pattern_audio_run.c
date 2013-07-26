@@ -278,14 +278,14 @@ void
 ags_copy_pattern_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   /* call parent */
-  ags_copy_pattern_audio_run_parent_dynamic_connectable_interface->connect(dynamic_connectable);
+  ags_copy_pattern_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
 void
 ags_copy_pattern_audio_run_run_disconnect(AgsDynamicConnectable *dynamic_connectable)
 {
   /* call parent */
-  ags_copy_pattern_audio_run_parent_dynamic_connectable_interface->connect(dynamic_connectable);
+  ags_copy_pattern_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
 void

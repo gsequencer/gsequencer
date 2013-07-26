@@ -345,7 +345,7 @@ ags_loop_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsLoopChannelRun *loop_channel_run;
 
-  ags_loop_channel_run_parent_dynamic_connectable_interface->connect(dynamic_connectable);
+  ags_loop_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(dynamic_connectable);
 
@@ -379,7 +379,7 @@ ags_loop_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
 {
   AgsLoopChannelRun *loop_channel_run;
 
-  ags_loop_channel_run_parent_dynamic_connectable_interface->disconnect(dynamic_connectable);
+  ags_loop_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(dynamic_connectable);
 

@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 
@@ -28,12 +28,12 @@
 
 void ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling);
 void ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_copy_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_copy_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_copy_recycling_init(AgsCopyRecycling *copy_recycling);
 void ags_copy_recycling_connect(AgsConnectable *connectable);
 void ags_copy_recycling_disconnect(AgsConnectable *connectable);
-void ags_copy_recycling_run_connect(AgsRunConnectable *run_connectable);
-void ags_copy_recycling_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_copy_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_copy_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_recycling_finalize(GObject *gobject);
 
 void ags_copy_recycling_done(AgsRecall *recall);
@@ -45,7 +45,7 @@ AgsRecall* ags_copy_recycling_duplicate(AgsRecall *recall,
 
 static gpointer ags_copy_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_recycling_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_copy_recycling_parent_run_connectable_interface;
+static AgsDynamicConnectableInterface *ags_copy_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_copy_recycling_get_type()
@@ -71,8 +71,8 @@ ags_copy_recycling_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_copy_recycling_run_connectable_interface_init,
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_recycling_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -87,8 +87,8 @@ ags_copy_recycling_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_copy_recycling,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_copy_recycling);
@@ -131,12 +131,12 @@ ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectab
 }
 
 void
-ags_copy_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ags_copy_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
-  ags_copy_recycling_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+  ags_copy_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  run_connectable->connect = ags_copy_recycling_run_connect;
-  run_connectable->disconnect = ags_copy_recycling_run_disconnect;
+  dynamic_connectable->connect_dynamic = ags_copy_recycling_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_copy_recycling_disconnect_dynamic;
 }
 
 void
@@ -180,21 +180,21 @@ ags_copy_recycling_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_copy_recycling_run_connect(AgsRunConnectable *run_connectable)
+ags_copy_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsCopyRecycling *copy_recycling;
   GObject *gobject;
 
-  ags_copy_recycling_parent_run_connectable_interface->connect(run_connectable);
+  ags_copy_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
 void
-ags_copy_recycling_run_disconnect(AgsRunConnectable *run_connectable)
+ags_copy_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsCopyRecycling *copy_recycling;
   GObject *gobject;
 
-  ags_copy_recycling_parent_run_connectable_interface->connect(run_connectable);
+  ags_copy_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
 }

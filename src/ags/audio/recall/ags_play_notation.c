@@ -19,14 +19,12 @@
 #include <ags/audio/recall/ags_play_notation.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
 void ags_play_notation_class_init(AgsPlayNotationClass *play_notation);
 void ags_play_notation_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_notation_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
 void ags_play_notation_init(AgsPlayNotation *play_notation);
 void ags_play_notation_set_property(GObject *gobject,
 				    guint prop_id,
@@ -39,8 +37,6 @@ void ags_play_notation_get_property(GObject *gobject,
 void ags_play_notation_finalize(GObject *gobject);
 void ags_play_notation_connect(AgsConnectable *connectable);
 void ags_play_notation_disconnect(AgsConnectable *connectable);
-void ags_play_notation_run_connect(AgsRunConnectable *run_connectable);
-void ags_play_notation_run_disconnect(AgsRunConnectable *run_connectable);
 
 void ags_play_notation_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_play_notation_duplicate(AgsRecall *recall,
@@ -61,7 +57,6 @@ enum{
 
 static gpointer ags_play_notation_parent_class = NULL;
 static AgsConnectableInterface* ags_play_notation_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_play_notation_parent_run_connectable_interface;
 
 GType
 ags_play_notation_get_type()
@@ -87,12 +82,6 @@ ags_play_notation_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_play_notation_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_play_notation = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 						    "AgsPlayNotation\0",
 						    &ags_play_notation_info,
@@ -101,10 +90,6 @@ ags_play_notation_get_type()
     g_type_add_interface_static(ags_type_play_notation,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_notation,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
   }
 
   return (ags_type_play_notation);
@@ -169,15 +154,6 @@ ags_play_notation_connectable_interface_init(AgsConnectableInterface *connectabl
 
   connectable->connect = ags_play_notation_connect;
   connectable->disconnect = ags_play_notation_disconnect;
-}
-
-void
-ags_play_notation_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
-{
-  ags_play_notation_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
-
-  run_connectable->connect = ags_play_notation_run_connect;
-  run_connectable->disconnect = ags_play_notation_run_disconnect;
 }
 
 void
@@ -380,26 +356,12 @@ ags_play_notation_finalize(GObject *gobject)
 void
 ags_play_notation_connect(AgsConnectable *connectable)
 {
-  /* call parent */
-  ags_play_notation_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_play_notation_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_play_notation_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_play_notation_run_connect(AgsRunConnectable *run_connectable)
-{
   AgsPlayNotation *play_notation;
 
   /* call parent */
-  ags_play_notation_parent_run_connectable_interface->connect(run_connectable);
+  ags_play_notation_parent_connectable_interface->connect(connectable);
 
-  play_notation = AGS_PLAY_NOTATION(run_connectable);
+  play_notation = AGS_PLAY_NOTATION(connectable);
 
   if(play_notation->delay_audio_run != NULL){
     play_notation->tic_alloc_input_handler = g_signal_connect_after(G_OBJECT(play_notation->delay_audio_run), "tic_alloc_input\0",
@@ -408,14 +370,14 @@ ags_play_notation_run_connect(AgsRunConnectable *run_connectable)
 }
 
 void
-ags_play_notation_run_disconnect(AgsRunConnectable *run_connectable)
+ags_play_notation_disconnect(AgsConnectable *connectable)
 {
   AgsPlayNotation *play_notation;
 
   /* call parent */
-  ags_play_notation_parent_run_connectable_interface->disconnect(run_connectable);
+  ags_play_notation_parent_connectable_interface->disconnect(connectable);
 
-  play_notation = AGS_PLAY_NOTATION(run_connectable);
+  play_notation = AGS_PLAY_NOTATION(connectable);
 
   if(play_notation->delay_audio_run != NULL){
     g_signal_handler_disconnect(G_OBJECT(play_notation->delay_audio_run), play_notation->tic_alloc_input_handler);

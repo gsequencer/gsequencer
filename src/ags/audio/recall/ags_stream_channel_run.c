@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_stream_channel_run.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -32,12 +32,12 @@
 
 void ags_stream_channel_run_class_init(AgsStreamChannelRunClass *stream_channel_run);
 void ags_stream_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_stream_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_stream_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run);
 void ags_stream_channel_run_connect(AgsConnectable *connectable);
 void ags_stream_channel_run_disconnect(AgsConnectable *connectable);
-void ags_stream_channel_run_run_connect(AgsRunConnectable *run_connectable);
-void ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_stream_channel_dynamic_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_channel_run_finalize(GObject *gobject);
 
 AgsRecall* ags_stream_channel_run_duplicate(AgsRecall *recall,
@@ -46,7 +46,7 @@ AgsRecall* ags_stream_channel_run_duplicate(AgsRecall *recall,
 
 static gpointer ags_stream_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_run_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_stream_channel_run_parent_run_connectable_interface;
+static AgsDynamicConnectableInterface *ags_stream_channel_run_parent_dynamic_connectable_interface;
 
 GType
 ags_stream_channel_run_get_type()
@@ -67,13 +67,13 @@ ags_stream_channel_run_get_type()
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_stream_channel_run_connectable_interface_init,
+      (GInterfaceInitFunc) ags_stream_channel_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_stream_channel_run_run_connectable_interface_init,
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_stream_channel_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -88,8 +88,8 @@ ags_stream_channel_run_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_stream_channel_run,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
   }
 
   return (ags_type_stream_channel_run);
@@ -124,12 +124,12 @@ ags_stream_channel_run_connectable_interface_init(AgsConnectableInterface *conne
 }
 
 void
-ags_stream_channel_run_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ags_stream_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
-  ags_stream_channel_run_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+  ags_stream_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  run_connectable->connect = ags_stream_channel_run_run_connect;
-  run_connectable->disconnect = ags_stream_channel_run_run_disconnect;
+  dynamic_connectable->connect_dynamic = ags_stream_channel_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_stream_channel_run_disconnect_dynamic;
 }
 
 void
@@ -167,21 +167,21 @@ ags_stream_channel_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_stream_channel_run_run_connect(AgsRunConnectable *run_connectable)
+ags_stream_channel_run_run_connect(AgsDynamicConnectable *run_connectable)
 {
   /* call parent */
-  ags_stream_channel_run_parent_run_connectable_interface->connect(run_connectable);
+  ags_stream_channel_run_parent_dynamic_connectable_interface->connect_dynamic(run_connectable);
 
   /* empty */
 }
 
 void
-ags_stream_channel_run_run_disconnect(AgsRunConnectable *run_connectable)
+ags_stream_channel_run_run_disconnect(AgsDynamicConnectable *run_connectable)
 {
   AgsChannel *channel;
   AgsStreamChannelRun *stream_channel_run;
 
-  ags_stream_channel_run_parent_run_connectable_interface->disconnect(run_connectable);
+  ags_stream_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(run_connectable);
 
   /* empty */
 }

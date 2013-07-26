@@ -21,7 +21,7 @@
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_run_connectable.h>
+#include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
@@ -31,12 +31,12 @@
 
 void ags_volume_recycling_class_init(AgsVolumeRecyclingClass *volume_recycling);
 void ags_volume_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_volume_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable);
+void ags_volume_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling);
 void ags_volume_recycling_connect(AgsConnectable *connectable);
 void ags_volume_recycling_disconnect(AgsConnectable *connectable);
-void ags_volume_recycling_run_connect(AgsRunConnectable *run_connectable);
-void ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable);
+void ags_volume_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_volume_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_volume_recycling_finalize(GObject *gobject);
 
 AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall,
@@ -45,7 +45,7 @@ AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall,
 
 static gpointer ags_volume_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_recycling_parent_connectable_interface;
-static AgsRunConnectableInterface *ags_volume_recycling_parent_run_connectable_interface;
+static AgsDynamicConnectableInterface *ags_volume_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_volume_recycling_get_type()
@@ -71,8 +71,8 @@ ags_volume_recycling_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_run_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_volume_recycling_run_connectable_interface_init,
+    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_volume_recycling_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -87,8 +87,8 @@ ags_volume_recycling_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_volume_recycling,
-				AGS_TYPE_RUN_CONNECTABLE,
-				&ags_run_connectable_interface_info);
+				AGS_TYPE_DYNAMIC_CONNECTABLE,
+				&ags_dynamic_connectable_interface_info);
   }
 
   return (ags_type_volume_recycling);
@@ -124,12 +124,12 @@ ags_volume_recycling_connectable_interface_init(AgsConnectableInterface *connect
 }
 
 void
-ags_volume_recycling_run_connectable_interface_init(AgsRunConnectableInterface *run_connectable)
+ags_volume_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
-  ags_volume_recycling_parent_run_connectable_interface = g_type_interface_peek_parent(run_connectable);
+  ags_volume_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 
-  run_connectable->connect = ags_volume_recycling_run_connect;
-  run_connectable->disconnect = ags_volume_recycling_run_disconnect;
+  dynamic_connectable->connect_dynamic = ags_volume_recycling_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_volume_recycling_disconnect_dynamic;
 }
 
 void
@@ -166,19 +166,19 @@ ags_volume_recycling_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_volume_recycling_run_connect(AgsRunConnectable *run_connectable)
+ags_volume_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   /* call parent */
-  ags_volume_recycling_parent_run_connectable_interface->connect(run_connectable);
+  ags_volume_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
 }
 
 void
-ags_volume_recycling_run_disconnect(AgsRunConnectable *run_connectable)
+ags_volume_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   /* call parent */
-  ags_volume_recycling_parent_run_connectable_interface->disconnect(run_connectable);
+  ags_volume_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* empty */
 }
