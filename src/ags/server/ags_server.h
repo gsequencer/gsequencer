@@ -53,6 +53,10 @@ xmlrpc_value* ags_server_object_get_property(xmlrpc_env *env_p,
 					     xmlrpc_value *param_array_p,
 					     void *server_info);
 
+xmlrpc_value* ags_server_object_emit_signal(xmlrpc_env *env_p,
+					    xmlrpc_value *param_array_p,
+					    void *server_info);
+
 AgsServer* ags_server_new(GObject *devout);
 
 #endif /*__AGS_SERVER_H__*/
