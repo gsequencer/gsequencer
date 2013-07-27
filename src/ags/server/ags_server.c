@@ -29,6 +29,8 @@ void ags_server_finalize(GObject *gobject);
 
 static gpointer ags_server_parent_class = NULL;
 
+static GList *ags_server_list = NULL;
+
 GType
 ags_server_get_type()
 {
@@ -91,7 +93,12 @@ ags_server_init(AgsServer *server)
 {
   server->flags = 0;
 
+  server->server_info = NULL;
+
   server->devout = NULL;
+
+  server->registry = ags_registry_new();
+  server->remote_task = ags_remote_task_new();
 }
 
 void
@@ -114,6 +121,24 @@ ags_server_finalize(GObject *gobject)
   server = AGS_SERVER(gobject);
 
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
+}
+
+AgsServer*
+ags_server_lookup(void *server_info)
+{
+  GList *current;
+
+  current = ags_server_list;
+
+  while(current != NULL){
+    if(FALSE){ //TODO:JK: compare server info
+      return(AGS_SERVER(current->data));
+    }
+
+    current = current->next;
+  }
+
+  return(NULL);
 }
 
 xmlrpc_value*

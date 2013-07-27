@@ -4,6 +4,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <xmlrpc.h>
+#include <xmlrpc_server.h>
+
 #define AGS_TYPE_REGISTRY                (ags_registry_get_type())
 #define AGS_REGISTRY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REGISTRY, AgsRegistry))
 #define AGS_REGISTRY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_REGISTRY, AgsRegistryClass))
@@ -47,6 +50,10 @@ void ags_registry_add(AgsRegistry *registry,
 
 AgsRegistryEntry* ags_registry_entry_find(AgsRegistry *registry,
 					  gchar *id);
+
+xmlrpc_value* ags_registry_entry_bulk(xmlrpc_env *env_p,
+				      xmlrpc_value *param_array_p,
+				      void *server_info);
 
 AgsRegistry* ags_registry_new();
 

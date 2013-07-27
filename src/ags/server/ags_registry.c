@@ -24,6 +24,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/server/ags_server.h>
+
 void ags_registry_class_init(AgsRegistryClass *registry);
 void ags_registry_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_registry_init(AgsRegistry *registry);
@@ -32,6 +34,8 @@ void ags_registry_disconnect(AgsConnectable *connectable);
 void ags_registry_finalize(GObject *gobject);
 
 static gpointer ags_registry_parent_class = NULL;
+
+extern GList *ags_server_list;
 
 GType
 ags_registry_get_type()
@@ -177,6 +181,37 @@ ags_registry_entry_find(AgsRegistry *registry,
   pthread_mutex_unlock(&mutex);
 
   return(entry);
+}
+
+xmlrpc_value*
+ags_registry_entry_bulk(xmlrpc_env *env_p,
+			xmlrpc_value *param_array_p,
+			void *server_info)
+{
+  AgsServer *server;
+  AgsRegistry *registry;
+  AgsRegistryEntry *entry;
+  GList *current;
+  xmlrpc_env env;
+  xmlrpc_value *bulk;
+  xmlrpc_value *item;
+
+  server = ags_server_lookup(server_info);
+  registry = server->registry;
+
+  xmlrpc_env_init(&env);
+  bulk = xmlrpc_array_new(&env);
+
+  current = registry->registry;
+
+  while(current != NULL){
+    entry = (AgsRegistryEntry *) current->data;
+    item = xmlrpc_string_new(&env, entry->id);
+
+    xmlrpc_array_append_item(&env, bulk, item);
+  }
+
+  return(bulk);
 }
 
 AgsRegistry*

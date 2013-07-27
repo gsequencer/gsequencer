@@ -7,6 +7,9 @@
 #include <xmlrpc.h>
 #include <xmlrpc_server.h>
 
+#include <ags/server/ags_registry.h>
+#include <ags/server/ags_remote_task.h>
+
 #define AGS_TYPE_SERVER                (ags_server_get_type())
 #define AGS_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER, AgsServer))
 #define AGS_SERVER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SERVER, AgsServerClass))
@@ -27,7 +30,12 @@ struct _AgsServer
 
   guint flags;
 
+  void *server_info;
+  
   GObject *devout;
+
+  AgsRegistry *registry;
+  AgsRemoteTask *remote_task;
 };
 
 struct _AgsServerClass
@@ -36,6 +44,8 @@ struct _AgsServerClass
 };
 
 GType ags_server_get_type();
+
+AgsServer* ags_server_lookup(void *server_info);
 
 xmlrpc_value* ags_server_create_object(xmlrpc_env *env_p,
 				       xmlrpc_value *param_array_p,
