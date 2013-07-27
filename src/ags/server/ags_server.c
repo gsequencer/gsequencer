@@ -157,7 +157,7 @@ ags_server_create_object(xmlrpc_env *env,
   guint n_params;
   guint i;
 
-  if(xmlrpc_array_size(param_array) % 2 != 1){
+  if(xmlrpc_array_size(env, param_array) % 2 != 1){
     return(NULL);
   }
 
@@ -170,7 +170,7 @@ ags_server_create_object(xmlrpc_env *env,
   type = g_type_from_name(type_name);
   object_class = g_type_class_ref(type);
 
-  n_params = (xmlrpc_array_size(param_array) - 1) / 2;
+  n_params = (xmlrpc_array_size(env, param_array) - 1) / 2;
   parameter = g_new(GParameter, n_params);
 
   for(i = 0; i < n_params; i++){
@@ -194,7 +194,7 @@ ags_server_create_object(xmlrpc_env *env,
     xmlrpc_DECREF(item);
 
     g_value_init(&parameter[i].value, G_PARAM_SPEC_VALUE_TYPE(pspec));
-    g_value_copy(&(registry_entry->value),
+    g_value_copy(&(registry_entry->entry),
 		 &parameter[i].value);
 
     g_free(param_name);
@@ -209,7 +209,7 @@ ags_server_create_object(xmlrpc_env *env,
   }
 
   object = g_object_newv(type,
-			 nparams,
+			 n_params,
 			 parameter);
 
   registry_entry = ags_registry_entry_alloc(server->registry);

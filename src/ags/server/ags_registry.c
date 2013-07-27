@@ -135,8 +135,6 @@ ags_registry_entry_alloc(AgsRegistry *registry)
 
   registry_entry->id = ags_id_generator_create_uuid();
 
-  registry_entry->entry = NULL;
-
   return(registry_entry);
 }
 
@@ -191,15 +189,13 @@ ags_registry_entry_bulk(xmlrpc_env *env,
   AgsRegistry *registry;
   AgsRegistryEntry *entry;
   GList *current;
-  xmlrpc_env env;
   xmlrpc_value *bulk;
   xmlrpc_value *item;
 
   server = ags_server_lookup(server_info);
   registry = server->registry;
 
-  xmlrpc_env_init(&env);
-  bulk = xmlrpc_array_new(&env);
+  bulk = xmlrpc_array_new(env);
 
   pthread_mutex_lock(&(registry->mutex));
 
@@ -207,9 +203,9 @@ ags_registry_entry_bulk(xmlrpc_env *env,
 
   while(current != NULL){
     entry = (AgsRegistryEntry *) current->data;
-    item = xmlrpc_string_new(&env, entry->id);
+    item = xmlrpc_string_new(env, entry->id);
 
-    xmlrpc_array_append_item(&env, bulk, item);
+    xmlrpc_array_append_item(env, bulk, item);
   }
 
   pthread_mutex_unlock(&(registry->mutex));
