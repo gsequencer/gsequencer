@@ -42,7 +42,7 @@ struct _AgsRegistryClass
 struct _AgsRegistryEntry
 {
   gchar *id;
-  GObject *entry;
+  GValue entry;
 };
 
 GType ags_registry_get_type();
@@ -55,8 +55,8 @@ void ags_registry_add(AgsRegistry *registry,
 AgsRegistryEntry* ags_registry_entry_find(AgsRegistry *registry,
 					  gchar *id);
 
-xmlrpc_value* ags_registry_entry_bulk(xmlrpc_env *env_p,
-				      xmlrpc_value *param_array_p,
+xmlrpc_value* ags_registry_entry_bulk(xmlrpc_env *env,
+				      xmlrpc_value *param_array,
 				      void *server_info);
 
 AgsRegistry* ags_registry_new();

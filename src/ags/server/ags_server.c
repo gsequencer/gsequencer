@@ -142,40 +142,114 @@ ags_server_lookup(void *server_info)
 }
 
 xmlrpc_value*
-ags_server_create_object(xmlrpc_env *env_p,
-			 xmlrpc_value *param_array_p,
+ags_server_create_object(xmlrpc_env *env,
+			 xmlrpc_value *param_array,
 			 void *server_info)
 {
-  //TODO:JK: implement me
+  AgsServer *server;
+  GType type;
+  GObjectClass *object_class;
+  GParameter *parameter;
+  GObject *object;
+  AgsRegistryEntry *registry_entry;
+  gchar *type_name;
+  xmlrpc_value *item, *retval;
+  guint n_params;
+  guint i;
+
+  if(xmlrpc_array_size(param_array) % 2 != 1){
+    return(NULL);
+  }
+
+  server = ags_server_lookup(server_info);
+
+  xmlrpc_array_read_item(env, param_array, 0, &item);
+  xmlrpc_read_string(env, item, &type_name);
+  xmlrpc_DECREF(item);
+
+  type = g_type_from_name(type_name);
+  object_class = g_type_class_ref(type);
+
+  n_params = (xmlrpc_array_size(param_array) - 1) / 2;
+  parameter = g_new(GParameter, n_params);
+
+  for(i = 0; i < n_params; i++){
+    GParamSpec *pspec;
+    AgsRegistryEntry *registry_entry;
+    gchar *param_name, *registry_id;
+    gchar *error;
+
+    xmlrpc_array_read_item(env, param_array, 1 + i * 2, &item);
+    xmlrpc_read_string(env, item, &param_name);
+    xmlrpc_DECREF(item);
+
+    pspec = g_object_class_find_property(object_class,
+					 param_name);
+
+    parameter[i].name = param_name;
+    parameter[i].value.g_type = 0;
+
+    xmlrpc_array_read_item(env, param_array, 2 + i * 2, &item);
+    xmlrpc_read_string(env, item, &registry_id);
+    xmlrpc_DECREF(item);
+
+    g_value_init(&parameter[i].value, G_PARAM_SPEC_VALUE_TYPE(pspec));
+    g_value_copy(&(registry_entry->value),
+		 &parameter[i].value);
+
+    g_free(param_name);
+    g_free(registry_id);
+
+    if(error){
+      g_warning ("%s: %s\0", G_STRFUNC, error);
+      g_free (error);
+      g_value_unset (&parameter[i].value);
+      break;
+    }
+  }
+
+  object = g_object_newv(type,
+			 nparams,
+			 parameter);
+
+  registry_entry = ags_registry_entry_alloc(server->registry);
+  g_value_init(&(registry_entry->entry),
+	       G_TYPE_OBJECT);
+  g_value_set_object(&(registry_entry->entry),
+		     object);
+  
+  retval = xmlrpc_string_new(env, registry_entry->id);
+
+  return(retval);
 }
 
 xmlrpc_value*
-ags_server_object_list_properties(xmlrpc_env *env_p,
-				  xmlrpc_value *param_array_p,
+ags_server_object_list_properties(xmlrpc_env *env,
+				  xmlrpc_value *param_array,
 				  void *server_info)
 {
   //TODO:JK: implement me
 }
 
 xmlrpc_value*
-ags_server_object_set_property(xmlrpc_env *env_p,
-			       xmlrpc_value *param_array_p,
+ags_server_object_set_property(xmlrpc_env *env,
+			       xmlrpc_value *param_array,
 			       void *server_info)
 {
   //TODO:JK: implement me
 }
 
 xmlrpc_value*
-ags_server_object_get_property(xmlrpc_env *env_p,
-			       xmlrpc_value *param_array_p,
+ags_server_object_get_property(xmlrpc_env *env,
+			       xmlrpc_value *param_array,
 			       void *server_info)
 {
   //TODO:JK: implement me
 }
 
 xmlrpc_value*
-ags_server_object_emit_signal(xmlrpc_env *env_p,
-			      xmlrpc_value *param_array_p,
+ags_server_object_emit_signal(xmlrpc_env *env,
+			      xmlrpc_value *param_array,
 			      void *server_info)
 {
   //TODO:JK: implement me

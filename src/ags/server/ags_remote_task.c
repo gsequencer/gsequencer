@@ -114,32 +114,32 @@ ags_remote_task_finalize(GObject *gobject)
 }
 
 xmlrpc_value*
-ags_remote_task_create(xmlrpc_env *env_p,
-		       xmlrpc_value *param_array_p,
+ags_remote_task_create(xmlrpc_env *env,
+		       xmlrpc_value *param_array,
 		       void *server_info)
 {
   //TODO:JK: implement me
 }
 
 xmlrpc_value*
-ags_remote_task_launch(xmlrpc_env *env_p,
-		       xmlrpc_value *param_array_p,
+ags_remote_task_launch(xmlrpc_env *env,
+		       xmlrpc_value *param_array,
 		       void *server_info)
 {
   //TODO:JK: implement me
 }
 
 xmlrpc_value*
-ags_remote_task_create_and_launch(xmlrpc_env *env_p,
-				  xmlrpc_value *param_array_p,
+ags_remote_task_create_and_launch(xmlrpc_env *env,
+				  xmlrpc_value *param_array,
 				  void *server_info)
 {
   //TODO:JK: implement me
 }
 
 xmlrpc_value*
-ags_remote_task_create_and_launch_timed(xmlrpc_env *env_p,
-					xmlrpc_value *param_array_p,
+ags_remote_task_create_and_launch_timed(xmlrpc_env *env,
+					xmlrpc_value *param_array,
 					void *server_info)
 {
   //TODO:JK: implement me

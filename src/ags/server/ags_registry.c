@@ -183,8 +183,8 @@ ags_registry_entry_find(AgsRegistry *registry,
 }
 
 xmlrpc_value*
-ags_registry_entry_bulk(xmlrpc_env *env_p,
-			xmlrpc_value *param_array_p,
+ags_registry_entry_bulk(xmlrpc_env *env,
+			xmlrpc_value *param_array,
 			void *server_info)
 {
   AgsServer *server;

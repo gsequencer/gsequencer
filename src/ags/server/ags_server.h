@@ -47,24 +47,24 @@ GType ags_server_get_type();
 
 AgsServer* ags_server_lookup(void *server_info);
 
-xmlrpc_value* ags_server_create_object(xmlrpc_env *env_p,
-				       xmlrpc_value *param_array_p,
+xmlrpc_value* ags_server_create_object(xmlrpc_env *env,
+				       xmlrpc_value *param_array,
 				       void *server_info);
 
-xmlrpc_value* ags_server_object_list_properties(xmlrpc_env *env_p,
-						xmlrpc_value *param_array_p,
+xmlrpc_value* ags_server_object_list_properties(xmlrpc_env *env,
+						xmlrpc_value *param_array,
 						void *server_info);
 
-xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env_p,
-					     xmlrpc_value *param_array_p,
+xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env,
+					     xmlrpc_value *param_array,
 					     void *server_info);
 
-xmlrpc_value* ags_server_object_get_property(xmlrpc_env *env_p,
-					     xmlrpc_value *param_array_p,
+xmlrpc_value* ags_server_object_get_property(xmlrpc_env *env,
+					     xmlrpc_value *param_array,
 					     void *server_info);
 
-xmlrpc_value* ags_server_object_emit_signal(xmlrpc_env *env_p,
-					    xmlrpc_value *param_array_p,
+xmlrpc_value* ags_server_object_emit_signal(xmlrpc_env *env,
+					    xmlrpc_value *param_array,
 					    void *server_info);
 
 AgsServer* ags_server_new(GObject *devout);
