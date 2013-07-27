@@ -142,6 +142,8 @@ ags_remote_task_launch(xmlrpc_env *env,
 
   /* launch */
   ags_task_launch(task);
+
+  return(NULL);
 }
 
 void*
