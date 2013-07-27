@@ -454,6 +454,8 @@ UUID_LIBS = -luuid
 VERSION = 0.3.16-SNAPSHOT
 XMLRPC_CFLAGS = -I/usr/include/libxml2  
 XMLRPC_LIBS = -lxmlrpc  
+XMLRPC_SERVER_CFLAGS = -I/usr/include/libxml2  
+XMLRPC_SERVER_LIBS = -lxmlrpc_server  
 XMLRPC_UTIL_CFLAGS =  
 XMLRPC_UTIL_LIBS = -lxmlrpc_util  
 abs_builddir = /home/joel/ags-code
@@ -908,8 +910,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/server/ags_remote_task.c
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
-ags_CFLAGS = `pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc xmlrpc_util`
-ags_LDFLAGS = -ldl `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc xmlrpc_util`
+ags_CFLAGS = `pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc xmlrpc_util xmlrpc_server`
+ags_LDFLAGS = -ldl `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc xmlrpc_util xmlrpc_server`
 test_CFLAGS = ${ags_CFLAGS}
 test_LDFLAGS = ${ags_LDFLAGS}
 all: config.h

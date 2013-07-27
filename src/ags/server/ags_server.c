@@ -131,7 +131,7 @@ ags_server_lookup(void *server_info)
   current = ags_server_list;
 
   while(current != NULL){
-    if(server_info == AGS_SERVER(current->server_info)){
+    if(server_info == AGS_SERVER(current)->server_info){
       return(AGS_SERVER(current->data));
     }
 

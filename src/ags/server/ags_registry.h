@@ -1,6 +1,8 @@
 #ifndef __AGS_REGISTRY_H__
 #define __AGS_REGISTRY_H__
 
+#include <pthread.h>
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -23,6 +25,8 @@ typedef struct _AgsRegistryEntry AgsRegistryEntry;
 struct _AgsRegistry
 {
   GObject object;
+
+  pthread_mutex_t mutex;
 
   guint id_length;
   guint counter;

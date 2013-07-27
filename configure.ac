@@ -69,6 +69,10 @@ PKG_CHECK_MODULES([XMLRPC_UTIL], [xmlrpc_util >= 1.32.5])
 AC_SUBST(XMLRPC_UTIL_CFLAGS)
 AC_SUBST(XMLRPC_UTIL_LIBS)
 
+PKG_CHECK_MODULES([XMLRPC_SERVER], [xmlrpc_server >= 1.32.5])
+AC_SUBST(XMLRPC_SERVER_CFLAGS)
+AC_SUBST(XMLRPC_SERVER_LIBS)
+
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/ioctl.h unistd.h])
 

@@ -35,8 +35,6 @@ void ags_registry_finalize(GObject *gobject);
 
 static gpointer ags_registry_parent_class = NULL;
 
-extern GList *ags_server_list;
-
 GType
 ags_registry_get_type()
 {
@@ -62,9 +60,9 @@ ags_registry_get_type()
     };
 
     ags_type_registry = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsRegistry\0",
-					   &ags_registry_info,
-					   0);
+					       "AgsRegistry\0",
+					       &ags_registry_info,
+					       0);
 
     g_type_add_interface_static(ags_type_registry,
 				AGS_TYPE_CONNECTABLE,
@@ -97,6 +95,9 @@ ags_registry_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_registry_init(AgsRegistry *registry)
 {
+  pthread_mutex_init(&(registry->mutex),
+		     NULL);
+  
   registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
   registry->counter = 0;
   
@@ -143,14 +144,12 @@ void
 ags_registry_add(AgsRegistry *registry,
 		 AgsRegistryEntry *registry_entry)
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&(registry->mutex));
 
   registry->registry = g_list_prepend(registry->registry,
 				      registry_entry);
 
-  pthread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(&(registry->mutex));
 }
 
 AgsRegistryEntry*
@@ -162,7 +161,7 @@ ags_registry_entry_find(AgsRegistry *registry,
   GList *current;
   AgsRegistryEntry *entry;
 
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&(registry->mutex));
 
   current = registry->registry;
   
@@ -178,7 +177,7 @@ ags_registry_entry_find(AgsRegistry *registry,
     current = current->next;
   }
 
-  pthread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(&(registry->mutex));
 
   return(entry);
 }
@@ -202,6 +201,8 @@ ags_registry_entry_bulk(xmlrpc_env *env_p,
   xmlrpc_env_init(&env);
   bulk = xmlrpc_array_new(&env);
 
+  pthread_mutex_lock(&(registry->mutex));
+
   current = registry->registry;
 
   while(current != NULL){
@@ -210,6 +211,8 @@ ags_registry_entry_bulk(xmlrpc_env *env_p,
 
     xmlrpc_array_append_item(&env, bulk, item);
   }
+
+  pthread_mutex_unlock(&(registry->mutex));
 
   return(bulk);
 }
