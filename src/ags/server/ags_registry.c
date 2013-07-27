@@ -89,9 +89,10 @@ ags_registry_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_registry_init(AgsRegistry *registry)
 {
-  registry->flags = 0;
-
-  registry->devout = NULL;
+  registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
+  registry->counter = 0;
+  
+  registry->registry = NULL;
 }
 
 void
@@ -114,6 +115,64 @@ ags_registry_finalize(GObject *gobject)
   registry = AGS_REGISTRY(gobject);
 
   G_OBJECT_CLASS(ags_registry_parent_class)->finalize(gobject);
+}
+
+AgsRegistryEntry*
+ags_registry_entry_alloc(AgsRegistry *registry)
+{
+  AgsRegistryEntry *registry_entry;
+
+  registry_entry = (AgsRegistryEntry *) malloc(sizeof(AgsRegistryEntry));
+
+  registry_entry->id = ags_id_generator_create_uuid();
+
+  registry_entry->entry = NULL;
+
+  return(registry_entry);
+}
+
+void
+ags_registry_add(AgsRegistry *registry,
+		 AgsRegistryEntry *registry_entry)
+{
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
+  registry->registry = g_list_prepend(registry->registry,
+				      registry_entry);
+
+  pthread_mutex_unlock(&mutex);
+}
+
+AgsRegistryEntry*
+ags_registry_entry_find(AgsRegistry *registry,
+			gchar *id)
+{
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  GList *current;
+  AgsRegistryEntry *entry;
+
+  pthread_mutex_lock(&mutex);
+
+  current = registry->registry;
+  
+  while(current != NULL){
+    entry = (AgsRegistryEntry *) current->data;
+
+    if(!g_strncmp(entry->id,
+		  id,
+		  registry->id_length)){
+      return(entry);
+    }
+
+    current = current->next;
+  }
+
+  pthread_mutex_unlock(&mutex);
+
+  return(NULL);
 }
 
 AgsRegistry*

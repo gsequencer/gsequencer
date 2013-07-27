@@ -11,9 +11,20 @@
 #define AGS_IS_REGISTRY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_REGISTRY))
 #define AGS_REGISTRY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_REGISTRY, AgsRegistryClass))
 
+#define AGS_REGISTRY_DEFAULT_ID_LENGTH 16
+
+typedef struct _AgsRegistry AgsRegistry;
+typedef struct _AgsRegistryClass AgsRegistryClass;
+typedef struct _AgsRegistryEntry AgsRegistryEntry;
+
 struct _AgsRegistry
 {
   GObject object;
+
+  guint id_length;
+  guint counter;
+
+  GList *registry;
 };
 
 struct _AgsRegistryClass
@@ -21,7 +32,21 @@ struct _AgsRegistryClass
   GObjectClass object;
 };
 
+struct _AgsRegistryEntry
+{
+  gchar *id;
+  GObject *entry;
+};
+
 GType ags_registry_get_type();
+
+AgsRegistryEntry* ags_registry_entry_alloc(AgsRegistry *registry);
+
+void ags_registry_add(AgsRegistry *registry,
+		      AgsRegistryEntry *registry_entry);
+
+AgsRegistryEntry* ags_registry_entry_find(AgsRegistry *registry,
+					  gchar *id);
 
 AgsRegistry* ags_registry_new();
 

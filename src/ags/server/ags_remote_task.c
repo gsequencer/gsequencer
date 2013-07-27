@@ -89,9 +89,6 @@ ags_remote_task_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_remote_task_init(AgsRemoteTask *remote_task)
 {
-  remote_task->flags = 0;
-
-  remote_task->devout = NULL;
 }
 
 void
@@ -114,6 +111,38 @@ ags_remote_task_finalize(GObject *gobject)
   remote_task = AGS_REMOTE_TASK(gobject);
 
   G_OBJECT_CLASS(ags_remote_task_parent_class)->finalize(gobject);
+}
+
+xmlrpc_value*
+ags_remote_task_create(xmlrpc_env *env_p,
+		       xmlrpc_value *param_array_p,
+		       void *server_info)
+{
+  //TODO:JK: implement me
+}
+
+xmlrpc_value*
+ags_remote_task_launch(xmlrpc_env *env_p,
+		       xmlrpc_value *param_array_p,
+		       void *server_info)
+{
+  //TODO:JK: implement me
+}
+
+xmlrpc_value*
+ags_remote_task_create_and_launch(xmlrpc_env *env_p,
+				  xmlrpc_value *param_array_p,
+				  void *server_info)
+{
+  //TODO:JK: implement me
+}
+
+xmlrpc_value*
+ags_remote_task_create_and_launch_timed(xmlrpc_env *env_p,
+					xmlrpc_value *param_array_p,
+					void *server_info)
+{
+  //TODO:JK: implement me
 }
 
 AgsRemoteTask*

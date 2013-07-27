@@ -21,6 +21,9 @@ AC_CHECK_LIB([m], [main])
 # FIXME: Replace `main' with a function in `-lrt':
 AC_CHECK_LIB([rt], [main])
 
+PKG_CHECK_MODULES([UUID], [uuid >= 2.23.0])
+AC_SUBST(UUID_CFLAGS)
+AC_SUBST(UUID_LIBS)
 
 PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
 AC_SUBST(LIBASOUND2_CFLAGS)
@@ -58,9 +61,9 @@ PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.24.10])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-PKG_CHECK_MODULES([XMLRPC], [xmlrpc >= 0.27.1])
-AC_SUBST(GTK_CFLAGS)
-AC_SUBST(GTK_LIBS)
+PKG_CHECK_MODULES([XMLRPC], [xmlrpc >= 1.32.5])
+AC_SUBST(XMLRPC_CFLAGS)
+AC_SUBST(XMLRPC_LIBS)
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/ioctl.h unistd.h])

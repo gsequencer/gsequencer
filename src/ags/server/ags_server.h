@@ -11,6 +11,9 @@
 #define AGS_IS_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER))
 #define AGS_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER, AgsServerClass))
 
+typedef struct _AgsServer AgsServer;
+typedef struct _AgsServerClass AgsServerClass;
+
 typedef enum{
   AGS_SERVER_STARTED        = 1,
 }AgsServerFlags;
@@ -30,6 +33,22 @@ struct _AgsServerClass
 };
 
 GType ags_server_get_type();
+
+xmlrpc_value* ags_server_create_object(xmlrpc_env *env_p,
+				       xmlrpc_value *param_array_p,
+				       void *server_info);
+
+xmlrpc_value* ags_server_object_list_properties(xmlrpc_env *env_p,
+						xmlrpc_value *param_array_p,
+						void *server_info);
+
+xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env_p,
+					     xmlrpc_value *param_array_p,
+					     void *server_info);
+
+xmlrpc_value* ags_server_object_get_property(xmlrpc_env *env_p,
+					     xmlrpc_value *param_array_p,
+					     void *server_info);
 
 AgsServer* ags_server_new(GObject *devout);
 

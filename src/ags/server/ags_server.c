@@ -116,6 +116,38 @@ ags_server_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
 }
 
+xmlrpc_value*
+ags_server_create_object(xmlrpc_env *env_p,
+			 xmlrpc_value *param_array_p,
+			 void *server_info)
+{
+  //TODO:JK: implement me
+}
+
+xmlrpc_value*
+ags_server_object_list_properties(xmlrpc_env *env_p,
+				  xmlrpc_value *param_array_p,
+				  void *server_info)
+{
+  //TODO:JK: implement me
+}
+
+xmlrpc_value*
+ags_server_object_set_property(xmlrpc_env *env_p,
+			       xmlrpc_value *param_array_p,
+			       void *server_info)
+{
+  //TODO:JK: implement me
+}
+
+xmlrpc_value*
+ags_server_object_get_property(xmlrpc_env *env_p,
+			       xmlrpc_value *param_array_p,
+			       void *server_info)
+{
+  //TODO:JK: implement me
+}
+
 AgsServer*
 ags_server_new(GObject *devout)
 {
