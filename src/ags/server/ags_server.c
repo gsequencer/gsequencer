@@ -193,6 +193,9 @@ ags_server_create_object(xmlrpc_env *env,
     xmlrpc_read_string(env, item, &registry_id);
     xmlrpc_DECREF(item);
 
+    registry_entry = ags_registry_entry_find(server->registry,
+					     registry_id);
+
     g_value_init(&parameter[i].value, G_PARAM_SPEC_VALUE_TYPE(pspec));
     g_value_copy(&(registry_entry->entry),
 		 &parameter[i].value);
