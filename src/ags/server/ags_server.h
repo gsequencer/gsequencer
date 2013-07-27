@@ -51,15 +51,7 @@ xmlrpc_value* ags_server_create_object(xmlrpc_env *env,
 				       xmlrpc_value *param_array,
 				       void *server_info);
 
-xmlrpc_value* ags_server_object_list_properties(xmlrpc_env *env,
-						xmlrpc_value *param_array,
-						void *server_info);
-
 xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env,
-					     xmlrpc_value *param_array,
-					     void *server_info);
-
-xmlrpc_value* ags_server_object_get_property(xmlrpc_env *env,
 					     xmlrpc_value *param_array,
 					     void *server_info);
 

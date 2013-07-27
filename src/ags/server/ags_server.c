@@ -163,6 +163,7 @@ ags_server_create_object(xmlrpc_env *env,
 
   server = ags_server_lookup(server_info);
 
+  /* read type */
   xmlrpc_array_read_item(env, param_array, 0, &item);
   xmlrpc_read_string(env, item, &type_name);
   xmlrpc_DECREF(item);
@@ -170,6 +171,7 @@ ags_server_create_object(xmlrpc_env *env,
   type = g_type_from_name(type_name);
   object_class = g_type_class_ref(type);
 
+  /* read parameters */
   n_params = (xmlrpc_array_size(env, param_array) - 1) / 2;
   parameter = g_new(GParameter, n_params);
 
@@ -179,6 +181,7 @@ ags_server_create_object(xmlrpc_env *env,
     gchar *param_name, *registry_id;
     gchar *error;
 
+    /* read parameter name */
     xmlrpc_array_read_item(env, param_array, 1 + i * 2, &item);
     xmlrpc_read_string(env, item, &param_name);
     xmlrpc_DECREF(item);
@@ -189,17 +192,21 @@ ags_server_create_object(xmlrpc_env *env,
     parameter[i].name = param_name;
     parameter[i].value.g_type = 0;
 
+    /* read registry id */
     xmlrpc_array_read_item(env, param_array, 2 + i * 2, &item);
     xmlrpc_read_string(env, item, &registry_id);
     xmlrpc_DECREF(item);
 
+    /* find registry entry */
     registry_entry = ags_registry_entry_find(server->registry,
 					     registry_id);
 
+    /* copy GValue from registry entry to parameter array */
     g_value_init(&parameter[i].value, G_PARAM_SPEC_VALUE_TYPE(pspec));
     g_value_copy(&(registry_entry->entry),
 		 &parameter[i].value);
 
+    /* free not needed strings */
     g_free(param_name);
     g_free(registry_id);
 
@@ -211,6 +218,7 @@ ags_server_create_object(xmlrpc_env *env,
     }
   }
 
+  /* instantiate object */
   object = g_object_newv(type,
 			 n_params,
 			 parameter);
@@ -221,17 +229,10 @@ ags_server_create_object(xmlrpc_env *env,
   g_value_set_object(&(registry_entry->entry),
 		     object);
   
+  /* create return value */
   retval = xmlrpc_string_new(env, registry_entry->id);
 
   return(retval);
-}
-
-xmlrpc_value*
-ags_server_object_list_properties(xmlrpc_env *env,
-				  xmlrpc_value *param_array,
-				  void *server_info)
-{
-  //TODO:JK: implement me
 }
 
 xmlrpc_value*
@@ -239,15 +240,47 @@ ags_server_object_set_property(xmlrpc_env *env,
 			       xmlrpc_value *param_array,
 			       void *server_info)
 {
-  //TODO:JK: implement me
-}
+  AgsServer *server;
+  GObject *object, *property;
+  AgsRegistryEntry *registry_entry;
+  gchar *param_name, *registry_id;
+  xmlrpc_value *item;
 
-xmlrpc_value*
-ags_server_object_get_property(xmlrpc_env *env,
-			       xmlrpc_value *param_array,
-			       void *server_info)
-{
-  //TODO:JK: implement me
+  if(xmlrpc_array_size(env, param_array) != 3){
+    return(NULL);
+  }
+
+  server = ags_server_lookup(server_info);
+
+  /* read registry id */
+  xmlrpc_array_read_item(env, param_array, 1, &item);
+  xmlrpc_read_string(env, item, &registry_id);
+  xmlrpc_DECREF(item);
+
+  registry_entry = ags_registry_entry_find(server->registry,
+					   registry_id);
+  object = g_value_get_object(registry_entry->entry);
+
+  /* read parameter name */
+  xmlrpc_array_read_item(env, param_array, 1, &item);
+  xmlrpc_read_string(env, item, &param_name);
+  xmlrpc_DECREF(item);
+
+  /* read registry id of object to set as property */
+  xmlrpc_array_read_item(env, param_array, 1, &item);
+  xmlrpc_read_string(env, item, &registry_id);
+  xmlrpc_DECREF(item);
+
+  registry_entry = ags_registry_entry_find(server->registry,
+					   registry_id);
+  property = g_value_get_object(registry_entry->entry);
+ 
+  /* set property */
+  g_object_set(object,
+	       param_name, property,
+	       NULL);
+
+  return(NULL);
 }
 
 xmlrpc_value*
@@ -255,7 +288,6 @@ ags_server_object_emit_signal(xmlrpc_env *env,
 			      xmlrpc_value *param_array,
 			      void *server_info)
 {
-  //TODO:JK: implement me
 }
 
 AgsServer*
