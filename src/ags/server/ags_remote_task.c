@@ -27,6 +27,8 @@ void ags_remote_task_connect(AgsConnectable *connectable);
 void ags_remote_task_disconnect(AgsConnectable *connectable);
 void ags_remote_task_finalize(GObject *gobject);
 
+void* ags_remote_task_launch_timed_thread(void *ptr);
+
 static gpointer ags_remote_task_parent_class = NULL;
 
 GType
@@ -114,34 +116,66 @@ ags_remote_task_finalize(GObject *gobject)
 }
 
 xmlrpc_value*
-ags_remote_task_create(xmlrpc_env *env,
-		       xmlrpc_value *param_array,
-		       void *server_info)
-{
-  //TODO:JK: implement me
-}
-
-xmlrpc_value*
 ags_remote_task_launch(xmlrpc_env *env,
 		       xmlrpc_value *param_array,
 		       void *server_info)
 {
-  //TODO:JK: implement me
+  AgsServer *server;
+  AgsTask *task;
+  AgsRegistryEntry *registry_entry;
+  gchar *registry_id;
+
+  if(xmlrpc_array_size(env, param_array) != 1){
+    return(NULL);
+  }
+
+  server = ags_server_lookup(server_info);
+
+  /* read registry id */
+  xmlrpc_array_read_item(env, param_array, 1, &item);
+  xmlrpc_read_string(env, item, &registry_id);
+  xmlrpc_DECREF(item);
+
+  registry_entry = ags_registry_entry_find(server->registry,
+					   registry_id);
+  task = (AgsTask *) g_value_get_object(&(registry_entry->entry));
+
+  /* launch */
+  ags_task_launch(task);
 }
 
-xmlrpc_value*
-ags_remote_task_create_and_launch(xmlrpc_env *env,
-				  xmlrpc_value *param_array,
-				  void *server_info)
+void*
+ags_remote_task_launch_timed_thread(void *ptr)
 {
   //TODO:JK: implement me
 }
 
 xmlrpc_value*
-ags_remote_task_create_and_launch_timed(xmlrpc_env *env,
-					xmlrpc_value *param_array,
-					void *server_info)
+ags_remote_task_launch_timed(xmlrpc_env *env,
+			     xmlrpc_value *param_array,
+			     void *server_info)
 {
+  AgsServer *server;
+  AgsTask *task;
+  AgsRegistryEntry *registry_entry;
+  gchar *registry_id;
+
+  if(xmlrpc_array_size(env, param_array) != 1){
+    return(NULL);
+  }
+
+  server = ags_server_lookup(server_info);
+
+  /* read registry id */
+  xmlrpc_array_read_item(env, param_array, 1, &item);
+  xmlrpc_read_string(env, item, &registry_id);
+  xmlrpc_DECREF(item);
+
+  registry_entry = ags_registry_entry_find(server->registry,
+					   registry_id);
+  task = (AgsTask *) g_value_get_object(&(registry_entry->entry));
+
+  /* launch timed */
   //TODO:JK: implement me
 }
 

@@ -29,21 +29,14 @@ struct _AgsRemoteTaskClass
 
 GType ags_remote_task_get_type();
 
-xmlrpc_value* ags_remote_task_create(xmlrpc_env *env,
-				     xmlrpc_value *param_array,
-				     void *server_info);
 
 xmlrpc_value* ags_remote_task_launch(xmlrpc_env *env,
 				     xmlrpc_value *param_array,
 				     void *server_info);
 
-xmlrpc_value* ags_remote_task_create_and_launch(xmlrpc_env *env,
-						xmlrpc_value *param_array,
-						void *server_info);
-
-xmlrpc_value* ags_remote_task_create_and_launch_timed(xmlrpc_env *env,
-						      xmlrpc_value *param_array,
-						      void *server_info);
+xmlrpc_value* ags_remote_task_launch_timed(xmlrpc_env *env,
+					   xmlrpc_value *param_array,
+					   void *server_info);
 
 AgsRemoteTask* ags_remote_task_new();
 

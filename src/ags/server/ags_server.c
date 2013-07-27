@@ -273,7 +273,7 @@ ags_server_object_set_property(xmlrpc_env *env,
 
   registry_entry = ags_registry_entry_find(server->registry,
 					   registry_id);
-  property = g_value_get_object(registry_entry->entry);
+  property = g_value_get_object(&(registry_entry->entry));
  
   /* set property */
   g_object_set(object,
@@ -281,13 +281,6 @@ ags_server_object_set_property(xmlrpc_env *env,
 	       NULL);
 
   return(NULL);
-}
-
-xmlrpc_value*
-ags_server_object_emit_signal(xmlrpc_env *env,
-			      xmlrpc_value *param_array,
-			      void *server_info)
-{
 }
 
 AgsServer*
