@@ -16,7 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/ags_registry.h>
+#include <ags/server/ags_registry.h>
+
+#include <stdlib.h>
+
+#include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -161,9 +165,9 @@ ags_registry_entry_find(AgsRegistry *registry,
   while(current != NULL){
     entry = (AgsRegistryEntry *) current->data;
 
-    if(!g_strncmp(entry->id,
-		  id,
-		  registry->id_length)){
+    if(!strncmp(entry->id,
+		id,
+		registry->id_length)){
       return(entry);
     }
 
@@ -172,7 +176,7 @@ ags_registry_entry_find(AgsRegistry *registry,
 
   pthread_mutex_unlock(&mutex);
 
-  return(NULL);
+  return(entry);
 }
 
 AgsRegistry*

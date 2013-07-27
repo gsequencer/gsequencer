@@ -1,5 +1,7 @@
 #include <ags/util/ags_id_generator.h>
 
+#include <stdlib.h>
+
 #include <uuid/uuid.h>
 
 #define AGS_ID_GENERATOR_DEFAULT_UUID_LENGTH 16

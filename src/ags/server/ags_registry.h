@@ -1,8 +1,8 @@
 #ifndef __AGS_REGISTRY_H__
 #define __AGS_REGISTRY_H__
 
-#include <xmlrpc.h>
-#include <xmlrpc_registry.h>
+#include <glib.h>
+#include <glib-object.h>
 
 #define AGS_TYPE_REGISTRY                (ags_registry_get_type())
 #define AGS_REGISTRY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REGISTRY, AgsRegistry))

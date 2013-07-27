@@ -1,8 +1,11 @@
 #ifndef __AGS_REMOTE_TASK_H__
 #define __AGS_REMOTE_TASK_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <xmlrpc.h>
-#include <xmlrpc_remote_task.h>
+#include <xmlrpc_server.h>
 
 #define AGS_TYPE_REMOTE_TASK                (ags_remote_task_get_type())
 #define AGS_REMOTE_TASK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REMOTE_TASK, AgsRemoteTask))

@@ -1,6 +1,9 @@
 #ifndef __AGS_SERVER_H__
 #define __AGS_SERVER_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <xmlrpc.h>
 #include <xmlrpc_server.h>
 

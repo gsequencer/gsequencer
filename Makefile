@@ -253,7 +253,9 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_recycling_thread.$(OBJEXT) ags-ags_sync.$(OBJEXT) \
 	ags-ags_thread.$(OBJEXT) ags-ags_audio_loop.$(OBJEXT) \
 	ags-ags_task_thread.$(OBJEXT) ags-ags_devout_thread.$(OBJEXT) \
-	ags-ags_iterator_thread.$(OBJEXT)
+	ags-ags_iterator_thread.$(OBJEXT) \
+	ags-ags_id_generator.$(OBJEXT) ags-ags_server.$(OBJEXT) \
+	ags-ags_registry.$(OBJEXT) ags-ags_remote_task.$(OBJEXT)
 ags_OBJECTS = $(am_ags_OBJECTS)
 ags_LDADD = $(LDADD)
 ags_LINK = $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) $(LDFLAGS) \
@@ -447,6 +449,8 @@ SHELL = /bin/sh
 SNDFILE_CFLAGS =  
 SNDFILE_LIBS = -lsndfile  
 STRIP = 
+UUID_CFLAGS = -I/usr/include/uuid  
+UUID_LIBS = -luuid  
 VERSION = 0.3.16-SNAPSHOT
 XMLRPC_CFLAGS = -I/usr/include/libxml2  
 XMLRPC_LIBS = -lxmlrpc  
@@ -892,11 +896,18 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/thread/ags_devout_thread.h \
 	./src/ags/thread/ags_devout_thread.c \
 	./src/ags/thread/ags_iterator_thread.h \
-	./src/ags/thread/ags_iterator_thread.c
+	./src/ags/thread/ags_iterator_thread.c \
+	./src/ags/util/ags_id_generator.h \
+	./src/ags/util/ags_id_generator.c \
+	./src/ags/server/ags_server.h ./src/ags/server/ags_server.c \
+	./src/ags/server/ags_registry.h \
+	./src/ags/server/ags_registry.c \
+	./src/ags/server/ags_remote_task.h \
+	./src/ags/server/ags_remote_task.c
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
-ags_CFLAGS = `pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
-ags_LDFLAGS = -ldl `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0`
+ags_CFLAGS = `pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc`
+ags_LDFLAGS = -ldl `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc`
 test_CFLAGS = ${ags_CFLAGS}
 test_LDFLAGS = ${ags_LDFLAGS}
 all: config.h
@@ -1086,6 +1097,7 @@ include ./$(DEPDIR)/ags-ags_file_selection_callbacks.Po
 include ./$(DEPDIR)/ags-ags_free_selection.Po
 include ./$(DEPDIR)/ags-ags_garbage_collector.Po
 include ./$(DEPDIR)/ags-ags_htimebar.Po
+include ./$(DEPDIR)/ags-ags_id_generator.Po
 include ./$(DEPDIR)/ags-ags_init_audio.Po
 include ./$(DEPDIR)/ags-ags_init_channel.Po
 include ./$(DEPDIR)/ags-ags_inline_player.Po
@@ -1178,6 +1190,8 @@ include ./$(DEPDIR)/ags-ags_recall_id.Po
 include ./$(DEPDIR)/ags-ags_recall_recycling.Po
 include ./$(DEPDIR)/ags-ags_recycling.Po
 include ./$(DEPDIR)/ags-ags_recycling_thread.Po
+include ./$(DEPDIR)/ags-ags_registry.Po
+include ./$(DEPDIR)/ags-ags_remote_task.Po
 include ./$(DEPDIR)/ags-ags_remove_audio.Po
 include ./$(DEPDIR)/ags-ags_remove_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_remove_note.Po
@@ -1190,6 +1204,7 @@ include ./$(DEPDIR)/ags-ags_run_order.Po
 include ./$(DEPDIR)/ags-ags_runnable.Po
 include ./$(DEPDIR)/ags-ags_seekable.Po
 include ./$(DEPDIR)/ags-ags_segment.Po
+include ./$(DEPDIR)/ags-ags_server.Po
 include ./$(DEPDIR)/ags-ags_set_audio_channels.Po
 include ./$(DEPDIR)/ags-ags_set_buffer_size.Po
 include ./$(DEPDIR)/ags-ags_set_devout_play_flags.Po
@@ -4265,6 +4280,62 @@ ags-ags_iterator_thread.obj: ./src/ags/thread/ags_iterator_thread.c
 #	$(AM_V_CC)source='./src/ags/thread/ags_iterator_thread.c' object='ags-ags_iterator_thread.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_iterator_thread.obj `if test -f './src/ags/thread/ags_iterator_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_iterator_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_iterator_thread.c'; fi`
+
+ags-ags_id_generator.o: ./src/ags/util/ags_id_generator.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_id_generator.o -MD -MP -MF $(DEPDIR)/ags-ags_id_generator.Tpo -c -o ags-ags_id_generator.o `test -f './src/ags/util/ags_id_generator.c' || echo '$(srcdir)/'`./src/ags/util/ags_id_generator.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_id_generator.Tpo $(DEPDIR)/ags-ags_id_generator.Po
+#	$(AM_V_CC)source='./src/ags/util/ags_id_generator.c' object='ags-ags_id_generator.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_id_generator.o `test -f './src/ags/util/ags_id_generator.c' || echo '$(srcdir)/'`./src/ags/util/ags_id_generator.c
+
+ags-ags_id_generator.obj: ./src/ags/util/ags_id_generator.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_id_generator.obj -MD -MP -MF $(DEPDIR)/ags-ags_id_generator.Tpo -c -o ags-ags_id_generator.obj `if test -f './src/ags/util/ags_id_generator.c'; then $(CYGPATH_W) './src/ags/util/ags_id_generator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/util/ags_id_generator.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_id_generator.Tpo $(DEPDIR)/ags-ags_id_generator.Po
+#	$(AM_V_CC)source='./src/ags/util/ags_id_generator.c' object='ags-ags_id_generator.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_id_generator.obj `if test -f './src/ags/util/ags_id_generator.c'; then $(CYGPATH_W) './src/ags/util/ags_id_generator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/util/ags_id_generator.c'; fi`
+
+ags-ags_server.o: ./src/ags/server/ags_server.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_server.o -MD -MP -MF $(DEPDIR)/ags-ags_server.Tpo -c -o ags-ags_server.o `test -f './src/ags/server/ags_server.c' || echo '$(srcdir)/'`./src/ags/server/ags_server.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_server.Tpo $(DEPDIR)/ags-ags_server.Po
+#	$(AM_V_CC)source='./src/ags/server/ags_server.c' object='ags-ags_server.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_server.o `test -f './src/ags/server/ags_server.c' || echo '$(srcdir)/'`./src/ags/server/ags_server.c
+
+ags-ags_server.obj: ./src/ags/server/ags_server.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_server.obj -MD -MP -MF $(DEPDIR)/ags-ags_server.Tpo -c -o ags-ags_server.obj `if test -f './src/ags/server/ags_server.c'; then $(CYGPATH_W) './src/ags/server/ags_server.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_server.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_server.Tpo $(DEPDIR)/ags-ags_server.Po
+#	$(AM_V_CC)source='./src/ags/server/ags_server.c' object='ags-ags_server.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_server.obj `if test -f './src/ags/server/ags_server.c'; then $(CYGPATH_W) './src/ags/server/ags_server.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_server.c'; fi`
+
+ags-ags_registry.o: ./src/ags/server/ags_registry.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_registry.o -MD -MP -MF $(DEPDIR)/ags-ags_registry.Tpo -c -o ags-ags_registry.o `test -f './src/ags/server/ags_registry.c' || echo '$(srcdir)/'`./src/ags/server/ags_registry.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_registry.Tpo $(DEPDIR)/ags-ags_registry.Po
+#	$(AM_V_CC)source='./src/ags/server/ags_registry.c' object='ags-ags_registry.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_registry.o `test -f './src/ags/server/ags_registry.c' || echo '$(srcdir)/'`./src/ags/server/ags_registry.c
+
+ags-ags_registry.obj: ./src/ags/server/ags_registry.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_registry.obj -MD -MP -MF $(DEPDIR)/ags-ags_registry.Tpo -c -o ags-ags_registry.obj `if test -f './src/ags/server/ags_registry.c'; then $(CYGPATH_W) './src/ags/server/ags_registry.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_registry.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_registry.Tpo $(DEPDIR)/ags-ags_registry.Po
+#	$(AM_V_CC)source='./src/ags/server/ags_registry.c' object='ags-ags_registry.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_registry.obj `if test -f './src/ags/server/ags_registry.c'; then $(CYGPATH_W) './src/ags/server/ags_registry.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_registry.c'; fi`
+
+ags-ags_remote_task.o: ./src/ags/server/ags_remote_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_remote_task.o -MD -MP -MF $(DEPDIR)/ags-ags_remote_task.Tpo -c -o ags-ags_remote_task.o `test -f './src/ags/server/ags_remote_task.c' || echo '$(srcdir)/'`./src/ags/server/ags_remote_task.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_remote_task.Tpo $(DEPDIR)/ags-ags_remote_task.Po
+#	$(AM_V_CC)source='./src/ags/server/ags_remote_task.c' object='ags-ags_remote_task.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_remote_task.o `test -f './src/ags/server/ags_remote_task.c' || echo '$(srcdir)/'`./src/ags/server/ags_remote_task.c
+
+ags-ags_remote_task.obj: ./src/ags/server/ags_remote_task.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_remote_task.obj -MD -MP -MF $(DEPDIR)/ags-ags_remote_task.Tpo -c -o ags-ags_remote_task.obj `if test -f './src/ags/server/ags_remote_task.c'; then $(CYGPATH_W) './src/ags/server/ags_remote_task.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_remote_task.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_remote_task.Tpo $(DEPDIR)/ags-ags_remote_task.Po
+#	$(AM_V_CC)source='./src/ags/server/ags_remote_task.c' object='ags-ags_remote_task.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_remote_task.obj `if test -f './src/ags/server/ags_remote_task.c'; then $(CYGPATH_W) './src/ags/server/ags_remote_task.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_remote_task.c'; fi`
 
 test-ags_test_thread.o: ./src/ags/test/ags_test_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -MT test-ags_test_thread.o -MD -MP -MF $(DEPDIR)/test-ags_test_thread.Tpo -c -o test-ags_test_thread.o `test -f './src/ags/test/ags_test_thread.c' || echo '$(srcdir)/'`./src/ags/test/ags_test_thread.c
