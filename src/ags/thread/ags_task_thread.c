@@ -190,6 +190,16 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /*  */
+  if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
+    ags_thread_lock(thread);
+
+    thread->flags &= (~AGS_THREAD_INITIAL_RUN);
+    pthread_cond_signal(&(thread->start_cond));
+
+    ags_thread_unlock(thread);
+  }
+
+  /*  */
   ags_thread_lock(thread);
 
   g_list_free(task_thread->exec);
@@ -211,9 +221,7 @@ ags_task_thread_run(AgsThread *thread)
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
-      if(DEBUG){
-	g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
-      }
+      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
 
       ags_task_launch(task);
 
@@ -255,13 +263,6 @@ ags_task_thread_append_task_thread(void *ptr)
 
   /* lock */
   ags_thread_lock(AGS_THREAD(task_thread));
-
-  task->flags |= AGS_TASK_LOCKED;
-
-  while((AGS_TASK_LOCKED & (task->flags)) != 0){
-    pthread_cond_wait(&(task->wait_sync_task_cond),
-		      &(AGS_THREAD(task_thread)->mutex));
-  }
 
   /* append to queue */
   task_thread->queued += 1;
@@ -306,44 +307,19 @@ ags_task_thread_append_tasks_thread(void *ptr)
   AgsTask *task;
   AgsTaskThread *task_thread;
   AgsTaskThreadAppend *append;
-  GList *start, *list;
+  GList *list;
   gboolean initial_wait;
-  guint count;
   int ret;
 
   append = (AgsTaskThreadAppend *) ptr;
 
   task_thread = append->task_thread;
-  start = 
-    list = (GList *) append->data;
+  list = (GList *) append->data;
 
   free(append);
-  count = 0;
-
-  /* lock */
-  while(list != NULL){
-    task = AGS_TASK(list->data);
-
-    task->flags |= AGS_TASK_LOCKED;
-    count++;
-
-    ags_thread_lock(AGS_THREAD(task_thread));
-
-    task->flags |= AGS_TASK_LOCKED;
-
-    while((AGS_TASK_LOCKED & (task->flags)) != 0){
-      pthread_cond_wait(&(task->wait_sync_task_cond),
-			&(AGS_THREAD(task_thread)->mutex));
-    }
-
-
-    list = list->next;
-  }
-
-  list = start;
 
   /* append to queue */
-  task_thread->queued += count;
+  task_thread->queued += g_list_length(list);
 
   task_thread->queue = g_list_concat(task_thread->queue, list);
 

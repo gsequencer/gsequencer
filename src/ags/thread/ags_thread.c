@@ -616,13 +616,10 @@ ags_thread_is_tree_ready(AgsThread *thread, guint current_tic)
 
   if(thread != main_loop){
     if(tic == 0 && current_tic == 2){
-      g_message("ready@0\n\0");
       return(TRUE);
     }else if(tic == 1 && current_tic == 0){
-      g_message("ready@0\n\0");
       return(TRUE);
     }else if(tic == 2 && current_tic == 1){
-      g_message("ready@0\n\0");
       return(TRUE);
     }
   }
@@ -715,10 +712,7 @@ ags_thread_is_tree_in_sync(AgsThread *thread, guint tic)
   
   ags_thread_is_tree_in_sync_recursive(main_loop->children, &wait_count);
   
-  g_message("locks: %d\n\0", wait_count);
-
   if(wait_count == 0){
-    g_message("synced\n\0");
     return(TRUE);
   }else{
     return(FALSE);
@@ -773,8 +767,6 @@ ags_thread_main_loop_unlock_children(AgsThread *thread, guint tic)
       child = child->next;
     }
   }
-
-  g_message("unlock children\n\0");
 
   main_loop = ags_thread_get_toplevel(thread);
 
@@ -1414,8 +1406,6 @@ ags_thread_loop(void *ptr)
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
-
-      g_message("tree sync: %s\n\0", G_OBJECT_TYPE_NAME(thread));
     }else{
       guint next_tic;
 
@@ -1451,8 +1441,6 @@ ags_thread_loop(void *ptr)
 	}
       }
 
-      g_message("tree sync: %s\n\0", G_OBJECT_TYPE_NAME(thread));
-
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_thread_main_loop_unlock_children(main_loop, tic);
@@ -1464,9 +1452,6 @@ ags_thread_loop(void *ptr)
 
   current_tic = 0;
   thread->flags |= AGS_THREAD_WAIT_0;
-
-
-  g_message("debug\n\0");
 
   while((AGS_THREAD_RUNNING & (thread->flags)) != 0){
 
@@ -1526,9 +1511,6 @@ ags_thread_loop(void *ptr)
     thread->flags |= AGS_THREAD_IDLE;
 
     if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0){
-      g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		"lock parent\0");
-
       wait_for_parent = TRUE;
 
       thread->flags |= AGS_THREAD_WAITING_FOR_PARENT;
@@ -1539,9 +1521,6 @@ ags_thread_loop(void *ptr)
 
     /* lock sibling */
     if((AGS_THREAD_WAIT_FOR_SIBLING & (thread->flags)) != 0){
-      g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		"lock sibling\0");
-
       wait_for_sibling = TRUE;
 
       thread->flags |= AGS_THREAD_WAITING_FOR_SIBLING;
@@ -1552,8 +1531,6 @@ ags_thread_loop(void *ptr)
 
     /* lock_children */
     if((AGS_THREAD_WAIT_FOR_CHILDREN & (thread->flags)) != 0){
-      g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		"lock children\0");
       wait_for_children = TRUE;
 
       thread->flags |= AGS_THREAD_WAITING_FOR_CHILDREN;
@@ -1568,25 +1545,16 @@ ags_thread_loop(void *ptr)
 
       /* wait parent */
       if(wait_for_parent){
-	g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		  "wait for parent\0");
-
 	ags_thread_wait_parent(thread, NULL);
       }
 
       /* wait sibling */
       if(wait_for_sibling){
-	g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		  "wait for sibling\0");
-
 	ags_thread_wait_sibling(thread);
       }
 
       /* wait children */
       if(wait_for_children){
-	g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		  "wait for children\0");
-
 	ags_thread_wait_children(thread);
       }
     }
@@ -1605,25 +1573,16 @@ ags_thread_loop(void *ptr)
     /* unlock parent */
     if(wait_for_parent){
       ags_thread_unlock_parent(thread, NULL);
-
-      g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		"unlock parent\0");
     }
 
     /* unlock sibling */
     if(wait_for_sibling){
       ags_thread_unlock_sibling(thread);
-
-      g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		"unlock sibling\0");
     }
 
     /* unlock children */
     if(wait_for_children){
       ags_thread_unlock_children(thread);
-
-      g_message("%s - %s\0", G_OBJECT_TYPE_NAME(thread),
-		"unlock children\0");
     }
 
     /* unset initial run */
