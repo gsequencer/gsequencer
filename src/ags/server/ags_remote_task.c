@@ -20,6 +20,11 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/server/ags_server.h>
+#include <ags/server/ags_registry.h>
+
+#include <ags/audio/ags_task.h>
+
 void ags_remote_task_class_init(AgsRemoteTaskClass *remote_task);
 void ags_remote_task_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remote_task_init(AgsRemoteTask *remote_task);
@@ -124,6 +129,7 @@ ags_remote_task_launch(xmlrpc_env *env,
   AgsTask *task;
   AgsRegistryEntry *registry_entry;
   gchar *registry_id;
+  xmlrpc_value *item;
 
   if(xmlrpc_array_size(env, param_array) != 1){
     return(NULL);
@@ -161,6 +167,7 @@ ags_remote_task_launch_timed(xmlrpc_env *env,
   AgsTask *task;
   AgsRegistryEntry *registry_entry;
   gchar *registry_id;
+  xmlrpc_value *item;
 
   if(xmlrpc_array_size(env, param_array) != 1){
     return(NULL);

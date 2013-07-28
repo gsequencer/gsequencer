@@ -259,7 +259,7 @@ ags_server_object_set_property(xmlrpc_env *env,
 
   registry_entry = ags_registry_entry_find(server->registry,
 					   registry_id);
-  object = g_value_get_object(registry_entry->entry);
+  object = g_value_get_object(&(registry_entry->entry));
 
   /* read parameter name */
   xmlrpc_array_read_item(env, param_array, 1, &item);
