@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_copy_channel.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);

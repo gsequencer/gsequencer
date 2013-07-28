@@ -18,7 +18,7 @@
 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 

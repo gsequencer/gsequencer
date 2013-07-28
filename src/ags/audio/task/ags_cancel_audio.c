@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_cancel_audio.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
 

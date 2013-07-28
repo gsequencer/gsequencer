@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_unref_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_unref_audio_signal_class_init(AgsUnrefAudioSignalClass *unref_audio_signal);
 void ags_unref_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);

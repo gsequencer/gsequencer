@@ -18,7 +18,7 @@
 
 #include <ags/X/machine/ags_mixer_input_pad.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/X/ags_window.h>
 

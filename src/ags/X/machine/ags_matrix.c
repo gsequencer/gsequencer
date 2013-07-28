@@ -19,7 +19,7 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>

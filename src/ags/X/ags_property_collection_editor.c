@@ -19,7 +19,7 @@
 #include <ags/X/ags_property_collection_editor.h>
 #include <ags/X/ags_property_collection_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
 #include <string.h>

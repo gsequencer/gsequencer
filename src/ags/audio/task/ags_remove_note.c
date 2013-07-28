@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_remove_note.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_remove_note_class_init(AgsRemoveNoteClass *remove_note);
 void ags_remove_note_connectable_interface_init(AgsConnectableInterface *connectable);

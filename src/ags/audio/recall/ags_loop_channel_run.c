@@ -20,7 +20,7 @@
 
 #include <ags/lib/ags_list.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
 

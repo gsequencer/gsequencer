@@ -18,6 +18,8 @@
 
 #include <ags-client/scripting/ags_script_editor.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 void ags_script_editor_class_init(AgsScriptEditorClass *script_editor);
 void ags_script_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_editor_init(AgsScriptEditor *script_editor);
@@ -51,11 +53,11 @@ ags_script_editor_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_script_editor = g_type_register_static(GTK_TYPE_TEXT,
+    ags_type_script_editor = g_type_register_static(GTK_TYPE_TEXT_VIEW,
 						    "AgsScriptEditor\0",
 						    &ags_script_editor_info,
 						    0);
-
+    
     g_type_add_interface_static(ags_type_script_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);

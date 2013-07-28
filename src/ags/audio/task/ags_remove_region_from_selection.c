@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_remove_region_from_selection.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *remove_region_from_selection);
 void ags_remove_region_from_selection_connectable_interface_init(AgsConnectableInterface *connectable);

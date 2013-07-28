@@ -19,7 +19,7 @@
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_mixer_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>

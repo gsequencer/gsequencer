@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_channel_resize_editor.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/audio/ags_audio.h>

@@ -18,7 +18,7 @@
 
 #include <ags/X/machine/ags_mixer_input_line.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>

@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/client/ags_client.h>
+#include <ags-client/client/ags_client.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_client_class_init(AgsClientClass *client);
 void ags_client_connectable_interface_init(AgsConnectableInterface *connectable);

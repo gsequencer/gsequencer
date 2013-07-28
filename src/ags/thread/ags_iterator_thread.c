@@ -19,7 +19,7 @@
 #include <ags/thread/ags_iterator_thread.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/thread/ags_recycling_thread.h>
 

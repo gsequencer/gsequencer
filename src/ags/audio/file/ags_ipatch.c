@@ -18,7 +18,7 @@
 
 #include <ags/audio/file/ags_ipatch.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
 
 void ags_ipatch_class_init(AgsIpatchClass *ipatch);

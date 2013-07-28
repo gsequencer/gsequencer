@@ -19,7 +19,7 @@
 #include <ags/X/editor/ags_sf2_chooser.h>
 #include <ags/X/editor/ags_sf2_chooser_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
 
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>

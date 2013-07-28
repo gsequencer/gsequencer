@@ -19,7 +19,7 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_preferences_class_init(AgsPreferencesClass *preferences);
 void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);

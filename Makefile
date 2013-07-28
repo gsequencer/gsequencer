@@ -15,6 +15,7 @@
 
 
 
+
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
   case $${target_option-} in \
@@ -76,7 +77,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = ags$(EXEEXT) test$(EXEEXT)
+bin_PROGRAMS = ags$(EXEEXT) agsclient$(EXEEXT) test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
@@ -92,6 +93,17 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+LIBRARIES = $(noinst_LIBRARIES)
+AR = ar
+ARFLAGS = cru
+AM_V_AR = $(am__v_AR_$(V))
+am__v_AR_ = $(am__v_AR_$(AM_DEFAULT_VERBOSITY))
+am__v_AR_0 = @echo "  AR      " $@;
+am__v_AR_1 = 
+libags_a_AR = $(AR) $(ARFLAGS)
+libags_a_LIBADD =
+am_libags_a_OBJECTS = libags_a-ags_connectable.$(OBJEXT)
+libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
@@ -182,8 +194,7 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_runnable.$(OBJEXT) ags-ags_persistable.$(OBJEXT) \
 	ags-ags_seekable.$(OBJEXT) ags-ags_playable.$(OBJEXT) \
 	ags-ags_marshal.$(OBJEXT) ags-ags_tactable.$(OBJEXT) \
-	ags-ags_connectable.$(OBJEXT) ags-ags_packable.$(OBJEXT) \
-	ags-ags_preferences.$(OBJEXT) \
+	ags-ags_packable.$(OBJEXT) ags-ags_preferences.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) \
 	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
@@ -257,9 +268,17 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_id_generator.$(OBJEXT) ags-ags_server.$(OBJEXT) \
 	ags-ags_registry.$(OBJEXT) ags-ags_remote_task.$(OBJEXT)
 ags_OBJECTS = $(am_ags_OBJECTS)
-ags_LDADD = $(LDADD)
+ags_DEPENDENCIES = libags.a
 ags_LINK = $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am_agsclient_OBJECTS = agsclient-main.$(OBJEXT) \
+	agsclient-ags_client.$(OBJEXT) \
+	agsclient-ags_client_window.$(OBJEXT) \
+	agsclient-ags_script_editor.$(OBJEXT)
+agsclient_OBJECTS = $(am_agsclient_OBJECTS)
+agsclient_DEPENDENCIES = libags.a
+agsclient_LINK = $(CCLD) $(agsclient_CFLAGS) $(CFLAGS) \
+	$(agsclient_LDFLAGS) $(LDFLAGS) -o $@
 am_test_OBJECTS = test-ags_test_thread.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
@@ -297,8 +316,10 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(ags_SOURCES) $(test_SOURCES)
-DIST_SOURCES = $(ags_SOURCES) $(test_SOURCES)
+SOURCES = $(libags_a_SOURCES) $(ags_SOURCES) $(agsclient_SOURCES) \
+	$(test_SOURCES)
+DIST_SOURCES = $(libags_a_SOURCES) $(ags_SOURCES) $(agsclient_SOURCES) \
+	$(test_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -444,6 +465,7 @@ PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
 PKG_CONFIG_PATH = 
+RANLIB = ranlib
 SET_MAKE = 
 SHELL = /bin/sh
 SNDFILE_CFLAGS =  
@@ -502,6 +524,8 @@ top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src
+noinst_LIBRARIES = libags.a
+libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h
 ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/audio/ags_task.c \
 	./src/ags/audio/ags_recall_dependency.h \
@@ -721,7 +745,6 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/object/ags_tree_iterator.c \
 	./src/ags/object/ags_tree_iterator.h \
 	./src/ags/object/ags_runnable.c \
-	./src/ags/object/ags_connectable.h \
 	./src/ags/object/ags_applicable.h \
 	./src/ags/object/ags_seekable.h \
 	./src/ags/object/ags_countable.h \
@@ -733,7 +756,6 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/object/ags_playable.c ./src/ags/object/ags_marshal.c \
 	./src/ags/object/ags_playable.h \
 	./src/ags/object/ags_tactable.c \
-	./src/ags/object/ags_connectable.c \
 	./src/ags/object/ags_packable.c \
 	./src/ags/object/ags_dynamic_connectable.h \
 	./src/ags/object/ags_packable.h ./src/ags/X/ags_preferences.c \
@@ -908,10 +930,16 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/server/ags_registry.c \
 	./src/ags/server/ags_remote_task.h \
 	./src/ags/server/ags_remote_task.c
+agsclient_SOURCES = ./src/ags-client/main.c ./src/ags-client/client/ags_client.h ./src/ags-client/client/ags_client.c ./src/ags-client/scripting/ags_client_window.h ./src/ags-client/scripting/ags_client_window.c ./src/ags-client/scripting/ags_script_editor.h ./src/ags-client/scripting/ags_script_editor.c
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
-ags_CFLAGS = `pkg-config --cflags alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc xmlrpc_util xmlrpc_server`
-ags_LDFLAGS = -ldl `pkg-config --libs alsa ao sndfile libxml-2.0 glib-2.0 libinstpatch-1.0 gtk+-2.0 uuid xmlrpc xmlrpc_util xmlrpc_server`
+ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
+ags_LDFLAGS = -ldl $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_LIBS)
+ags_LDADD = libags.a
+agsclient_CFLAGS = $(UUID_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_CLIENT_CFLAGS)
+agsclient_LDFLAGS = -ldl $(UUID_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_CLIENT_LIBS)
+agsclient_LDADD = libags.a
+libags_a_CFLAGS = $(GOBJECT_CFLAGS)
 test_CFLAGS = ${ags_CFLAGS}
 test_LDFLAGS = ${ags_LDFLAGS}
 all: config.h
@@ -968,6 +996,14 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+
+libags.a: $(libags_a_OBJECTS) $(libags_a_DEPENDENCIES) $(EXTRA_libags_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libags.a
+	$(AM_V_AR)$(libags_a_AR) libags.a $(libags_a_OBJECTS) $(libags_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libags.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -1015,6 +1051,10 @@ ags$(EXEEXT): $(ags_OBJECTS) $(ags_DEPENDENCIES) $(EXTRA_ags_DEPENDENCIES)
 	@rm -f ags$(EXEEXT)
 	$(AM_V_CCLD)$(ags_LINK) $(ags_OBJECTS) $(ags_LDADD) $(LIBS)
 
+agsclient$(EXEEXT): $(agsclient_OBJECTS) $(agsclient_DEPENDENCIES) $(EXTRA_agsclient_DEPENDENCIES) 
+	@rm -f agsclient$(EXEEXT)
+	$(AM_V_CCLD)$(agsclient_LINK) $(agsclient_OBJECTS) $(agsclient_LDADD) $(LIBS)
+
 test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) $(EXTRA_test_DEPENDENCIES) 
 	@rm -f test$(EXEEXT)
 	$(AM_V_CCLD)$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
@@ -1060,7 +1100,6 @@ include ./$(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_channel_resize_editor.Po
 include ./$(DEPDIR)/ags-ags_channel_set_recycling.Po
 include ./$(DEPDIR)/ags-ags_combo_box_text.Po
-include ./$(DEPDIR)/ags-ags_connectable.Po
 include ./$(DEPDIR)/ags-ags_copy_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_copy_channel.Po
 include ./$(DEPDIR)/ags-ags_copy_channel_run.Po
@@ -1245,6 +1284,11 @@ include ./$(DEPDIR)/ags-ags_volume_recycling.Po
 include ./$(DEPDIR)/ags-ags_window.Po
 include ./$(DEPDIR)/ags-ags_window_callbacks.Po
 include ./$(DEPDIR)/ags-main.Po
+include ./$(DEPDIR)/agsclient-ags_client.Po
+include ./$(DEPDIR)/agsclient-ags_client_window.Po
+include ./$(DEPDIR)/agsclient-ags_script_editor.Po
+include ./$(DEPDIR)/agsclient-main.Po
+include ./$(DEPDIR)/libags_a-ags_connectable.Po
 include ./$(DEPDIR)/test-ags_test_thread.Po
 
 .c.o:
@@ -1260,6 +1304,20 @@ include ./$(DEPDIR)/test-ags_test_thread.Po
 #	$(AM_V_CC)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+libags_a-ags_connectable.o: ./src/ags-lib/object/ags_connectable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.o `test -f './src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`./src/ags-lib/object/ags_connectable.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
+#	$(AM_V_CC)source='./src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.o `test -f './src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`./src/ags-lib/object/ags_connectable.c
+
+libags_a-ags_connectable.obj: ./src/ags-lib/object/ags_connectable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.obj `if test -f './src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) './src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/object/ags_connectable.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_connectable.Tpo $(DEPDIR)/libags_a-ags_connectable.Po
+#	$(AM_V_CC)source='./src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.obj `if test -f './src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) './src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/object/ags_connectable.c'; fi`
 
 ags-ags_run_order.o: ./src/ags/audio/ags_run_order.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_run_order.o -MD -MP -MF $(DEPDIR)/ags-ags_run_order.Tpo -c -o ags-ags_run_order.o `test -f './src/ags/audio/ags_run_order.c' || echo '$(srcdir)/'`./src/ags/audio/ags_run_order.c
@@ -2969,20 +3027,6 @@ ags-ags_tactable.obj: ./src/ags/object/ags_tactable.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_tactable.obj `if test -f './src/ags/object/ags_tactable.c'; then $(CYGPATH_W) './src/ags/object/ags_tactable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_tactable.c'; fi`
 
-ags-ags_connectable.o: ./src/ags/object/ags_connectable.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_connectable.o -MD -MP -MF $(DEPDIR)/ags-ags_connectable.Tpo -c -o ags-ags_connectable.o `test -f './src/ags/object/ags_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_connectable.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_connectable.Tpo $(DEPDIR)/ags-ags_connectable.Po
-#	$(AM_V_CC)source='./src/ags/object/ags_connectable.c' object='ags-ags_connectable.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_connectable.o `test -f './src/ags/object/ags_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_connectable.c
-
-ags-ags_connectable.obj: ./src/ags/object/ags_connectable.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_connectable.obj -MD -MP -MF $(DEPDIR)/ags-ags_connectable.Tpo -c -o ags-ags_connectable.obj `if test -f './src/ags/object/ags_connectable.c'; then $(CYGPATH_W) './src/ags/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_connectable.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_connectable.Tpo $(DEPDIR)/ags-ags_connectable.Po
-#	$(AM_V_CC)source='./src/ags/object/ags_connectable.c' object='ags-ags_connectable.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_connectable.obj `if test -f './src/ags/object/ags_connectable.c'; then $(CYGPATH_W) './src/ags/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_connectable.c'; fi`
-
 ags-ags_packable.o: ./src/ags/object/ags_packable.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_packable.o -MD -MP -MF $(DEPDIR)/ags-ags_packable.Tpo -c -o ags-ags_packable.o `test -f './src/ags/object/ags_packable.c' || echo '$(srcdir)/'`./src/ags/object/ags_packable.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_packable.Tpo $(DEPDIR)/ags-ags_packable.Po
@@ -4341,6 +4385,62 @@ ags-ags_remote_task.obj: ./src/ags/server/ags_remote_task.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_remote_task.obj `if test -f './src/ags/server/ags_remote_task.c'; then $(CYGPATH_W) './src/ags/server/ags_remote_task.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_remote_task.c'; fi`
 
+agsclient-main.o: ./src/ags-client/main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-main.o -MD -MP -MF $(DEPDIR)/agsclient-main.Tpo -c -o agsclient-main.o `test -f './src/ags-client/main.c' || echo '$(srcdir)/'`./src/ags-client/main.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-main.Tpo $(DEPDIR)/agsclient-main.Po
+#	$(AM_V_CC)source='./src/ags-client/main.c' object='agsclient-main.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-main.o `test -f './src/ags-client/main.c' || echo '$(srcdir)/'`./src/ags-client/main.c
+
+agsclient-main.obj: ./src/ags-client/main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-main.obj -MD -MP -MF $(DEPDIR)/agsclient-main.Tpo -c -o agsclient-main.obj `if test -f './src/ags-client/main.c'; then $(CYGPATH_W) './src/ags-client/main.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/main.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-main.Tpo $(DEPDIR)/agsclient-main.Po
+#	$(AM_V_CC)source='./src/ags-client/main.c' object='agsclient-main.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-main.obj `if test -f './src/ags-client/main.c'; then $(CYGPATH_W) './src/ags-client/main.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/main.c'; fi`
+
+agsclient-ags_client.o: ./src/ags-client/client/ags_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client.Tpo -c -o agsclient-ags_client.o `test -f './src/ags-client/client/ags_client.c' || echo '$(srcdir)/'`./src/ags-client/client/ags_client.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client.Tpo $(DEPDIR)/agsclient-ags_client.Po
+#	$(AM_V_CC)source='./src/ags-client/client/ags_client.c' object='agsclient-ags_client.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client.o `test -f './src/ags-client/client/ags_client.c' || echo '$(srcdir)/'`./src/ags-client/client/ags_client.c
+
+agsclient-ags_client.obj: ./src/ags-client/client/ags_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client.Tpo -c -o agsclient-ags_client.obj `if test -f './src/ags-client/client/ags_client.c'; then $(CYGPATH_W) './src/ags-client/client/ags_client.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/client/ags_client.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client.Tpo $(DEPDIR)/agsclient-ags_client.Po
+#	$(AM_V_CC)source='./src/ags-client/client/ags_client.c' object='agsclient-ags_client.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client.obj `if test -f './src/ags-client/client/ags_client.c'; then $(CYGPATH_W) './src/ags-client/client/ags_client.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/client/ags_client.c'; fi`
+
+agsclient-ags_client_window.o: ./src/ags-client/scripting/ags_client_window.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window.Tpo -c -o agsclient-ags_client_window.o `test -f './src/ags-client/scripting/ags_client_window.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_client_window.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window.Tpo $(DEPDIR)/agsclient-ags_client_window.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_client_window.c' object='agsclient-ags_client_window.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window.o `test -f './src/ags-client/scripting/ags_client_window.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_client_window.c
+
+agsclient-ags_client_window.obj: ./src/ags-client/scripting/ags_client_window.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window.Tpo -c -o agsclient-ags_client_window.obj `if test -f './src/ags-client/scripting/ags_client_window.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_client_window.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_client_window.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window.Tpo $(DEPDIR)/agsclient-ags_client_window.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_client_window.c' object='agsclient-ags_client_window.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window.obj `if test -f './src/ags-client/scripting/ags_client_window.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_client_window.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_client_window.c'; fi`
+
+agsclient-ags_script_editor.o: ./src/ags-client/scripting/ags_script_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_editor.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_editor.Tpo -c -o agsclient-ags_script_editor.o `test -f './src/ags-client/scripting/ags_script_editor.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_script_editor.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_editor.Tpo $(DEPDIR)/agsclient-ags_script_editor.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_script_editor.c' object='agsclient-ags_script_editor.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_editor.o `test -f './src/ags-client/scripting/ags_script_editor.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_script_editor.c
+
+agsclient-ags_script_editor.obj: ./src/ags-client/scripting/ags_script_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_editor.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_editor.Tpo -c -o agsclient-ags_script_editor.obj `if test -f './src/ags-client/scripting/ags_script_editor.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_script_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_script_editor.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_editor.Tpo $(DEPDIR)/agsclient-ags_script_editor.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_script_editor.c' object='agsclient-ags_script_editor.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_editor.obj `if test -f './src/ags-client/scripting/ags_script_editor.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_script_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_script_editor.c'; fi`
+
 test-ags_test_thread.o: ./src/ags/test/ags_test_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -MT test-ags_test_thread.o -MD -MP -MF $(DEPDIR)/test-ags_test_thread.Tpo -c -o test-ags_test_thread.o `test -f './src/ags/test/ags_test_thread.c' || echo '$(srcdir)/'`./src/ags/test/ags_test_thread.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/test-ags_test_thread.Tpo $(DEPDIR)/test-ags_test_thread.Po
@@ -4644,7 +4744,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(PROGRAMS) config.h
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)"; do \
@@ -4682,7 +4782,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
+	mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -4756,21 +4857,21 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
 	am--refresh check check-am clean clean-binPROGRAMS \
-	clean-cscope clean-generic cscope cscopelist-am ctags ctags-am \
-	dist dist-all dist-bzip2 dist-gzip dist-lzip dist-shar \
-	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-compile distclean-generic distclean-hdr \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS
+	clean-cscope clean-generic clean-noinstLIBRARIES cscope \
+	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
+	distcheck distclean distclean-compile distclean-generic \
+	distclean-hdr distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-binPROGRAMS install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-binPROGRAMS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

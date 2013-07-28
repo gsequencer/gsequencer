@@ -19,7 +19,7 @@
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 

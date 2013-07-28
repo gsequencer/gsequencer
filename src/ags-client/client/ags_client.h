@@ -29,6 +29,6 @@ struct _AgsClientClass
 
 GType ags_client_get_type();
 
-AgsClient* ags_client_new(GObject *devout);
+AgsClient* ags_client_new();
 
 #endif /*__AGS_CLIENT_H__*/

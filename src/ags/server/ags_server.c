@@ -18,7 +18,7 @@
 
 #include <ags/server/ags_server.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_server_class_init(AgsServerClass *server);
 void ags_server_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_set_output_device.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 

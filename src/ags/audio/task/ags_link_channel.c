@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_link_channel.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 void ags_link_channel_class_init(AgsLinkChannelClass *link_channel);
 void ags_link_channel_connectable_interface_init(AgsConnectableInterface *connectable);

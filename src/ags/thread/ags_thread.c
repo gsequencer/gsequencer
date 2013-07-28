@@ -19,7 +19,7 @@
 #include <ags/thread/ags_thread.h>
 
 #include <ags/object/ags_tree_iterator.h>
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/audio/ags_devout.h>

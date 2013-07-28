@@ -18,7 +18,7 @@
 
 #include <ags/server/ags_remote_task.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_registry.h>

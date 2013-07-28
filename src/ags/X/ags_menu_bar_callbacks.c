@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_menu_bar_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/file/ags_file.h>
 

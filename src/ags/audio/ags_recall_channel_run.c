@@ -21,7 +21,7 @@
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 

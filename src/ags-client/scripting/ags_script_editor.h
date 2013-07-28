@@ -1,6 +1,7 @@
 #ifndef __AGS_SCRIPT_EDITOR_H__
 #define __AGS_SCRIPT_EDITOR_H__
 
+#include <glib-object.h>
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_SCRIPT_EDITOR                (ags_script_editor_get_type())
@@ -15,12 +16,12 @@ typedef struct _AgsScriptEditorClass AgsScriptEditorClass;
 
 struct _AgsScriptEditor
 {
-  GtkText text;
+  GtkTextView text_view;
 };
 
 struct _AgsScriptEditorClass
 {
-  GtkTextClass text;
+  GtkTextViewClass text_view;
 };
 
 GType ags_script_editor_get_type();

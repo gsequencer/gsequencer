@@ -22,7 +22,7 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/server/ags_server.h>
 

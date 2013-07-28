@@ -18,6 +18,8 @@
 
 #include <ags-client/scripting/ags_client_window.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 void ags_client_window_class_init(AgsClientWindowClass *client_window);
 void ags_client_window_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_client_window_init(AgsClientWindow *client_window);
@@ -51,7 +53,7 @@ ags_client_window_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_client_window = g_type_register_static(GTK_TYPE_TEXT,
+    ags_type_client_window = g_type_register_static(GTK_TYPE_WINDOW,
 						    "AgsClientWindow\0",
 						    &ags_client_window_info,
 						    0);
