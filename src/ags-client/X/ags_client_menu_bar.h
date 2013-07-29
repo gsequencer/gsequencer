@@ -35,6 +35,10 @@ typedef struct _AgsClientMenuBarClass AgsClientMenuBarClass;
 struct _AgsClientMenuBar
 {
   GtkMenuBar menu_bar;
+
+  GtkMenu *file;
+  GtkMenu *network;
+  GtkMenu *help;
 };
 
 struct _AgsClientMenuBarClass

@@ -89,7 +89,38 @@ ags_client_window_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_client_window_init(AgsClientWindow *client_window)
 {
-  //TODO:JK: implement me
+  GtkVBox *vbox;
+  GtkVPaned *vpaned;
+
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add(GTK_CONTAINER(client_window),
+		    GTK_WIDGET(vbox));
+  
+  client_window->menu_bar = ags_client_menu_bar_new();
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(client_window->menu_bar),
+		     FALSE, FALSE,
+		     0);
+
+  client_window->toolbar = ags_client_toolbar_new();
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(client_window->toolbar),
+		     FALSE, FALSE,
+		     0);
+
+  vpaned = (GtkVPaned *) gtk_vpaned_new();
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(vpaned),
+		     TRUE, TRUE,
+		     0);
+  
+  client_window->script_editor = ags_script_editor_new();
+  gtk_paned_add1(GTK_PANED(vpaned),
+		 GTK_WIDGET(client_window->script_editor));
+
+  client_window->log = ags_client_log_new();
+  gtk_paned_add2(GTK_PANED(vpaned),
+		 GTK_WIDGET(client_window->log));
 }
 
 void
