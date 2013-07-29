@@ -274,6 +274,7 @@ ags_LINK = $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) $(LDFLAGS) \
 am_agsclient_OBJECTS = agsclient-main.$(OBJEXT) \
 	agsclient-ags_client.$(OBJEXT) \
 	agsclient-ags_client_window.$(OBJEXT) \
+	agsclient-ags_client_window_callbacks.$(OBJEXT) \
 	agsclient-ags_script_editor.$(OBJEXT) \
 	agsclient-ags_client_menu_bar.$(OBJEXT) \
 	agsclient-ags_client_log.$(OBJEXT) \
@@ -933,7 +934,7 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/server/ags_registry.c \
 	./src/ags/server/ags_remote_task.h \
 	./src/ags/server/ags_remote_task.c
-agsclient_SOURCES = ./src/ags-client/main.c ./src/ags-client/client/ags_client.h ./src/ags-client/client/ags_client.c ./src/ags-client/X/ags_client_window.h ./src/ags-client/X/ags_client_window.c ./src/ags-client/X/ags_script_editor.h ./src/ags-client/X/ags_script_editor.c ./src/ags-client/X/ags_client_menu_bar.h ./src/ags-client/X/ags_client_menu_bar.c ./src/ags-client/X/ags_client_log.h ./src/ags-client/X/ags_client_log.c ./src/ags-client/X/ags_client_toolbar.h ./src/ags-client/X/ags_client_toolbar.c
+agsclient_SOURCES = ./src/ags-client/main.c ./src/ags-client/client/ags_client.h ./src/ags-client/client/ags_client.c ./src/ags-client/X/ags_client_window.h ./src/ags-client/X/ags_client_window.c ./src/ags-client/X/ags_client_window_callbacks.h ./src/ags-client/X/ags_client_window_callbacks.c ./src/ags-client/X/ags_script_editor.h ./src/ags-client/X/ags_script_editor.c ./src/ags-client/X/ags_client_menu_bar.h ./src/ags-client/X/ags_client_menu_bar.c ./src/ags-client/X/ags_client_log.h ./src/ags-client/X/ags_client_log.c ./src/ags-client/X/ags_client_toolbar.h ./src/ags-client/X/ags_client_toolbar.c
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
 ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
@@ -1292,6 +1293,7 @@ include ./$(DEPDIR)/agsclient-ags_client_log.Po
 include ./$(DEPDIR)/agsclient-ags_client_menu_bar.Po
 include ./$(DEPDIR)/agsclient-ags_client_toolbar.Po
 include ./$(DEPDIR)/agsclient-ags_client_window.Po
+include ./$(DEPDIR)/agsclient-ags_client_window_callbacks.Po
 include ./$(DEPDIR)/agsclient-ags_script_editor.Po
 include ./$(DEPDIR)/agsclient-main.Po
 include ./$(DEPDIR)/libags_a-ags_connectable.Po
@@ -4432,6 +4434,20 @@ agsclient-ags_client_window.obj: ./src/ags-client/X/ags_client_window.c
 #	$(AM_V_CC)source='./src/ags-client/X/ags_client_window.c' object='agsclient-ags_client_window.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window.obj `if test -f './src/ags-client/X/ags_client_window.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window.c'; fi`
+
+agsclient-ags_client_window_callbacks.o: ./src/ags-client/X/ags_client_window_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window_callbacks.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo -c -o agsclient-ags_client_window_callbacks.o `test -f './src/ags-client/X/ags_client_window_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_window_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_window_callbacks.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_window_callbacks.c' object='agsclient-ags_client_window_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window_callbacks.o `test -f './src/ags-client/X/ags_client_window_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_window_callbacks.c
+
+agsclient-ags_client_window_callbacks.obj: ./src/ags-client/X/ags_client_window_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window_callbacks.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo -c -o agsclient-ags_client_window_callbacks.obj `if test -f './src/ags-client/X/ags_client_window_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_window_callbacks.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_window_callbacks.c' object='agsclient-ags_client_window_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window_callbacks.obj `if test -f './src/ags-client/X/ags_client_window_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window_callbacks.c'; fi`
 
 agsclient-ags_script_editor.o: ./src/ags-client/X/ags_script_editor.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_editor.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_editor.Tpo -c -o agsclient-ags_script_editor.o `test -f './src/ags-client/X/ags_script_editor.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_script_editor.c

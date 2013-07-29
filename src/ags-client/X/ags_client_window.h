@@ -41,6 +41,8 @@ struct _AgsClientWindow
 {
   GtkWindow window;
 
+  gchar *name;
+
   AgsClientMenuBar *menu_bar;
   AgsScriptEditor *script_editor;
   AgsClientToolbar *toolbar;

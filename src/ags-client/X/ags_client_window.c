@@ -17,6 +17,7 @@
  */
 
 #include <ags-client/X/ags_client_window.h>
+#include <ags-client/X/ags_client_window_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -91,7 +92,10 @@ ags_client_window_init(AgsClientWindow *client_window)
 {
   GtkVBox *vbox;
   GtkVPaned *vpaned;
-
+  
+  client_window->name = g_strdup("unnamed\0");
+   
+  /* widgets */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(client_window),
 		    GTK_WIDGET(vbox));
@@ -126,6 +130,13 @@ ags_client_window_init(AgsClientWindow *client_window)
 void
 ags_client_window_connect(AgsConnectable *connectable)
 {
+  AgsClientWindow *client_window;
+
+  client_window = AGS_CLIENT_WINDOW(connectable);
+
+  g_signal_connect(G_OBJECT(client_window), "delete_event\0",
+		   G_CALLBACK(ags_client_window_delete_event_callback), NULL);
+
   /* empty */
 }
 

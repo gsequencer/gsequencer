@@ -91,7 +91,6 @@ ags_client_menu_bar_init(AgsClientMenuBar *client_menu_bar)
 {
   GtkMenu *menu;
   GtkMenuItem *menu_item;
-  GtkWidget *separator;
 
   /* file menu */
   menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_FILE,
@@ -114,10 +113,6 @@ ags_client_menu_bar_init(AgsClientMenuBar *client_menu_bar)
   gtk_menu_shell_append(GTK_MENU_SHELL(menu),
 			GTK_WIDGET(menu_item));
 
-  separator = gtk_hseparator_new();
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu),
-			separator);
-  
   menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT,
 								 NULL);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu),
@@ -138,12 +133,35 @@ ags_client_menu_bar_init(AgsClientMenuBar *client_menu_bar)
 								 NULL);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu),
 			GTK_WIDGET(menu_item));
+
+  menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_EXECUTE,
+								 NULL);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu),
+			GTK_WIDGET(menu_item));
+
+  /*  */
+  menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP,
+								 NULL);
+  gtk_menu_bar_append(GTK_MENU_BAR(client_menu_bar),
+		      GTK_WIDGET(menu_item));
+
+  menu = 
+    client_menu_bar->help = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(menu_item,
+			    GTK_WIDGET(menu));
+
+  menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT,
+								 NULL);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu),
+			GTK_WIDGET(menu_item));
 }
 
 void
 ags_client_menu_bar_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  GList *list;
+
+  //TODO:JK: implement me
 }
 
 void
