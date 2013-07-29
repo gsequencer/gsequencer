@@ -22,7 +22,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#define AGS_TYPE_CLIENT_MENU_BAR                (ags_menu_bar_get_type())
+#define AGS_TYPE_CLIENT_MENU_BAR                (ags_client_menu_bar_get_type())
 #define AGS_CLIENT_MENU_BAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CLIENT_MENU_BAR, AgsClientMenuBar))
 #define AGS_CLIENT_MENU_BAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CLIENT_MENU_BAR, AgsClientMenuBarClass))
 #define AGS_IS_CLIENT_MENU_BAR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CLIENT_MENU_BAR))
@@ -42,8 +42,8 @@ struct _AgsClientMenuBarClass
   GtkMenuBarClass menu_bar;
 };
 
-GType ags_menu_bar_get_type();
+GType ags_client_menu_bar_get_type();
 
-AgsClientMenuBar* ags_menu_bar_new();
+AgsClientMenuBar* ags_client_menu_bar_new();
 
 #endif /*__AGS_CLIENT_MENU_BAR_H__*/

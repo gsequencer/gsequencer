@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
 
-#include <ags-client/scripting/ags_client_window.h>
+#include <ags-client/X/ags_client_window.h>
 
 int
 main(int argc, char **argv)
