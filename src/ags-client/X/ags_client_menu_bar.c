@@ -17,6 +17,7 @@
  */
 
 #include <ags-client/X/ags_client_menu_bar.h>
+#include <ags-client/X/ags_client_menu_bar_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -103,6 +104,11 @@ ags_client_menu_bar_init(AgsClientMenuBar *client_menu_bar)
   gtk_menu_item_set_submenu(menu_item,
 			    GTK_WIDGET(menu));
 
+  menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN,
+								 NULL);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu),
+			GTK_WIDGET(menu_item));
+
   menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE,
 								 NULL);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu),
@@ -113,17 +119,20 @@ ags_client_menu_bar_init(AgsClientMenuBar *client_menu_bar)
   gtk_menu_shell_append(GTK_MENU_SHELL(menu),
 			GTK_WIDGET(menu_item));
 
+  gtk_menu_shell_append((GtkMenuShell*) menu,
+			(GtkWidget*) gtk_separator_menu_item_new());
+
   menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT,
 								 NULL);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu),
 			GTK_WIDGET(menu_item));
 
-  /**/
+  /* network */
   menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_NETWORK,
-									       NULL);
+								 NULL);
   gtk_menu_bar_append(GTK_MENU_BAR(client_menu_bar),
 		      GTK_WIDGET(menu_item));
-
+  
   menu = 
     client_menu_bar->network = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu(menu_item,
@@ -139,7 +148,7 @@ ags_client_menu_bar_init(AgsClientMenuBar *client_menu_bar)
   gtk_menu_shell_append(GTK_MENU_SHELL(menu),
 			GTK_WIDGET(menu_item));
 
-  /*  */
+  /* help */
   menu_item = (GtkMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP,
 								 NULL);
   gtk_menu_bar_append(GTK_MENU_BAR(client_menu_bar),
@@ -159,9 +168,46 @@ ags_client_menu_bar_init(AgsClientMenuBar *client_menu_bar)
 void
 ags_client_menu_bar_connect(AgsConnectable *connectable)
 {
+  AgsClientMenuBar *client_menu_bar;
   GList *list;
 
-  //TODO:JK: implement me
+  client_menu_bar = AGS_CLIENT_MENU_BAR(connectable);
+
+  /* file */
+  list = gtk_container_get_children(GTK_CONTAINER(client_menu_bar->file));
+
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_client_menu_bar_open_callback), (gpointer) client_menu_bar);
+  list = list->next;
+  
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_client_menu_bar_save_callback), (gpointer) client_menu_bar);
+  list = list->next;
+  
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_client_menu_bar_save_as_callback), (gpointer) client_menu_bar);
+  list = list->next->next;
+  
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_client_menu_bar_quit_callback), (gpointer) client_menu_bar);
+
+  /* file */
+  list = gtk_container_get_children(GTK_CONTAINER(client_menu_bar->network));
+
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_client_menu_bar_connect_callback), (gpointer) client_menu_bar);
+  list = list->next;
+  
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_client_menu_bar_execute_callback), (gpointer) client_menu_bar);
+  list = list->next;
+  
+  /* help */
+  list = gtk_container_get_children(GTK_CONTAINER(client_menu_bar->help));
+
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_client_menu_bar_about_callback), (gpointer) client_menu_bar);
+  list = list->next;
 }
 
 void

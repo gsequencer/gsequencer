@@ -137,7 +137,8 @@ ags_client_window_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(client_window), "delete_event\0",
 		   G_CALLBACK(ags_client_window_delete_event_callback), NULL);
 
-  /* empty */
+  /*  */
+  ags_connectable_connect(AGS_CONNECTABLE(client_window->menu_bar));
 }
 
 void

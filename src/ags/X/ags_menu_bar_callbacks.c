@@ -18,6 +18,10 @@
 
 #include <ags/X/ags_menu_bar_callbacks.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/stat.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/file/ags_file.h>
