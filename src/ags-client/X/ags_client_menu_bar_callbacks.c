@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#include <ags-client/scripting/ags_script.h>
+
 #include <ags-client/X/ags_client_window.h>
 
 void ags_client_menu_bar_open_ok_callback(GtkWidget *widget, AgsClientMenuBar *client_menu_bar);
@@ -47,13 +49,13 @@ void
 ags_client_menu_bar_open_ok_callback(GtkWidget *widget, AgsClientMenuBar *client_menu_bar)
 {
   GtkFileSelection *file_selection;
-  AgsFile *file;
+  AgsScript *script;
 
   file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_DIALOG);
 
-//TODO:JK: implement me
+  //TODO:JK: implement me
 
-  g_object_unref(G_OBJECT(file));
+
   gtk_widget_destroy((GtkWidget *) file_selection);
 }
 
@@ -100,6 +102,8 @@ ags_client_menu_bar_quit_callback(GtkWidget *menu_item, AgsClientMenuBar *client
   response = gtk_dialog_run(dialog);
 
   if(response == GTK_RESPONSE_YES){
+    AgsScript *script;
+
     //TODO:JK: implement me
   }
 
