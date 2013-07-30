@@ -5,9 +5,14 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <!-- Types -->
   <xsd:simpleType name="void" final="xsd:string"/>
+
   <xsd:simpleType name="function" basetype="xsd:string"/>
   <xsd:simpleType name="uuid" basetype="xsd:string"/>
+
   <xsd:simpleType name="object" basetype="xsd:uuid"/>
+  <xsd:simpleType name="pid" basetype="xsd:uint64"/>
+  <xsd:simpleType name="host" basetype="xsd:string"/>
+
   <xsd:simpleType name="xpath" basetype="xsd:string" variety="atomic"/>
 
   <xsd:complexType name="ags-semaphore">
@@ -44,7 +49,7 @@
   <!-- controllers (... and functions) -->
   <xsd:complexType name="ags-controller">
     <xsd:sequence>
-      <xsd:element type="(ags-set|ags-push|ags-pop|ags-if|ags-switch|ags-while|ags-do_while|ags-for|ags-printf|ags-fprintf|ags-scanf|ags-sscanf|ags-tostring|ags-valueof|ags-nanosleep|ags-sutex|ags-rpc)"/>
+      <xsd:element type="(ags-set|ags-push|ags-pop|ags-if|ags-switch|ags-while|ags-do_while|ags-for|ags-printf|ags-fprintf|ags-scanf|ags-sscanf|ags-tostring|ags-valueof|ags-nanosleep|ags-memcpy|ags-sutex|ags-xmlrpc)"/>
       <xsd:element type="ags-semaphore"/>
       <xsd:element type="ags-var"/>
       <xsd:element type="ags-array"/>
@@ -69,6 +74,25 @@
   </xsd:complexType>
 
   <xsd:complexType name="ags-if">
+
+      <xsd:sequence>
+	<xsd:complexType name="then">
+	  <xsd:sequence>
+	    <xsd:element type="ags-controller"/>
+	  </xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="else-if">
+	  <xsd:sequence>
+	    <xsd:element type="ags-controller"/>
+	  </xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="else">
+	  <xsd:sequence>
+	    <xsd:element type="ags-controller"/>
+	  </xsd:sequence>
+	</xsd:complexType>
+      </xsd:sequence>
+
     <xsd:attribute name="condition" type="xsd:IDREF"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
   </xsd:complexType>
@@ -168,6 +192,12 @@
       <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
     </xsd:complexType>
 
+    <xsd:complexType name="ags-memcpy">
+      <xsd:attribute name="context" type="(pid|host)"/>
+      <xsd:attribute name="return_code" type="xsd:void"/>
+      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+    </xsd:complexType>
+
     <xsd:complexType name="ags-nanosleep">
       <xsd:attribute name="str" type="xsd:IDREF"/>
       <xsd:attribute name="return_code" type="xsd:void"/>
@@ -180,7 +210,7 @@
       <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
     </xsd:complexType>
 
-    <xsd:complexType name="ags-rpc">
+    <xsd:complexType name="ags-xmlrpc">
       <xsd:attribute name="function" type="xsd:function"/>
       <xsd:attribute name="parameter" type="xsd:object"/>
       <xsd:attribute name="return_code" type="xsd:void"/>
@@ -195,10 +225,7 @@
 	  <xsd:element type="ags-array"/>
 	  <xsd:element type="ags-stack"/>
 
-	  <xsd:sequence>
-	    <xsd:element type="ags-controller"/>
-	  </xsd:sequence>
-	  
+	  <xsd:element type="ags-controller"/>
 	  
 	</xsd:sequence>
 	
