@@ -40,6 +40,7 @@ struct _AgsXmlScriptFactory
 {
   GObject object;
 
+  AgsSchemaFactory *schema_factory;
   xmlDoc *schema;
 
   GList *prototype;

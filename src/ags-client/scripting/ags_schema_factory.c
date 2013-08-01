@@ -157,7 +157,7 @@ ags_schema_factory_create_node_from_xsd(AgsSchemaFactory *schema_factory,
       variety = xmlNodeGetProp(node, "variety\0");
 
       if(!xmlStrncmp("atomic\0", variety, 7)){
-	xmlNewProp(retval, BAD_CAST "variety\0", BAD_CAST (gchar *) g_strdup("true\0"));
+	xmlNewProp(retval, BAD_CAST "atomic\0", BAD_CAST (gchar *) g_strdup("true\0"));
       }
     }
 

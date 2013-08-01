@@ -113,6 +113,7 @@ void
 ags_xml_script_factory_init(AgsXmlScriptFactory *xml_script_factory)
 {
   xml_script_factory->schema = xmlReadFile(AGS_XML_SCRIPT_FACTORY_DEFAULT_SCHEMA, NULL, 0);
+  xml_script_factory->schema_factory = ags_schema_factory_new();
 
   xml_script_factory->prototype = NULL;
 }
@@ -146,10 +147,19 @@ ags_xml_script_factory_real_create_prototype(AgsXmlScriptFactory *xml_script_fac
   xmlNode *current_node;
   GList *list;
 
-  current_node =
-    root_node = xmlDocGetRootElement(xml_script_factory->schema);
+  root_node = xmlDocGetRootElement(xml_script_factory->schema);
 
-  //TODO:JK: implement me
+  current_node = root_node->children;
+  list = NULL;
+
+  while(current_node != NULL){
+    list = g_list_prepend(list, ags_schema_factory_create_node(xml_script_factory->schema_factory,
+							       current_node));
+
+    current_node = current_node->next;
+  }
+
+  xml_script_factory->prototype = list;
 }
 
 void
