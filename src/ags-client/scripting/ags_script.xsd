@@ -49,7 +49,7 @@
   <!-- controllers (... and functions) -->
   <xsd:complexType name="ags-controller">
     <xsd:sequence>
-      <xsd:element type="(ags-set|ags-push|ags-pop|ags-if|ags-switch|ags-while|ags-do_while|ags-for|ags-printf|ags-fprintf|ags-scanf|ags-sscanf|ags-tostring|ags-valueof|ags-nanosleep|ags-memcpy|ags-sutex|ags-xmlrpc)"/>
+      <xsd:element type="(ags-set|ags-push|ags-pop|ags-if|ags-switch|ags-while|ags-do_while|ags-for|ags-printf|ags-fprintf|ags-scanf|ags-fscanf|ags-tostring|ags-valueof|ags-nanosleep|ags-memcpy|ags-sutex|ags-xmlrpc)"/>
       <xsd:element type="ags-semaphore"/>
       <xsd:element type="ags-var"/>
       <xsd:element type="ags-array"/>
@@ -60,6 +60,12 @@
 
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="./*/[last()]@id-ref"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-set">
+    <xsd:attribute name="id" type="xsd:ID"/>
+    <xsd:attribute name="id-ref" type="xsd:IDREF"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@id-ref"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-push">
@@ -75,23 +81,23 @@
 
   <xsd:complexType name="ags-if">
 
-      <xsd:sequence>
-	<xsd:complexType name="then">
-	  <xsd:sequence>
-	    <xsd:element type="ags-controller"/>
-	  </xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="else-if">
-	  <xsd:sequence>
-	    <xsd:element type="ags-controller"/>
-	  </xsd:sequence>
-	</xsd:complexType>
-	<xsd:complexType name="else">
-	  <xsd:sequence>
-	    <xsd:element type="ags-controller"/>
-	  </xsd:sequence>
-	</xsd:complexType>
-      </xsd:sequence>
+    <xsd:sequence>
+      <xsd:complexType name="then">
+	<xsd:sequence>
+	  <xsd:element type="ags-controller"/>
+	</xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="else-if">
+	<xsd:sequence>
+	  <xsd:element type="ags-controller"/>
+	</xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="else">
+	<xsd:sequence>
+	  <xsd:element type="ags-controller"/>
+	</xsd:sequence>
+      </xsd:complexType>
+    </xsd:sequence>
 
     <xsd:attribute name="condition" type="xsd:IDREF"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
@@ -99,139 +105,137 @@
 
   <xsd:element name="ags-break"/>
 
-    <xsd:complexType name="ags-switch">
-      <xsd:sequence>
-	<xsd:element type="ags-case"/>
-      </xsd:sequence>
-
-      <xsd:attribute name="expression" type="xsd:IDREF"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="./ags-case[@status='true']@statement"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-case">
-      <xsd:sequence>
-	<xsd:element type="ags-controller"/>
-	<xsd:element type="ags-break"/>
-      </xsd:sequence>
-
-      <xsd:attribute name="label" type="xsd:string"/>
-      <xsd:attribute name="status" type="xsd:boolean"/>
-      <xsd:attribute name="statement" type="xsd:IDREF"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-while">
-      <xsd:sequence>
-	<xsd:element type="ags-controller"/>
-	<xsd:element type="ags-break"/>
-      </xsd:sequence>
-
-      <xsd:attribute name="condition" type="xsd:IDREF"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-do_while">
-      <xsd:sequence>
-	<xsd:element type="ags-controller"/>
-	<xsd:element type="ags-break"/>
-      </xsd:sequence>
-
-      <xsd:attribute name="condition" type="xsd:IDREF"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-for">
-      <xsd:sequence>
-	<xsd:element type="ags-controller"/>
-	<xsd:element type="ags-break"/>
-      </xsd:sequence>
-
-      <xsd:attribute name="initializer" type="xsd:IDREF"/>
-      <xsd:attribute name="condition" type="xsd:IDREF"/>
-      <xsd:attribute name="operation" type="xsd:IDREF"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-printf">
-      <xsd:attribute name="format" type="xsd:string"/>
-      <xsd:attribute name="args" type="xsd:IDREF"/>
-      <xsd:attribute name="return_code" type="xsd:int64"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-fprintf">
-      <xsd:attribute name="format" type="xsd:string"/>
-      <xsd:attribute name="args" type="xsd:IDREF"/>
-      <xsd:attribute name="return_code" type="xsd:int64"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-scanf">
-      <xsd:attribute name="format" type="xsd:string"/>
-      <xsd:attribute name="args" type="xsd:IDREF"/>
-      <xsd:attribute name="return_code" type="xsd:int64"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-sscanf">
-      <xsd:attribute name="str" type="xsd:string"/>
-      <xsd:attribute name="format" type="xsd:string"/>
-      <xsd:attribute name="args" type="xsd:IDREF"/>
-      <xsd:attribute name="return_code" type="xsd:int64"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-tostring">
-      <xsd:attribute name="val" type="xsd:IDREF"/>
-      <xsd:attribute name="return_code" type="xsd:string"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-valueof">
-      <xsd:attribute name="str" type="xsd:IDREF"/>
-      <xsd:attribute name="return_code" type="(xsd:double|xsd:int64)"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-memcpy">
-      <xsd:attribute name="context" type="(pid|host)"/>
-      <xsd:attribute name="return_code" type="xsd:void"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-nanosleep">
-      <xsd:attribute name="str" type="xsd:IDREF"/>
-      <xsd:attribute name="return_code" type="xsd:void"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-sutex">
-      <xsd:attribute name="context" type="(pid|host)"/>
-      <xsd:attribute name="return_code" type="xsd:void"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="ags-xmlrpc">
-      <xsd:attribute name="function" type="xsd:function"/>
-      <xsd:attribute name="parameter" type="xsd:object"/>
-      <xsd:attribute name="return_code" type="xsd:void"/>
-      <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
-    </xsd:complexType>
-
-    <xsd:element name="AgsScript">
-      <xsd:complexType>
+  <xsd:complexType name="ags-switch">
+    <xsd:sequence>
+      <xsd:complexType name="ags-case">
 	<xsd:sequence>
-	  <xsd:element type="ags-semaphore"/>
-	  <xsd:element type="ags-var"/>
-	  <xsd:element type="ags-array"/>
-	  <xsd:element type="ags-stack"/>
-
 	  <xsd:element type="ags-controller"/>
-	  
+	  <xsd:element type="ags-break"/>
 	</xsd:sequence>
-	
-	<xsd:attribute name="version" type="xsd:string"/>
-	<xsd:attribute name="return" type="xsd:decimal"/>
+
+	<xsd:attribute name="label" type="xsd:string"/>
+	<xsd:attribute name="status" type="xsd:boolean"/>
+	<xsd:attribute name="statement" type="xsd:IDREF"/>
       </xsd:complexType>
-    </xsd:element>
+    </xsd:sequence>
+
+    <xsd:attribute name="expression" type="xsd:IDREF"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="./ags-case[@status='true']@statement"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-while">
+    <xsd:sequence>
+      <xsd:element type="ags-controller"/>
+      <xsd:element type="ags-break"/>
+    </xsd:sequence>
+
+    <xsd:attribute name="condition" type="xsd:IDREF"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-do_while">
+    <xsd:sequence>
+      <xsd:element type="ags-controller"/>
+      <xsd:element type="ags-break"/>
+    </xsd:sequence>
+
+    <xsd:attribute name="condition" type="xsd:IDREF"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-for">
+    <xsd:sequence>
+      <xsd:element type="ags-controller"/>
+      <xsd:element type="ags-break"/>
+    </xsd:sequence>
+
+    <xsd:attribute name="initializer" type="xsd:IDREF"/>
+    <xsd:attribute name="condition" type="xsd:IDREF"/>
+    <xsd:attribute name="operation" type="xsd:IDREF"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-printf">
+    <xsd:attribute name="format" type="xsd:string"/>
+    <xsd:attribute name="args" type="xsd:IDREF"/>
+    <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-fprintf">
+    <xsd:attribute name="format" type="xsd:string"/>
+    <xsd:attribute name="args" type="xsd:IDREF"/>
+    <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-scanf">
+    <xsd:attribute name="format" type="xsd:string"/>
+    <xsd:attribute name="args" type="xsd:IDREF"/>
+    <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-fscanf">
+    <xsd:attribute name="str" type="xsd:string"/>
+    <xsd:attribute name="format" type="xsd:string"/>
+    <xsd:attribute name="args" type="xsd:IDREF"/>
+    <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-tostring">
+    <xsd:attribute name="val" type="xsd:IDREF"/>
+    <xsd:attribute name="return_code" type="xsd:string"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-valueof">
+    <xsd:attribute name="str" type="xsd:IDREF"/>
+    <xsd:attribute name="return_code" type="(xsd:double|xsd:int64)"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-memcpy">
+    <xsd:attribute name="context" type="(pid|host)"/>
+    <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-nanosleep">
+    <xsd:attribute name="str" type="xsd:IDREF"/>
+    <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-sutex">
+    <xsd:attribute name="context" type="(pid|host)"/>
+    <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ags-xmlrpc">
+    <xsd:attribute name="function" type="xsd:function"/>
+    <xsd:attribute name="parameter" type="xsd:object"/>
+    <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
+  </xsd:complexType>
+
+  <xsd:element name="AgsScript">
+    <xsd:complexType>
+      <xsd:sequence>
+	<xsd:element type="ags-semaphore"/>
+	<xsd:element type="ags-var"/>
+	<xsd:element type="ags-array"/>
+	<xsd:element type="ags-stack"/>
+
+	<xsd:element type="ags-controller"/>
+	
+      </xsd:sequence>
+      
+      <xsd:attribute name="version" type="xsd:string"/>
+      <xsd:attribute name="return" type="xsd:decimal"/>
+    </xsd:complexType>
+  </xsd:element>
 
 </xsd:schema>
