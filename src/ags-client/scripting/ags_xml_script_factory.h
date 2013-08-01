@@ -36,6 +36,12 @@
 typedef struct _AgsXmlScriptFactory AgsXmlScriptFactory;
 typedef struct _AgsXmlScriptFactoryClass AgsXmlScriptFactoryClass;
 
+#define AGS_XML_SCRIPT_FACTORY_ERROR (ags_xml_script_factory_error_quark())
+
+typedef enum{
+  AGS_XML_SCRIPT_FACTORY_INVALID_PROTOTYPE,
+}AgsXmlScriptFactoryError;
+
 struct _AgsXmlScriptFactory
 {
   GObject object;

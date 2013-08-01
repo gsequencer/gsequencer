@@ -29,7 +29,8 @@ void ags_xml_script_factory_finalize(GObject *gobject);
 
 void ags_xml_script_factory_real_create_prototype(AgsXmlScriptFactory *xml_script_factory);
 
-xmlNode* ags_xml_script_factory_find_prototype(AgsXmlScriptFactory *xml_script_factory);
+xmlNode* ags_xml_script_factory_find_prototype(AgsXmlScriptFactory *xml_script_factory,
+					       gchar *xml_type);
 
 enum{
   CREATE_PROTOTYPE,
@@ -109,6 +110,12 @@ ags_xml_script_factory_connectable_interface_init(AgsConnectableInterface *conne
   connectable->disconnect = ags_xml_script_factory_disconnect;
 }
 
+GQuark
+ags_xml_script_factory_error_quark()
+{
+  return(g_quark_from_static_string("ags-xml-script-factory-error-quark\0"));
+}
+
 void
 ags_xml_script_factory_init(AgsXmlScriptFactory *xml_script_factory)
 {
@@ -174,11 +181,25 @@ ags_xml_script_factory_create_prototype(AgsXmlScriptFactory *xml_script_factory)
 }
 
 xmlNode*
-ags_xml_script_factory_find_prototype(AgsXmlScriptFactory *xml_script_factory)
+ags_xml_script_factory_find_prototype(AgsXmlScriptFactory *xml_script_factory,
+				      gchar *xml_type)
 {
+  xmlNode *current_node;
   GList *current;
 
-  //TODO:JK: implement me
+  current = xml_script_factory->prototype;
+
+  while(current != NULL){
+    current_node = (xmlNode *) current->data;
+
+    if(!xmlStrcmp(current_node->name, xml_type)){
+      return(current_node);
+    }
+
+    current = current->next;
+  }
+
+  return(NULL);
 }
 
 xmlNode*
@@ -186,7 +207,30 @@ ags_xml_script_factory_map(AgsXmlScriptFactory *xml_script_factory,
 			   AgsScriptObject *script_object,
 			   GError **error)
 {
-  //TODO:JK: implement me
+  static const char *prefix = "AgsScript\0";
+  xmlNode *retval;
+  gchar *xml_type;
+  int length, prefix_length;
+
+  xml_type = NULL;
+  length = strlen(G_OBJECT_TYPE_NAME(script_object));
+  prefix_length = strlen(prefix);
+
+  retval = NULL;
+
+  if(length > prefix_length){
+    xml_type = g_strconcat("ags-\0", g_ascii_tolower(&(G_OBJECT_TYPE_NAME(script_object)[prefix_length])));
+    retval = ags_xml_script_factory_find_prototype(xml_script_factory,
+						   xml_type);
+  }else{
+    g_set_error(error,
+		AGS_XML_SCRIPT_FACTORY_ERROR,
+		AGS_XML_SCRIPT_FACTORY_INVALID_PROTOTYPE,
+		"can't map xml representation for given type: %s\0",
+		G_OBJECT_TYPE_NAME(script_object));
+  }
+
+  return(retval);
 }
 
 AgsXmlScriptFactory*
