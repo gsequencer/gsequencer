@@ -43,7 +43,7 @@
     </xsd:sequence>
 
     <xsd:attribute name="id" type="xsd:ID"/>
-    <xsd:attribute name="retval" type="xsd:xpath" value="./*/[last()]@id-ref"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value=".//[last()]@id-ref"/>
   </xsd:complexType>
 
   <!-- controllers (... and functions) -->
@@ -59,7 +59,7 @@
     </xsd:sequence>
 
     <xsd:attribute name="id" type="xsd:ID"/>
-    <xsd:attribute name="retval" type="xsd:xpath" value="./*/[last()]@id-ref"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value=".//[last()]@id-ref"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-set">
@@ -71,12 +71,12 @@
   <xsd:complexType name="ags-push">
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="id-ref" type="xsd:IDREF"/>
-    <xsd:attribute name="retval" type="xsd:xpath" value="./*/[last()]@id-ref"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value=".//[last()]@id-ref"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-pop">
     <xsd:attribute name="id" type="xsd:ID"/>
-    <xsd:attribute name="retval" type="xsd:xpath" value="./*/[last()]@id-ref"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value=".//[last()]@id-ref"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-if">

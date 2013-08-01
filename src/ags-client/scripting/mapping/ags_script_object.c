@@ -27,6 +27,9 @@ void ags_script_object_connect(AgsConnectable *connectable);
 void ags_script_object_disconnect(AgsConnectable *connectable);
 void ags_script_object_finalize(GObject *gobject);
 
+void ags_script_object_real_map_xml(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_real_object_launch(AgsScriptObject *script_object);
+
 static gpointer ags_script_object_parent_class = NULL;
 
 GType
@@ -77,6 +80,10 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
   gobject = (GObjectClass *) script_object;
 
   gobject->finalize = ags_script_object_finalize;
+
+  /* AgsScriptObjectClass */
+  script_object->map_xml = ags_script_object_real_map_xml;
+  script_object->launch = ags_script_object_real_launch;
 }
 
 void
@@ -112,6 +119,26 @@ ags_script_object_finalize(GObject *gobject)
   script_object = AGS_SCRIPT_OBJECT(gobject);
 
   G_OBJECT_CLASS(ags_script_object_parent_class)->finalize(gobject);
+}
+
+void
+ags_script_object_real_map_xml(AgsScriptObject *script_object)
+{
+}
+
+void
+ags_script_object_map_xml(AgsScriptObject *script_object)
+{
+}
+
+AgsScriptObject*
+ags_script_real_object_launch(AgsScriptObject *script_object)
+{
+}
+
+AgsScriptObject*
+ags_script_object_launch(AgsScriptObject *script_object)
+{
 }
 
 AgsScriptObject*

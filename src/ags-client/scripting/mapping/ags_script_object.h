@@ -29,20 +29,40 @@
 #define AGS_IS_SCRIPT_OBJECT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SCRIPT_OBJECT))
 #define AGS_SCRIPT_OBJECT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SCRIPT_OBJECT, AgsScriptObjectClass))
 
+#define AGS_SCRIPT_OBJECT_DEFAULT_SCHEMA "ags_script.xsd"
+
 typedef struct _AgsScriptObject AgsScriptObject;
 typedef struct _AgsScriptObjectClass AgsScriptObjectClass;
+
+typedef enum{
+  AGS_SCRIPT_OBJECT_LAUNCHED        = 1,
+};
 
 struct _AgsScriptObject
 {
   GObject object;
+  
+  guint flags;
+  
+  xmlElement *node;
+  uuid *id;
+
+  AgsScriptObject *retval;
 };
 
 struct _AgsScriptObjectClass
 {
   GObjectClass object;
+
+  void (*map_xml)(AgsScriptObject *script_object);
+
+  AgsScriptObject* (*launch)(AgsScriptObject *script_object);
 };
 
 GType ags_script_object_get_type();
+
+void ags_script_object_map_xml(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object);
 
 AgsScriptObject* ags_script_object_new();
 
