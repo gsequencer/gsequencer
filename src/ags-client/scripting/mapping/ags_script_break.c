@@ -1,4 +1,4 @@
-/* AGS - Advanced GTK Sequencer
+/* AGS Client - Advanced GTK Sequencer Client
  * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@ ags_script_break_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_script_break = g_type_register_static(G_TYPE_OBJECT,
+    ags_type_script_break = g_type_register_static(AGS_TYPE_SCRIPT_CONTROLLER,
 						   "AgsScriptBreak\0",
 						   &ags_script_break_info,
 						   0);
