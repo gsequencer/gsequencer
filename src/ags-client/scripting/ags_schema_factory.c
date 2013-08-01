@@ -27,6 +27,11 @@ void ags_schema_factory_connect(AgsConnectable *connectable);
 void ags_schema_factory_disconnect(AgsConnectable *connectable);
 void ags_schema_factory_finalize(GObject *gobject);
 
+xmlNode* ags_schema_factory_create_node_from_dtd(AgsSchemaFactory *schema_factory,
+						 gchar *node);
+xmlNode* ags_schema_factory_create_node_from_xsd(AgsSchemaFactory *schema_factory,
+						 xmlNode *node);
+
 static gpointer ags_schema_factory_parent_class = NULL;
 
 GType
@@ -54,9 +59,9 @@ ags_schema_factory_get_type()
     };
 
     ags_type_schema_factory = g_type_register_static(G_TYPE_OBJECT,
-							 "AgsSchemaFactory\0",
-							 &ags_schema_factory_info,
-							 0);
+						     "AgsSchemaFactory\0",
+						     &ags_schema_factory_info,
+						     0);
     
     g_type_add_interface_static(ags_type_schema_factory,
 				AGS_TYPE_CONNECTABLE,
@@ -89,6 +94,7 @@ ags_schema_factory_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_schema_factory_init(AgsSchemaFactory *schema_factory)
 {
+  schema_factory->flags = AGS_SCHEMA_FACTORY_PARSE_AS_XSD;
 }
 
 void
@@ -114,9 +120,91 @@ ags_schema_factory_finalize(GObject *gobject)
 }
 
 xmlNode*
-ags_schema_factory_create_node(AgsSchemaFactory *schema_factory,
-			       xmlNode *node)
+ags_schema_factory_create_node_from_dtd(AgsSchemaFactory *schema_factory,
+					gchar *node)
 {
+  xmlNode *node;
+
+  //TODO:JK: implement me
+
+  return(node);
+}
+
+xmlNode*
+ags_schema_factory_create_node_from_xsd(AgsSchemaFactory *schema_factory,
+					xmlNode *node)
+{
+  xmlNode *retval;
+  char *name, *final, *basetype;
+  char *xml_retval;
+
+  auto xmlNode* ags_schema_factory_create_node_from_xsd_parse(xmlNode *node);
+
+  xmlNode* ags_schema_factory_create_node_from_xsd_parse(xmlNode *node){
+    xmlNode *current;
+    xmlNode *retval;
+
+    /* parse basics */
+    retval = xmlNewNode(NULL, xmlNodeGetProp(node, "name\0"));
+
+    if((final = xmlNodeGetProp(node, "final\0")) != NULL){
+      xmlNewProp(retval, BAD_CAST "final\0", NULL);
+    }else if((basetype = xmlNodeGetProp(node, "basetype\0")) != NULL){
+      char *variety;
+
+      xmlNewProp(retval, BAD_CAST "basetype\0", BAD_CAST (gchar *) g_strdup(basetype));
+
+      variety = xmlNodeGetProp(node, "variety\0");
+
+      if(!xmlStrncmp("atomic\0", variety, 7)){
+	xmlNewProp(retval, BAD_CAST "variety\0", BAD_CAST (gchar *) g_strdup("true\0"));
+      }
+    }
+
+    /* parse attributes and child elements */
+    current = node;
+
+    while(current != NULL){
+      if(current->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp("attribute\0", current->name, 10)){
+	  xmlNodeSetProp(retval, BAD_CAST (gchar *) g_strdup(xmlNodeGetProp(current, "name\0")), NULL);
+	}else if(!xmlStrncmp("sequence\0", current->name, 9)){
+	  xmlNode *sequence;
+
+	  sequence = ags_schema_factory_create_node_from_xsd_parse(current->children);
+
+	  xmlNodeAddChildList(retval, sequence);
+	}
+      }
+
+      current = current->next;
+    }
+
+    return(retval);
+  }
+
+  /* parse recursive */
+  retval = ags_schema_factory_create_node_from_xsd_parse(node->children);
+
+  return(retval);
+}
+
+xmlNode*
+ags_schema_factory_create_node(AgsSchemaFactory *schema_factory,
+			       void *node)
+{
+  if((AGS_SCHEMA_FACTORY_PARSE_AS_DTD & (schema_factory->flags)) != 0){
+    return(ags_schema_factory_create_node_from_dtd(schema_factory,
+						   (gchar *) node))
+  }else if((AGS_SCHEMA_FACTORY_PARSE_AS_XSD & (schema_factory->flags)) != 0){
+    return(ags_schema_factory_create_node_from_xsd(schema_factory,
+						   (xmlNode *) node))
+  }else{
+    g_warning("invalid state of %s\0",
+	      G_OBJECT_TYPE_NAME(schema_factory));
+
+    return(NULL);
+  }
 }
 
 AgsSchemaFactory*

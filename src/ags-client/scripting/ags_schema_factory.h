@@ -34,9 +34,16 @@
 typedef struct _AgsSchemaFactory AgsSchemaFactory;
 typedef struct _AgsSchemaFactoryClass AgsSchemaFactoryClass;
 
+typedef enum{
+  AGS_SCHEMA_FACTORY_PARSE_AS_DTD      = 1,
+  AGS_SCHEMA_FACTORY_PARSE_AS_XSD      = 1 << 1,
+};
+
 struct _AgsSchemaFactory
 {
   GObject object;
+
+  guint flags;
 };
 
 struct _AgsSchemaFactoryClass
@@ -47,7 +54,7 @@ struct _AgsSchemaFactoryClass
 GType ags_schema_factory_get_type();
 
 xmlNode* ags_schema_factory_create_node(AgsSchemaFactory *schema_factory,
-					xmlNode *node);
+					void *node);
 
 AgsSchemaFactory* ags_schema_factory_new();
 
