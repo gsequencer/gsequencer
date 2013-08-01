@@ -22,14 +22,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libxml/tree.h>
+
 #define AGS_TYPE_SCRIPT_OBJECT                (ags_script_object_get_type())
 #define AGS_SCRIPT_OBJECT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_OBJECT, AgsScriptObject))
 #define AGS_SCRIPT_OBJECT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_OBJECT, AgsScriptObjectClass))
 #define AGS_IS_SCRIPT_OBJECT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SCRIPT_OBJECT))
 #define AGS_IS_SCRIPT_OBJECT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SCRIPT_OBJECT))
 #define AGS_SCRIPT_OBJECT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SCRIPT_OBJECT, AgsScriptObjectClass))
-
-#define AGS_SCRIPT_OBJECT_DEFAULT_SCHEMA "ags_script.xsd"
 
 typedef struct _AgsScriptObject AgsScriptObject;
 typedef struct _AgsScriptObjectClass AgsScriptObjectClass;
@@ -44,7 +44,7 @@ struct _AgsScriptObject
   
   guint flags;
   
-  xmlElement *node;
+  xmlNode *node;
   uuid *id;
 
   AgsScriptObject *retval;

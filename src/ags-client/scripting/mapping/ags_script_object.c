@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-client/object/ags_marshal.h>
+
 void ags_script_object_class_init(AgsScriptObjectClass *script_object);
 void ags_script_object_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_object_init(AgsScriptObject *script_object);
@@ -30,7 +32,14 @@ void ags_script_object_finalize(GObject *gobject);
 void ags_script_object_real_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_real_object_launch(AgsScriptObject *script_object);
 
+enum{
+  MAP_XML,
+  LAUNCH,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_script_object_parent_class = NULL;
+static guint script_object_signals[LAST_SIGNAL];
 
 GType
 ags_script_object_get_type()
@@ -84,6 +93,25 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
   /* AgsScriptObjectClass */
   script_object->map_xml = ags_script_object_real_map_xml;
   script_object->launch = ags_script_object_real_launch;
+
+  /* signals */
+  task_signals[MAP_XML] =
+    g_signal_new("map_xml\0",
+		 G_TYPE_FROM_CLASS(task),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTaskClass, map_xml),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  task_signals[LAUNCH] =
+    g_signal_new("launch\0",
+		 G_TYPE_FROM_CLASS(task),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTaskClass, launch),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_OBJECT__VOID,
+		 G_TYPE_OBJECT, 0);
 }
 
 void
@@ -96,7 +124,10 @@ ags_script_object_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_script_object_init(AgsScriptObject *script_object)
 {
-  //TODO:JK: implement me
+  script_object->node = NULL;
+  script_object->id = NULL;
+
+  script_object->retval = NULL;
 }
 
 void
@@ -129,6 +160,12 @@ ags_script_object_real_map_xml(AgsScriptObject *script_object)
 void
 ags_script_object_map_xml(AgsScriptObject *script_object)
 {
+  g_return_if_fail(AGS_IS_SCRIPT_OBJECT(script_object));
+
+  g_object_ref(G_OBJECT(script_object));
+  g_signal_emit(G_OBJECT(script_object),
+		script_object_signals[MAP_XML], 0);
+  g_object_unref(G_OBJECT(script_object));
 }
 
 AgsScriptObject*
@@ -139,6 +176,17 @@ ags_script_real_object_launch(AgsScriptObject *script_object)
 AgsScriptObject*
 ags_script_object_launch(AgsScriptObject *script_object)
 {
+  AgsScriptObject *retval;
+
+  g_return_val_if_fail(AGS_IS_SCRIPT_OBJECT(script_object), NULL);
+
+  g_object_ref(G_OBJECT(script_object));
+  g_signal_emit(G_OBJECT(script_object),
+		script_object_signals[LAUNCH], 0,
+		&retval);
+  g_object_unref(G_OBJECT(script_object));
+
+  return(retval);
 }
 
 AgsScriptObject*
