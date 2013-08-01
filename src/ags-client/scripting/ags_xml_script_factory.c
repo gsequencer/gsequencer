@@ -29,6 +29,8 @@ void ags_xml_script_factory_finalize(GObject *gobject);
 
 void ags_xml_script_factory_real_create_prototype(AgsXmlScriptFactory *xml_script_factory);
 
+xmlNode* ags_xml_script_factory_find_prototype(AgsXmlScriptFactory *xml_script_factory);
+
 enum{
   CREATE_PROTOTYPE,
   LAST_SIGNAL,
@@ -87,8 +89,7 @@ ags_xml_script_factory_class_init(AgsXmlScriptFactoryClass *xml_script_factory)
   gobject->finalize = ags_xml_script_factory_finalize;
 
   /* AgsXmlScriptFactoryClass */
-  xml_script_factory->map_xml = ags_xml_script_factory_real_map_xml;
-  xml_script_factory->launch = ags_xml_script_factory_real_launch;
+  xml_script_factory->create_prototype = ags_xml_script_factory_real_create_prototype;
 
   /* signals */
   xml_script_factory_signals[CREATE_PROTOTYPE] =
@@ -143,9 +144,12 @@ ags_xml_script_factory_real_create_prototype(AgsXmlScriptFactory *xml_script_fac
 {
   xmlNode *root_node;
   xmlNode *current_node;
+  GList *list;
 
   current_node =
     root_node = xmlDocGetRootElement(xml_script_factory->schema);
+
+  //TODO:JK: implement me
 }
 
 void
@@ -160,9 +164,19 @@ ags_xml_script_factory_create_prototype(AgsXmlScriptFactory *xml_script_factory)
 }
 
 xmlNode*
-ags_xml_script_factory_map(AgsXmlScriptFactory *xml_script_factory,
-			   AgsScriptObject *script_object)
+ags_xml_script_factory_find_prototype(AgsXmlScriptFactory *xml_script_factory)
 {
+  GList *current;
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_xml_script_factory_map(AgsXmlScriptFactory *xml_script_factory,
+			   AgsScriptObject *script_object,
+			   GError **error)
+{
+  //TODO:JK: implement me
 }
 
 AgsXmlScriptFactory*
