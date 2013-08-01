@@ -95,20 +95,20 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
   script_object->launch = ags_script_object_real_launch;
 
   /* signals */
-  task_signals[MAP_XML] =
+  script_object_signals[MAP_XML] =
     g_signal_new("map_xml\0",
-		 G_TYPE_FROM_CLASS(task),
+		 G_TYPE_FROM_CLASS(script_object),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsTaskClass, map_xml),
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, map_xml),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-  task_signals[LAUNCH] =
+  script_object_signals[LAUNCH] =
     g_signal_new("launch\0",
-		 G_TYPE_FROM_CLASS(task),
+		 G_TYPE_FROM_CLASS(script_object),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsTaskClass, launch),
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, launch),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_OBJECT__VOID,
 		 G_TYPE_OBJECT, 0);

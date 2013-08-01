@@ -91,23 +91,14 @@ ags_xml_script_factory_class_init(AgsXmlScriptFactoryClass *xml_script_factory)
   xml_script_factory->launch = ags_xml_script_factory_real_launch;
 
   /* signals */
-  task_signals[MAP_XML] =
-    g_signal_new("map_xml\0",
-		 G_TYPE_FROM_CLASS(task),
+  xml_script_factory_signals[CREATE_PROTOTYPE] =
+    g_signal_new("create_prototype\0",
+		 G_TYPE_FROM_CLASS(xml_script_factory),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsTaskClass, map_xml),
+		 G_STRUCT_OFFSET(AgsXmlScriptFactoryClass, create_prototype),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
-
-  task_signals[LAUNCH] =
-    g_signal_new("launch\0",
-		 G_TYPE_FROM_CLASS(task),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsTaskClass, launch),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__VOID,
-		 G_TYPE_OBJECT, 0);
 }
 
 void
@@ -120,10 +111,9 @@ ags_xml_script_factory_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_xml_script_factory_init(AgsXmlScriptFactory *xml_script_factory)
 {
-  xml_script_factory->node = NULL;
-  xml_script_factory->id = NULL;
+  xml_script_factory->schema = xmlReadFile(AGS_XML_SCRIPT_FACTORY_DEFAULT_SCHEMA, NULL, 0);
 
-  xml_script_factory->retval = NULL;
+  xml_script_factory->prototype = NULL;
 }
 
 void
@@ -151,11 +141,22 @@ ags_xml_script_factory_finalize(GObject *gobject)
 void
 ags_xml_script_factory_real_create_prototype(AgsXmlScriptFactory *xml_script_factory)
 {
+  xmlNode *root_node;
+  xmlNode *current_node;
+
+  current_node =
+    root_node = xmlDocGetRootElement(xml_script_factory->schema);
 }
 
 void
 ags_xml_script_factory_create_prototype(AgsXmlScriptFactory *xml_script_factory)
 {
+  g_return_if_fail(AGS_IS_XML_SCRIPT_FACTORY(xml_script_factory));
+
+  g_object_ref(G_OBJECT(xml_script_factory));
+  g_signal_emit(G_OBJECT(xml_script_factory),
+		xml_script_factory_signals[CREATE_PROTOTYPE], 0);
+  g_object_unref(G_OBJECT(xml_script_factory));
 }
 
 xmlNode*
