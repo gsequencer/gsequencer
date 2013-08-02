@@ -27,6 +27,9 @@ void ags_script_array_connect(AgsConnectable *connectable);
 void ags_script_array_disconnect(AgsConnectable *connectable);
 void ags_script_array_finalize(GObject *gobject);
 
+void ags_script_array_launch(AgsScriptObject *script_object);
+void ags_script_array_tostring(AgsScriptObject *script_object);
+
 static gpointer ags_script_array_parent_class = NULL;
 
 GType
@@ -117,6 +120,18 @@ ags_script_array_finalize(GObject *gobject)
   script_array = AGS_SCRIPT_ARRAY(gobject);
 
   G_OBJECT_CLASS(ags_script_array_parent_class)->finalize(gobject);
+}
+
+void
+ags_script_array_launch(AgsScriptObject *script_object)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_script_array_tostring(AgsScriptObject *script_object)
+{
+  //TODO:JK: implement me
 }
 
 AgsScriptArray*

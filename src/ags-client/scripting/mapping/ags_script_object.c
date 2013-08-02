@@ -41,6 +41,12 @@ void ags_script_object_finalize(GObject *gobject);
 
 void ags_script_object_real_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_real_valueof(AgsScriptObject *script_object);
+
+AgsScriptObject* ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_object,
+								     guint flags);
+AgsScriptObject* ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_object,
+								    guint flags);
 
 enum{
   MAP_XML,
@@ -328,6 +334,25 @@ ags_script_object_tostring(AgsScriptObject *script_object)
 }
 
 AgsScriptObject*
+ags_script_object_real_valueof(AgsScriptObject *script_object)
+{
+  AgsScriptObject *first_match, *last_match;
+  xmlNode *node;
+
+  if((first_match = ags_script_object_find_flags_descending_first_match(script_object,
+									AGS_SCRIPT_OBJECT_LAUNCHED)) == NULL){
+    return(NULL);
+  }
+
+  last_match = ags_script_object_find_flags_descending_first_match(script_object,
+								   AGS_SCRIPT_OBJECT_LAUNCHED);
+
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+AgsScriptObject*
 ags_script_object_valueof(AgsScriptObject *script_object)
 {
   AgsScriptObject *retval;
@@ -341,6 +366,58 @@ ags_script_object_valueof(AgsScriptObject *script_object)
   g_object_unref(G_OBJECT(script_object));
 
   return(retval);
+}
+
+AgsScriptObject*
+ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_object,
+						    guint flags)
+{
+  AgsScriptObject *current, *value;
+
+  if((flags & (script_object->flags)) == flags){
+    return(current);
+  }
+
+  current = script_object->retval;
+
+  while(current != NULL){
+    value = ags_script_object_find_flags_descending(current,
+						    flags);
+    
+    if(value != NULL){
+      return(current);
+    }
+
+    current = current->next;
+  }
+
+  return(NULL);
+}
+
+AgsScriptObject*
+ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_object,
+						   guint flags)
+{
+  AgsScriptObject *current, *value;
+
+  current = script_object->retval;
+
+  while(current != NULL){
+    value = ags_script_object_find_flags_descending(current,
+						    flags);
+    
+    if(value != NULL){
+      return(current);
+    }
+
+    current = current->next;
+  }
+
+  if((flags & (script_object->flags)) == flags){
+    return(current);
+  }
+
+  return(NULL);
 }
 
 AgsScriptObject*
