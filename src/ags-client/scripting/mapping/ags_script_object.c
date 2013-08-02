@@ -35,6 +35,8 @@ AgsScriptObject* ags_script_real_object_launch(AgsScriptObject *script_object);
 enum{
   MAP_XML,
   LAUNCH,
+  TOSTRING,
+  VALUEOF,
   LAST_SIGNAL,
 };
 
@@ -93,6 +95,8 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
   /* AgsScriptObjectClass */
   script_object->map_xml = ags_script_object_real_map_xml;
   script_object->launch = ags_script_object_real_launch;
+  script_object->tostring = NULL;
+  script_object->valueof = NULL;
 
   /* signals */
   script_object_signals[MAP_XML] =
@@ -109,6 +113,24 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
 		 G_TYPE_FROM_CLASS(script_object),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsScriptObjectClass, launch),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_OBJECT__VOID,
+		 G_TYPE_OBJECT, 0);
+
+  script_object_signals[TOSTRING] =
+    g_signal_new("tostring\0",
+		 G_TYPE_FROM_CLASS(script_object),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, tostring),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_OBJECT__VOID,
+		 G_TYPE_OBJECT, 0);
+
+  script_object_signals[VALUEOF] =
+    g_signal_new("valueof\0",
+		 G_TYPE_FROM_CLASS(script_object),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, valueof),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_OBJECT__VOID,
 		 G_TYPE_OBJECT, 0);
@@ -183,6 +205,38 @@ ags_script_object_launch(AgsScriptObject *script_object)
   g_object_ref(G_OBJECT(script_object));
   g_signal_emit(G_OBJECT(script_object),
 		script_object_signals[LAUNCH], 0,
+		&retval);
+  g_object_unref(G_OBJECT(script_object));
+
+  return(retval);
+}
+
+gchar*
+ags_script_object_tostring(AgsScriptObject *script_object)
+{
+  AgsScriptObject *retval;
+
+  g_return_val_if_fail(AGS_IS_SCRIPT_OBJECT(script_object), NULL);
+
+  g_object_ref(G_OBJECT(script_object));
+  g_signal_emit(G_OBJECT(script_object),
+		script_object_signals[TOSTRING], 0,
+		&retval);
+  g_object_unref(G_OBJECT(script_object));
+
+  return(retval);
+}
+
+AgsScriptObject*
+ags_script_object_valueof(AgsScriptObject *script_object)
+{
+  AgsScriptObject *retval;
+
+  g_return_val_if_fail(AGS_IS_SCRIPT_OBJECT(script_object), NULL);
+
+  g_object_ref(G_OBJECT(script_object));
+  g_signal_emit(G_OBJECT(script_object),
+		script_object_signals[VALUEOF], 0,
 		&retval);
   g_object_unref(G_OBJECT(script_object));
 

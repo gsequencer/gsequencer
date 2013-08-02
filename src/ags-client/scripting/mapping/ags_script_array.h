@@ -32,14 +32,31 @@
 typedef struct _AgsScriptArray AgsScriptArray;
 typedef struct _AgsScriptArrayClass AgsScriptArrayClass;
 
+typedef enum{
+  AGS_SCRIPT_ARRAY_INT16    = 1,
+  AGS_SCRIPT_ARRAY_UINT16   = 1 << 1,
+  AGS_SCRIPT_ARRAY_INT32    = 1 << 2,
+  AGS_SCRIPT_ARRAY_UINT32   = 1 << 3,
+  AGS_SCRIPT_ARRAY_INT64    = 1 << 4,
+  AGS_SCRIPT_ARRAY_UINT64   = 1 << 5,
+  AGS_SCRIPT_ARRAY_CHAR     = 1 << 6,
+  AGS_SCRIPT_ARRAY_POINTER  = 1 << 7,
+  AGS_SCRIPT_ARRAY_UTF8     = 1 << 8,
+  AGS_SCRIPT_ARRAY_BASE64   = 1 << 9,
+}AgsScriptArrayFlags;
+
 struct _AgsScriptArray
 {
-  GObject object;
+  AgsScriptObject object;
+
+  guint flags;
+
+  gpointer array;
 };
 
 struct _AgsScriptArrayClass
 {
-  GObjectClass object;
+  AgsScriptObjectClass object;
 };
 
 GType ags_script_array_get_type();

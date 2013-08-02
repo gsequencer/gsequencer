@@ -57,12 +57,18 @@ struct _AgsScriptObjectClass
   void (*map_xml)(AgsScriptObject *script_object);
 
   AgsScriptObject* (*launch)(AgsScriptObject *script_object);
+
+  gchar* (*tostring)(AgsScriptObject *script_object);
+  AgsScriptObject* (*valueof)(AgsScriptObject *script_object);
 };
 
 GType ags_script_object_get_type();
 
 void ags_script_object_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object);
+
+gchar* ags_script_object_tostring(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_valueof(AgsScriptObject *script_object);
 
 AgsScriptObject* ags_script_object_new();
 

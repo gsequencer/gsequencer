@@ -77,6 +77,8 @@ ags_script_array_class_init(AgsScriptArrayClass *script_array)
   gobject = (GObjectClass *) script_array;
 
   gobject->finalize = ags_script_array_finalize;
+
+  /* AgsScriptArray */
 }
 
 void
@@ -89,7 +91,10 @@ ags_script_array_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_script_array_init(AgsScriptArray *script_array)
 {
-  //TODO:JK: implement me
+  script_array->flags |= (AGS_SCRIPT_ARRAY_CHAR |
+			  AGS_SCRIPT_ARRAY_BASE64);
+
+  script_array->array = NULL;
 }
 
 void
