@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags-client/scripting/mapping/ags_script_object.h>
+
 #define AGS_TYPE_SCRIPT_STACK                (ags_script_stack_get_type())
 #define AGS_SCRIPT_STACK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_STACK, AgsScriptStack))
 #define AGS_SCRIPT_STACK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_STACK, AgsScriptStackClass))
@@ -34,12 +36,12 @@ typedef struct _AgsScriptStackClass AgsScriptStackClass;
 
 struct _AgsScriptStack
 {
-  GObject object;
+  AgsScriptObject script_object;
 };
 
 struct _AgsScriptStackClass
 {
-  GObjectClass object;
+  AgsScriptObjectClass script_object;
 };
 
 GType ags_script_stack_get_type();

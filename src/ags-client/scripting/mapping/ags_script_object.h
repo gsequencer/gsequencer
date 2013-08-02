@@ -36,7 +36,7 @@ typedef struct _AgsScriptObjectClass AgsScriptObjectClass;
 
 typedef enum{
   AGS_SCRIPT_OBJECT_LAUNCHED        = 1,
-};
+}AgsScriptObjectFlags;
 
 struct _AgsScriptObject
 {
@@ -47,7 +47,7 @@ struct _AgsScriptObject
   GObject *script;
   
   xmlNode *node;
-  uuid *id;
+  gchar *id;
 
   AgsScriptObject *retval;
 };
@@ -60,7 +60,7 @@ struct _AgsScriptObjectClass
 
   AgsScriptObject* (*launch)(AgsScriptObject *script_object);
 
-  gchar* (*tostring)(AgsScriptObject *script_object);
+  AgsScriptObject* (*tostring)(AgsScriptObject *script_object);
   AgsScriptObject* (*valueof)(AgsScriptObject *script_object);
 };
 
@@ -69,7 +69,7 @@ GType ags_script_object_get_type();
 void ags_script_object_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object);
 
-gchar* ags_script_object_tostring(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_tostring(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_valueof(AgsScriptObject *script_object);
 
 AgsScriptObject* ags_script_object_new(GObject *script);

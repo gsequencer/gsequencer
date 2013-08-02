@@ -24,6 +24,9 @@
 
 #include <libxml/tree.h>
 
+#include <ags-client/scripting/ags_schema_factory.h>
+#include <ags-client/scripting/mapping/ags_script_object.h>
+
 #define AGS_TYPE_XML_SCRIPT_FACTORY                (ags_xml_script_factory_get_type())
 #define AGS_XML_SCRIPT_FACTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_XML_SCRIPT_FACTORY, AgsXmlScriptFactory))
 #define AGS_XML_SCRIPT_FACTORY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_XML_SCRIPT_FACTORY, AgsXmlScriptFactoryClass))

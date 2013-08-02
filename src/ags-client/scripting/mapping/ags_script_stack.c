@@ -16,9 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-client/scripting/ags_script_stack.h>
+#include <ags-client/scripting/mapping/ags_script_stack.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags-client/scripting/mapping/ags_script_object.h>
 
 void ags_script_stack_class_init(AgsScriptStackClass *script_stack);
 void ags_script_stack_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags-client/scripting/mapping/ags_script_object.h>
+
 #define AGS_TYPE_SCRIPT_PID                (ags_script_pid_get_type())
 #define AGS_SCRIPT_PID(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_PID, AgsScriptPid))
 #define AGS_SCRIPT_PID_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_PID, AgsScriptPidClass))
@@ -34,12 +36,12 @@ typedef struct _AgsScriptPidClass AgsScriptPidClass;
 
 struct _AgsScriptPid
 {
-  GObject object;
+  AgsScriptObject script_object;
 };
 
 struct _AgsScriptPidClass
 {
-  GObjectClass object;
+  AgsScriptObjectClass script_object;
 };
 
 GType ags_script_pid_get_type();

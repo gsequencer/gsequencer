@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-client/scripting/ags_script_do_while.h>
+#include <ags-client/scripting/mapping/ags_script_do_while.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
-void ags_script_do_while_class_init(AgsScriptArrayClass *script_do_while);
+void ags_script_do_while_class_init(AgsScriptControllerClass *script_do_while);
 void ags_script_do_while_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_script_do_while_init(AgsScriptArray *script_do_while);
+void ags_script_do_while_init(AgsScriptDoWhile *script_do_while);
 void ags_script_do_while_connect(AgsConnectable *connectable);
 void ags_script_do_while_disconnect(AgsConnectable *connectable);
 void ags_script_do_while_finalize(GObject *gobject);
@@ -36,13 +36,13 @@ ags_script_do_while_get_type()
 
   if(!ags_type_script_do_while){
     static const GTypeInfo ags_script_do_while_info = {
-      sizeof (AgsScriptArrayClass),
+      sizeof (AgsScriptControllerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_script_do_while_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsScriptArray),
+      sizeof (AgsScriptController),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_script_do_while_init,
     };
@@ -54,7 +54,7 @@ ags_script_do_while_get_type()
     };
 
     ags_type_script_do_while = g_type_register_static(AGS_TYPE_SCRIPT_CONTROLLER,
-						      "AgsScriptArray\0",
+						      "AgsScriptController\0",
 						      &ags_script_do_while_info,
 						      0);
     
@@ -67,7 +67,7 @@ ags_script_do_while_get_type()
 }
 
 void
-ags_script_do_while_class_init(AgsScriptArrayClass *script_do_while)
+ags_script_do_while_class_init(AgsScriptControllerClass *script_do_while)
 {
   GObjectClass *gobject;
 
@@ -87,7 +87,7 @@ ags_script_do_while_connectable_interface_init(AgsConnectableInterface *connecta
 }
 
 void
-ags_script_do_while_init(AgsScriptArray *script_do_while)
+ags_script_do_while_init(AgsScriptDoWhile *script_do_while)
 {
   //TODO:JK: implement me
 }
@@ -107,20 +107,20 @@ ags_script_do_while_disconnect(AgsConnectable *connectable)
 void
 ags_script_do_while_finalize(GObject *gobject)
 {
-  AgsScriptArray *script_do_while;
+  AgsScriptController *script_do_while;
 
   script_do_while = AGS_SCRIPT_DO_WHILE(gobject);
 
   G_OBJECT_CLASS(ags_script_do_while_parent_class)->finalize(gobject);
 }
 
-AgsScriptArray*
+AgsScriptDoWhile*
 ags_script_do_while_new()
 {
-  AgsScriptArray *script_do_while;
+  AgsScriptDoWhile *script_do_while;
 
-  script_do_while = (AgsScriptArray *) g_object_new(AGS_TYPE_SCRIPT_DO_WHILE,
-						    NULL);
+  script_do_while = (AgsScriptDoWhile *) g_object_new(AGS_TYPE_SCRIPT_DO_WHILE,
+						      NULL);
   
   return(script_do_while);
 }

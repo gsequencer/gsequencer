@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags-client/scripting/mapping/ags_script_controller.h>
+
 #define AGS_TYPE_SCRIPT_XPATH                (ags_script_xpath_get_type())
 #define AGS_SCRIPT_XPATH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_XPATH, AgsScriptXPath))
 #define AGS_SCRIPT_XPATH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_XPATH, AgsScriptXPathClass))
@@ -34,12 +36,12 @@ typedef struct _AgsScriptXPathClass AgsScriptXPathClass;
 
 struct _AgsScriptXPath
 {
-  GObject object;
+  AgsScriptController script_controller;
 };
 
 struct _AgsScriptXPathClass
 {
-  GObjectClass object;
+  AgsScriptControllerClass script_controller;
 };
 
 GType ags_script_xpath_get_type();

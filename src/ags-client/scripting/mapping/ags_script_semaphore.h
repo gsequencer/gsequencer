@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags-client/scripting/mapping/ags_script_object.h>
+
 #define AGS_TYPE_SCRIPT_SEMAPHORE                (ags_script_semaphore_get_type())
 #define AGS_SCRIPT_SEMAPHORE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_SEMAPHORE, AgsScriptSemaphore))
 #define AGS_SCRIPT_SEMAPHORE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_SEMAPHORE, AgsScriptSemaphoreClass))
@@ -34,12 +36,12 @@ typedef struct _AgsScriptSemaphoreClass AgsScriptSemaphoreClass;
 
 struct _AgsScriptSemaphore
 {
-  GObject object;
+  AgsScriptObject script_object;
 };
 
 struct _AgsScriptSemaphoreClass
 {
-  GObjectClass object;
+  AgsScriptObjectClass script_object;
 };
 
 GType ags_script_semaphore_get_type();

@@ -16,11 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-client/scripting/ags_script_object.h>
+#include <ags-client/scripting/mapping/ags_script_object.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags-client/object/ags_marshal.h>
+
+#include <ags-client/scripting/ags_script.h>
 
 void ags_script_object_class_init(AgsScriptObjectClass *script_object);
 void ags_script_object_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -38,7 +40,7 @@ void ags_script_object_disconnect(AgsConnectable *connectable);
 void ags_script_object_finalize(GObject *gobject);
 
 void ags_script_object_real_map_xml(AgsScriptObject *script_object);
-AgsScriptObject* ags_script_real_object_launch(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object);
 
 enum{
   MAP_XML,
@@ -289,7 +291,7 @@ ags_script_object_map_xml(AgsScriptObject *script_object)
 }
 
 AgsScriptObject*
-ags_script_real_object_launch(AgsScriptObject *script_object)
+ags_script_object_real_launch(AgsScriptObject *script_object)
 {
 }
 
@@ -309,7 +311,7 @@ ags_script_object_launch(AgsScriptObject *script_object)
   return(retval);
 }
 
-gchar*
+AgsScriptObject*
 ags_script_object_tostring(AgsScriptObject *script_object)
 {
   AgsScriptObject *retval;

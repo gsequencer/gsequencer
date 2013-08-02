@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags-client/scripting/mapping/ags_script_object.h>
+
 #define AGS_TYPE_SCRIPT_HOST                (ags_script_host_get_type())
 #define AGS_SCRIPT_HOST(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_HOST, AgsScriptHost))
 #define AGS_SCRIPT_HOST_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_HOST, AgsScriptHostClass))
@@ -34,12 +36,12 @@ typedef struct _AgsScriptHostClass AgsScriptHostClass;
 
 struct _AgsScriptHost
 {
-  GObject object;
+  AgsScriptObject script_object;
 };
 
 struct _AgsScriptHostClass
 {
-  GObjectClass object;
+  AgsScriptObjectClass script_object;
 };
 
 GType ags_script_host_get_type();

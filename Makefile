@@ -271,15 +271,48 @@ ags_OBJECTS = $(am_ags_OBJECTS)
 ags_DEPENDENCIES = libags.a
 ags_LINK = $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) $(LDFLAGS) \
 	-o $@
-am_agsclient_OBJECTS = agsclient-main.$(OBJEXT) \
-	agsclient-ags_client.$(OBJEXT) agsclient-ags_script.$(OBJEXT) \
-	agsclient-ags_client_window.$(OBJEXT) \
-	agsclient-ags_client_window_callbacks.$(OBJEXT) \
-	agsclient-ags_script_editor.$(OBJEXT) \
-	agsclient-ags_client_menu_bar.$(OBJEXT) \
+am_agsclient_OBJECTS =  \
 	agsclient-ags_client_menu_bar_callbacks.$(OBJEXT) \
+	agsclient-ags_client_window.$(OBJEXT) \
+	agsclient-ags_client_menu_bar.$(OBJEXT) \
+	agsclient-ags_script_editor.$(OBJEXT) \
+	agsclient-ags_client_window_callbacks.$(OBJEXT) \
+	agsclient-ags_client_toolbar.$(OBJEXT) \
 	agsclient-ags_client_log.$(OBJEXT) \
-	agsclient-ags_client_toolbar.$(OBJEXT)
+	agsclient-ags_script.$(OBJEXT) \
+	agsclient-ags_script_xmlrpc.$(OBJEXT) \
+	agsclient-ags_script_printf.$(OBJEXT) \
+	agsclient-ags_script_pop.$(OBJEXT) \
+	agsclient-ags_script_object.$(OBJEXT) \
+	agsclient-ags_script_scanf.$(OBJEXT) \
+	agsclient-ags_script_set.$(OBJEXT) \
+	agsclient-ags_script_sutex.$(OBJEXT) \
+	agsclient-ags_script_valueof.$(OBJEXT) \
+	agsclient-ags_script_fprintf.$(OBJEXT) \
+	agsclient-ags_script_switch.$(OBJEXT) \
+	agsclient-ags_script_xpath.$(OBJEXT) \
+	agsclient-ags_script_semaphore.$(OBJEXT) \
+	agsclient-ags_script_var.$(OBJEXT) \
+	agsclient-ags_script_do_while.$(OBJEXT) \
+	agsclient-ags_script_while.$(OBJEXT) \
+	agsclient-ags_script_stack.$(OBJEXT) \
+	agsclient-ags_script_host.$(OBJEXT) \
+	agsclient-ags_script_nanosleep.$(OBJEXT) \
+	agsclient-ags_script_fscanf.$(OBJEXT) \
+	agsclient-ags_script_controller.$(OBJEXT) \
+	agsclient-ags_script_tostring.$(OBJEXT) \
+	agsclient-ags_script_push.$(OBJEXT) \
+	agsclient-ags_script_function.$(OBJEXT) \
+	agsclient-ags_script_memcpy.$(OBJEXT) \
+	agsclient-ags_script_pid.$(OBJEXT) \
+	agsclient-ags_script_for.$(OBJEXT) \
+	agsclient-ags_script_break.$(OBJEXT) \
+	agsclient-ags_script_if.$(OBJEXT) \
+	agsclient-ags_script_array.$(OBJEXT) \
+	agsclient-ags_schema_factory.$(OBJEXT) \
+	agsclient-ags_xml_script_factory.$(OBJEXT) \
+	agsclient-ags_client.$(OBJEXT) agsclient-ags_marshal.$(OBJEXT) \
+	agsclient-main.$(OBJEXT)
 agsclient_OBJECTS = $(am_agsclient_OBJECTS)
 agsclient_DEPENDENCIES = libags.a
 agsclient_LINK = $(CCLD) $(agsclient_CFLAGS) $(CFLAGS) \
@@ -935,7 +968,90 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/server/ags_registry.c \
 	./src/ags/server/ags_remote_task.h \
 	./src/ags/server/ags_remote_task.c
-agsclient_SOURCES = ./src/ags-client/main.c ./src/ags-client/client/ags_client.h ./src/ags-client/client/ags_client.c ./src/ags-client/scripting/ags_script.h ./src/ags-client/scripting/ags_script.c ./src/ags-client/X/ags_client_window.h ./src/ags-client/X/ags_client_window.c ./src/ags-client/X/ags_client_window_callbacks.h ./src/ags-client/X/ags_client_window_callbacks.c ./src/ags-client/X/ags_script_editor.h ./src/ags-client/X/ags_script_editor.c ./src/ags-client/X/ags_client_menu_bar.h ./src/ags-client/X/ags_client_menu_bar.c ./src/ags-client/X/ags_client_menu_bar_callbacks.h ./src/ags-client/X/ags_client_menu_bar_callbacks.c ./src/ags-client/X/ags_client_log.h ./src/ags-client/X/ags_client_log.c ./src/ags-client/X/ags_client_toolbar.h ./src/ags-client/X/ags_client_toolbar.c
+agsclient_SOURCES =  \
+	./src/ags-client/X/ags_client_menu_bar_callbacks.c \
+	./src/ags-client/X/ags_client_window_callbacks.h \
+	./src/ags-client/X/ags_client_window.h \
+	./src/ags-client/X/ags_client_menu_bar_callbacks.h \
+	./src/ags-client/X/ags_client_toolbar.h \
+	./src/ags-client/X/ags_client_window.c \
+	./src/ags-client/X/ags_client_menu_bar.c \
+	./src/ags-client/X/ags_script_editor.c \
+	./src/ags-client/X/ags_client_log.h \
+	./src/ags-client/X/ags_client_menu_bar.h \
+	./src/ags-client/X/ags_client_window_callbacks.c \
+	./src/ags-client/X/ags_client_toolbar.c \
+	./src/ags-client/X/ags_client_log.c \
+	./src/ags-client/X/ags_script_editor.h \
+	./src/ags-client/scripting/ags_script.c \
+	./src/ags-client/scripting/ags_script.h \
+	./src/ags-client/scripting/ags_schema_factory.h \
+	./src/ags-client/scripting/mapping/ags_script_xpath.h \
+	./src/ags-client/scripting/mapping/ags_script_xmlrpc.h \
+	./src/ags-client/scripting/mapping/ags_script_xmlrpc.c \
+	./src/ags-client/scripting/mapping/ags_script_printf.c \
+	./src/ags-client/scripting/mapping/ags_script_pop.c \
+	./src/ags-client/scripting/mapping/ags_script_scanf.h \
+	./src/ags-client/scripting/mapping/ags_script_object.c \
+	./src/ags-client/scripting/mapping/ags_script_pid.h \
+	./src/ags-client/scripting/mapping/ags_script_sscanf.h \
+	./src/ags-client/scripting/mapping/ags_script_scanf.c \
+	./src/ags-client/scripting/mapping/ags_script_set.c \
+	./src/ags-client/scripting/mapping/ags_script_sutex.c \
+	./src/ags-client/scripting/mapping/ags_script_sutex.h \
+	./src/ags-client/scripting/mapping/ags_script_valueof.c \
+	./src/ags-client/scripting/mapping/ags_script_break.h \
+	./src/ags-client/scripting/mapping/ags_script_fprintf.c \
+	./src/ags-client/scripting/mapping/ags_script_controller.h \
+	./src/ags-client/scripting/mapping/ags_script_switch.c \
+	./src/ags-client/scripting/mapping/ags_script_printf.h \
+	./src/ags-client/scripting/mapping/ags_script_semaphore.h \
+	./src/ags-client/scripting/mapping/ags_script_xpath.c \
+	./src/ags-client/scripting/mapping/ags_script_pop.h \
+	./src/ags-client/scripting/mapping/ags_script_function.h \
+	./src/ags-client/scripting/mapping/ags_script_semaphore.c \
+	./src/ags-client/scripting/mapping/ags_script_var.c \
+	./src/ags-client/scripting/mapping/ags_script_do_while.h \
+	./src/ags-client/scripting/mapping/ags_script_host.h \
+	./src/ags-client/scripting/mapping/ags_script_switch.h \
+	./src/ags-client/scripting/mapping/ags_script_do_while.c \
+	./src/ags-client/scripting/mapping/ags_script_while.c \
+	./src/ags-client/scripting/mapping/ags_script_stack.c \
+	./src/ags-client/scripting/mapping/ags_script_nanosleep.h \
+	./src/ags-client/scripting/mapping/ags_script_host.c \
+	./src/ags-client/scripting/mapping/ags_script_if.h \
+	./src/ags-client/scripting/mapping/ags_script_stack.h \
+	./src/ags-client/scripting/mapping/ags_script_for.h \
+	./src/ags-client/scripting/mapping/ags_script_memcpy.h \
+	./src/ags-client/scripting/mapping/ags_script_nanosleep.c \
+	./src/ags-client/scripting/mapping/ags_script_while.h \
+	./src/ags-client/scripting/mapping/ags_script_fscanf.c \
+	./src/ags-client/scripting/mapping/ags_script_tostring.h \
+	./src/ags-client/scripting/mapping/ags_script_object.h \
+	./src/ags-client/scripting/mapping/ags_script_controller.c \
+	./src/ags-client/scripting/mapping/ags_script_tostring.c \
+	./src/ags-client/scripting/mapping/ags_script_push.c \
+	./src/ags-client/scripting/mapping/ags_script_function.c \
+	./src/ags-client/scripting/mapping/ags_script_array.h \
+	./src/ags-client/scripting/mapping/ags_script_valueof.h \
+	./src/ags-client/scripting/mapping/ags_script_memcpy.c \
+	./src/ags-client/scripting/mapping/ags_script_set.h \
+	./src/ags-client/scripting/mapping/ags_script_fprintf.h \
+	./src/ags-client/scripting/mapping/ags_script_pid.c \
+	./src/ags-client/scripting/mapping/ags_script_for.c \
+	./src/ags-client/scripting/mapping/ags_script_break.c \
+	./src/ags-client/scripting/mapping/ags_script_var.h \
+	./src/ags-client/scripting/mapping/ags_script_if.c \
+	./src/ags-client/scripting/mapping/ags_script_array.c \
+	./src/ags-client/scripting/mapping/ags_script_push.h \
+	./src/ags-client/scripting/mapping/ags_script_fscanf.h \
+	./src/ags-client/scripting/ags_schema_factory.c \
+	./src/ags-client/scripting/ags_xml_script_factory.h \
+	./src/ags-client/scripting/ags_xml_script_factory.c \
+	./src/ags-client/client/ags_client.c \
+	./src/ags-client/client/ags_client.h \
+	./src/ags-client/object/ags_marshal.h \
+	./src/ags-client/object/ags_marshal.c ./src/ags-client/main.c
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
 ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
@@ -1296,8 +1412,40 @@ include ./$(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Po
 include ./$(DEPDIR)/agsclient-ags_client_toolbar.Po
 include ./$(DEPDIR)/agsclient-ags_client_window.Po
 include ./$(DEPDIR)/agsclient-ags_client_window_callbacks.Po
+include ./$(DEPDIR)/agsclient-ags_marshal.Po
+include ./$(DEPDIR)/agsclient-ags_schema_factory.Po
 include ./$(DEPDIR)/agsclient-ags_script.Po
+include ./$(DEPDIR)/agsclient-ags_script_array.Po
+include ./$(DEPDIR)/agsclient-ags_script_break.Po
+include ./$(DEPDIR)/agsclient-ags_script_controller.Po
+include ./$(DEPDIR)/agsclient-ags_script_do_while.Po
 include ./$(DEPDIR)/agsclient-ags_script_editor.Po
+include ./$(DEPDIR)/agsclient-ags_script_for.Po
+include ./$(DEPDIR)/agsclient-ags_script_fprintf.Po
+include ./$(DEPDIR)/agsclient-ags_script_fscanf.Po
+include ./$(DEPDIR)/agsclient-ags_script_function.Po
+include ./$(DEPDIR)/agsclient-ags_script_host.Po
+include ./$(DEPDIR)/agsclient-ags_script_if.Po
+include ./$(DEPDIR)/agsclient-ags_script_memcpy.Po
+include ./$(DEPDIR)/agsclient-ags_script_nanosleep.Po
+include ./$(DEPDIR)/agsclient-ags_script_object.Po
+include ./$(DEPDIR)/agsclient-ags_script_pid.Po
+include ./$(DEPDIR)/agsclient-ags_script_pop.Po
+include ./$(DEPDIR)/agsclient-ags_script_printf.Po
+include ./$(DEPDIR)/agsclient-ags_script_push.Po
+include ./$(DEPDIR)/agsclient-ags_script_scanf.Po
+include ./$(DEPDIR)/agsclient-ags_script_semaphore.Po
+include ./$(DEPDIR)/agsclient-ags_script_set.Po
+include ./$(DEPDIR)/agsclient-ags_script_stack.Po
+include ./$(DEPDIR)/agsclient-ags_script_sutex.Po
+include ./$(DEPDIR)/agsclient-ags_script_switch.Po
+include ./$(DEPDIR)/agsclient-ags_script_tostring.Po
+include ./$(DEPDIR)/agsclient-ags_script_valueof.Po
+include ./$(DEPDIR)/agsclient-ags_script_var.Po
+include ./$(DEPDIR)/agsclient-ags_script_while.Po
+include ./$(DEPDIR)/agsclient-ags_script_xmlrpc.Po
+include ./$(DEPDIR)/agsclient-ags_script_xpath.Po
+include ./$(DEPDIR)/agsclient-ags_xml_script_factory.Po
 include ./$(DEPDIR)/agsclient-main.Po
 include ./$(DEPDIR)/libags_a-ags_connectable.Po
 include ./$(DEPDIR)/test-ags_test_thread.Po
@@ -4396,47 +4544,19 @@ ags-ags_remote_task.obj: ./src/ags/server/ags_remote_task.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_remote_task.obj `if test -f './src/ags/server/ags_remote_task.c'; then $(CYGPATH_W) './src/ags/server/ags_remote_task.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/server/ags_remote_task.c'; fi`
 
-agsclient-main.o: ./src/ags-client/main.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-main.o -MD -MP -MF $(DEPDIR)/agsclient-main.Tpo -c -o agsclient-main.o `test -f './src/ags-client/main.c' || echo '$(srcdir)/'`./src/ags-client/main.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-main.Tpo $(DEPDIR)/agsclient-main.Po
-#	$(AM_V_CC)source='./src/ags-client/main.c' object='agsclient-main.o' libtool=no \
+agsclient-ags_client_menu_bar_callbacks.o: ./src/ags-client/X/ags_client_menu_bar_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar_callbacks.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo -c -o agsclient-ags_client_menu_bar_callbacks.o `test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar_callbacks.c' object='agsclient-ags_client_menu_bar_callbacks.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-main.o `test -f './src/ags-client/main.c' || echo '$(srcdir)/'`./src/ags-client/main.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar_callbacks.o `test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar_callbacks.c
 
-agsclient-main.obj: ./src/ags-client/main.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-main.obj -MD -MP -MF $(DEPDIR)/agsclient-main.Tpo -c -o agsclient-main.obj `if test -f './src/ags-client/main.c'; then $(CYGPATH_W) './src/ags-client/main.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/main.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-main.Tpo $(DEPDIR)/agsclient-main.Po
-#	$(AM_V_CC)source='./src/ags-client/main.c' object='agsclient-main.obj' libtool=no \
+agsclient-ags_client_menu_bar_callbacks.obj: ./src/ags-client/X/ags_client_menu_bar_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar_callbacks.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo -c -o agsclient-ags_client_menu_bar_callbacks.obj `if test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar_callbacks.c' object='agsclient-ags_client_menu_bar_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-main.obj `if test -f './src/ags-client/main.c'; then $(CYGPATH_W) './src/ags-client/main.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/main.c'; fi`
-
-agsclient-ags_client.o: ./src/ags-client/client/ags_client.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client.Tpo -c -o agsclient-ags_client.o `test -f './src/ags-client/client/ags_client.c' || echo '$(srcdir)/'`./src/ags-client/client/ags_client.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client.Tpo $(DEPDIR)/agsclient-ags_client.Po
-#	$(AM_V_CC)source='./src/ags-client/client/ags_client.c' object='agsclient-ags_client.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client.o `test -f './src/ags-client/client/ags_client.c' || echo '$(srcdir)/'`./src/ags-client/client/ags_client.c
-
-agsclient-ags_client.obj: ./src/ags-client/client/ags_client.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client.Tpo -c -o agsclient-ags_client.obj `if test -f './src/ags-client/client/ags_client.c'; then $(CYGPATH_W) './src/ags-client/client/ags_client.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/client/ags_client.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client.Tpo $(DEPDIR)/agsclient-ags_client.Po
-#	$(AM_V_CC)source='./src/ags-client/client/ags_client.c' object='agsclient-ags_client.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client.obj `if test -f './src/ags-client/client/ags_client.c'; then $(CYGPATH_W) './src/ags-client/client/ags_client.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/client/ags_client.c'; fi`
-
-agsclient-ags_script.o: ./src/ags-client/scripting/ags_script.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script.Tpo -c -o agsclient-ags_script.o `test -f './src/ags-client/scripting/ags_script.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_script.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script.Tpo $(DEPDIR)/agsclient-ags_script.Po
-#	$(AM_V_CC)source='./src/ags-client/scripting/ags_script.c' object='agsclient-ags_script.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script.o `test -f './src/ags-client/scripting/ags_script.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_script.c
-
-agsclient-ags_script.obj: ./src/ags-client/scripting/ags_script.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script.Tpo -c -o agsclient-ags_script.obj `if test -f './src/ags-client/scripting/ags_script.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_script.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_script.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script.Tpo $(DEPDIR)/agsclient-ags_script.Po
-#	$(AM_V_CC)source='./src/ags-client/scripting/ags_script.c' object='agsclient-ags_script.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script.obj `if test -f './src/ags-client/scripting/ags_script.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_script.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_script.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar_callbacks.obj `if test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar_callbacks.c'; fi`
 
 agsclient-ags_client_window.o: ./src/ags-client/X/ags_client_window.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window.Tpo -c -o agsclient-ags_client_window.o `test -f './src/ags-client/X/ags_client_window.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_window.c
@@ -4452,19 +4572,19 @@ agsclient-ags_client_window.obj: ./src/ags-client/X/ags_client_window.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window.obj `if test -f './src/ags-client/X/ags_client_window.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window.c'; fi`
 
-agsclient-ags_client_window_callbacks.o: ./src/ags-client/X/ags_client_window_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window_callbacks.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo -c -o agsclient-ags_client_window_callbacks.o `test -f './src/ags-client/X/ags_client_window_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_window_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_window_callbacks.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_window_callbacks.c' object='agsclient-ags_client_window_callbacks.o' libtool=no \
+agsclient-ags_client_menu_bar.o: ./src/ags-client/X/ags_client_menu_bar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo -c -o agsclient-ags_client_menu_bar.o `test -f './src/ags-client/X/ags_client_menu_bar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar.c' object='agsclient-ags_client_menu_bar.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window_callbacks.o `test -f './src/ags-client/X/ags_client_window_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_window_callbacks.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar.o `test -f './src/ags-client/X/ags_client_menu_bar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar.c
 
-agsclient-ags_client_window_callbacks.obj: ./src/ags-client/X/ags_client_window_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window_callbacks.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo -c -o agsclient-ags_client_window_callbacks.obj `if test -f './src/ags-client/X/ags_client_window_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_window_callbacks.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_window_callbacks.c' object='agsclient-ags_client_window_callbacks.obj' libtool=no \
+agsclient-ags_client_menu_bar.obj: ./src/ags-client/X/ags_client_menu_bar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo -c -o agsclient-ags_client_menu_bar.obj `if test -f './src/ags-client/X/ags_client_menu_bar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar.c' object='agsclient-ags_client_menu_bar.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window_callbacks.obj `if test -f './src/ags-client/X/ags_client_window_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window_callbacks.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar.obj `if test -f './src/ags-client/X/ags_client_menu_bar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar.c'; fi`
 
 agsclient-ags_script_editor.o: ./src/ags-client/X/ags_script_editor.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_editor.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_editor.Tpo -c -o agsclient-ags_script_editor.o `test -f './src/ags-client/X/ags_script_editor.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_script_editor.c
@@ -4480,33 +4600,33 @@ agsclient-ags_script_editor.obj: ./src/ags-client/X/ags_script_editor.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_editor.obj `if test -f './src/ags-client/X/ags_script_editor.c'; then $(CYGPATH_W) './src/ags-client/X/ags_script_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_script_editor.c'; fi`
 
-agsclient-ags_client_menu_bar.o: ./src/ags-client/X/ags_client_menu_bar.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo -c -o agsclient-ags_client_menu_bar.o `test -f './src/ags-client/X/ags_client_menu_bar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar.c' object='agsclient-ags_client_menu_bar.o' libtool=no \
+agsclient-ags_client_window_callbacks.o: ./src/ags-client/X/ags_client_window_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window_callbacks.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo -c -o agsclient-ags_client_window_callbacks.o `test -f './src/ags-client/X/ags_client_window_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_window_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_window_callbacks.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_window_callbacks.c' object='agsclient-ags_client_window_callbacks.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar.o `test -f './src/ags-client/X/ags_client_menu_bar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window_callbacks.o `test -f './src/ags-client/X/ags_client_window_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_window_callbacks.c
 
-agsclient-ags_client_menu_bar.obj: ./src/ags-client/X/ags_client_menu_bar.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo -c -o agsclient-ags_client_menu_bar.obj `if test -f './src/ags-client/X/ags_client_menu_bar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar.c' object='agsclient-ags_client_menu_bar.obj' libtool=no \
+agsclient-ags_client_window_callbacks.obj: ./src/ags-client/X/ags_client_window_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_window_callbacks.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo -c -o agsclient-ags_client_window_callbacks.obj `if test -f './src/ags-client/X/ags_client_window_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_window_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_window_callbacks.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_window_callbacks.c' object='agsclient-ags_client_window_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar.obj `if test -f './src/ags-client/X/ags_client_menu_bar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_window_callbacks.obj `if test -f './src/ags-client/X/ags_client_window_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_window_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_window_callbacks.c'; fi`
 
-agsclient-ags_client_menu_bar_callbacks.o: ./src/ags-client/X/ags_client_menu_bar_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar_callbacks.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo -c -o agsclient-ags_client_menu_bar_callbacks.o `test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar_callbacks.c' object='agsclient-ags_client_menu_bar_callbacks.o' libtool=no \
+agsclient-ags_client_toolbar.o: ./src/ags-client/X/ags_client_toolbar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_toolbar.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_toolbar.Tpo -c -o agsclient-ags_client_toolbar.o `test -f './src/ags-client/X/ags_client_toolbar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_toolbar.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_toolbar.Tpo $(DEPDIR)/agsclient-ags_client_toolbar.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_toolbar.c' object='agsclient-ags_client_toolbar.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar_callbacks.o `test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_menu_bar_callbacks.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_toolbar.o `test -f './src/ags-client/X/ags_client_toolbar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_toolbar.c
 
-agsclient-ags_client_menu_bar_callbacks.obj: ./src/ags-client/X/ags_client_menu_bar_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_menu_bar_callbacks.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo -c -o agsclient-ags_client_menu_bar_callbacks.obj `if test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Tpo $(DEPDIR)/agsclient-ags_client_menu_bar_callbacks.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_menu_bar_callbacks.c' object='agsclient-ags_client_menu_bar_callbacks.obj' libtool=no \
+agsclient-ags_client_toolbar.obj: ./src/ags-client/X/ags_client_toolbar.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_toolbar.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_toolbar.Tpo -c -o agsclient-ags_client_toolbar.obj `if test -f './src/ags-client/X/ags_client_toolbar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_toolbar.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_toolbar.Tpo $(DEPDIR)/agsclient-ags_client_toolbar.Po
+#	$(AM_V_CC)source='./src/ags-client/X/ags_client_toolbar.c' object='agsclient-ags_client_toolbar.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_menu_bar_callbacks.obj `if test -f './src/ags-client/X/ags_client_menu_bar_callbacks.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_menu_bar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_menu_bar_callbacks.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_toolbar.obj `if test -f './src/ags-client/X/ags_client_toolbar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_toolbar.c'; fi`
 
 agsclient-ags_client_log.o: ./src/ags-client/X/ags_client_log.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_log.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_log.Tpo -c -o agsclient-ags_client_log.o `test -f './src/ags-client/X/ags_client_log.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_log.c
@@ -4522,19 +4642,495 @@ agsclient-ags_client_log.obj: ./src/ags-client/X/ags_client_log.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_log.obj `if test -f './src/ags-client/X/ags_client_log.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_log.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_log.c'; fi`
 
-agsclient-ags_client_toolbar.o: ./src/ags-client/X/ags_client_toolbar.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_toolbar.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client_toolbar.Tpo -c -o agsclient-ags_client_toolbar.o `test -f './src/ags-client/X/ags_client_toolbar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_toolbar.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_toolbar.Tpo $(DEPDIR)/agsclient-ags_client_toolbar.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_toolbar.c' object='agsclient-ags_client_toolbar.o' libtool=no \
+agsclient-ags_script.o: ./src/ags-client/scripting/ags_script.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script.Tpo -c -o agsclient-ags_script.o `test -f './src/ags-client/scripting/ags_script.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_script.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script.Tpo $(DEPDIR)/agsclient-ags_script.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_script.c' object='agsclient-ags_script.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_toolbar.o `test -f './src/ags-client/X/ags_client_toolbar.c' || echo '$(srcdir)/'`./src/ags-client/X/ags_client_toolbar.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script.o `test -f './src/ags-client/scripting/ags_script.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_script.c
 
-agsclient-ags_client_toolbar.obj: ./src/ags-client/X/ags_client_toolbar.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client_toolbar.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client_toolbar.Tpo -c -o agsclient-ags_client_toolbar.obj `if test -f './src/ags-client/X/ags_client_toolbar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_toolbar.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client_toolbar.Tpo $(DEPDIR)/agsclient-ags_client_toolbar.Po
-#	$(AM_V_CC)source='./src/ags-client/X/ags_client_toolbar.c' object='agsclient-ags_client_toolbar.obj' libtool=no \
+agsclient-ags_script.obj: ./src/ags-client/scripting/ags_script.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script.Tpo -c -o agsclient-ags_script.obj `if test -f './src/ags-client/scripting/ags_script.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_script.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_script.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script.Tpo $(DEPDIR)/agsclient-ags_script.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_script.c' object='agsclient-ags_script.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_toolbar.obj `if test -f './src/ags-client/X/ags_client_toolbar.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_toolbar.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script.obj `if test -f './src/ags-client/scripting/ags_script.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_script.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_script.c'; fi`
+
+agsclient-ags_script_xmlrpc.o: ./src/ags-client/scripting/mapping/ags_script_xmlrpc.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_xmlrpc.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_xmlrpc.Tpo -c -o agsclient-ags_script_xmlrpc.o `test -f './src/ags-client/scripting/mapping/ags_script_xmlrpc.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_xmlrpc.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_xmlrpc.Tpo $(DEPDIR)/agsclient-ags_script_xmlrpc.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_xmlrpc.c' object='agsclient-ags_script_xmlrpc.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_xmlrpc.o `test -f './src/ags-client/scripting/mapping/ags_script_xmlrpc.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_xmlrpc.c
+
+agsclient-ags_script_xmlrpc.obj: ./src/ags-client/scripting/mapping/ags_script_xmlrpc.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_xmlrpc.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_xmlrpc.Tpo -c -o agsclient-ags_script_xmlrpc.obj `if test -f './src/ags-client/scripting/mapping/ags_script_xmlrpc.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_xmlrpc.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_xmlrpc.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_xmlrpc.Tpo $(DEPDIR)/agsclient-ags_script_xmlrpc.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_xmlrpc.c' object='agsclient-ags_script_xmlrpc.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_xmlrpc.obj `if test -f './src/ags-client/scripting/mapping/ags_script_xmlrpc.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_xmlrpc.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_xmlrpc.c'; fi`
+
+agsclient-ags_script_printf.o: ./src/ags-client/scripting/mapping/ags_script_printf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_printf.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_printf.Tpo -c -o agsclient-ags_script_printf.o `test -f './src/ags-client/scripting/mapping/ags_script_printf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_printf.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_printf.Tpo $(DEPDIR)/agsclient-ags_script_printf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_printf.c' object='agsclient-ags_script_printf.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_printf.o `test -f './src/ags-client/scripting/mapping/ags_script_printf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_printf.c
+
+agsclient-ags_script_printf.obj: ./src/ags-client/scripting/mapping/ags_script_printf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_printf.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_printf.Tpo -c -o agsclient-ags_script_printf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_printf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_printf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_printf.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_printf.Tpo $(DEPDIR)/agsclient-ags_script_printf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_printf.c' object='agsclient-ags_script_printf.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_printf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_printf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_printf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_printf.c'; fi`
+
+agsclient-ags_script_pop.o: ./src/ags-client/scripting/mapping/ags_script_pop.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_pop.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_pop.Tpo -c -o agsclient-ags_script_pop.o `test -f './src/ags-client/scripting/mapping/ags_script_pop.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_pop.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_pop.Tpo $(DEPDIR)/agsclient-ags_script_pop.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_pop.c' object='agsclient-ags_script_pop.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_pop.o `test -f './src/ags-client/scripting/mapping/ags_script_pop.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_pop.c
+
+agsclient-ags_script_pop.obj: ./src/ags-client/scripting/mapping/ags_script_pop.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_pop.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_pop.Tpo -c -o agsclient-ags_script_pop.obj `if test -f './src/ags-client/scripting/mapping/ags_script_pop.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_pop.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_pop.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_pop.Tpo $(DEPDIR)/agsclient-ags_script_pop.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_pop.c' object='agsclient-ags_script_pop.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_pop.obj `if test -f './src/ags-client/scripting/mapping/ags_script_pop.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_pop.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_pop.c'; fi`
+
+agsclient-ags_script_object.o: ./src/ags-client/scripting/mapping/ags_script_object.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_object.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_object.Tpo -c -o agsclient-ags_script_object.o `test -f './src/ags-client/scripting/mapping/ags_script_object.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_object.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_object.Tpo $(DEPDIR)/agsclient-ags_script_object.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_object.c' object='agsclient-ags_script_object.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_object.o `test -f './src/ags-client/scripting/mapping/ags_script_object.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_object.c
+
+agsclient-ags_script_object.obj: ./src/ags-client/scripting/mapping/ags_script_object.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_object.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_object.Tpo -c -o agsclient-ags_script_object.obj `if test -f './src/ags-client/scripting/mapping/ags_script_object.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_object.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_object.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_object.Tpo $(DEPDIR)/agsclient-ags_script_object.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_object.c' object='agsclient-ags_script_object.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_object.obj `if test -f './src/ags-client/scripting/mapping/ags_script_object.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_object.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_object.c'; fi`
+
+agsclient-ags_script_scanf.o: ./src/ags-client/scripting/mapping/ags_script_scanf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_scanf.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_scanf.Tpo -c -o agsclient-ags_script_scanf.o `test -f './src/ags-client/scripting/mapping/ags_script_scanf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_scanf.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_scanf.Tpo $(DEPDIR)/agsclient-ags_script_scanf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_scanf.c' object='agsclient-ags_script_scanf.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_scanf.o `test -f './src/ags-client/scripting/mapping/ags_script_scanf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_scanf.c
+
+agsclient-ags_script_scanf.obj: ./src/ags-client/scripting/mapping/ags_script_scanf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_scanf.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_scanf.Tpo -c -o agsclient-ags_script_scanf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_scanf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_scanf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_scanf.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_scanf.Tpo $(DEPDIR)/agsclient-ags_script_scanf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_scanf.c' object='agsclient-ags_script_scanf.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_scanf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_scanf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_scanf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_scanf.c'; fi`
+
+agsclient-ags_script_set.o: ./src/ags-client/scripting/mapping/ags_script_set.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_set.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_set.Tpo -c -o agsclient-ags_script_set.o `test -f './src/ags-client/scripting/mapping/ags_script_set.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_set.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_set.Tpo $(DEPDIR)/agsclient-ags_script_set.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_set.c' object='agsclient-ags_script_set.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_set.o `test -f './src/ags-client/scripting/mapping/ags_script_set.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_set.c
+
+agsclient-ags_script_set.obj: ./src/ags-client/scripting/mapping/ags_script_set.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_set.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_set.Tpo -c -o agsclient-ags_script_set.obj `if test -f './src/ags-client/scripting/mapping/ags_script_set.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_set.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_set.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_set.Tpo $(DEPDIR)/agsclient-ags_script_set.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_set.c' object='agsclient-ags_script_set.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_set.obj `if test -f './src/ags-client/scripting/mapping/ags_script_set.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_set.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_set.c'; fi`
+
+agsclient-ags_script_sutex.o: ./src/ags-client/scripting/mapping/ags_script_sutex.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_sutex.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_sutex.Tpo -c -o agsclient-ags_script_sutex.o `test -f './src/ags-client/scripting/mapping/ags_script_sutex.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_sutex.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_sutex.Tpo $(DEPDIR)/agsclient-ags_script_sutex.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_sutex.c' object='agsclient-ags_script_sutex.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_sutex.o `test -f './src/ags-client/scripting/mapping/ags_script_sutex.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_sutex.c
+
+agsclient-ags_script_sutex.obj: ./src/ags-client/scripting/mapping/ags_script_sutex.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_sutex.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_sutex.Tpo -c -o agsclient-ags_script_sutex.obj `if test -f './src/ags-client/scripting/mapping/ags_script_sutex.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_sutex.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_sutex.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_sutex.Tpo $(DEPDIR)/agsclient-ags_script_sutex.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_sutex.c' object='agsclient-ags_script_sutex.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_sutex.obj `if test -f './src/ags-client/scripting/mapping/ags_script_sutex.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_sutex.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_sutex.c'; fi`
+
+agsclient-ags_script_valueof.o: ./src/ags-client/scripting/mapping/ags_script_valueof.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_valueof.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_valueof.Tpo -c -o agsclient-ags_script_valueof.o `test -f './src/ags-client/scripting/mapping/ags_script_valueof.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_valueof.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_valueof.Tpo $(DEPDIR)/agsclient-ags_script_valueof.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_valueof.c' object='agsclient-ags_script_valueof.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_valueof.o `test -f './src/ags-client/scripting/mapping/ags_script_valueof.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_valueof.c
+
+agsclient-ags_script_valueof.obj: ./src/ags-client/scripting/mapping/ags_script_valueof.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_valueof.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_valueof.Tpo -c -o agsclient-ags_script_valueof.obj `if test -f './src/ags-client/scripting/mapping/ags_script_valueof.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_valueof.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_valueof.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_valueof.Tpo $(DEPDIR)/agsclient-ags_script_valueof.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_valueof.c' object='agsclient-ags_script_valueof.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_valueof.obj `if test -f './src/ags-client/scripting/mapping/ags_script_valueof.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_valueof.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_valueof.c'; fi`
+
+agsclient-ags_script_fprintf.o: ./src/ags-client/scripting/mapping/ags_script_fprintf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_fprintf.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_fprintf.Tpo -c -o agsclient-ags_script_fprintf.o `test -f './src/ags-client/scripting/mapping/ags_script_fprintf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_fprintf.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_fprintf.Tpo $(DEPDIR)/agsclient-ags_script_fprintf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_fprintf.c' object='agsclient-ags_script_fprintf.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_fprintf.o `test -f './src/ags-client/scripting/mapping/ags_script_fprintf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_fprintf.c
+
+agsclient-ags_script_fprintf.obj: ./src/ags-client/scripting/mapping/ags_script_fprintf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_fprintf.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_fprintf.Tpo -c -o agsclient-ags_script_fprintf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_fprintf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_fprintf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_fprintf.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_fprintf.Tpo $(DEPDIR)/agsclient-ags_script_fprintf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_fprintf.c' object='agsclient-ags_script_fprintf.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_fprintf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_fprintf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_fprintf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_fprintf.c'; fi`
+
+agsclient-ags_script_switch.o: ./src/ags-client/scripting/mapping/ags_script_switch.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_switch.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_switch.Tpo -c -o agsclient-ags_script_switch.o `test -f './src/ags-client/scripting/mapping/ags_script_switch.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_switch.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_switch.Tpo $(DEPDIR)/agsclient-ags_script_switch.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_switch.c' object='agsclient-ags_script_switch.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_switch.o `test -f './src/ags-client/scripting/mapping/ags_script_switch.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_switch.c
+
+agsclient-ags_script_switch.obj: ./src/ags-client/scripting/mapping/ags_script_switch.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_switch.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_switch.Tpo -c -o agsclient-ags_script_switch.obj `if test -f './src/ags-client/scripting/mapping/ags_script_switch.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_switch.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_switch.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_switch.Tpo $(DEPDIR)/agsclient-ags_script_switch.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_switch.c' object='agsclient-ags_script_switch.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_switch.obj `if test -f './src/ags-client/scripting/mapping/ags_script_switch.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_switch.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_switch.c'; fi`
+
+agsclient-ags_script_xpath.o: ./src/ags-client/scripting/mapping/ags_script_xpath.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_xpath.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_xpath.Tpo -c -o agsclient-ags_script_xpath.o `test -f './src/ags-client/scripting/mapping/ags_script_xpath.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_xpath.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_xpath.Tpo $(DEPDIR)/agsclient-ags_script_xpath.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_xpath.c' object='agsclient-ags_script_xpath.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_xpath.o `test -f './src/ags-client/scripting/mapping/ags_script_xpath.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_xpath.c
+
+agsclient-ags_script_xpath.obj: ./src/ags-client/scripting/mapping/ags_script_xpath.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_xpath.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_xpath.Tpo -c -o agsclient-ags_script_xpath.obj `if test -f './src/ags-client/scripting/mapping/ags_script_xpath.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_xpath.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_xpath.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_xpath.Tpo $(DEPDIR)/agsclient-ags_script_xpath.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_xpath.c' object='agsclient-ags_script_xpath.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_xpath.obj `if test -f './src/ags-client/scripting/mapping/ags_script_xpath.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_xpath.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_xpath.c'; fi`
+
+agsclient-ags_script_semaphore.o: ./src/ags-client/scripting/mapping/ags_script_semaphore.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_semaphore.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_semaphore.Tpo -c -o agsclient-ags_script_semaphore.o `test -f './src/ags-client/scripting/mapping/ags_script_semaphore.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_semaphore.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_semaphore.Tpo $(DEPDIR)/agsclient-ags_script_semaphore.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_semaphore.c' object='agsclient-ags_script_semaphore.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_semaphore.o `test -f './src/ags-client/scripting/mapping/ags_script_semaphore.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_semaphore.c
+
+agsclient-ags_script_semaphore.obj: ./src/ags-client/scripting/mapping/ags_script_semaphore.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_semaphore.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_semaphore.Tpo -c -o agsclient-ags_script_semaphore.obj `if test -f './src/ags-client/scripting/mapping/ags_script_semaphore.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_semaphore.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_semaphore.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_semaphore.Tpo $(DEPDIR)/agsclient-ags_script_semaphore.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_semaphore.c' object='agsclient-ags_script_semaphore.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_semaphore.obj `if test -f './src/ags-client/scripting/mapping/ags_script_semaphore.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_semaphore.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_semaphore.c'; fi`
+
+agsclient-ags_script_var.o: ./src/ags-client/scripting/mapping/ags_script_var.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_var.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_var.Tpo -c -o agsclient-ags_script_var.o `test -f './src/ags-client/scripting/mapping/ags_script_var.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_var.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_var.Tpo $(DEPDIR)/agsclient-ags_script_var.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_var.c' object='agsclient-ags_script_var.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_var.o `test -f './src/ags-client/scripting/mapping/ags_script_var.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_var.c
+
+agsclient-ags_script_var.obj: ./src/ags-client/scripting/mapping/ags_script_var.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_var.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_var.Tpo -c -o agsclient-ags_script_var.obj `if test -f './src/ags-client/scripting/mapping/ags_script_var.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_var.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_var.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_var.Tpo $(DEPDIR)/agsclient-ags_script_var.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_var.c' object='agsclient-ags_script_var.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_var.obj `if test -f './src/ags-client/scripting/mapping/ags_script_var.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_var.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_var.c'; fi`
+
+agsclient-ags_script_do_while.o: ./src/ags-client/scripting/mapping/ags_script_do_while.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_do_while.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_do_while.Tpo -c -o agsclient-ags_script_do_while.o `test -f './src/ags-client/scripting/mapping/ags_script_do_while.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_do_while.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_do_while.Tpo $(DEPDIR)/agsclient-ags_script_do_while.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_do_while.c' object='agsclient-ags_script_do_while.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_do_while.o `test -f './src/ags-client/scripting/mapping/ags_script_do_while.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_do_while.c
+
+agsclient-ags_script_do_while.obj: ./src/ags-client/scripting/mapping/ags_script_do_while.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_do_while.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_do_while.Tpo -c -o agsclient-ags_script_do_while.obj `if test -f './src/ags-client/scripting/mapping/ags_script_do_while.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_do_while.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_do_while.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_do_while.Tpo $(DEPDIR)/agsclient-ags_script_do_while.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_do_while.c' object='agsclient-ags_script_do_while.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_do_while.obj `if test -f './src/ags-client/scripting/mapping/ags_script_do_while.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_do_while.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_do_while.c'; fi`
+
+agsclient-ags_script_while.o: ./src/ags-client/scripting/mapping/ags_script_while.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_while.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_while.Tpo -c -o agsclient-ags_script_while.o `test -f './src/ags-client/scripting/mapping/ags_script_while.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_while.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_while.Tpo $(DEPDIR)/agsclient-ags_script_while.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_while.c' object='agsclient-ags_script_while.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_while.o `test -f './src/ags-client/scripting/mapping/ags_script_while.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_while.c
+
+agsclient-ags_script_while.obj: ./src/ags-client/scripting/mapping/ags_script_while.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_while.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_while.Tpo -c -o agsclient-ags_script_while.obj `if test -f './src/ags-client/scripting/mapping/ags_script_while.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_while.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_while.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_while.Tpo $(DEPDIR)/agsclient-ags_script_while.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_while.c' object='agsclient-ags_script_while.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_while.obj `if test -f './src/ags-client/scripting/mapping/ags_script_while.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_while.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_while.c'; fi`
+
+agsclient-ags_script_stack.o: ./src/ags-client/scripting/mapping/ags_script_stack.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_stack.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_stack.Tpo -c -o agsclient-ags_script_stack.o `test -f './src/ags-client/scripting/mapping/ags_script_stack.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_stack.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_stack.Tpo $(DEPDIR)/agsclient-ags_script_stack.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_stack.c' object='agsclient-ags_script_stack.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_stack.o `test -f './src/ags-client/scripting/mapping/ags_script_stack.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_stack.c
+
+agsclient-ags_script_stack.obj: ./src/ags-client/scripting/mapping/ags_script_stack.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_stack.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_stack.Tpo -c -o agsclient-ags_script_stack.obj `if test -f './src/ags-client/scripting/mapping/ags_script_stack.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_stack.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_stack.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_stack.Tpo $(DEPDIR)/agsclient-ags_script_stack.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_stack.c' object='agsclient-ags_script_stack.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_stack.obj `if test -f './src/ags-client/scripting/mapping/ags_script_stack.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_stack.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_stack.c'; fi`
+
+agsclient-ags_script_host.o: ./src/ags-client/scripting/mapping/ags_script_host.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_host.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_host.Tpo -c -o agsclient-ags_script_host.o `test -f './src/ags-client/scripting/mapping/ags_script_host.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_host.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_host.Tpo $(DEPDIR)/agsclient-ags_script_host.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_host.c' object='agsclient-ags_script_host.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_host.o `test -f './src/ags-client/scripting/mapping/ags_script_host.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_host.c
+
+agsclient-ags_script_host.obj: ./src/ags-client/scripting/mapping/ags_script_host.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_host.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_host.Tpo -c -o agsclient-ags_script_host.obj `if test -f './src/ags-client/scripting/mapping/ags_script_host.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_host.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_host.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_host.Tpo $(DEPDIR)/agsclient-ags_script_host.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_host.c' object='agsclient-ags_script_host.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_host.obj `if test -f './src/ags-client/scripting/mapping/ags_script_host.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_host.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_host.c'; fi`
+
+agsclient-ags_script_nanosleep.o: ./src/ags-client/scripting/mapping/ags_script_nanosleep.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_nanosleep.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_nanosleep.Tpo -c -o agsclient-ags_script_nanosleep.o `test -f './src/ags-client/scripting/mapping/ags_script_nanosleep.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_nanosleep.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_nanosleep.Tpo $(DEPDIR)/agsclient-ags_script_nanosleep.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_nanosleep.c' object='agsclient-ags_script_nanosleep.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_nanosleep.o `test -f './src/ags-client/scripting/mapping/ags_script_nanosleep.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_nanosleep.c
+
+agsclient-ags_script_nanosleep.obj: ./src/ags-client/scripting/mapping/ags_script_nanosleep.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_nanosleep.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_nanosleep.Tpo -c -o agsclient-ags_script_nanosleep.obj `if test -f './src/ags-client/scripting/mapping/ags_script_nanosleep.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_nanosleep.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_nanosleep.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_nanosleep.Tpo $(DEPDIR)/agsclient-ags_script_nanosleep.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_nanosleep.c' object='agsclient-ags_script_nanosleep.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_nanosleep.obj `if test -f './src/ags-client/scripting/mapping/ags_script_nanosleep.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_nanosleep.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_nanosleep.c'; fi`
+
+agsclient-ags_script_fscanf.o: ./src/ags-client/scripting/mapping/ags_script_fscanf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_fscanf.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_fscanf.Tpo -c -o agsclient-ags_script_fscanf.o `test -f './src/ags-client/scripting/mapping/ags_script_fscanf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_fscanf.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_fscanf.Tpo $(DEPDIR)/agsclient-ags_script_fscanf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_fscanf.c' object='agsclient-ags_script_fscanf.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_fscanf.o `test -f './src/ags-client/scripting/mapping/ags_script_fscanf.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_fscanf.c
+
+agsclient-ags_script_fscanf.obj: ./src/ags-client/scripting/mapping/ags_script_fscanf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_fscanf.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_fscanf.Tpo -c -o agsclient-ags_script_fscanf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_fscanf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_fscanf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_fscanf.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_fscanf.Tpo $(DEPDIR)/agsclient-ags_script_fscanf.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_fscanf.c' object='agsclient-ags_script_fscanf.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_fscanf.obj `if test -f './src/ags-client/scripting/mapping/ags_script_fscanf.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_fscanf.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_fscanf.c'; fi`
+
+agsclient-ags_script_controller.o: ./src/ags-client/scripting/mapping/ags_script_controller.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_controller.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_controller.Tpo -c -o agsclient-ags_script_controller.o `test -f './src/ags-client/scripting/mapping/ags_script_controller.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_controller.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_controller.Tpo $(DEPDIR)/agsclient-ags_script_controller.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_controller.c' object='agsclient-ags_script_controller.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_controller.o `test -f './src/ags-client/scripting/mapping/ags_script_controller.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_controller.c
+
+agsclient-ags_script_controller.obj: ./src/ags-client/scripting/mapping/ags_script_controller.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_controller.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_controller.Tpo -c -o agsclient-ags_script_controller.obj `if test -f './src/ags-client/scripting/mapping/ags_script_controller.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_controller.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_controller.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_controller.Tpo $(DEPDIR)/agsclient-ags_script_controller.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_controller.c' object='agsclient-ags_script_controller.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_controller.obj `if test -f './src/ags-client/scripting/mapping/ags_script_controller.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_controller.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_controller.c'; fi`
+
+agsclient-ags_script_tostring.o: ./src/ags-client/scripting/mapping/ags_script_tostring.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_tostring.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_tostring.Tpo -c -o agsclient-ags_script_tostring.o `test -f './src/ags-client/scripting/mapping/ags_script_tostring.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_tostring.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_tostring.Tpo $(DEPDIR)/agsclient-ags_script_tostring.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_tostring.c' object='agsclient-ags_script_tostring.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_tostring.o `test -f './src/ags-client/scripting/mapping/ags_script_tostring.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_tostring.c
+
+agsclient-ags_script_tostring.obj: ./src/ags-client/scripting/mapping/ags_script_tostring.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_tostring.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_tostring.Tpo -c -o agsclient-ags_script_tostring.obj `if test -f './src/ags-client/scripting/mapping/ags_script_tostring.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_tostring.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_tostring.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_tostring.Tpo $(DEPDIR)/agsclient-ags_script_tostring.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_tostring.c' object='agsclient-ags_script_tostring.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_tostring.obj `if test -f './src/ags-client/scripting/mapping/ags_script_tostring.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_tostring.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_tostring.c'; fi`
+
+agsclient-ags_script_push.o: ./src/ags-client/scripting/mapping/ags_script_push.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_push.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_push.Tpo -c -o agsclient-ags_script_push.o `test -f './src/ags-client/scripting/mapping/ags_script_push.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_push.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_push.Tpo $(DEPDIR)/agsclient-ags_script_push.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_push.c' object='agsclient-ags_script_push.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_push.o `test -f './src/ags-client/scripting/mapping/ags_script_push.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_push.c
+
+agsclient-ags_script_push.obj: ./src/ags-client/scripting/mapping/ags_script_push.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_push.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_push.Tpo -c -o agsclient-ags_script_push.obj `if test -f './src/ags-client/scripting/mapping/ags_script_push.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_push.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_push.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_push.Tpo $(DEPDIR)/agsclient-ags_script_push.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_push.c' object='agsclient-ags_script_push.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_push.obj `if test -f './src/ags-client/scripting/mapping/ags_script_push.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_push.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_push.c'; fi`
+
+agsclient-ags_script_function.o: ./src/ags-client/scripting/mapping/ags_script_function.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_function.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_function.Tpo -c -o agsclient-ags_script_function.o `test -f './src/ags-client/scripting/mapping/ags_script_function.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_function.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_function.Tpo $(DEPDIR)/agsclient-ags_script_function.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_function.c' object='agsclient-ags_script_function.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_function.o `test -f './src/ags-client/scripting/mapping/ags_script_function.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_function.c
+
+agsclient-ags_script_function.obj: ./src/ags-client/scripting/mapping/ags_script_function.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_function.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_function.Tpo -c -o agsclient-ags_script_function.obj `if test -f './src/ags-client/scripting/mapping/ags_script_function.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_function.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_function.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_function.Tpo $(DEPDIR)/agsclient-ags_script_function.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_function.c' object='agsclient-ags_script_function.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_function.obj `if test -f './src/ags-client/scripting/mapping/ags_script_function.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_function.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_function.c'; fi`
+
+agsclient-ags_script_memcpy.o: ./src/ags-client/scripting/mapping/ags_script_memcpy.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_memcpy.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_memcpy.Tpo -c -o agsclient-ags_script_memcpy.o `test -f './src/ags-client/scripting/mapping/ags_script_memcpy.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_memcpy.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_memcpy.Tpo $(DEPDIR)/agsclient-ags_script_memcpy.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_memcpy.c' object='agsclient-ags_script_memcpy.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_memcpy.o `test -f './src/ags-client/scripting/mapping/ags_script_memcpy.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_memcpy.c
+
+agsclient-ags_script_memcpy.obj: ./src/ags-client/scripting/mapping/ags_script_memcpy.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_memcpy.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_memcpy.Tpo -c -o agsclient-ags_script_memcpy.obj `if test -f './src/ags-client/scripting/mapping/ags_script_memcpy.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_memcpy.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_memcpy.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_memcpy.Tpo $(DEPDIR)/agsclient-ags_script_memcpy.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_memcpy.c' object='agsclient-ags_script_memcpy.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_memcpy.obj `if test -f './src/ags-client/scripting/mapping/ags_script_memcpy.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_memcpy.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_memcpy.c'; fi`
+
+agsclient-ags_script_pid.o: ./src/ags-client/scripting/mapping/ags_script_pid.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_pid.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_pid.Tpo -c -o agsclient-ags_script_pid.o `test -f './src/ags-client/scripting/mapping/ags_script_pid.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_pid.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_pid.Tpo $(DEPDIR)/agsclient-ags_script_pid.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_pid.c' object='agsclient-ags_script_pid.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_pid.o `test -f './src/ags-client/scripting/mapping/ags_script_pid.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_pid.c
+
+agsclient-ags_script_pid.obj: ./src/ags-client/scripting/mapping/ags_script_pid.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_pid.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_pid.Tpo -c -o agsclient-ags_script_pid.obj `if test -f './src/ags-client/scripting/mapping/ags_script_pid.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_pid.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_pid.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_pid.Tpo $(DEPDIR)/agsclient-ags_script_pid.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_pid.c' object='agsclient-ags_script_pid.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_pid.obj `if test -f './src/ags-client/scripting/mapping/ags_script_pid.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_pid.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_pid.c'; fi`
+
+agsclient-ags_script_for.o: ./src/ags-client/scripting/mapping/ags_script_for.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_for.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_for.Tpo -c -o agsclient-ags_script_for.o `test -f './src/ags-client/scripting/mapping/ags_script_for.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_for.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_for.Tpo $(DEPDIR)/agsclient-ags_script_for.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_for.c' object='agsclient-ags_script_for.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_for.o `test -f './src/ags-client/scripting/mapping/ags_script_for.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_for.c
+
+agsclient-ags_script_for.obj: ./src/ags-client/scripting/mapping/ags_script_for.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_for.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_for.Tpo -c -o agsclient-ags_script_for.obj `if test -f './src/ags-client/scripting/mapping/ags_script_for.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_for.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_for.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_for.Tpo $(DEPDIR)/agsclient-ags_script_for.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_for.c' object='agsclient-ags_script_for.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_for.obj `if test -f './src/ags-client/scripting/mapping/ags_script_for.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_for.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_for.c'; fi`
+
+agsclient-ags_script_break.o: ./src/ags-client/scripting/mapping/ags_script_break.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_break.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_break.Tpo -c -o agsclient-ags_script_break.o `test -f './src/ags-client/scripting/mapping/ags_script_break.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_break.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_break.Tpo $(DEPDIR)/agsclient-ags_script_break.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_break.c' object='agsclient-ags_script_break.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_break.o `test -f './src/ags-client/scripting/mapping/ags_script_break.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_break.c
+
+agsclient-ags_script_break.obj: ./src/ags-client/scripting/mapping/ags_script_break.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_break.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_break.Tpo -c -o agsclient-ags_script_break.obj `if test -f './src/ags-client/scripting/mapping/ags_script_break.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_break.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_break.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_break.Tpo $(DEPDIR)/agsclient-ags_script_break.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_break.c' object='agsclient-ags_script_break.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_break.obj `if test -f './src/ags-client/scripting/mapping/ags_script_break.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_break.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_break.c'; fi`
+
+agsclient-ags_script_if.o: ./src/ags-client/scripting/mapping/ags_script_if.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_if.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_if.Tpo -c -o agsclient-ags_script_if.o `test -f './src/ags-client/scripting/mapping/ags_script_if.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_if.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_if.Tpo $(DEPDIR)/agsclient-ags_script_if.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_if.c' object='agsclient-ags_script_if.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_if.o `test -f './src/ags-client/scripting/mapping/ags_script_if.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_if.c
+
+agsclient-ags_script_if.obj: ./src/ags-client/scripting/mapping/ags_script_if.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_if.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_if.Tpo -c -o agsclient-ags_script_if.obj `if test -f './src/ags-client/scripting/mapping/ags_script_if.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_if.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_if.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_if.Tpo $(DEPDIR)/agsclient-ags_script_if.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_if.c' object='agsclient-ags_script_if.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_if.obj `if test -f './src/ags-client/scripting/mapping/ags_script_if.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_if.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_if.c'; fi`
+
+agsclient-ags_script_array.o: ./src/ags-client/scripting/mapping/ags_script_array.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_array.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script_array.Tpo -c -o agsclient-ags_script_array.o `test -f './src/ags-client/scripting/mapping/ags_script_array.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_array.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_array.Tpo $(DEPDIR)/agsclient-ags_script_array.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_array.c' object='agsclient-ags_script_array.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_array.o `test -f './src/ags-client/scripting/mapping/ags_script_array.c' || echo '$(srcdir)/'`./src/ags-client/scripting/mapping/ags_script_array.c
+
+agsclient-ags_script_array.obj: ./src/ags-client/scripting/mapping/ags_script_array.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script_array.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_script_array.Tpo -c -o agsclient-ags_script_array.obj `if test -f './src/ags-client/scripting/mapping/ags_script_array.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_array.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_array.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_script_array.Tpo $(DEPDIR)/agsclient-ags_script_array.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/mapping/ags_script_array.c' object='agsclient-ags_script_array.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_script_array.obj `if test -f './src/ags-client/scripting/mapping/ags_script_array.c'; then $(CYGPATH_W) './src/ags-client/scripting/mapping/ags_script_array.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/mapping/ags_script_array.c'; fi`
+
+agsclient-ags_schema_factory.o: ./src/ags-client/scripting/ags_schema_factory.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_schema_factory.o -MD -MP -MF $(DEPDIR)/agsclient-ags_schema_factory.Tpo -c -o agsclient-ags_schema_factory.o `test -f './src/ags-client/scripting/ags_schema_factory.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_schema_factory.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_schema_factory.Tpo $(DEPDIR)/agsclient-ags_schema_factory.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_schema_factory.c' object='agsclient-ags_schema_factory.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_schema_factory.o `test -f './src/ags-client/scripting/ags_schema_factory.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_schema_factory.c
+
+agsclient-ags_schema_factory.obj: ./src/ags-client/scripting/ags_schema_factory.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_schema_factory.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_schema_factory.Tpo -c -o agsclient-ags_schema_factory.obj `if test -f './src/ags-client/scripting/ags_schema_factory.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_schema_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_schema_factory.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_schema_factory.Tpo $(DEPDIR)/agsclient-ags_schema_factory.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_schema_factory.c' object='agsclient-ags_schema_factory.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_schema_factory.obj `if test -f './src/ags-client/scripting/ags_schema_factory.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_schema_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_schema_factory.c'; fi`
+
+agsclient-ags_xml_script_factory.o: ./src/ags-client/scripting/ags_xml_script_factory.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_xml_script_factory.o -MD -MP -MF $(DEPDIR)/agsclient-ags_xml_script_factory.Tpo -c -o agsclient-ags_xml_script_factory.o `test -f './src/ags-client/scripting/ags_xml_script_factory.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_xml_script_factory.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_xml_script_factory.Tpo $(DEPDIR)/agsclient-ags_xml_script_factory.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_xml_script_factory.c' object='agsclient-ags_xml_script_factory.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_xml_script_factory.o `test -f './src/ags-client/scripting/ags_xml_script_factory.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_xml_script_factory.c
+
+agsclient-ags_xml_script_factory.obj: ./src/ags-client/scripting/ags_xml_script_factory.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_xml_script_factory.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_xml_script_factory.Tpo -c -o agsclient-ags_xml_script_factory.obj `if test -f './src/ags-client/scripting/ags_xml_script_factory.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_xml_script_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_xml_script_factory.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_xml_script_factory.Tpo $(DEPDIR)/agsclient-ags_xml_script_factory.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_xml_script_factory.c' object='agsclient-ags_xml_script_factory.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_xml_script_factory.obj `if test -f './src/ags-client/scripting/ags_xml_script_factory.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_xml_script_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_xml_script_factory.c'; fi`
+
+agsclient-ags_client.o: ./src/ags-client/client/ags_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client.o -MD -MP -MF $(DEPDIR)/agsclient-ags_client.Tpo -c -o agsclient-ags_client.o `test -f './src/ags-client/client/ags_client.c' || echo '$(srcdir)/'`./src/ags-client/client/ags_client.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client.Tpo $(DEPDIR)/agsclient-ags_client.Po
+#	$(AM_V_CC)source='./src/ags-client/client/ags_client.c' object='agsclient-ags_client.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client.o `test -f './src/ags-client/client/ags_client.c' || echo '$(srcdir)/'`./src/ags-client/client/ags_client.c
+
+agsclient-ags_client.obj: ./src/ags-client/client/ags_client.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_client.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_client.Tpo -c -o agsclient-ags_client.obj `if test -f './src/ags-client/client/ags_client.c'; then $(CYGPATH_W) './src/ags-client/client/ags_client.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/client/ags_client.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_client.Tpo $(DEPDIR)/agsclient-ags_client.Po
+#	$(AM_V_CC)source='./src/ags-client/client/ags_client.c' object='agsclient-ags_client.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client.obj `if test -f './src/ags-client/client/ags_client.c'; then $(CYGPATH_W) './src/ags-client/client/ags_client.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/client/ags_client.c'; fi`
+
+agsclient-ags_marshal.o: ./src/ags-client/object/ags_marshal.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_marshal.o -MD -MP -MF $(DEPDIR)/agsclient-ags_marshal.Tpo -c -o agsclient-ags_marshal.o `test -f './src/ags-client/object/ags_marshal.c' || echo '$(srcdir)/'`./src/ags-client/object/ags_marshal.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_marshal.Tpo $(DEPDIR)/agsclient-ags_marshal.Po
+#	$(AM_V_CC)source='./src/ags-client/object/ags_marshal.c' object='agsclient-ags_marshal.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_marshal.o `test -f './src/ags-client/object/ags_marshal.c' || echo '$(srcdir)/'`./src/ags-client/object/ags_marshal.c
+
+agsclient-ags_marshal.obj: ./src/ags-client/object/ags_marshal.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_marshal.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_marshal.Tpo -c -o agsclient-ags_marshal.obj `if test -f './src/ags-client/object/ags_marshal.c'; then $(CYGPATH_W) './src/ags-client/object/ags_marshal.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/object/ags_marshal.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_marshal.Tpo $(DEPDIR)/agsclient-ags_marshal.Po
+#	$(AM_V_CC)source='./src/ags-client/object/ags_marshal.c' object='agsclient-ags_marshal.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_marshal.obj `if test -f './src/ags-client/object/ags_marshal.c'; then $(CYGPATH_W) './src/ags-client/object/ags_marshal.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/object/ags_marshal.c'; fi`
+
+agsclient-main.o: ./src/ags-client/main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-main.o -MD -MP -MF $(DEPDIR)/agsclient-main.Tpo -c -o agsclient-main.o `test -f './src/ags-client/main.c' || echo '$(srcdir)/'`./src/ags-client/main.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-main.Tpo $(DEPDIR)/agsclient-main.Po
+#	$(AM_V_CC)source='./src/ags-client/main.c' object='agsclient-main.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-main.o `test -f './src/ags-client/main.c' || echo '$(srcdir)/'`./src/ags-client/main.c
+
+agsclient-main.obj: ./src/ags-client/main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-main.obj -MD -MP -MF $(DEPDIR)/agsclient-main.Tpo -c -o agsclient-main.obj `if test -f './src/ags-client/main.c'; then $(CYGPATH_W) './src/ags-client/main.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/main.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-main.Tpo $(DEPDIR)/agsclient-main.Po
+#	$(AM_V_CC)source='./src/ags-client/main.c' object='agsclient-main.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-main.obj `if test -f './src/ags-client/main.c'; then $(CYGPATH_W) './src/ags-client/main.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/main.c'; fi`
 
 test-ags_test_thread.o: ./src/ags/test/ags_test_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -MT test-ags_test_thread.o -MD -MP -MF $(DEPDIR)/test-ags_test_thread.Tpo -c -o test-ags_test_thread.o `test -f './src/ags/test/ags_test_thread.c' || echo '$(srcdir)/'`./src/ags/test/ags_test_thread.c

@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags-client/scripting/mapping/ags_script_object.h>
+
 #define AGS_TYPE_SCRIPT_VAR                (ags_script_var_get_type())
 #define AGS_SCRIPT_VAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_VAR, AgsScriptVar))
 #define AGS_SCRIPT_VAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_VAR, AgsScriptVarClass))
@@ -34,12 +36,12 @@ typedef struct _AgsScriptVarClass AgsScriptVarClass;
 
 struct _AgsScriptVar
 {
-  GObject object;
+  AgsScriptObject script_object;
 };
 
 struct _AgsScriptVarClass
 {
-  GObjectClass object;
+  AgsScriptObjectClass script_object;
 };
 
 GType ags_script_var_get_type();

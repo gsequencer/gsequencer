@@ -37,7 +37,7 @@ typedef struct _AgsSchemaFactoryClass AgsSchemaFactoryClass;
 typedef enum{
   AGS_SCHEMA_FACTORY_PARSE_AS_DTD      = 1,
   AGS_SCHEMA_FACTORY_PARSE_AS_XSD      = 1 << 1,
-};
+}AgsSchemaFactoryFlags;
 
 struct _AgsSchemaFactory
 {

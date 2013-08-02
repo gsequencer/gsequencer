@@ -16,9 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-client/scripting/ags_script_semaphore.h>
+#include <ags-client/scripting/mapping/ags_script_semaphore.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags-client/scripting/mapping/ags_script_controller.h>
 
 void ags_script_semaphore_class_init(AgsScriptSemaphoreClass *script_semaphore);
 void ags_script_semaphore_connectable_interface_init(AgsConnectableInterface *connectable);

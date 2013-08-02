@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags-client/scripting/mapping/ags_script_object.h>
+
 #define AGS_TYPE_SCRIPT_CONTROLLER                (ags_script_controller_get_type())
 #define AGS_SCRIPT_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_CONTROLLER, AgsScriptController))
 #define AGS_SCRIPT_CONTROLLER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_CONTROLLER, AgsScriptControllerClass))
@@ -34,12 +36,12 @@ typedef struct _AgsScriptControllerClass AgsScriptControllerClass;
 
 struct _AgsScriptController
 {
-  GObject object;
+  AgsScriptObject script_object;
 };
 
 struct _AgsScriptControllerClass
 {
-  GObjectClass object;
+  AgsScriptObjectClass script_object;
 };
 
 GType ags_script_controller_get_type();
