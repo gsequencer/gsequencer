@@ -39,6 +39,12 @@ typedef enum{
   AGS_SCRIPT_OBJECT_RETVAL_VOID     = 1 << 1,
 }AgsScriptObjectFlags;
 
+#define AGS_SCRIPT_OBJECT_ERROR (ags_script_object_error_quark())
+
+typedef enum{
+  AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
+}AgsError;
+
 struct _AgsScriptObject
 {
   GObject object;

@@ -338,14 +338,73 @@ AgsScriptObject*
 ags_script_object_real_valueof(AgsScriptObject *script_object,
 			       GError **error)
 {
-  AgsScriptObject *first_match, *last_match;
+  AgsScriptObject *first_match, *last_match, *current;
   guint position, retval_count;
+  gchar **name;
   guint *index;
+  guint index_length;
   xmlNode *node;
+  guint i, j, k;
+  guint current_node_count;
+  gboolean is_node_after_first_match, is_node_after_last_match;
 
-  auto guint* ags_script_object_read_index(AgsScriptObject *script_object);
+  auto gchar* ags_script_object_split_xpath(gchar *xpath, guint *name_length);
+  auto guint* ags_script_object_read_index(AgsScriptObject *script_object, guint *index_length);
   auto guint ags_script_object_count_retval(AgsScriptObject *script_object);
   auto AgsScriptObject* ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth);
+
+  gchar* ags_script_object_split_xpath(gchar *xpath, guint *name_length){
+    gchar *name;
+    gchar *offset, *prev_offset;
+    guint i, start;
+
+    name = (gchar **) malloc(sizeof(gchar*));
+
+    prev_offset = xpath;
+
+    if(xpath[0] == '('){
+      start++;
+      prev_offset = &(xpath[1]);
+      
+      if(xpath[1] == '/'){
+	start++;
+
+	if(xpath[2] == '/'){
+	  start++;
+	}
+      }
+    }else{
+      if(xpath[0] == '/'){
+	start++;
+
+	if(xpath[1] == '/'){
+	  start++;
+	}
+      }
+    }
+
+    offset = &(xpath[start]);
+
+    i = 1;
+
+    while((offset = strchr(offset, '/')) != NULL && offset[0] != '\0'){
+      name = (gchar **) realloc(name, (i) * sizeof(gchar *));
+
+      name[i - 1] = g_strndup(offset, offset - prev_offset);
+
+      if(offset[1] == '/'){
+	offset = &(offset[2]);
+      }else{
+	offset = &(offset[1]);
+      }
+
+      i++;
+    }
+
+    *name_length = i;
+
+    return(name);
+  }
 
   guint* ags_script_object_read_index(gchar *xpath){
     guint *index;
@@ -360,7 +419,7 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
       if(i == 0){
 	index = (guint *) malloc(sizeof(guint));
       }else{
-	index = realloc(index, (i + 1) * sizeof(guint));
+	index = (guint *) realloc(index, (i + 1) * sizeof(guint));
       }
 
       sscanf(xpath, "%d\0", &(index[i]));
@@ -368,6 +427,8 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
       offset = &(offset[1]);
       i++;
     }
+
+    *index_length = i;
 
     return(index);
   }
@@ -403,16 +464,65 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 
   retval_count = ags_script_object_count_retval(script_object);
   index = ags_script_object_read_index(xmlNodeGetProp(script_object->node,
-						      "retval\0"));
-
-  //TODO:JK: implement me
+						      "retval\0"), &index_length);
 
   position = 0;
 
-  //TODO:JK: implement me
+  if(index_length > retval_count){
+    current = script_object;
+
+    is_node_after_first_match = FALSE;
+    is_node_after_last_match = TRUE;
+
+    for(i = 0, j = 0; i < index[i] && j < index_length; j++){
+
+      if(current ){
+	/* set error */
+	g_set_error(error,
+		    AGS_OBJECT_SCRIPT_ERROR,
+		    AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		    "can't access index because it doesn't exist: %d of %d\0",
+		    index_length, index_length);
+
+	return(NULL);
+      }      
+
+      current = current->retval;
+      
+      if(!xmlStrcmp(current->name, name[i])){
+	if(index[i]){
+	  k += index[i];
+	  i++;
+	}else{
+	  position += current_node_count;
+	  k = 0;
+	}
+      }
+    }
+
+    if(is_node_after_last_match || !is_node_after_last_match){
+      /* set error */
+      g_set_error(error,
+		  AGS_OBJECT_SCRIPT_ERROR,
+		  AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		  "can't access index because it doesn't exist: %d of %d\0",
+		  index_length, index_length);
+
+      return(NULL);
+    }
+  }else{
+    /* set error */
+    g_set_error(error,
+		AGS_OBJECT_SCRIPT_ERROR,
+		AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		"can't access index because it doesn't exist: %d of %d\0",
+		-1, index_length);
+
+    return(NULL);
+  }
 
   if(position > 0){
-    return(ags_script_object_nth_retval(script_object, position));
+    return(current);
   }else{
     return(first_match);
   }
