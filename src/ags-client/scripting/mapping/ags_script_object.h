@@ -43,6 +43,8 @@ struct _AgsScriptObject
   GObject object;
   
   guint flags;
+
+  GObject *script;
   
   xmlNode *node;
   uuid *id;
@@ -70,6 +72,6 @@ AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object);
 gchar* ags_script_object_tostring(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_valueof(AgsScriptObject *script_object);
 
-AgsScriptObject* ags_script_object_new();
+AgsScriptObject* ags_script_object_new(GObject *script);
 
 #endif /*__AGS_SCRIPT_OBJECT_H__*/

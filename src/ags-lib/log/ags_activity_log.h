@@ -22,8 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags-cluster/cluster/ags_cluster.h>
-
 #include <stdio.h>
 
 #define AGS_TYPE_ACTIVITY_LOG                (ags_activity_log_get_type())

@@ -25,6 +25,14 @@
 void ags_script_object_class_init(AgsScriptObjectClass *script_object);
 void ags_script_object_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_object_init(AgsScriptObject *script_object);
+void ags_script_object_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_script_object_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_script_object_connect(AgsConnectable *connectable);
 void ags_script_object_disconnect(AgsConnectable *connectable);
 void ags_script_object_finalize(GObject *gobject);
@@ -38,6 +46,11 @@ enum{
   TOSTRING,
   VALUEOF,
   LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_SCRIPT,
 };
 
 static gpointer ags_script_object_parent_class = NULL;
@@ -84,13 +97,27 @@ void
 ags_script_object_class_init(AgsScriptObjectClass *script_object)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_script_object_parent_class = g_type_class_peek_parent(script_object);
 
   /* GObjectClass */
   gobject = (GObjectClass *) script_object;
 
+  gobject->set_property = ags_script_object_set_property;
+  gobject->get_property = ags_script_object_get_property;
+
   gobject->finalize = ags_script_object_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("script\0",
+				   "script running in\0",
+				   "The script where this script object belongs to\0",
+				   AGS_TYPE_SCRIPT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCRIPT,
+				  param_spec);
 
   /* AgsScriptObjectClass */
   script_object->map_xml = ags_script_object_real_map_xml;
@@ -152,6 +179,64 @@ ags_script_object_init(AgsScriptObject *script_object)
   script_object->retval = NULL;
 }
 
+
+void
+ags_script_object_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsScriptObject *script_object;
+
+  script_object = AGS_SCRIPT_OBJECT(gobject);
+
+  switch(prop_id){
+  case PROP_SCRIPT:
+    {
+      AgsScript *script;
+
+      script = (AgsScript *) g_value_get_object(value);
+
+      if(script == ((AgsScript *) script_object->script))
+	return;
+
+      if(script_object->script != NULL)
+	g_object_unref(script_object->script);
+
+      if(script != NULL)
+	g_object_ref(G_OBJECT(script));
+
+      script_object->script = (GObject *) script;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_script_object_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsScriptObject *script_object;
+
+  script_object = AGS_SCRIPT_OBJECT(gobject);
+
+  switch(prop_id){
+  case PROP_SCRIPT:
+    {
+      g_value_set_object(value, script_object->script);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
 void
 ags_script_object_connect(AgsConnectable *connectable)
 {
@@ -177,6 +262,19 @@ ags_script_object_finalize(GObject *gobject)
 void
 ags_script_object_real_map_xml(AgsScriptObject *script_object)
 {
+  AgsScript *script;
+  GError *error;
+
+  script = AGS_SCRIPT(script_object->script);
+
+  error = NULL;
+  script_object->node = ags_xml_script_factory_map(script->xml_script_factory,
+						   script_object,
+						   &error);
+
+  if(error != NULL){
+    g_warning(error->message);
+  }
 }
 
 void
@@ -244,11 +342,12 @@ ags_script_object_valueof(AgsScriptObject *script_object)
 }
 
 AgsScriptObject*
-ags_script_object_new()
+ags_script_object_new(GObject *script)
 {
   AgsScriptObject *script_object;
 
   script_object = (AgsScriptObject *) g_object_new(AGS_TYPE_SCRIPT_OBJECT,
+						   "script\0", script,
 						   NULL);
   
   return(script_object);

@@ -89,7 +89,11 @@ ags_script_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_script_init(AgsScript *script)
 {
-  //TODO:JK: implement me
+  script->xml_script_factory = ags_xml_script_factory_new();
+  ags_xml_script_factory_create_prototype(script->xml_script_factory);
+
+  script->filename = NULL;
+  script->file = NULL;
 }
 
 void

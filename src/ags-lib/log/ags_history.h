@@ -1,4 +1,4 @@
-/* AGS Client - Advanced GTK Sequencer Client
+/* AGS Lib - Advanced GTK Sequencer Lib
  * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,6 @@
 
 #include <glib.h>
 #include <glib-object.h>
-
-#include <ags-cluster/cluster/ags_cluster.h>
 
 #include <stdio.h>
 

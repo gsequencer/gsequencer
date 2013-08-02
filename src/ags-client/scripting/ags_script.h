@@ -24,6 +24,8 @@
 
 #include <stdio.h>
 
+#include <ags-client/scripting/ags_xml_script_factory.h>
+
 #define AGS_TYPE_SCRIPT                (ags_script_get_type())
 #define AGS_SCRIPT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT, AgsScript))
 #define AGS_SCRIPT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT, AgsScriptClass))
@@ -37,6 +39,8 @@ typedef struct _AgsScriptClass AgsScriptClass;
 struct _AgsScript
 {
   GObject object;
+
+  AgsXmlScriptFactory *xml_script_factory;
   
   gchar *filename;
   FILE *file;
