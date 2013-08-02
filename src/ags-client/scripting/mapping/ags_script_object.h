@@ -61,7 +61,8 @@ struct _AgsScriptObjectClass
   AgsScriptObject* (*launch)(AgsScriptObject *script_object);
 
   AgsScriptObject* (*tostring)(AgsScriptObject *script_object);
-  AgsScriptObject* (*valueof)(AgsScriptObject *script_object);
+  AgsScriptObject* (*valueof)(AgsScriptObject *script_object,
+			      GError **error);
 };
 
 GType ags_script_object_get_type();

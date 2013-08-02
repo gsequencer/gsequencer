@@ -299,6 +299,7 @@ ags_script_object_map_xml(AgsScriptObject *script_object)
 AgsScriptObject*
 ags_script_object_real_launch(AgsScriptObject *script_object)
 {
+  //TODO:JK: implement me
 }
 
 AgsScriptObject*
@@ -334,22 +335,82 @@ ags_script_object_tostring(AgsScriptObject *script_object)
 }
 
 AgsScriptObject*
-ags_script_object_real_valueof(AgsScriptObject *script_object)
+ags_script_object_real_valueof(AgsScriptObject *script_object,
+			       GError **error)
 {
   AgsScriptObject *first_match, *last_match;
+  guint position, retval_count;
+  guint *index;
   xmlNode *node;
+
+  auto guint* ags_script_object_read_index(AgsScriptObject *script_object);
+  auto guint ags_script_object_count_retval(AgsScriptObject *script_object);
+  auto AgsScriptObject* ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth);
+
+  guint* ags_script_object_read_index(gchar *xpath){
+    guint *index;
+    gchar *offset;
+    guint i;
+
+    index = NULL;
+    offset = xpath;
+    i = 0;
+
+    while((offset = strchr(offset, '[')) != NULL && offset[0] != '\0'){
+      sscanf();
+
+      offset = &(offset[1]);
+    }
+
+    return(index);
+  }
+
+  guint ags_script_object_count_retval(AgsScriptObject *script_object){
+    AgsScriptObject *current;
+    guint i;
+
+    current = script_object;
+
+    for(i = 0; current != NULL; i++) current = current->next;
+
+    return(i);
+  }
+  AgsScriptObject* ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth){
+    AgsScriptObject *current;
+    guint i;
+
+    current = script_object;
+
+    for(i = 0; i < nth && current != NULL; i++) current = current->next;
+
+    return(current);
+  }
 
   if((first_match = ags_script_object_find_flags_descending_first_match(script_object,
 									AGS_SCRIPT_OBJECT_LAUNCHED)) == NULL){
     return(NULL);
   }
 
-  last_match = ags_script_object_find_flags_descending_first_match(script_object,
-								   AGS_SCRIPT_OBJECT_LAUNCHED);
+  last_match = ags_script_object_find_flags_descending_last_match(script_object,
+								  AGS_SCRIPT_OBJECT_LAUNCHED);
+
+  retval_count = ags_script_object_count_retval(script_object);
+  index = ags_script_object_read_index(xmlNodeGetProp(script_object->node,
+						      "retval\0"));
 
   //TODO:JK: implement me
 
-  return(NULL);
+  position = 0;
+
+  //TODO:JK: implement me
+
+  if(position > 0){
+    return(ags_script_object_nth_retval(script_object, position));
+  }else{
+    return(first_match);
+  }
+
+  //TODO:JK: implement me
 }
 
 AgsScriptObject*
