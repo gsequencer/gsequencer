@@ -357,9 +357,16 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
     i = 0;
 
     while((offset = strchr(offset, '[')) != NULL && offset[0] != '\0'){
-      sscanf();
+      if(i == 0){
+	index = (guint *) malloc(sizeof(guint));
+      }else{
+	index = realloc(index, (i + 1) * sizeof(guint));
+      }
+
+      sscanf(xpath, "%d\0", &(index[i]));
 
       offset = &(offset[1]);
+      i++;
     }
 
     return(index);
@@ -409,8 +416,6 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
   }else{
     return(first_match);
   }
-
-  //TODO:JK: implement me
 }
 
 AgsScriptObject*
@@ -434,8 +439,11 @@ ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_obje
 						    guint flags)
 {
   AgsScriptObject *current, *value;
+  guint inverse_flags;
 
-  if((flags & (script_object->flags)) == flags){
+  inverse_flags = ~flags;
+
+  if(((inverse_flags) & (flags | (script_object->flags))) == 0){
     return(current);
   }
 
@@ -460,6 +468,8 @@ ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_objec
 						   guint flags)
 {
   AgsScriptObject *current, *value;
+  guint inverse_flags;
+
 
   current = script_object->retval;
 
@@ -474,7 +484,9 @@ ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_objec
     current = current->next;
   }
 
-  if((flags & (script_object->flags)) == flags){
+  inverse_flags = ~flags;
+
+  if(((inverse_flags) & (flags | (script_object->flags))) == 0){
     return(current);
   }
 
