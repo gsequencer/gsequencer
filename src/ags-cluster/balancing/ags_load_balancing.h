@@ -40,6 +40,8 @@ struct _AgsLoadBalancing
 {
   GObject object;
 
+  GList *activity_log;
+
   AgsCluster *cluster;
 };
 
