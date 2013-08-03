@@ -31,6 +31,8 @@
 #define AGS_IS_SCRIPT_OBJECT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SCRIPT_OBJECT))
 #define AGS_SCRIPT_OBJECT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SCRIPT_OBJECT, AgsScriptObjectClass))
 
+#define AGS_SCRIPT_OBJECT_XPATH_NaN (G_MAXUINT)
+
 typedef struct _AgsScriptObject AgsScriptObject;
 typedef struct _AgsScriptObjectClass AgsScriptObjectClass;
 

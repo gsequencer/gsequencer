@@ -436,19 +436,21 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 	return(NULL);
       }
 
-      /* start */
+      /* find first - start */
       if(name[i][1] == '/'){
 	prefix_length = 2;
 
-	while(current != NULL){
-	  node = current->node;
-
+	if(name[i][2] != '\0' && name[i][2] != '[' && name[i][2] != '@'){
+	  while(current != NULL){
+	    node = current->node;
+	    
 	  //FIXME:JK: strlen() not very safe
-	  if(!xmlStrncmp(node->name, &(name[i][prefix_length]), strlen(node->name))){
-	    break;
-	  }else{
-	    current = current->retval;
-	    j++;
+	    if(!xmlStrncmp(node->name, &(name[i][prefix_length]), strlen(node->name))){
+	      break;
+	    }else{
+	      current = current->retval;
+	      j++;
+	    }
 	  }
 	}
 
@@ -481,20 +483,25 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
       /* position */
       z_index = strtoul(xmlGetProp(node, "z_index\0"), NULL, 10);
 
-      for(k = 0; k < index[i] && current != NULL; j++){
-	node = current->node;
-	current = current->retval;
-
-	//FIXME:JK: strlen() not very safe
-	if(!xmlStrncmp(node->name, &(name[i][prefix_length]), strlen(node->name)) && z_index == strtoul(xmlGetProp(node, "z_index\0"), NULL, 10)){
-	  k++;
+      if(index[i] != AGS_SCRIPT_OBJECT_XPATH_NaN){
+	for(k = 0; k < index[i] && current != NULL; j++){
+	  node = current->node;
+	  current = current->retval;
+	  
+	  //FIXME:JK: strlen() not very safe
+	  if(!xmlStrncmp(node->name, &(name[i][prefix_length]), strlen(node->name)) &&
+	     z_index == strtoul(xmlGetProp(node, "z_index\0"), NULL, 10)){
+	    k++;
+	  }
 	}
+      }else{
+	current = last_match;
       }
 
       node_list = g_list_prepend(node_list,
 				 node);
 
-      if(current == last_match && 
+      if(index[i] != AGS_SCRIPT_OBJECT_XPATH_NaN && 
 	 k != index[i]){
 	/* set error */
 	g_set_error(error,
@@ -625,7 +632,7 @@ ags_script_object_read_index(gchar *xpath, guint *index_length)
     }
 
     if(!xmlStrncmp(offset, "last()\0", 7)){
-      index[i] = NaN;
+      index[i] = AGS_SCRIPT_OBJECT_XPATH_NaN;
     }else{
       sscanf(xpath, "%d\0", &(index[i]));
     }
