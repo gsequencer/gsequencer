@@ -339,12 +339,16 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 			       GError **error)
 {
   AgsScriptObject *first_match, *last_match, *current;
-  guint position, retval_count;
+  GList *node_list;
+  guint retval_count;
+  gchar *xpath;
   gchar **name;
   guint *index;
   guint index_length;
+  guint name_length;
   xmlNode *node;
   guint i, j, k;
+  guint z_index;
   guint current_node_count;
   gboolean is_node_after_first_match, is_node_after_last_match;
 
@@ -439,7 +443,7 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 
     current = script_object;
 
-    for(i = 0; current != NULL; i++) current = current->next;
+    for(i = 0; current != NULL; i++) current = current->retval;
 
     return(i);
   }
@@ -449,10 +453,14 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 
     current = script_object;
 
-    for(i = 0; i < nth && current != NULL; i++) current = current->next;
+    for(i = 0; i < nth && current != NULL; i++) current = current->retval;
 
     return(current);
   }
+
+  /* entry */
+  xpath = xmlNodeGetProp(script_object->node,
+			 "retval\0");
 
   if((first_match = ags_script_object_find_flags_descending_first_match(script_object,
 									AGS_SCRIPT_OBJECT_LAUNCHED)) == NULL){
@@ -463,50 +471,115 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 								  AGS_SCRIPT_OBJECT_LAUNCHED);
 
   retval_count = ags_script_object_count_retval(script_object);
-  index = ags_script_object_read_index(xmlNodeGetProp(script_object->node,
-						      "retval\0"), &index_length);
+
+  name = ags_script_object_split_xpath(xpath, &name_length);
+  index = ags_script_object_read_index(xpath,
+				       &index_length);
 
   position = 0;
 
   if(index_length > retval_count){
+    guint prefix_length;
+
     current = script_object;
+    node_list = NULL;
 
     is_node_after_first_match = FALSE;
     is_node_after_last_match = TRUE;
 
-    for(i = 0, j = 0; i < index[i] && j < index_length; j++){
+    for(i = 0, j = 0; i < index_length; i++){
 
-      if(current ){
+      if(current == first_match){
+	is_node_after_first_match = TRUE;
+      }
+
+      if(current == NULL){
 	/* set error */
 	g_set_error(error,
 		    AGS_OBJECT_SCRIPT_ERROR,
 		    AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
 		    "can't access index because it doesn't exist: %d of %d\0",
-		    index_length, index_length);
+		    position, position);
 
 	return(NULL);
-      }      
+      }
 
-      current = current->retval;
-      
-      if(!xmlStrcmp(current->name, name[i])){
-	if(index[i]){
-	  k += index[i];
-	  i++;
-	}else{
-	  position += current_node_count;
-	  k = 0;
+      /* start */
+      if(name[i][1] == '/'){
+	prefix_length = 2;
+
+	while(current != NULL){
+	  node = current->node;
+
+	  if(xmlStrcmp(node->name, &(name[i][prefix_length])) == 0){
+	    current = current->retval;
+	    j++;
+	  }else{
+	    break;
+	  }
 	}
+
+	if(current == NULL){
+	  /* set error */
+	  g_set_error(error,
+		      AGS_OBJECT_SCRIPT_ERROR,
+		      AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		      "named child doesn't exist\0");
+
+	  return(NULL);
+	}
+      }else{
+	prefix_length = 1;
+
+	if(!xmlStrcmp(node->name, &(name[i][prefix_length]))){
+	  current = current->retval;
+	  node = current->node;
+
+	  j++;
+	}else{
+	  /* set error */
+	  g_set_error(error,
+		      AGS_OBJECT_SCRIPT_ERROR,
+		      AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		      "named child doesn't exist\0");
+	}
+      }
+
+      /* position */
+      z_index = strtoul(xmlNodeGetProp(node, "z_index\0"));
+
+      for(k = 0; k < index[i] && current != NULL; j++){
+	node = current->node;
+	current = current->retval;
+
+	if(!xmlStrcmp(node->name, &(name[i][prefix_length])) && z_index == strtoul(xmlNodeGetProp(node, "z_index\0"))){
+	  k++;
+	}
+      }
+
+      node_list = g_list_prepend(node_list,
+				 node);
+
+      if(current == last_match && 
+	 k != index[i]){
+	/* set error */
+	g_set_error(error,
+		    AGS_OBJECT_SCRIPT_ERROR,
+		    AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		    "can't access index because it doesn't exist: %d of %d\0",
+		    position, position);
+
+	return(NULL);
       }
     }
 
-    if(is_node_after_last_match || !is_node_after_last_match){
+    if(!is_node_after_first_match){
       /* set error */
       g_set_error(error,
 		  AGS_OBJECT_SCRIPT_ERROR,
 		  AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
 		  "can't access index because it doesn't exist: %d of %d\0",
-		  index_length, index_length);
+		  -1, index_length);
 
       return(NULL);
     }
@@ -521,7 +594,7 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
     return(NULL);
   }
 
-  if(position > 0){
+  if(j > 0){
     return(current);
   }else{
     return(first_match);
@@ -567,7 +640,7 @@ ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_obje
       return(current);
     }
 
-    current = current->next;
+    current = current->retval;
   }
 
   return(NULL);
@@ -591,7 +664,7 @@ ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_objec
       return(current);
     }
 
-    current = current->next;
+    current = current->retval;
   }
 
   inverse_flags = ~flags;
