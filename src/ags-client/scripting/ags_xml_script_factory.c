@@ -20,6 +20,10 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <libxml/xmlstring.h>
+
+#include <string.h>
+
 void ags_xml_script_factory_class_init(AgsXmlScriptFactoryClass *xml_script_factory);
 void ags_xml_script_factory_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_xml_script_factory_init(AgsXmlScriptFactory *xml_script_factory);
@@ -219,7 +223,7 @@ ags_xml_script_factory_map(AgsXmlScriptFactory *xml_script_factory,
   retval = NULL;
 
   if(length > prefix_length){
-    xml_type = g_strconcat("ags-\0", g_ascii_tolower(&(G_OBJECT_TYPE_NAME(script_object)[prefix_length])));
+    xml_type = g_strconcat("ags-\0", tolower(&(G_OBJECT_TYPE_NAME(script_object)[prefix_length])));
     retval = ags_xml_script_factory_find_prototype(xml_script_factory,
 						   xml_type);
   }else{

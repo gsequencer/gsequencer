@@ -53,6 +53,8 @@ struct _AgsSchemaFactoryClass
 
 GType ags_schema_factory_get_type();
 
+GQuark ags_schema_factory_error_quark();
+
 xmlNode* ags_schema_factory_create_node(AgsSchemaFactory *schema_factory,
 					void *node);
 

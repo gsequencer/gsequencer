@@ -74,6 +74,8 @@ struct _AgsScriptObjectClass
 
 GType ags_script_object_get_type();
 
+GQuark ags_script_object_error_quark();
+
 void ags_script_object_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object);
 

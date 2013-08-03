@@ -25,6 +25,7 @@
 #include <ags-client/scripting/ags_script.h>
 
 #include <libxml/tree.h>
+#include <libxml/xmlstring.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -189,6 +190,12 @@ ags_script_object_connectable_interface_init(AgsConnectableInterface *connectabl
   connectable->disconnect = ags_script_object_disconnect;
 }
 
+GQuark
+ags_script_object_error_quark()
+{
+  return(g_quark_from_static_string("ags-script-object-error-quark\0"));
+}
+
 void
 ags_script_object_init(AgsScriptObject *script_object)
 {
@@ -197,7 +204,6 @@ ags_script_object_init(AgsScriptObject *script_object)
 
   script_object->retval = NULL;
 }
-
 
 void
 ags_script_object_set_property(GObject *gobject,

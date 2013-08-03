@@ -91,6 +91,12 @@ ags_schema_factory_connectable_interface_init(AgsConnectableInterface *connectab
   connectable->disconnect = ags_schema_factory_disconnect;
 }
 
+GQuark
+ags_schema_factory_error_quark()
+{
+  return(g_quark_from_static_string("ags-schema-factory-error-quark\0"));
+}
+
 void
 ags_schema_factory_init(AgsSchemaFactory *schema_factory)
 {
@@ -123,11 +129,9 @@ xmlNode*
 ags_schema_factory_create_node_from_dtd(AgsSchemaFactory *schema_factory,
 					gchar *node)
 {
-  xmlNode *node;
-
   //TODO:JK: implement me
 
-  return(node);
+  return(NULL);
 }
 
 xmlNode*
@@ -147,7 +151,7 @@ ags_schema_factory_create_node_from_xsd(AgsSchemaFactory *schema_factory,
     /* parse basics */
     retval = xmlNewNode(NULL, xmlGetProp(node, "name\0"));
 
-    if((final = xmlProp(node, "final\0")) != NULL){
+    if((final = xmlGetProp(node, "final\0")) != NULL){
       xmlNewProp(retval, BAD_CAST "final\0", NULL);
     }else if((basetype = xmlGetProp(node, "basetype\0")) != NULL){
       char *variety;
@@ -167,13 +171,13 @@ ags_schema_factory_create_node_from_xsd(AgsSchemaFactory *schema_factory,
     while(current != NULL){
       if(current->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp("attribute\0", current->name, 10)){
-	  xmlNodeSetProp(retval, BAD_CAST (gchar *) g_strdup(xmlGetProp(current, "name\0")), NULL);
+	  xmlSetProp(retval, BAD_CAST (gchar *) g_strdup(xmlGetProp(current, "name\0")), NULL);
 	}else if(!xmlStrncmp("sequence\0", current->name, 9)){
 	  xmlNode *sequence;
 
 	  sequence = ags_schema_factory_create_node_from_xsd_parse(current->children);
 
-	  xmlNodeAddChildList(retval, sequence);
+	  xmlAddChildList(retval, sequence);
 	}
       }
 
@@ -195,10 +199,10 @@ ags_schema_factory_create_node(AgsSchemaFactory *schema_factory,
 {
   if((AGS_SCHEMA_FACTORY_PARSE_AS_DTD & (schema_factory->flags)) != 0){
     return(ags_schema_factory_create_node_from_dtd(schema_factory,
-						   (gchar *) node))
+						   (gchar *) node));
   }else if((AGS_SCHEMA_FACTORY_PARSE_AS_XSD & (schema_factory->flags)) != 0){
     return(ags_schema_factory_create_node_from_xsd(schema_factory,
-						   (xmlNode *) node))
+						   (xmlNode *) node));
   }else{
     g_warning("invalid state of %s\0",
 	      G_OBJECT_TYPE_NAME(schema_factory));
