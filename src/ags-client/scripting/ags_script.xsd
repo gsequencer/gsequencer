@@ -29,7 +29,7 @@
     <xsd:attribute name="encoded" type="xsd:boolean" value="true"/>
     <xsd:attribute name="value" type="xsd:base64"/>
     <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
-    <xsd:attribute name="retval" type="xsd:xpath" value="@id"/>
+    <xsd:attribute name="retval" type="xsd:xpath" value="@value"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-array">

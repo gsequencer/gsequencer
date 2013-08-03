@@ -52,10 +52,13 @@ AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_tostring(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_valueof(AgsScriptObject *script_object,
 						GError **error);
+
 gchar** ags_script_object_split_xpath(gchar *xpath, guint *name_length);
 guint* ags_script_object_read_index(gchar *xpath, guint *index_length);
 guint ags_script_object_count_retval(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth);
+guint ags_script_object_count_sibling(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_next_sibling(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_object,
 								     guint flags,
 								     guint z_index);
@@ -440,11 +443,12 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 	while(current != NULL){
 	  node = current->node;
 
-	  if(xmlStrcmp(node->name, &(name[i][prefix_length])) == 0){
+	  //FIXME:JK: strlen() not very safe
+	  if(!xmlStrncmp(node->name, &(name[i][prefix_length]), strlen(node->name))){
+	    break;
+	  }else{
 	    current = current->retval;
 	    j++;
-	  }else{
-	    break;
 	  }
 	}
 
@@ -481,7 +485,8 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 	node = current->node;
 	current = current->retval;
 
-	if(!xmlStrcmp(node->name, &(name[i][prefix_length])) && z_index == strtoul(xmlGetProp(node, "z_index\0"), NULL, 10)){
+	//FIXME:JK: strlen() not very safe
+	if(!xmlStrncmp(node->name, &(name[i][prefix_length]), strlen(node->name)) && z_index == strtoul(xmlGetProp(node, "z_index\0"), NULL, 10)){
 	  k++;
 	}
       }
@@ -619,7 +624,11 @@ ags_script_object_read_index(gchar *xpath, guint *index_length)
       index = (guint *) realloc(index, (i + 1) * sizeof(guint));
     }
 
-    sscanf(xpath, "%d\0", &(index[i]));
+    if(!xmlStrncmp(offset, "last()\0", 7)){
+      index[i] = NaN;
+    }else{
+      sscanf(xpath, "%d\0", &(index[i]));
+    }
 
     offset = &(offset[1]);
     i++;
@@ -654,6 +663,41 @@ ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth)
   for(i = 0; i < nth && current != NULL; i++) current = current->retval;
 
   return(current);
+}
+
+guint
+ags_script_object_count_sibling(AgsScriptObject *script_object)
+{
+  guint count;
+
+  count = 0;
+  
+  while((script_object = ags_script_object_next_sibling(script_object)) != NULL) count++;
+
+  return(count);
+}
+
+AgsScriptObject*
+ags_script_object_next_sibling(AgsScriptObject *script_object)
+{
+  AgsScriptObject *current, *sibling;
+  guint z_index;
+  guint current_z_index;
+
+  z_index = strtoul(xmlGetProp(script_object->node, "z_index\0"), NULL, 10);
+
+  current = script_object->retval;
+  sibling = NULL;
+
+  while(current != NULL && z_index >= (current_z_index = strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10))){
+    if(current_z_index == z_index){
+      sibling = current;
+    }
+
+    current = current->retval;
+  }
+
+  return(sibling);
 }
 
 AgsScriptObject*
