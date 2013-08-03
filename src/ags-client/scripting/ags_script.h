@@ -44,6 +44,8 @@ struct _AgsScript
   
   gchar *filename;
   FILE *file;
+
+  xmlDoc *script;
 };
 
 struct _AgsScriptClass
@@ -61,6 +63,6 @@ void ags_script_read(AgsScript *script);
 void ags_script_write(AgsScript *script);
 void ags_script_launch(AgsScript *script);
 
-AgsScript* ags_script_new();
+AgsScript* ags_script_new(gchar *filename);
 
 #endif /*__AGS_SCRIPT_H__*/

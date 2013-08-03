@@ -23,13 +23,37 @@
 void ags_script_class_init(AgsScriptClass *script);
 void ags_script_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_init(AgsScript *script);
+void ags_script_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_script_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
 void ags_script_connect(AgsConnectable *connectable);
 void ags_script_disconnect(AgsConnectable *connectable);
 void ags_script_finalize(GObject *gobject);
 
+void ags_script_real_read(AgsScript *script);
+void ags_script_real_write(AgsScript *script);
+void ags_script_real_launch(AgsScript *script);
 
+enum{
+  READ,
+  WRITE,
+  LAUNCH,
+  LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_FILENAME,
+  PROP_SCRIPT,
+};
 
 static gpointer ags_script_parent_class = NULL;
+static guint script_signals[LAST_SIGNAL];
 
 GType
 ags_script_get_type()
@@ -72,13 +96,67 @@ void
 ags_script_class_init(AgsScriptClass *script)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_script_parent_class = g_type_class_peek_parent(script);
 
   /* GObjectClass */
   gobject = (GObjectClass *) script;
 
+  gobject->set_property = ags_script_set_property;
+  gobject->get_property = ags_script_get_property;
+
   gobject->finalize = ags_script_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_pointer("filename\0",
+				    "filename of script\0",
+				    "The filename of the script\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCRIPT,
+				  param_spec);
+
+  param_spec = g_param_spec_pointer("script\0",
+				    "xml script document\0",
+				    "The xml script document\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCRIPT,
+				  param_spec);
+
+  /* AgsScriptClass */
+  script->write = ags_script_real_write;
+  script->read = ags_script_real_read;
+  script->launch = ags_script_real_launch;
+
+  /* signals */
+  script_signals[WRITE] =
+    g_signal_new("write\0",
+		 G_TYPE_FROM_CLASS(script),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, write),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  script_signals[READ] =
+    g_signal_new("read\0",
+		 G_TYPE_FROM_CLASS(script),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, read),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  script_signals[LAUNCH] =
+    g_signal_new("launch\0",
+		 G_TYPE_FROM_CLASS(script),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, launch),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -96,6 +174,70 @@ ags_script_init(AgsScript *script)
 
   script->filename = NULL;
   script->file = NULL;
+
+  script->script = NULL;
+}
+
+void
+ags_script_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsScript *script;
+
+  script = AGS_SCRIPT(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = (gchar *) g_value_get_pointer(value);
+
+      script->filename = filename;
+    }
+    break;
+  case PROP_SCRIPT:
+    {
+      xmlDoc *doc;
+
+      doc = (xmlDoc *) g_value_get_pointer(value);
+
+      script->script = doc;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_script_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsScript *script;
+
+  script = AGS_SCRIPT(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    {
+      g_value_set_pointer(value, script->filename);
+    }
+    break;
+  case PROP_SCRIPT:
+    {
+      g_value_set_pointer(value, script->filename);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -121,7 +263,29 @@ ags_script_finalize(GObject *gobject)
 }
 
 void
+ags_script_real_read(AgsScript *script)
+{
+  xmlDoc *doc;
+
+  //TODO:JK: implement me
+  g_object_set(G_OBJECT(script),
+	       "script\0", doc,
+	       NULL);
+}
+
+void
 ags_script_read(AgsScript *script)
+{
+  g_return_if_fail(AGS_IS_SCRIPT(script));
+
+  g_object_ref(G_OBJECT(script));
+  g_signal_emit(G_OBJECT(script),
+		script_signals[READ], 0);
+  g_object_unref(G_OBJECT(script));
+}
+
+void
+ags_script_real_write(AgsScript *script)
 {
   //TODO:JK: implement me
 }
@@ -129,13 +293,29 @@ ags_script_read(AgsScript *script)
 void
 ags_script_write(AgsScript *script)
 {
+  g_return_if_fail(AGS_IS_SCRIPT(script));
+
+  g_object_ref(G_OBJECT(script));
+  g_signal_emit(G_OBJECT(script),
+		script_signals[WRITE], 0);
+  g_object_unref(G_OBJECT(script));
+}
+
+void
+ags_script_real_launch(AgsScript *script)
+{
   //TODO:JK: implement me
 }
 
 void
 ags_script_launch(AgsScript *script)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SCRIPT(script));
+
+  g_object_ref(G_OBJECT(script));
+  g_signal_emit(G_OBJECT(script),
+		script_signals[LAUNCH], 0);
+  g_object_unref(G_OBJECT(script));
 }
 
 AgsScript*

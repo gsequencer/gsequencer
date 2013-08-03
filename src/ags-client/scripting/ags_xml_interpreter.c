@@ -205,7 +205,8 @@ ags_xml_interpreter_thread(void *ptr)
       ags_xml_interpreter_load_script(xml_interpreter,
 				      script);
 
-      ags_script_launch(script);
+      ags_xml_interpreter_run_snipped(xml_interpreter,
+				      xml_interpreter->default_stack);
 
       ags_xml_interpreter_unload_script(xml_interpreter,
 					script);
