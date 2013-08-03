@@ -323,6 +323,8 @@ AgsScriptObject*
 ags_script_object_real_launch(AgsScriptObject *script_object)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 AgsScriptObject*

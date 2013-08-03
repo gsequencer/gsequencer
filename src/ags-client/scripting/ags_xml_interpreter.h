@@ -24,12 +24,16 @@
 
 #include <libxml/tree.h>
 
+#include <ags-client/scripting/mapping/ags_script_stack.h>
+
 #define AGS_TYPE_XML_INTERPRETER                (ags_xml_interpreter_get_type())
 #define AGS_XML_INTERPRETER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_XML_INTERPRETER, AgsXmlInterpreter))
 #define AGS_XML_INTERPRETER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_XML_INTERPRETER, AgsXmlInterpreterClass))
 #define AGS_IS_XML_INTERPRETER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_XML_INTERPRETER))
 #define AGS_IS_XML_INTERPRETER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_XML_INTERPRETER))
 #define AGS_XML_INTERPRETER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_XML_INTERPRETER, AgsXmlInterpreterClass))
+
+#define AGS_XML_INTERPRETER_DEFAULT_STACK_SIZE (G_MAXUINT)
 
 typedef struct _AgsXmlInterpreter AgsXmlInterpreter;
 typedef struct _AgsXmlInterpreterClass AgsXmlInterpreterClass;
@@ -49,6 +53,9 @@ struct _AgsXmlInterpreter
   GObject object;
   
   guint flags;
+
+  AgsScriptStack *default_stack;
+  guint64 stack_size;
 };
 
 struct _AgsXmlInterpreterClass
