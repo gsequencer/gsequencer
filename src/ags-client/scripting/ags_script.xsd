@@ -18,18 +18,21 @@
   <xsd:complexType name="ags-semaphore">
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="type" type="xsd:string" value="&ags-type;"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@id"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-var">
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="type" type="xsd:string" value="&ags-type;"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@id"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-array">
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="type" type="xsd:string" value="&ags-type;"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@id"/>
   </xsd:complexType>
 
@@ -43,6 +46,7 @@
     </xsd:sequence>
 
     <xsd:attribute name="id" type="xsd:ID"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value=".//[last()]@id-ref"/>
   </xsd:complexType>
 
@@ -59,18 +63,21 @@
     </xsd:sequence>
 
     <xsd:attribute name="id" type="xsd:ID"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value=".//[last()]@id-ref"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-set">
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="id-ref" type="xsd:IDREF"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@id-ref"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-push">
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="id-ref" type="xsd:IDREF"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value=".//[last()]@id-ref"/>
   </xsd:complexType>
 
@@ -100,6 +107,7 @@
     </xsd:sequence>
 
     <xsd:attribute name="condition" type="xsd:IDREF"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
   </xsd:complexType>
 
@@ -120,6 +128,7 @@
     </xsd:sequence>
 
     <xsd:attribute name="expression" type="xsd:IDREF"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="./ags-case[@status='true']@statement"/>
   </xsd:complexType>
 
@@ -130,6 +139,7 @@
     </xsd:sequence>
 
     <xsd:attribute name="condition" type="xsd:IDREF"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
   </xsd:complexType>
 
@@ -140,6 +150,7 @@
     </xsd:sequence>
 
     <xsd:attribute name="condition" type="xsd:IDREF"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
   </xsd:complexType>
 
@@ -152,6 +163,7 @@
     <xsd:attribute name="initializer" type="xsd:IDREF"/>
     <xsd:attribute name="condition" type="xsd:IDREF"/>
     <xsd:attribute name="operation" type="xsd:IDREF"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
   </xsd:complexType>
 
@@ -159,6 +171,7 @@
     <xsd:attribute name="format" type="xsd:string"/>
     <xsd:attribute name="args" type="xsd:IDREF"/>
     <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
@@ -166,6 +179,7 @@
     <xsd:attribute name="format" type="xsd:string"/>
     <xsd:attribute name="args" type="xsd:IDREF"/>
     <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
@@ -173,6 +187,7 @@
     <xsd:attribute name="format" type="xsd:string"/>
     <xsd:attribute name="args" type="xsd:IDREF"/>
     <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
@@ -181,36 +196,42 @@
     <xsd:attribute name="format" type="xsd:string"/>
     <xsd:attribute name="args" type="xsd:IDREF"/>
     <xsd:attribute name="return_code" type="xsd:int64"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-tostring">
     <xsd:attribute name="val" type="xsd:IDREF"/>
     <xsd:attribute name="return_code" type="xsd:string"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-valueof">
     <xsd:attribute name="str" type="xsd:IDREF"/>
     <xsd:attribute name="return_code" type="(xsd:double|xsd:int64)"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-memcpy">
     <xsd:attribute name="context" type="(pid|host)"/>
     <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-nanosleep">
     <xsd:attribute name="str" type="xsd:IDREF"/>
     <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
   <xsd:complexType name="ags-sutex">
     <xsd:attribute name="context" type="(pid|host)"/>
     <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
@@ -218,6 +239,7 @@
     <xsd:attribute name="function" type="xsd:function"/>
     <xsd:attribute name="parameter" type="xsd:object"/>
     <xsd:attribute name="return_code" type="xsd:void"/>
+    <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@return_code"/>
   </xsd:complexType>
 
