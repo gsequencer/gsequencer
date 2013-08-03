@@ -24,6 +24,8 @@
 
 #include <ags-client/scripting/ags_script.h>
 
+#include <ags-client/scripting/mapping/ags_script_var.h>
+
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>
 
@@ -47,6 +49,7 @@ void ags_script_object_finalize(GObject *gobject);
 
 void ags_script_object_real_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_real_tostring(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_valueof(AgsScriptObject *script_object,
 						GError **error);
 gchar** ags_script_object_split_xpath(gchar *xpath, guint *name_length);
@@ -142,8 +145,8 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
   /* AgsScriptObjectClass */
   script_object->map_xml = ags_script_object_real_map_xml;
   script_object->launch = ags_script_object_real_launch;
-  script_object->tostring = NULL;
-  script_object->valueof = NULL;
+  script_object->tostring = ags_script_object_real_tostring;
+  script_object->valueof = ags_script_object_real_valueof;
 
   /* signals */
   script_object_signals[MAP_XML] =
@@ -349,6 +352,22 @@ ags_script_object_tostring(AgsScriptObject *script_object)
   g_object_unref(G_OBJECT(script_object));
 
   return(retval);
+}
+
+AgsScriptObject*
+ags_script_object_real_tostring(AgsScriptObject *script_object)
+{
+  AgsScriptVar *retval;
+
+  if((AGS_SCRIPT_OBJECT_LAUNCHED & (script_object->flags)) != 0){
+    retval = AGS_SCRIPT_VAR(ags_script_object_valueof(script_object));
+  }else{
+    retval = ags_script_var_new();
+
+    xmlSetProp(AGS_SCRIPT_OBJECT(retval)->node, "type\0", "char\0");
+  }
+
+  return((AgsScriptObject *) retval);
 }
 
 AgsScriptObject*

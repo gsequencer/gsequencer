@@ -89,7 +89,7 @@ ags_script_var_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_script_var_init(AgsScriptVar *script_var)
 {
-  //TODO:JK: implement me
+  script_var->flags = 0;
 }
 
 void

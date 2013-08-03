@@ -34,9 +34,15 @@
 typedef struct _AgsScriptVar AgsScriptVar;
 typedef struct _AgsScriptVarClass AgsScriptVarClass;
 
+typedef enum{
+  AGS_SCRIPT_VAR_ENCODED_BASE64      = 1,
+}AgsScriptVarFlags;
+
 struct _AgsScriptVar
 {
   AgsScriptObject script_object;
+
+  guint flags;
 };
 
 struct _AgsScriptVarClass

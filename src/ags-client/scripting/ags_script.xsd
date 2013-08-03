@@ -6,8 +6,9 @@
   <!-- Types -->
   <xsd:simpleType name="void" final="xsd:string"/>
 
-  <xsd:simpleType name="function" basetype="xsd:string"/>
+  <xsd:simpleType name="function" basetype="xsd:IDREF"/>
   <xsd:simpleType name="uuid" basetype="xsd:string"/>
+  <xsd:simpleType name="base64" basetype="xsd:string"/>
 
   <xsd:simpleType name="object" basetype="xsd:uuid"/>
   <xsd:simpleType name="pid" basetype="xsd:uint64"/>
@@ -25,6 +26,8 @@
   <xsd:complexType name="ags-var">
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="type" type="xsd:string" value="&ags-type;"/>
+    <xsd:attribute name="encoded" type="xsd:boolean" value="true"/>
+    <xsd:attribute name="value" type="xsd:base64"/>
     <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@id"/>
   </xsd:complexType>
