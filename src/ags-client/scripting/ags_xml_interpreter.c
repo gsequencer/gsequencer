@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-client/scripting/ags_script.h>
+
 void ags_xml_interpreter_class_init(AgsXmlInterpreterClass *xml_interpreter);
 void ags_xml_interpreter_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_xml_interpreter_init(AgsXmlInterpreter *xml_interpreter);
@@ -28,6 +30,12 @@ void ags_xml_interpreter_disconnect(AgsConnectable *connectable);
 void ags_xml_interpreter_finalize(GObject *gobject);
 
 void ags_xml_interpreter_real_start(AgsXmlInterpreter *xml_interpreter);
+void* ags_xml_interpreter_thread(void *ptr);
+
+void ags_xml_interpreter_load_script(AgsXmlInterpreter *xml_interpreter,
+				     AgsScript *script);
+void ags_xml_interpreter_unload_script(AgsXmlInterpreter *xml_interpreter,
+				       AgsScript *script);
 
 enum{
   START,
@@ -115,8 +123,14 @@ ags_xml_interpreter_init(AgsXmlInterpreter *xml_interpreter)
 {
   xml_interpreter->flags = 0;
 
+  pthread_mutex_init(&(xml_interpreter->mutex), NULL);
+  pthread_cond_init(&(xml_interpreter->cond), NULL);
+
   xml_interpreter->default_stack = ags_script_stack_new();
   xml_interpreter->stack_size = AGS_XML_INTERPRETER_DEFAULT_STACK_SIZE;
+
+  xml_interpreter->script = NULL;
+  pthread_mutex_init(&(xml_interpreter->script_mutex), NULL);
 }
 
 void
@@ -156,6 +170,68 @@ ags_xml_interpreter_start(AgsXmlInterpreter *xml_interpreter)
   g_signal_emit(G_OBJECT(xml_interpreter),
 		xml_interpreter_signals[START], 0);
   g_object_unref(G_OBJECT(xml_interpreter));
+}
+
+void*
+ags_xml_interpreter_thread(void *ptr)
+{
+  AgsXmlInterpreter *xml_interpreter;
+  AgsScript *script;
+  GList *current;
+  static struct timespec poll_interval;
+  static gboolean initialized = FALSE;
+
+  if(!initialized){
+    initialized = TRUE;
+
+    poll_interval.tv_sec = 0;
+    poll_interval.tv_nsec = 500000;
+  }
+
+  xml_interpreter = AGS_XML_INTERPRETER(ptr);
+
+  while((AGS_XML_INTERPRETER_RUNNING & (xml_interpreter->flags)) != 0){
+    pthread_mutex_lock(&(xml_interpreter->script_mutex));
+
+    current = xml_interpreter->script;
+    xml_interpreter->script = NULL;
+
+    pthread_mutex_unlock(&(xml_interpreter->script_mutex));
+
+    while(current != NULL){
+      script = AGS_SCRIPT(current->data);
+
+      /* run script */
+      ags_xml_interpreter_load_script(xml_interpreter,
+				      script);
+
+      ags_script_launch(script);
+
+      ags_xml_interpreter_unload_script(xml_interpreter,
+					script);
+
+      /* iterate */
+      current = current->next;
+    }
+
+    nanosleep(&poll_interval);
+  }
+
+  pthread_exit(NULL);
+}
+
+void
+ags_xml_interpreter_load_script(AgsXmlInterpreter *xml_interpreter,
+				AgsScript *script)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_xml_interpreter_unload_script(AgsXmlInterpreter *xml_interpreter,
+				  AgsScript *script)
+{
+  //TODO:JK: implement me
 }
 
 void

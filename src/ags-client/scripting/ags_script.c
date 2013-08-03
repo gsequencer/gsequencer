@@ -27,6 +27,8 @@ void ags_script_connect(AgsConnectable *connectable);
 void ags_script_disconnect(AgsConnectable *connectable);
 void ags_script_finalize(GObject *gobject);
 
+
+
 static gpointer ags_script_parent_class = NULL;
 
 GType
@@ -131,7 +133,7 @@ ags_script_write(AgsScript *script)
 }
 
 void
-ags_script_execute(AgsScript *script)
+ags_script_launch(AgsScript *script)
 {
   //TODO:JK: implement me
 }

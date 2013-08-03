@@ -19,6 +19,8 @@
 #ifndef __AGS_XML_INTERPRETER_H__
 #define __AGS_XML_INTERPRETER_H__
 
+#include <pthread.h>
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -40,6 +42,8 @@ typedef struct _AgsXmlInterpreterClass AgsXmlInterpreterClass;
 
 typedef enum{
   AGS_XML_INTERPRETER_RUNNING     = 1,
+  AGS_XML_INTERPRETER_WAIT        = 1 << 1,
+  AGS_XML_INTERPRETER_DONE        = 1 << 2,
 }AgsXmlInterpreterFlags;
 
 #define AGS_XML_INTERPRETER_ERROR (ags_xml_interpreter_error_quark())
@@ -54,8 +58,15 @@ struct _AgsXmlInterpreter
   
   guint flags;
 
+  pthread_t thread;
+  pthread_mutex_t mutex;
+  pthread_cond_t cond;
+
   AgsScriptStack *default_stack;
   guint64 stack_size;
+
+  GList *script;
+  pthread_mutex_t script_mutex;
 };
 
 struct _AgsXmlInterpreterClass

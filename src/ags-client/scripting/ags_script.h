@@ -52,14 +52,14 @@ struct _AgsScriptClass
 
   void (*read)(AgsScript *script);
   void (*write)(AgsScript *script);
-  void (*execute)(AgsScript *script);
+  void (*launch)(AgsScript *script);
 };
 
 GType ags_script_get_type();
 
 void ags_script_read(AgsScript *script);
 void ags_script_write(AgsScript *script);
-void ags_script_execute(AgsScript *script);
+void ags_script_launch(AgsScript *script);
 
 AgsScript* ags_script_new();
 
