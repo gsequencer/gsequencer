@@ -24,6 +24,11 @@
 
 #include <ags-client/scripting/ags_script.h>
 
+#include <libxml/tree.h>
+
+#include <stdlib.h>
+#include <string.h>
+
 void ags_script_object_class_init(AgsScriptObjectClass *script_object);
 void ags_script_object_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_object_init(AgsScriptObject *script_object);
@@ -41,12 +46,18 @@ void ags_script_object_finalize(GObject *gobject);
 
 void ags_script_object_real_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object);
-AgsScriptObject* ags_script_object_real_valueof(AgsScriptObject *script_object);
-
+AgsScriptObject* ags_script_object_real_valueof(AgsScriptObject *script_object,
+						GError **error);
+gchar** ags_script_object_split_xpath(gchar *xpath, guint *name_length);
+guint* ags_script_object_read_index(gchar *xpath, guint *index_length);
+guint ags_script_object_count_retval(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth);
 AgsScriptObject* ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_object,
-								     guint flags);
+								     guint flags,
+								     guint z_index);
 AgsScriptObject* ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_object,
-								    guint flags);
+								    guint flags,
+								    guint z_index);
 
 enum{
   MAP_XML,
@@ -352,131 +363,24 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
   guint current_node_count;
   gboolean is_node_after_first_match, is_node_after_last_match;
 
-  auto gchar* ags_script_object_split_xpath(gchar *xpath, guint *name_length);
-  auto guint* ags_script_object_read_index(AgsScriptObject *script_object, guint *index_length);
-  auto guint ags_script_object_count_retval(AgsScriptObject *script_object);
-  auto AgsScriptObject* ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth);
-
-  gchar* ags_script_object_split_xpath(gchar *xpath, guint *name_length){
-    gchar *name;
-    gchar *offset, *prev_offset;
-    guint i, start;
-
-    name = (gchar **) malloc(sizeof(gchar*));
-
-    prev_offset = xpath;
-
-    if(xpath[0] == '('){
-      start++;
-      prev_offset = &(xpath[1]);
-      
-      if(xpath[1] == '/'){
-	start++;
-
-	if(xpath[2] == '/'){
-	  start++;
-	}
-      }
-    }else{
-      if(xpath[0] == '/'){
-	start++;
-
-	if(xpath[1] == '/'){
-	  start++;
-	}
-      }
-    }
-
-    offset = &(xpath[start]);
-
-    i = 1;
-
-    while((offset = strchr(offset, '/')) != NULL && offset[0] != '\0'){
-      name = (gchar **) realloc(name, (i) * sizeof(gchar *));
-
-      name[i - 1] = g_strndup(offset, offset - prev_offset);
-
-      if(offset[1] == '/'){
-	offset = &(offset[2]);
-      }else{
-	offset = &(offset[1]);
-      }
-
-      i++;
-    }
-
-    *name_length = i;
-
-    return(name);
-  }
-
-  guint* ags_script_object_read_index(gchar *xpath){
-    guint *index;
-    gchar *offset;
-    guint i;
-
-    index = NULL;
-    offset = xpath;
-    i = 0;
-
-    while((offset = strchr(offset, '[')) != NULL && offset[0] != '\0'){
-      if(i == 0){
-	index = (guint *) malloc(sizeof(guint));
-      }else{
-	index = (guint *) realloc(index, (i + 1) * sizeof(guint));
-      }
-
-      sscanf(xpath, "%d\0", &(index[i]));
-
-      offset = &(offset[1]);
-      i++;
-    }
-
-    *index_length = i;
-
-    return(index);
-  }
-
-  guint ags_script_object_count_retval(AgsScriptObject *script_object){
-    AgsScriptObject *current;
-    guint i;
-
-    current = script_object;
-
-    for(i = 0; current != NULL; i++) current = current->retval;
-
-    return(i);
-  }
-  AgsScriptObject* ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth){
-    AgsScriptObject *current;
-    guint i;
-
-    current = script_object;
-
-    for(i = 0; i < nth && current != NULL; i++) current = current->retval;
-
-    return(current);
-  }
-
   /* entry */
-  xpath = xmlNodeGetProp(script_object->node,
-			 "retval\0");
+  xpath = xmlGetProp(script_object->node, "retval\0");
 
   if((first_match = ags_script_object_find_flags_descending_first_match(script_object,
-									AGS_SCRIPT_OBJECT_LAUNCHED)) == NULL){
+									AGS_SCRIPT_OBJECT_LAUNCHED,
+									strtoul(xmlGetProp(script_object->node, "z_index\0"), NULL, 10))) == NULL){
     return(NULL);
   }
 
   last_match = ags_script_object_find_flags_descending_last_match(script_object,
-								  AGS_SCRIPT_OBJECT_LAUNCHED);
+								  AGS_SCRIPT_OBJECT_LAUNCHED,
+								  strtoul(xmlGetProp(script_object->node, "z_index\0"), NULL, 10));
 
   retval_count = ags_script_object_count_retval(script_object);
 
   name = ags_script_object_split_xpath(xpath, &name_length);
   index = ags_script_object_read_index(xpath,
 				       &index_length);
-
-  position = 0;
 
   if(index_length > retval_count){
     guint prefix_length;
@@ -496,10 +400,10 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
       if(current == NULL){
 	/* set error */
 	g_set_error(error,
-		    AGS_OBJECT_SCRIPT_ERROR,
-		    AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		    AGS_SCRIPT_OBJECT_ERROR,
+		    AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
 		    "can't access index because it doesn't exist: %d of %d\0",
-		    position, position);
+		    retval_count, retval_count);
 
 	return(NULL);
       }
@@ -522,8 +426,8 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 	if(current == NULL){
 	  /* set error */
 	  g_set_error(error,
-		      AGS_OBJECT_SCRIPT_ERROR,
-		      AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		      AGS_SCRIPT_OBJECT_ERROR,
+		      AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
 		      "named child doesn't exist\0");
 
 	  return(NULL);
@@ -539,20 +443,20 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 	}else{
 	  /* set error */
 	  g_set_error(error,
-		      AGS_OBJECT_SCRIPT_ERROR,
-		      AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		      AGS_SCRIPT_OBJECT_ERROR,
+		      AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
 		      "named child doesn't exist\0");
 	}
       }
 
       /* position */
-      z_index = strtoul(xmlNodeGetProp(node, "z_index\0"));
+      z_index = strtoul(xmlGetProp(node, "z_index\0"), NULL, 10);
 
       for(k = 0; k < index[i] && current != NULL; j++){
 	node = current->node;
 	current = current->retval;
 
-	if(!xmlStrcmp(node->name, &(name[i][prefix_length])) && z_index == strtoul(xmlNodeGetProp(node, "z_index\0"))){
+	if(!xmlStrcmp(node->name, &(name[i][prefix_length])) && z_index == strtoul(xmlGetProp(node, "z_index\0"), NULL, 10)){
 	  k++;
 	}
       }
@@ -564,10 +468,10 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
 	 k != index[i]){
 	/* set error */
 	g_set_error(error,
-		    AGS_OBJECT_SCRIPT_ERROR,
-		    AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		    AGS_SCRIPT_OBJECT_ERROR,
+		    AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
 		    "can't access index because it doesn't exist: %d of %d\0",
-		    position, position);
+		    retval_count, retval_count);
 
 	return(NULL);
       }
@@ -576,8 +480,8 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
     if(!is_node_after_first_match){
       /* set error */
       g_set_error(error,
-		  AGS_OBJECT_SCRIPT_ERROR,
-		  AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		  AGS_SCRIPT_OBJECT_ERROR,
+		  AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
 		  "can't access index because it doesn't exist: %d of %d\0",
 		  -1, index_length);
 
@@ -586,8 +490,8 @@ ags_script_object_real_valueof(AgsScriptObject *script_object,
   }else{
     /* set error */
     g_set_error(error,
-		AGS_OBJECT_SCRIPT_ERROR,
-		AGS_OBJECT_SCRIPT_INDEX_EXCEEDED,
+		AGS_SCRIPT_OBJECT_ERROR,
+		AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
 		"can't access index because it doesn't exist: %d of %d\0",
 		-1, index_length);
 
@@ -617,26 +521,140 @@ ags_script_object_valueof(AgsScriptObject *script_object)
   return(retval);
 }
 
+gchar**
+ags_script_object_split_xpath(gchar *xpath, guint *name_length)
+{
+  gchar **name;
+  gchar *offset, *prev_offset;
+  guint i, start;
+
+  name = (gchar **) malloc(sizeof(gchar*));
+
+  prev_offset = xpath;
+
+  if(xpath[0] == '('){
+    start++;
+    prev_offset = &(xpath[1]);
+      
+    if(xpath[1] == '/'){
+      start++;
+
+      if(xpath[2] == '/'){
+	start++;
+      }
+    }
+  }else{
+    if(xpath[0] == '/'){
+      start++;
+
+      if(xpath[1] == '/'){
+	start++;
+      }
+    }
+  }
+
+  offset = &(xpath[start]);
+
+  i = 1;
+
+  while((offset = strchr(offset, '/')) != NULL && offset[0] != '\0'){
+    name = (gchar **) realloc(name, (i) * sizeof(gchar *));
+
+    name[i - 1] = g_strndup(offset, offset - prev_offset);
+
+    if(offset[1] == '/'){
+      offset = &(offset[2]);
+    }else{
+      offset = &(offset[1]);
+    }
+
+    i++;
+  }
+
+  *name_length = i;
+
+  return(name);
+}
+
+guint*
+ags_script_object_read_index(gchar *xpath, guint *index_length)
+{
+  guint *index;
+  gchar *offset;
+  guint i;
+
+  index = NULL;
+  offset = xpath;
+  i = 0;
+
+  while((offset = strchr(offset, '[')) != NULL && offset[0] != '\0'){
+    if(i == 0){
+      index = (guint *) malloc(sizeof(guint));
+    }else{
+      index = (guint *) realloc(index, (i + 1) * sizeof(guint));
+    }
+
+    sscanf(xpath, "%d\0", &(index[i]));
+
+    offset = &(offset[1]);
+    i++;
+  }
+
+  *index_length = i;
+
+  return(index);
+}
+
+guint
+ags_script_object_count_retval(AgsScriptObject *script_object)
+{
+  AgsScriptObject *current;
+  guint i;
+
+  current = script_object;
+
+  for(i = 0; current != NULL; i++) current = current->retval;
+
+  return(i);
+}
+
+AgsScriptObject*
+ags_script_object_nth_retval(AgsScriptObject *script_object, guint nth)
+{
+  AgsScriptObject *current;
+  guint i;
+
+  current = script_object;
+
+  for(i = 0; i < nth && current != NULL; i++) current = current->retval;
+
+  return(current);
+}
+
 AgsScriptObject*
 ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_object,
-						    guint flags)
+						    guint flags,
+						    guint z_index)
 {
   AgsScriptObject *current, *value;
   guint inverse_flags;
-
-  inverse_flags = ~flags;
-
-  if(((inverse_flags) & (flags | (script_object->flags))) == 0){
-    return(current);
-  }
+  gboolean found_z_index;
 
   current = script_object->retval;
+  inverse_flags = ~flags;
+
+  found_z_index = FALSE;
 
   while(current != NULL){
-    value = ags_script_object_find_flags_descending(current,
-						    flags);
+    if(!found_z_index && z_index == strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10)){
+      found_z_index = TRUE;
+    }
+
+    if(found_z_index && z_index > strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10)){
+      break;
+    }
     
-    if(value != NULL){
+    if(found_z_index && ((inverse_flags) & (flags | (script_object->flags))) == 0){
       return(current);
     }
 
@@ -648,32 +666,36 @@ ags_script_object_find_flags_descending_first_match(AgsScriptObject *script_obje
 
 AgsScriptObject*
 ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_object,
-						   guint flags)
+						   guint flags,
+						   guint z_index)
 {
-  AgsScriptObject *current, *value;
+  AgsScriptObject *current, *last_match, *value;
   guint inverse_flags;
-
+  gboolean found_z_index;
 
   current = script_object->retval;
+  inverse_flags = ~flags;
+  
+  last_match = NULL;
+  found_z_index = FALSE;
 
   while(current != NULL){
-    value = ags_script_object_find_flags_descending(current,
-						    flags);
-    
-    if(value != NULL){
-      return(current);
+    if(!found_z_index && z_index == strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10)){
+      found_z_index = TRUE;
+    }
+
+    if(found_z_index && z_index > strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10)){
+      break;
+    }
+
+    if(found_z_index && ((inverse_flags) & (flags | (script_object->flags))) == 0){
+      last_match = current;
     }
 
     current = current->retval;
   }
 
-  inverse_flags = ~flags;
-
-  if(((inverse_flags) & (flags | (script_object->flags))) == 0){
-    return(current);
-  }
-
-  return(NULL);
+  return(last_match);
 }
 
 AgsScriptObject*

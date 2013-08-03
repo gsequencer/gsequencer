@@ -145,16 +145,16 @@ ags_schema_factory_create_node_from_xsd(AgsSchemaFactory *schema_factory,
     xmlNode *retval;
 
     /* parse basics */
-    retval = xmlNewNode(NULL, xmlNodeGetProp(node, "name\0"));
+    retval = xmlNewNode(NULL, xmlGetProp(node, "name\0"));
 
-    if((final = xmlNodeGetProp(node, "final\0")) != NULL){
+    if((final = xmlProp(node, "final\0")) != NULL){
       xmlNewProp(retval, BAD_CAST "final\0", NULL);
-    }else if((basetype = xmlNodeGetProp(node, "basetype\0")) != NULL){
+    }else if((basetype = xmlGetProp(node, "basetype\0")) != NULL){
       char *variety;
 
       xmlNewProp(retval, BAD_CAST "basetype\0", BAD_CAST (gchar *) g_strdup(basetype));
 
-      variety = xmlNodeGetProp(node, "variety\0");
+      variety = xmlGetProp(node, "variety\0");
 
       if(!xmlStrncmp("atomic\0", variety, 7)){
 	xmlNewProp(retval, BAD_CAST "atomic\0", BAD_CAST (gchar *) g_strdup("true\0"));
@@ -167,7 +167,7 @@ ags_schema_factory_create_node_from_xsd(AgsSchemaFactory *schema_factory,
     while(current != NULL){
       if(current->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp("attribute\0", current->name, 10)){
-	  xmlNodeSetProp(retval, BAD_CAST (gchar *) g_strdup(xmlNodeGetProp(current, "name\0")), NULL);
+	  xmlNodeSetProp(retval, BAD_CAST (gchar *) g_strdup(xmlGetProp(current, "name\0")), NULL);
 	}else if(!xmlStrncmp("sequence\0", current->name, 9)){
 	  xmlNode *sequence;
 
