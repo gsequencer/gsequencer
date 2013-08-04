@@ -283,6 +283,7 @@ ags_xml_interpreter_load_script(AgsXmlInterpreter *xml_interpreter,
       mapped_node = ags_xml_script_factory_map(xml_script_factory,
 					       (gchar *) node->name,
 					       &error);
+    xmlSetProp(mapped_node, "z_index\0", g_strdup_printf("%d\0", z_index));
     ags_script_object_mapped_xml(script_object);
 
 
