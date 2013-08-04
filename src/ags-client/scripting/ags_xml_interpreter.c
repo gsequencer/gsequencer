@@ -193,7 +193,7 @@ ags_xml_interpreter_thread(void *ptr)
   while((AGS_XML_INTERPRETER_RUNNING & (xml_interpreter->flags)) != 0){
     pthread_mutex_lock(&(xml_interpreter->script_mutex));
 
-    current = xml_interpreter->script;
+    current = g_list_reverse(xml_interpreter->script);
     xml_interpreter->script = NULL;
 
     pthread_mutex_unlock(&(xml_interpreter->script_mutex));

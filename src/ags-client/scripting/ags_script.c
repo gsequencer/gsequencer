@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-client/scripting/ags_xml_interpreter.h>
+
 void ags_script_class_init(AgsScriptClass *script);
 void ags_script_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_init(AgsScript *script);
@@ -48,6 +50,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_XML_INTERPRETER,
   PROP_FILENAME,
   PROP_SCRIPT,
 };
@@ -109,6 +112,15 @@ ags_script_class_init(AgsScriptClass *script)
   gobject->finalize = ags_script_finalize;
 
   /* properties */
+  param_spec = g_param_spec_object("xml interpreter\0",
+				   "xml interpreter to use\0",
+				   "The xml interpreter to be used to process the script\0",
+				   AGS_TYPE_XML_INTERPRETER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCRIPT,
+				  param_spec);
+
   param_spec = g_param_spec_pointer("filename\0",
 				    "filename of script\0",
 				    "The filename of the script\0",
@@ -190,6 +202,27 @@ ags_script_set_property(GObject *gobject,
   script = AGS_SCRIPT(gobject);
 
   switch(prop_id){
+  case PROP_XML_INTERPRETER:
+    {
+      AgsXmlInterpreter *xml_interpreter;
+
+      xml_interpreter = (AgsXmlInterpreter *) g_value_get_object(value);
+
+      if(xml_interpreter == script->xml_interpreter){
+	return;
+      }
+
+      if(script->xml_interpreter != NULL){
+	g_object_ref(script->xml_interpreter);
+      }
+
+      if(xml_interpreter != NULL){
+	g_object_unref(xml_interpreter);
+      }
+
+      script->xml_interpreter = xml_interpreter;
+    }
+    break;
   case PROP_FILENAME:
     {
       gchar *filename;
@@ -225,6 +258,11 @@ ags_script_get_property(GObject *gobject,
   script = AGS_SCRIPT(gobject);
 
   switch(prop_id){
+  case PROP_XML_INTERPRETER:
+    {
+      g_value_set_object(value, script->xml_interpreter);
+    }
+    break;
   case PROP_FILENAME:
     {
       g_value_set_pointer(value, script->filename);
@@ -322,7 +360,16 @@ ags_script_write(AgsScript *script)
 void
 ags_script_real_launch(AgsScript *script)
 {
-  //TODO:JK: implement me
+  AgsXmlInterpreter *xml_interpreter;
+
+  xml_interpreter = AGS_XML_INTERPRETER(script->xml_interpreter);
+
+  pthread_mutex_lock(&(xml_interpreter->script_mutex));
+  
+  xml_interpreter->script = g_list_prepend(xml_interpreter->script,
+					   script);
+
+  pthread_mutex_unlock(&(xml_interpreter->script_mutex));
 }
 
 void
@@ -337,11 +384,12 @@ ags_script_launch(AgsScript *script)
 }
 
 AgsScript*
-ags_script_new()
+ags_script_new(GObject *xml_interpreter)
 {
   AgsScript *script;
 
   script = (AgsScript *) g_object_new(AGS_TYPE_SCRIPT,
+				      "xml_interpreter", xml_interpreter,
 				      NULL);
 
   return(script);

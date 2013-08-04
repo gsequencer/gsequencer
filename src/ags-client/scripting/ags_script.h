@@ -66,6 +66,6 @@ void ags_script_read(AgsScript *script);
 void ags_script_write(AgsScript *script);
 void ags_script_launch(AgsScript *script);
 
-AgsScript* ags_script_new();
+AgsScript* ags_script_new(GObject *xml_interpreter);
 
 #endif /*__AGS_SCRIPT_H__*/
