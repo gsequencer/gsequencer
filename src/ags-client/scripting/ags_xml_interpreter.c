@@ -208,7 +208,7 @@ ags_xml_interpreter_thread(void *ptr)
 {
   AgsXmlInterpreter *xml_interpreter;
   AgsScript *script;
-  AgsScriptObject *current;
+  AgsScriptObject *current_script_object;
   GList *current;
 
   static struct timespec poll_interval;
@@ -221,7 +221,7 @@ ags_xml_interpreter_thread(void *ptr)
 
     next = script_object->retval;
 
-    if(strtoul(xmlGetProp(next, "z_index\0"), NULL, 10) > strtoul(xmlGetProp(script_object, "z_index\0"), NULL, 10)){
+    if(strtoul(xmlGetProp(next->node, "z_index\0"), NULL, 10) > strtoul(xmlGetProp(script_object->node, "z_index\0"), NULL, 10)){
       next = ags_xml_interpreter_thread_recursive_launch(next);
     }
     
@@ -256,10 +256,10 @@ ags_xml_interpreter_thread(void *ptr)
       ags_xml_interpreter_load_script(xml_interpreter,
 				      script);
 
-      current = AGS_SCRIPT_OBJECT(script->default_stack);
+      current_script_object = AGS_SCRIPT_OBJECT(xml_interpreter->default_stack);
 
-      while(current != NULL){
-	current = ags_xml_interpreter_thread_recursive_launch(current);
+      while(current_script_object != NULL){
+	current_script_object = ags_xml_interpreter_thread_recursive_launch(current_script_object);
       }
 
       ags_xml_interpreter_unload_script(xml_interpreter,
