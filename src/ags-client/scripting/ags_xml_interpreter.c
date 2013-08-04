@@ -208,9 +208,29 @@ ags_xml_interpreter_thread(void *ptr)
 {
   AgsXmlInterpreter *xml_interpreter;
   AgsScript *script;
+  AgsScriptObject *current;
   GList *current;
+
   static struct timespec poll_interval;
   static gboolean initialized = FALSE;
+
+  auto AgsScriptObject* ags_xml_interpreter_thread_recursive_launch(AgsScriptObject *script_object);
+
+  AgsScriptObject* ags_xml_interpreter_thread_recursive_launch(AgsScriptObject *script_object){
+    AgsScriptObject *next;
+
+    next = script_object->retval;
+
+    if(strtoul(xmlGetProp(next, "z_index\0"), NULL, 10) > strtoul(xmlGetProp(script_object, "z_index\0"), NULL, 10)){
+      next = ags_xml_interpreter_thread_recursive_launch(next);
+    }
+    
+    ags_script_object_launch(script_object);
+    ags_xml_interpreter_run_snipped(xml_interpreter,
+				    AGS_SCRIPT_OBJECT(xml_interpreter->default_stack)->node);
+
+    return(next);
+  }
 
   if(!initialized){
     initialized = TRUE;
@@ -236,8 +256,11 @@ ags_xml_interpreter_thread(void *ptr)
       ags_xml_interpreter_load_script(xml_interpreter,
 				      script);
 
-      ags_xml_interpreter_run_snipped(xml_interpreter,
-				      AGS_SCRIPT_OBJECT(xml_interpreter->default_stack)->node);
+      current = AGS_SCRIPT_OBJECT(script->default_stack);
+
+      while(current != NULL){
+	current = ags_xml_interpreter_thread_recursive_launch(current);
+      }
 
       ags_xml_interpreter_unload_script(xml_interpreter,
 					script);
