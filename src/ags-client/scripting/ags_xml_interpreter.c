@@ -225,19 +225,101 @@ void
 ags_xml_interpreter_load_script(AgsXmlInterpreter *xml_interpreter,
 				AgsScript *script)
 {
-  //TODO:JK: implement me
+  AgsXmlScriptFactory *xml_script_factory;
+  AgsScriptStack *default_stack;
+  AgsScriptObject *current;
+  AgsScriptObject *retval;
+  xmlNode *root_node;
+  xmlNode *current_node;
+
+  auto AgsScriptObject* ags_xml_interpreter_load_script_recursive(xmlNode *node, guint z_index);
+
+  AgsScriptObject* ags_xml_interpreter_load_script_recursive(xmlNode *node, guint z_index){
+    AgsScriptObject *script_object;
+    GType type;
+    AgsScriptObject *current;
+    AgsScriptObject *retval;
+    xmlNode *current_node;
+    xmlNode *mapped_node;
+    GError *error;
+
+    type = ags_xml_interpreter_type_from_name((gchar *) node->name);
+    script_object = (AgsScriptObject *) g_object_new(type,
+						     NULL);
+
+    error = NULL;
+    mapped_node = ags_xml_script_factory_map(xml_script_factory,
+					     script_object,
+					     &error);
+
+    if(error != NULL){
+      g_warning(error->message);
+    }
+ 
+    current_node = node->children;
+
+    while(current_node != NULL){
+      if(current_node->type == XML_ELEMENT_NODE){
+	retval = ags_xml_interpreter_load_script_recursive(current_node, z_index + 1);
+
+	current->retval = retval;
+
+	current = retval;
+      }
+
+      current_node = current_node->next;
+    }
+
+    return(script_object);
+  }
+
+  xml_script_factory = script->xml_script_factory;
+
+  default_stack = xml_interpreter->default_stack;
+
+  root_node = xmlDocGetRootElement(script->script);
+
+  current_node = root_node->children;
+
+  while(current_node != NULL){
+    if(current_node->type == XML_ELEMENT_NODE){
+      retval = ags_xml_interpreter_load_script_recursive(current_node, 0);
+
+      current->retval = retval;
+
+      current = retval;
+    }
+
+    current_node = current_node->next;
+  }
 }
 
 void
 ags_xml_interpreter_unload_script(AgsXmlInterpreter *xml_interpreter,
 				  AgsScript *script)
 {
-  //TODO:JK: approve if there's a memory leak
+  AgsScriptStack *default_stack;
+  xmlNode *node;
+
+  default_stack = xml_interpreter->default_stack;
+  node = AGS_SCRIPT_OBJECT(default_stack)->node;
+
+  g_object_unref(G_OBJECT(AGS_SCRIPT_OBJECT(default_stack)->retval));
+  AGS_SCRIPT_OBJECT(default_stack)->retval = NULL;
+
+  node->children = NULL;
+  xmlSetProp(node, "value\0", NULL);
 }
 
 void
 ags_xml_interpreter_run_snipped(AgsXmlInterpreter *xml_interpreter,
 				xmlNode *snipped)
+{
+  //TODO:JK: implement me
+}
+
+GType
+ags_xml_interpreter_type_from_name(gchar *name)
 {
   //TODO:JK: implement me
 }

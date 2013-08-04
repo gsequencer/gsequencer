@@ -84,6 +84,8 @@ void ags_xml_interpreter_start(AgsXmlInterpreter *xml_interpreter);
 void ags_xml_interpreter_run_snipped(AgsXmlInterpreter *xml_interpreter,
 				     xmlNode *snipped);
 
+GType ags_xml_interpreter_type_from_name(gchar *name);
+
 AgsXmlInterpreter* ags_xml_interpreter_new();
 
 #endif /*__AGS_XML_INTERPRETER_H__*/
