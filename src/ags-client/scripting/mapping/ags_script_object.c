@@ -786,7 +786,7 @@ ags_script_object_find_parent(AgsScriptObject *start, AgsScriptObject *end,
   while(current != end){
     if(z_index < (strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10)) &&
        !xmlStrcmp(current->node->name, name)){
-      return(current);
+      last_match = current;
     }
 
     current = current->retval;
