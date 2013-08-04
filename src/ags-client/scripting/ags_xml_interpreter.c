@@ -218,6 +218,7 @@ ags_xml_interpreter_thread(void *ptr)
 
   AgsScriptObject* ags_xml_interpreter_thread_recursive_launch(AgsScriptObject *script_object){
     AgsScriptObject *next;
+    GError *error;
 
     next = script_object->retval;
 
@@ -226,9 +227,18 @@ ags_xml_interpreter_thread(void *ptr)
     }
     
     if(AGS_IS_SCRIPT_POP(script_object)){
-      ags_script_object_launch(script_object);
-      ags_xml_interpreter_run_snipped(xml_interpreter,
-				      AGS_SCRIPT_OBJECT(xml_interpreter->default_stack)->node);
+      error = NULL;
+
+      ags_script_object_launch(script_object, &error);
+
+      if(error == NULL){
+	ags_xml_interpreter_run_snipped(xml_interpreter,
+					AGS_SCRIPT_OBJECT(xml_interpreter->default_stack)->node);
+      }else{
+	g_warning(error->message);
+
+	return(NULL);
+      }
     }
 
     return(next);

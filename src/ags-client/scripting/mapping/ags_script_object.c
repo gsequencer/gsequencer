@@ -49,7 +49,7 @@ void ags_script_object_connect(AgsConnectable *connectable);
 void ags_script_object_disconnect(AgsConnectable *connectable);
 void ags_script_object_finalize(GObject *gobject);
 
-AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object, GError **error);
 AgsScriptObject* ags_script_object_real_tostring(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_valueof(AgsScriptObject *script_object,
 						GError **error);
@@ -168,8 +168,9 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsScriptObjectClass, launch),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__VOID,
-		 G_TYPE_OBJECT, 0);
+		 g_cclosure_user_marshal_OBJECT__POINTER,
+		 G_TYPE_OBJECT, 0,
+		 G_TYPE_POINTER);
 
   script_object_signals[TOSTRING] =
     g_signal_new("tostring\0",
@@ -314,7 +315,7 @@ ags_script_object_mapped_xml(AgsScriptObject *script_object)
 }
 
 AgsScriptObject*
-ags_script_object_real_launch(AgsScriptObject *script_object)
+ags_script_object_real_launch(AgsScriptObject *script_object, GError **error)
 {
   //TODO:JK: implement me
 
@@ -322,7 +323,7 @@ ags_script_object_real_launch(AgsScriptObject *script_object)
 }
 
 AgsScriptObject*
-ags_script_object_launch(AgsScriptObject *script_object)
+ags_script_object_launch(AgsScriptObject *script_object, GError **error)
 {
   AgsScriptObject *retval;
 
@@ -331,6 +332,7 @@ ags_script_object_launch(AgsScriptObject *script_object)
   g_object_ref(G_OBJECT(script_object));
   g_signal_emit(G_OBJECT(script_object),
 		script_object_signals[LAUNCH], 0,
+		error,
 		&retval);
   g_object_unref(G_OBJECT(script_object));
 
