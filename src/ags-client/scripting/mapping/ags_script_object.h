@@ -45,7 +45,7 @@ typedef enum{
 
 typedef enum{
   AGS_SCRIPT_OBJECT_INDEX_EXCEEDED,
-}AgsError;
+}AgsScriptObjectError;
 
 struct _AgsScriptObject
 {

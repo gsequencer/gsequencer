@@ -206,7 +206,7 @@ ags_xml_interpreter_thread(void *ptr)
 				      script);
 
       ags_xml_interpreter_run_snipped(xml_interpreter,
-				      xml_interpreter->default_stack);
+				      AGS_SCRIPT_OBJECT(xml_interpreter->default_stack)->node);
 
       ags_xml_interpreter_unload_script(xml_interpreter,
 					script);
@@ -215,7 +215,7 @@ ags_xml_interpreter_thread(void *ptr)
       current = current->next;
     }
 
-    nanosleep(&poll_interval);
+    nanosleep(&poll_interval, NULL);
   }
 
   pthread_exit(NULL);
@@ -232,7 +232,7 @@ void
 ags_xml_interpreter_unload_script(AgsXmlInterpreter *xml_interpreter,
 				  AgsScript *script)
 {
-  //TODO:JK: implement me
+  //TODO:JK: approve if there's a memory leak
 }
 
 void

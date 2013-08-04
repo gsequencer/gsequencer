@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <uuid/uuid.h>
+
 void ags_script_object_class_init(AgsScriptObjectClass *script_object);
 void ags_script_object_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_object_init(AgsScriptObject *script_object);
@@ -205,8 +207,13 @@ ags_script_object_error_quark()
 void
 ags_script_object_init(AgsScriptObject *script_object)
 {
+  uuid_t id;
+
   script_object->node = NULL;
-  script_object->id = NULL;
+
+  uuid_generate(id);
+  script_object->id = g_base64_encode((guchar *) id,
+				      16);
 
   script_object->retval = NULL;
 }
@@ -286,6 +293,12 @@ ags_script_object_finalize(GObject *gobject)
   AgsScriptObject *script_object;
 
   script_object = AGS_SCRIPT_OBJECT(gobject);
+
+  g_object_unref(G_OBJECT(script_object->retval));
+
+  xmlFreeNode(script_object->node);
+
+  g_free(script_object->id);
 
   G_OBJECT_CLASS(ags_script_object_parent_class)->finalize(gobject);
 }

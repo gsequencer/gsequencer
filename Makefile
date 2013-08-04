@@ -279,6 +279,7 @@ am_agsclient_OBJECTS =  \
 	agsclient-ags_client_window_callbacks.$(OBJEXT) \
 	agsclient-ags_client_toolbar.$(OBJEXT) \
 	agsclient-ags_client_log.$(OBJEXT) \
+	agsclient-ags_xml_interpreter.$(OBJEXT) \
 	agsclient-ags_script.$(OBJEXT) \
 	agsclient-ags_script_xmlrpc.$(OBJEXT) \
 	agsclient-ags_script_printf.$(OBJEXT) \
@@ -983,6 +984,8 @@ agsclient_SOURCES =  \
 	./src/ags-client/X/ags_client_toolbar.c \
 	./src/ags-client/X/ags_client_log.c \
 	./src/ags-client/X/ags_script_editor.h \
+	./src/ags-client/scripting/ags_xml_interpreter.c \
+	./src/ags-client/scripting/ags_xml_interpreter.h \
 	./src/ags-client/scripting/ags_script.c \
 	./src/ags-client/scripting/ags_script.h \
 	./src/ags-client/scripting/ags_schema_factory.h \
@@ -1445,6 +1448,7 @@ include ./$(DEPDIR)/agsclient-ags_script_var.Po
 include ./$(DEPDIR)/agsclient-ags_script_while.Po
 include ./$(DEPDIR)/agsclient-ags_script_xmlrpc.Po
 include ./$(DEPDIR)/agsclient-ags_script_xpath.Po
+include ./$(DEPDIR)/agsclient-ags_xml_interpreter.Po
 include ./$(DEPDIR)/agsclient-ags_xml_script_factory.Po
 include ./$(DEPDIR)/agsclient-main.Po
 include ./$(DEPDIR)/libags_a-ags_connectable.Po
@@ -4641,6 +4645,20 @@ agsclient-ags_client_log.obj: ./src/ags-client/X/ags_client_log.c
 #	$(AM_V_CC)source='./src/ags-client/X/ags_client_log.c' object='agsclient-ags_client_log.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_client_log.obj `if test -f './src/ags-client/X/ags_client_log.c'; then $(CYGPATH_W) './src/ags-client/X/ags_client_log.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/X/ags_client_log.c'; fi`
+
+agsclient-ags_xml_interpreter.o: ./src/ags-client/scripting/ags_xml_interpreter.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_xml_interpreter.o -MD -MP -MF $(DEPDIR)/agsclient-ags_xml_interpreter.Tpo -c -o agsclient-ags_xml_interpreter.o `test -f './src/ags-client/scripting/ags_xml_interpreter.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_xml_interpreter.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_xml_interpreter.Tpo $(DEPDIR)/agsclient-ags_xml_interpreter.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_xml_interpreter.c' object='agsclient-ags_xml_interpreter.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_xml_interpreter.o `test -f './src/ags-client/scripting/ags_xml_interpreter.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_xml_interpreter.c
+
+agsclient-ags_xml_interpreter.obj: ./src/ags-client/scripting/ags_xml_interpreter.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_xml_interpreter.obj -MD -MP -MF $(DEPDIR)/agsclient-ags_xml_interpreter.Tpo -c -o agsclient-ags_xml_interpreter.obj `if test -f './src/ags-client/scripting/ags_xml_interpreter.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_xml_interpreter.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_xml_interpreter.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/agsclient-ags_xml_interpreter.Tpo $(DEPDIR)/agsclient-ags_xml_interpreter.Po
+#	$(AM_V_CC)source='./src/ags-client/scripting/ags_xml_interpreter.c' object='agsclient-ags_xml_interpreter.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -c -o agsclient-ags_xml_interpreter.obj `if test -f './src/ags-client/scripting/ags_xml_interpreter.c'; then $(CYGPATH_W) './src/ags-client/scripting/ags_xml_interpreter.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-client/scripting/ags_xml_interpreter.c'; fi`
 
 agsclient-ags_script.o: ./src/ags-client/scripting/ags_script.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(agsclient_CFLAGS) $(CFLAGS) -MT agsclient-ags_script.o -MD -MP -MF $(DEPDIR)/agsclient-ags_script.Tpo -c -o agsclient-ags_script.o `test -f './src/ags-client/scripting/ags_script.c' || echo '$(srcdir)/'`./src/ags-client/scripting/ags_script.c

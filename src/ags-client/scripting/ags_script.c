@@ -208,7 +208,7 @@ ags_script_set_property(GObject *gobject,
 
       xml_interpreter = (AgsXmlInterpreter *) g_value_get_object(value);
 
-      if(xml_interpreter == script->xml_interpreter){
+      if(xml_interpreter == (AgsXmlInterpreter *) script->xml_interpreter){
 	return;
       }
 
@@ -220,7 +220,7 @@ ags_script_set_property(GObject *gobject,
 	g_object_unref(xml_interpreter);
       }
 
-      script->xml_interpreter = xml_interpreter;
+      script->xml_interpreter = (GObject *) xml_interpreter;
     }
     break;
   case PROP_FILENAME:
