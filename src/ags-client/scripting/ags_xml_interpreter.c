@@ -225,9 +225,11 @@ ags_xml_interpreter_thread(void *ptr)
       next = ags_xml_interpreter_thread_recursive_launch(next);
     }
     
-    ags_script_object_launch(script_object);
-    ags_xml_interpreter_run_snipped(xml_interpreter,
-				    AGS_SCRIPT_OBJECT(xml_interpreter->default_stack)->node);
+    if(AGS_IS_SCRIPT_POP(script_object)){
+      ags_script_object_launch(script_object);
+      ags_xml_interpreter_run_snipped(xml_interpreter,
+				      AGS_SCRIPT_OBJECT(xml_interpreter->default_stack)->node);
+    }
 
     return(next);
   }
