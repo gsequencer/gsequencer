@@ -135,7 +135,7 @@ ags_script_class_init(AgsScriptClass *script)
     g_signal_new("write\0",
 		 G_TYPE_FROM_CLASS(script),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsScriptObjectClass, write),
+		 G_STRUCT_OFFSET(AgsScriptClass, write),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -144,7 +144,7 @@ ags_script_class_init(AgsScriptClass *script)
     g_signal_new("read\0",
 		 G_TYPE_FROM_CLASS(script),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsScriptObjectClass, read),
+		 G_STRUCT_OFFSET(AgsScriptClass, read),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -153,7 +153,7 @@ ags_script_class_init(AgsScriptClass *script)
     g_signal_new("launch\0",
 		 G_TYPE_FROM_CLASS(script),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsScriptObjectClass, launch),
+		 G_STRUCT_OFFSET(AgsScriptClass, launch),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -169,11 +169,12 @@ ags_script_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_script_init(AgsScript *script)
 {
+  script->xml_interpreter = NULL;
+
   script->xml_script_factory = ags_xml_script_factory_new();
   ags_xml_script_factory_create_prototype(script->xml_script_factory);
 
   script->filename = NULL;
-  script->file = NULL;
 
   script->script = NULL;
 }
@@ -259,6 +260,10 @@ ags_script_finalize(GObject *gobject)
 
   script = AGS_SCRIPT(gobject);
 
+  g_object_unref(script->xml_script_factory);
+
+  xmlFreeDoc(script->script);
+
   G_OBJECT_CLASS(ags_script_parent_class)->finalize(gobject);
 }
 
@@ -267,7 +272,11 @@ ags_script_real_read(AgsScript *script)
 {
   xmlDoc *doc;
 
-  //TODO:JK: implement me
+  if(script->script != NULL){
+    return;
+  }
+
+  doc = xmlReadFile(script->filename, NULL, 0);
   g_object_set(G_OBJECT(script),
 	       "script\0", doc,
 	       NULL);
@@ -287,7 +296,16 @@ ags_script_read(AgsScript *script)
 void
 ags_script_real_write(AgsScript *script)
 {
-  //TODO:JK: implement me
+  xmlDtd *dtd;
+  FILE *file;
+  xmlChar *buffer;
+  int size;
+
+  xmlDocDumpFormatMemoryEnc(script->script, &buffer, &size, AGS_SCRIPT_DEFAULT_ENCODING, TRUE);
+
+  file = fopen(script->filename, "w+\0");
+  fwrite(buffer, size, sizeof(xmlChar), file);
+  fclose(file);
 }
 
 void

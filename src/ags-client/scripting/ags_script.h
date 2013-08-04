@@ -33,6 +33,8 @@
 #define AGS_IS_SCRIPT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SCRIPT))
 #define AGS_SCRIPT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SCRIPT, AgsScriptClass))
 
+#define AGS_SCRIPT_DEFAULT_ENCODING "UTF-8\0"
+
 typedef struct _AgsScript AgsScript;
 typedef struct _AgsScriptClass AgsScriptClass;
 
@@ -40,10 +42,11 @@ struct _AgsScript
 {
   GObject object;
 
+  GObject *xml_interpreter;
+
   AgsXmlScriptFactory *xml_script_factory;
   
   gchar *filename;
-  FILE *file;
 
   xmlDoc *script;
 };
@@ -63,6 +66,6 @@ void ags_script_read(AgsScript *script);
 void ags_script_write(AgsScript *script);
 void ags_script_launch(AgsScript *script);
 
-AgsScript* ags_script_new(gchar *filename);
+AgsScript* ags_script_new();
 
 #endif /*__AGS_SCRIPT_H__*/
