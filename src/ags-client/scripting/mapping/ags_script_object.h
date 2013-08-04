@@ -84,6 +84,11 @@ AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object, GError
 AgsScriptObject* ags_script_object_tostring(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_valueof(AgsScriptObject *script_object);
 
+AgsScriptObject* ags_script_object_find_parent(AgsScriptObject *start, AgsScriptObject *end,
+					       gchar *name);
+AgsScriptObject* ags_script_object_find_child(AgsScriptObject *start,
+					      gchar *name);
+
 AgsScriptObject* ags_script_object_new(GObject *script);
 
 #endif /*__AGS_SCRIPT_OBJECT_H__*/

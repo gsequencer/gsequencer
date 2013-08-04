@@ -773,6 +773,50 @@ ags_script_object_find_flags_descending_last_match(AgsScriptObject *script_objec
 }
 
 AgsScriptObject*
+ags_script_object_find_parent(AgsScriptObject *start, AgsScriptObject *end,
+			      gchar *name)
+{
+  AgsScriptObject *current, *last_match;
+  guint z_index;
+
+  current = start;
+  last_match = NULL;
+  z_index = strtoul(xmlGetProp(end->node, "z_index\0"), NULL, 10);
+
+  while(current != end){
+    if(z_index < (strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10)) &&
+       !xmlStrcmp(current->node->name, name)){
+      return(current);
+    }
+
+    current = current->retval;
+  }
+
+  return(last_match);
+}
+
+AgsScriptObject*
+ags_script_object_find_child(AgsScriptObject *start,
+			     gchar *name)
+{
+  AgsScriptObject *current;
+  guint z_index;
+
+  current = start;
+  z_index = strtoul(xmlGetProp(start->node, "z_index\0"), NULL, 10);
+
+  while(current != NULL && z_index < strtoul(xmlGetProp(current->node, "z_index\0"), NULL, 10)){
+    if(!xmlStrcmp(current->node->name, name)){
+      return(current);
+    }
+
+    current = current->retval;
+  }
+
+  return(NULL);
+}
+
+AgsScriptObject*
 ags_script_object_new(GObject *script)
 {
   AgsScriptObject *script_object;
