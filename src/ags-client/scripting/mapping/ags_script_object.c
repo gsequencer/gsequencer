@@ -49,7 +49,6 @@ void ags_script_object_connect(AgsConnectable *connectable);
 void ags_script_object_disconnect(AgsConnectable *connectable);
 void ags_script_object_finalize(GObject *gobject);
 
-void ags_script_object_real_map_xml(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_launch(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_tostring(AgsScriptObject *script_object);
 AgsScriptObject* ags_script_object_real_valueof(AgsScriptObject *script_object,
@@ -69,7 +68,7 @@ AgsScriptObject* ags_script_object_find_flags_descending_last_match(AgsScriptObj
 								    guint z_index);
 
 enum{
-  MAP_XML,
+  MAPPED_XML,
   LAUNCH,
   TOSTRING,
   VALUEOF,
@@ -148,17 +147,17 @@ ags_script_object_class_init(AgsScriptObjectClass *script_object)
 				  param_spec);
 
   /* AgsScriptObjectClass */
-  script_object->map_xml = ags_script_object_real_map_xml;
+  script_object->mapped_xml = NULL;
   script_object->launch = ags_script_object_real_launch;
   script_object->tostring = ags_script_object_real_tostring;
   script_object->valueof = ags_script_object_real_valueof;
 
   /* signals */
-  script_object_signals[MAP_XML] =
-    g_signal_new("map_xml\0",
+  script_object_signals[MAPPED_XML] =
+    g_signal_new("mapped_xml\0",
 		 G_TYPE_FROM_CLASS(script_object),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsScriptObjectClass, map_xml),
+		 G_STRUCT_OFFSET(AgsScriptObjectClass, mapped_xml),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -304,31 +303,13 @@ ags_script_object_finalize(GObject *gobject)
 }
 
 void
-ags_script_object_real_map_xml(AgsScriptObject *script_object)
-{
-  AgsScript *script;
-  GError *error;
-
-  script = AGS_SCRIPT(script_object->script);
-
-  error = NULL;
-  script_object->node = ags_xml_script_factory_map(script->xml_script_factory,
-						   script_object,
-						   &error);
-
-  if(error != NULL){
-    g_warning(error->message);
-  }
-}
-
-void
-ags_script_object_map_xml(AgsScriptObject *script_object)
+ags_script_object_mapped_xml(AgsScriptObject *script_object)
 {
   g_return_if_fail(AGS_IS_SCRIPT_OBJECT(script_object));
 
   g_object_ref(G_OBJECT(script_object));
   g_signal_emit(G_OBJECT(script_object),
-		script_object_signals[MAP_XML], 0);
+		script_object_signals[MAPPED_XML], 0);
   g_object_unref(G_OBJECT(script_object));
 }
 

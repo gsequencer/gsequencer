@@ -22,8 +22,36 @@
 
 #include <ags-client/scripting/ags_script.h>
 
+#include <ags-client/scripting/mapping/ags_script_xpath.h>
+#include <ags-client/scripting/mapping/ags_script_xmlrpc.h>
+#include <ags-client/scripting/mapping/ags_script_scanf.h>
+#include <ags-client/scripting/mapping/ags_script_pid.h>
+#include <ags-client/scripting/mapping/ags_script_sscanf.h>
+#include <ags-client/scripting/mapping/ags_script_sutex.h>
+#include <ags-client/scripting/mapping/ags_script_break.h>
+#include <ags-client/scripting/mapping/ags_script_controller.h>
+#include <ags-client/scripting/mapping/ags_script_printf.h>
 #include <ags-client/scripting/mapping/ags_script_semaphore.h>
-
+#include <ags-client/scripting/mapping/ags_script_pop.h>
+#include <ags-client/scripting/mapping/ags_script_function.h>
+#include <ags-client/scripting/mapping/ags_script_do_while.h>
+#include <ags-client/scripting/mapping/ags_script_host.h>
+#include <ags-client/scripting/mapping/ags_script_switch.h>
+#include <ags-client/scripting/mapping/ags_script_nanosleep.h>
+#include <ags-client/scripting/mapping/ags_script_if.h>
+#include <ags-client/scripting/mapping/ags_script_stack.h>
+#include <ags-client/scripting/mapping/ags_script_for.h>
+#include <ags-client/scripting/mapping/ags_script_memcpy.h>
+#include <ags-client/scripting/mapping/ags_script_while.h>
+#include <ags-client/scripting/mapping/ags_script_tostring.h>
+#include <ags-client/scripting/mapping/ags_script_object.h>
+#include <ags-client/scripting/mapping/ags_script_array.h>
+#include <ags-client/scripting/mapping/ags_script_valueof.h>
+#include <ags-client/scripting/mapping/ags_script_set.h>
+#include <ags-client/scripting/mapping/ags_script_fprintf.h>
+#include <ags-client/scripting/mapping/ags_script_var.h>
+#include <ags-client/scripting/mapping/ags_script_push.h>
+#include <ags-client/scripting/mapping/ags_script_fscanf.h>
 
 void ags_xml_interpreter_class_init(AgsXmlInterpreterClass *xml_interpreter);
 void ags_xml_interpreter_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -251,10 +279,13 @@ ags_xml_interpreter_load_script(AgsXmlInterpreter *xml_interpreter,
 						     NULL);
 
     error = NULL;
-    mapped_node = ags_xml_script_factory_map(xml_script_factory,
-					     node->name,
-					     &error);
-    
+    script_object->node =
+      mapped_node = ags_xml_script_factory_map(xml_script_factory,
+					       (gchar *) node->name,
+					       &error);
+    ags_script_object_mapped_xml(script_object);
+
+
     if(error != NULL){
       g_warning(error->message);
     }
@@ -330,7 +361,7 @@ ags_xml_interpreter_type_from_name(gchar *name)
     return(AGS_TYPE_SCRIPT_VAR);
   }else if(!strncmp("ags-array\0", name, 10)){
     return(AGS_TYPE_SCRIPT_ARRAY);
-  }else if(!strncmp("ags-stack\0", name, 10){
+  }else if(!strncmp("ags-stack\0", name, 10)){
     return(AGS_TYPE_SCRIPT_STACK);
   }else if(!strncmp("ags-controller\0", name, 15)){
     return(AGS_TYPE_SCRIPT_CONTROLLER);
@@ -341,31 +372,31 @@ ags_xml_interpreter_type_from_name(gchar *name)
   }else if(!strncmp("ags-pop\0", name, 8)){
     return(AGS_TYPE_SCRIPT_POP);
   }else if(!strncmp("ags-if\0", name, 7)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_IF);
   }else if(!strncmp("ags-break\0", name, 9)){
     return(AGS_TYPE_SCRIPT_BREAK);
   }else if(!strncmp("ags-while\0", name, 10)){
     return(AGS_TYPE_SCRIPT_WHILE);
   }else if(!strncmp("ags-do_while\0", name, 13)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_DO_WHILE);
   }else if(!strncmp("ags-for\0", name, 8)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_FOR);
   }else if(!strncmp("ags-printf\0", name, 11)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_PRINTF);
   }else if(!strncmp("ags-fprintf\0", name, 12)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_FPRINTF);
   }else if(!strncmp("ags-scanf\0", name, 10)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_SCANF);
   }else if(!strncmp("ags-fscanf\0", name, 11)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_FSCANF);
   }else if(!strncmp("ags-tostring\0", name, 13)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_TOSTRING);
   }else if(!strncmp("ags-valueof\0", name, 12)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_VALUEOF);
   }else if(!strncmp("ags-memcpy\0", name, 11)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_MEMCPY);
   }else if(!strncmp("ags-nanosleep\0", name, 14)){
-    return(AGS_TYPE_SCRIPT_);
+    return(AGS_TYPE_SCRIPT_NANOSLEEP);
   }else if(!strncmp("ags-xmlrpc\0", name, 11)){
     return(AGS_TYPE_SCRIPT_XMLRPC);
   }

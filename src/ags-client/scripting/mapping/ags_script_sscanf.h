@@ -25,27 +25,27 @@
 #include <ags-client/scripting/mapping/ags_script_controller.h>
 
 #define AGS_TYPE_SCRIPT_FSCANF                (ags_script_fscanf_get_type())
-#define AGS_SCRIPT_FSCANF(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_FSCANF, AgfscriptFScanf))
-#define AGS_SCRIPT_FSCANF_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_FSCANF, AgfscriptFScanfClass))
+#define AGS_SCRIPT_FSCANF(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_FSCANF, AgsScriptFScanf))
+#define AGS_SCRIPT_FSCANF_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SCRIPT_FSCANF, AgsScriptFScanfClass))
 #define AGS_IS_SCRIPT_FSCANF(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SCRIPT_FSCANF))
 #define AGS_IS_SCRIPT_FSCANF_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SCRIPT_FSCANF))
-#define AGS_SCRIPT_FSCANF_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SCRIPT_FSCANF, AgfscriptFScanfClass))
+#define AGS_SCRIPT_FSCANF_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SCRIPT_FSCANF, AgsScriptFScanfClass))
 
-typedef struct _AgfscriptFScanf AgfscriptFScanf;
-typedef struct _AgfscriptFScanfClass AgfscriptFScanfClass;
+typedef struct _AgfscriptFScanf AgsScriptFScanf;
+typedef struct _AgfscriptFScanfClass AgsScriptFScanfClass;
 
-struct _AgfscriptFScanf
+struct _AgsScriptFScanf
 {
-  AgfscriptController controller;
+  AgsScriptController controller;
 };
 
-struct _AgfscriptFScanfClass
+struct _AgsScriptFScanfClass
 {
-  AgfscriptControllerClass controller;
+  AgsScriptControllerClass controller;
 };
 
 GType ags_script_fscanf_get_type();
 
-AgfscriptFScanf* ags_script_fscanf_new();
+AgsScriptFScanf* ags_script_fscanf_new();
 
 #endif /*__AGS_SCRIPT_FSCANF_H__*/

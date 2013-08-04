@@ -222,7 +222,7 @@ ags_xml_script_factory_map(AgsXmlScriptFactory *xml_script_factory,
 
   prototype = ags_xml_script_factory_find_prototype(xml_script_factory,
 						    xml_type);
-  retval = xmlCopyNode(prototype);
+  retval = xmlCopyNode(prototype, 1);
 
   return(retval);
 }
