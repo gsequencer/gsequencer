@@ -67,7 +67,7 @@ GType ags_xml_script_factory_get_type();
 void ags_xml_script_factory_create_prototype(AgsXmlScriptFactory *xml_script_factory);
 
 xmlNode* ags_xml_script_factory_map(AgsXmlScriptFactory *xml_script_factory,
-				    AgsScriptObject *script_object,
+				    gchar *name,
 				    GError **error);
 
 AgsXmlScriptFactory* ags_xml_script_factory_new();

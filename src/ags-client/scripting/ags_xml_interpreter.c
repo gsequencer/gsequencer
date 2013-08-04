@@ -22,6 +22,9 @@
 
 #include <ags-client/scripting/ags_script.h>
 
+#include <ags-client/scripting/mapping/ags_script_semaphore.h>
+
+
 void ags_xml_interpreter_class_init(AgsXmlInterpreterClass *xml_interpreter);
 void ags_xml_interpreter_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_xml_interpreter_init(AgsXmlInterpreter *xml_interpreter);
@@ -249,9 +252,9 @@ ags_xml_interpreter_load_script(AgsXmlInterpreter *xml_interpreter,
 
     error = NULL;
     mapped_node = ags_xml_script_factory_map(xml_script_factory,
-					     script_object,
+					     node->name,
 					     &error);
-
+    
     if(error != NULL){
       g_warning(error->message);
     }
@@ -321,7 +324,53 @@ ags_xml_interpreter_run_snipped(AgsXmlInterpreter *xml_interpreter,
 GType
 ags_xml_interpreter_type_from_name(gchar *name)
 {
-  //TODO:JK: implement me
+  if(!strncmp("ags-semaphore\0", name, 14)){
+    return(AGS_TYPE_SCRIPT_SEMAPHORE);
+  }else if(!strncmp("ags-var\0", name, 8)){
+    return(AGS_TYPE_SCRIPT_VAR);
+  }else if(!strncmp("ags-array\0", name, 10)){
+    return(AGS_TYPE_SCRIPT_ARRAY);
+  }else if(!strncmp("ags-stack\0", name, 10){
+    return(AGS_TYPE_SCRIPT_STACK);
+  }else if(!strncmp("ags-controller\0", name, 15)){
+    return(AGS_TYPE_SCRIPT_CONTROLLER);
+  }else if(!strncmp("ags-set\0", name, 8)){
+    return(AGS_TYPE_SCRIPT_SET);
+  }else if(!strncmp("ags-push\0", name, 9)){
+    return(AGS_TYPE_SCRIPT_PUSH);
+  }else if(!strncmp("ags-pop\0", name, 8)){
+    return(AGS_TYPE_SCRIPT_POP);
+  }else if(!strncmp("ags-if\0", name, 7)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-break\0", name, 9)){
+    return(AGS_TYPE_SCRIPT_BREAK);
+  }else if(!strncmp("ags-while\0", name, 10)){
+    return(AGS_TYPE_SCRIPT_WHILE);
+  }else if(!strncmp("ags-do_while\0", name, 13)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-for\0", name, 8)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-printf\0", name, 11)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-fprintf\0", name, 12)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-scanf\0", name, 10)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-fscanf\0", name, 11)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-tostring\0", name, 13)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-valueof\0", name, 12)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-memcpy\0", name, 11)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-nanosleep\0", name, 14)){
+    return(AGS_TYPE_SCRIPT_);
+  }else if(!strncmp("ags-xmlrpc\0", name, 11)){
+    return(AGS_TYPE_SCRIPT_XMLRPC);
+  }
+
+  return(G_TYPE_NONE);
 }
 
 AgsXmlInterpreter*

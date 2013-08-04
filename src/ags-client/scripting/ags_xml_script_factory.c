@@ -208,31 +208,21 @@ ags_xml_script_factory_find_prototype(AgsXmlScriptFactory *xml_script_factory,
 
 xmlNode*
 ags_xml_script_factory_map(AgsXmlScriptFactory *xml_script_factory,
-			   AgsScriptObject *script_object,
+			   gchar *name,
 			   GError **error)
 {
   static const char *prefix = "AgsScript\0";
-  xmlNode *retval;
+  xmlNode *prototype, *retval;
   gchar *xml_type;
   int length, prefix_length;
 
-  xml_type = NULL;
-  length = strlen(G_OBJECT_TYPE_NAME(script_object));
-  prefix_length = strlen(prefix);
+  xml_type = name;
 
   retval = NULL;
 
-  if(length > prefix_length){
-    xml_type = g_strconcat("ags-\0", tolower(&(G_OBJECT_TYPE_NAME(script_object)[prefix_length])));
-    retval = ags_xml_script_factory_find_prototype(xml_script_factory,
-						   xml_type);
-  }else{
-    g_set_error(error,
-		AGS_XML_SCRIPT_FACTORY_ERROR,
-		AGS_XML_SCRIPT_FACTORY_INVALID_PROTOTYPE,
-		"can't map xml representation for given type: %s\0",
-		G_OBJECT_TYPE_NAME(script_object));
-  }
+  prototype = ags_xml_script_factory_find_prototype(xml_script_factory,
+						    xml_type);
+  retval = xmlCopyNode(prototype);
 
   return(retval);
 }
