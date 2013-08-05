@@ -35,25 +35,34 @@ typedef struct _AgsScriptArray AgsScriptArray;
 typedef struct _AgsScriptArrayClass AgsScriptArrayClass;
 
 typedef enum{
-  AGS_SCRIPT_ARRAY_INT16    = 1,
-  AGS_SCRIPT_ARRAY_UINT16   = 1 << 1,
-  AGS_SCRIPT_ARRAY_INT32    = 1 << 2,
-  AGS_SCRIPT_ARRAY_UINT32   = 1 << 3,
-  AGS_SCRIPT_ARRAY_INT64    = 1 << 4,
-  AGS_SCRIPT_ARRAY_UINT64   = 1 << 5,
-  AGS_SCRIPT_ARRAY_CHAR     = 1 << 6,
-  AGS_SCRIPT_ARRAY_POINTER  = 1 << 7,
-  AGS_SCRIPT_ARRAY_UTF8     = 1 << 8,
-  AGS_SCRIPT_ARRAY_BASE64   = 1 << 9,
+  AGS_SCRIPT_ARRAY_UTF8_ENCODED     = 1 << 8,
+  AGS_SCRIPT_ARRAY_BASE64_ENCODED   = 1 << 9,
 }AgsScriptArrayFlags;
+
+typedef enum{
+  AGS_SCRIPT_ARRAY_INT16,
+  AGS_SCRIPT_ARRAY_UINT16,
+  AGS_SCRIPT_ARRAY_INT32,
+  AGS_SCRIPT_ARRAY_UINT32,
+  AGS_SCRIPT_ARRAY_INT64,
+  AGS_SCRIPT_ARRAY_UINT64,
+  AGS_SCRIPT_ARRAY_CHAR,
+  AGS_SCRIPT_ARRAY_POINTER,
+}AgsScriptArrayMode;
 
 struct _AgsScriptArray
 {
   AgsScriptObject object;
 
   guint flags;
+  guint mode;
 
   gpointer array;
+  guint dimension;
+
+  gpointer data;
+  xmlNode **node;
+  guint *length;
 };
 
 struct _AgsScriptArrayClass

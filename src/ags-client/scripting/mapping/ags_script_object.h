@@ -39,6 +39,7 @@ typedef struct _AgsScriptObjectClass AgsScriptObjectClass;
 typedef enum{
   AGS_SCRIPT_OBJECT_LAUNCHED        = 1,
   AGS_SCRIPT_OBJECT_RETVAL_VOID     = 1 << 1,
+  AGS_SCRIPT_OBJECT_RETVAL_RESET    = 1 << 2,
 }AgsScriptObjectFlags;
 
 #define AGS_SCRIPT_OBJECT_ERROR (ags_script_object_error_quark())
