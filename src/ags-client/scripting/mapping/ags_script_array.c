@@ -18,8 +18,9 @@
 
 #include <ags-client/scripting/mapping/ags_script_array.h>
 
-#include <libxml/tree.h>
+#include <stdlib.h>
 #include <string.h>
+#include <libxml/tree.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -30,7 +31,7 @@ void ags_script_array_connect(AgsConnectable *connectable);
 void ags_script_array_disconnect(AgsConnectable *connectable);
 void ags_script_array_finalize(GObject *gobject);
 
-void ags_script_array_launch(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_array_launch(AgsScriptObject *script_object, GError **error);
 
 static gpointer ags_script_array_parent_class = NULL;
 
@@ -96,14 +97,14 @@ ags_script_array_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_script_array_init(AgsScriptArray *script_array)
 {
-  script_array->flags |= (AGS_SCRIPT_ARRAY_CHAR |
-			  AGS_SCRIPT_ARRAY_BASE64);
+  script_array->flags |= (AGS_SCRIPT_ARRAY_BASE64_ENCODED);
+  script_array->mode = AGS_SCRIPT_ARRAY_CHAR;
 
   script_array->array = NULL;
   script_array->dimension = 0;
 
   script_array->data = NULL;
-  script_array->nodes = NULL;
+  script_array->node = NULL;
   script_array->length = NULL;
 }
 
@@ -133,10 +134,11 @@ AgsScriptObject*
 ags_script_array_launch(AgsScriptObject *script_object, GError **error)
 {
   AgsScriptArray *script_array;
+  gpointer data;
   guint i;
 
   auto gpointer ags_script_array_alloc_recursive(AgsScriptArray *script_array, xmlNode *node);
-  auto void ags_script_array_read(AgsScriptArray *script_array, xmlNode *node, gpointer array);
+  auto void ags_script_array_read(AgsScriptArray *script_array, xmlNode *node, gpointer array, guint length);
 
   gpointer ags_script_array_alloc_recursive(AgsScriptArray *script_array, xmlNode *node){
     xmlNode *current;
@@ -145,22 +147,13 @@ ags_script_array_launch(AgsScriptObject *script_object, GError **error)
     guint i;
 
     current = node->children;
-    length = strtoul(xmlGetProp(node, "length\0"));
+    length = strtoul(xmlGetProp(node, "length\0"), NULL, 10);
 
     if(current == NULL){
       guint index;
       
       index = script_array->dimension;      
       script_array->dimension += 1;
-
-      script_array->data = realloc(script_array->data, script_array->dimension * sizeof(gpointer));
-      script_array->data[index] = NULL;
-
-      script_array->node = realloc(script_array->node, script_array->dimension * sizeof(gpointer));
-      script_array->node[index] = NULL;
-
-      script_array->length = realloc(script_array->length, script_array->dimension * sizeof(gpointer));
-      script_array->length[index] = 0;
 
       switch(script_array->mode){
       case AGS_SCRIPT_ARRAY_INT16:
@@ -213,12 +206,20 @@ ags_script_array_launch(AgsScriptObject *script_object, GError **error)
 	break;
       }
 
+      *(gpointer*)script_array->data = (gpointer) realloc(script_array->data, script_array->dimension * sizeof(gpointer));
+      ((gpointer*)script_array->data)[index] = start;
+
+      script_array->node = (xmlNode **) realloc(script_array->node, script_array->dimension * sizeof(xmlNode*));
+      script_array->node[index] = node;
+
+      script_array->length = (guint *) realloc(script_array->length, script_array->dimension * sizeof(guint));
+      script_array->length[index] = length;
     }else{
       start =
 	array = (gpointer) malloc(length * sizeof(gpointer));
 
       for(i = 0; i < length;){
-	if(current->type != XML_ELEMENT){
+	if(current->type != XML_ELEMENT_NODE){
 	  current = current->next;
 	  continue;
 	}
@@ -229,18 +230,18 @@ ags_script_array_launch(AgsScriptObject *script_object, GError **error)
 	  index = script_array->dimension;
 	  script_array->dimension += 1;
 
-	  (gpointer) (*array) = NULL;
+	  *(gpointer*)array = NULL;
 
-	  script_array->data = realloc(script_array->data, script_array->dimension * sizeof(gpointer));
-	  script_array->data[index] = NULL;
+	  *(gpointer*)script_array->data = (gpointer) realloc(script_array->data, script_array->dimension * sizeof(gpointer));
+	  ((gpointer*)script_array->data)[index] = NULL;
 
-	  script_array->node = realloc(script_array->node, script_array->dimension * sizeof(gpointer));
+	  script_array->node = (xmlNode **) realloc(script_array->node, script_array->dimension * sizeof(xmlNode*));
 	  script_array->node[index] = NULL;
 
-	  script_array->length = realloc(script_array->length, script_array->dimension * sizeof(gpointer));
+	  script_array->length = (guint *) realloc(script_array->length, script_array->dimension * sizeof(guint));
 	  script_array->length[index] = 0;
 	}else{
-	  (gpointer) (*array) = ags_script_array_alloc_recursive(script_array, current);
+	  *(gpointer*)array = ags_script_array_alloc_recursive(script_array, current);
 	  current = current->next;
 	}
 
@@ -251,8 +252,16 @@ ags_script_array_launch(AgsScriptObject *script_object, GError **error)
 
     return(start);
   }
-  void ags_script_array_read(AgsScriptArray *script_array, xmlNode *node, gpointer array){
-    //TODO:JK: implement me
+  void ags_script_array_read(AgsScriptArray *script_array, xmlNode *node, gpointer array, guint length){
+    xmlChar *content;
+    gsize retlength;
+
+    if(*(gpointer*)array != NULL){
+      free(*(gpointer*)array);
+    }
+
+    content = xmlNodeGetContent(node);
+    *(gpointer*)array = (gpointer) g_base64_decode(content, &retlength);
   }
 
   script_array = AGS_SCRIPT_ARRAY(script_object);
@@ -264,9 +273,13 @@ ags_script_array_launch(AgsScriptObject *script_object, GError **error)
   }
 
   if((AGS_SCRIPT_OBJECT_RETVAL_RESET & (script_object->flags)) != 0){
-    //TODO:JK: implement me
+    data = script_array->data;
 
-    script_object->flags &= (~AGS_SCRIPT_ARRAY_OBJECT_RETVAL_RESET);
+    for(i = 0; i < script_array->dimension; i++){
+      ags_script_array_read(script_array, script_array->node[i], ((gpointer*) data)[i], script_array->length[i]);
+    }
+
+    script_object->flags &= (~AGS_SCRIPT_OBJECT_RETVAL_RESET);
   }
 
   return(script_object);

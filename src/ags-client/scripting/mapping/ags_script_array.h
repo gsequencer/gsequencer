@@ -35,8 +35,8 @@ typedef struct _AgsScriptArray AgsScriptArray;
 typedef struct _AgsScriptArrayClass AgsScriptArrayClass;
 
 typedef enum{
-  AGS_SCRIPT_ARRAY_UTF8_ENCODED     = 1 << 8,
-  AGS_SCRIPT_ARRAY_BASE64_ENCODED   = 1 << 9,
+  AGS_SCRIPT_ARRAY_UTF8_ENCODED     = 1,
+  AGS_SCRIPT_ARRAY_BASE64_ENCODED   = 1 << 1,
 }AgsScriptArrayFlags;
 
 typedef enum{
