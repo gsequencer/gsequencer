@@ -1,4 +1,4 @@
-/* AGS - Advanced GTK Sequencer
+/* AGS Client - Advanced GTK Sequencer Client
  * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,22 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-client/scripting/ags_xml_interpreter.h>
+#include <ags-client/scripting/ags_xml_script_factory.h>
+
+#include <libxml/tree.h>
+
+#include <stdlib.h>
+#include <string.h>
+
 void ags_script_controller_class_init(AgsScriptControllerClass *script_controller);
 void ags_script_controller_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_controller_init(AgsScriptController *script_controller);
 void ags_script_controller_connect(AgsConnectable *connectable);
 void ags_script_controller_disconnect(AgsConnectable *connectable);
 void ags_script_controller_finalize(GObject *gobject);
+
+AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object, GError **error);
 
 static gpointer ags_script_controller_parent_class = NULL;
 
@@ -112,6 +122,99 @@ ags_script_controller_finalize(GObject *gobject)
   script_controller = AGS_SCRIPT_CONTROLLER(gobject);
 
   G_OBJECT_CLASS(ags_script_controller_parent_class)->finalize(gobject);
+}
+
+AgsScriptObject*
+ags_script_controller_launch(AgsScriptObject *script_object, GError **error)
+{
+  AgsScriptObject *retval, *last_retval;
+  xmlNode *current;
+  guint z_index;
+
+  z_index = strtoul(xmlGetProp(script_object->node, "z_index\0"), NULL, 10);
+  z_index++;
+
+  if((AGS_SCRIPT_OBJECT_LAUNCHED & (script_object->flags)) == 0){
+    current = script_object->node->children;
+
+    while(current != NULL){
+      if(z_index != strtoul(xmlGetProp(retval->node, "z_index\0"), NULL, 10)){
+	break;
+      }
+
+      if(XML_ELEMENT_NODE == current->type){
+	ags_script_object_launch(retval, error);
+      }
+
+      last_retval = retval;
+      retval = retval->retval;
+
+      current = current->next;
+    }
+
+    /* check if stack is outdated */
+    /* create new AgsScriptObject */
+    if(current != NULL){
+      AgsScriptObject *next_retval;
+      GType type;
+
+      while(current != NULL){
+	if(z_index != strtoul(xmlGetProp(retval->node, "z_index\0"), NULL, 10)){
+	  break;
+	}
+
+	if(XML_ELEMENT_NODE == current->type){
+	  /* instantiate on the fly */
+	  type = ags_xml_interpreter_type_from_name((gchar *) current->name);
+	  next_retval = (AgsScriptObject *) g_object_new(type,
+							 NULL);
+	  
+	  next_retval->script = retval->script;
+	  
+	  /* launch */
+	  retval->retval = next_retval;
+	  retval = next_retval;
+	  
+	  ags_script_object_launch(retval, error);
+
+	  last_retval = retval;
+	}
+
+	current = current->next;
+      }
+    }
+
+    /* report invalid z_index */
+    if(current != NULL){
+      while(current != NULL){
+	if(XML_ELEMENT_NODE == current->type){
+	  g_message("found inactive node: %s\0", current->name);
+	}
+
+	current = current->next;
+      }
+    }
+
+    /* unref unneeded AgsScriptObject */
+    if(z_index == strtoul(xmlGetProp(retval->node, "z_index\0"), NULL, 10)){
+      AgsScriptObject *start, *next_retval;
+
+      start = last_retval;
+
+      while(z_index == strtoul(xmlGetProp(retval->node, "z_index\0"), NULL, 10)){
+	next_retval = retval->retval;
+
+	g_message("found lost object: %s\0", G_OBJECT_TYPE_NAME(retval));
+	g_object_unref(G_OBJECT(retval));
+
+	retval = next_retval;
+      }
+      
+      start->retval = retval;
+    }
+  }
+
+  return(last_retval);
 }
 
 AgsScriptController*

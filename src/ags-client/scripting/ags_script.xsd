@@ -49,6 +49,7 @@
     <xsd:sequence>
       <xsd:element type="ags-var"/>
       <xsd:element type="ags-array"/>
+      <xsd:element type="ags-semaphore"/>
       <xsd:element type="ags-stack"/>
 
       <xsd:element type="ags-controller"/>
@@ -63,9 +64,6 @@
   <xsd:complexType name="ags-controller">
     <xsd:sequence>
       <xsd:element type="(ags-set|ags-push|ags-pop|ags-if|ags-switch|ags-while|ags-do_while|ags-for|ags-printf|ags-fprintf|ags-scanf|ags-fscanf|ags-tostring|ags-valueof|ags-nanosleep|ags-memcpy|ags-sutex|ags-xmlrpc)"/>
-      <xsd:element type="ags-semaphore"/>
-      <xsd:element type="ags-var"/>
-      <xsd:element type="ags-array"/>
       <xsd:element type="ags-stack"/>
       
       <xsd:element type="ags-controller"/>
@@ -119,8 +117,6 @@
     <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@condition"/>
   </xsd:complexType>
-
-  <xsd:element name="ags-break"/>
 
   <xsd:complexType name="ags-switch">
     <xsd:sequence>

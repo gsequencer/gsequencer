@@ -28,7 +28,6 @@
 #include <ags-client/scripting/mapping/ags_script_pid.h>
 #include <ags-client/scripting/mapping/ags_script_sscanf.h>
 #include <ags-client/scripting/mapping/ags_script_sutex.h>
-#include <ags-client/scripting/mapping/ags_script_break.h>
 #include <ags-client/scripting/mapping/ags_script_controller.h>
 #include <ags-client/scripting/mapping/ags_script_printf.h>
 #include <ags-client/scripting/mapping/ags_script_semaphore.h>
@@ -409,8 +408,6 @@ ags_xml_interpreter_type_from_name(gchar *name)
     return(AGS_TYPE_SCRIPT_POP);
   }else if(!strncmp("ags-if\0", name, 7)){
     return(AGS_TYPE_SCRIPT_IF);
-  }else if(!strncmp("ags-break\0", name, 9)){
-    return(AGS_TYPE_SCRIPT_BREAK);
   }else if(!strncmp("ags-while\0", name, 10)){
     return(AGS_TYPE_SCRIPT_WHILE);
   }else if(!strncmp("ags-do_while\0", name, 13)){
