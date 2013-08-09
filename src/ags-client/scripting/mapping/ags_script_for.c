@@ -114,6 +114,26 @@ ags_script_for_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_script_for_parent_class)->finalize(gobject);
 }
 
+AgsScriptObject*
+ags_script_for_launch(AgsScriptObject *script_object, GError **error)
+{
+  AgsScriptDoWhile *script_do_while;
+  AgsScriptSet *initializer, *loop_control, *step;
+  GError *initializer_error, *step_error;
+
+  script_for = AGS_SCRIPT_FOR(script_object);
+
+  initializer = AGS_SCRIPT_SET(script_for->initializer);
+  loop_control = AGS_SCRIPT_SET(script_for->loop_control);
+  step = AGS_SCRIPT_SET(script_for->step);
+
+  for(ags_script_object_launch(AGS_SCRIPT_OBJECT(initializer, &initializer_error));
+      ags_script_set_boolean_term(loop_control);
+      ags_script_object_launch(step, &step_error)){
+    AGS_SCRIPT_OBJECT_CLASS(ags_script_do_while_parent_class)->launch(script_object, error);
+  }
+}
+
 AgsScriptFor*
 ags_script_for_new()
 {

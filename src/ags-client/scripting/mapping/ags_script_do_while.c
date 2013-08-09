@@ -27,6 +27,8 @@ void ags_script_do_while_connect(AgsConnectable *connectable);
 void ags_script_do_while_disconnect(AgsConnectable *connectable);
 void ags_script_do_while_finalize(GObject *gobject);
 
+AgsScriptObject* ags_script_do_while_launch(AgsScriptObject *script_object, GError **error);
+
 static gpointer ags_script_do_while_parent_class = NULL;
 
 GType
@@ -77,6 +79,11 @@ ags_script_do_while_class_init(AgsScriptControllerClass *script_do_while)
   gobject = (GObjectClass *) script_do_while;
 
   gobject->finalize = ags_script_do_while_finalize;
+
+  /* AgsScriptObjectClass */
+  script_object = (AgsScriptObject *) script_do_while;
+
+  script_object->launch = ags_script_do_while_launch;
 }
 
 void
@@ -89,7 +96,7 @@ ags_script_do_while_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_script_do_while_init(AgsScriptDoWhile *script_do_while)
 {
-  //TODO:JK: implement me
+  script_do_while->loop_control = ags_script_set_new()
 }
 
 void
@@ -111,7 +118,23 @@ ags_script_do_while_finalize(GObject *gobject)
 
   script_do_while = AGS_SCRIPT_DO_WHILE(gobject);
 
+  g_object_unref(G_OBJECT(script_do_while->loop_control));
+
   G_OBJECT_CLASS(ags_script_do_while_parent_class)->finalize(gobject);
+}
+
+AgsScriptObject*
+ags_script_do_while_launch(AgsScriptObject *script_object, GError **error)
+{
+  AgsScriptDoWhile *script_do_while;
+  AgsScriptSet *loop_control;
+
+  script_do_while = AGS_SCRIPT_DO_WHILE(script_object);
+  loop_control = AGS_SCRIPT_SET(script_do_while->loop_control);
+
+  do{
+    AGS_SCRIPT_OBJECT_CLASS(ags_script_do_while_parent_class)->launch(script_object, error);
+  }while(ags_script_set_boolean_term(loop_control));
 }
 
 AgsScriptDoWhile*

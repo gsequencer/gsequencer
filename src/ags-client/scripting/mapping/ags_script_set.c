@@ -114,6 +114,55 @@ ags_script_set_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_script_set_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_script_set_boolean_term(AgsScriptSet *script_set)
+{
+  gboolean term;
+
+  term = FALSE;
+
+  //TODO:JK: implement me
+
+  return(term);
+}
+
+gint
+ags_script_set_int_term(AgsScriptSet *script_set)
+{
+  gint term;
+
+  term = -1;
+
+  //TODO:JK: implement me
+
+  return(term);
+}
+
+guint
+ags_script_set_uint_term(AgsScriptSet *script_set)
+{
+  guint term;
+
+  term = 0;
+
+  //TODO:JK: implement me
+
+  return(term);
+}
+
+gdouble
+ags_script_set_double_term(AgsScriptSet *script_set)
+{
+  gdouble term;
+
+  term = 1.0;
+
+  //TODO:JK: implement me
+
+  return(term);
+}
+
+
 AgsScriptSet*
 ags_script_set_new()
 {

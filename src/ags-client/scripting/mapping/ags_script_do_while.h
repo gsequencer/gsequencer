@@ -37,6 +37,8 @@ typedef struct _AgsScriptDoWhileClass AgsScriptDoWhileClass;
 struct _AgsScriptDoWhile
 {
   AgsScriptController controller;
+
+  AgsSet *loop_control;
 };
 
 struct _AgsScriptDoWhileClass

@@ -46,6 +46,11 @@ struct _AgsScriptSetClass
 
 GType ags_script_set_get_type();
 
+gboolean ags_script_set_boolean_term(AgsScriptSet *script_set);
+gint ags_script_set_int_term(AgsScriptSet *script_set);
+guint ags_script_set_uint_term(AgsScriptSet *script_set);
+gdouble ags_script_set_double_term(AgsScriptSet *script_set);
+
 AgsScriptSet* ags_script_set_new();
 
 #endif /*__AGS_SCRIPT_SET_H__*/

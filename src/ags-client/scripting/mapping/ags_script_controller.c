@@ -35,7 +35,7 @@ void ags_script_controller_connect(AgsConnectable *connectable);
 void ags_script_controller_disconnect(AgsConnectable *connectable);
 void ags_script_controller_finalize(GObject *gobject);
 
-AgsScriptObject* ags_script_object_launch(AgsScriptObject *script_object, GError **error);
+AgsScriptObject* ags_script_controller_launch(AgsScriptObject *script_object, GError **error);
 
 static gpointer ags_script_controller_parent_class = NULL;
 
@@ -79,6 +79,7 @@ ags_script_controller_get_type()
 void
 ags_script_controller_class_init(AgsScriptControllerClass *script_controller)
 {
+  AgsScriptObject *script_object;
   GObjectClass *gobject;
 
   ags_script_controller_parent_class = g_type_class_peek_parent(script_controller);
@@ -87,6 +88,11 @@ ags_script_controller_class_init(AgsScriptControllerClass *script_controller)
   gobject = (GObjectClass *) script_controller;
 
   gobject->finalize = ags_script_controller_finalize;
+
+  /* AgsScriptObjectClass */
+  script_object = (AgsScriptObject *) script_controller;
+
+  script_object->launch = ags_script_controller_launch;
 }
 
 void
