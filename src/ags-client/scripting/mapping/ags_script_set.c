@@ -226,12 +226,12 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
       break;
     case AGS_SCRIPT_ARRAY_CHAR:
       {
-	i_stop = retlength / sizeof(gchar);
+	g_message("unsupported data type: gchar\0");
       }
       break;
     case AGS_SCRIPT_ARRAY_POINTER:
       {
-	i_stop = retlength / sizeof(gpointer);
+	g_message("unsupported data type: gpointer\0");
       }
       break;
     }
@@ -331,12 +331,12 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	break;
       case AGS_SCRIPT_ARRAY_CHAR:
 	{
-	  g_message("unsupported data type: gchar");
+	  g_message("unsupported data type: gchar\0");
 	}
 	break;
       case AGS_SCRIPT_ARRAY_POINTER:
 	{
-	  g_message("unsupported data type: gpointer");
+	  g_message("unsupported data type: gpointer\0");
 	}
 	break;
       }
@@ -391,20 +391,325 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 
   void ags_script_set_matrix_from_string_read_col(xmlNode *node,
 						  gchar *string){
-    //TODO:JK: implement me
+    guchar *col;
+    gchar *current, *prev;
+    guint cols;
+
+    col = NULL;
+
+    current =
+      prev = string;
+    cols = 0;
+
+    while((current = strchr(current, ':')) != NULL){
+
+      switch(script_array->mode){
+      case AGS_SCRIPT_ARRAY_INT16:
+	{
+	  gint16 k;
+
+	  sscanf(prev, "%d:\0", &k);
+
+	  if(col == NULL){
+	    col = (gint16 *) malloc(sizeof(gint16));
+	  }else{
+	    col = (gint16 *) realloc((cols + 1) * sizeof(gint16));
+	  }
+
+	  memcpy(col, &k, sizeof(gint16));
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_UINT16:
+	{
+	  guint16 k;
+
+	  sscanf(prev, "%d:\0", &k);
+
+	  if(col == NULL){
+	    col = (guint16 *) malloc(sizeof(guint16));
+	  }else{
+	    col = (guint16 *) realloc((cols + 1) * sizeof(guint16));
+	  }
+
+	  memcpy(col, &k, sizeof(guint16));
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_INT32:
+	{
+	  gint32 k;
+
+	  sscanf(prev, "%d:\0", &k);
+
+	  if(col == NULL){
+	    col = (gint32 *) malloc(sizeof(gint32));
+	  }else{
+	    col = (gint32 *) realloc((cols + 1) * sizeof(gint32));
+	  }
+
+	  memcpy(col, &k, sizeof(gint32));
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_UINT32:
+	{
+	  guint32 k;
+
+	  sscanf(prev, "%d:\0", &k);
+
+	  if(col == NULL){
+	    col = (guint32 *) malloc(sizeof(guint32));
+	  }else{
+	    col = (guint32 *) realloc((cols + 1) * sizeof(guint32));
+	  }
+
+	  memcpy(col, &k, sizeof(guint32));
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_INT64:
+	{
+	  gint64 k;
+
+	  sscanf(prev, "%d:\0", &k);
+
+	  if(col == NULL){
+	    col = (gint64 *) malloc(sizeof(gint64));
+	  }else{
+	    col = (gint64 *) realloc((cols + 1) * sizeof(gint64));
+	  }
+
+	  memcpy(col, &k, sizeof(gint64));
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_UINT64:
+	{
+	  guint64 k;
+
+	  sscanf(prev, "%d:\0", &k);
+
+	  if(col == NULL){
+	    col = (guint64 *) malloc(sizeof(guint64));
+	  }else{
+	    col = (guint64 *) realloc((cols + 1) * sizeof(guint64));
+	  }
+
+	  memcpy(col, &k, sizeof(guint64));
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_DOUBLE:
+	{
+	  gdouble k;
+
+	  sscanf(prev, "%f:\0", &k);
+
+	  if(col == NULL){
+	    col = (gdouble *) malloc(sizeof(gdouble));
+	  }else{
+	    col = (gdouble *) realloc((cols + 1) * sizeof(gdouble));
+	  }
+
+	  memcpy(col, &k, sizeof(gdouble));
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_CHAR:
+	{
+	  g_message("unsupported data type: gchar\0");
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_POINTER:
+	{
+	  g_message("unsupported data type: gpointer\0");
+	}
+	break;
+      }
+
+      current++;
+      prev = current;
+      cols++;
+    }
+
+    xmlNodeSetContent(node, (xmlChar *) col);
+    xmlSetProp(node, "length\0", cols);
   }
   void ags_script_set_matrix_from_string_read_row(xmlNode *node,
 						  gchar *string){
-    guint n_rows;
+    xmlNode *row;
+    gchar *current, *prev;
+    guint rows;
 
-    //TODO:JK: implement me
+    current =
+      prev = string;
+    rows = 0;
+
+    while((current = strchr(current, ';')) != NULL){
+      row = ags_xml_script_factory_map(xml_script_factory,
+				       "ags-array\0",
+				       &error);
+      ags_script_set_matrix_from_string_read_col(row,
+						 prev);
+      xmlAddChild(node, row);
+
+      current++;
+      prev = current;
+      rows++;
+    }
+
+    xmlSetProp(node, "length\0", rows);
   }
-
   void ags_script_set_matrix_from_string_validate(xmlNode *node){
+    xmlNode *current;
+    guchar *col;
     guint *cols;
-    guint n_cols;
+    guint n_cols, n_rows;
+    guint i, j, j_start;
 
-    //TODO:JK: implement me
+    n_rows = strtoul(xmlGetProp(node, "length\0"), NULL, 10);
+    cols = (guint *) malloc(n_rows * sizeof(guint));
+
+    current = node->children;
+    n_cols = 0;
+
+    /* read cols */
+    for(i = 0; i < n_rows; i++){
+      cols[i] = strtoul(xmlGetProp(current, "length\0"), NULL, 10);
+
+      /* find longest row */
+      if(n_cols < cols[i]){
+	n_cols = cols[i];
+      }
+
+      current = current->next;
+    }
+
+    /* fill invalid rows */
+    current = node->children;
+
+    for(i = 0; i < n_rows; i++){
+      col = g_base64_decode((guchar *) xmlNodeGetContent(node));
+      j_start = strtoul(xmlGetProp(node, "length\0"), NULL, 10);
+
+      for(j = j_start; j < n_cols; j++){
+
+	switch(script_array->mode){
+	case AGS_SCRIPT_ARRAY_INT16:
+	  {
+	    gint16 k;
+
+	    k = 0;
+	    
+	    if(col == NULL){
+	      col = (gint16 *) malloc(sizeof(gint16));
+	    }else{
+	      col = (gint16 *) realloc((cols + 1) * sizeof(gint16));
+	    }
+
+	    memcpy(col, &k, sizeof(gint16));
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_UINT16:
+	  {
+	    guint16 k;
+
+	    k = 0;
+	    
+	    if(col == NULL){
+	      col = (guint16 *) malloc(sizeof(guint16));
+	    }else{
+	      col = (guint16 *) realloc((cols + 1) * sizeof(guint16));
+	    }
+
+	    memcpy(col, &k, sizeof(guint16));
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_INT32:
+	  {
+	    gint32 k;
+
+	    k = 0;
+	    
+	    if(col == NULL){
+	      col = (gint32 *) malloc(sizeof(gint32));
+	    }else{
+	      col = (gint32 *) realloc((cols + 1) * sizeof(gint32));
+	    }
+
+	    memcpy(col, &k, sizeof(gint32));
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_UINT32:
+	  {
+	    guint32 k;
+
+	    k = 0;
+	    
+	    if(col == NULL){
+	      col = (guint32 *) malloc(sizeof(guint32));
+	    }else{
+	      col = (guint32 *) realloc((cols + 1) * sizeof(guint32));
+	    }
+
+	    memcpy(col, &k, sizeof(guint32));
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_INT64:
+	  {
+	    gint64 k;
+
+	    k = 0;
+	    
+	    if(col == NULL){
+	      col = (gint64 *) malloc(sizeof(gint64));
+	    }else{
+	      col = (gint64 *) realloc((cols + 1) * sizeof(gint64));
+	    }
+
+	    memcpy(col, &k, sizeof(gint64));
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_UINT64:
+	  {
+	    guint64 k;
+
+	    k = 0;
+	    
+	    if(col == NULL){
+	      col = (guint64 *) malloc(sizeof(guint64));
+	    }else{
+	      col = (guint64 *) realloc((cols + 1) * sizeof(guint64));
+	    }
+
+	    memcpy(col, &k, sizeof(guint64));
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_DOUBLE:
+	  {
+	    gdouble k;
+
+	    k = 0.0;
+	    
+	    if(col == NULL){
+	      col = (gdouble *) malloc(sizeof(gdouble));
+	    }else{
+	      col = (gdouble *) realloc((cols + 1) * sizeof(gdouble));
+	    }
+
+	    memcpy(col, &k, sizeof(gdouble));
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_CHAR:
+	  {
+	    g_message("unsupported data type: gchar\0");
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_POINTER:
+	  {
+	    g_message("unsupported data type: gpointer\0");
+	  }
+	  break;
+	}
+
+      }
+
+      current = current->next;
+    }
   }
 
   xml_script_factory = AGS_SCRIPT(AGS_SCRIPT_OBJECT(script_set)->script)->xml_script_factory;
