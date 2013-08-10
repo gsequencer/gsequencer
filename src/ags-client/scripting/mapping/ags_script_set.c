@@ -854,6 +854,8 @@ ags_script_set_value(AgsScriptSet *script_set,
 	memcpy(&k, value, sizeof(gint64));
 
 	j_stop = sizeof(gint64) / sizeof(char);
+
+	mask = (gint64) 0xff;
 	
 	for(i = 0; i < n_cols; i++){
 	  mask = (gint64) 0xff;
@@ -889,21 +891,55 @@ ags_script_set_value(AgsScriptSet *script_set,
 	mask = (guint64) 0xff;
 	
 	for(i = 0; i < n_cols; i++){
+	  mask = (gint64) 0xff;
+
 	  for(j = 0; j < j_stop; j++){
-	    shift = j * sizeof(char);
-	    c = ((mask << j) & shift) >> j; 
+	    c = (mask & k) >> j; 
 
 	    ptr[i * j_stop + j] = c;
+
+	    if(j + 1 < j_stop){
+	      mask = mask << sizeof(char);
+	    }
 	  }
 	}
       }
       break;
     case AGS_SCRIPT_ARRAY_DOUBLE:
       {
+	gdouble *ptr;
+	gdouble k;
+	guint i;
+
+	data = (char *) malloc(n_cols * sizeof(gdouble) * sizeof(guchar));
+	ptr = (gdouble *) data;
+	
+	for(i = 0; i < n_cols; i++){
+	  ptr[i] = k;
+	}
       }
       break;
     case AGS_SCRIPT_ARRAY_CHAR:
       {
+	guchar *value;
+	char k;
+	int c, mask;
+	guint i, shift;
+	
+	data = (guchar *) malloc(n_cols * sizeof(char));
+
+	value = g_base64_decode(xmlNodeGetContent(current));
+	memcpy(&k, value, sizeof(char));
+
+	mask = (int) (char) 0xffff;
+
+	for(i = 0; i < sizeof(int) / sizeof(char) && i < n_cols; i++){
+	  shift = i * sizeof(char);
+	  mask = mask << shift;
+	  c = mask & (k << shift);
+	}
+
+	memset(data, c, (size_t) ceil((n_cols * sizeof(char)) / sizeof(int)));	
       }
       break;
     case AGS_SCRIPT_ARRAY_POINTER:
