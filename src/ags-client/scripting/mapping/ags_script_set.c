@@ -718,10 +718,7 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 
   error = NULL;
 
-  AGS_SCRIPT_OBJECT(array)->node = ags_xml_script_factory;
-  matrix = ags_xml_script_factory_map(xml_script_factory,
-				      "ags-array\0",
-				      &error);
+  matrix = AGS_SCRIPT_OBJECT(array)->node;
 
   if(error != NULL){
     g_message("failed to instantiate xmlNode: ags-array\0");
