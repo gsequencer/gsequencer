@@ -27,6 +27,8 @@ void ags_script_fprintf_connect(AgsConnectable *connectable);
 void ags_script_fprintf_disconnect(AgsConnectable *connectable);
 void ags_script_fprintf_finalize(GObject *gobject);
 
+AgsScriptObject* ags_script_fprintf_launch(AgsScriptObject *script_object, GError **error);
+
 static gpointer ags_script_fprintf_parent_class = NULL;
 
 GType
@@ -69,6 +71,7 @@ ags_script_fprintf_get_type()
 void
 ags_script_fprintf_class_init(AgsScriptFPrintfClass *script_fprintf)
 {
+  AgsScriptObjectClass *script_object;
   GObjectClass *gobject;
 
   ags_script_fprintf_parent_class = g_type_class_peek_parent(script_fprintf);
@@ -77,6 +80,11 @@ ags_script_fprintf_class_init(AgsScriptFPrintfClass *script_fprintf)
   gobject = (GObjectClass *) script_fprintf;
 
   gobject->finalize = ags_script_fprintf_finalize;
+  
+  /* AgsScriptObjectClass */
+  script_object = (AgsScriptObjectClass *) script_fprintf;
+
+  script_object->launch = ags_script_fprintf_launch;
 }
 
 void
@@ -89,7 +97,7 @@ ags_script_fprintf_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_script_fprintf_init(AgsScriptFPrintf *script_fprintf)
 {
-  //TODO:JK: implement me
+  script_fprintf->args = NULL;
 }
 
 void
@@ -111,7 +119,17 @@ ags_script_fprintf_finalize(GObject *gobject)
 
   script_fprintf = AGS_SCRIPT_FPRINTF(gobject);
 
+  g_object_unref(script_fprintf->args);
+
   G_OBJECT_CLASS(ags_script_fprintf_parent_class)->finalize(gobject);
+}
+
+AgsScriptObject*
+ags_script_fprintf_launch(AgsScriptObject *script_object, GError **error)
+{
+  //TODO:JK: implement me
+
+  return(script_object);
 }
 
 AgsScriptFPrintf*

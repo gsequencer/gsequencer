@@ -34,9 +34,19 @@
 typedef struct _AgsScriptSet AgsScriptSet;
 typedef struct _AgsScriptSetClass AgsScriptSetClass;
 
+typedef enum{
+  AGS_SCRIPT_SET_EQUATION_TRUE        = 1,
+  AGS_SCRIPT_SET_EQUATION_OPEN        = 1 << 1,
+};
+
 struct _AgsScriptSet
 {
   AgsScriptController controller;
+
+  guint flags;
+  
+  gchar *start;
+  gchar *current;
 };
 
 struct _AgsScriptSetClass
@@ -45,6 +55,13 @@ struct _AgsScriptSetClass
 };
 
 GType ags_script_set_get_type();
+
+void ags_script_set_from_string(AgsScriptSet *script_set, gchar *string);
+
+gchar* ags_script_set_matrix_to_string(AgsScriptSet *script_set,
+				       AgsScriptArray *array);
+AgsScriptArray* ags_script_set_matrix_from_string(AgsScriptSet *script_set,
+						  gchar *string);
 
 gboolean ags_script_set_boolean_term(AgsScriptSet *script_set);
 gint ags_script_set_int_term(AgsScriptSet *script_set);

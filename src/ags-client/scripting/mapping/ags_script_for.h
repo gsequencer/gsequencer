@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags-client/scripting/mapping/ags_script_controller.h>
+#include <ags-client/scripting/mapping/ags_script_set.h>
 
 #define AGS_TYPE_SCRIPT_FOR                (ags_script_for_get_type())
 #define AGS_SCRIPT_FOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_FOR, AgsScriptFor))
@@ -37,6 +38,10 @@ typedef struct _AgsScriptForClass AgsScriptForClass;
 struct _AgsScriptFor
 {
   AgsScriptController controller;
+
+  AgsScriptSet *initializer;
+  AgsScriptSet *loop_control;
+  AgsScriptSet *step;
 };
 
 struct _AgsScriptForClass

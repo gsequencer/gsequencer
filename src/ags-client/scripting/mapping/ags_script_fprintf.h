@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags-client/scripting/mapping/ags_script_controller.h>
+#include <ags-client/scripting/mapping/ags_script_stack.h>
 
 #define AGS_TYPE_SCRIPT_FPRINTF                (ags_script_fprintf_get_type())
 #define AGS_SCRIPT_FPRINTF(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_FPRINTF, AgsScriptFPrintf))
@@ -37,6 +38,8 @@ typedef struct _AgsScriptFPrintfClass AgsScriptFPrintfClass;
 struct _AgsScriptFPrintf
 {
   AgsScriptController controller;
+
+  AgsScriptStack *args;
 };
 
 struct _AgsScriptFPrintfClass

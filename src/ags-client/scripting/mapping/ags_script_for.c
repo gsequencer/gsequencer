@@ -69,6 +69,7 @@ ags_script_for_get_type()
 void
 ags_script_for_class_init(AgsScriptForClass *script_for)
 {
+  AgsScriptObjectClass *script_object;
   GObjectClass *gobject;
 
   ags_script_for_parent_class = g_type_class_peek_parent(script_for);
@@ -77,6 +78,11 @@ ags_script_for_class_init(AgsScriptForClass *script_for)
   gobject = (GObjectClass *) script_for;
 
   gobject->finalize = ags_script_for_finalize;
+
+  /* AgsScriptObjectClass */
+  script_object = (AgsScriptObjectClass *) script_for;
+
+  script_object->launch = ags_script_for_launch;
 }
 
 void
@@ -89,7 +95,9 @@ ags_script_for_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_script_for_init(AgsScriptFor *script_for)
 {
-  //TODO:JK: implement me
+  script_for->initializer = ags_script_set_new();
+  script_for->loop_control = ags_script_set_new();
+  script_for->step = ags_script_set_new();
 }
 
 void
@@ -110,6 +118,10 @@ ags_script_for_finalize(GObject *gobject)
   AgsScriptFor *script_for;
 
   script_for = AGS_SCRIPT_FOR(gobject);
+
+  g_object_unref(G_OBJECT(script_for->initializer));
+  g_object_unref(G_OBJECT(script_for->loop_control));
+  g_object_unref(G_OBJECT(script_for->step));
 
   G_OBJECT_CLASS(ags_script_for_parent_class)->finalize(gobject);
 }

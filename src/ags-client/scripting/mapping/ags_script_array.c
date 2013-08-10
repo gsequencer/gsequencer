@@ -192,10 +192,16 @@ ags_script_array_launch(AgsScriptObject *script_object, GError **error)
 	    array = (gpointer) malloc(length * sizeof(guint64));
 	}
 	break;
+      case AGS_SCRIPT_ARRAY_DOUBLE:
+	{
+	  start =
+	    array = (gpointer) malloc(length * sizeof(gdouble));
+	}
+	break;
       case AGS_SCRIPT_ARRAY_CHAR:
 	{
 	  start =
-	    array = (gpointer) malloc(length * sizeof(char));
+	    array = (gpointer) malloc(length * sizeof(gchar));
 	}
 	break;
       case AGS_SCRIPT_ARRAY_POINTER:

@@ -71,6 +71,7 @@ ags_script_do_while_get_type()
 void
 ags_script_do_while_class_init(AgsScriptControllerClass *script_do_while)
 {
+  AgsScriptObjectClass *script_object;
   GObjectClass *gobject;
 
   ags_script_do_while_parent_class = g_type_class_peek_parent(script_do_while);
@@ -81,7 +82,7 @@ ags_script_do_while_class_init(AgsScriptControllerClass *script_do_while)
   gobject->finalize = ags_script_do_while_finalize;
 
   /* AgsScriptObjectClass */
-  script_object = (AgsScriptObject *) script_do_while;
+  script_object = (AgsScriptObjectClass *) script_do_while;
 
   script_object->launch = ags_script_do_while_launch;
 }

@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags-client/scripting/mapping/ags_script_controller.h>
+#include <ags-client/scripting/mapping/ags_script_set.h>
 
 #define AGS_TYPE_SCRIPT_DO_WHILE                (ags_script_do_while_get_type())
 #define AGS_SCRIPT_DO_WHILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_DO_WHILE, AgsScriptDoWhile))
