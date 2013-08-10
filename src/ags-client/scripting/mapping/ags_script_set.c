@@ -38,18 +38,16 @@ void ags_script_set_matrix_sort(AgsScriptSet *script_set,
 				gboolean sort_column, gboolean sort_row);
 void ags_script_set_matrix_sort_by_operands(AgsScriptSet *script_set,
 					    AgsScriptArray *matrix,
-					    AgsScriptStack *operands,
+					    AgsScriptArray *operands,
 					    guint depth);
 
 void ags_script_set_matrix_vector_mirror(AgsScriptSet *script_set,
 					 AgsScriptArray *matrix,
 					 AgsScriptArray *vector);
-void ags_script_set_matrix_fill(AgsScriptSet *script_set,
-				AgsScriptStack *stack);
 
 void ags_script_set_equation(AgsScriptSet *script_set,
-			     AgsScriptStack *factorized,
-			     AgsScriptStack *operands);
+			     AgsScriptArray *factorized,
+			     AgsScriptArray *operands);
 
 static gpointer ags_script_set_parent_class = NULL;
 
@@ -738,9 +736,188 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 void
 ags_script_set_value(AgsScriptSet *script_set,
 		     AgsScriptVar *value,
-		     AgsScriptStack *lvalue)
+		     AgsScriptArray *lvalue)
 {
+  xmlNode *current;
+  guchar *data;
+  guint n_cols;
 
+  current = AGS_SCRIPT_OBJECT(script_set)->node->children;
+
+  while(current != NULL){
+    n_cols = strtoul(xmlGetProp(current, "length\0"), NULL, 10);
+
+    switch(script_var->mode){
+    case AGS_SCRIPT_ARRAY_INT16:
+      {
+	guchar *value;
+	gint16 k;
+	int c, mask;
+	guint i, shift;
+	
+	data = (guchar *) malloc(n_cols * sizeof(gint16));
+
+	value = g_base64_decode(xmlNodeGetContent(current));
+	memcpy(&k, value, sizeof(gint16));
+
+	mask = (int) (gint16) 0xffff;
+
+	for(i = 0; i < sizeof(int) / sizeof(gint16) && i < n_cols; i++){
+	  shift = i * sizeof(gint16);
+	  mask = mask << shift;
+	  c = mask & (k << shift);
+	}
+
+	memset(data, c, (size_t) ceil((n_cols * sizeof(gint16)) / sizeof(int)));
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_UINT16:
+      {
+	guchar *value;
+	guint16 k;
+	int c, mask;
+	guint i, shift;
+
+	data = (guchar *) malloc(n_cols * sizeof(guint16));
+
+	value = g_base64_decode(xmlNodeGetContent(current));
+	memcpy(&k, value, sizeof(guint16));
+
+	mask = (int) (guint16) 0xffff;
+
+	for(i = 0; i < sizeof(int) / sizeof(guint16) && i < n_cols; i++){
+	  shift = i * sizeof(guint16);
+	  mask = mask << shift;
+	  c = mask & (k << shift);
+	}
+
+	memset(data, c, (size_t) ceil((n_cols * sizeof(guint16)) / sizeof(int)));
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_INT32:
+      {
+	guchar *value;
+	gint32 k;
+	int c, mask;
+	guint i, shift;
+
+	data = (guchar *) malloc(n_cols * sizeof(gint32));
+
+	value = g_base64_decode(xmlNodeGetContent(current));
+	memcpy(&k, value, sizeof(gint32));
+
+	mask = (int) (gint32) 0xffff;
+
+	for(i = 0; i < sizeof(int) / sizeof(gint32) && i < n_cols; i++){
+	  shift = i * sizeof(gint32);
+	  mask = mask << shift;
+	  c = mask & (k << shift);
+	}
+
+	memset(data, c, (size_t) ceil((n_cols * sizeof(gint32)) / sizeof(int)));
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_UINT32:
+      {
+	guchar *value;
+	guint32 k;
+	int c, mask;
+	guint i, shift;
+
+	data = (guchar *) malloc(n_cols * sizeof(guint32));
+
+	value = g_base64_decode(xmlNodeGetContent(current));
+	memcpy(&k, value, sizeof(guint32));
+
+	mask = (int) (guint32) 0xffff;
+
+	for(i = 0; i < sizeof(int) / sizeof(guint32) && i < n_cols; i++){
+	  shift = i * sizeof(guint32);
+	  mask = mask << shift;
+	  c = mask & (k << shift);
+	}
+
+	memset(data, c, (size_t) ceil((n_cols * sizeof(guint32)) / sizeof(int)));
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_INT64:
+      {
+	char *ptr;
+	gint64 k, mask;
+	char c;
+	guint i, j, j_stop, shift;
+
+	ptr =
+	  data = (char *) malloc(n_cols * sizeof(gint64) * sizeof(char));
+
+	value = g_base64_decode(xmlNodeGetContent(current));
+	memcpy(&k, value, sizeof(gint64));
+
+	j_stop = sizeof(gint64) / sizeof(char);
+	
+	for(i = 0; i < n_cols; i++){
+	  mask = (gint64) 0xff;
+
+	  for(j = 0; j < j_stop; j++){
+	    c = (mask & k) >> j; 
+
+	    ptr[i * j_stop + j] = c;
+
+	    if(j + 1 < j_stop){
+	      mask = mask << sizeof(char);
+	    }
+	  }
+	}
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_UINT64:
+      {
+	char *ptr;
+	guint offset;
+	guint64 k, mask;
+	char c;
+	guint i, j, j_stop, shift;
+
+	ptr =
+	  data = (char *) malloc(n_cols * sizeof(guint64) * sizeof(char));
+
+	value = g_base64_decode(xmlNodeGetContent(current));
+	memcpy(&k, value, sizeof(guint64));
+
+	j_stop = sizeof(guint64) / sizeof(char);
+
+	mask = (guint64) 0xff;
+	
+	for(i = 0; i < n_cols; i++){
+	  for(j = 0; j < j_stop; j++){
+	    shift = j * sizeof(char);
+	    c = ((mask << j) & shift) >> j; 
+
+	    ptr[i * j_stop + j] = c;
+	  }
+	}
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_DOUBLE:
+      {
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_CHAR:
+      {
+      }
+      break;
+    case AGS_SCRIPT_ARRAY_POINTER:
+      {
+	g_message("unsupported data type: gpointer\0");
+      }
+      break;
+    }
+
+    xmlNodeSetContent(current, g_base64_encode(data));
+    free(data);
+
+    current = current->next;
+  }
 }
 
 void
@@ -754,7 +931,7 @@ ags_script_set_matrix_sort(AgsScriptSet *script_set,
 void
 ags_script_set_matrix_sort_by_operands(AgsScriptSet *script_set,
 				       AgsScriptArray *matrix,
-				       AgsScriptStack *operands,
+				       AgsScriptArray *operands,
 				       guint depth)
 {
 
@@ -770,16 +947,9 @@ ags_script_set_matrix_vector_mirror(AgsScriptSet *script_set,
 }
 
 void
-ags_script_set_matrix_fill(AgsScriptSet *script_set,
-			   AgsScriptStack *stack)
-{
-
-}
-
-void
 ags_script_set_equation(AgsScriptSet *script_set,
-			AgsScriptStack *factorized,
-			AgsScriptStack *operands)
+			AgsScriptArray *factorized,
+			AgsScriptArray *operands)
 {
 
 }

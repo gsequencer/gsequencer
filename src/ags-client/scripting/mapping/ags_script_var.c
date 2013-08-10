@@ -90,6 +90,7 @@ void
 ags_script_var_init(AgsScriptVar *script_var)
 {
   script_var->flags = 0;
+  script_var->mode = AGS_SCRIPT_VAR_DOUBLE;
 }
 
 void

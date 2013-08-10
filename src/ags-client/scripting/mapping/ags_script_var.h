@@ -35,6 +35,18 @@ typedef struct _AgsScriptVar AgsScriptVar;
 typedef struct _AgsScriptVarClass AgsScriptVarClass;
 
 typedef enum{
+  AGS_SCRIPT_VAR_INT16,
+  AGS_SCRIPT_VAR_UINT16,
+  AGS_SCRIPT_VAR_INT32,
+  AGS_SCRIPT_VAR_UINT32,
+  AGS_SCRIPT_VAR_INT64,
+  AGS_SCRIPT_VAR_UINT64,
+  AGS_SCRIPT_VAR_DOUBLE,
+  AGS_SCRIPT_VAR_CHAR,
+  AGS_SCRIPT_VAR_POINTER,
+}AgsScriptVarMode;
+
+typedef enum{
   AGS_SCRIPT_VAR_ENCODED_BASE64      = 1,
 }AgsScriptVarFlags;
 
@@ -43,6 +55,7 @@ struct _AgsScriptVar
   AgsScriptObject script_object;
 
   guint flags;
+  guint mode;
 };
 
 struct _AgsScriptVarClass
