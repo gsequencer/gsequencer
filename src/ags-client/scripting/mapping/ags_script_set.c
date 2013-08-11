@@ -1427,7 +1427,52 @@ void
 ags_script_set_default_index(AgsScriptSet *script_set,
 			     AgsScriptArray *index)
 {
-  //TODO:JK: implement me
+  AgsXmlScriptFactory *xml_script_factory;
+  AgsScriptVar *index_value;
+  xmlNode *current;
+  guint i, j;
+  guint n_rows, n_cols;
+  guint offset;
+  gsize retlength;
+  guint x, y;
+  GError *error;
+
+  xml_script_factory = AGS_SCRIPT(AGS_SCRIPT_OBJECT(script_set)->script)->xml_script_factory;
+  error = NULL;
+
+  index_value = ags_script_var_new();
+  index_value->node = ags_xml_script_factory_map(xml_script_factory,
+						 "ags-var\0",
+						 &error);
+
+  if(error != NULL){
+    g_message("can't instantiate ags-var: %s\0", error->message);
+
+    return;
+  }
+
+  n_rows = strtoul(xmlGetProp(AGS_SCRIPT_OBJECT(index)->node, "length\0"), NULL, 10);
+
+  offset = 0;
+
+  for(i = 0; i < n_rows; i++){
+    current = ags_script_set_matrix_find_index(i);
+
+    n_cols = strtoul(xmlGetProp(, "length\0"), NULL, 10);
+
+    for(j = 0; j < n_cols; j++){
+      xmlNodeSetContent(AGS_SCRIPT_OBJECT(index_value)->node, g_base64_encode(i * n_cols + j, &retlength));
+
+      //TODO:JK: verify
+      ags_script_set_matrix_put(script_set,
+				index,
+				index_value,
+				floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+				&x, &y);
+
+      offset++;
+    }
+  }
 }
 
 void
@@ -1438,6 +1483,10 @@ ags_script_set_matrix_move_index(AgsScriptSet *script_set,
 				 guint src_x, guint src_y)
 {
   //TODO:JK: implement me
+      ags_script_set_matrix_put(script_set,
+				index,
+				index_value,
+				i, j);
 }
 
 void
