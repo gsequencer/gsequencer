@@ -809,7 +809,8 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
     ret_x = (guint) floor(offset / n_cols);
     ret_y = offset % n_cols;
 
-    current = ags_script_set_matrix_find_index(matrix,
+    current = ags_script_set_matrix_find_index(script_set,
+					       matrix,
 					       ret_y);
 
     data = g_base64_decode(xmlNodeGetContent(current),
@@ -927,7 +928,8 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
     ret_x = (guint) floor(offset / n_cols);
     ret_y = offset % n_cols;
 
-    current = ags_script_set_matrix_find_index(matrix,
+    current = ags_script_set_matrix_find_index(script_set,
+					       matrix,
 					       ret_y);
 
     data = xmlNodeGetContent(current);
@@ -1456,7 +1458,9 @@ ags_script_set_default_index(AgsScriptSet *script_set,
   offset = 0;
 
   for(i = 0; i < n_rows; i++){
-    current = ags_script_set_matrix_find_index(i);
+    current = ags_script_set_matrix_find_index(script_set,
+					       index,
+					       i);
 
     n_cols = strtoul(xmlGetProp(, "length\0"), NULL, 10);
 
@@ -1482,11 +1486,56 @@ ags_script_set_matrix_move_index(AgsScriptSet *script_set,
 				 guint dest_x, guint dest_y,
 				 guint src_x, guint src_y)
 {
+  AgsScriptVar *src, *dest;
+  xmlNode *current;
+  guint src_offset, dest_offset;
+  guint ncols;
+  guint x, y;
+  
+  current = ags_script_set_matrix_find_index(script_set,
+					     matrix,
+					     dest_y);
+  n_cols = strtoul(xmlGetProp(current, "length\0"), NULL, 10);
+
+  //TODO:JK: verify
+  /* collect old fields */
+  src_offset = src_y * n_cols + src_x;
+  ags_script_set_matrix_get(script_set,
+			    matrix,
+			    src,
+			    floor((double) src_offset / 2.0) + ((src_offset % 2 == 1) ? j: i * n_cols),
+
+  /* collect old fields */
+  dest_offset = dest_y * n_cols + dest_x;
+  ags_script_set_matrix_get(script_set,
+			    matrix,
+			    dest,
+			    floor((double) dest_offset / 2.0) + ((dest_offset % 2 == 1) ? j: i * n_cols),
+			    &x, &y);
+
+  /* move indices */
+  dest_offset = src_y * n_cols + src_x;
+  ags_script_set_matrix_put(script_set,
+			    matrix,
+			    dest,
+			    floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+			    &x, &y);
+			    &x, &y);
+
+  dest_offset = dest_y * n_cols + dest_x;
+  ags_script_set_matrix_put(script_set,
+			    matrix,
+			    src,
+			    floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+			    &x, &y);
+
+
   //TODO:JK: implement me
-      ags_script_set_matrix_put(script_set,
-				index,
-				index_value,
-				i, j);
+  ags_script_set_matrix_put(script_set,
+			    index,
+			    index_value,
+			    floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+			    &x, &y);
 }
 
 void
