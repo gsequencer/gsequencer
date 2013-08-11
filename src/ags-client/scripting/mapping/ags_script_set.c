@@ -20,6 +20,14 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-client/scripting/ags_xml_script_factory.h>
+
+#include <ags-client/scripting/mapping/ags_script_var.h>
+
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+
 void ags_script_set_class_init(AgsScriptSetClass *script_set);
 void ags_script_set_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_set_init(AgsScriptSet *script_set);
@@ -193,65 +201,89 @@ ags_script_set_from_string(AgsScriptSet *script_set, gchar *string)
 
 gchar*
 ags_script_set_matrix_to_string(AgsScriptSet *script_set,
-				AgsScriptArray *array)
+				AgsScriptArray *script_array)
 {
   gchar *string;
 
-  auto gchar* ags_script_set_fill_column(xmlNode *column);
-  auto gchar* ags_script_set_fill_row(xmlNode *row);
+  auto gchar* ags_script_set_fill_column(AgsScriptArray *script_array, xmlNode *column);
+  auto gchar* ags_script_set_fill_row(AgsScriptArray *script_array, xmlNode *row);
 
-  gchar* ags_script_set_fill_column(xmlNode *column){
-    gchar *column, *tmp;
-    xmlChar *content, *current;
+  gchar* ags_script_set_fill_column(AgsScriptArray *script_array, xmlNode *column){
+    xmlChar *content, *tmp;
     guchar *value;
+    union{
+      gint16 *data_int16;
+      guint16 *data_uint16;
+      gint32 *data_int32;
+      guint32 *data_uint32;
+      gint64 *data_int64;
+      guint64 *data_uint64;
+      gdouble *data_double;
+      gchar *data_char;
+    }ptr;
+    gchar *string;
     gsize retlength;
     guint i, i_stop;
 
     content = xmlNodeGetContent(column);
 
     value = g_base64_decode(content, &retlength);
-
-    current = value;
-    column = NULL;
+    string = NULL;
 
     switch(script_array->mode){
     case AGS_SCRIPT_ARRAY_INT16:
       {
+	ptr.data_int16 = (gint16 *) value;
+
 	i_stop = retlength / sizeof(gint16);
       }
       break;
     case AGS_SCRIPT_ARRAY_UINT16:
       {
+	ptr.data_uint16 = (gint16 *) value;
+
 	i_stop = retlength / sizeof(guint16);
       }
       break;
     case AGS_SCRIPT_ARRAY_INT32:
       {
+	ptr.data_int32 = (gint32 *) value;
+
 	i_stop = retlength / sizeof(gint32);
       }
       break;
     case AGS_SCRIPT_ARRAY_UINT32:
       {
+	ptr.data_uint32 = (guint32 *) value;
+
 	i_stop = retlength / sizeof(guint32);
       }
       break;
     case AGS_SCRIPT_ARRAY_INT64:
       {
+	ptr.data_int64 = (gint64 *) value;
+
 	i_stop = retlength / sizeof(gint64);
       }
       break;
     case AGS_SCRIPT_ARRAY_UINT64:
       {
+	ptr.data_uint64 = (guint64 *) value;
+
 	i_stop = retlength / sizeof(guint64);
       }
       break;
     case AGS_SCRIPT_ARRAY_DOUBLE:
       {
+	ptr.data_double = (gdouble *) value;
+
 	i_stop = retlength / sizeof(gdouble);
       }
       break;
     case AGS_SCRIPT_ARRAY_CHAR:
       {
+	ptr.data_char2 = (gchar *) value;
+
 	g_message("unsupported data type: gchar\0");
       }
       break;
@@ -268,12 +300,11 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	{
 	  gint16 k;
 
-	  memcpy(&k, current, sizeof(gint16));
-	  current += sizeof(gint16);
+	  memcpy(&k, &(ptr.data_int16[i * sizeof(gint16)]), sizeof(gint16));
 
-	  tmp = column;
+	  tmp = string;
 
-	  column = g_strdup_printf("%s %d:\0", column, k);
+	  string = g_strdup_printf("%s %d:\0", string, k);
 	  g_free(tmp);
 	}
 	break;
@@ -281,12 +312,11 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	{
 	  guint16 k;
 
-	  memcpy(&k, current, sizeof(guint16));
-	  current += sizeof(guint16);
+	  memcpy(&k, &(ptr.data_uint16[i * sizeof(guint16)]), sizeof(guint16));
 
-	  tmp = column;
+	  tmp = string;
 
-	  column = g_strdup_printf("%s %d:\0", column, k);
+	  string = g_strdup_printf("%s %d:\0", string, k);
 	  g_free(tmp);
 	}
 	break;
@@ -294,12 +324,11 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	{
 	  gint32 k;
 
-	  memcpy(&k, current, sizeof(gint32));
-	  current += sizeof(gint32);
+	  memcpy(&k, &(ptr.data_int32[i * sizeof(gint32)]), sizeof(gint32));
 
-	  tmp = column;
+	  tmp = string;
 
-	  column = g_strdup_printf("%s %d:\0", column, k);
+	  string = g_strdup_printf("%s %d:\0", string, k);
 	  g_free(tmp);
 	}
 	break;
@@ -307,12 +336,11 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	{
 	  guint32 k;
 
-	  memcpy(&k, current, sizeof(guint32));
-	  current += sizeof(guint32);
+	  memcpy(&k, &(ptr.data_uint32[i * sizeof(guint32)]), sizeof(guint32));
 
-	  tmp = column;
+	  tmp = string;
 
-	  column = g_strdup_printf("%s %d:\0", column, k);
+	  string = g_strdup_printf("%s %d:\0", string, k);
 	  g_free(tmp);
 	}
 	break;
@@ -320,12 +348,11 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	{
 	  gint64 k;
 
-	  memcpy(&k, current, sizeof(gint64));
-	  current += sizeof(gint64);
+	  memcpy(&k, &(ptr.data_int64[i * sizeof(gint64)]), sizeof(gint64));
 
-	  tmp = column;
+	  tmp = string;
 
-	  column = g_strdup_printf("%s %d:\0", column, k);
+	  string = g_strdup_printf("%s %d:\0", string, k);
 	  g_free(tmp);
 	}
 	break;
@@ -333,12 +360,11 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	{
 	  guint64 k;
 
-	  memcpy(&k, current, sizeof(guint64));
-	  current += sizeof(guint64);
+	  memcpy(&k, &(ptr.data_uint64[i * sizeof(guint64)]), sizeof(guint64));
 
-	  tmp = column;
+	  tmp = string;
 
-	  column = g_strdup_printf("%s %d:\0", column, k);
+	  string = g_strdup_printf("%s %d:\0", string, k);
 	  g_free(tmp);
 	}
 	break;
@@ -346,12 +372,11 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	{
 	  gdouble k;
 
-	  memcpy(&k, current, sizeof(gdouble));
-	  current += sizeof(gdouble);
+	  memcpy(&k, &(ptr.data_double[i * sizeof(gdouble)]), sizeof(gdouble));
 
-	  tmp = column;
+	  tmp = string;
 
-	  column = g_strdup_printf("%s %f:\0", column, k);
+	  string = g_strdup_printf("%s %f:\0", string, k);
 	  g_free(tmp);
 	}
 	break;
@@ -367,8 +392,10 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
 	break;
       }
     }
+
+    return(string);
   }
-  gchar* ags_script_set_fill_row(xmlNode *row){
+  gchar* ags_script_set_fill_row(AgsScriptArray *script_array, xmlNode *row){
     xmlNode *current;
     gchar *matrix, *column, *tmp;
 
@@ -377,7 +404,7 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
     
     while(current != NULL){
       if(current->type == XML_ELEMENT_NODE){
-	column = ags_script_set_fill_column();
+	column = ags_script_set_fill_column(script_array, current);
 	tmp = matrix;
 
 	matrix = g_strconcat(matrix, column, ";\0");
@@ -395,7 +422,7 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
     return(matrix);
   }
 
-  string = ags_script_set_fill_row(script_object->node);
+  string = ags_script_set_fill_row(script_array, AGS_SCRIPT_OBJECT(script_array)->node);
 
   return(string);
 }
@@ -1435,7 +1462,6 @@ ags_script_set_default_index(AgsScriptSet *script_set,
   guint i, j;
   guint n_rows, n_cols;
   guint offset;
-  gsize retlength;
   guint x, y;
   GError *error;
 
@@ -1465,7 +1491,7 @@ ags_script_set_default_index(AgsScriptSet *script_set,
     n_cols = strtoul(xmlGetProp(, "length\0"), NULL, 10);
 
     for(j = 0; j < n_cols; j++){
-      xmlNodeSetContent(AGS_SCRIPT_OBJECT(index_value)->node, g_base64_encode(i * n_cols + j, &retlength));
+      xmlNodeSetContent(AGS_SCRIPT_OBJECT(index_value)->node, g_base64_encode(i * n_cols + j, sizeof(guint)));
 
       //TODO:JK: verify
       ags_script_set_matrix_put(script_set,
@@ -1588,7 +1614,7 @@ ags_script_set_matrix_sort(AgsScriptSet *script_set,
 			   AgsScriptArray *index, guint depth,
 			   guint *x, guint *y)
 {
-  xmlNode current_matrix, current_index;
+  xmlNode *current_matrix, *current_index;
   guchar *matrix_data, *index_data;
   guint *index_ptr;
   guint n_cols;

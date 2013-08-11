@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-client/scripting/mapping/ags_script_array.h>
+
 void ags_script_do_while_class_init(AgsScriptControllerClass *script_do_while);
 void ags_script_do_while_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_script_do_while_init(AgsScriptDoWhile *script_do_while);

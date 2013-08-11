@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags-client/scripting/mapping/ags_script_controller.h>
+#include <ags-client/scripting/mapping/ags_script_array.h>
 
 #define AGS_TYPE_SCRIPT_SET                (ags_script_set_get_type())
 #define AGS_SCRIPT_SET(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCRIPT_SET, AgsScriptSet))
@@ -37,7 +38,7 @@ typedef struct _AgsScriptSetClass AgsScriptSetClass;
 typedef enum{
   AGS_SCRIPT_SET_EQUATION_TRUE        = 1,
   AGS_SCRIPT_SET_EQUATION_OPEN        = 1 << 1,
-};
+}AgsScriptSetFlags;
 
 struct _AgsScriptSet
 {

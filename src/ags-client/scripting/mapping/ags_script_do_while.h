@@ -39,7 +39,7 @@ struct _AgsScriptDoWhile
 {
   AgsScriptController controller;
 
-  AgsSet *loop_control;
+  AgsScriptSet *loop_control;
 };
 
 struct _AgsScriptDoWhileClass
