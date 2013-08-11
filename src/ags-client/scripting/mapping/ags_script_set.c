@@ -1501,65 +1501,83 @@ ags_script_set_matrix_move_index(AgsScriptSet *script_set,
   //TODO:JK: verify
   /* move values */
   /* collect old fields */
-  offset = src_y * n_cols + src_x;
+  src_offset = src_y * n_cols + src_x;
   ags_script_set_matrix_get(script_set,
 			    matrix,
 			    src,
-			    floor((double) src_offset / 2.0) + ((src_offset % 2 == 1) ? j: i * n_cols),
+			    src_offset + ((src_offset % 2 == 1) ?
+					  floor(-1.0 * (double) j / 2.0):
+					  floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
+			    &x, &y);
 
-  offset = dest_y * n_cols + dest_x;
+  dest_offset = dest_y * n_cols + dest_x;
   ags_script_set_matrix_get(script_set,
 			    matrix,
 			    dest,
-			    floor((double) dest_offset / 2.0) + ((dest_offset % 2 == 1) ? j: i * n_cols),
+			    dest_offset + ((dest_offset % 2 == 1) ?
+					   floor(-1.0 * (double) j / 2.0):
+					   floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
 			    &x, &y);
 
   /* move indices */
-  offset = src_y * n_cols + src_x;
+  src_offset = src_y * n_cols + src_x;
   ags_script_set_matrix_put(script_set,
 			    matrix,
 			    dest,
-			    floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+			    src_offset + ((src_offset % 2 == 1) ?
+					  floor(-1.0 * (double) j / 2.0):
+					  floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
 			    &x, &y);
 			    &x, &y);
 
-  offset = dest_y * n_cols + dest_x;
+  dest_offset = dest_y * n_cols + dest_x;
   ags_script_set_matrix_put(script_set,
 			    matrix,
 			    src,
-			    floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+			    dest_offset + ((dest_offset % 2 == 1) ?
+					   floor(-1.0 * (double) j / 2.0):
+					   floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
 			    &x, &y);
 
   /* move indices */
   /* collect old fields */
   //TODO:JK: verify
-  offset = src_y * n_cols + src_x;
+  src_offset = src_y * n_cols + src_x;
   ags_script_set_matrix_get(script_set,
 			    index,
 			    src_index,
-			    floor((double) src_offset / 2.0) + ((src_offset % 2 == 1) ? j: i * n_cols),
+			    src_offset + ((src_offset % 2 == 1) ?
+					  floor(-1.0 * (double) j / 2.0):
+					  floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
+			    &x, &y);
 
-  offset = dest_y * n_cols + dest_x;
+  dest_offset = dest_y * n_cols + dest_x;
   ags_script_set_matrix_get(script_set,
 			    index,
 			    dest_index,
-			    floor((double) dest_offset / 2.0) + ((dest_offset % 2 == 1) ? j: i * n_cols),
+			    dest_offset + ((dest_offset % 2 == 1) ?
+					   floor(-1.0 * (double) j / 2.0):
+					   floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
 			    &x, &y);
 
 
   /* move indices */
-  offset = src_y * n_cols + src_x;
+  src_offset = src_y * n_cols + src_x;
   ags_script_set_matrix_put(script_set,
 			    index,
 			    dest_index,
-			    floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+			    src_offset + ((src_offset % 2 == 1) ?
+					  floor(-1.0 * (double) j / 2.0):
+					  floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
 			    &x, &y);
 
-  offset = dest_y * n_cols + dest_x;
+  dest_offset = dest_y * n_cols + dest_x;
   ags_script_set_matrix_put(script_set,
 			    index,
 			    src_index,
-			    floor((double) offset / 2.0) + ((offset % 2 == 1) ? j: i * n_cols),
+			    dest_offset + ((dest_offset % 2 == 1) ?
+					   floor(-1.0 * (double) j / 2.0):
+					   floor(-1.0 * (double) i / 2.0 * (double) n_cols)),
 			    &x, &y);
 }
 
