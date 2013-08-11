@@ -27,7 +27,6 @@
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="type" type="xsd:string" value="&ags-type;"/>
     <xsd:attribute name="encoded" type="xsd:boolean" value="true"/>
-    <xsd:attribute name="value" type="xsd:base64"/>
     <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@value"/>
   </xsd:complexType>
@@ -40,7 +39,7 @@
     <xsd:attribute name="id" type="xsd:ID"/>
     <xsd:attribute name="type" type="xsd:string" value="&ags-type;"/>
     <xsd:attribute name="length" type="xsd:NMTOKEN"/>
-    <xsd:attribute name="value" type="xsd:base64"/>
+    <xsd:attribute name="row" type="xsd:NMTOKEN"/>
     <xsd:attribute name="z_index" type="xsd:NMTOKEN"/>
     <xsd:attribute name="retval" type="xsd:xpath" value="@id"/>
   </xsd:complexType>
