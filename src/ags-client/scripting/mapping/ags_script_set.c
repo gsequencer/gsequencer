@@ -872,8 +872,10 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
 			  guint *x, guint *y)
 {
   xmlNode *current, *row;
-  guchar *data;
+  guchar *data, *buffer;
   guint n_cols;
+  guint state, save;
+  guint putlength, x_frame;
   guint ret_x, ret_y;
   gsize retlength;
   
@@ -894,16 +896,31 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
 					       matrix,
 					       ret_y);
 
-    data = g_base64_decode(xmlNodeGetContent(current),
-			   &retlength);
+    data = xmlNodeGetContent(current);
     
     switch(matrix->mode){
     case AGS_SCRIPT_ARRAY_INT16:
       {
 	gint16 *k;
+
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gint16)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 	
-	k = (gint16 *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	k = (gint16 *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(gint16)));
       }
       break;
@@ -911,8 +928,24 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
       {
 	guint16 *k;
 
-	k = (guint16 *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(guint16)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+	
+	k = (guint16 *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(guint16)));
       }
       break;
@@ -920,8 +953,24 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
       {
 	gint32 *k;
 
-	k = (gint32 *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gint32)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+	
+	k = (gint32 *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(gint32)));
       }
       break;
@@ -929,8 +978,24 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
       {
 	guint32 *k;
 
-	k = (guint32 *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(guint32)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+	
+	k = (guint32 *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(guint32)));
       }
       break;
@@ -938,8 +1003,24 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
       {
 	gint64 *k;
 
-	k = (gint64 *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gint64)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT[0] %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+	
+	k = (gint64 *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(gint64)));
       }
       break;
@@ -947,8 +1028,24 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
       {
 	guint64 *k;
 
-	k = (guint64 *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(guint64)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+	
+	k = (guint64 *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(guint64)));
       }
       break;
@@ -956,8 +1053,24 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
       {
 	gdouble *k;
 
-	k = (gdouble *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gdouble)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+	
+	k = (gdouble *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(gdouble)));
       }
       break;
@@ -965,8 +1078,24 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
       {
 	char *k;
 
-	k = (char *) data;
-	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(char)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+
+	buffer = (guchar *) malloc(putlength);
+
+	g_base64_decode_step(data,
+			     putlength,
+			     buffer,
+			     &state, &save);
+
+	x_frame = x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
+	  AGS_SCRIPT_SET_BASE64_UNIT;
+	
+	k = (char *) &(buffer[x_frame]);
+	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) k,
 									   sizeof(char)));
       }
       break;
@@ -1033,7 +1162,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(gint16));
@@ -1050,7 +1179,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1073,7 +1202,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(guint16));
@@ -1090,7 +1219,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1113,7 +1242,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(gint32));
@@ -1130,7 +1259,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1153,7 +1282,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(guint32));
@@ -1170,7 +1299,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1193,7 +1322,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(gint64));
@@ -1210,7 +1339,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1233,7 +1362,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(guint64));
@@ -1250,7 +1379,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1273,7 +1402,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(gdouble));
@@ -1290,7 +1419,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1313,7 +1442,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	  AGS_SCRIPT_SET_BASE64_UNIT +
 	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	offset = (guint) floor((gdouble) x *
+	offset = (guint) floor((gdouble) x[0] *
 			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
 			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
 			       (gdouble) sizeof(char));
@@ -1330,7 +1459,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 			     &state,
 			     &save);
 
-	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	k_ptr[x[0] * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT %
 	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
@@ -1351,7 +1480,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 
   memcpy(&(data[offset]), tmp_col, putlength);
   g_free(tmp_col);
-
+  
   *x = ret_x;
   *y = ret_y;
 }
