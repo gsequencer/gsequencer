@@ -20,6 +20,7 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-client/scripting/ags_script.h>
 #include <ags-client/scripting/ags_xml_script_factory.h>
 
 #include <ags-client/scripting/mapping/ags_script_var.h>
@@ -52,6 +53,17 @@ void ags_script_set_matrix_put(AgsScriptSet *script_set,
 			       guint offset,
 			       guint *x, guint *y);
 
+void ags_script_set_prime(AgsScriptSet *script_set,
+			  AgsScriptVar *a,
+			  AgsScriptArray *prime);
+void ags_script_set_ggt(AgsScriptSet *script_set,
+			AgsScriptVar *a,
+			AgsScriptVar *b,
+			AgsScriptVar *ggt);
+void ags_script_set_kgv(AgsScriptSet *script_set,
+			AgsScriptVar *a,
+			AgsScriptVar *b,
+			AgsScriptVar *kgv);
 void ags_script_set_value(AgsScriptSet *script_set,
 			  AgsScriptVar *value,
 			  AgsScriptArray *lvalue);
@@ -84,6 +96,7 @@ void ags_script_set_equation(AgsScriptSet *script_set,
 			     AgsScriptArray *operands);
 
 #define AGS_SCRIPT_SET_BASE64_UNIT (4)
+#define AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT (3)
 
 static gpointer ags_script_set_parent_class = NULL;
 
@@ -235,54 +248,54 @@ ags_script_set_matrix_to_string(AgsScriptSet *script_set,
       {
 	ptr.data_int16 = (gint16 *) value;
 
-	i_stop = retlength / sizeof(gint16);
+	i_stop = retlength * AGS_SCRIPT_SET_BASE64_UNIT / sizeof(gint16);
       }
       break;
     case AGS_SCRIPT_ARRAY_UINT16:
       {
 	ptr.data_uint16 = (gint16 *) value;
 
-	i_stop = retlength / sizeof(guint16);
+	i_stop = retlength * AGS_SCRIPT_SET_BASE64_UNIT / sizeof(guint16);
       }
       break;
     case AGS_SCRIPT_ARRAY_INT32:
       {
 	ptr.data_int32 = (gint32 *) value;
 
-	i_stop = retlength / sizeof(gint32);
+	i_stop = retlength * AGS_SCRIPT_SET_BASE64_UNIT / sizeof(gint32);
       }
       break;
     case AGS_SCRIPT_ARRAY_UINT32:
       {
 	ptr.data_uint32 = (guint32 *) value;
 
-	i_stop = retlength / sizeof(guint32);
+	i_stop = retlength * AGS_SCRIPT_SET_BASE64_UNIT / sizeof(guint32);
       }
       break;
     case AGS_SCRIPT_ARRAY_INT64:
       {
 	ptr.data_int64 = (gint64 *) value;
 
-	i_stop = retlength / sizeof(gint64);
+	i_stop = retlength * AGS_SCRIPT_SET_BASE64_UNIT / sizeof(gint64);
       }
       break;
     case AGS_SCRIPT_ARRAY_UINT64:
       {
 	ptr.data_uint64 = (guint64 *) value;
 
-	i_stop = retlength / sizeof(guint64);
+	i_stop = retlength * AGS_SCRIPT_SET_BASE64_UNIT / sizeof(guint64);
       }
       break;
     case AGS_SCRIPT_ARRAY_DOUBLE:
       {
 	ptr.data_double = (gdouble *) value;
 
-	i_stop = retlength / sizeof(gdouble);
+	i_stop = retlength * AGS_SCRIPT_SET_BASE64_UNIT / sizeof(gdouble);
       }
       break;
     case AGS_SCRIPT_ARRAY_CHAR:
       {
-	ptr.data_char2 = (gchar *) value;
+	ptr.data_char = (gchar *) value;
 
 	g_message("unsupported data type: gchar\0");
       }
@@ -432,27 +445,31 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 				  gchar *string)
 {
   AgsXmlScriptFactory *xml_script_factory;
-  AgsScriptArray *array;
+  AgsScriptArray *script_array;
   xmlNode *matrix;
   GError *error;
 
-  auto void ags_script_set_matrix_from_string_read_col(xmlNode *node,
+  auto void ags_script_set_matrix_from_string_read_col(AgsScriptArray *script_array,
+						       xmlNode *node,
 						       gchar *string);
-  auto void ags_script_set_matrix_from_string_read_row(xmlNode *node,
+  auto void ags_script_set_matrix_from_string_read_row(AgsScriptArray *script_array,
+						       xmlNode *node,
 						       gchar *string);
-  auto void ags_script_set_matrix_from_string_validate(xmlNode *node);
+  auto void ags_script_set_matrix_from_string_validate(AgsScriptArray *script_array,
+						       xmlNode *node);
 
-  void ags_script_set_matrix_from_string_read_col(xmlNode *node,
+  void ags_script_set_matrix_from_string_read_col(AgsScriptArray *script_array,
+						  xmlNode *node,
 						  gchar *string){
-    guchar *col;
+    guchar *col, *data;
     gchar *current, *prev;
-    guint cols;
+    guint n_cols;
 
     col = NULL;
 
     current =
       prev = string;
-    cols = 0;
+    n_cols = 0;
 
     while((current = strchr(current, ':')) != NULL){
 
@@ -464,9 +481,10 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 	  sscanf(prev, "%d:\0", &k);
 
 	  if(col == NULL){
-	    col = (gint16 *) malloc(sizeof(gint16));
+	    col = (guchar *) (gint16 *) malloc(sizeof(gint16));
 	  }else{
-	    col = (gint16 *) realloc((cols + 1) * sizeof(gint16));
+	    col = (guchar *) (gint16 *) realloc(col,
+						(n_cols + 1) * sizeof(gint16));
 	  }
 
 	  memcpy(col, &k, sizeof(gint16));
@@ -479,9 +497,10 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 	  sscanf(prev, "%d:\0", &k);
 
 	  if(col == NULL){
-	    col = (guint16 *) malloc(sizeof(guint16));
+	    col = (guchar *) (guint16 *) malloc(sizeof(guint16));
 	  }else{
-	    col = (guint16 *) realloc((cols + 1) * sizeof(guint16));
+	    col = (guchar *) (guint16 *) realloc(col,
+						 (n_cols + 1) * sizeof(guint16));
 	  }
 
 	  memcpy(col, &k, sizeof(guint16));
@@ -494,9 +513,10 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 	  sscanf(prev, "%d:\0", &k);
 
 	  if(col == NULL){
-	    col = (gint32 *) malloc(sizeof(gint32));
+	    col = (guchar *) (gint32 *) malloc(sizeof(gint32));
 	  }else{
-	    col = (gint32 *) realloc((cols + 1) * sizeof(gint32));
+	    col = (guchar *) (gint32 *) realloc(col,
+						(n_cols + 1) * sizeof(gint32));
 	  }
 
 	  memcpy(col, &k, sizeof(gint32));
@@ -509,9 +529,10 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 	  sscanf(prev, "%d:\0", &k);
 
 	  if(col == NULL){
-	    col = (guint32 *) malloc(sizeof(guint32));
+	    col = (guchar *) (guint32 *) malloc(sizeof(guint32));
 	  }else{
-	    col = (guint32 *) realloc((cols + 1) * sizeof(guint32));
+	    col = (guchar *) (guint32 *) realloc(col,
+						 (n_cols + 1) * sizeof(guint32));
 	  }
 
 	  memcpy(col, &k, sizeof(guint32));
@@ -524,9 +545,10 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 	  sscanf(prev, "%d:\0", &k);
 
 	  if(col == NULL){
-	    col = (gint64 *) malloc(sizeof(gint64));
+	    col = (guchar *) (gint64 *) malloc(sizeof(gint64));
 	  }else{
-	    col = (gint64 *) realloc((cols + 1) * sizeof(gint64));
+	    col = (guchar *) (gint64 *) realloc(col,
+						(n_cols + 1) * sizeof(gint64));
 	  }
 
 	  memcpy(col, &k, sizeof(gint64));
@@ -539,9 +561,10 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 	  sscanf(prev, "%d:\0", &k);
 
 	  if(col == NULL){
-	    col = (guint64 *) malloc(sizeof(guint64));
+	    col = (guchar *) (guint64 *) malloc(sizeof(guint64));
 	  }else{
-	    col = (guint64 *) realloc((cols + 1) * sizeof(guint64));
+	    col = (guchar *) (guint64 *) realloc(col,
+						 (n_cols + 1) * sizeof(guint64));
 	  }
 
 	  memcpy(col, &k, sizeof(guint64));
@@ -554,9 +577,10 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 	  sscanf(prev, "%f:\0", &k);
 
 	  if(col == NULL){
-	    col = (gdouble *) malloc(sizeof(gdouble));
+	    col = (guchar *) (gdouble *) malloc(sizeof(gdouble));
 	  }else{
-	    col = (gdouble *) realloc((cols + 1) * sizeof(gdouble));
+	    col = (guchar *) (gdouble *) realloc(col,
+						 (n_cols + 1) * sizeof(gdouble));
 	  }
 
 	  memcpy(col, &k, sizeof(gdouble));
@@ -576,13 +600,14 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 
       current++;
       prev = current;
-      cols++;
+      n_cols++;
     }
 
-    xmlNodeSetContent(node, (xmlChar *) col);
-    xmlSetProp(node, "length\0", cols);
+    xmlNodeSetContent(node, (xmlChar *) g_base64_encode(col, n_cols));
+    xmlSetProp(node, "length\0", (xmlChar *) g_strdup_printf("%d\0", n_cols));
   }
-  void ags_script_set_matrix_from_string_read_row(xmlNode *node,
+  void ags_script_set_matrix_from_string_read_row(AgsScriptArray *script_array,
+						  xmlNode *node,
 						  gchar *string){
     xmlNode *row;
     gchar *current, *prev;
@@ -596,7 +621,8 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
       row = ags_xml_script_factory_map(xml_script_factory,
 				       "ags-array\0",
 				       &error);
-      ags_script_set_matrix_from_string_read_col(row,
+      ags_script_set_matrix_from_string_read_col(script_array,
+						 row,
 						 prev);
       xmlAddChild(node, row);
 
@@ -605,13 +631,15 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
       rows++;
     }
 
-    xmlSetProp(node, "length\0", rows);
+    xmlSetProp(node, "length\0", (xmlChar *) g_strdup_printf("%d\0", rows));
   }
-  void ags_script_set_matrix_from_string_validate(xmlNode *node){
+  void ags_script_set_matrix_from_string_validate(AgsScriptArray *script_array,
+						  xmlNode *node){
     xmlNode *current;
     guchar *col;
     guint *cols;
     guint n_cols, n_rows;
+    guint current_length;
     guint i, j, j_start;
     gsize retlength;
 
@@ -641,127 +669,147 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 			    &retlength);
       j_start = strtoul(xmlGetProp(node, "length\0"), NULL, 10);
 
-      for(j = j_start; j < n_cols; j++){
+      switch(script_array->mode){
+      case AGS_SCRIPT_ARRAY_INT16:
+	{
+	  gint16 k;
 
-	switch(script_array->mode){
-	case AGS_SCRIPT_ARRAY_INT16:
-	  {
-	    gint16 k;
-
-	    k = 0;
+	  k = 0;
 	    
-	    if(col == NULL){
-	      col = (gint16 *) malloc(sizeof(gint16));
-	    }else{
-	      col = (gint16 *) realloc((cols + 1) * sizeof(gint16));
-	    }
-
-	    memcpy(col, &k, sizeof(gint16));
+	  if(col == NULL){
+	    col = (guchar *) (gint16 *) malloc(n_cols * sizeof(gint16));
+	  }else{
+	    col = (guchar *) (gint16 *) realloc(col,
+						n_cols * sizeof(gint16));
 	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_UINT16:
-	  {
-	    guint16 k;
 
-	    k = 0;
-	    
-	    if(col == NULL){
-	      col = (guint16 *) malloc(sizeof(guint16));
-	    }else{
-	      col = (guint16 *) realloc((cols + 1) * sizeof(guint16));
-	    }
-
-	    memcpy(col, &k, sizeof(guint16));
+	  for(j = j_start; j < n_cols; j++){
+	    memcpy(&(col[j * sizeof(gint16)]), &k, sizeof(gint16));
 	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_INT32:
-	  {
-	    gint32 k;
-
-	    k = 0;
-	    
-	    if(col == NULL){
-	      col = (gint32 *) malloc(sizeof(gint32));
-	    }else{
-	      col = (gint32 *) realloc((cols + 1) * sizeof(gint32));
-	    }
-
-	    memcpy(col, &k, sizeof(gint32));
-	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_UINT32:
-	  {
-	    guint32 k;
-
-	    k = 0;
-	    
-	    if(col == NULL){
-	      col = (guint32 *) malloc(sizeof(guint32));
-	    }else{
-	      col = (guint32 *) realloc((cols + 1) * sizeof(guint32));
-	    }
-
-	    memcpy(col, &k, sizeof(guint32));
-	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_INT64:
-	  {
-	    gint64 k;
-
-	    k = 0;
-	    
-	    if(col == NULL){
-	      col = (gint64 *) malloc(sizeof(gint64));
-	    }else{
-	      col = (gint64 *) realloc((cols + 1) * sizeof(gint64));
-	    }
-
-	    memcpy(col, &k, sizeof(gint64));
-	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_UINT64:
-	  {
-	    guint64 k;
-
-	    k = 0;
-	    
-	    if(col == NULL){
-	      col = (guint64 *) malloc(sizeof(guint64));
-	    }else{
-	      col = (guint64 *) realloc((cols + 1) * sizeof(guint64));
-	    }
-
-	    memcpy(col, &k, sizeof(guint64));
-	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_DOUBLE:
-	  {
-	    gdouble k;
-
-	    k = 0.0;
-	    
-	    if(col == NULL){
-	      col = (gdouble *) malloc(sizeof(gdouble));
-	    }else{
-	      col = (gdouble *) realloc((cols + 1) * sizeof(gdouble));
-	    }
-
-	    memcpy(col, &k, sizeof(gdouble));
-	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_CHAR:
-	  {
-	    g_message("unsupported data type: gchar\0");
-	  }
-	  break;
-	case AGS_SCRIPT_ARRAY_POINTER:
-	  {
-	    g_message("unsupported data type: gpointer\0");
-	  }
-	  break;
 	}
+	break;
+      case AGS_SCRIPT_ARRAY_UINT16:
+	{
+	  guint16 k;
 
+	  k = 0;
+	    
+	  if(col == NULL){
+	    col = (guchar *) (guint16 *) malloc(n_cols * sizeof(guint16));
+	  }else{
+	    col = (guchar *) (guint16 *) realloc(col,
+						 n_cols * sizeof(guint16));
+	  }
+
+	  for(j = j_start; j < n_cols; j++){
+	    memcpy(&(col[j * sizeof(guint16)]), &k, sizeof(guint16));
+	  }
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_INT32:
+	{
+	  gint32 k;
+
+	  k = 0;
+	    
+	  if(col == NULL){
+	    col = (guchar *) (gint32 *) malloc(n_cols * sizeof(gint32));
+	  }else{
+	    col = (guchar *) (gint32 *) realloc(col,
+						n_cols * sizeof(gint32));
+	  }
+
+	  for(j = j_start; j < n_cols; j++){
+	    memcpy(&(col[j * sizeof(gint32)]), &k, sizeof(gint32));
+	  }
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_UINT32:
+	{
+	  guint32 k;
+
+	  k = 0;
+	    
+	  if(col == NULL){
+	    col = (guchar *) (guint32 *) malloc(n_cols * sizeof(guint32));
+	  }else{
+	    col = (guchar *) (guint32 *) realloc(col,
+						 n_cols * sizeof(guint32));
+	  }
+
+	  for(j = j_start; j < n_cols; j++){
+	    memcpy(&(col[j * sizeof(guint32)]), &k, sizeof(guint32));
+	  }
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_INT64:
+	{
+	  gint64 k;
+
+	  k = 0;
+	    
+	  if(col == NULL){
+	    col = (guchar *) (gint64 *) malloc(n_cols * sizeof(gint64));
+	  }else{
+	    col = (guchar *) (gint64 *) realloc(col,
+						n_cols * sizeof(gint64));
+	  }
+
+	  for(j = j_start; j < n_cols; j++){
+	    memcpy(&(col[j * sizeof(gint64)]), &k, sizeof(gint64));
+	  }
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_UINT64:
+	{
+	  guint64 k;
+
+	  k = 0;
+	    
+	  if(col == NULL){
+	    col = (guchar *) (guint64 *) malloc(n_cols * sizeof(guint64));
+	  }else{
+	    col = (guchar *) (guint64 *) realloc(col,
+						 n_cols * sizeof(guint64));
+	  }
+
+	  for(j = j_start; j < n_cols; j++){
+	    memcpy(&(col[j * sizeof(guint64)]), &k, sizeof(guint64));
+	  }
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_DOUBLE:
+	{
+	  gdouble k;
+
+	  k = 0.0;
+	    
+	  if(col == NULL){
+	    col = (guchar *) (gdouble *) malloc(n_cols * sizeof(gdouble));
+	  }else{
+	    col = (guchar *) (gdouble *) realloc(col,
+						 n_cols * sizeof(gdouble));
+	  }
+
+	  for(j = j_start; j < n_cols; j++){
+	    memcpy(&(col[j * sizeof(gdouble)]), &k, sizeof(gdouble));
+	  }
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_CHAR:
+	{
+	  g_message("unsupported data type: gchar\0");
+	}
+	break;
+      case AGS_SCRIPT_ARRAY_POINTER:
+	{
+	  g_message("unsupported data type: gpointer\0");
+	}
+	break;
       }
+
+      col = g_base64_encode(col,
+			    n_cols);
 
       current = current->next;
     }
@@ -769,25 +817,31 @@ ags_script_set_matrix_from_string(AgsScriptSet *script_set,
 
   xml_script_factory = AGS_SCRIPT(AGS_SCRIPT_OBJECT(script_set)->script)->xml_script_factory;
 
-  array = ags_script_array_new();
+  script_array = ags_script_array_new();
+  script_array->flags &= (~AGS_SCRIPT_ARRAY_UTF8_ENCODED);
+  script_array->flags |= AGS_SCRIPT_ARRAY_BASE64_ENCODED;
+  script_array->mode = AGS_SCRIPT_ARRAY_DOUBLE;
 
   error = NULL;
 
-  matrix = AGS_SCRIPT_OBJECT(array)->node;
+  matrix = AGS_SCRIPT_OBJECT(script_array)->node;
 
   if(error != NULL){
     g_message("failed to instantiate xmlNode: ags-array\0");
 
-    g_object_unref(array);
+    g_object_unref(script_array);
 
     return(NULL);
   }
 
-  ags_script_set_matrix_from_string_read_row(matrix,
+  //TODO:JK: implement data type - see above
+  ags_script_set_matrix_from_string_read_row(script_array,
+					     matrix,
 					     string);
-  ags_script_set_matrix_from_string_validate(matrix);
+  ags_script_set_matrix_from_string_validate(script_array,
+					     matrix);
 
-  return(array);
+  return(script_array);
 }
 
 xmlNode*
@@ -797,10 +851,10 @@ ags_script_set_matrix_find_index(AgsScriptSet *script_set,
 {
   xmlNode *current;
 
-  current = matrix->node->children;
+  current = AGS_SCRIPT_OBJECT(matrix)->node->children;
 
   while(current != NULL){
-    if(strtoul(xmlGetProp(current, "index\0") NULL, 10) == y){
+    if(strtoul(xmlGetProp(current, "index\0"), NULL, 10) == y){
       return(current);
     }
 
@@ -823,7 +877,7 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
   guint ret_x, ret_y;
   gsize retlength;
   
-  row = AGS_SCRIPT_OBJECT(value)->node->children;
+  row = AGS_SCRIPT_OBJECT(matrix)->node->children;
 
   if(xmlNodeGetContent(AGS_SCRIPT_OBJECT(lvalue)->node) != NULL){
     xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node,
@@ -842,12 +896,12 @@ ags_script_set_matrix_get(AgsScriptSet *script_set,
 
     data = g_base64_decode(xmlNodeGetContent(current),
 			   &retlength);
-
-    switch(script_array->mode){
+    
+    switch(matrix->mode){
     case AGS_SCRIPT_ARRAY_INT16:
       {
 	gint16 *k;
-
+	
 	k = (gint16 *) data;
 	xmlNodeSetContent(AGS_SCRIPT_OBJECT(lvalue)->node, g_base64_encode((guchar *) &(k[ret_x]),
 									   sizeof(gint16)));
@@ -943,11 +997,13 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
   xmlNode *current, *row;
   xmlChar *data;
   guchar *tmp_col;
+  guint offset;
   guint n_cols;
   guint ret_x, ret_y;
   gsize putlength;
+  GError *error;
   
-  row = AGS_SCRIPT_OBJECT(value)->node->children;
+  row = AGS_SCRIPT_OBJECT(matrix)->node->children;
 
   if(row != NULL){
     n_cols = strtoul(xmlGetProp(row, "length\0"), NULL, 10);
@@ -961,7 +1017,7 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 
     data = xmlNodeGetContent(current);
 
-    switch(script_array->mode){
+    switch(matrix->mode){
     case AGS_SCRIPT_ARRAY_INT16:
       {
 	guchar *value_data;
@@ -971,25 +1027,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(gint16));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gint16)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = AGS_SCRIPT_SET_BASE64_UNIT / sizeof(gint16);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(gint16));
+	
+	/*  */
 	k_ptr = (gint16 *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1002,25 +1067,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(guint16));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(guint16)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = AGS_SCRIPT_SET_BASE64_UNIT / sizeof(guint16);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(guint16));
+	
+	/*  */
 	k_ptr = (guint16 *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1033,25 +1107,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(gint32));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gint32)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = AGS_SCRIPT_SET_BASE64_UNIT / sizeof(gint32);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(gint32));
+	
+	/*  */
 	k_ptr = (gint32 *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1064,25 +1147,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(guint32));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(guint32)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = AGS_SCRIPT_SET_BASE64_UNIT / sizeof(guint32);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(guint32));
+	
+	/*  */
 	k_ptr = (guint32 *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1095,25 +1187,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(gint64));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gint64)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = sizeof(gint64);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(gint64));
+	
+	/*  */
 	k_ptr = (gint64 *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1126,25 +1227,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(guint64));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(guint64)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = sizeof(guint64);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(guint64));
+	
+	/*  */
 	k_ptr = (guint64 *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1157,25 +1267,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(gdouble));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(gdouble)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = sizeof(gdouble);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(gdouble));
+	
+	/*  */
 	k_ptr = (gdouble *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1188,25 +1307,34 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
 	guint save;
 	gsize retlength;
 
-	value_data = g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(value)->node), retlength);
-	memcpy(&k, value_data, sizeof(char));
+	putlength = (guint) round((gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+				  (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+				  sizeof(char)) *
+	  AGS_SCRIPT_SET_BASE64_UNIT +
+	  AGS_SCRIPT_SET_BASE64_UNIT;
 
-	putlength = AGS_SCRIPT_SET_BASE64_UNIT / sizeof(char);
+	offset = (guint) floor((gdouble) x *
+			       (gdouble) AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT /
+			       (gdouble) AGS_SCRIPT_SET_BASE64_UNIT *
+			       (gdouble) sizeof(char));
+	
+	/*  */
 	k_ptr = (char *) malloc(putlength);
 
 	state = 0;
 	save = 0;
 
-	g_base64_decode_step(data,
+	g_base64_decode_step(&(data[offset]),
 			     putlength,
-			     k_ptr,
+			     (guchar *) k_ptr,
 			     &state,
 			     &save);
 
-	k_ptr[x % putlength] = k;
+	k_ptr[(x * AGS_SCRIPT_SET_BASE64_BYTES_PER_UNIT) %
+	      AGS_SCRIPT_SET_BASE64_UNIT] = k;
 
 	tmp_col = g_base64_encode((guchar *) k_ptr,
-				  putlength);
+				  &putlength);
 	free(k_ptr);
       }
       break;
@@ -1221,11 +1349,38 @@ ags_script_set_matrix_put(AgsScriptSet *script_set,
     ret_y = G_MAXUINT;
   }
 
-  memcpy(data, tmp_col, strlen(tmp_col));
+  memcpy(&(data[offset]), tmp_col, putlength);
   g_free(tmp_col);
 
   *x = ret_x;
   *y = ret_y;
+}
+
+
+void
+ags_script_set_prime(AgsScriptSet *script_set,
+		     AgsScriptVar *a,
+		     AgsScriptArray *prime)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_script_set_ggt(AgsScriptSet *script_set,
+		   AgsScriptVar *a,
+		   AgsScriptVar *b,
+		   AgsScriptVar *ggt)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_script_set_kgv(AgsScriptSet *script_set,
+		   AgsScriptVar *a,
+		   AgsScriptVar *b,
+		   AgsScriptVar *kgv)
+{
+  //TODO:JK: implement me
 }
 
 void
