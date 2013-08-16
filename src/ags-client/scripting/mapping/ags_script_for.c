@@ -133,7 +133,7 @@ ags_script_for_launch(AgsScriptObject *script_object, GError **error)
 {
   AgsScriptFor *script_for;
   AgsScriptSet *initializer, *loop_control, *step;
-  GError *initializer_error, *step_error;
+  GError *initializer_error, *step_error, *body_error;
 
   script_for = AGS_SCRIPT_FOR(script_object);
 
@@ -144,7 +144,7 @@ ags_script_for_launch(AgsScriptObject *script_object, GError **error)
   for(ags_script_object_launch(AGS_SCRIPT_OBJECT(initializer), &initializer_error);
       ags_script_set_boolean_term(loop_control);
       ags_script_object_launch(AGS_SCRIPT_OBJECT(step), &step_error)){
-    AGS_SCRIPT_OBJECT_CLASS(ags_script_for_parent_class)->launch(script_object, error);
+    AGS_SCRIPT_OBJECT_CLASS(ags_script_for_parent_class)->launch(script_object, body_error);
   }
 }
 

@@ -1759,9 +1759,9 @@ ags_script_set_default_index(AgsScriptSet *script_set,
   GError *error;
 
   xml_script_factory = AGS_SCRIPT(AGS_SCRIPT_OBJECT(script_set)->script)->xml_script_factory;
-  error = NULL;
 
   index_value = ags_script_var_new();
+  error = NULL;
   AGS_SCRIPT_OBJECT(index_value)->node = ags_xml_script_factory_map(xml_script_factory,
 								    "ags-var\0",
 								    &error);
@@ -1799,85 +1799,148 @@ void
 ags_script_set_matrix_move_index(AgsScriptSet *script_set,
 				 AgsScriptArray *matrix,
 				 AgsScriptArray *index,
-				 guint dest_x, guint dest_y,
-				 guint src_x, guint src_y)
+				 guint row,
+				 guint dest_x,
+				 guint src_x)
 {
-  AgsScriptVar *src, *dest;
+  AgsXmlScriptFactory *xml_script_factory;
+  AgsScriptVar *src, *dest, **matrix_region_old, **index_region_old;
   AgsScriptVar *src_index, *dest_index;
   xmlNode *current;
   guint src_offset, dest_offset;
   guint n_cols;
+  guint *y_old;
+  guint i, i_stop;
   guint x, y;
+  GError *error;
+
+  xml_script_factory = AGS_SCRIPT(AGS_SCRIPT_OBJECT(script_set)->script)->xml_script_factory;
   
   current = ags_script_set_matrix_find_index(script_set,
 					     matrix,
 					     dest_y);
   n_cols = strtoul(xmlGetProp(current, "length\0"), NULL, 10);
 
-  //TODO:JK: verify
-  /* move values */
+  /* move values in x direction */
+  if(dest_x > src_x){
+    i_stop = dest_x - src_x;
+  }else{
+    i_stop = src_x - dest_x;
+  }
+
   /* collect old fields */
-  src_offset = src_y * n_cols + src_x;
-  ags_script_set_matrix_get(script_set,
-			    matrix,
-			    src,
-			    src_offset,
-			    &x, &y);
+  matrix_region_old = (AgsScriptVar **) malloc(i_stop * sizeof(AgsScriptVar *));
+  index_region_old = (AgsScriptVar **) malloc(i_stop * sizeof(AgsScriptVar *));
+  
+  for(i = 0; i < i_stop; i++){
+    src_offset = row * n_cols + ((src_x < dest_x) ? src_x: dest_x) + i;
 
-  dest_offset = dest_y * n_cols + dest_x;
-  ags_script_set_matrix_get(script_set,
-			    matrix,
-			    dest,
-			    dest_offset,
-			    &x, &y);
+    /* indices */
+    index_region_old[i] = ags_script_var_new();
+    error = NULL;
+    AGS_SCRIPT_OBJECT(index_region_old[i])->node = ags_xml_script_factory_map(xml_script_factory,
+								       "ags-var\0",
+								       &error);
+  
+    if(error != NULL){
+      g_message("can't instantiate ags-var: %s\0", error->message);
 
-  /* move indices */
-  src_offset = src_y * n_cols + src_x;
-  ags_script_set_matrix_put(script_set,
-			    matrix,
-			    dest,
-			    src_offset,
-			    &x, &y);
+      return;
+    }
 
-  dest_offset = dest_y * n_cols + dest_x;
-  ags_script_set_matrix_put(script_set,
-			    matrix,
-			    src,
-			    dest_offset,
-			    &x, &y);
+    ags_script_set_matrix_get(script_set,
+			      matrix,
+			      index_region_old[i],
+			      src_offset,
+			      &x, &y);
 
-  /* move indices */
-  /* collect old fields */
-  //TODO:JK: verify
-  src_offset = src_y * n_cols + src_x;
-  ags_script_set_matrix_get(script_set,
-			    index,
-			    src_index,
-			    src_offset,
-			    &x, &y);
+    /* matrix */
+    matrix_region_old[i] = ags_script_var_new();
+    error = NULL;
+    AGS_SCRIPT_OBJECT(matrix_region_old[i])->node = ags_xml_script_factory_map(xml_script_factory,
+									"ags-var\0",
+									&error);
+  
+    if(error != NULL){
+      g_message("can't instantiate ags-var: %s\0", error->message);
 
-  dest_offset = dest_y * n_cols + dest_x;
-  ags_script_set_matrix_get(script_set,
-			    index,
-			    dest_index,
-			    dest_offset,
-			    &x, &y);
+      return;
+    }
 
+    ags_script_set_matrix_get(script_set,
+			      matrix,
+			      matrix_region_old[i],
+			      src_offset,
+			      &x, &y);
+  }
 
-  /* move indices */
-  src_offset = src_y * n_cols + src_x;
-  ags_script_set_matrix_put(script_set,
-			    index,
-			    dest_index,
-			    src_offset,
-			    &x, &y);
+  /* shift indices */
+  for(i = 0; i < i_stop - 1; i++){
 
-  dest_offset = dest_y * n_cols + dest_x;
-  ags_script_set_matrix_put(script_set,
-			    index,
-			    src_index,
-			    dest_offset,
-			    &x, &y);
+    if(dest_x > src_x){
+      src_offset = row * n_cols + src_x + i;
+      dest_offset = src_offset + 1;
+      
+      ags_script_set_matrix_put(script_set,
+				index,
+				index_region_old[i],
+				dest_offset,
+				&x, &y);
+
+      ags_script_set_matrix_put(script_set,
+				matrix,
+				matrix_region_old[i],
+				dest_offset,
+				&x, &y);
+    }else{
+      src_offset = row * n_cols + dest_x + i;
+      dest_offset = src_offset;
+      src_offset++;
+
+      ags_script_set_matrix_put(script_set,
+				index,
+				index_region_old[i + 1],
+				dest_offset,
+				&x, &y);
+
+      ags_script_set_matrix_put(script_set,
+				matrix,
+				matrix_region_old[i + 1],
+				dest_offset,
+				&x, &y);
+    }
+  }
+
+  /* move index */
+  if(dest_x > src_x){
+    dest_offset = row * n_cols + src_x;
+
+    ags_script_set_matrix_put(script_set,
+			      index,
+			      index_region_old[dest_x - src_x],
+			      dest_offset,
+			      &x, &y);
+
+    ags_script_set_matrix_put(script_set,
+			      matrix,
+			      matrix_region_old[dest_x - src_x],
+			      dest_offset,
+			      &x, &y);
+  }else{
+    dest_offset = row * n_cols + dest_x;
+
+    ags_script_set_matrix_put(script_set,
+			      index,
+			      index_region_old[0],
+			      dest_offset,
+			      &x, &y);
+
+    ags_script_set_matrix_put(script_set,
+			      matrix,
+			      matrix_region_old[0],
+			      dest_offset,
+			      &x, &y);
+  }
 }
 
 void
@@ -1887,75 +1950,115 @@ ags_script_set_matrix_sort(AgsScriptSet *script_set,
 			   AgsScriptArray *index, guint depth,
 			   guint *x, guint *y)
 {
-  AgsScriptVar *matrix_value;
+  AgsScriptVar *next_value, *current_value;
   xmlNode *current_matrix, *current_index;
   guint n_rows, n_cols;
   guint offset, stop;
   guint i, j, k;
+  guint move_count;
   guint src_x, src_y;
   guint dest_x, dest_y;
-  
-  current_matrix = AGS_SCRIPT_OBJECT(matrix)->node;
+  guint x, y;
 
-  n_rows = strtoul(xmlGetProp(current_matrix, "length\0"), NULL, 10);
+  n_rows = strtoul(xmlGetProp(AGS_SCRIPT_OBJECT(matrix)->node, "length\0"), NULL, 10);
+
+  offset = 0;
 
   for(i = 0; i < n_rows; i++){
 
     /*  */
-    n_cols = strtoul(xmlGetProp(current_matrix->children, "length\0"), NULL, 10);
+    current_matrix = ags_script_set_matrix_find_index(script_set,
+						      matrix,
+						      i);
+    n_cols = strtoul(xmlGetProp(current_matrix, "length\0"), NULL, 10);
 
-    for(j = 0; j < n_cols; j++){
+    current_index = ags_script_set_matrix_find_index(script_set,
+						     index,
+						     i);
 
-      if(current_matrix == NULL){
-	*x = G_MAXUINT;
-	*y = G_MAXUINT;
-	return;
+    for(j = 0; j < n_cols; j++, offset++){
+      ags_script_set_matrix_get(script_set,
+				matrix,
+				current_value,
+				offset,
+				&x, &y);
+
+      move_count = 0;
+
+      for(k = 0; k < n_cols - j - 1; k++){
+	ags_script_set_matrix_get(script_set,
+				  matrix,
+				  next_value,
+				  offset + k,
+				  &x, &y);
+
+	if(current_matrix == NULL ||
+	   current_index == NULL){
+	  *x = G_MAXUINT;
+	  *y = G_MAXUINT;
+	  return;
+	}
+
+	if(j >= depth){
+	  break;
+	}
+
+	switch(matrix->mode){
+	case AGS_SCRIPT_ARRAY_INT16:
+	  {
+	    gint16 next_val, current_val;
+
+	    if(next_val > current_val){
+
+	      ags_script_set_matrix_move_index(script_set,
+					       matrix,
+					       index,
+				      guint dest_x, guint dest_y,
+				      guint src_x, guint src_y);
+
+
+	      move_count++;
+	    }
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_UINT16:
+	  {
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_INT32:
+	  {
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_UINT32:
+	  {
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_INT64:
+	  {
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_UINT64:
+	  {
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_DOUBLE:
+	  {
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_CHAR:
+	  {
+	    g_message("unsupported data type: gchar\0");
+	  }
+	  break;
+	case AGS_SCRIPT_ARRAY_POINTER:
+	  {
+	    g_message("unsupported data type: gpointer\0");
+	  }
+	  break;
+	}
       }
 
-      if(j >= depth){
-	break;
-      }
-
-      switch(matrix->mode){
-      case AGS_SCRIPT_ARRAY_INT16:
-	{
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_UINT16:
-	{
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_INT32:
-	{
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_UINT32:
-	{
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_INT64:
-	{
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_UINT64:
-	{
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_DOUBLE:
-	{
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_CHAR:
-	{
-	  g_message("unsupported data type: gchar\0");
-	}
-	break;
-      case AGS_SCRIPT_ARRAY_POINTER:
-	{
-	  g_message("unsupported data type: gpointer\0");
-	}
-	break;
-      }
+      j += move_count;
     }
   }
 }
