@@ -73,8 +73,9 @@ void ags_script_set_default_index(AgsScriptSet *script_set,
 void ags_script_set_matrix_move_index(AgsScriptSet *script_set,
 				      AgsScriptArray *matrix,
 				      AgsScriptArray *index,
-				      guint dest_x, guint dest_y,
-				      guint src_x, guint src_y);
+				      guint row,
+				      guint dest_x,
+				      guint src_x);
 
 void ags_script_set_matrix_sort(AgsScriptSet *script_set,
 				AgsScriptArray *matrix,
@@ -1818,7 +1819,7 @@ ags_script_set_matrix_move_index(AgsScriptSet *script_set,
   
   current = ags_script_set_matrix_find_index(script_set,
 					     matrix,
-					     dest_y);
+					     row);
   n_cols = strtoul(xmlGetProp(current, "length\0"), NULL, 10);
 
   /* move values in x direction */
@@ -1955,10 +1956,9 @@ ags_script_set_matrix_sort(AgsScriptSet *script_set,
   guint n_rows, n_cols;
   guint offset, stop;
   guint i, j, k;
-  guint move_count;
-  guint src_x, src_y;
-  guint dest_x, dest_y;
-  guint x, y;
+  guint row, src_x, dest_x;
+  guint ret_x, ret_y;
+  gsize retlength;
 
   n_rows = strtoul(xmlGetProp(AGS_SCRIPT_OBJECT(matrix)->node, "length\0"), NULL, 10);
 
@@ -1981,16 +1981,14 @@ ags_script_set_matrix_sort(AgsScriptSet *script_set,
 				matrix,
 				current_value,
 				offset,
-				&x, &y);
-
-      move_count = 0;
+				&ret_x, &ret_y);
 
       for(k = 0; k < n_cols - j - 1; k++){
 	ags_script_set_matrix_get(script_set,
 				  matrix,
 				  next_value,
-				  offset + k,
-				  &x, &y);
+				  offset + k + 1,
+				  &ret_x, &ret_y);
 
 	if(current_matrix == NULL ||
 	   current_index == NULL){
@@ -2006,44 +2004,143 @@ ags_script_set_matrix_sort(AgsScriptSet *script_set,
 	switch(matrix->mode){
 	case AGS_SCRIPT_ARRAY_INT16:
 	  {
-	    gint16 next_val, current_val;
+	    gint16 *next_val, *current_val;
+	    
+	    current_val = (gint16 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(current_value)->node),
+								&retlength);
+	    next_val = (gint16 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(next_value)->node),
+							     &retlength);
 
-	    if(next_val > current_val){
-
+	    if(*next_val > *current_val){
+	      current_value = next_value;
 	      ags_script_set_matrix_move_index(script_set,
 					       matrix,
 					       index,
-				      guint dest_x, guint dest_y,
-				      guint src_x, guint src_y);
-
-
-	      move_count++;
+					       i,
+					       j,
+					       k);
 	    }
 	  }
 	  break;
 	case AGS_SCRIPT_ARRAY_UINT16:
 	  {
+	    guint16 *next_val, *current_val;
+
+	    current_val = (guint16 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(current_value)->node),
+								 &retlength);
+	    next_val = (guint16 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(next_value)->node),
+							      &retlength);
+
+	    if(*next_val > *current_val){
+	      current_value = next_value;
+	      ags_script_set_matrix_move_index(script_set,
+					       matrix,
+					       index,
+					       i,
+					       j,
+					       k);
+	    }
 	  }
 	  break;
 	case AGS_SCRIPT_ARRAY_INT32:
 	  {
+	    gint32 *next_val, *current_val;
+
+	    current_val = (gint32 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(current_value)->node),
+								&retlength);
+	    next_val = (gint32 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(next_value)->node),
+							     &retlength);
+	    
+	    if(*next_val > *current_val){
+	      current_value = next_value;
+	      ags_script_set_matrix_move_index(script_set,
+					       matrix,
+					       index,
+					       i,
+					       j,
+					       k);
+	    }
 	  }
 	  break;
 	case AGS_SCRIPT_ARRAY_UINT32:
 	  {
+	    guint32 *next_val, *current_val;
+
+	    current_val = (guint32 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(current_value)->node),
+								 &retlength);
+	    next_val = (guint32 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(next_value)->node),
+							      &retlength);
+
+	    if(*next_val > *current_val){
+	      current_value = next_value;
+	      ags_script_set_matrix_move_index(script_set,
+					       matrix,
+					       index,
+					       i,
+					       j,
+					       k);
+	    }
 	  }
 	  break;
 	case AGS_SCRIPT_ARRAY_INT64:
 	  {
+	    gint64 *next_val, *current_val;
+
+	    current_val = (gint64 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(current_value)->node),
+								&retlength);
+	    next_val = (gint64 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(next_value)->node),
+							     &retlength);
+
+	    if(*next_val > *current_val){
+	      current_value = next_value;
+	      ags_script_set_matrix_move_index(script_set,
+					       matrix,
+					       index,
+					       i,
+					       j,
+					       k);
+	    }
 	  }
 	  break;
 	case AGS_SCRIPT_ARRAY_UINT64:
 	  {
+	    guint64 *next_val, *current_val;
+
+	    current_val = (guint64 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(current_value)->node),
+								 &retlength);
+	    next_val = (guint64 *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(next_value)->node),
+							      &retlength);
+	    
+	    if(*next_val > *current_val){
+	      current_value = next_value;
+	      ags_script_set_matrix_move_index(script_set,
+					       matrix,
+					       index,
+					       i,
+					       j,
+					       k);
+	    }
 	  }
 	  break;
 	case AGS_SCRIPT_ARRAY_DOUBLE:
 	  {
 	  }
+	    gdouble *next_val, *current_val;
+
+	    current_val = (gdouble *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(current_value)->node),
+								 &retlength);
+	    next_val = (gdouble *) (guchar *) g_base64_decode(xmlNodeGetContent(AGS_SCRIPT_OBJECT(next_value)->node),
+							      &retlength);
+
+	    if(*next_val > *current_val){
+	      current_value = next_value;
+	      ags_script_set_matrix_move_index(script_set,
+					       matrix,
+					       index,
+					       i,
+					       j,
+					       k);
+	    }
 	  break;
 	case AGS_SCRIPT_ARRAY_CHAR:
 	  {
@@ -2057,8 +2154,6 @@ ags_script_set_matrix_sort(AgsScriptSet *script_set,
 	  break;
 	}
       }
-
-      j += move_count;
     }
   }
 }
