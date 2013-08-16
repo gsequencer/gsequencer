@@ -99,7 +99,7 @@ ags_script_do_while_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_script_do_while_init(AgsScriptDoWhile *script_do_while)
 {
-  script_do_while->loop_control = ags_script_set_new()
+  script_do_while->loop_control = ags_script_set_new();
 }
 
 void
@@ -117,7 +117,7 @@ ags_script_do_while_disconnect(AgsConnectable *connectable)
 void
 ags_script_do_while_finalize(GObject *gobject)
 {
-  AgsScriptController *script_do_while;
+  AgsScriptDoWhile *script_do_while;
 
   script_do_while = AGS_SCRIPT_DO_WHILE(gobject);
 
