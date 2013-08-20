@@ -198,6 +198,8 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) \
 	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
+	ags-ags_server_preferences.$(OBJEXT) \
+	ags-ags_server_preferences_callbacks.$(OBJEXT) \
 	ags-ags_performance_preferences.$(OBJEXT) \
 	ags-ags_performance_preferences_callbacks.$(OBJEXT) \
 	ags-ags_pad_editor_callbacks.$(OBJEXT) \
@@ -804,6 +806,10 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/X/ags_audio_preferences.h \
 	./src/ags/X/ags_audio_preferences_callbacks.c \
 	./src/ags/X/ags_audio_preferences_callbacks.h \
+	./src/ags/X/ags_server_preferences.c \
+	./src/ags/X/ags_server_preferences.h \
+	./src/ags/X/ags_server_preferences_callbacks.c \
+	./src/ags/X/ags_server_preferences_callbacks.h \
 	./src/ags/X/ags_performance_preferences.c \
 	./src/ags/X/ags_performance_preferences.h \
 	./src/ags/X/ags_performance_preferences_callbacks.c \
@@ -1369,6 +1375,8 @@ include ./$(DEPDIR)/ags-ags_runnable.Po
 include ./$(DEPDIR)/ags-ags_seekable.Po
 include ./$(DEPDIR)/ags-ags_segment.Po
 include ./$(DEPDIR)/ags-ags_server.Po
+include ./$(DEPDIR)/ags-ags_server_preferences.Po
+include ./$(DEPDIR)/ags-ags_server_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_set_audio_channels.Po
 include ./$(DEPDIR)/ags-ags_set_buffer_size.Po
 include ./$(DEPDIR)/ags-ags_set_devout_play_flags.Po
@@ -3255,6 +3263,34 @@ ags-ags_audio_preferences_callbacks.obj: ./src/ags/X/ags_audio_preferences_callb
 #	$(AM_V_CC)source='./src/ags/X/ags_audio_preferences_callbacks.c' object='ags-ags_audio_preferences_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_audio_preferences_callbacks.obj `if test -f './src/ags/X/ags_audio_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_audio_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_audio_preferences_callbacks.c'; fi`
+
+ags-ags_server_preferences.o: ./src/ags/X/ags_server_preferences.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_server_preferences.o -MD -MP -MF $(DEPDIR)/ags-ags_server_preferences.Tpo -c -o ags-ags_server_preferences.o `test -f './src/ags/X/ags_server_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_server_preferences.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_server_preferences.Tpo $(DEPDIR)/ags-ags_server_preferences.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_server_preferences.c' object='ags-ags_server_preferences.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_server_preferences.o `test -f './src/ags/X/ags_server_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_server_preferences.c
+
+ags-ags_server_preferences.obj: ./src/ags/X/ags_server_preferences.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_server_preferences.obj -MD -MP -MF $(DEPDIR)/ags-ags_server_preferences.Tpo -c -o ags-ags_server_preferences.obj `if test -f './src/ags/X/ags_server_preferences.c'; then $(CYGPATH_W) './src/ags/X/ags_server_preferences.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_server_preferences.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_server_preferences.Tpo $(DEPDIR)/ags-ags_server_preferences.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_server_preferences.c' object='ags-ags_server_preferences.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_server_preferences.obj `if test -f './src/ags/X/ags_server_preferences.c'; then $(CYGPATH_W) './src/ags/X/ags_server_preferences.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_server_preferences.c'; fi`
+
+ags-ags_server_preferences_callbacks.o: ./src/ags/X/ags_server_preferences_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_server_preferences_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_server_preferences_callbacks.Tpo -c -o ags-ags_server_preferences_callbacks.o `test -f './src/ags/X/ags_server_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_server_preferences_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_server_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_server_preferences_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_server_preferences_callbacks.c' object='ags-ags_server_preferences_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_server_preferences_callbacks.o `test -f './src/ags/X/ags_server_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_server_preferences_callbacks.c
+
+ags-ags_server_preferences_callbacks.obj: ./src/ags/X/ags_server_preferences_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_server_preferences_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_server_preferences_callbacks.Tpo -c -o ags-ags_server_preferences_callbacks.obj `if test -f './src/ags/X/ags_server_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_server_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_server_preferences_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_server_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_server_preferences_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_server_preferences_callbacks.c' object='ags-ags_server_preferences_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_server_preferences_callbacks.obj `if test -f './src/ags/X/ags_server_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_server_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_server_preferences_callbacks.c'; fi`
 
 ags-ags_performance_preferences.o: ./src/ags/X/ags_performance_preferences.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_performance_preferences.o -MD -MP -MF $(DEPDIR)/ags-ags_performance_preferences.Tpo -c -o ags-ags_performance_preferences.o `test -f './src/ags/X/ags_performance_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_performance_preferences.c

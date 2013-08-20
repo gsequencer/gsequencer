@@ -36,7 +36,7 @@ void ags_script_set_connect(AgsConnectable *connectable);
 void ags_script_set_disconnect(AgsConnectable *connectable);
 void ags_script_set_finalize(GObject *gobject);
 
-AgsScriptObject* ags_script_set_launch(AgsScriptObject *script_object);
+AgsScriptObject* ags_script_set_launch(AgsScriptObject *script_object, GError **error);
 
 xmlNode* ags_script_set_matrix_find_index(AgsScriptSet *script_set,
 					  AgsScriptArray *matrix,
@@ -200,7 +200,7 @@ ags_script_set_finalize(GObject *gobject)
 }
 
 AgsScriptObject*
-ags_script_set_launch(AgsScriptObject *script_object)
+ags_script_set_launch(AgsScriptObject *script_object, GError **error)
 {
   //TODO:JK: implement me
 
@@ -2167,7 +2167,6 @@ ags_script_set_matrix_sort_by_operands(AgsScriptSet *script_set,
 {
 
 }
-
 
 void
 ags_script_set_matrix_vector_mirror(AgsScriptSet *script_set,

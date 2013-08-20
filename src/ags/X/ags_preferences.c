@@ -122,6 +122,11 @@ ags_preferences_init(AgsPreferences *preferences)
 			   GTK_WIDGET(preferences->performance_preferences),
 			   gtk_label_new("performance\0"));
 
+  preferences->server_preferences = ags_server_preferences_new();
+  gtk_notebook_append_page(notebook,
+			   GTK_WIDGET(preferences->server_preferences),
+			   gtk_label_new("server\0"));
+
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
 			       gtk_button_new_from_stock(GTK_STOCK_OK),
 			       GTK_RESPONSE_OK);
@@ -136,6 +141,7 @@ ags_preferences_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(preferences->audio_preferences);
   ags_connectable_connect(preferences->performance_preferences);
+  ags_connectable_connect(preferences->server_preferences);
 
   g_signal_connect_after(G_OBJECT(preferences), "response\0",
 			 G_CALLBACK(ags_preferences_response_callback), NULL);
