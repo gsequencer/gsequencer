@@ -37,6 +37,13 @@
 #include <libintl.h>
 #include <stdio.h>
 
+#include <xmlrpc-c/base.h>
+#include <xmlrpc-c/abyss.h>
+#include <xmlrpc-c/server.h>
+#include <xmlrpc-c/server_abyss.h>
+
+#include "config.h"
+
 void ags_init();
 void ags_colors_alloc();
 
@@ -264,12 +271,17 @@ main(int argc, char **argv)
   AgsSynth *synth;
   AgsChannel *in, *out;
   signed short *buffer;
+  xmlrpc_env env;
+  const char * error;
 
   LIBXML_TEST_VERSION;
 
   gtk_init(&argc, &argv);
 
   ipatch_init();
+
+  AbyssInit(&error);
+  xmlrpc_env_init(&env);
 
   ags_init();
   ags_colors_alloc();

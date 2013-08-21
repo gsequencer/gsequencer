@@ -77,12 +77,15 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
 bin_PROGRAMS = ags$(EXEEXT) agsclient$(EXEEXT) test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in depcomp AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README install-sh missing
+	INSTALL NEWS README config.guess config.sub install-sh missing \
+	ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -94,7 +97,6 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
-AR = ar
 ARFLAGS = cru
 AM_V_AR = $(am__v_AR_$(V))
 am__v_AR_ = $(am__v_AR_$(AM_DEFAULT_VERBOSITY))
@@ -271,8 +273,13 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_registry.$(OBJEXT) ags-ags_remote_task.$(OBJEXT)
 ags_OBJECTS = $(am_ags_OBJECTS)
 ags_DEPENDENCIES = libags.a
-ags_LINK = $(CCLD) $(ags_CFLAGS) $(CFLAGS) $(ags_LDFLAGS) $(LDFLAGS) \
-	-o $@
+AM_V_lt = $(am__v_lt_$(V))
+am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+ags_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(ags_CFLAGS) $(CFLAGS) \
+	$(ags_LDFLAGS) $(LDFLAGS) -o $@
 am_agsclient_OBJECTS =  \
 	agsclient-ags_client_menu_bar_callbacks.$(OBJEXT) \
 	agsclient-ags_client_window.$(OBJEXT) \
@@ -317,13 +324,15 @@ am_agsclient_OBJECTS =  \
 	agsclient-main.$(OBJEXT)
 agsclient_OBJECTS = $(am_agsclient_OBJECTS)
 agsclient_DEPENDENCIES = libags.a
-agsclient_LINK = $(CCLD) $(agsclient_CFLAGS) $(CFLAGS) \
-	$(agsclient_LDFLAGS) $(LDFLAGS) -o $@
+agsclient_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(agsclient_CFLAGS) \
+	$(CFLAGS) $(agsclient_LDFLAGS) $(LDFLAGS) -o $@
 am_test_OBJECTS = test-ags_test_thread.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_LDADD = $(LDADD)
-test_LINK = $(CCLD) $(test_CFLAGS) $(CFLAGS) $(test_LDFLAGS) \
-	$(LDFLAGS) -o $@
+test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(test_CFLAGS) $(CFLAGS) \
+	$(test_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -340,18 +349,20 @@ DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
-AM_V_lt = $(am__v_lt_$(V))
-am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
-am__v_lt_0 = --silent
-am__v_lt_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_$(V))
 am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
 am__v_CC_0 = @echo "  CC      " $@;
 am__v_CC_1 = 
 CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
@@ -448,6 +459,7 @@ distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/joel/ags-code/missing aclocal-1.13
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
+AR = ar
 AUTOCONF = ${SHELL} /home/joel/ags-code/missing autoconf
 AUTOHEADER = ${SHELL} /home/joel/ags-code/missing autoheader
 AUTOMAKE = ${SHELL} /home/joel/ags-code/missing automake-1.13
@@ -462,11 +474,15 @@ CPPFLAGS =
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
+DLLTOOL = false
+DSYMUTIL = 
+DUMPBIN = 
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
 EGREP = /usr/bin/grep -E
 EXEEXT = 
+FGREP = /usr/bin/grep -F
 GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/libpng15  
 GDKPIXBUF_LIBS = -pthread -lgdk_pixbuf_xlib-2.0 -lgmodule-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  
 GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include  
@@ -479,6 +495,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
+LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBAO_CFLAGS =  
 LIBAO_LIBS = -lao  
@@ -488,12 +505,21 @@ LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I
 LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lsndfile -lglib-2.0  
 LIBOBJS = 
 LIBS = -lrt -lm -lfreetype -lfontconfig -ldl 
+LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBXML2_CFLAGS = -I/usr/include/libxml2  
 LIBXML2_LIBS = -lxml2  
+LIPO = 
+LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/joel/ags-code/missing makeinfo
+MANIFEST_TOOL = :
 MKDIR_P = /usr/bin/mkdir -p
+NM = /usr/bin/nm -B
+NMEDIT = 
+OBJDUMP = objdump
 OBJEXT = o
+OTOOL = 
+OTOOL64 = 
 PACKAGE = ags
 PACKAGE_BUGREPORT = joel@weedlight.ch
 PACKAGE_NAME = ags
@@ -506,17 +532,22 @@ PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
 PKG_CONFIG_PATH = 
 RANLIB = ranlib
+SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 SNDFILE_CFLAGS =  
 SNDFILE_LIBS = -lsndfile  
-STRIP = 
+STRIP = strip
 UUID_CFLAGS = -I/usr/include/uuid  
 UUID_LIBS = -luuid  
 VERSION = 0.3.16-SNAPSHOT
 XMLRPC_CFLAGS = -I/usr/include/libxml2  
 XMLRPC_LIBS = -lxmlrpc  
+XMLRPC_SERVER_ABYSS_CFLAGS = -I/usr/include/libxml2  
+XMLRPC_SERVER_ABYSS_LIBS = -lxmlrpc_server_abyss  
 XMLRPC_SERVER_CFLAGS = -I/usr/include/libxml2  
+XMLRPC_SERVER_CGI_CFLAGS = -I/usr/include/libxml2  
+XMLRPC_SERVER_CGI_LIBS = -lxmlrpc_server_cgi  
 XMLRPC_SERVER_LIBS = -lxmlrpc_server  
 XMLRPC_UTIL_CFLAGS =  
 XMLRPC_UTIL_LIBS = -lxmlrpc_util  
@@ -524,21 +555,31 @@ abs_builddir = /home/joel/ags-code
 abs_srcdir = /home/joel/ags-code
 abs_top_builddir = /home/joel/ags-code
 abs_top_srcdir = /home/joel/ags-code
+ac_ct_AR = ar
 ac_ct_CC = gcc
+ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
+build = x86_64-unknown-linux-gnu
 build_alias = 
+build_cpu = x86_64
+build_os = linux-gnu
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
+host = x86_64-unknown-linux-gnu
 host_alias = 
+host_cpu = x86_64
+host_os = linux-gnu
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
@@ -1060,8 +1101,8 @@ agsclient_SOURCES =  \
 	./src/ags-client/object/ags_marshal.c ./src/ags-client/main.c
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
-ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
-ags_LDFLAGS = -ldl $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_LIBS)
+ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
+ags_LDFLAGS = -ldl $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm
 ags_LDADD = libags.a
 agsclient_CFLAGS = $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_CLIENT_CFLAGS)
 agsclient_LDFLAGS = -ldl $(UUID_LIBS) $(LIBXML2_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_CLIENT_LIBS)
@@ -1073,7 +1114,7 @@ all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
+.SUFFIXES: .c .lo .o .obj
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -1141,6 +1182,7 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
 	while read p p1; do if test -f $$p \
+	 || test -f $$p1 \
 	  ; then echo "$$p"; echo "$$p"; else :; fi; \
 	done | \
 	sed -e 'p;s,.*/,,;n;h' \
@@ -1155,8 +1197,8 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
 	    } \
 	; done
 
@@ -1172,7 +1214,13 @@ uninstall-binPROGRAMS:
 	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
 clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
 
 ags$(EXEEXT): $(ags_OBJECTS) $(ags_DEPENDENCIES) $(EXTRA_ags_DEPENDENCIES) 
 	@rm -f ags$(EXEEXT)
@@ -1471,6 +1519,13 @@ include ./$(DEPDIR)/test-ags_test_thread.Po
 #	$(AM_V_CC)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+.c.lo:
+	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+#	$(AM_V_CC)source='$<' object='$@' libtool=yes \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(LTCOMPILE) -c -o $@ $<
 
 libags_a-ags_connectable.o: ./src/ags-lib/object/ags_connectable.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_connectable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_connectable.Tpo -c -o libags_a-ags_connectable.o `test -f './src/ags-lib/object/ags_connectable.c' || echo '$(srcdir)/'`./src/ags-lib/object/ags_connectable.c
@@ -5182,6 +5237,15 @@ test-ags_test_thread.obj: ./src/ags/test/ags_test_thread.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -c -o test-ags_test_thread.obj `if test -f './src/ags/test/ags_test_thread.c'; then $(CYGPATH_W) './src/ags/test/ags_test_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/test/ags_test_thread.c'; fi`
 
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+	-rm -f libtool config.lt
+
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
 # To change the values of 'make' variables: instead of editing Makefiles,
@@ -5509,15 +5573,15 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool \
+	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-tags
+	distclean-hdr distclean-libtool distclean-tags
 
 dvi: dvi-recursive
 
@@ -5568,7 +5632,8 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-recursive
 
@@ -5584,21 +5649,21 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
 	am--refresh check check-am clean clean-binPROGRAMS \
-	clean-cscope clean-generic clean-noinstLIBRARIES cscope \
-	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	clean-cscope clean-generic clean-libtool clean-noinstLIBRARIES \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
 	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
 	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
+	distclean-hdr distclean-libtool distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am info \
+	info-am install install-am install-binPROGRAMS install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

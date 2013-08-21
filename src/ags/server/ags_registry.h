@@ -31,7 +31,8 @@ struct _AgsRegistry
   guint id_length;
   guint counter;
 
-  GList *registry;
+  GList *entry;
+  //  xmlrpc_registry *registry;
 };
 
 struct _AgsRegistryClass

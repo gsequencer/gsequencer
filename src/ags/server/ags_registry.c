@@ -101,7 +101,7 @@ ags_registry_init(AgsRegistry *registry)
   registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
   registry->counter = 0;
   
-  registry->registry = NULL;
+  registry->entry = NULL;
 }
 
 void
@@ -144,8 +144,8 @@ ags_registry_add(AgsRegistry *registry,
 {
   pthread_mutex_lock(&(registry->mutex));
 
-  registry->registry = g_list_prepend(registry->registry,
-				      registry_entry);
+  registry->entry = g_list_prepend(registry->entry,
+				   registry_entry);
 
   pthread_mutex_unlock(&(registry->mutex));
 }
@@ -161,7 +161,7 @@ ags_registry_entry_find(AgsRegistry *registry,
 
   pthread_mutex_lock(&(registry->mutex));
 
-  current = registry->registry;
+  current = registry->entry;
   
   while(current != NULL){
     entry = (AgsRegistryEntry *) current->data;
@@ -199,7 +199,7 @@ ags_registry_entry_bulk(xmlrpc_env *env,
 
   pthread_mutex_lock(&(registry->mutex));
 
-  current = registry->registry;
+  current = registry->entry;
 
   while(current != NULL){
     entry = (AgsRegistryEntry *) current->data;

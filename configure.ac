@@ -9,6 +9,9 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
+AC_PROG_LIBTOOL
+
+AGS_WITH_XMLRPC_C
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-ldl':
@@ -73,6 +76,14 @@ AC_SUBST(XMLRPC_UTIL_LIBS)
 PKG_CHECK_MODULES([XMLRPC_SERVER], [xmlrpc_server >= 1.32.5])
 AC_SUBST(XMLRPC_SERVER_CFLAGS)
 AC_SUBST(XMLRPC_SERVER_LIBS)
+
+PKG_CHECK_MODULES([XMLRPC_SERVER_CGI], [xmlrpc_server_cgi >= 1.32.5])
+AC_SUBST(XMLRPC_SERVER_CGI_CFLAGS)
+AC_SUBST(XMLRPC_SERVER_CGI_LIBS)
+
+PKG_CHECK_MODULES([XMLRPC_SERVER_ABYSS], [xmlrpc_server_abyss >= 1.32.5])
+AC_SUBST(XMLRPC_SERVER_ABYSS_CFLAGS)
+AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS)
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/ioctl.h unistd.h])

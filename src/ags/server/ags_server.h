@@ -4,8 +4,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <xmlrpc.h>
-#include <xmlrpc_server.h>
+#include <xmlrpc-c/base.h>
+#include <xmlrpc-c/abyss.h>
+#include <xmlrpc-c/server.h>
+#include <xmlrpc-c/server_abyss.h>
+
+#include "config.h"
 
 #include <ags/server/ags_registry.h>
 #include <ags/server/ags_remote_task.h>
@@ -30,6 +34,9 @@ struct _AgsServer
 
   guint flags;
 
+  TServer abyss_server;
+  xmlrpc_uint16_t port;
+
   void *server_info;
   
   GObject *devout;
@@ -41,9 +48,13 @@ struct _AgsServer
 struct _AgsServerClass
 {
   GObjectClass object;
+  
+  void (*start)(AgsServer *server);
 };
 
 GType ags_server_get_type();
+
+void ags_server_start(AgsServer *server);
 
 AgsServer* ags_server_lookup(void *server_info);
 

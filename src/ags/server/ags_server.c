@@ -27,7 +27,15 @@ void ags_server_connect(AgsConnectable *connectable);
 void ags_server_disconnect(AgsConnectable *connectable);
 void ags_server_finalize(GObject *gobject);
 
+void ags_server_real_start(AgsServer *server);
+
+enum{
+  START,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_server_parent_class = NULL;
+static guint server_signals[LAST_SIGNAL];
 
 static GList *ags_server_list = NULL;
 
@@ -79,6 +87,20 @@ ags_server_class_init(AgsServerClass *server)
   gobject = (GObjectClass *) server;
 
   gobject->finalize = ags_server_finalize;
+
+  /* AgsServer */
+  server->start = ags_server_real_start;
+
+  server_signals[START] =
+    g_signal_new("start\0",
+		 G_TYPE_FROM_CLASS(server),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsServerClass, start),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
 }
 
 void
@@ -121,6 +143,22 @@ ags_server_finalize(GObject *gobject)
   server = AGS_SERVER(gobject);
 
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
+}
+
+void
+ags_server_real_start(AgsServer *server)
+{
+}
+
+void
+ags_server_start(AgsServer *server)
+{
+  g_return_if_fail(AGS_IS_SERVER(server));
+
+  g_object_ref((GObject *) server);
+  g_signal_emit(G_OBJECT(server),
+		server_signals[START], 0);
+  g_object_unref((GObject *) server);
 }
 
 AgsServer*
