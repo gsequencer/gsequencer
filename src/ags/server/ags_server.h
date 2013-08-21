@@ -4,6 +4,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <netinet/in.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <xmlrpc-c/util.h>
+
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/abyss.h>
 #include <xmlrpc-c/server.h>
@@ -26,6 +33,7 @@ typedef struct _AgsServerClass AgsServerClass;
 
 typedef enum{
   AGS_SERVER_STARTED        = 1,
+  AGS_SERVER_RUNNING        = 1 << 1,
 }AgsServerFlags;
 
 struct _AgsServer
@@ -35,11 +43,13 @@ struct _AgsServer
   guint flags;
 
   TServer abyss_server;
-  xmlrpc_uint16_t port;
+  TSocket *socket;
+  int socket_fd;
+  struct sockaddr_in address;
 
   void *server_info;
   
-  GObject *devout;
+  GObject *main;
 
   AgsRegistry *registry;
   AgsRemoteTask *remote_task;
@@ -66,6 +76,6 @@ xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env,
 					     xmlrpc_value *param_array,
 					     void *server_info);
 
-AgsServer* ags_server_new(GObject *devout);
+AgsServer* ags_server_new(GObject *main);
 
 #endif /*__AGS_SERVER_H__*/

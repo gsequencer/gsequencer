@@ -28,11 +28,14 @@ struct _AgsRegistry
 
   pthread_mutex_t mutex;
 
+  xmlrpc_registry *registry;
+
+  GObject *server;
+
   guint id_length;
   guint counter;
 
   GList *entry;
-  //  xmlrpc_registry *registry;
 };
 
 struct _AgsRegistryClass

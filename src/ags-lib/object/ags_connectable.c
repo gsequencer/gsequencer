@@ -58,6 +58,17 @@ ags_connectable_add_to_registry(AgsConnectable *connectable)
 }
 
 void
+ags_connectable_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+  g_return_if_fail(connectable_interface->remove_from_registry);
+  connectable_interface->remove_from_registry(connectable);
+}
+
+void
 ags_connectable_connect(AgsConnectable *connectable)
 {
   AgsConnectableInterface *connectable_interface;

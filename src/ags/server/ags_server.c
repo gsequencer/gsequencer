@@ -20,9 +20,13 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 void ags_server_class_init(AgsServerClass *server);
 void ags_server_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_init(AgsServer *server);
+void ags_server_add_to_registry(AgsConnectable *connectable);
+void ags_server_remove_from_registry(AgsConnectable *connectable);
 void ags_server_connect(AgsConnectable *connectable);
 void ags_server_disconnect(AgsConnectable *connectable);
 void ags_server_finalize(GObject *gobject);
@@ -106,6 +110,8 @@ ags_server_class_init(AgsServerClass *server)
 void
 ags_server_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->add_to_registry = ags_server_add_to_registry;
+  connectable->remove_from_registry = ags_server_remove_from_registry;
   connectable->connect = ags_server_connect;
   connectable->disconnect = ags_server_disconnect;
 }
@@ -115,12 +121,53 @@ ags_server_init(AgsServer *server)
 {
   server->flags = 0;
 
+  memset(&(server->address), 0, sizeof(struct sockaddr_in));
+  server->address.sin_port = 8080;
+  server->address.sin_family = AF_INET;
+  server->address.sin_addr.s_addr = inet_aton("127.0.0.1\0");
+
   server->server_info = NULL;
 
-  server->devout = NULL;
+  server->main = NULL;
 
   server->registry = ags_registry_new();
   server->remote_task = ags_remote_task_new();
+}
+
+void
+ags_server_add_to_registry(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  AgsRegistry *registry;
+  struct xmlrpc_method_info3 *method_info;
+
+  server = AGS_SERVER(connectable);
+  
+  registry = AGS_REGISTRY(server->registry);
+
+  /* create object */
+  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
+  method_info->methodName = "ags_server_create_object\0";
+  method_info->methodFunction = &ags_server_create_object;
+  method_info->serverInfo = NULL;
+  xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
+			      registry->registry,
+			      method_info);
+
+  /* set property */
+  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
+  method_info->methodName = "ags_server_object_set_property\0";
+  method_info->methodFunction = &ags_server_object_set_property;
+  method_info->serverInfo = NULL;
+  xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
+			      registry->registry,
+			      method_info);
+}
+
+void
+ags_server_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 void
@@ -148,6 +195,40 @@ ags_server_finalize(GObject *gobject)
 void
 ags_server_real_start(AgsServer *server)
 {
+  AgsMain *main;
+  AgsRegistry *registry;
+  const char *error;
+
+  main = AGS_MAIN(server->main);
+
+  registry = AGS_REGISTRY(server->registry);
+  registry->registry = xmlrpc_registry_new(&(main->env));
+
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(main->main_loop));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(server));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(main->devout));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(main->window));
+
+  //  xmlrpc_registry_set_shutdown(registry,
+  //			       &requestShutdown, &terminationRequested);
+  server->socket_fd = socket(AF_INET, SOCK_RDM, PF_INET);
+  bind(server->socket_fd, &(server->address), sizeof(struct sockaddr_in));
+
+  SocketUnixCreateFd(server->socket_fd, &(server->socket));
+
+  ServerCreateSocket2(&(server->abyss_server), server->socket, &error);
+  xmlrpc_server_abyss_set_handlers2(&(server->abyss_server), "/RPC2", registry->registry);
+  ServerInit(&(server->abyss_server));
+  //  setupSignalHandlers();
+
+  while((AGS_SERVER_RUNNING & (server->flags)) != 0){
+    printf("Waiting for next RPC...\n");
+    ServerRunOnce(&(server->abyss_server));
+    /* This waits for the next connection, accepts it, reads the
+       HTTP POST request, executes the indicated RPC, and closes
+       the connection.
+    */
+  } 
 }
 
 void
@@ -322,14 +403,14 @@ ags_server_object_set_property(xmlrpc_env *env,
 }
 
 AgsServer*
-ags_server_new(GObject *devout)
+ags_server_new(GObject *main)
 {
   AgsServer *server;
 
   server = (AgsServer *) g_object_new(AGS_TYPE_SERVER,
 				      NULL);
 
-  server->devout = devout;
+  server->main = main;
 
   return(server);
 }

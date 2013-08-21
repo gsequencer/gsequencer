@@ -20,14 +20,14 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/lib/ags_log.h>
+#include <ags/main.h>
+
+#include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recycling.h>
-
-#include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
@@ -37,15 +37,18 @@
 #include <libintl.h>
 #include <stdio.h>
 
-#include <xmlrpc-c/base.h>
-#include <xmlrpc-c/abyss.h>
-#include <xmlrpc-c/server.h>
-#include <xmlrpc-c/server_abyss.h>
-
 #include "config.h"
 
-void ags_init();
+void ags_main_class_init(AgsMainClass *main);
+void ags_main_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_main_init(AgsMain *main);
+void ags_main_connect(AgsConnectable *connectable);
+void ags_main_disconnect(AgsConnectable *connectable);
+void ags_main_finalize(GObject *gobject);
+
 void ags_colors_alloc();
+
+static gpointer ags_main_parent_class = NULL;
 
 extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
@@ -54,13 +57,112 @@ extern GtkStyle *notebook_style;
 extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
 
-void
-ags_init()
+GType
+ags_main_get_type()
 {
-  ags_default_log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-					    "file\0", stdout,
-					    NULL);
-  //  ags_log_start_queue(ags_default_log);
+  static GType ags_type_main = 0;
+
+  if(!ags_type_main){
+    static const GTypeInfo ags_main_info = {
+      sizeof (AgsMainClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_main_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsMain),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_main_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_main_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_main = g_type_register_static(G_TYPE_OBJECT,
+					   "AgsMain\0",
+					   &ags_main_info,
+					   0);
+
+    g_type_add_interface_static(ags_type_main,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+  }
+
+  return (ags_type_main);
+}
+
+void
+ags_main_class_init(AgsMainClass *main)
+{
+  GObjectClass *gobject;
+
+  ags_main_parent_class = g_type_class_peek_parent(main);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) main;
+
+  gobject->finalize = ags_main_finalize;
+}
+
+void
+ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_main_connect;
+  connectable->disconnect = ags_main_disconnect;
+}
+
+void
+ags_main_init(AgsMain *main)
+{
+  AgsWindow *window;
+  AgsMatrix *matrix;
+  AgsSynth *synth;
+  AgsChannel *in, *out;
+  signed short *buffer;
+
+  main->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
+				      "file\0", stdout,
+				      NULL);
+  ags_colors_alloc();
+
+  mlockall(MCL_CURRENT | MCL_FUTURE);
+
+  // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
+
+  window = ags_window_new();
+  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+  gtk_paned_set_position((GtkPaned *) window->paned, 300);
+  ags_connectable_connect(window);
+  gtk_widget_show_all((GtkWidget *) window);
+
+  main->server = ags_server_new(main);
+  main->devout = window->devout;
+  main->main_loop = window->devout->audio_loop;
+}
+
+void
+ags_main_connect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_main_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_main_finalize(GObject *gobject)
+{
+  AgsMain *main;
+
+  main = AGS_MAIN(gobject);
+
+  G_OBJECT_CLASS(ags_main_parent_class)->finalize(gobject);
 }
 
 void
@@ -263,16 +365,22 @@ ags_colors_alloc()
   }
 }
 
+AgsMain*
+ags_main_new()
+{
+  AgsMain *main;
+
+  main = (AgsMain *) g_object_new(AGS_TYPE_MAIN,
+				  NULL);
+
+  return(main);
+}
+
 int
 main(int argc, char **argv)
 {
-  AgsWindow *window;
-  AgsMatrix *matrix;
-  AgsSynth *synth;
-  AgsChannel *in, *out;
-  signed short *buffer;
-  xmlrpc_env env;
-  const char * error;
+  AgsMain *main;
+  const char *error;
 
   LIBXML_TEST_VERSION;
 
@@ -281,20 +389,9 @@ main(int argc, char **argv)
   ipatch_init();
 
   AbyssInit(&error);
-  xmlrpc_env_init(&env);
+  xmlrpc_env_init(&(main->env));
 
-  ags_init();
-  ags_colors_alloc();
-
-  mlockall(MCL_CURRENT | MCL_FUTURE);
-
-  // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
-
-  window = ags_window_new();
-  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-  gtk_paned_set_position((GtkPaned *) window->paned, 300);
-  ags_connectable_connect(window);
-  gtk_widget_show_all((GtkWidget *) window);
+  main = ags_main_new();
 
   gtk_main();
 

@@ -24,11 +24,15 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 #include <ags/server/ags_server.h>
 
 void ags_registry_class_init(AgsRegistryClass *registry);
 void ags_registry_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_registry_init(AgsRegistry *registry);
+void ags_registry_add_to_registry(AgsConnectable *connectable);
+void ags_registry_remove_from_registry(AgsConnectable *connectable);
 void ags_registry_connect(AgsConnectable *connectable);
 void ags_registry_disconnect(AgsConnectable *connectable);
 void ags_registry_finalize(GObject *gobject);
@@ -88,6 +92,8 @@ ags_registry_class_init(AgsRegistryClass *registry)
 void
 ags_registry_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->add_to_registry = ags_registry_add_to_registry;
+  connectable->remove_from_registry = ags_registry_remove_from_registry;
   connectable->connect = ags_registry_connect;
   connectable->disconnect = ags_registry_disconnect;
 }
@@ -97,11 +103,39 @@ ags_registry_init(AgsRegistry *registry)
 {
   pthread_mutex_init(&(registry->mutex),
 		     NULL);
+
+  registry->registry = NULL;
   
   registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
   registry->counter = 0;
   
   registry->entry = NULL;
+}
+
+void
+ags_registry_add_to_registry(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  AgsRegistry *registry;
+  struct xmlrpc_method_info3 *method_info;
+
+  registry = AGS_REGISTRY(connectable);
+  server = AGS_SERVER(registry->server);
+
+  /* bulk */
+  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
+  method_info->methodName = "ags_registry_entry_bulk\0";
+  method_info->methodFunction = &ags_registry_entry_bulk;
+  method_info->serverInfo = NULL;
+  xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
+			      registry->registry,
+			      method_info);
+}
+
+void
+ags_registry_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 void
