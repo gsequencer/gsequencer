@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_registry.h>
 
@@ -28,6 +30,8 @@
 void ags_remote_task_class_init(AgsRemoteTaskClass *remote_task);
 void ags_remote_task_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remote_task_init(AgsRemoteTask *remote_task);
+void ags_remote_task_add_to_registry(AgsConnectable *connectable);
+void ags_remote_task_remove_from_registry(AgsConnectable *connectable);
 void ags_remote_task_connect(AgsConnectable *connectable);
 void ags_remote_task_disconnect(AgsConnectable *connectable);
 void ags_remote_task_finalize(GObject *gobject);
@@ -89,6 +93,8 @@ ags_remote_task_class_init(AgsRemoteTaskClass *remote_task)
 void
 ags_remote_task_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->add_to_registry = ags_remote_task_add_to_registry;
+  connectable->remove_from_registry = ags_remote_task_remove_from_registry;
   connectable->connect = ags_remote_task_connect;
   connectable->disconnect = ags_remote_task_disconnect;
 }
@@ -96,6 +102,36 @@ ags_remote_task_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_remote_task_init(AgsRemoteTask *remote_task)
 {
+  remote_task->server = NULL;
+}
+
+void
+ags_remote_task_add_to_registry(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  AgsRegistry *registry;
+  AgsRemoteTask *remote_task;
+  struct xmlrpc_method_info3 *method_info;
+
+  remote_task = AGS_REMOTE_TASK(connectable);
+
+  server = AGS_SERVER(remote_task->server);
+  registry = AGS_REGISTRY(server->registry);
+
+  /* bulk */
+  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
+  method_info->methodName = "ags_remote_task_launch\0";
+  method_info->methodFunction = &ags_remote_task_launch;
+  method_info->serverInfo = NULL;
+  xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
+			      registry->registry,
+			      method_info);
+}
+
+void
+ags_remote_task_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 void

@@ -20,6 +20,8 @@ typedef struct _AgsRemoteTaskClass AgsRemoteTaskClass;
 struct _AgsRemoteTask
 {
   GObject object;
+
+  GObject *server;
 };
 
 struct _AgsRemoteTaskClass
