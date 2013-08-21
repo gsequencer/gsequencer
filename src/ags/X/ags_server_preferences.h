@@ -34,6 +34,14 @@ typedef struct _AgsServerPreferencesClass AgsServerPreferencesClass;
 struct _AgsServerPreferences
 {
   GtkVBox vbox;
+
+  GtkCheckButton *start;
+
+  GtkEntry *address;
+  GtkEntry *port;
+
+  GtkEntry *username;
+  GtkEntry *password;
 };
 
 struct _AgsServerPreferencesClass

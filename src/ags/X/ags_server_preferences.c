@@ -101,6 +101,103 @@ ags_server_preferences_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_server_preferences_init(AgsServerPreferences *server_preferences)
 {
+  GtkTable *table;
+  GtkLabel *label;
+
+  table = (GtkTable *) gtk_table_new(2, 5, FALSE);
+  gtk_box_pack_start(GTK_BOX(server_preferences),
+		     GTK_WIDGET(table),
+		     FALSE, FALSE,
+		     2);
+
+  server_preferences->start = (GtkCheckButton *) gtk_check_button_new_with_label("start server\0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(server_preferences->start),
+		   0, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* address */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "address\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  server_preferences->address = (GtkEntry *) gtk_entry_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(server_preferences->address),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* port */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "port\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  server_preferences->port = (GtkEntry *) gtk_entry_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(server_preferences->port),
+		   1, 2,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* username */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "username\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  server_preferences->username = (GtkEntry *) gtk_entry_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(server_preferences->username),
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* password */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "password\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  server_preferences->password = (GtkEntry *) gtk_entry_new();
+  gtk_entry_set_visibility(server_preferences->password, FALSE);
+  gtk_table_attach(table,
+		   GTK_WIDGET(server_preferences->password),
+		   1, 2,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
