@@ -18,9 +18,12 @@
 
 #include <ags/audio/ags_audio.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/lib/ags_list.h>
 
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_marshal.h>
 
@@ -53,6 +56,8 @@ void ags_audio_get_property(GObject *gobject,
 			    guint prop_id,
 			    GValue *value,
 			    GParamSpec *param_spec);
+void ags_audio_add_to_registry(AgsConnectable *connectable);
+void ags_audio_remove_from_registry(AgsConnectable *connectable);
 void ags_audio_connect(AgsConnectable *connectable);
 void ags_audio_disconnect(AgsConnectable *connectable);
 void ags_audio_finalize(GObject *gobject);
@@ -172,6 +177,8 @@ ags_audio_class_init(AgsAudioClass *audio)
 void
 ags_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->add_to_registry = ags_audio_add_to_registry;
+  connectable->remove_from_registry = ags_audio_remove_from_registry;
   connectable->connect = ags_audio_connect;
   connectable->disconnect = ags_audio_disconnect;
 }
@@ -312,6 +319,52 @@ ags_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_audio_add_to_registry(AgsConnectable *connectable)
+{
+  AgsMain *main;
+  AgsServer *server;
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsRegistryEntry *entry;
+  
+  audio = AGS_AUDIO(connectable);
+
+  main = AGS_MAIN(AGS_DEVOUT(audio->devout)->main);
+
+  server = main->server;
+
+  entry = ags_registry_entry_alloc(server->registry);
+  g_value_set_object(&(entry->entry),
+		     (gpointer) audio);
+  ags_registry_add(server->registry,
+		   entry);
+
+  /* add output */
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+
+  /* add input */
+  channel = audio->input;
+
+  while(channel != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+}
+
+void
+ags_audio_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 void
