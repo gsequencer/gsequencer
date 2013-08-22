@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_applicable.h>
+
 #include <ags/audio/ags_devout.h>
 
 #include <ags/X/ags_window.h>
@@ -28,9 +30,13 @@
 
 void ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preferences);
 void ags_audio_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_audio_preferences_init(AgsAudioPreferences *audio_preferences);
 void ags_audio_preferences_connect(AgsConnectable *connectable);
 void ags_audio_preferences_disconnect(AgsConnectable *connectable);
+void ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update);
+void ags_audio_preferences_apply(AgsApplicable *applicable);
+void ags_audio_preferences_reset(AgsApplicable *applicable);
 static void ags_audio_preferences_finalize(GObject *gobject);
 void ags_audio_preferences_show(GtkWidget *widget);
 
@@ -62,6 +68,12 @@ ags_audio_preferences_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_audio_preferences_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_audio_preferences = g_type_register_static(GTK_TYPE_VBOX,
 							"AgsAudioPreferences\0", &ags_audio_preferences_info,
@@ -70,6 +82,10 @@ ags_audio_preferences_get_type(void)
     g_type_add_interface_static(ags_type_audio_preferences,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_audio_preferences,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_audio_preferences);
@@ -99,6 +115,14 @@ ags_audio_preferences_connectable_interface_init(AgsConnectableInterface *connec
 {
   connectable->connect = ags_audio_preferences_connect;
   connectable->disconnect = ags_audio_preferences_disconnect;
+}
+
+void
+ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_audio_preferences_set_update;
+  applicable->apply = ags_audio_preferences_apply;
+  applicable->reset = ags_audio_preferences_reset;
 }
 
 void
@@ -229,6 +253,25 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
 static void
 ags_audio_preferences_finalize(GObject *gobject)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_preferences_apply(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_preferences_reset(AgsApplicable *applicable)
+{
+  //TODO:JK: implement me
 }
 
 void

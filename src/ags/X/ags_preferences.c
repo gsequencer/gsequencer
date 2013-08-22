@@ -21,11 +21,17 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_applicable.h>
+
 void ags_preferences_class_init(AgsPreferencesClass *preferences);
 void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_preferences_init(AgsPreferences *preferences);
 void ags_preferences_connect(AgsConnectable *connectable);
 void ags_preferences_disconnect(AgsConnectable *connectable);
+void ags_preferences_set_update(AgsApplicable *applicable, gboolean update);
+void ags_preferences_apply(AgsApplicable *applicable);
+void ags_preferences_reset(AgsApplicable *applicable);
 static void ags_preferences_finalize(GObject *gobject);
 void ags_preferences_show(GtkWidget *widget);
 
@@ -54,6 +60,12 @@ ags_preferences_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_preferences_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_preferences = g_type_register_static(GTK_TYPE_DIALOG,
 						  "AgsPreferences\0", &ags_preferences_info,
@@ -62,6 +74,10 @@ ags_preferences_get_type(void)
     g_type_add_interface_static(ags_type_preferences,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_preferences,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
   }
 
   return(ags_type_preferences);
@@ -89,6 +105,14 @@ ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_preferences_connect;
   connectable->disconnect = ags_preferences_disconnect;
+}
+
+void
+ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_preferences_set_update;
+  applicable->apply = ags_preferences_apply;
+  applicable->reset = ags_preferences_reset;
 }
 
 void
@@ -153,9 +177,46 @@ ags_preferences_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
+void
+ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
+{
+  AgsPreferences *preferences;
+
+  preferences = AGS_PREFERENCES(applicable);
+
+  ags_applicable_set_update(AGS_APPLICABLE(preferences->audio_preferences), update);
+  ags_applicable_set_update(AGS_APPLICABLE(preferences->performance_preferences), update);
+  ags_applicable_set_update(AGS_APPLICABLE(preferences->server_preferences), update);
+}
+
+void
+ags_preferences_apply(AgsApplicable *applicable)
+{
+  AgsPreferences *preferences;
+
+  preferences = AGS_PREFERENCES(applicable);
+
+  ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
+  ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
+  ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
+}
+
+void
+ags_preferences_reset(AgsApplicable *applicable)
+{
+  AgsPreferences *preferences;
+
+  preferences = AGS_PREFERENCES(applicable);
+
+  ags_applicable_reset(AGS_APPLICABLE(preferences->audio_preferences));
+  ags_applicable_reset(AGS_APPLICABLE(preferences->performance_preferences));
+  ags_applicable_reset(AGS_APPLICABLE(preferences->server_preferences));
+}
+
 static void
 ags_preferences_finalize(GObject *gobject)
 {
+  //TODO:JK: implement me
 }
 
 void
