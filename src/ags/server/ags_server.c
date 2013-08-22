@@ -66,11 +66,11 @@ ags_server_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-
+    
     ags_type_server = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsServer\0",
-					   &ags_server_info,
-					   0);
+					     "AgsServer\0",
+					     &ags_server_info,
+					     0);
 
     g_type_add_interface_static(ags_type_server,
 				AGS_TYPE_CONNECTABLE,
@@ -102,9 +102,7 @@ ags_server_class_init(AgsServerClass *server)
 		 G_STRUCT_OFFSET(AgsServerClass, start),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_OBJECT);
-
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -124,7 +122,7 @@ ags_server_init(AgsServer *server)
   memset(&(server->address), 0, sizeof(struct sockaddr_in));
   server->address.sin_port = 8080;
   server->address.sin_family = AF_INET;
-  server->address.sin_addr.s_addr = inet_aton("127.0.0.1\0");
+  inet_aton("127.0.0.1\0", &(server->address.sin_addr.s_addr));
 
   server->server_info = NULL;
 

@@ -117,12 +117,6 @@ ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_main_init(AgsMain *main)
 {
-  AgsWindow *window;
-  AgsMatrix *matrix;
-  AgsSynth *synth;
-  AgsChannel *in, *out;
-  signed short *buffer;
-
   main->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
 				      "file\0", stdout,
 				      NULL);
@@ -131,16 +125,6 @@ ags_main_init(AgsMain *main)
   mlockall(MCL_CURRENT | MCL_FUTURE);
 
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
-
-  window = ags_window_new(main);
-  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-  gtk_paned_set_position((GtkPaned *) window->paned, 300);
-  ags_connectable_connect(window);
-  gtk_widget_show_all((GtkWidget *) window);
-
-  main->server = ags_server_new(main);
-  main->devout = window->devout;
-  main->main_loop = window->devout->audio_loop;
 }
 
 void
@@ -380,18 +364,28 @@ int
 main(int argc, char **argv)
 {
   AgsMain *main;
+  AgsWindow *window;
+
   const char *error;
 
   LIBXML_TEST_VERSION;
 
   gtk_init(&argc, &argv);
-
   ipatch_init();
-
   AbyssInit(&error);
-  xmlrpc_env_init(&(main->env));
 
   main = ags_main_new();
+  xmlrpc_env_init(&(main->env));
+
+  window = ags_window_new(main);
+  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+  gtk_paned_set_position((GtkPaned *) window->paned, 300);
+  ags_connectable_connect(window);
+  gtk_widget_show_all((GtkWidget *) window);
+
+  main->server = ags_server_new(main);
+  main->devout = window->devout;
+  main->main_loop = window->devout->audio_loop;
 
   gtk_main();
 
