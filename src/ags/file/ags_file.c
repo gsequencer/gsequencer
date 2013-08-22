@@ -882,7 +882,7 @@ ags_file_read_window(AgsFile *file)
   if(file->current == NULL)
     return;
 
-  window = ags_window_new();
+  window = ags_window_new(file->main);
   file->window = (GtkWidget *) window;
 
   node = file->current;
@@ -2035,11 +2035,13 @@ ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine)
 }
 
 AgsFile*
-ags_file_new()
+ags_file_new(GObject *main)
 {
   AgsFile *file;
 
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE, NULL);
+
+  file->main = main;
 
   return(file);
 }

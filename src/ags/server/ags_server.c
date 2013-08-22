@@ -162,6 +162,10 @@ ags_server_add_to_registry(AgsConnectable *connectable)
   xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
 			      registry->registry,
 			      method_info);
+
+  /* children */
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->registry));
+  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->remote_task));
 }
 
 void

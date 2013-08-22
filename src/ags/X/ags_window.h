@@ -46,6 +46,7 @@ struct _AgsWindow
 {
   GtkWindow window;
 
+  GObject *main;
   AgsDevout *devout;
 
   char *name;
@@ -83,6 +84,6 @@ struct _AgsMachineCounter
 
 GType ags_window_get_type(void);
 
-AgsWindow* ags_window_new();
+AgsWindow* ags_window_new(GObject *main);
 
 #endif /*__AGS_WINDOW_H__*/

@@ -132,7 +132,7 @@ ags_main_init(AgsMain *main)
 
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 
-  window = ags_window_new();
+  window = ags_window_new(main);
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
   ags_connectable_connect(window);

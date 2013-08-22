@@ -48,6 +48,7 @@ struct _AgsFile
   xmlDocPtr doc;
   xmlNodePtr current;
 
+  GObject *main;
   GtkWidget *window;
 };
 
@@ -61,6 +62,6 @@ GType ags_file_get_type(void);
 void ags_file_write(AgsFile *file);
 void ags_file_read(AgsFile *file);
 
-AgsFile* ags_file_new();
+AgsFile* ags_file_new(GObject *main);
 
 #endif /*__AGS_FILE_H__*/

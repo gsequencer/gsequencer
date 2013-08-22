@@ -103,6 +103,7 @@ ags_window_init(AgsWindow *window)
   GtkVBox *vbox;
   GtkWidget *scrolled_window;
 
+  window->main = NULL;
   window->devout = ags_devout_new();
 
   window->name = g_strdup("unnamed\0");
@@ -210,11 +211,13 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 }
 
 AgsWindow*
-ags_window_new()
+ags_window_new(GObject *main)
 {
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW, NULL);
+
+  window->main = main;
 
   return(window);
 }
