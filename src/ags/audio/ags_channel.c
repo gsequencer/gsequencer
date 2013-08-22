@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/main.h>
+
 #include <ags/lib/ags_list.h>
 
 #include <ags-lib/object/ags_connectable.h>
@@ -53,6 +55,8 @@ void ags_channel_get_property(GObject *gobject,
 			      guint prop_id,
 			      GValue *value,
 			      GParamSpec *param_spec);
+void ags_channel_add_to_registry(AgsConnectable *connectable);
+void ags_channel_remove_from_registry(AgsConnectable *connectable);
 void ags_channel_connect(AgsConnectable *connectable);
 void ags_channel_disconnect(AgsConnectable *connectable);
 static void ags_channel_finalize(GObject *gobject);
@@ -153,6 +157,8 @@ ags_channel_class_init(AgsChannelClass *channel)
 void
 ags_channel_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->add_to_registry = ags_channel_add_to_registry;
+  connectable->remove_from_registry = ags_channel_remove_from_registry;
   connectable->connect = ags_channel_connect;
   connectable->disconnect = ags_channel_disconnect;
 }
@@ -259,6 +265,52 @@ ags_channel_get_property(GObject *gobject,
 }
 
 void
+ags_channel_add_to_registry(AgsConnectable *connectable)
+{
+  AgsMain *main;
+  AgsServer *server;
+  AgsChannel *channel;
+  AgsRegistryEntry *entry;
+  GList *list;
+  
+  channel = AGS_CHANNEL(connectable);
+
+  main = AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->main);
+
+  server = main->server;
+
+  entry = ags_registry_entry_alloc(server->registry);
+  g_value_set_object(&(entry->entry),
+		     (gpointer) channel);
+  ags_registry_add(server->registry,
+		   entry);
+
+  /* add play */
+  list = channel->play;
+
+  while(list != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+  
+  /* add recall */
+  list = channel->recall;
+
+  while(list != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_channel_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_channel_connect(AgsConnectable *connectable)
 {
   AgsChannel *channel;
@@ -266,6 +318,8 @@ ags_channel_connect(AgsConnectable *connectable)
   GList *list;
 
   channel = AGS_CHANNEL(connectable);
+
+  ags_connectable_add_to_registry(connectable);
 
   /* connect recall ids */
   list = channel->recall_id;
@@ -284,16 +338,6 @@ ags_channel_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
-
-  /*
-  list = channel->recall_container;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-  */
 
   /* connect recalls */
   list = channel->recall;
