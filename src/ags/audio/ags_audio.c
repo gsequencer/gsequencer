@@ -329,6 +329,7 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
   AgsAudio *audio;
   AgsChannel *channel;
   AgsRegistryEntry *entry;
+  GList *list;
   
   audio = AGS_AUDIO(connectable);
 
@@ -341,6 +342,24 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
 		     (gpointer) audio);
   ags_registry_add(server->registry,
 		   entry);
+
+  /* add play */
+  list = audio->play;
+
+  while(list != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+  
+  /* add recall */
+  list = audio->recall;
+
+  while(list != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 
   /* add output */
   channel = audio->output;

@@ -18,10 +18,13 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
@@ -51,6 +54,8 @@ void ags_recall_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
+void ags_recall_add_to_registry(AgsConnectable *connectable);
+void ags_recall_remove_from_registry(AgsConnectable *connectable);
 void ags_recall_connect(AgsConnectable *connectable);
 void ags_recall_disconnect(AgsConnectable *connectable);
 gboolean ags_recall_pack(AgsPackable *packable, GObject *container);
@@ -401,6 +406,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 void
 ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->add_to_registry = ags_recall_add_to_registry;
+  connectable->remove_from_registry = ags_recall_remove_from_registry;
   connectable->connect = ags_recall_connect;
   connectable->disconnect = ags_recall_disconnect;
 }
@@ -577,6 +584,34 @@ ags_recall_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_recall_add_to_registry(AgsConnectable *connectable)
+{
+  AgsMain *main;
+  AgsServer *server;
+  AgsRecall *recall;
+  AgsRegistryEntry *entry;
+  GList *list;
+  
+  recall = AGS_RECALL(connectable);
+
+  main = AGS_MAIN(AGS_DEVOUT(recall->devout)->main);
+
+  server = main->server;
+
+  entry = ags_registry_entry_alloc(server->registry);
+  g_value_set_object(&(entry->entry),
+		     (gpointer) recall);
+  ags_registry_add(server->registry,
+		   entry);
+}
+
+void
+ags_recall_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 void
