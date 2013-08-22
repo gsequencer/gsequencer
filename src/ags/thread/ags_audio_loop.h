@@ -54,6 +54,8 @@ struct _AgsAudioLoop
 
   guint tic;
   guint last_sync;
+
+  GObject *main;
   
   AgsThread *task_thread;
 

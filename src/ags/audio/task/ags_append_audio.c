@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_audio_init(AgsAppendAudio *append_audio);
@@ -131,6 +133,7 @@ ags_append_audio_finalize(GObject *gobject)
 void
 ags_append_audio_launch(AgsTask *task)
 {
+  AgsServer *server;
   AgsAppendAudio *append_audio;
   AgsAudioLoop *audio_loop;
 
@@ -143,6 +146,13 @@ ags_append_audio_launch(AgsTask *task)
   audio_loop->play_audio = g_list_append(audio_loop->play_audio,
 					 append_audio->devout_play);
   audio_loop->play_audio_ref += 1;
+
+  /* add to server registry */
+  server = AGS_MAIN(audio_loop->main);
+
+  if((AGS_SERVER_RUNNING & (server->flags)) != 0){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->devout_play->source));
+  }
 }
 
 AgsAppendAudio*

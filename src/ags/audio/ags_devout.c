@@ -301,6 +301,8 @@ ags_devout_init(AgsDevout *devout)
   devout->attack = ags_attack_alloc(0, devout->buffer_size,
 				    0, devout->buffer_size);
 
+  devout->main = NULL;
+
   /* all AgsAudio */
   devout->audio = NULL;
 
@@ -912,11 +914,13 @@ ags_devout_start_default_threads(AgsDevout *devout)
 }
 
 AgsDevout*
-ags_devout_new()
+ags_devout_new(GObject *main)
 {
   AgsDevout *devout;
 
   devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
+  
+  devout->main = main;
 
   return(devout);
 }

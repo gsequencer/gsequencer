@@ -215,7 +215,6 @@ ags_menu_bar_add_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  AgsServer *server;
   AgsWindow *window;
   AgsPanel *panel;
   AgsAddAudio *add_audio;
@@ -235,12 +234,6 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(panel));
 
-  server = AGS_MAIN(window->main)->server;
-
-  if((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(AGS_MACHINE(panel)->audio));
-  }
-
   gtk_widget_show_all(GTK_WIDGET(panel));
 
   panel->machine.audio->input_pads =
@@ -251,7 +244,6 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  AgsServer *server;
   AgsWindow *window;
   AgsMixer *mixer;
   AgsAddAudio *add_audio;
@@ -271,12 +263,6 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(mixer));
 
-  server = AGS_MAIN(window->main)->server;
-
-  if((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(AGS_MACHINE(mixer)->audio));
-  }
-
   gtk_widget_show_all(GTK_WIDGET(mixer));
 
   mixer->machine.audio->audio_channels = 2;
@@ -289,7 +275,6 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  AgsServer *server;
   AgsWindow *window;
   AgsDrum *drum;
   AgsAddAudio *add_audio;
@@ -310,12 +295,6 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(drum));
 
-  server = AGS_MAIN(window->main)->server;
-
-  if((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(AGS_MACHINE(drum)->audio));
-  }
-
   /* */
   gtk_widget_show_all(GTK_WIDGET(drum));
 
@@ -330,7 +309,6 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  AgsServer *server;
   AgsWindow *window;
   AgsMatrix *matrix;
   AgsAddAudio *add_audio;
@@ -350,12 +328,6 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(matrix));
 
-  server = AGS_MAIN(window->main)->server;
-
-  if((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(AGS_MACHINE(matrix)->audio));
-  }
-
   gtk_widget_show_all((GtkWidget *) matrix);
 
   matrix->machine.audio->audio_channels = 1;
@@ -366,7 +338,6 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  AgsServer *server;
   AgsWindow *window;
   AgsSynth *synth;
   AgsAddAudio *add_audio;
@@ -386,12 +357,6 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
-  server = AGS_MAIN(window->main)->server;
-
-  if((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(AGS_MACHINE(synth)->audio));
-  }
-
   gtk_widget_show_all((GtkWidget *) synth);
 
   synth->machine.audio->audio_channels = 1;
@@ -402,7 +367,6 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  AgsServer *server;
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
   AgsAddAudio *add_audio;
@@ -421,12 +385,6 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     FALSE, FALSE, 0);
 
   ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
-
-  server = AGS_MAIN(window->main)->server;
-
-  if((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(AGS_MACHINE(ffplayer)->audio));
-  }
 
   gtk_widget_show_all((GtkWidget *) ffplayer);
 
