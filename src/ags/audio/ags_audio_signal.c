@@ -1076,6 +1076,80 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 		       AgsAudioSignal *template,
 		       guint length)
 {
+  GList *stream;
+  gdouble *frequency;
+  gdouble *axis;
+  gboolean *is_sinus;
+  gboolean expand;
+
+  auto void ags_audio_signal_scale_detect_frequency(GList *stream, guint buffer_size,
+						    guint resolution, guint samplerate,
+						    gdouble *frequency, gdouble *axis, gboolean *is_sinus);
+  auto void ags_audio_signal_scale_known_frequency(GList *destination, GList *source,
+						   guint dresolution, guint dsamplerate,
+						   guint sresolution, guint ssamplerate,
+						   gdouble *frequency, gdouble *axis, gboolean *is_sinus);
+  auto void ags_audio_signal_scale_noise(GList *destination, GList *source,
+					 guint dresolution, guint dsamplerate,
+					 guint sresolution, guint ssamplerate,
+					 gdouble *frequency, gdouble *axis, gboolean *is_sinus);
+  void ags_audio_signal_scale_detect_frequency(GList *stream, guint buffer_size,
+					       guint resolution, guint samplerate,
+					       gdouble *frequency, gdouble *axis, gboolean *is_sinus){
+    GList *sinus_wavetable, *sawtooth_wavetable;
+    GList *current_stream;
+    guint band_lower, band_upper;
+
+    band_lower = 16;
+    band_upper = 20500;
+
+    //TODO:JK: implement me
+  }
+  void ags_audio_signal_scale_known_frequency(GList *destination, GList *source,
+					      guint dresolution, guint dsamplerate,
+					      guint sresolution, guint ssamplerate,
+					      gdouble *frequency, gdouble *axis, gboolean *is_sinus)
+  {
+    //TODO:JK: implement me
+  }
+  void ags_audio_signal_scale_noise(GList *destination, GList *source,
+				    guint dresolution, guint dsamplerate,
+				    guint sresolution, guint ssamplerate,
+				    gdouble *frequency, gdouble *axis, gboolean *is_sinus)
+  {
+    //TODO:JK: implement me
+  }
+
+  stream = template->stream_beginning;
+
+  frequency = NULL;
+  axis = NULL;
+  is_sinus = NULL;
+
+  if(template->length < length){
+    expand = TRUE;
+  }else{
+    expand = FALSE;
+  }
+
+  /* prepare destination */
+  ags_audio_signal_stream_resize(audio_signal, length);
+
+  /* analyze stream */
+  ags_audio_signal_scale_detect_frequency(stream, template->buffer_size,
+					  AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, template->samplerate,
+					  frequency, axis, is_sinus);
+
+  /* perform transformation */
+  ags_audio_signal_scale_known_frequency(audio_signal->stream_beginning, stream,
+					 AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, audio_signal->samplerate,
+					 AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, template->samplerate,
+					 frequency, axis, is_sinus);
+
+  ags_audio_signal_scale_noise(audio_signal->stream_beginning, stream,
+			       AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, audio_signal->samplerate,
+			       AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, template->samplerate,
+			       frequency, axis, is_sinus);
 }
 
 AgsAudioSignal*

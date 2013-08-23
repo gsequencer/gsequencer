@@ -94,7 +94,7 @@ ags_preferences_class_init(AgsPreferencesClass *preferences)
   /* GtkObjectClass */
   gobject = (GObjectClass *) preferences;
 
-  gobject->finalize = ags_preferences_finalize;
+  //  gobject->finalize = ags_preferences_finalize;
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) preferences;
@@ -119,6 +119,7 @@ void
 ags_preferences_init(AgsPreferences *preferences)
 {
   GtkNotebook *notebook;
+  GtkButton *button;
 
   preferences->flags = 0;
 
@@ -150,6 +151,14 @@ ags_preferences_init(AgsPreferences *preferences)
   gtk_notebook_append_page(notebook,
 			   GTK_WIDGET(preferences->server_preferences),
 			   gtk_label_new("server\0"));
+
+  gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
+			       gtk_button_new_from_stock(GTK_STOCK_APPLY),
+			       GTK_RESPONSE_APPLY);
+
+  gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
+			       gtk_button_new_from_stock(GTK_STOCK_CANCEL),
+			       GTK_RESPONSE_CANCEL);
 
   gtk_dialog_add_action_widget(GTK_DIALOG(preferences),
 			       gtk_button_new_from_stock(GTK_STOCK_OK),

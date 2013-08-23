@@ -18,16 +18,37 @@
 
 #include <ags/X/ags_preferences_callbacks.h>
 
+#include <ags/object/ags_applicable.h>
+
 #include <ags/X/ags_window.h>
 
 void
 ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
-  if(response_id == GTK_RESPONSE_OK){
-    //TODO:JK: implement me
-  }
+  gboolean apply;
 
-  AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
-  AGS_WINDOW(AGS_PREFERENCES(dialog)->window)->preferences = NULL;
-  gtk_widget_destroy(GTK_WIDGET(dialog));
+  apply = FALSE;
+
+  switch(response_id){
+  case GTK_RESPONSE_APPLY:
+    {
+      apply = TRUE;
+    }
+  case GTK_RESPONSE_OK:
+    {
+      ags_applicable_apply(AGS_APPLICABLE(dialog));
+
+      if(apply){
+	ags_applicable_reset(AGS_APPLICABLE(dialog));
+
+	break;
+      }
+    }
+  case GTK_RESPONSE_CANCEL:
+    {
+      AGS_PREFERENCES(dialog)->flags |= AGS_PREFERENCES_SHUTDOWN;
+      AGS_WINDOW(AGS_PREFERENCES(dialog)->window)->preferences = NULL;
+      gtk_widget_destroy(GTK_WIDGET(dialog));
+    }
+  }
 }

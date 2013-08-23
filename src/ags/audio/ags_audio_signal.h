@@ -43,6 +43,14 @@ typedef enum{
   AGS_ATTACK_SWAP         = 1 << 1,
 }AgsAttackFlags;
 
+typedef enum{
+  AGS_AUDIO_SIGNAL_RESOLUTION_8_BIT    = 8,
+  AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT   = 16,
+  AGS_AUDIO_SIGNAL_RESOLUTION_24_BIT   = 24,
+  AGS_AUDIO_SIGNAL_RESOLUTION_32_BIT   = 32,
+  AGS_AUDIO_SIGNAL_RESOLUTION_64_BIT   = 64,
+}AgsAudioSignalResolution;
+
 struct _AgsAudioSignal
 {
   GObject object;
