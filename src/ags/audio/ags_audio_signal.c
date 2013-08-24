@@ -1076,47 +1076,248 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 		       AgsAudioSignal *template,
 		       guint length)
 {
-  auto void ags_audio_signal_scale_expand_to_samplerate();
-  auto void ags_audio_signal_scale_reduce_to_samplerate(GList *stream, guint buffer_size,
-							guint resolution, guint samplerate,
-							gpointer buffer, guint buffer_length);
-  void ags_audio_signal_scale_reduce_to_frequency(GList *stream, guint buffer_size,
-						  guint resolution, guint samplerate,
-						  double frequency,
-						  gpointer buffer, guint buffer_length){
-    //TODO:JK: implement me
+  GList *stream, *stream_template;
+  gpointer data;
+  double scale_factor, morph_factor;
+  guint offset, step;
+  guint i, j, j_stop;
+  gboolean expand;
+
+  auto void ags_audio_signal_scale_copy_8_bit(GList *source, GList *destination,
+					      guint soffset, guint doffset,
+					      guint dresolution);
+  auto void ags_audio_signal_scale_copy_16_bit(GList *source, GList *destination,
+					       guint soffset, guint doffset,
+					       guint dresolution);
+  auto void ags_audio_signal_scale_copy_24_bit(GList *source, GList *destination,
+					       guint soffset, guint doffset,
+					       guint dresolution);
+  auto void ags_audio_signal_scale_copy_32_bit(GList *source, GList *destination,
+					       guint soffset, guint doffset,
+					       guint dresolution);
+  auto void ags_audio_signal_scale_copy_64_bit(GList *source, GList *destination,
+					       guint soffset, guint doffset,
+					       guint dresolution);
+
+  void ags_audio_signal_scale_copy_8_bit(GList *source, GList *destination,
+					 guint soffset, guint doffset,
+					 guint dresolution){
+    gint8 *sbuffer;
+
+    switch(dresolution){
+    case AGS_DEVOUT_RESOLUTION_8_BIT:
+      {
+	gint8 *dbuffer;
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_16_BIT:
+      {
+	gint16 *dbuffer;
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_24_BIT:
+      {
+	gint24 *dbuffer;
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_32_BIT:
+      {
+	gint32 *dbuffer;
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_64_BIT:
+      {
+	gint64 *dbuffer;
+      }
+      break;
+    }
+  }
+  void ags_audio_signal_scale_copy_16_bit(GList *source, GList *destination,
+					  guint soffset, guint doffset,
+					  guint dresolution){
+    switch(dresolution){
+    case AGS_DEVOUT_RESOLUTION_8_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_16_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_24_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_32_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_64_BIT:
+      {
+      }
+      break;
+    }
+  }
+  void ags_audio_signal_scale_copy_24_bit(GList *source, GList *destination,
+					  guint soffset, guint doffset,
+					  guint dresolution){
+    switch(dresolution){
+    case AGS_DEVOUT_RESOLUTION_8_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_16_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_24_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_32_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_64_BIT:
+      {
+      }
+      break;
+    }
+  }
+  void ags_audio_signal_scale_copy_32_bit(GList *source, GList *destination,
+					  guint soffset, guint doffset,
+					  guint dresolution){
+    switch(dresolution){
+    case AGS_DEVOUT_RESOLUTION_8_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_16_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_24_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_32_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_64_BIT:
+      {
+      }
+      break;
+    }
+  }
+  void ags_audio_signal_scale_copy_64_bit(GList *source, GList *destination,
+					  guint soffset, guint doffset,
+					  guint dresolution){
+    switch(dresolution){
+    case AGS_DEVOUT_RESOLUTION_8_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_16_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_24_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_32_BIT:
+      {
+      }
+      break;
+    case AGS_DEVOUT_RESOLUTION_64_BIT:
+      {
+      }
+      break;
+    }
   }
 
   stream = template->stream_beginning;
 
-  frequency = NULL;
-  axis = NULL;
-  is_sinus = NULL;
-
-  if(template->length < length){
+  if(template->samplerate < audio_signal->samplerate){
     expand = TRUE;
   }else{
     expand = FALSE;
   }
 
+  scale_factor = 1.0 / template->length * length;
+  morph_factor = 1.0 / template->resolution * audio_signal->resolution;
+
   /* prepare destination */
   ags_audio_signal_stream_resize(audio_signal, length);
 
-  /* analyze stream */
-  ags_audio_signal_scale_detect_frequency(stream, template->buffer_size,
-					  AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, template->samplerate,
-					  frequency, axis, is_sinus);
+  /* create audio data */
+  j_stop = smallest_common_fact(audio_signal->resolution, template->resolution);
 
-  /* perform transformation */
-  ags_audio_signal_scale_known_frequency(audio_signal->stream_beginning, stream,
-					 AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, audio_signal->samplerate,
-					 AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, template->samplerate,
-					 frequency, axis, is_sinus);
+  stream_template = NULL;
 
-  ags_audio_signal_scale_noise(audio_signal->stream_beginning, stream,
-			       AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, audio_signal->samplerate,
-			       AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT, template->samplerate,
-			       frequency, axis, is_sinus);
+  offset = 0;
+  step = 0;
+
+  for(i = 0; i < template->length; i++){
+    for(; j < j_stop && offset < audio_signal->buffer_size; j++, offset++){
+
+      if(offset == 0){
+	if(expand){
+	  data = (gpointer) malloc(sizeof(audio_signal->buffer_size * morph_factor));
+	}else{
+	  data = (gpointer) malloc(sizeof(audio_signal->buffer_size / morph_factor));
+	}
+
+	stream_template = g_list_prepend(stream_template,
+					 data);
+      }
+
+      switch(template->resolution){
+      case AGS_AUDIO_SIGNAL_RESOLUTION_8_BIT:
+	{
+	  ags_audio_signal_scale_copy_8_bit();
+	}
+	break;
+      case AGS_AUDIO_SIGNAL_RESOLUTION_16_BIT:
+	{
+	  ags_audio_signal_scale_copy_16_bit();
+	}
+	break;
+      case AGS_AUDIO_SIGNAL_RESOLUTION_24_BIT:
+	{
+	  ags_audio_signal_scale_copy_24_bit();
+	}
+	break;
+      case AGS_AUDIO_SIGNAL_RESOLUTION_32_BIT:
+	{
+	  ags_audio_signal_scale_copy_32_bit();
+	}
+	break;
+      case AGS_AUDIO_SIGNAL_RESOLUTION_64_BIT:
+	{
+	  ags_audio_signal_scale_copy_64_bit();
+	}
+	break;
+      }
+      
+    }
+
+    step += (1 / factor);
+
+    if(j == j_stop){
+      step = 0;
+      j = 0;
+    }
+
+    if(offset == audio_signal->buffer_size){
+      offset = 0;
+      stream = stream->next;
+    }
+  }
+
+  /* scale */
+  ///TODO:JK: implement me
 }
 
 AgsAudioSignal*

@@ -85,6 +85,14 @@ typedef enum
   AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 <<  6,
 }AgsDevoutPlayFlags;
 
+typedef enum{
+  AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
+  AGS_DEVOUT_RESOLUTION_16_BIT   = 16,
+  AGS_DEVOUT_RESOLUTION_24_BIT   = 24,
+  AGS_DEVOUT_RESOLUTION_32_BIT   = 32,
+  AGS_DEVOUT_RESOLUTION_64_BIT   = 64,
+}AgsDevoutResolutionMode;
+
 #define AGS_DEVOUT_ERROR (ags_devout_error_quark())
 
 typedef enum{
