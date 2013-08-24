@@ -1076,47 +1076,14 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 		       AgsAudioSignal *template,
 		       guint length)
 {
-  GList *stream;
-  gdouble *frequency;
-  gdouble *axis;
-  gboolean *is_sinus;
-  gboolean expand;
-
-  auto void ags_audio_signal_scale_detect_frequency(GList *stream, guint buffer_size,
-						    guint resolution, guint samplerate,
-						    gdouble *frequency, gdouble *axis, gboolean *is_sinus);
-  auto void ags_audio_signal_scale_known_frequency(GList *destination, GList *source,
-						   guint dresolution, guint dsamplerate,
-						   guint sresolution, guint ssamplerate,
-						   gdouble *frequency, gdouble *axis, gboolean *is_sinus);
-  auto void ags_audio_signal_scale_noise(GList *destination, GList *source,
-					 guint dresolution, guint dsamplerate,
-					 guint sresolution, guint ssamplerate,
-					 gdouble *frequency, gdouble *axis, gboolean *is_sinus);
-  void ags_audio_signal_scale_detect_frequency(GList *stream, guint buffer_size,
-					       guint resolution, guint samplerate,
-					       gdouble *frequency, gdouble *axis, gboolean *is_sinus){
-    GList *sinus_wavetable, *sawtooth_wavetable;
-    GList *current_stream;
-    guint band_lower, band_upper;
-
-    band_lower = 16;
-    band_upper = 20500;
-
-    //TODO:JK: implement me
-  }
-  void ags_audio_signal_scale_known_frequency(GList *destination, GList *source,
-					      guint dresolution, guint dsamplerate,
-					      guint sresolution, guint ssamplerate,
-					      gdouble *frequency, gdouble *axis, gboolean *is_sinus)
-  {
-    //TODO:JK: implement me
-  }
-  void ags_audio_signal_scale_noise(GList *destination, GList *source,
-				    guint dresolution, guint dsamplerate,
-				    guint sresolution, guint ssamplerate,
-				    gdouble *frequency, gdouble *axis, gboolean *is_sinus)
-  {
+  auto void ags_audio_signal_scale_expand_to_samplerate();
+  auto void ags_audio_signal_scale_reduce_to_samplerate(GList *stream, guint buffer_size,
+							guint resolution, guint samplerate,
+							gpointer buffer, guint buffer_length);
+  void ags_audio_signal_scale_reduce_to_frequency(GList *stream, guint buffer_size,
+						  guint resolution, guint samplerate,
+						  double frequency,
+						  gpointer buffer, guint buffer_length){
     //TODO:JK: implement me
   }
 
