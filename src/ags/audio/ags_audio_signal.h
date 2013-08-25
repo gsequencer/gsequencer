@@ -56,6 +56,7 @@ struct _AgsAudioSignal
 
   guint samplerate;
   guint buffer_size;
+  guint resolution;
 
   guint length;
   guint last_frame; // the last frame at stream_end

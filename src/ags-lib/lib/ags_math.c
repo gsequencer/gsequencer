@@ -18,6 +18,8 @@
 
 #include <ags-lib/lib/ags_math.h>
 
+#include <stdlib.h>
+
 gboolean
 is_prim(guint x)
 {

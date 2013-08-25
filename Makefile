@@ -104,7 +104,8 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libags_a_AR = $(AR) $(ARFLAGS)
 libags_a_LIBADD =
-am_libags_a_OBJECTS = libags_a-ags_connectable.$(OBJEXT)
+am_libags_a_OBJECTS = libags_a-ags_connectable.$(OBJEXT) \
+	libags_a-ags_math.$(OBJEXT)
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -606,7 +607,7 @@ top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src
 noinst_LIBRARIES = libags.a
-libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h
+libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h ./src/ags-lib/lib/ags_math.c ./src/ags-lib/lib/ags_math.h
 ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/audio/ags_task.c \
 	./src/ags/audio/ags_recall_dependency.h \
@@ -1504,6 +1505,7 @@ include ./$(DEPDIR)/agsclient-ags_xml_interpreter.Po
 include ./$(DEPDIR)/agsclient-ags_xml_script_factory.Po
 include ./$(DEPDIR)/agsclient-main.Po
 include ./$(DEPDIR)/libags_a-ags_connectable.Po
+include ./$(DEPDIR)/libags_a-ags_math.Po
 include ./$(DEPDIR)/test-ags_test_thread.Po
 
 .c.o:
@@ -1540,6 +1542,20 @@ libags_a-ags_connectable.obj: ./src/ags-lib/object/ags_connectable.c
 #	$(AM_V_CC)source='./src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.obj `if test -f './src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) './src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/object/ags_connectable.c'; fi`
+
+libags_a-ags_math.o: ./src/ags-lib/lib/ags_math.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_math.o -MD -MP -MF $(DEPDIR)/libags_a-ags_math.Tpo -c -o libags_a-ags_math.o `test -f './src/ags-lib/lib/ags_math.c' || echo '$(srcdir)/'`./src/ags-lib/lib/ags_math.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_math.Tpo $(DEPDIR)/libags_a-ags_math.Po
+#	$(AM_V_CC)source='./src/ags-lib/lib/ags_math.c' object='libags_a-ags_math.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_math.o `test -f './src/ags-lib/lib/ags_math.c' || echo '$(srcdir)/'`./src/ags-lib/lib/ags_math.c
+
+libags_a-ags_math.obj: ./src/ags-lib/lib/ags_math.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_math.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_math.Tpo -c -o libags_a-ags_math.obj `if test -f './src/ags-lib/lib/ags_math.c'; then $(CYGPATH_W) './src/ags-lib/lib/ags_math.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/lib/ags_math.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_math.Tpo $(DEPDIR)/libags_a-ags_math.Po
+#	$(AM_V_CC)source='./src/ags-lib/lib/ags_math.c' object='libags_a-ags_math.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_math.obj `if test -f './src/ags-lib/lib/ags_math.c'; then $(CYGPATH_W) './src/ags-lib/lib/ags_math.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/lib/ags_math.c'; fi`
 
 ags-ags_run_order.o: ./src/ags/audio/ags_run_order.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_run_order.o -MD -MP -MF $(DEPDIR)/ags-ags_run_order.Tpo -c -o ags-ags_run_order.o `test -f './src/ags/audio/ags_run_order.c' || echo '$(srcdir)/'`./src/ags/audio/ags_run_order.c

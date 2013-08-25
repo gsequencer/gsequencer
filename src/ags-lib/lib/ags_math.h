@@ -16,8 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#infdef __AGS_MATH_H__
+#ifndef __AGS_MATH_H__
 #define __AGS_MATH_H__
+
+#include <glib.h>
 
 gboolean is_prim(guint a);
 
