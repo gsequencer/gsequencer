@@ -1232,7 +1232,7 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 	dbuffer[doffset * 3 + 2] = (mask << 16) & value;
 	
 	if(sbuffer[soffset] < 0){
-	  dbuffer[doffset * 3 + 2] = 0x80;
+	  dbuffer[doffset * 3 + 2] |= 0x80;
 	}
       }
       break;
@@ -1344,24 +1344,48 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     case AGS_DEVOUT_RESOLUTION_8_BIT:
       {
 	gint8 *dbuffer;
+	gdouble scale;
 
 	dbuffer = (gint8 *) destination->data;
 
-	dbuffer[doffset] = sbuffer[soffset];
+	scale = exp2(1.0 / 24.0);
+
+	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
     case AGS_DEVOUT_RESOLUTION_16_BIT:
       {
 	gint16 *dbuffer;
+	gdouble scale;
 
 	dbuffer = (gint16 *) destination->data;
 
-	dbuffer[doffset] = sbuffer[soffset];
+	scale = exp2(1.0 / 16.0);
+
+	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
     case AGS_DEVOUT_RESOLUTION_24_BIT:
       {
-	//TODO:JK: implement me
+	unsigned char *dbuffer;
+	gint32 value;
+	gdouble scale;
+	gint32 mask;
+
+	dbuffer = (unsigned char *) destination->data;
+
+	scale = exp2(1.0 / 8.0);
+	mask = 0xff;
+
+	value = scale * sbuffer[soffset];
+      
+	dbuffer[doffset * 3] = mask & value;
+	dbuffer[doffset * 3 + 1] = (mask << 8) & value;
+	dbuffer[doffset * 3 + 2] = (mask << 16) & value;
+	
+	if(sbuffer[soffset] < 0){
+	  dbuffer[doffset * 3 + 2] |= 0x80;
+	}
       }
       break;
     case AGS_DEVOUT_RESOLUTION_32_BIT:
@@ -1376,10 +1400,13 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     case AGS_DEVOUT_RESOLUTION_64_BIT:
       {
 	gint64 *dbuffer;
+	gdouble scale;
 
 	dbuffer = (gint64 *) destination->data;
 
-	dbuffer[doffset] = sbuffer[soffset];
+	scale = exp2(32.0);
+
+	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
     }
@@ -1395,33 +1422,60 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
     case AGS_DEVOUT_RESOLUTION_8_BIT:
       {
 	gint8 *dbuffer;
+	gdouble scale;
 
 	dbuffer = (gint8 *) destination->data;
 
-	dbuffer[doffset] = sbuffer[soffset];
+	scale = exp2(1 / 56.0);
+
+	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
     case AGS_DEVOUT_RESOLUTION_16_BIT:
       {
 	gint16 *dbuffer;
+	gdouble scale;
 
 	dbuffer = (gint16 *) destination->data;
 
-	dbuffer[doffset] = sbuffer[soffset];
+	scale = exp2(1 / 48.0);
+
+	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
     case AGS_DEVOUT_RESOLUTION_24_BIT:
       {
-	//TODO:JK: implement me
+	unsigned char *dbuffer;
+	gint32 value;
+	gdouble scale;
+	gint32 mask;
+
+	dbuffer = (unsigned char *) destination->data;
+
+	scale = exp2(1.0 / 40.0);
+	mask = 0xff;
+
+	value = scale * sbuffer[soffset];
+      
+	dbuffer[doffset * 3] = mask & value;
+	dbuffer[doffset * 3 + 1] = (mask << 8) & value;
+	dbuffer[doffset * 3 + 2] = (mask << 16) & value;
+	
+	if(sbuffer[soffset] < 0){
+	  dbuffer[doffset * 3 + 2] |= 0x80;
+	}
       }
       break;
     case AGS_DEVOUT_RESOLUTION_32_BIT:
       {
 	gint32 *dbuffer;
+	gdouble scale;
 
 	dbuffer = (gint32 *) destination->data;
 
-	dbuffer[doffset] = sbuffer[soffset];
+	scale = exp2(1 / 32.0);
+
+	dbuffer[doffset] = scale * sbuffer[soffset];
       }
       break;
     case AGS_DEVOUT_RESOLUTION_64_BIT:
