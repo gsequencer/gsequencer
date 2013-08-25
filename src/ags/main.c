@@ -384,8 +384,13 @@ main(int argc, char **argv)
   gtk_widget_show_all((GtkWidget *) window);
 
   main->server = ags_server_new(main);
+
   main->devout = window->devout;
   main->main_loop = window->devout->audio_loop;
+
+  //TODO:JK: really ugly
+  main->devout->main = main;
+  AGS_AUDIO_LOOP(main->main_loop)->main = main;
 
   gtk_main();
 

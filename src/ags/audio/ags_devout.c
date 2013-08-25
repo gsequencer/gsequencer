@@ -921,6 +921,7 @@ ags_devout_new(GObject *main)
   devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
   
   devout->main = main;
+  devout->audio_loop->main = main;
 
   return(devout);
 }
