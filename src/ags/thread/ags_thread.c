@@ -226,6 +226,7 @@ ags_thread_set_property(GObject *gobject,
   case PROP_DEVOUT:
     {
       AgsDevout *devout;
+      AgsThread *current;
 
       devout = (AgsDevout *) g_value_get_object(value);
 
@@ -238,6 +239,16 @@ ags_thread_set_property(GObject *gobject,
       }
 
       thread->devout = G_OBJECT(devout);
+
+      current = thread->children;
+
+      while(current != NULL){
+	g_object_set(G_OBJECT(current),
+		     "devout\0", devout,
+		     NULL);
+
+	current = current->next;
+      }
     }
     break;
   default:

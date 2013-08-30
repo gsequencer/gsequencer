@@ -631,8 +631,23 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
 void
 ags_devout_real_run(AgsDevout *devout)
 {
+  AgsDevoutThread *devout_thread;
+
+  devout_thread = devout->devout_thread;
+
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-    ags_devout_alsa_play(devout);
+    ags_devout_alsa_init(devout);
+
+    ags_thread_start(AGS_THREAD(devout_thread));
+
+    ags_thread_lock(AGS_THREAD(devout_thread));
+
+    devout->flags &= (~AGS_DEVOUT_START_PLAY);
+    pthread_cond_signal(&(devout_thread->start_play_cond));
+
+    ags_thread_unlock(AGS_THREAD(devout_thread));
+
+    g_message("ags_devout_alsa_play\0");
   }
 }
 
@@ -799,23 +814,7 @@ ags_devout_alsa_play(AgsDevout *devout)
 {
   AgsDevoutThread *devout_thread;
  
-  if(DEBUG_DEVOUT){
-    g_message("ags_devout_play\n\0");
-  }
-
   devout_thread = devout->devout_thread;
-
-  ags_thread_lock(AGS_THREAD(devout_thread));
-
-  devout->flags &= (~AGS_DEVOUT_START_PLAY);
-  pthread_cond_signal(&(devout_thread->start_play_cond));
-
-  ags_thread_unlock(AGS_THREAD(devout_thread));
-
-  if(DEBUG_DEVOUT){
-    g_message("ags_devout_alsa_play\0");
-  }
-
     
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
@@ -883,7 +882,7 @@ ags_devout_alsa_play(AgsDevout *devout)
 
     //      g_message("ags_devout_play 3\n\0");
   }
-    
+
   /*
     if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
     devout->offset++;

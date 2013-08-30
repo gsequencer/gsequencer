@@ -115,8 +115,6 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread = AGS_THREAD(task_thread);
 
-  task_thread->devout = NULL;
-
   task_thread->queued = 0;
   task_thread->pending = 0;
 
@@ -179,7 +177,7 @@ ags_task_thread_run(AgsThread *thread)
   static gboolean initialized = FALSE;
 
   task_thread = AGS_TASK_THREAD(thread);
-  devout = AGS_DEVOUT(task_thread->devout);
+  devout = AGS_DEVOUT(thread->devout);
 
   if(!initialized){
     play_idle.tv_sec = 0;
@@ -359,9 +357,9 @@ ags_task_thread_new(GObject *devout)
   AgsTaskThread *task_thread;
 
   task_thread = (AgsTaskThread *) g_object_new(AGS_TYPE_TASK_THREAD,
+					       "devout\0", devout,
 					       NULL);
 
-  task_thread->devout = devout;
 
   return(task_thread);
 }

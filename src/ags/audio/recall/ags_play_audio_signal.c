@@ -237,6 +237,9 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     buffer0 = devout->buffer[0];
     buffer1 = devout->buffer[1];
+  }else{
+    g_warning("no output buffer");
+    return;
   }
 
   //  attack = play_audio_signal->attack;

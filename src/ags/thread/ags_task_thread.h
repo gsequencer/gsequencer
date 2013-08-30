@@ -41,8 +41,6 @@ struct _AgsTaskThread
 {
   AgsThread thread;
 
-  GObject *devout;
-
   guint queued;
   guint pending;
 
