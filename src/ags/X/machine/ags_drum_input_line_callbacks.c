@@ -33,6 +33,15 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/X/ags_window.h>
+
+void
+ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrumInputLine *drum_input_line)
+{
+  /* set devout */
+  //TODO:JK: implement me
+}
+
 void
 ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 					    guint pads, guint pads_old,

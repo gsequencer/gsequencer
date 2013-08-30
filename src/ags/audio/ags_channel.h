@@ -61,6 +61,7 @@ struct _AgsChannel
   guint flags;
 
   GObject *audio;
+  GObject *devout;
 
   AgsChannel *prev;
   AgsChannel *prev_pad;
@@ -121,6 +122,8 @@ AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
 
 AgsChannel* ags_channel_first_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
+
+void ags_channel_set_devout(AgsChannel *channel, GObject *devout);
 
 void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id);

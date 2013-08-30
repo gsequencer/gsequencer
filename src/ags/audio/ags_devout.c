@@ -128,7 +128,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_string("device\0",
 				   "the device identifier\0",
 				   "The device to perform output to\0",
-				   "hw:0\0",
+				   "hw:0,0\0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -279,7 +279,7 @@ ags_devout_init(AgsDevout *devout)
   devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
-  devout->out.alsa.device = g_strdup("hw:0\0");
+  devout->out.alsa.device = g_strdup("default\0");
   /*
   devout->offset = 0;
 
@@ -504,6 +504,7 @@ ags_devout_list_cards()
   snd_ctl_t *card_handle;
   snd_ctl_card_info_t *card_info;
   GList *list;
+  char *name;
   char str[65];
   int card_num;
   int error;
@@ -522,8 +523,8 @@ ags_devout_list_cards()
       continue;
     }
 
-    sprintf(str, "hw:%i\0", card_num);
-    error = snd_ctl_open(&card_handle, str,0 );
+    sprintf(str, "hw:%i,0\0", card_num);
+    error = snd_ctl_open(&card_handle, str, 0);
 
     if(error < 0){
       continue;
@@ -536,7 +537,7 @@ ags_devout_list_cards()
       continue;
     }
 
-    list = g_list_prepend(list, g_strdup(snd_ctl_card_info_get_name(card_info)));
+    list = g_list_prepend(list, g_strdup(str));
 
     snd_ctl_close(card_handle);
   }
@@ -564,6 +565,8 @@ ags_devout_pcm_info(char *card_id,
   int err;
 
   /* Open PCM device for playback. */
+  handle = NULL;
+
   rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
   if(rc < 0) {
@@ -652,7 +655,7 @@ ags_devout_real_run(AgsDevout *devout)
 }
 
 /**
- * ags_devout_real_run:
+ * ags_devout_run:
  * @devout an #AgsDevout
  * 
  * Starts the sound card output thread.
@@ -697,9 +700,16 @@ ags_devout_stop(AgsDevout *devout)
   g_return_if_fail(AGS_IS_DEVOUT(devout));
 
   if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
-    g_message("ags_devout_stop:  not playing\n\0");
+    g_message("ags_devout_stop: not playing\0");
     return;
   }
+
+  if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
+    g_message("ags_devout_stop: just starting\0");
+    return;
+  }
+
+  g_message("ags_devout_stop: terminating\0");
 
   g_object_ref((GObject *) devout);
   g_signal_emit(G_OBJECT(devout),
@@ -713,7 +723,7 @@ ags_devout_tic(AgsDevout *devout)
   g_return_if_fail(AGS_IS_DEVOUT(devout));
 
   if((AGS_DEVOUT_PLAY & devout->flags) == 0){
-    g_message("ags_devout_tic:  not playing\n\0");
+    g_message("ags_devout_tic: not playing\0");
     return;
   }
 
@@ -756,16 +766,16 @@ ags_devout_alsa_init(AgsDevout *devout)
   int err;
 
   /* Open PCM device for playback. */
-  devout->out.alsa.rc = snd_pcm_open(&devout->out.alsa.handle, devout->out.alsa.device,
+  devout->out.alsa.rc = snd_pcm_open(&(devout->out.alsa.handle), devout->out.alsa.device,
 				     SND_PCM_STREAM_PLAYBACK, 0);
 
   if(devout->out.alsa.rc < 0) {
-    g_message("unable to open pcm device: %s\n\0", snd_strerror(devout->out.alsa.rc));
+    g_message("unable to open pcm device: %s\0", snd_strerror(devout->out.alsa.rc));
     exit(1);
   }
 
   /* Allocate a hardware parameters object. */
-  snd_pcm_hw_params_alloca(&devout->out.alsa.params);
+  snd_pcm_hw_params_alloca(&(devout->out.alsa.params));
 
   /* Fill it in with default values. */
   snd_pcm_hw_params_any(devout->out.alsa.handle, devout->out.alsa.params);
@@ -804,7 +814,7 @@ ags_devout_alsa_init(AgsDevout *devout)
   /* Write the parameters to the driver */
   devout->out.alsa.rc = snd_pcm_hw_params(devout->out.alsa.handle, devout->out.alsa.params);
   if(devout->out.alsa.rc < 0) {
-    g_message("unable to set hw parameters: %s\n\0", snd_strerror(devout->out.alsa.rc));
+    g_message("unable to set hw parameters: %s\0", snd_strerror(devout->out.alsa.rc));
     exit(1);
   }
 }
@@ -824,15 +834,15 @@ ags_devout_alsa_play(AgsDevout *devout)
       
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      g_message("underrun occurred\n\0");
+      g_message("underrun occurred\0");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) 128) {
-      g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
+      g_message("short write, write %d frames\0", devout->out.alsa.rc);
     }
       
-    //      g_message("ags_devout_play 0\n\0");
+    //      g_message("ags_devout_play 0\0");
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     memset(devout->buffer[0], 0, (size_t) 256 * sizeof(signed short));
 
@@ -840,15 +850,15 @@ ags_devout_alsa_play(AgsDevout *devout)
       
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      g_message("underrun occurred\n\0");
+      g_message("underrun occurred\0");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) 128) {
-      g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
+      g_message("short write, write %d frames\0", devout->out.alsa.rc);
     }
       
-    //      g_message("ags_devout_play 1\n\0");
+    //      g_message("ags_devout_play 1\0");
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     memset(devout->buffer[1], 0, (size_t) 256 * sizeof(signed short));
       
@@ -856,15 +866,15 @@ ags_devout_alsa_play(AgsDevout *devout)
       
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      g_message("underrun occurred\n\0");
+      g_message("underrun occurred\0");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) 128) {
-      g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
+      g_message("short write, write %d frames\0", devout->out.alsa.rc);
     }
 
-    //      g_message("ags_devout_play 2\n\0");
+    //      g_message("ags_devout_play 2\0");
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     memset(devout->buffer[2], 0, (size_t) 256 * sizeof(signed short));
       
@@ -872,15 +882,15 @@ ags_devout_alsa_play(AgsDevout *devout)
       
     if(devout->out.alsa.rc == -EPIPE){
       /* EPIPE means underrun */
-      g_message("underrun occurred\n\0");
+      g_message("underrun occurred\0");
       snd_pcm_prepare(devout->out.alsa.handle);
     }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\n\0", snd_strerror(devout->out.alsa.rc));
+      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
     }else if(devout->out.alsa.rc != (int) 128) {
-      g_message("short write, write %d frames\n\0", devout->out.alsa.rc);
+      g_message("short write, write %d frames\0", devout->out.alsa.rc);
     }
 
-    //      g_message("ags_devout_play 3\n\0");
+    //      g_message("ags_devout_play 3\0");
   }
 
   /*

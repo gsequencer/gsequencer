@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_audio.h>
 
+void ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrumInputLine *drum_input_line);
+
 /* AgsAudio */
 void ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 						 guint pads, guint pads_old,

@@ -32,6 +32,14 @@
 
 void ags_recycling_class_init(AgsRecyclingClass *recycling_class);
 void ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_recycling_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_recycling_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_recycling_init(AgsRecycling *recycling);
 void ags_recycling_connect(AgsConnectable *connectable);
 void ags_recycling_disconnect(AgsConnectable *connectable);
@@ -42,6 +50,11 @@ void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 
 void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 					    AgsAudioSignal *audio_signal);
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+};
 
 enum{
   ADD_AUDIO_SIGNAL,
@@ -92,12 +105,29 @@ void
 ags_recycling_class_init(AgsRecyclingClass *recycling)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_recycling_parent_class = g_type_class_peek_parent(recycling);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) recycling;
+
+  gobject->set_property = ags_recycling_set_property;
+  gobject->get_property = ags_recycling_get_property;
+
   gobject->finalize = ags_recycling_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   AGS_TYPE_DEVOUT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  /*  */
   recycling->add_audio_signal = ags_recycling_real_add_audio_signal;
   recycling->remove_audio_signal = ags_recycling_real_remove_audio_signal;
 
@@ -133,6 +163,7 @@ void
 ags_recycling_init(AgsRecycling *recycling)
 {
   //  recycling->flags = 0;
+  recycling->devout = NULL;
 
   recycling->channel = NULL;
 
@@ -142,6 +173,52 @@ ags_recycling_init(AgsRecycling *recycling)
   recycling->prev = NULL;
 
   recycling->audio_signal = NULL;
+}
+
+void
+ags_recycling_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsRecycling *recycling;
+
+  recycling = AGS_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      ags_recycling_set_devout(recycling, devout);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_recycling_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsRecycling *recycling;
+
+  recycling = AGS_RECYCLING(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    g_value_set_object(value, recycling->devout);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -169,6 +246,22 @@ ags_recycling_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_parent_class)->finalize(gobject);
+}
+
+void
+ags_recycling_set_devout(AgsRecycling *recycling, GObject *devout)
+{
+  /* recycling */
+  if(recycling->devout == devout)
+    return;
+
+  if(recycling->devout != NULL)
+    g_object_unref(recycling->devout);
+
+  if(devout != NULL)
+    g_object_ref(devout);
+
+  recycling->devout = (GObject *) devout;
 }
 
 void

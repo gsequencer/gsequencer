@@ -149,7 +149,8 @@ ags_start_devout_launch(AgsTask *task)
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
 			AGS_AUDIO_LOOP_PLAY_CHANNEL |
 			AGS_AUDIO_LOOP_PLAY_RECALL);
-  devout->flags |= (AGS_DEVOUT_START_PLAY);
+  devout->flags |= (AGS_DEVOUT_START_PLAY |
+		    AGS_DEVOUT_PLAY);
 
   ags_devout_run(devout);
 

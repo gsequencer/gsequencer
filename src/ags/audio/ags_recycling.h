@@ -42,6 +42,7 @@ struct _AgsRecycling
   GObject object;
 
   GObject *channel;
+  GObject *devout;
 
   AgsRecycling *parent;
 
@@ -62,6 +63,8 @@ struct _AgsRecyclingClass
 };
 
 GType ags_recycling_get_type();
+
+void ags_recycling_set_devout(AgsRecycling *recycling, GObject *devout);
 
 void ags_recycling_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal);

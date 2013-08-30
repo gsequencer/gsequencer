@@ -120,6 +120,9 @@ ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
+  g_signal_connect_after((GObject *) drum_input_line, "parent_set\0",
+			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
+
   drum_input_line->flags = 0;
 
   drum_input_line->volume = (GtkVScale *) gtk_vscale_new_with_range(0.0, 2.00, 0.025);

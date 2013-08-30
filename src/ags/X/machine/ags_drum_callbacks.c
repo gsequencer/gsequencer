@@ -80,6 +80,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
     return;
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
+
   audio = drum->machine.audio;
   audio->devout = (GObject *) window->devout;
 
@@ -87,6 +88,51 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   window->counter->drum++;
 
   devout = AGS_DEVOUT(audio->devout);
+
+  /* AgsDevout */
+  /* play */
+  g_object_set(G_OBJECT(drum->play_delay_audio),
+	       "devout\0", devout,
+	       NULL);
+  g_object_set(G_OBJECT(drum->play_delay_audio_run),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(drum->play_count_beats_audio),
+	       "devout\0", devout,
+	       NULL);
+  g_object_set(G_OBJECT(drum->play_count_beats_audio_run),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(drum->play_copy_pattern_audio),
+	       "devout\0", devout,
+	       NULL);
+  g_object_set(G_OBJECT(drum->play_copy_pattern_audio_run),
+	       "devout\0", devout,
+	       NULL);
+
+  /* recall */
+  g_object_set(G_OBJECT(drum->recall_delay_audio),
+	       "devout\0", devout,
+	       NULL);
+  g_object_set(G_OBJECT(drum->recall_delay_audio_run),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(drum->recall_count_beats_audio),
+	       "devout\0", devout,
+	       NULL);
+  g_object_set(G_OBJECT(drum->recall_count_beats_audio_run),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(drum->recall_copy_pattern_audio),
+	       "devout\0", devout,
+	       NULL);
+  g_object_set(G_OBJECT(drum->recall_copy_pattern_audio_run),
+	       "devout\0", devout,
+	       NULL);
 
   /* bpm */
   bpm = window->navigation->bpm->adjustment->value;
@@ -108,7 +154,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				  tact);
   ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
-			 AGS_TASK(apply_tact));
+			      AGS_TASK(apply_tact));
 
   /* length */
   length = GTK_SPIN_BUTTON(drum->length_spin)->adjustment->value;
@@ -117,6 +163,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 							  length);
   ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
 			      AGS_TASK(apply_sequencer_length));
+
 }
 
 void

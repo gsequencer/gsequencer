@@ -298,13 +298,15 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   while(list != NULL){
     gtk_list_store_append(model, &iter);
     gtk_list_store_set(model, &iter,
-		       0, g_strdup_printf("hw:%i\0", i),
-		       1, g_strdup(list->data),
+		       0, g_strdup_printf("hw:%i,0\0", i),
+		       1, list->data,
 		       -1);
       
     list = list->next;
     i++;
   }
+
+  g_list_free(list);
     
   gtk_combo_box_set_model(audio_preferences->card,
 			  GTK_TREE_MODEL(model));
@@ -334,11 +336,11 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
-		      &channels_min, &channels_max,
-		      &rate_min, &rate_max,
-		      &buffer_size_min, &buffer_size_max,
-		      &error);
+  //  ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
+  //		      &channels_min, &channels_max,
+  //		      &rate_min, &rate_max,
+  //		      &buffer_size_min, &buffer_size_max,
+  //		      &error);
 
   if(error != NULL){
     GtkMessageDialog *dialog;

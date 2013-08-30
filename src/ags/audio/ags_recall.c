@@ -463,7 +463,8 @@ ags_recall_set_property(GObject *gobject,
   case PROP_DEVOUT:
     {
       AgsDevout *devout;
-
+      GList *current;
+      
       devout = (AgsDevout *) g_value_get_object(value);
 
       if(devout == ((AgsDevout *) recall->devout))
@@ -476,6 +477,16 @@ ags_recall_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(devout));
 
       recall->devout = (GObject *) devout;
+
+      current = recall->children;
+
+      while(current != NULL){
+	g_object_set(G_OBJECT(current->data),
+		     "devout\0", devout,
+		     NULL);
+
+	current = current->next;
+      }
     }
     break;
   case PROP_CONTAINER:

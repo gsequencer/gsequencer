@@ -89,6 +89,7 @@ ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread)
   /* AgsThread */
   thread = (AgsThreadClass *) devout_thread;
 
+  thread->start = ags_devout_thread_start;
   thread->run = ags_devout_thread_run;
   thread->stop = ags_devout_thread_stop;
 }
@@ -142,11 +143,22 @@ ags_devout_thread_start(AgsThread *thread)
   AgsDevout *devout;
   AgsDevoutThread *devout_thread;
 
-  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
-
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
   devout = AGS_DEVOUT(thread->devout);
+
+  /*  */
+  ags_thread_lock(thread);
+
+  devout->flags |= (AGS_DEVOUT_BUFFER0 |
+		    AGS_DEVOUT_PLAY);
+
+  thread->flags |= (AGS_THREAD_RUNNING);
+
+  ags_thread_unlock(thread);
+
+  /*  */
+  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
 
   ags_devout_alsa_init(devout);
 
@@ -154,9 +166,6 @@ ags_devout_thread_start(AgsThread *thread)
   memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-
-  devout->flags |= (AGS_DEVOUT_BUFFER0 |
-		    AGS_DEVOUT_PLAY);
 }
 
 void
@@ -171,6 +180,7 @@ ags_devout_thread_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(thread->devout);
 
+  g_message("play\0");
   ags_devout_alsa_play(devout);
 }
 

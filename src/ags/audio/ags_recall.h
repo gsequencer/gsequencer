@@ -151,6 +151,7 @@ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 				AgsRecallID *recall_id);
 
 void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
+void ags_recall_set_devout_recursive(AgsRecall *recall, GObject *devout);
 
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
 

@@ -112,6 +112,8 @@ void ags_audio_find_group_id_from_child(AgsAudio *audio,
 					AgsChannel *input, AgsRecallID *input_recall_id, gboolean input_do_recall,
 					AgsRecallID **child_recall_id, gboolean *child_do_recall);
 
+void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
+
 void ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order);
 void ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order);
 

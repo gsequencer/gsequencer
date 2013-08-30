@@ -26,6 +26,8 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_applicable.h>
+
 #include <ags/file/ags_file.h>
 
 #include <ags/audio/ags_devout.h>
@@ -413,6 +415,9 @@ ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window->preferences = ags_preferences_new();
   window->preferences->window = GTK_WINDOW(window);
+
+  ags_applicable_reset(AGS_APPLICABLE(window->preferences));
+
   ags_connectable_connect(AGS_CONNECTABLE(window->preferences));
   gtk_widget_show_all(GTK_WIDGET(window->preferences));
 }

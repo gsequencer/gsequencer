@@ -219,6 +219,11 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
 
+  if(devout == NULL){
+    g_warning("no devout\0");
+    return;
+  }
+
   if(stream == NULL){
     ags_recall_done(recall);
 
@@ -238,7 +243,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     buffer0 = devout->buffer[0];
     buffer1 = devout->buffer[1];
   }else{
-    g_warning("no output buffer");
+    g_warning("no output buffer\0");
     return;
   }
 

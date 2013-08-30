@@ -69,6 +69,7 @@ enum{
 enum{
   PROP_0,
   PROP_AUDIO,
+  PROP_DEVOUT,
 };
 
 static gpointer ags_channel_parent_class = NULL;
@@ -136,6 +137,15 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  PROP_AUDIO ,
 				  param_spec);
 
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT ,
+				  param_spec);
+
   /* AgsChannelClass */
   channel->recycling_changed = NULL;
 
@@ -175,6 +185,7 @@ ags_channel_init(AgsChannel *channel)
   channel->flags = 0;
 
   channel->audio = NULL;
+  channel->devout = NULL;
 
   channel->prev = NULL;
   channel->prev_pad = NULL;
@@ -238,6 +249,15 @@ ags_channel_set_property(GObject *gobject,
       channel->audio = audio;
     }
     break;
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      ags_channel_set_devout(channel, devout);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -257,6 +277,9 @@ ags_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO:
     g_value_set_object(value, channel->audio);
+    break;
+  case PROP_DEVOUT:
+    g_value_set_object(value, channel->devout);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -598,6 +621,63 @@ ags_channel_last_with_recycling(AgsChannel *channel)
   }
 
   return(channel);
+}
+
+void
+ags_channel_set_devout(AgsChannel *channel, GObject *devout)
+{
+  GList *list;
+
+  /* channel */
+  if(channel->devout == devout)
+    return;
+
+  if(channel->devout != NULL)
+    g_object_unref(channel->devout);
+
+  if(devout != NULL)
+    g_object_ref(devout);
+
+  channel->devout = (GObject *) devout;
+
+  /* recall */
+  list = channel->play;
+
+  while(list != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "devout\0", devout,
+		 NULL);
+
+    list = list->next;
+  }
+
+  list = channel->recall;
+
+  while(list != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "devout\0", devout,
+		 NULL);
+
+    list = list->next;
+  }
+
+  /* AgsRecycling */
+  if((AGS_IS_OUTPUT(channel) &&
+      (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0) ||
+     ((AGS_IS_INPUT(channel) &&
+       (AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0))){
+    AgsRecycling *recycling;
+
+    recycling = channel->first_recycling;
+
+    while(recycling != channel->last_recycling->next){
+      g_object_set(G_OBJECT(recycling),
+		   "devout\0", devout,
+		   NULL); 
+
+      recycling = recycling->next;
+    }
+  }
 }
 
 void

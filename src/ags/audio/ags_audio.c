@@ -67,7 +67,6 @@ void ags_audio_real_set_audio_channels(AgsAudio *audio,
 void ags_audio_real_set_pads(AgsAudio *audio,
 			     GType type,
 			     guint channels, guint channels_old);
-void ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout);
 
 enum{
   SET_AUDIO_CHANNELS,
@@ -2203,73 +2202,13 @@ ags_audio_cancel(AgsAudio *audio,
  * AgsDevout related
  */
 void
-ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
+ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 {
+  AgsChannel *channel;
   GList *list;
-  void ags_audio_set_devout_for_audio_signal(AgsChannel *channel){
-    AgsRecycling *recycling;
-    AgsAudioSignal *audio_signal;
 
-    while(channel != NULL){
-      recycling = channel->first_recycling;
-
-      while(recycling != channel->last_recycling->next){
-	GValue value = {0,};
-
-	audio_signal = ags_audio_signal_get_template(recycling->audio_signal);
-
-	g_value_init(&value, G_TYPE_OBJECT);
-	g_value_set_object(&value, devout);
-	g_object_set_property(G_OBJECT(audio_signal),
-			      "devout\0", &value);
-	g_value_unset(&value);
-
-	recycling = recycling->next;
-      }
-
-      channel = channel->next;
-    }
-  }
-  void ags_audio_set_devout_for_recall_recursive(AgsRecall *recall){
-    GList *list;
-    
-    g_object_set(G_OBJECT(recall),
-		 "devout\0", devout,
-		 NULL);
-
-    list = recall->children;
-
-    while(list != NULL){
-      ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
-      
-      list = list->next;
-    }
-  }
-  void ags_audio_set_devout_for_recall(AgsChannel *channel){
-    GList *list;
-
-    while(channel != NULL){
-      list = channel->play;
-
-      while(list != NULL){
-	ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
-
-	list = list->next;
-      }
-
-      list = channel->recall;
-
-      while(list != NULL){
-	ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
-
-	list = list->next;
-      }
-
-      channel = channel->next;
-    }
-  }
-
-  if((AgsDevout *) audio->devout == devout)
+  /* audio */
+  if(audio->devout == devout)
     return;
 
   if(audio->devout != NULL)
@@ -2278,13 +2217,15 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
   if(devout != NULL)
     g_object_ref(devout);
 
-  /* audio */
   audio->devout = (GObject *) devout;
 
+  /* recall */
   list = audio->play;
   
   while(list != NULL){
-    ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
+    g_object_set(G_OBJECT(list->data),
+		 "devout\0", devout,
+		 NULL);
     
     list = list->next;
   }
@@ -2292,22 +2233,34 @@ ags_audio_set_devout(AgsAudio *audio, AgsDevout *devout)
   list = audio->recall;
   
   while(list != NULL){
-    ags_audio_set_devout_for_recall_recursive(AGS_RECALL(list->data));
+    g_object_set(G_OBJECT(list->data),
+		 "devout\0", devout,
+		 NULL);
     
     list = list->next;
   }
   
-  /* input */	
-  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
-    ags_audio_set_devout_for_audio_signal(audio->input);
+  /* input */
+  channel = audio->input;
 
-  ags_audio_set_devout_for_recall(audio->input);
+  while(channel != NULL){
+    g_object_set(G_OBJECT(channel),
+		 "devout\0", devout,
+		 NULL);
+    
+    channel = channel->next;
+  }
 
   /* output */
-  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
-    ags_audio_set_devout_for_audio_signal(audio->output);
+  channel = audio->output;
 
-  ags_audio_set_devout_for_recall(audio->output);
+  while(channel != NULL){
+    g_object_set(G_OBJECT(channel),
+		 "devout\0", devout,
+		 NULL);
+    
+    channel = channel->next;
+  }
 }
 
 void
