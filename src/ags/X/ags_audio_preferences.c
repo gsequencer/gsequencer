@@ -298,7 +298,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   while(list != NULL){
     gtk_list_store_append(model, &iter);
     gtk_list_store_set(model, &iter,
-		       0, g_strdup_printf("hw:%i,0\0", i),
+		       0, g_strdup_printf("hw:%i\0", i),
 		       1, list->data,
 		       -1);
       

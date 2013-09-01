@@ -128,7 +128,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_string("device\0",
 				   "the device identifier\0",
 				   "The device to perform output to\0",
-				   "hw:0,0\0",
+				   "hw:0\0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -279,7 +279,7 @@ ags_devout_init(AgsDevout *devout)
   devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
-  devout->out.alsa.device = g_strdup("default\0");
+  devout->out.alsa.device = g_strdup("hw:0\0");
   /*
   devout->offset = 0;
 
@@ -523,7 +523,7 @@ ags_devout_list_cards()
       continue;
     }
 
-    sprintf(str, "hw:%i,0\0", card_num);
+    sprintf(str, "hw:%i\0", card_num);
     error = snd_ctl_open(&card_handle, str, 0);
 
     if(error < 0){
@@ -537,7 +537,7 @@ ags_devout_list_cards()
       continue;
     }
 
-    list = g_list_prepend(list, g_strdup(str));
+    list = g_list_prepend(list, g_strdup(snd_ctl_card_info_get_name(card_info)));
 
     snd_ctl_close(card_handle);
   }

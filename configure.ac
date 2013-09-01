@@ -25,7 +25,7 @@ AC_CHECK_LIB([m], [main])
 # FIXME: Replace `main' with a function in `-lrt':
 AC_CHECK_LIB([rt], [main])
 
-PKG_CHECK_MODULES([UUID], [uuid >= 2.23.0])
+PKG_CHECK_MODULES([UUID], [uuid >= 2.20.0])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
 
