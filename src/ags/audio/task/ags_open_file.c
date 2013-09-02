@@ -20,6 +20,13 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+
+#include <ags/audio/file/ags_audio_file.h>
+
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
 void ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_file_init(AgsOpenFile *open_file);
@@ -133,13 +140,85 @@ void
 ags_open_file_launch(AgsTask *task)
 {
   AgsOpenFile *open_file;
+  AgsAudio *audio;
+  AgsChannel *channel, *iter;
+  AgsAudioFile *audio_file;
+  GSList *current;
+  GList *audio_signal;
+  guint i, i_stop;
+  GError *error;
 
   open_file = AGS_OPEN_FILE(task);
 
-  ags_audio_file_open(open_file->audio,
-		      open_file->filenames,
-		      open_file->overwrite_channels,
-		      open_file->create_channels);
+  audio = open_file->audio;
+
+  current = open_file->filenames;
+
+  i_stop = 0;
+  
+  if(open_file->overwrite_channels){
+    channel = audio->input;    
+
+    i_stop = audio->input_pads;
+  }
+
+  if(open_file->create_channels){
+    i_stop = g_slist_length(open_file->filenames);
+
+    if(open_file->overwrite_channels){
+      if(i_stop > audio->input_pads){
+	ags_audio_set_pads(audio, AGS_TYPE_INPUT,
+			   i_stop);
+      }
+
+      channel = audio->input;
+    }else{
+      guint pads_old;
+
+      pads_old = audio->input_pads;
+
+      ags_audio_set_pads(audio, AGS_TYPE_INPUT,
+			 audio->input_pads + i_stop);
+
+      channel = ags_channel_pad_nth(audio->input, pads_old);
+    }
+  }
+
+  for(i = 0; i < i_stop && current != NULL; i++){
+    audio_file = ags_audio_file_new((gchar *) current->data,
+				    AGS_DEVOUT(audio->devout),
+				    0, open_file->audio->audio_channels);
+
+    ags_audio_file_open(audio_file);
+    ags_audio_file_read_audio_signal(audio_file);
+
+    iter = channel;
+    audio_signal = audio_file->audio_signal;
+
+    while(iter != channel->next_pad && audio_signal != NULL){
+      AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+
+      if(iter->link != NULL){
+	error = NULL;
+
+	ags_channel_set_link(iter, NULL,
+			     &error);
+
+	if(error != NULL){
+	  g_warning(error->message);
+	}
+      }
+
+      ags_recycling_add_audio_signal(iter->first_recycling,
+				     AGS_AUDIO_SIGNAL(audio_signal->data));
+
+      audio_signal = audio_signal->next;
+      iter = iter->next;
+    }
+
+    channel = channel->next_pad;
+    current = current->next;
+  }
 }
 
 AgsOpenFile*
