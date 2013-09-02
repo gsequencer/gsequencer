@@ -324,7 +324,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   error = NULL;
 
   /*  */
-  //  sscanf(device, "hw:%i\0", &card_num);
+  sscanf(device, "hw:%i\0", &card_num);
   //  gtk_combo_box_set_active(audio_preferences->card,
   //			   card_num);
 
@@ -336,11 +336,11 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
-  //  ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
-  //		      &channels_min, &channels_max,
-  //		      &rate_min, &rate_max,
-  //		      &buffer_size_min, &buffer_size_max,
-  //		      &error);
+  ags_devout_pcm_info(gtk_combo_box_get_active_text(audio_preferences->card),
+  		      &channels_min, &channels_max,
+  		      &rate_min, &rate_max,
+  		      &buffer_size_min, &buffer_size_max,
+  		      &error);
 
   if(error != NULL){
     GtkMessageDialog *dialog;

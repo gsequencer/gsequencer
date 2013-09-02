@@ -279,7 +279,9 @@ ags_devout_init(AgsDevout *devout)
   devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
+  devout->out.alsa.handle = NULL;
   devout->out.alsa.device = g_strdup("hw:0\0");
+
   /*
   devout->offset = 0;
 
@@ -639,18 +641,20 @@ ags_devout_real_run(AgsDevout *devout)
   devout_thread = devout->devout_thread;
 
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-    ags_devout_alsa_init(devout);
-
-    ags_thread_start(AGS_THREAD(devout_thread));
-
-    ags_thread_lock(AGS_THREAD(devout_thread));
-
-    devout->flags &= (~AGS_DEVOUT_START_PLAY);
-    pthread_cond_signal(&(devout_thread->start_play_cond));
-
-    ags_thread_unlock(AGS_THREAD(devout_thread));
-
-    g_message("ags_devout_alsa_play\0");
+    if(devout->out.alsa.handle == NULL){
+      ags_devout_alsa_init(devout);
+      
+      ags_thread_start(AGS_THREAD(devout_thread));
+      
+      ags_thread_lock(AGS_THREAD(devout_thread));
+      
+      devout->flags &= (~AGS_DEVOUT_START_PLAY);
+      pthread_cond_signal(&(devout_thread->start_play_cond));
+      
+      ags_thread_unlock(AGS_THREAD(devout_thread));
+      
+      g_message("ags_devout_alsa_play\0");
+    }
   }
 }
 
@@ -760,30 +764,38 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
 void
 ags_devout_alsa_init(AgsDevout *devout)
 {
+  int rc;
+  snd_pcm_t *handle;
+  snd_pcm_hw_params_t *params;
   unsigned int val;
   int dir;
   snd_pcm_uframes_t frames;
   int err;
 
   /* Open PCM device for playback. */
-  devout->out.alsa.rc = snd_pcm_open(&(devout->out.alsa.handle), devout->out.alsa.device,
-				     SND_PCM_STREAM_PLAYBACK, 0);
+  handle = NULL;
 
-  if(devout->out.alsa.rc < 0) {
-    g_message("unable to open pcm device: %s\0", snd_strerror(devout->out.alsa.rc));
-    exit(1);
+  rc = snd_pcm_open(&handle, "hw:0\0", SND_PCM_STREAM_PLAYBACK, 0);
+
+  if(rc < 0) {
+    g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
+    return;
   }
 
+  devout->out.alsa.handle = handle;
+
   /* Allocate a hardware parameters object. */
-  snd_pcm_hw_params_alloca(&(devout->out.alsa.params));
+  snd_pcm_hw_params_alloca(&(params));
+
+  devout->out.alsa.params = params;
 
   /* Fill it in with default values. */
-  snd_pcm_hw_params_any(devout->out.alsa.handle, devout->out.alsa.params);
+  snd_pcm_hw_params_any(handle, params);
 
   /* Set the desired hardware parameters. */
 
   /* Interleaved mode */
-  snd_pcm_hw_params_set_access(devout->out.alsa.handle, devout->out.alsa.params,
+  snd_pcm_hw_params_set_access(handle, params,
 			       SND_PCM_ACCESS_RW_INTERLEAVED);
 
   /* Signed 16-bit little-endian format */
@@ -791,30 +803,31 @@ ags_devout_alsa_init(AgsDevout *devout)
                               SND_PCM_FORMAT_S16_LE);
 
   /* Two channels (stereo) */
-  snd_pcm_hw_params_set_channels(devout->out.alsa.handle, devout->out.alsa.params, 2);
+  snd_pcm_hw_params_set_channels(handle, params, 2);
 
   /* 44100 bits/second sampling rate (CD quality) */
   val = 44100;//(unsigned int) devout->frequency;
   dir = 0;
-  snd_pcm_hw_params_set_rate(devout->out.alsa.handle, devout->out.alsa.params,
+  snd_pcm_hw_params_set_rate(handle, params,
 			     val, dir);
 
   /* Set period size to devout->buffer_size frames. */
   frames = 128;//devout->buffer_size;
 
-  snd_pcm_hw_params_set_buffer_size(devout->out.alsa.handle,
-				    devout->out.alsa.params, 128);
+  snd_pcm_hw_params_set_buffer_size(handle,
+				    params, 128);
 
-  snd_pcm_hw_params_set_period_size(devout->out.alsa.handle,
-				    devout->out.alsa.params, frames, dir);
+  snd_pcm_hw_params_set_period_size(handle,
+				    params, frames, dir);
 
   //snd_pcm_hw_params_set_rate_resample(devout->out.alsa.handle,
   //				      devout->out.alsa.params, frames);
 
   /* Write the parameters to the driver */
-  devout->out.alsa.rc = snd_pcm_hw_params(devout->out.alsa.handle, devout->out.alsa.params);
-  if(devout->out.alsa.rc < 0) {
-    g_message("unable to set hw parameters: %s\0", snd_strerror(devout->out.alsa.rc));
+  rc = snd_pcm_hw_params(handle, params);
+
+  if(rc < 0) {
+    g_message("unable to set hw parameters: %s\0", snd_strerror(rc));
     exit(1);
   }
 }
