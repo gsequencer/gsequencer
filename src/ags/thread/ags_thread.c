@@ -337,10 +337,17 @@ ags_thread_lock(AgsThread *thread)
 
   if(toplevel == thread){
     if(toplevel->children != NULL){
-      pthread_mutex_lock(&(toplevel->children->mutex));
-      thread->flags |= AGS_THREAD_LOCKED;
-      pthread_mutex_lock(&(thread->mutex));
-      pthread_mutex_unlock(&(toplevel->children->mutex));
+      if(toplevel->children == thread){
+      	pthread_mutex_lock(&(thread->mutex));
+
+	thread->flags |= AGS_THREAD_LOCKED;
+      }else{
+	pthread_mutex_lock(&(toplevel->children->mutex));
+      	pthread_mutex_lock(&(thread->mutex));
+
+	thread->flags |= AGS_THREAD_LOCKED;
+	pthread_mutex_unlock(&(toplevel->children->mutex));
+      }
     }
   }else{
     pthread_mutex_lock(&(toplevel->children->mutex));
