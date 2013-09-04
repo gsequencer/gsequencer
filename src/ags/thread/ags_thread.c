@@ -1404,17 +1404,13 @@ ags_thread_loop(void *ptr)
       }
     }
 
-    if((ags_thread_is_current_ready(thread, current_tic) &&
-	!ags_thread_is_tree_in_sync(thread, current_tic)) &&
-       ((ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 0 && (AGS_THREAD_WAIT_0 & (thread->flags)) != 0) ||
-	(ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 1 && (AGS_THREAD_WAIT_1 & (thread->flags)) != 0) ||
-	(ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0))){
-
-      while((ags_thread_is_current_ready(thread, current_tic) &&
-	     !ags_thread_is_tree_in_sync(thread, current_tic)) &&
-	    ((ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 0 && (AGS_THREAD_WAIT_0 & (thread->flags)) != 0) ||
-	     (ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 1 && (AGS_THREAD_WAIT_1 & (thread->flags)) != 0) ||
-	     (ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0))){
+    if(thread == main_loop && !ags_thread_is_tree_in_sync(thread, current_tic)){
+      while(!ags_thread_is_tree_in_sync(thread, current_tic)){
+	pthread_cond_wait(&(thread->cond),
+			  &(thread->mutex));
+      }
+    }else if(ags_thread_is_current_ready(thread, current_tic)){
+      while(ags_thread_is_current_ready(thread, current_tic)){
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
