@@ -327,12 +327,27 @@ ags_thread_set_devout(AgsThread *thread, GObject *devout)
 void
 ags_thread_lock(AgsThread *thread)
 {
+  AgsThread *toplevel;
+
   if(thread == NULL){
     return;
   }
 
+  toplevel = ags_thread_get_toplevel(thread);
+
+  if(toplevel == thread){
+    if(toplevel->children != NULL){
+      pthread_mutex_lock(&(toplevel->children->mutex));
+      thread->flags |= AGS_THREAD_LOCKED;
+      pthread_mutex_unlock(&(toplevel->children->mutex));
+    }
+  }else{
+    pthread_mutex_lock(&(toplevel->mutex));
+    thread->flags |= AGS_THREAD_LOCKED;
+    pthread_mutex_unlock(&(toplevel->mutex));
+  }
+
   pthread_mutex_lock(&(thread->mutex));
-  thread->flags |= AGS_THREAD_LOCKED;
 }
 
 /**
