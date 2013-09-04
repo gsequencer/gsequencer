@@ -62,6 +62,7 @@ struct _AgsTaskClass
 GType ags_task_get_type();
 
 void ags_task_launch(AgsTask *task);
+void ags_task_failure(AgsTask *task, GError *error);
 
 AgsTask* ags_task_new();
 

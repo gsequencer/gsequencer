@@ -615,7 +615,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			   FALSE, FALSE,
 			   0);
 	ags_pad_resize_lines((AgsPad *) drum_input_pad, AGS_TYPE_DRUM_INPUT_LINE,
-			     AGS_AUDIO(channel->audio)->audio_channels, 0);
+			     audio->audio_channels, 0);
 	gtk_option_menu_set_history(drum_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
@@ -653,7 +653,6 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
-	  //	  ags_drum_output_pad_connect(drum_output_pad);
 	  gtk_widget_show_all((GtkWidget *) drum_output_pad);
 	}
       }else{

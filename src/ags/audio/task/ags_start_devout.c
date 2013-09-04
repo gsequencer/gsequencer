@@ -137,6 +137,7 @@ ags_start_devout_launch(AgsTask *task)
   AgsDevout *devout;
   AgsAudioLoop *audio_loop;
   AgsDevoutThread *devout_thread;
+  GError *error;
 
   start_devout = AGS_START_DEVOUT(task);
 
@@ -152,7 +153,9 @@ ags_start_devout_launch(AgsTask *task)
   devout->flags |= (AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY);
 
-  ags_devout_run(devout);
+  error = NULL;
+  ags_devout_run(devout,
+		 error);
 
   ags_thread_lock(AGS_THREAD(devout_thread));
 
@@ -162,6 +165,10 @@ ags_start_devout_launch(AgsTask *task)
   }
 
   ags_thread_unlock(AGS_THREAD(devout_thread));
+
+  if(error != NULL){
+    ags_task_failure(AGS_TASK(start_devout), error);
+  }
 }
 
 AgsStartDevout*

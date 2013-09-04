@@ -41,7 +41,8 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_finalize(GObject *gobject);
 
-void ags_devout_real_run(AgsDevout *devout);
+void ags_devout_real_run(AgsDevout *devout,
+			 GError **error);
 void ags_devout_real_stop(AgsDevout *devout);
 
 void ags_devout_real_change_bpm(AgsDevout *devout, double bpm);
@@ -239,8 +240,9 @@ ags_devout_class_init(AgsDevoutClass *devout)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsDevoutClass, run),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
 
   devout_signals[STOP] =
     g_signal_new("stop\0",
@@ -634,7 +636,8 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
 }
 
 void
-ags_devout_real_run(AgsDevout *devout)
+ags_devout_real_run(AgsDevout *devout,
+		    GError **error)
 {
   AgsDevoutThread *devout_thread;
 
@@ -665,12 +668,14 @@ ags_devout_real_run(AgsDevout *devout)
  * Starts the sound card output thread.
  */
 void
-ags_devout_run(AgsDevout *devout)
+ags_devout_run(AgsDevout *devout,
+	       GError **error)
 {
   g_return_if_fail(AGS_IS_DEVOUT(devout));
   g_object_ref((GObject *) devout);
   g_signal_emit(G_OBJECT(devout),
-		devout_signals[RUN], 0);
+		devout_signals[RUN], 0,
+		error);
   g_object_unref((GObject *) devout);
 }
 
@@ -693,7 +698,7 @@ ags_devout_real_stop(AgsDevout *devout)
 }
 
 /**
- * ags_devout_real_run:
+ * ags_devout_stop:
  * @devout an #AgsDevout
  * 
  * Stops the sound card output thread.
@@ -775,7 +780,7 @@ ags_devout_alsa_init(AgsDevout *devout)
   /* Open PCM device for playback. */
   handle = NULL;
 
-  rc = snd_pcm_open(&handle, "hw:0\0", SND_PCM_STREAM_PLAYBACK, 0);
+  rc = snd_pcm_open(&handle, "hw:1,0\0", SND_PCM_STREAM_PLAYBACK, 0);
 
   if(rc < 0) {
     g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
