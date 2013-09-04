@@ -1098,7 +1098,7 @@ ags_thread_unlock_children(AgsThread *thread)
 	}
       }
 
-      ags_thread_unlock(current);
+      //      ags_thread_unlock(current);
 
       current = current->prev;
     }
@@ -1421,32 +1421,6 @@ ags_thread_loop(void *ptr)
 			  &(thread->mutex));
       }
 
-      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-      switch(tic){
-      case 0:
-	{
-	  thread->flags &= (~AGS_THREAD_WAIT_0);
-	  thread->flags |= AGS_THREAD_WAIT_1;
-	  thread->flags &= (~AGS_THREAD_TREE_SYNC_0);
-	  break;
-	}
-      case 1:
-	{
-	  thread->flags &= (~AGS_THREAD_WAIT_1);
-	  thread->flags |= AGS_THREAD_WAIT_2;
-	  thread->flags &= (~AGS_THREAD_TREE_SYNC_1);
-	  break;
-	}
-      case 2:
-	{
-	  thread->flags &= (~AGS_THREAD_WAIT_2);
-	  thread->flags |= AGS_THREAD_WAIT_0;
-	  thread->flags &= (~AGS_THREAD_TREE_SYNC_2);
-	  break;
-	}
-      }      
-
       ags_thread_unlock(thread);
     }else{
       guint next_tic;
@@ -1459,33 +1433,13 @@ ags_thread_loop(void *ptr)
 	next_tic = 2;
       }
 
-      switch(tic){
-      case 0:
-	{
-	  thread->flags &= (~AGS_THREAD_WAIT_0);
-	  thread->flags |= AGS_THREAD_WAIT_1;
-	  thread->flags &= (~AGS_THREAD_TREE_SYNC_0);
-	  break;
-	}
-      case 1:
-	{
-	  thread->flags &= (~AGS_THREAD_WAIT_1);
-	  thread->flags |= AGS_THREAD_WAIT_2;
-	  thread->flags &= (~AGS_THREAD_TREE_SYNC_1);
-	  break;
-	}
-      case 2:
-	{
-	  thread->flags &= (~AGS_THREAD_WAIT_2);
-	  thread->flags |= AGS_THREAD_WAIT_0;
-	  thread->flags &= (~AGS_THREAD_TREE_SYNC_2);
-	  break;
-	}
-      }
+      ags_thread_lock(thread);
 
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_thread_main_loop_unlock_children(main_loop, tic);
+
+      ags_thread_unlock(thread);
     }
   }
 
