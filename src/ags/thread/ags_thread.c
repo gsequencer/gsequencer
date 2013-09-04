@@ -1410,8 +1410,6 @@ ags_thread_loop(void *ptr)
 	(ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 1 && (AGS_THREAD_WAIT_1 & (thread->flags)) != 0) ||
 	(ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0))){
 
-      ags_thread_lock(thread);
-
       while((ags_thread_is_current_ready(thread, current_tic) &&
 	     !ags_thread_is_tree_in_sync(thread, current_tic)) &&
 	    ((ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 0 && (AGS_THREAD_WAIT_0 & (thread->flags)) != 0) ||
@@ -1420,8 +1418,6 @@ ags_thread_loop(void *ptr)
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
-
-      ags_thread_unlock(thread);
     }else{
       guint next_tic;
 
@@ -1433,13 +1429,9 @@ ags_thread_loop(void *ptr)
 	next_tic = 2;
       }
 
-      ags_thread_lock(thread);
-
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_thread_main_loop_unlock_children(main_loop, tic);
-
-      ags_thread_unlock(thread);
     }
   }
 
