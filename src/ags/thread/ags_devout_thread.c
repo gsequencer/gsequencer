@@ -110,7 +110,7 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
 
   thread = AGS_THREAD(devout_thread);
 
-  thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
+  //  thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
 }
 
 void
@@ -142,6 +142,7 @@ ags_devout_thread_start(AgsThread *thread)
 {
   AgsDevout *devout;
   AgsDevoutThread *devout_thread;
+  GError *error;
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
@@ -160,7 +161,18 @@ ags_devout_thread_start(AgsThread *thread)
   /*  */
   AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
 
-  ags_devout_alsa_init(devout);
+  error = NULL;
+  ags_devout_run(devout,
+		 &error);
+
+  if(error != NULL){
+    AgsAudioLoop *audio_loop;
+
+    /* preserve AgsAudioLoop from playing */
+    //TODO:JK: implement me
+
+    return;
+  }
 
   memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -173,15 +185,23 @@ ags_devout_thread_run(AgsThread *thread)
 {
   AgsDevout *devout;
   AgsDevoutThread *devout_thread;
+  GError *error;
 
-  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->run(thread);
+  //  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->run(thread);
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
   devout = AGS_DEVOUT(thread->devout);
 
-  g_message("play\0");
-  ags_devout_alsa_play(devout);
+  //  g_message("play\0");
+
+  error = NULL;
+  ags_devout_alsa_play(devout,
+		       &error);
+
+  if(error != NULL){
+    //TODO:JK: implement me
+  }
 }
 
 void
@@ -199,7 +219,12 @@ ags_devout_thread_stop(AgsThread *thread)
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (devout->flags)) != 0 ||
      (AGS_AUDIO_LOOP_PLAY_CHANNEL & (devout->flags)) != 0 ||
      (AGS_AUDIO_LOOP_PLAY_AUDIO & (devout->flags)) != 0){
-    g_message("ags_devout_stop:  still playing\n\0");
+    g_message("ags_devout_thread_stop:  still playing\n\0");
+    return;
+  }
+
+  if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
+    g_message("ags_devout_thread_stop:  just starting\n\0");
     return;
   }
 

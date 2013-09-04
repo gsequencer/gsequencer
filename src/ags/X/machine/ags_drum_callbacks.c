@@ -21,6 +21,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_navigation.h>
@@ -64,6 +66,8 @@
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall"
 
 extern const char *AGS_DRUM_INDEX;
+
+void ags_drum_start_devout_failure(AgsTask *task, GError *error);
 
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
@@ -289,6 +293,25 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
       AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
     }
   }
+}
+
+void
+ags_drum_start_devout_failure(AgsTask *task, GError *error)
+{
+  AgsWindow *window;
+  GtkMessageDialog *dialog;
+  AgsAudioLoop *audio_loop;
+
+  /* show error message */
+  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->main)->window;
+  
+  dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
+						       GTK_DIALOG_MODAL,
+						       GTK_MESSAGE_ERROR,
+						       GTK_BUTTONS_CLOSE,
+						       error->message);
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
 void

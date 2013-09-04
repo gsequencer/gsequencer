@@ -387,6 +387,9 @@ main(int argc, char **argv)
 
   main->devout = window->devout;
   main->main_loop = window->devout->audio_loop;
+  g_object_set(G_OBJECT(main->main_loop),
+	       "devout\0", main->devout,
+	       NULL);
 
   //TODO:JK: really ugly
   main->devout->main = main;

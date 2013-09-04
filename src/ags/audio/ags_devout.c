@@ -51,8 +51,10 @@ void ags_devout_switch_buffer_flag(AgsDevout *devout);
 
 void ags_devout_play_functions(AgsDevout *devout);
 
-void ags_devout_alsa_init(AgsDevout *devout);
-void ags_devout_alsa_play(AgsDevout *devout);
+void ags_devout_alsa_init(AgsDevout *devout,
+			  GError **error);
+void ags_devout_alsa_play(AgsDevout *devout,
+			  GError **error);
 void ags_devout_alsa_free(AgsDevout *devout);
 
 enum{
@@ -645,7 +647,8 @@ ags_devout_real_run(AgsDevout *devout,
 
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
     if(devout->out.alsa.handle == NULL){
-      ags_devout_alsa_init(devout);
+      ags_devout_alsa_init(devout,
+			   error);
       
       ags_thread_start(AGS_THREAD(devout_thread));
       
@@ -767,7 +770,8 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
 }
 
 void
-ags_devout_alsa_init(AgsDevout *devout)
+ags_devout_alsa_init(AgsDevout *devout,
+		     GError **error)
 {
   int rc;
   snd_pcm_t *handle;
@@ -780,7 +784,7 @@ ags_devout_alsa_init(AgsDevout *devout)
   /* Open PCM device for playback. */
   handle = NULL;
 
-  rc = snd_pcm_open(&handle, "hw:1,0\0", SND_PCM_STREAM_PLAYBACK, 0);
+  rc = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0);
 
   if(rc < 0) {
     g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
@@ -838,7 +842,8 @@ ags_devout_alsa_init(AgsDevout *devout)
 }
 
 void
-ags_devout_alsa_play(AgsDevout *devout)
+ags_devout_alsa_play(AgsDevout *devout,
+		     GError **error)
 {
   AgsDevoutThread *devout_thread;
  
