@@ -327,38 +327,12 @@ ags_thread_set_devout(AgsThread *thread, GObject *devout)
 void
 ags_thread_lock(AgsThread *thread)
 {
-  AgsThread *toplevel;
-
   if(thread == NULL){
     return;
   }
 
-  toplevel = ags_thread_get_toplevel(thread);
-
-  if(toplevel == thread){
-    if(toplevel->children != NULL){
-      pthread_mutex_lock(&(toplevel->children->mutex));
-      pthread_mutex_lock(&(thread->mutex));
-
-      thread->flags |= AGS_THREAD_LOCKED;
-      pthread_mutex_unlock(&(toplevel->children->mutex));
-    }else{
-      pthread_mutex_lock(&(thread->mutex));
-      thread->flags |= AGS_THREAD_LOCKED;
-    }
-  }else{
-    if(toplevel->children == thread){
-      pthread_mutex_lock(&(thread->mutex));
-    
-      thread->flags |= AGS_THREAD_LOCKED;
-    }else{
-      pthread_mutex_lock(&(toplevel->children->mutex));
-
-      pthread_mutex_lock(&(thread->mutex));
-      thread->flags |= AGS_THREAD_LOCKED;
-      pthread_mutex_unlock(&(toplevel->children->mutex));
-    }
-  }
+  pthread_mutex_lock(&(thread->mutex));
+  thread->flags |= AGS_THREAD_LOCKED;
 }
 
 /**
@@ -1401,7 +1375,7 @@ ags_thread_loop(void *ptr)
 
   void ags_thread_loop_sync(AgsThread *thread){
     guint tic;
-    
+
     tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
     if(tic == 0 && current_tic == 2){
@@ -1435,6 +1409,9 @@ ags_thread_loop(void *ptr)
        ((ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 0 && (AGS_THREAD_WAIT_0 & (thread->flags)) != 0) ||
 	(ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 1 && (AGS_THREAD_WAIT_1 & (thread->flags)) != 0) ||
 	(ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 2 && (AGS_THREAD_WAIT_2 & (thread->flags)) != 0))){
+
+      ags_thread_lock(thread);
+
       while((ags_thread_is_current_ready(thread, current_tic) &&
 	     !ags_thread_is_tree_in_sync(thread, current_tic)) &&
 	    ((ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)) == 0 && (AGS_THREAD_WAIT_0 & (thread->flags)) != 0) ||
@@ -1443,6 +1420,34 @@ ags_thread_loop(void *ptr)
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
+
+      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      switch(tic){
+      case 0:
+	{
+	  thread->flags &= (~AGS_THREAD_WAIT_0);
+	  thread->flags |= AGS_THREAD_WAIT_1;
+	  thread->flags &= (~AGS_THREAD_TREE_SYNC_0);
+	  break;
+	}
+      case 1:
+	{
+	  thread->flags &= (~AGS_THREAD_WAIT_1);
+	  thread->flags |= AGS_THREAD_WAIT_2;
+	  thread->flags &= (~AGS_THREAD_TREE_SYNC_1);
+	  break;
+	}
+      case 2:
+	{
+	  thread->flags &= (~AGS_THREAD_WAIT_2);
+	  thread->flags |= AGS_THREAD_WAIT_0;
+	  thread->flags &= (~AGS_THREAD_TREE_SYNC_2);
+	  break;
+	}
+      }      
+
+      ags_thread_unlock(thread);
     }else{
       guint next_tic;
 
