@@ -154,8 +154,6 @@ ags_devout_thread_start(AgsThread *thread)
   devout->flags |= (AGS_DEVOUT_BUFFER0 |
 		    AGS_DEVOUT_PLAY);
 
-  thread->flags |= (AGS_THREAD_RUNNING);
-
   ags_thread_unlock(thread);
 
   /*  */

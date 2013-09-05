@@ -192,7 +192,7 @@ ags_task_thread_run(AgsThread *thread)
     ags_thread_lock(thread);
 
     thread->flags &= (~AGS_THREAD_INITIAL_RUN);
-    pthread_cond_signal(&(thread->start_cond));
+    //    pthread_cond_signal(&(thread->start_cond));
 
     ags_thread_unlock(thread);
   }

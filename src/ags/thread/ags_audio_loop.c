@@ -361,7 +361,8 @@ ags_audio_loop_start(AgsThread *thread)
   /*  */
   ags_thread_lock(thread);
 
-  thread->flags |= (AGS_THREAD_RUNNING);
+  thread->flags |= (AGS_THREAD_RUNNING |
+		    AGS_THREAD_WAIT_0);
 
   AGS_THREAD(audio_loop->task_thread)->flags |= AGS_THREAD_INITIAL_RUN;
 
@@ -418,6 +419,7 @@ ags_audio_loop_run(AgsThread *thread)
     devout->delay_counter = 0;
   }
 
+  /*
   ags_thread_lock(audio_loop->task_thread);
 
   if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(audio_loop->task_thread)->flags)) != 0){
@@ -429,6 +431,7 @@ ags_audio_loop_run(AgsThread *thread)
   }
   
   ags_thread_unlock(audio_loop->task_thread);
+  */
 }
 
 /**

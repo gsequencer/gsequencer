@@ -327,12 +327,23 @@ ags_thread_set_devout(AgsThread *thread, GObject *devout)
 void
 ags_thread_lock(AgsThread *thread)
 {
+  AgsThread *main_loop;
+
   if(thread == NULL){
     return;
   }
 
-  pthread_mutex_lock(&(thread->mutex));
-  thread->flags |= AGS_THREAD_LOCKED;
+  main_loop = ags_thread_get_toplevel(thread);
+
+  if(main_loop == thread){
+    pthread_mutex_lock(&(thread->mutex));
+    thread->flags |= AGS_THREAD_LOCKED;
+  }else{
+    pthread_mutex_lock(&(main_loop->mutex));
+    pthread_mutex_lock(&(thread->mutex));
+    thread->flags |= AGS_THREAD_LOCKED;
+    pthread_mutex_unlock(&(main_loop->mutex));
+  }
 }
 
 /**
@@ -438,30 +449,12 @@ ags_thread_remove_child(AgsThread *thread, AgsThread *child)
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
 {
-  AgsThread *main_loop;
-
   if(thread == NULL || child == NULL){
     return;
   }
   
   if(child->parent != NULL){
     ags_thread_remove_child(child->parent, child);
-  }
-
-  /*  */
-  main_loop = ags_thread_get_toplevel(thread);
-
-  ags_thread_lock(main_loop);
-
-  current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-  switch(current_tic){
-  case 0:
-    thread->flags |= AGS_THREAD_WAIT_0;
-  case 1:
-    thread->flags |= AGS_THREAD_WAIT_1;
-  case 2:
-    thread->flags |= AGS_THREAD_WAIT_2;
   }
 
   /*  */
@@ -478,10 +471,10 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
     child->parent = thread;
   }
 
-  ags_thread_unlock(main_loop);
-
   if((AGS_THREAD_RUNNING & (thread->flags)) != 0){
     ags_thread_start(child);
+  }else{
+    thread->flags |= AGS_THREAD_WAIT_0;
   }
 }
 
@@ -590,6 +583,10 @@ ags_thread_children_is_locked(AgsThread *thread)
 gboolean
 ags_thread_is_current_ready(AgsThread *current, guint tic)
 {
+  if((AGS_THREAD_RUNNING & (current->flags)) == 0){
+    return(TRUE);
+  }
+
   switch(tic){
   case 0:
     {
@@ -1254,10 +1251,34 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 void
 ags_thread_real_start(AgsThread *thread)
 {
+  AgsThread *main_loop;
+  guint current_tic;
+
   if(thread == NULL){
     return;
   }
 
+  /*  */
+  main_loop = ags_thread_get_toplevel(thread);
+
+  ags_thread_lock(main_loop);
+
+  thread->flags |= AGS_THREAD_RUNNING;
+
+  current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+  switch(current_tic){
+  case 0:
+    thread->flags |= AGS_THREAD_WAIT_2;
+  case 1:
+    thread->flags |= AGS_THREAD_WAIT_0;
+  case 2:
+    thread->flags |= AGS_THREAD_WAIT_1;
+  }
+
+  ags_thread_unlock(main_loop);
+
+  /*  */
   ags_thread_lock(thread);
 
   thread->flags |= AGS_THREAD_INITIAL_RUN;
