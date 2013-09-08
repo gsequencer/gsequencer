@@ -139,6 +139,7 @@ ags_gui_thread_start(AgsThread *thread)
   gui_thread = AGS_GUI_THREAD(thread);
 
   gui_thread->iter = 0.0;
+  //  gui_thread->frequency = ;
 
   AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
 }
@@ -164,7 +165,7 @@ ags_gui_thread_run(AgsThread *thread)
     wait.tv_sec = floor(ts.tv_sec / i_stop);
 
     rest = (double) ts.tv_sec / (double) i_stop - (double) (ts.tv_sec % (long) i_stop);
-    wait.tv_nsec = rest + floor(ts.tv_nsec / i_stop);
+    wait.tv_nsec = (long) (1000000000 * rest) + floor(ts.tv_nsec / i_stop);
 
     /*  */
     if(gui_thread->iter >= 1.0){
