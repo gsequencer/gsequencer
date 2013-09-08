@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 #include <math.h>
 
 void ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread);
@@ -104,7 +106,9 @@ ags_gui_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_gui_thread_init(AgsGuiThread *gui_thread)
 {
-  gui_thread->frequency = 200.0 / 70.0;
+  gui_thread->frequency = 1.0 /
+    (1.0 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE) *
+    (1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE);
 }
 
 void
@@ -139,7 +143,6 @@ ags_gui_thread_start(AgsThread *thread)
   gui_thread = AGS_GUI_THREAD(thread);
 
   gui_thread->iter = 0.0;
-  //  gui_thread->frequency = ;
 
   AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
 }
