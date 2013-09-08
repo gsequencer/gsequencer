@@ -134,9 +134,13 @@ ags_gui_thread_finalize(GObject *gobject)
 void
 ags_gui_thread_start(AgsThread *thread)
 {
-  thread->iter = 0;
+  AgsGuiThread *gui_thread;
 
-  G_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
+  gui_thread = AGS_GUI_THREAD(thread);
+
+  gui_thread->iter = 0.0;
+
+  AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
 }
 
 void
