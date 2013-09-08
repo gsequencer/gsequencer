@@ -150,12 +150,46 @@ ags_gui_thread_run(AgsThread *thread)
 
   gui_thread = AGS_GUI_THREAD(thread);
 
-  if(gui_thread->iter > gui_thread->frequency){
-    gtk_main_iteration();
+  if(gui_thread->frequency < 1.0){
+    guint i, i_stop;
+    double rest;
+    struct timespec wait, ts;
 
-    gui_thread->iter = 0.0;
+    /*  */
+    i_stop = floor(1.0 / gui_thread->frequency);
+
+    /*  */
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
+
+    wait.tv_sec = floor(ts.tv_sec / i_stop);
+
+    rest = (double) ts.tv_sec / (double) i_stop - (double) (ts.tv_sec % (long) i_stop);
+    wait.tv_nsec = rest + floor(ts.tv_nsec / i_stop);
+
+    /*  */
+    if(gui_thread->iter >= 1.0){
+      i_stop++;
+      gui_thread->iter = 0.0;
+    }else{
+      gui_thread->iter += gui_thread->frequency;
+    }
+
+    /*  */
+    for(i = 0; i < i_stop; i++){
+      gtk_main_iteration();
+
+      nanosleep(&wait, NULL);
+    }
+    
   }else{
-    gui_thread->iter += (gdouble) ceil(1.0 / gui_thread->frequency);
+    /*  */
+    if(gui_thread->iter > gui_thread->frequency){
+      gtk_main_iteration();
+
+      gui_thread->iter = 0.0;
+    }else{
+      gui_thread->iter += (gdouble) floor(1.0 / gui_thread->frequency);
+    }
   }
 }
 
