@@ -24,6 +24,11 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_main_loop.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_gui_thread.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -365,6 +370,7 @@ main(int argc, char **argv)
 {
   AgsMain *main;
   AgsWindow *window;
+  AgsGuiThread *gui_thread;
 
   const char *error;
 
@@ -395,7 +401,13 @@ main(int argc, char **argv)
   main->devout->main = main;
   AGS_AUDIO_LOOP(main->main_loop)->main = main;
 
-  gtk_main();
+  /*  */
+  main->gui_loop = (AgsThread *) ags_gui_thread_new();
+  ags_thread_add_child(main->main_loop, main->gui_loop);
+  ags_thread_start(main->gui_loop);
+
+  pthread_join(main->gui_loop->thread,
+	       NULL);
 
   return(0);
 }

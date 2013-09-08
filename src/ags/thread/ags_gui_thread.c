@@ -140,10 +140,19 @@ ags_gui_thread_start(AgsThread *thread)
 {
   AgsGuiThread *gui_thread;
 
+  /*  */
+  ags_thread_lock(thread);
+
+  thread->flags |= (AGS_THREAD_RUNNING);
+
+  ags_thread_unlock(thread);
+
+  /*  */
   gui_thread = AGS_GUI_THREAD(thread);
 
   gui_thread->iter = 0.0;
 
+  /*  */
   AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
 }
 
@@ -201,10 +210,9 @@ AgsGuiThread*
 ags_gui_thread_new()
 {
   AgsGuiThread *gui_thread;
-
+  
   gui_thread = (AgsGuiThread *) g_object_new(AGS_TYPE_GUI_THREAD,
-						   NULL);
-
+					     NULL);
 
   return(gui_thread);
 }

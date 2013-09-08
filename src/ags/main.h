@@ -54,8 +54,12 @@ struct _AgsMain
   xmlrpc_env env;
 
   AgsThread *main_loop;
+  AgsThread *gui_loop;
+
   AgsServer *server;
+
   AgsDevout *devout;
+
   AgsWindow *window;
 
   AgsLog *log;
