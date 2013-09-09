@@ -127,10 +127,12 @@ AgsThread* ags_thread_next_children_locked(AgsThread *thread);
 void ags_thread_lock_parent(AgsThread *thread, AgsThread *parent);
 void ags_thread_lock_sibling(AgsThread *thread);
 void ags_thread_lock_children(AgsThread *thread);
+void ags_thread_lock_all(AgsThread *thread);
 
 void ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent);
 void ags_thread_unlock_sibling(AgsThread *thread);
 void ags_thread_unlock_children(AgsThread *thread);
+void ags_thread_unlock_all(AgsThread *thread);
 
 void ags_thread_wait_parent(AgsThread *thread, AgsThread *parent);
 void ags_thread_wait_sibling(AgsThread *thread);

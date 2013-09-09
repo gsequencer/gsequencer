@@ -837,6 +837,14 @@ ags_thread_lock_children(AgsThread *thread)
   ags_thread_lock_children_recursive(thread->children);
 }
 
+void
+ags_thread_lock_all(AgsThread *thread)
+{
+  ags_thread_lock_parent(thread, NULL);
+  ags_thread_lock_sibling(thread);
+  ags_thread_lock_children(thread);
+}
+
 /**
  * ags_thread_unlock_parent:
  * @thread an #AgsThread
@@ -946,6 +954,14 @@ ags_thread_unlock_children(AgsThread *thread)
   }
   
   ags_thread_unlock_children_recursive(thread->children);
+}
+
+void
+ags_thread_unlock_all(AgsThread *thread)
+{
+  ags_thread_unlock_parent(thread, NULL);
+  ags_thread_unlock_sibling(thread);
+  ags_thread_unlock_children(thread);
 }
 
 /**
@@ -1241,7 +1257,12 @@ ags_thread_loop(void *ptr)
   void ags_thread_loop_sync(AgsThread *thread){
     guint tic;
 
+    ags_thread_lock_all(thread);
+
     if(!ags_thread_is_tree_ready(thread)){
+
+      ags_thread_unlock_all(thread);
+
       if(thread != main_loop){
 	if(tic == 0 && current_tic == 2){
 	  return;
@@ -1264,6 +1285,8 @@ ags_thread_loop(void *ptr)
       guint next_tic;
 
       tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      ags_thread_unlock_all(thread);
 
       if(tic = 2){
 	next_tic = 0;
