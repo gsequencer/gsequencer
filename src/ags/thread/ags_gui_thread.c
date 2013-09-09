@@ -186,7 +186,7 @@ ags_gui_thread_run(AgsThread *thread)
     wait.tv_nsec = 1000000000 / i_stop;
 
     /*  */
-    for(i = 0; i < i_stop; i++){
+    for(i = 0; i < i_stop / 10; i++){
       ags_thread_lock(AGS_THREAD(task_thread));
 
       gtk_main_iteration_do(FALSE);
@@ -199,11 +199,11 @@ ags_gui_thread_run(AgsThread *thread)
   }else{
     /*  */
     if(gui_thread->iter > 2.0){
-      ags_thread_lock(AGS_THREAD(audio_loop));
+      ags_thread_lock(AGS_THREAD(task_thread));
      
       gtk_main_iteration_do(FALSE);
 
-      ags_thread_unlock(AGS_THREAD(audio_loop));
+      ags_thread_unlock(AGS_THREAD(task_thread));
 
       gui_thread->iter = 0.0;
     }else{
