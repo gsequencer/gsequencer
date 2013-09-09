@@ -159,9 +159,13 @@ ags_gui_thread_start(AgsThread *thread)
 void
 ags_gui_thread_run(AgsThread *thread)
 {
+  AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
+  AgsTaskThread *task_thread;
 
   gui_thread = AGS_GUI_THREAD(thread);
+  audio_loop = AGS_AUDIO_LOOP(thread->parent);
+  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
 
   if(gui_thread->frequency < 1.0){
     guint i, i_stop;
@@ -169,7 +173,7 @@ ags_gui_thread_run(AgsThread *thread)
     struct timespec wait, ts;
 
     /*  */
-    i_stop = floor(1.0 / gui_thread->frequency);
+    i_stop = (guint) floor(1.0 / gui_thread->frequency);
 
     /*  */
     clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
@@ -177,7 +181,7 @@ ags_gui_thread_run(AgsThread *thread)
     wait.tv_sec = floor(ts.tv_sec / i_stop);
 
     rest = (double) ts.tv_sec / (double) i_stop - (double) (ts.tv_sec % (long) i_stop);
-    wait.tv_nsec = (long) (1000000000 * rest) + floor(ts.tv_nsec / i_stop);
+    wait.tv_nsec = (long) (1000000000 * rest / i_stop) + floor(ts.tv_nsec / i_stop);
 
     /*  */
     if(gui_thread->iter >= 1.0){
@@ -189,7 +193,11 @@ ags_gui_thread_run(AgsThread *thread)
 
     /*  */
     for(i = 0; i < i_stop; i++){
+      ags_thread_lock(AGS_THREAD(task_thread));
+
       gtk_main_iteration();
+
+      ags_thread_unlock(AGS_THREAD(task_thread));
 
       nanosleep(&wait, NULL);
     }
@@ -197,7 +205,11 @@ ags_gui_thread_run(AgsThread *thread)
   }else{
     /*  */
     if(gui_thread->iter > gui_thread->frequency){
+      ags_thread_lock(AGS_THREAD(task_thread));
+
       gtk_main_iteration();
+
+      ags_thread_unlock(AGS_THREAD(task_thread));
 
       gui_thread->iter = 0.0;
     }else{
