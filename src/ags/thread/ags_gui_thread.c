@@ -174,7 +174,7 @@ ags_gui_thread_run(AgsThread *thread)
     i_stop = (guint) floor(1.0 / gui_thread->frequency);
 
     /*  */
-    if(gui_thread->iter > gui_thread->frequency){
+    if(gui_thread->iter > 0.5){
       i_stop++;
       gui_thread->iter = 0.0;
     }else{
@@ -189,7 +189,7 @@ ags_gui_thread_run(AgsThread *thread)
     for(i = 0; i < i_stop; i++){
       ags_thread_lock(AGS_THREAD(task_thread));
 
-      gtk_main_iteration();
+      gtk_main_iteration_do(FALSE);
 
       ags_thread_unlock(AGS_THREAD(task_thread));
 
@@ -198,10 +198,10 @@ ags_gui_thread_run(AgsThread *thread)
     
   }else{
     /*  */
-    if(gui_thread->iter > gui_thread->frequency){
+    if(gui_thread->iter > 2.0){
       ags_thread_lock(AGS_THREAD(audio_loop));
      
-      gtk_main_iteration();
+      gtk_main_iteration_do(FALSE);
 
       ags_thread_unlock(AGS_THREAD(audio_loop));
 
