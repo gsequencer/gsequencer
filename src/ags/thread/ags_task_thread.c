@@ -181,8 +181,8 @@ ags_task_thread_run(AgsThread *thread)
 
   if(!initialized){
     play_idle.tv_sec = 0;
-    play_idle.tv_nsec = 10 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
-    idle = 1000 * round(1000.0 * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
 
     initialized = TRUE;
   }

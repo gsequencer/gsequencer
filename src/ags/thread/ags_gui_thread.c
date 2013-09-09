@@ -106,9 +106,7 @@ ags_gui_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_gui_thread_init(AgsGuiThread *gui_thread)
 {
-  gui_thread->frequency = 1.0 /
-    (1.0 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE) *
-    (1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE);
+  gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
 }
 
 void
@@ -176,20 +174,16 @@ ags_gui_thread_run(AgsThread *thread)
     i_stop = (guint) floor(1.0 / gui_thread->frequency);
 
     /*  */
-    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
-
-    wait.tv_sec = floor(ts.tv_sec / i_stop);
-
-    rest = (double) ts.tv_sec / (double) i_stop - (double) (ts.tv_sec % (long) i_stop);
-    wait.tv_nsec = (long) (1000000000 * rest / i_stop) + floor(ts.tv_nsec / i_stop);
-
-    /*  */
-    if(gui_thread->iter >= 1.0){
+    if(gui_thread->iter > gui_thread->frequency){
       i_stop++;
       gui_thread->iter = 0.0;
     }else{
-      gui_thread->iter += gui_thread->frequency;
+      gui_thread->iter += (1.0 / gui_thread->frequency);
     }
+
+    /*  */
+    wait.tv_sec = 0;
+    wait.tv_nsec = 1000000000 / i_stop;
 
     /*  */
     for(i = 0; i < i_stop; i++){
@@ -205,15 +199,16 @@ ags_gui_thread_run(AgsThread *thread)
   }else{
     /*  */
     if(gui_thread->iter > gui_thread->frequency){
-      ags_thread_lock(AGS_THREAD(task_thread));
-
+      ags_thread_lock(AGS_THREAD(audio_loop));
+     
       gtk_main_iteration();
 
-      ags_thread_unlock(AGS_THREAD(task_thread));
+      ags_thread_unlock(AGS_THREAD(audio_loop));
 
       gui_thread->iter = 0.0;
     }else{
-      gui_thread->iter += (gdouble) floor(1.0 / gui_thread->frequency);
+
+      gui_thread->iter += (1.0 / gui_thread->frequency);
     }
   }
 }
