@@ -201,7 +201,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    gtk_main_quit();
+    ags_main_quit(AGS_MAIN(window->main));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }

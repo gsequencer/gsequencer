@@ -72,6 +72,8 @@ struct _AgsMainClass
 
 GType ags_main_get_type();
 
+void ags_main_quit(AgsMain *main);
+
 AgsMain* ags_main_new();
 
 #endif /*__AGS_MAIN_H__*/

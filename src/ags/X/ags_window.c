@@ -59,8 +59,8 @@ ags_window_get_type()
     };
 
     ags_type_window = g_type_register_static(GTK_TYPE_WINDOW,
-					      "AgsWindow\0", &ags_window_info,
-					      0);
+					     "AgsWindow\0", &ags_window_info,
+					     0);
     
     g_type_add_interface_static(ags_type_window,
 				AGS_TYPE_CONNECTABLE,

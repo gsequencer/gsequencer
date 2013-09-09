@@ -234,12 +234,12 @@ ags_task_thread_run(AgsThread *thread)
     ags_thread_unlock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
 
     //FIXME:JK: this isn't very efficient
-    nanosleep(&play_idle, NULL);
+    //    nanosleep(&play_idle, NULL);
   }else{
     ags_thread_unlock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
 
     //FIXME:JK: this isn't very efficient
-    usleep(idle);
+    //    usleep(idle);
   }
 }
 

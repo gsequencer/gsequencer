@@ -354,6 +354,12 @@ ags_colors_alloc()
   }
 }
 
+void
+ags_main_quit(AgsMain *main)
+{
+  ags_thread_stop(main->gui_loop);
+}
+
 AgsMain*
 ags_main_new()
 {

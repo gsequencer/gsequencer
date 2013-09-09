@@ -68,10 +68,14 @@ struct _AgsThread
   guint flags;
 
   pthread_t thread;
+  pthread_attr_t thread_attr;
+
   pthread_mutex_t mutex;
   pthread_mutexattr_t mutexattr;
+
   pthread_cond_t start_cond;
   pthread_cond_t cond;
+
   GList *unlocked;
 
   pthread_barrier_t barrier[2];

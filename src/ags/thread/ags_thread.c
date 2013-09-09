@@ -191,11 +191,16 @@ ags_thread_init(AgsThread *thread)
 {
   thread->flags = 0;
 
+  pthread_attr_init(&(thread->thread_attr));
+
   pthread_mutexattr_init(&(thread->mutexattr));
   pthread_mutexattr_settype(&(thread->mutexattr), PTHREAD_MUTEX_RECURSIVE);
+
   pthread_mutex_init(&(thread->mutex), &(thread->mutexattr));
+
   pthread_cond_init(&(thread->start_cond), NULL);
   pthread_cond_init(&(thread->cond), NULL);
+
   thread->unlocked = NULL;
 
   thread->first_barrier = TRUE;
@@ -930,6 +935,10 @@ ags_thread_unlock_children(AgsThread *thread)
   void ags_thread_unlock_children_recursive(AgsThread *child){
     AgsThread *current;
 
+    if(child == NULL){
+      return;
+    }
+
     current = ags_thread_last(child);
 
     while(current != NULL){
@@ -1223,7 +1232,7 @@ ags_thread_real_start(AgsThread *thread)
 
   ags_thread_unlock(thread);
 
-  pthread_create(&(thread->thread), NULL,
+  pthread_create(&(thread->thread), &(thread->thread_attr),
 		 &(ags_thread_loop), thread);
 }
 
@@ -1257,11 +1266,11 @@ ags_thread_loop(void *ptr)
   void ags_thread_loop_sync(AgsThread *thread){
     guint tic;
 
-    ags_thread_lock_all(thread);
+    ags_thread_lock(main_loop);
 
     if(!ags_thread_is_tree_ready(thread)){
 
-      ags_thread_unlock_all(thread);
+      ags_thread_unlock(main_loop);
 
       if(thread != main_loop){
 	if(tic == 0 && current_tic == 2){
@@ -1286,7 +1295,7 @@ ags_thread_loop(void *ptr)
 
       tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
-      ags_thread_unlock_all(thread);
+      ags_thread_unlock(main_loop);
 
       if(tic = 2){
 	next_tic = 0;
