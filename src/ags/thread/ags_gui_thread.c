@@ -230,6 +230,10 @@ ags_gui_thread_run(AgsThread *thread)
       }
     }
   }else{
+    guint iter_val;
+
+    iter_val = 1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+
     /*  */
     if(gui_thread->iter > 1.0){
 
@@ -253,7 +257,7 @@ ags_gui_thread_run(AgsThread *thread)
 
       gui_thread->iter = 0.0;
     }else{
-      gui_thread->iter += i_stop;
+      gui_thread->iter += iter_val;
     }
   }
 

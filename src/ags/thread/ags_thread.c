@@ -342,11 +342,13 @@ ags_thread_lock(AgsThread *thread)
 
   if(main_loop == thread){
     pthread_mutex_lock(&(thread->mutex));
-    thread->flags |= AGS_THREAD_LOCKED;
+    g_atomic_int_or(&(thread->flags),
+		     (AGS_THREAD_LOCKED));
   }else{
     pthread_mutex_lock(&(main_loop->mutex));
     pthread_mutex_lock(&(thread->mutex));
-    thread->flags |= AGS_THREAD_LOCKED;
+    g_atomic_int_or(&(thread->flags),
+		     (AGS_THREAD_LOCKED));
     pthread_mutex_unlock(&(main_loop->mutex));
   }
 }
@@ -368,7 +370,8 @@ ags_thread_trylock(AgsThread *thread)
       return(FALSE);
     }
 
-    thread->flags |= AGS_THREAD_LOCKED;
+    g_atomic_int_or(&(thread->flags),
+		     (AGS_THREAD_LOCKED));
   }else{
     if(pthread_mutex_trylock(&(main_loop->mutex)) != 0){
       return(FALSE);
@@ -379,7 +382,8 @@ ags_thread_trylock(AgsThread *thread)
       return(FALSE);
     }
 
-    thread->flags |= AGS_THREAD_LOCKED;
+    g_atomic_int_or(&(thread->flags),
+		     (AGS_THREAD_LOCKED));
     pthread_mutex_unlock(&(main_loop->mutex));
   }
 
@@ -399,7 +403,9 @@ ags_thread_unlock(AgsThread *thread)
     return;
   }
 
-  thread->flags &= (~AGS_THREAD_LOCKED);
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_LOCKED));
+
   pthread_mutex_unlock(&(thread->mutex));
 }
 
@@ -513,8 +519,6 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
 
   if((AGS_THREAD_RUNNING & (thread->flags)) != 0){
     ags_thread_start(child);
-  }else{
-    thread->flags |= AGS_THREAD_WAIT_0;
   }
 }
 
@@ -676,7 +680,8 @@ ags_thread_main_loop_unlock_children(AgsThread *thread)
     }
 
     while(child != NULL){
-      child->flags &= (~AGS_THREAD_WAIT_0);
+      g_atomic_int_and(&(child->flags),
+		       (~AGS_THREAD_WAIT_0));
 
       ags_thread_main_loop_unlock_children_recursive(child->children);
 
