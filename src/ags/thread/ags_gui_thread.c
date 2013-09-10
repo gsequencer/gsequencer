@@ -170,7 +170,7 @@ ags_gui_thread_run(AgsThread *thread)
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
 
   /*  */
-  i_stop = (guint) floor(1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+  i_stop = (guint) floor(1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE) / 2);
 
   if(gui_thread->frequency < 1.0){
     GPollFD fds;
@@ -197,16 +197,16 @@ ags_gui_thread_run(AgsThread *thread)
 
     /*  */
     for(i = 0; i < i_stop; i++){
-      pthread_mutex_lock(&(AGS_THREAD(task_thread)->mutex));
+      GDK_THREADS_ENTER();      
 
-      GDK_THREADS_ENTER();
       GDK_THREADS_LEAVE();
 
+      pthread_mutex_lock(&(AGS_THREAD(task_thread)->mutex));
+      
       g_main_context_iteration (NULL, FALSE);
 
       pthread_mutex_unlock(&(AGS_THREAD(task_thread)->mutex));
     }
-    
   }else{
     /*  */
     if(gui_thread->iter > 1.0){

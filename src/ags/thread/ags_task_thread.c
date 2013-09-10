@@ -181,7 +181,7 @@ ags_task_thread_run(AgsThread *thread)
 
   if(!initialized){
     play_idle.tv_sec = 0;
-    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE);
     idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
 
     initialized = TRUE;
@@ -198,7 +198,7 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /*  */
-  ags_thread_lock(thread);
+  pthread_mutex_lock(&(thread->mutex));
 
   g_list_free(task_thread->exec);
   list = 
@@ -209,41 +209,36 @@ ags_task_thread_run(AgsThread *thread)
   task_thread->pending = g_list_length(list);
   task_thread->queued -= prev_pending;
 
-  ags_thread_unlock(thread);
+  pthread_mutex_unlock(&(thread->mutex));
 
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
     int i;
 
+    pthread_mutex_lock(&(thread->mutex));
+
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
       g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
 
-      pthread_mutex_lock(&(thread->mutex));
-
       ags_task_launch(task);
-
-      pthread_mutex_unlock(&(thread->mutex));
 
       list = list->next;
     }
+
+    pthread_mutex_unlock(&(thread->mutex));
   }
 
   /* sleep if wanted */
-  ags_thread_lock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
-
   if((AGS_THREAD_RUNNING & (AGS_THREAD(AGS_AUDIO_LOOP(thread->parent)->devout_thread)->flags)) != 0){
-    ags_thread_unlock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
-
     //FIXME:JK: this isn't very efficient
     //    nanosleep(&play_idle, NULL);
   }else{
-    ags_thread_unlock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
-
     //FIXME:JK: this isn't very efficient
-    usleep(idle);
+    nanosleep(&play_idle, NULL);
+    //    usleep(idle);
   }
 }
 

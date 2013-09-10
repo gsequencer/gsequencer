@@ -351,6 +351,41 @@ ags_thread_lock(AgsThread *thread)
   }
 }
 
+
+gboolean
+ags_thread_trylock(AgsThread *thread)
+{
+  AgsThread *main_loop;
+
+  if(thread == NULL){
+    return(FALSE);
+  }
+
+  main_loop = ags_thread_get_toplevel(thread);
+
+  if(main_loop == thread){
+    if(pthread_mutex_trylock(&(thread->mutex)) != 0){
+      return(FALSE);
+    }
+
+    thread->flags |= AGS_THREAD_LOCKED;
+  }else{
+    if(pthread_mutex_trylock(&(main_loop->mutex)) != 0){
+      return(FALSE);
+    }
+
+    if(pthread_mutex_trylock(&(thread->mutex)) != 0){
+      pthread_mutex_unlock(&(main_loop->mutex));
+      return(FALSE);
+    }
+
+    thread->flags |= AGS_THREAD_LOCKED;
+    pthread_mutex_unlock(&(main_loop->mutex));
+  }
+
+  return(TRUE);
+}
+
 /**
  * ags_thread_unlock:
  * @thread an #AgsThread
@@ -1269,6 +1304,7 @@ ags_thread_loop(void *ptr)
     ags_thread_lock(main_loop);
 
     if(!ags_thread_is_tree_ready(thread)){
+      thread->flags |= AGS_THREAD_WAIT_0;
 
       ags_thread_unlock(main_loop);
 
@@ -1282,8 +1318,6 @@ ags_thread_loop(void *ptr)
 	}    
       }
     
-      thread->flags |= AGS_THREAD_WAIT_0;
-
       while(ags_thread_is_current_ready(thread)){
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
