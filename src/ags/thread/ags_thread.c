@@ -189,7 +189,8 @@ ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_thread_init(AgsThread *thread)
 {
-  thread->flags = 0;
+  g_atomic_int_set(&(thread->flags),
+		   0);
 
   pthread_attr_init(&(thread->thread_attr));
 
@@ -627,11 +628,15 @@ ags_thread_children_is_locked(AgsThread *thread)
 gboolean
 ags_thread_is_current_ready(AgsThread *current)
 {
-  if((AGS_THREAD_RUNNING & (current->flags)) == 0){
+  gint val;
+
+  val = g_atomic_int_get(&(current->flags));
+
+  if((AGS_THREAD_RUNNING & (val)) == 0){
     return(TRUE);
   }
 
-  if((AGS_THREAD_WAIT_0 & (current->flags)) != 0){
+  if((AGS_THREAD_WAIT_0 & (val)) != 0){
     return(TRUE);
   }
 
@@ -1311,7 +1316,7 @@ ags_thread_loop(void *ptr)
 	}    
       }
     
-      while(ags_thread_is_current_ready(thread)){
+      while(!ags_thread_is_current_ready(thread)){
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
 
@@ -1398,7 +1403,8 @@ ags_thread_loop(void *ptr)
     }
 
     /* set idle flag */
-    thread->flags |= AGS_THREAD_IDLE;
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_IDLE);
 
     if((AGS_THREAD_WAIT_FOR_PARENT & (thread->flags)) != 0){
       wait_for_parent = TRUE;

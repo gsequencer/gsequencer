@@ -114,6 +114,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(task_thread);
+  pthread_mutex_init(&(task_thread->read_mutex), NULL);
+  pthread_mutex_init(&(task_thread->launch_mutex), NULL);
 
   task_thread->queued = 0;
   task_thread->pending = 0;
@@ -174,9 +176,9 @@ ags_task_thread_run(AgsThread *thread)
   devout = AGS_DEVOUT(thread->devout);
 
   if(!initialized){
-    play_idle.tv_sec = 0;
-    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE);
-    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
+    //    play_idle.tv_sec = 0;
+    //    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE);
+    //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
 
     initialized = TRUE;
   }
@@ -192,7 +194,7 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /*  */
-  pthread_mutex_lock(&(thread->mutex));
+  pthread_mutex_lock(&(task_thread->read_mutex));
 
   g_list_free(task_thread->exec);
   list = 
@@ -203,14 +205,14 @@ ags_task_thread_run(AgsThread *thread)
   task_thread->pending = g_list_length(list);
   task_thread->queued -= prev_pending;
 
-  pthread_mutex_unlock(&(thread->mutex));
+  pthread_mutex_unlock(&(task_thread->read_mutex));
 
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
     int i;
 
-    pthread_mutex_lock(&(thread->mutex));
+    pthread_mutex_lock(&(task_thread->launch_mutex));
 
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
@@ -222,7 +224,7 @@ ags_task_thread_run(AgsThread *thread)
       list = list->next;
     }
 
-    pthread_mutex_unlock(&(thread->mutex));
+    pthread_mutex_unlock(&(task_thread->launch_mutex));
   }
 
   /* sleep if wanted */
@@ -231,7 +233,7 @@ ags_task_thread_run(AgsThread *thread)
     //    nanosleep(&play_idle, NULL);
   }else{
     //FIXME:JK: this isn't very efficient
-    nanosleep(&play_idle, NULL);
+    //    nanosleep(&play_idle, NULL);
     //    usleep(idle);
   }
 }
@@ -253,7 +255,7 @@ ags_task_thread_append_task_thread(void *ptr)
   free(append);
 
   /* lock */
-  ags_thread_lock(AGS_THREAD(task_thread));
+  pthread_mutex_lock(&(task_thread->read_mutex));
 
   /* append to queue */
   task_thread->queued += 1;
@@ -261,7 +263,7 @@ ags_task_thread_append_task_thread(void *ptr)
   task_thread->queue = g_list_append(task_thread->queue, task);
 
   /*  */
-  ags_thread_unlock(AGS_THREAD(task_thread));
+  pthread_mutex_unlock(&(task_thread->read_mutex));
 
   /*  */
   //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
@@ -310,7 +312,7 @@ ags_task_thread_append_tasks_thread(void *ptr)
   free(append);
 
   /* lock */
-  ags_thread_lock(AGS_THREAD(task_thread));
+  pthread_mutex_lock(&(task_thread->read_mutex));
 
   /* append to queue */
   task_thread->queued += g_list_length(list);
@@ -318,7 +320,7 @@ ags_task_thread_append_tasks_thread(void *ptr)
   task_thread->queue = g_list_concat(task_thread->queue, list);
 
   /*  */
-  ags_thread_unlock(AGS_THREAD(task_thread));
+  pthread_mutex_unlock(&(task_thread->read_mutex));
 
   /*  */
   pthread_exit(NULL);
