@@ -230,13 +230,16 @@ ags_gui_thread_run(AgsThread *thread)
       }
     }
   }else{
+    struct timespec wait;
     guint iter_val;
+
+    wait.tv_sec = 0;
+    wait.tv_nsec = round(1000000000 * ((double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE));
 
     iter_val = 1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
 
     /*  */
     if(gui_thread->iter > 1.0){
-
       if(!g_main_context_acquire(main_context)){
 	gboolean got_ownership = FALSE;
 
@@ -258,6 +261,7 @@ ags_gui_thread_run(AgsThread *thread)
       gui_thread->iter = 0.0;
     }else{
       gui_thread->iter += iter_val;
+      nanosleep(&wait, NULL);
     }
   }
 
