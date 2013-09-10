@@ -1527,7 +1527,8 @@ ags_thread_run(AgsThread *thread)
 void
 ags_thread_real_stop(AgsThread *thread)
 {
-  thread->flags &= (~AGS_THREAD_RUNNING);
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_RUNNING));
 }
 
 /**

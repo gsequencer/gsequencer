@@ -242,9 +242,13 @@ ags_devout_thread_stop(AgsThread *thread)
     return;
   }
 
-  ags_devout_stop(devout);
-
   AGS_THREAD_CLASS(ags_devout_thread_parent_class)->stop(thread);
+
+  devout->flags &= ~(AGS_DEVOUT_PLAY);
+
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    ags_devout_alsa_free(devout);
+  }
 }
 
 AgsDevoutThread*

@@ -41,8 +41,6 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_finalize(GObject *gobject);
 
-void ags_devout_real_stop(AgsDevout *devout);
-
 void ags_devout_real_change_bpm(AgsDevout *devout, double bpm);
 
 void ags_devout_switch_buffer_flag(AgsDevout *devout);
@@ -230,17 +228,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  param_spec);
 
   /* AgsDevoutClass */
-  devout->stop = ags_devout_real_stop;
   devout->tic = NULL;
-
-  devout_signals[STOP] =
-    g_signal_new("stop\0",
-		 G_TYPE_FROM_CLASS (devout),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsDevoutClass, stop),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
 
   devout_signals[TIC] =
     g_signal_new("tic\0",
@@ -622,53 +610,6 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
   devout->audio = g_list_remove(devout->audio,
 				audio);
   g_object_unref(G_OBJECT(audio));
-}
-
-void
-ags_devout_real_stop(AgsDevout *devout)
-{
-  AgsDevoutThread *devout_thread;
-
-  devout_thread = devout->devout_thread;
-
-  ags_thread_lock(AGS_THREAD(devout_thread));
-
-  devout->flags &= ~(AGS_DEVOUT_PLAY);
-
-  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-    ags_devout_alsa_free(devout);
-  }
-
-  ags_thread_unlock(AGS_THREAD(devout_thread));
-}
-
-/**
- * ags_devout_stop:
- * @devout an #AgsDevout
- * 
- * Stops the sound card output thread.
- */
-void
-ags_devout_stop(AgsDevout *devout)
-{
-  g_return_if_fail(AGS_IS_DEVOUT(devout));
-
-  if((AGS_DEVOUT_PLAY & (devout->flags)) == 0){
-    g_message("ags_devout_stop: not playing\0");
-    return;
-  }
-
-  if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
-    g_message("ags_devout_stop: just starting\0");
-    return;
-  }
-
-  g_message("ags_devout_stop: terminating\0");
-
-  g_object_ref((GObject *) devout);
-  g_signal_emit(G_OBJECT(devout),
-		devout_signals[STOP], 0);
-  g_object_unref((GObject *) devout);
 }
 
 void

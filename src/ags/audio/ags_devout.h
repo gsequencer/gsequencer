@@ -155,7 +155,6 @@ struct _AgsDevoutClass
 {
   GObjectClass object;
 
-  void (*stop)(AgsDevout *devout);
   void (*tic)(AgsDevout *devout);
 
   void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
@@ -186,8 +185,6 @@ void ags_devout_pcm_info(char *card_id,
 			 guint *rate_min, guint *rate_max,
 			 guint *buffer_size_min, guint *buffer_size_max,
 			 GError **error);
-
-void ags_devout_stop(AgsDevout *devout);
 void ags_devout_tic(AgsDevout *devout);
 
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
