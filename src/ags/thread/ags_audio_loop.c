@@ -359,16 +359,6 @@ ags_audio_loop_start(AgsThread *thread)
   audio_loop = AGS_AUDIO_LOOP(thread);
 
   /*  */
-  ags_thread_lock(thread);
-
-  thread->flags |= (AGS_THREAD_RUNNING |
-		    AGS_THREAD_WAIT_0);
-
-  AGS_THREAD(audio_loop->task_thread)->flags |= AGS_THREAD_INITIAL_RUN;
-
-  ags_thread_unlock(thread);
-
-  /*  */
   AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
 
   /*  */

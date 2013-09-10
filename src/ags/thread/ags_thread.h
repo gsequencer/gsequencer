@@ -65,7 +65,7 @@ struct _AgsThread
 {
   GObject object;
 
-  guint flags;
+  volatile guint flags;
 
   pthread_t thread;
   pthread_attr_t thread_attr;

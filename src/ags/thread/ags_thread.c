@@ -1245,28 +1245,15 @@ ags_thread_real_start(AgsThread *thread)
 
   ags_thread_lock(main_loop);
 
-  thread->flags |= AGS_THREAD_RUNNING;
-
   current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
-  switch(current_tic){
-  case 0:
-    thread->flags |= AGS_THREAD_WAIT_2;
-  case 1:
-    thread->flags |= AGS_THREAD_WAIT_0;
-  case 2:
-    thread->flags |= AGS_THREAD_WAIT_1;
-  }
-
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_RUNNING |
+		   AGS_THREAD_INITIAL_RUN));
+  
   ags_thread_unlock(main_loop);
 
   /*  */
-  ags_thread_lock(thread);
-
-  thread->flags |= AGS_THREAD_INITIAL_RUN;
-
-  ags_thread_unlock(thread);
-
   pthread_create(&(thread->thread), &(thread->thread_attr),
 		 &(ags_thread_loop), thread);
 }
@@ -1304,7 +1291,8 @@ ags_thread_loop(void *ptr)
     ags_thread_lock(main_loop);
 
     if(!ags_thread_is_tree_ready(thread)){
-      thread->flags |= AGS_THREAD_WAIT_0;
+      g_atomic_int_or(&(thread->flags),
+		      AGS_THREAD_WAIT_0);
 
       ags_thread_unlock(main_loop);
 

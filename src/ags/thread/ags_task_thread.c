@@ -156,12 +156,6 @@ ags_task_thread_finalize(GObject *gobject)
 void
 ags_task_thread_start(AgsThread *thread)
 {
-  ags_thread_lock(thread);
-
-  thread->flags |= AGS_THREAD_RUNNING;
-
-  ags_thread_unlock(thread);
-
   AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
 }
 
