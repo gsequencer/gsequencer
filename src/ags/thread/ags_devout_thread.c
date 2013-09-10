@@ -110,7 +110,7 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
 
   thread = AGS_THREAD(devout_thread);
 
-  //  thread->flags |= AGS_THREAD_WAIT_FOR_PARENT;
+  devout_thread->error = NULL;
 }
 
 void
@@ -142,6 +142,7 @@ ags_devout_thread_start(AgsThread *thread)
 {
   AgsDevout *devout;
   AgsDevoutThread *devout_thread;
+  static gboolean initialized = FALSE;
   GError *error;
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
@@ -149,21 +150,34 @@ ags_devout_thread_start(AgsThread *thread)
   devout = AGS_DEVOUT(thread->devout);
 
   /*  */
-  ags_thread_lock(thread);
+  if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
+    pthread_mutex_lock(&(thread->start_mutex));
 
+    thread->flags &= (~AGS_THREAD_INITIAL_RUN);
+    pthread_cond_broadcast(&(thread->start_cond));
+
+    pthread_mutex_unlock(&(thread->start_mutex));
+  }
+
+  /*  */
   devout->flags |= (AGS_DEVOUT_BUFFER0 |
 		    AGS_DEVOUT_PLAY);
 
-  ags_thread_unlock(thread);
-
   /*  */
-  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
+  devout_thread->error = NULL;
 
-  error = NULL;
-  ags_devout_run(devout,
-		 &error);
+  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+    if(devout->out.alsa.handle == NULL){
+      ags_devout_alsa_init(devout,
+			   devout_thread->error);
+      
+      devout->flags &= (~AGS_DEVOUT_START_PLAY);      
+      g_message("ags_devout_alsa_play\0");
+    }
+  }
 
-  if(error != NULL){
+
+  if(devout_thread->error != NULL){
     AgsAudioLoop *audio_loop;
 
     /* preserve AgsAudioLoop from playing */
@@ -171,6 +185,8 @@ ags_devout_thread_start(AgsThread *thread)
 
     return;
   }
+
+  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
 
   memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));

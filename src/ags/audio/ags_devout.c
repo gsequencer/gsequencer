@@ -41,8 +41,6 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_finalize(GObject *gobject);
 
-void ags_devout_real_run(AgsDevout *devout,
-			 GError **error);
 void ags_devout_real_stop(AgsDevout *devout);
 
 void ags_devout_real_change_bpm(AgsDevout *devout, double bpm);
@@ -232,19 +230,8 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  param_spec);
 
   /* AgsDevoutClass */
-  devout->run = ags_devout_real_run;
   devout->stop = ags_devout_real_stop;
   devout->tic = NULL;
-
-  devout_signals[RUN] =
-    g_signal_new("run\0",
-		 G_TYPE_FROM_CLASS (devout),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsDevoutClass, run),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__POINTER,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_POINTER);
 
   devout_signals[STOP] =
     g_signal_new("stop\0",
@@ -635,51 +622,6 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
   devout->audio = g_list_remove(devout->audio,
 				audio);
   g_object_unref(G_OBJECT(audio));
-}
-
-void
-ags_devout_real_run(AgsDevout *devout,
-		    GError **error)
-{
-  AgsDevoutThread *devout_thread;
-
-  devout_thread = devout->devout_thread;
-
-  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-    if(devout->out.alsa.handle == NULL){
-      ags_devout_alsa_init(devout,
-			   error);
-      
-      ags_thread_start(AGS_THREAD(devout_thread));
-      
-      ags_thread_lock(AGS_THREAD(devout_thread));
-      
-      devout->flags &= (~AGS_DEVOUT_START_PLAY);
-      pthread_cond_signal(&(devout_thread->start_play_cond));
-      
-      ags_thread_unlock(AGS_THREAD(devout_thread));
-      
-      g_message("ags_devout_alsa_play\0");
-    }
-  }
-}
-
-/**
- * ags_devout_run:
- * @devout an #AgsDevout
- * 
- * Starts the sound card output thread.
- */
-void
-ags_devout_run(AgsDevout *devout,
-	       GError **error)
-{
-  g_return_if_fail(AGS_IS_DEVOUT(devout));
-  g_object_ref((GObject *) devout);
-  g_signal_emit(G_OBJECT(devout),
-		devout_signals[RUN], 0,
-		error);
-  g_object_unref((GObject *) devout);
 }
 
 void

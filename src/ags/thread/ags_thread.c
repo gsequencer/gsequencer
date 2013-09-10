@@ -198,9 +198,10 @@ ags_thread_init(AgsThread *thread)
   pthread_mutexattr_settype(&(thread->mutexattr), PTHREAD_MUTEX_RECURSIVE);
 
   pthread_mutex_init(&(thread->mutex), &(thread->mutexattr));
-
-  pthread_cond_init(&(thread->start_cond), NULL);
   pthread_cond_init(&(thread->cond), NULL);
+
+  pthread_mutex_init(&(thread->start_mutex), NULL);
+  pthread_cond_init(&(thread->start_cond), NULL);
 
   thread->unlocked = NULL;
 
@@ -310,7 +311,9 @@ ags_thread_finalize(GObject *gobject)
 
   pthread_mutex_destroy(&(thread->mutex));
   pthread_cond_destroy(&(thread->cond));
-  g_list_free(thread->unlocked);
+
+  pthread_mutex_destroy(&(thread->start_mutex));
+  pthread_cond_destroy(&(thread->start_cond));
 
   g_object_unref(G_OBJECT(thread->devout));
 
@@ -653,6 +656,10 @@ ags_thread_is_tree_ready(AgsThread *thread)
   gboolean ags_thread_is_tree_ready_recursive(AgsThread *current){
 
     while(current != NULL){
+      if(current == thread){
+	return(!ags_thread_is_tree_ready_recursive(current->children));
+      }
+
       if(thread != current && !ags_thread_is_current_ready(current)){
 	return(FALSE);
       }

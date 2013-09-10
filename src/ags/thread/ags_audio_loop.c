@@ -326,13 +326,18 @@ ags_audio_loop_get_tic(AgsMainLoop *main_loop)
 void
 ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
 {
-  AGS_AUDIO_LOOP(main_loop)->last_sync = last_sync;
+  g_atomic_int_set(&(AGS_AUDIO_LOOP(main_loop)->last_sync),
+		   last_sync);
 }
 
 guint
 ags_audio_loop_get_last_sync(AgsMainLoop *main_loop)
 {
-  return(AGS_AUDIO_LOOP(main_loop)->last_sync);
+  gint val;
+
+  val = g_atomic_int_get(&(AGS_AUDIO_LOOP(main_loop)->last_sync));
+
+  return(val);
 }
 
 void

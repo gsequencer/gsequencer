@@ -176,8 +176,8 @@ ags_task_thread_run(AgsThread *thread)
   devout = AGS_DEVOUT(thread->devout);
 
   if(!initialized){
-    //    play_idle.tv_sec = 0;
-    //    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE);
+    play_idle.tv_sec = 0;
+    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE);
     //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE / 8.0);
 
     initialized = TRUE;
@@ -185,12 +185,12 @@ ags_task_thread_run(AgsThread *thread)
 
   /*  */
   if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
-    ags_thread_lock(thread);
+    pthread_mutex_lock(&(thread->start_mutex));
 
     thread->flags &= (~AGS_THREAD_INITIAL_RUN);
-    //    pthread_cond_signal(&(thread->start_cond));
+    pthread_cond_broadcast(&(thread->start_cond));
 
-    ags_thread_unlock(thread);
+    pthread_mutex_unlock(&(thread->start_mutex));
   }
 
   /*  */
@@ -228,12 +228,14 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /* sleep if wanted */
+  
+
   if((AGS_THREAD_RUNNING & (AGS_THREAD(AGS_AUDIO_LOOP(thread->parent)->devout_thread)->flags)) != 0){
     //FIXME:JK: this isn't very efficient
     //    nanosleep(&play_idle, NULL);
   }else{
     //FIXME:JK: this isn't very efficient
-    //    nanosleep(&play_idle, NULL);
+    nanosleep(&play_idle, NULL);
     //    usleep(idle);
   }
 }

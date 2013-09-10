@@ -72,9 +72,10 @@ struct _AgsThread
 
   pthread_mutex_t mutex;
   pthread_mutexattr_t mutexattr;
-
-  pthread_cond_t start_cond;
   pthread_cond_t cond;
+
+  pthread_mutex_t start_mutex;
+  pthread_cond_t start_cond;
 
   GList *unlocked;
 

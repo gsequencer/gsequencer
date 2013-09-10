@@ -213,10 +213,10 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
-      if(!pthread_mutex_trylock(&(AGS_THREAD(task_thread)->mutex))){
+      if(!pthread_mutex_trylock(&(task_thread->launch_mutex))){
 	g_main_context_iteration(main_context, FALSE);
 
-	pthread_mutex_unlock(&(AGS_THREAD(task_thread)->mutex));
+	pthread_mutex_unlock(&(task_thread->launch_mutex));
       }
 
       g_main_context_release(main_context);
