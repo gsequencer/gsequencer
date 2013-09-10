@@ -300,7 +300,7 @@ ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
     recall_id_list = recall_id_list->next;
   }
 
-  printf("ags_recall_id_find_group_id_with_recycling: couldn't find matching recall id\n\0");
+  //  printf("ags_recall_id_find_group_id_with_recycling: couldn't find matching recall id\n\0");
 
   return(NULL);
 }

@@ -366,7 +366,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 	run_order = 0;
       }
 
-      g_message("ags_delay_audio_run_run_pre: alloc sequencer[%d]\0", run_order);
+      //      g_message("ags_delay_audio_run_run_pre: alloc sequencer[%d]\0", run_order);
 
 
       /* sequencer speed */
