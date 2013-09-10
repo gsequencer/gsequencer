@@ -221,7 +221,11 @@ ags_task_thread_run(AgsThread *thread)
 
       g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
 
+      pthread_mutex_lock(&(thread->mutex));
+
       ags_task_launch(task);
+
+      pthread_mutex_unlock(&(thread->mutex));
 
       list = list->next;
     }
@@ -239,7 +243,7 @@ ags_task_thread_run(AgsThread *thread)
     ags_thread_unlock(AGS_AUDIO_LOOP(thread->parent)->devout_thread);
 
     //FIXME:JK: this isn't very efficient
-    //    usleep(idle);
+    usleep(idle);
   }
 }
 
@@ -315,6 +319,9 @@ ags_task_thread_append_tasks_thread(void *ptr)
   list = (GList *) append->data;
 
   free(append);
+
+  /* lock */
+  ags_thread_lock(AGS_THREAD(task_thread));
 
   /* append to queue */
   task_thread->queued += g_list_length(list);

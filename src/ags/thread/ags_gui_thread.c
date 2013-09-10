@@ -139,16 +139,19 @@ ags_gui_thread_start(AgsThread *thread)
   AgsGuiThread *gui_thread;
 
   /*  */
-  ags_thread_lock(thread);
+  ags_thread_lock(thread->parent);
 
   thread->flags |= (AGS_THREAD_RUNNING);
 
-  ags_thread_unlock(thread);
+  ags_thread_unlock(thread->parent);
 
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
 
   gui_thread->iter = 0.0;
+
+  /*  */
+  gui_thread->main_context = g_main_context_new();
 
   /*  */
   AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
@@ -160,45 +163,53 @@ ags_gui_thread_run(AgsThread *thread)
   AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
   AgsTaskThread *task_thread;
+  guint i, i_stop;
 
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
 
+  /*  */
+  i_stop = (guint) floor(1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+
   if(gui_thread->frequency < 1.0){
-    guint i, i_stop;
-    double rest;
+    GPollFD fds;
+    gint priority;
+    gint timeout;
+    gint n_fds;
+    gboolean initial_iter;
     struct timespec wait, ts;
 
-    /*  */
-    i_stop = (guint) floor(1.0 / gui_thread->frequency);
+    n_fds = 0;
 
     /*  */
-    if(gui_thread->iter > 0.5){
-      i_stop++;
+    if(gui_thread->iter > 1.0){
       gui_thread->iter = 0.0;
     }else{
-      gui_thread->iter += (1.0 / gui_thread->frequency);
+      gui_thread->iter += (1.0 / i_stop);
     }
 
     /*  */
     wait.tv_sec = 0;
-    wait.tv_nsec = 1000000000 / i_stop;
+    wait.tv_nsec = 1000000000 / (i_stop + 1);
+
+    initial_iter = TRUE;
 
     /*  */
-    for(i = 0; i < i_stop / 10; i++){
-      ags_thread_lock(AGS_THREAD(task_thread));
+    for(i = 0; i < i_stop; i++){
+      pthread_mutex_lock(&(AGS_THREAD(task_thread)->mutex));
 
-      gtk_main_iteration_do(FALSE);
+      GDK_THREADS_ENTER();
+      GDK_THREADS_LEAVE();
 
-      ags_thread_unlock(AGS_THREAD(task_thread));
+      g_main_context_iteration (NULL, FALSE);
 
-      nanosleep(&wait, NULL);
+      pthread_mutex_unlock(&(AGS_THREAD(task_thread)->mutex));
     }
     
   }else{
     /*  */
-    if(gui_thread->iter > 2.0){
+    if(gui_thread->iter > 1.0){
       ags_thread_lock(AGS_THREAD(task_thread));
      
       gtk_main_iteration_do(FALSE);
@@ -208,7 +219,7 @@ ags_gui_thread_run(AgsThread *thread)
       gui_thread->iter = 0.0;
     }else{
 
-      gui_thread->iter += (1.0 / gui_thread->frequency);
+      gui_thread->iter += (1.0 / i_stop);
     }
   }
 }

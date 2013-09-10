@@ -42,6 +42,8 @@ struct _AgsGuiThread
 {
   AgsThread thread;
 
+  GMainContext *main_context;
+
   gdouble frequency;
   gdouble iter;
 };
