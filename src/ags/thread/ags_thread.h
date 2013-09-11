@@ -59,6 +59,9 @@ typedef enum{
   AGS_THREAD_WAIT_1                  = 1 << 18,
   AGS_THREAD_TREE_SYNC_2             = 1 << 19,
   AGS_THREAD_WAIT_2                  = 1 << 20,
+  AGS_THREAD_TIMELOCK_RUN            = 1 << 21,
+  AGS_THREAD_TIMELOCK_WAIT           = 1 << 22,
+  AGS_THREAD_TIMELOCK_CANCEL         = 1 << 23,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -77,8 +80,6 @@ struct _AgsThread
   pthread_mutex_t start_mutex;
   pthread_cond_t start_cond;
 
-  GList *unlocked;
-
   pthread_barrier_t barrier[2];
   gboolean first_barrier;
   int wait_count[2];
@@ -91,6 +92,11 @@ struct _AgsThread
 
   AgsThread *children;
 
+  pthread_t timelock_thread;
+  pthread_mutex_t timelock_mutex;
+  pthread_cond_t timelock_cond;
+  struct timespec timelock;
+
   GObject *data;
 };
 
@@ -100,6 +106,7 @@ struct _AgsThreadClass
 
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
+  void (*timelock)(AgsThread *thread);
   void (*stop)(AgsThread *thread);
 };
 
@@ -150,6 +157,7 @@ void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
+void ags_thread_timelock(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
 
 AgsThread* ags_thread_new(GObject *data);

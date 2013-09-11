@@ -33,6 +33,7 @@ void ags_gui_thread_finalize(GObject *gobject);
 
 void ags_gui_thread_start(AgsThread *thread);
 void ags_gui_thread_run(AgsThread *thread);
+void ags_gui_thread_timelock(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
 static gpointer ags_gui_thread_parent_class = NULL;
@@ -95,6 +96,7 @@ ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread)
 
   thread->start = ags_gui_thread_start;
   thread->run = ags_gui_thread_run;
+  thread->timelock = ags_gui_thread_timelock;
   thread->stop = ags_gui_thread_stop;
 }
 
@@ -110,7 +112,20 @@ ags_gui_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_gui_thread_init(AgsGuiThread *gui_thread)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(gui_thread);
+
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMELOCK_RUN);
+  thread->timelock.tv_sec = 0;
+  thread->timelock.tv_nsec = floor(NSEC_PER_SEC / (AGS_GUI_THREAD_DEFAULT_JIFFIE + 1) *
+				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+
+
   gui_thread->main_loop = g_main_loop_new(NULL, FALSE);
+  g_cond_init(&gui_thread->cond);
+  g_mutex_init(&gui_thread->mutex);
 
   gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
 }
@@ -164,9 +179,8 @@ ags_gui_thread_run(AgsThread *thread)
   AgsTaskThread *task_thread;
   GMainLoop *main_loop;
   GMainContext *main_context;
-  GCond cond;
-  GMutex mutex;
   guint i, i_stop;
+  guint val;
 
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
@@ -177,9 +191,6 @@ ags_gui_thread_run(AgsThread *thread)
 
   main_loop = gui_thread->main_loop;
   main_context = g_main_context_default();
-
-  g_cond_init(&cond);
-  g_mutex_init(&mutex);
 
   /*  */
   i_stop = (guint) floor(1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
@@ -208,8 +219,8 @@ ags_gui_thread_run(AgsThread *thread)
 
 	while(!got_ownership){
 	  got_ownership = g_main_context_wait(main_context,
-					      &cond,
-					      &mutex);
+					      &gui_thread->cond,
+					      &gui_thread->mutex);
 	}
       }
 
@@ -224,8 +235,11 @@ ags_gui_thread_run(AgsThread *thread)
       /* do timing */
       clock_gettime(CLOCK_MONOTONIC ,&current);
 
-      if(current.tv_sec > stop.tv_sec ||
-	 current.tv_nsec > stop.tv_nsec && current.tv_sec == stop.tv_sec){
+      val = g_atomic_int_get(&(thread->flags));
+
+      if((current.tv_sec > stop.tv_sec ||
+	  current.tv_nsec > stop.tv_nsec && current.tv_sec == stop.tv_sec) ||
+	 (AGS_THREAD_TIMELOCK_CANCEL & (val)) != 0){
 	break;
       }
     }
@@ -245,8 +259,8 @@ ags_gui_thread_run(AgsThread *thread)
 
 	while(!got_ownership){
 	  got_ownership = g_main_context_wait(main_context,
-					      &cond,
-					      &mutex);
+					      &gui_thread->cond,
+					      &gui_thread->mutex);
 	}
       }
 
@@ -265,7 +279,32 @@ ags_gui_thread_run(AgsThread *thread)
     }
   }
 
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_TIMELOCK_CANCEL));
+
   g_main_loop_unref(gui_thread->main_loop);
+}
+
+void
+ags_gui_thread_timelock(AgsThread *thread)
+{
+  GMainContext *main_context;
+  GCond cond;
+  GMutex mutex;
+
+  main_context = g_main_context_default();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &cond,
+					  &mutex);
+    }
+  }
+
+  g_main_context_release(main_context);
 }
 
 void

@@ -43,6 +43,8 @@ struct _AgsGuiThread
   AgsThread thread;
 
   GMainLoop *main_loop;
+  GCond cond;
+  GMutex mutex;
 
   gdouble frequency;
   gdouble iter;
