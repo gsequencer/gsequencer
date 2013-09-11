@@ -46,6 +46,9 @@ struct _AgsGuiThread
   GCond cond;
   GMutex mutex;
 
+  GCond timelock_cond;
+  GMutex timelock_mutex;
+
   gdouble frequency;
   gdouble iter;
 };

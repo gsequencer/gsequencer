@@ -127,6 +127,9 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   g_cond_init(&gui_thread->cond);
   g_mutex_init(&gui_thread->mutex);
 
+  g_cond_init(&gui_thread->timelock_cond);
+  g_mutex_init(&gui_thread->timelock_mutex);
+
   gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
 }
 
@@ -288,19 +291,20 @@ ags_gui_thread_run(AgsThread *thread)
 void
 ags_gui_thread_timelock(AgsThread *thread)
 {
+  AgsGuiThread *gui_thread;
   GMainContext *main_context;
-  GCond cond;
-  GMutex mutex;
 
   main_context = g_main_context_default();
+
+  gui_thread = AGS_GUI_THREAD(thread);
 
   if(!g_main_context_acquire(main_context)){
     gboolean got_ownership = FALSE;
 
     while(!got_ownership){
       got_ownership = g_main_context_wait(main_context,
-					  &cond,
-					  &mutex);
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
     }
   }
 
