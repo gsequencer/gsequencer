@@ -49,6 +49,7 @@ void ags_thread_set_devout(AgsThread *thread, GObject *devout);
 void ags_thread_real_start(AgsThread *thread);
 void* ags_thread_loop(void *ptr);
 void ags_thread_real_run(AgsThread *thread);
+void ags_thread_real_timelock(AgsThread *thread);
 void* ags_thread_timelock_loop(void *ptr);
 void ags_thread_real_stop(AgsThread *thread);
 
@@ -146,7 +147,7 @@ ags_thread_class_init(AgsThreadClass *thread)
   /* AgsThread */
   thread->start = ags_thread_real_start;
   thread->run = NULL;
-  thread->timelock = NULL;
+  thread->timelock = ags_thread_real_timelock;
   thread->stop = ags_thread_real_stop;
 
   /* signals */
@@ -1595,12 +1596,62 @@ ags_thread_timelock_loop(void *ptr)
     nanosleep(&(thread->timelock), NULL);
 
     g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_TIMELOCK_CANCEL);
+		    AGS_THREAD_TIMELOCK_RESUME);
 
     ags_thread_timelock(thread);
 
     val = g_atomic_int_get(&(thread->flags));
   }
+}
+
+void
+ags_thread_real_timelock(AgsThread *thread)
+{
+  AgsThread *main_loop;
+
+  ags_thread_lock(thread);
+
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMELOCK_RESUME);
+
+  pthread_suspend(&(thread->thread), NULL);
+
+  main_loop = ags_thread_get_toplevel(thread);
+
+  ags_thread_lock(main_loop);
+
+  if(!ags_thread_is_tree_ready(thread)){
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_WAIT_0);
+
+    ags_thread_unlock(main_loop);
+    
+    while(!ags_thread_is_current_ready(thread)){
+      pthread_cond_wait(&(thread->cond),
+			&(thread->mutex));
+    }
+  }else{
+    guint tic, next_tic;
+
+    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+    ags_thread_unlock(main_loop);
+
+    if(tic = 2){
+      next_tic = 0;
+    }else if(tic = 0){
+      next_tic = 1;
+    }else if(tic = 1){
+      next_tic = 2;
+    }
+
+    ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+    ags_thread_main_loop_unlock_children(main_loop);
+    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+  }
+
+  pthread_resume(&(thread->thread), NULL);
+  ags_thread_unlock(thread);
 }
 
 void

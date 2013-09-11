@@ -33,7 +33,6 @@ void ags_gui_thread_finalize(GObject *gobject);
 
 void ags_gui_thread_start(AgsThread *thread);
 void ags_gui_thread_run(AgsThread *thread);
-void ags_gui_thread_timelock(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
 static gpointer ags_gui_thread_parent_class = NULL;
@@ -96,7 +95,6 @@ ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread)
 
   thread->start = ags_gui_thread_start;
   thread->run = ags_gui_thread_run;
-  thread->timelock = ags_gui_thread_timelock;
   thread->stop = ags_gui_thread_stop;
 }
 
@@ -126,9 +124,6 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->main_loop = g_main_loop_new(NULL, FALSE);
   g_cond_init(&gui_thread->cond);
   g_mutex_init(&gui_thread->mutex);
-
-  g_cond_init(&gui_thread->timelock_cond);
-  g_mutex_init(&gui_thread->timelock_mutex);
 
   gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
 }
@@ -183,7 +178,6 @@ ags_gui_thread_run(AgsThread *thread)
   GMainLoop *main_loop;
   GMainContext *main_context;
   guint i, i_stop;
-  guint val;
 
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
@@ -238,11 +232,8 @@ ags_gui_thread_run(AgsThread *thread)
       /* do timing */
       clock_gettime(CLOCK_MONOTONIC ,&current);
 
-      val = g_atomic_int_get(&(thread->flags));
-
-      if((current.tv_sec > stop.tv_sec ||
-	  current.tv_nsec > stop.tv_nsec && current.tv_sec == stop.tv_sec) ||
-	 (AGS_THREAD_TIMELOCK_CANCEL & (val)) != 0){
+      if(current.tv_sec > stop.tv_sec ||
+	 current.tv_nsec > stop.tv_nsec && current.tv_sec == stop.tv_sec){
 	break;
       }
     }
@@ -282,24 +273,7 @@ ags_gui_thread_run(AgsThread *thread)
     }
   }
 
-  g_atomic_int_and(&(thread->flags),
-		   (~AGS_THREAD_TIMELOCK_CANCEL));
-
   g_main_loop_unref(gui_thread->main_loop);
-}
-
-void
-ags_gui_thread_timelock(AgsThread *thread)
-{
-  AgsGuiThread *gui_thread;
-  static sigset_t signal_mask;
-
-  gui_thread = AGS_GUI_THREAD(thread);
-
-  sigemptyset(&signal_mask);
-  sigsuspend(&signal_mask);
-
-  pthread_sigmask(SIG_BLOCK, &signal_mask, NULL);
 }
 
 void

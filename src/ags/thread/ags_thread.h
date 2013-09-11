@@ -32,8 +32,6 @@
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
 
-#define PTHREAD_MUTEX_TO_POINTER(mutex) ((gpointer) (&mutex))
-
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
 
@@ -61,7 +59,7 @@ typedef enum{
   AGS_THREAD_WAIT_2                  = 1 << 20,
   AGS_THREAD_TIMELOCK_RUN            = 1 << 21,
   AGS_THREAD_TIMELOCK_WAIT           = 1 << 22,
-  AGS_THREAD_TIMELOCK_CANCEL         = 1 << 23,
+  AGS_THREAD_TIMELOCK_RESUME         = 1 << 23,
 }AgsThreadFlags;
 
 struct _AgsThread
