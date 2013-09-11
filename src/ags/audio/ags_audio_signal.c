@@ -430,10 +430,10 @@ ags_attack_duplicate_from_devout(GObject *gobject)
 
   if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
     copy = ags_attack_alloc(attack->first_start, attack->first_length,
-			    0, 0);
+			    attack->second_start, attack->second_length);
   else
     copy = ags_attack_alloc(attack->second_start, attack->second_length,
-			    0, 0);
+			    attack->first_start, attack->first_length);
 
   return(copy);
 }
@@ -830,6 +830,11 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
     while(template_stream != NULL){
       if(k == devout->buffer_size){
 	k = 0;
+	
+	if(stream->next == NULL && template_k != devout->buffer_size){
+	  ags_audio_signal_add_stream(audio_signal);
+	}
+
 	stream = stream->next;
       }
 

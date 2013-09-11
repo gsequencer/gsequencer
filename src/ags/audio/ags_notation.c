@@ -132,7 +132,7 @@ ags_notation_init(AgsNotation *notation)
   notation->tact = g_strdup("1/4\0");
   notation->bpm = 120;
 
-  notation->maximum_note_length = 256;
+  notation->maximum_note_length = AGS_NOTATION_MAXIMUM_NOTE_LENGTH;
 
   notation->notes = NULL;
   notation->start_loop = NULL;

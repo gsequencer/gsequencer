@@ -31,6 +31,9 @@
 #define AGS_IS_NOTATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_NOTATION))
 #define AGS_NOTATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NOTATION, AgsNotationClass))
 
+#define AGS_NOTATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
+#define AGS_NOTATION_MAXIMUM_NOTE_LENGTH 256
+
 typedef struct _AgsNotation AgsNotation;
 typedef struct _AgsNotationClass AgsNotationClass;
 

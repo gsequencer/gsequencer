@@ -50,6 +50,7 @@
 
 #define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100)
 #define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (940)
+#define AGS_DEVOUT_DEFAULT_BPM (120.0)
 
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;

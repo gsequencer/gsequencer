@@ -276,11 +276,14 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[2] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   devout->buffer[3] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
 
-  devout->bpm = 0.0;
-  devout->delay = 0;
+  devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
+  devout->delay = (guint) AGS_ATTACK_DEFAULT_DELAY * 60 / AGS_DEVOUT_DEFAULT_BPM;
   devout->delay_counter = 0;
-  devout->attack = ags_attack_alloc(0, devout->buffer_size,
-				    0, devout->buffer_size);
+  
+  g_message("%d\0", devout->delay % devout->buffer_size);
+
+  devout->attack = ags_attack_alloc(devout->delay % devout->buffer_size, devout->buffer_size - (devout->delay % devout->buffer_size),
+				    devout->buffer_size - (devout->delay % devout->buffer_size), devout->delay % devout->buffer_size);
 
   devout->main = NULL;
 
@@ -720,8 +723,10 @@ ags_devout_alsa_init(AgsDevout *devout,
 
   if(rc < 0) {
     g_message("unable to set hw parameters: %s\0", snd_strerror(rc));
-    exit(1);
+    return;
   }
+
+  devout->delay_counter = 0;
 }
 
 void
@@ -803,6 +808,21 @@ ags_devout_alsa_play(AgsDevout *devout,
     if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
     devout->offset++;
   */
+
+  /* determine if attack should be switched */
+  devout->delay_counter += 1;
+
+  if(devout->delay_counter == devout->delay){
+    if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0){
+      devout->flags &= (~AGS_DEVOUT_ATTACK_FIRST);
+    }else{
+      devout->flags |= AGS_DEVOUT_ATTACK_FIRST;
+    }
+
+    devout->delay_counter = 0;
+  } 
+
+  /* switch buffer flags */
   ags_devout_switch_buffer_flag(devout);
 }
 
