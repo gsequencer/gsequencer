@@ -292,23 +292,14 @@ void
 ags_gui_thread_timelock(AgsThread *thread)
 {
   AgsGuiThread *gui_thread;
-  GMainContext *main_context;
-
-  main_context = g_main_context_default();
+  static sigset_t signal_mask;
 
   gui_thread = AGS_GUI_THREAD(thread);
 
-  if(!g_main_context_acquire(main_context)){
-    gboolean got_ownership = FALSE;
+  sigemptyset(&signal_mask);
+  sigsuspend(&signal_mask);
 
-    while(!got_ownership){
-      got_ownership = g_main_context_wait(main_context,
-					  &(gui_thread->cond),
-					  &(gui_thread->mutex));
-    }
-  }
-
-  g_main_context_release(main_context);
+  pthread_sigmask(SIG_BLOCK, &signal_mask, NULL);
 }
 
 void
