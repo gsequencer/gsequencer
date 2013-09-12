@@ -25,6 +25,7 @@
 #include <ags/audio/ags_devout.h>
 
 #include <stdio.h>
+#include <math.h>
 
 void ags_thread_class_init(AgsThreadClass *thread);
 void ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree);
@@ -1608,13 +1609,19 @@ void
 ags_thread_real_timelock(AgsThread *thread)
 {
   AgsThread *main_loop;
+  int sig;
+  static sigset_t set;
 
   ags_thread_lock(thread);
 
   g_atomic_int_or(&(thread->flags),
 		  AGS_THREAD_TIMELOCK_RESUME);
 
-  pthread_suspend(&(thread->thread), NULL);
+  pthread_suspend(&(thread->thread));
+  //  sigemptyset(&set);
+  //  sigwait(&set, &sig);
+
+  pthread_kill(thread->thread, sig);
 
   main_loop = ags_thread_get_toplevel(thread);
 
@@ -1650,7 +1657,10 @@ ags_thread_real_timelock(AgsThread *thread)
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
   }
 
-  pthread_resume(&(thread->thread), NULL);
+  pthread_resume(&(thread->thread));
+  //  pthread_sigmask(SIG_UNBLOCK, &set, NULL);
+  //  pthread_kill(thread->thread, sig);
+
   ags_thread_unlock(thread);
 }
 
