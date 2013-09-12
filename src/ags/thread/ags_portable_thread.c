@@ -78,7 +78,7 @@ ags_portable_thread_get_type()
   static GType ags_type_thread = 0;
 
   if(!ags_type_thread){
-    static const GTypeInfo ags_portable_thread_info = {
+    const GTypeInfo ags_portable_thread_info = {
       sizeof (AgsPortableThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
@@ -90,28 +90,28 @@ ags_portable_thread_get_type()
       (GInstanceInitFunc) ags_portable_thread_init,
     };
 
-    static const GInterfaceInfo ags_tree_iterator_interface_info = {
+    const GInterfaceInfo ags_tree_iterator_interface_info = {
       (GInterfaceInitFunc) ags_portable_thread_tree_iterator_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
+    const GInterfaceInfo ags_connectable_interface_info = {
       (GInterfaceInitFunc) ags_portable_thread_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
-    ags_type_thread = g_type_register_static(G_TYPE_OBJECT,
+    ags_type_thread = g_type_module_register(G_TYPE_OBJECT,
 					     "AgsPortableThread\0",
 					     &ags_portable_thread_info,
 					     0);
     
-    g_type_add_interface_static(ags_type_thread,
+    g_type_module_add_interface(ags_type_thread,
 				AGS_TYPE_TREE_ITERATOR,
 				&ags_tree_iterator_interface_info);
 
-    g_type_add_interface_static(ags_type_thread,
+    g_type_module_add_interface(ags_type_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
   }
