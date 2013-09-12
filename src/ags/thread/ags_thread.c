@@ -70,6 +70,12 @@ enum{
 static gpointer ags_thread_parent_class = NULL;
 static guint thread_signals[LAST_SIGNAL];
 
+static pthread_cond_t cond;
+static phtread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static volatile gint enqueued = 0;
+static volatile gint released = 1;
+static gboolean initialized = FALSE;
+
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 
 GType
@@ -362,6 +368,25 @@ ags_thread_lock(AgsThread *thread)
   if(thread == NULL){
     return;
   }
+  
+  pthread_mutex_lock(&mutex);
+
+  if(enqueued){
+    while(enqueud &&
+	  thread->locked){
+      g_atomic_int_set(&enqueued, 1);
+      g_atomic_int_set(&released, 0);
+
+      pthread_cond_wait(&cond,
+			&mutex);
+    }
+
+    g_atomic_int_set(&released, 1);
+  }else{
+    g_atomic_int_set(&enqueued, 1);
+  }
+
+  pthread_mutex_unlock(&mutex);
 
   main_loop = ags_thread_get_toplevel(thread);
 
@@ -376,8 +401,17 @@ ags_thread_lock(AgsThread *thread)
 		     (AGS_THREAD_LOCKED));
     pthread_mutex_unlock(&(main_loop->mutex));
   }
-}
 
+  pthread_mutex_lock(&mutex);
+
+  g_atomic_int_set(&enqueued, 0);
+
+  if(!released){
+    pthread_cond_broadcast(&(cond));
+  }
+
+  pthread_mutex_unlock(&mutex);
+}
 
 gboolean
 ags_thread_trylock(AgsThread *thread)
