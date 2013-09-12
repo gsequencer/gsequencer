@@ -265,8 +265,7 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_line_callbacks.$(OBJEXT) ags-main.$(OBJEXT) \
 	ags-ags_file.$(OBJEXT) ags-ags_list.$(OBJEXT) \
 	ags-ags_parameter.$(OBJEXT) ags-ags_combo_box_text.$(OBJEXT) \
-	ags-ags_log.$(OBJEXT) ags-ags_interceptor.$(OBJEXT) \
-	ags-ags_recycling_thread.$(OBJEXT) ags-ags_sync.$(OBJEXT) \
+	ags-ags_log.$(OBJEXT) ags-ags_recycling_thread.$(OBJEXT) \
 	ags-ags_thread.$(OBJEXT) ags-ags_audio_loop.$(OBJEXT) \
 	ags-ags_gui_thread.$(OBJEXT) ags-ags_task_thread.$(OBJEXT) \
 	ags-ags_devout_thread.$(OBJEXT) \
@@ -995,11 +994,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/lib/ags_parameter.h ./src/ags/lib/ags_list.h \
 	./src/ags/lib/ags_combo_box_text.c ./src/ags/lib/ags_log.c \
 	./src/ags/lib/ags_combo_box_text.h \
-	./src/ags/thread/ags_interceptor.c \
 	./src/ags/thread/ags_recycling_thread.c \
-	./src/ags/thread/ags_sync.c ./src/ags/thread/ags_sync.h \
 	./src/ags/thread/ags_thread.h \
-	./src/ags/thread/ags_interceptor.h \
 	./src/ags/thread/ags_recycling_thread.h \
 	./src/ags/thread/ags_thread.c \
 	./src/ags/thread/ags_audio_loop.h \
@@ -1105,8 +1101,8 @@ agsclient_SOURCES =  \
 	./src/ags-client/object/ags_marshal.c ./src/ags-client/main.c
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
-ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
-ags_LDFLAGS = -ldl $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm
+ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
+ags_LDFLAGS = -ldl $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(LIBSNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lpth -lm
 ags_LDADD = libags.a
 agsclient_CFLAGS = $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_CLIENT_CFLAGS)
 agsclient_LDFLAGS = -ldl $(UUID_LIBS) $(LIBXML2_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_CLIENT_LIBS)
@@ -1326,7 +1322,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_inline_player.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_inline_player_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_input.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_interceptor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ipatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ipatch_sf2_reader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_iterator_thread.Po@am__quote@
@@ -1444,7 +1439,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_stream_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_stream_channel_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_stream_recycling.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_sync.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_synth.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_synth_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_synths.Po@am__quote@
@@ -4487,20 +4481,6 @@ ags-ags_log.obj: ./src/ags/lib/ags_log.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_log.obj `if test -f './src/ags/lib/ags_log.c'; then $(CYGPATH_W) './src/ags/lib/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/lib/ags_log.c'; fi`
 
-ags-ags_interceptor.o: ./src/ags/thread/ags_interceptor.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_interceptor.o -MD -MP -MF $(DEPDIR)/ags-ags_interceptor.Tpo -c -o ags-ags_interceptor.o `test -f './src/ags/thread/ags_interceptor.c' || echo '$(srcdir)/'`./src/ags/thread/ags_interceptor.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_interceptor.Tpo $(DEPDIR)/ags-ags_interceptor.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_interceptor.c' object='ags-ags_interceptor.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_interceptor.o `test -f './src/ags/thread/ags_interceptor.c' || echo '$(srcdir)/'`./src/ags/thread/ags_interceptor.c
-
-ags-ags_interceptor.obj: ./src/ags/thread/ags_interceptor.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_interceptor.obj -MD -MP -MF $(DEPDIR)/ags-ags_interceptor.Tpo -c -o ags-ags_interceptor.obj `if test -f './src/ags/thread/ags_interceptor.c'; then $(CYGPATH_W) './src/ags/thread/ags_interceptor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_interceptor.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_interceptor.Tpo $(DEPDIR)/ags-ags_interceptor.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_interceptor.c' object='ags-ags_interceptor.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_interceptor.obj `if test -f './src/ags/thread/ags_interceptor.c'; then $(CYGPATH_W) './src/ags/thread/ags_interceptor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_interceptor.c'; fi`
-
 ags-ags_recycling_thread.o: ./src/ags/thread/ags_recycling_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recycling_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_recycling_thread.Tpo -c -o ags-ags_recycling_thread.o `test -f './src/ags/thread/ags_recycling_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_recycling_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_recycling_thread.Tpo $(DEPDIR)/ags-ags_recycling_thread.Po
@@ -4514,20 +4494,6 @@ ags-ags_recycling_thread.obj: ./src/ags/thread/ags_recycling_thread.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_recycling_thread.c' object='ags-ags_recycling_thread.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recycling_thread.obj `if test -f './src/ags/thread/ags_recycling_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_recycling_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_recycling_thread.c'; fi`
-
-ags-ags_sync.o: ./src/ags/thread/ags_sync.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_sync.o -MD -MP -MF $(DEPDIR)/ags-ags_sync.Tpo -c -o ags-ags_sync.o `test -f './src/ags/thread/ags_sync.c' || echo '$(srcdir)/'`./src/ags/thread/ags_sync.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_sync.Tpo $(DEPDIR)/ags-ags_sync.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_sync.c' object='ags-ags_sync.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_sync.o `test -f './src/ags/thread/ags_sync.c' || echo '$(srcdir)/'`./src/ags/thread/ags_sync.c
-
-ags-ags_sync.obj: ./src/ags/thread/ags_sync.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_sync.obj -MD -MP -MF $(DEPDIR)/ags-ags_sync.Tpo -c -o ags-ags_sync.obj `if test -f './src/ags/thread/ags_sync.c'; then $(CYGPATH_W) './src/ags/thread/ags_sync.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_sync.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_sync.Tpo $(DEPDIR)/ags-ags_sync.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_sync.c' object='ags-ags_sync.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_sync.obj `if test -f './src/ags/thread/ags_sync.c'; then $(CYGPATH_W) './src/ags/thread/ags_sync.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_sync.c'; fi`
 
 ags-ags_thread.o: ./src/ags/thread/ags_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_thread.Tpo -c -o ags-ags_thread.o `test -f './src/ags/thread/ags_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_thread.c

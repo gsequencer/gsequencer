@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #define _GNU_SOURCE
+
 #include <pthread.h>
 
 #define AGS_TYPE_THREAD                (ags_thread_get_type())
@@ -82,6 +83,12 @@ struct _AgsThread
   gboolean first_barrier;
   int wait_count[2];
 
+  pthread_t timelock_thread;
+  pthread_mutex_t timelock_mutex;
+  pthread_cond_t timelock_cond;
+
+  struct timespec timelock;
+
   GObject *devout;
   AgsThread *parent;
 
@@ -89,11 +96,6 @@ struct _AgsThread
   AgsThread *prev;
 
   AgsThread *children;
-
-  pthread_t timelock_thread;
-  pthread_mutex_t timelock_mutex;
-  pthread_cond_t timelock_cond;
-  struct timespec timelock;
 
   GObject *data;
 };

@@ -412,8 +412,13 @@ main(int argc, char **argv)
   ags_thread_add_child(main->main_loop, main->gui_loop);
   ags_thread_start(main->gui_loop);
 
+#ifdef _USE_PTH
+  pth_join(main->gui_loop->thread,
+	   NULL);
+#else
   pthread_join(main->gui_loop->thread,
 	       NULL);
+#endif
 
   return(0);
 }

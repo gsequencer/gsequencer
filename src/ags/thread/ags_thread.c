@@ -223,19 +223,19 @@ ags_thread_init(AgsThread *thread)
   thread->wait_count[0] = 1;
   thread->wait_count[1] = 1;
 
-  thread->devout = NULL;
-
-  thread->parent = NULL;
-  thread->next = NULL;
-  thread->prev = NULL;
-  thread->children = NULL;
-
   pthread_mutex_init(&(thread->timelock_mutex), NULL);
   pthread_cond_init(&(thread->timelock_cond), NULL);
 
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC *
 				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+
+  thread->devout = NULL;
+
+  thread->parent = NULL;
+  thread->next = NULL;
+  thread->prev = NULL;
+  thread->children = NULL;
 
   thread->data = NULL;
 }
@@ -1618,10 +1618,6 @@ ags_thread_real_timelock(AgsThread *thread)
 		  AGS_THREAD_TIMELOCK_RESUME);
 
   pthread_suspend(&(thread->thread));
-  //  sigemptyset(&set);
-  //  sigwait(&set, &sig);
-
-  pthread_kill(thread->thread, sig);
 
   main_loop = ags_thread_get_toplevel(thread);
 
@@ -1658,8 +1654,6 @@ ags_thread_real_timelock(AgsThread *thread)
   }
 
   pthread_resume(&(thread->thread));
-  //  pthread_sigmask(SIG_UNBLOCK, &set, NULL);
-  //  pthread_kill(thread->thread, sig);
 
   ags_thread_unlock(thread);
 }
