@@ -27,10 +27,6 @@
 #include <stdio.h>
 #include <math.h>
 
-gboolean ags_thread_load(GType);
-void ags_thread_unload();
-
-static void ags_thread_class_inter_init(gpointer klass);
 void ags_thread_class_init(AgsThreadClass *thread);
 void ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree);
 void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -75,28 +71,15 @@ static gpointer ags_thread_parent_class = NULL;
 static GType ags_thread_type_id = 0;
 static guint thread_signals[LAST_SIGNAL];
 
-pthread_cond_t cond;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-volatile gint enqueued = 0;
-volatile gint released = 1;
-gboolean initialized = FALSE;
-
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
-
-static void
-ags_thread_class_inter_init(gpointer klass)
-{
-  ags_thread_parent_class = g_type_class_peek_parent(klass);
-  ags_thread_class_init((AgsThreadClass*) klass);
-}
 
 GType
 ags_thread_get_type()
 {
-  return ags_thread_type_id;
+  return(ags_thread_type_id);
 }
 
-static void
+static GType
 ags_thread_register_type(GTypeModule *type_module)
 {
   GType ags_type_thread = 0;
@@ -149,6 +132,8 @@ ags_thread_class_init(AgsThreadClass *thread)
 {
   GObjectClass *gobject;
   GParamSpec *param_spec;
+
+  ags_thread_parent_class = g_type_class_peek_parent(thread);
 
   /* GObject */
   gobject = (GObjectClass *) thread;
@@ -386,25 +371,6 @@ ags_thread_lock(AgsThread *thread)
     return;
   }
   
-  pthread_mutex_lock(&mutex);
-
-  if(enqueued){
-    while(enqueud &&
-	  thread->locked){
-      g_atomic_int_set(&enqueued, 1);
-      g_atomic_int_set(&released, 0);
-
-      pthread_cond_wait(&cond,
-			&mutex);
-    }
-
-    g_atomic_int_set(&released, 1);
-  }else{
-    g_atomic_int_set(&enqueued, 1);
-  }
-
-  pthread_mutex_unlock(&mutex);
-
   main_loop = ags_thread_get_toplevel(thread);
 
   if(main_loop == thread){
@@ -418,27 +384,18 @@ ags_thread_lock(AgsThread *thread)
 		     (AGS_THREAD_LOCKED));
     pthread_mutex_unlock(&(main_loop->mutex));
   }
-
-  pthread_mutex_lock(&mutex);
-
-  g_atomic_int_set(&enqueued, 0);
-
-  if(!released){
-    pthread_cond_broadcast(&(cond));
-  }
-
-  pthread_mutex_unlock(&mutex);
 }
 
 gboolean
 ags_thread_trylock(AgsThread *thread)
 {
   AgsThread *main_loop;
+  guint val;
 
   if(thread == NULL){
     return(FALSE);
   }
-
+    
   main_loop = ags_thread_get_toplevel(thread);
 
   if(main_loop == thread){
@@ -1377,7 +1334,7 @@ ags_thread_loop(void *ptr)
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   guint current_tic;
-  guint val;
+  guint val, running;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
 
@@ -1434,7 +1391,9 @@ ags_thread_loop(void *ptr)
 
   current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
-  while((AGS_THREAD_RUNNING & (thread->flags)) != 0){
+  running = g_atomic_int_get(&(thread->flags));
+
+  while((AGS_THREAD_RUNNING & running) != 0){
 
     /* barrier */
     if((AGS_THREAD_WAITING_FOR_BARRIER & (thread->flags)) != 0){
@@ -1469,6 +1428,9 @@ ags_thread_loop(void *ptr)
     ags_thread_lock(thread);
 
     ags_thread_loop_sync(thread);
+
+    /*  */
+    running = g_atomic_int_get(&(thread->flags));
 
     /* */
     val = g_atomic_int_get(&(thread->flags));
@@ -1622,6 +1584,7 @@ void*
 ags_thread_timelock_loop(void *ptr)
 {
   AgsThread *thread;
+  int retval;
   guint val;
 
   thread = AGS_THREAD(ptr);
@@ -1631,28 +1594,26 @@ ags_thread_timelock_loop(void *ptr)
   while((AGS_THREAD_RUNNING & (val)) != 0){
     pthread_mutex_lock(&thread->timelock_mutex);
 
-    val = g_atomic_int_get(&(thread->flags));
-
-    while((AGS_THREAD_TIMELOCK_WAIT & (val)) != 0){
-      pthread_cond_wait(&(thread->timelock_cond),
-			&(thread->timelock_mutex));
-
-      val = g_atomic_int_get(&(thread->flags));
-    }
-
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_TIMELOCK_WAIT);
 
-    pthread_mutex_unlock(&thread->timelock_mutex);
+    val = g_atomic_int_get(&(thread->flags));
 
-    nanosleep(&(thread->timelock), NULL);
+    while((AGS_THREAD_TIMELOCK_WAIT & (val)) != 0){
+      retval = pthread_cond_timedwait(&(thread->timelock_cond),
+				      &(thread->timelock_mutex),
+				      &(thread->timelock));
 
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_TIMELOCK_RESUME);
-
-    ags_thread_timelock(thread);
+      if(retval != ETIMEDOUT){
+	val = g_atomic_int_get(&(thread->flags));
+      }else{
+	ags_thread_timelock(thread);
+	break;
+      }
+    }
 
     val = g_atomic_int_get(&(thread->flags));
+    pthread_mutex_unlock(&thread->timelock_mutex);
   }
 }
 

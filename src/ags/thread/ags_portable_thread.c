@@ -68,55 +68,63 @@ enum{
 };
 
 static gpointer ags_portable_thread_parent_class = NULL;
+static GType ags_portable_thread_type_id = 0;
 static guint thread_signals[LAST_SIGNAL];
 
-#define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+#define USEC_PER_SEC    (1000000) /* The number of nsecs per sec. */
 
 GType
 ags_portable_thread_get_type()
 {
-  static GType ags_type_thread = 0;
+  return(ags_portable_thread_type_id);
+}
 
-  if(!ags_type_thread){
-    const GTypeInfo ags_portable_thread_info = {
-      sizeof (AgsPortableThreadClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) ags_portable_thread_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (AgsPortableThread),
-      0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_portable_thread_init,
-    };
+static GType
+ags_portable_thread_register_type(GTypeModule *type_module)
+{
+  GType ags_type_portable_thread = 0;
 
-    const GInterfaceInfo ags_tree_iterator_interface_info = {
-      (GInterfaceInitFunc) ags_portable_thread_tree_iterator_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
+  const GTypeInfo ags_portable_thread_info = {
+    sizeof (AgsPortableThreadClass),
+    NULL, /* base_init */
+    NULL, /* base_finalize */
+    (GClassInitFunc) ags_portable_thread_class_init,
+    NULL, /* class_finalize */
+    NULL, /* class_data */
+    sizeof (AgsPortableThread),
+    0,    /* n_preallocs */
+    (GInstanceInitFunc) ags_portable_thread_init,
+  };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_portable_thread_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
+  const GInterfaceInfo ags_tree_iterator_interface_info = {
+    (GInterfaceInitFunc) ags_portable_thread_tree_iterator_interface_init,
+    NULL, /* interface_finalize */
+    NULL, /* interface_data */
+  };
 
-    ags_type_thread = g_type_module_register(G_TYPE_OBJECT,
-					     "AgsPortableThread\0",
-					     &ags_portable_thread_info,
-					     0);
+  const GInterfaceInfo ags_connectable_interface_info = {
+    (GInterfaceInitFunc) ags_portable_thread_connectable_interface_init,
+    NULL, /* interface_finalize */
+    NULL, /* interface_data */
+  };
+
+  ags_type_portable_thread = g_type_module_register(type_module,
+						    G_TYPE_OBJECT,
+						    "AgsPortableThread\0",
+						    &ags_portable_thread_info,
+						    0);
     
-    g_type_module_add_interface(ags_type_thread,
-				AGS_TYPE_TREE_ITERATOR,
-				&ags_tree_iterator_interface_info);
+  g_type_module_add_interface(type_module,
+			      ags_type_portable_thread,
+			      AGS_TYPE_TREE_ITERATOR,
+			      &ags_tree_iterator_interface_info);
 
-    g_type_module_add_interface(ags_type_thread,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-  }
+  g_type_module_add_interface(type_module,
+			      ags_type_portable_thread,
+			      AGS_TYPE_CONNECTABLE,
+			      &ags_connectable_interface_info);
   
-  return (ags_type_thread);
+  return (ags_type_portable_thread);
 }
 
 void
@@ -208,7 +216,7 @@ ags_portable_thread_init(AgsPortableThread *thread)
   g_atomic_int_set(&(thread->flags),
 		   0);
 
-  pth_attr_init(&thread->thread_attr);
+  pth_attr_init(thread->thread_attr);
 
   pth_mutex_init(&thread->mutex);
   pth_cond_init(&thread->cond);
@@ -222,9 +230,8 @@ ags_portable_thread_init(AgsPortableThread *thread)
 
   pth_mutex_init(&thread->timelock_mutex);
   pth_cond_init(&thread->timelock_cond);
-  thread->timelock.tv_sec = 0;
-  thread->timelock.tv_nsec = floor(NSEC_PER_SEC *
-				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+  thread->timelock = floor(USEC_PER_SEC *
+			   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
 
   thread->devout = NULL;
 
@@ -326,11 +333,7 @@ ags_portable_thread_finalize(GObject *gobject)
 
   thread = AGS_PORTABLE_THREAD(gobject);
 
-  pth_mutex_destroy(&(thread->mutex));
-  pth_cond_destroy(&(thread->cond));
-
-  pth_mutex_destroy(&(thread->start_mutex));
-  pth_cond_destroy(&(thread->start_cond));
+  pth_attr_destroy(thread->thread_attr);
 
   g_object_unref(G_OBJECT(thread->devout));
 
@@ -387,14 +390,14 @@ ags_portable_thread_trylock(AgsPortableThread *thread)
   main_loop = ags_portable_thread_get_toplevel(thread);
 
   if(main_loop == thread){
-    if(pth_mutex_(&(thread->mutex)) != 0){
+    if(pth_mutex_acquire(&(thread->mutex), TRUE, NULL) != 0){
       return(FALSE);
     }
 
     g_atomic_int_or(&(thread->flags),
 		     (AGS_PORTABLE_THREAD_LOCKED));
   }else{
-    if(pth_mutex_acquire(&(main_loop->mutex, TRUE, NULL)) != 0){
+    if(pth_mutex_acquire(&(main_loop->mutex), TRUE, NULL) != 0){
       return(FALSE);
     }
 
@@ -717,7 +720,7 @@ ags_portable_thread_main_loop_unlock_children(AgsPortableThread *thread)
       if((AGS_PORTABLE_THREAD_BROADCAST_PARENT & (thread->flags)) == 0){
 	pth_cond_notify(&(child->cond), FALSE);
       }else{
-	pth_cond_broadcast(&(child->cond), TRUE);
+	pth_cond_notify(&(child->cond), TRUE);
       }
 
       child = child->next;
@@ -1289,7 +1292,7 @@ ags_portable_thread_real_start(AgsPortableThread *thread)
   ags_portable_thread_unlock(main_loop);
 
   /*  */
-  thread->thread = pth_spawn(&(thread->thread_attr),
+  thread->thread = pth_spawn(thread->thread_attr,
 			     &(ags_portable_thread_loop),
 			     thread);
   
@@ -1297,9 +1300,9 @@ ags_portable_thread_real_start(AgsPortableThread *thread)
   val = g_atomic_int_get(&(thread->flags));
   
   if((AGS_PORTABLE_THREAD_TIMELOCK_RUN & val) != 0){
-    thread->timelock_thread = pth_create(NULL,
-					 &(ags_portable_thread_timelock_loop),
-					 thread);
+    thread->timelock_thread = pth_spawn(NULL,
+					&(ags_portable_thread_timelock_loop),
+					thread);
   }
 }
 
@@ -1400,8 +1403,8 @@ ags_portable_thread_loop(void *ptr)
 	ags_portable_thread_unlock(thread);
 
 	/* init and wait */
-	pth_barrier_init(&(thread->barrier[0]), NULL, wait_count);
-	pth_barrier_wait(&(thread->barrier[0]));
+	pth_barrier_init(&(thread->barrier[0]), wait_count);
+	pth_barrier_reach(&(thread->barrier[0]));
       }else{
 	/* retrieve wait count */
 	ags_portable_thread_lock(thread);
@@ -1411,8 +1414,8 @@ ags_portable_thread_loop(void *ptr)
 	ags_portable_thread_unlock(thread);
 
 	/* init and wait */
-	pth_barrier_init(&(thread->barrier[1]), NULL, wait_count);
-	pth_barrier_wait(&(thread->barrier[1]));
+	pth_barrier_init(&(thread->barrier[1]), wait_count);
+	pth_barrier_reach(&(thread->barrier[1]));
       }
     }
 
@@ -1426,6 +1429,7 @@ ags_portable_thread_loop(void *ptr)
 
     if((AGS_PORTABLE_THREAD_TIMELOCK_RUN & val) != 0){
       pth_mutex_acquire(&(thread->timelock_mutex),
+			FALSE,
 			NULL);
 
       g_atomic_int_and(&(thread->flags),
@@ -1584,14 +1588,15 @@ ags_portable_thread_timelock_loop(void *ptr)
 
   while((AGS_PORTABLE_THREAD_RUNNING & (val)) != 0){
     pth_mutex_acquire(&thread->timelock_mutex,
-		      FALSE);
+		      FALSE,
+		      NULL);
 
     val = g_atomic_int_get(&(thread->flags));
 
     while((AGS_PORTABLE_THREAD_TIMELOCK_WAIT & (val)) != 0){
       pth_cond_await(&(thread->timelock_cond),
 		     &(thread->timelock_mutex),
-		     NULL);
+		     pth_event(PTH_EVENT_TIME, pth_timeout(0, thread->timelock)));
 
       val = g_atomic_int_get(&(thread->flags));
     }
@@ -1600,8 +1605,6 @@ ags_portable_thread_timelock_loop(void *ptr)
 		    AGS_PORTABLE_THREAD_TIMELOCK_WAIT);
 
     pth_mutex_release(&thread->timelock_mutex);
-
-    nanosleep(&(thread->timelock), NULL);
 
     g_atomic_int_or(&(thread->flags),
 		    AGS_PORTABLE_THREAD_TIMELOCK_RESUME);
@@ -1624,7 +1627,7 @@ ags_portable_thread_real_timelock(AgsPortableThread *thread)
   g_atomic_int_or(&(thread->flags),
 		  AGS_PORTABLE_THREAD_TIMELOCK_RESUME);
 
-  pth_suspend(&(thread->thread));
+  pth_suspend(thread->thread);
 
   main_loop = ags_portable_thread_get_toplevel(thread);
 
@@ -1661,7 +1664,7 @@ ags_portable_thread_real_timelock(AgsPortableThread *thread)
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
   }
 
-  pth_resume(&(thread->thread));
+  pth_resume(thread->thread);
 
   ags_portable_thread_unlock(thread);
 }
@@ -1713,7 +1716,7 @@ ags_portable_thread_new(GObject *data)
 {
   AgsPortableThread *thread;
 
-  thread = (AgsPortableThread *) g_object_new(AGS_TYPE_THREAD,
+  thread = (AgsPortableThread *) g_object_new(AGS_TYPE_PORTABLE_THREAD,
 					      NULL);
 
   thread->data = data;
