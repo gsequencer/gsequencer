@@ -218,6 +218,9 @@ ags_task_thread_run(AgsThread *thread)
     
     if(locked_greedy == 0){
       /* throughput is guaranteed */
+      g_atomic_int_and(&thread->flags,
+		       (~AGS_THREAD_SKIPPED_BY_TIMELOCK));
+
       for(i = 0; i < task_thread->pending; i++){
 	task = AGS_TASK(list->data);
 
@@ -228,6 +231,9 @@ ags_task_thread_run(AgsThread *thread)
 	list = list->next;
       }
     }else{
+      g_atomic_int_or(&thread->flags,
+		      AGS_THREAD_SKIPPED_BY_TIMELOCK);
+      
       /* this is really bad */
       g_message("AgsTaskThread - can't do my job because not in sync: greedy thread is running\0");
     }

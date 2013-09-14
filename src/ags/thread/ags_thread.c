@@ -1341,7 +1341,7 @@ ags_thread_loop(void *ptr)
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   guint current_tic;
-  guint val, running, greedy_locks;
+  guint val, running, locked_greedy;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
 
@@ -1525,6 +1525,28 @@ ags_thread_loop(void *ptr)
       }
     }
 
+    /* check for greedy to announce */
+    pthread_mutex_lock(&(thread->greedy_mutex));
+
+    if(thread->greedy_locks != NULL){
+      GList *greedy_locks;
+
+      greedy_locks = thread->greedy_locks;
+      
+      while(greedy_locks != NULL){
+	locked_greedy = g_atomic_int_get(&AGS_THREAD(greedy_locks->data)->locked_greedy);
+
+	locked_greedy++;
+
+	g_atomic_int_set(&AGS_THREAD(greedy_locks->data)->locked_greedy,
+			 locked_greedy);
+
+	greedy_locks = greedy_locks->next;
+      }
+    }
+
+    pthread_mutex_unlock(&(thread->greedy_mutex));
+
     ags_thread_unlock(thread);
 
     /* run */
@@ -1533,16 +1555,16 @@ ags_thread_loop(void *ptr)
     /* greedy work around */
     pthread_mutex_lock(&(thread->greedy_mutex));
 
-    greedy_locks = g_atomic_int_get(&thread->locked_greedy);
+    locked_greed = g_atomic_int_get(&thread->locked_greedy);
     
-    if(greedy_locks != 0){
-      while(greedy_locks != 0){
+    if(locked_greedy != 0){
+      while(locked_greedy != 0){
 	pthread_cond_wait(&(thread->greedy_cond),
 			  &(thread->greedy_mutex));
 	
       }
 
-      greedy_locks = g_atomic_int_get(&thread->locked_greedy);
+      locked_greedy = g_atomic_int_get(&thread->locked_greedy);
     }
 
     pthread_mutex_unlock(&(thread->greedy_mutex));
