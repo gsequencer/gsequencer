@@ -101,7 +101,6 @@ struct _AgsThread
 
   struct timespec timelock;
   GList *greedy_locks;
-  GList *skip;
 
   GObject *devout;
   AgsThread *parent;

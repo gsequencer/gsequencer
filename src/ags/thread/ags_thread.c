@@ -243,7 +243,6 @@ ags_thread_init(AgsThread *thread)
 				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
 
   thread->greedy_locks = NULL;
-  thread->skip = NULL;
 
   thread->devout = NULL;
 

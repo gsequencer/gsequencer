@@ -408,8 +408,7 @@ main(int argc, char **argv)
   AGS_AUDIO_LOOP(main->main_loop)->main = main;
 
   /*  */
-  main->gui_loop = (AgsThread *) ags_gui_thread_new();
-  ags_thread_add_child(main->main_loop, main->gui_loop);
+  main->gui_loop = AGS_AUDIO_LOOP(main->main_loop)->gui_thread;
   ags_thread_start(main->gui_loop);
 
 #ifdef _USE_PTH
