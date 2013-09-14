@@ -68,7 +68,6 @@ enum{
 };
 
 static gpointer ags_thread_parent_class = NULL;
-static GType ags_thread_type_id = 0;
 static guint thread_signals[LAST_SIGNAL];
 
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
@@ -76,53 +75,46 @@ static guint thread_signals[LAST_SIGNAL];
 GType
 ags_thread_get_type()
 {
-  return(ags_thread_type_id);
-}
+  static GType ags_type_thread = 0;
 
-static GType
-ags_thread_register_type(GTypeModule *type_module)
-{
-  GType ags_type_thread = 0;
+  if(!ags_type_thread){
+    const GTypeInfo ags_thread_info = {
+      sizeof (AgsThreadClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_thread_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsThread),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_thread_init,
+    };
 
-  const GTypeInfo ags_thread_info = {
-    sizeof (AgsThreadClass),
-    NULL, /* base_init */
-    NULL, /* base_finalize */
-    (GClassInitFunc) ags_thread_class_init,
-    NULL, /* class_finalize */
-    NULL, /* class_data */
-    sizeof (AgsThread),
-    0,    /* n_preallocs */
-    (GInstanceInitFunc) ags_thread_init,
-  };
+    const GInterfaceInfo ags_tree_iterator_interface_info = {
+      (GInterfaceInitFunc) ags_thread_tree_iterator_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
 
-  const GInterfaceInfo ags_tree_iterator_interface_info = {
-    (GInterfaceInitFunc) ags_thread_tree_iterator_interface_init,
-    NULL, /* interface_finalize */
-    NULL, /* interface_data */
-  };
+    const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_thread_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
 
-  const GInterfaceInfo ags_connectable_interface_info = {
-    (GInterfaceInitFunc) ags_thread_connectable_interface_init,
-    NULL, /* interface_finalize */
-    NULL, /* interface_data */
-  };
-
-  ags_type_thread = g_type_module_register_type(type_module,
-						G_TYPE_OBJECT,
-						"AgsThread\0",
-						&ags_thread_info,
-						0);
+    ags_type_thread = g_type_register_static(G_TYPE_OBJECT,
+					     "AgsThread\0",
+					     &ags_thread_info,
+					     0);
     
-  g_type_module_add_interface(type_module,
-			      ags_type_thread,
-			      AGS_TYPE_TREE_ITERATOR,
-			      &ags_tree_iterator_interface_info);
+    g_type_add_interface_static(ags_type_thread,
+				AGS_TYPE_TREE_ITERATOR,
+				&ags_tree_iterator_interface_info);
     
-  g_type_module_add_interface(type_module,
-			      ags_type_thread,
-			      AGS_TYPE_CONNECTABLE,
-			      &ags_connectable_interface_info);
+    g_type_add_interface_static(ags_type_thread,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+  }
   
   return(ags_type_thread);
 }
@@ -1671,7 +1663,7 @@ ags_thread_real_timelock(AgsThread *thread)
 
   ags_thread_lock(thread);
 
-  val = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->flags));
+  val = g_atomic_int_get(&(thread->flags));
 
 #ifdef AGS_PTHREAD_SUSPEND
   if((AGS_THREAD_SKIP_NON_GREEEDY & val) != 0){
