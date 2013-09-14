@@ -115,7 +115,6 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread = AGS_THREAD(task_thread);
   pthread_mutex_init(&(task_thread->read_mutex), NULL);
-  pthread_mutex_init(&(task_thread->launch_mutex), NULL);
 
   task_thread->queued = 0;
   task_thread->pending = 0;
@@ -170,6 +169,7 @@ ags_task_thread_run(AgsThread *thread)
   static struct timespec play_idle;
   static useconds_t idle;
   guint prev_pending;
+  guint locked_greedy;
   static gboolean initialized = FALSE;
 
   task_thread = AGS_TASK_THREAD(thread);
@@ -212,24 +212,30 @@ ags_task_thread_run(AgsThread *thread)
     AgsTask *task;
     int i;
 
-    pthread_mutex_lock(&(task_thread->launch_mutex));
+    pthread_mutex_lock(&(thread->greedy_mutex));
+    
+    locked_greedy = g_atomic_int_get(&thread->locked_greedy);
+    
+    if(locked_greedy == 0){
+      /* throughput is guaranteed */
+      for(i = 0; i < task_thread->pending; i++){
+	task = AGS_TASK(list->data);
 
-    for(i = 0; i < task_thread->pending; i++){
-      task = AGS_TASK(list->data);
+	g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
 
-      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+	ags_task_launch(task);
 
-      ags_task_launch(task);
-
-      list = list->next;
+	list = list->next;
+      }
+    }else{
+      /* this is really bad */
+      g_message("AgsTaskThread - can't do my job because not in sync: greedy thread is running\0");
     }
 
-    pthread_mutex_unlock(&(task_thread->launch_mutex));
+    pthread_mutex_unlock(&(thread->greedy_mutex));
   }
 
   /* sleep if wanted */
-  
-
   if((AGS_THREAD_RUNNING & (AGS_THREAD(AGS_AUDIO_LOOP(thread->parent)->devout_thread)->flags)) != 0){
     //FIXME:JK: this isn't very efficient
     //    nanosleep(&play_idle, NULL);
