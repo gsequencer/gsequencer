@@ -61,6 +61,14 @@ typedef enum{
   AGS_THREAD_TIMELOCK_RUN            = 1 << 21,
   AGS_THREAD_TIMELOCK_WAIT           = 1 << 22,
   AGS_THREAD_TIMELOCK_RESUME         = 1 << 23,
+  /*
+   * prefered way would be unlocking greedy_locks
+   * and the suspend to not become greedy
+   * but while pthread_suspend and pthread_resume
+   * are missing you need this as work-around
+   */
+  AGS_THREAD_SKIP_NON_GREEDY         = 1 << 24,
+  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 25,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -87,7 +95,13 @@ struct _AgsThread
   pthread_mutex_t timelock_mutex;
   pthread_cond_t timelock_cond;
 
+  pthread_mutex_t greedy_mutex;
+  pthread_cond_t greedy_cond;
+  volatile guint locked_greedy;
+
   struct timespec timelock;
+  GList *greedy_locks;
+  GList *skip;
 
   GObject *devout;
   AgsThread *parent;

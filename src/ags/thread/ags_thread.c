@@ -234,9 +234,16 @@ ags_thread_init(AgsThread *thread)
   pthread_mutex_init(&(thread->timelock_mutex), NULL);
   pthread_cond_init(&(thread->timelock_cond), NULL);
 
+  pthread_mutex_init(&(thread->greedy_mutex), NULL);
+  pthread_cond_init(&(thread->greedy_cond), NULL);
+  thread->locked_greedy = 0;
+
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC *
 				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+
+  thread->greedy_locks = NULL;
+  thread->skip = NULL;
 
   thread->devout = NULL;
 
@@ -1334,7 +1341,7 @@ ags_thread_loop(void *ptr)
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   guint current_tic;
-  guint val, running;
+  guint val, running, greedy_locks;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
 
@@ -1523,6 +1530,23 @@ ags_thread_loop(void *ptr)
     /* run */
     ags_thread_run(thread);
 
+    /* greedy work around */
+    pthread_mutex_lock(&(thread->greedy_mutex));
+
+    greedy_locks = g_atomic_int_get(&thread->locked_greedy);
+    
+    if(greedy_locks != 0){
+      while(greedy_locks != 0){
+	pthread_cond_wait(&(thread->greedy_cond),
+			  &(thread->greedy_mutex));
+	
+      }
+
+      greedy_locks = g_atomic_int_get(&thread->locked_greedy);
+    }
+
+    pthread_mutex_unlock(&(thread->greedy_mutex));
+
     /**/
     ags_thread_lock(thread);
 
@@ -1621,51 +1645,87 @@ void
 ags_thread_real_timelock(AgsThread *thread)
 {
   AgsThread *main_loop;
-  int sig;
-  static sigset_t set;
+  GList *greedy_locks;
+  guint locked_greedy, val;
 
   ags_thread_lock(thread);
 
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_TIMELOCK_RESUME);
+  val = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->flags));
 
-  pthread_suspend(&(thread->thread));
+  if((AGS_THREAD_SKIP_NON_GREEEDY & val) != 0){
+    /*
+     * bad choice because throughput will suffer but it's your only choice as long
+     * pthread_suspend and pthread_resume will be missing.
+     */
 
-  main_loop = ags_thread_get_toplevel(thread);
+    //TODO:JK: implement me
 
-  ags_thread_lock(main_loop);
-
-  if(!ags_thread_is_tree_ready(thread)){
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_WAIT_0);
-
-    ags_thread_unlock(main_loop);
-    
-    while(!ags_thread_is_current_ready(thread)){
-      pthread_cond_wait(&(thread->cond),
-			&(thread->mutex));
-    }
   }else{
-    guint tic, next_tic;
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_TIMELOCK_RESUME);
+    
+    /* throughput is mandatory */
+    pthread_suspend(&(thread->thread));
+    
+    /* allow non greedy to continue */
+    greedy_locks = thread->greedy_locks;
 
-    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+    while(greedy_locks != NULL){
+      pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+    
+      locked_greedy = g_atomic_int_get(&AGS_THREAD(greedy_locks->data)->locked_greedy);
 
-    ags_thread_unlock(main_loop);
+      locked_greedy--;
 
-    if(tic = 2){
-      next_tic = 0;
-    }else if(tic = 0){
-      next_tic = 1;
-    }else if(tic = 1){
-      next_tic = 2;
+      g_atomic_int_set(&(AGS_THREAD(greedy_locks->data)->locked_greedy),
+		       locked_greedy);
+
+      pthread_cond_signal(&(AGS_THREAD(greedy_locks->data)->greedy_cond));
+
+      pthread_mutex_unlock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+
+      greedy_locks = greedy_locks->next;
     }
 
-    ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-    ags_thread_main_loop_unlock_children(main_loop);
-    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-  }
+    /* skip syncing for greedy */
+    main_loop = ags_thread_get_toplevel(thread);
 
-  pthread_resume(&(thread->thread));
+    ags_thread_lock(main_loop);
+
+    if(!ags_thread_is_tree_ready(thread)){
+      g_atomic_int_or(&(thread->flags),
+		      AGS_THREAD_WAIT_0);
+
+      ags_thread_unlock(main_loop);
+    
+      while(!ags_thread_is_current_ready(thread)){
+	pthread_cond_wait(&(thread->cond),
+			  &(thread->mutex));
+      }
+    }else{
+      guint tic, next_tic;
+
+      /* you have the tic that's why you don't have to skip */
+      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      ags_thread_unlock(main_loop);
+
+      if(tic = 2){
+	next_tic = 0;
+      }else if(tic = 0){
+	next_tic = 1;
+      }else if(tic = 1){
+	next_tic = 2;
+      }
+
+      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_thread_main_loop_unlock_children(main_loop);
+      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+    }
+
+    /* your chance */
+    pthread_resume(&(thread->thread));
+  }
 
   ags_thread_unlock(thread);
 }
