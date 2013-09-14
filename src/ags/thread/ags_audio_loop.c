@@ -195,6 +195,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->main = NULL;
   
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
+  g_atomic_int_or(&(audio_loop->task_thread->flags),
+		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
 
   audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();

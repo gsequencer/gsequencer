@@ -211,34 +211,16 @@ ags_task_thread_run(AgsThread *thread)
   if(list != NULL){
     AgsTask *task;
     int i;
-
-    pthread_mutex_lock(&(thread->greedy_mutex));
     
-    locked_greedy = g_atomic_int_get(&thread->locked_greedy);
-    
-    if(locked_greedy == 0){
-      /* throughput is guaranteed */
-      g_atomic_int_and(&thread->flags,
-		       (~AGS_THREAD_SKIPPED_BY_TIMELOCK));
+    for(i = 0; i < task_thread->pending; i++){
+      task = AGS_TASK(list->data);
 
-      for(i = 0; i < task_thread->pending; i++){
-	task = AGS_TASK(list->data);
+      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
 
-	g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+      ags_task_launch(task);
 
-	ags_task_launch(task);
-
-	list = list->next;
-      }
-    }else{
-      g_atomic_int_or(&thread->flags,
-		      AGS_THREAD_SKIPPED_BY_TIMELOCK);
-      
-      /* this is really bad */
-      g_message("AgsTaskThread - can't do my job because not in sync: greedy thread is running\0");
+      list = list->next;
     }
-
-    pthread_mutex_unlock(&(thread->greedy_mutex));
   }
 
   /* sleep if wanted */

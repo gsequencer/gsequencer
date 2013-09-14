@@ -69,6 +69,7 @@ typedef enum{
    */
   AGS_THREAD_SKIP_NON_GREEDY         = 1 << 24,
   AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 25,
+  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 26,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -97,6 +98,7 @@ struct _AgsThread
 
   pthread_mutex_t greedy_mutex;
   pthread_cond_t greedy_cond;
+  pthread_mutex_t greedy_run_mutex;
   volatile guint locked_greedy;
 
   struct timespec timelock;
