@@ -1554,7 +1554,7 @@ ags_thread_loop(void *ptr)
     /* greedy work around */
     pthread_mutex_lock(&(thread->greedy_mutex));
 
-    locked_greed = g_atomic_int_get(&thread->locked_greedy);
+    locked_greedy = g_atomic_int_get(&thread->locked_greedy);
     
     if(locked_greedy != 0){
       while(locked_greedy != 0){
@@ -1681,7 +1681,6 @@ ags_thread_real_timelock(AgsThread *thread)
      * pthread_suspend and pthread_resume will be missing.
      */
 
-    //TODO:JK: implement me
     greedy_locks = thread->greedy_locks;
 
     while(greedy_locks != NULL){

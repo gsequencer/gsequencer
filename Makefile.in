@@ -266,9 +266,9 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_file.$(OBJEXT) ags-ags_list.$(OBJEXT) \
 	ags-ags_parameter.$(OBJEXT) ags-ags_combo_box_text.$(OBJEXT) \
 	ags-ags_log.$(OBJEXT) ags-ags_recycling_thread.$(OBJEXT) \
-	ags-ags_thread.$(OBJEXT) ags-ags_portable_thread.$(OBJEXT) \
-	ags-ags_audio_loop.$(OBJEXT) ags-ags_gui_thread.$(OBJEXT) \
-	ags-ags_task_thread.$(OBJEXT) ags-ags_devout_thread.$(OBJEXT) \
+	ags-ags_thread.$(OBJEXT) ags-ags_audio_loop.$(OBJEXT) \
+	ags-ags_gui_thread.$(OBJEXT) ags-ags_task_thread.$(OBJEXT) \
+	ags-ags_devout_thread.$(OBJEXT) \
 	ags-ags_iterator_thread.$(OBJEXT) \
 	ags-ags_id_generator.$(OBJEXT) ags-ags_server.$(OBJEXT) \
 	ags-ags_registry.$(OBJEXT) ags-ags_remote_task.$(OBJEXT)
@@ -996,10 +996,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/lib/ags_combo_box_text.h \
 	./src/ags/thread/ags_recycling_thread.c \
 	./src/ags/thread/ags_thread.h \
-	./src/ags/thread/ags_portable_thread.h \
 	./src/ags/thread/ags_recycling_thread.h \
 	./src/ags/thread/ags_thread.c \
-	./src/ags/thread/ags_portable_thread.c \
 	./src/ags/thread/ags_audio_loop.h \
 	./src/ags/thread/ags_audio_loop.c \
 	./src/ags/thread/ags_gui_thread.h \
@@ -1391,7 +1389,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_pattern.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_playable.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_portable_thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_preferences.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_preferences_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_property_collection_editor.Po@am__quote@
@@ -4511,20 +4508,6 @@ ags-ags_thread.obj: ./src/ags/thread/ags_thread.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_thread.c' object='ags-ags_thread.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_thread.obj `if test -f './src/ags/thread/ags_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_thread.c'; fi`
-
-ags-ags_portable_thread.o: ./src/ags/thread/ags_portable_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_portable_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_portable_thread.Tpo -c -o ags-ags_portable_thread.o `test -f './src/ags/thread/ags_portable_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_portable_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_portable_thread.Tpo $(DEPDIR)/ags-ags_portable_thread.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_portable_thread.c' object='ags-ags_portable_thread.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_portable_thread.o `test -f './src/ags/thread/ags_portable_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_portable_thread.c
-
-ags-ags_portable_thread.obj: ./src/ags/thread/ags_portable_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_portable_thread.obj -MD -MP -MF $(DEPDIR)/ags-ags_portable_thread.Tpo -c -o ags-ags_portable_thread.obj `if test -f './src/ags/thread/ags_portable_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_portable_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_portable_thread.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_portable_thread.Tpo $(DEPDIR)/ags-ags_portable_thread.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/thread/ags_portable_thread.c' object='ags-ags_portable_thread.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_portable_thread.obj `if test -f './src/ags/thread/ags_portable_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_portable_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_portable_thread.c'; fi`
 
 ags-ags_audio_loop.o: ./src/ags/thread/ags_audio_loop.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_audio_loop.o -MD -MP -MF $(DEPDIR)/ags-ags_audio_loop.Tpo -c -o ags-ags_audio_loop.o `test -f './src/ags/thread/ags_audio_loop.c' || echo '$(srcdir)/'`./src/ags/thread/ags_audio_loop.c

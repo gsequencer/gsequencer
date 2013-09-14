@@ -221,11 +221,7 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
-      if(!pthread_mutex_trylock(&(task_thread->launch_mutex))){
-	g_main_context_iteration(main_context, FALSE);
-
-	pthread_mutex_unlock(&(task_thread->launch_mutex));
-      }
+      g_main_context_iteration(main_context, FALSE);
 
       g_main_context_release(main_context);
 
@@ -258,11 +254,7 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
-      pthread_mutex_lock(&(task_thread->launch_mutex));
-
       g_main_context_iteration(main_context, FALSE);
-
-      pthread_mutex_unlock(&(task_thread->launch_mutex));
 
       g_main_context_release(main_context);
 
