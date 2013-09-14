@@ -1680,7 +1680,50 @@ ags_thread_real_timelock(AgsThread *thread)
      */
 
     //TODO:JK: implement me
+    greedy_locks = thread->greedy_locks;
 
+    while(greedy_locks != NULL){
+      pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+      
+      ags_thread_lock(main_loop);
+
+      g_atomic_int_or(&(AGS_THREAD(greedy_locks->data)->flags),
+		      (AGS_THREAD_WAIT_0 | AGS_THREAD_SKIPPED_BY_TIMELOCK));
+
+      ags_thread_unlock(main_loop);
+	
+      pthread_mutex_unlock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+
+      greedy_locks = greedy_locks->next;
+    }
+
+    ags_thread_lock(main_loop);
+
+    if(!ags_thread_is_tree_ready(thread)){
+      g_atomic_int_or(&(thread->flags),
+		      AGS_THREAD_WAIT_0);
+
+      ags_thread_unlock(main_loop);
+    }else{
+      guint tic, next_tic;
+
+      /* you have the tic that's why you don't have to cheat */
+      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      ags_thread_unlock(main_loop);
+
+      if(tic = 2){
+	next_tic = 0;
+      }else if(tic = 0){
+	next_tic = 1;
+      }else if(tic = 1){
+	next_tic = 2;
+      }
+
+      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_thread_main_loop_unlock_children(main_loop);
+      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+    }
   }else{
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_TIMELOCK_RESUME);
