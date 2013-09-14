@@ -26,6 +26,7 @@ AC_CHECK_LIB([m], [main])
 AC_CHECK_LIB([rt], [main])
 
 AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_WITH_PTHREAD]))
+AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_PTHREAD_SUSPEND]))
 AC_CHECK_LIB([pth], [pth_suspend], AC_DEFINE([AGS_WITH_PTH]))
 
 PKG_CHECK_MODULES([UUID], [uuid >= 2.20.0])

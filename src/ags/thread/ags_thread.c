@@ -1673,7 +1673,9 @@ ags_thread_real_timelock(AgsThread *thread)
 
   val = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->flags));
 
+#ifdef AGS_PTHREAD_SUSPEND
   if((AGS_THREAD_SKIP_NON_GREEEDY & val) != 0){
+#endif
     /*
      * bad choice because throughput will suffer but it's your only choice as long
      * pthread_suspend and pthread_resume will be missing.
@@ -1724,6 +1726,7 @@ ags_thread_real_timelock(AgsThread *thread)
       ags_thread_main_loop_unlock_children(main_loop);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
     }
+#ifdef AGS_PTHREAD_SUSPEND
   }else{
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_TIMELOCK_RESUME);
@@ -1790,6 +1793,7 @@ ags_thread_real_timelock(AgsThread *thread)
     /* your chance */
     pthread_resume(&(thread->thread));
   }
+#endif
 
   ags_thread_unlock(thread);
 }
