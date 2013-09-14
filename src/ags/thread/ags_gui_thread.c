@@ -192,7 +192,7 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   i_stop = (guint) floor(1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
 
-  if(i_stop >= 1){
+  if(gui_thread->frequency < 1.0 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE){
     struct timespec start, stop, current, reserved;
 
     /* calculate timing */
@@ -238,10 +238,11 @@ ags_gui_thread_run(AgsThread *thread)
     guint iter_val;
 
     wait.tv_sec = 0;
-    wait.tv_nsec = round(1000000000 * ((double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE  / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE));
+    //    wait.tv_nsec = round(1000000000 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
 
-    iter_val = 1.0 / gui_thread->frequency * ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
-
+    iter_val = (1.0 / gui_thread->frequency) / (1.0 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+    g_message("paint\0");
+      
     /*  */
     if(gui_thread->iter > 1.0){
       if(!g_main_context_acquire(main_context)){
@@ -261,7 +262,7 @@ ags_gui_thread_run(AgsThread *thread)
       gui_thread->iter = 0.0;
     }else{
       gui_thread->iter += iter_val;
-      nanosleep(&wait, NULL);
+      //      nanosleep(&wait, NULL);
     }
   }
 
