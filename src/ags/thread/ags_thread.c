@@ -1295,10 +1295,6 @@ ags_thread_real_start(AgsThread *thread)
   
   ags_thread_unlock(main_loop);
 
-  /*  */
-  pthread_create(&(thread->thread), &(thread->thread_attr),
-		 &(ags_thread_loop), thread);
-  
   /* */
   val = g_atomic_int_get(&(thread->flags));
   
@@ -1306,6 +1302,10 @@ ags_thread_real_start(AgsThread *thread)
     pthread_create(&(thread->timelock_thread), NULL,
 		   &(ags_thread_timelock_loop), thread);
   }
+
+  /*  */
+  pthread_create(&(thread->thread), &(thread->thread_attr),
+		 &(ags_thread_loop), thread);
 }
 
 /**
@@ -1504,7 +1504,7 @@ ags_thread_loop(void *ptr)
 
     ags_thread_unlock(thread);
 
-    /* check for greedy to announce * /
+    /* check for greedy to announce */
     if(thread->greedy_locks != NULL){
       GList *greedy_locks;
 
@@ -1525,7 +1525,7 @@ ags_thread_loop(void *ptr)
       }
     }
 
-    /* greedy work around * /
+    /* greedy work around */
     pthread_mutex_lock(&(thread->greedy_mutex));
 
     locked_greedy = g_atomic_int_get(&thread->locked_greedy);
@@ -1540,10 +1540,7 @@ ags_thread_loop(void *ptr)
     }
 
     pthread_mutex_unlock(&(thread->greedy_mutex));
-    */
 
-    /* run */
-    ags_thread_run(thread);
 
     /* */
     pthread_mutex_lock(&(thread->timelock_mutex));
@@ -1559,13 +1556,16 @@ ags_thread_loop(void *ptr)
 		       (~AGS_THREAD_TIMELOCK_WAIT));
 
       if((AGS_THREAD_TIMELOCK_WAIT & locked) != 0){	
-	pthread_cond_signal(&(thread->timelock_cond));
+       	pthread_cond_signal(&(thread->timelock_cond));
       }
     }
 
     pthread_mutex_unlock(&(thread->timelock_mutex));
 
-    /* check for greedy to release * /
+    /* run */
+    ags_thread_run(thread);
+
+    /* check for greedy to release */
     if(thread->greedy_locks != NULL){
       GList *greedy_locks;
 
@@ -1586,7 +1586,7 @@ ags_thread_loop(void *ptr)
 
 	greedy_locks = greedy_locks->next;
       }
-      } */
+    }
 
     /**/
     ags_thread_lock(thread);
@@ -1655,9 +1655,13 @@ ags_thread_timelock_loop(void *ptr)
   thread = AGS_THREAD(ptr);
 
   val = g_atomic_int_get(&(thread->flags));
+  
+  pthread_mutex_lock(&thread->timelock_mutex);
+
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMELOCK_WAIT);
 
   while((AGS_THREAD_RUNNING & (val)) != 0){
-    pthread_mutex_lock(&thread->timelock_mutex);
 
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_TIMELOCK_WAIT);
@@ -1665,22 +1669,27 @@ ags_thread_timelock_loop(void *ptr)
     val = g_atomic_int_get(&(thread->flags));
 
     while((AGS_THREAD_TIMELOCK_WAIT & (val)) != 0){
-      retval = pthread_cond_timedwait(&(thread->timelock_cond),
-				      &(thread->timelock_mutex),
-				      &(thread->timelock));
+      retval = pthread_cond_wait(&(thread->timelock_cond),
+				 &(thread->timelock_mutex));
 
-      if(retval != ETIMEDOUT){
-	val = g_atomic_int_get(&(thread->flags));
-      }else{
-	g_message("timelock\0");
-	//	ags_thread_timelock(thread);
-	break;
-      }
+      val = g_atomic_int_get(&(thread->flags));
     }
-    
+
+    nanosleep(&(thread->timelock), NULL);
+
     val = g_atomic_int_get(&(thread->flags));
-    pthread_mutex_unlock(&thread->timelock_mutex);
+
+    if((AGS_THREAD_WAIT_0 & val) != 0){
+      //      g_message("realtime\0");
+    }else{
+      //      g_message("======== timelock ========\0");
+      ags_thread_timelock(thread);
+    }
+
+    val = g_atomic_int_get(&(thread->flags));
   }
+
+  pthread_mutex_unlock(&thread->timelock_mutex);
 }
 
 void
@@ -1690,12 +1699,12 @@ ags_thread_real_timelock(AgsThread *thread)
   GList *greedy_locks;
   guint locked_greedy, val;
 
-  ags_thread_lock(thread);
+  pthread_mutex_lock(&(thread->greedy_mutex));
 
 #ifdef AGS_PTHREAD_SUSPEND
   val = g_atomic_int_get(&(thread->flags));
 
-  if((AGS_THREAD_SKIP_NON_GREEEDY & val) != 0){
+  if((AGS_THREAD_SKIP_NON_GREEDY & val) != 0){
 #endif
     /*
      * bad choice because throughput will suffer but it's your only choice as long
@@ -1725,6 +1734,11 @@ ags_thread_real_timelock(AgsThread *thread)
 		      AGS_THREAD_WAIT_0);
 
       ags_thread_unlock(main_loop);
+
+      while(!ags_thread_is_current_ready(thread)){
+	pthread_cond_wait(&(thread->cond),
+			  &(thread->greedy_mutex));
+      }
     }else{
       guint tic, next_tic;
 
@@ -1786,7 +1800,7 @@ ags_thread_real_timelock(AgsThread *thread)
     
       while(!ags_thread_is_current_ready(thread)){
 	pthread_cond_wait(&(thread->cond),
-			  &(thread->mutex));
+			  &(thread->greedy_mutex));
       }
     }else{
       guint tic, next_tic;
@@ -1813,8 +1827,7 @@ ags_thread_real_timelock(AgsThread *thread)
     pthread_resume(&(thread->thread));
   }
 #endif
-
-  ags_thread_unlock(thread);
+  pthread_mutex_unlock(&(thread->greedy_mutex));
 }
 
 void

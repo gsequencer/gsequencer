@@ -241,7 +241,7 @@ ags_gui_thread_run(AgsThread *thread)
     //    wait.tv_nsec = round(1000000000 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
 
     iter_val = (1.0 / gui_thread->frequency) / (1.0 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
-    g_message("paint\0");
+    //    g_message("paint\0");
       
     /*  */
     if(gui_thread->iter > 1.0){
@@ -262,7 +262,7 @@ ags_gui_thread_run(AgsThread *thread)
       gui_thread->iter = 0.0;
     }else{
       gui_thread->iter += iter_val;
-      //      nanosleep(&wait, NULL);
+      nanosleep(&wait, NULL);
     }
   }
 

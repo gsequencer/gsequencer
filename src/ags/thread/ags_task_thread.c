@@ -114,7 +114,9 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(task_thread);
+
   pthread_mutex_init(&(task_thread->read_mutex), NULL);
+  pthread_mutex_init(&(task_thread->launch_mutex), NULL);
 
   task_thread->queued = 0;
   task_thread->pending = 0;
