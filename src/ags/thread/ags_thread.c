@@ -1529,7 +1529,7 @@ ags_thread_loop(void *ptr)
     pthread_mutex_lock(&(thread->greedy_mutex));
 
     locked_greedy = g_atomic_int_get(&thread->locked_greedy);
-    
+
     if(locked_greedy != 0){
       while(locked_greedy != 0){
 	pthread_cond_wait(&(thread->greedy_cond),

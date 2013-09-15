@@ -776,7 +776,7 @@ ags_recall_finalize(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
-  g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
+  //  g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 
   if(recall->devout != NULL){
     g_object_unref(recall->devout);
@@ -1086,7 +1086,7 @@ ags_recall_real_done(AgsRecall *recall)
     return;
   }
 
-  g_message("ags_recall_done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  //  g_message("ags_recall_done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
   recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
 
   if(AGS_IS_DYNAMIC_CONNECTABLE(recall)){
@@ -1151,7 +1151,7 @@ ags_recall_real_remove(AgsRecall *recall)
 {
   AgsRecall *parent;
 
-  g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  //  g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
 

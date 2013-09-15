@@ -160,7 +160,7 @@ ags_devout_thread_start(AgsThread *thread)
   }
 
   /*  */
-  devout->flags |= (AGS_DEVOUT_BUFFER0 |
+  devout->flags |= (AGS_DEVOUT_BUFFER3 |
 		    AGS_DEVOUT_PLAY);
 
   /*  */
