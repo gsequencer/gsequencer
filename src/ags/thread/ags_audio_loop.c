@@ -382,6 +382,7 @@ ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
   AgsDevout *devout;
+  guint val;
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
@@ -423,11 +424,15 @@ ags_audio_loop_run(AgsThread *thread)
 
   pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));
 
-  if((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(audio_loop->task_thread)->flags)) != 0){
+  val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
 
-    while((AGS_THREAD_INITIAL_RUN & (AGS_THREAD(audio_loop->task_thread)->flags)) != 0){
+  if((AGS_THREAD_INITIAL_RUN & val) != 0){
+
+    while((AGS_THREAD_INITIAL_RUN & val) != 0){
       pthread_cond_wait(&(audio_loop->task_thread->start_cond),
 			&(audio_loop->task_thread->start_mutex));
+
+      val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
     }
   }
   
