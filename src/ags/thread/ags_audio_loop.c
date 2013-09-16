@@ -321,13 +321,14 @@ ags_audio_loop_disconnect(AgsConnectable *connectable)
 void
 ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic)
 {
-  AGS_AUDIO_LOOP(main_loop)->tic = tic;
+  g_atomic_int_set(&(AGS_AUDIO_LOOP(main_loop)->tic),
+		   tic);
 }
 
 guint
 ags_audio_loop_get_tic(AgsMainLoop *main_loop)
 {
-  return(AGS_AUDIO_LOOP(main_loop)->tic);
+  return(g_atomic_int_get(&(AGS_AUDIO_LOOP(main_loop)->tic)));
 }
 
 void

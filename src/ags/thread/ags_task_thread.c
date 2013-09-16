@@ -121,6 +121,9 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   pthread_mutex_init(&(task_thread->read_mutex), NULL);
   pthread_mutex_init(&(task_thread->launch_mutex), NULL);
 
+  g_cond_init(&task_thread->cond);
+  g_mutex_init(&task_thread->mutex);
+
   task_thread->queued = 0;
   task_thread->pending = 0;
 
@@ -174,7 +177,7 @@ ags_task_thread_run(AgsThread *thread)
   static struct timespec play_idle;
   static useconds_t idle;
   guint prev_pending;
-  guint locked_greedy;
+  GMainContext *main_context;
   static gboolean initialized = FALSE;
 
   task_thread = AGS_TASK_THREAD(thread);
@@ -216,7 +219,21 @@ ags_task_thread_run(AgsThread *thread)
   if(list != NULL){
     AgsTask *task;
     int i;
-    
+
+    main_context = g_main_context_default();
+
+    if(!g_main_context_acquire(main_context)){
+      gboolean got_ownership = FALSE;
+
+      while(!got_ownership){
+	got_ownership = g_main_context_wait(main_context,
+					    &task_thread->cond,
+					    &task_thread->mutex);
+      }
+    }
+
+    pthread_mutex_lock(&(task_thread->launch_mutex));
+
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
@@ -226,6 +243,10 @@ ags_task_thread_run(AgsThread *thread)
 
       list = list->next;
     }
+
+    pthread_mutex_unlock(&(task_thread->launch_mutex));
+
+    g_main_context_release(main_context);
   }
 
   /* sleep if wanted */

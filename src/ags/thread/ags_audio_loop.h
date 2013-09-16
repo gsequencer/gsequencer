@@ -52,8 +52,8 @@ struct _AgsAudioLoop
 
   guint flags;
 
-  guint tic;
-  guint last_sync;
+  volatile guint tic;
+  volatile guint last_sync;
 
   GObject *main;
   
