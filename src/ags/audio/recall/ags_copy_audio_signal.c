@@ -189,15 +189,17 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 void
 ags_copy_audio_signal_run_inter(AgsRecall *recall)
 {
+  AgsDevout *devout;
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;
-  AgsAttack *attack;
+  //  AgsAttack *attack;
   GList *stream_source, *stream_destination;
 
   AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter(recall);
 
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
+  devout = AGS_DEVOUT(AGS_RECALL(copy_audio_signal)->devout);
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
 
@@ -209,14 +211,14 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   //FIXME:JK: attack probably needs to be removed
   destination = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination;
   stream_destination = destination->stream_current;
-  attack = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->attack;
+  //  attack = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->attack;
 
   if(stream_destination->next == NULL)
     ags_audio_signal_add_stream(destination);
 
   ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
 					 (signed short *) stream_source->data, 1,
-					 attack->first_length);
+					 devout->buffer_size);
 
   //  if(attack->first_start != 0){
   //    ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
