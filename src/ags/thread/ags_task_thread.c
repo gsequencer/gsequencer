@@ -237,7 +237,7 @@ ags_task_thread_run(AgsThread *thread)
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
-      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+      //      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
 
       ags_task_launch(task);
 

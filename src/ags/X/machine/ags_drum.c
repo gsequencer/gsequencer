@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/widget/ags_led.h>
+
 #include <ags/X/machine/ags_drum_input_pad.h>
 #include <ags/X/machine/ags_drum_input_line.h>
 #include <ags/X/machine/ags_drum_output_pad.h>
@@ -397,26 +399,28 @@ ags_drum_init(AgsDrum *drum)
 		     (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN)),
 		     FALSE, FALSE, 0);
 
+  /* sequencer */
   frame = (GtkFrame *) gtk_frame_new("Pattern\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame, FALSE, FALSE, 0);
 
-  table0 = (GtkTable *) gtk_table_new(16, 3, FALSE);
+  table0 = (GtkTable *) gtk_table_new(16, 4, FALSE);
   gtk_container_add((GtkContainer*) frame, (GtkWidget *) table0);
 
   drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->loop_button,
-			    0, 1, 1, 2);
+			    0, 1, 2, 3);
 
   drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("run\0"));
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->run,
-			    1, 2, 1, 2);
+			    1, 2, 2, 3);
 
+  /* bank */
   table1 = (GtkTable *) gtk_table_new(3, 5, TRUE);
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) table1,
-			    2, 3, 0, 2);
+			    2, 3, 0, 3);
 
   drum->selected1 = NULL;
 
@@ -443,6 +447,7 @@ ags_drum_init(AgsDrum *drum)
   drum->selected0 = drum->index0[0];
   gtk_toggle_button_set_active(drum->index0[0], TRUE);
 
+  /* tact */
   drum->tact = (GtkOptionMenu *) gtk_option_menu_new();
   gtk_table_attach(table0,
 		   (GtkWidget *) drum->tact,
@@ -453,6 +458,7 @@ ags_drum_init(AgsDrum *drum)
   gtk_option_menu_set_menu(drum->tact, (GtkWidget *) ags_tact_menu_new());
   gtk_option_menu_set_history(drum->tact, 6);
 
+  /* duration */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table0,
 		   (GtkWidget *) hbox,
@@ -464,9 +470,23 @@ ags_drum_init(AgsDrum *drum)
   drum->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) drum->length_spin, FALSE, FALSE, 0);
 
+  /* led */
+  drum->active_led = 0;
+
+  drum->led =
+    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 16);
+  gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 1, 2);
+
+  for(i = 0; i < 16; i++){
+    toggle_button = (GtkToggleButton *) ags_led_new();
+    gtk_widget_set_size_request((GtkWidget *) toggle_button, 8, 4);
+    gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) toggle_button, FALSE, FALSE, 0);
+  }
+
+  /* pattern */
   drum->pattern =
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 1, 2);
+  gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 2, 3);
 
   for(i = 0; i < 16; i++){
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
@@ -474,6 +494,7 @@ ags_drum_init(AgsDrum *drum)
     gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) toggle_button, FALSE, FALSE, 0);
   }
 
+  /* page */
   drum->offset = (GtkVBox*) gtk_vbox_new(FALSE, 0);
   gtk_table_attach_defaults(table0, (GtkWidget *) drum->offset, 15, 16, 0, 3);
 
@@ -504,12 +525,22 @@ ags_drum_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
   AgsDrum *drum;
+  AgsRecallHandler *recall_handler;
   GList *list;
   int i;
 
   ags_drum_parent_connectable_interface->connect(connectable);
 
   drum = AGS_DRUM(connectable);
+
+  /* recalls */
+  recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+  recall_handler->signal_name = "sequencer_count\0";
+  recall_handler->callback = G_CALLBACK(ags_drum_sequencer_count_callback);
+  recall_handler->data = (gpointer) drum;
+
+  ags_recall_add_handler(AGS_RECALL(drum->recall_delay_audio_run), recall_handler);
 
   /* AgsDrum */
   g_signal_connect((GObject *) drum->open, "clicked\0",

@@ -93,6 +93,8 @@ struct _AgsDrum
   GtkToggleButton *index1[12];
   GtkToggleButton *selected1;
 
+  guint active_led;
+  GtkHBox *led;
   GtkHBox *pattern;
 
   GtkVBox *offset;

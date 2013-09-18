@@ -180,7 +180,7 @@ GQuark ags_devout_error_quark();
 
 AgsDevoutPlay* ags_devout_play_alloc();
 
-GList *ags_devout_list_cards();
+void ags_devout_list_cards(GList **card_id, GList **card_name);
 void ags_devout_pcm_info(char *card_id,
 			 guint *channels_min, guint *channels_max,
 			 guint *rate_min, guint *rate_max,

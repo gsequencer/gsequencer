@@ -274,8 +274,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   AgsDevout *devout;
   GtkListStore *model;
   GtkTreeIter iter;
-  GList *list;
-  int i;
+  GList *card_id, *card_name;
   char *device;
   int card_num;
   guint channels, channels_min, channels_max;
@@ -291,23 +290,23 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   window = AGS_WINDOW(preferences->window);
 
   /* refresh */
-  list = ags_devout_list_cards();
+  ags_devout_list_cards(&card_id, &card_name);
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-  i = 0;
 
-  while(list != NULL){
+  while(card_id != NULL){
     gtk_list_store_append(model, &iter);
     gtk_list_store_set(model, &iter,
-		       0, g_strdup_printf("hw:%i\0", i),
-		       1, list->data,
+		       0, card_id->data,
+		       1, card_name->data,
 		       -1);
       
-    list = list->next;
-    i++;
+    card_id = card_id->next;
+    card_name = card_name->next;
   }
 
-  g_list_free(list);
-    
+  g_list_free(card_id);
+  g_list_free(card_name);
+
   gtk_combo_box_set_model(audio_preferences->card,
 			  GTK_TREE_MODEL(model));
 
@@ -325,6 +324,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 
   /*  */
   sscanf(device, "hw:%i\0", &card_num);
+
   //  gtk_combo_box_set_active(audio_preferences->card,
   //			   card_num);
 

@@ -485,18 +485,18 @@ ags_devout_play_alloc()
   return(play);
 }
 
-GList*
-ags_devout_list_cards()
+void
+ags_devout_list_cards(GList **card_id, GList **card_name)
 {
   snd_ctl_t *card_handle;
   snd_ctl_card_info_t *card_info;
-  GList *list;
   char *name;
-  char str[65];
+  gchar *str;
   int card_num;
   int error;
 
-  list = NULL;
+  *card_id = NULL;
+  *card_name = NULL;
   card_num = -1;
 
   while(TRUE){
@@ -510,7 +510,7 @@ ags_devout_list_cards()
       continue;
     }
 
-    sprintf(str, "hw:%i\0", card_num);
+    str = g_strdup_printf("hw:%i\0", card_num);
     error = snd_ctl_open(&card_handle, str, 0);
 
     if(error < 0){
@@ -524,16 +524,16 @@ ags_devout_list_cards()
       continue;
     }
 
-    list = g_list_prepend(list, g_strdup(snd_ctl_card_info_get_name(card_info)));
+    *card_id = g_list_prepend(*card_id, str);
+    *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
 
     snd_ctl_close(card_handle);
   }
 
   snd_config_update_free_global();
 
-  list = g_list_reverse(list);
-
-  return(list);
+  *card_id = g_list_reverse(*card_id);
+  *card_name = g_list_reverse(*card_name);
 }
 
 void

@@ -641,6 +641,16 @@ ags_recall_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
+  /* handlers */
+  list = recall->handlers;
+
+  while(list != NULL){
+    g_signal_connect(G_OBJECT(recall), AGS_RECALL_HANDLER(list->data)->signal_name,
+		     AGS_RECALL_HANDLER(list->data)->callback, AGS_RECALL_HANDLER(list->data)->data);
+
+    list = list->next;
+  }
+
   recall->flags |= AGS_RECALL_CONNECTED;
 }
 
