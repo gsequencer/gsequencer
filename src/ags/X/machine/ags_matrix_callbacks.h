@@ -23,11 +23,17 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/audio/recall/ags_delay_audio_run.h>
+
 #include <ags/X/machine/ags_matrix.h>
 
 void ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix);
 
 void ags_matrix_run_callback(GtkWidget *widget, AgsMatrix *matrix);
+
+void ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					 guint attack,
+					 AgsMatrix *matrix);
 
 void ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix);
 gboolean ags_matrix_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsMatrix *matrix);

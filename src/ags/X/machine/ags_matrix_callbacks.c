@@ -25,18 +25,19 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/audio/task/ags_toggle_led.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 #include <ags/audio/task/recall/ags_apply_tact.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
@@ -159,6 +160,37 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
       AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
     }
   }
+}
+
+void
+ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+				    guint attack,
+				    AgsMatrix *matrix)
+{
+  AgsWindow *window;
+  AgsRecallContainer *recall_container;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  AgsToggleLed *toggle_led;
+  GList *list;
+  guint counter;
+  
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
+
+  list = AGS_RECALL_CONTAINER(AGS_RECALL(matrix->recall_count_beats_audio_run)->container)->recall_audio_run;
+  list = ags_recall_find_group_id(list,
+				  AGS_RECALL(delay_audio_run)->recall_id->group_id);
+
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  counter = count_beats_audio_run->sequencer_counter;
+
+  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
+				  counter,
+				  matrix->active_led);
+
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+			      AGS_TASK(toggle_led));
+
+  matrix->active_led = counter;
 }
 
 void

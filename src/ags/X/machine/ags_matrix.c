@@ -38,6 +38,8 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/widget/ags_led.h>
+
 #include <ags/X/ags_menu_bar.h>
 
 #include <math.h>
@@ -163,6 +165,7 @@ ags_matrix_init(AgsMatrix *matrix)
   GtkTable *table;
   GtkToggleButton *button;
   GtkVScrollbar *vscrollbar;
+  AgsLed *led;
   GtkVBox *vbox;
   GtkHBox *hbox;
   int i, j;
@@ -390,7 +393,7 @@ ags_matrix_init(AgsMatrix *matrix)
 
   table = (GtkTable *) gtk_table_new(3, 3, FALSE);
   gtk_table_attach(matrix->table, (GtkWidget *) table,
-		   1, 2, 0, 1,
+		   1, 2, 0, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   matrix->selected = NULL;
@@ -410,6 +413,7 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->selected = matrix->index[0];
   gtk_toggle_button_set_active(matrix->selected, TRUE);
 
+  /* sequencer */
   table = (GtkTable *) gtk_table_new(2, 2, FALSE);
   gtk_table_attach(matrix->table, (GtkWidget *) table,
 		   2, 3, 0, 1,
@@ -430,7 +434,6 @@ ags_matrix_init(AgsMatrix *matrix)
                          | GDK_POINTER_MOTION_MASK
                          | GDK_POINTER_MOTION_HINT_MASK);
 
-
   matrix->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 77.0, 1.0, 1.0, 8.0);
 
   vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(matrix->adjustment);
@@ -440,6 +443,23 @@ ags_matrix_init(AgsMatrix *matrix)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* led */
+  matrix->active_led = 0;
+
+  matrix->led =
+    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_table_attach(matrix->table, (GtkWidget *) hbox,
+		   2, 3, 1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  for(i = 0; i < 32; i++){
+    led = ags_led_new();
+    gtk_widget_set_size_request((GtkWidget *) led, AGS_MATRIX_CELL_WIDTH, AGS_MATRIX_CELL_WIDTH / 2);
+    gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) led, FALSE, FALSE, 0);
+  }
+
+  /*  */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_table_attach(matrix->table, (GtkWidget *) vbox,
 		   3, 4, 0, 1,
@@ -475,13 +495,23 @@ void
 ags_matrix_connect(AgsConnectable *connectable)
 {
   AgsMatrix *matrix;
+  AgsRecallHandler *recall_handler;
   int i;
 
   ags_matrix_parent_connectable_interface->connect(connectable);
 
-  /* AgsMatrix */
   matrix = AGS_MATRIX(connectable);
 
+  /* recall */
+  recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+  recall_handler->signal_name = "sequencer_count\0";
+  recall_handler->callback = G_CALLBACK(ags_matrix_sequencer_count_callback);
+  recall_handler->data = (gpointer) matrix;
+
+  ags_recall_add_handler(AGS_RECALL(matrix->recall_delay_audio_run), recall_handler);
+
+  /* AgsMatrix */
   g_signal_connect(G_OBJECT(matrix->run), "clicked\0",
 		   G_CALLBACK(ags_matrix_run_callback), (gpointer) matrix);
 

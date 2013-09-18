@@ -23,8 +23,6 @@
 
 #include <ags/main.h>
 
-#include <ags/audio/ags_recall_container.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_navigation.h>
@@ -36,6 +34,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>

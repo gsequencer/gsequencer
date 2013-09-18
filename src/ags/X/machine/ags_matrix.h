@@ -70,6 +70,8 @@ struct _AgsMatrix
   GtkToggleButton *index[9];
 
   GtkDrawingArea *drawing_area;
+  guint active_led;
+  GtkHBox *led;
 
   GtkAdjustment *adjustment;
 
