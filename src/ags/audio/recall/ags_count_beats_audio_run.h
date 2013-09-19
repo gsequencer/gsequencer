@@ -54,6 +54,9 @@ struct _AgsCountBeatsAudioRun
   gulong sequencer_alloc_output_handler;
   gulong sequencer_count_handler;
 
+  gulong notation_alloc_output_handler;
+  gulong notation_count_handler;
+
   AgsDelayAudioRun *delay_audio_run;
 };
 

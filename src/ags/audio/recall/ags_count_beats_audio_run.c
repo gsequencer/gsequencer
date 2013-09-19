@@ -61,6 +61,13 @@ void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 						 gint count);
 void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
 
+void ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
+							      guint nth_run, guint attack,
+							      AgsCountBeatsAudioRun *count_beats_audio_run);
+void ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_run,
+						       guint nth_run, guint attack,
+						       AgsCountBeatsAudioRun *count_beats_audio_run);
+
 void ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
 							       guint nth_run, guint attack,
 							       AgsCountBeatsAudioRun *count_beats_audio_run);
@@ -388,6 +395,14 @@ void ags_count_beats_audio_run_set_property(GObject *gobject,
 	    count_beats_audio_run->sequencer_count_handler =
 	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer_count\0",
 			       G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
+
+	    count_beats_audio_run->notation_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "notation_alloc_output\0",
+			       G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback), count_beats_audio_run);
+
+	    count_beats_audio_run->notation_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "notation_count\0",
+			       G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
 	  }
 	}
       }

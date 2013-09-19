@@ -399,10 +399,10 @@ ags_matrix_init(AgsMatrix *matrix)
 
   /* create AgsPlayNotationRun in audio->recall */
   matrix->play_notation =
-    play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION_RUN,
+    play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
 						     "devout\0", audio->devout,
 						     "recall_container\0", recall_container,
-						     "recall_audio\0", play_notation,
+						     "recall_audio\0", recall_audio,
 						     "count_beats_audio_run\0", recall_count_beats_audio_run,
 						     NULL);
   AGS_RECALL(play_notation)->flags |= (AGS_RECALL_TEMPLATE |
