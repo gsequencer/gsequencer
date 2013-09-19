@@ -50,7 +50,7 @@ void ags_play_notation_delay_tic_alloc_input_callback(AgsDelayAudioRun *delay,
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_NOTATION,
   PROP_DELAY_AUDIO_RUN,
   PROP_COUNT_BEATS_AUDIO_RUN,
 };
@@ -113,13 +113,13 @@ ags_play_notation_class_init(AgsPlayNotationClass *play_notation)
   gobject->finalize = ags_play_notation_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned AgsDevout\0",
-				   "the AgsDevout\0",
-				   AGS_TYPE_DEVOUT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("notation\0",
+				   "assigned notation\0",
+				   "the assigned AgsNotation\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_NOTATION,
 				  param_spec);
 
   param_spec = g_param_spec_object("delay_audio_run\0",
@@ -159,8 +159,6 @@ ags_play_notation_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_play_notation_init(AgsPlayNotation *play_notation)
 {
-  play_notation->devout = NULL;
-  
   play_notation->notation = NULL;
 
   play_notation->delay_audio_run = NULL;
@@ -179,25 +177,18 @@ ags_play_notation_set_property(GObject *gobject,
   play_notation = AGS_PLAY_NOTATION(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_NOTATION:
     {
-      AgsDevout *devout;
+      AgsNotation *notation;
 
-      devout = g_value_get_object(value);
+      notation = g_value_get_object(value);
 
-      if(devout == play_notation->devout){
+      if(g_list_find(play_notation->notation, notation) != NULL || notation == NULL){
 	return;
       }
 
-      if(play_notation->devout != NULL){
-	g_object_unref(G_OBJECT(play_notation->devout));
-      }
-
-      if(devout != NULL){
-	g_object_ref(devout);
-      }
-
-      play_notation->devout = devout;
+      g_object_ref(notation);
+      play_notation->notation = g_list_append(play_notation->notation, notation);
     }
     break;
   case PROP_DELAY_AUDIO_RUN:
@@ -306,11 +297,6 @@ ags_play_notation_get_property(GObject *gobject,
   play_notation = AGS_PLAY_NOTATION(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    {
-      g_value_set_object(value, G_OBJECT(play_notation->devout));
-    }
-    break;
   case PROP_DELAY_AUDIO_RUN:
     {
       g_value_set_object(value, G_OBJECT(play_notation->delay_audio_run));
@@ -334,12 +320,20 @@ ags_play_notation_finalize(GObject *gobject)
 
   play_notation = AGS_PLAY_NOTATION(gobject);
 
-  if(play_notation->devout != NULL){
-    g_object_unref(G_OBJECT(play_notation->devout));
-  }
-
   if(play_notation->notation != NULL){
-    g_object_unref(G_OBJECT(play_notation->notation));
+    GList *current;
+
+    current = play_notation->notation;
+
+    while(current != NULL){
+      g_object_unref(G_OBJECT(current->data));
+
+      current = current->next;
+    }
+
+    current = play_notation->notation;
+    play_notation->notation = NULL;
+    g_list_free(current);
   }
 
   if(play_notation->delay_audio_run != NULL){
@@ -435,6 +429,7 @@ ags_play_notation_duplicate(AgsRecall *recall,
 			    guint *n_params, GParameter *parameter)
 {
   AgsPlayNotation *copy, *play_notation;
+  GList *current;
 
   copy = AGS_PLAY_NOTATION(AGS_RECALL_CLASS(ags_play_notation_parent_class)->duplicate(recall,
 										       recall_id,
@@ -442,13 +437,15 @@ ags_play_notation_duplicate(AgsRecall *recall,
 
   play_notation = AGS_PLAY_NOTATION(recall);
 
-  g_object_set(G_OBJECT(play_notation),
-	       "devout\0", play_notation->devout,
-	       NULL);
+  current = play_notation->notation;
 
-  //FIXME:JK: write properties
-  play_notation = AGS_PLAY_NOTATION(recall);
-  copy->notation = play_notation->notation;
+  while(current != NULL){
+    g_object_set(G_OBJECT(copy),
+		 "notation\0", current->data,
+		 NULL);
+
+    current = current->next;
+  }
 
   return((AgsRecall *) copy);
 }

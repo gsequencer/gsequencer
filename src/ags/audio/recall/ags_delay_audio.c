@@ -156,7 +156,7 @@ void
 ags_delay_audio_init(AgsDelayAudio *delay_audio)
 {
   delay_audio->bpm = AGS_DEVOUT_DEFAULT_BPM;
-  delay_audio->tact = exp2(-2);
+  delay_audio->tact = exp2(-2.0);
 
   delay_audio->notation_delay = (gdouble) AGS_DEVOUT_DEFAULT_SAMPLERATE / (gdouble) AGS_DEVOUT_DEFAULT_BUFFER_SIZE * 60.0 / delay_audio->bpm;
   delay_audio->sequencer_delay = (gdouble) AGS_DEVOUT_DEFAULT_SAMPLERATE / (gdouble) AGS_DEVOUT_DEFAULT_BUFFER_SIZE * 60.0 / delay_audio->bpm * 64.0 * delay_audio->tact;
