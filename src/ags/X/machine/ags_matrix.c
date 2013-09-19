@@ -155,12 +155,14 @@ ags_matrix_init(AgsMatrix *matrix)
 {
   AgsAudio *audio;
   AgsRecallContainer *recall_container;
+  AgsRecallAudio *recall_audio;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
   AgsCountBeatsAudio *count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsPlayNotation *play_notation;
   GtkFrame *frame;
   GtkTable *table;
   GtkToggleButton *button;
@@ -378,6 +380,36 @@ ags_matrix_init(AgsMatrix *matrix)
 						AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, FALSE);
 
+  /* audio->recall */
+  /* create AgsRecallContainer for delay related recalls */
+  recall_container = ags_recall_container_new();
+  ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
+
+  /* create AgsPlayNotation in audio->recall */
+  recall_audio = (AgsPlayNotation *) g_object_new(AGS_TYPE_RECALL_AUDIO,
+						  "devout\0", audio->devout,
+						  "audio\0", audio,
+						  "recall_container\0", recall_container,
+						  NULL);
+  AGS_RECALL(recall_audio)->flags |= (AGS_RECALL_TEMPLATE |
+				       AGS_RECALL_SEQUENCER |
+				       AGS_RECALL_INPUT_ORIENTATED);
+  ags_audio_add_recall(audio, (GObject *) recall_audio, FALSE);
+
+  /* create AgsPlayNotationRun in audio->recall */
+  matrix->play_notation =
+    play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION_RUN,
+						     "devout\0", audio->devout,
+						     "recall_container\0", recall_container,
+						     "recall_audio\0", play_notation,
+						     "count_beats_audio_run\0", recall_count_beats_audio_run,
+						     NULL);
+  AGS_RECALL(play_notation)->flags |= (AGS_RECALL_TEMPLATE |
+				       AGS_RECALL_SEQUENCER |
+				       AGS_RECALL_INPUT_ORIENTATED);
+  ags_audio_add_recall(audio, (GObject *) play_notation, FALSE);
+  
 
   /* create widgets */
   frame = (GtkFrame *) (gtk_container_get_children((GtkContainer *) matrix))->data;
