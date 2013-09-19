@@ -90,12 +90,12 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 			      AGS_TASK(apply_bpm));
 
   /* tact */
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
+  //  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
 
-  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
-				  tact);
-  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
-			      AGS_TASK(apply_tact));
+  //  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
+  //				  tact);
+  //  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+  //			      AGS_TASK(apply_tact));
 
   /* length */
   length = GTK_SPIN_BUTTON(matrix->length_spin)->adjustment->value;
@@ -172,7 +172,7 @@ ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth
   AgsCountBeatsAudioRun *count_beats_audio_run;
   AgsToggleLed *toggle_led;
   GList *list;
-  guint counter;
+  guint counter, active_led;
   
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
 
@@ -183,14 +183,20 @@ ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
   counter = count_beats_audio_run->sequencer_counter;
 
+  matrix->active_led = counter;
+
+  if(matrix->active_led == 0){
+    active_led = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio)->sequencer_loop_end - 1;
+  }else{
+    active_led = matrix->active_led - 1;
+  }
+
   toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
-				  counter,
-				  matrix->active_led);
+				  matrix->active_led,
+				  active_led);
 
   ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
 			      AGS_TASK(toggle_led));
-
-  matrix->active_led = counter;
 }
 
 void
