@@ -448,15 +448,15 @@ ags_drum_init(AgsDrum *drum)
   gtk_toggle_button_set_active(drum->index0[0], TRUE);
 
   /* tact */
-  drum->tact = (GtkOptionMenu *) gtk_option_menu_new();
-  gtk_table_attach(table0,
-		   (GtkWidget *) drum->tact,
-		   5, 6, 0, 1,
-		   GTK_EXPAND, GTK_EXPAND,
-		   0, 0);
+  //  drum->tact = (GtkOptionMenu *) gtk_option_menu_new();
+  //  gtk_table_attach(table0,
+  //		   (GtkWidget *) drum->tact,
+  //		   5, 6, 0, 1,
+  //		   GTK_EXPAND, GTK_EXPAND,
+  //		   0, 0);
 
-  gtk_option_menu_set_menu(drum->tact, (GtkWidget *) ags_tact_menu_new());
-  gtk_option_menu_set_history(drum->tact, 6);
+  //  gtk_option_menu_set_menu(drum->tact, (GtkWidget *) ags_tact_menu_new());
+  //  gtk_option_menu_set_history(drum->tact, 6);
 
   /* duration */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -552,8 +552,8 @@ ags_drum_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) drum->run, "clicked\0",
 		   G_CALLBACK(ags_drum_run_callback), (gpointer) drum);
 
-  g_signal_connect((GObject *) drum->tact, "changed\0",
-		   G_CALLBACK(ags_drum_tact_callback), (gpointer) drum);
+  //  g_signal_connect((GObject *) drum->tact, "changed\0",
+  //		   G_CALLBACK(ags_drum_tact_callback), (gpointer) drum);
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
 
