@@ -475,11 +475,11 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) matrix->length_spin, FALSE, FALSE, 0);
 
-  //  matrix->tact = (GtkOptionMenu *) gtk_option_menu_new();
-  //  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tact, FALSE, FALSE, 0);
+  matrix->tact = (GtkOptionMenu *) gtk_option_menu_new();
+  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tact, FALSE, FALSE, 0);
 
-  //  gtk_option_menu_set_menu(matrix->tact, (GtkWidget *) ags_tact_menu_new());
-  //  gtk_option_menu_set_history(matrix->tact, 6);
+  gtk_option_menu_set_menu(matrix->tact, (GtkWidget *) ags_tact_menu_new());
+  gtk_option_menu_set_history(matrix->tact, 6);
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
@@ -532,8 +532,8 @@ ags_matrix_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
 
-  //  g_signal_connect((GObject *) matrix->tact, "changed\0",
-  //		   G_CALLBACK(ags_matrix_tact_callback), (gpointer) matrix);
+  g_signal_connect((GObject *) matrix->tact, "changed\0",
+		   G_CALLBACK(ags_matrix_tact_callback), (gpointer) matrix);
 
   g_signal_connect((GObject *) matrix->loop_button, "clicked\0",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);

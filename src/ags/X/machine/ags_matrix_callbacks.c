@@ -90,12 +90,12 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 			      AGS_TASK(apply_bpm));
 
   /* tact */
-  //  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
-
-  //  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
-  //				  tact);
-  //  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
-  //			      AGS_TASK(apply_tact));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
+ 
+  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
+  				  tact);
+  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+			      AGS_TASK(apply_tact));
 
   /* length */
   length = GTK_SPIN_BUTTON(matrix->length_spin)->adjustment->value;
