@@ -10,6 +10,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/audio/recall/ags_play_notation.h>
+
 void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
 void ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_container_init(AgsRecallContainer *recall);
@@ -444,53 +446,41 @@ ags_recall_container_find(GList *recall_container,
   while(recall_container != NULL){
     current = AGS_RECALL_CONTAINER(recall_container->data);
 
-    switch(mode){
-    case 0:
-      {
-	recall = ags_recall_container_get_recall_audio(current);
-      }
-      break;
-    case 1:
-      {
-	GList *list;
+    if(mode == 0){
+      recall = ags_recall_container_get_recall_audio(current);
+    }else if(mode == 1){
+      GList *list;
 
-	list = ags_recall_container_get_recall_audio_run(current);
+      list = ags_recall_container_get_recall_audio_run(current);
+	
+      if(list == NULL)
+	recall = NULL;
+      else
+	recall = AGS_RECALL(list->data);
+    }else if(mode == 2){
+      GList *list;
 
-	if(list == NULL)
-	  recall = NULL;
-	else
-	  recall = AGS_RECALL(list->data);
-      }
-      break;
-    case 2:
-      {
-	GList *list;
+      list = ags_recall_container_get_recall_channel(current);
 
-	list = ags_recall_container_get_recall_channel(current);
+      if(list == NULL)
+	recall = NULL;
+      else
+	recall = AGS_RECALL(list->data);
+    }else if(mode == 3){
+      GList *list;
 
-	if(list == NULL)
-	  recall = NULL;
-	else
-	  recall = AGS_RECALL(list->data);
-      }
-      break;
-    case 3:
-      {
-	GList *list;
+      list = ags_recall_container_get_recall_channel_run(current);
 
-	list = ags_recall_container_get_recall_channel_run(current);
-
-	if(list == NULL)
-	  recall = NULL;
-	else
-	  recall = AGS_RECALL(list->data);
-      }
+      if(list == NULL)
+	recall = NULL;
+      else
+	recall = AGS_RECALL(list->data);
     }
    
     if(recall != NULL){
-      if(((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) == 0 || type == G_OBJECT_TYPE(recall)) &&
+      if(((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) == 0 || G_OBJECT_TYPE(recall) == type) &&
 	 ((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) == 0 || (AGS_RECALL_TEMPLATE & (recall->flags)) != 0) &&
-	 ((AGS_RECALL_CONTAINER_FIND_GROUP_ID & find_flags) == 0 || (recall->recall_id != NULL && AGS_RECALL_ID(recall->recall_id)->group_id == group_id))){
+	 ((AGS_RECALL_CONTAINER_FIND_GROUP_ID & find_flags) == 0 || (recall->recall_id != NULL && recall->recall_id->group_id == group_id))){
 	break;
       }
     }

@@ -53,7 +53,7 @@ struct _AgsPlayNotation
   GList *notation;
 
   AgsDelayAudioRun *delay_audio_run;
-  gulong tic_alloc_input_handler;
+  gulong notation_alloc_input_handler;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
 };

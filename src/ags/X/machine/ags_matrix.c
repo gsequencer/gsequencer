@@ -385,28 +385,29 @@ ags_matrix_init(AgsMatrix *matrix)
   recall_container = ags_recall_container_new();
   ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
-
-  /* create AgsPlayNotation in audio->recall */
+  /* create dummy AgsRecallAudio in audio->recall */
   recall_audio = (AgsPlayNotation *) g_object_new(AGS_TYPE_RECALL_AUDIO,
 						  "devout\0", audio->devout,
 						  "audio\0", audio,
 						  "recall_container\0", recall_container,
 						  NULL);
   AGS_RECALL(recall_audio)->flags |= (AGS_RECALL_TEMPLATE |
-				       AGS_RECALL_SEQUENCER |
-				       AGS_RECALL_INPUT_ORIENTATED);
+				      AGS_RECALL_NOTATION |
+				      AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) recall_audio, FALSE);
 
-  /* create AgsPlayNotationRun in audio->recall */
+  /* create AgsPlayNotation in audio->recall */
   matrix->play_notation =
     play_notation = (AgsPlayNotation *) g_object_new(AGS_TYPE_PLAY_NOTATION,
 						     "devout\0", audio->devout,
 						     "recall_container\0", recall_container,
 						     "recall_audio\0", recall_audio,
+						     "delay_audio_run\0", recall_delay_audio_run,
 						     "count_beats_audio_run\0", recall_count_beats_audio_run,
+						     // "notation\0", audio->notation,
 						     NULL);
   AGS_RECALL(play_notation)->flags |= (AGS_RECALL_TEMPLATE |
-				       AGS_RECALL_SEQUENCER |
+				       AGS_RECALL_NOTATION |
 				       AGS_RECALL_INPUT_ORIENTATED);
   ags_audio_add_recall(audio, (GObject *) play_notation, FALSE);
   
@@ -630,6 +631,27 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     grow = FALSE;
 
   if(type == AGS_TYPE_INPUT){
+    AgsPlayNotation  *play_notation;
+    GList *list, *notation;
+
+    list = audio->recall;
+
+    while((list = ags_recall_find_type(list,
+				       AGS_TYPE_PLAY_NOTATION)) != NULL){
+      play_notation = AGS_PLAY_NOTATION(list->data);
+
+      notation = audio->notation;
+	
+      while(notation != NULL){
+	g_object_set(G_OBJECT(play_notation),
+		     "notation\0", notation->data,
+		     NULL);
+	
+	notation = notation->next;
+      }
+
+      list = list->next;
+    }
 
     if(grow){
       source = ags_channel_nth(audio->input, pads_old);

@@ -36,10 +36,6 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-
 #include <ags/audio/task/ags_audio_set_recycling.h>
 
 #include <stdlib.h>
@@ -1515,8 +1511,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	list = g_list_alloc();
       i = 0;
       goto ags_audio_set_pads_alloc_notation0;
-    }else
+    }else{
       return;
+    }
 
     for(; i < audio->audio_channels; i++){
       list->next = g_list_alloc();
@@ -1532,8 +1529,10 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     if(audio->audio_channels > 0){
       list = audio->notation;
-    }else
+      audio->notation = NULL;
+    }else{
       return;
+    }
 
     while(list != NULL){
       list_next = list->next;
@@ -1596,6 +1595,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
   update_async_link = FALSE;
   set_async_link = FALSE;
 
+  /*  */
   if(type == AGS_TYPE_OUTPUT){
     pads_old = audio->output_pads;
     link_recycling = FALSE;
@@ -1617,12 +1617,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	input = audio->input;
 
     if(pads_old == 0){
+
+      /* alloc notation */
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
-	 audio->notation == NULL){
+	 audio->notation == NULL &&
+	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
 	ags_audio_set_pads_alloc_notation();
-	ags_audio_set_pads_add_notes();
       }
 
+      /*  */
       ags_audio_set_pads_grow_one();
       channel =
 	audio->output = start;
@@ -1685,6 +1688,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
     
     if(pads_old == 0){
+
+      /* alloc notation */
+      if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
+	 audio->notation == NULL &&
+	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
+	ags_audio_set_pads_alloc_notation();
+      }
+
+      /*  */
       ags_audio_set_pads_grow_one();
       channel =
 	audio->input = start;
@@ -1993,12 +2005,6 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 	matches_reality = FALSE;
     }
     */
-
-    if(AGS_IS_DELAY_AUDIO_RUN(recall) ||
-       AGS_IS_COUNT_BEATS_AUDIO_RUN(recall) ||
-       AGS_IS_COPY_PATTERN_AUDIO_RUN(recall))
-      g_message("\n\0");
-
 
     if(((called_by_output && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0) ||
 	(!called_by_output && (AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) == 0)) ||
