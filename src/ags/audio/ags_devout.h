@@ -190,8 +190,6 @@ void ags_devout_tic(AgsDevout *devout);
 
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 
-void ags_devout_start_default_threads(AgsDevout *devout);
-
 AgsDevout* ags_devout_new(GObject *main);
 
 #endif /*__AGS_DEVOUT_H__*/

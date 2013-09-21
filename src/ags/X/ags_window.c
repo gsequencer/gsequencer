@@ -163,7 +163,6 @@ ags_window_connect(AgsConnectable *connectable)
   ags_menu_bar_connect(window->menu_bar);
   ags_editor_connect(window->editor);
   ags_navigation_connect(window->navigation);
-  ags_devout_start_default_threads(window->devout);
 }
 
 void
