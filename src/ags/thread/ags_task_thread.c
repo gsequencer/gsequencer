@@ -222,6 +222,8 @@ ags_task_thread_run(AgsThread *thread)
 
     main_context = g_main_context_default();
 
+    //    pthread_mutex_lock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
+
     if(!g_main_context_acquire(main_context)){
       gboolean got_ownership = FALSE;
 
@@ -231,9 +233,7 @@ ags_task_thread_run(AgsThread *thread)
 					    &task_thread->mutex);
       }
     }
-
-    pthread_mutex_lock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
-    pthread_mutex_lock(&(task_thread->launch_mutex));
+    //    pthread_mutex_lock(&(task_thread->launch_mutex));
 
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
@@ -245,10 +245,9 @@ ags_task_thread_run(AgsThread *thread)
       list = list->next;
     }
 
-    pthread_mutex_unlock(&(task_thread->launch_mutex));
-    pthread_mutex_unlock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
-
+    //    pthread_mutex_unlock(&(task_thread->launch_mutex));
     g_main_context_release(main_context);
+    //    pthread_mutex_unlock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
   }
 
   /* sleep if wanted */

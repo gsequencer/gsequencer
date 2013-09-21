@@ -42,8 +42,9 @@ typedef enum{
   AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 << 5,
   AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 << 6,
   AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 << 7,
-  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 8,
-  AGS_AUDIO_LOOP_PLAY_NOTE                      = 1 << 9,
+  AGS_AUDIO_LOOP_PLAY_NOTATION                  = 1 << 8,
+  AGS_AUDIO_LOOP_PLAYING_NOTATION               = 1 << 9,
+  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 10,
 }AgsAudioLoopFlags;
 
 struct _AgsAudioLoop
@@ -62,6 +63,8 @@ struct _AgsAudioLoop
   AgsThread *devout_thread;
 
   pthread_mutex_t recall_mutex;
+  GCond cond;
+  GMutex mutex;
 
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall
@@ -71,6 +74,9 @@ struct _AgsAudioLoop
 
   guint play_audio_ref;
   GList *play_audio; // play AgsAudio
+
+  guint play_notation_ref;
+  GList *play_notation;
 };
 
 struct _AgsAudioLoopClass

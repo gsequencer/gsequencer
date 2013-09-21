@@ -209,6 +209,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
 
+  g_cond_init(&audio_loop->cond);
+  g_mutex_init(&audio_loop->mutex);
+
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
 
@@ -217,6 +220,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->play_audio_ref = 0;
   audio_loop->play_audio = NULL;
+
+  audio_loop->play_notation_ref = 0;
+  audio_loop->play_notation = NULL;
 }
 
 void
@@ -383,6 +389,7 @@ ags_audio_loop_start(AgsThread *thread)
 void
 ags_audio_loop_run(AgsThread *thread)
 {
+  GMainContext *main_context;
   AgsAudioLoop *audio_loop;
   AgsDevout *devout;
   guint val;
@@ -391,28 +398,44 @@ ags_audio_loop_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(AGS_THREAD(audio_loop)->devout);
 
-  pthread_mutex_lock(&(audio_loop->recall_mutex));
+  main_context = g_main_context_default();
+
+  //  pthread_mutex_lock(&(audio_loop->recall_mutex));
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &audio_loop->cond,
+					  &audio_loop->mutex);
+    }
+  }
 
   /* play channel */
   if((AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) != 0){
     ags_audio_loop_play_channel(audio_loop);
-      
+
     if(audio_loop->play_channel_ref == 0){
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_CHANNEL);
-      ags_thread_stop(AGS_THREAD(devout->devout_thread));
-      g_message("audio_loop->play_channel_ref == 0\n\0");
     }
   }
     
   /* play audio */
   if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) != 0){
     ags_audio_loop_play_audio(audio_loop);
-      
+
     if(audio_loop->play_audio_ref == 0){
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
-      ags_thread_stop(AGS_THREAD(devout->devout_thread));
-      g_message("audio_loop->play_audio_ref == 0\n\0");
     }
+  }
+
+  if((AGS_THREAD_RUNNING & (AGS_THREAD(audio_loop->devout_thread)->flags)) != 0 &&
+     audio_loop->play_recall_ref == 0 &&
+     audio_loop->play_channel_ref == 0 &&
+     audio_loop->play_audio_ref == 0 &&
+     audio_loop->play_notation_ref == 0){
+    ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
   }
     
   /* determine if attack should be switched */
@@ -427,7 +450,8 @@ ags_audio_loop_run(AgsThread *thread)
     devout->delay_counter = 0;
   }
 
-  pthread_mutex_unlock(&(audio_loop->recall_mutex));
+  g_main_context_release(main_context);
+  //  pthread_mutex_unlock(&(audio_loop->recall_mutex));
 
   pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));
 
