@@ -2842,7 +2842,7 @@ fi
 # Define the identity of the package.
 
  PACKAGE=ags
- VERSION=0.3.16-SNAPSHOT
+ VERSION=0.3.99-SNAPSHOT
 
 
 cat >>confdefs.h <<_ACEOF

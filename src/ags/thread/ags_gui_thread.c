@@ -114,8 +114,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 
   thread = AGS_THREAD(gui_thread);
 
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_TIMELOCK_RUN);
+  //  g_atomic_int_or(&(thread->flags),
+  //		  AGS_THREAD_TIMELOCK_RUN);
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC / (AGS_GUI_THREAD_DEFAULT_JIFFIE + 1) *
 				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
@@ -221,7 +221,11 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
+      pthread_mutex_lock(&(task_thread->launch_mutex));
+
       g_main_context_iteration(main_context, FALSE);
+
+      pthread_mutex_unlock(&(task_thread->launch_mutex));
 
       g_main_context_release(main_context);
 
@@ -255,7 +259,11 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
+      pthread_mutex_lock(&(task_thread->launch_mutex));
+
       g_main_context_iteration(main_context, FALSE);
+
+      pthread_mutex_unlock(&(task_thread->launch_mutex));
 
       g_main_context_release(main_context);
 

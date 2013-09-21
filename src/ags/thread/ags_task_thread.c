@@ -115,8 +115,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread = AGS_THREAD(task_thread);
 
-  g_atomic_int_or(&thread->flags,
-		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
+  //  g_atomic_int_or(&thread->flags,
+  //		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
 
   pthread_mutex_init(&(task_thread->read_mutex), NULL);
   pthread_mutex_init(&(task_thread->launch_mutex), NULL);
@@ -232,6 +232,7 @@ ags_task_thread_run(AgsThread *thread)
       }
     }
 
+    pthread_mutex_lock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
     pthread_mutex_lock(&(task_thread->launch_mutex));
 
     for(i = 0; i < task_thread->pending; i++){
@@ -245,6 +246,7 @@ ags_task_thread_run(AgsThread *thread)
     }
 
     pthread_mutex_unlock(&(task_thread->launch_mutex));
+    pthread_mutex_unlock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
 
     g_main_context_release(main_context);
   }

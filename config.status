@@ -731,7 +731,7 @@ fi
 
 
     PACKAGE='ags'
-    VERSION='0.3.16-SNAPSHOT'
+    VERSION='0.3.99-SNAPSHOT'
     TIMESTAMP=''
     RM='rm -f'
     ofile='libtool'
@@ -921,7 +921,7 @@ S["AUTOHEADER"]="${SHELL} /home/jkraehemann/ags-code/missing autoheader"
 S["AUTOMAKE"]="${SHELL} /home/jkraehemann/ags-code/missing automake-1.13"
 S["AUTOCONF"]="${SHELL} /home/jkraehemann/ags-code/missing autoconf"
 S["ACLOCAL"]="${SHELL} /home/jkraehemann/ags-code/missing aclocal-1.13"
-S["VERSION"]="0.3.16-SNAPSHOT"
+S["VERSION"]="0.3.99-SNAPSHOT"
 S["PACKAGE"]="ags"
 S["CYGPATH_W"]="echo"
 S["am__isrc"]=""
@@ -1014,7 +1014,7 @@ D["PACKAGE_STRING"]=" \"ags 0.3.16-SNAPSHOT\""
 D["PACKAGE_BUGREPORT"]=" \"joel@weedlight.ch\""
 D["PACKAGE_URL"]=" \"\""
 D["PACKAGE"]=" \"ags\""
-D["VERSION"]=" \"0.3.16-SNAPSHOT\""
+D["VERSION"]=" \"0.3.99-SNAPSHOT\""
 D["STDC_HEADERS"]=" 1"
 D["HAVE_SYS_TYPES_H"]=" 1"
 D["HAVE_SYS_STAT_H"]=" 1"

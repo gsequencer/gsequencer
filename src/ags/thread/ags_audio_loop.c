@@ -195,17 +195,19 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->main = NULL;
   
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
-  g_atomic_int_or(&(audio_loop->task_thread->flags),
-		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
+  //  g_atomic_int_or(&(audio_loop->task_thread->flags),
+  //		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
 
   audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();
-  AGS_THREAD(audio_loop->gui_thread)->greedy_locks = g_list_prepend(AGS_THREAD(audio_loop->gui_thread)->greedy_locks,
-								    audio_loop->task_thread);
+  //  AGS_THREAD(audio_loop->gui_thread)->greedy_locks = g_list_prepend(AGS_THREAD(audio_loop->gui_thread)->greedy_locks,
+  //								    audio_loop->task_thread);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->gui_thread);
 
   audio_loop->devout_thread = (AgsThread *) ags_devout_thread_new(NULL);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->devout_thread);
+
+  pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
 
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
@@ -389,6 +391,8 @@ ags_audio_loop_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(AGS_THREAD(audio_loop)->devout);
 
+  pthread_mutex_lock(&(audio_loop->recall_mutex));
+
   /* play channel */
   if((AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) != 0){
     ags_audio_loop_play_channel(audio_loop);
@@ -422,6 +426,8 @@ ags_audio_loop_run(AgsThread *thread)
       
     devout->delay_counter = 0;
   }
+
+  pthread_mutex_unlock(&(audio_loop->recall_mutex));
 
   pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));
 
