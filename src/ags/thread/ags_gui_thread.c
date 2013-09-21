@@ -238,7 +238,7 @@ ags_gui_thread_run(AgsThread *thread)
     guint iter_val;
 
     wait.tv_sec = 0;
-    //    wait.tv_nsec = round(1000000000 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+    wait.tv_nsec = round(1000000000 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
 
     iter_val = (1.0 / gui_thread->frequency) / (1.0 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
     //    g_message("paint\0");
