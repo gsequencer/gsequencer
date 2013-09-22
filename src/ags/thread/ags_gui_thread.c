@@ -325,8 +325,10 @@ ags_gui_thread_suspend(AgsThread *thread)
     AgsAudioLoop *audio_loop;
     AgsGuiThread *gui_thread;
     AgsTaskThread *task_thread;
-  
-    pthread_mutex_unlock(&(thread->suspend_mutex));
+    
+    if(success){
+      pthread_mutex_unlock(&(thread->suspend_mutex));
+    }
 
     gui_thread = AGS_GUI_THREAD(thread);
     audio_loop = AGS_AUDIO_LOOP(thread->parent);
@@ -349,8 +351,10 @@ ags_gui_thread_resume(AgsThread *thread)
     AgsAudioLoop *audio_loop;
     AgsGuiThread *gui_thread;
     AgsTaskThread *task_thread;
-  
-    pthread_mutex_unlock(&(thread->suspend_mutex));
+
+    if(success){
+      pthread_mutex_unlock(&(thread->suspend_mutex));
+    }
 
     gui_thread = AGS_GUI_THREAD(thread);
     audio_loop = AGS_AUDIO_LOOP(thread->parent);
