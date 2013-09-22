@@ -401,10 +401,14 @@ ags_thread_resume_handler(int sig)
 void
 ags_thread_suspend_handler(int sig)
 {
+  if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&ags_thread_self->flags))) != 0) return;
+
   g_atomic_int_or(&ags_thread_self->flags,
 		  AGS_THREAD_SUSPENDED);
 
   ags_thread_suspend(ags_thread_self);
+
+  do sigsuspend(&ags_thread_self->wait_mask); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&ags_thread_self->flags))) != 0);
 }
 
 void
@@ -1863,7 +1867,7 @@ ags_thread_real_timelock(AgsThread *thread)
 #ifdef AGS_PTHREAD_SUSPEND
     pthread_suspend(&(thread->thread));
 #else
-    pthread_kill(thread_id, AGS_SUSPEND_SIG);
+    pthread_kill(thread_id, AGS_THREAD_SUSPEND_SIG);
 #endif
 
     /* allow non greedy to continue */
@@ -1926,7 +1930,7 @@ ags_thread_real_timelock(AgsThread *thread)
 #ifdef AGS_PTHREAD_SUSPEND
     pthread_resume(&(thread->thread));
 #else
-    pthread_kill(thread_id, AGS_RESUME_SIG);
+    pthread_kill(thread_id, AGS_THREAD_RESUME_SIG);
 #endif
   }
 #endif
