@@ -35,6 +35,8 @@ void ags_gui_thread_start(AgsThread *thread);
 void ags_gui_thread_run(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
+void ags_gui_thread_suspend_handler(int sig);
+
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
 
@@ -270,7 +272,7 @@ ags_gui_thread_run(AgsThread *thread)
       gui_thread->iter = 0.0;
     }else{
       gui_thread->iter += iter_val;
-      nanosleep(&wait, NULL);
+      //      nanosleep(&wait, NULL);
     }
   }
 

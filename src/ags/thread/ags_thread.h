@@ -24,6 +24,7 @@
 
 #define _GNU_SOURCE
 
+#include <signal.h>
 #include <pthread.h>
 
 #define AGS_TYPE_THREAD                (ags_thread_get_type())
@@ -32,6 +33,10 @@
 #define AGS_IS_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD))
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
+
+#define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+#define AGS_THREAD_RESUME_SIG SIGUSR2
+#define AGS_THREAD_SUSPEND_SIG SIGUSR1
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
@@ -70,6 +75,7 @@ typedef enum{
   AGS_THREAD_SKIP_NON_GREEDY         = 1 << 24,
   AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 25,
   AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 26,
+  AGS_THREAD_SUSPENDED               = 1 << 27,
 }AgsThreadFlags;
 
 struct _AgsThread
@@ -77,6 +83,8 @@ struct _AgsThread
   GObject object;
 
   volatile guint flags;
+
+  sigset_t wait_mask;
 
   pthread_t thread;
   pthread_attr_t thread_attr;
@@ -121,6 +129,8 @@ struct _AgsThreadClass
 
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
+  void (*suspend)(AgsThread *thread);
+  void (*resume)(AgsThread *thread);
   void (*timelock)(AgsThread *thread);
   void (*stop)(AgsThread *thread);
 };
@@ -172,6 +182,8 @@ void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
+void ags_thread_suspend(AgsThread *thread);
+void ags_thread_resume(AgsThread *thread);
 void ags_thread_timelock(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
 

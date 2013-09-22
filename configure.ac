@@ -25,8 +25,7 @@ AC_CHECK_LIB([m], [main])
 # FIXME: Replace `main' with a function in `-lrt':
 AC_CHECK_LIB([rt], [main])
 
-AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_WITH_PTHREAD], [1], ["great!"]))
-AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_PTHREAD_SUSPEND], [1], ["using work-around"]))
+AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_WITH_PTHREAD], [1], ["great!"]), AC_DEFINE([AGS_LINUX_SIGNALS], [1], ["YOUR CHANCE"]))
 
 PKG_CHECK_MODULES([UUID], [uuid >= 2.20.0])
 AC_SUBST(UUID_CFLAGS)

@@ -1,7 +1,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* "using work-around" */
-#undef AGS_PTHREAD_SUSPEND
+/* "YOUR CHANCE" */
+#undef AGS_LINUX_SIGNALS
 
 /* "great!" */
 #undef AGS_WITH_PTHREAD
