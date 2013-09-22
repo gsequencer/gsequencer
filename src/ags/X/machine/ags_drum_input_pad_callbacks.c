@@ -137,6 +137,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
   if(toggle_button->active){
     AgsDevoutPlay *devout_play;
     AgsPlayAudioSignal *play_audio_signal;
+    AgsStartDevout *start_devout;
     AgsAppendRecall *append_recall;
     AgsAudioFile *audio_file;
     GList *audio_signal;
@@ -158,7 +159,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
       ags_audio_file_open(audio_file);
       ags_audio_file_read_audio_signal(audio_file);
-      g_message("ags_drum_input_pad_open_play: \0");
+      g_message("ags_drum_input_pad_open_play:\0");
     }
 
     /* task */
@@ -190,6 +191,10 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       audio_signal = audio_signal->next;
       i++;
     }
+
+    /* create start task */
+    start_devout = ags_start_devout_new(devout);
+    tasks = g_list_prepend(tasks, start_devout);
 
     /*  */
     ags_task_thread_append_tasks(devout->task_thread, tasks);

@@ -412,6 +412,15 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
+  /* play recall */
+  if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
+    ags_audio_loop_play_recall(audio_loop);
+
+    if(audio_loop->play_recall_ref == 0){
+      audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_RECALL);
+    }
+  }
+
   /* play channel */
   if((AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) != 0){
     ags_audio_loop_play_channel(audio_loop);
@@ -420,7 +429,7 @@ ags_audio_loop_run(AgsThread *thread)
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_CHANNEL);
     }
   }
-    
+
   /* play audio */
   if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) != 0){
     ags_audio_loop_play_audio(audio_loop);
@@ -482,7 +491,7 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
 {
   AgsDevoutPlay *devout_play;
   AgsRecall *recall;
-  AgsRecallID *recall_id;
+  //  AgsRecallID *recall_id;
   GList *list, *list_next;
   guint stage;
 
@@ -505,9 +514,9 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
   audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING);
 
   while(list != NULL){
-    devout_play = (AgsDevoutPlay *) list->data;
+    devout_play = AGS_DEVOUT_PLAY(list->data);
     recall = AGS_RECALL(devout_play->source);
-    recall_id = devout_play->recall_id;
+    //    recall_id = devout_play->recall_id;
     list_next = list->next;
 
 
@@ -524,9 +533,8 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
     ags_recall_child_check_remove(recall);
 
     if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
-      //TODO:JK: check if these mutices can be removed
       audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
-      audio_loop->play_recall = g_list_remove(audio_loop->play_recall, (gpointer) recall);
+      audio_loop->play_recall = g_list_remove(audio_loop->play_recall, (gpointer) devout_play);
 
       ags_recall_remove(recall);
     }
