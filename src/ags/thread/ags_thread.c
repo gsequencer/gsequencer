@@ -271,7 +271,7 @@ ags_thread_init(AgsThread *thread)
 
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC /
-				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE * 2.0));
 
   thread->greedy_locks = NULL;
 
@@ -1777,7 +1777,7 @@ ags_thread_timelock_loop(void *ptr)
     if((AGS_THREAD_WAIT_0 & val) != 0){
       //      g_message("realtime\0");
     }else{
-      //      g_message("======== timelock ========\0");
+      g_message("======== timelock ========\0");
       ags_thread_timelock(thread);
     }
 
