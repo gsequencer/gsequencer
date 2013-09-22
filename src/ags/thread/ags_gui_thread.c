@@ -220,7 +220,24 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
+      /*  */
+      success = pthread_mutex_trylock(&(thread->suspend_mutex));
+
+      if(success){
+	g_atomic_int_set(&thread->critical_region,
+			 TRUE);
+      }
+
+      /*  */
       pthread_mutex_lock(&(task_thread->launch_mutex));
+
+      if(success){
+	/*  */
+	pthread_mutex_unlock(&(thread->suspend_mutex));
+      }else{
+	g_atomic_int_set(&thread->critical_region,
+			 TRUE);
+      }
 
       g_main_context_iteration(main_context, FALSE);
 
@@ -230,7 +247,17 @@ ags_gui_thread_run(AgsThread *thread)
       GDK_THREADS_LEAVE();
 
       /*  */
+      success = pthread_mutex_trylock(&(thread->suspend_mutex));
+      
+      /*  */
       pthread_mutex_unlock(&(task_thread->launch_mutex));
+
+      g_atomic_int_set(&thread->critical_region,
+		       FALSE);
+
+      if(!success){
+	pthread_mutex_unlock(&(thread->suspend_mutex));
+      }
 
       g_main_context_release(main_context);
 
@@ -320,6 +347,8 @@ ags_gui_thread_suspend(AgsThread *thread)
 
   success = pthread_mutex_trylock(&(thread->suspend_mutex));
   critical_region = g_atomic_int_get(&(thread->critical_region));
+
+  printf("suspend\n\0");
 
   if(!success || critical_region){
     AgsAudioLoop *audio_loop;
