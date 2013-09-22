@@ -257,9 +257,8 @@ ags_gui_thread_run(AgsThread *thread)
       g_atomic_int_set(&thread->critical_region,
 		       FALSE);
 
-      if(!success){
+      if(success)
 	pthread_mutex_unlock(&(thread->suspend_mutex));
-      }
 
       g_main_context_release(main_context);
 
@@ -327,9 +326,8 @@ ags_gui_thread_run(AgsThread *thread)
       g_atomic_int_set(&thread->critical_region,
 		       FALSE);
 
-      if(!success){
+      if(success)
 	pthread_mutex_unlock(&(thread->suspend_mutex));
-      }
 
       g_main_context_release(main_context);
 
@@ -350,9 +348,9 @@ ags_gui_thread_suspend(AgsThread *thread)
   success = pthread_mutex_trylock(&(thread->suspend_mutex));
   critical_region = g_atomic_int_get(&(thread->critical_region));
 
-  printf("suspend\n\0");
-
-  if(!success || critical_region){
+  g_message("**** suspend\0");
+  
+  if(success || critical_region){
     AgsAudioLoop *audio_loop;
     AgsGuiThread *gui_thread;
     AgsTaskThread *task_thread;
@@ -378,7 +376,9 @@ ags_gui_thread_resume(AgsThread *thread)
   success = pthread_mutex_trylock(&(thread->suspend_mutex));
   critical_region = g_atomic_int_get(&(thread->critical_region));
 
-  if(!success || critical_region){
+  g_message("**** resume\0");
+  
+  if(success || critical_region){
     AgsAudioLoop *audio_loop;
     AgsGuiThread *gui_thread;
     AgsTaskThread *task_thread;
