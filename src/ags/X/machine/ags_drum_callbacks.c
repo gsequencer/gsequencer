@@ -63,8 +63,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout"
-#define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall"
+#define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
+#define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
 
 extern const char *AGS_DRUM_INDEX;
 
@@ -306,7 +306,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 				AGS_TASK(append_audio));
 
     /* create start task */
-    start_devout = ags_start_devout_new(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout));
+    start_devout = ags_start_devout_new(devout);
 
     /* append AgsStartDevout */
     ags_task_thread_append_task(task_thread,

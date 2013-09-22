@@ -142,7 +142,7 @@ ags_append_channel_launch(AgsTask *task)
   append_channel->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
   audio_loop->play_channel = g_list_append(audio_loop->play_channel,
 					   append_channel->devout_play);
-  audio_loop->play_channel_ref++;
+  audio_loop->play_channel_ref += 1;
 }
 
 AgsAppendChannel*

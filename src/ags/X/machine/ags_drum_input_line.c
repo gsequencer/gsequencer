@@ -328,7 +328,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(recall_stream_channel_run));
 
-    /* AgsPlayChannel * /
+    /* AgsPlayChannel */
     play_channel_container = ags_recall_container_new();
     play_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
     ags_channel_add_recall_container(source, (GObject *) play_channel_container);
@@ -341,20 +341,20 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 						   NULL);
 
     AGS_RECALL(play_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_PLAYBACK |
 					AGS_RECALL_PROPAGATE_DONE);
     ags_channel_add_recall(source, (GObject *) play_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
       ags_connectable_connect(AGS_CONNECTABLE(play_channel));
 
-    /* AgsPlayChannelRun * /
+    /* AgsPlayChannelRun */
     play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
 							  "devout\0", audio->devout,
-							  "recall_channel\0", play_channel,
 							  "source\0", source,
+							  "recall_channel\0", play_channel,
 							  "recall_container\0", play_channel_container,
 							  "stream_channel_run\0", play_stream_channel_run,
+							  "audio_channel\0", source->audio_channel,
 							  NULL);
 
     AGS_RECALL(play_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
@@ -366,7 +366,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       ags_connectable_connect(AGS_CONNECTABLE(play_channel_run));
     
     ags_recall_add_handler(AGS_RECALL(play_channel_run),
-			   ags_recall_handler_alloc("remove\0",
+			   ags_recall_handler_alloc("done\0",
 						    G_CALLBACK(ags_drum_input_line_play_channel_run_done),
 						    G_OBJECT(drum_input_line)));
 

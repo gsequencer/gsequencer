@@ -284,13 +284,13 @@ ags_play_audio_file_finalize(GObject *gobject)
 void
 ags_play_audio_file_run_inter(AgsRecall *recall)
 {
-  AGS_RECALL_CLASS(ags_play_audio_file_parent_class)->run_inter(recall);
-
-  /*
+  /* DEPRECATED
   AgsPlayAudioFile *play_audio_file;
   signed short *buffer;
   guint i0, i1, j, stop;
   gboolean play_done;
+
+  AGS_RECALL_CLASS(ags_play_audio_file_parent_class)->run_inter(recall);
 
   play_audio_file = (AgsPlayAudioFile *) recall;
 
@@ -304,7 +304,7 @@ ags_play_audio_file_run_inter(AgsRecall *recall)
     buffer = play_audio_file->devout->buffer[0];
   }
 
-  i0 = play_audio_file->current;
+  i0 = play_audio_file->current_frame;
   stop = i0 + play_audio_file->devout->buffer_size;
 
   if(stop < play_audio_file->audio_file->frames)
@@ -319,11 +319,11 @@ ags_play_audio_file_run_inter(AgsRecall *recall)
       buffer[i1 * play_audio_file->devout->dsp_channels + j] = ((buffer[i1 * play_audio_file->devout->dsp_channels + j]) / 2) + ((play_audio_file->audio_file->buffer[i0 * play_audio_file->audio_file->channels + j]) / 2);
   }
 
-  play_audio_file->current = i0;
+  play_audio_file->current_frame = i0;
 
   if(play_done)
-    g_signal_emit_by_name((GObject *) recall, "done\0", recall_id);
-  */
+    ags_recall_done(recall);
+*/
 }
 
 void

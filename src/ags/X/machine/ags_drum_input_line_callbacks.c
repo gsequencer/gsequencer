@@ -61,54 +61,50 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
 {
   AgsChannel *channel;
 
-  fprintf(stdout, "ags_drum_input_line_play_channel_run_done\n\0");
+  g_message("ags_drum_input_line_play_channel_run_done\0");
 
   channel = AGS_LINE(drum_input_line)->channel;
 
-  if(AGS_DEVOUT_PLAY(channel->devout_play)->group_id == recall->recall_id->group_id &&
-     ags_recall_is_done(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run,
-			recall->recall_id->group_id)){
-    AgsDrumInputPad *drum_input_pad;
+  if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(channel->devout_play)->flags)) != 0){
+    AgsChannel *next_pad;
+    gboolean all_done;
 
-    printf("ags_drum_input_line_play_channel_run_done\n\0");
-    drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
+    channel = ags_channel_nth(AGS_AUDIO(channel->audio)->input, channel->line - channel->audio_channel);
+    next_pad = channel->next_pad;
 
-    gtk_toggle_button_set_active(drum_input_pad->play, FALSE);
-  }
+    all_done = TRUE;
 
-  /*
-  AgsDevout *devout;
-  AgsChannel *channel;
-  AgsPlayChannel *play_channel;
-
-  fprintf(stdout, "ags_drum_input_line_play_channel_done\n\0");
-
-  play_channel = (AgsPlayChannel *) recall;
-  devout = play_channel->devout;
-  channel = drum_input_line->line.channel;
-
-  if((AGS_DEVOUT_PLAY_PAD & (channel->devout_play->flags)) != 0){
-    drum_input_pad->play_ref--;
-
-    if(drum_input_pad->play_ref == 0){
-      AgsChannel *next_pad;
-
-      next_pad = channel->next_pad;
-
-      while(channel != next_pad){
-	channel->devout_play->flags |= AGS_DEVOUT_PLAY_DONE;
-
-	channel = channel->next;
+    while(channel != next_pad){
+      if(!(AGS_DEVOUT_PLAY(channel->devout_play)->group_id == recall->recall_id->group_id &&
+	   ags_recall_is_done(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run,
+			      recall->recall_id->group_id))){
+	all_done = FALSE;
+	break;
       }
+
+      channel = channel->next;
+    }
+
+    if(all_done){
+      AgsDrumInputPad *drum_input_pad;
+
+      g_message("ags_drum_input_line_play_channel_run_done\0");
+      drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
 
       gtk_toggle_button_set_active(drum_input_pad->play, FALSE);
     }
   }else{
-    channel = play_channel->source;
-    channel->devout_play->flags |= AGS_DEVOUT_PLAY_DONE;
-    gtk_toggle_button_set_active(drum_input_pad->play, FALSE);
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->group_id == recall->recall_id->group_id &&
+       ags_recall_is_done(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run,
+			  recall->recall_id->group_id)){
+      AgsDrumInputPad *drum_input_pad;
+
+      g_message("ags_drum_input_line_play_channel_run_done\0");
+      drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
+
+      gtk_toggle_button_set_active(drum_input_pad->play, FALSE);
+    }
   }
-  */
 }
 
 void
