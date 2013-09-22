@@ -1779,7 +1779,7 @@ ags_thread_timelock_loop(void *ptr)
     val = g_atomic_int_get(&(thread->flags));
 
     if((AGS_THREAD_WAIT_0 & val) != 0){
-      //      g_message("realtime\0");
+      //g_message("realtime\0");
     }else{
       g_message("======== timelock ========\0");
       ags_thread_timelock(thread);

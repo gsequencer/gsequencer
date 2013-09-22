@@ -242,7 +242,7 @@ ags_task_thread_run(AgsThread *thread)
     //    nanosleep(&play_idle, NULL);
   }else{
     //FIXME:JK: this isn't very efficient
-    nanosleep(&play_idle, NULL);
+    //    nanosleep(&play_idle, NULL);
     //    usleep(idle);
   }
 }

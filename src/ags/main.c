@@ -127,8 +127,6 @@ ags_main_init(AgsMain *main)
 				      NULL);
   ags_colors_alloc();
 
-  mlockall(MCL_CURRENT | MCL_FUTURE);
-
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 }
 
@@ -377,8 +375,17 @@ main(int argc, char **argv)
   AgsMain *main;
   AgsWindow *window;
   AgsGuiThread *gui_thread;
-
+  struct sched_param param;
   const char *error;
+
+  /* Declare ourself as a real time task */
+  param.sched_priority = AGS_PRIORITY;
+
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed\0");
+  }
+
+  mlockall(MCL_CURRENT | MCL_FUTURE);
 
   LIBXML_TEST_VERSION;
 
