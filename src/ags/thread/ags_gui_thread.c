@@ -99,6 +99,8 @@ ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread)
 
   thread->start = ags_gui_thread_start;
   thread->run = ags_gui_thread_run;
+  thread->suspend = ags_gui_thread_suspend;
+  thread->resume = ags_gui_thread_resume;
   thread->stop = ags_gui_thread_stop;
 }
 
