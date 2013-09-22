@@ -35,6 +35,7 @@
 #include <ags/audio/task/ags_cancel_channel.h>
 
 #include <ags/audio/recall/ags_play_audio_signal.h>
+#include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -137,6 +138,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
   if(toggle_button->active){
     AgsDevoutPlay *devout_play;
     AgsPlayAudioSignal *play_audio_signal;
+    AgsStreamAudioSignal *stream_audio_signal;
     AgsStartDevout *start_devout;
     AgsAppendRecall *append_recall;
     AgsAudioFile *audio_file;
@@ -174,12 +176,28 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 						    devout,
 						    i,
 						    NULL);
+      AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current = AGS_AUDIO_SIGNAL(audio_signal->data)->stream_beginning;
 
       /* AgsAppendRecall */
       devout_play = ags_devout_play_alloc();
 
       devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
       devout_play->source = G_OBJECT(play_audio_signal);
+      devout_play->recall_id = ags_recall_id_new();
+
+      append_recall = ags_append_recall_new(G_OBJECT(devout->audio_loop),
+					    devout_play);
+    
+      tasks = g_list_prepend(tasks, append_recall);
+      
+      /* AgsStreamAudioSignal recall */
+      stream_audio_signal = ags_stream_audio_signal_new(AGS_AUDIO_SIGNAL(audio_signal->data));
+
+      devout_play = ags_devout_play_alloc();
+
+      /* AgsAppendRecall */
+      devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
+      devout_play->source = G_OBJECT(stream_audio_signal);
       devout_play->recall_id = ags_recall_id_new();
 
       append_recall = ags_append_recall_new(G_OBJECT(devout->audio_loop),
@@ -197,6 +215,8 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     tasks = g_list_prepend(tasks, start_devout);
 
     /*  */
+    tasks = g_list_reverse(tasks);
+
     ags_task_thread_append_tasks(devout->task_thread, tasks);
   }else{
     //TODO:JK: implement me

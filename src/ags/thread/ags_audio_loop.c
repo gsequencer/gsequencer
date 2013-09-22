@@ -516,6 +516,7 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
   while(list != NULL){
     devout_play = AGS_DEVOUT_PLAY(list->data);
     recall = AGS_RECALL(devout_play->source);
+
     //    recall_id = devout_play->recall_id;
     list_next = list->next;
 

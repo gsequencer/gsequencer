@@ -230,13 +230,6 @@ ags_devout_thread_stop(AgsThread *thread)
   devout = AGS_DEVOUT(thread->devout);
   audio_loop = devout->audio_loop;
 
-  if((AGS_AUDIO_LOOP_PLAY_RECALL & (devout->flags)) != 0 ||
-     (AGS_AUDIO_LOOP_PLAY_CHANNEL & (devout->flags)) != 0 ||
-     (AGS_AUDIO_LOOP_PLAY_AUDIO & (devout->flags)) != 0){
-    g_message("ags_devout_thread_stop:  still playing\n\0");
-    return;
-  }
-
   if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
     g_message("ags_devout_thread_stop:  just starting\n\0");
     return;

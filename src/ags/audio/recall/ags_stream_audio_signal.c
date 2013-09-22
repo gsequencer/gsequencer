@@ -152,8 +152,10 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 
   audio_signal = recall_audio_signal->source;
 
-  ags_recycling_remove_audio_signal(AGS_RECYCLING(AGS_RECALL_RECYCLING(AGS_RECALL(recall_audio_signal)->parent)->source),
-  				    recall_audio_signal->source);
+  if(AGS_RECALL(recall_audio_signal)->parent != NULL){
+    ags_recycling_remove_audio_signal(AGS_RECYCLING(AGS_RECALL_RECYCLING(AGS_RECALL(recall_audio_signal)->parent)->source),
+				      recall_audio_signal->source);
+  }
 
   if(recall_audio_signal->source != NULL){
     g_object_unref(G_OBJECT(recall_audio_signal->source));
@@ -248,7 +250,7 @@ ags_stream_audio_signal_new(AgsAudioSignal *audio_signal)
   AgsStreamAudioSignal *stream_audio_signal;
 
   stream_audio_signal = (AgsStreamAudioSignal *) g_object_new(AGS_TYPE_STREAM_AUDIO_SIGNAL,
-							      "audio_signal\0", audio_signal,
+							      "source\0", audio_signal,
 							      NULL);
 
   return(stream_audio_signal);
