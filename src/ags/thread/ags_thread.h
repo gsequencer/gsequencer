@@ -112,6 +112,9 @@ struct _AgsThread
   struct timespec timelock;
   GList *greedy_locks;
 
+  pthread_mutex_t suspend_mutex;
+  volatile gboolean critical_region;
+
   GObject *devout;
   AgsThread *parent;
 

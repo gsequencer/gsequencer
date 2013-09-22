@@ -275,6 +275,8 @@ ags_thread_init(AgsThread *thread)
 
   thread->greedy_locks = NULL;
 
+  pthread_mutex_init(&(thread->suspend_mutex), NULL);
+
   thread->devout = NULL;
 
   thread->parent = NULL;

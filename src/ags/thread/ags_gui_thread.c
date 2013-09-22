@@ -33,6 +33,8 @@ void ags_gui_thread_finalize(GObject *gobject);
 
 void ags_gui_thread_start(AgsThread *thread);
 void ags_gui_thread_run(AgsThread *thread);
+void ags_gui_thread_suspend(AgsThread *thread);
+void ags_gui_thread_resume(AgsThread *thread);
 void ags_gui_thread_stop(AgsThread *thread);
 
 void ags_gui_thread_suspend_handler(int sig);
@@ -116,14 +118,12 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 
   thread = AGS_THREAD(gui_thread);
 
-  //  g_atomic_int_or(&(thread->flags),
-  //		  AGS_THREAD_TIMELOCK_RUN);
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMELOCK_RUN);
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC / (AGS_GUI_THREAD_DEFAULT_JIFFIE + 1) *
 				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
 
-
-  gui_thread->main_loop = g_main_loop_new(NULL, FALSE);
   g_cond_init(&gui_thread->cond);
   g_mutex_init(&gui_thread->mutex);
 
@@ -177,18 +177,15 @@ ags_gui_thread_run(AgsThread *thread)
   AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
   AgsTaskThread *task_thread;
-  GMainLoop *main_loop;
   GMainContext *main_context;
   guint i, i_stop;
+  int success;
 
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
 
   /*  */
-  g_main_loop_ref(gui_thread->main_loop);
-
-  main_loop = gui_thread->main_loop;
   main_context = g_main_context_default();
 
   /*  */
@@ -223,11 +220,17 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
-      //      pthread_mutex_lock(&(task_thread->launch_mutex));
+      pthread_mutex_lock(&(task_thread->launch_mutex));
 
       g_main_context_iteration(main_context, FALSE);
 
-      //      pthread_mutex_unlock(&(task_thread->launch_mutex));
+      /*  */
+      GDK_THREADS_ENTER();
+
+      GDK_THREADS_LEAVE();
+
+      /*  */
+      pthread_mutex_unlock(&(task_thread->launch_mutex));
 
       g_main_context_release(main_context);
 
@@ -247,7 +250,6 @@ ags_gui_thread_run(AgsThread *thread)
     wait.tv_nsec = round(1000000000 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
 
     iter_val = (1.0 / gui_thread->frequency) / (1.0 / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
-    //    g_message("paint\0");
       
     /*  */
     if(gui_thread->iter > 1.0){
@@ -261,11 +263,44 @@ ags_gui_thread_run(AgsThread *thread)
 	}
       }
 
-      //      pthread_mutex_lock(&(task_thread->launch_mutex));
+      /*  */
+      success = pthread_mutex_trylock(&(thread->suspend_mutex));
 
+      if(success){
+	g_atomic_int_set(&thread->critical_region,
+			 TRUE);
+      }
+
+      /*  */
+      pthread_mutex_lock(&(task_thread->launch_mutex));
+
+      if(success){
+	/*  */
+	pthread_mutex_unlock(&(thread->suspend_mutex));
+      }else{
+	g_atomic_int_set(&thread->critical_region,
+			 TRUE);
+      }
+
+      /*  */
       g_main_context_iteration(main_context, FALSE);
 
-      //      pthread_mutex_unlock(&(task_thread->launch_mutex));
+      GDK_THREADS_ENTER();
+
+      GDK_THREADS_LEAVE();
+
+      /*  */
+      success = pthread_mutex_trylock(&(thread->suspend_mutex));
+      
+      /*  */
+      pthread_mutex_unlock(&(task_thread->launch_mutex));
+
+      g_atomic_int_set(&thread->critical_region,
+		       FALSE);
+
+      if(!success){
+	pthread_mutex_unlock(&(thread->suspend_mutex));
+      }
 
       g_main_context_release(main_context);
 
@@ -275,8 +310,16 @@ ags_gui_thread_run(AgsThread *thread)
       //      nanosleep(&wait, NULL);
     }
   }
+}
 
-  g_main_loop_unref(gui_thread->main_loop);
+void
+ags_gui_thread_suspend(AgsThread *thread)
+{
+}
+
+void
+ags_gui_thread_resume(AgsThread *thread)
+{
 }
 
 void
@@ -286,8 +329,7 @@ ags_gui_thread_stop(AgsThread *thread)
   AGS_THREAD_CLASS(ags_gui_thread_parent_class)->stop(thread);  
 
   /*  */
-  //  GDK_THREADS_ENTER();
-  //  gdk_flush();
+  gdk_flush();
 }
 
 AgsGuiThread*

@@ -177,7 +177,6 @@ ags_task_thread_run(AgsThread *thread)
   static struct timespec play_idle;
   static useconds_t idle;
   guint prev_pending;
-  GMainContext *main_context;
   static gboolean initialized = FALSE;
 
   task_thread = AGS_TASK_THREAD(thread);
@@ -220,21 +219,8 @@ ags_task_thread_run(AgsThread *thread)
     AgsTask *task;
     int i;
 
-    main_context = g_main_context_default();
-
-    if(!g_main_context_acquire(main_context)){
-      gboolean got_ownership = FALSE;
-
-      while(!got_ownership){
-	got_ownership = g_main_context_wait(main_context,
-					    &task_thread->cond,
-					    &task_thread->mutex);
-      }
-    }
-
+    pthread_mutex_lock(&(task_thread->launch_mutex));
     pthread_mutex_lock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
-
-    //    pthread_mutex_lock(&(task_thread->launch_mutex));
 
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
@@ -247,9 +233,7 @@ ags_task_thread_run(AgsThread *thread)
     }
 
     pthread_mutex_unlock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
-    //    pthread_mutex_unlock(&(task_thread->launch_mutex));
-
-    g_main_context_release(main_context);
+    pthread_mutex_unlock(&(task_thread->launch_mutex));
   }
 
   /* sleep if wanted */
