@@ -155,18 +155,22 @@ ags_start_devout_launch(AgsTask *task)
 
   ags_thread_start(AGS_THREAD(devout_thread));
   
-  pthread_mutex_lock(&(AGS_THREAD(devout_thread)->start_mutex));
+  if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(devout_thread)->flags)) == 0){
+    pthread_mutex_lock(&(AGS_THREAD(devout_thread)->start_mutex));
 
-  while((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
-    pthread_cond_wait(&(AGS_THREAD(devout_thread)->start_cond),
-		      &(AGS_THREAD(devout_thread)->start_mutex));
-  }
-
-  ags_thread_unlock(AGS_THREAD(devout_thread));
-  pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->start_mutex));
-
-  if(devout_thread->error != NULL){
-    ags_task_failure(AGS_TASK(start_devout), error);
+    while((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
+      pthread_cond_wait(&(AGS_THREAD(devout_thread)->start_cond),
+			&(AGS_THREAD(devout_thread)->start_mutex));
+    }
+    
+    //    ags_thread_unlock(AGS_THREAD(devout_thread));
+    pthread_mutex_unlock(&(AGS_THREAD(devout_thread)->start_mutex));
+    
+    if(devout_thread->error != NULL){
+      ags_task_failure(AGS_TASK(start_devout), error);
+    }
+  }else{
+    AGS_THREAD(devout_thread)->flags |= AGS_THREAD_RUNNING;
   }
 }
 

@@ -717,16 +717,17 @@ ags_devout_alsa_play(AgsDevout *devout,
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[0],
 					 (snd_pcm_sframes_t) devout->buffer_size);
-      
-    if(devout->out.alsa.rc == -EPIPE){
-      /* EPIPE means underrun */
-      g_message("underrun occurred\0");
-    }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
-    }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      g_message("short write, write %d frames\0", devout->out.alsa.rc);
-    }
-      
+
+    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
+      if(devout->out.alsa.rc == -EPIPE){
+	/* EPIPE means underrun */
+	g_message("underrun occurred\0");
+      }else if(devout->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
+	g_message("short write, write %d frames\0", devout->out.alsa.rc);
+      }
+    }      
     //      g_message("ags_devout_play 0\0");
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     memset(devout->buffer[0], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -734,16 +735,17 @@ ags_devout_alsa_play(AgsDevout *devout,
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[1],
 					 (snd_pcm_sframes_t) devout->buffer_size);
-      
-    if(devout->out.alsa.rc == -EPIPE){
-      /* EPIPE means underrun */
-      g_message("underrun occurred\0");
-    }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
-    }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      g_message("short write, write %d frames\0", devout->out.alsa.rc);
-    }
-      
+     
+    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
+      if(devout->out.alsa.rc == -EPIPE){
+	/* EPIPE means underrun */
+	g_message("underrun occurred\0");
+      }else if(devout->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
+	g_message("short write, write %d frames\0", devout->out.alsa.rc);
+      }
+    }      
     //      g_message("ags_devout_play 1\0");
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     memset(devout->buffer[1], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -751,16 +753,17 @@ ags_devout_alsa_play(AgsDevout *devout,
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[2],
 					 (snd_pcm_sframes_t) devout->buffer_size);
-      
-    if(devout->out.alsa.rc == -EPIPE){
-      /* EPIPE means underrun */
-      g_message("underrun occurred\0");
-    }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
-    }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      g_message("short write, write %d frames\0", devout->out.alsa.rc);
-    }
 
+    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
+      if(devout->out.alsa.rc == -EPIPE){
+	/* EPIPE means underrun */
+	g_message("underrun occurred\0");
+      }else if(devout->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
+	g_message("short write, write %d frames\0", devout->out.alsa.rc);
+      }
+    }
     //      g_message("ags_devout_play 2\0");
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
     memset(devout->buffer[2], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -768,16 +771,17 @@ ags_devout_alsa_play(AgsDevout *devout,
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[3],
 					 (snd_pcm_sframes_t) devout->buffer_size);
-      
-    if(devout->out.alsa.rc == -EPIPE){
-      /* EPIPE means underrun */
-      g_message("underrun occurred\0");
-    }else if(devout->out.alsa.rc < 0){
-      g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
-    }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
-      g_message("short write, write %d frames\0", devout->out.alsa.rc);
-    }
 
+    if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
+      if(devout->out.alsa.rc == -EPIPE){
+	/* EPIPE means underrun */
+	g_message("underrun occurred\0");
+      }else if(devout->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
+      }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
+	g_message("short write, write %d frames\0", devout->out.alsa.rc);
+      }
+    }
     //      g_message("ags_devout_play 3\0");
   }
 
@@ -822,7 +826,6 @@ ags_devout_new(GObject *main)
   devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
   
   devout->main = main;
-  devout->audio_loop->main = main;
 
   return(devout);
 }

@@ -33,6 +33,8 @@ void ags_single_thread_start(AgsThread *thread);
 void ags_single_thread_run(AgsThread *thread);
 void ags_single_thread_stop(AgsThread *thread);
 
+void* ags_single_thread_loop(void *ptr);
+
 static gpointer ags_single_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_single_thread_parent_connectable_interface;
 
@@ -177,13 +179,29 @@ ags_single_thread_start(AgsThread *thread)
 	       "devout\0", devout,
 	       NULL);
 
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_RUNNING |
+		   AGS_THREAD_INITIAL_RUN));
+
+  ags_single_thread_run(thread);
+
+  //  pthread_create(&(AGS_THREAD(single_thread)->thread), NULL,
+  //		 &(ags_single_thread_loop), thread);
+
   ags_thread_start((AgsThread *) single_thread->audio_loop);
 
   ags_thread_start((AgsThread *) single_thread->task_thread);
 
-  ags_thread_start((AgsThread *) single_thread->devout_thread);
-
   ags_thread_start((AgsThread *) single_thread->gui_thread);
+
+}
+
+void*
+ags_single_thread_loop(void *ptr)
+{
+  ags_single_thread_run(AGS_THREAD(ptr));
+
+  pthread_exit(NULL);
 }
 
 void
@@ -195,7 +213,11 @@ ags_single_thread_run(AgsThread *thread)
   single_thread = AGS_SINGLE_THREAD(thread);
 
   play_idle.tv_sec = 0;
-  play_idle.tv_nsec = (double) NSEC_PER_SEC / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  play_idle.tv_nsec = floor((double) NSEC_PER_SEC /
+			    (double) AGS_DEVOUT_DEFAULT_SAMPLERATE *
+			    (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE *
+			    (60.0 / AGS_DEVOUT_DEFAULT_BPM) *
+			    AGS_ATTACK_DEFAULT_TACT);
 
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) != 0){
     /* initial value to calculate timing */
@@ -206,7 +228,9 @@ ags_single_thread_run(AgsThread *thread)
 
     ags_thread_run((AgsThread *) single_thread->task_thread);
 
-    ags_thread_run((AgsThread *) single_thread->devout_thread);
+    if((AGS_THREAD_RUNNING & (AGS_THREAD(single_thread->devout_thread)->flags)) != 0){
+      ags_thread_run((AgsThread *) single_thread->devout_thread);
+    }
 
     ags_thread_run((AgsThread *) single_thread->gui_thread);
 
@@ -224,7 +248,7 @@ ags_single_thread_run(AgsThread *thread)
     
     /* calculate timing */
     current.tv_sec = 0;
-    current.tv_nsec = play_idle.tv_nsec - (play_exceeded.tv_nsec + play_start.tv_nsec);
+    current.tv_nsec = play_idle.tv_nsec - (play_exceeded.tv_nsec - play_start.tv_nsec);
 
     nanosleep(&current, NULL);
   }
@@ -247,11 +271,12 @@ ags_single_thread_stop(AgsThread *thread)
 }
 
 AgsSingleThread*
-ags_single_thread_new(GObject *single)
+ags_single_thread_new(GObject *devout)
 {
   AgsSingleThread *single_thread;
 
   single_thread = (AgsSingleThread *) g_object_new(AGS_TYPE_SINGLE_THREAD,
+						   "devout\0", devout,
 						   NULL);
 
 

@@ -463,9 +463,9 @@ main(int argc, char **argv)
     main->devout->main = main; //TODO:JK: really ugly
 
     /* threads */
-    single_thread = ags_single_thread_new();
+    single_thread = ags_single_thread_new(devout);
     devout->audio_loop = single_thread->audio_loop;
-    devout->audio_loop->main = main;
+    devout->audio_loop->main = main; //TODO:JK: really ugly
     devout->task_thread = single_thread->task_thread;
     devout->devout_thread = single_thread->devout_thread;
 
@@ -485,21 +485,10 @@ main(int argc, char **argv)
 		 "devout\0", main->devout,
 		 NULL);
 
-    //TODO:JK: really ugly
-    AGS_AUDIO_LOOP(main->main_loop)->main = main;
-
     /*  */
     main->gui_loop = AGS_AUDIO_LOOP(main->main_loop)->gui_thread;
 
     ags_thread_start(single_thread);
-
-#ifdef _USE_PTH
-    pth_join(AGS_PORTABLE_THREAD(single_thread)->thread,
-	     NULL);
-#else
-    pthread_join(AGS_THREAD(single_thread)->thread,
-		 NULL);
-#endif
   }
 
   return(0);
