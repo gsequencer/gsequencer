@@ -186,12 +186,14 @@ ags_devout_thread_start(AgsThread *thread)
     return;
   }
 
-  AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
-
   memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+
+  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+    AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
+  }
 }
 
 void

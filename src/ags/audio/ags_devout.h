@@ -73,6 +73,8 @@ typedef enum
 
   AGS_DEVOUT_SHUTDOWN                       = 1 << 9,
   AGS_DEVOUT_START_PLAY                     = 1 << 10,
+
+  AGS_DEVOUT_NONBLOCKING                    = 1 << 11,
 }AgsDevoutFlags;
 
 typedef enum

@@ -209,9 +209,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
 
-  g_cond_init(&audio_loop->cond);
-  g_mutex_init(&audio_loop->mutex);
-
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
 
@@ -379,11 +376,13 @@ ags_audio_loop_start(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  /*  */
-  AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
-
-  /*  */
-  ags_thread_start(audio_loop->task_thread);
+  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+    /*  */
+    AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
+    
+    /*  */
+    ags_thread_start(audio_loop->task_thread);
+  }
 }
 
 void
@@ -401,16 +400,6 @@ ags_audio_loop_run(AgsThread *thread)
   main_context = g_main_context_default();
 
   pthread_mutex_lock(&(audio_loop->recall_mutex));
-
-  //  if(!g_main_context_acquire(main_context)){
-  //    gboolean got_ownership = FALSE;
-
-  //    while(!got_ownership){
-  //      got_ownership = g_main_context_wait(main_context,
-  //					  &audio_loop->cond,
-  //					  &audio_loop->mutex);
-  //  }
-  //}
 
   /* play recall */
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
@@ -459,7 +448,6 @@ ags_audio_loop_run(AgsThread *thread)
     devout->delay_counter = 0;
   }
 
-  //  g_main_context_release(main_context);
   pthread_mutex_unlock(&(audio_loop->recall_mutex));
 
   pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));

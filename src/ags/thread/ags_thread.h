@@ -76,6 +76,7 @@ typedef enum{
   AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 25,
   AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 26,
   AGS_THREAD_SUSPENDED               = 1 << 27,
+  AGS_THREAD_SINGLE_LOOP             = 1 << 28,
 }AgsThreadFlags;
 
 struct _AgsThread

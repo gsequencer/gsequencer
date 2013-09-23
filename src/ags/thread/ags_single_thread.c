@@ -104,6 +104,24 @@ ags_single_thread_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_single_thread_init(AgsSingleThread *single_thread)
 {
+  AgsThread *thread;
+
+  thread = AGS_THREAD(single_thread);
+
+  thread->devout->flags |= AGS_DEVOUT_NONBLOCKING;
+
+  single_thread->audio_loop = ags_audio_loop_new(G_OBJECT(devout));
+  AGS_THREAD(single_thread->audio_loop)->flags |= AGS_THREAD_SINGLE_LOOP;
+
+  single_thread->task_thread = AGS_TASK_THREAD(devout->audio_loop->task_thread);
+  AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
+
+  single_thread->devout_thread = AGS_DEVOUT_THREAD(devout->audio_loop->devout_thread);
+  AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
+
+  single_thread->gui_thread = AGS_GUI_THREAD(devout->audio_loop->gui_thread);
+  AGS_THREAD(single_thread->gui_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
+  single_thread->gui_thread->frequency = 1.0 / (double) AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE;
 }
 
 void
@@ -133,16 +151,77 @@ ags_single_thread_finalize(GObject *gobject)
 void
 ags_single_thread_start(AgsThread *thread)
 {
+  AgsSingleThread *single_thread;
+
+  single_thread = AGS_SINGLE_THREAD(thread);
+
+  ags_thread_start((AgsThread *) single_thread->audio_loop);
+
+  ags_thread_start((AgsThread *) single_thread->task_thread);
+
+  ags_thread_start((AgsThread *) single_thread->devout_thread);
+
+  ags_thread_start((AgsThread *) single_thread->gui_thread);
 }
 
 void
 ags_single_thread_run(AgsThread *thread)
 {
+  AgsSingleThread *single_thread;
+  struct timespec play_start, play_exceeded, play_idle, current;
+
+  single_thread = AGS_SINGLE_THREAD(thread);
+
+  play_idle.tv_sec = 0;
+  play_idle.tv_nsec = (double) NSEC_PER_SEC / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+
+  while((AGS_THREAD_RUNNING & (g_atomic_int_get_val(&thread->flags))) != 0){
+    /* initial value to calculate timing */
+    clock_gettime(CLOCK_MONOTONIC, &play_start);
+
+    /*  */
+    ags_thread_run((AgsThread *) single_thread->audio_loop);
+
+    ags_thread_run((AgsThread *) single_thread->task_thread);
+
+    ags_thread_run((AgsThread *) single_thread->devout_thread);
+
+    ags_thread_run((AgsThread *) single_thread->gui_thread);
+
+    /* do timing */
+    clock_gettime(CLOCK_MONOTONIC, &play_exceeded);
+
+    if(play_start.tv_sec < play_exceeded.tv_sec){
+      play_exceeded.tv_nsec += NSEC_PER_SEC;
+      play_exceeded.tv_sec--;
+    }
+
+    if(play_start.tv_sec < play_exceeded.tv_sec){
+      continue;
+    }
+    
+    /* calculate timing */
+    current.tv_sec = 0;
+    current.tv_nsec = play_idle.tv_nsec - (play_exceeded.tv_nsec + play_start.tv_nsec);
+
+    nanosleep(&current, NULL);
+  }
 }
 
 void
 ags_single_thread_stop(AgsThread *thread)
 {
+  AgsSingleThread *single_thread;
+
+  single_thread = AGS_SINGLE_THREAD(thread);
+
+  ags_thread_stop((AgsThread *) single_thread->audio_loop);
+
+  ags_thread_stop((AgsThread *) single_thread->task_thread);
+
+  ags_thread_stop((AgsThread *) single_thread->devout_thread);
+
+  ags_thread_stop((AgsThread *) single_thread->gui_thread);
 }
 
 AgsSingleThread*

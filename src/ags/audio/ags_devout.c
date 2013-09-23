@@ -669,13 +669,21 @@ ags_devout_alsa_init(AgsDevout *devout,
   int dir;
   snd_pcm_uframes_t frames;
   int err;
+
   /* Open PCM device for playback. */
   handle = NULL;
-  rc = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0);
+
+  if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
+    rc = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0);
+  }else{
+    rc = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
+  }
+
   if(rc < 0) {
     g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
     return;
   }
+
   devout->out.alsa.handle = handle;
 
   rc = snd_pcm_set_params(handle,
@@ -690,6 +698,7 @@ ags_devout_alsa_init(AgsDevout *devout,
     g_message("unable to set hw parameters: %s\0", snd_strerror(rc));
     return;
   }
+
   devout->delay_counter = 0; 
 }
 

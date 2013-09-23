@@ -63,8 +63,6 @@ struct _AgsAudioLoop
   AgsThread *devout_thread;
 
   pthread_mutex_t recall_mutex;
-  GCond cond;
-  GMutex mutex;
 
   guint play_recall_ref;
   GList *play_recall; // play AgsRecall

@@ -41,6 +41,8 @@ struct _AgsTaskThread
 {
   AgsThread thread;
 
+  guint flags;
+
   pthread_mutex_t read_mutex;
   pthread_mutex_t launch_mutex;
 

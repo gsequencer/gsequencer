@@ -170,7 +170,9 @@ ags_gui_thread_start(AgsThread *thread)
   GDK_THREADS_LEAVE();
 
   /*  */
-  AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
+  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+    AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
+  }
 }
 
 void
@@ -204,8 +206,9 @@ ags_gui_thread_run(AgsThread *thread)
 
     stop.tv_sec = start.tv_sec;
     stop.tv_nsec = start.tv_nsec + ((i_stop - 1) * NSEC_PER_SEC / gui_thread->frequency);
-
-    while(current.tv_nsec >= NSEC_PER_SEC) {
+    
+    /* do timing */    
+    while(stop.tv_nsec >= NSEC_PER_SEC) {
       stop.tv_nsec -= NSEC_PER_SEC;
       stop.tv_sec++;
     }
@@ -271,7 +274,6 @@ ags_gui_thread_run(AgsThread *thread)
       }
     }
   }else{
-    struct timespec wait;
     guint iter_val;
 
     wait.tv_sec = 0;
@@ -348,8 +350,6 @@ ags_gui_thread_suspend(AgsThread *thread)
   success = pthread_mutex_trylock(&(thread->suspend_mutex));
   critical_region = g_atomic_int_get(&(thread->critical_region));
 
-  g_message("**** suspend\0");
-  
   if(success || critical_region){
     AgsAudioLoop *audio_loop;
     AgsGuiThread *gui_thread;
@@ -376,8 +376,6 @@ ags_gui_thread_resume(AgsThread *thread)
   success = pthread_mutex_trylock(&(thread->suspend_mutex));
   critical_region = g_atomic_int_get(&(thread->critical_region));
 
-  g_message("**** resume\0");
-  
   if(success || critical_region){
     AgsAudioLoop *audio_loop;
     AgsGuiThread *gui_thread;
