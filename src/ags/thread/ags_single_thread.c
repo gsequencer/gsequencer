@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_devout.h>
+
 void ags_single_thread_class_init(AgsSingleThreadClass *single_thread);
 void ags_single_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_single_thread_init(AgsSingleThread *single_thread);
@@ -105,10 +107,12 @@ void
 ags_single_thread_init(AgsSingleThread *single_thread)
 {
   AgsThread *thread;
+  AgsDevout *devout;
 
   thread = AGS_THREAD(single_thread);
 
-  thread->devout->flags |= AGS_DEVOUT_NONBLOCKING;
+  devout = AGS_DEVOUT(thread->devout);
+  devout->flags |= AGS_DEVOUT_NONBLOCKING;
 
   single_thread->audio_loop = ags_audio_loop_new(G_OBJECT(devout));
   AGS_THREAD(single_thread->audio_loop)->flags |= AGS_THREAD_SINGLE_LOOP;
@@ -175,7 +179,7 @@ ags_single_thread_run(AgsThread *thread)
   play_idle.tv_sec = 0;
   play_idle.tv_nsec = (double) NSEC_PER_SEC / (double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
 
-  while((AGS_THREAD_RUNNING & (g_atomic_int_get_val(&thread->flags))) != 0){
+  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) != 0){
     /* initial value to calculate timing */
     clock_gettime(CLOCK_MONOTONIC, &play_start);
 

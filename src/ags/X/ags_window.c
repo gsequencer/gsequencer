@@ -217,7 +217,6 @@ ags_window_new(GObject *main)
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW, NULL);
 
   window->main = main;
-  window->devout->main = main;
 
   return(window);
 }

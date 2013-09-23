@@ -28,6 +28,7 @@
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_gui_thread.h>
+#include <ags/thread/ags_single_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -480,7 +481,7 @@ main(int argc, char **argv)
 
     /*  */
     single_thread = ags_single_thread_new();
-    ags_thread_start(main->single_thread);
+    ags_thread_start(single_thread);
 
 #ifdef _USE_PTH
     pth_join(AGS_PORTABLE_THREAD(single_thread)->thread,

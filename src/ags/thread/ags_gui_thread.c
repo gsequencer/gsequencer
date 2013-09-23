@@ -274,6 +274,7 @@ ags_gui_thread_run(AgsThread *thread)
       }
     }
   }else{
+    struct timespec wait;
     guint iter_val;
 
     wait.tv_sec = 0;

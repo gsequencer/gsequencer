@@ -271,8 +271,9 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_gui_thread.$(OBJEXT) ags-ags_task_thread.$(OBJEXT) \
 	ags-ags_devout_thread.$(OBJEXT) \
 	ags-ags_iterator_thread.$(OBJEXT) \
-	ags-ags_id_generator.$(OBJEXT) ags-ags_server.$(OBJEXT) \
-	ags-ags_registry.$(OBJEXT) ags-ags_remote_task.$(OBJEXT)
+	ags-ags_single_thread.$(OBJEXT) ags-ags_id_generator.$(OBJEXT) \
+	ags-ags_server.$(OBJEXT) ags-ags_registry.$(OBJEXT) \
+	ags-ags_remote_task.$(OBJEXT)
 ags_OBJECTS = $(am_ags_OBJECTS)
 ags_DEPENDENCIES = libags.a
 AM_V_lt = $(am__v_lt_$(V))
@@ -1012,6 +1013,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/thread/ags_devout_thread.c \
 	./src/ags/thread/ags_iterator_thread.h \
 	./src/ags/thread/ags_iterator_thread.c \
+	./src/ags/thread/ags_single_thread.h \
+	./src/ags/thread/ags_single_thread.c \
 	./src/ags/util/ags_id_generator.h \
 	./src/ags/util/ags_id_generator.c \
 	./src/ags/server/ags_server.h ./src/ags/server/ags_server.c \
@@ -1437,6 +1440,7 @@ include ./$(DEPDIR)/ags-ags_set_output_device.Po
 include ./$(DEPDIR)/ags-ags_set_samplerate.Po
 include ./$(DEPDIR)/ags-ags_sf2_chooser.Po
 include ./$(DEPDIR)/ags-ags_sf2_chooser_callbacks.Po
+include ./$(DEPDIR)/ags-ags_single_thread.Po
 include ./$(DEPDIR)/ags-ags_sndfile.Po
 include ./$(DEPDIR)/ags-ags_start_devout.Po
 include ./$(DEPDIR)/ags-ags_stream.Po
@@ -4612,6 +4616,20 @@ ags-ags_iterator_thread.obj: ./src/ags/thread/ags_iterator_thread.c
 #	$(AM_V_CC)source='./src/ags/thread/ags_iterator_thread.c' object='ags-ags_iterator_thread.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_iterator_thread.obj `if test -f './src/ags/thread/ags_iterator_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_iterator_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_iterator_thread.c'; fi`
+
+ags-ags_single_thread.o: ./src/ags/thread/ags_single_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_single_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_single_thread.Tpo -c -o ags-ags_single_thread.o `test -f './src/ags/thread/ags_single_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_single_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_single_thread.Tpo $(DEPDIR)/ags-ags_single_thread.Po
+#	$(AM_V_CC)source='./src/ags/thread/ags_single_thread.c' object='ags-ags_single_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_single_thread.o `test -f './src/ags/thread/ags_single_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_single_thread.c
+
+ags-ags_single_thread.obj: ./src/ags/thread/ags_single_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_single_thread.obj -MD -MP -MF $(DEPDIR)/ags-ags_single_thread.Tpo -c -o ags-ags_single_thread.obj `if test -f './src/ags/thread/ags_single_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_single_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_single_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_single_thread.Tpo $(DEPDIR)/ags-ags_single_thread.Po
+#	$(AM_V_CC)source='./src/ags/thread/ags_single_thread.c' object='ags-ags_single_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_single_thread.obj `if test -f './src/ags/thread/ags_single_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_single_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_single_thread.c'; fi`
 
 ags-ags_id_generator.o: ./src/ags/util/ags_id_generator.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_id_generator.o -MD -MP -MF $(DEPDIR)/ags-ags_id_generator.Tpo -c -o ags-ags_id_generator.o `test -f './src/ags/util/ags_id_generator.c' || echo '$(srcdir)/'`./src/ags/util/ags_id_generator.c

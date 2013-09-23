@@ -239,7 +239,7 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /* sleep if wanted */
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get_val(&(AGS_THREAD(AGS_AUDIO_LOOP(thread->parent)->devout_thread)->flags))) != 0){
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(AGS_AUDIO_LOOP(thread->parent)->devout_thread)->flags)))) != 0){
     //FIXME:JK: this isn't very efficient
     //    nanosleep(&play_idle, NULL);
   }else{
