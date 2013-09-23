@@ -703,7 +703,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall)
 }
 
 AgsAudioLoop*
-ags_audio_loop_new(GObject *devout)
+ags_audio_loop_new(GObject *devout, GObject *main)
 {
   AgsAudioLoop *audio_loop;
 
@@ -711,7 +711,7 @@ ags_audio_loop_new(GObject *devout)
 					     "devout\0", devout,
 					     NULL);
 
-  audio_loop->main = AGS_DEVOUT(devout)->main;
+  audio_loop->main = main;
 
   return(audio_loop);
 }

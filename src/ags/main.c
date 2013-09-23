@@ -412,6 +412,11 @@ main(int argc, char **argv)
     main->devout = devout; //TODO:JK: really ugly
     main->devout->main = main; //TODO:JK: really ugly
 
+    /* threads */
+    devout->audio_loop = ags_audio_loop_new(G_OBJECT(devout), G_OBJECT(main));
+    devout->task_thread = AGS_TASK_THREAD(devout->audio_loop->task_thread);
+    devout->devout_thread = AGS_DEVOUT_THREAD(devout->audio_loop->devout_thread);
+
     /* AgsWindow */
     window = ags_window_new(main);
     window->devout = devout; //TODO:JK: really ugly
@@ -457,6 +462,13 @@ main(int argc, char **argv)
     main->devout = devout; //TODO:JK: really ugly
     main->devout->main = main; //TODO:JK: really ugly
 
+    /* threads */
+    single_thread = ags_single_thread_new();
+    devout->audio_loop = single_thread->audio_loop;
+    devout->audio_loop->main = main;
+    devout->task_thread = single_thread->task_thread;
+    devout->devout_thread = single_thread->devout_thread;
+
     /* AgsWindow */
     window = ags_window_new(main);
     window->devout = devout; //TODO:JK: really ugly
@@ -479,8 +491,6 @@ main(int argc, char **argv)
     /*  */
     main->gui_loop = AGS_AUDIO_LOOP(main->main_loop)->gui_thread;
 
-    /*  */
-    single_thread = ags_single_thread_new();
     ags_thread_start(single_thread);
 
 #ifdef _USE_PTH

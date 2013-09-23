@@ -107,23 +107,21 @@ void
 ags_single_thread_init(AgsSingleThread *single_thread)
 {
   AgsThread *thread;
-  AgsDevout *devout;
+  AgsAudioLoop *audio_loop;
 
   thread = AGS_THREAD(single_thread);
 
-  devout = AGS_DEVOUT(thread->devout);
-  devout->flags |= AGS_DEVOUT_NONBLOCKING;
-
-  single_thread->audio_loop = ags_audio_loop_new(G_OBJECT(devout));
+  audio_loop = 
+    single_thread->audio_loop = ags_audio_loop_new(NULL, NULL);
   AGS_THREAD(single_thread->audio_loop)->flags |= AGS_THREAD_SINGLE_LOOP;
 
-  single_thread->task_thread = AGS_TASK_THREAD(devout->audio_loop->task_thread);
+  single_thread->task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
   AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
 
-  single_thread->devout_thread = AGS_DEVOUT_THREAD(devout->audio_loop->devout_thread);
+  single_thread->devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
   AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
 
-  single_thread->gui_thread = AGS_GUI_THREAD(devout->audio_loop->gui_thread);
+  single_thread->gui_thread = AGS_GUI_THREAD(audio_loop->gui_thread);
   AGS_THREAD(single_thread->gui_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
   single_thread->gui_thread->frequency = 1.0 / (double) AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE;
 }
@@ -156,8 +154,28 @@ void
 ags_single_thread_start(AgsThread *thread)
 {
   AgsSingleThread *single_thread;
+  AgsDevout *devout;
 
   single_thread = AGS_SINGLE_THREAD(thread);
+
+  devout = AGS_DEVOUT(thread->devout);
+  devout->flags |= AGS_DEVOUT_NONBLOCKING;
+
+  g_object_set(G_OBJECT(single_thread->audio_loop),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(single_thread->task_thread),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(single_thread->devout_thread),
+	       "devout\0", devout,
+	       NULL);
+
+  g_object_set(G_OBJECT(single_thread->gui_thread),
+	       "devout\0", devout,
+	       NULL);
 
   ags_thread_start((AgsThread *) single_thread->audio_loop);
 

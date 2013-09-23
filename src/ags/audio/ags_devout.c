@@ -294,9 +294,9 @@ ags_devout_init(AgsDevout *devout)
   devout->audio = NULL;
 
   /* threads */
-  devout->audio_loop = ags_audio_loop_new(G_OBJECT(devout));
-  devout->task_thread = AGS_TASK_THREAD(devout->audio_loop->task_thread);
-  devout->devout_thread = AGS_DEVOUT_THREAD(devout->audio_loop->devout_thread);
+  devout->audio_loop = NULL;
+  devout->task_thread = NULL;
+  devout->devout_thread = NULL;
 }
 
 void
