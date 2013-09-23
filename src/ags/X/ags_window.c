@@ -104,7 +104,7 @@ ags_window_init(AgsWindow *window)
   GtkWidget *scrolled_window;
 
   window->main = NULL;
-  window->devout = ags_devout_new(NULL);
+  window->devout = NULL;
 
   window->name = g_strdup("unnamed\0");
 
