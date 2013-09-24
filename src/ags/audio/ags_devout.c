@@ -282,7 +282,8 @@ ags_devout_init(AgsDevout *devout)
   devout->delay = (guint) (AGS_ATTACK_DEFAULT_DELAY * 60.0 / AGS_DEVOUT_DEFAULT_BPM);
   devout->delay_counter = 0;
   
-  start = ((guint) AGS_ATTACK_DEFAULT_DELAY % devout->buffer_size) * 60.0 / AGS_DEVOUT_DEFAULT_BPM;
+  start = ((guint) (devout->delay * AGS_DEVOUT_DEFAULT_BUFFER_SIZE) %
+	   (guint) (AGS_ATTACK_DEFAULT_JIFFIE));
   g_message("%d\0", start);
 
   devout->attack = ags_attack_alloc(start, devout->buffer_size - start,

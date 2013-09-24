@@ -37,9 +37,15 @@
 typedef struct _AgsRecallAudioSignal AgsRecallAudioSignal;
 typedef struct _AgsRecallAudioSignalClass AgsRecallAudioSignalClass;
 
+typedef enum{
+  AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN      = 1,
+}AgsRecallAudioSignalFlags;
+
 struct _AgsRecallAudioSignal
 {
   AgsRecall recall;
+
+  guint flags;
 
   guint audio_channel;
 

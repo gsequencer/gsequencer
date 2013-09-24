@@ -213,7 +213,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsAudioSignal *source;
   GList *stream;
   signed short *buffer0, *buffer1;
-  //  AgsAttack *attack;
+  AgsAttack *attack;
   guint audio_channel;
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
@@ -251,18 +251,21 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   }
 
   audio_channel = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel;
-  //  attack = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->attack;
+  attack = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->attack;
 
-  ags_audio_signal_copy_buffer_to_buffer(&(buffer0[devout->pcm_channels]),
-					 devout->pcm_channels,
-					 (signed short *) stream->data, 1,
-					 devout->buffer_size);
 
-  //  if(attack->first_start != 0){
-  //    ags_audio_signal_copy_buffer_to_buffer(&(buffer1[audio_channel]), devout->pcm_channels,
-  //					   &(((signed short *) stream->data)[attack->first_length]), 1,
-  //					   attack->first_start);
-  //  }
+  if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
+    AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
+
+    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel + attack->first_start * devout->pcm_channels]),
+					   devout->pcm_channels,
+					   (signed short *) stream->data, 1,
+					   attack->first_length);
+  }else{
+    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
+					   (signed short *) stream->data, 1,
+					   devout->buffer_size);
+  }
 
   /* call parent */
   AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_inter(recall);

@@ -224,6 +224,7 @@ ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal)
   g_signal_connect_after(G_OBJECT(recall_audio_signal), "notify::devout\0",
 			 G_CALLBACK(ags_recall_audio_signal_notify_devout_after), NULL);
 
+  recall_audio_signal->flags = AGS_RECALL_INITIAL_RUN;
   recall_audio_signal->audio_channel = 0;
 
   recall_audio_signal->source = NULL;
