@@ -211,15 +211,11 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   if(audio_loop->frequency < gui_thread->frequency){
     gui_thread->iter_stop_is_delay = TRUE;
 
-    gui_thread->iter_stop = (guint) ceil((1.0 / audio_loop->frequency) / (1.0 / gui_thread->frequency));
-
-    g_message("a: %d\0", gui_thread->iter_stop);
+    gui_thread->iter_stop = (guint) floor((1.0 / audio_loop->frequency) / (1.0 / gui_thread->frequency));
   }else{
     gui_thread->iter_stop_is_delay = FALSE;
 
-    gui_thread->iter_stop = (guint) ceil((1.0 / gui_thread->frequency) / (1.0 / audio_loop->frequency));
-
-    g_message("b: %d\0", gui_thread->iter_stop);
+    gui_thread->iter_stop = (guint) floor((1.0 / gui_thread->frequency) / (1.0 / audio_loop->frequency));
   }
 
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->gui_thread);

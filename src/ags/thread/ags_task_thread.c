@@ -237,16 +237,6 @@ ags_task_thread_run(AgsThread *thread)
     pthread_mutex_unlock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
     pthread_mutex_unlock(&(task_thread->launch_mutex));
   }
-
-  /* sleep if wanted */
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(AGS_AUDIO_LOOP(thread->parent)->devout_thread)->flags)))) != 0){
-    //FIXME:JK: this isn't very efficient
-    //    nanosleep(&play_idle, NULL);
-  }else{
-    //FIXME:JK: this isn't very efficient
-    //    nanosleep(&play_idle, NULL);
-    //    usleep(idle);
-  }
 }
 
 void*

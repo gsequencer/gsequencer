@@ -213,11 +213,7 @@ ags_single_thread_run(AgsThread *thread)
   single_thread = AGS_SINGLE_THREAD(thread);
 
   play_idle.tv_sec = 0;
-  play_idle.tv_nsec = floor((double) NSEC_PER_SEC /
-			    (double) AGS_DEVOUT_DEFAULT_SAMPLERATE *
-			    (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE *
-			    (60.0 / AGS_DEVOUT_DEFAULT_BPM) *
-			    AGS_ATTACK_DEFAULT_TACT);
+  play_idle.tv_nsec = floor((double) NSEC_PER_SEC / (double) AGS_AUDIO_LOOP_DEFAULT_JIFFIE);
 
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) != 0){
     /* initial value to calculate timing */

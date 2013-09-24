@@ -271,7 +271,7 @@ ags_thread_init(AgsThread *thread)
 
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC /
-				   AGS_AUDIO_LOOP_DEFAULT_JIFFIE);
+				   (AGS_AUDIO_LOOP_DEFAULT_JIFFIE + 1));
 
   thread->greedy_locks = NULL;
 

@@ -120,12 +120,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 
   thread = AGS_THREAD(gui_thread);
 
-  //  g_atomic_int_or(&(thread->flags),
-  //		  AGS_THREAD_TIMELOCK_RUN);
-  thread->timelock.tv_sec = 0;
-  thread->timelock.tv_nsec = floor((NSEC_PER_SEC /
-				    ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)) -
-				   (1.0 / AGS_GUI_THREAD_DEFAULT_JIFFIE));
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMELOCK_RUN);
 
   g_cond_init(&gui_thread->cond);
   g_mutex_init(&gui_thread->mutex);
