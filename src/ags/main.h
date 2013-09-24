@@ -43,7 +43,7 @@
 #define AGS_VERSION "0.3.99-SNAPSHOT"
 
 #define __AGS_DEBUG__
-#define AGS_PRIORITY (49)
+#define AGS_PRIORITY (0)
 
 typedef struct _AgsMain AgsMain;
 typedef struct _AgsMainClass AgsMainClass;
