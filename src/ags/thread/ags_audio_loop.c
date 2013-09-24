@@ -159,7 +159,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 
   /* AgsThread */
   thread = (AgsThreadClass *) audio_loop;
-
+  
   thread->start = ags_audio_loop_start;
   thread->run = ags_audio_loop_run;
 
@@ -170,7 +170,7 @@ void
 ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_audio_loop_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
+  
   connectable->connect = ags_audio_loop_connect;
   connectable->disconnect = ags_audio_loop_disconnect;
 }
@@ -211,11 +211,15 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   if(audio_loop->frequency < gui_thread->frequency){
     gui_thread->iter_stop_is_delay = TRUE;
 
-    gui_thread->iter_stop = (guint) ceil(1.0 / gui_thread->frequency * audio_loop->frequency);
+    gui_thread->iter_stop = (guint) ceil((1.0 / audio_loop->frequency) / (1.0 / gui_thread->frequency));
+
+    g_message("a: %d\0", gui_thread->iter_stop);
   }else{
     gui_thread->iter_stop_is_delay = FALSE;
 
-    gui_thread->iter_stop = (guint) ceil(1.0 / audio_loop->frequency * gui_thread->frequency);
+    gui_thread->iter_stop = (guint) ceil((1.0 / gui_thread->frequency) / (1.0 / audio_loop->frequency));
+
+    g_message("b: %d\0", gui_thread->iter_stop);
   }
 
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->gui_thread);

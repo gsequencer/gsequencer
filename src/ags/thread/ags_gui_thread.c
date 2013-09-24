@@ -120,8 +120,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 
   thread = AGS_THREAD(gui_thread);
 
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_TIMELOCK_RUN);
+  //  g_atomic_int_or(&(thread->flags),
+  //		  AGS_THREAD_TIMELOCK_RUN);
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor((NSEC_PER_SEC /
 				    ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)) -
@@ -243,6 +243,7 @@ ags_gui_thread_run(AgsThread *thread)
     g_main_context_release(main_context);
   }
 
+  /* entry point */
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
@@ -250,12 +251,13 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   main_context = g_main_context_default();
 
+  /*  */
   if(gui_thread->iter_stop_is_delay){
-    gui_thread->iter += 1.0;
+    gui_thread->iter += 1;
 
-    if(gui_thread->iter == gui_thread->iter_stop){
+    if(gui_thread->iter >= gui_thread->iter_stop){
       ags_gui_thread_do_gtk_iteration();
-      gui_thread->iter = 0.0;
+      gui_thread->iter = 0;
     }
 
   }else{
