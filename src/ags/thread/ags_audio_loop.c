@@ -185,6 +185,8 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 void
 ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
+  AgsGuiThread *gui_thread;
+
   //  AGS_THREAD(audio_loop)->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
 
   audio_loop->flags = 0;
@@ -192,23 +194,38 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->tic = 0;
   audio_loop->last_sync = 0;
 
+  audio_loop->frequency = 1.0 / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
+
   audio_loop->main = NULL;
-  
+
+  /* AgsTaskThread */  
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
-  //  g_atomic_int_or(&(audio_loop->task_thread->flags),
-  //		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
 
-  audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();
-  //  AGS_THREAD(audio_loop->gui_thread)->greedy_locks = g_list_prepend(AGS_THREAD(audio_loop->gui_thread)->greedy_locks,
-  //								    audio_loop->task_thread);
+  /* AgsGuiThread */
+  gui_thread =
+    audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();
+
+  if(audio_loop->frequency < gui_thread->frequency){
+    gui_thread->iter_stop_is_delay = TRUE;
+
+    gui_thread->iter_stop = (guint) ceil(1.0 / gui_thread->frequency * audio_loop->frequency);
+  }else{
+    gui_thread->iter_stop_is_delay = FALSE;
+
+    gui_thread->iter_stop = (guint) ceil(1.0 / audio_loop->frequency * gui_thread->frequency);
+  }
+
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->gui_thread);
 
+  /* AgsDevoutThread */
   audio_loop->devout_thread = (AgsThread *) ags_devout_thread_new(NULL);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->devout_thread);
 
+  /* recall mutex */
   pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
 
+  /* recall related lists */
   audio_loop->play_recall_ref = 0;
   audio_loop->play_recall = NULL;
 

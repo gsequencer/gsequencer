@@ -131,8 +131,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   g_mutex_init(&gui_thread->mutex);
 
   gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
-  gui_thread->iter = 0.0;
-  gui_thread->iter_stop = 1.0;
+  gui_thread->iter = 0;
+  gui_thread->iter_stop = 1;
   gui_thread->iter_stop_is_delay = TRUE;
 }
 

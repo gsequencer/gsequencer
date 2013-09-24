@@ -30,6 +30,8 @@
 #define AGS_IS_AUDIO_LOOP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_LOOP))
 #define AGS_AUDIO_LOOP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_LOOP, AgsAudioLoopClass))
 
+#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE ((guint) floor(1.0 / AGS_DEVOUT_DEFAULT_SAMPLERATE * AGS_DEVOUT_DEFAULT_BUFFER_SIZE))
+
 typedef struct _AgsAudioLoop AgsAudioLoop;
 typedef struct _AgsAudioLoopClass AgsAudioLoopClass;
 
@@ -55,6 +57,8 @@ struct _AgsAudioLoop
 
   volatile guint tic;
   volatile guint last_sync;
+
+  gdouble frequency;
 
   GObject *main;
   
