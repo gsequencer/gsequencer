@@ -120,8 +120,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 
   thread = AGS_THREAD(gui_thread);
 
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_TIMELOCK_RUN);
+  //  g_atomic_int_or(&(thread->flags),
+  //		  AGS_THREAD_TIMELOCK_RUN);
 
   g_cond_init(&gui_thread->cond);
   g_mutex_init(&gui_thread->mutex);
