@@ -270,8 +270,12 @@ ags_thread_init(AgsThread *thread)
   thread->locked_greedy = 0;
 
   thread->timelock.tv_sec = 0;
-  thread->timelock.tv_nsec = floor(NSEC_PER_SEC /
-				   ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE * (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE * 2.0));
+  thread->timelock.tv_nsec = floor((double) NSEC_PER_SEC /
+				   (double) AGS_DEVOUT_DEFAULT_SAMPLERATE *
+				   (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE *
+				   (60.0 / (double) AGS_DEVOUT_DEFAULT_BPM) *
+				   AGS_ATTACK_DEFAULT_TACT *
+				   0.5);
 
   thread->greedy_locks = NULL;
 

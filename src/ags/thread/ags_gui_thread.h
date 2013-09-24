@@ -33,7 +33,7 @@
 #define AGS_IS_GUI_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_GUI_THREAD))
 #define AGS_GUI_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_GUI_THREAD, AgsGuiThreadClass))
 
-#define AGS_GUI_THREAD_DEFAULT_JIFFIE (sysconf(_SC_CLK_TCK) / 4)
+#define AGS_GUI_THREAD_DEFAULT_JIFFIE (sysconf(_SC_CLK_TCK))
 
 typedef struct _AgsGuiThread AgsGuiThread;
 typedef struct _AgsGuiThreadClass AgsGuiThreadClass;
@@ -42,12 +42,13 @@ struct _AgsGuiThread
 {
   AgsThread thread;
 
-  GMainLoop *main_loop;
   GCond cond;
   GMutex mutex;
 
   gdouble frequency;
-  gdouble iter;
+  guint iter;
+  guint iter_stop;
+  gboolean iter_stop_is_delay;
 };
 
 struct _AgsGuiThreadClass
