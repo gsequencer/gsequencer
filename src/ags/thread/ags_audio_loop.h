@@ -19,6 +19,8 @@
 #ifndef __AGS_AUDIO_LOOP_H__
 #define __AGS_AUDIO_LOOP_H__
 
+#include <math.h>
+
 #include <glib-object.h>
 
 #include <ags/thread/ags_thread.h>
