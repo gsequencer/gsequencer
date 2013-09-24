@@ -133,7 +133,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
   gui_thread->iter = 0.0;
   gui_thread->iter_stop = 1.0;
-  guit_thread->iter_stop_is_delay = TRUE;
+  gui_thread->iter_stop_is_delay = TRUE;
 }
 
 void
@@ -259,7 +259,7 @@ ags_gui_thread_run(AgsThread *thread)
     }
 
   }else{
-    for(gui_thread->iter = 0; i < gui_thread->iter_stop; gui_thread->iter++){
+    for(gui_thread->iter = 0; gui_thread->iter < gui_thread->iter_stop; gui_thread->iter++){
       ags_gui_thread_do_gtk_iteration();
     }
   }
