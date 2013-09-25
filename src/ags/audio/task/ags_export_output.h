@@ -34,16 +34,11 @@
 typedef struct _AgsExportOutput AgsExportOutput;
 typedef struct _AgsExportOutputClass AgsExportOutputClass;
 
-typedef enum{
-  AGS_EXPORT_OUTPUT_LIVE_PERFORMANCE     = 1,
-};
-
 struct _AgsExportOutput
 {
   AgsTask task;
 
-  guint flags;
-
+  gboolean live_performance;
   AgsExportThread *thread;
 };
 

@@ -49,7 +49,9 @@ struct _AgsExportThread
 
   guint flags;
 
-  AgsExport *export;
+  AgsDevout *devout;
+  
+  AgsRecallContainer *clone;
 };
 
 struct _AgsExportThreadClass

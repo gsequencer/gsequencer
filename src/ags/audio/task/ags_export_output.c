@@ -132,9 +132,7 @@ ags_export_output_finalize(GObject *gobject)
 void
 ags_export_output_launch(AgsTask *task)
 {
-  AgsServer *server;
   AgsExportOutput *export_output;
-  AgsAudioLoop *audio_loop;
 
   export_output = AGS_EXPORT_OUTPUT(task);
 
@@ -144,8 +142,7 @@ ags_export_output_launch(AgsTask *task)
 }
 
 AgsExportOutput*
-ags_export_output_new(GObject *audio_loop,
-		     AgsDevoutPlay *devout_play)
+ags_export_output_new(gboolean live_performance)
 {
   AgsExportOutput *export_output;
 
