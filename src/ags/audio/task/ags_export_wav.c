@@ -102,8 +102,7 @@ ags_export_wav_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_export_wav_init(AgsExportWav *export_wav)
 {
-  export_wav->audio_loop = NULL;
-  export_wav->devout_play = NULL;
+  export_wav->flags = 0;
 }
 
 void

@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/thread/ags_export_thread.h>
+
 #define AGS_TYPE_EXPORT_WAV                (ags_export_wav_get_type())
 #define AGS_EXPORT_WAV(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_WAV, AgsExportWav}))
 #define AGS_EXPORT_WAV_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_EXPORT_WAV, AgsExportWavClass))
@@ -32,9 +34,17 @@
 typedef struct _AgsExportWav AgsExportWav;
 typedef struct _AgsExportWavClass AgsExportWavClass;
 
+typedef enum{
+  AGS_EXPORT_WAV_LIVE_PERFORMANCE     = 1,
+};
+
 struct _AgsExportWav
 {
   AgsTask task;
+
+  guint flags;
+
+  AgsExportThread *thread;
 };
 
 struct _AgsExportWavClass
@@ -44,6 +54,6 @@ struct _AgsExportWavClass
 
 GType ags_export_wav_get_type();
 
-AgsExportWav* ags_export_wav_new();
+AgsExportWav* ags_export_wav_new(gboolean live_performance);
 
 #endif /*__AGS_EXPORT_WAV_H__*/
