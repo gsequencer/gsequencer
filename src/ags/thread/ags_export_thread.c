@@ -110,7 +110,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
 
   thread = AGS_THREAD(export_thread);
 
-  export_thread->error = NULL;
+  export_thread->flags = 0;
 }
 
 void
@@ -166,6 +166,5 @@ ags_export_thread_new(GObject *devout)
 						   "devout\0", devout,
 						   NULL);
   
-
   return(export_thread);
 }

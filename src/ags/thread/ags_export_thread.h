@@ -16,36 +16,49 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_DEVOUT_THREAD_H__
-#define __AGS_DEVOUT_THREAD_H__
+#ifndef __AGS_EXPORT_THREAD_H__
+#define __AGS_EXPORT_THREAD_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
 #include <ags/thread/ags_thread.h>
 
-#define AGS_TYPE_DEVOUT_THREAD                (ags_devout_thread_get_type())
-#define AGS_DEVOUT_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT_THREAD, AgsDevoutThread))
-#define AGS_DEVOUT_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_DEVOUT_THREAD, AgsDevoutThreadClass))
-#define AGS_IS_DEVOUT_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_DEVOUT_THREAD))
-#define AGS_IS_DEVOUT_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT_THREAD))
-#define AGS_DEVOUT_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT_THREAD, AgsDevoutThreadClass))
+#define AGS_TYPE_EXPORT_THREAD                (ags_export_thread_get_type())
+#define AGS_EXPORT_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_THREAD, AgsExportThread))
+#define AGS_EXPORT_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_EXPORT_THREAD, AgsExportThreadClass))
+#define AGS_IS_EXPORT_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_EXPORT_THREAD))
+#define AGS_IS_EXPORT_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_EXPORT_THREAD))
+#define AGS_EXPORT_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_EXPORT_THREAD, AgsExportThreadClass))
 
-typedef struct _AgsDevoutThread AgsDevoutThread;
-typedef struct _AgsDevoutThreadClass AgsDevoutThreadClass;
+typedef struct _AgsExportThread AgsExportThread;
+typedef struct _AgsExportThreadClass AgsExportThreadClass;
 
-struct _AgsDevoutThread
-{
-  AgsThread thread;
+typedef enum{
+  AGS_EXPORT_THREAD_LIVE_PERFORMANCE       = 1,
+  AGS_EXPORT_THREAD_AS_WAV                 = 1 << 1,
+  AGS_EXPORT_THREAD_AS_FLAC                = 1 << 2,
+  AGS_EXPORT_THREAD_AS_OGG                 = 1 << 3,
+  AGS_EXPORT_THREAD_AS_MP3                 = 1 << 4,
+  AGS_EXPORT_THREAD_AS_MP4                 = 1 << 5,
 };
 
-struct _AgsDevoutThreadClass
+struct _AgsExportThread
+{
+  AgsThread thread;
+
+  guint flags;
+
+  AgsExport *export;
+};
+
+struct _AgsExportThreadClass
 {
   AgsThreadClass thread;
 };
 
-GType ags_devout_thread_get_type();
+GType ags_export_thread_get_type();
 
-AgsDevoutThread* ags_devout_thread_new(GObject *devout);
+AgsExportThread* ags_export_thread_new(GObject *devout);
 
-#endif /*__AGS_DEVOUT_THREAD_H__*/
+#endif /*__AGS_EXPORT_THREAD_H__*/
