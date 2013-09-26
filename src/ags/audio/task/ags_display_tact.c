@@ -102,7 +102,7 @@ ags_display_tact_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_display_tact_init(AgsDisplayTact *display_tact)
 {
-  display_tact->editor = NULL;
+  display_tact->navigation = NULL;
 }
 
 void
@@ -136,14 +136,14 @@ ags_display_tact_launch(AgsTask *task)
 }
 
 AgsDisplayTact*
-ags_display_tact_new(GtkWidget *editor)
+ags_display_tact_new(GtkWidget *navigation)
 {
   AgsDisplayTact *display_tact;
 
   display_tact = (AgsDisplayTact *) g_object_new(AGS_TYPE_DISPLAY_TACT,
 						 NULL);
 
-  display_tact->editor = editor;
+  display_tact->navigation = navigation;
 
   return(display_tact);
 }

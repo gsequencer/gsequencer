@@ -20,6 +20,8 @@
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_scroll_on_play.h>
+#include <ags/audio/task/ags_display_tact.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
 

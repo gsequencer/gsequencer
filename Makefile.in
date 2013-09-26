@@ -140,7 +140,9 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_toggle_pattern_bit.$(OBJEXT) \
 	ags-ags_add_audio.$(OBJEXT) ags-ags_remove_note.$(OBJEXT) \
 	ags-ags_cancel_channel.$(OBJEXT) \
-	ags-ags_append_audio.$(OBJEXT) ags-ags_apply_bpm.$(OBJEXT) \
+	ags-ags_append_audio.$(OBJEXT) \
+	ags-ags_scroll_on_play.$(OBJEXT) \
+	ags-ags_display_tact.$(OBJEXT) ags-ags_apply_bpm.$(OBJEXT) \
 	ags-ags_apply_sequencer_length.$(OBJEXT) \
 	ags-ags_apply_tact.$(OBJEXT) ags-ags_append_channel.$(OBJEXT) \
 	ags-ags_remove_audio_signal.$(OBJEXT) \
@@ -668,6 +670,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/audio/task/ags_audio_set_recycling.c \
 	./src/ags/audio/task/ags_remove_recall.c \
 	./src/ags/audio/task/ags_append_audio.h \
+	./src/ags/audio/task/ags_scroll_on_play.h \
+	./src/ags/audio/task/ags_display_tact.h \
 	./src/ags/audio/task/ags_add_region_to_selection.c \
 	./src/ags/audio/task/ags_start_devout.h \
 	./src/ags/audio/task/ags_remove_audio_signal.h \
@@ -683,6 +687,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/audio/task/ags_cancel_channel.c \
 	./src/ags/audio/task/ags_open_file.h \
 	./src/ags/audio/task/ags_append_audio.c \
+	./src/ags/audio/task/ags_scroll_on_play.c \
+	./src/ags/audio/task/ags_display_tact.c \
 	./src/ags/audio/task/ags_add_point_to_selection.h \
 	./src/ags/audio/task/ags_remove_region_from_selection.h \
 	./src/ags/audio/task/ags_cancel_audio.h \
@@ -1300,6 +1306,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_devout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_devout_thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_dial.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_display_tact.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_drum.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_drum_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_drum_input_line.Po@am__quote@
@@ -1428,6 +1435,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ruler_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_run_order.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_runnable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_scroll_on_play.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_seekable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_segment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_server.Po@am__quote@
@@ -2110,6 +2118,34 @@ ags-ags_append_audio.obj: ./src/ags/audio/task/ags_append_audio.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_append_audio.c' object='ags-ags_append_audio.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_append_audio.obj `if test -f './src/ags/audio/task/ags_append_audio.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_append_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_append_audio.c'; fi`
+
+ags-ags_scroll_on_play.o: ./src/ags/audio/task/ags_scroll_on_play.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_scroll_on_play.o -MD -MP -MF $(DEPDIR)/ags-ags_scroll_on_play.Tpo -c -o ags-ags_scroll_on_play.o `test -f './src/ags/audio/task/ags_scroll_on_play.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_scroll_on_play.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_scroll_on_play.Tpo $(DEPDIR)/ags-ags_scroll_on_play.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_scroll_on_play.c' object='ags-ags_scroll_on_play.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_scroll_on_play.o `test -f './src/ags/audio/task/ags_scroll_on_play.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_scroll_on_play.c
+
+ags-ags_scroll_on_play.obj: ./src/ags/audio/task/ags_scroll_on_play.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_scroll_on_play.obj -MD -MP -MF $(DEPDIR)/ags-ags_scroll_on_play.Tpo -c -o ags-ags_scroll_on_play.obj `if test -f './src/ags/audio/task/ags_scroll_on_play.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_scroll_on_play.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_scroll_on_play.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_scroll_on_play.Tpo $(DEPDIR)/ags-ags_scroll_on_play.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_scroll_on_play.c' object='ags-ags_scroll_on_play.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_scroll_on_play.obj `if test -f './src/ags/audio/task/ags_scroll_on_play.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_scroll_on_play.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_scroll_on_play.c'; fi`
+
+ags-ags_display_tact.o: ./src/ags/audio/task/ags_display_tact.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_display_tact.o -MD -MP -MF $(DEPDIR)/ags-ags_display_tact.Tpo -c -o ags-ags_display_tact.o `test -f './src/ags/audio/task/ags_display_tact.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_display_tact.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_display_tact.Tpo $(DEPDIR)/ags-ags_display_tact.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_display_tact.c' object='ags-ags_display_tact.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_display_tact.o `test -f './src/ags/audio/task/ags_display_tact.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_display_tact.c
+
+ags-ags_display_tact.obj: ./src/ags/audio/task/ags_display_tact.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_display_tact.obj -MD -MP -MF $(DEPDIR)/ags-ags_display_tact.Tpo -c -o ags-ags_display_tact.obj `if test -f './src/ags/audio/task/ags_display_tact.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_display_tact.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_display_tact.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_display_tact.Tpo $(DEPDIR)/ags-ags_display_tact.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_display_tact.c' object='ags-ags_display_tact.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_display_tact.obj `if test -f './src/ags/audio/task/ags_display_tact.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_display_tact.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_display_tact.c'; fi`
 
 ags-ags_apply_bpm.o: ./src/ags/audio/task/recall/ags_apply_bpm.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_apply_bpm.o -MD -MP -MF $(DEPDIR)/ags-ags_apply_bpm.Tpo -c -o ags-ags_apply_bpm.o `test -f './src/ags/audio/task/recall/ags_apply_bpm.c' || echo '$(srcdir)/'`./src/ags/audio/task/recall/ags_apply_bpm.c

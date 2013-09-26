@@ -38,6 +38,8 @@ typedef struct _AgsDisplayTactClass AgsDisplayTactClass;
 struct _AgsDisplayTact
 {
   AgsTask task;
+
+  GtkWidget *navigation;
 };
 
 struct _AgsDisplayTactClass
@@ -47,6 +49,6 @@ struct _AgsDisplayTactClass
 
 GType ags_display_tact_get_type();
 
-AgsDisplayTact* ags_display_tact_new();
+AgsDisplayTact* ags_display_tact_new(GtkWidget *navigation);
 
 #endif /*__AGS_DISPLAY_TACT_H__*/

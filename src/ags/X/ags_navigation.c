@@ -262,7 +262,7 @@ ags_navigation_tact_to_time_string(gdouble tact)
 
   hsec = (guint) floor(tact / delay_hsec);
 
-  timestr = g_strdup("%00d:%00d.%00d\0", min, sec, hsec);
+  timestr = g_strdup_printf("%00d:%00d.%00d\0", min, sec, hsec);
 
   return(timestr);
 }
