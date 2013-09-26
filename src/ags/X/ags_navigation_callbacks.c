@@ -193,57 +193,29 @@ ags_navigation_loop_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_position_sec_callback(GtkWidget *widget,
-				     AgsNavigation *navigation)
-{
-  /* empty */
-}
-
-void
-ags_navigation_position_min_callback(GtkWidget *widget,
-				     AgsNavigation *navigation)
-{
-  /* empty */
-}
-
-void
-ags_navigation_duration_sec_callback(GtkWidget *widget,
-				     AgsNavigation *navigation)
-{
-  /* empty */
-}
-
-void
-ags_navigation_duration_min_callback(GtkWidget *widget,
-				     AgsNavigation *navigation)
-{
-  /* empty */
-}
-
-void
-ags_navigation_loop_left_sec_callback(GtkWidget *widget,
+ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
   /* empty */
 }
 
 void
-ags_navigation_loop_left_min_callback(GtkWidget *widget,
+ags_navigation_duration_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
   /* empty */
 }
 
 void
-ags_navigation_loop_right_sec_callback(GtkWidget *widget,
+ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 				       AgsNavigation *navigation)
 {
   /* empty */
 }
 
 void
-ags_navigation_loop_right_min_callback(GtkWidget *widget,
-				       AgsNavigation *navigation)
+ags_navigation_loop_right_tact_callback(GtkWidget *widget,
+					AgsNavigation *navigation)
 {
   /* empty */
 }

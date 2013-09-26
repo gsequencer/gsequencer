@@ -19,6 +19,8 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
+#include <ags/X/ags_editor.h>
+
 void ags_navigation_class_init(AgsNavigationClass *navigation);
 void ags_navigation_init(AgsNavigation *navigation);
 void ags_navigation_connect(AgsNavigation *navigation);
@@ -122,21 +124,21 @@ ags_navigation_init(AgsNavigation *navigation)
   label = (GtkLabel *) gtk_label_new("position\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->position_min = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_min, FALSE, FALSE, 2);
+  navigation->position_time = (GtkLabel *) gtk_label_new("00:00.00\0");
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_time, FALSE, FALSE, 2);
 
-  navigation->position_sec = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 60.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_sec, FALSE, FALSE, 2);
+  navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_EDITOR_MAX_CONTROLS * 64.0, 1.0);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_tact, FALSE, FALSE, 2);
 
 
   label = (GtkLabel *) gtk_label_new("duration\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->duration_min = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_min, FALSE, FALSE, 2);
+  navigation->duration_time = (GtkLabel *) gtk_label_new("00:00.00\0");
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
-  navigation->duration_sec = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 60.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_sec, FALSE, FALSE, 2);
+  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_EDITOR_MAX_CONTROLS * 64.0, 1.0);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
 
 
   /* expansion */
@@ -147,20 +149,14 @@ ags_navigation_init(AgsNavigation *navigation)
   label = (GtkLabel *) gtk_label_new("loop L\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->loop_left_min = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_left_min, FALSE, FALSE, 2);
-
-  navigation->loop_left_sec = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 60.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_left_sec, FALSE, FALSE, 2);
+  navigation->loop_left_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_left_tact, FALSE, FALSE, 2);
 
   label = (GtkLabel *) gtk_label_new("loop R\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->loop_right_min = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_min, FALSE, FALSE, 2);
-
-  navigation->loop_right_sec = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 60.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_sec, FALSE, FALSE, 2);
+  navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
 
   navigation->raster = (GtkCheckButton *) gtk_check_button_new_with_label("raster\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->raster, FALSE, FALSE, 2);
@@ -202,30 +198,18 @@ ags_navigation_connect(AgsNavigation *navigation)
   g_signal_connect((GObject *) navigation->loop, "clicked\0",
 		   G_CALLBACK(ags_navigation_loop_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->position_min, "value-changed\0",
-		   G_CALLBACK(ags_navigation_position_min_callback), (gpointer) navigation);
+  g_signal_connect((GObject *) navigation->position_tact, "value-changed\0",
+		   G_CALLBACK(ags_navigation_position_tact_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->position_sec, "value-changed\0",
-		   G_CALLBACK(ags_navigation_position_sec_callback), (gpointer) navigation);
-
-  g_signal_connect((GObject *) navigation->duration_min, "value-changed\0",
-		   G_CALLBACK(ags_navigation_duration_min_callback), (gpointer) navigation);
-
-  g_signal_connect((GObject *) navigation->duration_sec, "value-changed\0",
-		   G_CALLBACK(ags_navigation_duration_sec_callback), (gpointer) navigation);
+  g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
+		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
   /* expansion */
-  g_signal_connect((GObject *) navigation->loop_left_min, "value-changed\0",
-		   G_CALLBACK(ags_navigation_loop_left_min_callback), (gpointer) navigation);
+  g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
+		   G_CALLBACK(ags_navigation_loop_left_tact_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->loop_left_sec, "value-changed\0",
-		   G_CALLBACK(ags_navigation_loop_left_sec_callback), (gpointer) navigation);
-
-  g_signal_connect((GObject *) navigation->loop_right_min, "value-changed\0",
-		   G_CALLBACK(ags_navigation_loop_right_min_callback), (gpointer) navigation);
-
-  g_signal_connect((GObject *) navigation->loop_right_sec, "value-changed\0",
-		   G_CALLBACK(ags_navigation_loop_right_sec_callback), (gpointer) navigation);
+  g_signal_connect((GObject *) navigation->loop_right_tact, "value-changed\0",
+		   G_CALLBACK(ags_navigation_loop_right_tact_callback), (gpointer) navigation);
 
   g_signal_connect((GObject *) navigation->raster, "clicked\0",
 		   G_CALLBACK(ags_navigation_raster_callback), (gpointer) navigation);
@@ -243,6 +227,12 @@ ags_navigation_show(GtkWidget *widget)
 
   list = gtk_container_get_children((GtkContainer *) widget);
   //  GTK_WIDGET_UNSET_FLAGS((GtkWidget *) list->next->data, GTK_NO_SHOW_ALL);
+}
+
+gchar*
+ags_navigation_tact_to_time_string(gdouble tact)
+{
+  //TODO:JK: implement me
 }
 
 AgsNavigation*

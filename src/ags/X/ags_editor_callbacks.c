@@ -905,3 +905,8 @@ ags_editor_hscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
   ags_editor_reset_horizontally(editor, 0);
   editor->flags &= (~AGS_EDITOR_RESETING_HORIZONTALLY);
 }
+
+void
+ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor)
+{
+}

@@ -55,17 +55,14 @@ struct _AgsNavigation
 
   GtkCheckButton *loop;
 
-  GtkSpinButton *position_min;
-  GtkSpinButton *position_sec;
+  GtkLabel *position_time;
+  GtkSpinButton *position_tact;
 
-  GtkSpinButton *duration_min;
-  GtkSpinButton *duration_sec;
+  GtkLabel *duration_time;
+  GtkSpinButton *duration_tact;
 
-  GtkSpinButton *loop_left_min;
-  GtkSpinButton *loop_left_sec;
-
-  GtkSpinButton *loop_right_min;
-  GtkSpinButton *loop_right_sec;
+  GtkSpinButton *loop_left_tact;
+  GtkSpinButton *loop_right_tact;
 
   GtkCheckButton *raster;
 };
@@ -76,6 +73,8 @@ struct _AgsNavigationClass
 };
 
 GType ags_navigation_get_type(void);
+
+gchar* ags_navigation_tact_to_time_string(gdouble tact);
 
 AgsNavigation* ags_navigation_new();
 
