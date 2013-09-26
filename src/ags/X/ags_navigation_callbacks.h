@@ -69,4 +69,7 @@ void ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 void ags_navigation_raster_callback(GtkWidget *widget,
 				    AgsNavigation *navigation);
 
+void ags_navigation_tic_callback(AgsDevout *devout,
+				 AgsNavigation *navigation);
+
 #endif /*__AGS_NAVIGATION_CALLBACKS_H__*/

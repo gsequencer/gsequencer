@@ -226,3 +226,12 @@ ags_navigation_raster_callback(GtkWidget *widget,
 {
   /* empty */
 }
+
+void
+ags_navigation_tic_callback(AgsDevout *devout,
+			    AgsNavigation *navigation)
+{
+  AgsScrollOnPlay *scroll_on_play;
+
+  //TODO:JK: implement me
+}

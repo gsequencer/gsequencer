@@ -794,7 +794,9 @@ ags_devout_alsa_play(AgsDevout *devout,
   /* determine if attack should be switched */
   devout->delay_counter += 1;
 
-  if(devout->delay_counter == devout->delay){
+  if(devout->delay_counter >= devout->delay){
+    ags_devout_tic(devout);
+
     if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0){
       devout->flags &= (~AGS_DEVOUT_ATTACK_FIRST);
     }else{
