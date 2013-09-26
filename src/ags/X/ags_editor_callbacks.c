@@ -18,6 +18,8 @@
 
 #include <ags/X/ags_editor_callbacks.h>
 
+#include <ags/audio/task/ags_scroll_on_play.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/X/editor/ags_toolbar.h>
@@ -909,4 +911,11 @@ ags_editor_hscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
 void
 ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor)
 {
+  AgsTaskThread *task_thread;
+  AgsScrollOnPlay *scroll_on_play;
+
+  task_thread = devout->task_thread;
+
+  scroll_on_play = ags_scroll_on_play_new(editor);  
+  ags_task_thread_append_task(task_thread, AGS_TASK(scroll_on_play));
 }

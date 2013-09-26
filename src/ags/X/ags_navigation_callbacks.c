@@ -20,7 +20,6 @@
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_scroll_on_play.h>
 #include <ags/audio/task/ags_display_tact.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
@@ -233,7 +232,11 @@ void
 ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
-  AgsScrollOnPlay *scroll_on_play;
+  AgsTaskThread *task_thread;
+  AgsDisplayTact *display_tact;
 
-  //TODO:JK: implement me
+  task_thread = devout->task_thread;
+
+  display_tact = ags_display_tact_new(navigation);
+  ags_task_thread_append_task(task_thread, AGS_TASK(display_tact));
 }
