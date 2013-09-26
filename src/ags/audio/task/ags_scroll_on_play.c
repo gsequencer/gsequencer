@@ -102,6 +102,7 @@ ags_scroll_on_play_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_scroll_on_play_init(AgsScrollOnPlay *scroll_on_play)
 {
+  scroll_on_play->editor = NULL;
 }
 
 void
@@ -131,6 +132,9 @@ ags_scroll_on_play_finalize(GObject *gobject)
 void
 ags_scroll_on_play_launch(AgsTask *task)
 {
+  GtkAdjustment *adjustment;
+
+  //TODO:JK: implement me
 }
 
 AgsScrollOnPlay*
@@ -140,6 +144,8 @@ ags_scroll_on_play_new(GtkWidget *editor)
 
   scroll_on_play = (AgsScrollOnPlay *) g_object_new(AGS_TYPE_SCROLL_ON_PLAY,
 						    NULL);
+
+  scroll_on_play->editor = editor;
 
   return(scroll_on_play);
 }
