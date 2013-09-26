@@ -225,6 +225,8 @@ ags_editor_init(AgsEditor *editor)
 		   1, 2, 2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  editor->tact_counter = 0;
 }
 
 void

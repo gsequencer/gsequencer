@@ -140,6 +140,8 @@ struct _AgsEditor
   
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
+
+  guint tact_counter;
 };
 
 struct _AgsEditorClass

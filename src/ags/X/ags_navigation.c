@@ -232,7 +232,43 @@ ags_navigation_show(GtkWidget *widget)
 gchar*
 ags_navigation_tact_to_time_string(gdouble tact)
 {
-  //TODO:JK: implement me
+  static gdouble delay_min, delay_sec, delay_hsec;
+  static gboolean initialized = FALSE;
+  gchar timestr;
+  gdouble tact_redux;
+  guint min, sec, hsec;
+
+  if(!initialized){
+    delay_min = AGS_DEVOUT_DEFAULT_BPM * 64.0;
+    delay_sec = delay_min / 60.0;
+    delay_hsec = delay_sec / 100.0;
+
+    initialized = TRUE;
+  }
+
+  tact_redux = tact * 64.0;
+
+  min = (guint) floor(tact_redux / delay_min);
+
+  if(min > 0){
+    tact_redux = tact_redux - (min * delay_min);
+  }
+
+  sec = (guint) floor(tact / delay_sec);
+
+  if(sec > 0){
+    tact_redux = tact_redux - (sec * delay_sec);
+  }
+
+  hsec = (guint) floor(tact / delay_hsec);
+
+  //  if(min > 0){
+  //    tact_redux = tact_redux - (hsec * delay_hsec);
+  //  }
+
+  timestr = g_strdup("%00d:%00d.%00d\0", min, sec, hsec);
+
+  return(timestr);
 }
 
 AgsNavigation*
