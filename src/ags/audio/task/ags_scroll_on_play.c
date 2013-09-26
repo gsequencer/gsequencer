@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/ags_editor.h>
+
 #include <ags/main.h>
 
 void ags_scroll_on_play_class_init(AgsScrollOnPlayClass *scroll_on_play);
@@ -132,9 +134,20 @@ ags_scroll_on_play_finalize(GObject *gobject)
 void
 ags_scroll_on_play_launch(AgsTask *task)
 {
-  GtkAdjustment *adjustment;
+  AgsWindow *window;
+  AgsScrollOnPlay *scroll_on_play;
+  AgsEditor *editor;
+  gdouble tact;
 
-  //TODO:JK: implement me
+  scroll_on_play = AGS_SCROLL_ON_PLAY(task);
+
+  editor = AGS_EDITOR(scroll_on_play->editor);
+
+  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(editor));
+
+  tact = gtk_adjustment_get_value(GTK_RANGE(window->navigation->position_tact)->adjustment);
+
+  gtk_adjustment_set_value(editor->vscrollbar, tact);
 }
 
 AgsScrollOnPlay*

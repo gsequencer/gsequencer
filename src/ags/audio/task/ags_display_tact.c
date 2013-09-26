@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/ags_navigation.h>
+
 #include <ags/main.h>
 
 void ags_display_tact_class_init(AgsDisplayTactClass *display_tact);
@@ -132,7 +134,19 @@ ags_display_tact_finalize(GObject *gobject)
 void
 ags_display_tact_launch(AgsTask *task)
 {
-  //TODO:JK: implement me
+  AgsDisplayTact *display_tact;
+  AgsNavigation *navigation;
+  gchar *timestr;
+
+  display_tact = AGS_DISPLAY_TACT(task);
+  
+  navigation = AGS_NAVIGATION(display_tact->navigation);
+
+  gtk_adjustment_set_value(GTK_RANGE(navigation->position_tact)->adjustment,
+			   GTK_RANGE(navigation->position_tact)->adjustment->value + 1.0);
+
+  timestr = ags_navigation_tact_to_time_string(gtk_adjustment_get_value(GTK_RANGE(navigation->position_tact)->adjustment));
+  gtk_label_set_text(navigation->duration_time, timestr);
 }
 
 AgsDisplayTact*

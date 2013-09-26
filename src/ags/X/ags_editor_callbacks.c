@@ -225,8 +225,8 @@ ags_editor_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton *e
     }
 
     /* store the events position */
-    editor->control.x0_offset = (guint) round((double) editor->hscrollbar->scrollbar.range.adjustment->value);
-    editor->control.y0_offset = (guint) round((double) editor->vscrollbar->scrollbar.range.adjustment->value);
+    editor->control.x0_offset = (guint) round((double) GTK_RANGE(editor->hscrollbar)->adjustment->value);
+    editor->control.y0_offset = (guint) round((double) GTK_RANGE(editor->vscrollbar)->adjustment->value);
 
     editor->control.x0 = (guint) event->x;
     editor->control.y0 = (guint) event->y;
