@@ -19,13 +19,33 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/X/ags_editor.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
+void ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_navigation_init(AgsNavigation *navigation);
-void ags_navigation_connect(AgsNavigation *navigation);
+void ags_navigation_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_navigation_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
+void ags_navigation_finalize(GObject *gobject);
+void ags_navigation_connect(AgsConnectable *connectable);
+void ags_navigation_disconnect(AgsConnectable *connectable);
 void ags_navigation_destroy(GtkObject *object);
 void ags_navigation_show(GtkWidget *widget);
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+};
+
+static gpointer ags_navigation_parent_class = NULL;
 
 GType
 ags_navigation_get_type(void)
@@ -45,9 +65,19 @@ ags_navigation_get_type(void)
       (GInstanceInitFunc) ags_navigation_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_navigation_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_navigation = g_type_register_static(GTK_TYPE_VBOX,
 						 "AgsNavigation\0", &ags_navigation_info,
 						 0);
+
+    g_type_add_interface_static(ags_type_navigation,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_navigation);
@@ -56,6 +86,36 @@ ags_navigation_get_type(void)
 void
 ags_navigation_class_init(AgsNavigationClass *navigation)
 {
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  GParamSpec *param_spec;
+
+  ags_navigation_parent_class = g_type_class_peek_parent(navigation);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) navigation;
+
+  gobject->set_property = ags_navigation_set_property;
+  gobject->get_property = ags_navigation_get_property;
+
+  gobject->finalize = ags_navigation_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+}
+
+void
+ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_navigation_connect;
+  connectable->disconnect = ags_navigation_disconnect;
 }
 
 void
@@ -163,8 +223,64 @@ ags_navigation_init(AgsNavigation *navigation)
 }
 
 void
-ags_navigation_connect(AgsNavigation *navigation)
+ags_navigation_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
 {
+  AgsNavigation *navigation;
+
+  navigation = AGS_NAVIGATION(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(navigation->devout == devout)
+	return;
+
+      if(devout != NULL)
+	g_object_ref(devout);
+
+      navigation->devout = devout;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_navigation_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsNavigation *navigation;
+
+  navigation = AGS_NAVIGATION(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    g_value_set_object(value, navigation->devout);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_navigation_connect(AgsConnectable *connectable)
+{
+  AgsNavigation *navigation;
+
+  navigation = AGS_NAVIGATION(connectable);
+
   g_signal_connect((GObject *) navigation, "destroy\0",
 		   G_CALLBACK(ags_navigation_destroy_callback), (gpointer) navigation);
 
@@ -216,6 +332,17 @@ ags_navigation_connect(AgsNavigation *navigation)
 }
 
 void
+ags_navigation_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_navigation_finalize(GObject *gobject)
+{
+}
+
+void
 ags_navigation_destroy(GtkObject *object)
 {
 }
@@ -234,7 +361,7 @@ ags_navigation_tact_to_time_string(gdouble tact)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
   static gboolean initialized = FALSE;
-  gchar timestr;
+  gchar *timestr;
   gdouble tact_redux;
   guint min, sec, hsec;
 

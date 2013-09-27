@@ -70,6 +70,8 @@ struct _AgsEditor
 
   guint flags;
 
+  AgsDevout *devout;
+
   GtkVBox *index_radio;
   GtkRadioButton *selected;
 
@@ -152,8 +154,6 @@ struct _AgsEditorClass
 };
 
 GType ags_editor_get_type(void);
-
-void ags_editor_connect(AgsEditor *editor);
 
 void ags_editor_change_machine(AgsEditor *editor, AgsMachine *machine);
 

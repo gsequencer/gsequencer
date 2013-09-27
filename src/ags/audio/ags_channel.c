@@ -134,7 +134,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO ,
+				  PROP_AUDIO,
 				  param_spec);
 
   param_spec = g_param_spec_object("devout\0",
@@ -143,7 +143,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT ,
+				  PROP_DEVOUT,
 				  param_spec);
 
   /* AgsChannelClass */

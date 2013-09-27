@@ -19,6 +19,8 @@
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_editor_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
@@ -26,8 +28,19 @@
 #include <cairo.h>
 
 void ags_editor_class_init(AgsEditorClass *editor);
+void ags_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_editor_init(AgsEditor *editor);
-void ags_editor_connect(AgsEditor *editor);
+void ags_editor_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_editor_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
+void ags_editor_finalize(GObject *gobject);
+void ags_editor_connect(AgsConnectable *connectable);
+void ags_editor_disconnect(AgsConnectable *connectable);
 void ags_editor_destroy(GtkObject *object);
 void ags_editor_show(GtkWidget *widget);
 
@@ -40,6 +53,12 @@ enum{
   LAST_SIGNAL,
 };
 
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+};
+
+static gpointer ags_editor_parent_class = NULL;
 static guint editor_signals[LAST_SIGNAL];
 
 GtkStyle *editor_style;
@@ -47,28 +66,67 @@ GtkStyle *editor_style;
 GType
 ags_editor_get_type(void)
 {
-  static GType editor_type = 0;
+  static GType ags_type_editor = 0;
 
-  if (!editor_type){
-    static const GtkTypeInfo editor_info = {
-      "AgsEditor\0",
-      sizeof(AgsEditor), /* base_init */
-      sizeof(AgsEditorClass), /* base_finalize */
-      (GtkClassInitFunc) ags_editor_class_init,
-      (GtkObjectInitFunc) ags_editor_init,
+  if(!ags_type_editor){
+    static const GTypeInfo ags_editor_info = {
+      sizeof (AgsEditorClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_editor_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsEditor),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_editor_init,
     };
-    editor_type = gtk_type_unique (GTK_TYPE_VBOX, &editor_info);
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_editor_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_editor = g_type_register_static(GTK_TYPE_VBOX,
+					     "AgsEditor\0", &ags_editor_info,
+					     0);
+    
+    g_type_add_interface_static(ags_type_editor,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (editor_type);
+  return(ags_type_editor);
 }
 
 void
 ags_editor_class_init(AgsEditorClass *editor)
 {
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+  GParamSpec *param_spec;
+
+  ags_editor_parent_class = g_type_class_peek_parent(editor);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) editor;
+
+  gobject->set_property = ags_editor_set_property;
+  gobject->get_property = ags_editor_get_property;
+
+  gobject->finalize = ags_editor_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
+
+  /*  */
   editor->change_machine = ags_editor_real_change_machine;
 
   editor_signals[CHANGE_MACHINE] =
@@ -80,6 +138,13 @@ ags_editor_class_init(AgsEditorClass *editor)
                  g_cclosure_marshal_VOID__OBJECT,
                  G_TYPE_NONE, 1,
                  G_TYPE_OBJECT);
+}
+
+void
+ags_editor_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_editor_connect;
+  connectable->disconnect = ags_editor_disconnect;
 }
 
 void
@@ -97,6 +162,8 @@ ags_editor_init(AgsEditor *editor)
 			 G_CALLBACK(ags_editor_parent_set_callback), editor);
 
   editor->flags = 0;
+
+  editor->devout = NULL;
 
   editor->popup = ags_editor_popup_new(editor);
 
@@ -230,9 +297,70 @@ ags_editor_init(AgsEditor *editor)
 }
 
 void
-ags_editor_connect(AgsEditor *editor)
+ags_editor_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsEditor *editor;
+
+  editor = AGS_EDITOR(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = (AgsDevout *) g_value_get_object(value);
+
+      if(editor->devout == devout)
+	return;
+
+      if(devout != NULL)
+	g_object_ref(devout);
+
+      editor->devout = devout;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_editor_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsEditor *editor;
+
+  editor = AGS_EDITOR(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    g_value_set_object(value, editor->devout);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_editor_finalize(GObject *gobject)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_editor_connect(AgsConnectable *connectable)
 {
   GtkHPaned *hpaned;
+  AgsEditor *editor;
+
+  editor = AGS_EDITOR(connectable);
 
   g_signal_connect((GObject *) editor, "destroy\0",
 		   G_CALLBACK(ags_editor_destroy_callback), (gpointer) editor);
@@ -267,6 +395,11 @@ ags_editor_connect(AgsEditor *editor)
   ags_toolbar_connect(editor->toolbar);
   ags_notebook_connect(editor->notebook);
   ags_meter_connect(editor->meter);
+}
+
+void
+ags_editor_disconnect(AgsConnectable *connectable)
+{
 }
 
 void

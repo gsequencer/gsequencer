@@ -19,33 +19,65 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_bar_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
+void ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_menu_bar_init(AgsMenuBar *menu_bar);
-void ags_menu_bar_connect(AgsMenuBar *menu_bar);
+void ags_menu_bar_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec);
+void ags_menu_bar_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec);
+void ags_menu_bar_connect(AgsConnectable *connectable);
+void ags_menu_bar_disconnect(AgsConnectable *connectable);
 void ags_menu_bar_destroy(GtkObject *object);
 void ags_menu_bar_show(GtkWidget *widget);
 
 GType
 ags_menu_bar_get_type(void)
 {
-  static GType menu_bar_type = 0;
+  static GType ags_type_menu_bar = 0;
 
-  if(!menu_bar_type){
-    static const GtkTypeInfo menu_bar_info = {
-      "AgsMenuBar\0",
-      sizeof(AgsMenuBar), /* base_init */
-      sizeof(AgsMenuBarClass), /* base_finalize */
-      (GtkClassInitFunc) ags_menu_bar_class_init,
-      (GtkObjectInitFunc) ags_menu_bar_init,
+  if(!ags_type_menu_bar){
+    static const GTypeInfo ags_menu_bar_info = {
+      sizeof (AgsMenuBarClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_menu_bar_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsMenuBar),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_menu_bar_init,
     };
 
-    menu_bar_type = gtk_type_unique (GTK_TYPE_MENU_BAR, &menu_bar_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_menu_bar_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_menu_bar = g_type_register_static(GTK_TYPE_MENU_BAR,
+					       "AgsMenuBar\0", &ags_menu_bar_info,
+					       0);
+    
+    g_type_add_interface_static(ags_type_menu_bar,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return(menu_bar_type);
+  return(ags_type_menu_bar);
+}
+
+void
+ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_menu_bar_connect;
+  connectable->disconnect = ags_menu_bar_disconnect;
 }
 
 void
@@ -138,9 +170,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
 }
 
 void
-ags_menu_bar_connect(AgsMenuBar *menu_bar)
+ags_menu_bar_connect(AgsConnectable *connectable)
 {
+  AgsMenuBar *menu_bar;
   GList *list0, *list1, *list2;
+
+  menu_bar = AGS_MENU_BAR(connectable);
 
   /* File */
   g_signal_connect((GObject *) menu_bar, "destroy\0",
@@ -214,6 +249,11 @@ ags_menu_bar_connect(AgsMenuBar *menu_bar)
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_about_callback), (gpointer) menu_bar);
+}
+
+void
+ags_menu_bar_disconnect(AgsConnectable *connectable)
+{
 }
 
 void

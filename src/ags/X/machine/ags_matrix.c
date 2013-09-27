@@ -75,7 +75,7 @@ static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
 GtkStyle *matrix_style;
 
 extern const char *AGS_COPY_PATTERN;
-const char *AGS_MATRIX_INDEX = "AgsMatrixIndex";
+const char *AGS_MATRIX_INDEX = "AgsMatrixIndex\0";
 
 GType
 ags_matrix_get_type(void)
@@ -179,6 +179,7 @@ ags_matrix_init(AgsMatrix *matrix)
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
+		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_HAS_NOTATION);
   audio->audio_channels = 1;
 

@@ -26,11 +26,24 @@
 void ags_window_class_init(AgsWindowClass *window);
 void ags_window_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_window_init(AgsWindow *window);
+void ags_window_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_window_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
 void ags_window_finalize(GObject *gobject);
 void ags_window_connect(AgsConnectable *connectable);
 void ags_window_disconnect(AgsConnectable *connectable);
 void ags_window_show(GtkWidget *widget);
 gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
+
+enum{
+  PROP_0,
+  PROP_DEVOUT,
+};
 
 static gpointer ags_window_parent_class = NULL;
 
@@ -75,13 +88,27 @@ ags_window_class_init(AgsWindowClass *window)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+  GParamSpec *param_spec;
 
   ags_window_parent_class = g_type_class_peek_parent(window);
 
   /* GObjectClass */
   gobject = (GObjectClass *) window;
 
+  gobject->set_property = ags_window_set_property;
+  gobject->get_property = ags_window_get_property;
+
   gobject->finalize = ags_window_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("devout\0",
+				   "assigned devout\0",
+				   "The devout it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT,
+				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) window;
@@ -158,6 +185,66 @@ ags_window_init(AgsWindow *window)
 }
 
 void
+ags_window_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsWindow *window;
+
+  window = AGS_WINDOW(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    {
+      AgsDevout *devout;
+
+      devout = g_value_get_object(value);
+
+      if(window->devout == devout)
+	return;
+
+      if(devout != NULL)
+	g_object_ref(devout);
+
+      window->devout = devout;
+
+      g_object_set(G_OBJECT(window->editor),
+		   "devout\0", devout,
+		   NULL);
+
+      g_object_set(G_OBJECT(window->navigation),
+		   "devout\0", devout,
+		   NULL);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_window_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsWindow *window;
+
+  window = AGS_WINDOW(gobject);
+
+  switch(prop_id){
+  case PROP_DEVOUT:
+    g_value_set_object(value, window->devout);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_window_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
@@ -167,9 +254,9 @@ ags_window_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(window), "delete_event\0",
 		   G_CALLBACK(ags_window_delete_event_callback), NULL);
 
-  ags_menu_bar_connect(window->menu_bar);
-  ags_editor_connect(window->editor);
-  ags_navigation_connect(window->navigation);
+  ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
+  ags_connectable_connect(AGS_CONNECTABLE(window->editor));
+  ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
 }
 
 void
