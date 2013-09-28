@@ -366,14 +366,14 @@ ags_navigation_tact_to_time_string(gdouble tact)
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = AGS_DEVOUT_DEFAULT_BPM * AGS_AUDIO_SIGNAL_TACT_PER_SECONDS;
+    delay_min = AGS_DEVOUT_DEFAULT_BPM;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 
     initialized = TRUE;
   }
 
-  tact_redux = tact * 64.0;
+  tact_redux = tact;
 
   min = (guint) floor(tact_redux / delay_min);
 
