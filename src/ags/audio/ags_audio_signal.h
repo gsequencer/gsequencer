@@ -28,14 +28,6 @@
 #define AGS_IS_AUDIO_SIGNAL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_SIGNAL))
 #define AGS_AUDIO_SIGNAL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_AUDIO_SIGNAL, AgsAudioSignalClass))
 
-#define AGS_AUDIO_SIGNAL_TACT_PER_SECONDS (64.0)
-
-#define AGS_ATTACK_DEFAULT_JIFFIE (1.0 / AGS_ATTACK_DEFAULT_TACT)
-#define AGS_ATTACK_DEFAULT_TACT (exp2(-4))
-#define AGS_ATTACK_DEFAULT_DELAY ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE /  \
-				  (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE *   \
-				  (double) AGS_ATTACK_DEFAULT_TACT)
-
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
 typedef struct _AgsAttack AgsAttack;

@@ -456,7 +456,7 @@ ags_drum_init(AgsDrum *drum)
 		   0, 0);
 
   gtk_option_menu_set_menu(drum->tact, (GtkWidget *) ags_tact_menu_new());
-  gtk_option_menu_set_history(drum->tact, 6);
+  gtk_option_menu_set_history(drum->tact, 4);
 
   /* duration */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);

@@ -156,10 +156,10 @@ void
 ags_delay_audio_init(AgsDelayAudio *delay_audio)
 {
   delay_audio->bpm = AGS_DEVOUT_DEFAULT_BPM;
-  delay_audio->tact = exp2(-2.0);
+  delay_audio->tact = 1.0; // exp2(-2.0);
 
-  delay_audio->notation_delay = AGS_AUDIO_LOOP_DEFAULT_JIFFIE / 64.0;
-  delay_audio->sequencer_delay = AGS_AUDIO_LOOP_DEFAULT_JIFFIE * delay_audio->tact;
+  delay_audio->notation_delay = AGS_DEVOUT_DEFAULT_DELAY;
+  delay_audio->sequencer_delay = AGS_DEVOUT_DEFAULT_DELAY / AGS_DEVOUT_DEFAULT_TACT * delay_audio->tact;
 
   delay_audio->sequencer_duration = 16.0;
   delay_audio->notation_duration = 1200.0 * 64.0;

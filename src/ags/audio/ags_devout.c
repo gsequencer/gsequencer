@@ -279,12 +279,13 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[3] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
 
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
-  devout->delay = (guint) (AGS_ATTACK_DEFAULT_DELAY * 60.0 / AGS_DEVOUT_DEFAULT_BPM);
+  devout->delay = (guint) ((double) AGS_DEVOUT_DEFAULT_JIFFIE *
+			   (double) AGS_DEVOUT_DEFAULT_TACTRATE);
   devout->delay_counter = 0;
   
-  start = ((guint) (devout->delay * AGS_DEVOUT_DEFAULT_BUFFER_SIZE) %
-	   (guint) (AGS_ATTACK_DEFAULT_JIFFIE));
-  g_message("%d\0", start);
+  start = (((guint) AGS_DEVOUT_DEFAULT_TACTRATE) %
+	   ((guint) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+  g_message("%d + %d\0", devout->delay, start);
 
   devout->attack = ags_attack_alloc(start, devout->buffer_size - start,
 				    devout->buffer_size - start, start);
