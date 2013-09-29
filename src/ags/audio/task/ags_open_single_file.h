@@ -23,6 +23,7 @@
 
 #include <ags/audio/ags_task.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_devout.h>
 
 #define AGS_TYPE_OPEN_SINGLE_FILE                (ags_open_single_file_get_type())
 #define AGS_OPEN_SINGLE_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SINGLE_FILE, AgsOpenSingleFile))
@@ -39,6 +40,7 @@ struct _AgsOpenSingleFile
   AgsTask task;
 
   AgsChannel *channel;
+  AgsDevout *devout;
 
   gchar *filename;
   guint start_channel;

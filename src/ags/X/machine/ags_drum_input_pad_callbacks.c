@@ -32,6 +32,7 @@
 #include <ags/audio/task/ags_append_channel.h>
 #include <ags/audio/task/ags_append_recall.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
+#include <ags/audio/task/ags_open_single_file.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 
 #include <ags/audio/recall/ags_play_audio_signal.h>
@@ -268,6 +269,7 @@ void
 ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *drum_input_pad)
 {
   AgsDrum *drum;
+  AgsAudioFile *audio_file;
   GtkFileChooserDialog *file_chooser;
   GtkSpinButton *spin_button;
   AgsOpenSingleFile *open_single_file;
@@ -282,8 +284,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     name1 = (char *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME);
 
     spin_button = (GtkSpinButton *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON);
-
-    task = NULL;
 
     /* open audio file and read audio signal */
     if(!g_strcmp0(name0, name1)){
@@ -315,8 +315,9 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   }else if(response == GTK_RESPONSE_CANCEL){
     audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
 
-    if(audio_file != NULL)
+    if(audio_file != NULL){
       g_object_unref(G_OBJECT(audio_file));
+    }
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
   }

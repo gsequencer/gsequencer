@@ -124,6 +124,7 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_cancel_recall.$(OBJEXT) \
 	ags-ags_add_audio_signal.$(OBJEXT) \
 	ags-ags_free_selection.$(OBJEXT) ags-ags_open_file.$(OBJEXT) \
+	ags-ags_open_single_file.$(OBJEXT) \
 	ags-ags_start_devout.$(OBJEXT) ags-ags_apply_synth.$(OBJEXT) \
 	ags-ags_init_audio.$(OBJEXT) \
 	ags-ags_unref_audio_signal.$(OBJEXT) \
@@ -651,6 +652,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/audio/task/ags_append_channel.h \
 	./src/ags/audio/task/ags_free_selection.c \
 	./src/ags/audio/task/ags_open_file.c \
+	./src/ags/audio/task/ags_open_single_file.c \
+	./src/ags/audio/task/ags_open_single_file.h \
 	./src/ags/audio/task/ags_start_devout.c \
 	./src/ags/audio/task/ags_apply_synth.c \
 	./src/ags/audio/task/ags_init_audio.c \
@@ -1376,6 +1379,7 @@ include ./$(DEPDIR)/ags-ags_note.Po
 include ./$(DEPDIR)/ags-ags_notebook.Po
 include ./$(DEPDIR)/ags-ags_notebook_callbacks.Po
 include ./$(DEPDIR)/ags-ags_open_file.Po
+include ./$(DEPDIR)/ags-ags_open_single_file.Po
 include ./$(DEPDIR)/ags-ags_option_menu.Po
 include ./$(DEPDIR)/ags-ags_oscillator.Po
 include ./$(DEPDIR)/ags-ags_oscillator_callbacks.Po
@@ -1850,6 +1854,20 @@ ags-ags_open_file.obj: ./src/ags/audio/task/ags_open_file.c
 #	$(AM_V_CC)source='./src/ags/audio/task/ags_open_file.c' object='ags-ags_open_file.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_open_file.obj `if test -f './src/ags/audio/task/ags_open_file.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_open_file.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_open_file.c'; fi`
+
+ags-ags_open_single_file.o: ./src/ags/audio/task/ags_open_single_file.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_open_single_file.o -MD -MP -MF $(DEPDIR)/ags-ags_open_single_file.Tpo -c -o ags-ags_open_single_file.o `test -f './src/ags/audio/task/ags_open_single_file.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_open_single_file.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_open_single_file.Tpo $(DEPDIR)/ags-ags_open_single_file.Po
+#	$(AM_V_CC)source='./src/ags/audio/task/ags_open_single_file.c' object='ags-ags_open_single_file.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_open_single_file.o `test -f './src/ags/audio/task/ags_open_single_file.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_open_single_file.c
+
+ags-ags_open_single_file.obj: ./src/ags/audio/task/ags_open_single_file.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_open_single_file.obj -MD -MP -MF $(DEPDIR)/ags-ags_open_single_file.Tpo -c -o ags-ags_open_single_file.obj `if test -f './src/ags/audio/task/ags_open_single_file.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_open_single_file.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_open_single_file.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_open_single_file.Tpo $(DEPDIR)/ags-ags_open_single_file.Po
+#	$(AM_V_CC)source='./src/ags/audio/task/ags_open_single_file.c' object='ags-ags_open_single_file.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_open_single_file.obj `if test -f './src/ags/audio/task/ags_open_single_file.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_open_single_file.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_open_single_file.c'; fi`
 
 ags-ags_start_devout.o: ./src/ags/audio/task/ags_start_devout.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_start_devout.o -MD -MP -MF $(DEPDIR)/ags-ags_start_devout.Tpo -c -o ags-ags_start_devout.o `test -f './src/ags/audio/task/ags_start_devout.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_start_devout.c

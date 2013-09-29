@@ -157,7 +157,8 @@ ags_add_audio_signal_launch(AgsTask *task)
 
   /* remove template */
   if(old_template != NULL){
-    add_audio_signal->recycling->audio_signal = g_list_remove(old_template);
+    ags_recycling_add_audio_signal(add_audio_signal->recycling,
+				   old_template);
   }
 }
 

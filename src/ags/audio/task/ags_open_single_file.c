@@ -105,10 +105,11 @@ ags_open_single_file_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_open_single_file_init(AgsOpenSingleFile *open_single_file)
 {
-  open_single_file->audio = NULL;
-  open_single_file->filenames = NULL;
-  open_single_file->overwrite_channels = FALSE;
-  open_single_file->create_channels = FALSE;
+  open_single_file->channel = NULL;
+  open_single_file->devout = NULL;
+  open_single_file->filename = NULL;
+  open_single_file->start_channel = 0;
+  open_single_file->audio_channels = 0;
 }
 
 void
@@ -144,13 +145,13 @@ ags_open_single_file_launch(AgsTask *task)
   AgsAudioFile *audio_file;
   GList *audio_signal;
   guint i;
+  GError *error;
 
   open_single_file = AGS_OPEN_SINGLE_FILE(task);
 
   /* open audio file and read audio signal */
-  audio_file = ags_audio_file_new(open_single_file->channel,
+  audio_file = ags_audio_file_new(open_single_file->filename,
 				  open_single_file->devout,
-				  open_single_file->filename,
 				  open_single_file->start_channel, open_single_file->audio_channels);
 
   ags_audio_file_open(audio_file);
@@ -163,7 +164,13 @@ ags_open_single_file_launch(AgsTask *task)
   for(i = 0; i < open_single_file->audio_channels; i++){
     /* unset link */
     if(channel->link != NULL){
-      ags_channel_set_link(channel, NULL);    
+      error = NULL;
+      ags_channel_set_link(channel, NULL,
+			   &error);
+
+      if(error != NULL){
+	g_warning(error->message);
+      }
     }
 
     /* mark as template */
@@ -173,11 +180,11 @@ ags_open_single_file_launch(AgsTask *task)
     old_template = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
     
     /* add as template */
-    ags_recycling_add_audio_signal(add_audio_signal->recycling,
+    ags_recycling_add_audio_signal(channel->first_recycling,
 				   AGS_AUDIO_SIGNAL(audio_signal->data));
 
     /* remove old template */
-    ags_recycling_remove_audio_signal(add_audio_signal->recycling,
+    ags_recycling_remove_audio_signal(channel->first_recycling,
 				      old_template);
 
     /* iterate */
