@@ -134,9 +134,16 @@ void
 ags_add_audio_signal_launch(AgsTask *task)
 {
   AgsAddAudioSignal *add_audio_signal;
-  AgsAudioSignal *audio_signal;
+  AgsAudioSignal *audio_signal, *old_template;
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
+
+  /* check for template to remove */
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (add_audio_signal->audio_signal_flags)) != 0){
+    old_template = ags_audio_signal_get_template(add_audio_signal->recycling->audio_signal);
+  }else{
+    old_template = NULL;
+  }
 
   /* add audio signal */
   audio_signal = ags_audio_signal_new((GObject *) add_audio_signal->devout,
@@ -147,6 +154,11 @@ ags_add_audio_signal_launch(AgsTask *task)
   
   ags_recycling_add_audio_signal(add_audio_signal->recycling,
 				 audio_signal);
+
+  /* remove template */
+  if(old_template != NULL){
+    add_audio_signal->recycling->audio_signal = g_list_remove(old_template);
+  }
 }
 
 AgsAddAudioSignal*

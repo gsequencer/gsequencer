@@ -267,24 +267,25 @@ ags_drum_input_pad_open_play_done(AgsRecall *recall, AgsDrumInputPad *drum_input
 void
 ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *drum_input_pad)
 {
-  /*
+  AgsDrum *drum;
   GtkFileChooserDialog *file_chooser;
   GtkSpinButton *spin_button;
-  AgsDevout *devout;
-  AgsChannel *channel;
-  AgsInput *input;
-  AgsAudioFile *audio_file;
-  AgsAudioSignal *audio_signal_source_old;
+  AgsOpenSingleFile *open_single_file;
   char *name0, *name1;
-  GStaticMutex mutex = G_STATIC_MUTEX_INIT;
+
+  drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(drum_input_pad), AGS_TYPE_DRUM);
 
   file_chooser = drum_input_pad->file_chooser;
 
   if(response == GTK_RESPONSE_ACCEPT){
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
     name1 = (char *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME);
+
     spin_button = (GtkSpinButton *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON);
 
+    task = NULL;
+
+    /* open audio file and read audio signal */
     if(!g_strcmp0(name0, name1)){
       audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
     }else{
@@ -292,68 +293,25 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 	audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
 	g_object_unref(G_OBJECT(audio_file));
       }
-
-      audio_file = ags_audio_file_new();
-      audio_file->name = name0;
-      devout = AGS_DEVOUT(AGS_AUDIO(drum_input_pad->pad.channel->audio)->devout);
-      ags_audio_file_set_devout(audio_file, devout);
-      ags_audio_file_open(audio_file);
-      AGS_AUDIO_FILE_GET_CLASS(audio_file)->read_buffer(audio_file);
-      // ags_audio_file_read_audio_signal will be called later
     }
 
-    channel = AGS_CHANNEL(drum_input_pad->pad.channel);
-
-    if(drum_input_pad->pad.group->active){
-      GList *list;
-      guint i;
-
-      audio_file->flags |= AGS_AUDIO_FILE_ALL_CHANNELS;
-      ags_audio_file_read_audio_signal(audio_file);
-
-      list = audio_file->audio_signal;
-
-      for(i = 0; i < AGS_AUDIO(drum_input_pad->pad.channel->audio)->audio_channels && i < audio_file->channels; i++){
-	if(channel->link != NULL)
-	  ags_channel_set_link(channel, NULL);
-
-	AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	AGS_AUDIO_SIGNAL(list->data)->recycling = (GObject *) channel->first_recycling;
-
-	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-	g_static_mutex_lock(&mutex);
-	channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal, (gpointer) audio_signal_source_old);
-	channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal, list->data);
-	g_static_mutex_unlock(&mutex);
-
-	g_object_unref(G_OBJECT(audio_signal_source_old));
-
-	channel = channel->next;
-	list = list->next;
-      }
+    /* task */
+    if(AGS_PAD(drum_input_pad)->group->active){
+      open_single_file = ags_open_single_file_new(AGS_PAD(drum_input_pad)->channel,
+						  AGS_DEVOUT(AGS_AUDIO(AGS_MACHINE(drum)->audio)->devout),
+						  name0,
+						  0, AGS_AUDIO(AGS_MACHINE(drum)->audio)->audio_channels);
     }else{
-      channel = ags_channel_nth(channel, (guint) gtk_option_menu_get_history(drum_input_pad->pad.option));
-      audio_file->channel = (guint) spin_button->adjustment->value;
-      ags_audio_file_read_audio_signal(audio_file);
-
-      if(channel->link != NULL)
-	ags_channel_set_link(channel, NULL);
-
-      AGS_AUDIO_SIGNAL(audio_file->audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      AGS_AUDIO_SIGNAL(audio_file->audio_signal->data)->recycling = (GObject *) channel->first_recycling;
-      audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-      g_static_mutex_lock(&mutex);
-      channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal, (gpointer) audio_signal_source_old);
-      channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal, audio_file->audio_signal->data);
-      g_static_mutex_unlock(&mutex);
-
-      g_object_unref(G_OBJECT(audio_signal_source_old));
+      open_single_file = ags_open_single_file_new(ags_channel_nth(AGS_PAD(drum_input_pad)->channel,
+								  gtk_option_menu_get_history(AGS_PAD(drum_input_pad)->option)),
+						  AGS_DEVOUT(AGS_AUDIO(AGS_MACHINE(drum)->audio)->devout),
+						  name0,
+						  (guint) spin_button->adjustment->value, 1);
     }
+
+    ags_task_thread_append_task(AGS_DEVOUT(AGS_AUDIO(AGS_MACHINE(drum)->audio)->devout)->task_thread, AGS_TASK(open_single_file));
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
-    g_object_unref(G_OBJECT(audio_file));
   }else if(response == GTK_RESPONSE_CANCEL){
     audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
 
@@ -364,7 +322,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   }
 
   drum_input_pad->file_chooser = NULL;
-  */
 }
 
 void
