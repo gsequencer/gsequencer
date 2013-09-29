@@ -194,7 +194,7 @@ ags_navigation_init(AgsNavigation *navigation)
   label = (GtkLabel *) gtk_label_new("duration\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->duration_time = (GtkLabel *) gtk_label_new("00:00.00\0");
+  navigation->duration_time = (GtkLabel *) gtk_label_new("0000:00.00\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
   navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_EDITOR_MAX_CONTROLS * 64.0, 1.0);
@@ -393,7 +393,7 @@ ags_navigation_tact_to_time_string(gdouble tact)
 
   hsec = (guint) floor(tact_redux / delay_hsec);
 
-  timestr = g_strdup_printf("%00d:%00d.%00d\0", min, sec, hsec);
+  timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
 
   return(timestr);
 }

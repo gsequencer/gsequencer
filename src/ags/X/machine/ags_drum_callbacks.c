@@ -154,7 +154,7 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 			      AGS_TASK(apply_bpm));
 
   /* tact */
-  tact = 1.0; // exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
 
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
   				  tact);

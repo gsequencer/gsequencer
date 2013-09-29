@@ -90,7 +90,7 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 			      AGS_TASK(apply_bpm));
 
   /* tact */
-  tact = 1.0; // exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
+  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
  
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
   				  tact);

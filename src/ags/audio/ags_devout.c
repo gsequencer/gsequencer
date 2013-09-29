@@ -279,12 +279,10 @@ ags_devout_init(AgsDevout *devout)
   devout->buffer[3] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
 
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
-  devout->delay = (guint) ((double) AGS_DEVOUT_DEFAULT_JIFFIE *
-			   (double) AGS_DEVOUT_DEFAULT_TACTRATE /
-			   64.0);
+  devout->delay = (guint) (AGS_DEVOUT_DEFAULT_DELAY * exp2(-4.0));
   devout->delay_counter = 0;
   
-  start = (((guint) AGS_DEVOUT_DEFAULT_TACTRATE) %
+  start = (((guint) devout->delay * AGS_DEVOUT_DEFAULT_SAMPLERATE) %
 	   ((guint) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
   g_message("%d + %d\0", devout->delay, start);
 

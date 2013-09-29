@@ -513,7 +513,7 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tact, FALSE, FALSE, 0);
 
   gtk_option_menu_set_menu(matrix->tact, (GtkWidget *) ags_tact_menu_new());
-  gtk_option_menu_set_history(matrix->tact, 4);
+  gtk_option_menu_set_history(matrix->tact, 6);
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
