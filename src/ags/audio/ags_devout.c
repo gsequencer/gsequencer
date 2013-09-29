@@ -280,7 +280,8 @@ ags_devout_init(AgsDevout *devout)
 
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
   devout->delay = (guint) ((double) AGS_DEVOUT_DEFAULT_JIFFIE *
-			   (double) AGS_DEVOUT_DEFAULT_TACTRATE);
+			   (double) AGS_DEVOUT_DEFAULT_TACTRATE /
+			   64.0);
   devout->delay_counter = 0;
   
   start = (((guint) AGS_DEVOUT_DEFAULT_TACTRATE) %

@@ -320,6 +320,10 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
+  /* devout */
+  g_signal_connect((GObject *) navigation->devout, "tic\0",
+		   G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
+
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_loop_left_tact_callback), (gpointer) navigation);
@@ -366,7 +370,7 @@ ags_navigation_tact_to_time_string(gdouble tact)
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = AGS_DEVOUT_DEFAULT_BPM * 64.0;
+    delay_min = AGS_DEVOUT_DEFAULT_BPM;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 
@@ -381,13 +385,13 @@ ags_navigation_tact_to_time_string(gdouble tact)
     tact_redux = tact_redux - (min * delay_min);
   }
 
-  sec = (guint) floor(tact / delay_sec);
+  sec = (guint) floor(tact_redux / delay_sec);
 
   if(sec > 0){
     tact_redux = tact_redux - (sec * delay_sec);
   }
 
-  hsec = (guint) floor(tact / delay_hsec);
+  hsec = (guint) floor(tact_redux / delay_hsec);
 
   timestr = g_strdup_printf("%00d:%00d.%00d\0", min, sec, hsec);
 

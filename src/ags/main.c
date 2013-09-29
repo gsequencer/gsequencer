@@ -419,7 +419,9 @@ main(int argc, char **argv)
 
     /* AgsWindow */
     window = ags_window_new(main);
-    window->devout = devout; //TODO:JK: really ugly
+    g_object_set(G_OBJECT(window),
+		 "devout\0", devout,
+		 NULL);
 
     gtk_window_set_default_size((GtkWindow *) window, 500, 500);
     gtk_paned_set_position((GtkPaned *) window->paned, 300);
@@ -471,7 +473,9 @@ main(int argc, char **argv)
 
     /* AgsWindow */
     window = ags_window_new(main);
-    window->devout = devout; //TODO:JK: really ugly
+    g_object_set(G_OBJECT(window),
+		 "devout\0", devout,
+		 NULL);
 
     gtk_window_set_default_size((GtkWindow *) window, 500, 500);
     gtk_paned_set_position((GtkPaned *) window->paned, 300);
