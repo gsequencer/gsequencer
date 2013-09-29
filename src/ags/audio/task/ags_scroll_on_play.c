@@ -147,7 +147,7 @@ ags_scroll_on_play_launch(AgsTask *task)
 
   tact = gtk_adjustment_get_value(window->navigation->position_tact->adjustment);
 
-  gtk_adjustment_set_value(GTK_RANGE(editor->vscrollbar)->adjustment, tact);
+  gtk_range_set_value(GTK_RANGE(editor->hscrollbar), tact * editor->control_current.control_width);
 }
 
 AgsScrollOnPlay*

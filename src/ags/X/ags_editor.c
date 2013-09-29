@@ -392,6 +392,11 @@ ags_editor_connect(AgsConnectable *connectable)
   g_signal_connect_after ((GObject *) editor->hscrollbar, "value-changed\0",
 			  G_CALLBACK (ags_editor_hscrollbar_value_changed), (gpointer) editor);
 
+  /*  */
+  g_signal_connect((GObject *) editor->devout, "tic\0",
+		   G_CALLBACK(ags_editor_tic_callback), (gpointer) editor);
+
+  /*  */
   ags_toolbar_connect(editor->toolbar);
   ags_notebook_connect(editor->notebook);
   ags_meter_connect(editor->meter);
