@@ -102,7 +102,7 @@ ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal)
 {
   add_audio_signal->recycling = NULL;
   add_audio_signal->devout = NULL;
-  add_audio_signal->recall_id = NULL;
+  add_audio_signal->group_id = 0;
   add_audio_signal->audio_signal_flags = 0;
 }
 
@@ -135,6 +135,7 @@ ags_add_audio_signal_launch(AgsTask *task)
 {
   AgsAddAudioSignal *add_audio_signal;
   AgsAudioSignal *audio_signal, *old_template;
+  AgsRecallID *recall_id;
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
 
@@ -145,27 +146,39 @@ ags_add_audio_signal_launch(AgsTask *task)
     old_template = NULL;
   }
 
-  /* add audio signal */
+  recall_id = ags_recall_id_find_group_id(AGS_CHANNEL(add_audio_signal->recycling->channel)->recall_id,
+					  add_audio_signal->group_id);
+  
+  /* create audio signal */
   audio_signal = ags_audio_signal_new((GObject *) add_audio_signal->devout,
 				      (GObject *) add_audio_signal->recycling,
-				      (GObject *) add_audio_signal->recall_id);
+				      (GObject *) recall_id);
   audio_signal->flags = add_audio_signal->audio_signal_flags;
+
+  /* add audio signal */
+  //TODO:JK: optimize attack calculation
+  ags_recycling_create_audio_signal_with_defaults(add_audio_signal->recycling,
+						  audio_signal, add_audio_signal->devout->attack->first_start);
+  audio_signal->stream_current = audio_signal->stream_beginning;
   ags_audio_signal_connect(audio_signal);
   
+  /*
+   * emit add_audio_signal on AgsRecycling
+   */
   ags_recycling_add_audio_signal(add_audio_signal->recycling,
 				 audio_signal);
 
   /* remove template */
   if(old_template != NULL){
-    ags_recycling_add_audio_signal(add_audio_signal->recycling,
-				   old_template);
+    ags_recycling_remove_audio_signal(add_audio_signal->recycling,
+				      old_template);
   }
 }
 
 AgsAddAudioSignal*
 ags_add_audio_signal_new(AgsRecycling *recycling,
 			 AgsDevout *devout,
-			 AgsRecallID *recall_id,
+			 AgsGroupId group_id,
 			 guint audio_signal_flags)
 {
   AgsAddAudioSignal *add_audio_signal;
@@ -175,7 +188,7 @@ ags_add_audio_signal_new(AgsRecycling *recycling,
 
   add_audio_signal->recycling = recycling;
   add_audio_signal->devout = devout;
-  add_audio_signal->recall_id = recall_id;
+  add_audio_signal->group_id = group_id;
   add_audio_signal->audio_signal_flags = audio_signal_flags;
 
   return(add_audio_signal);

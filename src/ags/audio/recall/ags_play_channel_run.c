@@ -425,7 +425,7 @@ void
 ags_play_channel_run_stream_channel_done_callback(AgsRecall *recall,
 						  AgsPlayChannelRun *play_channel_run)
 {
-  play_channel_run->flags |= AGS_PLAY_CHANNEL_RUN_TERMINATING;
+  //  play_channel_run->flags |= AGS_PLAY_CHANNEL_RUN_TERMINATING;
 }
 
 AgsPlayChannelRun*
