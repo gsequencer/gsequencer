@@ -360,7 +360,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     group_id = ags_recall_id_generate_group_id();
     child_group_id = ags_recall_id_generate_group_id();
 
-    play_all = drum_input_pad->pad.group->active;
+    play_all = AGS_PAD(drum_input_pad)->group->active;
 
     flags = AGS_AUDIO_SIGNAL_STANDALONE;
 
@@ -455,7 +455,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
   }else{
     AgsCancelChannel *cancel_channel;
 
-    channel = drum_input_pad->pad.channel;
+    channel = AGS_PAD(drum_input_pad)->channel;
 
     if((AGS_DEVOUT_PLAY_PAD & (AGS_DEVOUT_PLAY(channel->devout_play)->flags)) != 0){
       AgsChannel *next_pad;

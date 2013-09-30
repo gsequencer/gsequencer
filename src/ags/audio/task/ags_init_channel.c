@@ -170,7 +170,9 @@ ags_init_channel_launch(AgsTask *task)
 	  AGS_DEVOUT_PLAY(channel->devout_play)->group_id = init_channel->group_id;
 	
 	ags_channel_recursive_play_init(channel, stage,
-					arrange_group_id, duplicate_templates, TRUE, FALSE, FALSE, resolve_dependencies,
+					arrange_group_id, duplicate_templates,
+					init_channel->playback, init_channel->sequencer, init_channel->notation,
+					resolve_dependencies,
 					init_channel->group_id, init_channel->child_group_id,
 					0);
 	
@@ -181,7 +183,9 @@ ags_init_channel_launch(AgsTask *task)
     AGS_DEVOUT_PLAY(init_channel->channel->devout_play)->group_id = init_channel->group_id;
 
     ags_channel_recursive_play_init(init_channel->channel, -1,
-				    TRUE, TRUE, TRUE, FALSE, FALSE, TRUE,
+				    TRUE, TRUE,
+				    init_channel->playback, init_channel->sequencer, init_channel->notation,
+				    TRUE,
 				    init_channel->group_id, init_channel->child_group_id,
 				    0);
   }

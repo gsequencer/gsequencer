@@ -437,12 +437,11 @@ main(int argc, char **argv)
     g_object_set(G_OBJECT(main->main_loop),
 		 "devout\0", main->devout,
 		 NULL);
-
+    
     ags_thread_start(main->main_loop);
-
-    //TODO:JK: really ugly
-    AGS_AUDIO_LOOP(main->main_loop)->main = main;
-
+    
+    AGS_AUDIO_LOOP(main->main_loop)->main = main; //TODO:JK: really ugly
+    
     /*  */
     main->gui_loop = AGS_AUDIO_LOOP(main->main_loop)->gui_thread;
 
