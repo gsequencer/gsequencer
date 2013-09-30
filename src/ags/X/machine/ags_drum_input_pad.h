@@ -36,7 +36,6 @@ typedef struct _AgsDrumInputPad AgsDrumInputPad;
 typedef struct _AgsDrumInputPadClass AgsDrumInputPadClass;
 
 typedef enum{
-  //  AGS_DRUM_INPUT_PAD_PLAY_DONE        = 1,
   AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE   = 1,
 }AgsDrumInputPadFlags;
 
@@ -54,6 +53,8 @@ struct _AgsDrumInputPad
   guint pad_open_play_ref;
 
   GtkFileChooserDialog *file_chooser;
+
+  guint pad_play_ref;
 };
 
 struct _AgsDrumInputPadClass

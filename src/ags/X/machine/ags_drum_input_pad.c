@@ -128,6 +128,8 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   drum_input_pad->pad_open_recalls = NULL;
 
   drum_input_pad->file_chooser = NULL;
+
+  drum_input_pad->pad_play_ref = 0;
 }
 
 void

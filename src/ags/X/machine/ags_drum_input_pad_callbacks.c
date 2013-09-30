@@ -401,6 +401,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	  recycling = recycling->next;
 	}
 
+	drum_input_pad->pad_play_ref++;
 	channel = channel->next;
       }
 
@@ -438,6 +439,8 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	
 	recycling = recycling->next;
       }
+
+      drum_input_pad->pad_play_ref++;
 
       tasks = g_list_reverse(tasks);      
       ags_task_thread_append_tasks(task_thread, tasks);
@@ -494,6 +497,21 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
       }
     }
+  }
+}
+
+void
+ags_drum_input_pad_play_done_callback(AgsRecall *recall, AgsDrumInputPad *drum_input_pad)
+{
+  drum_input_pad->pad_play_ref--;
+
+  if(drum_input_pad->pad_play_ref == 0){
+    GtkToggleButton *toggle_button;
+
+    toggle_button = (GtkToggleButton *) drum_input_pad->play;
+
+    AGS_DEVOUT_PLAY(AGS_PAD(drum_input_pad)->channel->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
+    gtk_toggle_button_set_active(toggle_button, FALSE);
   }
 }
 
