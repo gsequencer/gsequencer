@@ -1953,7 +1953,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 			   AgsGroupId group_id,
 			   guint audio_signal_level, gboolean called_by_output)
 {
-  AgsRecall *recall;
+  AgsRecall *recall, *copy;
   AgsRecallID *recall_id, *current_recall_id;
   AgsRunOrder *run_order;
   GList *list_recall_start, *list_recall;
@@ -2002,19 +2002,33 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 								   current_group_id,
 								   first_recycling, last_recycling);
 
-    /* duplicate the recall, notify first run and initialize it */
-    recall = ags_recall_duplicate(recall, current_recall_id);
-    g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(recall));
-      
+    /* duplicate the recall */
+    copy = ags_recall_duplicate(recall, current_recall_id);
+
+    g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
+
+    /* set appropriate flag */
+    if(playback){
+      ags_recall_set_flags(copy, AGS_RECALL_PLAYBACK);
+    }else if(sequencer){
+      ags_recall_set_flags(copy, AGS_RECALL_SEQUENCER);
+    }else if(notation){
+      ags_recall_set_flags(copy, AGS_RECALL_NOTATION);
+    }
+
+    /* append to AgsAudio */
     if(audio_signal_level == 0)
-      audio->play = g_list_append(audio->play, recall);
+      audio->play = g_list_append(audio->play, copy);
     else
-      audio->recall = g_list_append(audio->recall, recall);
-	
-    ags_connectable_connect(AGS_CONNECTABLE(recall));
-	
-    ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
+      audio->recall = g_list_append(audio->recall, copy);
     
+    /* connect */
+    ags_connectable_connect(AGS_CONNECTABLE(copy));
+	
+    /* notify run */
+    ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
+
+    /* iterate */
     list_recall = list_recall->next;
   }
   

@@ -179,7 +179,7 @@ struct _AgsDevoutPlay
   GObject *source;
   guint audio_channel;
 
-  AgsGroupId group_id; // if source is an AgsChannel or an AgsAudio
+  AgsGroupId group_id[3]; // if source is an AgsChannel or an AgsAudio
   AgsRecallID *recall_id; // if source is an AgsRecall
 };
 

@@ -2172,17 +2172,32 @@ ags_channel_duplicate_recall(AgsChannel *channel,
       continue;
     }
     
-    /* duplicate play or recall AgsRecall */    
+    /* duplicate the recall */
     copy = ags_recall_duplicate(recall, recall_id);
     g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
-      
+    
+    /* set appropriate flag */
+    if(playback){
+      ags_recall_set_flags(copy, AGS_RECALL_PLAYBACK);
+    }else if(sequencer){
+      ags_recall_set_flags(copy, AGS_RECALL_SEQUENCER);
+    }else if(notation){
+      ags_recall_set_flags(copy, AGS_RECALL_NOTATION);
+    }
+
+    /* append to AgsAudio */
     if(recall_id->parent_group_id == 0)
       channel->play = g_list_append(channel->play, copy);
     else
       channel->recall = g_list_append(channel->recall, copy);
       
+    /* connect */
     ags_connectable_connect(AGS_CONNECTABLE(copy));
-    
+
+    /* notify run */
+    ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
+
+    /* iterate */    
     list_recall = list_recall->next;
   }
   

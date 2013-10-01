@@ -1124,11 +1124,6 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
-  if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
-     (AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
-    return;
-  }
-
   recall->flags |= AGS_RECALL_DONE;
 
   ags_recall_remove(recall);
@@ -1145,6 +1140,14 @@ void
 ags_recall_done(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
+  
+  if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
+     (AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
+     ((AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0 && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
+     ((AGS_RECALL_PERSISTENT_SEQUENCER & (recall->flags)) != 0 && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
+     ((AGS_RECALL_PERSISTENT_NOTATION & (recall->flags)) != 0 && (AGS_RECALL_NOTATION & (recall->flags)) != 0)){
+    return;
+  }
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
