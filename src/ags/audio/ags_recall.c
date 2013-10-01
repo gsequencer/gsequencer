@@ -1161,7 +1161,7 @@ ags_recall_real_remove(AgsRecall *recall)
 {
   AgsRecall *parent;
 
-  //  g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
 

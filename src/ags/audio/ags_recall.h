@@ -55,6 +55,7 @@ typedef enum{
   AGS_RECALL_REMOVE             = 1 << 14,
   AGS_RECALL_HIDE               = 1 << 15,
   AGS_RECALL_PROPAGATE_DONE     = 1 << 16, // see ags_recall_real_remove
+  //  AGS_RECALL_REMOVE_AFTER_DONE  = 1 << 17,
 }AgsRecallFlags;
 
 typedef enum{

@@ -71,7 +71,7 @@ void ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling 
 								   AgsRecallRecycling *recall_recycling);
 
 void ags_recall_recycling_recall_audio_signal_done(AgsRecall *recall,
-						   gpointer data);
+						   AgsRecallRecycling *recall_recycling);
 
 void ags_recall_recycling_duplicate_list(GList *list,
 					 GList **target);
@@ -791,9 +791,9 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 
 void
 ags_recall_recycling_recall_audio_signal_done(AgsRecall *recall,
-					      gpointer data)
+					      AgsRecallRecycling *recall_recycling)
 {
-  /* empty */
+  recall->flags |= AGS_RECALL_REMOVE;
 }
 
 AgsRecallRecycling*
