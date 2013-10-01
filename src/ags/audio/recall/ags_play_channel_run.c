@@ -316,7 +316,7 @@ ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 
   /* stream_channel_run */
   gobject = G_OBJECT(play_channel_run->stream_channel_run);
-
+    
   play_channel_run->done_handler =
     g_signal_connect(gobject, "done\0",
 		     G_CALLBACK(ags_play_channel_run_stream_channel_done_callback), play_channel_run);
@@ -329,8 +329,6 @@ ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
   AgsPlayChannelRun *play_channel_run;
   GObject *gobject;
 
-  ags_play_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
   /* AgsPlayChannelRun */
   play_channel_run = AGS_PLAY_CHANNEL_RUN(dynamic_connectable);
 
@@ -338,9 +336,15 @@ ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
   play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run)->recall_channel);
 
   /* stream_channel_run */
-  gobject = G_OBJECT(play_channel_run->stream_channel_run);
+  if(play_channel_run->stream_channel_run != NULL &&
+     (AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
+    gobject = G_OBJECT(play_channel_run->stream_channel_run);
 
-  g_signal_handler_disconnect(gobject, play_channel_run->done_handler);
+    g_signal_handler_disconnect(gobject, play_channel_run->done_handler);
+  }
+
+  /* call parent */
+  ags_play_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
 
 void

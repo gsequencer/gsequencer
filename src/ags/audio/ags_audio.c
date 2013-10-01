@@ -1927,17 +1927,6 @@ ags_audio_play(AgsAudio *audio,
 	ags_recall_run_post(recall);
     }
 
-    ags_recall_child_check_remove(recall);
-
-    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
-      if(do_recall)
-	audio->recall = g_list_remove(audio->recall, recall);
-      else
-	audio->play = g_list_remove(audio->play, recall);
-
-      ags_recall_remove(recall);
-    }
-    
     list = list_next;
   }
 }

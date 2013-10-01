@@ -565,22 +565,27 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
   AgsRecallChannelRun *recall_channel_run;
   GObject *gobject;
 
-  ags_recall_channel_run_parent_connectable_interface->disconnect(connectable);
-
   /* AgsRecallChannelRun */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
   /* destination */
-  if(recall_channel_run->destination != NULL){
+  if(recall_channel_run->destination != NULL &&
+     (AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(recall_channel_run)->flags)) != 0){
     gobject = G_OBJECT(recall_channel_run->destination);
   
     g_signal_handler_disconnect(gobject, recall_channel_run->destination_recycling_changed_handler);
   }
 
   /* source */
-  gobject = G_OBJECT(recall_channel_run->source);
+  if(recall_channel_run->source != NULL &&
+     (AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(recall_channel_run)->flags)) != 0){
+    gobject = G_OBJECT(recall_channel_run->source);
 
-  g_signal_handler_disconnect(gobject, recall_channel_run->source_recycling_changed_handler);
+    g_signal_handler_disconnect(gobject, recall_channel_run->source_recycling_changed_handler);
+  }
+
+  /* call parent */
+  ags_recall_channel_run_parent_connectable_interface->disconnect(connectable);
 }
 
 gboolean

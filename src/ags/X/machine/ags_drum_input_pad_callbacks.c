@@ -62,7 +62,7 @@ ags_drum_input_pad_option_callback(GtkOptionMenu *option, AgsDrumInputPad *drum_
   while(list != NULL && list->data != option->menu_item)
     list = list->next;
 
-  drum_input_pad->pad.selected_line = (list != NULL) ? AGS_LINE(list->data): NULL;
+  AGS_PAD(drum_input_pad)->selected_line = (list != NULL) ? AGS_LINE(list->data): NULL;
 
   if(drum->selected_pad == drum_input_pad)
     ags_drum_set_pattern(drum);
@@ -176,7 +176,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       play_audio_signal = ags_play_audio_signal_new(AGS_AUDIO_SIGNAL(audio_signal->data),
 						    devout,
 						    i,
-						    NULL);
+						    ags_attack_duplicate_from_devout(devout));
       AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current = AGS_AUDIO_SIGNAL(audio_signal->data)->stream_beginning;
       drum_input_pad->pad_open_play_ref++;
 
@@ -221,12 +221,12 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       i++;
     }
 
+    /*  */
+    tasks = g_list_reverse(tasks);
+
     /* create start task */
     start_devout = ags_start_devout_new(devout);
     tasks = g_list_prepend(tasks, start_devout);
-
-    /*  */
-    tasks = g_list_reverse(tasks);
 
     ags_task_thread_append_tasks(devout->task_thread, tasks);
   }else{

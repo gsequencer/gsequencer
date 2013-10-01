@@ -538,15 +538,6 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
       }
     }
 
-    ags_recall_child_check_remove(recall);
-
-    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
-      audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
-      audio_loop->play_recall = g_list_remove(audio_loop->play_recall, (gpointer) devout_play);
-
-      ags_recall_remove(recall);
-    }
-
     list = list_next;
   }
 

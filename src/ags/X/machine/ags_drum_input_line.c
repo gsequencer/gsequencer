@@ -352,6 +352,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     AGS_RECALL(recall_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
 						 AGS_RECALL_SEQUENCER |
 						 AGS_RECALL_NOTATION |
+						 AGS_RECALL_PROPAGATE_DONE |
 						 AGS_RECALL_INPUT_ORIENTATED);
     ags_channel_add_recall(source, (GObject *) recall_stream_channel, FALSE);
 
@@ -369,6 +370,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 						     AGS_RECALL_PLAYBACK |
 						     AGS_RECALL_SEQUENCER |
 						     AGS_RECALL_NOTATION |
+						     AGS_RECALL_PROPAGATE_DONE |
 						     AGS_RECALL_INPUT_ORIENTATED);
     ags_channel_add_recall(source, (GObject *) recall_stream_channel_run, FALSE);
 

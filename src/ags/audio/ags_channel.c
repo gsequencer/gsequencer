@@ -1541,17 +1541,6 @@ ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboole
 	ags_recall_run_post(recall);
     }
 
-    ags_recall_child_check_remove(recall);
-
-    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
-      if(do_recall)
-	channel->recall = g_list_remove(channel->recall, recall);
-      else
-	channel->play = g_list_remove(channel->play, recall);
-
-      ags_recall_remove(recall);
-    }
-    
     list = list_next;
   }
 }

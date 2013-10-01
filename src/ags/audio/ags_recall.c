@@ -629,6 +629,7 @@ void
 ags_recall_connect(AgsConnectable *connectable)
 {
   AgsRecall *recall;
+  AgsRecallHandler *recall_handler;
   GList *list;
 
   recall = AGS_RECALL(connectable);
@@ -645,8 +646,9 @@ ags_recall_connect(AgsConnectable *connectable)
   list = recall->handlers;
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(recall), AGS_RECALL_HANDLER(list->data)->signal_name,
-		     AGS_RECALL_HANDLER(list->data)->callback, AGS_RECALL_HANDLER(list->data)->data);
+    recall_handler = AGS_RECALL_HANDLER(list->data);
+    recall_handler->handler = g_signal_connect(G_OBJECT(recall), recall_handler->signal_name,
+					       G_CALLBACK(recall_handler->callback), recall_handler->data);
 
     list = list->next;
   }
@@ -817,6 +819,43 @@ ags_recall_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_recall_set_flags:
+ * @recall an #AgsRecall
+ * @flags the flags mask
+ *
+ * Set flags recursivly.
+ */
+void
+ags_recall_set_flags(AgsRecall *recall, guint flags)
+{
+  GList *child;
+  guint inheritated_flags_mask;
+
+  /* set flags */
+  recall->flags |= flags;
+
+  /* set recursivly - prepare mask */
+  inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
+			    AGS_RECALL_SEQUENCER |
+			    AGS_RECALL_NOTATION |
+			    AGS_RECALL_PROPAGATE_DONE |
+			    AGS_RECALL_INITIAL_RUN);
+
+  if(!AGS_IS_RECALL_RECYCLING(recall)){
+    inheritated_flags_mask |= AGS_RECALL_PERSISTENT;
+  }
+
+  /* apply recursivly */
+  child = recall->children;
+
+  while(child != NULL){
+    ags_recall_set_flags(AGS_RECALL(child->data), (inheritated_flags_mask & (flags)));
+
+    child = child->next;
+  }
 }
 
 /**
@@ -1085,23 +1124,15 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
+  g_message("done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+
   if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0 ||
      (AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
      (AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     return;
   }
 
-  if((AGS_RECALL_TERMINATING & (recall->flags)) == 0){
-    recall->flags |= AGS_RECALL_TERMINATING;
-    return;
-  }
-
-  //  g_message("ags_recall_done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
-  recall->flags |= AGS_RECALL_DONE | AGS_RECALL_HIDE | AGS_RECALL_REMOVE;
-
-  if(AGS_IS_DYNAMIC_CONNECTABLE(recall)){
-    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
-  }
+  ags_recall_remove(recall);
 }
 
 /**
@@ -1248,6 +1279,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
 
   copy->flags = recall->flags;
+  g_message("%x=%x\0", recall->flags, copy->flags);
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
   /* duplicate handlers */
@@ -1449,7 +1481,9 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     g_object_ref(parent);
     g_object_ref(child);
 
+    g_message("%s@prev: %x\0", G_OBJECT_TYPE_NAME(child), child->flags);
     child->flags |= (inheritated_flags_mask & (parent->flags));
+    g_message("%s@next: %x\0", G_OBJECT_TYPE_NAME(child), child->flags);
 
     parent->children = g_list_prepend(parent->children, child);
 
@@ -1486,47 +1520,6 @@ GList*
 ags_recall_get_children(AgsRecall *recall)
 {
   return(recall->children);
-}
-
-/**
- * ags_recall_child_check_remove:
- * @recall an #AgsRecall
- * 
- * Looks for the #AGS_RECALL_REMOVE flag. If found in an #AgsRecall
- * it will be removed from its parent.
- */
-void
-ags_recall_child_check_remove(AgsRecall *recall)
-{
-  GList *list, *list_next;
-  void ags_recall_check_remove_recursive(AgsRecall *recall){
-    GList *list, *list_next;
-
-    list = recall->children;
-
-    while(list != NULL){
-      list_next = list->next;
-
-      ags_recall_check_remove_recursive(AGS_RECALL(list->data));
-
-      list = list_next;
-    }
-
-    if((AGS_RECALL_REMOVE & (recall->flags)) != 0){
-      ags_recall_remove(recall);
-      g_object_unref(recall);
-    }
-  }
-
-  list = recall->children;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    ags_recall_check_remove_recursive(AGS_RECALL(list->data));
-    
-    list = list_next;
-  }
 }
 
 /**

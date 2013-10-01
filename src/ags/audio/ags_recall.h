@@ -130,6 +130,8 @@ struct _AgsRecallHandler
 
 GType ags_recall_get_type();
 
+void ags_recall_set_flags(AgsRecall *recall, guint flags);
+
 void ags_recall_resolve_dependencies(AgsRecall *reall);
 
 void ags_recall_run_init_pre(AgsRecall *recall);
@@ -162,8 +164,6 @@ GList* ags_recall_get_dependencies(AgsRecall *recall);
 
 void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
 GList* ags_recall_get_children(AgsRecall *recall);
-
-void ags_recall_child_check_remove(AgsRecall *recall);
 
 void ags_recall_set_effect(AgsRecall *recall, char *effect);
 GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect);
