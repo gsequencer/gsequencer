@@ -1279,7 +1279,6 @@ ags_recall_real_duplicate(AgsRecall *recall,
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
 
   copy->flags = recall->flags;
-  g_message("%x=%x\0", recall->flags, copy->flags);
   copy->flags &= (~AGS_RECALL_TEMPLATE);
 
   /* duplicate handlers */
@@ -1481,9 +1480,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     g_object_ref(parent);
     g_object_ref(child);
 
-    g_message("%s@prev: %x\0", G_OBJECT_TYPE_NAME(child), child->flags);
     child->flags |= (inheritated_flags_mask & (parent->flags));
-    g_message("%s@next: %x\0", G_OBJECT_TYPE_NAME(child), child->flags);
 
     parent->children = g_list_prepend(parent->children, child);
 

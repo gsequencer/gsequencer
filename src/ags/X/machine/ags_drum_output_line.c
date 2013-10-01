@@ -224,9 +224,9 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 						   "recall_container\0", play_loop_channel_container,
 						   "delay_audio\0", drum->play_delay_audio,
 						   NULL);
-    AGS_RECALL(loop_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_SEQUENCER |
-					AGS_RECALL_OUTPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(loop_channel), (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_SEQUENCER |
+						    AGS_RECALL_OUTPUT_ORIENTATED));
     ags_channel_add_recall(output, (GObject *) loop_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -240,9 +240,9 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 							  "recall_container\0", play_loop_channel_container,
 							  "count_beats_audio_run\0", recall_count_beats_audio_run,
 							  NULL);
-    AGS_RECALL(loop_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-					    AGS_RECALL_SEQUENCER |
-					    AGS_RECALL_OUTPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(loop_channel_run), (AGS_RECALL_TEMPLATE |
+							AGS_RECALL_SEQUENCER |
+							AGS_RECALL_OUTPUT_ORIENTATED));
     ags_channel_add_recall(output, (GObject *) loop_channel_run, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -259,9 +259,9 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 							    "source\0", output,
 							    "recall_container\0", play_stream_channel_container,
 							    NULL);
-    AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					       AGS_RECALL_SEQUENCER /* |
-					       AGS_RECALL_PERSISTENT */);
+    ags_recall_set_flags(AGS_RECALL(play_stream_channel), (AGS_RECALL_TEMPLATE |
+							   AGS_RECALL_SEQUENCER // |
+							   /* AGS_RECALL_PERSISTENT */));
     ags_channel_add_recall(output, (GObject *) play_stream_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -274,11 +274,11 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 								   "recall_channel\0", play_stream_channel,
 								   "recall_container\0", play_stream_channel_container,
 								   NULL);
-    AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-						   AGS_RECALL_PLAYBACK |
-						   AGS_RECALL_SEQUENCER |
-						   AGS_RECALL_NOTATION |
-						   AGS_RECALL_PERSISTENT);
+    ags_recall_set_flags(AGS_RECALL(play_stream_channel_run), (AGS_RECALL_TEMPLATE |
+							       AGS_RECALL_PLAYBACK |
+							       AGS_RECALL_SEQUENCER |
+							       AGS_RECALL_NOTATION |
+							       AGS_RECALL_PERSISTENT));
     ags_channel_add_recall(output, (GObject *) play_stream_channel_run, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
