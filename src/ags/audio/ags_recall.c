@@ -1129,6 +1129,8 @@ ags_recall_real_done(AgsRecall *recall)
     return;
   }
 
+  recall->flags |= AGS_RECALL_DONE;
+
   ags_recall_remove(recall);
 }
 
@@ -1243,8 +1245,7 @@ ags_recall_is_done(GList *recalls, AgsGroupId group_id)
     recall = AGS_RECALL(recalls->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0)
-      if((recall->recall_id != NULL && recall->recall_id->group_id != group_id) ||
-	 (AGS_RECALL_DONE & (recall->flags)) == 0)
+      if(recall->recall_id != NULL && recall->recall_id->group_id != group_id && (AGS_RECALL_DONE & (recall->flags)) == 0)
 	return(FALSE);
 
     recalls = recalls->next;
