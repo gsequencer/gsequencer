@@ -275,8 +275,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 						   "audio_channel\0", source->audio_channel,
 						   NULL);
 
-    AGS_RECALL(play_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_PROPAGATE_DONE);
+    ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_PROPAGATE_DONE));
     ags_channel_add_recall(source, (GObject *) play_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -291,9 +291,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 							  "audio_channel\0", source->audio_channel,
 							  NULL);
 
-    AGS_RECALL(play_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-					    AGS_RECALL_PLAYBACK |
-					    AGS_RECALL_PROPAGATE_DONE);
+    ags_recall_set_flags(AGS_RECALL(play_channel_run), (AGS_RECALL_TEMPLATE |
+							AGS_RECALL_PLAYBACK |
+							AGS_RECALL_PROPAGATE_DONE));
     ags_channel_add_recall(source, (GObject *) play_channel_run, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -310,9 +310,9 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 							    "source\0", source,
 							    "recall_container\0", play_stream_channel_container,
 							    NULL);
-    AGS_RECALL(play_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					       AGS_RECALL_PROPAGATE_DONE |
-					       AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(play_stream_channel), (AGS_RECALL_TEMPLATE |
+							   AGS_RECALL_PROPAGATE_DONE |
+							   AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) play_stream_channel, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -325,10 +325,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 								   "recall_channel\0", play_stream_channel,
 								   "recall_container\0", play_stream_channel_container,
 								   NULL);
-    AGS_RECALL(play_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-						   AGS_RECALL_PLAYBACK |
-						   AGS_RECALL_PROPAGATE_DONE |
-						   AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(play_stream_channel_run), (AGS_RECALL_TEMPLATE |
+							       AGS_RECALL_PLAYBACK |
+							       AGS_RECALL_PROPAGATE_DONE |
+							       AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) play_stream_channel_run, TRUE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -349,11 +349,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 							      "source\0", source,
 							      "recall_container\0", recall_stream_channel_container,
 							      NULL);
-    AGS_RECALL(recall_stream_channel)->flags |= (AGS_RECALL_TEMPLATE |
-						 AGS_RECALL_SEQUENCER |
-						 AGS_RECALL_NOTATION |
-						 AGS_RECALL_PROPAGATE_DONE |
-						 AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(recall_stream_channel), (AGS_RECALL_TEMPLATE |
+							     AGS_RECALL_SEQUENCER |
+							     AGS_RECALL_NOTATION |
+							     AGS_RECALL_PROPAGATE_DONE |
+							     AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) recall_stream_channel, FALSE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -366,12 +366,12 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 								     "recall_channel\0", recall_stream_channel,
 								     "recall_container\0", recall_stream_channel_container,
 								     NULL);
-    AGS_RECALL(recall_stream_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-						     AGS_RECALL_PLAYBACK |
-						     AGS_RECALL_SEQUENCER |
-						     AGS_RECALL_NOTATION |
-						     AGS_RECALL_PROPAGATE_DONE |
-						     AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(recall_stream_channel_run),(AGS_RECALL_TEMPLATE |
+								AGS_RECALL_PLAYBACK |
+								AGS_RECALL_SEQUENCER |
+								AGS_RECALL_NOTATION |
+								AGS_RECALL_PROPAGATE_DONE |
+								AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) recall_stream_channel_run, FALSE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -468,10 +468,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 								       "recall_container\0", recall_copy_pattern_container,
 								       "pattern\0", source->pattern->data,
 								       NULL);
-    AGS_RECALL(play_copy_pattern_channel)->flags |= (AGS_RECALL_TEMPLATE |
-						     AGS_RECALL_SEQUENCER |
-						     AGS_RECALL_NOTATION |
-						     AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(play_copy_pattern_channel), (AGS_RECALL_TEMPLATE |
+								 AGS_RECALL_SEQUENCER |
+								 AGS_RECALL_NOTATION |
+								 AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) play_copy_pattern_channel, TRUE);
     
     if(GTK_WIDGET_VISIBLE(drum))
@@ -487,10 +487,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									      "recall_container\0", play_copy_pattern_container,
 									      NULL);
   
-    AGS_RECALL(play_copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-							 AGS_RECALL_SEQUENCER |
-							 AGS_RECALL_NOTATION |
-							 AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(play_copy_pattern_channel_run), (AGS_RECALL_TEMPLATE |
+								     AGS_RECALL_SEQUENCER |
+								     AGS_RECALL_NOTATION |
+								     AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) play_copy_pattern_channel_run, TRUE);
     
     if(GTK_WIDGET_VISIBLE(drum))
@@ -513,10 +513,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 									 "recall_container\0", recall_copy_pattern_container,
 									 "pattern\0", source->pattern->data,
 									 NULL);
-    AGS_RECALL(recall_copy_pattern_channel)->flags |= (AGS_RECALL_TEMPLATE |
-						       AGS_RECALL_SEQUENCER |
-						       AGS_RECALL_NOTATION |
-						       AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(recall_copy_pattern_channel), (AGS_RECALL_TEMPLATE |
+								   AGS_RECALL_SEQUENCER |
+								   AGS_RECALL_NOTATION |
+								   AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel, FALSE);
       
     if(GTK_WIDGET_VISIBLE(drum))
@@ -532,10 +532,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 										"recall_container\0", recall_copy_pattern_container,
 										NULL);
     
-    AGS_RECALL(recall_copy_pattern_channel_run)->flags |= (AGS_RECALL_TEMPLATE  |
-							   AGS_RECALL_SEQUENCER |
-							   AGS_RECALL_NOTATION |
-							   AGS_RECALL_INPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(recall_copy_pattern_channel_run), (AGS_RECALL_TEMPLATE  |
+								       AGS_RECALL_SEQUENCER |
+								       AGS_RECALL_NOTATION |
+								       AGS_RECALL_INPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel_run, FALSE);
     
     if(GTK_WIDGET_VISIBLE(drum))
@@ -553,10 +553,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 						   "destination\0", destination,
 						   "recall_container\0", copy_channel_container,
 						   NULL);
-    AGS_RECALL(copy_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_SEQUENCER |
-					AGS_RECALL_NOTATION |
-					AGS_RECALL_OUTPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(copy_channel), (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_SEQUENCER |
+						    AGS_RECALL_NOTATION |
+						    AGS_RECALL_OUTPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) copy_channel, FALSE);
 
     if(GTK_WIDGET_VISIBLE(drum))
@@ -570,10 +570,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 							  "recall_channel\0", copy_channel,
 							  "recall_container\0", copy_channel_container,
 							  NULL);
-    AGS_RECALL(copy_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-					    AGS_RECALL_SEQUENCER |
-					    AGS_RECALL_NOTATION |
-					    AGS_RECALL_OUTPUT_ORIENTATED);
+    ags_recall_set_flags(AGS_RECALL(copy_channel_run), (AGS_RECALL_TEMPLATE |
+							AGS_RECALL_SEQUENCER |
+							AGS_RECALL_NOTATION |
+							AGS_RECALL_OUTPUT_ORIENTATED));
     ags_channel_add_recall(source, (GObject *) copy_channel_run, FALSE);
 
     if(GTK_WIDGET_VISIBLE(drum))
