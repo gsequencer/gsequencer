@@ -1124,10 +1124,7 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
-  g_message("done: %s\n\0", G_OBJECT_TYPE_NAME(recall));
-
-  if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0 ||
-     (AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
+  if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
      (AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     return;
   }
@@ -1191,8 +1188,6 @@ void
 ags_recall_real_remove(AgsRecall *recall)
 {
   AgsRecall *parent;
-
-  g_message("remove: %s\n\0", G_OBJECT_TYPE_NAME(recall));
 
   ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
 
@@ -1278,8 +1273,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
 
-  copy->flags = recall->flags;
-  copy->flags &= (~AGS_RECALL_TEMPLATE);
+  ags_recall_set_flags(copy, (recall->flags & (~AGS_RECALL_TEMPLATE)));
 
   /* duplicate handlers */
   list = recall->handlers;
