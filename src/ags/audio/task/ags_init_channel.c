@@ -174,14 +174,17 @@ ags_init_channel_launch(AgsTask *task)
 	if(stage == 0){
 	  if(init_channel->playback){
 	    AGS_DEVOUT_PLAY(channel->devout_play)->group_id[0] = init_channel->group_id[0];
+	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
 	  }
 	  
 	  if(init_channel->sequencer){
 	    AGS_DEVOUT_PLAY(channel->devout_play)->group_id[1] = init_channel->group_id[1];
+	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
 	  }
 	  
 	  if(init_channel->notation){
 	    AGS_DEVOUT_PLAY(channel->devout_play)->group_id[2] = init_channel->group_id[2];
+	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
 	  }
 	}else{
 	  if(init_channel->playback){
