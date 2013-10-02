@@ -440,7 +440,7 @@ ags_channel_finalize(GObject *gobject)
     free(channel->note);
 
   if(channel->devout_play != NULL)
-    free(channel->devout_play);  
+    ags_devout_play_free(channel->devout_play);  
 
 
   /* free some lists */

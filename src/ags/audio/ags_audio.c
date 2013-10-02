@@ -301,7 +301,7 @@ ags_audio_finalize(GObject *gobject)
   ags_list_free_and_unref_link(audio->notation);
 
   if(audio->devout_play != NULL)
-    free(audio->devout_play);
+    ags_devout_play_free(audio->devout_play);
 
   ags_list_free_and_unref_link(audio->recall_id);
   ags_list_free_and_unref_link(audio->run_order);

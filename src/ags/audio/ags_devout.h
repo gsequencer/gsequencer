@@ -188,6 +188,7 @@ GType ags_devout_get_type();
 GQuark ags_devout_error_quark();
 
 AgsDevoutPlay* ags_devout_play_alloc();
+void ags_devout_play_free(AgsDevoutPlay *devout_play);
 
 void ags_devout_list_cards(GList **card_id, GList **card_name);
 void ags_devout_pcm_info(char *card_id,

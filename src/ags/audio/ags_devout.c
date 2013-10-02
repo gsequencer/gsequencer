@@ -466,6 +466,7 @@ ags_devout_finalize(GObject *gobject)
 void
 ags_devout_connect(AgsDevout *devout)
 {
+  /* empty */
 }
 
 AgsDevoutPlay*
@@ -488,6 +489,18 @@ ags_devout_play_alloc()
   memset(play->group_id, 0, 3 * sizeof(AgsGroupId));
 
   return(play);
+}
+
+void
+ags_devout_play_free(AgsDevoutPlay *play)
+{
+  g_object_unref(G_OBJECT(play->iterator_thread[0]));
+  g_object_unref(G_OBJECT(play->iterator_thread[1]));
+  g_object_unref(G_OBJECT(play->iterator_thread[2]));
+
+  free(play->iterator_thread);
+
+  free(play->group_id);
 }
 
 void
