@@ -18,6 +18,11 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_id.h>
+
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
 {
@@ -41,15 +46,15 @@ ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
 {
   if(recall->recall_id != NULL && recall->recall_id->parent_group_id != 0){
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
-      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio)->recall, recall);
+      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), recall, FALSE);
     }else{
-      ags_channel_remove_recall(AGS_AUDIO(line->channel)->recall, recall);
+      ags_channel_remove_recall(AGS_AUDIO(line->channel), recall, FALSE);
     }
   }else{
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
-      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio)->play, recall);
+      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), recall, TRUE);
     }else{
-      ags_channel_remove_recall(AGS_AUDIO(line->channel)->play, recall);
+      ags_channel_remove_recall(AGS_AUDIO(line->channel), recall, TRUE);
     }
   }
 }
