@@ -130,7 +130,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 				AGS_TASK(init_audio));
 
     /* create append task */
-    append_audio = ags_append_audio_new(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout)->audio_loop,
+    append_audio = ags_append_audio_new(G_OBJECT(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout)->audio_loop),
 					AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
 
     /* append AgsAppendAudio */
@@ -149,7 +149,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
       AgsCancelAudio *cancel_audio;
 
       /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->group_id,
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->group_id[1],
 					  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
 
       /* append AgsAppendAudio */

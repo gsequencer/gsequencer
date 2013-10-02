@@ -320,7 +320,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
       AgsCancelAudio *cancel_audio;
 
       /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->group_id,
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->group_id[1],
 					  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play));
 
       /* append AgsCancelAudio */

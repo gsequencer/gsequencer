@@ -477,11 +477,13 @@ ags_devout_play_alloc()
 
   play->flags = 0;
 
-  play->iterator_thread = ags_iterator_thread_new();
+  play->iterator_thread[0] = ags_iterator_thread_new();
+  play->iterator_thread[1] = ags_iterator_thread_new();
+  play->iterator_thread[2] = ags_iterator_thread_new();
 
   play->source = NULL;
   play->audio_channel = 0;
-  play->group_id = 0;
+  memset(play->group_id, 0, 3 * sizeof(AgsGroupId));
 
   return(play);
 }

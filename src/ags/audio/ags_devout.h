@@ -174,7 +174,7 @@ struct _AgsDevoutPlay
 {
   guint flags;
 
-  AgsIteratorThread *iterator_thread; 
+  AgsIteratorThread **iterator_thread;
 
   GObject *source;
   guint audio_channel;
