@@ -839,16 +839,16 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
 
   /* set recursivly - prepare mask */
   inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
-			    AGS_RECALL_PERSISTENT_PLAYBACK |
 			    AGS_RECALL_SEQUENCER |
-			    AGS_RECALL_PERSISTENT_SEQUENCER |
 			    AGS_RECALL_NOTATION |
-			    AGS_RECALL_PERSISTENT_NOTATION |
 			    AGS_RECALL_PROPAGATE_DONE |
 			    AGS_RECALL_INITIAL_RUN);
 
   if(!AGS_IS_RECALL_RECYCLING(recall)){
-    inheritated_flags_mask |= AGS_RECALL_PERSISTENT;
+    inheritated_flags_mask |= (AGS_RECALL_PERSISTENT |
+			       AGS_RECALL_PERSISTENT_PLAYBACK |
+			       AGS_RECALL_PERSISTENT_SEQUENCER |
+			       AGS_RECALL_PERSISTENT_NOTATION);
   }
 
   /* apply recursivly */
@@ -1455,16 +1455,16 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     return;
 
   inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
-			    AGS_RECALL_PERSISTENT_PLAYBACK |
 			    AGS_RECALL_SEQUENCER |
-			    AGS_RECALL_PERSISTENT_SEQUENCER |
 			    AGS_RECALL_NOTATION |
-			    AGS_RECALL_PERSISTENT_NOTATION |
 			    AGS_RECALL_PROPAGATE_DONE |
 			    AGS_RECALL_INITIAL_RUN);
 
   if(!AGS_IS_RECALL_AUDIO_SIGNAL(child)){
-    inheritated_flags_mask |= AGS_RECALL_PERSISTENT;
+    inheritated_flags_mask |= (AGS_RECALL_PERSISTENT |
+			       AGS_RECALL_PERSISTENT_PLAYBACK |
+			       AGS_RECALL_PERSISTENT_SEQUENCER |
+			       AGS_RECALL_PERSISTENT_NOTATION);
   }
 
   /* unref old */
