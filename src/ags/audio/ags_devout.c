@@ -477,6 +477,8 @@ ags_devout_play_alloc()
 
   play->flags = 0;
 
+  play->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));
+
   play->iterator_thread[0] = ags_iterator_thread_new();
   play->iterator_thread[1] = ags_iterator_thread_new();
   play->iterator_thread[2] = ags_iterator_thread_new();
