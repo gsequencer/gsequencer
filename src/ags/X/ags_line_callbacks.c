@@ -35,3 +35,21 @@ ags_line_show_callback(GtkWidget *widget, AgsLine *line)
 {
   ags_line_show(widget);
 }
+
+void
+ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
+{
+  if(recall->recall_id != NULL && recall->recall_id->parent_group_id != 0){
+    if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
+      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio)->recall, recall);
+    }else{
+      ags_channel_remove_recall(AGS_AUDIO(line->channel)->recall, recall);
+    }
+  }else{
+    if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
+      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio)->play, recall);
+    }else{
+      ags_channel_remove_recall(AGS_AUDIO(line->channel)->play, recall);
+    }
+  }
+}
