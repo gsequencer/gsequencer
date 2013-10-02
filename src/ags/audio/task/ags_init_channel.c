@@ -175,16 +175,37 @@ ags_init_channel_launch(AgsTask *task)
 	  if(init_channel->playback){
 	    AGS_DEVOUT_PLAY(channel->devout_play)->group_id[0] = init_channel->group_id[0];
 	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
+
+	    ags_channel_recursive_play_init(channel, stage,
+					    arrange_group_id, duplicate_templates,
+					    TRUE, FALSE, FALSE,
+					    resolve_dependencies,
+					    init_channel->group_id[0], init_channel->child_group_id[0],
+					    0);
 	  }
 	  
 	  if(init_channel->sequencer){
 	    AGS_DEVOUT_PLAY(channel->devout_play)->group_id[1] = init_channel->group_id[1];
 	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+
+	    ags_channel_recursive_play_init(channel, stage,
+					    arrange_group_id, duplicate_templates,
+					    FALSE, TRUE, FALSE,
+					    resolve_dependencies,
+					    init_channel->group_id[0], init_channel->child_group_id[0],
+					    0);
 	  }
 	  
 	  if(init_channel->notation){
 	    AGS_DEVOUT_PLAY(channel->devout_play)->group_id[2] = init_channel->group_id[2];
 	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
+
+	    ags_channel_recursive_play_init(channel, stage,
+					    arrange_group_id, duplicate_templates,
+					    FALSE, FALSE, TRUE,
+					    resolve_dependencies,
+					    init_channel->group_id[0], init_channel->child_group_id[0],
+					    0);
 	  }
 	}else{
 	  if(init_channel->playback){
@@ -214,9 +235,9 @@ ags_init_channel_launch(AgsTask *task)
 					    0);
 	
 	  }	  
-	  
-	  channel = channel->next;
 	}
+
+	channel = channel->next;
       }
     }
   }else{
