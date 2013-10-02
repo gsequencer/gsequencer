@@ -64,7 +64,17 @@ struct _AgsLineClass
 struct _AgsLineMember
 {
   AgsRecall *recall;
-  guint control;
+
+  GList *control;
+
+  gulong done_handler;
+};
+
+struct _AgsLineControl
+{
+  GType control_type;
+
+  GtkAdjustment *adjustment;
 };
 
 GType ags_line_get_type(void);
