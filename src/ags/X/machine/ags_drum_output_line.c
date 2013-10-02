@@ -242,6 +242,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 							  NULL);
     ags_recall_set_flags(AGS_RECALL(loop_channel_run), (AGS_RECALL_TEMPLATE |
 							AGS_RECALL_SEQUENCER |
+							AGS_RECALL_PERSISTENT_SEQUENCER |
 							AGS_RECALL_OUTPUT_ORIENTATED));
     ags_channel_add_recall(output, (GObject *) loop_channel_run, TRUE);
 
@@ -277,6 +278,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     ags_recall_set_flags(AGS_RECALL(play_stream_channel_run), (AGS_RECALL_TEMPLATE |
 							       AGS_RECALL_PLAYBACK |
 							       AGS_RECALL_SEQUENCER |
+							       AGS_RECALL_PERSISTENT_SEQUENCER |
 							       AGS_RECALL_NOTATION |
 							       AGS_RECALL_PERSISTENT));
     ags_channel_add_recall(output, (GObject *) play_stream_channel_run, TRUE);

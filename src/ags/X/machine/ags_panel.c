@@ -215,8 +215,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 						     "audio_channel\0", i,
 						     NULL);
       
-      AGS_RECALL(play_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					  AGS_RECALL_OUTPUT_ORIENTATED);
+      ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_OUTPUT_ORIENTATED));
       ags_channel_add_recall(input, (GObject *) play_channel, TRUE);
 
       if(GTK_WIDGET_VISIBLE(panel))
@@ -234,6 +234,7 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       ags_recall_set_flags(AGS_RECALL(play_channel_run), (AGS_RECALL_TEMPLATE |
 							  AGS_RECALL_PLAYBACK |
 							  AGS_RECALL_SEQUENCER |
+							  AGS_RECALL_PERSISTENT_SEQUENCER |
 							  AGS_RECALL_NOTATION |
 							  AGS_RECALL_OUTPUT_ORIENTATED));
       ags_channel_add_recall(input, (GObject *) play_channel_run, TRUE);

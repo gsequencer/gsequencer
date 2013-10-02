@@ -929,6 +929,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
 								     NULL);
       ags_recall_set_flags(AGS_RECALL(recall_stream_channel_run), (AGS_RECALL_TEMPLATE |
 								   AGS_RECALL_SEQUENCER |
+								   AGS_RECALL_PERSISTENT_SEQUENCER |
 								   AGS_RECALL_NOTATION |
 								   AGS_RECALL_INPUT_ORIENTATED));
       ags_channel_add_recall(source, (GObject *) recall_stream_channel_run, FALSE);
@@ -968,6 +969,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
       
       ags_recall_set_flags(AGS_RECALL(play_copy_pattern_channel_run), (AGS_RECALL_TEMPLATE |
 								       AGS_RECALL_SEQUENCER |
+								       AGS_RECALL_PERSISTENT_SEQUENCER |
 								       AGS_RECALL_NOTATION |
 								       AGS_RECALL_INPUT_ORIENTATED));
       ags_channel_add_recall(source, (GObject *) play_copy_pattern_channel_run, TRUE);
@@ -1013,6 +1015,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
     
       ags_recall_set_flags(AGS_RECALL(recall_copy_pattern_channel_run), (AGS_RECALL_TEMPLATE  |
 									 AGS_RECALL_SEQUENCER |
+									 AGS_RECALL_PERSISTENT_SEQUENCER |
 									 AGS_RECALL_NOTATION |
 									 AGS_RECALL_INPUT_ORIENTATED));
       ags_channel_add_recall(source, (GObject *) recall_copy_pattern_channel_run, FALSE);
@@ -1052,6 +1055,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint output_pad_start)
 							    NULL);
       ags_recall_set_flags(AGS_RECALL(copy_channel_run), (AGS_RECALL_TEMPLATE |
 							  AGS_RECALL_SEQUENCER |
+							  AGS_RECALL_PERSISTENT_SEQUENCER |
 							  AGS_RECALL_NOTATION |
 							  AGS_RECALL_OUTPUT_ORIENTATED));
       ags_channel_add_recall(source, (GObject *) copy_channel_run, FALSE);
