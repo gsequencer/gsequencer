@@ -1,44 +1,47 @@
 <!ENTITY ags_default_version "0.4.0">
+<!ENTITY ags_effects_default_version "0.4.0">
 
+<!-- root node -->
 <!ELEMENT ags (AgsWindow, AgsEmbededAudio*)>
 <!ATTLIST ags
-  version          CDATA      #REQUIRED
-  embedded_audio   CDATA      "FALSE"
->
+	  version          CDATA      #REQUIRED
+	  embedded_audio   CDATA      "FALSE"
+	  >
 
-<!ELEMENT AgsAudio (AgsChannel*, AgsNotation*)>
+<!-- audio -->
+<!ELEMENT AgsAudio (AgsChannel*, AgsRecalls*, AgsNotation*)>
 <!ATTLIST AgsAudio
-  audio_channels   NMTOKEN    "2"
-  output_pads      NMTOKEN    "1"
-  input_pads       NMTOKEN    "1"
->
+	  audio_channels   NMTOKEN    "2"
+	  output_pads      NMTOKEN    "1"
+	  input_pads       NMTOKEN    "1"
+	  >
 
-<!ELEMENT AgsChannel (AgsRecycling?, AgsRecall*, AgsPattern*, (AgsOutput|AgsInput))>
+<!ELEMENT AgsChannel (AgsRecycling?, AgsRecalls*, AgsPattern*, (AgsOutput|AgsInput))>
 <!ATTLIST AgsChannel
-  pad              NMTOKEN    #REQUIRED
-  audio_channel    NMTOKEN    #REQUIRED
-  link_name        CDATA      #REQUIRED
-  link_line        NMTOKEN    #REQUIRED
->
+	  pad              NMTOKEN    #REQUIRED
+	  audio_channel    NMTOKEN    #REQUIRED
+	  link_name        CDATA      #REQUIRED
+	  link_line        NMTOKEN    #REQUIRED
+	  >
 
 <!ELEMENT AgsOutput EMPTY>
 
 <!ELEMENT AgsInput EMPTY>
 <!ATTLIST AgsInput
-  file             CDATA      #IMPLIED
->
+	  file             CDATA      #IMPLIED
+	  >
 
 <!ELEMENT AgsRecycling (AgsAudioSignal*)>
 
 <!ELEMENT AgsAudioSignal ( AgsStream*)>
 <!ATTLIST AgsAudioSignal
-  start            NMTOKEN    #REQUIRED
-  stop             NMTOKEN    #REQUIRED
-  attack0          NMTOKEN    #REQUIRED
-  attack1          NMTOKEN    #REQUIRED
-  parent_attack    NMTOKEN    #IMPLIED
-  lock_attack	   NMTOKEN    #REQUIRED
->
+	  start            NMTOKEN    #REQUIRED
+	  stop             NMTOKEN    #REQUIRED
+	  attack0          NMTOKEN    #REQUIRED
+	  attack1          NMTOKEN    #REQUIRED
+	  parent_attack    NMTOKEN    #IMPLIED
+	  lock_attack	   NMTOKEN    #REQUIRED
+	  >
 
 <!ELEMENT AgsOffset EMPTY>
 
@@ -46,94 +49,138 @@
 
 <!ELEMENT AgsPattern (AgsPatternData*)>
 <!ATTLIST AgsPattern
-  dim0             NMTOKEN    "1"
-  dim1             NMTOKEN    "1"
-  lenght           NMTOKEN    "32"
->
+	  dim0             NMTOKEN    "1"
+	  dim1             NMTOKEN    "1"
+	  lenght           NMTOKEN    "32"
+	  >
 
 <!ELEMENT AgsPatternData (#CDATA)>
 <!ATTLIST AgsPatternData
-  index0           NMTOKEN    #REQUIRED
-  index1	   NMTOKEN    #REQUIRED
-  coding           CDATA      "human readable"
->
+	  index0           NMTOKEN    #REQUIRED
+	  index1	   NMTOKEN    #REQUIRED
+	  coding           CDATA      "human readable"
+	  >
 
 <!ELEMENT AgsNotation (AgsNote)*>
 <!ATTLIST AgsNotation
-  raster           CDATA     "TRUE"
-  key              CDATA     "violine"
-  tact             CDATA     "1/4"
-  bpm              NMTOKEN   "120"
->
+	  raster           CDATA     "TRUE"
+	  key              CDATA     "violine"
+	  tact             CDATA     "1/4"
+	  bpm              NMTOKEN   "120"
+	  >
 
 <!ELEMENT AgsNote ((AgsBeat, AgsBeat)?,(AgsOffset, AgsOffset)?)>
 <!ATTLIST AgsNote
-  x0               NMTOKEN   #REQUIRED
-  x1               NMTOKEN   #REQUIRED
-  y                NMTOKEN   #REQUIRED
-  name             NMTOKEN   #IMPLIED
-  frequency        NMTOKEN   #IMPLIED
->
+	  x0               NMTOKEN   #REQUIRED
+	  x1               NMTOKEN   #REQUIRED
+	  y                NMTOKEN   #REQUIRED
+	  name             NMTOKEN   #IMPLIED
+	  frequency        NMTOKEN   #IMPLIED
+	  >
 
 <!ELEMENT AgsBeat (AgsOffset)>
 
 <!ELEMENT AgsEmbededAudio (AgsFileLink*, #PCDATA)*>
 <!ATTLIST AgsEmbededAudio
-  coding           CDATA      "raw"
-  channels         NMTOKEN    "2"
->
+	  coding           CDATA      "raw"
+	  channels         NMTOKEN    "2"
+	  >
 
 <!ELEMENT AgsFileLink EMPTY>
 <!ATTLIST AgsFileLink
-  type             CDATA      "embeded audio"
-  mode             CDATA      "mix"
-  file             CDATA      #REQUIRED
-  offset           CDATA      #REQUIRED
-  start            CDATA      #REQUIRED
->
+	  type             CDATA      "embeded audio"
+	  mode             CDATA      "mix"
+	  file             CDATA      #REQUIRED
+	  offset           CDATA      #REQUIRED
+	  start            CDATA      #REQUIRED
+	  >
 
 <!ELEMENT AgsDevout EMPTY>
 <!ATTLIST AgsDevout
-  pcm_channels     NMTOKEN    "2"
-  dsp_channels     NMTOKEN    "2"
-  bits             NMTOKEN    "16"
-  buffer_size      NMTOKEN    "512"
-  frequence        NMTOKEN    "44100"
-  system           CDATA      "oss"
-  device           CDATA      "/dev/dsp"
->
+	  pcm_channels     NMTOKEN    "2"
+	  dsp_channels     NMTOKEN    "2"
+	  bits             NMTOKEN    "16"
+	  buffer_size      NMTOKEN    "512"
+	  frequence        NMTOKEN    "44100"
+	  system           CDATA      "oss"
+	  device           CDATA      "/dev/dsp"
+	  >
 
 <!ELEMENT AgsTask ()>
 <!ATTLIST AgsTask
-  name             CDATA      #REQUIRED
-  start            NMTOKEN    #REQUIRED
->
+	  name             CDATA      #REQUIRED
+	  start            NMTOKEN    #REQUIRED
+	  >
 
-<!ELEMENT AgsRecall ((AgsPlayPattern|AgsPlayChannel|AgsPlayAudioSignal|AgsVolume|AgsCopyPattern|AgsCopyChannel|AgsCopyAudioSignal), AgsRecall*)>
+<!-- recalls -->
+<!Element AgsRecalls (AgsRecall*)>
+
+<!ENTITIY AGS_LED "AgsLed">
+
+<!ENTITIY AGS_VINDICATOR "AgsVIndicator">
+
+<!ENTITIY AGS_HINDICATOR "AgsHIndicator">
+
+<!ENTITIY GTK_LABEL "GtkLabel">
+
+<!ENTITIY AGS_WAVEFORM "AgsWaveform">
+
+<!ENTITIY GTK_BUTTON "GtkButton">
+
+<!ENTITIY GTK_TOGGLE_BUTTON "GtkToggleButton">
+
+<!ENTITIY GTK_CHECK_BUTTON "GtkCheckButton">
+
+<!ENTITIY GTK_SPIN_BUTTON "GtkSpinButton">
+
+<!ENTITIY GTK_VSCALE "GtkVScale">
+
+<!ENTITIY GTK_HSCALE "GtkHScale">
+
+<!ENTITIY AGS_DIAL "AgsDial">
+
+<!ENTITIY AGS_CARTESIAN "AgsCartesian">
+
+<!ELEMENT AgsRecall (AgsRecallAudio|AgsRecallAudioRun|AgsRecallChannel|AgsRecallChannelRun|AgsRecallRecycling|AgsRecallRecyclingRun|AgsRecallAudioSignal)?, AgsRecall*)>
 <!ATTLIST AgsRecall
-  effect           CDATA      #REQUIRED
-  name             CDATA      #REQUIRED
-  control_count	   NMTOKEN    #REQUIRED
->
+	  id                     ID         #REQUIRED
+	  effect                 CDATA      #REQUIRED
+	  name                   CDATA      #REQUIRED
+	  control_count	         NMTOKEN    #REQUIRED
+	  control_types          CDATA      #REQUIRED
+	  control_property_name  CDATA      #REQUIRED
+	  control_property_value CDATA      #REQUIRED
+	  next_grouped           IDREF      #REQUIRED
+	  effect-id              IDREF      #REQUIRED
+	  version                CDATA      #REQUIRED
+	  >
 
-<!ELEMENT AgsPlayPattern EMPTY>
+<!ELEMENT AgsRecallAudio>
 
-<!ELEMENT AgsPlayChannel EMPTY>
+<!ELEMENT AgsRecallAudioRun>
 
-<!ELEMENT AgsPlayAudioSignal EMPTY>
+<!ELEMENT AgsRecallChannel>
 
-<!ELEMENT AgsVolume EMPTY>
+<!ELEMENT AgsRecallChannelRun>
 
+<!ELEMENT AgsRecallRecycling>
+
+<!ELEMENT AgsRecallRecyclingRun>
+
+<!ELEMENT AgsRecallAudioSignal>
+
+<!--GUI Widgets -->
 <!ELEMENT AgsWindow (AgsMenubar, AgsMachines, AgsEditor, AgsNavigation)>
 
 <!ELEMENT AgsMenuBar EMPTY>
 
 <!ELEMENT AgsMachines (AgsMachine*)>
 
-<!ELEMENT AgsMachine (AgsAudio, (AgsPanel|AgsMixer|AgsDrum|AgsMatrix|AgsSynth|AgsFFPlayer))>
+<!-- machine -->
+<!ELEMENT AgsMachine (AgsAudio, (AgsPanel|AgsMixer|AgsDrum|AgsMatrix|AgsSynth|AgsFFPlayer), AgsPad*)>
 <!ATTLIST AgsMachine
-  name             CDATA      #REQUIRED
->
+	  name             CDATA      #REQUIRED
+	  >
 
 <!ELEMENT AgsPanel (AgsDevout)>
 
@@ -147,78 +194,93 @@
 
 <!ELEMENT AgsFFPlayer EMPTY>
 
-<!ELEMENT AgsPad (AgsLine)*>
+<!ELEMENT AgsPad (AgsLine*, (AgsMixerInputPad|AgsMixerOutputPad|AgsDrumInputPad|AgsDrumOutputPad))>
 <!ATTLIST AgsPad
-  show_grouping    CDATA      "TRUE"
-  groupe_pad       CDATA      "FALSE"
-  groupe_channel   CDATA      "FALSE"
->
+	  show_grouping    CDATA      "TRUE"
+	  groupe_pad       CDATA      "FALSE"
+	  groupe_channel   CDATA      "FALSE"
+	  >
 
-<!ELEMENT AgsLine (AgsLineMember)*>
+<!ELEMENT AgsMixerInputPad EMPTY>
+
+<!ELEMENT AgsMixerOutputPad EMPTY>
+
+<!ELEMENT AgsDrumInputPad EMPTY>
+
+<!ELEMENT AgsDrumOutputPad EMPTY>
+
+<!ELEMENT AgsLine (AgsLineMember*, (AgsDrumInputLine|AgsDrumOutputLine))>
 <!ATTLIST AgsLine
-  rows             NMTOKEN    #REQUIRED
-  cols             NMTOKEN    #REQUIRED
->
+	  rows             NMTOKEN    #REQUIRED
+	  cols             NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT AgsDrumInputLine EMPTY>
+
+<!ELEMENT AgsDrumOutputLine EMPTY>
 
 <!ELEMENT AgsLineMember EMPTY>
 <!ATTLIST AgsLineMember
-  visualization    CDATA      "GtkDial"
-  left_attach      NMTOKEN    #REQUIRED
-  rigth_attach     NMTOKEN    #REQUIRED
-  top_attach       NMTOKEN    #REQUIRED
-  bottom_attach    NMTOKEN    #REQUIRED
-  effect           CDATA      #REQUIRED
-  recall_name      CDATA      #REQUIRED
-  control          NMTOKEN    #REQUIRED
->
+	  visualization    CDATA      "AgsDial"
+	  left_attach      NMTOKEN    #REQUIRED
+	  rigth_attach     NMTOKEN    #REQUIRED
+	  top_attach       NMTOKEN    #REQUIRED
+	  bottom_attach    NMTOKEN    #REQUIRED
+	  effect           CDATA      #REQUIRED
+	  recall_name      CDATA      #REQUIRED
+	  control          NMTOKEN    #REQUIRED
+	  >
 
+<!-- dialogs -->
 <!ELEMENT AgsMachineEditor (AgsPadEditor*)>
 <!ATTLIST AgsMachineEditor
-  machine          CDATA      #REQUIRED
->
+	  machine          CDATA      #REQUIRED
+	  >
 
 <!ELEMENT AgsPadEditor (AgsLineEditor)*>
 <!ATTLIST AgsPadEditor
-  pad              NMTOKEN    #REQUIRED
->
+	  pad              NMTOKEN    #REQUIRED
+	  >
 
 <!ELEMENT AgsLineEditor (AgsLineMemberEditor, AgsLinkEditor)>
 <!ATTLIST AgsLineEditor
-  line             NMTOKEN    #REQUIRED
->
+	  line             NMTOKEN    #REQUIRED
+	  >
 
 <!ELEMENT AgsLineMemberEditor (#CDATA, #CDATA, #NMTOKEN, ("GtkDial"|"GtkScale"|"GtkSpinButton"), #NMTOKEN, #NMTOKEN, #NMTOKEN, #NMTOKEN)*>
 
 <!ELEMENT AgsLinkEditor EMPTY>
 <!ATTLIST AgsLinkEditor
-  machine          CDATA      #REQUIRED
-  name             CDATA      #REQUIRED
-  link		   NMTOKEN    #REQUIRED
->
+	  machine          CDATA      #REQUIRED
+	  name             CDATA      #REQUIRED
+	  link		   NMTOKEN    #REQUIRED
+	  >
 
+<!-- editor -->
 <!ELEMENT AgsEditor (AgsToolbar, AgsNotebook)>
 
 <!ELEMENT AgsToolbar EMPTY>
 <!ATTLIST AgsToolbar
-  mode             CDATA      "edit")
-  tic              CDATA      "1/8"
-  zoom             CDATA      "1:8"
->
+	  mode             CDATA      "edit")
+	  tic              CDATA      "1/8"
+	  zoom             CDATA      "1:8"
+	  >
 
 <!ELEMENT AgsNotebook EMPTY>
 
+<!-- navigation -->
 <!ELEMENT AgsNavigation EMPTY>
 <!ATTLIST AgsNavigation
-  expandet         CDATA      "FALSE"
-  bpm              NMTOKEN    "120"
-  loop             CDATA      "FALSE"
-  position_min     NMTOKEN    "0.0"
-  position_sec     NMTOKEN    "0.0"
-  duration_min     NMTOKEN    "0.0"
-  duration_sec     NMTOKEN    "0.0"
-  loop_left_min    NMTOKEN    "0.0"
-  loop_left_sec    NMTOKEN    "0.0"
-  loop_right_min   NMTOKEN    "0.0"
-  loop_right_sec   NMTOKEN    "0.0"
-  raster           CDATA      "TRUE"
->
+	  expandet         CDATA      "FALSE"
+	  bpm              NMTOKEN    "120"
+	  loop             CDATA      "FALSE"
+	  position_min     NMTOKEN    "0.0"
+	  position_sec     NMTOKEN    "0.0"
+	  duration_min     NMTOKEN    "0.0"
+	  duration_sec     NMTOKEN    "0.0"
+	  loop_left_min    NMTOKEN    "0.0"
+	  loop_left_sec    NMTOKEN    "0.0"
+	  loop_right_min   NMTOKEN    "0.0"
+	  loop_right_sec   NMTOKEN    "0.0"
+	  raster           CDATA      "TRUE"
+	  >

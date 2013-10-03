@@ -61,22 +61,6 @@ struct _AgsLineClass
   void (*set_channel)(AgsLine *line, AgsChannel *channel);
 };
 
-struct _AgsLineMember
-{
-  AgsRecall *recall;
-
-  GList *control;
-
-  gulong done_handler;
-};
-
-struct _AgsLineControl
-{
-  GType control_type;
-
-  GtkAdjustment *adjustment;
-};
-
 GType ags_line_get_type(void);
 
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
