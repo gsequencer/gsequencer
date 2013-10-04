@@ -63,6 +63,9 @@ struct _AgsAudioSignal
   guint loop_start;
   guint loop_end;
 
+  guint attack;
+  guint lock_attack;
+  
   GList *stream_beginning;
   GList *stream_current;
   GList *stream_end;

@@ -41,6 +41,8 @@ struct _AgsRecycling
 {
   GObject object;
 
+  guint flags;
+
   GObject *channel;
   GObject *devout;
 

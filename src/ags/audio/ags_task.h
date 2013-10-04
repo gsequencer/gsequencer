@@ -45,7 +45,7 @@ struct _AgsTask
 
   char *name;
 
-  guint start;
+  guint delay;
 
   pthread_cond_t wait_sync_task_cond;
 };

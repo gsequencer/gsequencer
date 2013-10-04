@@ -56,7 +56,7 @@ struct _AgsWindow
   GtkVPaned *paned;
 
   GtkVBox *machines;
-  AgsMachineCounter *counter;
+  AgsMachineCounter *counter; //TODO:JK: make applicable for plugins
   AgsMachine *selected;
 
   AgsEditor *editor;

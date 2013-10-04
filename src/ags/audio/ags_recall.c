@@ -434,6 +434,10 @@ ags_recall_init(AgsRecall *recall)
   recall->devout = NULL;
   recall->container = NULL;
 
+  recall->version = NULL;
+  recall->build_id = NULL;
+
+  recall->effect = NULL;
   recall->name = NULL;
 
   recall->dependencies = NULL;

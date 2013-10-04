@@ -78,7 +78,11 @@ struct _AgsRecall
   GObject *devout;
   GObject *container; // see AgsRecallContainer
 
-  char *name;
+  gchar *version;
+  gchar *build_id;
+
+  gchar *effect;
+  gchar *name;
 
   GList *dependencies;
 

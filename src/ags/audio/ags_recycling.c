@@ -162,7 +162,8 @@ ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_recycling_init(AgsRecycling *recycling)
 {
-  //  recycling->flags = 0;
+  recycling->flags = 0;
+
   recycling->devout = NULL;
 
   recycling->channel = NULL;

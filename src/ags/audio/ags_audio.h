@@ -81,8 +81,8 @@ struct _AgsAudio
   GList *recall;
   GList *play;
 
-  GList *recall_remove;
-  GList *play_remove;
+  GList *recall_remove; //TODO:JK: verify deprecation
+  GList *play_remove; //TODO:JK: verify deprecation
 
   GtkWidget *machine;
 };

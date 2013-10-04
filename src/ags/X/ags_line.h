@@ -34,7 +34,6 @@
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;
-typedef struct _AgsLineMember AgsLineMember;
 
 typedef enum{
   AGS_LINE_CONNECTED       = 1,
