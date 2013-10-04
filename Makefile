@@ -215,6 +215,7 @@ am_ags_OBJECTS = ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_editor_callbacks.$(OBJEXT) \
 	ags-ags_machine_editor_callbacks.$(OBJEXT) \
 	ags-ags_property_collection_editor.$(OBJEXT) \
+	ags-ags_line_member.$(OBJEXT) \
 	ags-ags_line_member_editor.$(OBJEXT) \
 	ags-ags_navigation_callbacks.$(OBJEXT) \
 	ags-ags_machine_callbacks.$(OBJEXT) \
@@ -875,6 +876,7 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/X/ags_machine_callbacks.h \
 	./src/ags/X/ags_machine_editor_callbacks.c \
 	./src/ags/X/ags_property_collection_editor.c \
+	./src/ags/X/ags_line_member.c \
 	./src/ags/X/ags_line_member_editor.c \
 	./src/ags/X/ags_navigation_callbacks.c \
 	./src/ags/X/ags_window_callbacks.h \
@@ -897,7 +899,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/X/ags_window.c ./src/ags/X/ags_machine.h \
 	./src/ags/X/ags_property_editor.h ./src/ags/X/ags_window.h \
 	./src/ags/X/ags_property_listing_editor.c \
-	./src/ags/X/ags_editor.h ./src/ags/X/ags_line_member_editor.h \
+	./src/ags/X/ags_editor.h ./src/ags/X/ags_line_member.h \
+	./src/ags/X/ags_line_member_editor.h \
 	./src/ags/X/ags_pad_editor.h ./src/ags/X/ags_line_editor.h \
 	./src/ags/X/ags_link_editor.c \
 	./src/ags/X/ags_line_member_editor_callbacks.c \
@@ -1345,6 +1348,7 @@ include ./$(DEPDIR)/ags-ags_line.Po
 include ./$(DEPDIR)/ags-ags_line_callbacks.Po
 include ./$(DEPDIR)/ags-ags_line_editor.Po
 include ./$(DEPDIR)/ags-ags_line_editor_callbacks.Po
+include ./$(DEPDIR)/ags-ags_line_member.Po
 include ./$(DEPDIR)/ags-ags_line_member_editor.Po
 include ./$(DEPDIR)/ags-ags_line_member_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_link_channel.Po
@@ -3562,6 +3566,20 @@ ags-ags_property_collection_editor.obj: ./src/ags/X/ags_property_collection_edit
 #	$(AM_V_CC)source='./src/ags/X/ags_property_collection_editor.c' object='ags-ags_property_collection_editor.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_property_collection_editor.obj `if test -f './src/ags/X/ags_property_collection_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_property_collection_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_property_collection_editor.c'; fi`
+
+ags-ags_line_member.o: ./src/ags/X/ags_line_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_line_member.o -MD -MP -MF $(DEPDIR)/ags-ags_line_member.Tpo -c -o ags-ags_line_member.o `test -f './src/ags/X/ags_line_member.c' || echo '$(srcdir)/'`./src/ags/X/ags_line_member.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_line_member.Tpo $(DEPDIR)/ags-ags_line_member.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_line_member.c' object='ags-ags_line_member.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_line_member.o `test -f './src/ags/X/ags_line_member.c' || echo '$(srcdir)/'`./src/ags/X/ags_line_member.c
+
+ags-ags_line_member.obj: ./src/ags/X/ags_line_member.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_line_member.obj -MD -MP -MF $(DEPDIR)/ags-ags_line_member.Tpo -c -o ags-ags_line_member.obj `if test -f './src/ags/X/ags_line_member.c'; then $(CYGPATH_W) './src/ags/X/ags_line_member.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_line_member.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_line_member.Tpo $(DEPDIR)/ags-ags_line_member.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_line_member.c' object='ags-ags_line_member.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_line_member.obj `if test -f './src/ags/X/ags_line_member.c'; then $(CYGPATH_W) './src/ags/X/ags_line_member.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_line_member.c'; fi`
 
 ags-ags_line_member_editor.o: ./src/ags/X/ags_line_member_editor.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_line_member_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_line_member_editor.Tpo -c -o ags-ags_line_member_editor.o `test -f './src/ags/X/ags_line_member_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_line_member_editor.c

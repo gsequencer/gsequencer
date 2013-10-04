@@ -26,6 +26,7 @@
 #include <ags/audio/ags_channel.h>
 
 #include <ags/X/ags_link_editor.h>
+#include <ags/X/ags_line_member_editor.h>
 
 #define AGS_TYPE_LINE_EDITOR                (ags_line_editor_get_type())
 #define AGS_LINE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_EDITOR, AgsLineEditor))
@@ -44,6 +45,7 @@ struct _AgsLineEditor
   AgsChannel *channel;
 
   AgsLinkEditor *link_editor;
+  AgsLineMemberEditor *member_editor;
 };
 
 struct _AgsLineEditorClass

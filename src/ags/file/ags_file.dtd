@@ -576,7 +576,7 @@
 <!ELEMENT ags-machine-editor (ags-pad-editor-list)>
 <!ATTLIST ags-machine-editor
 	  id               ID         #REQUIRED
-	  machine          CDATA      #REQUIRED
+	  machine          IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-pad-editor-list (ags-pad-editor*)>

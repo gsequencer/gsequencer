@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,38 +19,85 @@
 #include <ags/X/ags_line_member_editor.h>
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
+
 void ags_line_member_editor_class_init(AgsLineMemberEditorClass *line_member_editor);
+void ags_line_member_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_line_member_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor);
-void ags_line_member_editor_connect(AgsLineMemberEditor *line_member_editor);
-void ags_line_member_editor_destroy(GtkObject *object);
-void ags_line_member_editor_show(GtkWidget *widget);
+void ags_line_member_editor_connect(AgsConnectable *connectable);
+void ags_line_member_editor_disconnect(AgsConnectable *connectable);
+void ags_line_member_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_line_member_editor_apply(AgsApplicable *applicable);
+void ags_line_member_editor_reset(AgsApplicable *applicable);
+void ags_line_member_editor_finalize(GObject *gobject);
 
 GType
 ags_line_member_editor_get_type(void)
 {
-  static GType line_member_editor_type = 0;
+  static GType ags_type_line_member_editor = 0;
 
-  if (!line_member_editor_type){
-    static const GtkTypeInfo line_member_editor_info = {
-      "AgsLineMemberEditor\0",
-      sizeof(AgsLineMemberEditor), /* base_init */
-      sizeof(AgsLineMemberEditorClass), /* base_finalize */
-      (GtkClassInitFunc) ags_line_member_editor_class_init,
-      (GtkObjectInitFunc) ags_line_member_editor_init,
+  if(!ags_type_line_member_editor){
+    static const GTypeInfo ags_line_member_editor_info = {
+      sizeof (AgsLineMemberEditorClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_line_member_editor_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsLineMemberEditor),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_line_member_editor_init,
     };
 
-    line_member_editor_type = gtk_type_unique (GTK_TYPE_VBOX, &line_member_editor_info);
-  }
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_line_member_editor_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
 
-  return (line_member_editor_type);
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_line_member_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_line_member_editor = g_type_register_static(GTK_TYPE_VBOX,
+							 "AgsLineMemberEditor\0", &ags_line_member_editor_info,
+							 0);
+
+    g_type_add_interface_static(ags_type_line_member_editor,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+    
+    g_type_add_interface_static(ags_type_line_member_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
+  }
+  
+  return(ags_type_line_member_editor);
 }
 
 void
 ags_line_member_editor_class_init(AgsLineMemberEditorClass *line_member_editor)
 {
+  /* empty */
+}
+
+void
+ags_line_member_editor_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->connect = ags_line_member_editor_connect;
+  connectable->disconnect = ags_line_member_editor_disconnect;
+}
+
+void
+ags_line_member_editor_applicable_interface_init(AgsApplicableInterface *applicable)
+{
+  applicable->set_update = ags_line_member_editor_set_update;
+  applicable->apply = ags_line_member_editor_apply;
+  applicable->reset = ags_line_member_editor_reset;
 }
 
 void
@@ -64,23 +111,47 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 }
 
 void
-ags_line_member_editor_connect(AgsLineMemberEditor *line_member_editor)
+ags_line_member_editor_connect(AgsConnectable *connectable)
 {
-  g_signal_connect((GObject *) line_member_editor, "destroy\0",
-		   G_CALLBACK(ags_line_member_editor_destroy_callback), (gpointer) line_member_editor);
+  AgsLineMemberEditor *line_member_editor;
 
-  g_signal_connect((GObject *) line_member_editor, "show\0",
-		   G_CALLBACK(ags_line_member_editor_show_callback), (gpointer) line_member_editor);
+  line_member_editor = AGS_LINE_MEMBER_EDITOR(connectable);
 }
 
 void
-ags_line_member_editor_destroy(GtkObject *object)
+ags_line_member_editor_disconnect(AgsConnectable *connectable)
 {
+  /* empty */
 }
 
 void
-ags_line_member_editor_show(GtkWidget *widget)
+ags_line_member_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
+  AgsLineMemberEditor *line_member_editor;
+
+  line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
+
+  /* empty */
+}
+
+void
+ags_line_member_editor_apply(AgsApplicable *applicable)
+{
+  AgsLineMemberEditor *line_member_editor;
+
+  line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
+
+  /* empty */
+}
+
+void
+ags_line_member_editor_reset(AgsApplicable *applicable)
+{
+  AgsLineMemberEditor *line_member_editor;
+
+  line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
+
+  /* empty */
 }
 
 AgsLineMemberEditor*
@@ -88,7 +159,8 @@ ags_line_member_editor_new()
 {
   AgsLineMemberEditor *line_member_editor;
 
-  line_member_editor = (AgsLineMemberEditor *) g_object_new(AGS_TYPE_LINE_MEMBER_EDITOR, NULL);
+  line_member_editor = (AgsLineMemberEditor *) g_object_new(AGS_TYPE_LINE_MEMBER_EDITOR,
+							    NULL);
 
   return(line_member_editor);
 }

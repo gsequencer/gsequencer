@@ -62,6 +62,7 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+#include <ags/X/ags_line_member.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine_editor.h>
@@ -80,12 +81,6 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_ffplayer.h>
-
-#define MY_ENCODING "UTF-8" //"ISO-8859-15"
-#define AGS_FILE_FALSE "FALSE"
-#define AGS_FILE_TRUE "TRUE"
-#define AGS_CHANNEL_LINK_NAME "AgsChannelLinkName"
-#define AGS_CHANNEL_LINK_LINE "AgsChannelLinkLine"
 
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init (AgsFile *file);
@@ -121,6 +116,7 @@ void ags_file_read_menu_bar(AgsFile *file, AgsMenuBar *menu_bar);
 void ags_file_read_machine(AgsFile *file);
 void ags_file_read_pad(AgsFile *file, AgsPad *pad);
 void ags_file_read_line(AgsFile *file, AgsLine *line);
+void ags_file_read_line_member(AgsFile *file, AgsLineMember *line_member);
 void ags_file_read_editor(AgsFile *file, AgsEditor *editor);
 void ags_file_read_navigation(AgsFile *file, AgsNavigation *navigation);
 void ags_file_read_machine_editor(AgsFile *file, AgsMachineEditor *machine_editor);
@@ -169,6 +165,7 @@ void ags_file_write_menu_bar(AgsFile *file, AgsMenuBar *menu_bar);
 void ags_file_write_machine(AgsFile *file, AgsMachine *machine);
 void ags_file_write_pad(AgsFile *file, AgsPad *pad);
 void ags_file_write_line(AgsFile *file, AgsLine *line);
+void ags_file_write_line_member(AgsFile *file, AgsLineMember *line_member)
 void ags_file_write_editor(AgsFile *file, AgsEditor *editor);
 void ags_file_write_navigation(AgsFile *file, AgsNavigation *navigation);
 void ags_file_write_machine_editor(AgsFile *file, AgsMachineEditor *machine_editor);
@@ -232,7 +229,7 @@ ags_file_init(AgsFile *file)
 
   file->name = NULL;
   file->encoding = MY_ENCODING;
-  file->dtd = "~/ags/file/ags_file.dtd";
+  file->dtd = AGS_DEFAULT_DTD;
 
   file->doc = NULL;
   file->current = NULL;
@@ -1111,6 +1108,12 @@ ags_file_read_line(AgsFile *file, AgsLine *line)
 }
 
 void
+ags_file_read_line_member(AgsFile *file, AgsLineMember *line_member)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_read_editor(AgsFile *file, AgsEditor *editor)
 {
   xmlNodePtr node, child;
@@ -1291,31 +1294,43 @@ ags_file_read_navigation(AgsFile *file, AgsNavigation *navigation)
 void
 ags_file_read_machine_editor(AgsFile *file, AgsMachineEditor *machine_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_pad_editor(AgsFile *file, AgsPadEditor *pad_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_line_editor(AgsFile *file, AgsLineEditor *line_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_link_editor(AgsFile *file, AgsLinkEditor *link_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_line_member_editor(AgsFile *file, AgsLineMemberEditor *line_member_editor)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_line_member_editor(AgsFile *file, AgsLineMemberEditor *line_member_editor)
+{
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_panel(AgsFile *file, AgsMachine *machine)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -1854,6 +1869,13 @@ ags_file_write_line(AgsFile *file, AgsLine *line)
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
+
+void
+ags_file_write_line_member(AgsFile *file, AgsLineMember *line_member)
+{
+  //TODO:JK: implement me
+}
+
 void
 ags_file_write_editor(AgsFile *file, AgsEditor *editor)
 {
@@ -1924,26 +1946,31 @@ ags_file_write_navigation(AgsFile *file, AgsNavigation *navigation)
 void
 ags_file_write_machine_editor(AgsFile *file, AgsMachineEditor *machine_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_write_pad_editor(AgsFile *file, AgsPadEditor *pad_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_write_line_editor(AgsFile *file, AgsLineEditor *line_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_write_link_editor(AgsFile *file, AgsLinkEditor *link_editor)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_write_line_member_editor(AgsFile *file, AgsLineMemberEditor *line_member_editor)
 {
+  //TODO:JK: implement me
 }
 
 void

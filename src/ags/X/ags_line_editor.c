@@ -133,6 +133,7 @@ void
 ags_line_editor_init(AgsLineEditor *line_editor)
 {
   line_editor->link_editor = NULL;
+  line_editor->member_editor = NULL;
 }
 
 void
@@ -267,9 +268,17 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
   line_editor->channel = channel;
 
   if(channel != NULL){
+    /* link */
     line_editor->link_editor = ags_link_editor_new();
     gtk_box_pack_start(GTK_BOX(line_editor),
 		       GTK_WIDGET(line_editor->link_editor),
+		       FALSE, FALSE,
+		       0);
+
+    /* recall */
+    line_editor->member_editor = ags_line_member_editor_new();
+    gtk_box_pack_start(GTK_BOX(line_editor),
+		       GTK_WIDGET(line_editor->member_editor),
 		       FALSE, FALSE,
 		       0);
   }

@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,3 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-int
-ags_line_member_editor_destroy_callback(GtkObject *object, AgsLineMemberEditor *line_member_editor)
-{
-  ags_line_member_editor_destroy(object);
-  return(0);
-}
-
-int
-ags_line_member_editor_show_callback(GtkWidget *widget, AgsLineMemberEditor *line_member_editor)
-{
-  ags_line_member_editor_show(widget);
-  return(0);
-}

@@ -27,6 +27,9 @@
 #define AGS_TYPE_FILE                (ags_file_get_type())
 #define AGS_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE, AgsFile))
 #define AGS_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE, AgsFileClass))
+#define AGS_IS_FILE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FILE))
+#define AGS_IS_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE))
+#define AGS_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE, AgsFileClass))
 
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
@@ -48,8 +51,16 @@ struct _AgsFile
   xmlDocPtr doc;
   xmlNodePtr current;
 
+  GObject *clipboard;
+  GList *property;
+  GList *script;
+  GObject *cluster;
+  GObject *client;
+  GObject *server;
   GObject *main;
-  GtkWidget *window;
+  GList *embedded_audio;
+  GList *file_link_history;
+  GObject *history;
 };
 
 struct _AgsFileClass

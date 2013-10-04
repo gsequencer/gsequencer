@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+ * Copyright (C) 2013 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_LINEMEMBEREDITOR_H__
-#define __AGS_LINEMEMBEREDITOR_H__
+#ifndef __AGS_LINE_MEMBER_EDITOR_H__
+#define __AGS_LINE_MEMBER_EDITOR_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -40,6 +40,8 @@ struct _AgsLineMemberEditor
   GtkVBox *line_member;
 
   GtkButton *add;
+  GtkMenu *popup;
+
   GtkButton *remove;
 };
 

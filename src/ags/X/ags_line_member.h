@@ -49,7 +49,7 @@ struct _AgsLineMember
   gulong done_handler;
 };
 
-struct _AgsLineMember
+struct _AgsLineMemberClass
 {
   GtkBinClass bin;
 };
@@ -60,5 +60,9 @@ struct _AgsLineControl
 
   gpointer value;
 };
+
+GType ags_line_member_get_type(void);
+
+AgsLineMember* ags_line_member_new();
 
 #endif /*__AGS_LINE_MEMBER_H__*/
