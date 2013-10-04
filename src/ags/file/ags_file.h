@@ -21,7 +21,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
+
 #include <libxml/tree.h>
 
 #define AGS_TYPE_FILE                (ags_file_get_type())
