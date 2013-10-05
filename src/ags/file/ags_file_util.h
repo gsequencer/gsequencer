@@ -26,10 +26,10 @@
 
 #include <libxml/tree.h>
 
-void ags_file_util_read_gvalue(xmlNode *node, gchar **id,
-			       GValue **value, xmlChar **xpath);
-void ags_file_util_write_gvalue(xmlNode *parent, gchar *id,
-				GValue *value, xmlChar *xpath);
+void ags_file_util_read_value(xmlNode *node, gchar **id,
+			      GValue **value, xmlChar **xpath);
+void ags_file_util_write_value(xmlNode *parent, gchar *id,
+			       GValue *value, xmlChar *xpath);
 
 void ags_file_util_read_parameter(xmlNode *node, gchar **id,
 				  GParameter **parameter, gint *n_params, xmlChar **xpath);

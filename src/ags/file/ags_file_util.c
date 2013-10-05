@@ -21,8 +21,8 @@
 #include <ags/file/ags_file_stock.h>
 
 void
-ags_file_util_read_gvalue(xmlNode *node, gchar **id,
-			  GValue **value, xmlChar **xpath)
+ags_file_util_read_value(xmlNode *node, gchar **id,
+			 GValue **value, xmlChar **xpath)
 {
   xmlChar *type_str;
   xmlChar *value_str;
@@ -161,14 +161,27 @@ ags_file_util_read_gvalue(xmlNode *node, gchar **id,
 
     *value = NULL;
     *xpath = xmlGetProp(node, AGS_FILE_VALUE_PROP);
+  }else{
+    g_warning("ags_file_util_read_gvalue: unsupported type\0");
   }
 }
 
 void
-ags_file_util_write_gvalue(xmlNode *parent, gchar *id,
-			   GValue *value, xmlChar *xpath)
+ags_file_util_write_value(xmlNode *parent, gchar *id,
+			  GValue *value, xmlChar *xpath)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-value\0");  
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
@@ -182,7 +195,18 @@ void
 ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 			      GParameter *parameter, gint n_params, xmlChar *xpath)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-parameter\0");  
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
@@ -196,7 +220,18 @@ void
 ags_file_util_write_callback(xmlNode *parent, gchar *id,
 			     gchar *signal_name, gchar *callback_name, xmlChar *xpath)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-callback\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
@@ -217,14 +252,36 @@ void
 ags_file_util_write_handler(xmlNode *parent, gchar *id,
 			    gchar *name, GList **xpath)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-handler\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
 ags_file_util_write_handler_list(xmlNode *parent, gchar *id,
 				 GList *handler, AgsRecallHandler *handler, GList *parameter, GList *xpath)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-handler-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
@@ -245,12 +302,34 @@ void
 ags_file_util_write_dependency(xmlNode *parent, gchar *id,
 			       gchar *name, GList *values, GList *xpath)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-dependency\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
 ags_file_util_write_dependency_list(xmlNode *parent, gchar *id,
 				    GList *dependency, GList *xpath)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-dependency-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);
 }

@@ -16,15 +16,21 @@
 <!ENTITY ags-cartesian "AgsCartesian">
 
 <!-- utility -->
-<!ELEMENT gvalue EMPTY>
-<!ATTLIST gvalue
+<!ELEMENT ags-value EMPTY>
+<!ATTLIST ags-value
 	  id               ID         #REQUIRED
           type             CDATA      #REQUIRED
 	  value            PCDATA     #REQUIRED
 	  >
 
-<!ELEMENT gcallback EMPTY>
-<!ATTLIST gcallback
+<!ELEMENT ags-parameter (ags-value)*>
+<!ATTLIST ags-parameter
+	  id               ID         #REQUIRED
+	  name             CDATA      #IMPLIED
+	  >
+
+<!ELEMENT ags-callback EMPTY>
+<!ATTLIST ags-callback
 	  id               ID         #REQUIRED
 	  signal-name      CDATA      #REQUIRED
 	  callback-name    CDATA      #REQUIRED
@@ -35,7 +41,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-handler (gcallback, ags-parameter-list)>
+<!ELEMENT ags-handler (gcallback, ags-parameter)>
 <!ATTLIST ags-handler
 	  id               ID         #REQUIRED
 	  name             CDATA      #REQUIRED
@@ -48,17 +54,6 @@
 
 <!ELEMENT ags-dependency (gvalue*)>
 <!ATTLIST ags-dependency
-	  id               ID         #REQUIRED
-	  name             CDATA      #REQUIRED
-	  >
-
-<!ELEMENT ags-parameter-list (ags-parameter*)>
-<!ATTLIST ags-parameter-list
-	  id               ID         #REQUIRED
-	  >
-
-<!ELEMENT ags-parameter (gvalue*)>
-<!ATTLIST ags-parameter
 	  id               ID         #REQUIRED
 	  name             CDATA      #REQUIRED
 	  >
@@ -400,7 +395,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-recycling-run|ags-recall-audio-signal)?, ags-recall-list?, ags-dependency-list, ags-handler-list, ags-parameter-list)>
+<!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-recycling-run|ags-recall-audio-signal)?, ags-recall-list?, ags-dependency-list, ags-handler-list, ags-parameter)>
 <!ATTLIST ags-recall
 	  id                     ID         #REQUIRED
 	  version                CDATA      #REQUIRED
