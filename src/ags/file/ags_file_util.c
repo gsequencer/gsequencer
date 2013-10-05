@@ -65,7 +65,7 @@ ags_file_util_read_gvalue(xmlNode *node, gchar **id,
     *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gint[]\0")){
     gchar **str_arr, **str_iter;
-    gint *arr;
+    gint64 *arr;
     guint i;
 
     str_arr = g_strsplit(xmlGetProp(node, AGS_FILE_VALUE_PROP), " \0", -1);
@@ -93,7 +93,7 @@ ags_file_util_read_gvalue(xmlNode *node, gchar **id,
     *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "guint[]\0")){
     gchar **str_arr, **str_iter;
-    guint *arr;
+    guint64 *arr;
     guint i;
 
     str_arr = g_strsplit(xmlGetProp(node, AGS_FILE_VALUE_PROP), " \0", -1);
