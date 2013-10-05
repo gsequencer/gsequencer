@@ -21,7 +21,71 @@
 void
 ags_file_util_read_gvalue(xmlNode *node, gchar **id, GType *type, GValue **value)
 {
-  //TODO:JK: implement me
+  xmlChar *type_str;
+  xmlChar *value_str;
+  GValue value = G_VALUE_INIT;
+
+  *id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  type_str = xmlGetProp(node, "type\0");
+  type_str = xmlGetProp(value, "type\0");
+
+  if(!xmlStrcmp(type_str, "gchar\0")){
+    *type = G_TYPE_CHAR;
+
+    g_value_init(&value, G_TYPE_CHAR);
+    g_value_set_schar(&value, xmlGetProp(node, AGS_FILE_VALUE_PROP));
+
+    *value = &value;
+  }else if(!xmlStrcmp(type_str, "gint64\0")){
+    *type = G_TYPE_INT;
+
+    g_value_init(&value, G_TYPE_INT64);
+    g_value_set_int(&value, g_ascii_strtoll(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
+
+    *value = &value;
+  }else if(!xmlStrcmp(type_str, "guint64\0")){
+    *type = G_TYPE_UINT;
+
+    g_value_init(&value, G_TYPE_UINT64);
+    g_value_set_static_string(&value, g_ascii_strtoull(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
+
+    *value = &value;
+  }else if(!xmlStrcmp(type_str, "gdouble\0")){
+    *type = G_TYPE_DOUBLE;
+
+    g_value_init(&value, G_TYPE_DOUBLE);
+    g_value_set_double(&value, g_ascii_strtod(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
+
+    *value = &value;
+  }else if(!xmlStrcmp(type_str, "gchar[]\0")){
+    *type = G_TYPE_STRING;
+
+    g_value_init(&value, G_TYPE_STRING);
+    g_value_set_static_string(&value, xmlGetProp(node, AGS_FILE_VALUE_PROP));
+
+    *value = &value;
+  }else if(!xmlStrcmp(type_str, "gint[]\0")){
+    *type = G_TYPE_POINTER;
+
+    //TODO:JK: implement me
+  }else if(!xmlStrcmp(type_str, "guint[]\0")){
+    *type = G_TYPE_POINTER;
+
+    //TODO:JK: implement me
+  }else if(!xmlStrcmp(type_str, "gdouble[]\0")){
+    *type = G_TYPE_POINTER;
+
+    //TODO:JK: implement me
+  }else if(!xmlStrcmp(type_str, "gpointer\0")){
+    *type = G_TYPE_POINTER;
+
+    //TODO:JK: implement me
+  }else if(!xmlStrcmp(type_str, "gobject\0")){
+    *type = G_TYPE_OBJECT;
+
+    //TODO:JK: implement me
+  }
 }
 
 void

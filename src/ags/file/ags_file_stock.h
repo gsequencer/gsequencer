@@ -31,15 +31,19 @@
 #include <ags/widget/ags_dial.h>
 #include <ags/widget/ags_cartestian.h>
 
-#define AGS_FILE_DEFAULT_VERSION "0.4.0"
-#define AGS_EFFECTS_DEFAULT_VERSION "0.4.0"
-#define AGS_CLIPBOARD_DEFAULT_VERSION "0.4.0"
+#define AGS_FILE_DEFAULT_VERSION "0.4.0\0"
+#define AGS_EFFECTS_DEFAULT_VERSION "0.4.0\0"
+#define AGS_CLIPBOARD_DEFAULT_VERSION "0.4.0\0"
 
-#define AGS_FILE_DEFAULT_ENCODING "UTF-8" //"ISO-8859-15"
-#define AGS_FILE_DEFAULT_DTD  "~/ags/file/ags_file.dtd"
+#define AGS_FILE_DEFAULT_ENCODING "UTF-8\0" //"ISO-8859-15"
+#define AGS_FILE_DEFAULT_DTD  "~/ags/file/ags_file.dtd\0"
 
-#define AGS_FILE_FALSE "FALSE"
-#define AGS_FILE_TRUE "TRUE"
+#define AGS_FILE_FALSE "FALSE\0"
+#define AGS_FILE_TRUE "TRUE\0"
+
+#define AGS_FILE_ID_PROP "id\0"
+#define AGS_FILE_TYPE_PROP "type\0"
+#define AGS_FILE_VALUE_PROP "value\0"
 
 #define AGS_FILE_DYNAMIC_WIDGET_LED (g_type_name(AgsTypeLed))
 #define AGS_FILE_DYNAMIC_WIDGET_VINDICATOR (g_type_name(AgsTypeVIndicator))
