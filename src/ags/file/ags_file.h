@@ -76,6 +76,7 @@ struct _AgsFileClass
   void (*read)(AgsFile *file);
   void (*resolve)(AgsFile *file);
   void (*link)(AgsFile *file);
+  void (*start)(AgsFile *file);
 };
 
 GType ags_file_get_type(void);
@@ -85,6 +86,7 @@ void ags_file_write(AgsFile *file);
 void ags_file_read(AgsFile *file);
 void ags_file_resolve(AgsFile *file);
 void ags_file_link(AgsFile *file);
+void ags_file_start(AgsFile *file);
 
 AgsFile* ags_file_new(GObject *main);
 

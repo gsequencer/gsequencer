@@ -43,7 +43,6 @@
 
 #define AGS_FILE_ID_PROP "id\0"
 #define AGS_FILE_TYPE_PROP "type\0"
-#define AGS_FILE_VALUE_PROP "value\0"
 
 #define AGS_FILE_DYNAMIC_WIDGET_LED (g_type_name(AgsTypeLed))
 #define AGS_FILE_DYNAMIC_WIDGET_VINDICATOR (g_type_name(AgsTypeVIndicator))

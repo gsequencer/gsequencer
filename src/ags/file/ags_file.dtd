@@ -16,11 +16,10 @@
 <!ENTITY ags-cartesian "AgsCartesian">
 
 <!-- utility -->
-<!ELEMENT ags-value EMPTY>
+<!ELEMENT ags-value PCDATA>
 <!ATTLIST ags-value
 	  id               ID         #REQUIRED
           type             CDATA      #REQUIRED
-	  value            PCDATA     #REQUIRED
 	  >
 
 <!ELEMENT ags-parameter (ags-value)*>
