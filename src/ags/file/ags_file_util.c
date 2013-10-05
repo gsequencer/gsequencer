@@ -22,186 +22,235 @@
 
 void
 ags_file_util_read_gvalue(xmlNode *node, gchar **id,
-			  GType *type, GValue **value, xmlXPathContext **context)
+			  GValue **value, xmlChar **xpath)
 {
   xmlChar *type_str;
   xmlChar *value_str;
-  GValue value = G_VALUE_INIT;
+  GValue a = G_VALUE_INIT;
 
   *id = xmlGetProp(node, AGS_FILE_ID_PROP);
 
   type_str = xmlGetProp(node, "type\0");
-  type_str = xmlGetProp(value, "type\0");
+  type_str = xmlGetProp(node, "type\0");
 
   if(!xmlStrcmp(type_str, "gchar\0")){
-    *type = G_TYPE_CHAR;
+    g_value_init(&a, G_TYPE_CHAR);
+    g_value_set_schar(&a, xmlGetProp(node, AGS_FILE_VALUE_PROP));
 
-    g_value_init(&value, G_TYPE_CHAR);
-    g_value_set_schar(&value, xmlGetProp(node, AGS_FILE_VALUE_PROP));
-
-    *value = &value;
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gint64\0")){
-    *type = G_TYPE_INT;
+    g_value_init(&a, G_TYPE_INT64);
+    g_value_set_int(&a, g_ascii_strtoll(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
 
-    g_value_init(&value, G_TYPE_INT64);
-    g_value_set_int(&value, g_ascii_strtoll(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
-
-    *value = &value;
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "guint64\0")){
-    *type = G_TYPE_UINT;
+    g_value_init(&a, G_TYPE_UINT64);
+    g_value_set_static_string(&a, g_ascii_strtoull(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
 
-    g_value_init(&value, G_TYPE_UINT64);
-    g_value_set_static_string(&value, g_ascii_strtoull(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
-
-    *value = &value;
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gdouble\0")){
-    *type = G_TYPE_DOUBLE;
+    g_value_init(&a, G_TYPE_DOUBLE);
+    g_value_set_double(&a, g_ascii_strtod(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
 
-    g_value_init(&value, G_TYPE_DOUBLE);
-    g_value_set_double(&value, g_ascii_strtod(xmlGetProp(node, AGS_FILE_VALUE_PROP)));
-
-    *value = &value;
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gchar[]\0")){
-    *type = G_TYPE_STRING;
+    g_value_init(&a, G_TYPE_STRING);
+    g_value_set_static_string(&a, xmlGetProp(node, AGS_FILE_VALUE_PROP));
 
-    g_value_init(&value, G_TYPE_STRING);
-    g_value_set_static_string(&value, xmlGetProp(node, AGS_FILE_VALUE_PROP));
-
-    *value = &value;
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gint[]\0")){
-    gchar **str_arr;
+    gchar **str_arr, **str_iter;
     gint *arr;
+    guint i;
 
-    *type = G_TYPE_POINTER;
+    str_arr = g_strsplit(xmlGetProp(node, AGS_FILE_VALUE_PROP), " \0", -1);
+    
+    g_value_init(&a, G_TYPE_POINTER);
 
-    g_value_init(&value, G_TYPE_POINTER);
+    arr = NULL;
+    str_iter = str_arr;
+    i = 0;
 
-    //TODO:JK: implement me
+    while(*str_iter != NULL){
+      if(arr == NULL){
+	arr = (gint64 *) malloc(sizeof(gint64));
+      }else{
+	arr = (gint64 *) realloc((i + 1) * sizeof(gint64));
+      }
+
+      arr[i] = g_ascii_strtoll(*str_iter);
+
+      str_iter++;
+      i++;
+    }
+    
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "guint[]\0")){
-    gchar **str_arr;
+    gchar **str_arr, **str_iter;
     guint *arr;
+    guint i;
 
-    *type = G_TYPE_POINTER;
+    str_arr = g_strsplit(xmlGetProp(node, AGS_FILE_VALUE_PROP), " \0", -1);
 
-    g_value_init(&value, G_TYPE_POINTER);
+    g_value_init(&a, G_TYPE_POINTER);
 
-    //TODO:JK: implement me
+    arr = NULL;
+    str_iter = str_arr;
+    i = 0;
+
+    while(*str_iter != NULL){
+      if(arr == NULL){
+	arr = (guint64 *) malloc(sizeof(guint64));
+      }else{
+	arr = (guint64 *) realloc((i + 1) * sizeof(guint64));
+      }
+
+      arr[i] = g_ascii_strtoll(*str_iter);
+
+      str_iter++;
+      i++;
+    }
+    
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gdouble[]\0")){
-    gchar **str_arr;
+    gchar **str_arr, **str_iter;
     gdouble *arr;
+    guint i;
 
-    *type = G_TYPE_POINTER;
+    str_arr = g_strsplit(xmlGetProp(node, AGS_FILE_VALUE_PROP), " \0", -1);
 
-    g_value_init(&value, G_TYPE_POINTER);
+    g_value_init(&a, G_TYPE_POINTER);
 
-    //TODO:JK: implement me
+    arr = NULL;
+    str_iter = str_arr;
+    i = 0;
+
+    while(*str_iter != NULL){
+      if(arr == NULL){
+	arr = (gdouble *) malloc(sizeof(gdouble));
+      }else{
+	arr = (gdouble *) realloc((i + 1) * sizeof(gdouble));
+      }
+
+      arr[i] = g_ascii_strtoll(*str_iter);
+
+      str_iter++;
+      i++;
+    }
+    
+    *value = &a;
+    *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gpointer\0")){
-    xmlXPathContext *context;
-    gpointer arr;
+    xmlChar *xpath;
 
-    *type = G_TYPE_POINTER;
+    g_value_init(&a, G_TYPE_POINTER);
 
-    g_value_init(&value, G_TYPE_POINTER);
-
-    //TODO:JK: implement me
+    *value = NULL;
+    *xpath = xmlGetProp(node, AGS_FILE_VALUE_PROP);
   }else if(!xmlStrcmp(type_str, "gobject\0")){
-    xmlXPathContext *context;
+    xmlChar *xpath;
 
-    *type = G_TYPE_OBJECT;
+    g_value_init(&a, G_TYPE_OBJECT);
 
-    g_value_init(&value, G_TYPE_OBJECT);
-
-    //TODO:JK: implement me
+    *value = NULL;
+    *xpath = xmlGetProp(node, AGS_FILE_VALUE_PROP);
   }
 }
 
 void
 ags_file_util_write_gvalue(xmlNode *parent, gchar *id,
-			   GValue *value, xmlXPathContext *context)
+			   GValue *value, xmlChar *xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_read_parameter(xmlNode *node, gchar **id,
-			     GParameter **parameter, gint *n_params, xmlXPathContext **context)
+			     GParameter **parameter, gint *n_params, xmlChar **xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_write_parameter(xmlNode *parent, gchar *id,
-			      GParameter *parameter, gint n_params, xmlXPathContext *context)
+			      GParameter *parameter, gint n_params, xmlChar *xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_read_callback(xmlNode *node, gchar **id,
-			    gchar **signal_name, gchar **callback_name, xmlXPathContext **context)
+			    gchar **signal_name, gchar **callback_name, xmlChar **xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_write_callback(xmlNode *parent, gchar *id,
-			     gchar *signal_name, gchar *callback_name, xmlXPathContext *context)
+			     gchar *signal_name, gchar *callback_name, xmlChar *xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_read_handler(xmlNode *node, gchar **id,
-			   gchar **name, AgsRecallHandler **handler, GList **parameter, xmlXPathContext **context)
+			   gchar **name, AgsRecallHandler **handler, GList **parameter, xmlChar **xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_read_handler_list(xmlNode *node, gchar **id,
-				GList **handler, xmlXPathContext *context)
+				GList **handler, xmlChar *xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_write_handler(xmlNode *parent, gchar *id,
-			    gchar *name, GList **context)
+			    gchar *name, GList **xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_write_handler_list(xmlNode *parent, gchar *id,
-				 GList *handler, AgsRecallHandler *handler, GList *parameter, GList *context)
+				 GList *handler, AgsRecallHandler *handler, GList *parameter, GList *xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_read_dependency(xmlNode *node, gchar **id,
-			      gchar **name, GList **values, xmlXPathContext **context)
+			      gchar **name, GList **values, xmlChar **xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_read_dependency_list(xmlNode *node, gchar **id,
-				   GList **dependency, GList **context)
+				   GList **dependency, GList **xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_write_dependency(xmlNode *parent, gchar *id,
-			       gchar *name, GList *values, GList *context)
+			       gchar *name, GList *values, GList *xpath)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_file_util_write_dependency_list(xmlNode *parent, gchar *id,
-				    GList *dependency, GList *context)
+				    GList *dependency, GList *xpath)
 {
   //TODO:JK: implement me
 }
