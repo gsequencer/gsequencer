@@ -162,13 +162,13 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
     *value = NULL;
     *xpath = xmlGetProp(node, AGS_FILE_VALUE_PROP);
   }else{
-    g_warning("ags_file_util_read_gvalue: unsupported type\0");
+    g_warning("ags_file_util_read_value: unsupported type\0");
   }
 }
 
 void
 ags_file_util_write_value(xmlNode *parent, gchar *id,
-			  GValue *value, xmlChar *xpath)
+			  GValue *value, AgsSerializeable *serializeable)
 {
   xmlNode *node;
 
@@ -178,7 +178,11 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
 	     AGS_FILE_ID_PROP,
 	     id);
 
-  //TODO:JK: implement me
+  switch(G_VALUE_TYPE(value)){
+    case 
+  default:
+    g_warning("ags_file_util_write_value\0");
+  }
 
   xmlAddChild(parent,
 	      node);
@@ -193,7 +197,7 @@ ags_file_util_read_parameter(xmlNode *node, gchar **id,
 
 void
 ags_file_util_write_parameter(xmlNode *parent, gchar *id,
-			      GParameter *parameter, gint n_params, xmlChar *xpath)
+			      GParameter *parameter, gint n_params, AgsSerializeable *serializeable)
 {
   xmlNode *node;
 
@@ -218,7 +222,7 @@ ags_file_util_read_callback(xmlNode *node, gchar **id,
 
 void
 ags_file_util_write_callback(xmlNode *parent, gchar *id,
-			     gchar *signal_name, gchar *callback_name, xmlChar *xpath)
+			     gchar *signal_name, gchar *callback_name, AgsSerializeable *serializeable)
 {
   xmlNode *node;
 
@@ -243,7 +247,7 @@ ags_file_util_read_handler(xmlNode *node, gchar **id,
 
 void
 ags_file_util_read_handler_list(xmlNode *node, gchar **id,
-				GList **handler, xmlChar *xpath)
+				GList **handler, AgsSerializeable *serializeable)
 {
   //TODO:JK: implement me
 }
@@ -268,7 +272,7 @@ ags_file_util_write_handler(xmlNode *parent, gchar *id,
 
 void
 ags_file_util_write_handler_list(xmlNode *parent, gchar *id,
-				 GList *handler, AgsRecallHandler *handler, GList *parameter, GList *xpath)
+				 GList *handler, AgsRecallHandler *handler, GList *parameter, GList *serializeable)
 {
   xmlNode *node;
 
@@ -300,7 +304,7 @@ ags_file_util_read_dependency_list(xmlNode *node, gchar **id,
 
 void
 ags_file_util_write_dependency(xmlNode *parent, gchar *id,
-			       gchar *name, GList *values, GList *xpath)
+			       gchar *name, GList *values, GList *serializeable)
 {
   xmlNode *node;
 
@@ -318,7 +322,7 @@ ags_file_util_write_dependency(xmlNode *parent, gchar *id,
 
 void
 ags_file_util_write_dependency_list(xmlNode *parent, gchar *id,
-				    GList *dependency, GList *xpath)
+				    GList *dependency, GList *serializeable)
 {
   xmlNode *node;
 

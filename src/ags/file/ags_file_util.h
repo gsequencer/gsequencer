@@ -29,34 +29,34 @@
 void ags_file_util_read_value(xmlNode *node, gchar **id,
 			      GValue **value, xmlChar **xpath);
 void ags_file_util_write_value(xmlNode *parent, gchar *id,
-			       GValue *value, xmlChar *xpath);
+			       GValue *value, AgsSerializeable *serializeable);
 
 void ags_file_util_read_parameter(xmlNode *node, gchar **id,
 				  GParameter **parameter, gint *n_params, xmlChar **xpath);
 void ags_file_util_write_parameter(xmlNode *parent, gchar *id,
-				   GParameter *parameter, gint n_params, xmlChar *xpath);
+				   GParameter *parameter, gint n_params, AgsSerializeable *serializeable);
 
 void ags_file_util_read_callback(xmlNode *node, gchar **id,
 				 gchar **signal_name, gchar **callback_name, xmlChar **xpath);
 void ags_file_util_write_callback(xmlNode *parent, gchar *id,
-				  gchar *signal_name, gchar *callback_name, xmlChar *xpath);
+				  gchar *signal_name, gchar *callback_name, AgsSerializeable *serializeable);
 
 void ags_file_util_read_handler(xmlNode *node, gchar **id,
 				gchar **name, AgsRecallHandler **handler, GList **parameter, xmlChar **xpath);
 void ags_file_util_read_handler_list(xmlNode *node, gchar **id,
-				     GList **handler, xmlChar *xpath);
+				     GList **handler, AgsSerializeable *serializeable);
 void ags_file_util_write_handler(xmlNode *parent, gchar *id,
 				 gchar *name, GList **xpath);
 void ags_file_util_write_handler_list(xmlNode *parent, gchar *id,
-				      GList *handler, AgsRecallHandler *handler, GList *parameter, GList *xpath);
+				      GList *handler, AgsRecallHandler *handler, GList *parameter, GList *serializeable);
 
 void ags_file_util_read_dependency(xmlNode *node, gchar **id,
 				   gchar **name, GList **values, xmlChar **xpath);
 void ags_file_util_read_dependency_list(xmlNode *node, gchar **id,
 					GList **dependency, GList **xpath);
 void ags_file_util_write_dependency(xmlNode *parent, gchar *id,
-				    gchar *name, GList *values, GList *xpath);
+				    gchar *name, GList *values, GList *serializeable);
 void ags_file_util_write_dependency_list(xmlNode *parent, gchar *id,
-					 GList *dependency, GList *xpath);
+					 GList *dependency, GList *serializeable);
 
 #endif /*__AGS_FILE_UTIL_H__*/
