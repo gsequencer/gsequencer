@@ -26,25 +26,37 @@
 
 #include <libxml/tree.h>
 
-void ags_file_util_read_gvalue(xmlNode *node, gchar **id, GType *type, GValue **value);
-void ags_file_util_write_gvalue(xmlNode *parent, gchar *id, GType type, GValue *value);
+void ags_file_util_read_gvalue(xmlNode *node, gchar **id,
+			       GType *type, GValue **value, xmlXPathContext **context);
+void ags_file_util_write_gvalue(xmlNode *parent, gchar *id,
+				GValue *value, xmlXPathContext *context);
 
-void ags_file_util_read_callback(xmlNode *node, gchar **id, gchar **signal_name, gchar **callback_name);
-void ags_file_util_write_callback(xmlNode *parent, gchar *id, gchar *signal_name, gchar *callback_name);
+void ags_file_util_read_parameter(xmlNode *node, gchar **id,
+				  GParameter **parameter, gint *n_params, xmlXPathContext **context);
+void ags_file_util_write_parameter(xmlNode *parent, gchar *id,
+				   GParameter *parameter, gint n_params, xmlXPathContext *context);
 
-void ags_file_util_read_handler(xmlNode *node, gchar **id, gchar **name, AgsRecallHandler **handler, GList **parameter);
-void ags_file_util_read_handler_list(xmlNode *node, gchar **id, GList **handler);
-void ags_file_util_write_handler(xmlNode *parent, gchar *id, gchar *name);
-void ags_file_util_write_handler_list(xmlNode *parent, gchar *id, GList *handler, AgsRecallHandler *handler, GList *parameter);
+void ags_file_util_read_callback(xmlNode *node, gchar **id,
+				 gchar **signal_name, gchar **callback_name, xmlXPathContext **context);
+void ags_file_util_write_callback(xmlNode *parent, gchar *id,
+				  gchar *signal_name, gchar *callback_name, xmlXPathContext *context);
 
-void ags_file_util_read_dependency(xmlNode *node, gchar **id, gchar **name, GList **values);
-void ags_file_util_read_dependency_list(xmlNode *node, gchar **id, GList **dependency);
-void ags_file_util_write_dependency(xmlNode *parent, gchar *id, gchar *name, GList *values);
-void ags_file_util_write_dependency_list(xmlNode *parent, gchar *id, GList *dependency);
+void ags_file_util_read_handler(xmlNode *node, gchar **id,
+				gchar **name, AgsRecallHandler **handler, GList **parameter, xmlXPathContext **context);
+void ags_file_util_read_handler_list(xmlNode *node, gchar **id,
+				     GList **handler, xmlXPathContext *context);
+void ags_file_util_write_handler(xmlNode *parent, gchar *id,
+				 gchar *name, GList **context);
+void ags_file_util_write_handler_list(xmlNode *parent, gchar *id,
+				      GList *handler, AgsRecallHandler *handler, GList *parameter, GList *context);
 
-void ags_file_util_read_parameter(xmlNode *node, gchar **id, gchar **parameter, GList **values);
-void ags_file_util_read_parameter_list(xmlNode *node, gchar **id, GList **parameter);
-void ags_file_util_write_parameter(xmlNode *parent, gchar *id, gchar *parameter, GList *values);
-void ags_file_util_write_parameter_list(xmlNode *parent, gchar *id, GList *parameter);
+void ags_file_util_read_dependency(xmlNode *node, gchar **id,
+				   gchar **name, GList **values, xmlXPathContext **context);
+void ags_file_util_read_dependency_list(xmlNode *node, gchar **id,
+					GList **dependency, GList **context);
+void ags_file_util_write_dependency(xmlNode *parent, gchar *id,
+				    gchar *name, GList *values, GList *context);
+void ags_file_util_write_dependency_list(xmlNode *parent, gchar *id,
+					 GList *dependency, GList *context);
 
 #endif /*__AGS_FILE_UTIL_H__*/

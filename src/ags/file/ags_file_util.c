@@ -18,8 +18,11 @@
 
 #include <ags/file/ags_file_util.h>
 
+#include <ags/file/ags_file_stock.h>
+
 void
-ags_file_util_read_gvalue(xmlNode *node, gchar **id, GType *type, GValue **value)
+ags_file_util_read_gvalue(xmlNode *node, gchar **id,
+			  GType *type, GValue **value, xmlXPathContext **context)
 {
   xmlChar *type_str;
   xmlChar *value_str;
@@ -66,115 +69,139 @@ ags_file_util_read_gvalue(xmlNode *node, gchar **id, GType *type, GValue **value
 
     *value = &value;
   }else if(!xmlStrcmp(type_str, "gint[]\0")){
+    gchar **str_arr;
+    gint *arr;
+
     *type = G_TYPE_POINTER;
+
+    g_value_init(&value, G_TYPE_POINTER);
 
     //TODO:JK: implement me
   }else if(!xmlStrcmp(type_str, "guint[]\0")){
+    gchar **str_arr;
+    guint *arr;
+
     *type = G_TYPE_POINTER;
+
+    g_value_init(&value, G_TYPE_POINTER);
 
     //TODO:JK: implement me
   }else if(!xmlStrcmp(type_str, "gdouble[]\0")){
+    gchar **str_arr;
+    gdouble *arr;
+
     *type = G_TYPE_POINTER;
+
+    g_value_init(&value, G_TYPE_POINTER);
 
     //TODO:JK: implement me
   }else if(!xmlStrcmp(type_str, "gpointer\0")){
+    xmlXPathContext *context;
+    gpointer arr;
+
     *type = G_TYPE_POINTER;
+
+    g_value_init(&value, G_TYPE_POINTER);
 
     //TODO:JK: implement me
   }else if(!xmlStrcmp(type_str, "gobject\0")){
+    xmlXPathContext *context;
+
     *type = G_TYPE_OBJECT;
+
+    g_value_init(&value, G_TYPE_OBJECT);
 
     //TODO:JK: implement me
   }
 }
 
 void
-ags_file_util_write_gvalue(xmlNode *parent, gchar *id, GType type, GValue *value)
+ags_file_util_write_gvalue(xmlNode *parent, gchar *id,
+			   GValue *value, xmlXPathContext *context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_read_callback(xmlNode *node, gchar **id, gchar **signal_name, gchar **callback_name)
+ags_file_util_read_parameter(xmlNode *node, gchar **id,
+			     GParameter **parameter, gint *n_params, xmlXPathContext **context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_write_callback(xmlNode *parent, gchar *id, gchar *signal_name, gchar *callback_name)
+ags_file_util_write_parameter(xmlNode *parent, gchar *id,
+			      GParameter *parameter, gint n_params, xmlXPathContext *context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_read_handler(xmlNode *node, gchar **id, gchar **name, AgsRecallHandler **handler, GList **parameter)
+ags_file_util_read_callback(xmlNode *node, gchar **id,
+			    gchar **signal_name, gchar **callback_name, xmlXPathContext **context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_read_handler_list(xmlNode *node, gchar **id, GList **handler)
+ags_file_util_write_callback(xmlNode *parent, gchar *id,
+			     gchar *signal_name, gchar *callback_name, xmlXPathContext *context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_write_handler(xmlNode *parent, gchar *id, gchar *name)
+ags_file_util_read_handler(xmlNode *node, gchar **id,
+			   gchar **name, AgsRecallHandler **handler, GList **parameter, xmlXPathContext **context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_write_handler_list(xmlNode *parent, gchar *id, GList *handler, AgsRecallHandler *handler, GList *parameter)
+ags_file_util_read_handler_list(xmlNode *node, gchar **id,
+				GList **handler, xmlXPathContext *context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_read_dependency(xmlNode *node, gchar **id, gchar **name, GList **values)
+ags_file_util_write_handler(xmlNode *parent, gchar *id,
+			    gchar *name, GList **context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_read_dependency_list(xmlNode *node, gchar **id, GList **dependency)
+ags_file_util_write_handler_list(xmlNode *parent, gchar *id,
+				 GList *handler, AgsRecallHandler *handler, GList *parameter, GList *context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_write_dependency(xmlNode *parent, gchar *id, gchar *name, GList *values)
+ags_file_util_read_dependency(xmlNode *node, gchar **id,
+			      gchar **name, GList **values, xmlXPathContext **context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_write_dependency_list(xmlNode *parent, gchar *id, GList *dependency)
+ags_file_util_read_dependency_list(xmlNode *node, gchar **id,
+				   GList **dependency, GList **context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_read_parameter(xmlNode *node, gchar **id, gchar **parameter, GList **values)
+ags_file_util_write_dependency(xmlNode *parent, gchar *id,
+			       gchar *name, GList *values, GList *context)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_util_read_parameter_list(xmlNode *node, gchar **id, GList **parameter)
+ags_file_util_write_dependency_list(xmlNode *parent, gchar *id,
+				    GList *dependency, GList *context)
 {
   //TODO:JK: implement me
 }
-
-void
-ags_file_util_write_parameter(xmlNode *parent, gchar *id, gchar *parameter, GList *values)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_util_write_parameter_list(xmlNode *parent, gchar *id, GList *parameter)
-{
-  //TODO:JK: implement me
-}
-
