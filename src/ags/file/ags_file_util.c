@@ -29,7 +29,8 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
   xmlChar *content;
   GValue a = G_VALUE_INIT;
 
-  *id = xmlGetProp(node, AGS_FILE_ID_PROP);
+  if(id != NULL)
+    *id = xmlGetProp(node, AGS_FILE_ID_PROP);
 
   type_str = xmlGetProp(node, AGS_FILE_TYPE_PROP);
 
@@ -39,38 +40,68 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
     g_value_init(&a, G_TYPE_BOOLEAN);
     g_value_set_boolean(&a, g_ascii_strtol(content));
 
-    *value = &a;
-    *xpath = NULL;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gchar\0")){
     g_value_init(&a, G_TYPE_CHAR);
     g_value_set_schar(&a, content);
 
-    *value = &a;
-    *xpath = NULL;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gint64\0")){
     g_value_init(&a, G_TYPE_INT64);
     g_value_set_int(&a, g_ascii_strtoll(content));
 
-    *value = &a;
-    *xpath = NULL;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "guint64\0")){
     g_value_init(&a, G_TYPE_UINT64);
     g_value_set_static_string(&a, g_ascii_strtoull(content));
 
-    *value = &a;
-    *xpath = NULL;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gdouble\0")){
     g_value_init(&a, G_TYPE_DOUBLE);
     g_value_set_double(&a, g_ascii_strtod(content));
 
-    *value = &a;
-    *xpath = NULL;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gchar-pointer\0")){
     g_value_init(&a, G_TYPE_STRING);
     g_value_set_static_string(&a, content);
 
-    *value = &a;
-    *xpath = NULL;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gboolean-pointer\0")){
     gchar **str_arr, **str_iter;
     gint64 *arr;
@@ -102,9 +133,14 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
     }
 
     g_free(str_arr);
+
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
     
-    *value = &a;
-    *xpath = NULL;
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gint-pointer\0")){
     gchar **str_arr, **str_iter;
     gint64 *arr;
@@ -132,9 +168,14 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
     }
     
     g_free(str_arr);
+
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
     
-    *value = &a;
-    *xpath = NULL;
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "guint-pointer\0")){
     gchar **str_arr, **str_iter;
     guint64 *arr;
@@ -162,9 +203,14 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
     }
     
     g_free(str_arr);
+
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
     
-    *value = &a;
-    *xpath = NULL;
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gdouble-pointer\0")){
     gchar **str_arr, **str_iter;
     gdouble *arr;
@@ -192,19 +238,34 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
     }
     
     g_free(str_arr);
+
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
     
-    *value = &a;
-    *xpath = NULL;
+    if(xpath != NULL)
+      *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gpointer\0")){
     g_value_init(&a, G_TYPE_POINTER);
     
-    *value = NULL;
-    *xpath = content;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = content;
   }else if(!xmlStrcmp(type_str, "gobject\0")){
     g_value_init(&a, G_TYPE_OBJECT);
     
-    *value = NULL;
-    *xpath = content;
+    if(value != NULL)
+      *value = &a;
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = content;
   }else{
     g_warning("ags_file_util_read_value: unsupported type\0");
   }
@@ -271,24 +332,61 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
 
 void
 ags_file_util_read_parameter(xmlNode *node, gchar **id,
-			     GParameter **parameter, gint *n_params, xmlChar **xpath)
+			     GParameter **parameter, gint *n_params, xmlChar ***xpath)
 {
-  GParameter *parameter;
-  gchar **name, **name_iter;
+  xmlNode *child;
+  GParameter *parameter_arr;
+  gchar **name_arr, **name_iter;
+  gchar **xpath_arr;
+  guint i;
 
-  name = g_strsplit(xmlGetProp(node, "name\0"), " \0", -1);
+  name_arr = g_strsplit(xmlGetProp(node, "name\0"), " \0", -1);
 
-  name_iter = name;
-  parameter = null;
+  parameter_arr = NULL;
+  name_iter = name_arr;
+  xpath_arr = NULL;
+  i = 0;
+  
+  child = node->children;
 
-  //TODO:JK: implement me
+  while(name_iter != NULL){
+    if(parameter_arr == NULL){
+      parameter_arr = (GParameter *) g_new(GParameter, 1);
+      xpath_arr = (xmlChar **) malloc(sizeof(xmlChar *));
+    }else{
+      parameter_arr = (GParameter *) g_renew(GParameter, i + 1);
+      xpath_arr = (xmlChar **) malloc((i + 1) * sizeof(xmlChar *));
+    }
 
-  g_free(name);
+    parameter_arr[i].name = name_arr[i];
+    ags_file_util_read_value(child, NULL,
+			     &(parameter_arr[i].value), &(xpath_arr[i]));
+
+    child = child->next;
+    name_iter++;
+    i++;
+  }
+
+  g_free(name_arr);
+  
+  if(id != NULL)
+    *id = (gchar *) xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  if(parameter != NULL)
+    *parameter = parameter_arr;
+  else
+    g_free(parameter);
+
+  if(n_params != NULL)
+    *n_params = i;
+
+  if(xpath != NULL)
+    *xpath = xpath_arr;
 }
 
 void
 ags_file_util_write_parameter(xmlNode *parent, gchar *id,
-			      GParameter *parameter, gint n_params, AgsSerializeable *serializeable)
+			      GParameter *parameter, gint n_params, AgsSerializeable **serializeable)
 {
   xmlNode *node;
 
