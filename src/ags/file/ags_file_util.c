@@ -100,6 +100,8 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       str_iter++;
       i++;
     }
+
+    g_free(str_arr);
     
     *value = &a;
     *xpath = NULL;
@@ -129,6 +131,8 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       i++;
     }
     
+    g_free(str_arr);
+    
     *value = &a;
     *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "guint-pointer\0")){
@@ -156,6 +160,8 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       str_iter++;
       i++;
     }
+    
+    g_free(str_arr);
     
     *value = &a;
     *xpath = NULL;
@@ -185,16 +191,18 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       i++;
     }
     
+    g_free(str_arr);
+    
     *value = &a;
     *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gpointer\0")){
     g_value_init(&a, G_TYPE_POINTER);
-
+    
     *value = NULL;
     *xpath = content;
   }else if(!xmlStrcmp(type_str, "gobject\0")){
     g_value_init(&a, G_TYPE_OBJECT);
-
+    
     *value = NULL;
     *xpath = content;
   }else{
@@ -265,7 +273,17 @@ void
 ags_file_util_read_parameter(xmlNode *node, gchar **id,
 			     GParameter **parameter, gint *n_params, xmlChar **xpath)
 {
+  GParameter *parameter;
+  gchar **name, **name_iter;
+
+  name = g_strsplit(xmlGetProp(node, "name\0"), " \0", -1);
+
+  name_iter = name;
+  parameter = null;
+
   //TODO:JK: implement me
+
+  g_free(name);
 }
 
 void

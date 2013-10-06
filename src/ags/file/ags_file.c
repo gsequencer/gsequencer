@@ -204,8 +204,13 @@ ags_file_get_type (void)
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_init,
     };
-    ags_type_file = g_type_register_static (G_TYPE_OBJECT, "AgsFile\0", &ags_file_info, 0);
+
+    ags_type_file = g_type_register_static(G_TYPE_OBJECT,
+					   "AgsFile\0",
+					   &ags_file_info,
+					   0);
   }
+
   return (ags_type_file);
 }
 
