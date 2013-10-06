@@ -28,33 +28,16 @@
 	  name             CDATA      #IMPLIED
 	  >
 
-<!ELEMENT ags-callback EMPTY>
-<!ATTLIST ags-callback
-	  id               ID         #REQUIRED
-	  signal-name      CDATA      #REQUIRED
-	  callback-name    CDATA      #REQUIRED
-	  >
-
-<!ELEMENT ags-handler-list (ags-handler*)>
-<!ATTLIST ags-handler-list
-	  id               ID         #REQUIRED
-	  >
-
-<!ELEMENT ags-handler (gcallback, ags-parameter)>
-<!ATTLIST ags-handler
-	  id               ID         #REQUIRED
-	  name             CDATA      #REQUIRED
-	  >
-
 <!ELEMENT ags-dependency-list (ags-dependency*)>
 <!ATTLIST ags-dependency-list
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-dependency (gvalue*)>
+<!ELEMENT ags-dependency EMPTY>
 <!ATTLIST ags-dependency
 	  id               ID         #REQUIRED
 	  name             CDATA      #REQUIRED
+	  xpath            CDATA      #REQUIRED
 	  >
 
 <!-- root node -->
@@ -389,12 +372,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-dependency-list (ags-recall*)>
-<!ATTLIST ags-dependency-list
-	  id               ID         #REQUIRED
-	  >
-
-<!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-recycling-run|ags-recall-audio-signal)?, ags-recall-list?, ags-dependency-list, ags-handler-list, ags-parameter)>
+<!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-recycling-run|ags-recall-audio-signal)?, ags-recall-list?, ags-dependency-list, ags-parameter)>
 <!ATTLIST ags-recall
 	  id                     ID         #REQUIRED
 	  version                CDATA      #REQUIRED

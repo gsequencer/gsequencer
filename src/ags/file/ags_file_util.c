@@ -451,97 +451,17 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 }
 
 void
-ags_file_util_read_callback(xmlNode *node, gchar **id,
-			    gchar **signal_name, gchar **callback_name, xmlChar **xpath)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_util_write_callback(xmlNode *parent, gchar *id,
-			     gchar *signal_name, gchar *callback_name, AgsSerializeable *serializeable)
-{
-  xmlNode *node;
-
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
-		    "ags-callback\0");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  //TODO:JK: implement me
-
-  xmlAddChild(parent,
-	      node);
-}
-
-void
-ags_file_util_read_handler(xmlNode *node, gchar **id,
-			   gchar **name, AgsRecallHandler **handler, GList **parameter, xmlChar **xpath)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_util_read_handler_list(xmlNode *node, gchar **id,
-				GList **handler, AgsSerializeable *serializeable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_util_write_handler(xmlNode *parent, gchar *id,
-			    gchar *name, GList **xpath)
-{
-  xmlNode *node;
-
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
-		    "ags-handler\0");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  //TODO:JK: implement me
-
-  xmlAddChild(parent,
-	      node);
-}
-
-void
-ags_file_util_write_handler_list(xmlNode *parent, gchar *id,
-				 GList *handler, AgsRecallHandler *handler, GList *parameter, GList *serializeable)
-{
-  xmlNode *node;
-
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
-		    "ags-handler-list\0");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  //TODO:JK: implement me
-
-  xmlAddChild(parent,
-	      node);
-}
-
-void
 ags_file_util_read_dependency(xmlNode *node, gchar **id,
-			      gchar **name, GList **values, xmlChar **xpath)
+			      gchar **name, xmlChar **xpath)
 {
-  //TODO:JK: implement me
-}
-
-void
-ags_file_util_read_dependency_list(xmlNode *node, gchar **id,
-				   GList **dependency, GList **xpath)
-{
-  //TODO:JK: implement me
+  *id = xmlGetProp(node, AGS_FILE_ID_PROP);
+  *name = xmlGetProp(node, AGS_FILE_NAME_PROP);
+  *xpath = xmlGetProp(node, AGS_FILE_XPATH_PROP);
 }
 
 void
 ags_file_util_write_dependency(xmlNode *parent, gchar *id,
-			       gchar *name, GList *values, GList *serializeable)
+			       gchar *name, xmlChar *xpath)
 {
   xmlNode *node;
 
@@ -551,25 +471,13 @@ ags_file_util_write_dependency(xmlNode *parent, gchar *id,
 	     AGS_FILE_ID_PROP,
 	     id);
 
-  //TODO:JK: implement me
-
-  xmlAddChild(parent,
-	      node);
-}
-
-void
-ags_file_util_write_dependency_list(xmlNode *parent, gchar *id,
-				    GList *dependency, GList *serializeable)
-{
-  xmlNode *node;
-
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
-		    "ags-dependency-list\0");
   xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
+	     AGS_FILE_NAME_PROP,
+	     name);
 
-  //TODO:JK: implement me
+  xmlNewProp(node,
+	     AGS_FILE_XPATH_PROP,
+	     xpath);
 
   xmlAddChild(parent,
 	      node);
