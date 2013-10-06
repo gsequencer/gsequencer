@@ -188,7 +188,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-devout (ags-devout-play*)>
+<!ELEMENT ags-devout (ags-devout-play-list)>
 <!ATTLIST ags-devout
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -204,6 +204,11 @@
 	  attack-length    NMTOKEN    #REQUIRED
 	  system           CDATA      "alsa"
 	  device           CDATA      "default"
+	  >
+
+<!ELEMENT ags-devout-play-list (ags-devout-play*)>
+<!ATTLIST ags-devout-play-list
+	  id               ID         #REQUIRED
 	  >
 
 <!ELEMENT ags-devout-play EMPTY>
@@ -232,7 +237,6 @@
 <!ELEMENT ags-channel-list (ags-channel*)>
 <!ATTLIST ags-channel-list
 	  id               ID         #REQUIRED
-	  type             CDATA      ("in"|"out")
 	  >
 
 <!ELEMENT ags-channel (ags-recycling?, ags-recall-list, ags-pattern-list, (ags-output|ags-input))>
