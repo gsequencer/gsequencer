@@ -26,6 +26,31 @@
 
 #include <libxml/tree.h>
 
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
+#include <ags/X/ags_line_member.h>
+#include <ags/X/ags_editor.h>
+#include <ags/X/ags_navigation.h>
+#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_pad_editor.h>
+#include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_link_editor.h>
+#include <ags/X/ags_line_member_editor.h>
+
+#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_notebook.h>
+
+#include <ags/X/machine/ags_panel.h>
+#include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_oscillator.h>
+#include <ags/X/machine/ags_ffplayer.h>
+
 /* AgsWindow */
 void ags_file_read_window(xmlNode *node, AgsWindow **window);
 void ags_file_write_window(xmlNode *parent, AgsWindow *window);

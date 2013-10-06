@@ -32,158 +32,18 @@
 
 #include <ags/main.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_effect.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_note.h>
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_task.h>
-
-#include <ags/audio/ags_recall.h>
-
-#include <ags/audio/recall/ags_play_pattern.h>
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
-#include <ags/audio/recall/ags_play_audio_signal.h>
-
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_audio_signal.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_menu_bar.h>
-#include <ags/X/ags_machine.h>
-#include <ags/X/ags_pad.h>
-#include <ags/X/ags_line.h>
-#include <ags/X/ags_line_member.h>
-#include <ags/X/ags_editor.h>
-#include <ags/X/ags_navigation.h>
-#include <ags/X/ags_machine_editor.h>
-#include <ags/X/ags_pad_editor.h>
-#include <ags/X/ags_line_editor.h>
-#include <ags/X/ags_link_editor.h>
-#include <ags/X/ags_line_member_editor.h>
-
-#include <ags/X/editor/ags_toolbar.h>
-#include <ags/X/editor/ags_notebook.h>
-
-#include <ags/X/machine/ags_panel.h>
-#include <ags/X/machine/ags_mixer.h>
-#include <ags/X/machine/ags_drum.h>
-#include <ags/X/machine/ags_matrix.h>
-#include <ags/X/machine/ags_synth.h>
-#include <ags/X/machine/ags_oscillator.h>
-#include <ags/X/machine/ags_ffplayer.h>
+#include <ags/file/ags_file_sound.h>
+#include <ags/file/ags_file_gui.h>
 
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init (AgsFile *file);
 void ags_file_finalize(GObject *gobject);
 
-void ags_file_read_audio(AgsFile *file, AgsAudio *audio);
-void ags_file_read_channel(AgsFile *file, AgsAudio *audio);
-void ags_file_read_channel_link(AgsFile *file);
-void ags_file_read_output(AgsFile *file, AgsOutput *output);
-void ags_file_read_input(AgsFile *file, AgsInput *input);
-void ags_file_read_recycling(AgsFile *file, AgsRecycling *recycling);
-void ags_file_read_audio_signal(AgsFile *file, AgsAudioSignal *audio_signal);
-void ags_file_read_stream(AgsFile *file, guint *stream, guint buffer_size);
-void ags_file_read_pattern(AgsFile *file, AgsPattern *pattern);
-void ags_file_read_notation(AgsFile *file, AgsNotation *notation);
-void ags_file_read_note(AgsFile *file, AgsNote *note);
-void ags_file_read_devout(AgsFile *file, AgsDevout *devout);
-
-void ags_file_read_recall(AgsFile *file, AgsRecall *recall);
-
-void ags_file_read_play_pattern(AgsFile *file, AgsRecall *recall);
-void ags_file_read_play_channel(AgsFile *file, AgsRecall *recall);
-void ags_file_read_play_audio_signal(AgsFile *file, AgsRecall *recall);
-void ags_file_read_volume_channel(AgsFile *file, AgsRecall *recall);
-
-void ags_file_read_copy_pattern(AgsFile *file, AgsRecall *recall);
-void ags_file_read_copy_channel(AgsFile *file, AgsRecall *recall);
-void ags_file_read_copy_audio_signal(AgsFile *file, AgsRecall *recall);
-void ags_file_read_volume_channel(AgsFile *file, AgsRecall *recall);
-
-void ags_file_read_window(AgsFile *file);
-void ags_file_read_menu_bar(AgsFile *file, AgsMenuBar *menu_bar);
-void ags_file_read_machine(AgsFile *file);
-void ags_file_read_pad(AgsFile *file, AgsPad *pad);
-void ags_file_read_line(AgsFile *file, AgsLine *line);
-void ags_file_read_line_member(AgsFile *file, AgsLineMember *line_member);
-void ags_file_read_editor(AgsFile *file, AgsEditor *editor);
-void ags_file_read_navigation(AgsFile *file, AgsNavigation *navigation);
-void ags_file_read_machine_editor(AgsFile *file, AgsMachineEditor *machine_editor);
-void ags_file_read_pad_editor(AgsFile *file, AgsPadEditor *pad_editor);
-void ags_file_read_line_editor(AgsFile *file, AgsLineEditor *line_editor);
-void ags_file_read_link_editor(AgsFile *file, AgsLinkEditor *link_editor);
-void ags_file_read_line_member_editor(AgsFile *file, AgsLineMemberEditor *line_member_editor);
-
-void ags_file_read_toolbar(AgsFile *file, AgsToolbar *toolbar);
-void ags_file_read_notebook(AgsFile *file, AgsNotebook *notebook);
-
-void ags_file_read_panel(AgsFile *file, AgsMachine *machine);
-void ags_file_read_mixer(AgsFile *file, AgsMachine *machine);
-void ags_file_read_drum(AgsFile *file, AgsMachine *machine);
-void ags_file_read_matrix(AgsFile *file, AgsMachine *machine);
-void ags_file_read_synth(AgsFile *file, AgsMachine *machine);
-void ags_file_read_oscillator(AgsFile *file, AgsOscillator *oscillator);
-void ags_file_read_ffplayer(AgsFile *file, AgsMachine *machine);
-
-
-void ags_file_write_audio(AgsFile *file, AgsAudio *audio);
-void ags_file_write_channel(AgsFile *file, AgsChannel *channel);
-void ags_file_write_output(AgsFile *file, AgsChannel *channel);
-void ags_file_write_input(AgsFile *file, AgsChannel *channel);
-void ags_file_write_recycling(AgsFile *file, AgsRecycling *recycling);
-void ags_file_write_audio_signal(AgsFile *file, AgsAudioSignal *audio_signal);
-void ags_file_write_stream(AgsFile *file, gpointer stream, guint buffer_size);
-void ags_file_write_pattern(AgsFile *file, AgsPattern *pattern);
-void ags_file_write_notation(AgsFile *file, AgsNotation *notation);
-void ags_file_write_note(AgsFile *file, AgsNote *note);
-void ags_file_write_devout(AgsFile *file, AgsDevout *devout);
-
-void ags_file_write_recall(AgsFile *file, AgsRecall *recall);
-
-void ags_file_write_play_pattern(AgsFile *file, AgsRecall *recall);
-void ags_file_write_play_channel(AgsFile *file, AgsRecall *recall);
-void ags_file_write_play_audio_signal(AgsFile *file, AgsRecall *recall);
-void ags_file_write_volume_channel(AgsFile *file, AgsRecall *recall);
-
-void ags_file_write_copy_pattern(AgsFile *file, AgsRecall *recall);
-void ags_file_write_copy_channel(AgsFile *file, AgsRecall *recall);
-void ags_file_write_copy_audio_signal(AgsFile *file, AgsRecall *recall);
-
-void ags_file_write_window(AgsFile *file);
-void ags_file_write_menu_bar(AgsFile *file, AgsMenuBar *menu_bar);
-void ags_file_write_machine(AgsFile *file, AgsMachine *machine);
-void ags_file_write_pad(AgsFile *file, AgsPad *pad);
-void ags_file_write_line(AgsFile *file, AgsLine *line);
-void ags_file_write_line_member(AgsFile *file, AgsLineMember *line_member)
-void ags_file_write_editor(AgsFile *file, AgsEditor *editor);
-void ags_file_write_navigation(AgsFile *file, AgsNavigation *navigation);
-void ags_file_write_machine_editor(AgsFile *file, AgsMachineEditor *machine_editor);
-void ags_file_write_pad_editor(AgsFile *file, AgsPadEditor *pad_editor);
-void ags_file_write_line_editor(AgsFile *file, AgsLineEditor *line_editor);
-void ags_file_write_link_editor(AgsFile *file, AgsLinkEditor *link_editor);
-void ags_file_write_line_member_editor(AgsFile *file, AgsLineMemberEditor *line_member_editor);
-
-void ags_file_write_toolbar(AgsFile *file, AgsToolbar *toolbar);
-void ags_file_write_notebook(AgsFile *file, AgsNotebook *notebook);
-
-void ags_file_write_panel(AgsFile *file, AgsMachine *machine);
-void ags_file_write_mixer(AgsFile *file, AgsMachine *machine);
-void ags_file_write_drum(AgsFile *file, AgsMachine *machine);
-void ags_file_write_matrix(AgsFile *file, AgsMachine *machine);
-void ags_file_write_synth(AgsFile *file, AgsMachine *machine);
-void ags_file_write_oscillator(AgsFile *file, AgsOscillator *oscillator);
-void ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine);
+void ags_file_real_write(AgsFile *file);
+void ags_file_real_read(AgsFile *file);
+void ags_file_real_resolve(AgsFile *file);
+void ags_file_real_link(AgsFile *file);
+void ags_file_real_start(AgsFile *file);
 
 static gpointer ags_file_parent_class = NULL;
 
@@ -225,6 +85,13 @@ ags_file_class_init(AgsFileClass *file)
   gobject = (GObjectClass *) file;
 
   gobject->finalize = ags_file_finalize;
+
+  /* AgsFileClass */
+  file->write = ags_file_real_write;
+  file->read = ags_file_real_read;
+  file->resolve = ags_file_real_resolve;
+  file->link = ags_file_real_link;
+  file->start = ags_file_real_start;
 }
 
 void
@@ -271,6 +138,87 @@ ags_file_finalize(GObject *gobject)
   //  xmlMemoryDump();
 
   G_OBJECT_CLASS(ags_file_parent_class)->finalize(gobject);
+}
+
+void
+ags_file_real_write(AgsFile *file)
+{
+  /*  */
+}
+
+void
+ags_file_write(AgsFile *file)
+{
+  g_return_if_fail(AGS_IS_FILE(file));
+
+  g_object_ref(G_OBJECT(file));
+  g_signal_emit(G_OBJECT(file),
+		file_signals[WRITE], 0);
+  g_object_unref(G_OBJECT(file));
+}
+
+void
+ags_file_real_read(AgsFile *file)
+{
+}
+
+void
+ags_file_read(AgsFile *file)
+{
+  g_return_if_fail(AGS_IS_FILE(file));
+
+  g_object_ref(G_OBJECT(file));
+  g_signal_emit(G_OBJECT(file),
+		file_signals[READ], 0);
+  g_object_unref(G_OBJECT(file));
+}
+
+void
+ags_file_real_resolve(AgsFile *file)
+{
+}
+
+void
+ags_file_resolve(AgsFile *file)
+{
+  g_return_if_fail(AGS_IS_FILE(file));
+
+  g_object_ref(G_OBJECT(file));
+  g_signal_emit(G_OBJECT(file),
+		file_signals[RESOLVE], 0);
+  g_object_unref(G_OBJECT(file));
+}
+
+void
+ags_file_real_link(AgsFile *file)
+{
+}
+
+void
+ags_file_link(AgsFile *file)
+{
+  g_return_if_fail(AGS_IS_FILE(file));
+
+  g_object_ref(G_OBJECT(file));
+  g_signal_emit(G_OBJECT(file),
+		file_signals[LINK], 0);
+  g_object_unref(G_OBJECT(file));
+}
+
+void
+ags_file_real_start(AgsFile *file)
+{
+}
+
+void
+ags_file_start(AgsFile *file)
+{
+  g_return_if_fail(AGS_IS_FILE(file));
+
+  g_object_ref(G_OBJECT(file));
+  g_signal_emit(G_OBJECT(file),
+		file_signals[START], 0);
+  g_object_unref(G_OBJECT(file));
 }
 
 void

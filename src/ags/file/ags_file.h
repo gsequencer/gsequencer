@@ -88,6 +88,58 @@ void ags_file_resolve(AgsFile *file);
 void ags_file_link(AgsFile *file);
 void ags_file_start(AgsFile *file);
 
-AgsFile* ags_file_new(GObject *main);
+/* clipboard */
+void ags_file_read_clipboard(xmlNode *node, AgsClipboard **clipboard);
+void ags_file_write_clipboard(xmlNode *parent, AgsClipboard *clipboard);
+
+/* property */
+void ags_file_read_property(xmlNode *node, AgsProperty **property);
+void ags_file_write_property(xmlNode *parent, AgsProperty *property);
+
+void ags_file_read_property_list(xmlNode *node, GList **property);
+
+/* script */
+void ags_file_read_script(xmlNode *node, AgsScript **script);
+void ags_file_write_script(xmlNode *node, AgsScript *script);
+
+void ags_file_read_script_list(xmlNode *node, GList **script);
+void ags_file_write_script_list(xmlNode *node, GList *script);
+
+/*  */
+void ags_file_read_cluster(xmlNode *node, AgsCluster **cluster);
+void ags_file_write_cluster(xmlNode *parent, AgsCluster *cluster);
+
+/*  */
+void ags_file_read_client(xmlNode *node, AgsClient **client);
+void ags_file_write_client(xmlNode *parent, AgsClient *client);
+
+/*  */
+void ags_file_read_server(xmlNode *node, AgsServer **server);
+void ags_file_write_server(xmlNode *parent, AgsServer *server);
+
+/*  */
+void ags_file_read_main(xmlNode *node, AgsMain **main);
+void ags_file_write_main(xmlNode *parent, AgsMain *main);
+
+/*  */
+void ags_file_read_embedded_audio(xmlNode *node, AgsEmbeddedAudio **embedded_audio);
+void ags_file_write_embedded_audio(xmlNode *parent, AgsEmbeddedAudio *embedded_audio);
+
+void ags_file_read_embedded_audio_list(xmlNode *node, GList **embedded_audio);
+void ags_file_write_embedded_audio_list(xmlNode *parent, GList *embedded_audio);
+
+/*  */
+void ags_file_read_file_link(xmlNode *node, AgsEmbeddedAudio **file_link);
+void ags_file_write_file_link(xmlNode *parent, AgsEmbeddedAudio *file_link);
+
+void ags_file_read_file_link_list(xmlNode *node, GList **file_link);
+void ags_file_write_file_link_list(xmlNode *parent, GList *file_link);
+
+/*  */
+void ags_file_read_history(xmlNode *node, AgsHistory **history);
+void ags_file_write_history(xmlNode *parent, AgsHistory *history);
+
+/* */
+AgsFile* ags_file_new();
 
 #endif /*__AGS_FILE_H__*/

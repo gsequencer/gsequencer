@@ -24,6 +24,19 @@
 
 #include <libxml/tree.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_note.h>
+#include <ags/audio/ags_task.h>
+#include <ags/audio/ags_recall.h>
+
 /* AgsDevout */
 void ags_file_read_devout(xmlNode *node, AgsDevout **devout);
 void ags_file_write_devout(xmlNode *parent, AgsDevout *devout);
