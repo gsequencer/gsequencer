@@ -18,6 +18,8 @@
 
 #include <ags/file/ags_file_util.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/file/ags_file_stock.h>
 
 void
@@ -279,6 +281,10 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
   xmlChar *type;
   xmlChar *content;
 
+  if(value == NULL){
+    return;
+  }
+
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-value\0");  
   xmlNewProp(node,
@@ -313,11 +319,19 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
     break;
   case G_TYPE_POINTER:
     {
+      if(serializeable == NULL){
+	return;
+      }
+
       content = BAD_CAST ags_serializeable_serialize(AGS_SERIALIZEABLE(g_value_get_object(value)));
     }
     break;
   case G_TYPE_OBJECT:
     {
+      if(serializeable == NULL){
+	return;
+      }
+
       content = BAD_CAST ags_serializeable_serialize(AGS_SERIALIZEABLE(g_value_get_object(value)));
     }
     break;
@@ -340,7 +354,7 @@ ags_file_util_read_parameter(xmlNode *node, gchar **id,
   gchar **xpath_arr;
   guint i;
 
-  name_arr = g_strsplit(xmlGetProp(node, "name\0"), " \0", -1);
+  name_arr = g_strsplit(xmlGetProp(node, AGS_FILE_NAME_PROP), " \0", -1);
 
   parameter_arr = NULL;
   name_iter = name_arr;
@@ -382,6 +396,8 @@ ags_file_util_read_parameter(xmlNode *node, gchar **id,
 
   if(xpath != NULL)
     *xpath = xpath_arr;
+  else
+    free(xpath_arr);
 }
 
 void
@@ -389,6 +405,13 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 			      GParameter *parameter, gint n_params, AgsSerializeable **serializeable)
 {
   xmlNode *node;
+  xmlChar *name, *old_name;
+  gchar *child_id;
+  guint i;
+
+  if(parameter == NULL){
+    return;
+  }
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-parameter\0");  
@@ -396,7 +419,31 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 	     AGS_FILE_ID_PROP,
 	     id);
 
-  //TODO:JK: implement me
+  name = NULL;
+
+  for(i = 0; i < n_params; i++){
+    if(name == NULL){
+      name = g_strdup(parameter[i].name);
+    }else{
+      old_name = name;
+      name = (xmlChar *) g_strdup_printf("%s %s\0", name, parameter[i].name);
+      free(old_name);
+    }
+
+    child_id = ags_id_generator_create_uuid();
+
+    if(serializeable == NULL){
+      ags_file_util_write_value(node, child_id,
+				parameter[i].value, NULL);
+    }else{
+      ags_file_util_write_value(node, child_id,
+				parameter[i].value, serializeable[i]);
+    }
+  }
+
+  xmlNewProp(node,
+	     AGS_FILE_NAME_PROP,
+	     name);
 
   xmlNodeSetContent(node, content);
   xmlAddChild(parent,
