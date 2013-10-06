@@ -20,6 +20,12 @@
 
 #include <ags-lib/object/ags_serializeable.h>
 
+void ags_file_value_factory_class_init(AgsFileValueFactoryClass *file_value_factory);
+void ags_file_value_factory_serializeable_interface_init(AgsSerializeableInterface *serializeable);
+void ags_file_value_factory_init(AgsFileValueFactory *file_value_factory);
+void ags_file_value_factory_finalize(GObject *gobject);
+void ags_file_value_factory_serialize(AgsSerializeable *serializeable);
+
 static gpointer ags_file_value_factory_parent_class = NULL;
 
 GType
@@ -41,7 +47,7 @@ ags_file_value_factory_get_type(void)
     };
 
     static const GInterfaceInfo ags_serializeable_interface_info = {
-      (GInterfaceInitFunc) ags_window_serializeable_interface_init,
+      (GInterfaceInitFunc) ags_file_value_factory_serializeable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -51,7 +57,7 @@ ags_file_value_factory_get_type(void)
 							 &ags_file_value_factory_info,
 							 0);
 
-    g_type_add_interface_static(ags_type_window,
+    g_type_add_interface_static(ags_type_file_value_factory,
 				AGS_TYPE_SERIALIZEABLE,
 				&ags_serializeable_interface_info);
   }
@@ -70,6 +76,30 @@ ags_file_value_factory_class_init(AgsFileClass *file_value_factory)
   gobject = (GObjectClass *) file_value_factory;
 
   gobject->finalize = ags_file_value_factory_finalize;
+}
+
+void
+ags_file_value_factory_serializeable_interface_init(AgsSerializeableInterface *serializeable)
+{
+  file_value_factory->serialize = ags_file_value_factory_serialize;
+}
+
+void
+ags_file_value_factory_init(AgsFileValueFactory *file_value_factory)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_value_factory_finalize(GObject *gobject)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_value_factory_serialize(AgsSerializeable *serializeable)
+{
+  //TODO:JK: implement me
 }
 
 AgsFileValueFactory*

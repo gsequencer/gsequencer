@@ -19,6 +19,7 @@
 #ifndef __AGS_CONNECTABLE_H__
 #define __AGS_CONNECTABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_CONNECTABLE                    (ags_connectable_get_type())
