@@ -202,7 +202,6 @@
 	  delay-counter    NMTOKEN    #REQUIRED
 	  attack-delay     NMTOKEN    #REQUIRED
 	  attack-length    NMTOKEN    #REQUIRED
-	  system           CDATA      "alsa"
 	  device           CDATA      "default"
 	  >
 

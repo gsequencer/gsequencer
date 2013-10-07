@@ -1307,11 +1307,6 @@ ags_file_read_synth(AgsFile *file, AgsMachine *machine)
 }
 
 void
-ags_file_read_oscillator(AgsFile *file, AgsOscillator *oscillator)
-{
-}
-
-void
 ags_file_read_ffplayer(AgsFile *file, AgsMachine *machine)
 {
 }
@@ -1999,13 +1994,6 @@ ags_file_write_synth(AgsFile *file, AgsMachine *machine)
 }
 
 void
-ags_file_write_oscillator(AgsFile *file, AgsOscillator *oscillator)
-{
-  xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_OSCILLATOR), NULL);
-  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
-}
-
-void
 ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine)
 {
   AgsFFPlayer *ffplayer;
@@ -2015,13 +2003,11 @@ ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine)
 }
 
 AgsFile*
-ags_file_new(GObject *main)
+ags_file_new()
 {
   AgsFile *file;
 
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE, NULL);
-
-  file->main = main;
 
   return(file);
 }

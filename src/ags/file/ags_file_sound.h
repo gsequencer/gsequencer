@@ -44,9 +44,6 @@ void ags_file_write_devout(xmlNode *parent, AgsDevout *devout);
 void ags_file_read_devout_list(xmlNode *node, GList **devout);
 void ags_file_write_devout_list(xmlNode *parent, GList *devout);
 
-void ags_file_read_devout(xmlNode *node, AgsDevout **devout);
-void ags_file_write_devout(xmlNode *parent, AgsDevout *devout);
-
 void ags_file_read_devout_play(xmlNode *node, AgsDevoutPlay **play);
 void ags_file_write_devout_play(xmlNode *parent, AgsDevoutPlay *play);
 

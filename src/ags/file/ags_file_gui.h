@@ -123,6 +123,9 @@ void ags_file_write_drum_input_line(xmlNode *parent, AgsLine *drum_output_line);
 void ags_file_read_drum_output_line(xmlNode *node, AgsLine *drum_output_line);
 void ags_file_write_drum_output_line(xmlNode *parent, AgsLine *drum_output_line);
 
+void ags_file_read_oscillator(xmlNode *node, AgsOscillator *oscillator);
+void ags_file_write_oscillator(xmlNode *parent, AgsOscillator *oscillator);
+
 /* AgsLineMember */
 void ags_file_read_line_member(xmlNode *node, AgsLineMember **line_member);
 void ags_file_write_line_member(xmlNode *parent, AgsLineMember *line_member);
@@ -148,6 +151,5 @@ void ags_file_write_notebook(xmlNode *parent, AgsNotebook *notebook);
 /* AgsNavigation */
 void ags_file_read_navigation(xmlNode *node, AgsNavigation **navigation);
 void ags_file_write_navigation(xmlNode *parent, AgsNavigation *navigation);
-
 
 #endif /*__AGS_FILE_GUI_H__*/
