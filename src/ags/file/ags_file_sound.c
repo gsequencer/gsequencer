@@ -166,7 +166,7 @@ ags_file_read_devout_play(xmlNode *node, AgsDevoutPlay **play)
 
   play->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
 
-  play-source = ags_file_id_ref_new_from_xpath(g_strdup_printf("xpath://*/@id[%s]\0", xmlGetProp(node, "source\0")));
+  play->source = ags_file_id_ref_new_from_xpath(g_strdup_printf("xpath://*/@id[%s]\0", xmlGetProp(node, "source\0")));
   play->audio_channel = (guint) g_ascii_strtoull(xmlGetProp(node, "audio-channel\0"));
 }
 
@@ -244,11 +244,58 @@ ags_file_write_devout_play_list(xmlNode *parent, GList *play)
 void
 ags_file_read_audio(xmlNode *node, AgsAudio **audio)
 {
+  AgsAudio *current;
+  xmlNode *child;
+
+  *audio = NULL;
+
+  child = node->children;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_audio(child, &current);
+
+    *audio = g_list_prepend(*audio, current);
+
+    child = child->next;
+  }
+
+  *audio = g_list_reverse(*audio);
 }
 
 void
 ags_file_write_audio(xmlNode *parent, AgsAudio *audio)
 {
+  xmlNode *node;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-audio\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", audio->flags));
+
+  xmlNewProp(node,
+	     "sequence-length\0",
+	     g_strdup_printf("%d\0", audio->sequence_length));
+
+  xmlNewProp(node,
+	     "audio-channels\0",
+	     g_strdup_printf("%d\0", audio->audio_channels));
+
+  xmlNewProp(node,
+	     "output_pads\0",
+	     g_strdup_printf("%d\0", audio->output_pads));
+
+  xmlNewProp(node,
+	     "input_pads\0",
+	     g_strdup_printf("%d\0", audio->input_pads));
+
+  audio->devout_play = ags_file_id_ref_new_from_xpath(g_strdup_printf("xpath://*/@id[%s]\0", xmlGetProp(node, "devout-play\0")));
 }
 
 void
