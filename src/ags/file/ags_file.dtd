@@ -214,6 +214,7 @@
 <!ATTLIST ags-devout-play
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
+	  source           ID-REF     #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
 	  >
 

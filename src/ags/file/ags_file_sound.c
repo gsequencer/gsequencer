@@ -28,7 +28,7 @@ ags_file_read_devout(xmlNode *node, AgsDevout **devout)
 			NULL);
   *devout = object;
 
-  object->flags = (guint) g_ascii_strtoull(xmlGetProp(node, "flags\0"));
+  object->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
 
   object->dsp_channels = (guint) g_ascii_strtoull(xmlGetProp(node, "dsp-channels\0"));
   object->pcm_channels = (guint) g_ascii_strtoull(xmlGetProp(node, "pcm-channels\0"));
@@ -62,7 +62,11 @@ ags_file_write_devout(xmlNode *parent, AgsDevout *devout)
 		    "ags-devout\0");
 
   xmlNewProp(node,
-	     "flags\0",
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x\0", devout->flags));
 
   xmlNewProp(node,
@@ -125,6 +129,8 @@ ags_file_read_devout_list(xmlNode *node, GList **devout)
 
     child = child->next;
   }
+
+  *devout = g_list_reverse(*devout);
 }
 
 void
@@ -136,6 +142,11 @@ ags_file_write_devout_list(xmlNode *parent, GList *devout)
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-devout-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   xmlAddChild(parent,
 	      node);
 
@@ -151,21 +162,83 @@ ags_file_write_devout_list(xmlNode *parent, GList *devout)
 void
 ags_file_read_devout_play(xmlNode *node, AgsDevoutPlay **play)
 {
+  *play = ags_devout_play_alloc();
+
+  play->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
+
+  play-source = ags_file_id_ref_new_from_xpath(g_strdup_printf("xpath://*/@id[%s]\0", xmlGetProp(node, "source\0")));
+  play->audio_channel = (guint) g_ascii_strtoull(xmlGetProp(node, "audio-channel\0"));
 }
 
 void
 ags_file_write_devout_play(xmlNode *parent, AgsDevoutPlay *play)
 {
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-devout-play\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     play->flags);
+
+  xmlNewProp(node,
+	     "source\0",
+	     play->source);
+
+  xmlNewProp(node,
+	     "audio-channel\0",
+	     play->audio_channel);
 }
 
 void
 ags_file_read_devout_play_list(xmlNode *node, GList **play)
 {
+  AgsDevoutPlay *current;
+  xmlNode *child;
+
+  *play = NULL;
+
+  child = node->children;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_devout_play(child, &current);
+
+    *play = g_list_prepend(*play, current);
+
+    child = child->next;
+  }
+
+  *play = g_list_reverse(*play);
 }
 
 void
 ags_file_write_devout_play_list(xmlNode *parent, GList *play)
 {
+  AgsDevout *current;
+  xmlNode *node;
+  GList *list;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-devout-play-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = devout;
+
+  while(list != NULL){
+    ags_file_write_devout_play(node, AGS_DEVOUT_PLAY(list->data));
+
+    list = list->next;
+  }
 }
 
 void
