@@ -19,6 +19,9 @@
 #ifndef __AGS_FILE_ID_REF_H__
 #define __AGS_FILE_ID_REF_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #define AGS_TYPE_FILE_ID_REF                (ags_file_id_ref_get_type())
 #define AGS_FILE_ID_REF(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_ID_REF, AgsFileIdRef))
 #define AGS_FILE_ID_REF_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FILE_ID_REF, AgsFileIdRef))
@@ -26,9 +29,14 @@
 #define AGS_IS_FILE_ID_REF_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_ID_REF))
 #define AGS_FILE_ID_REF_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_ID_REF, AgsFileIdRefClass))
 
+#define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data\0"
+#define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data\0"
+
 struct _AgsFileIdRef
 {
   GObject object;
+
+  GObject *main;
 
   gchar *xpath;
   GObject *ref;
@@ -37,10 +45,14 @@ struct _AgsFileIdRef
 struct _AgsFileIdRefClass
 {
   GObjectClass object;
+
+  void (*resolve)(AgsFileIdRef *file_id_ref, GObject *main);
 };
 
 GType ags_file_id_ref_get_type();
 
-AgsFileIdRef* ags_file_id_ref_new(gchar *xpath);
+void ags_file_id_ref_resolve(AgsFileIdRef *file_id_ref);
+
+AgsFileIdRef* ags_file_id_ref_new();
 
 #endif /*__AGS_FILE_ID_REF_H__*/

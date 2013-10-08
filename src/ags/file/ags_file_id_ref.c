@@ -30,16 +30,27 @@ void ags_file_id_ref_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_file_id_ref_finalize(GObject *gobject);
 
+void ags_file_id_ref_real_serialize(AgsFileIdRef *file_id_ref);
+void ags_file_id_ref_real_resolve(AgsFileIdRef *file_id_ref);
+
+enum{
+  RESOLVE,
+  LAST_SIGNAL,
+};
+
 enum{
   PROP_0,
   PROP_XPATH,
   PROP_REFERENCE,
+  PROP_MAIN,
 };
 
 static gpointer ags_file_id_ref_parent_class = NULL;
 
+static guint file_id_ref_signals[LAST_SIGNAL];
+
 GType
-ags_file_id_ref_get_type (void)
+ags_file_id_ref_get_type()
 {
   static GType ags_type_file_id_ref = 0;
 
@@ -99,11 +110,32 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
   g_object_class_install_property(gobject,
 				  PROP_REF,
 				  param_spec);
+
+  param_spec = g_param_spec_object("main\0",
+				   "main access\0",
+				   "The main object to access the tree\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REF,
+				  param_spec);
+
+  /* signals */
+  file_id_ref_signals[RESOLVE] = 
+    g_signal_new("resolve\0",
+		 G_TYPE_FROM_CLASS(file_id_ref),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileIdRefClass, resolve),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
 ags_file_id_ref_init(AgsFileIdRef *file_id_ref)
 {
+  file_id_ref->main = NULL;
+
   file_id_ref->xpath = NULL;
   file_id_ref->ref = NULL;
 }
@@ -145,6 +177,21 @@ ags_file_id_ref_set_property(GObject *gobject,
 	g_object_ref(ref);
 
       file_id_ref->ref = ref;
+    }
+    break;
+  case PROP_MAIN:
+    {
+      GObject *main;
+
+      main = (GObject *) g_value_get_object(value);
+
+      if(file_id_ref->main != NULL)
+	g_object_unref(file_id_ref->main);
+
+      if(main != NULL)
+	g_object_ref(main);
+
+      file_id_ref->main = main;
     }
     break;
   default:
@@ -191,13 +238,30 @@ ags_file_id_ref_finalize(GObject *gobject)
   }
 }
 
+void
+ags_file_id_ref_real_resolve(AgsFileIdRef *file_id_ref)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_id_ref_resolve(AgsFileIdRef *file_id_ref)
+{
+  g_return_if_fail(AGS_IS_FILE_ID_REF(file_id_ref));
+
+  g_object_ref((GObject *) file_id_ref);
+  g_signal_emit(G_OBJECT(file_id_ref),
+		file_id_ref_signals[RESOLVE],
+		0);
+  g_object_unref((GObject *) file_id_ref);
+}
+
 AgsFileIdRef*
-ags_file_id_ref_new(gchar *xpath)
+ags_file_id_ref_new()
 {
   AgsFileIdRef *file_id_ref;
 
   file_id_ref = (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
-					      "xpath\0", xpath,
 					      NULL);
 
   return(file_id_ref);

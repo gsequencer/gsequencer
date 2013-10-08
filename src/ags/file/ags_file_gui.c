@@ -23,7 +23,7 @@ ags_file_read_window(xmlNode *node, AgsWindow **window)
 {
 }
 
-void
+xmlNode*
 ags_file_write_window(xmlNode *parent, AgsWindow *window)
 {
 }
@@ -33,7 +33,7 @@ ags_file_read_menu_bar(xmlNode *node, AgsMenuBar **menu_bar)
 {
 }
 
-void
+xmlNode*
 ags_file_write_menu_bar(xmlNode *parent, AgsMenuBar *menu_bar)
 {
 }
@@ -43,7 +43,7 @@ ags_file_read_machine_counter(xmlNode *node, AgsMachineCounter **machine_counter
 {
 }
 
-void
+xmlNode*
 ags_file_write_machine_counter(xmlNode *parent, AgsMachineCounter *machine_counter)
 {
 }
@@ -53,7 +53,7 @@ ags_file_read_machine_counter_list(xmlNode *node, GList **machine_counter)
 {
 }
 
-void
+xmlNode*
 ags_file_write_machine_counter_list(xmlNode *parent, GList *machine_counter)
 {
 }
@@ -63,7 +63,7 @@ ags_file_read_machine(xmlNode *node, AgsMachine **machine)
 {
 }
 
-void
+xmlNode*
 ags_file_write_machine(xmlNode *parent, AgsMachine *machine)
 {
 }
@@ -73,7 +73,7 @@ ags_file_read_machine_list(xmlNode *node, GList **machine)
 {
 }
 
-void
+xmlNode*
 ags_file_write_machine_list(xmlNode *parent, GList *machine)
 {
 }
@@ -83,7 +83,7 @@ ags_file_read_panel(xmlNode *node, AgsMachine *panel)
 {
 }
 
-void
+xmlNode*
 ags_file_write_panel(xmlNode *parent, AgsMachine *panel)
 {
 }
@@ -93,7 +93,7 @@ ags_file_read_mixer(xmlNode *node, AgsMachine *mixer)
 {
 }
 
-void
+xmlNode*
 ags_file_write_mixer(xmlNode *parent, AgsMachine *mixer)
 {
 }
@@ -103,7 +103,7 @@ ags_file_read_drum(xmlNode *node, AgsMachine *drum)
 {
 }
 
-void
+xmlNode*
 ags_file_write_drum(xmlNode *parent, AgsMachine *drum)
 {
 }
@@ -113,7 +113,7 @@ ags_file_read_matrix(xmlNode *node, AgsMachine *matrix)
 {
 }
 
-void
+xmlNode*
 ags_file_write_matrix(xmlNode *parent, AgsMachine *matrix)
 {
 }
@@ -123,7 +123,7 @@ ags_file_read_synth(xmlNode *node, AgsMachine *synth)
 {
 }
 
-void
+xmlNode*
 ags_file_write_synth(xmlNode *parent, AgsMachine *synth)
 {
 }
@@ -133,7 +133,7 @@ ags_file_read_ffplayer(xmlNode *node, AgsMachine *ffplayer)
 {
 }
 
-void
+xmlNode*
 ags_file_write_ffplayer(xmlNode *parent, AgsMachine *ffplayer)
 {
 }
@@ -143,7 +143,7 @@ ags_file_read_pad(xmlNode *node, AgsPad **pad)
 {
 }
 
-void
+xmlNode*
 ags_file_write_pad(xmlNode *parent, AgsPad *pad)
 {
 }
@@ -153,7 +153,7 @@ ags_file_read_pad_list(xmlNode *node, GList **pad)
 {
 }
 
-void
+xmlNode*
 ags_file_write_pad_list(xmlNode *parent, GList *pad)
 {
 }
@@ -163,7 +163,7 @@ ags_file_read_mixer_input_pad(xmlNode *node, AgsPad *mixer_input_pad)
 {
 }
 
-void
+xmlNode*
 ags_file_write_mixer_input_pad(xmlNode *parent, AgsPad *mixer_input_pad)
 {
 }
@@ -173,7 +173,7 @@ ags_file_read_mixer_output_pad(xmlNode *node, AgsPad *mixer_output_pad)
 {
 }
 
-void
+xmlNode*
 ags_file_write_mixer_output_pad(xmlNode *parent, AgsPad *mixer_output_pad)
 {
 }
@@ -183,7 +183,7 @@ ags_file_read_drum_input_pad(xmlNode *node, AgsPad *drum_input_pad)
 {
 }
 
-void
+xmlNode*
 ags_file_write_drum_input_pad(xmlNode *parent, AgsPad *drum_input_pad)
 {
 }
@@ -193,7 +193,7 @@ ags_file_read_drum_output_pad(xmlNode *node, AgsPad *drum_output_pad)
 {
 }
 
-void
+xmlNode*
 ags_file_write_drum_output_pad(xmlNode *parent, AgsPad *drum_output_pad)
 {
 }
@@ -203,7 +203,7 @@ ags_file_read_line(xmlNode *node, AgsLine **line)
 {
 }
 
-void
+xmlNode*
 ags_file_write_line(xmlNode *parent, AgsLine *line)
 {
 }
@@ -213,7 +213,7 @@ ags_file_read_line_list(xmlNode *node, GList **line)
 {
 }
 
-void
+xmlNode*
 ags_file_write_line_list(xmlNode *parent, GList *line)
 {
 }
@@ -223,7 +223,7 @@ ags_file_read_drum_input_line(xmlNode *node, AgsLine *drum_output_line)
 {
 }
 
-void
+xmlNode*
 ags_file_write_drum_input_line(xmlNode *parent, AgsLine *drum_output_line)
 {
 }
@@ -233,7 +233,7 @@ ags_file_read_drum_output_line(xmlNode *node, AgsLine *drum_output_line)
 {
 }
 
-void
+xmlNode*
 ags_file_write_drum_output_line(xmlNode *parent, AgsLine *drum_output_line)
 {
 }
@@ -243,7 +243,7 @@ ags_file_read_oscillator(xmlNode *node, AgsOscillator *oscillator)
 {
 }
 
-void
+xmlNode*
 ags_file_write_oscillator(xmlNode *parent, AgsOscillator *oscillator)
 {
 }
@@ -253,7 +253,7 @@ ags_file_read_line_member(xmlNode *node, AgsLineMember **line_member)
 {
 }
 
-void
+xmlNode*
 ags_file_write_line_member(xmlNode *parent, AgsLineMember *line_member)
 {
 }
@@ -263,7 +263,7 @@ ags_file_read_line_member_list(xmlNode *node, GList **line_member)
 {
 }
 
-void
+xmlNode*
 ags_file_write_line_member_list(xmlNode *parent, GList *line_member)
 {
 }
@@ -273,7 +273,7 @@ ags_file_read_editor(xmlNode *node, AgsEditor **editor)
 {
 }
 
-void
+xmlNode*
 ags_file_write_editor(xmlNode *parent, AgsEditor *editor)
 {
 }
@@ -283,7 +283,7 @@ ags_file_read_toolbar(xmlNode *node, AgsToolbar **toolbar)
 {
 }
 
-void
+xmlNode*
 ags_file_write_toolbar(xmlNode *parent, AgsToolbar *toolbar)
 {
 }
@@ -293,7 +293,7 @@ ags_file_read_notebook(xmlNode *node, AgsNotebook **notebook)
 {
 }
 
-void
+xmlNode*
 ags_file_write_notebook(xmlNode *parent, AgsNotebook *notebook)
 {
 }
@@ -303,7 +303,7 @@ ags_file_read_navigation(xmlNode *node, AgsNavigation **navigation)
 {
 }
 
-void
+xmlNode*
 ags_file_write_navigation(xmlNode *parent, AgsNavigation *navigation)
 {
 }

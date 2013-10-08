@@ -214,7 +214,7 @@
 <!ATTLIST ags-devout-play
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
-	  source           ID-REF     #REQUIRED
+	  source           IDREF      #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
 	  >
 
@@ -244,8 +244,8 @@
           id               ID         #REQUIRED
 	  pad              NMTOKEN    #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
-	  link-name        CDATA      #REQUIRED
-	  link-line        NMTOKEN    #REQUIRED
+	  link             IDREF      #REQUIRED
+	  devout-play      IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-output EMPTY>

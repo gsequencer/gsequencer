@@ -143,7 +143,7 @@ ags_file_finalize(GObject *gobject)
 void
 ags_file_real_write(AgsFile *file)
 {
-  /*  */
+  //TODO:JK: implement me
 }
 
 void
@@ -160,6 +160,7 @@ ags_file_write(AgsFile *file)
 void
 ags_file_real_read(AgsFile *file)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -176,6 +177,7 @@ ags_file_read(AgsFile *file)
 void
 ags_file_real_resolve(AgsFile *file)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -192,6 +194,7 @@ ags_file_resolve(AgsFile *file)
 void
 ags_file_real_link(AgsFile *file)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -208,6 +211,7 @@ ags_file_link(AgsFile *file)
 void
 ags_file_real_start(AgsFile *file)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -1307,6 +1311,11 @@ ags_file_read_synth(AgsFile *file, AgsMachine *machine)
 }
 
 void
+ags_file_read_oscillator(AgsFile *file, AgsOscillator *oscillator)
+{
+}
+
+void
 ags_file_read_ffplayer(AgsFile *file, AgsMachine *machine)
 {
 }
@@ -1990,6 +1999,13 @@ ags_file_write_synth(AgsFile *file, AgsMachine *machine)
   AgsSynth *synth;
 
   xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_SYNTH), NULL);
+  xmlNodeAddContent(file->current, BAD_CAST "\n\0");
+}
+
+void
+ags_file_write_oscillator(AgsFile *file, AgsOscillator *oscillator)
+{
+  xmlNewChild(file->current, NULL, BAD_CAST g_type_name(AGS_TYPE_OSCILLATOR), NULL);
   xmlNodeAddContent(file->current, BAD_CAST "\n\0");
 }
 
