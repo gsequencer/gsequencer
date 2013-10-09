@@ -38,109 +38,109 @@
 #include <ags/audio/ags_recall.h>
 
 /* AgsDevout */
-void ags_file_read_devout(xmlNode *node, AgsDevout **devout);
-xmlNode* ags_file_write_devout(xmlNode *parent, AgsDevout *devout);
+void ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout);
+xmlNode* ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout);
 
-void ags_file_read_devout_list(xmlNode *node, GList **devout);
-xmlNode* ags_file_write_devout_list(xmlNode *parent, GList *devout);
+void ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout);
+xmlNode* ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout);
 
-void ags_file_read_devout_play(xmlNode *node, AgsDevoutPlay **play);
-xmlNode* ags_file_write_devout_play(xmlNode *parent, AgsDevoutPlay *play);
+void ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play);
+xmlNode* ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play);
 
-void ags_file_read_devout_play_list(xmlNode *node, GList **play);
-xmlNode* ags_file_write_devout_play_list(xmlNode *parent, GList *play);
+void ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play);
+xmlNode* ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play);
 
 /* AgsAudio */
-void ags_file_read_audio(xmlNode *node, AgsAudio **audio);
-xmlNode* ags_file_write_audio(xmlNode *parent, AgsAudio *audio);
+void ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio);
+xmlNode* ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio);
 
-void ags_file_read_audio_list(xmlNode *node, GList **audio);
-xmlNode* ags_file_write_audio_list(xmlNode *parent, GList *audio);
+void ags_file_read_audio_list(AgsFile *file, xmlNode *node, GList **audio);
+xmlNode* ags_file_write_audio_list(AgsFile *file, xmlNode *parent, GList *audio);
 
 /* AgsChannel */
-void ags_file_read_channel(xmlNode *node, AgsChannel **channel);
-xmlNode* ags_file_write_channel(xmlNode *parent, AgsChannel *channel);
+void ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel);
+xmlNode* ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel);
 
-void ags_file_read_channel_list(xmlNode *node, GList **channel);
-xmlNode* ags_file_write_channel_list(xmlNode *parent, GList *channel);
+void ags_file_read_channel_list(AgsFile *file, xmlNode *node, GList **channel);
+xmlNode* ags_file_write_channel_list(AgsFile *file, xmlNode *parent, GList *channel);
 
-void ags_file_read_input(xmlNode *node, AgsChannel *input);
-xmlNode* ags_file_write_input(xmlNode *parent, AgsChannel *input);
+void ags_file_read_input(AgsFile *file, xmlNode *node, AgsChannel *input);
+xmlNode* ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *input);
 
-void ags_file_read_output(xmlNode *node, AgsChannel *output);
-xmlNode* ags_file_write_output(xmlNode *parent, AgsChannel *output);
+void ags_file_read_output(AgsFile *file, xmlNode *node, AgsChannel *output);
+xmlNode* ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *output);
 
 /* AgsRecall */
-void ags_file_read_recall(xmlNode *node, AgsRecall **recall);
-xmlNode* ags_file_write_recall(xmlNode *parent, AgsRecall *recall);
+void ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall);
+xmlNode* ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall);
 
-void ags_file_read_recall_list(xmlNode *node, GList **recall);
-xmlNode* ags_file_write_recall_list(xmlNode *parent, GList *recall);
+void ags_file_read_recall_list(AgsFile *file, xmlNode *node, GList **recall);
+xmlNode* ags_file_write_recall_list(AgsFile *file, xmlNode *parent, GList *recall);
 
-void ags_file_read_recall_audio(xmlNode *node, AgsRecall **recall);
-xmlNode* ags_file_write_recall_audio(xmlNode *parent, AgsRecall *recall);
+void ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall **recall);
+xmlNode* ags_file_write_recall_audio(AgsFile *file, xmlNode *parent, AgsRecall *recall);
 
-void ags_file_read_recall_audio_run(xmlNode *node, AgsRecall **recall);
-xmlNode* ags_file_write_recall_audio_run(xmlNode *parent, AgsRecall *recall);
+void ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall **recall);
+xmlNode* ags_file_write_recall_audio_run(AgsFile *file, xmlNode *parent, AgsRecall *recall);
 
-void ags_file_read_recall_channel(xmlNode *node, AgsRecall **recall);
-xmlNode* ags_file_write_recall_channel(xmlNode *parent, AgsRecall *recall);
+void ags_file_read_recall_channel(AgsFile *file, xmlNode *node, AgsRecall **recall);
+xmlNode* ags_file_write_recall_channel(AgsFile *file, xmlNode *parent, AgsRecall *recall);
 
-void ags_file_read_recall_channel_run(xmlNode *node, AgsRecall **recall);
-xmlNode* ags_file_write_recall_channel_run(xmlNode *parent, AgsRecall *recall);
+void ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall **recall);
+xmlNode* ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *recall);
 
 /* AgsRecycling */
-void ags_file_read_recycling(xmlNode *node, AgsRecycling **recycling);
-xmlNode* ags_file_write_recycling(xmlNode *parent, AgsRecycling *recycling);
+void ags_file_read_recycling(AgsFile *file, xmlNode *node, AgsRecycling **recycling);
+xmlNode* ags_file_write_recycling(AgsFile *file, xmlNode *parent, AgsRecycling *recycling);
 
-void ags_file_read_recycling_list(xmlNode *node, GList **recycling);
-xmlNode* ags_file_write_recycling_list(xmlNode *parent, GList *recycling);
+void ags_file_read_recycling_list(AgsFile *file, xmlNode *node, GList **recycling);
+xmlNode* ags_file_write_recycling_list(AgsFile *file, xmlNode *parent, GList *recycling);
 
 /* AgsAudioSignal */
-void ags_file_read_audio_signal(xmlNode *node, AgsAudioSignal **audio_signal);
-xmlNode* ags_file_write_audio_signal(xmlNode *parent, AgsAudioSignal *audio_signal);
+void ags_file_read_audio_signal(AgsFile *file, xmlNode *node, AgsAudioSignal **audio_signal);
+xmlNode* ags_file_write_audio_signal(AgsFile *file, xmlNode *parent, AgsAudioSignal *audio_signal);
 
-void ags_file_read_audio_signal_list(xmlNode *node, GList **audio_signal);
-xmlNode* ags_file_write_audio_signal_list(xmlNode *parent, GList *audio_signal);
+void ags_file_read_audio_signal_list(AgsFile *file, xmlNode *node, GList **audio_signal);
+xmlNode* ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList *audio_signal);
 
 /* AgsStream */
-void ags_file_read_stream(xmlNode *node, AgsStream **stream);
-xmlNode* ags_file_write_stream(xmlNode *parent, AgsStream *stream);
+void ags_file_read_stream(AgsFile *file, xmlNode *node, AgsStream **stream);
+xmlNode* ags_file_write_stream(AgsFile *file, xmlNode *parent, AgsStream *stream);
 
-void ags_file_read_stream_list(xmlNode *node, GList **stream);
-xmlNode* ags_file_write_stream_list(xmlNode *parent, GList *stream);
+void ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream);
+xmlNode* ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream);
 
 /* AgsPattern */
-void ags_file_read_pattern(xmlNode *node, AgsPattern **pattern);
-xmlNode* ags_file_write_pattern(xmlNode *parent, AgsPattern *pattern);
+void ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern);
+xmlNode* ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern);
 
-void ags_file_read_pattern_list(xmlNode *node, GList **pattern);
-xmlNode* ags_file_write_pattern_list(xmlNode *parent, GList *pattern);
+void ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern);
+xmlNode* ags_file_write_pattern_list(AgsFile *file, xmlNode *parent, GList *pattern);
 
-void ags_file_read_pattern_data(xmlNode *node, AgsPattern *pattern, guint i, guint j);
-xmlNode* ags_file_write_pattern_data(xmlNode *parent, AgsPattern *pattern, guint i, guint j);
+void ags_file_read_pattern_data(AgsFile *file, xmlNode *node, AgsPattern *pattern, guint i, guint j);
+xmlNode* ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern, guint i, guint j);
 
-void ags_file_read_pattern_data_list(xmlNode *node, AgsPattern *pattern);
-xmlNode* ags_file_write_pattern_data_list(xmlNode *parent, AgsPattern *pattern);
+void ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node, AgsPattern *pattern);
+xmlNode* ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent, AgsPattern *pattern);
 
 /* AgsNotation */
-void ags_file_read_notation(xmlNode *node, AgsNotation **notation);
-xmlNode* ags_file_write_notation(xmlNode *parent, AgsNotation *notation);
+void ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation);
+xmlNode* ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation);
 
-void ags_file_read_notation_list(xmlNode *node, GList **notation);
-xmlNode* ags_file_write_notation_list(xmlNode *parent, GList *notation);
+void ags_file_read_notation_list(AgsFile *file, xmlNode *node, GList **notation);
+xmlNode* ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation);
 
-void ags_file_read_note(xmlNode *node, AgsNote **note);
-xmlNode* ags_file_write_note(xmlNode *parent, AgsNote *note);
+void ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note);
+xmlNode* ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note);
 
-void ags_file_read_note_list(xmlNode *node, GList **note);
-xmlNode* ags_file_write_note_list(xmlNode *parent, GList *note);
+void ags_file_read_note_list(AgsFile *file, xmlNode *node, GList **note);
+xmlNode* ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note);
 
 /* AgsTask */
-void ags_file_read_task(xmlNode *node, AgsTask **task);
-xmlNode* ags_file_write_task(xmlNode *parent, AgsTask *task);
+void ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task);
+xmlNode* ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task);
 
-void ags_file_read_task_list(xmlNode *node, GList **task);
-xmlNode* ags_file_write_task_list(xmlNode *parent, GList *task);
+void ags_file_read_task_list(AgsFile *file, xmlNode *node, GList **task);
+xmlNode* ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task);
 
 #endif /*__AGS_FILE_SOUND_H__*/

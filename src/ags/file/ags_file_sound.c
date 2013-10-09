@@ -18,11 +18,10 @@
 
 #include <ags/file/ags_file_sound.h>
 
-#define AGS_FILE_ID_REF_SERIALIZE_DEVOUT_PLAY "ags-file-id-ref-serialize-devout-play\0"
-#define AGS_FILE_ID_REF_SERIALIZE_LINK "ags-file-id-ref-serialize-link\0"
+#define AGS_FILE_ID_REF_SERIALIZE_ID "ags-file-id-ref-serialize-id\0"
 
 void
-ags_file_read_devout(xmlNode *node, AgsDevout **devout)
+ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 {
   AgsDevout *gobject;
   xmlChar *prop;
@@ -57,16 +56,24 @@ ags_file_read_devout(xmlNode *node, AgsDevout **devout)
 }
 
 xmlNode*
-ags_file_write_devout(xmlNode *parent, AgsDevout *devout)
+ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 {
   xmlNode *node;
+  gchar *id;
+
+  if((id = g_object_get_data(G_OBJECT(channel), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
+    id = ags_id_generator_create_uuid();
+    g_object_set_data(G_OBJECT(channel),
+		      AGS_FILE_ID_REF_SERIALIZE_ID,
+		      id);
+  }
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-devout\0");
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
+	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
@@ -117,7 +124,7 @@ ags_file_write_devout(xmlNode *parent, AgsDevout *devout)
 }
 
 void
-ags_file_read_devout_list(xmlNode *node, GList **devout)
+ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
 {
   AgsDevout *current;
   xmlNode *child;
@@ -139,7 +146,7 @@ ags_file_read_devout_list(xmlNode *node, GList **devout)
 }
 
 xmlNode*
-ags_file_write_devout_list(xmlNode *parent, GList *devout)
+ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout)
 {
   AgsDevout *current;
   xmlNode *node;
@@ -162,12 +169,17 @@ ags_file_write_devout_list(xmlNode *parent, GList *devout)
 
     list = list->next;
   }
+
+  return(node);
 }
 
 void
-ags_file_read_devout_play(xmlNode *node, AgsDevoutPlay **play)
+ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play)
 {
   *play = ags_devout_play_alloc();
+
+  play->serial_id = xmlGetProp(node,
+			       AGS_FILE_ID_PROP);
 
   play->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
 
@@ -177,14 +189,18 @@ ags_file_read_devout_play(xmlNode *node, AgsDevoutPlay **play)
 }
 
 xmlNode*
-ags_file_write_devout_play(xmlNode *parent, AgsDevoutPlay *play)
+ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play)
 {
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-devout-play\0");
 
+  if(play->serial_id == NULL){
+    play->serial_id = ags_id_generator_create_uuid();
+  }
+
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
+	     play->serial_id);
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
@@ -195,10 +211,13 @@ ags_file_write_devout_play(xmlNode *parent, AgsDevoutPlay *play)
   xmlNewProp(node,
 	     "audio-channel\0",
 	     play->audio_channel);
+
+
+  return(node);
 }
 
 void
-ags_file_read_devout_play_list(xmlNode *node, GList **play)
+ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
 {
   AgsDevoutPlay *current;
   xmlNode *child;
@@ -220,7 +239,7 @@ ags_file_read_devout_play_list(xmlNode *node, GList **play)
 }
 
 xmlNode*
-ags_file_write_devout_play_list(xmlNode *parent, GList *play)
+ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play)
 {
   AgsDevout *current;
   xmlNode *node;
@@ -243,10 +262,12 @@ ags_file_write_devout_play_list(xmlNode *parent, GList *play)
 
     list = list->next;
   }
+
+  return(node);
 }
 
 void
-ags_file_read_audio(xmlNode *node, AgsAudio **audio)
+ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 {
   GObject *gobject;
 
@@ -269,12 +290,19 @@ ags_file_read_audio(xmlNode *node, AgsAudio **audio)
 }
 
 xmlNode*
-ags_file_write_audio(xmlNode *parent, AgsAudio *audio)
+ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 {
   xmlNode *node;
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-audio\0");
+
+  if((id = g_object_get_data(G_OBJECT(channel), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
+    id = ags_id_generator_create_uuid();
+    g_object_set_data(G_OBJECT(channel),
+		      AGS_FILE_ID_REF_SERIALIZE_ID,
+		      id);
+  }
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -302,10 +330,12 @@ ags_file_write_audio(xmlNode *parent, AgsAudio *audio)
 
   ags_file_write_devout_play(node,
 			     audio->devout_play);
+
+  return(node);
 }
 
 void
-ags_file_read_audio_list(xmlNode *node, GList **audio)
+ags_file_read_audio_list(AgsFile *file, xmlNode *node, GList **audio)
 {
   AgsAudio *current;
   xmlNode *child;
@@ -327,7 +357,7 @@ ags_file_read_audio_list(xmlNode *node, GList **audio)
 }
 
 xmlNode*
-ags_file_write_audio_list(xmlNode *parent, GList *audio)
+ags_file_write_audio_list(AgsFile *file, xmlNode *parent, GList *audio)
 {
   AgsAudio *current;
   xmlNode *node;
@@ -350,10 +380,12 @@ ags_file_write_audio_list(xmlNode *parent, GList *audio)
 
     list = list->next;
   }
+
+  return(node);
 }
 
 void
-ags_file_read_channel(xmlNode *node, AgsChannel **channel)
+ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 {
   GObject *gobject;
 
@@ -372,18 +404,18 @@ ags_file_read_channel(xmlNode *node, AgsChannel **channel)
 				 AGS_FILE_XPATH_PROP, g_strdup_printf("xpath://*/@id[%s]\0", xmlGetProp(node, "link\0")),
 				 NULL));
 
-  ags_file_write_devout_play(node,
-			     audio->devout_play);
+  ags_file_read_devout_play(node,
+			    &(audio->devout_play));
   audio->devout_play->source = (GObject *) gobject;
 }
 
 xmlNode*
-ags_file_write_channel(xmlNode *parent, AgsChannel *channel)
+ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 {
-  xmlNode *node;
-  gchar id;
+  xmlNode *node, *child;
+  gchar *id, *link_id;
 
-  if((id = g_object_get_data(G_OBJECT(channel), )) == NULL){
+  if((id = g_object_get_data(G_OBJECT(channel), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
     id = ags_id_generator_create_uuid();
   }
 
@@ -392,7 +424,7 @@ ags_file_write_channel(xmlNode *parent, AgsChannel *channel)
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
+	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
@@ -406,16 +438,25 @@ ags_file_write_channel(xmlNode *parent, AgsChannel *channel)
 	     g_strdup_printf("%d\0", channel->audio_channel));
 
 
-  ags_file_write_devout_play(node,
-			     audio->devout_play);
+  child = ags_file_write_devout_play(node,
+				     audio->devout_play);
+
+  if(channel->link != NULL && (id = g_object_get_data(G_OBJECT(channel->link), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
+  }
 
   xmlNewProp(node,
-	     ,
-	     );
+	     "link\0",
+	     link_id);
+
+  xmlNewProp(child,
+	     "source\0",
+	     id);
+
+  return(node);
 }
 
 void
-ags_file_read_channel_list(xmlNode *node, GList **channel)
+ags_file_read_channel_list(AgsFile *file, xmlNode *node, GList **channel)
 {
   AgsChannel *current;
   xmlNode *child;
@@ -437,7 +478,7 @@ ags_file_read_channel_list(xmlNode *node, GList **channel)
 }
 
 xmlNode*
-ags_file_write_channel_list(xmlNode *parent, GList *channel)
+ags_file_write_channel_list(AgsFile *file, xmlNode *parent, GList *channel)
 {
   AgsChannel *current;
   xmlNode *node;
@@ -463,241 +504,241 @@ ags_file_write_channel_list(xmlNode *parent, GList *channel)
 }
 
 void
-ags_file_read_input(xmlNode *node, AgsChannel *input)
+ags_file_read_input(AgsFile *file, xmlNode *node, AgsChannel *input)
 {
 }
 
 xmlNode*
-ags_file_write_input(xmlNode *parent, AgsChannel *input)
+ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *input)
 {
 }
 
 void
-ags_file_read_output(xmlNode *node, AgsChannel *output)
+ags_file_read_output(AgsFile *file, xmlNode *node, AgsChannel *output)
 {
 }
 
 xmlNode*
-ags_file_write_output(xmlNode *parent, AgsChannel *output)
+ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *output)
 {
 }
 
 void
-ags_file_read_recall(xmlNode *node, AgsRecall **recall)
+ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
 }
 
 xmlNode*
-ags_file_write_recall(xmlNode *parent, AgsRecall *recall)
+ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
 }
 
 void
-ags_file_read_recall_list(xmlNode *node, GList **recall)
+ags_file_read_recall_list(AgsFile *file, xmlNode *node, GList **recall)
 {
 }
 
 xmlNode*
-ags_file_write_recall_list(xmlNode *parent, GList *recall)
+ags_file_write_recall_list(AgsFile *file, xmlNode *parent, GList *recall)
 {
 }
 
 void
-ags_file_read_recall_audio(xmlNode *node, AgsRecall **recall)
+ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
 }
 
 xmlNode*
-ags_file_write_recall_audio(xmlNode *parent, AgsRecall *recall)
+ags_file_write_recall_audio(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
 }
 
 void
-ags_file_read_recall_audio_run(xmlNode *node, AgsRecall **recall)
+ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
 }
 
 xmlNode*
-ags_file_write_recall_audio_run(xmlNode *parent, AgsRecall *recall)
+ags_file_write_recall_audio_run(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
 }
 
 void
-ags_file_read_recall_channel(xmlNode *node, AgsRecall **recall)
+ags_file_read_recall_channel(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
 }
 
 xmlNode*
-ags_file_write_recall_channel(xmlNode *parent, AgsRecall *recall)
+ags_file_write_recall_channel(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
 }
 
 void
-ags_file_read_recall_channel_run(xmlNode *node, AgsRecall **recall)
+ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
 }
 
 xmlNode*
-ags_file_write_recall_channel_run(xmlNode *parent, AgsRecall *recall)
+ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
 }
 
 void
-ags_file_read_recycling(xmlNode *node, AgsRecycling **recycling)
+ags_file_read_recycling(AgsFile *file, xmlNode *node, AgsRecycling **recycling)
 {
 }
 
 xmlNode*
-ags_file_write_recycling(xmlNode *parent, AgsRecycling *recycling)
+ags_file_write_recycling(AgsFile *file, xmlNode *parent, AgsRecycling *recycling)
 {
 }
 
 void
-ags_file_read_recycling_list(xmlNode *node, GList **recycling)
+ags_file_read_recycling_list(AgsFile *file, xmlNode *node, GList **recycling)
 {
 }
 
 xmlNode*
-ags_file_write_recycling_list(xmlNode *parent, GList *recycling)
+ags_file_write_recycling_list(AgsFile *file, xmlNode *parent, GList *recycling)
 {
 }
 
 void
-ags_file_read_audio_signal(xmlNode *node, AgsAudioSignal **audio_signal)
+ags_file_read_audio_signal(AgsFile *file, xmlNode *node, AgsAudioSignal **audio_signal)
 {
 }
 
 xmlNode*
-ags_file_write_audio_signal(xmlNode *parent, AgsAudioSignal *audio_signal)
+ags_file_write_audio_signal(AgsFile *file, xmlNode *parent, AgsAudioSignal *audio_signal)
 {
 }
 
 void
-ags_file_read_audio_signal_list(xmlNode *node, GList **audio_signal)
+ags_file_read_audio_signal_list(AgsFile *file, xmlNode *node, GList **audio_signal)
 {
 }
 
 xmlNode*
-ags_file_write_audio_signal_list(xmlNode *parent, GList *audio_signal)
+ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList *audio_signal)
 {
 }
 
 void
-ags_file_read_stream(xmlNode *node, AgsStream **stream)
+ags_file_read_stream(AgsFile *file, xmlNode *node, AgsStream **stream)
 {
 }
 
 xmlNode*
-ags_file_write_stream(xmlNode *parent, AgsStream *stream)
+ags_file_write_stream(AgsFile *file, xmlNode *parent, AgsStream *stream)
 {
 }
 
 void
-ags_file_read_stream_list(xmlNode *node, GList **stream)
+ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream)
 {
 }
 
 xmlNode*
-ags_file_write_stream_list(xmlNode *parent, GList *stream)
+ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream)
 {
 }
 
 void
-ags_file_read_pattern(xmlNode *node, AgsPattern **pattern)
+ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 {
 }
 
 xmlNode*
-ags_file_write_pattern(xmlNode *parent, AgsPattern *pattern)
+ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 {
 }
 
 void
-ags_file_read_pattern_list(xmlNode *node, GList **pattern)
+ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern)
 {
 }
 
 xmlNode*
-ags_file_write_pattern_list(xmlNode *parent, GList *pattern)
+ags_file_write_pattern_list(AgsFile *file, xmlNode *parent, GList *pattern)
 {
 }
 
 void
-ags_file_read_pattern_data(xmlNode *node, AgsPattern *pattern, guint i, guint j)
+ags_file_read_pattern_data(AgsFile *file, xmlNode *node, AgsPattern *pattern, guint i, guint j)
 {
 }
 
 xmlNode*
-ags_file_write_pattern_data(xmlNode *parent, AgsPattern *pattern, guint i, guint j)
+ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern, guint i, guint j)
 {
 }
 
 void
-ags_file_read_pattern_data_list(xmlNode *node, AgsPattern *pattern)
+ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node, AgsPattern *pattern)
 {
 }
 
 xmlNode*
-ags_file_write_pattern_data_list(xmlNode *parent, AgsPattern *pattern)
+ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 {
 }
 
 void
-ags_file_read_notation(xmlNode *node, AgsNotation **notation)
+ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 {
 }
 
 xmlNode*
-ags_file_write_notation(xmlNode *parent, AgsNotation *notation)
+ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
 {
 }
 
 void
-ags_file_read_notation_list(xmlNode *node, GList **notation)
+ags_file_read_notation_list(AgsFile *file, xmlNode *node, GList **notation)
 {
 }
 
 xmlNode*
-ags_file_write_notation_list(xmlNode *parent, GList *notation)
+ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation)
 {
 }
 
 void
-ags_file_read_note(xmlNode *node, AgsNote **note)
+ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
 {
 }
 
 xmlNode*
-ags_file_write_note(xmlNode *parent, AgsNote *note)
+ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note)
 {
 }
 
 void
-ags_file_read_note_list(xmlNode *node, GList **note)
+ags_file_read_note_list(AgsFile *file, xmlNode *node, GList **note)
 {
 }
 
 xmlNode*
-ags_file_write_note_list(xmlNode *parent, GList *note)
+ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note)
 {
 }
 
 void
-ags_file_read_task(xmlNode *node, AgsTask **task)
+ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
 {
 }
 
 xmlNode*
-ags_file_write_task(xmlNode *parent, AgsTask *task)
+ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
 {
 }
 
 void
-ags_file_read_task_list(xmlNode *node, GList **task)
+ags_file_read_task_list(AgsFile *file, xmlNode *node, GList **task)
 {
 }
 
 xmlNode*
-ags_file_write_task_list(xmlNode *parent, GList *task)
+ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
 {
 }
