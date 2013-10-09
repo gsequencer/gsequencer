@@ -40,9 +40,10 @@ void ags_file_init (AgsFile *file);
 void ags_file_finalize(GObject *gobject);
 
 void ags_file_real_write(AgsFile *file);
+void ags_file_real_write_resolve(AgsFile *file);
+
 void ags_file_real_read(AgsFile *file);
-void ags_file_real_resolve(AgsFile *file);
-void ags_file_real_link(AgsFile *file);
+void ags_file_real_read_resolve(AgsFile *file);
 void ags_file_real_start(AgsFile *file);
 
 static gpointer ags_file_parent_class = NULL;
@@ -140,6 +141,18 @@ ags_file_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_file_parent_class)->finalize(gobject);
 }
 
+AgsFileIdRef*
+ags_file_id_ref_alloc(gchar *id, gpointer ref);
+{
+  //TODO:JK: implement me
+}
+
+AgsFileIdRefConsumer*
+ags_file_id_ref_consumer_alloc(gchar *id, gpointer consumer, AgsFileResolve *resolve)
+{
+  //TODO:JK: implement me
+}
+
 void
 ags_file_real_write(AgsFile *file)
 {
@@ -154,6 +167,24 @@ ags_file_write(AgsFile *file)
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
 		file_signals[WRITE], 0);
+  g_object_unref(G_OBJECT(file));
+}
+
+
+void
+ags_file_real_write_resolve(AgsFile *file)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_write_resolve(AgsFile *file)
+{
+  g_return_if_fail(AGS_IS_FILE(file));
+
+  g_object_ref(G_OBJECT(file));
+  g_signal_emit(G_OBJECT(file),
+		file_signals[RESOLVE], 0);
   g_object_unref(G_OBJECT(file));
 }
 
@@ -175,36 +206,19 @@ ags_file_read(AgsFile *file)
 }
 
 void
-ags_file_real_resolve(AgsFile *file)
+ags_file_real_read_resolve(AgsFile *file)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_resolve(AgsFile *file)
+ags_file_read_resolve(AgsFile *file)
 {
   g_return_if_fail(AGS_IS_FILE(file));
 
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
 		file_signals[RESOLVE], 0);
-  g_object_unref(G_OBJECT(file));
-}
-
-void
-ags_file_real_link(AgsFile *file)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_link(AgsFile *file)
-{
-  g_return_if_fail(AGS_IS_FILE(file));
-
-  g_object_ref(G_OBJECT(file));
-  g_signal_emit(G_OBJECT(file),
-		file_signals[LINK], 0);
   g_object_unref(G_OBJECT(file));
 }
 

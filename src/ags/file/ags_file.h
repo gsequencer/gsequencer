@@ -33,10 +33,17 @@
 #define AGS_IS_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE))
 #define AGS_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE, AgsFileClass))
 
+#define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
+
 #define AGS_FILE_DEFAULT_NS NULL
 
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
+
+typedef struct _AgsFileIdRef AgsFileIdRef;
+typedef struct _AgsFileIdConsumer AgsFileIdConsumer;
+
+typedef void (*AgsFileResolve)(void);
 
 typedef enum{
   AGS_FILE_READ,
@@ -55,6 +62,9 @@ struct _AgsFile
   xmlDocPtr doc;
   xmlNodePtr current;
 
+  GList *id_refs;
+  GList *id_consumers;
+
   GObject *clipboard;
   GList *property;
   GList *script;
@@ -72,21 +82,38 @@ struct _AgsFileClass
   GObjectClass object;
 
   void (*write)(AgsFile *file);
+  void (*write_resolve)(AgsFile *file);
 
   void (*read)(AgsFile *file);
-  void (*resolve)(AgsFile *file);
-  void (*link)(AgsFile *file);
-  void (*start)(AgsFile *file);
+  void (*read_resolve)(AgsFile *file);
+  void (*read_start)(AgsFile *file);
+};
+
+struct _AgsFileIdRef
+{
+  gchar *id;
+  gpointer ref;
+};
+
+struct _AgsFileIdConsumer
+{
+  gchar *id;
+  gpointer consumer;
+
+  void (*resolve)(AgsFile *file, gpointer consumer, gchar *id);
 };
 
 GType ags_file_get_type(void);
 
+AgsFileIdRef* ags_file_id_ref_alloc(gchar *id, gpointer ref);
+AgsFileIdRefConsumer* ags_file_id_ref_consumer_alloc(gchar *id, gpointer consumer, AgsFileResolve *resolve);
+
 void ags_file_write(AgsFile *file);
+void ags_file_write_resolve(AgsFile *file);
 
 void ags_file_read(AgsFile *file);
-void ags_file_resolve(AgsFile *file);
-void ags_file_link(AgsFile *file);
-void ags_file_start(AgsFile *file);
+void ags_file_read_resolve(AgsFile *file);
+void ags_file_read_start(AgsFile *file);
 
 /* clipboard */
 void ags_file_read_clipboard(AgsFile *file, xmlNode *node, AgsClipboard **clipboard);
