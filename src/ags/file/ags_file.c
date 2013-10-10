@@ -154,6 +154,18 @@ ags_file_id_ref_consumer_alloc(gchar *id, gpointer consumer, AgsFileResolve *res
 }
 
 void
+ags_file_add_id_ref(AgsFile *file, AgsFileIdRef *ref)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_add_id_consumer(AgsFile *file, AgsFileIdRef *ref)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_real_write(AgsFile *file)
 {
   //TODO:JK: implement me

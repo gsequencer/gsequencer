@@ -18,8 +18,6 @@
 
 #include <ags/file/ags_file_sound.h>
 
-#define AGS_FILE_ID_REF_SERIALIZE_ID "ags-file-id-ref-serialize-id\0"
-
 void
 ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 {
@@ -29,6 +27,9 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   gobject = g_object_new(AGS_TYPE_DEVOUT,
 			NULL);
   *devout = gobject;
+
+  ags_file_add_id_ref(file,
+		      ags_file_id_ref_alloc(file->xmlGetProp(node, AGS_FILE_ID_PROP), gobject));
 
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
 
@@ -61,12 +62,9 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   xmlNode *node;
   gchar *id;
 
-  if((id = g_object_get_data(G_OBJECT(channel), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
-    id = ags_id_generator_create_uuid();
-    g_object_set_data(G_OBJECT(channel),
-		      AGS_FILE_ID_REF_SERIALIZE_ID,
-		      id);
-  }
+  id = ags_id_generator_create_uuid();
+  ags_file_add_id_ref(file, ags_file_id_ref_alloc(id,
+						  devout));
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-devout\0");
@@ -128,8 +126,11 @@ ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
 {
   AgsDevout *current;
   xmlNode *child;
+  xmlChar *id;
 
   *devout = NULL;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
 
   child = node->children;
 
@@ -143,6 +144,8 @@ ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
   }
 
   *devout = g_list_reverse(*devout);
+
+  ags_file_id_ref_alloc(id, *devout);
 }
 
 xmlNode*

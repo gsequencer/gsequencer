@@ -108,6 +108,9 @@ GType ags_file_get_type(void);
 AgsFileIdRef* ags_file_id_ref_alloc(gchar *id, gpointer ref);
 AgsFileIdRefConsumer* ags_file_id_ref_consumer_alloc(gchar *id, gpointer consumer, AgsFileResolve *resolve);
 
+void ags_file_add_id_ref(AgsFile *file, AgsFileIdRef *ref);
+void ags_file_add_id_consumer(AgsFile *file, AgsFileIdRef *ref);
+
 void ags_file_write(AgsFile *file);
 void ags_file_write_resolve(AgsFile *file);
 
