@@ -33,17 +33,10 @@
 #define AGS_IS_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE))
 #define AGS_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE, AgsFileClass))
 
-#define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
-
 #define AGS_FILE_DEFAULT_NS NULL
 
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
-
-typedef struct _AgsFileIdRef AgsFileIdRef;
-typedef struct _AgsFileIdConsumer AgsFileIdConsumer;
-
-typedef void (*AgsFileResolve)(void);
 
 typedef enum{
   AGS_FILE_READ,
@@ -89,24 +82,7 @@ struct _AgsFileClass
   void (*read_start)(AgsFile *file);
 };
 
-struct _AgsFileIdRef
-{
-  gchar *id;
-  gpointer ref;
-};
-
-struct _AgsFileIdConsumer
-{
-  gchar *id;
-  gpointer consumer;
-
-  void (*resolve)(AgsFile *file, gpointer consumer, gchar *id);
-};
-
 GType ags_file_get_type(void);
-
-AgsFileIdRef* ags_file_id_ref_alloc(gchar *id, gpointer ref);
-AgsFileIdRefConsumer* ags_file_id_ref_consumer_alloc(gchar *id, gpointer consumer, AgsFileResolve *resolve);
 
 void ags_file_add_id_ref(AgsFile *file, AgsFileIdRef *ref);
 void ags_file_add_id_consumer(AgsFile *file, AgsFileIdRef *ref);

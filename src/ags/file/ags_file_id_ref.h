@@ -29,8 +29,15 @@
 #define AGS_IS_FILE_ID_REF_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_ID_REF))
 #define AGS_FILE_ID_REF_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_ID_REF, AgsFileIdRefClass))
 
+#define AGS_FILE_RESOLVE(f)          ((AgsFileResolve)(f))
+
 #define AGS_FILE_ID_REF_SERIALIZE_DATA "ags-file-id-ref-serizalize-data\0"
 #define AGS_FILE_ID_REF_RESOLVE_DATA "ags-file-id-ref-resolve-data\0"
+
+typedef struct _AgsFileIdRef AgsFileIdRef;
+typedef struct _AgsFileIdRefClass AgsFileIdRefClass;
+
+typedef void (*AgsFileResolve)(void);
 
 struct _AgsFileIdRef
 {

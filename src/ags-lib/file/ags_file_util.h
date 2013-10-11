@@ -24,6 +24,24 @@
 
 #include <libxml/tree.h>
 
+/* gvalue */
+void ags_file_util_read_value(xmlNode *node, gchar **id,
+			      GValue **value, xmlChar **xpath);
+xmlNode* ags_file_util_write_value(xmlNode *parent, gchar *id,
+				   GValue *value, AgsSerializeable *serializeable);
+
+/* parameter */
+void ags_file_util_read_parameter(xmlNode *node, gchar **id,
+				  GParameter **parameter, gint *n_params, xmlChar ***xpath);
+xmlNode* ags_file_util_write_parameter(xmlNode *parent, gchar *id,
+				       GParameter *parameter, gint n_params, AgsSerializeable **serializeable);
+
+/* dependency */
+void ags_file_util_read_dependency(xmlNode *node, gchar **id,
+				   gchar **name, xmlChar **xpath);
+xmlNode* ags_file_util_write_dependency(xmlNode *parent, gchar *id,
+					gchar *name, xmlChar *xpath);
+
 /* clipboard */
 void ags_file_util_read_clipboard(AgsFile *file, xmlNode *node, AgsClipboard **clipboard);
 xmlNode* ags_file_util_write_clipboard(AgsFile *file, xmlNode *parent, AgsClipboard *clipboard);
