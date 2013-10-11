@@ -118,31 +118,6 @@ void ags_file_read(AgsFile *file);
 void ags_file_read_resolve(AgsFile *file);
 void ags_file_read_start(AgsFile *file);
 
-/* clipboard */
-void ags_file_read_clipboard(AgsFile *file, xmlNode *node, AgsClipboard **clipboard);
-void ags_file_write_clipboard(AgsFile *file, xmlNode *parent, AgsClipboard *clipboard);
-
-/* property */
-void ags_file_read_property(AgsFile *file, xmlNode *node, AgsProperty **property);
-void ags_file_write_property(AgsFile *file, xmlNode *parent, AgsProperty *property);
-
-void ags_file_read_property_list(AgsFile *file, xmlNode *node, GList **property);
-
-/* script */
-void ags_file_read_script(AgsFile *file, xmlNode *node, AgsScript **script);
-void ags_file_write_script(AgsFile *file, xmlNode *node, AgsScript *script);
-
-void ags_file_read_script_list(AgsFile *file, xmlNode *node, GList **script);
-void ags_file_write_script_list(AgsFile *file, xmlNode *node, GList *script);
-
-/*  */
-void ags_file_read_cluster(AgsFile *file, xmlNode *node, AgsCluster **cluster);
-void ags_file_write_cluster(AgsFile *file, xmlNode *parent, AgsCluster *cluster);
-
-/*  */
-void ags_file_read_client(AgsFile *file, xmlNode *node, AgsClient **client);
-void ags_file_write_client(AgsFile *file, xmlNode *parent, AgsClient *client);
-
 /*  */
 void ags_file_read_server(AgsFile *file, xmlNode *node, AgsServer **server);
 void ags_file_write_server(AgsFile *file, xmlNode *parent, AgsServer *server);
@@ -164,10 +139,6 @@ void ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *
 
 void ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link);
 void ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link);
-
-/*  */
-void ags_file_read_history(AgsFile *file, xmlNode *node, AgsHistory **history);
-void ags_file_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history);
 
 /* */
 AgsFile* ags_file_new();
