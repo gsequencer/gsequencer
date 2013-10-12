@@ -141,26 +141,14 @@ ags_file_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_file_parent_class)->finalize(gobject);
 }
 
-AgsFileIdRef*
-ags_file_id_ref_alloc(gchar *id, gpointer ref);
-{
-  //TODO:JK: implement me
-}
-
-AgsFileIdRefConsumer*
-ags_file_id_ref_consumer_alloc(gchar *id, gpointer consumer, AgsFileResolve *resolve)
+void
+ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_add_id_ref(AgsFile *file, AgsFileIdRef *ref)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_add_id_consumer(AgsFile *file, AgsFileIdRef *ref)
+ags_file_add_id_consumer(AgsFile *file, GObject *id_ref)
 {
   //TODO:JK: implement me
 }
@@ -249,6 +237,16 @@ ags_file_start(AgsFile *file)
   g_signal_emit(G_OBJECT(file),
 		file_signals[START], 0);
   g_object_unref(G_OBJECT(file));
+}
+
+void
+ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
+{
+}
+
+void
+ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main)
+{
 }
 
 void

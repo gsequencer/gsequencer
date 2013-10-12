@@ -57,4 +57,18 @@ xmlNode* ags_file_util_write_property_list(AgsFile *file, xmlNode *parent, GList
 void ags_file_util_read_history(AgsFile *file, xmlNode *node, AgsHistory **history);
 xmlNode* ags_file_util_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history);
 
+/* embedded audio */
+void ags_file_read_embedded_audio(AgsFile *file, xmlNode *node, AgsEmbeddedAudio **embedded_audio);
+xmlNode* ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *embedded_audio);
+
+void ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **embedded_audio);
+xmlNode* ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedded_audio);
+
+/* file link */
+void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsEmbeddedAudio **file_link);
+xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *file_link);
+
+void ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link);
+xmlNode* ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link);
+
 #endif /*__AGS_FILE_UTIL_H__*/

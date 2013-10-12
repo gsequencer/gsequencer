@@ -84,8 +84,8 @@ struct _AgsFileClass
 
 GType ags_file_get_type(void);
 
-void ags_file_add_id_ref(AgsFile *file, AgsFileIdRef *ref);
-void ags_file_add_id_consumer(AgsFile *file, AgsFileIdRef *ref);
+void ags_file_add_id_ref(AgsFile *file, GObject *id_ref);
+void ags_file_add_id_consumer(AgsFile *file, GObject *id_ref);
 
 void ags_file_write(AgsFile *file);
 void ags_file_write_resolve(AgsFile *file);
@@ -99,22 +99,8 @@ void ags_file_read_server(AgsFile *file, xmlNode *node, AgsServer **server);
 void ags_file_write_server(AgsFile *file, xmlNode *parent, AgsServer *server);
 
 /*  */
-void ags_file_read_main(AgsFile *file, xmlNode *node, AgsMain **main);
-void ags_file_write_main(AgsFile *file, xmlNode *parent, AgsMain *main);
-
-/*  */
-void ags_file_read_embedded_audio(AgsFile *file, xmlNode *node, AgsEmbeddedAudio **embedded_audio);
-void ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *embedded_audio);
-
-void ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **embedded_audio);
-void ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedded_audio);
-
-/*  */
-void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsEmbeddedAudio **file_link);
-void ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *file_link);
-
-void ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link);
-void ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link);
+void ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main);
+void ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main);
 
 /* */
 AgsFile* ags_file_new();

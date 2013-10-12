@@ -721,7 +721,8 @@ ags_SOURCES = ./src/ags/audio/ags_run_order.c \
 	./src/ags/audio/ags_garbage_collector.c \
 	./src/ags/audio/ags_recycling.c \
 	./src/ags/audio/ags_recall_channel_run.h \
-	./src/ags/audio/ags_file.h ./src/ags/audio/ags_file_id_ref.h \
+	./src/ags/audio/ags_file.h ./src/ags/audio/ags_file_stock.h \
+	./src/ags/audio/ags_file_id_ref.h \
 	./src/ags/audio/ags_file_id_ref.c ./src/ags/audio/ags_task.h \
 	./src/ags/audio/ags_recall_dependency.c \
 	./src/ags/audio/ags_recall_audio_signal.c \

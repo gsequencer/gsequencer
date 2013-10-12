@@ -53,7 +53,7 @@ struct _AgsFileIdRefClass
 {
   GObjectClass object;
 
-  void (*resolve)(AgsFileIdRef *file_id_ref, GObject *main);
+  void (*resolve)(AgsFileIdRef *file_id_ref);
 };
 
 GType ags_file_id_ref_get_type();
