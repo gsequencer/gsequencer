@@ -240,13 +240,27 @@ ags_file_start(AgsFile *file)
 }
 
 void
+ags_file_read_server(AgsFile *file, xmlNode *node, GObject **server)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_write_server(AgsFile *file, xmlNode *parent, GObject *server)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main)
 {
+  //TODO:JK: implement me
 }
 
 void

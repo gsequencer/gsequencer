@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/ags_file_id_ref.h>
+#include <ags/file/ags_file_id_ref.h>
 
 void ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref);
 void ags_file_id_ref_init(AgsFileIdRef *file_id_ref);
@@ -108,7 +108,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_REF,
+				  PROP_REFERENCE,
 				  param_spec);
 
   param_spec = g_param_spec_object("main\0",
@@ -117,7 +117,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_REF,
+				  PROP_MAIN,
 				  param_spec);
 
   /* signals */
@@ -127,7 +127,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileIdRefClass, resolve),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__VOID,
+		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 }
 
@@ -211,13 +211,18 @@ ags_file_id_ref_get_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
   
   switch(prop_id){
-  case PROP_DEVICE:
+  case PROP_XPATH:
     {
       g_value_set_string(value, file_id_ref->xpath);
     }
   case PROP_REFERENCE:
     {
-      g_value_set_object(value, file_id_ref->reference);
+      g_value_set_object(value, file_id_ref->ref);
+    }
+    break;
+  case PROP_MAIN:
+    {
+      g_value_set_object(value, file_id_ref->main);
     }
     break;
   default:
@@ -229,6 +234,10 @@ ags_file_id_ref_get_property(GObject *gobject,
 void
 ags_file_id_ref_finalize(GObject *gobject)
 {
+  AgsFileIdRef *file_id_ref;
+
+  file_id_ref = AGS_FILE_ID_REF(gobject);
+
   if(file_id_ref->xpath != NULL){
     g_free(file_id_ref->xpath);
   }
@@ -236,6 +245,8 @@ ags_file_id_ref_finalize(GObject *gobject)
   if(file_id_ref->ref){
     g_object_unref(file_id_ref->ref);
   }
+
+  G_OBJECT_CLASS(ags_file_id_ref_parent_class)->finalize(gobject);
 }
 
 void

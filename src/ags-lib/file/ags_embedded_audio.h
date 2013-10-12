@@ -22,8 +22,30 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <libxml/tree.h>
+#define AGS_TYPE_EMBEDDED_AUDIO                (ags_embedded_audio_get_type())
+#define AGS_EMBEDDED_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EMBEDDED_AUDIO, AgsEmbeddedAudio))
+#define AGS_EMBEDDED_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_EMBEDDED_AUDIO, AgsEmbeddedAudio))
+#define AGS_IS_EMBEDDED_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_EMBEDDED_AUDIO))
+#define AGS_IS_EMBEDDED_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_EMBEDDED_AUDIO))
+#define AGS_EMBEDDED_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_EMBEDDED_AUDIO, AgsEmbeddedAudioClass))
 
+typedef struct _AgsEmbeddedAudio AgsEmbeddedAudio;
+typedef struct _AgsEmbeddedAudioClass AgsEmbeddedAudioClass;
 
+struct _AgsEmbeddedAudio
+{
+  GObject object;
+
+  gpointer *data;
+};
+
+struct _AgsEmbeddedAudioClass
+{
+  GObjectClass object;
+};
+
+GType ags_embedded_audio_get_type();
+
+AgsEmbeddedAudio* ags_embedded_audio_new();
 
 #endif /*__AGS_EMBEDDED_AUDIO_H__*/
