@@ -340,6 +340,8 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
   xmlNodeSetContent(node, content);
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -446,6 +448,8 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
   xmlNodeSetContent(node, content);
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -479,6 +483,8 @@ ags_file_util_write_dependency(xmlNode *parent, gchar *id,
 
   xmlAddChild(parent,
 	      node);
+  
+  return(node);
 }
 
 void
