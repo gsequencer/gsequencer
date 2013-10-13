@@ -27,9 +27,16 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   gobject = g_object_new(AGS_TYPE_DEVOUT,
 			NULL);
   *devout = gobject;
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->main,
+	       NULL);
 
   ags_file_add_id_ref(file,
-		      ags_file_id_ref_alloc(file->xmlGetProp(node, AGS_FILE_ID_PROP), gobject));
+		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
+						    "main\0", file->main,
+						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+						    "reference\0", gobject,
+						    NULL));
 
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
 
@@ -63,9 +70,14 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   gchar *id;
 
   id = ags_id_generator_create_uuid();
-  ags_file_add_id_ref(file, ags_file_id_ref_alloc(id,
-						  devout));
 
+  ags_file_add_id_ref(file,
+		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
+						    "main\0", file->main,
+						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id,
+						    "reference\0", devout,
+						    NULL));
+  
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-devout\0");
 
@@ -132,6 +144,13 @@ ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
 
   id = xmlGetProp(node, AGS_FILE_ID_PROP);
 
+  ags_file_add_id_ref(file,
+		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
+						    "main\0", file->main,
+						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+						    "reference\0", *devout,
+						    NULL));
+
   child = node->children;
 
   while(child != NULL){
@@ -154,13 +173,23 @@ ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout)
   AgsDevout *current;
   xmlNode *node;
   GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
+						    "main\0", file->main,
+						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id,
+						    "reference\0", list,
+						    NULL));
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-devout-list\0");
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
+	     id);
 
   xmlAddChild(parent,
 	      node);
