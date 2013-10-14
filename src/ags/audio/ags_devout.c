@@ -476,8 +476,6 @@ ags_devout_play_alloc()
 
   play = (AgsDevoutPlay *) malloc(sizeof(AgsDevoutPlay));
 
-  play->serial_id = NULL;
-
   play->flags = 0;
 
   play->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));

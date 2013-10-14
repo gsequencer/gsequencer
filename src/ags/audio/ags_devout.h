@@ -172,8 +172,6 @@ struct _AgsDevoutClass
 
 struct _AgsDevoutPlay
 {
-  gchar *serial_id;
-
   guint flags;
 
   AgsIteratorThread **iterator_thread;
