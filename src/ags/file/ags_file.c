@@ -37,6 +37,14 @@
 
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init (AgsFile *file);
+void ags_file_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec);
+void ags_file_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec);
 void ags_file_finalize(GObject *gobject);
 
 void ags_file_real_write(AgsFile *file);
@@ -46,7 +54,17 @@ void ags_file_real_read(AgsFile *file);
 void ags_file_real_read_resolve(AgsFile *file);
 void ags_file_real_start(AgsFile *file);
 
+enum{
+  WRITE,
+  WRITE_RESOLVE,
+  READ,
+  READ_RESOLVE,
+  READ_START,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_file_parent_class = NULL;
+static guint file_signals[LAST_SIGNAL];
 
 GType
 ags_file_get_type (void)
@@ -85,14 +103,62 @@ ags_file_class_init(AgsFileClass *file)
   /* GObjectClass */
   gobject = (GObjectClass *) file;
 
+  gobject->get_property = ags_file_get_property;
+  gobject->set_property = ags_file_set_property;
+
   gobject->finalize = ags_file_finalize;
 
   /* AgsFileClass */
   file->write = ags_file_real_write;
+  file->resolve_write = ags_file_real_write_resolve;
   file->read = ags_file_real_read;
-  file->resolve = ags_file_real_resolve;
-  file->link = ags_file_real_link;
-  file->start = ags_file_real_start;
+  file->resolve_read = ags_file_real_read_resolve;
+  file->start = ags_file_real_read_start;
+
+  file_signals[WRITE] =
+    g_signal_new("write\0",
+		 G_TYPE_FROM_CLASS(file),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileClass, write),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  file_signals[WRITE_RESOLVE] =
+    g_signal_new("write_resolve\0",
+		 G_TYPE_FROM_CLASS(file),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileClass, write_resolve),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  file_signals[READ] =
+    g_signal_new("read\0",
+		 G_TYPE_FROM_CLASS(file),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileClass, read),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  file_signals[READ_RESOLVE] =
+    g_signal_new("read_resolve\0",
+		 G_TYPE_FROM_CLASS(file),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileClass, read_resolve),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  file_signals[READ_START] =
+    g_signal_new("read_start\0",
+		 G_TYPE_FROM_CLASS(file),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsFileClass, read_start),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -101,13 +167,44 @@ ags_file_init(AgsFile *file)
   file->flags = 0;
 
   file->name = NULL;
-  file->encoding = MY_ENCODING;
-  file->dtd = AGS_DEFAULT_DTD;
+
+  file->encoding = AGS_FILE_DEFAULT_ENCODING;
+  file->dtd = AGS_FILE_DEFAULT_DTD;
 
   file->doc = NULL;
   file->current = NULL;
 
-  file->window = NULL;
+  file->id_refs = NULL;
+  file->lookup = NULL;
+
+  file->clipboard = NULL;
+  file->property = NULL;
+  file->script = NULL;
+  file->cluster = NULL;
+  file->client = NULL;
+  file->server = NULL;
+  file->main = NULL;
+  file->embedded_audio = NULL;
+  file->file_link = NULL;
+  file->history = NULL;
+}
+
+void
+ags_file_set_property(GObject *gobject,
+		      guint prop_id,
+		      const GValue *value,
+		      GParamSpec *param_spec)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_get_property(GObject *gobject,
+		      guint prop_id,
+		      GValue *value,
+		      GParamSpec *param_spec)
+{
+  //TODO:JK: implement me
 }
 
 void
@@ -184,7 +281,7 @@ ags_file_write_resolve(AgsFile *file)
 
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
-		file_signals[RESOLVE], 0);
+		file_signals[WRITE_RESOLVE], 0);
   g_object_unref(G_OBJECT(file));
 }
 
@@ -218,24 +315,24 @@ ags_file_read_resolve(AgsFile *file)
 
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
-		file_signals[RESOLVE], 0);
+		file_signals[READ_RESOLVE], 0);
   g_object_unref(G_OBJECT(file));
 }
 
 void
-ags_file_real_start(AgsFile *file)
+ags_file_real_read_start(AgsFile *file)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_file_start(AgsFile *file)
+ags_file_read_start(AgsFile *file)
 {
   g_return_if_fail(AGS_IS_FILE(file));
 
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
-		file_signals[START], 0);
+		file_signals[READ_START], 0);
   g_object_unref(G_OBJECT(file));
 }
 
@@ -2061,7 +2158,8 @@ ags_file_new()
 {
   AgsFile *file;
 
-  file = (AgsFile *) g_object_new(AGS_TYPE_FILE, NULL);
+  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				  NULL);
 
   return(file);
 }

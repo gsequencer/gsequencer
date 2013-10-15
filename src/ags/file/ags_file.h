@@ -33,6 +33,8 @@
 #define AGS_IS_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE))
 #define AGS_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE, AgsFileClass))
 
+#define AGS_FILE_DEFAULT_ENCODING "utf-8\0"
+#define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
 #define AGS_FILE_DEFAULT_NS NULL
 
 typedef struct _AgsFile AgsFile;
@@ -52,11 +54,12 @@ struct _AgsFile
   char *name;
   char *encoding;
   char *dtd;
-  xmlDocPtr doc;
-  xmlNodePtr current;
+
+  xmlDoc *doc;
 
   GList *id_refs;
-  GList *id_consumers;
+  GList *lookup;
+  GList *launch;
 
   GObject *clipboard;
   GList *property;
@@ -66,7 +69,7 @@ struct _AgsFile
   GObject *server;
   GObject *main;
   GList *embedded_audio;
-  GList *file_link_history;
+  GList *file_link;
   GObject *history;
 };
 

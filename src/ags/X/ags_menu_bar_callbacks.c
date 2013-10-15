@@ -116,9 +116,11 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
-  file = ags_file_new(window->main);
-  file->window = (GtkWidget *) window;
-  file->name = g_strdup(window->name);
+  //TODO:JK: revise me
+  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				  "main\0", window->main,
+				  "filename\0", g_strdup(window->name),
+				  NULL);
   ags_file_write(file);
   g_object_unref(G_OBJECT(file));
 }
@@ -149,9 +151,11 @@ ags_menu_bar_save_as_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
   file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_FILE_SELECTION);
 
-  file = ags_file_new(window->main);
-  file->window = (GtkWidget *) window;
-  file->name = g_strdup(gtk_file_selection_get_filename((GtkFileSelection *) file_selection));
+  //TODO:JK: revise me
+  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				  "main\0", window->main,
+				  "filename\0", g_strdup(gtk_file_selection_get_filename((GtkFileSelection *) file_selection)),
+				  NULL);
   ags_file_write(file);
 
   g_object_unref(G_OBJECT(file));
@@ -193,9 +197,12 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   if(response == GTK_RESPONSE_YES){
     AgsFile *file;
 
-    file = ags_file_new(window->main);
-    file->window = (GtkWidget *) window;
-    file->name = g_strdup(window->name);
+    //TODO:JK: revise me
+    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				    "main\0", window->main,
+				    "filename\0", g_strdup(window->name),
+				    NULL);
+
     ags_file_write(file);
     g_object_unref(G_OBJECT(file));
   }

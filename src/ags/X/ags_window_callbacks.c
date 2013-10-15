@@ -46,9 +46,10 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   if(response == GTK_RESPONSE_YES){
     AgsFile *file;
 
-    file = ags_file_new(window->main);
-    file->window = (GtkWidget *) window;
-    file->name = g_strdup(window->name);
+    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				    "main\0", window->main,
+				    "filename\0", g_strdup(window->name),
+				    NULL);
     ags_file_write(file);
     g_object_unref(G_OBJECT(file));
   }
