@@ -77,6 +77,8 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 					       "reference\0", gobject,
 					       NULL);
   ags_file_add_lookup(file, file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_devout_resolve_devout_play), gobject);
 }
 
 void
@@ -167,6 +169,8 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 					       "reference\0", devout,
 					       NULL);
   ags_file_add_lookup(file, file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_devout_resolve_devout_play), devout);
 
   return(node);
 }
@@ -175,7 +179,16 @@ void
 ags_file_write_devout_resolve_devout_play(AgsFileLookup *file_lookup,
 					  AgsDevout *devout)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = ags_file_find_id_ref_by_reference(file_lookup->file, devout->devout_play);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "devout-play\0",
+	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
 }
 
 void
