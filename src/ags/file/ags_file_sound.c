@@ -18,10 +18,18 @@
 
 #include <ags/file/ags_file_sound.h>
 
+#include <ags/file/ags_file_lookup.h>
+
+void ags_file_read_devout_resolve_devout_play(AgsFileLookup *file_lookup,
+					      AgsDevout *devout);
+void ags_file_write_devout_resolve_devout_play(AgsFileLookup *file_lookup,
+					       AgsDevout *devout);
+
 void
 ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 {
   AgsDevout *gobject;
+  AgsFileLookup *file_lookup;
   xmlChar *prop;
 
   gobject = g_object_new(AGS_TYPE_DEVOUT,
@@ -34,6 +42,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 						    "reference\0", gobject,
 						    NULL));
@@ -61,6 +70,27 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   }else if((AGS_DEVOUT_ALSA & (gobject->flags)) != 0){
     gobject->out.alsa.device = xmlGetProp(node, "device\0");
   }
+
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, file_lookup);
+}
+
+void
+ags_file_read_devout_resolve_devout_play(AgsFileLookup *file_lookup,
+					 AgsDevout *devout)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node);
+
+  id_ref = ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  devout->devout_play = id_ref->ref;
 }
 
 xmlNode*
@@ -74,6 +104,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
 						    "reference\0", devout,
 						    NULL));
@@ -130,7 +161,21 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   xmlAddChild(parent,
 	      node);
 
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", devout,
+					       NULL);
+  ags_file_add_lookup(file, file_lookup);
+
   return(node);
+}
+
+void
+ags_file_write_devout_resolve_devout_play(AgsFileLookup *file_lookup,
+					  AgsDevout *devout)
+{
+  //TODO:JK: implement me
 }
 
 void
@@ -147,6 +192,7 @@ ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
 						    "reference\0", *devout,
 						    NULL));
@@ -180,6 +226,7 @@ ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
 						    "reference\0", list,
 						    NULL));
@@ -220,6 +267,7 @@ ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
 						    "reference\0", pointer,
 						    NULL));
@@ -244,6 +292,7 @@ ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
 						    "reference\0", play,
 						    NULL));
@@ -296,6 +345,7 @@ ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
 						    "reference\0", list,
 						    NULL));
@@ -317,6 +367,7 @@ ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play)
   ags_file_add_id_ref(file,
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
+						    "node\0", node,
 						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
 						    "reference\0", list,
 						    NULL));

@@ -88,7 +88,10 @@ struct _AgsFileClass
 GType ags_file_get_type(void);
 
 void ags_file_add_id_ref(AgsFile *file, GObject *id_ref);
-void ags_file_add_id_consumer(AgsFile *file, GObject *id_ref);
+GObject* ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath);
+GObject* ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref);
+
+void ags_file_add_lookup(AgsFile *file, GObject *id_ref);
 
 void ags_file_write(AgsFile *file);
 void ags_file_write_resolve(AgsFile *file);

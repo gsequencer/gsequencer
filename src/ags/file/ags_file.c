@@ -244,8 +244,20 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
   //TODO:JK: implement me
 }
 
+GObject*
+ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
+{
+  //TODO:JK: implement me
+}
+
+GObject*
+ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
+{
+  //TODO:JK: implement me
+}
+
 void
-ags_file_add_id_consumer(AgsFile *file, GObject *id_ref)
+ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 {
   //TODO:JK: implement me
 }

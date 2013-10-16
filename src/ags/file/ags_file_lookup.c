@@ -35,6 +35,13 @@ enum{
   LAST_SIGNAL,
 };
 
+enum{
+  PROP_0,
+  PROP_FILE,
+  PROP_NODE,
+  PROP_REFERENCE,
+};
+
 static gpointer ags_file_lookup_parent_class = NULL;
 static guint file_lookup_signals[LAST_SIGNAL];
 
@@ -69,6 +76,7 @@ void
 ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_file_lookup_parent_class = g_type_class_peek_parent(file_lookup);
 
@@ -79,6 +87,32 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
   gobject->set_property = ags_file_lookup_set_property;
 
   gobject->finalize = ags_file_lookup_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("file\0",
+				   "assigned file\0",
+				   "The file it is assigned with\0",
+				   AGS_TYPE_FILE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE,
+				  param_spec);
+
+  param_spec = g_param_spec_pointer("node\0",
+				    "assigned node\0",
+				    "The node it is assigned with\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NODE,
+				  param_spec);
+
+  param_spec = g_param_spec_pointer("reference\0",
+				    "assigned reference\0",
+				    "The reference it is assigned with\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REFERENCE,
+				  param_spec);
 
   /* AgsFileLookupClass */
   file_lookup->resolve = NULL;
@@ -96,7 +130,10 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
 void
 ags_file_lookup_init(AgsFileLookup *file_lookup)
 {
-  file_lookup->data = NULL;
+  file_lookup->file = NULL;
+
+  file_lookup->node = NULL;
+  file_lookup->ref = NULL;
 }
 
 void
@@ -105,7 +142,50 @@ ags_file_lookup_set_property(GObject *gobject,
 			     const GValue *value,
 			     GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsFileLookup *file_lookup;
+
+  file_lookup = AGS_FILE_LOOKUP(gobject);
+
+  switch(prop_id){
+  case PROP_FILE:
+    {
+      AgsFile *file;
+
+      file = (AgsFile *) g_value_get_object(value);
+
+      if(file_lookup->file != NULL){
+	g_object_unref(G_OBJECT(file_lookup->file));
+      }
+
+      if(file != NULL){
+	g_object_ref(G_OBJECT(file_lookup->file));
+      }
+
+      file_lookup->file = file;
+    }
+    break;
+  case PROP_NODE:
+    {
+      xmlNode *node;
+
+      node = (xmlNode *) g_value_get_pointer(value);
+
+      file_lookup->node = node;
+    }
+    break;
+  case PROP_REFERENCE:
+    {
+      gpointer ref;
+
+      ref = (gpointer) g_value_get_pointer(value);
+
+      file_lookup->ref = ref;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -114,12 +194,36 @@ ags_file_lookup_get_property(GObject *gobject,
 			     GValue *value,
 			     GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsFileLookup *file_lookup;
+
+  file_lookup = AGS_FILE_LOOKUP(gobject);
+
+  switch(prop_id){
+  case PROP_FILE:
+    g_value_set_object(value, file_lookup->file);
+    break;
+  case PROP_NODE:
+    g_value_set_pointer(value, file_lookup->node);
+    break;
+  case PROP_REFERENCE:
+    g_value_set_pointer(value, file_lookup->ref);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_file_lookup_finalize(GObject *gobject)
 {
+  AgsFileLookup *file_lookup;
+
+  file_lookup = AGS_FILE_LOOKUP(gobject);
+
+  if(file_lookup->file != NULL){
+    g_object_unref(G_OBJECT(file_lookup->file));
+  }
 }
 
 void

@@ -40,6 +40,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_NODE,
   PROP_XPATH,
   PROP_REFERENCE,
   PROP_MAIN,
@@ -93,6 +94,14 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
   gobject->finalize = ags_file_id_ref_finalize;
 
   /* properties */
+  param_spec = g_param_spec_pointer("node\0",
+				    "the node\0",
+				    "The node to find the element\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NODE,
+				  param_spec);
+
   param_spec = g_param_spec_string("xpath\0",
 				   "the xpath\0",
 				   "The xpath to find the element\0",
@@ -136,6 +145,7 @@ ags_file_id_ref_init(AgsFileIdRef *file_id_ref)
 {
   file_id_ref->main = NULL;
 
+  file_id_ref->node = NULL;
   file_id_ref->xpath = NULL;
   file_id_ref->ref = NULL;
 }
@@ -152,6 +162,15 @@ ags_file_id_ref_set_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
   
   switch(prop_id){
+  case PROP_POINTER:
+    {
+      xmlNode *node;
+
+      node = (xmlNode *) g_value_get_pointer(value);
+
+      file_id_ref->node = node;
+    }
+    break;
   case PROP_XPATH:
     {
       char *xpath;
@@ -211,10 +230,16 @@ ags_file_id_ref_get_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
   
   switch(prop_id){
+  case PROP_NODE:
+    {
+      g_value_set_pointer(value, file_id_ref->node);
+    }
+    break;
   case PROP_XPATH:
     {
       g_value_set_string(value, file_id_ref->xpath);
     }
+    break;
   case PROP_REFERENCE:
     {
       g_value_set_object(value, file_id_ref->ref);

@@ -37,8 +37,11 @@ typedef struct _AgsFileLookupClass AgsFileLookupClass;
 struct _AgsFileLookup
 {
   GObject object;
-  
-  gpointer data;
+
+  AgsFile *file;
+
+  xmlNode *node;
+  gpointer ref;
 };
 
 struct _AgsFileLookupClass

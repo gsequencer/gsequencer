@@ -108,6 +108,8 @@ ags_pad_class_init(AgsPadClass *pad)
   gobject->set_property = ags_pad_set_property;
   gobject->get_property = ags_pad_get_property;
 
+  //TODO:JK: add finalize
+
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
 				   "The channel it is assigned with\0",

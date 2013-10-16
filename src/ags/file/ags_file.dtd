@@ -188,7 +188,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-devout (ags-devout-play-list)>
+<!ELEMENT ags-devout EMPTY>
 <!ATTLIST ags-devout
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -203,6 +203,7 @@
 	  attack-delay     NMTOKEN    #REQUIRED
 	  attack-length    NMTOKEN    #REQUIRED
 	  device           CDATA      "default"
+	  devout-play      IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-devout-play-list (ags-devout-play*)>
