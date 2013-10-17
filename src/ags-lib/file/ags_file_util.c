@@ -18,7 +18,7 @@
 
 #include <ags-lib/file/ags_file_util.h>
 
-#include <ags/file/ags_file_stock.h>
+#include <ags-lib/file/ags_file_stock.h>
 
 void
 ags_file_util_read_value(xmlNode *node, gchar **id,

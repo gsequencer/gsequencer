@@ -65,9 +65,6 @@ void ags_matrix_set_pads(AgsAudio *audio, GType type,
 			 guint pads, guint pads_old,
 			 gpointer data);
 
-extern void ags_file_read_matrix(AgsFile *file, AgsMachine *machine);
-extern void ags_file_write_matrix(AgsFile *file, AgsMachine *machine);
-
 static gpointer ags_matrix_parent_class = NULL;
 
 static AgsConnectableInterface *ags_matrix_parent_connectable_interface;

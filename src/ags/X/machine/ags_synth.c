@@ -56,9 +56,6 @@ void ags_synth_set_pads(AgsAudio *audio, GType type,
 
 void ags_synth_update(AgsSynth *synth);
 
-extern void ags_file_read_synth(AgsFile *file, AgsMachine *machine);
-extern void ags_file_write_synth(AgsFile *file, AgsMachine *machine);
-
 static gpointer ags_synth_parent_class = NULL;
 
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;

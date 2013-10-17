@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/file/ags_file_sound.h>
+#include <ags-lib/file/ags_file_sound.h>
 
-#include <ags/file/ags_file_lookup.h>
+#include <ags-lib/file/ags_file_lookup.h>
 
 void ags_file_read_devout_resolve_devout_play(AgsFileLookup *file_lookup,
 					      AgsDevout *devout);

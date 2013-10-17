@@ -47,9 +47,6 @@ void ags_mixer_set_pads(AgsAudio *audio, GType type,
 			guint pads, guint pads_old,
 			gpointer data);
 
-extern void ags_file_read_mixer(AgsFile *file, AgsMachine *machine);
-extern void ags_file_write_mixer(AgsFile *file, AgsMachine *machine);
-
 static gpointer ags_mixer_parent_class = NULL;
 
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;

@@ -60,9 +60,6 @@ void ags_drum_set_pads(AgsAudio *audio, GType type,
 		       guint pads, guint pads_old,
 		       gpointer data);
 
-extern void ags_file_read_drum(AgsFile *file, AgsMachine *machine);
-extern void ags_file_write_drum(AgsFile *file, AgsMachine *machine);
-
 static gpointer ags_drum_parent_class = NULL;
 
 static AgsConnectableInterface *ags_drum_parent_connectable_interface;

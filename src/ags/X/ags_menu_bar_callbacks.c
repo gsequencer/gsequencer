@@ -24,11 +24,11 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags-lib/file/ags_file.h>
+
 #include <ags/main.h>
 
 #include <ags/object/ags_applicable.h>
-
-#include <ags/file/ags_file.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_input.h>

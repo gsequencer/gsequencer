@@ -39,9 +39,6 @@ void ags_machine_show(GtkWidget *widget);
 
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 
-extern void ags_file_read_machine(AgsFile *file, AgsMachine *machine);
-extern void ags_file_write_machine(AgsFile *file, AgsMachine *machine);
-
 static gpointer ags_machine_parent_class = NULL;
 
 GType

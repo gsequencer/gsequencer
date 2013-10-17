@@ -26,6 +26,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags-lib/file/ags_file.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>

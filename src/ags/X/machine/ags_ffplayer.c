@@ -51,9 +51,6 @@ void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
-extern void ags_file_read_ffplayer(AgsFile *file, AgsMachine *machine);
-extern void ags_file_write_ffplayer(AgsFile *file, AgsMachine *machine);
-
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
