@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libxml/tree.h>
+
 #define AGS_TYPE_FILE_ID_REF                (ags_file_id_ref_get_type())
 #define AGS_FILE_ID_REF(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_ID_REF, AgsFileIdRef))
 #define AGS_FILE_ID_REF_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FILE_ID_REF, AgsFileIdRef))

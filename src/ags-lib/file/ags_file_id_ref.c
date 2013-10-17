@@ -162,7 +162,7 @@ ags_file_id_ref_set_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
   
   switch(prop_id){
-  case PROP_POINTER:
+  case PROP_NODE:
     {
       xmlNode *node;
 

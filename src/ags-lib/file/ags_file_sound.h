@@ -24,6 +24,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/file/ags_file.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -104,8 +106,8 @@ void ags_file_read_audio_signal_list(AgsFile *file, xmlNode *node, GList **audio
 xmlNode* ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList *audio_signal);
 
 /* AgsStream */
-void ags_file_read_stream(AgsFile *file, xmlNode *node, AgsStream **stream);
-xmlNode* ags_file_write_stream(AgsFile *file, xmlNode *parent, AgsStream *stream);
+void ags_file_read_stream(AgsFile *file, xmlNode *node, GList **stream);
+xmlNode* ags_file_write_stream(AgsFile *file, xmlNode *parent, GList *stream);
 
 void ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream);
 xmlNode* ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream);

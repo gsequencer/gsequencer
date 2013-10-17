@@ -43,7 +43,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 						    "reference\0", gobject,
 						    NULL));
 
@@ -107,7 +107,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 						    "reference\0", devout,
 						    NULL));
   
@@ -195,10 +195,9 @@ void
 ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
 {
   AgsDevout *current;
+  GList *list;
   xmlNode *child;
   xmlChar *id;
-
-  *devout = NULL;
 
   id = xmlGetProp(node, AGS_FILE_ID_PROP);
 
@@ -206,24 +205,24 @@ ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 						    "reference\0", *devout,
 						    NULL));
 
   child = node->children;
+  list = NULL;
 
   while(child != NULL){
     current = NULL;
-    ags_file_read_devout(child, &current);
+    ags_file_read_devout(file, child, &current);
 
-    *devout = g_list_prepend(*devout, current);
+    list = g_list_prepend(list, current);
 
     child = child->next;
   }
 
-  *devout = g_list_reverse(*devout);
-
-  ags_file_id_ref_alloc(id, *devout);
+  list = g_list_reverse(list);
+  *devout = list;
 }
 
 xmlNode*
@@ -240,7 +239,7 @@ ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 						    "reference\0", list,
 						    NULL));
 
@@ -257,7 +256,7 @@ ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout)
   list = devout;
 
   while(list != NULL){
-    ags_file_write_devout(node, AGS_DEVOUT(list->data));
+    ags_file_write_devout(file, node, AGS_DEVOUT(list->data));
 
     list = list->next;
   }
@@ -281,7 +280,7 @@ ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 						    "reference\0", pointer,
 						    NULL));
 
@@ -306,7 +305,7 @@ ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 						    "reference\0", play,
 						    NULL));
 
@@ -336,16 +335,15 @@ ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
   xmlNode *child;
   gchar *id;
 
-  list = NULL;
-
   id = xmlGetProp(node,
 		  AGS_FILE_ID_PROP);
 
   child = node->children;
+  list = NULL;
 
   while(child != NULL){
     current = NULL;
-    ags_file_read_devout_play(child, &current);
+    ags_file_read_devout_play(file, child, &current);
 
     list = g_list_prepend(list, current);
 
@@ -359,7 +357,7 @@ ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 						    "reference\0", list,
 						    NULL));
 }
@@ -381,7 +379,7 @@ ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play)
 		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
 						    "main\0", file->main,
 						    "node\0", node,
-						    "xpath\0", g_strdup_printf("xpath=*/[@id=%s]\0", id),
+						    "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 						    "reference\0", list,
 						    NULL));
 
@@ -395,7 +393,7 @@ ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play)
   list = play;
 
   while(list != NULL){
-    ags_file_write_devout_play(node, AGS_DEVOUT_PLAY(list->data));
+    ags_file_write_devout_play(file, node, AGS_DEVOUT_PLAY(list->data));
 
     list = list->next;
   }
@@ -538,7 +536,7 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
   g_object_set_data(G_OBJECT(gobject),
 		    AGS_FILE_ID_REF_SERIALIZE_LINK,
 		    g_object_new(AGS_TYPE_FILE_ID_REF,
-				 AGS_FILE_XPATH_PROP, g_strdup_printf("xpath://*/@id[%s]\0", xmlGetProp(node, "link\0")),
+				 AGS_FILE_XPATH_PROP, g_strdup_printf("xpath://*/@id['%s']\0", xmlGetProp(node, "link\0")),
 				 NULL));
 
   ags_file_read_devout_play(node,
@@ -808,6 +806,56 @@ ags_file_read_pattern_data(AgsFile *file, xmlNode *node, AgsPattern *pattern, gu
 xmlNode*
 ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern, guint i, guint j)
 {
+  xmlNode *node;
+  GString *content;
+  guint k;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-pattern-data\0");
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      (AgsFileIdRef *) g_object_new(AGS_TYPE_FILE_ID_REF,
+						    "main\0", file->main,
+						    "node\0", node,
+						    "xpath\0", g_strdup_printf("xpath=*/ags-pattern-data[@id='%s']\0", id),
+						    "reference\0", pattern,
+						    NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     "0\0");
+
+  xmlNewProp(node,
+	     "index-1st-level\0",
+	     g_strdup_printf("%d\0", i));
+
+  xmlNewProp(node,
+	     "index-2nd-level\0",
+	     g_strdup_printf("%d\0", j));
+
+  xmlNewProp(node,
+	     "coding\0",
+	     "human readable\0");
+
+  content = g_string_sized_new(pattern->dim[2] + 1);
+
+  for(k = 0; k < pattern->dim[2]; k++){
+    g_string_insert_c(content, k, (gchar) (ags_pattern_get_bit(pattern, i, j, k) ? '1': '0'));
+  }
+
+  g_string_insert_c(content, k, (gchar) '\0');
+  xmlNodeAddContent(node, BAD_CAST (content->str));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 void

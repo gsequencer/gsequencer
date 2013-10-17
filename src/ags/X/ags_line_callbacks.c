@@ -48,13 +48,13 @@ ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
       ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, FALSE);
     }else{
-      ags_channel_remove_recall(AGS_AUDIO(line->channel), (GObject *) recall, FALSE);
+      ags_channel_remove_recall(AGS_CHANNEL(line->channel), (GObject *) recall, FALSE);
     }
   }else{
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
       ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, TRUE);
     }else{
-      ags_channel_remove_recall(AGS_AUDIO(line->channel), (GObject *) recall, TRUE);
+      ags_channel_remove_recall(AGS_CHANNEL(line->channel), (GObject *) recall, TRUE);
     }
   }
 }
