@@ -18,7 +18,7 @@
 
 #include <ags/X/ags_window_callbacks.h>
 
-#include <ags-lib/file/ags_file.h>
+#include <ags/file/ags_file.h>
 
 #include <ags/main.h>
 

@@ -31,7 +31,7 @@
 #define AGS_IS_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE))
 #define AGS_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE, AgsFileClass))
 
-#define AGS_FILE_DEFAULT_ENCODING "utf-8\0"
+#define AGS_FILE_DEFAULT_ENCODING "UTF-8\0" //"ISO-8859-15"
 #define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
 #define AGS_FILE_DEFAULT_NS NULL
 

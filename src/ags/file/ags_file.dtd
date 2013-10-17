@@ -41,22 +41,11 @@
 	  >
 
 <!-- root node -->
-<!ELEMENT ags (ags-clip-board, ags-property-list, ags-script-list, ags-cluster, ags-client, ags-server, ags-main, ags-embedded-audio-list, ags-file-link-list, ags-history)>
+<!ELEMENT ags (ags-clip-board, ags-script-list, ags-cluster, ags-client, ags-server, ags-main, ags-embedded-audio-list, ags-file-link-list, ags-history)>
 <!ATTLIST ags
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  embedded-audio   CDATA      "FALSE"
-	  >
-
-<!ELEMENT ags-property-list (ags-property*)>
-<!ATTLIST ags-property-list
-	  id               ID         #REQUIRED
-	  >
-
-<!ELEMENT ags-property (gvalue*)>
-<!ATTLIST ags-property
-	  id               ID         #REQUIRED
-	  name             CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-offset (#CDATA)>

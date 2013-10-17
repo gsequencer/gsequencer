@@ -36,11 +36,11 @@ struct _AgsSerializeableInterface
 {
   GTypeInterface interface;
 
-  void (*serialize)(AgsSerializeable *serializeable);
+  gchar* (*serialize)(AgsSerializeable *serializeable);
 };
 
 GType ags_serializeable_get_type();
 
-void ags_serializeable_serialize(AgsSerializeable *serializeable);
+gchar* ags_serializeable_serialize(AgsSerializeable *serializeable);
 
 #endif /*__AGS_SERIALIZEABLE_H__*/

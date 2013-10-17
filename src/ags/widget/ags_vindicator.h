@@ -42,7 +42,7 @@ struct _AgsVIndicator
 
 struct _AgsVIndicatorClass
 {
-  GtkWidgetClass indicator
+  GtkWidgetClass indicator;
 };
 
 GType ags_vindicator_get_type(void);

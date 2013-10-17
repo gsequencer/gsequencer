@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/audio/ags_file_link.h>
+#include <ags/file/ags_file_link.h>
 
 void ags_file_link_class_init(AgsFileLinkClass *file_link);
 void ags_file_link_init(AgsFileLink *file_link);
@@ -137,7 +137,7 @@ ags_file_link_get_property(GObject *gobject,
   file_link = AGS_FILE_LINK(gobject);
   
   switch(prop_id){
-  case PROP_DEVICE:
+  case PROP_URL:
     {
       g_value_set_string(value, file_link->url);
     }

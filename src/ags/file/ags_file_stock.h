@@ -29,14 +29,11 @@
 #include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_waveform.h>
 #include <ags/widget/ags_dial.h>
-#include <ags/widget/ags_cartestian.h>
+#include <ags/widget/ags_cartesian.h>
 
 #define AGS_FILE_DEFAULT_VERSION "0.4.0\0"
 #define AGS_EFFECTS_DEFAULT_VERSION "0.4.0\0"
 #define AGS_CLIPBOARD_DEFAULT_VERSION "0.4.0\0"
-
-#define AGS_FILE_DEFAULT_ENCODING "UTF-8\0" //"ISO-8859-15"
-#define AGS_FILE_DEFAULT_DTD  "~/ags/file/ags_file.dtd\0"
 
 #define AGS_FILE_FALSE "FALSE\0"
 #define AGS_FILE_TRUE "TRUE\0"

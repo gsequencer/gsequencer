@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/audio/ags_embedded_audio.h>
+#include <ags/file/ags_embedded_audio.h>
 
 void ags_embedded_audio_class_init(AgsEmbeddedAudioClass *embedded_audio);
 void ags_embedded_audio_init(AgsEmbeddedAudio *embedded_audio);
@@ -84,7 +84,6 @@ ags_embedded_audio_class_init(AgsEmbeddedAudioClass *embedded_audio)
   param_spec = g_param_spec_pointer("data\0",
 				    "the data\0",
 				    "The data to locate the file\0",
-				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DATA,
@@ -110,9 +109,9 @@ ags_embedded_audio_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_DATA:
     {
-      char *data;
+      gpointer data;
 
-      data = (char *) g_value_get_pointer(value);
+      data = (gpointer) g_value_get_pointer(value);
 
       if(embedded_audio->data != NULL)
 	g_free(embedded_audio->data);
@@ -128,16 +127,16 @@ ags_embedded_audio_set_property(GObject *gobject,
 
 void
 ags_embedded_audio_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
 {
   AgsEmbeddedAudio *embedded_audio;
 
   embedded_audio = AGS_EMBEDDED_AUDIO(gobject);
   
   switch(prop_id){
-  case PROP_DEVICE:
+  case PROP_DATA:
     {
       g_value_set_pointer(value, embedded_audio->data);
     }

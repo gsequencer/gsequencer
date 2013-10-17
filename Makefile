@@ -105,6 +105,7 @@ am__v_AR_1 =
 libags_a_AR = $(AR) $(ARFLAGS)
 libags_a_LIBADD =
 am_libags_a_OBJECTS = libags_a-ags_connectable.$(OBJEXT) \
+	libags_a-ags_serializeable.$(OBJEXT) \
 	libags_a-ags_math.$(OBJEXT)
 libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
@@ -612,7 +613,7 @@ top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src
 noinst_LIBRARIES = libags.a
-libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h ./src/ags-lib/lib/ags_math.c ./src/ags-lib/lib/ags_math.h
+libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h ./src/ags-lib/object/ags_serializeable.c ./src/ags-lib/object/ags_serializeable.h ./src/ags-lib/lib/ags_math.c ./src/ags-lib/lib/ags_math.h
 ags_SOURCES = ./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/audio/ags_file_stock.h \
 	./src/ags/file/ags_file_id_ref.h \
@@ -1542,6 +1543,7 @@ include ./$(DEPDIR)/agsclient-ags_xml_script_factory.Po
 include ./$(DEPDIR)/agsclient-main.Po
 include ./$(DEPDIR)/libags_a-ags_connectable.Po
 include ./$(DEPDIR)/libags_a-ags_math.Po
+include ./$(DEPDIR)/libags_a-ags_serializeable.Po
 include ./$(DEPDIR)/test-ags_test_thread.Po
 
 .c.o:
@@ -1578,6 +1580,20 @@ libags_a-ags_connectable.obj: ./src/ags-lib/object/ags_connectable.c
 #	$(AM_V_CC)source='./src/ags-lib/object/ags_connectable.c' object='libags_a-ags_connectable.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_connectable.obj `if test -f './src/ags-lib/object/ags_connectable.c'; then $(CYGPATH_W) './src/ags-lib/object/ags_connectable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/object/ags_connectable.c'; fi`
+
+libags_a-ags_serializeable.o: ./src/ags-lib/object/ags_serializeable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_serializeable.o -MD -MP -MF $(DEPDIR)/libags_a-ags_serializeable.Tpo -c -o libags_a-ags_serializeable.o `test -f './src/ags-lib/object/ags_serializeable.c' || echo '$(srcdir)/'`./src/ags-lib/object/ags_serializeable.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_serializeable.Tpo $(DEPDIR)/libags_a-ags_serializeable.Po
+#	$(AM_V_CC)source='./src/ags-lib/object/ags_serializeable.c' object='libags_a-ags_serializeable.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_serializeable.o `test -f './src/ags-lib/object/ags_serializeable.c' || echo '$(srcdir)/'`./src/ags-lib/object/ags_serializeable.c
+
+libags_a-ags_serializeable.obj: ./src/ags-lib/object/ags_serializeable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_serializeable.obj -MD -MP -MF $(DEPDIR)/libags_a-ags_serializeable.Tpo -c -o libags_a-ags_serializeable.obj `if test -f './src/ags-lib/object/ags_serializeable.c'; then $(CYGPATH_W) './src/ags-lib/object/ags_serializeable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/object/ags_serializeable.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_a-ags_serializeable.Tpo $(DEPDIR)/libags_a-ags_serializeable.Po
+#	$(AM_V_CC)source='./src/ags-lib/object/ags_serializeable.c' object='libags_a-ags_serializeable.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -c -o libags_a-ags_serializeable.obj `if test -f './src/ags-lib/object/ags_serializeable.c'; then $(CYGPATH_W) './src/ags-lib/object/ags_serializeable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags-lib/object/ags_serializeable.c'; fi`
 
 libags_a-ags_math.o: ./src/ags-lib/lib/ags_math.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_a_CFLAGS) $(CFLAGS) -MT libags_a-ags_math.o -MD -MP -MF $(DEPDIR)/libags_a-ags_math.Tpo -c -o libags_a-ags_math.o `test -f './src/ags-lib/lib/ags_math.c' || echo '$(srcdir)/'`./src/ags-lib/lib/ags_math.c

@@ -46,13 +46,13 @@ ags_serializeable_base_init(AgsSerializeableInterface *interface)
   /* empty */
 }
 
-void
+gchar*
 ags_serializeable_serialize(AgsSerializeable *serializeable)
 {
   AgsSerializeableInterface *serializeable_interface;
 
-  g_return_if_fail(AGS_IS_SERIALIZEABLE(serializeable));
+  g_return_val_if_fail(AGS_IS_SERIALIZEABLE(serializeable), NULL);
   serializeable_interface = AGS_SERIALIZEABLE_GET_INTERFACE(serializeable);
-  g_return_if_fail(serializeable_interface->serialize);
-  serializeable_interface->serialize(serializeable);
+  g_return_val_if_fail(serializeable_interface->serialize, NULL);
+  return(serializeable_interface->serialize(serializeable));
 }

@@ -18,11 +18,13 @@
 
 #include <ags/file/ags_file_util.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/file/ags_file_stock.h>
 
 void
 ags_file_util_read_value(xmlNode *node, gchar **id,
-			 GValue **value, xmlChar **xpath)
+			 GValue *value, xmlChar **xpath)
 {
   xmlChar *type_str;
   xmlChar *value_str;
@@ -36,12 +38,12 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
 
   content = xmlNodeGetContent(node);
 
-  if(!xmlStrcmp(type_str, "boolean\0")){
+  if(!xmlStrcmp(type_str, "gboolean\0")){
     g_value_init(&a, G_TYPE_BOOLEAN);
-    g_value_set_boolean(&a, g_ascii_strtol(content));
+    g_value_set_boolean(&a, g_ascii_strtoll(content, NULL, 10));
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -49,10 +51,10 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gchar\0")){
     g_value_init(&a, G_TYPE_CHAR);
-    g_value_set_schar(&a, content);
+    g_value_set_schar(&a, content[0]);
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -60,10 +62,10 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gint64\0")){
     g_value_init(&a, G_TYPE_INT64);
-    g_value_set_int(&a, g_ascii_strtoll(content));
+    g_value_set_int64(&a, g_ascii_strtoll(content, NULL, 10));
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -71,10 +73,10 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "guint64\0")){
     g_value_init(&a, G_TYPE_UINT64);
-    g_value_set_static_string(&a, g_ascii_strtoull(content));
+    g_value_set_uint64(&a, g_ascii_strtoull(content, NULL, 10));
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -82,10 +84,10 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gdouble\0")){
     g_value_init(&a, G_TYPE_DOUBLE);
-    g_value_set_double(&a, g_ascii_strtod(content));
+    g_value_set_double(&a, g_ascii_strtod(content, NULL));
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -96,7 +98,7 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
     g_value_set_static_string(&a, content);
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -119,7 +121,7 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       if(arr == NULL){
 	arr = (gboolean *) malloc(sizeof(gboolean));
       }else{
-	arr = (gboolean *) realloc((i + 1) * sizeof(gboolean));
+	arr = (gboolean *) realloc(arr, (i + 1) * sizeof(gboolean));
       }
 
       if(!xmlStrcmp(*str_iter, AGS_FILE_TRUE)){
@@ -132,16 +134,17 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       i++;
     }
 
+    g_value_set_pointer(&a, (gpointer) arr);
     g_free(str_arr);
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
     
     if(xpath != NULL)
       *xpath = NULL;
-  }else if(!xmlStrcmp(type_str, "gint-pointer\0")){
+  }else if(!xmlStrcmp(type_str, "gint64-pointer\0")){
     gchar **str_arr, **str_iter;
     gint64 *arr;
     guint i;
@@ -158,25 +161,26 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       if(arr == NULL){
 	arr = (gint64 *) malloc(sizeof(gint64));
       }else{
-	arr = (gint64 *) realloc((i + 1) * sizeof(gint64));
+	arr = (gint64 *) realloc(arr, (i + 1) * sizeof(gint64));
       }
 
-      arr[i] = g_ascii_strtoll(*str_iter);
+      arr[i] = g_ascii_strtoll(*str_iter, NULL, 10);
 
       str_iter++;
       i++;
     }
     
+    g_value_set_pointer(&a, (gpointer) arr);
     g_free(str_arr);
 
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
     
     if(xpath != NULL)
       *xpath = NULL;
-  }else if(!xmlStrcmp(type_str, "guint-pointer\0")){
+  }else if(!xmlStrcmp(type_str, "guint64-pointer\0")){
     gchar **str_arr, **str_iter;
     guint64 *arr;
     guint i;
@@ -193,54 +197,20 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       if(arr == NULL){
 	arr = (guint64 *) malloc(sizeof(guint64));
       }else{
-	arr = (guint64 *) realloc((i + 1) * sizeof(guint64));
+	arr = (guint64 *) realloc(arr, (i + 1) * sizeof(guint64));
       }
 
-      arr[i] = g_ascii_strtoll(*str_iter);
+      arr[i] = g_ascii_strtoll(*str_iter, NULL, 10);
 
       str_iter++;
       i++;
     }
     
+    g_value_set_pointer(&a, (gpointer) arr);
     g_free(str_arr);
 
     if(value != NULL)
-      *value = &a;
-    else
-      g_value_unset(&a);
-    
-    if(xpath != NULL)
-      *xpath = NULL;
-  }else if(!xmlStrcmp(type_str, "gdouble-pointer\0")){
-    gchar **str_arr, **str_iter;
-    gdouble *arr;
-    guint i;
-
-    str_arr = g_strsplit(content, " \0", -1);
-
-    g_value_init(&a, G_TYPE_POINTER);
-
-    arr = NULL;
-    str_iter = str_arr;
-    i = 0;
-
-    while(*str_iter != NULL){
-      if(arr == NULL){
-	arr = (gdouble *) malloc(sizeof(gdouble));
-      }else{
-	arr = (gdouble *) realloc((i + 1) * sizeof(gdouble));
-      }
-
-      arr[i] = g_ascii_strtoll(*str_iter);
-
-      str_iter++;
-      i++;
-    }
-    
-    g_free(str_arr);
-
-    if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
     
@@ -248,9 +218,12 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       *xpath = NULL;
   }else if(!xmlStrcmp(type_str, "gpointer\0")){
     g_value_init(&a, G_TYPE_POINTER);
+
+    //TODO:JK: implement me
+    //    g_value_set_pointer(&a, (gpointer) );
     
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -258,9 +231,12 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
       *xpath = content;
   }else if(!xmlStrcmp(type_str, "gobject\0")){
     g_value_init(&a, G_TYPE_OBJECT);
+
+    //TODO:JK: implement me
+    //    g_value_set_object(&a, (GObject *) );
     
     if(value != NULL)
-      *value = &a;
+      g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
@@ -292,7 +268,7 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
   switch(G_VALUE_TYPE(value)){
   case G_TYPE_CHAR:
     {
-      content = BAD_CAST g_strdup_printf("%c\0", g_value_get_char(value));
+      content = BAD_CAST g_strdup_printf("%c\0", g_value_get_schar(value));
     }
     break;
   case G_TYPE_INT64:
@@ -368,8 +344,8 @@ ags_file_util_read_parameter(xmlNode *node, gchar **id,
       parameter_arr = (GParameter *) g_new(GParameter, 1);
       xpath_arr = (xmlChar **) malloc(sizeof(xmlChar *));
     }else{
-      parameter_arr = (GParameter *) g_renew(GParameter, i + 1);
-      xpath_arr = (xmlChar **) malloc((i + 1) * sizeof(xmlChar *));
+      parameter_arr = (GParameter *) g_renew(GParameter, parameter_arr, i + 1);
+      xpath_arr = (xmlChar **) realloc(xpath_arr, (i + 1) * sizeof(xmlChar *));
     }
 
     parameter_arr[i].name = name_arr[i];
@@ -434,10 +410,10 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 
     if(serializeable == NULL){
       ags_file_util_write_value(node, child_id,
-				parameter[i].value, NULL);
+				&(parameter[i].value), NULL);
     }else{
       ags_file_util_write_value(node, child_id,
-				parameter[i].value, serializeable[i]);
+				&(parameter[i].value), serializeable[i]);
     }
   }
 
@@ -445,7 +421,6 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 	     AGS_FILE_NAME_PROP,
 	     name);
 
-  xmlNodeSetContent(node, content);
   xmlAddChild(parent,
 	      node);
 
@@ -485,42 +460,6 @@ ags_file_util_write_dependency(xmlNode *parent, gchar *id,
 	      node);
   
   return(node);
-}
-
-void
-ags_file_util_read_clipboard(AgsFile *file, xmlNode *node, AgsClipboard **clipboard)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_util_write_clipboard(AgsFile *file, xmlNode *parent, AgsClipboard *clipboard)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_util_read_property(AgsFile *file, xmlNode *node, AgsProperty **property)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_util_write_property(AgsFile *file, xmlNode *parent, AgsProperty *property)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_util_read_property_list(AgsFile *file, xmlNode *node, GList **property)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_util_write_property_list(AgsFile *file, xmlNode *parent, GList *property)
-{
-  //TODO:JK: implement me
 }
 
 void

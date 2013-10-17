@@ -24,11 +24,19 @@
 
 #include <libxml/tree.h>
 
+#include <ags-lib/object/ags_serializeable.h>
+
+#include <ags-lib/object/ags_serializeable.h>
+
+#include <ags/thread/ags_history.h>
+
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_embedded_audio.h>
+#include <ags/file/ags_file_link.h>
 
 /* gvalue */
 void ags_file_util_read_value(xmlNode *node, gchar **id,
-			      GValue **value, xmlChar **xpath);
+			      GValue *value, xmlChar **xpath);
 xmlNode* ags_file_util_write_value(xmlNode *parent, gchar *id,
 				   GValue *value, AgsSerializeable *serializeable);
 
@@ -44,17 +52,6 @@ void ags_file_util_read_dependency(xmlNode *node, gchar **id,
 xmlNode* ags_file_util_write_dependency(xmlNode *parent, gchar *id,
 					gchar *name, xmlChar *xpath);
 
-/* clipboard */
-void ags_file_util_read_clipboard(AgsFile *file, xmlNode *node, AgsClipboard **clipboard);
-xmlNode* ags_file_util_write_clipboard(AgsFile *file, xmlNode *parent, AgsClipboard *clipboard);
-
-/* property */
-void ags_file_util_read_property(AgsFile *file, xmlNode *node, AgsProperty **property);
-xmlNode* ags_file_util_write_property(AgsFile *file, xmlNode *parent, AgsProperty *property);
-
-void ags_file_util_read_property_list(AgsFile *file, xmlNode *node, GList **property);
-xmlNode* ags_file_util_write_property_list(AgsFile *file, xmlNode *parent, GList *property);
-
 /* history */
 void ags_file_util_read_history(AgsFile *file, xmlNode *node, AgsHistory **history);
 xmlNode* ags_file_util_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history);
@@ -67,8 +64,8 @@ void ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **emb
 xmlNode* ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedded_audio);
 
 /* file link */
-void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsEmbeddedAudio **file_link);
-xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *file_link);
+void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link);
+xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link);
 
 void ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link);
 xmlNode* ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link);
