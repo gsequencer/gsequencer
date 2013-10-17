@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/file/ags_file_lookup.h>
+#include <ags/file/ags_file_lookup.h>
 
 void ags_file_lookup_class_init(AgsFileLookupClass *file_lookup);
 void ags_file_lookup_init (AgsFileLookup *file_lookup);

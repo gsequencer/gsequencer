@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/file/ags_file.h>
+#include <ags/file/ags_file.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -32,8 +32,8 @@
 
 #include <ags/main.h>
 
-#include <ags-lib/file/ags_file_sound.h>
-#include <ags-lib/file/ags_file_gui.h>
+#include <ags/file/ags_file_sound.h>
+#include <ags/file/ags_file_gui.h>
 
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init (AgsFile *file);

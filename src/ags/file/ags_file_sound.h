@@ -24,7 +24,7 @@
 
 #include <libxml/tree.h>
 
-#include <ags-lib/file/ags_file.h>
+#include <ags/file/ags_file.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_id_ref.h>
 
 void ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref);
 void ags_file_id_ref_init(AgsFileIdRef *file_id_ref);

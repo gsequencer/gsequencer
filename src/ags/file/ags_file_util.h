@@ -24,7 +24,7 @@
 
 #include <libxml/tree.h>
 
-#include <ags-lib/file/ags_file.h>
+#include <ags/file/ags_file.h>
 
 /* gvalue */
 void ags_file_util_read_value(xmlNode *node, gchar **id,
