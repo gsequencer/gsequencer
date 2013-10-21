@@ -32,9 +32,14 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   AgsFileLookup *file_lookup;
   xmlChar *prop;
 
-  gobject = g_object_new(AGS_TYPE_DEVOUT,
-			NULL);
-  *devout = gobject;
+  if(*devout == NULL){
+    gobject = g_object_new(AGS_TYPE_DEVOUT,
+			   NULL);
+    *devout = gobject;
+  }else{
+    gobject = *devout;
+  }
+
   g_object_set(G_OBJECT(gobject),
 	       "main\0", file->main,
 	       NULL);
@@ -270,8 +275,12 @@ ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play)
   AgsDevoutPlay *pointer;
   gchar *id;
   
-  pointer = ags_devout_play_alloc();
-  *play = pointer;
+  if(*play == NULL){
+    pointer = ags_devout_play_alloc();
+    *play = pointer;
+  }else{
+    pointer = *play;
+  }
 
   id = xmlGetProp(node,
 		  AGS_FILE_ID_PROP);
@@ -317,12 +326,11 @@ ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play)
 	     AGS_FILE_FLAGS_PROP,
 	     play->flags);
 
-  // write by parent call: play->source
-
   xmlNewProp(node,
 	     "audio-channel\0",
 	     play->audio_channel);
 
+  // write by parent call: play->source
 
   return(node);
 }
@@ -405,10 +413,15 @@ void
 ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 {
   GObject *gobject;
+  xmlNode *child;
 
-  gobject = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-				     NULL);
-  *audio = gobject;
+  if(*audio == NULL){
+    gobject = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
+					NULL);
+    *audio = gobject;
+  }else{
+    gobject = *audio;
+  }
 
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
 
@@ -416,28 +429,108 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 
   gobject->audio_channels = (guint) g_ascii_strtoull(xmlGetProp(node, "audio-channels\0"));
 
-  gobject->output_pads = (guint) g_ascii_strtoull(xmlGetProp(node, "output-pads\0"));
-  gobject->input_pads = (guint) g_ascii_strtoull(xmlGetProp(node, "input-pads\0"));
+  ags_audio_set_pads(gobject,
+		     AGS_TYPE_OUTPUT,
+		     (guint) g_ascii_strtoull(xmlGetProp(node, "output-pads\0")));
 
-  ags_file_write_read_devout_play(node,
+  ags_audio_set_pads(gobject->input_pads,
+		     AGS_TYPE_INPUT,
+		     (guint) g_ascii_strtoull(xmlGetProp(node, "input-pads\0")));
+
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-channel-list\0",
+		     16)){
+	xmlXPathContext *xpath_context;
+	xmlXPathObject *xpath_object;
+
+	xpath_context = xmlXPathNewContext(file->doc);
+
+	if(AGS_FILE_DEFAULT_NS != NULL){
+	  xmlXPathRegisterNs(xpath_context, AGS_FILE_DEFAULT_PREFIX, AGS_FILE_DEFAULT_NS);
+	}
+
+	xpath_object = xmlXPathNodeEval(child,
+					"./ags-channel/ags-output\0",
+					xpath_context);
+
+	if(xpath_object->nodesetval != NULL){
+	  AgsChannel *channel;
+	  xmlNode *channel_node;
+	  
+	  channel = audio->output;
+	  channel_node = child->children;
+
+	  while(channel != NULL){
+	    /* ags-channel output */
+	    ags_file_read_channel(file,
+				  channel_node,
+				  &channel);
+
+	    channel = channel->next;
+	    channel_node = channel_node->next;
+	  }
+	}else{
+	  AgsChannel *channel;
+	  xmlNode *channel_node;
+	  
+	  channel = audio->input;
+	  channel_node = child->children;
+
+	  while(channel != NULL){
+	    /* ags-channel output */
+	    ags_file_read_channel(file,
+				  channel_node,
+				  &channel);
+
+	    channel = channel->next;
+	    channel_node = channel_node->next;
+	  }
+	}
+      }else if(!xmlStrncmp(child->name,
+			   "ags-recall-list\0",
+			   15)){
+	/* ags-recall-list play */
+	ags_file_read_recall_list(file,
+				  child->children,
+				  &(audio->play));
+
+	/* ags-recall-list recall */
+	ags_file_read_recall_list(file,
+				  child->children,
+				  &(audio->recall));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-notation-list\0",
+			   17)){
+	/* ags-notation-list */
+	ags_file_read_notation_list(file,
+				    child->children,
+				    &(audio->notation));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-devout-play\0",
+			   15)){
+	/* ags-devout-play */
+	ags_file_read_devout_play(node,
 				  &(audio->devout_play));
-  audio->devout_play->source = (GObject *) audio;
+	audio->devout_play->source = (GObject *) audio;
+      }
+    }
+  }
 }
 
 xmlNode*
 ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 {
-  xmlNode *node;
+  AgsChannel *channel;
+  xmlNode *node, *child;
+
+  id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-audio\0");
-
-  if((id = g_object_get_data(G_OBJECT(channel), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
-    id = ags_id_generator_create_uuid();
-    g_object_set_data(G_OBJECT(channel),
-		      AGS_FILE_ID_REF_SERIALIZE_ID,
-		      id);
-  }
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -463,7 +556,63 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 	     "input-pads\0",
 	     g_strdup_printf("%d\0", audio->input_pads));
 
-  ags_file_write_devout_play(node,
+  xmlAddChild(parent,
+	      node);
+
+  /* ags-channel-list output */
+  channel = audio->output;
+
+  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		     "ags-channel-list\0");
+  xmlAddChild(node,
+	      child);
+
+  while(channel != NULL){
+    ags_file_write_channel(file,
+			   child,
+			   channel);
+
+    channel = channel->next;
+  }
+
+  /* ags-channel-list input */
+  channel = audio->input;
+
+  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		     "ags-channel-list\0");
+  xmlAddChild(node,
+	      child);
+
+  while(channel != NULL){
+    ags_file_write_channel(file,
+			   child,
+			   channel);
+
+    channel = channel->next;
+  }
+
+  /* ags-recall-list play */
+  ags_file_write_recall_list(file,
+			     node,
+			     audio->play);
+
+  /* ags-recall-list recall */
+  recall = audio->recall;
+
+  ags_file_write_recall_list(file,
+			     node,
+			     audio->recall);
+
+  /* ags-notation-list */
+  notation = audio->notation;
+
+  ags_file_write_notation_list(file,
+			       node,
+			       audio->notation);
+
+  /* ags-devout-play */
+  ags_file_write_devout_play(file,
+			     node,
 			     audio->devout_play);
 
   return(node);
@@ -473,30 +622,34 @@ void
 ags_file_read_audio_list(AgsFile *file, xmlNode *node, GList **audio)
 {
   AgsAudio *current;
+  GList *list;
   xmlNode *child;
 
-  *audio = NULL;
-
+  list = NULL;
   child = node->children;
 
   while(child != NULL){
     current = NULL;
-    ags_file_read_audio(child, &current);
+    ags_file_read_audio(file,
+			child,
+			&current);
 
-    *audio = g_list_prepend(*audio, current);
+    list = g_list_prepend(list,
+			  current);
 
     child = child->next;
   }
 
-  *audio = g_list_reverse(*audio);
+  list = g_list_reverse(list);
+  *audio = list;
 }
 
 xmlNode*
 ags_file_write_audio_list(AgsFile *file, xmlNode *parent, GList *audio)
 {
   AgsAudio *current;
-  xmlNode *node;
   GList *list;
+  xmlNode *node;
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-audio-list\0");
@@ -511,7 +664,9 @@ ags_file_write_audio_list(AgsFile *file, xmlNode *parent, GList *audio)
   list = audio;
 
   while(list != NULL){
-    ags_file_write_audio(node, AGS_AUDIO(list->data));
+    ags_file_write_audio(file,
+			 node,
+			 AGS_AUDIO(list->data));
 
     list = list->next;
   }
@@ -524,9 +679,13 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 {
   GObject *gobject;
 
-  gobject = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-				     NULL);
-  *channel = gobject;
+  if(*channel == NULL){
+    gobject = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
+					  NULL);
+    *channel = gobject;
+  }else{
+    gobject = *channel;
+  }
 
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP));
 
@@ -539,7 +698,8 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 				 AGS_FILE_XPATH_PROP, g_strdup_printf("xpath://*/@id['%s']\0", xmlGetProp(node, "link\0")),
 				 NULL));
 
-  ags_file_read_devout_play(node,
+  ags_file_read_devout_play(file,
+			    node,
 			    &(audio->devout_play));
   audio->devout_play->source = (GObject *) gobject;
 }
@@ -550,9 +710,7 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   xmlNode *node, *child;
   gchar *id, *link_id;
 
-  if((id = g_object_get_data(G_OBJECT(channel), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
-    id = ags_id_generator_create_uuid();
-  }
+  id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-channel\0");
@@ -576,8 +734,7 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   child = ags_file_write_devout_play(node,
 				     audio->devout_play);
 
-  if(channel->link != NULL && (id = g_object_get_data(G_OBJECT(channel->link), AGS_FILE_ID_REF_SERIALIZE_ID)) == NULL){
-  }
+  //link
 
   xmlNewProp(node,
 	     "link\0",

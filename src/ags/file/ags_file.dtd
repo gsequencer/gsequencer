@@ -213,7 +213,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-audio (ags-channel-list, ags-channel-list, ags-recall-list, ags-recall-list, ags-notation-list)>
+<!ELEMENT ags-audio (ags-channel-list, ags-channel-list, ags-recall-list, ags-recall-list, ags-notation-list, devout-play)>
 <!ATTLIST ags-audio
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -221,7 +221,6 @@
 	  audio-channels   NMTOKEN    2
 	  output-pads      NMTOKEN    1
 	  input-pads       NMTOKEN    1
-	  devout-play      IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-channel-list (ags-channel*)>
@@ -229,13 +228,12 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-channel (ags-recycling?, ags-recall-list, ags-pattern-list, (ags-output|ags-input))>
+<!ELEMENT ags-channel (ags-recycling?, ags-recall-list, ags-pattern-list, (ags-output|ags-input), devout-play)>
 <!ATTLIST ags-channel
           id               ID         #REQUIRED
 	  pad              NMTOKEN    #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
 	  link             IDREF      #REQUIRED
-	  devout-play      IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-output EMPTY>

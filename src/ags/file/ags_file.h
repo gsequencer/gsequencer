@@ -34,6 +34,7 @@
 #define AGS_FILE_DEFAULT_ENCODING "UTF-8\0" //"ISO-8859-15"
 #define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
 #define AGS_FILE_DEFAULT_NS NULL
+#define AGS_FILE_DEFAULT_PREFIX NULL
 
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
