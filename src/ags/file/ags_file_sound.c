@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/file/ags_file_sound.h>
+#include <ags/file/ags_file_sound.h>
 
-#include <ags-lib/file/ags_file_lookup.h>
+#include <ags/file/ags_file_lookup.h>
 
 void ags_file_read_devout_resolve_devout_play(AgsFileLookup *file_lookup,
 					      AgsDevout *devout);
@@ -507,21 +507,25 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
       }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
 			   15)){
-	/* ags-recall-list play */
-	ags_file_read_recall_list(file,
-				  child->children,
-				  &(audio->play));
-
-	/* ags-recall-list recall */
-	ags_file_read_recall_list(file,
-				  child->children,
-				  &(audio->recall));
+	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
+		       "true\0",
+		       5)){
+	  /* ags-recall-list play */
+	  ags_file_read_recall_list(file,
+				    child,
+				    &(audio->play));
+	}else{
+	  /* ags-recall-list recall */
+	  ags_file_read_recall_list(file,
+				    child,
+				    &(audio->recall));
+	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-notation-list\0",
 			   17)){
 	/* ags-notation-list */
 	ags_file_read_notation_list(file,
-				    child->children,
+				    child,
 				    &(audio->notation));
       }else if(!xmlStrncmp(child->name,
 			   "ags-devout-play\0",
@@ -620,8 +624,6 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 			     audio->play);
 
   /* ags-recall-list recall */
-  recall = audio->recall;
-
   ags_file_write_recall_list(file,
 			     node,
 			     audio->recall);
@@ -722,15 +724,46 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
   GObject *gobject;
   gboolean preset;
   guint pad, audio_channel;
+  gboolean is_output;
 
   if(*channel == NULL){
-    gobject = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
-					  NULL);
+    xmlXPathContext *xpath_context;
+    xmlXPathObject *xpath_object;
+
+    xpath_context = xmlXPathNewContext(file->doc);
+    
+    if(AGS_FILE_DEFAULT_NS != NULL){
+      xmlXPathRegisterNs(xpath_context, AGS_FILE_DEFAULT_PREFIX, AGS_FILE_DEFAULT_NS);
+    }
+    
+    xpath_object = xmlXPathNodeEval(child,
+				    "./ags-output\0",
+				    xpath_context);
+
+
+    if(xpath_object->nodesetval != NULL){
+      gobject = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
+					    NULL);
+
+      is_output = TRUE;
+    }else{
+      gobject = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
+					    NULL);
+
+      is_output = FALSE;
+    }
+
     *channel = gobject;
 
     preset = FALSE;
   }else{
     gobject = *channel;
+
+    if(AGS_IS_OUTPUT(gobject)){
+      is_output = TRUE;
+    }else{
+      is_output = FALSE;
+    }
 
     preset = TRUE;
   }
@@ -765,11 +798,64 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_read_devout_resolve_devout_play), gobject);
 
-  /* ags-devout-play */
-  ags_file_read_devout_play(file,
-			    node,
-			    &(channel->devout_play));
-  channel->devout_play->source = (GObject *) gobject;
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-recycling\0",
+		     13)){
+	/* ags-recycling */
+	ags_file_read_recycling(file,
+				child,
+				&(channel->first_recycling));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-recall-list\0",
+			   15)){
+	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
+		       "true\0",
+		       5)){
+	  /* ags-recall-list play */
+	  ags_file_read_recall_list(file,
+				    child,
+				    &(channel->play));
+	}else{
+	  /* ags-recall-list recall */
+	  ags_file_read_recall_list(file,
+				    child,
+				    &(channel->recall));
+	}
+      }else if(!xmlStrncmp(child->name,
+			   "ags-pattern-list\0",
+			   17)){
+	/* ags-notation-list */
+	ags_file_read_pattern_list(file,
+				    child,
+				    &(channel->pattern));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-output\0",
+			   10)){
+	/* ags-output */
+	ags_file_read_output(file,
+			     child,
+			     &(channel));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-input\0",
+			   9)){
+	/* ags-input */
+	ags_file_read_input(file,
+			    child,
+			    &(channel));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-devout-play\0",
+			   15)){
+	/* ags-devout-play */
+	ags_file_read_devout_play(node,
+				  &(channel->devout_play));
+	channel->devout_play->source = (GObject *) channel;
+      }
+    }
+  }
 }
 
 void
@@ -827,15 +913,59 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
 					       "node\0", node,
-					       "reference\0", gobject,
+					       "reference\0", channel,
 					       NULL);
   ags_file_add_lookup(file, file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_devout_resolve_devout_play), gobject);
+		   G_CALLBACK(ags_file_read_devout_resolve_devout_play), channel);
+
+  /* ags-recycling */
+  if(is_output){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0){
+      ags_file_write_recycling(file,
+			       node,
+			       channel->first_recycling);
+    }
+  }else{
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0){
+      ags_file_write_recycling(file,
+			       node,
+			       channel->first_recycling);
+    }
+  }
+
+  /* ags-recall-list play */
+  ags_file_write_recall_list(file,
+			     node,
+			     channel->play);
+
+  /* ags-recall-list recall */
+  ags_file_write_recall_list(file,
+			     node,
+			     channel->recall);
+
+  /* ags-pattern-list */
+  if(channel->pattern != NULL){
+    ags_file_write_pattern_list(file,
+				node,
+				channel->recall);
+  }
+
+  /* ags-input or ags-output */
+  if(AGS_IS_OUTPUT(channel)){
+    ags_file_write_output(file,
+			  node,
+			  AGS_OUTPUT(channel));
+  }else{
+    ags_file_write_output(file,
+			  node,
+			  AGS_INPUT(channel));
+  }
 
   /* ags-devout-play */
-  child = ags_file_write_devout_play(node,
-				     audio->devout_play);
+  child = ags_file_write_devout_play(file,
+				     node,
+				     channel->devout_play);
 
   return(node);
 }
@@ -929,6 +1059,7 @@ ags_file_write_channel_list(AgsFile *file, xmlNode *parent, GList *channel)
 void
 ags_file_read_input(AgsFile *file, xmlNode *node, AgsChannel *input)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
@@ -939,6 +1070,7 @@ ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *input)
 void
 ags_file_read_output(AgsFile *file, xmlNode *node, AgsChannel *output)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*

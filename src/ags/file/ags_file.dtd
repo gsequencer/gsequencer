@@ -228,7 +228,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-channel (ags-recycling?, ags-recall-list, ags-pattern-list, (ags-output|ags-input), devout-play)>
+<!ELEMENT ags-channel (ags-recycling?, ags-recall-list, ags-recall-list, ags-pattern-list?, (ags-output|ags-input), devout-play)>
 <!ATTLIST ags-channel
           id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -363,6 +363,7 @@
 <!ELEMENT ags-recall-list (ags-recall*)>
 <!ATTLIST ags-recall-list
 	  id               ID         #REQUIRED
+	  is-play          CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-recycling-run|ags-recall-audio-signal)?, ags-recall-list?, ags-dependency-list, ags-parameter)>
