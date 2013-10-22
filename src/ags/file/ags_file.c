@@ -237,6 +237,40 @@ ags_file_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_file_parent_class)->finalize(gobject);
 }
 
+gchar*
+ags_file_str2md5(gchar *content, guint strlen, unsigned long len)
+{
+  MD5_CTX c;
+  unsigned char *digest;
+  guint checksumlen;
+  guint i, i_stop;
+
+  checksumlen = sqrt(len / 2);
+  checksum = (gchar *) malloc((checksumlen + 1) * sizeof(gchar));
+
+  MD5_Init(&c);
+
+  i_stop = (guint) floor((double) strlen / len);
+
+  for(i = 0; i <= i_stop; i++){
+    if(i < i_stop){
+      MD5_Update(&c, &(content[i * len]), len);
+    }else{
+      MD5_Update(&c, &(content[i * len]), strlen % len);
+    }
+  }
+
+  MD5_Final(digest, &c);
+
+  checksum[checksumlen] = '\0';
+
+  for(i = 0; i < checksumlen; i++){
+    sprintf(&(checksum[i * 2]), "%02x", (unsigned int) digest[i]);
+  }
+
+  return(checksum);
+}
+
 void
 ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 {

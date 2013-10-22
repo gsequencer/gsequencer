@@ -38,7 +38,8 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 {
   AgsDevout *gobject;
   AgsFileLookup *file_lookup;
-  xmlChar *prop;
+  xmlNode *child;
+  xmlChar *prop, *content;
 
   if(*devout == NULL){
     gobject = g_object_new(AGS_TYPE_DEVOUT,
@@ -84,7 +85,66 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   gobject->bpm = (gdouble) g_ascii_strtod(xmlGetProp(node, "bpm\0"),
 					  NULL);
 
-  //TODO:JK: read ags-delay-data and ags-attack-data
+  child = node->children;
+
+  while(child != NULL){
+
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-attack-data\0",
+		     15)){
+	xmlChar *checksum;
+	
+	checksum = xmlGetProp(child,
+			      "checksum\0");
+	content = child->content;
+
+	if(!xmlStrncmp(ags_file_str2md5(content,
+					strlen(content),
+					AGS_FILE_CHECKSUM_PRECISION),
+		       checksum,
+		       AGS_FILE_CHECKSUM_LENGTH)){
+	  xmlChar *str, *endptr;
+
+	  str = content;
+
+	  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+	    gobject->attack[i] = (guint) g_ascii_strtoull(str,
+							  &endptr,
+							  10);
+	    str = endptr;
+	  }
+	}
+      }else if(!xmlStrncmp(child->name,
+			   "ags-delay-data\0",
+			   14)){
+	xmlChar *checksum;
+
+	checksum = xmlGetProp(child,
+			      "checksum\0");
+	content = child->content;
+
+	if(!xmlStrncmp(ags_file_str2md5(content,
+					strlen(content),
+					AGS_FILE_CHECKSUM_PRECISION),
+		       checksum,
+		       AGS_FILE_CHECKSUM_LENGTH)){
+	  xmlChar *str;
+
+	  str = content;
+	  
+	  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+	    gobject->delay[i] = (guint) g_ascii_strtoull(str,
+							 &endptr,
+							 10);
+	    str = endptr;
+	  }
+	}
+      }
+    }
+
+    child = child->next;
+  }
 
   gobject->delay_counter = (guint) g_ascii_strtoull(xmlGetProp(node, "delay-counter\0"),
 						    NULL,
@@ -102,7 +162,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 xmlNode*
 ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 {
-  xmlNode *node;
+  xmlNode *node, *child;
   gchar *id;
 
   id = ags_id_generator_create_uuid();
