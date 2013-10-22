@@ -193,7 +193,9 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->loop_start = 0;
   audio_signal->loop_end = 0;
 
+  audio_signal->delay = 0;
   audio_signal->attack = 0;
+
   audio_signal->lock_attack = 0;
 
   audio_signal->stream_beginning = NULL;
@@ -372,8 +374,11 @@ ags_attack_alloc(guint first_start, guint first_length,
 
   attack->flags = 0;
 
+  attack->delay = 0;
+
   attack->first_start = first_start;
   attack->first_length = first_length;
+
   attack->second_start = second_start;
   attack->second_length = second_length;
 

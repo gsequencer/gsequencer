@@ -28,6 +28,17 @@
 	  name             CDATA      #IMPLIED
 	  >
 
+<!ELEMENT ags-ref-list (ags-ref*)>
+<!ATTLIST ags-ref-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-ref EMPTY>
+<!ATTLIST ags-ref
+	  id               ID         #REQUIRED
+	  xpath            CDATA      #REQUIRED
+	  >
+
 <!ELEMENT ags-dependency-list (ags-dependency*)>
 <!ATTLIST ags-dependency-list
 	  id               ID         #REQUIRED
@@ -163,13 +174,21 @@
 	  >
 
 <!-- main -->
-<!ELEMENT ags-main (ags-devout-list, ags-audio-list, ags-window)>
+<!ELEMENT ags-main (ags-audio-loop, ags-devout-list, ags-audio-list, ags-window)>
 <!ATTLIST ags-main
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  log-file         NMTOKEN    #REQUIRED
 	  >
+
+<!-- thread -->
+<!ELEMENT ags-audio-loop (ags-ref-list, ags-ref-list, ags-ref-list, ags-ref-list)>
+<!ATTLIST ags-audio-loop
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  frequency        NMTOKEN    #REQUIRED
+>
 
 <!-- audio -->
 <!ELEMENT ags-devout-list (ags-devout*)>
@@ -192,7 +211,6 @@
 	  attack-delay     NMTOKEN    #REQUIRED
 	  attack-length    NMTOKEN    #REQUIRED
 	  device           CDATA      "default"
-	  devout-play      IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-devout-play-list (ags-devout-play*)>
@@ -269,6 +287,7 @@
 	  last-frame       NMTOKEN    #REQUIRED
 	  loop-start       NMTOKEN    #REQUIRED
 	  loop-end         NMTOKEN    #REQUIRED
+	  delay            NMTOKEN    #IMPLIED
 	  attack           NMTOKEN    #REQUIRED
 	  >
 

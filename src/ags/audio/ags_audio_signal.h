@@ -63,7 +63,9 @@ struct _AgsAudioSignal
   guint loop_start;
   guint loop_end;
 
+  guint delay;
   guint attack;
+
   guint lock_attack;
   
   GList *stream_beginning;
@@ -82,6 +84,8 @@ struct _AgsAudioSignalClass
 struct _AgsAttack
 {
   guint flags;
+
+  guint delay;
 
   guint first_start;
   guint first_length;
