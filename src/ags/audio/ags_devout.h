@@ -82,6 +82,9 @@ typedef enum
   AGS_DEVOUT_START_PLAY                     = 1 << 10,
 
   AGS_DEVOUT_NONBLOCKING                    = 1 << 11,
+
+  AGS_DEVOUT_TIMING_SET_0                   = 1 << 12,
+  AGS_DEVOUT_TIMING_SET_1                   = 1 << 13,
 }AgsDevoutFlags;
 
 typedef enum
