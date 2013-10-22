@@ -249,10 +249,15 @@ ags_devout_error_quark()
 void
 ags_devout_init(AgsDevout *devout)
 {
+  guint default_tact_frames;
+  guint default_tic_frames;
   guint start;
+  guint i;
   
+  /* flags */
   devout->flags = AGS_DEVOUT_ALSA;
 
+  /* quality */
   devout->dsp_channels = 2;
   devout->pcm_channels = 2;
   devout->bits = 16;
@@ -263,32 +268,40 @@ ags_devout_init(AgsDevout *devout)
   devout->out.alsa.handle = NULL;
   devout->out.alsa.device = g_strdup("hw:0\0");
 
-  /*
-  devout->offset = 0;
-
-  devout->note_delay = (guint) round((double)devout->frequency / (double)devout->buffer_size * 60.0 / 120.0 / 16.0);
-  devout->note_counter = 0;
-  */
-
-  //  devout->note_offset = 0;
-
+  /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
   devout->buffer[0] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   devout->buffer[1] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   devout->buffer[2] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   devout->buffer[3] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
 
+  /* bpm */
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
-  devout->delay = (guint) (AGS_DEVOUT_DEFAULT_DELAY * exp2(-4.0));
+
+  /* delay and attack */
+  devout->delay = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+				   sizeof(guint));
+
+  devout->attack = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+				   sizeof(guint));
+
+  default_tact_frames = AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  default_tic_frames = default_tact_frames * AGS_NOTATION_MINIMUM_NOTE_LENGTH;
+
+  start = default_tic_frames % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+
+  memset(devout->delay, AGS_DEVOUT_DEFAULT_DELAY, 2 * (int) ceil(AGS_NOTATION_TICS_PER_BEAT));
+
+  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+    devout->attack[i] = (start + i * default_tic_frames) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  }
+
+  memcpy(&(devout->attack[i]), devout->attack, (int) ceil(AGS_NOTATION_TICS_PER_BEAT));
+
+  /* delay counter */
   devout->delay_counter = 0;
-  
-  start = (((guint) devout->delay * AGS_DEVOUT_DEFAULT_SAMPLERATE) %
-	   ((guint) AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
-  g_message("%d + %d\0", devout->delay, start);
 
-  devout->attack = ags_attack_alloc(start, devout->buffer_size - start,
-				    devout->buffer_size - start, start);
-
+  /* parent */
   devout->main = NULL;
 
   /* all AgsAudio */

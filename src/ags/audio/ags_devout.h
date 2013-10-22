@@ -130,9 +130,11 @@ struct _AgsDevout
   signed short** buffer;
 
   double bpm; // beats per minute
-  guint delay; // delay between tic change
+
+  guint *delay; // delay between tic change
+  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
+
   guint delay_counter; // next time attack changeing when delay_counter == delay
-  AgsAttack *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 
   union{
     struct _AgsAO{
