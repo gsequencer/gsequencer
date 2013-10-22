@@ -196,7 +196,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-devout EMPTY>
+<!ELEMENT ags-devout (ags-delay-data, ags-attack-data)>
 <!ATTLIST ags-devout
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -206,11 +206,18 @@
 	  buffer-size      NMTOKEN    128
 	  frequency        NMTOKEN    44100 <!-- renamed frequence -->
 	  bpm              NMTOKEN    120.0
-	  delay            NMTOKEN    84
 	  delay-counter    NMTOKEN    #REQUIRED
-	  attack-delay     NMTOKEN    #REQUIRED
-	  attack-length    NMTOKEN    #REQUIRED
 	  device           CDATA      "default"
+	  >
+
+<!ELEMENT ags-delay-data (NMTOKEN)*> <!-- default start 84 -->
+<!ATTLIST ags-delay-data
+	  checksum        PCDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-attack-data (NMTOKEN)*>
+<!ATTLIST ags-attack-data
+	  checksum        PCDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-devout-play-list (ags-devout-play*)>

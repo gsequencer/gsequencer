@@ -83,21 +83,12 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 
   gobject->bpm = (gdouble) g_ascii_strtod(xmlGetProp(node, "bpm\0"),
 					  NULL);
-  gobject->delay = (guint) g_ascii_strtoull(xmlGetProp(node, "delay\0"),
-					    NULL,
-					    10);
+
+  //TODO:JK: read ags-delay-data and ags-attack-data
+
   gobject->delay_counter = (guint) g_ascii_strtoull(xmlGetProp(node, "delay-counter\0"),
 						    NULL,
 						    10);
-
-  gobject->attack->first_start = (guint) g_ascii_strtoull(xmlGetProp(node, "attack-delay\0"),
-							  NULL,
-							  10);
-  gobject->attack->first_length = (guint) g_ascii_strtoull(xmlGetProp(node, "attack-length\0"),
-						    NULL,
-						    10);
-
-  //TODO:JK: calculate gobject->attack->second_start and gobject->attack->second_length
 
   if((AGS_DEVOUT_LIBAO & (gobject->flags)) != 0){
     //TODO:JK: implement me
@@ -155,19 +146,12 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   xmlNewProp(node,
 	     "bpm\0",
 	     g_strdup_printf("%Lf\0", devout->bpm));
-  xmlNewProp(node,
-	     "delay\0",
-	     g_strdup_printf("%d\0", devout->delay));
+
+  //TODO:JK: write ags-delay-data and ags-attack-data
+
   xmlNewProp(node,
 	     "delay-counter\0",
 	     g_strdup_printf("%Lf\0", devout->delay_counter));
-
-  xmlNewProp(node,
-	     "attack\0",
-	     g_strdup_printf("%d\0", devout->attack->first_start));
-  xmlNewProp(node,
-	     "attack-length\0",
-	     g_strdup_printf("%d\0", devout->attack->first_length));
 
   xmlNewProp(node,
 	     "device\0",

@@ -124,12 +124,6 @@ struct _AgsDevout
   guint buffer_size;
   guint frequency; // sample_rate
 
-  //  guint64 offset; // for timed tasks in AgsChannel
-
-  //  guint note_delay;
-  //  guint note_counter;
-  //  guint note_offset; // corresponds to AgsNote->x
-
   signed short** buffer;
 
   double bpm; // beats per minute
