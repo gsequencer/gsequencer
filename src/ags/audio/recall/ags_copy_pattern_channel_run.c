@@ -349,8 +349,14 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   if(ags_pattern_get_bit((AgsPattern *) copy_pattern_channel->pattern,
 			 copy_pattern_audio->i, copy_pattern_audio->j,
 			 copy_pattern_audio_run->count_beats_audio_run->sequencer_counter)){
+    AgsDevout *devout;
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
+    guint delay, attack;
+    guint tic_counter_incr;
+  
+    devout = AGS_DEVOUT(AGS_RECALL(copy_pattern_channel_run)->devout);
+
     g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\n\0",
 	   AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
 	   copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
@@ -360,14 +366,24 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     
     /* create new audio signals */
     recycling = source->first_recycling;
-	
+    
+    tic_counter_incr = devout->tic_counter + 1;
+    
+    attack = devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			     0:
+			     tic_counter_incr)];
+    delay = devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			   0:
+			   tic_counter_incr)];
+
     if(recycling != NULL){
       while(recycling != source->last_recycling->next){
 	audio_signal = ags_audio_signal_new((GObject *) AGS_RECALL(copy_pattern_audio)->devout,
 					    (GObject *) recycling,
 					    (GObject *) AGS_RECALL(copy_pattern_channel_run)->recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal, attack);
+							audio_signal,
+							delay, attack);
 	audio_signal->stream_current = audio_signal->stream_beginning;
 	ags_audio_signal_connect(audio_signal);
 	

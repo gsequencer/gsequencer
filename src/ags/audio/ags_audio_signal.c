@@ -353,100 +353,6 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_attack_alloc:
- * @first_start a guint indicating the very first frame of the stream.
- * @first_length a guint telling how many frames remain from @first_start
- * to the end of a buffer.
- * @second_start a guint generally just used by #AgsDevout.
- * @second_length a guint generally just used by #AgsDevout.
- * Returns: the allocated #AgsAttack.
- *
- * Allocs an #AgsAttack you probably never may use this function directly
- * you rather want to duplicate an existing #AgsAttack.
- */
-AgsAttack*
-ags_attack_alloc(guint first_start, guint first_length,
-		 guint second_start, guint second_length)
-{
-  AgsAttack *attack;
-
-  attack = (AgsAttack *) malloc(sizeof(AgsAttack));
-
-  attack->flags = 0;
-
-  attack->delay = 0;
-
-  attack->first_start = first_start;
-  attack->first_length = first_length;
-
-  attack->second_start = second_start;
-  attack->second_length = second_length;
-
-  return(attack);
-}
-
-/**
- * ags_attack_duplicate:
- * @attack the #AgsAttack to duplicate.
- * Returns: the duplicated #AgsAttack.
- *
- * Duplicates an #AgsAttack.
- */
-AgsAttack*
-ags_attack_duplicate(AgsAttack *attack)
-{
-  AgsAttack *copy;
-
-  if(attack == NULL)
-    return(NULL);
-
-  copy = (AgsAttack *) malloc(sizeof(AgsAttack));
-
-  copy->flags = 0;
-
-  copy->first_start = attack->first_start;
-  copy->first_length = attack->first_length;
-  copy->second_start = attack->second_start;
-  copy->second_length = attack->second_length;
-
-  return(copy);
-}
-
-/**
- * ags_attack_duplicate_from_devout:
- * @gobject an #AgsDevout.
- * Returns: the duplicated #AgsAttack.
- *
- * Retrieves streaming offsets of the current stream position
- * and bpm. 
- */
-AgsAttack*
-ags_attack_duplicate_from_devout(GObject *gobject)
-{
-  AgsDevout *devout;
-  AgsAttack *copy, *attack;
-  GValue attack_value = {0,};
-
-  devout = AGS_DEVOUT(gobject);
-
-  g_value_init(&attack_value, G_TYPE_POINTER);
-  g_object_get_property(G_OBJECT(devout),
-			"attack\0",
-			&attack_value);
-  attack = g_value_get_pointer(&attack_value);
-  g_value_unset(&attack_value);
-
-  if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
-    copy = ags_attack_alloc(attack->first_start, attack->first_length,
-			    attack->second_start, attack->second_length);
-  else
-    copy = ags_attack_alloc(attack->second_start, attack->second_length,
-			    attack->first_start, attack->first_length);
-
-  return(copy);
-}
-
-/**
  * ags_audio_signal_get_length_till_current:
  * @audio_signal an #AgsAudioSignal
  * Returns: the counted length.
@@ -534,7 +440,6 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
       stream->next->prev = stream;
       stream = stream->next;
       stream->data = (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
-
     }
 
     end_old = audio_signal->stream_end;
@@ -800,8 +705,7 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
 
 void
 ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
-				  AgsAudioSignal *template,
-				  guint attack)
+				  AgsAudioSignal *template)
 {
   GList *template_stream, *stream, *start;
   signed short *buffer;
@@ -822,18 +726,24 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
     size = devout->buffer_size * sizeof(signed short);
 
-    ags_audio_signal_stream_resize(audio_signal, template->length);
+    ags_audio_signal_stream_resize(audio_signal, (audio_signal->delay +
+						  (guint) ceil(((double) audio_signal->attack +
+								(double) audio_signal->length) /
+							       (double) devout->buffer_size)));
     
-    if(attack + template->last_frame > devout->buffer_size){
+    if(audio_signal->attack + template->last_frame > devout->buffer_size){
       ags_audio_signal_add_stream(audio_signal);
     }
 
     stream =
-      start = audio_signal->stream_beginning;
-    template_stream = template->stream_beginning;
+      start = g_list_nth(audio_signal->stream_beginning,
+			 audio_signal->delay);
 
-    k = attack;
-    template_k = 0;
+    template_stream = g_list_nth(template->stream_beginning,
+				 template->delay);
+
+    k = audio_signal->attack;
+    template_k = template->attack;
 
     while(template_stream != NULL){
       if(k == devout->buffer_size){
@@ -861,9 +771,6 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
     // audio_signal->stream_beginning = start;
     // audio_signal->stream_end = stream;
-
-    audio_signal->length = template->length;
-    audio_signal->last_frame = template->last_frame;
   }
 }
 

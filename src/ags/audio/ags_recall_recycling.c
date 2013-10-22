@@ -597,7 +597,6 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 {
   AgsRecall *recall;
   AgsRecallAudioSignal *recall_audio_signal;
-  AgsAttack *attack;
 
   recall = AGS_RECALL(recall_recycling);
 
@@ -626,9 +625,6 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
     //    audio_signal->stream_current = audio_signal->stream_beginning;
 
-    attack = ags_attack_duplicate_from_devout(G_OBJECT(recall->devout));
-
-
     //    g_message("  -- recall_audio_signal = g_object_new -- destination@%x - source@%x\0", recall_recycling->child_destination, audio_signal);
     if(AGS_RECALL(recall_recycling)->child_type != G_TYPE_NONE){
       recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
@@ -636,7 +632,6 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 					 "audio_channel\0", recall_recycling->audio_channel,
 					 "destination\0", recall_recycling->child_destination,
 					 "source\0", audio_signal,
-					 "attack\0", attack,
 					 NULL);
 
       ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));

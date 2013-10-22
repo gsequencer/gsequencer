@@ -175,8 +175,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       /* AgsPlayAudioSignal recall */
       play_audio_signal = ags_play_audio_signal_new(AGS_AUDIO_SIGNAL(audio_signal->data),
 						    devout,
-						    i,
-						    ags_attack_duplicate_from_devout(G_OBJECT(devout)));
+						    i);
       AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current = AGS_AUDIO_SIGNAL(audio_signal->data)->stream_beginning;
       drum_input_pad->pad_open_play_ref++;
 

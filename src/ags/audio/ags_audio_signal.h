@@ -81,27 +81,9 @@ struct _AgsAudioSignalClass
   void (*morph_samplerate)(AgsAudioSignal *audio_signal, guint samplerate, double k_morph);
 };
 
-struct _AgsAttack
-{
-  guint flags;
-
-  guint delay;
-
-  guint first_start;
-  guint first_length;
-
-  guint second_start;
-  guint second_length;
-};
-
 GType ags_audio_signal_get_type();
 
 signed short* ags_stream_alloc(guint buffer_size);
-
-AgsAttack* ags_attack_alloc(guint first_start, guint first_length,
-			    guint second_start, guint second_length);
-AgsAttack* ags_attack_duplicate(AgsAttack *attack);
-AgsAttack* ags_attack_duplicate_from_devout(GObject *devout);
 
 guint ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal);
 
@@ -116,8 +98,7 @@ void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dch
 					    signed short *source, guint schannels, guint size);
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
-				       AgsAudioSignal *template,
-				       guint attack);
+				       AgsAudioSignal *template);
 
 //TODO:JK: rename these functions name it rather find than get
 AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);

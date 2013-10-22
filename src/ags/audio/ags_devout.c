@@ -29,6 +29,8 @@
 #include <math.h>
 #include <time.h>
 
+#include <ags/audio/ags_notation.h>
+
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_init(AgsDevout *devout);
 void ags_devout_set_property(GObject *gobject,
@@ -279,10 +281,10 @@ ags_devout_init(AgsDevout *devout)
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
 
   /* delay and attack */
-  devout->delay = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+  devout->delay = (guint *) malloc((int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT) *
 				   sizeof(guint));
 
-  devout->attack = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+  devout->attack = (guint *) malloc((int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT) *
 				   sizeof(guint));
 
   default_tact_frames = AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
@@ -824,15 +826,17 @@ ags_devout_alsa_play(AgsDevout *devout,
   /* determine if attack should be switched */
   devout->delay_counter += 1;
 
-  if(devout->delay_counter >= devout->delay){
+  if(devout->delay_counter >= devout->delay[devout->tic_counter]){
+    /* tic */
     ags_devout_tic(devout);
 
-    if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0){
-      devout->flags &= (~AGS_DEVOUT_ATTACK_FIRST);
-    }else{
-      devout->flags |= AGS_DEVOUT_ATTACK_FIRST;
+    devout->tic_counter += 1;
+
+    if(devout->tic_counter == AGS_NOTATION_TICS_PER_BEAT){
+      devout->tic_counter = 0;
     }
 
+    /* delay */
     devout->delay_counter = 0;
   } 
 

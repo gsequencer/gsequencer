@@ -48,8 +48,9 @@ AgsRecall* ags_play_notation_duplicate(AgsRecall *recall,
 				       guint *n_params, GParameter *parameter);
 
 void ags_play_notation_play_note_done(AgsRecall *recall, AgsPlayNotation *play_notation);
-void ags_play_notation_alloc_input_callback(AgsDelayAudioRun *delay,
-					    guint nth_run, guint attack,
+void ags_play_notation_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
+					    guint nth_run,
+					    guint delay, guint attack,
 					    AgsPlayNotation *play_notation);
 
 enum{
@@ -499,8 +500,9 @@ ags_play_notation_duplicate(AgsRecall *recall,
 }
 
 void
-ags_play_notation_alloc_input_callback(AgsDelayAudioRun *delay,
-				       guint nth_run, guint attack,
+ags_play_notation_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
+				       guint nth_run,
+				       guint delay, guint attack,
 				       AgsPlayNotation *play_notation)
 {
   AgsNotation *notation;
@@ -547,6 +549,7 @@ ags_play_notation_alloc_input_callback(AgsDelayAudioRun *delay,
       if(note->x[0] == play_notation->count_beats_audio_run->notation_counter){
 	selected_channel = ags_channel_pad_nth(channel, note->y);
 	
+	/* recycling */
 	recycling = selected_channel->first_recycling;
 	
 	g_message("playing: %u | %u\n\0", note->x[0], note->y);
@@ -558,7 +561,7 @@ ags_play_notation_alloc_input_callback(AgsDelayAudioRun *delay,
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
 							     note->x[1] - note->x[0],
-							     attack);
+							     delay, attack);
 	  ags_audio_signal_connect(audio_signal);
 
 	  g_message("adding\n\0");

@@ -251,34 +251,9 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 void
 ags_apply_bpm_devout(AgsApplyBpm *apply_bpm, AgsDevout *devout)
 {
-  AgsAttack *attack;
-  double frames; // delay in frames
-  guint delay, delay_old;
   GList *list;
 
-  /* AgsDevout */
-  frames = (double) devout->frequency / (60.0 / (double)apply_bpm->bpm / 64.0);
-
-  delay = (guint) floor(floor(frames) / (double) devout->buffer_size);
-
-  delay_old = devout->delay;
-  devout->delay = delay;
-
-  if(devout->delay_counter > devout->delay)
-    devout->delay_counter = devout->delay_counter % devout->delay;
-
-  attack = devout->attack;
-
-  if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0){
-    attack->first_start = attack->first_start;
-    attack->first_length = attack->first_length;
-  }else{
-    attack->first_start = attack->second_start;
-    attack->first_length = attack->second_length;
-  }
-
-  attack->second_start = (attack->first_start + (guint) round(frames)) % devout->buffer_size;
-  attack->second_length = devout->buffer_size - attack->second_start;
+  //TODO:JK: implement me
 
   /* AgsAudio */
   list = devout->audio;

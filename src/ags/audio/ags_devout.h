@@ -132,6 +132,7 @@ struct _AgsDevout
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 
   guint delay_counter; // next time attack changeing when delay_counter == delay
+  guint tic_counter;
 
   union{
     struct _AgsAO{
