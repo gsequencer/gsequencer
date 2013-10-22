@@ -105,12 +105,13 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 		       checksum,
 		       AGS_FILE_CHECKSUM_LENGTH)){
 	  xmlChar *str, *endptr;
+	  guint i;
 
 	  str = content;
 
 	  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
-	    gobject->attack[i] = (guint) g_ascii_strtoull(str,
-							  &endptr,
+	    gobject->attack[i] = (guint) g_ascii_strtoull((gchar *) str,
+							  (gchar **) &endptr,
 							  10);
 	    str = endptr;
 	  }
@@ -119,6 +120,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 			   "ags-delay-data\0",
 			   14)){
 	xmlChar *checksum;
+	guint i;
 
 	checksum = xmlGetProp(child,
 			      "checksum\0");
@@ -129,13 +131,13 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 					AGS_FILE_CHECKSUM_PRECISION),
 		       checksum,
 		       AGS_FILE_CHECKSUM_LENGTH)){
-	  xmlChar *str;
+	  xmlChar *str, *endptr;
 
 	  str = content;
 	  
 	  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
-	    gobject->delay[i] = (guint) g_ascii_strtoull(str,
-							 &endptr,
+	    gobject->delay[i] = (guint) g_ascii_strtoull((gchar *) str,
+							 (gchar **) &endptr,
 							 10);
 	    str = endptr;
 	  }
@@ -164,6 +166,11 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 {
   xmlNode *node, *child;
   gchar *id;
+  xmlChar *checksum;
+  xmlChar *content;
+  xmlChar *str;
+  guint value;
+  guint i;
 
   id = ags_id_generator_create_uuid();
 
@@ -207,8 +214,58 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 	     "bpm\0",
 	     g_strdup_printf("%Lf\0", devout->bpm));
 
-  //TODO:JK: write ags-delay-data and ags-attack-data
+  /* ags-delay-data */
+  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		     "ags-delay-data");
+  content = NULL;
+	  
+  for(i = 0; i < (int) ceil(2 * AGS_NOTATION_TICS_PER_BEAT); i++){
+    str = content;
+    content = g_strdup_printf("%s%d\n\0", content, devout->delay[i]);
 
+    if(str != NULL){
+      g_free(str);
+    }
+  }
+
+  checksum = ags_file_str2md5(content,
+			      strlen(content),
+			      AGS_FILE_CHECKSUM_PRECISION);
+
+
+  xmlNewProp(child,
+	     "checksum\0",
+	     checksum);
+
+  xmlAddChild(node,
+	      child);
+
+  /* ags-attack-data */
+  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		     "ags-attack-data");
+  content = NULL;
+	  
+  for(i = 0; i < (int) ceil(2 * AGS_NOTATION_TICS_PER_BEAT); i++){
+    str = content;
+    content = g_strdup_printf("%s%d\n\0", content, devout->attack[i]);
+
+    if(str != NULL){
+      g_free(str);
+    }
+  }
+
+  checksum = ags_file_str2md5(content,
+			      strlen(content),
+			      AGS_FILE_CHECKSUM_PRECISION);
+
+  xmlNewProp(child,
+	     "checksum\0",
+	     checksum);
+
+  xmlAddChild(node,
+	      child);
+
+  /*  */  
   xmlNewProp(node,
 	     "delay-counter\0",
 	     g_strdup_printf("%Lf\0", devout->delay_counter));

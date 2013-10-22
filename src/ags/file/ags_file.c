@@ -22,6 +22,8 @@
 #include <string.h>
 #include <math.h>
 
+#include <openssl/md5.h>
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -240,6 +242,7 @@ ags_file_finalize(GObject *gobject)
 gchar*
 ags_file_str2md5(gchar *content, guint strlen, unsigned long len)
 {
+  gchar *checksum;
   MD5_CTX c;
   unsigned char *digest;
   guint checksumlen;
