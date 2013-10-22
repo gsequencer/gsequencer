@@ -111,10 +111,11 @@ libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
-	ags-ags_file_util.$(OBJEXT) ags-ags_file_sound.$(OBJEXT) \
-	ags-ags_file_gui.$(OBJEXT) ags-ags_file_link.$(OBJEXT) \
-	ags-ags_embedded_audio.$(OBJEXT) ags-ags_run_order.$(OBJEXT) \
-	ags-ags_task.$(OBJEXT) ags-ags_recall_channel.$(OBJEXT) \
+	ags-ags_file_lookup.$(OBJEXT) ags-ags_file_util.$(OBJEXT) \
+	ags-ags_file_sound.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
+	ags-ags_file_link.$(OBJEXT) ags-ags_embedded_audio.$(OBJEXT) \
+	ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
+	ags-ags_recall_channel.$(OBJEXT) \
 	ags-ags_recall_audio_run.$(OBJEXT) ags-ags_pattern.$(OBJEXT) \
 	ags-ags_channel_iter.$(OBJEXT) \
 	ags-ags_set_output_device.$(OBJEXT) \
@@ -619,6 +620,8 @@ ags_SOURCES = ./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/audio/ags_file_stock.h \
 	./src/ags/file/ags_file_id_ref.h \
 	./src/ags/file/ags_file_id_ref.c \
+	./src/ags/file/ags_file_lookup.h \
+	./src/ags/file/ags_file_lookup.c \
 	./src/ags/file/ags_file_util.h ./src/ags/file/ags_file_util.c \
 	./src/ags/audio/ags_file_sound.h \
 	./src/ags/file/ags_file_sound.c ./src/ags/audio/ags_file_gui.h \
@@ -1346,6 +1349,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_file_gui.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_file_id_ref.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_file_link.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_file_lookup.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_file_selection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_file_selection_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_file_sound.Po@am__quote@
@@ -1642,6 +1646,20 @@ ags-ags_file_id_ref.obj: ./src/ags/file/ags_file_id_ref.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/file/ags_file_id_ref.c' object='ags-ags_file_id_ref.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_id_ref.obj `if test -f './src/ags/file/ags_file_id_ref.c'; then $(CYGPATH_W) './src/ags/file/ags_file_id_ref.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_id_ref.c'; fi`
+
+ags-ags_file_lookup.o: ./src/ags/file/ags_file_lookup.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_lookup.o -MD -MP -MF $(DEPDIR)/ags-ags_file_lookup.Tpo -c -o ags-ags_file_lookup.o `test -f './src/ags/file/ags_file_lookup.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_lookup.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_file_lookup.Tpo $(DEPDIR)/ags-ags_file_lookup.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/file/ags_file_lookup.c' object='ags-ags_file_lookup.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_lookup.o `test -f './src/ags/file/ags_file_lookup.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_lookup.c
+
+ags-ags_file_lookup.obj: ./src/ags/file/ags_file_lookup.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_lookup.obj -MD -MP -MF $(DEPDIR)/ags-ags_file_lookup.Tpo -c -o ags-ags_file_lookup.obj `if test -f './src/ags/file/ags_file_lookup.c'; then $(CYGPATH_W) './src/ags/file/ags_file_lookup.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_lookup.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_file_lookup.Tpo $(DEPDIR)/ags-ags_file_lookup.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/file/ags_file_lookup.c' object='ags-ags_file_lookup.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_lookup.obj `if test -f './src/ags/file/ags_file_lookup.c'; then $(CYGPATH_W) './src/ags/file/ags_file_lookup.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_lookup.c'; fi`
 
 ags-ags_file_util.o: ./src/ags/file/ags_file_util.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_util.o -MD -MP -MF $(DEPDIR)/ags-ags_file_util.Tpo -c -o ags-ags_file_util.o `test -f './src/ags/file/ags_file_util.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_util.c

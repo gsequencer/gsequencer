@@ -227,7 +227,7 @@ ags_file_lookup_finalize(GObject *gobject)
 }
 
 void
-ags_file_lookup_resolve(AgsFileLookup *lookup)
+ags_file_lookup_resolve(AgsFileLookup *file_lookup)
 {
   g_return_if_fail(AGS_IS_FILE_LOOKUP(file_lookup));
 

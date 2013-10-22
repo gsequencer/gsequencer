@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/file/ags_file.h>
+
 #include <libxml/tree.h>
 
 #define AGS_TYPE_FILE_LOOKUP                (ags_file_lookup_get_type())
