@@ -26,8 +26,6 @@
 
 #include <ags/audio/ags_channel.h>
 
-#include <ags/object/ags_playable.h>
-
 #define AGS_TYPE_INPUT                (ags_input_get_type())
 #define AGS_INPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INPUT, AgsInput))
 #define AGS_INPUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_INPUT, AgsInputClass))
@@ -42,7 +40,7 @@ struct _AgsInput
 {
   AgsChannel channel;
 
-  AgsPlayable *playable;
+  GObject *file_link;
 };
 
 struct _AgsInputClass

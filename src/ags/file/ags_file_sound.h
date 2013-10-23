@@ -25,6 +25,7 @@
 #include <libxml/tree.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_link.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -71,6 +72,10 @@ xmlNode* ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *input)
 
 void ags_file_read_output(AgsFile *file, xmlNode *node, AgsChannel *output);
 xmlNode* ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *output);
+
+/* AgsFileLink */
+void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink *file_link);
+xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link);
 
 /* AgsRecall */
 void ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall);

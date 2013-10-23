@@ -1168,170 +1168,277 @@ ags_file_write_channel_list(AgsFile *file, xmlNode *parent, GList *channel)
 }
 
 void
-ags_file_read_input(AgsFile *file, xmlNode *node, AgsChannel *input)
+ags_file_read_input(AgsFile *file, xmlNode *node, AgsChannel *channel)
 {
-  //TODO:JK: implement me
+  AgsInput *input;
+  xmlNode *child;
+
+  input = AGS_INPUT(channel);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, "id\0")),
+				   "reference\0", input,
+				   NULL));
+
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-file-link\0",
+		     13)){
+	ags_file_read_file_link(file,
+				child,
+				&(input->file_link));
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
-ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *input)
+ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 {
+  AgsInput *input;
+  xmlNode *node;
+  gchar id;
+
+  input = AGS_INPUT(channel);
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-input\0");
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", input,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  if(input->file_link != NULL){
+    ags_file_write_file_link(file,
+			     node,
+			     AGS_FILE_LINK(input->file_link));
+  }
 }
 
 void
 ags_file_read_output(AgsFile *file, xmlNode *node, AgsChannel *output)
 {
-  //TODO:JK: implement me
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, "id\0")),
+				   "reference\0", output,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *output)
 {
+  xmlNode *node;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-output\0");
+
+  id = ags_id_generator_create_uuid();
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", output,
+				   NULL));
+  
+  xmlAddChild(parent,
+	      node);
 }
 
 void
 ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_recall_list(AgsFile *file, xmlNode *node, GList **recall)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recall_list(AgsFile *file, xmlNode *parent, GList *recall)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recall_audio(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recall_audio_run(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_recall_channel(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recall_channel(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_recycling(AgsFile *file, xmlNode *node, AgsRecycling **recycling)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recycling(AgsFile *file, xmlNode *parent, AgsRecycling *recycling)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_recycling_list(AgsFile *file, xmlNode *node, GList **recycling)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_recycling_list(AgsFile *file, xmlNode *parent, GList *recycling)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_audio_signal(AgsFile *file, xmlNode *node, AgsAudioSignal **audio_signal)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_audio_signal(AgsFile *file, xmlNode *parent, AgsAudioSignal *audio_signal)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_audio_signal_list(AgsFile *file, xmlNode *node, GList **audio_signal)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList *audio_signal)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_stream(AgsFile *file, xmlNode *node, GList **stream)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_stream(AgsFile *file, xmlNode *parent, GList *stream)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_pattern_list(AgsFile *file, xmlNode *parent, GList *pattern)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_pattern_data(AgsFile *file, xmlNode *node, AgsPattern *pattern, guint i, guint j)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
@@ -1393,69 +1500,83 @@ ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern,
 void
 ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node, AgsPattern *pattern)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_notation_list(AgsFile *file, xmlNode *node, GList **notation)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_note_list(AgsFile *file, xmlNode *node, GList **note)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_task_list(AgsFile *file, xmlNode *node, GList **task)
 {
+  //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
 {
+  //TODO:JK: implement me
 }

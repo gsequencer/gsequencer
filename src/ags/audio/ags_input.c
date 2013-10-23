@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/file/ags_file_link.h>
+
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_input_init (AgsInput *input);
@@ -95,7 +97,7 @@ ags_input_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_input_init(AgsInput *input)
 {
-  input->playable = NULL;
+  input->file_link = NULL;
 }
 
 void
@@ -105,8 +107,9 @@ ags_input_finalize(GObject *gobject)
 
   input = AGS_INPUT(gobject);
 
-  if(input->playable != NULL)
-    g_object_unref(G_OBJECT(input->playable));
+  if(input->file_link != NULL){
+    g_object_unref(G_OBJECT(input->file_link));
+  }
 
   G_OBJECT_CLASS(ags_input_parent_class)->finalize(gobject);
 }

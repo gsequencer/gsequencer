@@ -19,6 +19,8 @@
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 #include <ags/X/ags_machine_callbacks.h>
 
+#include <ags/object/ags_playable.h>
+
 #include <ags/audio/ags_channel.h>
 
 #include <ags/audio/task/ags_link_channel.h>

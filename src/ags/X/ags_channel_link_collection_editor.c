@@ -22,6 +22,8 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 
 #include <ags/audio/task/ags_link_channel.h>
