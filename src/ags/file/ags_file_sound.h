@@ -96,6 +96,12 @@ xmlNode* ags_file_write_recall_channel(AgsFile *file, xmlNode *parent, AgsRecall
 void ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall *recall);
 xmlNode* ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *recall);
 
+void ags_file_read_recall_recycling(AgsFile *file, xmlNode *node, AgsRecall *recall);
+xmlNode* ags_file_write_recall_recycling(AgsFile *file, xmlNode *parent, AgsRecall *recall);
+
+void ags_file_read_recall_audio_signal(AgsFile *file, xmlNode *node, AgsRecall *recall);
+xmlNode* ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *recall);
+
 /* AgsRecycling */
 void ags_file_read_recycling(AgsFile *file, xmlNode *node, AgsRecycling **recycling);
 xmlNode* ags_file_write_recycling(AgsFile *file, xmlNode *parent, AgsRecycling *recycling);

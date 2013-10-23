@@ -1284,6 +1284,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
   AgsRecall *gobject;
   AgsFileLookup *file_lookup;
+  xmlNode *child;
   xmlChar *type_name;
 
   if(*recall == NULL){
@@ -1337,6 +1338,67 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
   gobject->name = (gchar *) xmlGetProp(node,
 				       "name\0");
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-recall-audio\0",
+		     16)){
+	ags_file_read_recall_audio(file,
+				   child,
+				   gobject);
+      }else if(!xmlStrncmp(child->name,
+		     "ags-recall-audio-run\0",
+		     20)){
+	ags_file_read_recall_audio_run(file,
+				       child,
+				       gobject);
+      }else if(!xmlStrncmp(child->name,
+		     "ags-recall-channel\0",
+		     18)){
+	ags_file_read_recall_channel(file,
+				     child,
+				     gobject);
+      }else if(!xmlStrncmp(child->name,
+		     "ags-recall-channel-run\0",
+		     22)){
+	ags_file_read_recall_channel_run(file,
+					 child,
+					 gobject);
+      }else if(!xmlStrncmp(child->name,
+		     "ags-recall-recycling\0",
+		     20)){
+	ags_file_read_recall_recycling(file,
+				       child,
+				       gobject);
+      }else if(!xmlStrncmp(child->name,
+		     "ags-recall-audio-signal\0",
+		     23)){
+	ags_file_read_recall_audio_signal(file,
+					  child,
+					  gobject);
+      }else if(!xmlStrncmp(child->name,
+			   "ags-recall-list\0",
+			   15)){
+	ags_file_read_recall_list(file,
+				  child,
+				  gobject->children);
+      }else if(!xmlStrncmp(child->name,
+			   "ags-dependency-list\0",
+			   19)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp(child->name,
+			   "ags-parameter\0",
+			   13)){
+	//TODO:JK: implement me
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 void
@@ -1357,6 +1419,8 @@ ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 xmlNode*
 ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
+  xmlNode *node;
+
   //TODO:JK: implement me
 }
 
@@ -1423,6 +1487,30 @@ ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall *recall
 
 xmlNode*
 ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_recall_recycling(AgsFile *file, xmlNode *node, AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_recall_recycling(AgsFile *file, xmlNode *parent, AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_recall_audio_signal(AgsFile *file, xmlNode *node, AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
   //TODO:JK: implement me
 }
