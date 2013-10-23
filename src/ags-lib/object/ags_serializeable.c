@@ -46,6 +46,17 @@ ags_serializeable_base_init(AgsSerializeableInterface *interface)
   /* empty */
 }
 
+GObject*
+ags_serializeable_get_file(AgsSerializeable *serializeable)
+{
+  AgsSerializeableInterface *serializeable_interface;
+
+  g_return_val_if_fail(AGS_IS_SERIALIZEABLE(serializeable), NULL);
+  serializeable_interface = AGS_SERIALIZEABLE_GET_INTERFACE(serializeable);
+  g_return_val_if_fail(serializeable_interface->get_file, NULL);
+  return(serializeable_interface->get_file(serializeable));
+}
+
 gchar*
 ags_serializeable_serialize(AgsSerializeable *serializeable)
 {

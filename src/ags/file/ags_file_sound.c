@@ -37,6 +37,10 @@ void ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 					 AgsRecall *recall);
 void ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 					  AgsRecall *recall);
+void ags_file_read_recall_resolve_dependency(AgsFileLookup *file_lookup,
+					     AgsRecall *recall);
+void ags_file_write_recall_resolve_dependency(AgsFileLookup *file_lookup,
+					      AgsRecall *recall);
 
 void
 ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
@@ -1383,17 +1387,48 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
       }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
 			   15)){
+	GList *list, *start;
+
 	ags_file_read_recall_list(file,
 				  child,
-				  gobject->children);
+				  &start);
+
+	list = start;
+
+	while(list != NULL){
+	  g_object_set(G_OBJECT(gobject),
+		       "child\0", AGS_RECALL(list->data),
+		       NULL);
+
+	  list = list->next;
+	}
+
+	g_list_free(start);
       }else if(!xmlStrncmp(child->name,
 			   "ags-dependency-list\0",
 			   19)){
-	//TODO:JK: implement me
+	xmlNode *dependency_node;
+
+	dependency_node = child->children;
+
+	while(dependency_node != NULL){
+	  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						       "file\0", file,
+						       "node\0", dependency_node,
+						       "reference\0", gobject,
+						       NULL);
+	  ags_file_add_lookup(file, (GObject *) file_lookup);
+	  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+			   G_CALLBACK(ags_file_read_recall_resolve_dependency), gobject);
+	  
+	  dependency_node = dependency_node->next;
+	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
-	//TODO:JK: implement me
+	ags_file_util_read_parameter(child,
+				     NULL,
+				     &(gobject->child_parameters), NULL, NULL);
       }
     }
 
@@ -1409,11 +1444,28 @@ ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
   gchar *xpath;
 
   xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "link\0");
+			       "devout\0");
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   recall->devout = (AgsDevout *) id_ref->ref;
+}
+
+void
+ags_file_read_recall_resolve_dependency(AgsFileLookup *file_lookup,
+					AgsRecall *recall)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "xpath\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  g_object_set(G_OBJECT(recall),
+	       xmlGetProp(file_lookup->node, "name\0"), id_ref->ref,
+	       NULL);
 }
 
 xmlNode*
@@ -1427,6 +1479,13 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 void
 ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 				     AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_write_recall_resolve_dependency(AgsFileLookup *file_lookup,
+					 AgsRecall *recall)
 {
   //TODO:JK: implement me
 }

@@ -35,21 +35,27 @@
 #include <ags/file/ags_file_link.h>
 
 /* gvalue */
-void ags_file_util_read_value(xmlNode *node, gchar **id,
+void ags_file_util_read_value(xmlNode *node,
+			      gchar **id,
 			      GValue *value, xmlChar **xpath);
-xmlNode* ags_file_util_write_value(xmlNode *parent, gchar *id,
+xmlNode* ags_file_util_write_value(xmlNode *parent,
+				   gchar *id,
 				   GValue *value, AgsSerializeable *serializeable);
 
 /* parameter */
-void ags_file_util_read_parameter(xmlNode *node, gchar **id,
+void ags_file_util_read_parameter(xmlNode *node,
+				  gchar **id,
 				  GParameter **parameter, gint *n_params, xmlChar ***xpath);
-xmlNode* ags_file_util_write_parameter(xmlNode *parent, gchar *id,
+xmlNode* ags_file_util_write_parameter(xmlNode *parent,
+				       gchar *id,
 				       GParameter *parameter, gint n_params, AgsSerializeable **serializeable);
 
 /* dependency */
-void ags_file_util_read_dependency(xmlNode *node, gchar **id,
+void ags_file_util_read_dependency(xmlNode *node,
+				   gchar **id,
 				   gchar **name, xmlChar **xpath);
-xmlNode* ags_file_util_write_dependency(xmlNode *parent, gchar *id,
+xmlNode* ags_file_util_write_dependency(xmlNode *parent,
+					gchar *id,
 					gchar *name, xmlChar *xpath);
 
 /* history */
