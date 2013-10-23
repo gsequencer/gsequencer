@@ -394,10 +394,12 @@
 
 <!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-recycling-run|ags-recall-audio-signal)?, ags-recall-list?, ags-dependency-list, ags-parameter)>
 <!ATTLIST ags-recall
+	  type                   CDATA      #REQUIRED
 	  id                     ID         #REQUIRED
 	  version                CDATA      #REQUIRED
 	  build-id               CDATA      #REQUIRED
-	  flags                  NMTOKE     0
+	  flags                  NMTOKEN    0
+	  devout                 CDATA      #REQUIRED
 	  effect                 CDATA      #REQUIRED
 	  name                   CDATA      #REQUIRED
 	  control-count	         NMTOKEN    #REQUIRED
