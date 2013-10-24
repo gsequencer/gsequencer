@@ -24,10 +24,6 @@
 
 #include <libxml/tree.h>
 
-#include <ags-lib/object/ags_serializeable.h>
-
-#include <ags-lib/object/ags_serializeable.h>
-
 #include <ags/thread/ags_history.h>
 
 #include <ags/file/ags_file.h>
@@ -35,26 +31,32 @@
 #include <ags/file/ags_file_link.h>
 
 /* gvalue */
-void ags_file_util_read_value(xmlNode *node,
+void ags_file_util_read_value(AgsFile *file,
+			      xmlNode *node,
 			      gchar **id,
 			      GValue *value, xmlChar **xpath);
-xmlNode* ags_file_util_write_value(xmlNode *parent,
+xmlNode* ags_file_util_write_value(AgsFile *file,
+				   xmlNode *parent,
 				   gchar *id,
-				   GValue *value, AgsSerializeable *serializeable);
+				   GValue *value, GType pointer_type);
 
 /* parameter */
-void ags_file_util_read_parameter(xmlNode *node,
+void ags_file_util_read_parameter(AgsFile *file,
+				  xmlNode *node,
 				  gchar **id,
 				  GParameter **parameter, gint *n_params, xmlChar ***xpath);
-xmlNode* ags_file_util_write_parameter(xmlNode *parent,
+xmlNode* ags_file_util_write_parameter(AgsFile *file,
+				       xmlNode *parent,
 				       gchar *id,
-				       GParameter *parameter, gint n_params, AgsSerializeable **serializeable);
+				       GParameter *parameter, gint n_params);
 
 /* dependency */
-void ags_file_util_read_dependency(xmlNode *node,
+void ags_file_util_read_dependency(AgsFile *file,
+				   xmlNode *node,
 				   gchar **id,
 				   gchar **name, xmlChar **xpath);
-xmlNode* ags_file_util_write_dependency(xmlNode *parent,
+xmlNode* ags_file_util_write_dependency(AgsFile *file,
+					xmlNode *parent,
 					gchar *id,
 					gchar *name, xmlChar *xpath);
 

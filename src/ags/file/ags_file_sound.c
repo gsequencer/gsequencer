@@ -907,6 +907,7 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_read_channel_resolve_link), gobject);
 
+  /*  */
   child = node->children;
 
   while(child != NULL){

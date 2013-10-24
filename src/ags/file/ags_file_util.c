@@ -21,11 +21,20 @@
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+
+void ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
+				      GValue *value);
+void ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
+				       GValue *value);
 
 void
-ags_file_util_read_value(xmlNode *node, gchar **id,
+ags_file_util_read_value(AgsFile *file,
+			 xmlNode *node, gchar **id,
 			 GValue *value, xmlChar **xpath)
 {
+  AgsFileLookup *file_lookup;
   xmlChar *type_str;
   xmlChar *value_str;
   xmlChar *content;
@@ -219,27 +228,47 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
   }else if(!xmlStrcmp(type_str, "gpointer\0")){
     g_value_init(&a, G_TYPE_POINTER);
 
-    //TODO:JK: implement me
-    //    g_value_set_pointer(&a, (gpointer) );
-    
+    g_value_set_pointer(&a, NULL);
+
     if(value != NULL)
       g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
+    /* gpointer */
+    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						 "file\0", file,
+						 "node\0", node,
+						 "reference\0", value,
+						 NULL);
+    ags_file_add_lookup(file, (GObject *) file_lookup);
+    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		     G_CALLBACK(ags_file_util_read_value_resolve), value);
+
+    /* xpath */
     if(xpath != NULL)
       *xpath = content;
   }else if(!xmlStrcmp(type_str, "gobject\0")){
     g_value_init(&a, G_TYPE_OBJECT);
 
-    //TODO:JK: implement me
-    //    g_value_set_object(&a, (GObject *) );
+    g_value_set_object(&a, NULL);
     
     if(value != NULL)
       g_value_copy(&a, value);
     else
       g_value_unset(&a);
 
+    /* GObject */
+    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						 "file\0", file,
+						 "node\0", node,
+						 "reference\0", value,
+						 NULL);
+    ags_file_add_lookup(file, (GObject *) file_lookup);
+    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		     G_CALLBACK(ags_file_util_read_value_resolve), value);
+
+    /* xpath */
     if(xpath != NULL)
       *xpath = content;
   }else{
@@ -247,9 +276,31 @@ ags_file_util_read_value(xmlNode *node, gchar **id,
   }
 }
 
+void
+ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
+				 GValue *value)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "link\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(G_VALUE_HOLDS(value, G_TYPE_POINTER)){
+    g_value_set_pointer(&value, (gpointer) id_ref->ref);
+  }else if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
+    g_value_set_object(&value, (GObject *) id_ref->ref);
+  }else{
+    g_warning("ags_file_util_read_parameter_resolve: unknown type of GValue\0");
+  }
+}
+
 xmlNode*
-ags_file_util_write_value(xmlNode *parent, gchar *id,
-			  GValue *value, AgsSerializeable *serializeable)
+ags_file_util_write_value(AgsFile *file,
+			  xmlNode *parent, gchar *id,
+			  GValue *value, GType pointer_type)
 {
   xmlNode *node;
   xmlChar *type;
@@ -293,20 +344,12 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
     break;
   case G_TYPE_POINTER:
     {
-      if(serializeable == NULL){
-	return;
-      }
-
-      content = BAD_CAST ags_serializeable_serialize(AGS_SERIALIZEABLE(g_value_get_object(value)));
+      //TODO:JK: implement me
     }
     break;
   case G_TYPE_OBJECT:
     {
-      if(serializeable == NULL){
-	return;
-      }
-
-      content = BAD_CAST ags_serializeable_serialize(AGS_SERIALIZEABLE(g_value_get_object(value)));
+      //TODO:JK: implement me
     }
     break;
   default:
@@ -321,7 +364,15 @@ ags_file_util_write_value(xmlNode *parent, gchar *id,
 }
 
 void
-ags_file_util_read_parameter(xmlNode *node, gchar **id,
+ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
+				  GValue *value)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_util_read_parameter(AgsFile *file,
+			     xmlNode *node, gchar **id,
 			     GParameter **parameter, gint *n_params, xmlChar ***xpath)
 {
   xmlNode *child;
@@ -349,7 +400,8 @@ ags_file_util_read_parameter(xmlNode *node, gchar **id,
     }
 
     parameter_arr[i].name = name_arr[i];
-    ags_file_util_read_value(child, NULL,
+    ags_file_util_read_value(file,
+			     child, NULL,
 			     &(parameter_arr[i].value), &(xpath_arr[i]));
 
     child = child->next;
@@ -377,8 +429,9 @@ ags_file_util_read_parameter(xmlNode *node, gchar **id,
 }
 
 xmlNode*
-ags_file_util_write_parameter(xmlNode *parent, gchar *id,
-			      GParameter *parameter, gint n_params, AgsSerializeable **serializeable)
+ags_file_util_write_parameter(AgsFile *file,
+			      xmlNode *parent, gchar *id,
+			      GParameter *parameter, gint n_params)
 {
   xmlNode *node;
   xmlChar *name, *old_name;
@@ -408,13 +461,9 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 
     child_id = ags_id_generator_create_uuid();
 
-    if(serializeable == NULL){
-      ags_file_util_write_value(node, child_id,
-				&(parameter[i].value), NULL);
-    }else{
-      ags_file_util_write_value(node, child_id,
-				&(parameter[i].value), serializeable[i]);
-    }
+    ags_file_util_write_value(file,
+			      node, child_id,
+			      &(parameter[i].value), G_TYPE_NONE);
   }
 
   xmlNewProp(node,
@@ -428,7 +477,8 @@ ags_file_util_write_parameter(xmlNode *parent, gchar *id,
 }
 
 void
-ags_file_util_read_dependency(xmlNode *node, gchar **id,
+ags_file_util_read_dependency(AgsFile *file,
+			      xmlNode *node, gchar **id,
 			      gchar **name, xmlChar **xpath)
 {
   *id = xmlGetProp(node, AGS_FILE_ID_PROP);
@@ -437,7 +487,8 @@ ags_file_util_read_dependency(xmlNode *node, gchar **id,
 }
 
 xmlNode*
-ags_file_util_write_dependency(xmlNode *parent, gchar *id,
+ags_file_util_write_dependency(AgsFile *file,
+			       xmlNode *parent, gchar *id,
 			       gchar *name, xmlChar *xpath)
 {
   xmlNode *node;
