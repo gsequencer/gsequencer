@@ -38,7 +38,7 @@ void ags_file_util_read_value(AgsFile *file,
 xmlNode* ags_file_util_write_value(AgsFile *file,
 				   xmlNode *parent,
 				   gchar *id,
-				   GValue *value, GType pointer_type);
+				   GValue *value, GType pointer_type, guint arr_length);
 
 /* parameter */
 void ags_file_util_read_parameter(AgsFile *file,

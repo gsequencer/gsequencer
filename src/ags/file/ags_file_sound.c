@@ -1202,7 +1202,7 @@ ags_file_read_input(AgsFile *file, xmlNode *node, AgsChannel *channel)
 		     13)){
 	ags_file_read_file_link(file,
 				child,
-				&(input->file_link));
+				(AgsFileLink *) &input->file_link);
       }
     }
 
@@ -1215,7 +1215,7 @@ ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 {
   AgsInput *input;
   xmlNode *node;
-  gchar id;
+  gchar *id;
 
   input = AGS_INPUT(channel);
 
@@ -1356,32 +1356,32 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 				   child,
 				   gobject);
       }else if(!xmlStrncmp(child->name,
-		     "ags-recall-audio-run\0",
-		     20)){
+			   "ags-recall-audio-run\0",
+			   20)){
 	ags_file_read_recall_audio_run(file,
 				       child,
 				       gobject);
       }else if(!xmlStrncmp(child->name,
-		     "ags-recall-channel\0",
-		     18)){
+			   "ags-recall-channel\0",
+			   18)){
 	ags_file_read_recall_channel(file,
 				     child,
 				     gobject);
       }else if(!xmlStrncmp(child->name,
-		     "ags-recall-channel-run\0",
-		     22)){
+			   "ags-recall-channel-run\0",
+			   22)){
 	ags_file_read_recall_channel_run(file,
 					 child,
 					 gobject);
       }else if(!xmlStrncmp(child->name,
-		     "ags-recall-recycling\0",
-		     20)){
+			   "ags-recall-recycling\0",
+			   20)){
 	ags_file_read_recall_recycling(file,
 				       child,
 				       gobject);
       }else if(!xmlStrncmp(child->name,
-		     "ags-recall-audio-signal\0",
-		     23)){
+			   "ags-recall-audio-signal\0",
+			   23)){
 	ags_file_read_recall_audio_signal(file,
 					  child,
 					  gobject);
@@ -1413,14 +1413,16 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 	dependency_node = child->children;
 
 	while(dependency_node != NULL){
-	  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						       "file\0", file,
-						       "node\0", dependency_node,
-						       "reference\0", gobject,
-						       NULL);
-	  ags_file_add_lookup(file, (GObject *) file_lookup);
-	  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			   G_CALLBACK(ags_file_read_recall_resolve_dependency), gobject);
+	  if(dependency_node->type == XML_ELEMENT_NODE){
+	    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+							 "file\0", file,
+							 "node\0", dependency_node,
+							 "reference\0", gobject,
+							 NULL);
+	    ags_file_add_lookup(file, (GObject *) file_lookup);
+	    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_file_read_recall_resolve_dependency), gobject);
+	  }
 	  
 	  dependency_node = dependency_node->next;
 	}
@@ -1449,7 +1451,7 @@ ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
-  recall->devout = (AgsDevout *) id_ref->ref;
+  recall->devout = (GObject *) id_ref->ref;
 }
 
 void
@@ -1472,7 +1474,68 @@ ags_file_read_recall_resolve_dependency(AgsFileLookup *file_lookup,
 xmlNode*
 ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
+  AgsFileLookup *file_lookup;
   xmlNode *node;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-recall\0");
+
+  id = ags_id_generator_create_uuid();
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", recall,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(recall));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(recall));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     recall->version);
+  
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     recall->build_id);
+  
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", recall->flags));
+  
+  /* devout */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", recall,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_recall_resolve_devout), recall);
+
+  /*  */
+  xmlNewProp(node,
+	     "effect\0",
+	     recall->effect);
+  
+  xmlNewProp(node,
+	     "name\0",
+	     recall->name);
+  
+  xmlAddChild(parent,
+	      node);
 
   //TODO:JK: implement me
 }

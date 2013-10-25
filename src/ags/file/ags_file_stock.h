@@ -38,6 +38,21 @@
 #define AGS_FILE_FALSE "FALSE\0"
 #define AGS_FILE_TRUE "TRUE\0"
 
+#define AGS_FILE_BOOLEAN_PROP "gboolean\0"
+#define AGS_FILE_CHAR_PROP "gchar\0"
+#define AGS_FILE_INT64_PROP "gint64\0"
+#define AGS_FILE_UINT64_PROP "guint64\0"
+#define AGS_FILE_DOUBLE_PROP "gdouble\0"
+
+#define AGS_FILE_POINTER_PROP "gpointer\0"
+#define AGS_FILE_OBJECT_PROP "GObject\0"
+
+#define AGS_FILE_BOOLEAN_POINTER_PROP "gboolean-pointer\0"
+#define AGS_FILE_CHAR_POINTER_PROP "gchar-pointer\0"
+#define AGS_FILE_INT64_POINTER_PROP "gint64-pointer\0"
+#define AGS_FILE_UINT64_POINTER_PROP "guint64-pointer\0"
+#define AGS_FILE_DOUBLE_POINTER_PROP "gdouble-pointer\0"
+
 #define AGS_FILE_ID_PROP "id\0"
 #define AGS_FILE_NAME_PROP "name\0"
 #define AGS_FILE_TYPE_PROP "type\0"
