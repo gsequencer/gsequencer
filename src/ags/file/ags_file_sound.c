@@ -28,6 +28,13 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_recycling.h>
+#include <ags/audio/ags_recall_audio_signal.h>
+
 void ags_file_read_channel_resolve_link(AgsFileLookup *file_lookup,
 					AgsChannel *channel);
 void ags_file_write_channel_resolve_link(AgsFileLookup *file_lookup,
@@ -1475,8 +1482,11 @@ xmlNode*
 ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
   AgsFileLookup *file_lookup;
-  xmlNode *node;
+  xmlNode *node, *child;
+  xmlNode *dependency_node;
+  GList *list;
   gchar *id;
+  guint i;
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-recall\0");
@@ -1531,27 +1541,123 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 	     recall->effect);
   
   xmlNewProp(node,
-	     "name\0",
+	     AGS_FILE_NAME_PROP,
 	     recall->name);
   
   xmlAddChild(parent,
 	      node);
 
-  //TODO:JK: implement me
+  /* child elements */
+  if(AGS_IS_RECALL_AUDIO(recall)){
+    ags_file_write_recall_audio(file,
+				node,
+				recall);
+  }else if(AGS_IS_RECALL_AUDIO_RUN(recall)){
+    ags_file_write_recall_audio_run(file,
+				    node,
+				    recall);
+  }else if(AGS_IS_RECALL_CHANNEL(recall)){
+    ags_file_write_recall_channel(file,
+				  node,
+				  recall);
+  }else if(AGS_IS_RECALL_CHANNEL_RUN(recall)){
+    ags_file_write_recall_channel_run(file,
+				      node,
+				      recall);
+  }else if(AGS_IS_RECALL_RECYCLING(recall)){
+    ags_file_write_recall_recycling(file,
+				    node,
+				    recall);
+  }else if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
+    ags_file_write_recall_audio_signal(file,
+				       node,
+				       recall);
+  }
+
+  if(recall->children != NULL){
+    ags_file_write_recall_list(file,
+			       node,
+			       recall->children);
+  }
+  
+  /* dependencies */
+  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		     "ags-dependency-list\0");
+
+  xmlNewProp(child,
+	     AGS_FILE_ID_PROP,
+	     ags_id_generator_create_uuid());
+
+  list = recall->dependencies;
+
+  for(i = 0; list != NULL; i++){
+    dependency_node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+				 "ags-dependency\0");
+
+    xmlNewProp(dependency_node,
+	       AGS_FILE_ID_PROP,
+	       ags_id_generator_create_uuid());
+
+    xmlNewProp(dependency_node,
+	       AGS_FILE_NAME_PROP,
+	       recall->dependency_names[i]);
+
+    xmlAddChild(child,
+		dependency_node);
+
+    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						 "file\0", file,
+						 "node\0", dependency_node,
+						 "reference\0", list->data,
+						 NULL);
+    ags_file_add_lookup(file, (GObject *) file_lookup);
+    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		     G_CALLBACK(ags_file_write_recall_resolve_dependency), recall);
+
+    list = list->next;
+  }
+
+  xmlAddChild(node,
+	      child);
+
+  /* child parameters */
+  ags_file_util_write_parameter(file,
+				node,
+				ags_id_generator_create_uuid(),
+				recall->child_parameters, recall->n_params);
 }
 
 void
 ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 				     AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, recall->devout);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "devout\0",
+	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
 }
 
 void
 ags_file_write_recall_resolve_dependency(AgsFileLookup *file_lookup,
 					 AgsRecall *recall)
 {
-  //TODO:JK: implement me
+
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "xpath\0",
+	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
 }
 
 void

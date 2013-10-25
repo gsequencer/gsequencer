@@ -84,6 +84,7 @@ struct _AgsRecall
   gchar *effect;
   gchar *name;
 
+  gchar **dependency_names;
   GList *dependencies;
 
   AgsRecallID *recall_id;
@@ -93,6 +94,7 @@ struct _AgsRecall
 
   GType child_type;
   GParameter *child_parameters;
+  guint n_params;
 
   GList *handlers;
 };

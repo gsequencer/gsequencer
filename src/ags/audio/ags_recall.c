@@ -440,6 +440,7 @@ ags_recall_init(AgsRecall *recall)
   recall->effect = NULL;
   recall->name = NULL;
 
+  recall->dependency_names = NULL;
   recall->dependencies = NULL;
 
   recall->recall_id = NULL;
@@ -449,7 +450,8 @@ ags_recall_init(AgsRecall *recall)
 
   recall->child_type = G_TYPE_NONE;
   recall->child_parameters = NULL;
-
+  recall->n_params = 0;
+  
   recall->handlers = NULL;
 }
 
