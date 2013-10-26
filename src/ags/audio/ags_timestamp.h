@@ -41,6 +41,15 @@ struct _AgsTimestamp
   GObject object;
 
   guint flags;
+  
+  union{
+    struct _unix{
+      time_t time_val;
+    }unix_time;
+  }timer;
+
+  guint delay;
+  guint attack;
 };
 
 struct _AgsTimestampClass

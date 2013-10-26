@@ -44,9 +44,9 @@ ags_timestamp_get_type (void)
     };
 
     ags_type_timestamp = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsTimestamp\0",
-					   &ags_timestamp_info,
-					   0);
+						"AgsTimestamp\0",
+						&ags_timestamp_info,
+						0);
   }
 
   return (ags_type_timestamp);
@@ -69,6 +69,11 @@ void
 ags_timestamp_init(AgsTimestamp *timestamp)
 {
   timestamp->flags = 0;
+
+  time(&timestamp->timer.unix_time.time_val);
+
+  timestamp->delay = 0;
+  timestamp->attack = 0;
 }
 
 AgsTimestamp*
@@ -77,7 +82,7 @@ ags_timestamp_new()
   AgsTimestamp *timestamp;
 
   timestamp = (AgsTimestamp *) g_object_new(AGS_TYPE_TIMESTAMP,
-				  NULL);
+					    NULL);
 
   return(timestamp);
 }
