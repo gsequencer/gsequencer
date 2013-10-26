@@ -118,12 +118,18 @@ xmlNode* ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList 
 
 /* AgsStream */
 void ags_file_read_stream(AgsFile *file, xmlNode *node,
-			  GList **stream, guint *index);
+			  GList **stream, guint *index,
+			  guint buffer_size);
 xmlNode* ags_file_write_stream(AgsFile *file, xmlNode *parent,
-			       GList *stream, guint index);
+			       GList *stream, guint index,
+			       guint buffer_size);
 
-void ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream);
-xmlNode* ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream);
+void ags_file_read_stream_list(AgsFile *file, xmlNode *node,
+			       GList **stream,
+			       guint buffer_size);
+xmlNode* ags_file_write_stream_list(AgsFile *file, xmlNode *parent,
+				    GList *stream,
+				    guint buffer_size);
 
 /* AgsPattern */
 void ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern);

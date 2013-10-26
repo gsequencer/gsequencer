@@ -244,6 +244,8 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
     }
   }
 
+  child->content = content;
+
   checksum = ags_file_str2md5(content,
 			      strlen(content),
 			      AGS_FILE_CHECKSUM_PRECISION);
@@ -269,6 +271,8 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
       g_free(str);
     }
   }
+
+  child->content = content;
 
   checksum = ags_file_str2md5(content,
 			      strlen(content),
@@ -2285,9 +2289,9 @@ ags_file_read_audio_signal(AgsFile *file, xmlNode *node, AgsAudioSignal **audio_
       if(!xmlStrncmp(child->name,
 		     "ags-stream-list\0",
 		     21)){
-	ags_file_read_stream_list(file,
-				  child,
-				  &gobject->stream_beginning);
+	ags_file_read_stream_list(file, child,
+				  &gobject->stream_beginning,
+				  gobject->buffer_size);
       }
     }
 
@@ -2361,9 +2365,9 @@ ags_file_write_audio_signal(AgsFile *file, xmlNode *parent, AgsAudioSignal *audi
 	      node);
 
   /* child elements */
-  ags_file_write_stream_list(file,
-			     node,
-			     audio_signal->stream_beginning);
+  ags_file_write_stream_list(file, node,
+			     audio_signal->stream_beginning,
+			     audio_signal->buffer_size);
   
   return(node);
 }
@@ -2449,20 +2453,109 @@ ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList *audio_si
 
 void
 ags_file_read_stream(AgsFile *file, xmlNode *node,
-		     GList **stream, guint *index)
+		     GList **stream, guint *index,
+		     guint buffer_size)
 {
-  //TODO:JK: implement me
+  GList *list;
+  xmlChar *encoding;
+  xmlChar *demuxer;
+  xmlChar *content;
+
+  if(*stream == NULL){
+    list = g_list_alloc();
+
+    *stream = list;
+  }else{
+    list = *stream;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
+
+  if(index != NULL){
+    *index = (guint) g_ascii_strtoull(xmlGetProp(node,
+						 "index\0"),
+				      NULL,
+				      10);
+  }
+
+  encoding = xmlGetProp(node,
+			"encoding\0");
+
+  if(!xmlStrncmp(encoding,
+		 "base64\0",
+		 7)){
+    demuxer = xmlGetProp(node,
+			 "demuxer\0");
+
+    if(!xmlStrncmp(demuxer,
+		   "raw\0",
+		   4)){
+      content = node->content;
+
+      //TODO:JK: verify
+      list->data = g_base64_decode(content,
+				   NULL);
+    }else{
+      g_warning("ags_file_read_stream: unsupported demuxer %s\0", demuxer);
+    }    
+  }else{
+    g_warning("ags_file_read_stream: unsupported encoding %s\0", encoding);
+  }
 }
 
 xmlNode*
 ags_file_write_stream(AgsFile *file, xmlNode *parent,
-		      GList *stream, guint index)
+		      GList *stream, guint index,
+		      guint buffer_size)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  xmlChar *content;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-stream\0");
+
+  id = ags_id_generator_create_uuid();
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", stream,
+				   NULL));
+  
+  xmlNewProp(node,
+	     "index\0",
+	     g_strdup_printf("%d\0", index));
+
+  xmlNewProp(node,
+	     "encoding\0",
+	     file->audio_encoding);
+
+  xmlNewProp(node,
+	     "demuxer\0",
+	     file->audio_format);
+
+  content = g_base64_encode(stream->data,
+			    buffer_size);
+
+  node->content = content;
 }
 
 void
-ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream)
+ags_file_read_stream_list(AgsFile *file, xmlNode *node,
+			  GList **stream,
+			  guint buffer_size)
 {
   GList *current;
   xmlNode *child;
@@ -2496,10 +2589,10 @@ ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream)
 	}
       }
       
-      g_list_insert(sorted,
-		    list->data,
-		    i);
-
+      sorted = g_list_insert(sorted,
+			     list->data,
+			     i);
+      
       i_stop--;
       list = list->next;
     }
@@ -2524,7 +2617,8 @@ ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream)
     }
 
     ags_file_read_stream(file, child,
-			 &current, &(index[i]));
+			 &current, &(index[i]),
+			 buffer_size);
     
     list = g_list_prepend(list,
 			  current);
@@ -2550,7 +2644,9 @@ ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream)
 }
 
 xmlNode*
-ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream)
+ags_file_write_stream_list(AgsFile *file, xmlNode *parent,
+			   GList *stream,
+			   guint buffer_size)
 {
   xmlNode *node;
   GList *list;
@@ -2581,7 +2677,8 @@ ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream)
 
   for(i = 0; list != NULL; i++){
     ags_file_write_stream(file, node,
-			  list, i);
+			  list, i,
+			  buffer_size);
     
     list = list->next;
   }
