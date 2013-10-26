@@ -617,7 +617,7 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 			   "ags-recall-list\0",
 			   15)){
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
-		       "true\0",
+		       AGS_FILE_TRUE,
 		       5)){
 	  /* ags-recall-list play */
 	  ags_file_read_recall_list(file,
@@ -729,14 +729,22 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
   }
 
   /* ags-recall-list play */
-  ags_file_write_recall_list(file,
-			     node,
-			     audio->play);
+  child = ags_file_write_recall_list(file,
+				     node,
+				     audio->play);
+
+  xmlNewProp(child,
+	     "is-play\0",
+	     AGS_FILE_TRUE);
 
   /* ags-recall-list recall */
-  ags_file_write_recall_list(file,
-			     node,
-			     audio->recall);
+  child = ags_file_write_recall_list(file,
+				     node,
+				     audio->recall);
+
+  xmlNewProp(child,
+	     "is-play\0",
+	     AGS_FILE_FALSE);
 
   /* ags-notation-list */
   ags_file_write_notation_list(file,
@@ -930,7 +938,7 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 			   "ags-recall-list\0",
 			   15)){
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
-		       "true\0",
+		       AGS_FILE_TRUE,
 		       5)){
 	  /* ags-recall-list play */
 	  ags_file_read_recall_list(file,
@@ -1061,14 +1069,22 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   }
 
   /* ags-recall-list play */
-  ags_file_write_recall_list(file,
-			     node,
-			     channel->play);
+  child = ags_file_write_recall_list(file,
+				     node,
+				     channel->play);
+  
+  xmlNewProp(child,
+	     "is-play\0",
+	     AGS_FILE_TRUE);
 
   /* ags-recall-list recall */
-  ags_file_write_recall_list(file,
-			     node,
-			     channel->recall);
+  child = ags_file_write_recall_list(file,
+				     node,
+				     channel->recall);
+  
+  xmlNewProp(child,
+	     "is-play\0",
+	     AGS_FILE_FALSE);
 
   /* ags-pattern-list */
   if(channel->pattern != NULL){
@@ -1663,13 +1679,73 @@ ags_file_write_recall_resolve_dependency(AgsFileLookup *file_lookup,
 void
 ags_file_read_recall_list(AgsFile *file, xmlNode *node, GList **recall)
 {
-  //TODO:JK: implement me
+  AgsRecall *current;
+  xmlNode *child;
+  GList *list;
+
+  list = NULL;
+  child = node->children;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_recall(file,
+			 child,
+			 &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *recall = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_recall_list(AgsFile *file, xmlNode *parent, GList *recall)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", recall,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-recall-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = recall;
+
+  while(list != NULL){
+    ags_file_write_recall(file,
+			  node,
+			  AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
 }
 
 void
