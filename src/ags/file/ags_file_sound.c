@@ -2626,6 +2626,7 @@ ags_file_read_stream_list(AgsFile *file, xmlNode *node,
     child = child->next;
   }
 
+  list = g_list_reverse(list);
   ags_file_read_stream_list_sort(&list, index);
 
   if(*stream != NULL){
@@ -2664,7 +2665,7 @@ ags_file_write_stream_list(AgsFile *file, xmlNode *parent,
 				   NULL));
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
-		    "ags-audio-signal-list\0");
+		    "ags-stream-list\0");
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -2689,25 +2690,129 @@ ags_file_write_stream_list(AgsFile *file, xmlNode *parent,
 void
 ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 {
+  GObject *gobject;
+
+  if(*pattern == NULL){
+    gobject = g_object_new(AGS_TYPE_PATTERN,
+			   NULL);
+
+    *pattern = gobject;
+  }else{
+    gobject = *pattern;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
   //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 {
+  xmlNode *node;
+  xmlChar *content;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-pattern\0");
+
+  id = ags_id_generator_create_uuid();
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", pattern,
+				   NULL));
+
   //TODO:JK: implement me
+
 }
 
 void
 ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern)
 {
-  //TODO:JK: implement me
+  AgsPattern *current;
+  xmlNode *child;
+
+  child = node->children;
+
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+
+    ags_file_read_pattern(file, child,
+			  &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+
+  *pattern = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_pattern_list(AgsFile *file, xmlNode *parent, GList *pattern)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", pattern,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-pattern-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = pattern;
+
+  for(i = 0; list != NULL; i++){
+    ags_file_write_pattern(file,
+			   node,
+			   AGS_PATTERN(list->data));
+    
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void
