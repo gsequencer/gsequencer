@@ -92,13 +92,13 @@ ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pattern_init(AgsPattern *pattern)
 {
+  pattern->timestamp = 0;
+
   pattern->dim[0] = 0;
   pattern->dim[1] = 0;
   pattern->dim[2] = 0;
 
   pattern->pattern = NULL;
-
-  pattern->offset = 0;
 }
 
 void
@@ -135,12 +135,12 @@ ags_pattern_finalize(GObject *gobject)
 }
 
 AgsPattern*
-ags_pattern_get_by_offset(GList *list, guint offset)
+ags_pattern_get_by_timestamp(GList *list, GObject *timestamp)
 {
   if(list == NULL)
     return(NULL);
 
-  while(AGS_PATTERN(list->data)->offset != offset){
+  while(AGS_PATTERN(list->data)->timestamp != timestamp){
     if(list->next == NULL)
       return(NULL);
 

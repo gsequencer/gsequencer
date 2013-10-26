@@ -37,10 +37,10 @@ struct _AgsPattern
 {
   GObject object;
 
+  GObject *timestamp;
+
   guint dim[3];
   guint ***pattern;
-
-  guint offset;
 };
 
 struct _AgsPatternClass
@@ -50,7 +50,7 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
-AgsPattern* ags_pattern_get_by_offset(GList *list, guint offset);
+AgsPattern* ags_pattern_get_by_timestamp(GList *list, GObject *timestamp);
 
 void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint lenght);
 

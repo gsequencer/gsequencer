@@ -2733,7 +2733,9 @@ ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
       if(!xmlStrncmp(child,
 		     "ags-timestamp\0",
 		     13)){
-	ags_file_read_timestamp();
+	ags_file_read_timestamp(file,
+				child,
+				);
       }else if(!xmlStrncmp(child,
 			   "ags-pattern-data-list\0",
 			   21)){

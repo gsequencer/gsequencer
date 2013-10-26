@@ -124,6 +124,8 @@ ags_notation_init(AgsNotation *notation)
 {
   notation->flags = 0;
 
+  notation->timestamp = NULL;
+  
   notation->audio_channel = 0;
   notation->audio = NULL;
 

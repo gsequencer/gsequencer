@@ -49,6 +49,8 @@ struct _AgsNotation
 
   guint flags;
 
+  GObject *timestamp;
+
   guint audio_channel;
   GObject *audio;
 
