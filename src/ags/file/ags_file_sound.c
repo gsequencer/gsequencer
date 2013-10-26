@@ -2448,13 +2448,15 @@ ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList *audio_si
 }
 
 void
-ags_file_read_stream(AgsFile *file, xmlNode *node, GList **stream)
+ags_file_read_stream(AgsFile *file, xmlNode *node,
+		     GList **stream, guint *index)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_file_write_stream(AgsFile *file, xmlNode *parent, GList *stream)
+ags_file_write_stream(AgsFile *file, xmlNode *parent,
+		      GList *stream, guint index)
 {
   //TODO:JK: implement me
 }
@@ -2462,13 +2464,129 @@ ags_file_write_stream(AgsFile *file, xmlNode *parent, GList *stream)
 void
 ags_file_read_stream_list(AgsFile *file, xmlNode *node, GList **stream)
 {
-  //TODO:JK: implement me
+  GList *current;
+  xmlNode *child;
+  GList *list;
+  guint *index;
+  guint i;
+
+  auto void ags_file_read_stream_list_sort(GList **stream, guint *index);
+
+  void ags_file_read_stream_list_sort(GList **stream, guint *index){
+    GList *start, *list;
+    GList *sorted;
+    guint stream_length;
+    guint i, i_stop;
+    guint j, k;
+
+    start =
+      list = *stream;
+
+    stream_length = 
+      i_stop = g_list_length(list);
+
+    sorted = NULL;
+
+    while(list != NULL){
+      j = index[stream_length - i_stop];
+
+      for(i = 0; i < stream_length - i_stop; i++){
+	if(j < index[i]){
+	  break;
+	}
+      }
+      
+      g_list_insert(sorted,
+		    list->data,
+		    i);
+
+      i_stop--;
+      list = list->next;
+    }
+
+    *stream = sorted;
+    g_list_free(start);
+  }
+
+  child = node->children;
+
+  list = NULL;
+  index = NULL;
+
+  for(i = 0; child != NULL; i++){
+    current = NULL;
+
+    if(index == NULL){
+      index = (guint *) malloc(sizeof(guint));
+    }else{
+      index = (guint *) realloc(index,
+				(i + 1) * sizeof(guint));
+    }
+
+    ags_file_read_stream(file, child,
+			 &current, &(index[i]));
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+
+  ags_file_read_stream_list_sort(&list, index);
+
+  if(*stream != NULL){
+    ags_list_free_and_free_link(*stream);
+  }
+
+  *stream = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_stream_list(AgsFile *file, xmlNode *parent, GList *stream)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", stream,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-audio-signal-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = stream;
+
+  for(i = 0; list != NULL; i++){
+    ags_file_write_stream(file, node,
+			  list, i);
+    
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void
