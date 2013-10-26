@@ -2690,11 +2690,12 @@ ags_file_write_stream_list(AgsFile *file, xmlNode *parent,
 void
 ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 {
-  GObject *gobject;
+  AgsPattern *gobject;
+  xmlNode *child;
 
   if(*pattern == NULL){
-    gobject = g_object_new(AGS_TYPE_PATTERN,
-			   NULL);
+    gobject = (AgsPattern *) g_object_new(AGS_TYPE_PATTERN,
+					  NULL);
 
     *pattern = gobject;
   }else{
@@ -2709,7 +2710,38 @@ ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 				   "reference\0", gobject,
 				   NULL));
   
-  //TODO:JK: implement me
+  gobject->dim[0] = g_ascii_strtoull(xmlGetProp(node,
+						"dim-1st-level\0"),
+				     NULL,
+				     10);
+
+  gobject->dim[1] = g_ascii_strtoull(xmlGetProp(node,
+						"dim-2nd-level\0"),
+				     NULL,
+				     10);
+
+  gobject->dim[2] = g_ascii_strtoull(xmlGetProp(node,
+						"length\0"),
+				     NULL,
+				     10);
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child,
+		     "ags-timestamp\0",
+		     13)){
+	ags_file_read_timestamp();
+      }else if(!xmlStrncmp(child,
+			   "ags-pattern-data-list\0",
+			   21)){
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
@@ -2735,7 +2767,22 @@ ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 				   "reference\0", pattern,
 				   NULL));
 
-  //TODO:JK: implement me
+  xmlNewProp(node,
+	     "dim-1st-level\0",
+	     g_strdup_printf("%d\0",
+			     pattern->dim[0]));
+
+  xmlNewProp(node,
+	     "dim-2nd-level\0",
+	     g_strdup_printf("%d\0",
+			     pattern->dim[1]));
+
+  xmlNewProp(node,
+	     "length\0",
+	     g_strdup_printf("%d\0",
+			     pattern->dim[2]));
+
+  /* child elements */
 
 }
 
