@@ -3007,3 +3007,15 @@ ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
 {
   //TODO:JK: implement me
 }
+
+void
+ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp)
+{
+  //TODO:JK: implement me
+}
