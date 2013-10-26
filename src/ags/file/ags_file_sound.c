@@ -1815,7 +1815,7 @@ ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall *recall)
 xmlNode*
 ags_file_write_recall_audio_run(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
-  AgsRecallAudio_Run *recall_audio_run;
+  AgsRecallAudioRun *recall_audio_run;
   xmlNode *node;
   gchar *id;
 
@@ -2024,13 +2024,59 @@ ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *re
 void
 ags_file_read_recycling(AgsFile *file, xmlNode *node, AgsRecycling **recycling)
 {
-  //TODO:JK: implement me
+  AgsRecycling *gobject;
+
+  if(*recycling == NULL){
+    gobject = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING,
+					    NULL);
+
+    *recycling = gobject;
+  }else{
+    gobject = *recycling;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node,
+						       AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    10);
 }
 
 xmlNode*
 ags_file_write_recycling(AgsFile *file, xmlNode *parent, AgsRecycling *recycling)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-recycling\0");
+
+  id = ags_id_generator_create_uuid();
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", recycling,
+				   NULL));
+  
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", recycling->flags));
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
