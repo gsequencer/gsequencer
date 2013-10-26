@@ -39,6 +39,9 @@
 #define AGS_FILE_CHECKSUM_PRECISION (512)
 #define AGS_FILE_CHECKSUM_LENGTH (sqrt((double) AGS_FILE_CHECKSUM_PRECISION / 2.0))
 
+#define AGS_FILE_DEFAULT_AUDIO_FORMAT ("raw\0")
+#define AGS_FILE_DEFAULT_AUDIO_ENCODING ("base64\0")
+
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
 
@@ -57,9 +60,12 @@ struct _AgsFile
 
   guint flags;
 
-  char *name;
-  char *encoding;
-  char *dtd;
+  gchar *name;
+  gchar *encoding;
+  gchar *dtd;
+
+  gchar *audio_format;
+  gchar *audio_encoding;
 
   xmlDoc *doc;
 

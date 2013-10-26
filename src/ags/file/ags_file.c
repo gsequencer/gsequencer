@@ -169,9 +169,11 @@ ags_file_init(AgsFile *file)
   file->flags = 0;
 
   file->name = NULL;
-
   file->encoding = AGS_FILE_DEFAULT_ENCODING;
   file->dtd = AGS_FILE_DEFAULT_DTD;
+
+  file->audio_format = AGS_FILE_DEFAULT_AUDIO_FORMAT;
+  file->audio_encoding = AGS_FILE_DEFAULT_AUDIO_ENCODING;
 
   file->doc = NULL;
 
