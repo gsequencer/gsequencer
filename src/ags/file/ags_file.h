@@ -43,8 +43,12 @@ typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
 
 typedef enum{
-  AGS_FILE_READ,
-  AGS_FILE_WRITE,
+  AGS_FILE_READ                    = 1,
+  AGS_FILE_READ_AUDIO_SIGNAL       = 1 << 1,
+  AGS_FILE_READ_EMBEDDED_AUDIO     = 1 << 2,
+  AGS_FILE_WRITE                   = 1 << 3,
+  AGS_FILE_WRITE_AUDIO_SIGNAL      = 1 << 4,
+  AGS_FILE_WRITE_EMBEDDED_AUDIO    = 1 << 5,
 }AgsFileFlags;
 
 struct _AgsFile

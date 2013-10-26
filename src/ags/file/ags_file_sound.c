@@ -1198,6 +1198,8 @@ ags_file_write_channel_list(AgsFile *file, xmlNode *parent, GList *channel)
 
     list = list->next;
   }
+
+  return(node);
 }
 
 void
@@ -1263,6 +1265,8 @@ ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 			     node,
 			     AGS_FILE_LINK(input->file_link));
   }
+
+  return(node);
 }
 
 void
@@ -1308,6 +1312,8 @@ ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -1644,6 +1650,8 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 				node,
 				ags_id_generator_create_uuid(),
 				recall->child_parameters, recall->n_params);
+
+  return(node);
 }
 
 void
@@ -1749,6 +1757,8 @@ ags_file_write_recall_list(AgsFile *file, xmlNode *parent, GList *recall)
     
     list = list->next;
   }
+
+  return(node);
 }
 
 void
@@ -1794,6 +1804,8 @@ ags_file_write_recall_audio(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -1839,6 +1851,8 @@ ags_file_write_recall_audio_run(AgsFile *file, xmlNode *parent, AgsRecall *recal
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -1884,6 +1898,8 @@ ags_file_write_recall_channel(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -1929,6 +1945,8 @@ ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *rec
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -1974,6 +1992,8 @@ ags_file_write_recall_recycling(AgsFile *file, xmlNode *parent, AgsRecall *recal
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -2019,6 +2039,8 @@ ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *re
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -2077,18 +2099,82 @@ ags_file_write_recycling(AgsFile *file, xmlNode *parent, AgsRecycling *recycling
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
 ags_file_read_recycling_list(AgsFile *file, xmlNode *node, GList **recycling)
 {
-  //TODO:JK: implement me
+  AgsRecycling *current;
+  xmlNode *child;
+  GList *list;
+
+  list = NULL;
+  child = node->children;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_recycling(file,
+			    child,
+			    &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *recycling = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_recycling_list(AgsFile *file, xmlNode *parent, GList *recycling)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", recycling,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-recycling-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = recycling;
+
+  while(list != NULL){
+    ags_file_write_recycling(file,
+			  node,
+			  AGS_RECYCLING(list->data));
+    
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void
