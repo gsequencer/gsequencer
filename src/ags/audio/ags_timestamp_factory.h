@@ -41,16 +41,24 @@ struct _AgsTimestampFactory
   GObject object;
 
   guint flags;
+
+  GList *timestamp;
 };
 
 struct _AgsTimestampFactoryClass
 {
   GObjectClass object;
+  
+  AgsTimestamp* (*create)(AgsTimestampFactory *timestamp_factory);
 };
 
 GType ags_timestamp_factory_get_type(void);
 
+AgsTimestamp* ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
+					   AgsTimestamp *predecor);
+
 /* */
+AgsTimestampFactory* ags_timestamp_factory_get_instance();
 AgsTimestampFactory* ags_timestamp_factory_new();
 
 #endif /*__AGS_TIMESTAMP_FACTORY_H__*/

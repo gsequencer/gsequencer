@@ -37,6 +37,8 @@ typedef struct _AgsTimestampThreadClass AgsTimestampThreadClass;
 struct _AgsTimestampThread
 {
   AgsThread thread;
+
+  GObject *current_timestamp;
 };
 
 struct _AgsTimestampThreadClass

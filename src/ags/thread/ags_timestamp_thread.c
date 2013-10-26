@@ -99,6 +99,7 @@ ags_timestamp_thread_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_timestamp_thread_init(AgsTimestampThread *timestamp_thread)
 {
+  timestamp_thread->current_timestamp = NULL;
 }
 
 void

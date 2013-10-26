@@ -34,6 +34,7 @@ typedef struct _AgsTimestampClass AgsTimestampClass;
 
 typedef enum{
   AGS_TIMESTAMP_UNIX      = 1,
+  AGS_TIMESTAMP_OUTDATED  = 1 << 1,
 }AgsTimestampFlags;
 
 struct _AgsTimestamp

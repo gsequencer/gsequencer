@@ -25,6 +25,8 @@ void ags_timestamp_factory_finalize(GObject *gobject);
 static gpointer ags_timestamp_factory_parent_class = NULL;
 static guint timestamp_factory_signals[LAST_SIGNAL];
 
+static AgsTimestampFactory *ags_timestamp_factory = NULL;
+
 GType
 ags_timestamp_factory_get_type (void)
 {
@@ -69,6 +71,42 @@ void
 ags_timestamp_factory_init(AgsTimestampFactory *timestamp_factory)
 {
   timestamp_factory->flags = 0;
+
+  timestamp_factory->timestamp = NULL;
+}
+
+AgsTimestamp*
+ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
+			     AgsTimestamp *predecor)
+{
+  AgsTimestamp *timestamp;
+
+  timestamp = ags_timestamp_new();
+
+  timestamp_factory->timestamp = g_list_prepend(timestamp_factory->timestamp,
+						timestamp);
+
+  if(predecor != NULL){
+    //TODO:JK: implement me
+  }
+
+  return(timestamp);
+}
+
+AgsTimestampFactory*
+ags_timestamp_factory_get_instance()
+{
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&(mutex));
+
+  if(ags_timestamp_factory == NULL){
+    ags_timestamp_factory = ags_timestamp_factory_new();
+  }
+
+  pthread_mutex_unlock(&(mutex));
+
+  return(ags_timestamp_factory);
 }
 
 AgsTimestampFactory*
