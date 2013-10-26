@@ -39,6 +39,7 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_task.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_timestamp.h>
 
 /* AgsDevout */
 void ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout);
@@ -138,11 +139,19 @@ xmlNode* ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *patt
 void ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern);
 xmlNode* ags_file_write_pattern_list(AgsFile *file, xmlNode *parent, GList *pattern);
 
-void ags_file_read_pattern_data(AgsFile *file, xmlNode *node, AgsPattern *pattern, guint i, guint j);
-xmlNode* ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern, guint i, guint j);
+void ags_file_read_pattern_data(AgsFile *file, xmlNode *node,
+				AgsPattern *pattern, guint *i, guint *j,
+				guint length);
+xmlNode* ags_file_write_pattern_data(AgsFile *file, xmlNode *parent,
+				     AgsPattern *pattern, guint i, guint j,
+				     guint length);
 
-void ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node, AgsPattern *pattern);
-xmlNode* ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent, AgsPattern *pattern);
+void ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node,
+				     AgsPattern *pattern,
+				     guint length);
+xmlNode* ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent,
+					  AgsPattern *pattern,
+					  guint length);
 
 /* AgsNotation */
 void ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation);

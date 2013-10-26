@@ -22,6 +22,9 @@ void ags_timestamp_factory_class_init(AgsTimestampFactoryClass *timestamp_factor
 void ags_timestamp_factory_init (AgsTimestampFactory *timestamp_factory);
 void ags_timestamp_factory_finalize(GObject *gobject);
 
+AgsTimestamp* ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
+						AgsTimestamp *predecor);
+
 static gpointer ags_timestamp_factory_parent_class = NULL;
 static guint timestamp_factory_signals[LAST_SIGNAL];
 
@@ -76,8 +79,8 @@ ags_timestamp_factory_init(AgsTimestampFactory *timestamp_factory)
 }
 
 AgsTimestamp*
-ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
-			     AgsTimestamp *predecor)
+ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
+				  AgsTimestamp *predecor)
 {
   AgsTimestamp *timestamp;
 
@@ -91,6 +94,14 @@ ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
   }
 
   return(timestamp);
+}
+
+
+AgsTimestamp*
+ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
+			     AgsTimestamp *predecor)
+{
+  //TODO:JK: implement me
 }
 
 AgsTimestampFactory*

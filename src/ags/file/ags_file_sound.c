@@ -2730,15 +2730,19 @@ ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child,
+      if(!xmlStrncmp(child->name,
 		     "ags-timestamp\0",
 		     13)){
 	ags_file_read_timestamp(file,
 				child,
-				);
-      }else if(!xmlStrncmp(child,
+				&gobject->timestamp);
+      }else if(!xmlStrncmp(child->name,
 			   "ags-pattern-data-list\0",
 			   21)){
+	ags_file_read_pattern_data_list(file,
+					child,
+					pattern,
+					pattern->dim[2]);
       }
     }
 
@@ -2749,7 +2753,7 @@ ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 xmlNode*
 ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 {
-  xmlNode *node;
+  xmlNode *node, *child;
   xmlChar *content;
   gchar *id;
 
@@ -2785,7 +2789,16 @@ ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 			     pattern->dim[2]));
 
   /* child elements */
+  if(pattern->timestamp != NULL){
+    ags_file_write_timestamp(file,
+			     node,
+			     pattern->timestamp);
+  }
 
+  ags_file_write_pattern_data_list(file,
+				   node,
+				   pattern,
+				   pattern->dim[2]);
 }
 
 void
@@ -2865,13 +2878,42 @@ ags_file_write_pattern_list(AgsFile *file, xmlNode *parent, GList *pattern)
 }
 
 void
-ags_file_read_pattern_data(AgsFile *file, xmlNode *node, AgsPattern *pattern, guint i, guint j)
+ags_file_read_pattern_data(AgsFile *file, xmlNode *node,
+			   AgsPattern *pattern, guint *i, guint *j,
+			   guint length)
 {
-  //TODO:JK: implement me
+  xmlChar *content;
+  xmlChar *coding;
+  guint k;
+
+  *i = g_ascii_strtoull(xmlGetProp(pattern_data_node,
+				   "dim-1st-level\0"));
+  
+  *j = g_ascii_strtoull(xmlGetProp(pattern_data_node,
+				   "dim-2nd-level\0"));
+
+  content = node->content;
+
+  coding = xmlGetProp(node,
+		      "coding\0");
+
+  if(!xmlStrncmp(coding,
+		 "human readable\0",
+		 14)){
+    for(k = 0; k < length; k++){
+      if(content[i] == '1'){
+	ags_pattern_toggle_bit(pattern, *i, *j, k);
+      }
+    }
+  }else{
+    g_warning("ags_file_read_pattern_data - unsupported coding: %s\0", coding);
+  }
 }
 
 xmlNode*
-ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern, guint i, guint j)
+ags_file_write_pattern_data(AgsFile *file, xmlNode *parent,
+			    AgsPattern *pattern, guint i, guint j,
+			    guint length)
 {
   xmlNode *node;
   GString *content;
@@ -2911,9 +2953,9 @@ ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern,
 	     "coding\0",
 	     "human readable\0");
 
-  content = g_string_sized_new(pattern->dim[2] + 1);
+  content = g_string_sized_new(length + 1);
 
-  for(k = 0; k < pattern->dim[2]; k++){
+  for(k = 0; k < length; k++){
     g_string_insert_c(content, k, (gchar) (ags_pattern_get_bit(pattern, i, j, k) ? '1': '0'));
   }
 
@@ -2927,13 +2969,17 @@ ags_file_write_pattern_data(AgsFile *file, xmlNode *parent, AgsPattern *pattern,
 }
 
 void
-ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node, AgsPattern *pattern)
+ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node,
+				AgsPattern *pattern,
+				guint length)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
+ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent,
+				 AgsPattern *pattern,
+				 guint length)
 {
   //TODO:JK: implement me
 }
