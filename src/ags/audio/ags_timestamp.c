@@ -23,7 +23,6 @@ void ags_timestamp_init (AgsTimestamp *timestamp);
 void ags_timestamp_finalize(GObject *gobject);
 
 static gpointer ags_timestamp_parent_class = NULL;
-static guint timestamp_signals[LAST_SIGNAL];
 
 GType
 ags_timestamp_get_type (void)
@@ -74,6 +73,12 @@ ags_timestamp_init(AgsTimestamp *timestamp)
 
   timestamp->delay = 0;
   timestamp->attack = 0;
+}
+
+void
+ags_timestamp_finalize(GObject *gobject)
+{
+  /* empty */
 }
 
 AgsTimestamp*

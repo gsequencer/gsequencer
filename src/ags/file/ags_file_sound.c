@@ -2735,14 +2735,14 @@ ags_file_read_pattern(AgsFile *file, xmlNode *node, AgsPattern **pattern)
 		     13)){
 	ags_file_read_timestamp(file,
 				child,
-				&gobject->timestamp);
+				(AgsTimestamp **) &gobject->timestamp);
       }else if(!xmlStrncmp(child->name,
 			   "ags-pattern-data-list\0",
 			   21)){
 	ags_file_read_pattern_data_list(file,
 					child,
-					pattern,
-					pattern->dim[2]);
+					gobject,
+					gobject->dim[2]);
       }
     }
 
@@ -2792,7 +2792,7 @@ ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
   if(pattern->timestamp != NULL){
     ags_file_write_timestamp(file,
 			     node,
-			     pattern->timestamp);
+			     (AgsTimestamp *) pattern->timestamp);
   }
 
   ags_file_write_pattern_data_list(file,
@@ -2806,6 +2806,7 @@ ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern)
 {
   AgsPattern *current;
   xmlNode *child;
+  GList *list;
 
   child = node->children;
 
@@ -2886,11 +2887,23 @@ ags_file_read_pattern_data(AgsFile *file, xmlNode *node,
   xmlChar *coding;
   guint k;
 
-  *i = g_ascii_strtoull(xmlGetProp(pattern_data_node,
-				   "dim-1st-level\0"));
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", pattern,
+				   NULL));
+
+  *i = g_ascii_strtoull(xmlGetProp(node,
+				   "dim-1st-level\0"),
+			NULL,
+			10);
   
-  *j = g_ascii_strtoull(xmlGetProp(pattern_data_node,
-				   "dim-2nd-level\0"));
+  *j = g_ascii_strtoull(xmlGetProp(node,
+				   "dim-2nd-level\0"),
+			NULL,
+			10);
 
   content = node->content;
 
@@ -2901,7 +2914,7 @@ ags_file_read_pattern_data(AgsFile *file, xmlNode *node,
 		 "human readable\0",
 		 14)){
     for(k = 0; k < length; k++){
-      if(content[i] == '1'){
+      if(content[k] == '1'){
 	ags_pattern_toggle_bit(pattern, *i, *j, k);
       }
     }
@@ -2973,7 +2986,26 @@ ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node,
 				AgsPattern *pattern,
 				guint length)
 {
-  //TODO:JK: implement me
+  xmlNode *child;
+  guint i, j;
+
+  child = node->children;
+
+  while(child != NULL){
+    ags_file_read_pattern_data(file, child,
+			       pattern, &i, &j,
+			       length);
+    
+    child = child->next;
+  }
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", pattern,
+				   NULL));
 }
 
 xmlNode*
@@ -2981,7 +3013,40 @@ ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent,
 				 AgsPattern *pattern,
 				 guint length)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i, j;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", pattern,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-pattern-data-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  for(i = 0; i < pattern->dim[0]; i++){
+    for(j = 0; j < pattern->dim[1]; j++){
+      ags_file_write_pattern_data(file, node,
+				  pattern, i, j,
+				  length);
+    }
+  }
+
+  return(node);
 }
 
 void

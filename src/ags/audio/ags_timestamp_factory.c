@@ -18,12 +18,18 @@
 
 #include <ags/audio/ags_timestamp_factory.h>
 
+#include <ags/object/ags_marshal.h>
+
 void ags_timestamp_factory_class_init(AgsTimestampFactoryClass *timestamp_factory);
 void ags_timestamp_factory_init (AgsTimestampFactory *timestamp_factory);
 void ags_timestamp_factory_finalize(GObject *gobject);
 
 AgsTimestamp* ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
 						AgsTimestamp *predecor);
+enum{
+  CREATE,
+  LAST_SIGNAL,
+};
 
 static gpointer ags_timestamp_factory_parent_class = NULL;
 static guint timestamp_factory_signals[LAST_SIGNAL];
@@ -68,6 +74,20 @@ ags_timestamp_factory_class_init(AgsTimestampFactoryClass *timestamp_factory)
   gobject = (GObjectClass *) timestamp_factory;
 
   gobject->finalize = ags_timestamp_factory_finalize;
+
+  /*  */
+  timestamp_factory->create = ags_timestamp_factory_real_create;
+
+  timestamp_factory_signals[CREATE] =
+    g_signal_new("create\0",
+		 G_TYPE_FROM_CLASS (timestamp_factory),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsTimestampFactoryClass, create),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT,
+		 G_TYPE_OBJECT, 2,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT);
+
 }
 
 void
@@ -76,6 +96,12 @@ ags_timestamp_factory_init(AgsTimestampFactory *timestamp_factory)
   timestamp_factory->flags = 0;
 
   timestamp_factory->timestamp = NULL;
+}
+
+void
+ags_timestamp_factory_finalize(GObject *gobject)
+{
+  //TODO:JK: implement me
 }
 
 AgsTimestamp*

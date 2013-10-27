@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_timestamp.h>
+
 #define AGS_TYPE_TIMESTAMP_FACTORY                (ags_timestamp_factory_get_type())
 #define AGS_TIMESTAMP_FACTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIMESTAMP_FACTORY, AgsTimestampFactory))
 #define AGS_TIMESTAMP_FACTORY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TIMESTAMP_FACTORY, AgsTimestampFactoryClass))
@@ -49,7 +51,8 @@ struct _AgsTimestampFactoryClass
 {
   GObjectClass object;
   
-  AgsTimestamp* (*create)(AgsTimestampFactory *timestamp_factory);
+  AgsTimestamp* (*create)(AgsTimestampFactory *timestamp_factory,
+			  AgsTimestamp *predecor);
 };
 
 GType ags_timestamp_factory_get_type(void);

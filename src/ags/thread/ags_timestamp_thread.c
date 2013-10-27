@@ -30,8 +30,6 @@ void ags_timestamp_thread_finalize(GObject *gobject);
 static gpointer ags_timestamp_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_timestamp_thread_parent_connectable_interface;
 
-static guint timestamp_thread_signals[LAST_SIGNAL];
-
 GType
 ags_timestamp_thread_get_type()
 {

@@ -118,7 +118,15 @@ extern void g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT (GClosure     *closur
                                                             gpointer      invocation_hint,
                                                             gpointer      marshal_data);
 
-/* OBJECT:OBJECT,POINTER,POINTER (ags_marshallers.list:15) */
+/* OBJECT:OBJECT,OBJECT (ags_marshallers.list:15) */
+extern void g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT (GClosure     *closure,
+                                                           GValue       *return_value,
+                                                           guint         n_param_values,
+                                                           const GValue *param_values,
+                                                           gpointer      invocation_hint,
+                                                           gpointer      marshal_data);
+
+/* OBJECT:OBJECT,POINTER,POINTER (ags_marshallers.list:16) */
 extern void g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
                                                                     GValue       *return_value,
                                                                     guint         n_param_values,
