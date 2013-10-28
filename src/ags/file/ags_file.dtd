@@ -378,11 +378,13 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-task EMPTY>
+<!ELEMENT ags-task (ags-ref-list)>
 <!ATTLIST ags-task
+	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
 	  name             CDATA      #REQUIRED
-	  delay            NMTOKEN    #REQUIRED <!-- deprecated: start renamed -->
+	  delay            NMTOKEN    #REQUIRED
 	  error-message    CDATA      #IMPLIED
 	  >
 

@@ -613,6 +613,22 @@ ags_file_util_write_parameter(AgsFile *file,
 }
 
 void
+ags_file_util_read_ref_list(AgsFile *file,
+			    xmlNode *node,
+			    GObject *gobject, GType base_type)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_util_write_ref_list(AgsFile *file,
+			     xmlNode *parent,
+			     GObject *gobject, GType base_type)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_util_read_dependency(AgsFile *file,
 			      xmlNode *node, gchar **id,
 			      gchar **name, xmlChar **xpath)

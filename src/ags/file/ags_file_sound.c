@@ -1539,10 +1539,6 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 	     id);
 
   xmlNewProp(node,
-	     AGS_FILE_TYPE_PROP,
-	     G_OBJECT_TYPE_NAME(recall));
-
-  xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
 	     recall->version);
   
@@ -3385,7 +3381,6 @@ ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note)
 
   xmlAddChild(parent,
 	      node);
-
 }
 
 void
@@ -3468,25 +3463,188 @@ ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note)
 void
 ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
 {
-  //TODO:JK: implement me
+  AgsTask *gobject;
+  AgsFileLookup *file_lookup;
+  xmlNode *child;
+  xmlChar *type_name;
+
+  if(*task == NULL){
+    GType type;
+
+    type_name = xmlGetProp(node,
+			   AGS_FILE_TYPE_PROP);
+
+    type = g_type_from_name(type_name);
+
+    gobject = g_object_new(type,
+			   NULL);
+
+    *task = gobject;
+  }else{
+    gobject = *task;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  /*  */
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node,
+						       AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->name = (gchar *) xmlGetProp(node,
+				       "name\0");
+
+  gobject->delay = g_ascii_strtoull((gchar *) xmlGetProp(node,
+							 "delay\0"),
+				    NULL,
+				    10);
+  
+  //TODO:JK: implement error message
+
+  /* child elements */
+  ags_file_util_read_ref_list(file,
+			      node,
+			      task, AGS_TYPE_TASK);
 }
 
 xmlNode*
 ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *id_ref;
+  xmlNode *node;
+  gchar *id;
+  gchar *xpath;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-task\0");
+
+  id = ags_id_generator_create_uuid();
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", task,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(task));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", task->flags));
+
+  /*  */  
+  xmlNewProp(node,
+	     AGS_FILE_NAME_PROP,
+	     task->name);
+  
+  xmlNewProp(node,
+	     "delay\0",
+	     g_strdup_printf("%d\0",
+			     task->delay));
+  
+  //TODO:JK: implement error message
+  
+  xmlAddChild(parent,
+	      node);
+
+  /* child parameters */
+  ags_file_util_write_ref_list(file,
+			       node,
+			       task, AGS_TYPE_TASK);
+
+  return(node);
 }
 
 void
 ags_file_read_task_list(AgsFile *file, xmlNode *node, GList **task)
 {
-  //TODO:JK: implement me
+  AgsTask *current;
+  xmlNode *child;
+  GList *list;
+
+  child = node->children;
+
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    
+    ags_file_read_task(file, child,
+		       &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+  
+  list = g_list_reverse(list);
+
+  *task = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", task,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-task-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = task;
+
+  for(i = 0; list != NULL; i++){
+    ags_file_write_task(file,
+			node,
+			AGS_TASK(list->data));
+    
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void
