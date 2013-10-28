@@ -19,7 +19,10 @@
 #include <ags/audio/ags_notation.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
 #include <ags/object/ags_tactable.h>
+
+#include <ags/audio/ags_devout.h>
 
 #include <stdlib.h>
 #include <errno.h>
@@ -129,17 +132,19 @@ ags_notation_init(AgsNotation *notation)
   notation->audio_channel = 0;
   notation->audio = NULL;
 
-  notation->base_frequency = 0;
+  notation->key = g_strdup("violine\0");
+  notation->base_frequency = 440.0;
 
-  notation->tact = g_strdup("1/4\0");
-  notation->bpm = 120;
+  notation->tact = AGS_DEVOUT_DEFAULT_TACT;
+  notation->bpm = 120.0;
 
   notation->maximum_note_length = AGS_NOTATION_MAXIMUM_NOTE_LENGTH;
 
   notation->notes = NULL;
-  notation->start_loop = NULL;
-  notation->end_loop = NULL;
-  notation->offset = 0;
+
+  notation->start_loop = 0.0;
+  notation->end_loop = 0.0;
+  notation->offset = 0.0;
 
   notation->selection = NULL;
 }
@@ -163,9 +168,6 @@ ags_notation_finalize(GObject *gobject)
   GList *list, *list_next;
 
   notation = AGS_NOTATION(gobject);
-
-  if(notation->tact != NULL)
-    g_free(notation->tact);
 
   ags_list_free_and_unref_link(notation->notes);
 

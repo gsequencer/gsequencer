@@ -54,17 +54,19 @@ struct _AgsNotation
   guint audio_channel;
   GObject *audio;
 
-  guint base_frequency;
+  gchar *key;
+  gdouble base_frequency;
 
-  char *tact;
-  guint bpm;
+  gdouble tact;
+  gdouble bpm;
 
-  guint maximum_note_length;
+  gdouble maximum_note_length;
 
   GList *notes;
-  GList *start_loop;
-  GList *end_loop;
-  guint offset;
+  
+  gdouble start_loop;
+  gdouble end_loop;
+  gdouble offset;
 
   GList *selection;
 };

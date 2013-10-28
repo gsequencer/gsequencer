@@ -545,7 +545,7 @@ ags_play_notation_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   while(current_position != NULL){
     note = AGS_NOTE(current_position->data);
     
-    if(current_position != notation->end_loop){
+    if(current_position != NULL){
       if(note->x[0] == play_notation->count_beats_audio_run->notation_counter){
 	selected_channel = ags_channel_pad_nth(channel, note->y);
 	

@@ -3052,25 +3052,237 @@ ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent,
 void
 ags_file_read_notation(AgsFile *file, xmlNode *node, AgsNotation **notation)
 {
-  //TODO:JK: implement me
+  AgsNotation *gobject;
+  xmlNode *child;
+  xmlChar *prop;
+
+  if(*notation == NULL){
+    gobject = (AgsNotation *) g_object_new(AGS_TYPE_NOTATION,
+					   NULL);
+
+    *notation = gobject;
+  }else{
+    gobject = *notation;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node,
+						       AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->audio_channel = (guint) g_ascii_strtoull(xmlGetProp(node,
+							       "audio-channel\0"),
+						    NULL,
+						    10);
+  
+  gobject->key = g_strdup(xmlGetProp(node,
+				     "key\0"));
+  
+  gobject->base_frequency = (gdouble) g_ascii_strtod(xmlGetProp(node,
+								"base-frequency\0"),
+						     NULL);
+
+  gobject->tact = (gdouble) g_ascii_strtod(xmlGetProp(node,
+						      "tact\0"),
+					   NULL);
+
+  gobject->bpm = (gdouble) g_ascii_strtod(xmlGetProp(node,
+						     "bpm\0"),
+					  NULL);
+
+  gobject->maximum_note_length = (gdouble) g_ascii_strtod(xmlGetProp(node,
+								     "max-note-length\0"),
+							  NULL);
+
+  prop = xmlGetProp(node,
+		    "loop-start\0");
+
+  if(prop != NULL){
+    gobject->start_loop = (gdouble) g_ascii_strtod(prop,
+						   NULL);
+    gobject->end_loop = (gdouble) g_ascii_strtod(xmlGetProp(node,
+							    "loop-end\0"),
+						 NULL);
+  }
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-timestamp\0",
+		     13)){
+	ags_file_read_timestamp(file,
+				child,
+				(AgsTimestamp **) &gobject->timestamp);
+      }else if(!xmlStrncmp(child->name,
+			   "ags-note-list\0",
+			   13)){
+	ags_file_read_note_list(file,
+				child,
+				&gobject->notes);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
 ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-notation\0");
+
+  id = ags_id_generator_create_uuid();
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", notation,
+				   NULL));
+  
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", notation->flags));
+
+  xmlNewProp(node,
+	     "key\0",
+	     notation->key);
+
+  xmlNewProp(node,
+	     "audio-channel\0",
+	     g_strdup_printf("%d\0", notation->audio_channel));
+
+  xmlNewProp(node,
+	     "base-frequency\0",
+	     g_strdup_printf("%f\0", notation->base_frequency));
+
+  xmlNewProp(node,
+	     "tact\0",
+	     g_strdup_printf("%f\0", notation->tact));
+
+  xmlNewProp(node,
+	     "bpm\0",
+	     g_strdup_printf("%f\0", notation->bpm));
+  
+  xmlNewProp(node,
+	     "bpm\0",
+	     g_strdup_printf("%f\0", notation->maximum_note_length));
+
+  xmlNewProp(node,
+	     "loop-start\0",
+	     g_strdup_printf("%f\0", notation->start_loop));
+
+  xmlNewProp(node,
+	     "loop-end\0",
+	     g_strdup_printf("%f\0", notation->end_loop));
+
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
+  ags_file_write_timestamp(file,
+			   node,
+			   (AgsTimestamp *) notation->timestamp);
+
+  ags_file_write_note_list(file,
+			   node,
+			   notation->notes);
 }
 
 void
 ags_file_read_notation_list(AgsFile *file, xmlNode *node, GList **notation)
 {
-  //TODO:JK: implement me
+  AgsNotation *current;
+  xmlNode *child;
+  GList *list;
+
+  child = node->children;
+
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    
+    ags_file_read_notation(file, child,
+			   &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+
+  *notation = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", notation,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-notation-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = notation;
+
+  for(i = 0; list != NULL; i++){
+    ags_file_write_notation(file,
+			    node,
+			    AGS_NOTATION(list->data));
+    
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void

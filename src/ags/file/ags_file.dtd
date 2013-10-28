@@ -347,6 +347,7 @@
 <!ATTLIST ags-notation
 	  id               ID         #REQUIRED
 	  flags            CDATA      #REQUIRED
+	  audio-channel    NMTOKEN    #REQUIRED
 	  key              CDATA      "violine"
 	  base-frequency   NMTOKEN    440.0
 	  tact             NMTOKEN    0.25
