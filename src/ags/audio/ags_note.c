@@ -95,6 +95,9 @@ ags_note_init(AgsNote *note)
   note->x[0] = 0;
   note->x[1] = 0;
   note->y = 0;
+
+  note->name = NULL;
+  note->frequency = 440.0;
 }
 
 void

@@ -346,7 +346,7 @@
 <!ELEMENT ags-notation (ags-timestamp, ags-note-list)>
 <!ATTLIST ags-notation
 	  id               ID         #REQUIRED
-	  flags            CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
 	  audio-channel    NMTOKEN    #REQUIRED
 	  key              CDATA      "violine"
 	  base-frequency   NMTOKEN    440.0
@@ -365,11 +365,11 @@
 <!ELEMENT ags-note EMPTY>
 <!ATTLIST ags-note
 	  id               ID         #REQUIRED
-	  flags            CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
 	  x0               NMTOKEN    #REQUIRED
 	  x1               NMTOKEN    #REQUIRED
 	  y                NMTOKEN    #REQUIRED
-	  name             NMTOKEN    #IMPLIED
+	  name             CDATA      #IMPLIED
 	  frequency        NMTOKEN    #IMPLIED
 	  >
 

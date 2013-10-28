@@ -49,6 +49,9 @@ struct _AgsNote
   // gui format, convert easy to visualization
   guint x[2];
   guint y;
+
+  gchar *name;
+  gdouble frequency;
 };
 
 struct _AgsNoteClass

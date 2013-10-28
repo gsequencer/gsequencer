@@ -3184,7 +3184,7 @@ ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
 	     g_strdup_printf("%f\0", notation->bpm));
   
   xmlNewProp(node,
-	     "bpm\0",
+	     "max-note-length\0",
 	     g_strdup_printf("%f\0", notation->maximum_note_length));
 
   xmlNewProp(node,
@@ -3288,25 +3288,181 @@ ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation)
 void
 ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
 {
-  //TODO:JK: implement me
+  AgsNote *gobject;
+  xmlNode *child;
+  xmlChar *prop;
+
+  if(*note == NULL){
+    gobject = (AgsNote *) g_object_new(AGS_TYPE_NOTE,
+				       NULL);
+
+    *note = gobject;
+  }else{
+    gobject = *note;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node,
+						       AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->x[0] = (guint) g_ascii_strtoull(xmlGetProp(node,
+						      "x0\0"),
+					   NULL,
+					   10);
+  
+  gobject->x[1] = (guint) g_ascii_strtoull(xmlGetProp(node,
+						      "x1\0"),
+					   NULL,
+					   10);
+  
+  gobject->y = (guint) g_ascii_strtoull(xmlGetProp(node,
+						   "y\0"),
+					NULL,
+					10);
+
+  gobject->name = g_strdup(xmlGetProp(node,
+				     "name\0"));
+
+  gobject->frequency = (gdouble) g_ascii_strtod(xmlGetProp(node,
+							   "frequency\0"),
+						NULL);
 }
 
 xmlNode*
 ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-note\0");
+
+  id = ags_id_generator_create_uuid();
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", note,
+				   NULL));
+  
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", note->flags));
+
+  xmlNewProp(node,
+	     "x0\0",
+	     g_strdup_printf("%d\0", note->x[0]));
+
+  xmlNewProp(node,
+	     "x1\0",
+	     g_strdup_printf("%d\0", note->x[1]));
+
+  xmlNewProp(node,
+	     "y\0",
+	     g_strdup_printf("%d\0", note->y));
+
+  xmlNewProp(node,
+	     "name\0",
+	     note->name);
+
+  xmlNewProp(node,
+	     "frequency\0",
+	     g_strdup_printf("%f\0", note->frequency));
+
+  xmlAddChild(parent,
+	      node);
+
 }
 
 void
 ags_file_read_note_list(AgsFile *file, xmlNode *node, GList **note)
 {
-  //TODO:JK: implement me
+  AgsNote *current;
+  xmlNode *child;
+  GList *list;
+
+  child = node->children;
+
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    
+    ags_file_read_note(file, child,
+		       &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+  
+  list = g_list_reverse(list);
+
+  *note = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", note,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-note-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = note;
+
+  for(i = 0; list != NULL; i++){
+    ags_file_write_note(file,
+			    node,
+			    AGS_NOTE(list->data));
+    
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void
