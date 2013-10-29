@@ -322,6 +322,9 @@
 	  dim-1st-level    NMTOKEN    1
 	  dim-2nd-level    NMTOKEN    1
 	  length           NMTOKEN    32
+	  <!-- TODO:JK: implement following -->
+	  delay            NMTOKEN    #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-pattern-data-list (ags-pattern-data*)>
@@ -355,6 +358,9 @@
 	  max-note-length  NMTOKEN    16.0
 	  loop-start       NMTOKEN    #IMPLIED
 	  loop-end         NMTOKEN    #IMPLIED
+	  <!-- TODO:JK: implement following -->
+	  delay            NMTOKEN    #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-note-list (ags-note*)>
@@ -401,7 +407,7 @@
 	  id                     ID         #REQUIRED
 	  version                CDATA      #REQUIRED
 	  build-id               CDATA      #REQUIRED
-	  flags                  NMTOKEN    0
+	  flags                  PCDATA     #REQUIRED
 	  devout                 CDATA      #REQUIRED
 	  effect                 CDATA      #REQUIRED
 	  name                   CDATA      #REQUIRED
@@ -645,7 +651,7 @@
 <!-- file link list -->
 <!ELEMENT ags-file-link-list (ags-file-link*)>
 
-<!ELEMENT ags-file-link (ags-offset)>
+<!ELEMENT ags-file-link (ags-timestamp)>
 <!ATTLIST ags-file-link
 	  id               ID         #REQUIRED
 	  type             CDATA      "xpath"
@@ -665,7 +671,10 @@
 
 <!ELEMENT ags-timestamp-list (ags-timestamp*)>
 
-<!ELEMENT ags-timestamp (ags-offset,ags-tic)>
+<!ELEMENT ags-timestamp (CDATA)>
 <!ATTLIST ags-timestamp
-	  id              ID         #REQUIRED
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  delay            NMTOKEN    #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
 	  >

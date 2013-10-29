@@ -3246,7 +3246,6 @@ ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation)
   xmlNode *node;
   GList *list;
   gchar *id;
-  guint i;
 
   id = ags_id_generator_create_uuid();
 
@@ -3270,7 +3269,7 @@ ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation)
 
   list = notation;
 
-  for(i = 0; list != NULL; i++){
+  while(list != NULL){
     ags_file_write_notation(file,
 			    node,
 			    AGS_NOTATION(list->data));
@@ -3286,7 +3285,6 @@ ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
 {
   AgsNote *gobject;
   xmlNode *child;
-  xmlChar *prop;
 
   if(*note == NULL){
     gobject = (AgsNote *) g_object_new(AGS_TYPE_NOTE,
@@ -3425,7 +3423,6 @@ ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note)
   xmlNode *node;
   GList *list;
   gchar *id;
-  guint i;
 
   id = ags_id_generator_create_uuid();
 
@@ -3449,7 +3446,7 @@ ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note)
 
   list = note;
 
-  for(i = 0; list != NULL; i++){
+  while(list != NULL){
     ags_file_write_note(file,
 			    node,
 			    AGS_NOTE(list->data));
@@ -3464,7 +3461,6 @@ void
 ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
 {
   AgsTask *gobject;
-  AgsFileLookup *file_lookup;
   xmlNode *child;
   xmlChar *type_name;
 
@@ -3520,7 +3516,6 @@ ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
   AgsFileIdRef *id_ref;
   xmlNode *node;
   gchar *id;
-  gchar *xpath;
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-task\0");
@@ -3612,7 +3607,6 @@ ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
   xmlNode *node;
   GList *list;
   gchar *id;
-  guint i;
 
   id = ags_id_generator_create_uuid();
 
@@ -3636,7 +3630,7 @@ ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
 
   list = task;
 
-  for(i = 0; list != NULL; i++){
+  while(list != NULL){
     ags_file_write_task(file,
 			node,
 			AGS_TASK(list->data));
@@ -3650,11 +3644,159 @@ ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
 void
 ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp)
 {
-  //TODO:JK: implement me
+  AgsTimestamp *gobject;
+  xmlNode *child;
+
+  if(*timestamp == NULL){
+    gobject = (AgsTimestamp *) g_object_new(AGS_TYPE_TIMESTAMP,
+					    NULL);
+
+    *timestamp = gobject;
+  }else{
+    gobject = *timestamp;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node,
+						       AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->delay = (guint) g_ascii_strtoull(xmlGetProp(node,
+						      "delay\0"),
+					   NULL,
+					   10);
+  
+  gobject->attack = (guint) g_ascii_strtoull(xmlGetProp(node,
+						      "attack\0"),
+					   NULL,
+					   10);
+
+  gobject->timer.unix_time.time_val = (guint) g_ascii_strtoull(node->content,
+							       NULL,
+							       10);
 }
 
 xmlNode*
 ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-timestamp\0");
+
+  id = ags_id_generator_create_uuid();
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+ 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", timestamp,
+				   NULL));
+  
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", timestamp->flags));
+
+  xmlNewProp(node,
+	     "delay\0",
+	     g_strdup_printf("%d\0", timestamp->delay));
+
+  xmlNewProp(node,
+	     "attack\0",
+	     g_strdup_printf("%d\0", timestamp->attack));
+
+  xmlAddChild(parent,
+	      node);
+
+  xmlNodeAddContent(node,
+		    g_strdup_printf("%d\0", timestamp->timer.unix_time.time_val));
+}
+
+void
+ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp)
+{
+  AgsTimestamp *current;
+  xmlNode *child;
+  GList *list;
+
+  child = node->children;
+
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    
+    ags_file_read_timestamp(file, child,
+			    &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+  
+  list = g_list_reverse(list);
+
+  *timestamp = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
+}
+
+xmlNode*
+ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp)
+{
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", timestamp,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-timestamp-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = timestamp;
+  
+  while(list != NULL){
+    ags_file_write_timestamp(file,
+			     node,
+			     AGS_TIMESTAMP(list->data));
+    
+    list = list->next;
+  }
+
+  return(node);
 }

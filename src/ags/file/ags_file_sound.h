@@ -177,4 +177,7 @@ xmlNode* ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task);
 void ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp);
 xmlNode* ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp);
 
+void ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp);
+xmlNode* ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp);
+
 #endif /*__AGS_FILE_SOUND_H__*/
