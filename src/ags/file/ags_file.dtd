@@ -28,17 +28,6 @@
 	  name             CDATA      #IMPLIED
 	  >
 
-<!ELEMENT ags-ref-list (ags-ref*)>
-<!ATTLIST ags-ref-list
-	  id               ID         #REQUIRED
-	  >
-
-<!ELEMENT ags-ref EMPTY>
-<!ATTLIST ags-ref
-	  id               ID         #REQUIRED
-	  xpath            CDATA      #REQUIRED
-	  >
-
 <!ELEMENT ags-dependency-list (ags-dependency*)>
 <!ATTLIST ags-dependency-list
 	  id               ID         #REQUIRED
@@ -183,7 +172,7 @@
 	  >
 
 <!-- thread -->
-<!ELEMENT ags-audio-loop (ags-ref-list, ags-ref-list, ags-ref-list, ags-ref-list)>
+<!ELEMENT ags-audio-loop (ags-parameter, ags-parameter, ags-parameter, ags-parameter)>
 <!ATTLIST ags-audio-loop
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -384,7 +373,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-task (ags-ref-list)>
+<!ELEMENT ags-task (ags-parameter)>
 <!ATTLIST ags-task
 	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED

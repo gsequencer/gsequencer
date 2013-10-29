@@ -50,14 +50,6 @@ xmlNode* ags_file_util_write_parameter(AgsFile *file,
 				       gchar *id,
 				       GParameter *parameter, gint n_params);
 
-/* ags-ref-list */
-void ags_file_util_read_ref_list(AgsFile *file,
-				 xmlNode *node,
-				 GObject *gobject, GType base_type);
-xmlNode* ags_file_util_write_ref_list(AgsFile *file,
-				      xmlNode *parent,
-				      GObject *gobject, GType base_type);
-
 /* dependency */
 void ags_file_util_read_dependency(AgsFile *file,
 				   xmlNode *node,

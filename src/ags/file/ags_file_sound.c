@@ -3461,8 +3461,10 @@ void
 ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
 {
   AgsTask *gobject;
+  GParameter *parameter;
   xmlNode *child;
   xmlChar *type_name;
+  guint n_params;
 
   if(*task == NULL){
     GType type;
@@ -3505,17 +3507,42 @@ ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
   //TODO:JK: implement error message
 
   /* child elements */
-  ags_file_util_read_ref_list(file,
-			      node,
-			      task, AGS_TYPE_TASK);
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-parameter\0",
+		     13)){
+	guint i;
+	
+	ags_file_util_read_parameter(file,
+				     child,
+				     NULL,
+				     &parameter, &n_params, NULL);
+
+	for(i = 0; i < n_params; i++){
+	  g_object_set_property(G_OBJECT(gobject),
+				parameter[i].name,
+				&parameter[i].value);
+	}
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
 ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
 {
   AgsFileIdRef *id_ref;
+  GParameter *parameter;
+  GParamSpec **param_spec;
   xmlNode *node;
   gchar *id;
+  guint n_properties, n_params;
+  guint i, j;
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
 		    "ags-task\0");
@@ -3558,9 +3585,38 @@ ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
 	      node);
 
   /* child parameters */
-  ags_file_util_write_ref_list(file,
-			       node,
-			       task, AGS_TYPE_TASK);
+  param_spec = g_object_class_list_properties(G_OBJECT_GET_CLASS(task),
+					      &n_properties);
+
+  parameter = NULL;
+
+  for(i = 0, j = 0; i < n_properties; i++){
+    if(g_type_is_a(param_spec[i]->owner_type,
+		   AGS_TYPE_TASK)){
+      if(parameter == 0){
+	parameter = (GParameter *) g_new(GParameter,
+					 1);
+      }else{
+	parameter = (GParameter *) g_renew(GParameter,
+					   parameter,
+					   (i + 1));
+      }
+
+      parameter[i].name = param_spec[i]->name;
+      g_object_get_property(G_OBJECT(task),
+			    param_spec[i]->name,
+			    &(parameter[i].value));
+
+      j++;
+    }
+  }
+
+  n_params = j;
+
+  ags_file_util_write_parameter(file,
+				node,
+				ags_id_generator_create_uuid(),
+				parameter, n_params);
 
   return(node);
 }
