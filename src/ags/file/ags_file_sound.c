@@ -49,6 +49,9 @@ void ags_file_read_recall_resolve_dependency(AgsFileLookup *file_lookup,
 void ags_file_write_recall_resolve_dependency(AgsFileLookup *file_lookup,
 					      AgsRecall *recall);
 
+void ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
+					  AgsTask *task);
+
 void
 ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 {
@@ -3514,22 +3517,52 @@ ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task)
       if(!xmlStrncmp(child->name,
 		     "ags-parameter\0",
 		     13)){
-	guint i;
-	
+	AgsFileLookup *file_lookup;
+
 	ags_file_util_read_parameter(file,
 				     child,
 				     NULL,
 				     &parameter, &n_params, NULL);
 
-	for(i = 0; i < n_params; i++){
-	  g_object_set_property(G_OBJECT(gobject),
-				parameter[i].name,
-				&parameter[i].value);
-	}
+	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						     "file\0", file,
+						     "node\0", node,
+						     "reference\0", parameter,
+						     NULL);
+	ags_file_add_lookup(file, (GObject *) file_lookup);
+	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			       G_CALLBACK(ags_file_read_task_resolve_parameter), gobject);
       }
     }
 
     child = child->next;
+  }
+}
+
+void
+ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
+				     AgsTask *task)
+{
+  GParameter *parameter;
+  GParamSpec **param_spec;
+  guint n_properties;
+  guint i, j;
+
+  parameter = (GParameter *) file_lookup->ref;
+
+  param_spec = g_object_class_list_properties(G_OBJECT_GET_CLASS(task),
+					      &n_properties);
+
+  for(i = 0, j = 0; i < n_properties; i++){
+    if(g_type_is_a(param_spec[i]->owner_type,
+		   AGS_TYPE_TASK)){
+	
+      g_object_set_property(G_OBJECT(task),
+			    parameter[j].name,
+			    &parameter[j].value);
+
+      j++;
+    }
   }
 }
 
@@ -3599,13 +3632,13 @@ ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
       }else{
 	parameter = (GParameter *) g_renew(GParameter,
 					   parameter,
-					   (i + 1));
+					   (j + 1));
       }
 
-      parameter[i].name = param_spec[i]->name;
+      parameter[j].name = param_spec[i]->name;
       g_object_get_property(G_OBJECT(task),
 			    param_spec[i]->name,
-			    &(parameter[i].value));
+			    &(parameter[j].value));
 
       j++;
     }
