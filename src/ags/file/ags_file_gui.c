@@ -18,6 +18,8 @@
 
 #include <ags/file/ags_file_gui.h>
 
+#include <ags/lib/ags_container.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/file/ags_file_stock.h>
@@ -79,9 +81,16 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
       }else if(!xmlStrncmp(child->name,
 			   "ags-machine-list\0",
 			   16)){
+	GList *list;
+
+	list = NULL;
+
 	ags_file_read_machine_list(file,
 				   child,
-				   &(gobject->machines));
+				   &list);
+
+	ags_container_add_all(GTK_CONTAINER(gobject->machines),
+			      list);
       }else if(!xmlStrncmp(child->name,
 			   "ags-editor\0",
 			   10)){
@@ -104,19 +113,100 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 xmlNode*
 ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 {
-  //TODO:JK: implement me
+  xmlNode *node, *child;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", window,
+				   NULL));
+  
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-window\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", window->flags));
+
+  xmlNewProp(node,
+	     "name\0",
+	     g_strdup(window->name));
+
+  /* child elements */
+  ags_file_write_menu_bar(file,
+			  node,
+			  window->menu_bar);
+
+  ags_file_write_machine_list(file,
+			      node,
+			      gtk_container_get_children(GTK_CONTAINER(window->machines)));
+
+  ags_file_write_editor(file,
+			node,
+			window->editor);
+
+  ags_file_write_navigation(file,
+			    node,
+			    window->navigation);
 }
 
 void
 ags_file_read_menu_bar(AgsFile *file, xmlNode *node, AgsMenuBar **menu_bar)
 {
-  //TODO:JK: implement me
+  AgsMenuBar *gobject;
+  xmlNode *child;
+  xmlChar *prop, *content;
+
+  if(*menu_bar == NULL){
+    gobject = g_object_new(AGS_TYPE_MENU_BAR,
+			   NULL);
+    *menu_bar = gobject;
+  }else{
+    gobject = *menu_bar;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_menu_bar(AgsFile *file, xmlNode *parent, AgsMenuBar *menu_bar)
 {
-  //TODO:JK: implement me
+  xmlNode *node, *child;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", menu_bar,
+				   NULL));
+  
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-menu-bar\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
 }
 
 void

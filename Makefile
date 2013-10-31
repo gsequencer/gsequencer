@@ -277,7 +277,7 @@ am_ags_OBJECTS = ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
 	ags-ags_line_callbacks.$(OBJEXT) ags-main.$(OBJEXT) \
 	ags-ags_list.$(OBJEXT) ags-ags_parameter.$(OBJEXT) \
 	ags-ags_combo_box_text.$(OBJEXT) ags-ags_log.$(OBJEXT) \
-	ags-ags_timestamp_thread.$(OBJEXT) \
+	ags-ags_container.$(OBJEXT) ags-ags_timestamp_thread.$(OBJEXT) \
 	ags-ags_recycling_thread.$(OBJEXT) ags-ags_thread.$(OBJEXT) \
 	ags-ags_audio_loop.$(OBJEXT) ags-ags_gui_thread.$(OBJEXT) \
 	ags-ags_task_thread.$(OBJEXT) ags-ags_devout_thread.$(OBJEXT) \
@@ -1033,6 +1033,7 @@ ags_SOURCES = ./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/lib/ags_parameter.h ./src/ags/lib/ags_list.h \
 	./src/ags/lib/ags_combo_box_text.c ./src/ags/lib/ags_log.c \
 	./src/ags/lib/ags_combo_box_text.h \
+	./src/ags/lib/ags_container.h ./src/ags/lib/ags_container.c \
 	./src/ags/thread/ags_timestamp_thread.h \
 	./src/ags/thread/ags_timestamp_thread.c \
 	./src/ags/thread/ags_recycling_thread.c \
@@ -1320,6 +1321,7 @@ include ./$(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_channel_resize_editor.Po
 include ./$(DEPDIR)/ags-ags_channel_set_recycling.Po
 include ./$(DEPDIR)/ags-ags_combo_box_text.Po
+include ./$(DEPDIR)/ags-ags_container.Po
 include ./$(DEPDIR)/ags-ags_copy_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_copy_channel.Po
 include ./$(DEPDIR)/ags-ags_copy_channel_run.Po
@@ -4768,6 +4770,20 @@ ags-ags_log.obj: ./src/ags/lib/ags_log.c
 #	$(AM_V_CC)source='./src/ags/lib/ags_log.c' object='ags-ags_log.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_log.obj `if test -f './src/ags/lib/ags_log.c'; then $(CYGPATH_W) './src/ags/lib/ags_log.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/lib/ags_log.c'; fi`
+
+ags-ags_container.o: ./src/ags/lib/ags_container.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_container.o -MD -MP -MF $(DEPDIR)/ags-ags_container.Tpo -c -o ags-ags_container.o `test -f './src/ags/lib/ags_container.c' || echo '$(srcdir)/'`./src/ags/lib/ags_container.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_container.Tpo $(DEPDIR)/ags-ags_container.Po
+#	$(AM_V_CC)source='./src/ags/lib/ags_container.c' object='ags-ags_container.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_container.o `test -f './src/ags/lib/ags_container.c' || echo '$(srcdir)/'`./src/ags/lib/ags_container.c
+
+ags-ags_container.obj: ./src/ags/lib/ags_container.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_container.obj -MD -MP -MF $(DEPDIR)/ags-ags_container.Tpo -c -o ags-ags_container.obj `if test -f './src/ags/lib/ags_container.c'; then $(CYGPATH_W) './src/ags/lib/ags_container.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/lib/ags_container.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_container.Tpo $(DEPDIR)/ags-ags_container.Po
+#	$(AM_V_CC)source='./src/ags/lib/ags_container.c' object='ags-ags_container.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_container.obj `if test -f './src/ags/lib/ags_container.c'; then $(CYGPATH_W) './src/ags/lib/ags_container.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/lib/ags_container.c'; fi`
 
 ags-ags_timestamp_thread.o: ./src/ags/thread/ags_timestamp_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_timestamp_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_timestamp_thread.Tpo -c -o ags-ags_timestamp_thread.o `test -f './src/ags/thread/ags_timestamp_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_timestamp_thread.c
