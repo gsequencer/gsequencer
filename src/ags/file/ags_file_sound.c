@@ -104,6 +104,7 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   gobject->bpm = (gdouble) g_ascii_strtod(xmlGetProp(node, "bpm\0"),
 					  NULL);
 
+  /* child elements */
   child = node->children;
 
   while(child != NULL){

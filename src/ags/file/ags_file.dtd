@@ -443,7 +443,7 @@
 	  >
 
 <!--GUI Widgets -->
-<!ELEMENT ags-window (ags-menubar, ags-machine-counter-list, ags-machine-list, ags-editor, ags-navigation)>
+<!ELEMENT ags-window (ags-menu-bar, ags-machine-counter-list, ags-machine-list, ags-editor, ags-navigation)>
 <!ATTLIST ags-window
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED

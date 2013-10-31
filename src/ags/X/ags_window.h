@@ -38,6 +38,8 @@
 #define AGS_IS_WINDOW_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_WINDOW))
 #define AGS_WINDOW_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_WINDOW, AgsWindowClass))
 
+#define AGS_MACHINE_COUNTER(ptr) ((AgsMachineCounter *)(ptr))
+
 typedef struct _AgsWindow AgsWindow;
 typedef struct _AgsWindowClass AgsWindowClass;
 typedef struct _AgsMachineCounter AgsMachineCounter;
@@ -47,7 +49,7 @@ typedef enum{
   AGS_WINDOW_LOADING      = 1 << 1,
   AGS_WINDOW_SAVING       = 1 << 2,
   AGS_WINDOW_TERMINATING  = 1 << 3,
-};
+}AgsWindowFlags;
 
 struct _AgsWindow
 {
@@ -65,7 +67,7 @@ struct _AgsWindow
   GtkVPaned *paned;
 
   GtkVBox *machines;
-  AgsMachineCounter *counter; //TODO:JK: make applicable for plugins
+  GList *machine_counter;
   AgsMachine *selected;
 
   AgsEditor *editor;
@@ -81,17 +83,19 @@ struct _AgsWindowClass
 
 struct _AgsMachineCounter
 {
-  guint everything;
-
-  guint panel;
-  guint mixer;
-  guint drum;
-  guint matrix;
-  guint synth;
-  guint ffplayer;
+  GType machine_type;
+  guint counter;
 };
 
 GType ags_window_get_type(void);
+
+AgsMachineCounter* ags_window_find_machine_counter(AgsWindow *window,
+						   GType machine_type);
+
+void ags_window_increment_machine_counter(AgsWindow *window,
+					  GType machine_type);
+void ags_window_decrement_machine_counter(AgsWindow *window,
+					  GType machine_type);
 
 AgsWindow* ags_window_new(GObject *main);
 

@@ -18,6 +18,12 @@
 
 #include <ags/file/ags_file_gui.h>
 
+#include <ags/util/ags_id_generator.h>
+
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+
 void
 ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 {
@@ -53,7 +59,46 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
   gobject->name = (gchar *) g_strdup(xmlGetProp(node, "name\0"));
 
   /* child elements */
-  //TODO:JK: implement me
+  child = node->children;
+
+  while(child != NULL){
+
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-menu-bar\0",
+		     11)){
+	ags_file_read_menu_bar(file,
+			       child,
+			       &(gobject->menu_bar));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-machine-counter-list\0",
+			   24)){
+	ags_file_read_machine_counter_list(file,
+					   child,
+					   &(gobject->machine_counter));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-machine-list\0",
+			   16)){
+	ags_file_read_machine_list(file,
+				   child,
+				   &(gobject->machines));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-editor\0",
+			   10)){
+	ags_file_read_editor(file,
+			     child,
+			     &(gobject->editor));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-navigation\0",
+			   14)){
+	ags_file_read_navigation(file,
+				 child,
+				 &(gobject->navigation));
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*

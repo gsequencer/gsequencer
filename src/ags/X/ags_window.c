@@ -21,6 +21,13 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/machine/ags_panel.h>
+#include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_ffplayer.h>
+
 #include <stdlib.h>
 
 void ags_window_class_init(AgsWindowClass *window);
@@ -39,6 +46,10 @@ void ags_window_connect(AgsConnectable *connectable);
 void ags_window_disconnect(AgsConnectable *connectable);
 void ags_window_show(GtkWidget *widget);
 gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
+
+static GList* ags_window_standard_machine_counter();
+
+AgsMachineCounter* ags_machine_counter_alloc(GType machine_type, guint initial_value);
 
 enum{
   PROP_0,
@@ -175,15 +186,9 @@ ags_window_init(AgsWindow *window)
 
   window->preferences = NULL;
 
+  window->machine_counter = ags_window_standard_machine_counter();
+
   window->selected = NULL;
-  window->counter = (AgsMachineCounter *) malloc(sizeof(AgsMachineCounter));
-  window->counter->everything = 0;
-  window->counter->panel = 0;
-  window->counter->mixer = 0;
-  window->counter->drum = 0;
-  window->counter->matrix = 0;
-  window->counter->synth = 0;
-  window->counter->ffplayer = 0;
 }
 
 void
@@ -277,7 +282,6 @@ ags_window_finalize(GObject *gobject)
 
   g_object_unref(G_OBJECT(window->devout));
 
-  free(window->counter);
   free(window->name);
 
   G_OBJECT_CLASS(ags_window_parent_class)->finalize(gobject);
@@ -303,6 +307,89 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
   GTK_WIDGET_CLASS(ags_window_parent_class)->delete_event(widget, event);
 
   return(FALSE);
+}
+
+static GList*
+ags_window_standard_machine_counter()
+{
+  static GList *machine_counter;
+
+  machine_counter = NULL;
+
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_TYPE_PANEL, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_TYPE_MIXER, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_TYPE_DRUM, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_TYPE_MATRIX, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_TYPE_SYNTH, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_TYPE_FFPLAYER, 0));
+
+  return(machine_counter);
+}
+
+AgsMachineCounter*
+ags_window_find_machine_counter(AgsWindow *window,
+				GType machine_type)
+{
+  GList *list;
+
+  list = window->machine_counter;
+
+  while(list != NULL){
+    if(AGS_MACHINE_COUNTER(list->data)->machine_type == machine_type){
+      return(AGS_MACHINE_COUNTER(list->data));
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
+}
+
+void
+ags_window_increment_machine_counter(AgsWindow *window,
+				     GType machine_type)
+{
+  AgsMachineCounter *machine_counter;
+
+  machine_counter = ags_window_find_machine_counter(window,
+						    machine_type);
+
+  if(machine_counter != NULL){
+    machine_counter->counter++;
+  }
+}
+
+void
+ags_window_decrement_machine_counter(AgsWindow *window,
+				     GType machine_type)
+{
+  AgsMachineCounter *machine_counter;
+
+  machine_counter = ags_window_find_machine_counter(window,
+						    machine_type);
+
+  if(machine_counter != NULL){
+    machine_counter->counter--;
+  }
+}
+
+AgsMachineCounter*
+ags_machine_counter_alloc(GType machine_type, guint initial_value)
+{
+  AgsMachineCounter *machine_counter;
+
+  machine_counter = (AgsMachineCounter *) malloc(sizeof(AgsMachineCounter));
+
+  machine_counter->machine_type = machine_type;
+  machine_counter->counter = initial_value;
+
+  return(machine_counter);
 }
 
 AgsWindow*
