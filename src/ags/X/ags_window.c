@@ -131,6 +131,8 @@ ags_window_init(AgsWindow *window)
   GtkWidget *scrolled_window;
   GError *error;
 
+  window->flags = 0;
+
   error = NULL;
 
   g_object_set(G_OBJECT(window),

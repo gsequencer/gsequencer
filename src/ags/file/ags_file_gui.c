@@ -21,6 +21,38 @@
 void
 ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 {
+  AgsWindow *gobject;
+  AgsFileLookup *file_lookup;
+  xmlNode *child;
+  xmlChar *prop, *content;
+
+  if(*window == NULL){
+    gobject = g_object_new(AGS_TYPE_WINDOW,
+			   NULL);
+    *window = gobject;
+  }else{
+    gobject = *window;
+  }
+
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->main,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->name = (gchar *) g_strdup(xmlGetProp(node, "name\0"));
+
+  /* child elements */
   //TODO:JK: implement me
 }
 

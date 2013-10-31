@@ -446,6 +446,7 @@
 <!ELEMENT ags-window (ags-menubar, ags-machine-counter-list, ags-machine-list, ags-editor, ags-navigation)>
 <!ATTLIST ags-window
 	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
 	  name             CDATA      #REQUIRED
 	  >
 
@@ -526,14 +527,24 @@
 	  >
 
 <!ELEMENT ags-mixer-input-pad EMPTY>
+<!ATTLIST ags-mixer-input-pad
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-mixer-output-pad EMPTY>
+<!ATTLIST ags-mixer-output-pad
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-drum-input-pad EMPTY>
+<!ATTLIST ags-drum-input-pad
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-drum-output-pad EMPTY>
-
-<!ELEMENT ags-line (ags-line-list*)>
+<!ATTLIST ags-drum-output-pad
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-line (ags-line-member-list, (ags-drum-input-line|ags-drum-output-line))>
 <!ATTLIST ags-line
@@ -543,8 +554,14 @@
 	  >
 
 <!ELEMENT ags-drum-input-line EMPTY>
+<!ATTLIST ags-drum-input-line
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-drum-output-line EMPTY>
+<!ATTLIST ags-drum-output-line
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-line-member-list (ags-line-member*)>
 <!ATTLIST ags-line-member-list
@@ -572,27 +589,42 @@
 	  >
 
 <!ELEMENT ags-pad-editor-list (ags-pad-editor*)>
+<!ATTLIST ags-pad-editor-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-pad-editor (ags-line-editor-list)>
 <!ATTLIST ags-pad-editor
+	  id               ID         #REQUIRED
 	  pad              NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-line-editor-list (ags-line-editor*)>
+<!ATTLIST ags-line-editor-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-line-editor (ags-line-member-editor-list, ags-link-editor)>
 <!ATTLIST ags-line-editor
+	  id               ID         #REQUIRED
 	  line             NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-line-member-editor-list (ags-line-member-editor*)>
+<!ATTLIST ags-line-member-editor-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-line-member-editor (#IDREF, #CDATA, #CDATA, #NMTOKEN, ((#CDATA), (#CDATA, #CDATA)*)*, #IDREF, #IDREF, #CDATA, #NMTOKEN, #NMTOKEN, #NMTOKEN, #NMTOKEN)*>
 
 <!ELEMENT ags-link-editor-list (ags-link-editor*)>
+<!ATTLIST ags-link-editor-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-link-editor EMPTY>
 <!ATTLIST ags-link-editor
+	  id               ID         #REQUIRED
 	  machine          CDATA      #REQUIRED
 	  name             CDATA      #REQUIRED
 	  link		   NMTOKEN    #REQUIRED
@@ -600,19 +632,28 @@
 
 <!-- editor -->
 <!ELEMENT ags-editor (ags-toolbar, ags-notebook)>
+<!ATTLIST ags-editor
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  >
 
 <!ELEMENT ags-toolbar EMPTY>
 <!ATTLIST ags-toolbar
+	  id               ID         #REQUIRED
 	  mode             CDATA      "edit"
 	  tic              CDATA      "1/8"
 	  zoom             CDATA      "1:8"
 	  >
 
 <!ELEMENT ags-notebook EMPTY>
+<!ATTLIST ags-notebook
+	  id               ID         #REQUIRED
+	  >
 
 <!-- navigation -->
 <!ELEMENT ags-navigation EMPTY>
 <!ATTLIST ags-navigation
+	  id               ID         #REQUIRED
 	  expanded         CDATA      "FALSE"
 	  bpm              NMTOKEN    120.0
 	  loop             CDATA      "FALSE"
@@ -629,9 +670,13 @@
 
 <!-- embedded audio list -->
 <!ELEMENT ags-embedded-audio-list (ags-embedded-audio*)>
+<!ATTLIST ags-embedded-audio-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-embedded-audio (#PCDATA)>
 <!ATTLIST ags-embedded-audio
+	  id               ID         #REQUIRED
 	  encoding         CDATA      "base64"
 	  demuxer          CDATA      "raw"
 	  channels         NMTOKEN    "2"
@@ -639,6 +684,9 @@
 
 <!-- file link list -->
 <!ELEMENT ags-file-link-list (ags-file-link*)>
+<!ATTLIST ags-file-link-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-file-link (ags-timestamp)>
 <!ATTLIST ags-file-link
@@ -650,15 +698,25 @@
 	  >
 
 <!ELEMENT ags-history (ags-history-entry-list, ags-timestamp-list))>
+<!ATTLIST ags-history
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-history-entry-list (ags-history-entry*)>
+<!ATTLIST ags-history-entry-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-history-entry (#CDATA)>
 <!ATTLIST ags-history-entry
-	  timestamp       IDREF      #REQUIRED
+	  id               ID         #REQUIRED
+	  timestamp        IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-timestamp-list (ags-timestamp*)>
+<!ATTLIST ags-timestamp-list
+	  id               ID         #REQUIRED
+	  >
 
 <!ELEMENT ags-timestamp (CDATA)>
 <!ATTLIST ags-timestamp

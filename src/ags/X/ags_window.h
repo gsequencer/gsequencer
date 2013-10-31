@@ -42,9 +42,18 @@ typedef struct _AgsWindow AgsWindow;
 typedef struct _AgsWindowClass AgsWindowClass;
 typedef struct _AgsMachineCounter AgsMachineCounter;
 
+typedef enum{
+  AGS_WINDOW_READY        = 1,
+  AGS_WINDOW_LOADING      = 1 << 1,
+  AGS_WINDOW_SAVING       = 1 << 2,
+  AGS_WINDOW_TERMINATING  = 1 << 3,
+};
+
 struct _AgsWindow
 {
   GtkWindow window;
+
+  guint flags;
 
   GObject *main;
   AgsDevout *devout;
