@@ -300,13 +300,74 @@ ags_file_write_machine_counter(AgsFile *file, xmlNode *parent, AgsMachineCounter
 void
 ags_file_read_machine_counter_list(AgsFile *file, xmlNode *node, GList **machine_counter)
 {
-  //TODO:JK: implement me
+  AgsMachineCounter *current;
+  GList *list;
+  xmlNode *child;
+  xmlChar *id;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_machine_counter(file, child, &current);
+
+    list = g_list_prepend(list, current);
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *machine_counter = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machine_counter)
 {
-  //TODO:JK: implement me
+  AgsMachineCounter *current;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-machine-counter-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = machine_counter;
+
+  while(list != NULL){
+    ags_file_write_machine_counter(file, node, AGS_MACHINE_COUNTER(list->data));
+
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void

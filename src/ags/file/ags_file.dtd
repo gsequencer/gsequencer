@@ -466,7 +466,7 @@
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  machine-type     CDATA      #REQUIRED
-	  count            CDATA      #REQUIRED
+	  counter          CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-machine-list (ags-machine*)>
