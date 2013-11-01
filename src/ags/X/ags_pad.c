@@ -162,6 +162,9 @@ ags_pad_init(AgsPad *pad)
 
   pad->flags = 0;
 
+  pad->version = AGS_PAD_DEFAULT_VERSION;
+  pad->build_id = AGS_PAD_DEFAULT_BUILD_ID;
+
   pad->option = (GtkOptionMenu *) gtk_option_menu_new();
   menu = (GtkMenu *) gtk_menu_new();
 

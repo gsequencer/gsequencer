@@ -111,6 +111,9 @@ ags_machine_init(AgsMachine *machine)
   machine->flags = 0;
   machine->file_input_flags = 0;
 
+  machine->version = AGS_MACHINE_DEFAULT_VERSION;
+  machine->build_id = AGS_MACHINE_DEFAULT_BUILD_ID;
+
   machine->name = NULL;
 
   frame = (GtkFrame *) gtk_frame_new(NULL);

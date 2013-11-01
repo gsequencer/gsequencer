@@ -132,6 +132,9 @@ ags_line_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_line_editor_init(AgsLineEditor *line_editor)
 {
+  line_editor->version = AGS_LINE_EDITOR_DEFAULT_VERSION;
+  line_editor->build_id = AGS_LINE_EDITOR_DEFAULT_BUILD_ID;
+
   line_editor->link_editor = NULL;
   line_editor->member_editor = NULL;
 }

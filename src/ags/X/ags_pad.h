@@ -35,6 +35,9 @@
 #define AGS_IS_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PAD))
 #define AGS_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PAD, AgsPadClass))
 
+#define AGS_PAD_DEFAULT_VERSION "0.4.0\0"
+#define AGS_PAD_DEFAULT_BUILD_ID "0.4.0\0"
+
 typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;
 
@@ -47,6 +50,9 @@ struct _AgsPad
   GtkVBox vbox;
 
   guint flags;
+
+  gchar *version;
+  gchar *build_id;
 
   AgsChannel *channel;
   AgsLine *selected_line;

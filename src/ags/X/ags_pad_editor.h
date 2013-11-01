@@ -32,6 +32,9 @@
 #define AGS_IS_PAD_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PAD_EDITOR))
 #define AGS_PAD_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_PAD_EDITOR, AgsPadEditorClass))
 
+#define AGS_PAD_EDITOR_DEFAULT_VERSION "0.4.0\0"
+#define AGS_PAD_EDITOR_DEFAULT_BUILD_ID "0.4.0\0"
+
 typedef struct _AgsPadEditor AgsPadEditor;
 typedef struct _AgsPadEditorClass AgsPadEditorClass;
 
@@ -39,6 +42,9 @@ struct _AgsPadEditor
 {
   GtkVBox vbox;
 
+  gchar *version;
+  gchar *build_id;
+  
   AgsChannel *pad;
 
   GtkExpander *line_editor_expander;

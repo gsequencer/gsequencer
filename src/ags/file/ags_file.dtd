@@ -625,6 +625,8 @@
 <!ELEMENT ags-pad-editor (ags-line-editor-list)>
 <!ATTLIST ags-pad-editor
 	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
 	  pad              NMTOKEN    #REQUIRED
 	  >
 
@@ -636,6 +638,8 @@
 <!ELEMENT ags-line-editor (ags-line-member-editor-list, ags-link-editor)>
 <!ATTLIST ags-line-editor
 	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
 	  line             NMTOKEN    #REQUIRED
 	  >
 
@@ -663,6 +667,8 @@
 <!ELEMENT ags-editor (ags-toolbar, ags-notebook)>
 <!ATTLIST ags-editor
 	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
 	  flags            PCDATA     #REQUIRED
 	  >
 

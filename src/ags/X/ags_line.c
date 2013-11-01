@@ -153,6 +153,9 @@ ags_line_init(AgsLine *line)
   //			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
   line->flags = 0;
 
+  line->version = AGS_LINE_DEFAULT_VERSION;
+  line->build_id = AGS_LINE_DEFAULT_BUILD_ID;
+
   line->channel = NULL;
 
   line->table = (GtkTable *) gtk_table_new(2, 2, FALSE);

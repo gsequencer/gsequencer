@@ -163,6 +163,9 @@ ags_editor_init(AgsEditor *editor)
 
   editor->flags = 0;
 
+  editor->version = AGS_EDITOR_DEFAULT_VERSION;
+  editor->build_id = AGS_EDITOR_DEFAULT_BUILD_ID;
+
   editor->devout = NULL;
 
   editor->popup = ags_editor_popup_new(editor);
