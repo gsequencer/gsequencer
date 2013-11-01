@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/ags_plugin_factory.h>
+#include <ags/plugin/ags_plugin_factory.h>
 
 #include <ags/object/ags_marshal.h>
 
@@ -24,8 +24,11 @@ void ags_plugin_factory_class_init(AgsPluginFactoryClass *plugin_factory);
 void ags_plugin_factory_init (AgsPluginFactory *plugin_factory);
 void ags_plugin_factory_finalize(GObject *gobject);
 
+void ags_plugin_factory_real_add(AgsPluginFactory *plugin_factory,
+				 GType type, gchar *plugin_name, gchar *version, gchar *build_id);
 AgsPlugin* ags_plugin_factory_real_create(AgsPluginFactory *plugin_factory,
-					  AgsPlugin *predecor);
+					  gchar *plugin_name, gchar *version, gchar *build_id);
+
 enum{
   CREATE,
   LAST_SIGNAL,
@@ -102,6 +105,33 @@ ags_plugin_factory_finalize(GObject *gobject)
   //TODO:JK: implement me
 }
 
+GList*
+ags_plugin_factory_list_by_name(AgsPluginFactory *plugin_factory,
+				gchar *plugin_name)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: implement me
+
+  return(list);
+}
+
+void
+ags_plugin_factory_real_add(AgsPluginFactory *plugin_factory,
+			    GType type, gchar *plugin_name, gchar *version, gchar *build_id)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_plugin_factory_add(AgsPluginFactory *plugin_factory,
+		       GType type, gchar *plugin_name, gchar *version, gchar *build_id)
+{
+  //TODO:JK: implement me
+}
+
 AgsPlugin*
 ags_plugin_factory_real_create(AgsPluginFactory *plugin_factory,
 			       gchar *plugin_name, gchar *version, gchar *build_id)
@@ -115,10 +145,9 @@ ags_plugin_factory_real_create(AgsPluginFactory *plugin_factory,
   return(plugin);
 }
 
-
 AgsPlugin*
 ags_plugin_factory_create(AgsPluginFactory *plugin_factory,
-			     AgsPlugin *predecor)
+			  gchar *plugin_name, gchar *version, gchar *build_id)
 {
   //TODO:JK: implement me
 }

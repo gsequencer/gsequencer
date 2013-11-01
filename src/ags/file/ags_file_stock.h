@@ -56,6 +56,7 @@
 #define AGS_FILE_ID_PROP "id\0"
 #define AGS_FILE_NAME_PROP "name\0"
 #define AGS_FILE_TYPE_PROP "type\0"
+#define AGS_FILE_SCOPE_PROP "scope\0"
 #define AGS_FILE_VERSION_PROP "version\0"
 #define AGS_FILE_BUILD_ID_PROP "build-id\0"
 #define AGS_FILE_XPATH_PROP "xpath\0"

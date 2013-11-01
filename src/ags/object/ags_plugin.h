@@ -21,7 +21,7 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/file/ags_file.h>
 
 #define AGS_TYPE_PLUGIN                    (ags_plugin_get_type())
 #define AGS_PLUGIN(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLUGIN, AgsPlugin))

@@ -167,7 +167,7 @@ ags_plugin_write(AgsFile *file,
 		 AgsPlugin *plugin)
 {
   AgsPluginInterface *plugin_interface;
-  gchar *ret_val;
+  xmlNode *ret_val;
 
   g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);

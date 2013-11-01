@@ -453,10 +453,26 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
       if(!xmlStrncmp(child->name,
 		     "ags-pad-list\0",
 		     12)){
+	GList *pad;
 
-	if(){
+	pad = NULL;
+
+	ags_file_read_pad_list(file,
+			       child,
+			       &pad);
+
+	if(!xmlStrncmp(xmlGetProp(child,
+				  AGS_FILE_SCOPE_PROP),
+		       "output\0",
+		       6)){
+	  ags_container_add_all(gobject->output,
+				pad);
 	}else{
+	  ags_container_add_all(gobject->input,
+				pad);
 	}
+
+	g_list_free(pad);
       }
     }
 

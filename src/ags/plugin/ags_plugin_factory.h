@@ -44,12 +44,22 @@ struct _AgsPluginFactory
 struct _AgsPluginFactoryClass
 {
   GObjectClass object;
-  
+
+  void (*add)(AgsPluginFactory *plugin_factory,
+	      GType type, gchar *plugin_name, gchar *version, gchar *build_id);
+
   AgsPlugin* (*create)(AgsPluginFactory *plugin_factory,
 		       gchar *plugin_name, gchar *version, gchar *build_id);
 };
 
 GType ags_plugin_factory_get_type(void);
+
+GList* ags_plugin_factory_list_by_name(AgsPluginFactory *plugin_factory,
+				       gchar *plugin_name);
+
+void ags_plugin_factory_add(AgsPluginFactory *plugin_factory,
+			    GType type, gchar *plugin_name, gchar *version, gchar *build_id);
+
 
 AgsPlugin* ags_plugin_factory_create(AgsPluginFactory *plugin_factory,
 				     gchar *plugin_name, gchar *version, gchar *build_id);

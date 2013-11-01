@@ -523,6 +523,7 @@
 <!ELEMENT ags-pad-list (ags-pad*)>
 <!ATTLIST ags-pad-list
 	  id               ID         #REQUIRED
+	  scope            CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-pad (ags-line-list, (ags-mixer-input-pad|ags-mixer-output-pad|ags-drum-input-pad|ags-drum-output-pad))>
@@ -531,8 +532,8 @@
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  show-grouping    CDATA      "TRUE"
-	  groupe-pad       CDATA      "FALSE"
-	  groupe-channel   CDATA      "FALSE"
+	  group-pad        CDATA      "FALSE"
+	  group-channel    CDATA      "FALSE"
 	  >
 
 <!ELEMENT ags-mixer-input-pad EMPTY>
