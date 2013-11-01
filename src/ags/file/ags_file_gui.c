@@ -26,11 +26,23 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+void ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
+					 AgsMachine *machine);
+void ags_file_read_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
+						  AgsMachine *machine);
+void ags_file_write_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
+						   AgsMachine *machine);
+void ags_file_write_machine_resolve_audio(AgsFileLookup *file_lookup,
+					  AgsMachine *machine);
+void ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
+						 AgsMachine *machine);
+void ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
+						  AgsMachine *machine);
+
 void
 ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 {
   AgsWindow *gobject;
-  AgsFileLookup *file_lookup;
   xmlNode *child;
   xmlChar *prop, *content;
 
@@ -373,11 +385,193 @@ ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machi
 void
 ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 {
+  AgsMachine *gobject;
+  AgsFileLookup *file_lookup;
+  xmlNode *child;
+
+  if(*machine == NULL){
+    gobject = g_object_new(AGS_TYPE_MACHINE,
+			   NULL);
+    *machine = gobject;
+  }else{
+    gobject = *machine;
+  }
+
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->main,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  //TODO:JK: implement me
+
+  /* audio */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_machine_resolve_audio), gobject);
+
+  /* machine-editor */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_machine_resolve_machine_editor), gobject);
+
+  /* rename-dialog */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_machine_resolve_rename_dialog), gobject);
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-pad-list\0",
+		     12)){
+
+	if(){
+	}else{
+	}
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
+ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
+				    AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
+					     AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
+					    AgsMachine *machine)
+{
   //TODO:JK: implement me
 }
 
 xmlNode*
 ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *node, *child;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", machine,
+				   NULL));
+  
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-machine\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", machine->flags));
+
+  //TODO:JK: implement me
+
+  /* audio */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", machine,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_machine_resolve_audio), machine);
+
+  /* machine-editor */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", machine,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_machine_resolve_machine_editor), machine);
+
+  /* rename-dialog */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", machine,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_machine_resolve_rename_dialog), machine);
+
+  /* child elements */
+  ags_file_write_pad_list(file,
+			  node,
+			  gtk_container_get_children(machine->output));
+
+  ags_file_write_pad_list(file,
+			  node,
+			  gtk_container_get_children(machine->input));
+}
+
+void
+ags_file_write_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
+					      AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
+					     AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_write_machine_resolve_audio(AgsFileLookup *file_lookup,
+				     AgsMachine *machine)
 {
   //TODO:JK: implement me
 }
@@ -385,13 +579,74 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 void
 ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine)
 {
-  //TODO:JK: implement me
+  AgsMachine *current;
+  GList *list;
+  xmlNode *child;
+  xmlChar *id;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_machine(file, child, &current);
+
+    list = g_list_prepend(list, current);
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *machine = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 {
-  //TODO:JK: implement me
+  AgsMachine *current;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-machine-counter-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = machine;
+
+  while(list != NULL){
+    ags_file_write_machine(file, node, AGS_MACHINE(list->data));
+
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void

@@ -56,7 +56,6 @@ void
 ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 {
   AgsDevout *gobject;
-  AgsFileLookup *file_lookup;
   xmlNode *child;
   xmlChar *prop, *content;
 

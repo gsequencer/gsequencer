@@ -469,13 +469,13 @@
 	  counter          CDATA      #REQUIRED
 	  >
 
+<!-- machine -->
 <!ELEMENT ags-machine-list (ags-machine*)>
 <!ATTLIST ags-machine-list
 	  id               ID         #REQUIRED
 	  >
 
-<!-- machine -->
-<!ELEMENT ags-machine ((ags-panel|ags-mixer|ags-drum|ags-matrix|ags-synth|ags-ffplayer), ags-pad-list)>
+<!ELEMENT ags-machine ((ags-panel|ags-mixer|ags-drum|ags-matrix|ags-synth|ags-ffplayer), ags-pad-list, ags-pad-list)>
 <!ATTLIST ags-machine
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
