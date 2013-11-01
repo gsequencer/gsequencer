@@ -83,6 +83,9 @@ struct _AgsWindowClass
 
 struct _AgsMachineCounter
 {
+  gchar *version;
+  gchar *build_id;
+
   GType machine_type;
   guint counter;
 };
@@ -96,6 +99,9 @@ void ags_window_increment_machine_counter(AgsWindow *window,
 					  GType machine_type);
 void ags_window_decrement_machine_counter(AgsWindow *window,
 					  GType machine_type);
+
+AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
+					     GType machine_type, guint initial_value);
 
 AgsWindow* ags_window_new(GObject *main);
 

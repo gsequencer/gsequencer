@@ -31,7 +31,11 @@
 #define AGS_IS_RECALL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RECALL))
 #define AGS_IS_RECALL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL))
 #define AGS_RECALL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL, AgsRecallClass))
+
 #define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
+
+#define AGS_RECALL_DEFAULT_VERSION "0.4.0\0"
+#define AGS_RECALL_DEFAULT_BUILD_ID "0.4.0\0"
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;

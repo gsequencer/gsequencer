@@ -142,6 +142,9 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 	     "name\0",
 	     g_strdup(window->name));
 
+  xmlAddChild(parent,
+	      node);
+
   /* child elements */
   ags_file_write_menu_bar(file,
 			  node,
@@ -207,18 +210,91 @@ ags_file_write_menu_bar(AgsFile *file, xmlNode *parent, AgsMenuBar *menu_bar)
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
 ags_file_read_machine_counter(AgsFile *file, xmlNode *node, AgsMachineCounter **machine_counter)
 {
-  //TODO:JK: implement me
+  AgsMachineCounter *ptr;
+  xmlNode *child;
+  xmlChar *prop, *content;
+
+  if(*machine_counter == NULL){
+    ptr = ags_machine_counter_alloc(NULL, NULL,
+				    G_TYPE_NONE, 0);
+    *machine_counter = ptr;
+  }else{
+    ptr = *machine_counter;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", ptr,
+				   NULL));
+
+  ptr->version = xmlGetProp(node,
+			    AGS_FILE_VERSION_PROP);
+
+  ptr->build_id = xmlGetProp(node,
+			     AGS_FILE_BUILD_ID_PROP);
+
+  ptr->machine_type = g_type_from_name(xmlGetProp(node,
+						  AGS_FILE_TYPE_PROP));
+
+  ptr->counter = g_ascii_strtoull(xmlGetProp(node,
+					     "counter\0"),
+				  NULL,
+				  10);
 }
 
 xmlNode*
 ags_file_write_machine_counter(AgsFile *file, xmlNode *parent, AgsMachineCounter *machine_counter)
 {
-  //TODO:JK: implement me
+  xmlNode *node, *child;
+  gchar *id;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", machine_counter,
+				   NULL));
+  
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-machine-counter\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     machine_counter->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     machine_counter->build_id);
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     g_type_name(machine_counter->machine_type));
+
+  xmlNewProp(node,
+	     "counter\0",
+	     g_strdup_printf("%d\0", machine_counter->counter));
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void

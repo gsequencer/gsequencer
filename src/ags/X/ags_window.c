@@ -49,8 +49,6 @@ gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 static GList* ags_window_standard_machine_counter();
 
-AgsMachineCounter* ags_machine_counter_alloc(GType machine_type, guint initial_value);
-
 enum{
   PROP_0,
   PROP_DEVOUT,
@@ -317,17 +315,23 @@ ags_window_standard_machine_counter()
   machine_counter = NULL;
 
   machine_counter = g_list_prepend(machine_counter,
-				   ags_machine_counter_alloc(AGS_TYPE_PANEL, 0));
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_PANEL, 0));
   machine_counter = g_list_prepend(machine_counter,
-				   ags_machine_counter_alloc(AGS_TYPE_MIXER, 0));
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_MIXER, 0));
   machine_counter = g_list_prepend(machine_counter,
-				   ags_machine_counter_alloc(AGS_TYPE_DRUM, 0));
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_DRUM, 0));
   machine_counter = g_list_prepend(machine_counter,
-				   ags_machine_counter_alloc(AGS_TYPE_MATRIX, 0));
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_MATRIX, 0));
   machine_counter = g_list_prepend(machine_counter,
-				   ags_machine_counter_alloc(AGS_TYPE_SYNTH, 0));
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_SYNTH, 0));
   machine_counter = g_list_prepend(machine_counter,
-				   ags_machine_counter_alloc(AGS_TYPE_FFPLAYER, 0));
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_FFPLAYER, 0));
 
   return(machine_counter);
 }
@@ -380,11 +384,15 @@ ags_window_decrement_machine_counter(AgsWindow *window,
 }
 
 AgsMachineCounter*
-ags_machine_counter_alloc(GType machine_type, guint initial_value)
+ags_machine_counter_alloc(gchar *version, gchar *build_id,
+			  GType machine_type, guint initial_value)
 {
   AgsMachineCounter *machine_counter;
 
   machine_counter = (AgsMachineCounter *) malloc(sizeof(AgsMachineCounter));
+
+  machine_counter->version = version;
+  machine_counter->build_id = build_id;
 
   machine_counter->machine_type = machine_type;
   machine_counter->counter = initial_value;
