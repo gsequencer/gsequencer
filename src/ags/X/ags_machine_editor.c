@@ -25,7 +25,7 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
-#include <ags/X/ags_channel_link_collection_editor.h>
+#include <ags/X/ags_link_collection_editor.h>
 
 void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
 void ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -406,31 +406,31 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 
 
   /* AgsOutput */
-  machine_editor->output_editor = ags_channel_listing_editor_new(AGS_TYPE_OUTPUT);
+  machine_editor->output_editor = ags_listing_editor_new(AGS_TYPE_OUTPUT);
   gtk_scrolled_window_add_with_viewport(machine_editor->output_scrolled_window,
 					(GtkWidget *) machine_editor->output_editor);
 
   /* AgsInput */
-  machine_editor->input_editor = ags_channel_listing_editor_new(AGS_TYPE_INPUT);
+  machine_editor->input_editor = ags_listing_editor_new(AGS_TYPE_INPUT);
   gtk_scrolled_window_add_with_viewport(machine_editor->input_scrolled_window,
 					(GtkWidget *) machine_editor->input_editor);
 
   /* AgsOutput link editor */
-  machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR,
+  machine_editor->output_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
 									  1,
 									  output_link_editor_child_parameter);
   gtk_scrolled_window_add_with_viewport(machine_editor->output_link_editor_scrolled_window,
 					(GtkWidget *) machine_editor->output_link_editor);
 
   /* AgsInput link editor */
-  machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_CHANNEL_LINK_COLLECTION_EDITOR,
+  machine_editor->input_link_editor = ags_property_collection_editor_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
 									 1,
 									 input_link_editor_child_parameter);
   gtk_scrolled_window_add_with_viewport(machine_editor->input_link_editor_scrolled_window,
 					(GtkWidget *) machine_editor->input_link_editor);
 
   /* resize editor */
-  machine_editor->resize_editor = ags_channel_resize_editor_new(AGS_TYPE_OUTPUT);
+  machine_editor->resize_editor = ags_resize_editor_new(AGS_TYPE_OUTPUT);
   gtk_scrolled_window_add_with_viewport(machine_editor->resize_editor_scrolled_window,
 					(GtkWidget *) machine_editor->resize_editor);
 }

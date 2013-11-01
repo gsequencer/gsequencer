@@ -218,7 +218,7 @@ am_ags_OBJECTS = ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
 	ags-ags_performance_preferences_callbacks.$(OBJEXT) \
 	ags-ags_pad_editor_callbacks.$(OBJEXT) \
 	ags-ags_pad_callbacks.$(OBJEXT) \
-	ags-ags_channel_listing_editor.$(OBJEXT) \
+	ags-ags_listing_editor.$(OBJEXT) \
 	ags-ags_editor_callbacks.$(OBJEXT) \
 	ags-ags_machine_editor_callbacks.$(OBJEXT) \
 	ags-ags_property_collection_editor.$(OBJEXT) \
@@ -227,7 +227,7 @@ am_ags_OBJECTS = ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
 	ags-ags_navigation_callbacks.$(OBJEXT) \
 	ags-ags_machine_callbacks.$(OBJEXT) \
 	ags-ags_menu_bar_callbacks.$(OBJEXT) ags-ags_line.$(OBJEXT) \
-	ags-ags_pad.$(OBJEXT) ags-ags_channel_resize_editor.$(OBJEXT) \
+	ags-ags_pad.$(OBJEXT) ags-ags_resize_editor.$(OBJEXT) \
 	ags-ags_line_editor_callbacks.$(OBJEXT) \
 	ags-ags_property_editor.$(OBJEXT) \
 	ags-ags_window_callbacks.$(OBJEXT) ags-ags_menu_bar.$(OBJEXT) \
@@ -248,10 +248,10 @@ am_ags_OBJECTS = ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
 	ags-ags_ruler_callbacks.$(OBJEXT) ags-ags_ruler.$(OBJEXT) \
 	ags-ags_meter.$(OBJEXT) ags-ags_sf2_chooser.$(OBJEXT) \
 	ags-ags_file_selection.$(OBJEXT) \
-	ags-ags_channel_link_collection_editor.$(OBJEXT) \
+	ags-ags_link_collection_editor.$(OBJEXT) \
 	ags-ags_pad_editor.$(OBJEXT) \
-	ags-ags_channel_listing_editor_callbacks.$(OBJEXT) \
-	ags-ags_channel_link_collection_editor_callbacks.$(OBJEXT) \
+	ags-ags_listing_editor_callbacks.$(OBJEXT) \
+	ags-ags_link_collection_editor_callbacks.$(OBJEXT) \
 	ags-ags_navigation.$(OBJEXT) \
 	ags-ags_property_collection_editor_callbacks.$(OBJEXT) \
 	ags-ags_machine.$(OBJEXT) ags-ags_mixer_input_line.$(OBJEXT) \
@@ -896,7 +896,7 @@ ags_SOURCES = ./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/X/ags_performance_preferences_callbacks.h \
 	./src/ags/X/ags_pad_editor_callbacks.c \
 	./src/ags/X/ags_pad_callbacks.c \
-	./src/ags/X/ags_channel_listing_editor.c \
+	./src/ags/X/ags_listing_editor.c \
 	./src/ags/X/ags_editor_callbacks.c \
 	./src/ags/X/ags_machine_callbacks.h \
 	./src/ags/X/ags_machine_editor_callbacks.c \
@@ -905,14 +905,14 @@ ags_SOURCES = ./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/X/ags_line_member_editor.c \
 	./src/ags/X/ags_navigation_callbacks.c \
 	./src/ags/X/ags_window_callbacks.h \
-	./src/ags/X/ags_channel_resize_editor.h \
+	./src/ags/X/ags_resize_editor.h \
 	./src/ags/X/ags_property_collection_editor.h \
 	./src/ags/X/ags_machine_callbacks.c \
-	./src/ags/X/ags_channel_link_collection_editor.h \
+	./src/ags/X/ags_link_collection_editor.h \
 	./src/ags/X/ags_menu_bar_callbacks.c ./src/ags/X/ags_line.c \
 	./src/ags/X/ags_line_callbacks.h \
-	./src/ags/X/ags_channel_listing_editor.h ./src/ags/X/ags_pad.c \
-	./src/ags/X/ags_channel_resize_editor.c \
+	./src/ags/X/ags_listing_editor.h ./src/ags/X/ags_pad.c \
+	./src/ags/X/ags_resize_editor.c \
 	./src/ags/X/ags_property_listing_editor.h \
 	./src/ags/X/ags_line_editor_callbacks.c \
 	./src/ags/X/ags_navigation.h ./src/ags/X/ags_property_editor.c \
@@ -962,13 +962,13 @@ ags_SOURCES = ./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/X/editor/ags_file_selection.h \
 	./src/ags/X/editor/ags_sf2_chooser.c \
 	./src/ags/X/editor/ags_file_selection.c \
-	./src/ags/X/ags_channel_link_collection_editor.c \
+	./src/ags/X/ags_link_collection_editor.c \
 	./src/ags/X/ags_pad_editor.c \
-	./src/ags/X/ags_channel_listing_editor_callbacks.c \
-	./src/ags/X/ags_channel_link_collection_editor_callbacks.h \
+	./src/ags/X/ags_listing_editor_callbacks.c \
+	./src/ags/X/ags_link_collection_editor_callbacks.h \
 	./src/ags/X/ags_pad_callbacks.h \
 	./src/ags/X/ags_line_editor_callbacks.h \
-	./src/ags/X/ags_channel_link_collection_editor_callbacks.c \
+	./src/ags/X/ags_link_collection_editor_callbacks.c \
 	./src/ags/X/ags_navigation.c \
 	./src/ags/X/ags_property_collection_editor_callbacks.c \
 	./src/ags/X/ags_link_editor_callbacks.h \
@@ -1025,7 +1025,7 @@ ags_SOURCES = ./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/X/ags_pad_editor_callbacks.h \
 	./src/ags/X/ags_link_editor.h ./src/ags/X/ags_machine_editor.c \
 	./src/ags/X/ags_pad.h \
-	./src/ags/X/ags_channel_listing_editor_callbacks.h \
+	./src/ags/X/ags_listing_editor_callbacks.h \
 	./src/ags/X/ags_menu_bar_callbacks.h \
 	./src/ags/X/ags_line_callbacks.c ./src/ags/main.c \
 	./src/ags/main.h ./src/ags/lib/ags_log.h \
@@ -1314,11 +1314,6 @@ include ./$(DEPDIR)/ags-ags_cancel_channel.Po
 include ./$(DEPDIR)/ags-ags_cancel_recall.Po
 include ./$(DEPDIR)/ags-ags_channel.Po
 include ./$(DEPDIR)/ags-ags_channel_iter.Po
-include ./$(DEPDIR)/ags-ags_channel_link_collection_editor.Po
-include ./$(DEPDIR)/ags-ags_channel_link_collection_editor_callbacks.Po
-include ./$(DEPDIR)/ags-ags_channel_listing_editor.Po
-include ./$(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Po
-include ./$(DEPDIR)/ags-ags_channel_resize_editor.Po
 include ./$(DEPDIR)/ags-ags_channel_set_recycling.Po
 include ./$(DEPDIR)/ags-ags_combo_box_text.Po
 include ./$(DEPDIR)/ags-ags_container.Po
@@ -1389,9 +1384,13 @@ include ./$(DEPDIR)/ags-ags_line_member.Po
 include ./$(DEPDIR)/ags-ags_line_member_editor.Po
 include ./$(DEPDIR)/ags-ags_line_member_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_link_channel.Po
+include ./$(DEPDIR)/ags-ags_link_collection_editor.Po
+include ./$(DEPDIR)/ags-ags_link_collection_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_link_editor.Po
 include ./$(DEPDIR)/ags-ags_link_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_list.Po
+include ./$(DEPDIR)/ags-ags_listing_editor.Po
+include ./$(DEPDIR)/ags-ags_listing_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_log.Po
 include ./$(DEPDIR)/ags-ags_loop_channel.Po
 include ./$(DEPDIR)/ags-ags_loop_channel_run.Po
@@ -1474,6 +1473,7 @@ include ./$(DEPDIR)/ags-ags_remove_note.Po
 include ./$(DEPDIR)/ags-ags_remove_point_from_selection.Po
 include ./$(DEPDIR)/ags-ags_remove_recall.Po
 include ./$(DEPDIR)/ags-ags_remove_region_from_selection.Po
+include ./$(DEPDIR)/ags-ags_resize_editor.Po
 include ./$(DEPDIR)/ags-ags_ruler.Po
 include ./$(DEPDIR)/ags-ags_ruler_callbacks.Po
 include ./$(DEPDIR)/ags-ags_run_order.Po
@@ -3707,19 +3707,19 @@ ags-ags_pad_callbacks.obj: ./src/ags/X/ags_pad_callbacks.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_pad_callbacks.obj `if test -f './src/ags/X/ags_pad_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_pad_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_pad_callbacks.c'; fi`
 
-ags-ags_channel_listing_editor.o: ./src/ags/X/ags_channel_listing_editor.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_listing_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_channel_listing_editor.Tpo -c -o ags-ags_channel_listing_editor.o `test -f './src/ags/X/ags_channel_listing_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_listing_editor.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_listing_editor.Tpo $(DEPDIR)/ags-ags_channel_listing_editor.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_listing_editor.c' object='ags-ags_channel_listing_editor.o' libtool=no \
+ags-ags_listing_editor.o: ./src/ags/X/ags_listing_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_listing_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_listing_editor.Tpo -c -o ags-ags_listing_editor.o `test -f './src/ags/X/ags_listing_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_listing_editor.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_listing_editor.Tpo $(DEPDIR)/ags-ags_listing_editor.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_listing_editor.c' object='ags-ags_listing_editor.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_listing_editor.o `test -f './src/ags/X/ags_channel_listing_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_listing_editor.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_listing_editor.o `test -f './src/ags/X/ags_listing_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_listing_editor.c
 
-ags-ags_channel_listing_editor.obj: ./src/ags/X/ags_channel_listing_editor.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_listing_editor.obj -MD -MP -MF $(DEPDIR)/ags-ags_channel_listing_editor.Tpo -c -o ags-ags_channel_listing_editor.obj `if test -f './src/ags/X/ags_channel_listing_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_listing_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_listing_editor.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_listing_editor.Tpo $(DEPDIR)/ags-ags_channel_listing_editor.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_listing_editor.c' object='ags-ags_channel_listing_editor.obj' libtool=no \
+ags-ags_listing_editor.obj: ./src/ags/X/ags_listing_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_listing_editor.obj -MD -MP -MF $(DEPDIR)/ags-ags_listing_editor.Tpo -c -o ags-ags_listing_editor.obj `if test -f './src/ags/X/ags_listing_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_listing_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_listing_editor.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_listing_editor.Tpo $(DEPDIR)/ags-ags_listing_editor.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_listing_editor.c' object='ags-ags_listing_editor.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_listing_editor.obj `if test -f './src/ags/X/ags_channel_listing_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_listing_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_listing_editor.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_listing_editor.obj `if test -f './src/ags/X/ags_listing_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_listing_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_listing_editor.c'; fi`
 
 ags-ags_editor_callbacks.o: ./src/ags/X/ags_editor_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_editor_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_editor_callbacks.Tpo -c -o ags-ags_editor_callbacks.o `test -f './src/ags/X/ags_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_editor_callbacks.c
@@ -3861,19 +3861,19 @@ ags-ags_pad.obj: ./src/ags/X/ags_pad.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_pad.obj `if test -f './src/ags/X/ags_pad.c'; then $(CYGPATH_W) './src/ags/X/ags_pad.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_pad.c'; fi`
 
-ags-ags_channel_resize_editor.o: ./src/ags/X/ags_channel_resize_editor.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_resize_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_channel_resize_editor.Tpo -c -o ags-ags_channel_resize_editor.o `test -f './src/ags/X/ags_channel_resize_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_resize_editor.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_resize_editor.Tpo $(DEPDIR)/ags-ags_channel_resize_editor.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_resize_editor.c' object='ags-ags_channel_resize_editor.o' libtool=no \
+ags-ags_resize_editor.o: ./src/ags/X/ags_resize_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_resize_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_resize_editor.Tpo -c -o ags-ags_resize_editor.o `test -f './src/ags/X/ags_resize_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_resize_editor.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_resize_editor.Tpo $(DEPDIR)/ags-ags_resize_editor.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_resize_editor.c' object='ags-ags_resize_editor.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_resize_editor.o `test -f './src/ags/X/ags_channel_resize_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_resize_editor.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_resize_editor.o `test -f './src/ags/X/ags_resize_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_resize_editor.c
 
-ags-ags_channel_resize_editor.obj: ./src/ags/X/ags_channel_resize_editor.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_resize_editor.obj -MD -MP -MF $(DEPDIR)/ags-ags_channel_resize_editor.Tpo -c -o ags-ags_channel_resize_editor.obj `if test -f './src/ags/X/ags_channel_resize_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_resize_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_resize_editor.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_resize_editor.Tpo $(DEPDIR)/ags-ags_channel_resize_editor.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_resize_editor.c' object='ags-ags_channel_resize_editor.obj' libtool=no \
+ags-ags_resize_editor.obj: ./src/ags/X/ags_resize_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_resize_editor.obj -MD -MP -MF $(DEPDIR)/ags-ags_resize_editor.Tpo -c -o ags-ags_resize_editor.obj `if test -f './src/ags/X/ags_resize_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_resize_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_resize_editor.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_resize_editor.Tpo $(DEPDIR)/ags-ags_resize_editor.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_resize_editor.c' object='ags-ags_resize_editor.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_resize_editor.obj `if test -f './src/ags/X/ags_channel_resize_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_resize_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_resize_editor.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_resize_editor.obj `if test -f './src/ags/X/ags_resize_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_resize_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_resize_editor.c'; fi`
 
 ags-ags_line_editor_callbacks.o: ./src/ags/X/ags_line_editor_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_line_editor_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_line_editor_callbacks.Tpo -c -o ags-ags_line_editor_callbacks.o `test -f './src/ags/X/ags_line_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_line_editor_callbacks.c
@@ -4225,19 +4225,19 @@ ags-ags_file_selection.obj: ./src/ags/X/editor/ags_file_selection.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_selection.obj `if test -f './src/ags/X/editor/ags_file_selection.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_file_selection.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_file_selection.c'; fi`
 
-ags-ags_channel_link_collection_editor.o: ./src/ags/X/ags_channel_link_collection_editor.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_link_collection_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_channel_link_collection_editor.Tpo -c -o ags-ags_channel_link_collection_editor.o `test -f './src/ags/X/ags_channel_link_collection_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_link_collection_editor.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_link_collection_editor.Tpo $(DEPDIR)/ags-ags_channel_link_collection_editor.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_link_collection_editor.c' object='ags-ags_channel_link_collection_editor.o' libtool=no \
+ags-ags_link_collection_editor.o: ./src/ags/X/ags_link_collection_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_link_collection_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_link_collection_editor.Tpo -c -o ags-ags_link_collection_editor.o `test -f './src/ags/X/ags_link_collection_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_link_collection_editor.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_link_collection_editor.Tpo $(DEPDIR)/ags-ags_link_collection_editor.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_link_collection_editor.c' object='ags-ags_link_collection_editor.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_link_collection_editor.o `test -f './src/ags/X/ags_channel_link_collection_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_link_collection_editor.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_link_collection_editor.o `test -f './src/ags/X/ags_link_collection_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_link_collection_editor.c
 
-ags-ags_channel_link_collection_editor.obj: ./src/ags/X/ags_channel_link_collection_editor.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_link_collection_editor.obj -MD -MP -MF $(DEPDIR)/ags-ags_channel_link_collection_editor.Tpo -c -o ags-ags_channel_link_collection_editor.obj `if test -f './src/ags/X/ags_channel_link_collection_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_link_collection_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_link_collection_editor.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_link_collection_editor.Tpo $(DEPDIR)/ags-ags_channel_link_collection_editor.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_link_collection_editor.c' object='ags-ags_channel_link_collection_editor.obj' libtool=no \
+ags-ags_link_collection_editor.obj: ./src/ags/X/ags_link_collection_editor.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_link_collection_editor.obj -MD -MP -MF $(DEPDIR)/ags-ags_link_collection_editor.Tpo -c -o ags-ags_link_collection_editor.obj `if test -f './src/ags/X/ags_link_collection_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_link_collection_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_link_collection_editor.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_link_collection_editor.Tpo $(DEPDIR)/ags-ags_link_collection_editor.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_link_collection_editor.c' object='ags-ags_link_collection_editor.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_link_collection_editor.obj `if test -f './src/ags/X/ags_channel_link_collection_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_link_collection_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_link_collection_editor.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_link_collection_editor.obj `if test -f './src/ags/X/ags_link_collection_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_link_collection_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_link_collection_editor.c'; fi`
 
 ags-ags_pad_editor.o: ./src/ags/X/ags_pad_editor.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_pad_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_pad_editor.Tpo -c -o ags-ags_pad_editor.o `test -f './src/ags/X/ags_pad_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_pad_editor.c
@@ -4253,33 +4253,33 @@ ags-ags_pad_editor.obj: ./src/ags/X/ags_pad_editor.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_pad_editor.obj `if test -f './src/ags/X/ags_pad_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_pad_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_pad_editor.c'; fi`
 
-ags-ags_channel_listing_editor_callbacks.o: ./src/ags/X/ags_channel_listing_editor_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_listing_editor_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Tpo -c -o ags-ags_channel_listing_editor_callbacks.o `test -f './src/ags/X/ags_channel_listing_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_listing_editor_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Tpo $(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_listing_editor_callbacks.c' object='ags-ags_channel_listing_editor_callbacks.o' libtool=no \
+ags-ags_listing_editor_callbacks.o: ./src/ags/X/ags_listing_editor_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_listing_editor_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_listing_editor_callbacks.Tpo -c -o ags-ags_listing_editor_callbacks.o `test -f './src/ags/X/ags_listing_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_listing_editor_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_listing_editor_callbacks.Tpo $(DEPDIR)/ags-ags_listing_editor_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_listing_editor_callbacks.c' object='ags-ags_listing_editor_callbacks.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_listing_editor_callbacks.o `test -f './src/ags/X/ags_channel_listing_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_listing_editor_callbacks.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_listing_editor_callbacks.o `test -f './src/ags/X/ags_listing_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_listing_editor_callbacks.c
 
-ags-ags_channel_listing_editor_callbacks.obj: ./src/ags/X/ags_channel_listing_editor_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_listing_editor_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Tpo -c -o ags-ags_channel_listing_editor_callbacks.obj `if test -f './src/ags/X/ags_channel_listing_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_listing_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_listing_editor_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Tpo $(DEPDIR)/ags-ags_channel_listing_editor_callbacks.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_listing_editor_callbacks.c' object='ags-ags_channel_listing_editor_callbacks.obj' libtool=no \
+ags-ags_listing_editor_callbacks.obj: ./src/ags/X/ags_listing_editor_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_listing_editor_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_listing_editor_callbacks.Tpo -c -o ags-ags_listing_editor_callbacks.obj `if test -f './src/ags/X/ags_listing_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_listing_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_listing_editor_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_listing_editor_callbacks.Tpo $(DEPDIR)/ags-ags_listing_editor_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_listing_editor_callbacks.c' object='ags-ags_listing_editor_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_listing_editor_callbacks.obj `if test -f './src/ags/X/ags_channel_listing_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_listing_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_listing_editor_callbacks.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_listing_editor_callbacks.obj `if test -f './src/ags/X/ags_listing_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_listing_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_listing_editor_callbacks.c'; fi`
 
-ags-ags_channel_link_collection_editor_callbacks.o: ./src/ags/X/ags_channel_link_collection_editor_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_link_collection_editor_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_channel_link_collection_editor_callbacks.Tpo -c -o ags-ags_channel_link_collection_editor_callbacks.o `test -f './src/ags/X/ags_channel_link_collection_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_link_collection_editor_callbacks.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_link_collection_editor_callbacks.Tpo $(DEPDIR)/ags-ags_channel_link_collection_editor_callbacks.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_link_collection_editor_callbacks.c' object='ags-ags_channel_link_collection_editor_callbacks.o' libtool=no \
+ags-ags_link_collection_editor_callbacks.o: ./src/ags/X/ags_link_collection_editor_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_link_collection_editor_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_link_collection_editor_callbacks.Tpo -c -o ags-ags_link_collection_editor_callbacks.o `test -f './src/ags/X/ags_link_collection_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_link_collection_editor_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_link_collection_editor_callbacks.Tpo $(DEPDIR)/ags-ags_link_collection_editor_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_link_collection_editor_callbacks.c' object='ags-ags_link_collection_editor_callbacks.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_link_collection_editor_callbacks.o `test -f './src/ags/X/ags_channel_link_collection_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_channel_link_collection_editor_callbacks.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_link_collection_editor_callbacks.o `test -f './src/ags/X/ags_link_collection_editor_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_link_collection_editor_callbacks.c
 
-ags-ags_channel_link_collection_editor_callbacks.obj: ./src/ags/X/ags_channel_link_collection_editor_callbacks.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_channel_link_collection_editor_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_channel_link_collection_editor_callbacks.Tpo -c -o ags-ags_channel_link_collection_editor_callbacks.obj `if test -f './src/ags/X/ags_channel_link_collection_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_link_collection_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_link_collection_editor_callbacks.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_channel_link_collection_editor_callbacks.Tpo $(DEPDIR)/ags-ags_channel_link_collection_editor_callbacks.Po
-#	$(AM_V_CC)source='./src/ags/X/ags_channel_link_collection_editor_callbacks.c' object='ags-ags_channel_link_collection_editor_callbacks.obj' libtool=no \
+ags-ags_link_collection_editor_callbacks.obj: ./src/ags/X/ags_link_collection_editor_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_link_collection_editor_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_link_collection_editor_callbacks.Tpo -c -o ags-ags_link_collection_editor_callbacks.obj `if test -f './src/ags/X/ags_link_collection_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_link_collection_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_link_collection_editor_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_link_collection_editor_callbacks.Tpo $(DEPDIR)/ags-ags_link_collection_editor_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_link_collection_editor_callbacks.c' object='ags-ags_link_collection_editor_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_channel_link_collection_editor_callbacks.obj `if test -f './src/ags/X/ags_channel_link_collection_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_channel_link_collection_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_channel_link_collection_editor_callbacks.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_link_collection_editor_callbacks.obj `if test -f './src/ags/X/ags_link_collection_editor_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_link_collection_editor_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_link_collection_editor_callbacks.c'; fi`
 
 ags-ags_navigation.o: ./src/ags/X/ags_navigation.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_navigation.o -MD -MP -MF $(DEPDIR)/ags-ags_navigation.Tpo -c -o ags-ags_navigation.o `test -f './src/ags/X/ags_navigation.c' || echo '$(srcdir)/'`./src/ags/X/ags_navigation.c

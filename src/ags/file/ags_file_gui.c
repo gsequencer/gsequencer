@@ -623,6 +623,126 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
 }
 
 void
+ags_file_read_dialog(AgsFile *file, xmlNode *node, GtkDialog **dialog)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_dialog(AgsFile *file, xmlNode *parent, GtkDialog *dialog)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_dialog_list(AgsFile *file, xmlNode *node, GList **dialog)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_dialog_list(AgsFile *file, xmlNode *parent, GList *dialog)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_machine_editor(AgsFile *file, xmlNode *node, AgsMachineEditor **machine_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_machine_editor(AgsFile *file, xmlNode *parent, AgsMachineEditor *machine_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_machine_editor_list(AgsFile *file, xmlNode *node, GList **machine_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_machine_editor_list(AgsFile *file, xmlNode *parent, GList *machine_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_pad_editor(AgsFile *file, xmlNode *node, AgsPadEditor **pad_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_pad_editor(AgsFile *file, xmlNode *parent, AgsPadEditor *pad_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_line_editor(AgsFile *file, xmlNode *node, AgsLineEditor **line_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_line_editor(AgsFile *file, xmlNode *parent, AgsLineEditor *line_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_link_editor(AgsFile *file, xmlNode *node, AgsLinkEditor **link_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_link_editor(AgsFile *file, xmlNode *parent, AgsLinkEditor *link_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_line_member_editor(AgsFile *file, xmlNode *node, AgsLineMemberEditor **line_member_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_line_member_editor(AgsFile *file, xmlNode *parent, AgsLineMemberEditor *line_member_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_link_collection_editor(AgsFile *file, xmlNode *node, AgsLinkCollectionEditor **link_collection_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_link_collection_editor(AgsFile *file, xmlNode *parent, AgsLinkCollectionEditor *link_collection_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_resize_editor(AgsFile *file, xmlNode *node, AgsResizeEditor **resize_editor)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_resize_editor(AgsFile *file, xmlNode *parent, AgsResizeEditor *resize_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 {
   //TODO:JK: implement me

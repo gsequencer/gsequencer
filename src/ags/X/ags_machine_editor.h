@@ -24,9 +24,9 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_channel_listing_editor.h>
+#include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_property_collection_editor.h>
-#include <ags/X/ags_channel_resize_editor.h>
+#include <ags/X/ags_resize_editor.h>
 
 #define AGS_TYPE_MACHINE_EDITOR                (ags_machine_editor_get_type())
 #define AGS_MACHINE_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_EDITOR, AgsMachineEditor))
@@ -53,10 +53,10 @@ struct _AgsMachineEditor
   GtkNotebook *notebook;
 
   GtkScrolledWindow *output_scrolled_window;
-  AgsChannelListingEditor *output_editor;
+  AgsListingEditor *output_editor;
 
   GtkScrolledWindow *input_scrolled_window;
-  AgsChannelListingEditor *input_editor;
+  AgsListingEditor *input_editor;
 
   GtkScrolledWindow *output_link_editor_scrolled_window;
   AgsPropertyCollectionEditor *output_link_editor;
@@ -65,7 +65,7 @@ struct _AgsMachineEditor
   AgsPropertyCollectionEditor *input_link_editor;
 
   GtkScrolledWindow *resize_editor_scrolled_window;
-  AgsChannelResizeEditor *resize_editor;
+  AgsResizeEditor *resize_editor;
 
   GtkButton *add;
   GtkButton *remove;

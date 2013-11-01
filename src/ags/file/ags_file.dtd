@@ -443,7 +443,7 @@
 	  >
 
 <!--GUI Widgets -->
-<!ELEMENT ags-window (ags-menu-bar, ags-machine-counter-list, ags-machine-list, ags-editor, ags-navigation)>
+<!ELEMENT ags-window (ags-menu-bar, ags-machine-counter-list, ags-machine-list, ags-editor, ags-navigation, ags-dialog-list, ags-machine-editor-list)>
 <!ATTLIST ags-window
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -478,8 +478,15 @@
 <!ELEMENT ags-machine ((ags-panel|ags-mixer|ags-drum|ags-matrix|ags-synth|ags-ffplayer), ags-pad-list)>
 <!ATTLIST ags-machine
 	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  file-input-flags PCDATA     #REQUIRED
+	  machine-type     CDATA      #REQUIRED
 	  name             CDATA      #REQUIRED
 	  audio            IDREF      #REQUIRED
+	  machine-editor   IDREF      #REQUIRED
+	  rename-dialog    IDREF      #IMPLIED
 	  >
 
 <!ELEMENT ags-panel EMPTY>
@@ -521,6 +528,8 @@
 <!ELEMENT ags-pad (ags-line-list, (ags-mixer-input-pad|ags-mixer-output-pad|ags-drum-input-pad|ags-drum-output-pad))>
 <!ATTLIST ags-pad
 	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
 	  show-grouping    CDATA      "TRUE"
 	  groupe-pad       CDATA      "FALSE"
 	  groupe-channel   CDATA      "FALSE"
@@ -549,6 +558,8 @@
 <!ELEMENT ags-line (ags-line-member-list, (ags-drum-input-line|ags-drum-output-line))>
 <!ATTLIST ags-line
 	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
 	  rows             NMTOKEN    #REQUIRED
 	  cols             NMTOKEN    #REQUIRED
 	  >
@@ -582,9 +593,27 @@
 	  >
 
 <!-- dialogs -->
+<!ELEMENT ags-dialog-list (ags-dialog*)>
+<!ATTLIST ags-dialog-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-dialog EMPTY>
+<!ATTLIST ags-dialog
+	  id               ID         #REQUIRED
+	  dialog-type      CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-machine-editor-list (ags-machine-editor*)>
+<!ATTLIST ags-machine-editor-list
+	  id               ID         #REQUIRED
+	  >
+
 <!ELEMENT ags-machine-editor (ags-pad-editor-list)>
 <!ATTLIST ags-machine-editor
 	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
 	  machine          IDREF      #REQUIRED
 	  >
 
