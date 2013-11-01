@@ -54,9 +54,9 @@ ags_plugin_get_name(AgsPlugin *plugin)
   AgsPluginInterface *plugin_interface;
   gchar *ret_val;
 
-  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), FALSE);
+  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
-  g_return_val_if_fail(plugin_interface->get_name, FALSE);
+  g_return_val_if_fail(plugin_interface->get_name, NULL);
   ret_val = plugin_interface->get_name(plugin);
 
   return(ret_val);
@@ -79,9 +79,9 @@ ags_plugin_get_version(AgsPlugin *plugin)
   AgsPluginInterface *plugin_interface;
   gchar *ret_val;
 
-  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), FALSE);
+  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
-  g_return_val_if_fail(plugin_interface->get_version, FALSE);
+  g_return_val_if_fail(plugin_interface->get_version, NULL);
   ret_val = plugin_interface->get_version(plugin);
 
   return(ret_val);
@@ -104,9 +104,9 @@ ags_plugin_get_build_id(AgsPlugin *plugin)
   AgsPluginInterface *plugin_interface;
   gchar *ret_val;
 
-  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), FALSE);
+  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
-  g_return_val_if_fail(plugin_interface->get_build_id, FALSE);
+  g_return_val_if_fail(plugin_interface->get_build_id, NULL);
   ret_val = plugin_interface->get_build_id(plugin);
 
   return(ret_val);
@@ -121,4 +121,58 @@ ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id)
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
   g_return_if_fail(plugin_interface->set_build_id);
   plugin_interface->set_build_id(plugin, build_id);
+}
+
+gchar*
+ags_plugin_get_xml_type(AgsPlugin *plugin)
+{
+  AgsPluginInterface *plugin_interface;
+  gchar *ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
+  plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
+  g_return_val_if_fail(plugin_interface->get_xml_type, NULL);
+  ret_val = plugin_interface->get_xml_type(plugin);
+
+  return(ret_val);
+}
+
+void
+ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AgsPluginInterface *plugin_interface;
+
+  g_return_if_fail(AGS_IS_PLUGIN(plugin));
+  plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
+  g_return_if_fail(plugin_interface->set_xml_type);
+  plugin_interface->set_xml_type(plugin, xml_type);
+}
+
+void
+ags_plugin_read(AgsFile *file,
+		xmlNode *node,
+		AgsPlugin *plugin)
+{
+  AgsPluginInterface *plugin_interface;
+
+  g_return_if_fail(AGS_IS_PLUGIN(plugin));
+  plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
+  g_return_if_fail(plugin_interface->read);
+  plugin_interface->read(plugin, node, plugin);
+}
+
+xmlNode*
+ags_plugin_write(AgsFile *file,
+		 xmlNode *parent,
+		 AgsPlugin *plugin)
+{
+  AgsPluginInterface *plugin_interface;
+  gchar *ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
+  plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
+  g_return_val_if_fail(plugin_interface->write, NULL);
+  ret_val = plugin_interface->write(plugin, parent, plugin);
+
+  return(ret_val);
 }

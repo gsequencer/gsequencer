@@ -45,6 +45,16 @@ struct _AgsPluginInterface
 
   gchar* (*get_build_id)(AgsPlugin *plugin);
   void (*set_build_id)(AgsPlugin *plugin, gchar *build_id);
+
+  gchar* (*get_xml_type)(AgsPlugin *plugin);
+  void (*set_xml_type)(AgsPlugin *plugin, gchar *xml_type);  
+
+  void (*read)(AgsFile *file,
+	       xmlNode *node,
+	       AgsPlugin *plugin);
+  xmlNode* (*write)(AgsFile *file,
+		    xmlNode *parent,
+		    AgsPlugin *plugin);
 };
 
 GType ags_plugin_get_type();
@@ -57,5 +67,15 @@ void ags_plugin_set_version(AgsPlugin *plugin, gchar *version);
 
 gchar* ags_plugin_get_build_id(AgsPlugin *plugin);
 void ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id);
+
+gchar* ags_plugin_get_xml_type(AgsPlugin *plugin);
+void ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+
+void ags_plugin_read(AgsFile *file,
+		     xmlNode *node,
+		     AgsPlugin *plugin);
+xmlNode* ags_plugin_write(AgsFile *file,
+			  xmlNode *parent,
+			  AgsPlugin *plugin);
 
 #endif /*__AGS_PLUGIN_H__*/
