@@ -18,7 +18,11 @@
 
 #include <ags/file/ags_file_gui.h>
 
+#include <ags/plugin/ags_plugin_factory.h>
+
 #include <ags/lib/ags_container.h>
+
+#include <ags/object/ags_plugin.h>
 
 #include <ags/util/ags_id_generator.h>
 
@@ -387,11 +391,15 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 {
   AgsMachine *gobject;
   AgsFileLookup *file_lookup;
+  GType machine_type;
   xmlNode *child;
 
   if(*machine == NULL){
-    gobject = g_object_new(AGS_TYPE_MACHINE,
-			   NULL);
+    machine_type = g_type_from_name(xmlGetProp(node,
+					       AGS_FILE_TYPE_PROP));
+
+    gobject = (AgsMachine *) g_object_new(machine_type,
+					  NULL);
     *machine = gobject;
   }else{
     gobject = *machine;
@@ -409,11 +417,22 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 				   "reference\0", gobject,
 				   NULL));
 
+  gobject->version = g_strdup(xmlGetProp(node,
+					 AGS_FILE_VERSION_PROP));
+
+  gobject->build_id = g_strdup(xmlGetProp(node,
+					  AGS_FILE_BUILD_ID_PROP));
+
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
 					    NULL,
 					    16);
 
-  //TODO:JK: implement me
+  gobject->file_input_flags = (guint) g_ascii_strtoull(xmlGetProp(node, "file-input-flags\0"),
+						       NULL,
+						       16);
+
+  gobject->name = g_strdup(xmlGetProp(node,
+				      AGS_FILE_NAME_PROP));
 
   /* audio */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -450,7 +469,12 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child->name,
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(gobject));
+      }else if(!xmlStrncmp(child->name,
 		     "ags-pad-list\0",
 		     12)){
 	GList *pad;
@@ -522,14 +546,32 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 		    "ags-machine\0");
 
   xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(machine));
+
+  xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     machine->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     machine->build_id);
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x\0", machine->flags));
 
-  //TODO:JK: implement me
+  xmlNewProp(node,
+	     "file-input-flags\0",
+	     g_strdup_printf("%x\0", machine->file_input_flags));
+
+  xmlNewProp(node,
+	     AGS_FILE_NAME_PROP,
+	     machine->name);
 
   /* audio */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -562,13 +604,23 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 		   G_CALLBACK(ags_file_write_machine_resolve_rename_dialog), machine);
 
   /* child elements */
-  ags_file_write_pad_list(file,
-			  node,
-			  gtk_container_get_children(machine->output));
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(machine));
 
-  ags_file_write_pad_list(file,
-			  node,
-			  gtk_container_get_children(machine->input));
+  child = ags_file_write_pad_list(file,
+				  node,
+				  gtk_container_get_children(machine->output));
+  xmlNewProp(child,
+	     AGS_FILE_SCOPE_PROP,
+	     "output\0");
+
+  child = ags_file_write_pad_list(file,
+				  node,
+				  gtk_container_get_children(machine->input));
+  xmlNewProp(child,
+	     AGS_FILE_SCOPE_PROP,
+	     "input\0");
 }
 
 void

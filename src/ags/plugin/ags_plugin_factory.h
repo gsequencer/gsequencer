@@ -46,7 +46,7 @@ struct _AgsPluginFactoryClass
   GObjectClass object;
 
   void (*add)(AgsPluginFactory *plugin_factory,
-	      GType type, gchar *plugin_name, gchar *version, gchar *build_id);
+	      GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type);
 
   AgsPlugin* (*create)(AgsPluginFactory *plugin_factory,
 		       gchar *plugin_name, gchar *version, gchar *build_id);
@@ -58,7 +58,7 @@ GList* ags_plugin_factory_list_by_name(AgsPluginFactory *plugin_factory,
 				       gchar *plugin_name);
 
 void ags_plugin_factory_add(AgsPluginFactory *plugin_factory,
-			    GType type, gchar *plugin_name, gchar *version, gchar *build_id);
+			    GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type);
 
 
 AgsPlugin* ags_plugin_factory_create(AgsPluginFactory *plugin_factory,

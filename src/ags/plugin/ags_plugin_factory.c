@@ -25,11 +25,12 @@ void ags_plugin_factory_init (AgsPluginFactory *plugin_factory);
 void ags_plugin_factory_finalize(GObject *gobject);
 
 void ags_plugin_factory_real_add(AgsPluginFactory *plugin_factory,
-				 GType type, gchar *plugin_name, gchar *version, gchar *build_id);
+				 GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type);
 AgsPlugin* ags_plugin_factory_real_create(AgsPluginFactory *plugin_factory,
 					  gchar *plugin_name, gchar *version, gchar *build_id);
 
 enum{
+  ADD,
   CREATE,
   LAST_SIGNAL,
 };
@@ -79,7 +80,19 @@ ags_plugin_factory_class_init(AgsPluginFactoryClass *plugin_factory)
   gobject->finalize = ags_plugin_factory_finalize;
 
   /*  */
+  plugin_factory->add = ags_plugin_factory_real_add;
   plugin_factory->create = ags_plugin_factory_real_create;
+
+  plugin_factory_signals[ADD] =
+    g_signal_new("add\0",
+		 G_TYPE_FROM_CLASS (plugin_factory),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPluginFactoryClass, add),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING,
+		 G_TYPE_OBJECT, 4,
+		 G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
 
   plugin_factory_signals[CREATE] =
     g_signal_new("create\0",
@@ -90,7 +103,6 @@ ags_plugin_factory_class_init(AgsPluginFactoryClass *plugin_factory)
 		 g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING,
 		 G_TYPE_OBJECT, 3,
 		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-
 }
 
 void
@@ -120,14 +132,14 @@ ags_plugin_factory_list_by_name(AgsPluginFactory *plugin_factory,
 
 void
 ags_plugin_factory_real_add(AgsPluginFactory *plugin_factory,
-			    GType type, gchar *plugin_name, gchar *version, gchar *build_id)
+			    GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_plugin_factory_add(AgsPluginFactory *plugin_factory,
-		       GType type, gchar *plugin_name, gchar *version, gchar *build_id)
+		       GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type)
 {
   //TODO:JK: implement me
 }
@@ -174,7 +186,7 @@ ags_plugin_factory_new()
   AgsPluginFactory *plugin_factory;
 
   plugin_factory = (AgsPluginFactory *) g_object_new(AGS_TYPE_PLUGIN_FACTORY,
-							   NULL);
+						     NULL);
 
   return(plugin_factory);
 }

@@ -477,12 +477,12 @@
 
 <!ELEMENT ags-machine ((ags-panel|ags-mixer|ags-drum|ags-matrix|ags-synth|ags-ffplayer), ags-pad-list, ags-pad-list)>
 <!ATTLIST ags-machine
+	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  flags            PCDATA     #REQUIRED
 	  file-input-flags PCDATA     #REQUIRED
-	  machine-type     CDATA      #REQUIRED
 	  name             CDATA      #REQUIRED
 	  audio            IDREF      #REQUIRED
 	  machine-editor   IDREF      #REQUIRED
@@ -528,6 +528,7 @@
 
 <!ELEMENT ags-pad (ags-line-list, (ags-mixer-input-pad|ags-mixer-output-pad|ags-drum-input-pad|ags-drum-output-pad))>
 <!ATTLIST ags-pad
+	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
@@ -558,6 +559,7 @@
 
 <!ELEMENT ags-line (ags-line-member-list, (ags-drum-input-line|ags-drum-output-line))>
 <!ATTLIST ags-line
+	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
