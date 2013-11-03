@@ -516,7 +516,7 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
-  machine->audio = (AgsMachine *) id_ref->ref;
+  machine->audio = (AgsAudio *) id_ref->ref;
 }
 
 void
@@ -531,7 +531,7 @@ ags_file_read_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
-  machine->machine_editor = (AgsMachine *) id_ref->ref;
+  machine->properties = (GtkDialog *) id_ref->ref;
 }
 
 void
@@ -546,7 +546,7 @@ ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
-  machine->rename_dialog = (AgsMachine *) id_ref->ref;
+  machine->rename = (GtkDialog *) id_ref->ref;
 }
 
 xmlNode*
@@ -654,7 +654,7 @@ ags_file_write_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->machine_editor);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->properties);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
@@ -670,7 +670,7 @@ ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->rename_dialog);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->rename);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
