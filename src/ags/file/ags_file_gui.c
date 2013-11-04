@@ -491,9 +491,13 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 		       6)){
 	  ags_container_add_all(gobject->output,
 				pad);
+
+	  //TODO:JK: set AgsChannel
 	}else{
 	  ags_container_add_all(gobject->input,
 				pad);
+
+	  //TODO:JK: set AgsChannel
 	}
 
 	g_list_free(pad);
@@ -516,6 +520,7 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
+  //TODO:JK: use g_object_set
   machine->audio = (AgsAudio *) id_ref->ref;
 }
 
@@ -531,6 +536,7 @@ ags_file_read_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
+  //TODO:JK: use g_object_set
   machine->properties = (GtkDialog *) id_ref->ref;
 }
 
@@ -546,6 +552,7 @@ ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
+  //TODO:JK: use g_object_set
   machine->rename = (GtkDialog *) id_ref->ref;
 }
 
@@ -748,7 +755,7 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 				   NULL));
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
-		    "ags-machine-counter-list\0");
+		    "ags-machine-list\0");
 
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -843,25 +850,197 @@ ags_file_write_ffplayer(AgsFile *file, xmlNode *parent, AgsMachine *ffplayer)
 void
 ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 {
-  //TODO:JK: implement me
+  AgsPad *gobject;
+  AgsFileLookup *file_lookup;
+  GType pad_type;
+  xmlNode *child;
+
+  if(*pad == NULL){
+    pad_type = g_type_from_name(xmlGetProp(node,
+					   AGS_FILE_TYPE_PROP));
+    
+    gobject = (AgsPad *) g_object_new(pad_type,
+				      NULL);
+    *pad = gobject;
+  }else{
+    gobject = *pad;
+  }
+
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->main,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->version = g_strdup(xmlGetProp(node,
+					 AGS_FILE_VERSION_PROP));
+
+  gobject->build_id = g_strdup(xmlGetProp(node,
+					  AGS_FILE_BUILD_ID_PROP));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(gobject));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-line-list\0",
+			   13)){
+	GList *line;
+
+	line = NULL;
+
+	ags_file_read_line_list(file,
+				child,
+				&line);
+
+	ags_container_add_all(gobject->option,
+			      line);
+
+	g_list_free(line);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
 ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 {
-  //TODO:JK: implement me
+  AgsFileLookup *file_lookup;
+  xmlNode *node, *child;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", pad,
+				   NULL));
+  
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-pad\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(pad));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     pad->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     pad->build_id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", pad->flags));
+
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(pad));
+
+  child = ags_file_write_line_list(file,
+				   node,
+				   gtk_container_get_children(pad->option));
 }
 
 void
 ags_file_read_pad_list(AgsFile *file, xmlNode *node, GList **pad)
 {
-  //TODO:JK: implement me
+  AgsPad *current;
+  GList *list;
+  xmlNode *child;
+  xmlChar *id;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_pad(file, child, &current);
+
+    list = g_list_prepend(list, current);
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *pad = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 {
-  //TODO:JK: implement me
+  AgsPad *current;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-pad-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = pad;
+
+  while(list != NULL){
+    ags_file_write_pad(file, node, AGS_PAD(list->data));
+
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void

@@ -532,9 +532,7 @@
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
-	  show-grouping    CDATA      "TRUE"
-	  group-pad        CDATA      "FALSE"
-	  group-channel    CDATA      "FALSE"
+	  flags            PCDATA     #REQUIRED
 	  >
 
 <!ELEMENT ags-mixer-input-pad EMPTY>
