@@ -20,14 +20,14 @@
 
 void ags_expander_set_class_init(AgsExpanderSetClass *expander_set);
 void ags_expander_set_init(AgsExpanderSet *expander_set);
-void ags_pad_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec);
-void ags_pad_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec);
+void ags_expander_set_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_expander_set_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_expander_set_show(GtkWidget *widget);
 
 void ags_expander_set_realize(GtkWidget *widget);
@@ -91,10 +91,10 @@ ags_expander_set_class_init(AgsExpanderSetClass *expander_set)
   ags_expander_set_parent_class = g_type_class_peek_parent(expander_set);
 
   /* GObjectClass */
-  gobject = G_OBJECT_CLASS(pad);
+  gobject = G_OBJECT_CLASS(expander_set);
 
-  gobject->set_property = ags_pad_set_property;
-  gobject->get_property = ags_pad_get_property;
+  gobject->set_property = ags_expander_set_set_property;
+  gobject->get_property = ags_expander_set_get_property;
 
   //TODO:JK: add finalize
 
@@ -128,6 +128,97 @@ ags_expander_set_init(AgsExpanderSet *expander_set)
 
   expander_set->location_width = NULL;
   expander_set->location_height = NULL;
+}
+
+void
+ags_expander_set_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsExpanderSet *expander_set;
+
+  expander_set = AGS_EXPANDER_SET(gobject);
+
+  switch(prop_id){
+  case PROP_LOCATION_X:
+    {
+      guint *location_x;
+
+      location_x = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_move(expander_set,
+			    location_x, expander_set->location_y,
+			    expander_set->location_x, expander_set->location_y);
+    }
+    break;
+  case PROP_LOCATION_Y:
+    {
+      guint *location_y;
+
+      location_y = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_move(expander_set,
+			    expander_set->location_x, location_y,
+			    expander_set->location_x, expander_set->location_y);
+    }
+    break;
+  case PROP_LOCATION_WIDTH:
+    {
+      guint *location_width;
+
+      location_width = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_resize(expander_set,
+			      location_width, expander_set->location_y,
+			      expander_set->location_width, expander_set->location_y);
+    }
+    break;
+  case PROP_LOCATION_HEIGHT:
+    {
+      guint *location_height;
+
+      location_height = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_resize(expander_set,
+			      expander_set->location_x, location_height,
+			      expander_set->location_x, expander_set->location_height);
+    }
+    break;
+  }
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_expander_set_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsExpanderSet *expander_set;
+
+  expander_set = AGS_EXPANDER_SET(gobject);
+
+  switch(prop_id){
+  case PROP_LOCATION_X:
+    g_value_set_pointer(value, expander_set->location_x);
+    break;
+  case PROP_LOCATION_Y:
+    g_value_set_pointer(value, expander_set->location_y);
+    break;
+  case PROP_LOCATION_WIDTH:
+    g_value_set_pointer(value, expander_set->location_width);
+    break;
+  case PROP_LOCATION_HEIGHT:
+    g_value_set_pointer(value, expander_set->location_height);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -193,6 +284,14 @@ void
 ags_expander_set_move(AgsExpanderSet *expander_set,
 		      guint *x_new, guint *y_new,
 		      guint *x_old, guint *y_old)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_expander_set_resize(AgsExpanderSet *expander_set,
+			guint *width_new, guint *height_new,
+			guint *width_old, guint *height_old)
 {
   //TODO:JK: implement me
 }
