@@ -34,9 +34,21 @@
 typedef struct _AgsExpanderSet AgsExpanderSet;
 typedef struct _AgsExpanderSetClass AgsExpanderSetClass;
 
+typedef enum{
+  AGS_EXPANDER_SET_DRAW_GHOST      = 1,
+};
+
 struct _AgsExpanderSet
 {
   GtkTable table;
+
+  guint flags;
+
+  guint *location_x;
+  guint *location_y;
+
+  guint *location_width;
+  guint *location_height;
 };
 
 struct _AgsExpanderSetClass
@@ -46,6 +58,18 @@ struct _AgsExpanderSetClass
 
 GType ags_expander_set_get_type(void);
 
-AgsExpanderSet* ags_expander_set_new();
+void ags_expander_set_add(AgsExpanderSet *expander_set,
+			  GtkWidget *widget,
+			  guint x, guint y,
+			  guint width, guint height);
+void ags_expander_set_remove(AgsExpanderSet *expander_set
+			     GtkWidget *widget);
+
+void ags_expander_set_move(AgsExpanderSet *expander_set,
+			   guint *x_new, guint *y_new,
+			   guint *x_old, guint *y_old);
+
+AgsExpanderSet* ags_expander_set_new(guint width, guint height,
+				     guint *x, guint *y);
 
 #endif /*__AGS_EXPANDER_SET_H__*/

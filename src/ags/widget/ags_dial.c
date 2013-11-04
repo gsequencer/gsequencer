@@ -26,8 +26,6 @@ void ags_dial_init(AgsDial *dial);
 void ags_dial_show(GtkWidget *widget);
 
 void ags_dial_realize(GtkWidget *widget);
-gint ags_dial_expose(GtkWidget *widget,
-		     GdkEventExpose *event);
 void ags_dial_size_request(GtkWidget *widget,
 			   GtkRequisition   *requisition);
 void ags_dial_size_allocate(GtkWidget *widget,
