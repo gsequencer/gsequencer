@@ -40,7 +40,7 @@ typedef enum{
   AGS_EXPANDER_SET_DRAW_RIGHT_ENDING     = 1 << 2,
   AGS_EXPANDER_SET_DRAW_LEFT_CONNECTOR   = 1 << 3,
   AGS_EXPANDER_SET_DRAW_RIGHT_CONNECTOR  = 1 << 4,
-};
+}AgsExpanderSetFlags;
 
 struct _AgsExpanderSet
 {
@@ -75,7 +75,7 @@ void ags_expander_set_add(AgsExpanderSet *expander_set,
 			  GtkWidget *widget,
 			  guint x, guint y,
 			  guint width, guint height);
-void ags_expander_set_remove(AgsExpanderSet *expander_set
+void ags_expander_set_remove(AgsExpanderSet *expander_set,
 			     GtkWidget *widget);
 
 void ags_expander_set_move(AgsExpanderSet *expander_set,

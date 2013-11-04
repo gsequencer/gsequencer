@@ -18,6 +18,8 @@
 
 #include "ags_expander_set.h"
 
+#include <stdlib.h>
+
 void ags_expander_set_class_init(AgsExpanderSetClass *expander_set);
 void ags_expander_set_init(AgsExpanderSet *expander_set);
 void ags_expander_set_set_property(GObject *gobject,
@@ -242,7 +244,6 @@ ags_expander_set_set_property(GObject *gobject,
 			      FALSE);
     }
     break;
-  }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -313,20 +314,20 @@ ags_expander_set_finalize(GObject *gobject)
     free(expander_set->ghost_height);
   }
 
-  if(expander_set->expander_set_x != NULL){
-    free(expander_set->expander_set_x);
+  if(expander_set->location_x != NULL){
+    free(expander_set->location_x);
   }
 
-  if(expander_set->expander_set_y != NULL){
-    free(expander_set->expander_set_y);
+  if(expander_set->location_y != NULL){
+    free(expander_set->location_y);
   }
 
-  if(expander_set->expander_set_width != NULL){
-    free(expander_set->expander_set_width);
+  if(expander_set->location_width != NULL){
+    free(expander_set->location_width);
   }
 
-  if(expander_set->expander_set_height != NULL){
-    free(expander_set->expander_set_height);
+  if(expander_set->location_height != NULL){
+    free(expander_set->location_height);
   }
 
   /* call parent */
@@ -393,7 +394,7 @@ ags_expander_set_add(AgsExpanderSet *expander_set,
 }
 
 void
-ags_expander_set_remove(AgsExpanderSet *expander_set
+ags_expander_set_remove(AgsExpanderSet *expander_set,
 			GtkWidget *widget)
 {
   //TODO:JK: implement me
@@ -402,7 +403,8 @@ ags_expander_set_remove(AgsExpanderSet *expander_set
 void
 ags_expander_set_move(AgsExpanderSet *expander_set,
 		      guint *x_new, guint *y_new,
-		      guint *x_old, guint *y_old)
+		      guint *x_old, guint *y_old,
+		      gboolean ghost)
 {
   //TODO:JK: implement me
 }
@@ -410,7 +412,8 @@ ags_expander_set_move(AgsExpanderSet *expander_set,
 void
 ags_expander_set_resize(AgsExpanderSet *expander_set,
 			guint *width_new, guint *height_new,
-			guint *width_old, guint *height_old)
+			guint *width_old, guint *height_old,
+		       gboolean ghost)
 {
   //TODO:JK: implement me
 }
