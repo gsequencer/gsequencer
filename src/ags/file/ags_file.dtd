@@ -583,7 +583,7 @@
 <!ELEMENT ags-line-member EMPTY>
 <!ATTLIST ags-line-member
 	  id               ID         #REQUIRED
-	  visualization    CDATA      "ags-dial"
+	  visualization    CDATA      "AgsDial"
 	  left-attach      NMTOKEN    #REQUIRED
 	  rigth-attach     NMTOKEN    #REQUIRED
 	  top-attach       NMTOKEN    #REQUIRED
@@ -591,6 +591,7 @@
 	  effect           CDATA      #REQUIRED
 	  recall-type      CDATA      #REQUIRED
 	  control          NMTOKEN    #REQUIRED
+	  recall           IDREF      #REQUIRED
 	  >
 
 <!-- dialogs -->

@@ -24,6 +24,8 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_plugin.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
@@ -1768,6 +1770,7 @@ void
 ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall *recall)
 {
   AgsRecallAudio *recall_audio;
+  xmlNode *child;
 
   recall_audio = AGS_RECALL_AUDIO(recall);
 
@@ -1778,6 +1781,20 @@ ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall *recall)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall_audio,
 				   NULL));
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -1808,6 +1825,11 @@ ags_file_write_recall_audio(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   xmlAddChild(parent,
 	      node);
 
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(recall));
+
   return(node);
 }
 
@@ -1815,6 +1837,7 @@ void
 ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall *recall)
 {
   AgsRecallAudioRun *recall_audio_run;
+  xmlNode *child;
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
 
@@ -1825,6 +1848,20 @@ ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall *recall)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall_audio_run,
 				   NULL));
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -1855,6 +1892,11 @@ ags_file_write_recall_audio_run(AgsFile *file, xmlNode *parent, AgsRecall *recal
   xmlAddChild(parent,
 	      node);
 
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(recall));
+
   return(node);
 }
 
@@ -1862,6 +1904,7 @@ void
 ags_file_read_recall_channel(AgsFile *file, xmlNode *node, AgsRecall *recall)
 {
   AgsRecallChannel *recall_channel;
+  xmlNode *child;
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
 
@@ -1872,6 +1915,20 @@ ags_file_read_recall_channel(AgsFile *file, xmlNode *node, AgsRecall *recall)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall_channel,
 				   NULL));
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -1902,6 +1959,11 @@ ags_file_write_recall_channel(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   xmlAddChild(parent,
 	      node);
 
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(recall));
+
   return(node);
 }
 
@@ -1909,6 +1971,7 @@ void
 ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall *recall)
 {
   AgsRecallChannelRun *recall_channel_run;
+  xmlNode *child;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
@@ -1919,6 +1982,20 @@ ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall *recall
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall_channel_run,
 				   NULL));
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -1949,6 +2026,11 @@ ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *rec
   xmlAddChild(parent,
 	      node);
 
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(recall));
+
   return(node);
 }
 
@@ -1956,6 +2038,7 @@ void
 ags_file_read_recall_recycling(AgsFile *file, xmlNode *node, AgsRecall *recall)
 {
   AgsRecallRecycling *recall_recycling;
+  xmlNode *child;
 
   recall_recycling = AGS_RECALL_RECYCLING(recall);
 
@@ -1966,6 +2049,21 @@ ags_file_read_recall_recycling(AgsFile *file, xmlNode *node, AgsRecall *recall)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall_recycling,
 				   NULL));
+
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -1996,6 +2094,11 @@ ags_file_write_recall_recycling(AgsFile *file, xmlNode *parent, AgsRecall *recal
   xmlAddChild(parent,
 	      node);
 
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(recall));
+
   return(node);
 }
 
@@ -2003,6 +2106,7 @@ void
 ags_file_read_recall_audio_signal(AgsFile *file, xmlNode *node, AgsRecall *recall)
 {
   AgsRecallAudioSignal *recall_audio_signal;
+  xmlNode *child;
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall);
 
@@ -2013,6 +2117,20 @@ ags_file_read_recall_audio_signal(AgsFile *file, xmlNode *node, AgsRecall *recal
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall_audio_signal,
 				   NULL));
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -2042,6 +2160,11 @@ ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *re
   
   xmlAddChild(parent,
 	      node);
+
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(recall));
 
   return(node);
 }

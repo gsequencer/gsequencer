@@ -25,7 +25,10 @@ void ags_plugin_factory_init (AgsPluginFactory *plugin_factory);
 void ags_plugin_factory_finalize(GObject *gobject);
 
 void ags_plugin_factory_real_add(AgsPluginFactory *plugin_factory,
-				 GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type);
+				 GType plugin_type, gchar *plugin_name,
+				 gchar *version, gchar *build_id,
+				 gchar *xml_type,
+				 GParameter *control, guint control_count);
 AgsPlugin* ags_plugin_factory_real_create(AgsPluginFactory *plugin_factory,
 					  gchar *plugin_name, gchar *version, gchar *build_id);
 
@@ -89,10 +92,12 @@ ags_plugin_factory_class_init(AgsPluginFactoryClass *plugin_factory)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPluginFactoryClass, add),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING,
-		 G_TYPE_OBJECT, 4,
-		 G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-
+		 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER,
+		 G_TYPE_OBJECT, 7,
+		 G_TYPE_ULONG,
+		 G_TYPE_STRING,
+		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+		 G_TYPE_UINT, G_TYPE_POINTER);
 
   plugin_factory_signals[CREATE] =
     g_signal_new("create\0",
@@ -117,6 +122,13 @@ ags_plugin_factory_finalize(GObject *gobject)
   //TODO:JK: implement me
 }
 
+void
+ags_plugin_factory_read_file(AgsPluginFactory *plugin_factory,
+			     gchar *path)
+{
+  //TODO:JK: implement me
+}
+
 GList*
 ags_plugin_factory_list_by_name(AgsPluginFactory *plugin_factory,
 				gchar *plugin_name)
@@ -132,14 +144,20 @@ ags_plugin_factory_list_by_name(AgsPluginFactory *plugin_factory,
 
 void
 ags_plugin_factory_real_add(AgsPluginFactory *plugin_factory,
-			    GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type)
+			    GType plugin_type, gchar *plugin_name,
+			    gchar *version, gchar *build_id,
+			    gchar *xml_type,
+			    GParameter *control, guint control_count)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_plugin_factory_add(AgsPluginFactory *plugin_factory,
-		       GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type)
+		       GType plugin_type, gchar *plugin_name,
+		       gchar *version, gchar *build_id,
+		       gchar *xml_type,
+		       GParameter *control, guint control_count)
 {
   //TODO:JK: implement me
 }
@@ -178,6 +196,20 @@ ags_plugin_factory_get_instance()
   pthread_mutex_unlock(&(mutex));
 
   return(ags_plugin_factory);
+}
+
+AgsPluginFactory*
+ags_plugin_factory_new_from_file(gchar *path)
+{
+  AgsPluginFactory *plugin_factory;
+
+  plugin_factory = (AgsPluginFactory *) g_object_new(AGS_TYPE_PLUGIN_FACTORY,
+						     NULL);
+
+  ags_plugin_factory_read_file(plugin_factory,
+			       path);
+
+  return(plugin_factory);
 }
 
 AgsPluginFactory*

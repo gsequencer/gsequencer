@@ -33,6 +33,7 @@
 
 typedef struct _AgsPluginFactory AgsPluginFactory;
 typedef struct _AgsPluginFactoryClass AgsPluginFactoryClass;
+typedef struct _AgsPluginMetadata AgsPluginMetadata;
 
 struct _AgsPluginFactory
 {
@@ -46,26 +47,52 @@ struct _AgsPluginFactoryClass
   GObjectClass object;
 
   void (*add)(AgsPluginFactory *plugin_factory,
-	      GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type);
+	      GType plugin_type,
+	      gchar *plugin_name,
+	      gchar *version, gchar *build_id,
+	      gchar *xml_type,
+	      GParameter *control, guint control_count);
 
   AgsPlugin* (*create)(AgsPluginFactory *plugin_factory,
-		       gchar *plugin_name, gchar *version, gchar *build_id);
+		       gchar *xml_type);
+};
+
+struct _AgsPluginMetadata
+{
+  GType plugin_type;
+  gchar *plugin_name;
+
+  gchar *version;
+  gchar *build_id;
+
+  gchar *xml_type;
+
+  GParameter *control;
+  guint control_count;
 };
 
 GType ags_plugin_factory_get_type(void);
+
+void ags_plugin_factory_read_file(AgsPluginFactory *plugin_factory,
+				  gchar *path);
 
 GList* ags_plugin_factory_list_by_name(AgsPluginFactory *plugin_factory,
 				       gchar *plugin_name);
 
 void ags_plugin_factory_add(AgsPluginFactory *plugin_factory,
-			    GType type, gchar *plugin_name, gchar *version, gchar *build_id, gchar *xml_type);
-
+			    GType plugin_type,
+			    gchar *plugin_name,
+			    gchar *version, gchar *build_id,
+			    gchar *xml_type,
+			    GParameter *control, guint control_count);
 
 AgsPlugin* ags_plugin_factory_create(AgsPluginFactory *plugin_factory,
 				     gchar *plugin_name, gchar *version, gchar *build_id);
 
 /* */
 AgsPluginFactory* ags_plugin_factory_get_instance();
+
+AgsPluginFactory* ags_plugin_factory_new_from_file(gchar *path);
 AgsPluginFactory* ags_plugin_factory_new();
 
 #endif /*__AGS_PLUGIN_FACTORY_H__*/

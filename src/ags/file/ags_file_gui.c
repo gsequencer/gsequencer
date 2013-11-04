@@ -909,7 +909,7 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 				child,
 				&line);
 
-	ags_container_add_all(gobject->option,
+	ags_container_add_all(GTK_CONTAINER(gobject->option),
 			      line);
 
 	g_list_free(line);
@@ -967,7 +967,7 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 
   child = ags_file_write_line_list(file,
 				   node,
-				   gtk_container_get_children(pad->option));
+				   gtk_container_get_children(GTK_CONTAINER(pad->option)));
 }
 
 void
@@ -1094,25 +1094,180 @@ ags_file_write_drum_output_pad(AgsFile *file, xmlNode *parent, AgsPad *drum_outp
 void
 ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 {
+  AgsLine *gobject;
+  AgsFileLookup *file_lookup;
+  GType line_type;
+  xmlNode *child;
+
+  if(*line == NULL){
+    line_type = g_type_from_name(xmlGetProp(node,
+					    AGS_FILE_TYPE_PROP));
+    
+    gobject = (AgsLine *) g_object_new(line_type,
+				       NULL);
+    *line = gobject;
+  }else{
+    gobject = *line;
+  }
+
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->main,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->version = g_strdup(xmlGetProp(node,
+					 AGS_FILE_VERSION_PROP));
+
+  gobject->build_id = g_strdup(xmlGetProp(node,
+					  AGS_FILE_BUILD_ID_PROP));
+
   //TODO:JK: implement me
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(gobject));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-line-member-list\0",
+			   20)){
+	//TODO:JK: implement me
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
 ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 {
+  AgsFileLookup *file_lookup;
+  xmlNode *node, *child;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", line,
+				   NULL));
+  
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-line\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(line));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     line->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     line->build_id);
+
+  //TODO:JK: implement me
+
+  /* child elements */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(line));
+
   //TODO:JK: implement me
 }
 
 void
 ags_file_read_line_list(AgsFile *file, xmlNode *node, GList **line)
 {
-  //TODO:JK: implement me
+  AgsLine *current;
+  GList *list;
+  xmlNode *child;
+  xmlChar *id;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_line(file, child, &current);
+
+    list = g_list_prepend(list, current);
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *line = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 {
-  //TODO:JK: implement me
+  AgsLine *current;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-line-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = line;
+
+  while(list != NULL){
+    ags_file_write_line(file, node, AGS_LINE(list->data));
+
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void
