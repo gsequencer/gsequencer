@@ -1194,6 +1194,10 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 		   node,
 		   AGS_PLUGIN(line));
 
+  ags_file_write_line_member_list(file,
+				  node,
+				  gtk_container_get_children(GTK_CONTAINER(line->table)));
+
   //TODO:JK: implement me
 }
 
