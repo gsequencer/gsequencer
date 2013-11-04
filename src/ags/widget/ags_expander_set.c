@@ -28,6 +28,7 @@ void ags_expander_set_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
+void ags_expander_set_finalize(GObject *gobject);
 void ags_expander_set_show(GtkWidget *widget);
 
 void ags_expander_set_realize(GtkWidget *widget);
@@ -47,6 +48,10 @@ void ags_expander_set_height_changed(GObject *gobject,
 
 enum{
   PROP_0,
+  PROP_GHOST_X,
+  PROP_GHOST_Y,
+  PROP_GHOST_WIDTH,
+  PROP_GHOST_HEIGHT,
   PROP_LOCATION_X,
   PROP_LOCATION_Y,
   PROP_LOCATION_WIDTH,
@@ -96,7 +101,7 @@ ags_expander_set_class_init(AgsExpanderSetClass *expander_set)
   gobject->set_property = ags_expander_set_set_property;
   gobject->get_property = ags_expander_set_get_property;
 
-  //TODO:JK: add finalize
+  gobject->finalize = ags_expander_set_finalize;
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) expander_set;
@@ -141,6 +146,54 @@ ags_expander_set_set_property(GObject *gobject,
   expander_set = AGS_EXPANDER_SET(gobject);
 
   switch(prop_id){
+  case PROP_GHOST_X:
+    {
+      guint *ghost_x;
+
+      ghost_x = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_move(expander_set,
+			    ghost_x, expander_set->ghost_y,
+			    expander_set->ghost_x, expander_set->ghost_y,
+			    TRUE);
+    }
+    break;
+  case PROP_GHOST_Y:
+    {
+      guint *ghost_y;
+
+      ghost_y = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_move(expander_set,
+			    expander_set->ghost_x, ghost_y,
+			    expander_set->ghost_x, expander_set->ghost_y,
+			    TRUE);
+    }
+    break;
+  case PROP_GHOST_WIDTH:
+    {
+      guint *ghost_width;
+
+      ghost_width = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_resize(expander_set,
+			      ghost_width, expander_set->ghost_y,
+			      expander_set->ghost_width, expander_set->ghost_y,
+			      TRUE);
+    }
+    break;
+  case PROP_GHOST_HEIGHT:
+    {
+      guint *ghost_height;
+
+      ghost_height = (guint *) g_value_get_pointer(value);
+
+      ags_expander_set_resize(expander_set,
+			      expander_set->ghost_x, ghost_height,
+			      expander_set->ghost_x, expander_set->ghost_height,
+			      TRUE);
+    }
+    break;
   case PROP_LOCATION_X:
     {
       guint *location_x;
@@ -149,7 +202,8 @@ ags_expander_set_set_property(GObject *gobject,
 
       ags_expander_set_move(expander_set,
 			    location_x, expander_set->location_y,
-			    expander_set->location_x, expander_set->location_y);
+			    expander_set->location_x, expander_set->location_y,
+			    FALSE);
     }
     break;
   case PROP_LOCATION_Y:
@@ -160,7 +214,8 @@ ags_expander_set_set_property(GObject *gobject,
 
       ags_expander_set_move(expander_set,
 			    expander_set->location_x, location_y,
-			    expander_set->location_x, expander_set->location_y);
+			    expander_set->location_x, expander_set->location_y,
+			    FALSE);
     }
     break;
   case PROP_LOCATION_WIDTH:
@@ -171,7 +226,8 @@ ags_expander_set_set_property(GObject *gobject,
 
       ags_expander_set_resize(expander_set,
 			      location_width, expander_set->location_y,
-			      expander_set->location_width, expander_set->location_y);
+			      expander_set->location_width, expander_set->location_y,
+			      FALSE);
     }
     break;
   case PROP_LOCATION_HEIGHT:
@@ -182,7 +238,8 @@ ags_expander_set_set_property(GObject *gobject,
 
       ags_expander_set_resize(expander_set,
 			      expander_set->location_x, location_height,
-			      expander_set->location_x, expander_set->location_height);
+			      expander_set->location_x, expander_set->location_height,
+			      FALSE);
     }
     break;
   }
@@ -203,6 +260,18 @@ ags_expander_set_get_property(GObject *gobject,
   expander_set = AGS_EXPANDER_SET(gobject);
 
   switch(prop_id){
+  case PROP_GHOST_X:
+    g_value_set_pointer(value, expander_set->ghost_x);
+    break;
+  case PROP_GHOST_Y:
+    g_value_set_pointer(value, expander_set->ghost_y);
+    break;
+  case PROP_GHOST_WIDTH:
+    g_value_set_pointer(value, expander_set->ghost_width);
+    break;
+  case PROP_GHOST_HEIGHT:
+    g_value_set_pointer(value, expander_set->ghost_height);
+    break;
   case PROP_LOCATION_X:
     g_value_set_pointer(value, expander_set->location_x);
     break;
@@ -219,6 +288,49 @@ ags_expander_set_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_expander_set_finalize(GObject *gobject)
+{
+  AgsExpanderSet *expander_set;
+
+  expander_set = AGS_EXPANDER_SET(gobject);
+
+  if(expander_set->ghost_x != NULL){
+    free(expander_set->ghost_x);
+  }
+
+  if(expander_set->ghost_y != NULL){
+    free(expander_set->ghost_y);
+  }
+
+  if(expander_set->ghost_width != NULL){
+    free(expander_set->ghost_width);
+  }
+
+  if(expander_set->ghost_height != NULL){
+    free(expander_set->ghost_height);
+  }
+
+  if(expander_set->expander_set_x != NULL){
+    free(expander_set->expander_set_x);
+  }
+
+  if(expander_set->expander_set_y != NULL){
+    free(expander_set->expander_set_y);
+  }
+
+  if(expander_set->expander_set_width != NULL){
+    free(expander_set->expander_set_width);
+  }
+
+  if(expander_set->expander_set_height != NULL){
+    free(expander_set->expander_set_height);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_expander_set_parent_class)->finalize(gobject);
 }
 
 void
@@ -260,6 +372,13 @@ void
 ags_expander_set_height_changed(GObject *gobject,
 				GParamSpec *pspec,
 				AgsExpanderSet *expander_set)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_expander_set_set_flags(AgsExpanderSet *expander_set,
+			   guint flags)
 {
   //TODO:JK: implement me
 }
