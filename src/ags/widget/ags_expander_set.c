@@ -53,6 +53,9 @@ void ags_expander_set_height_changed(GObject *gobject,
 void ags_expander_set_insert_child(AgsExpanderSet *expander_set,
 				   AgsExpanderSetChild *child,
 				   gboolean ghost);
+void ags_expander_set_remove_child(AgsExpanderSet *expander_set,
+				   AgsExpanderSetChild *child,
+				   gboolean ghost);
 
 enum{
   PROP_0,
@@ -277,6 +280,25 @@ ags_expander_set_child_alloc(guint x, guint y,
   return(child);
 }
 
+AgsExpanderSetChild*
+ags_expander_set_child_find(AgsExpanderSet *expander_set,
+			    GtkWidget *child)
+{
+  GList *list;
+  
+  list = expander_set->location;
+
+  while(list != NULL){
+    if(AGS_EXPANDER_SET_CHILD(list->data)->child == child){
+      return((AgsExpanderSetChild *) list->data);
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
+}
+
 void
 ags_expander_set_insert_child(AgsExpanderSet *expander_set,
 			      AgsExpanderSetChild *child,
@@ -332,6 +354,22 @@ ags_expander_set_insert_child(AgsExpanderSet *expander_set,
 }
 
 void
+ags_expander_set_remove_child(AgsExpanderSet *expander_set,
+			      AgsExpanderSetChild *child,
+			      gboolean ghost)
+{
+  if(ghost){
+    expander_set->ghost = g_list_remove(expander_set->ghost,
+					child);
+  }else{
+    expander_set->location = g_list_remove(expander_set->location,
+					   child);
+  }
+
+  free(child);
+}
+
+void
 ags_expander_set_add(AgsExpanderSet *expander_set,
 		     GtkWidget *widget,
 		     guint x, guint y,
@@ -368,7 +406,13 @@ void
 ags_expander_set_remove(AgsExpanderSet *expander_set,
 			GtkWidget *widget)
 {
-  //TODO:JK: implement me
+  ags_expander_set_remove_child(expander_set,
+				ags_expander_set_child_find(expander_set,
+							    widget),
+				FALSE);
+  
+  gtk_container_remove(GTK_CONTAINER(expander_set),
+		       widget);
 }
 
 void

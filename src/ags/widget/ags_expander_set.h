@@ -75,6 +75,8 @@ GType ags_expander_set_get_type(void);
 
 AgsExpanderSetChild* ags_expander_set_child_alloc(guint x, guint y,
 						  guint width, guint height);
+AgsExpanderSetChild* ags_expander_set_child_find(AgsExpanderSet *expander_set,
+						 GtkWidget *child);
 
 void ags_expander_set_set_flags(AgsExpanderSet *expander_set,
 				guint flags);
