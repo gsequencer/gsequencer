@@ -402,37 +402,6 @@ ags_expander_set_add(AgsExpanderSet *expander_set,
   }
 }
 
-void
-ags_expander_set_remove(AgsExpanderSet *expander_set,
-			GtkWidget *widget)
-{
-  ags_expander_set_remove_child(expander_set,
-				ags_expander_set_child_find(expander_set,
-							    widget),
-				FALSE);
-  
-  gtk_container_remove(GTK_CONTAINER(expander_set),
-		       widget);
-}
-
-void
-ags_expander_set_move(AgsExpanderSet *expander_set,
-		      guint *x_new, guint *y_new,
-		      guint *x_old, guint *y_old,
-		      gboolean ghost)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_expander_set_resize(AgsExpanderSet *expander_set,
-			guint *width_new, guint *height_new,
-			guint *width_old, guint *height_old,
-		       gboolean ghost)
-{
-  //TODO:JK: implement me
-}
-
 AgsExpanderSet*
 ags_expander_set_new(guint width, guint height,
 		     guint *x, guint *y)
