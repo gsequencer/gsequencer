@@ -18,6 +18,8 @@
 
 #include "ags_expander_set.h"
 
+#include <ags/lib/ags_list.h>
+
 #include <stdlib.h>
 
 void ags_expander_set_class_init(AgsExpanderSetClass *expander_set);
@@ -48,16 +50,14 @@ void ags_expander_set_height_changed(GObject *gobject,
 				     GParamSpec *pspec,
 				     AgsExpanderSet *expander_set);
 
+void ags_expander_set_insert_child(AgsExpanderSet *expander_set,
+				   AgsExpanderSetChild *child,
+				   gboolean ghost);
+
 enum{
   PROP_0,
-  PROP_GHOST_X,
-  PROP_GHOST_Y,
-  PROP_GHOST_WIDTH,
-  PROP_GHOST_HEIGHT,
-  PROP_LOCATION_X,
-  PROP_LOCATION_Y,
-  PROP_LOCATION_WIDTH,
-  PROP_LOCATION_HEIGHT,
+  PROP_GHOST,
+  PROP_LOCATION,
 };
 
 static gpointer ags_expander_set_parent_class = NULL;
@@ -130,11 +130,8 @@ ags_expander_set_init(AgsExpanderSet *expander_set)
 
   expander_set->flags = 0;
 
-  expander_set->location_x = NULL;
-  expander_set->location_y = NULL;
-
-  expander_set->location_width = NULL;
-  expander_set->location_height = NULL;
+  expander_set->ghost = NULL;
+  expander_set->location = NULL;
 }
 
 void
@@ -148,100 +145,22 @@ ags_expander_set_set_property(GObject *gobject,
   expander_set = AGS_EXPANDER_SET(gobject);
 
   switch(prop_id){
-  case PROP_GHOST_X:
+  case PROP_GHOST:
     {
-      guint *ghost_x;
+      AgsExpanderSetChild *ghost;
 
-      ghost_x = (guint *) g_value_get_pointer(value);
+      ghost = (AgsExpanderSetChild *) g_value_get_pointer(value);
 
-      ags_expander_set_move(expander_set,
-			    ghost_x, expander_set->ghost_y,
-			    expander_set->ghost_x, expander_set->ghost_y,
-			    TRUE);
+
     }
     break;
-  case PROP_GHOST_Y:
+  case PROP_LOCATION:
     {
-      guint *ghost_y;
+      AgsExpanderSetChild *location;
 
-      ghost_y = (guint *) g_value_get_pointer(value);
+      location = (AgsExpanderSetChild *) g_value_get_pointer(value);
 
-      ags_expander_set_move(expander_set,
-			    expander_set->ghost_x, ghost_y,
-			    expander_set->ghost_x, expander_set->ghost_y,
-			    TRUE);
-    }
-    break;
-  case PROP_GHOST_WIDTH:
-    {
-      guint *ghost_width;
 
-      ghost_width = (guint *) g_value_get_pointer(value);
-
-      ags_expander_set_resize(expander_set,
-			      ghost_width, expander_set->ghost_y,
-			      expander_set->ghost_width, expander_set->ghost_y,
-			      TRUE);
-    }
-    break;
-  case PROP_GHOST_HEIGHT:
-    {
-      guint *ghost_height;
-
-      ghost_height = (guint *) g_value_get_pointer(value);
-
-      ags_expander_set_resize(expander_set,
-			      expander_set->ghost_x, ghost_height,
-			      expander_set->ghost_x, expander_set->ghost_height,
-			      TRUE);
-    }
-    break;
-  case PROP_LOCATION_X:
-    {
-      guint *location_x;
-
-      location_x = (guint *) g_value_get_pointer(value);
-
-      ags_expander_set_move(expander_set,
-			    location_x, expander_set->location_y,
-			    expander_set->location_x, expander_set->location_y,
-			    FALSE);
-    }
-    break;
-  case PROP_LOCATION_Y:
-    {
-      guint *location_y;
-
-      location_y = (guint *) g_value_get_pointer(value);
-
-      ags_expander_set_move(expander_set,
-			    expander_set->location_x, location_y,
-			    expander_set->location_x, expander_set->location_y,
-			    FALSE);
-    }
-    break;
-  case PROP_LOCATION_WIDTH:
-    {
-      guint *location_width;
-
-      location_width = (guint *) g_value_get_pointer(value);
-
-      ags_expander_set_resize(expander_set,
-			      location_width, expander_set->location_y,
-			      expander_set->location_width, expander_set->location_y,
-			      FALSE);
-    }
-    break;
-  case PROP_LOCATION_HEIGHT:
-    {
-      guint *location_height;
-
-      location_height = (guint *) g_value_get_pointer(value);
-
-      ags_expander_set_resize(expander_set,
-			      expander_set->location_x, location_height,
-			      expander_set->location_x, expander_set->location_height,
-			      FALSE);
     }
     break;
   default:
@@ -261,29 +180,11 @@ ags_expander_set_get_property(GObject *gobject,
   expander_set = AGS_EXPANDER_SET(gobject);
 
   switch(prop_id){
-  case PROP_GHOST_X:
-    g_value_set_pointer(value, expander_set->ghost_x);
+  case PROP_GHOST:
+    g_value_set_pointer(value, expander_set->ghost);
     break;
-  case PROP_GHOST_Y:
-    g_value_set_pointer(value, expander_set->ghost_y);
-    break;
-  case PROP_GHOST_WIDTH:
-    g_value_set_pointer(value, expander_set->ghost_width);
-    break;
-  case PROP_GHOST_HEIGHT:
-    g_value_set_pointer(value, expander_set->ghost_height);
-    break;
-  case PROP_LOCATION_X:
-    g_value_set_pointer(value, expander_set->location_x);
-    break;
-  case PROP_LOCATION_Y:
-    g_value_set_pointer(value, expander_set->location_y);
-    break;
-  case PROP_LOCATION_WIDTH:
-    g_value_set_pointer(value, expander_set->location_width);
-    break;
-  case PROP_LOCATION_HEIGHT:
-    g_value_set_pointer(value, expander_set->location_height);
+  case PROP_LOCATION:
+    g_value_set_pointer(value, expander_set->location);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -298,36 +199,12 @@ ags_expander_set_finalize(GObject *gobject)
 
   expander_set = AGS_EXPANDER_SET(gobject);
 
-  if(expander_set->ghost_x != NULL){
-    free(expander_set->ghost_x);
+  if(expander_set->ghost != NULL){
+    ags_list_free_and_free_link(expander_set->ghost);
   }
 
-  if(expander_set->ghost_y != NULL){
-    free(expander_set->ghost_y);
-  }
-
-  if(expander_set->ghost_width != NULL){
-    free(expander_set->ghost_width);
-  }
-
-  if(expander_set->ghost_height != NULL){
-    free(expander_set->ghost_height);
-  }
-
-  if(expander_set->location_x != NULL){
-    free(expander_set->location_x);
-  }
-
-  if(expander_set->location_y != NULL){
-    free(expander_set->location_y);
-  }
-
-  if(expander_set->location_width != NULL){
-    free(expander_set->location_width);
-  }
-
-  if(expander_set->location_height != NULL){
-    free(expander_set->location_height);
+  if(expander_set->location != NULL){
+    ags_list_free_and_free_link(expander_set->location);
   }
 
   /* call parent */
@@ -384,13 +261,107 @@ ags_expander_set_set_flags(AgsExpanderSet *expander_set,
   //TODO:JK: implement me
 }
 
+AgsExpanderSetChild*
+ags_expander_set_child_alloc(guint x, guint y,
+			     guint width, guint height)
+{
+  AgsExpanderSetChild *child;
+
+  child = (AgsExpanderSetChild *) malloc(sizeof(AgsExpanderSetChild));
+
+  child->x = x;
+  child->y = y;
+  child->width = width;
+  child->height = height;
+
+  return(child);
+}
+
+void
+ags_expander_set_insert_child(AgsExpanderSet *expander_set,
+			      AgsExpanderSetChild *child,
+			      gboolean ghost)
+{
+  GList *list;
+  guint i;
+  
+  if(ghost){
+    list = expander_set->ghost;
+  }else{
+    list = expander_set->location;
+  }
+
+  i = 0;
+  
+  while(list != NULL){
+    if(AGS_EXPANDER_SET_CHILD(list->data)->x > child->x){
+      break;
+    }
+
+    if(AGS_EXPANDER_SET_CHILD(list->data)->x == child->x){
+      while(list != NULL){
+	if(AGS_EXPANDER_SET_CHILD(list->data)->x > child->x){
+	  break;
+	}
+
+	if(AGS_EXPANDER_SET_CHILD(list->data)->x == child->x &&
+	   AGS_EXPANDER_SET_CHILD(list->data)->y >= child->y){
+	  break;
+	}
+	
+	i++;
+	list = list->next;
+      }
+
+      break;
+    }
+
+    i++;
+    list = list->next;
+  }
+
+  if(ghost){
+    expander_set->ghost = g_list_insert(expander_set->ghost,
+					child,
+					i);
+  }else{
+    expander_set->location = g_list_insert(expander_set->location,
+					   child,
+					   i);
+  }
+}
+
 void
 ags_expander_set_add(AgsExpanderSet *expander_set,
 		     GtkWidget *widget,
 		     guint x, guint y,
 		     guint width, guint height)
 {
-  //TODO:JK: implement me
+  AgsExpanderSetChild *child;
+
+  gtk_table_attach(GTK_TABLE(expander_set),
+		   widget,
+		   x, y,
+		   x + width, y + height,
+		   GTK_FILL |
+		   GTK_EXPAND,
+		   GTK_FILL |
+		   GTK_EXPAND,
+		   0, 0);
+
+  child = ags_expander_set_child_alloc(x, y,
+				       width, height);
+  child->child = widget;
+    
+  if(widget != NULL){
+    ags_expander_set_insert_child(expander_set,
+				  child,
+				  FALSE);
+  }else{
+    ags_expander_set_insert_child(expander_set,
+				  child,
+				  TRUE);
+  }
 }
 
 void

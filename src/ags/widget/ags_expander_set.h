@@ -31,8 +31,11 @@
 #define AGS_IS_EXPANDER_SET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EXPANDER_SET))
 #define AGS_EXPANDER_SET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EXPANDER_SET, AgsExpanderSetClass))
 
+#define AGS_EXPANDER_SET_CHILD(ptr) ((AgsExpanderSetChild *)(ptr))
+
 typedef struct _AgsExpanderSet AgsExpanderSet;
 typedef struct _AgsExpanderSetClass AgsExpanderSetClass;
+typedef struct _AgsExpanderSetChild AgsExpanderSetChild;
 
 typedef enum{
   AGS_EXPANDER_SET_DRAW_GHOST            = 1,
@@ -48,17 +51,8 @@ struct _AgsExpanderSet
 
   guint flags;
 
-  guint *ghost_x;
-  guint *ghost_y;
-
-  guint *ghost_width;
-  guint *ghost_height;
-
-  guint *location_x;
-  guint *location_y;
-
-  guint *location_width;
-  guint *location_height;
+  GList *ghost;
+  GList *location;
 };
 
 struct _AgsExpanderSetClass
@@ -66,7 +60,21 @@ struct _AgsExpanderSetClass
   GtkTableClass table;
 };
 
+struct _AgsExpanderSetChild
+{
+  GtkWidget *child;
+
+  guint *x;
+  guint *y;
+
+  guint *width;
+  guint *height;
+};
+
 GType ags_expander_set_get_type(void);
+
+AgsExpanderSetChild* ags_expander_set_child_alloc(guint x, guint y,
+						  guint width, guint height);
 
 void ags_expander_set_set_flags(AgsExpanderSet *expander_set,
 				guint flags);
