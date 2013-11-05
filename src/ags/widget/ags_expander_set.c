@@ -50,6 +50,7 @@ void ags_expander_set_height_changed(GObject *gobject,
 				     GParamSpec *pspec,
 				     AgsExpanderSet *expander_set);
 
+void ags_expander_set_draw(AgsExpanderSet *expander_set);
 void ags_expander_set_insert_child(AgsExpanderSet *expander_set,
 				   AgsExpanderSetChild *child,
 				   gboolean ghost);
@@ -302,6 +303,12 @@ ags_expander_set_child_find(AgsExpanderSet *expander_set,
   }
 
   return(NULL);
+}
+
+void
+ags_expander_set_draw(AgsExpanderSet *expander_set)
+{
+  //TODO:JK: implement me
 }
 
 void

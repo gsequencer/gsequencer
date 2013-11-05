@@ -50,6 +50,7 @@ void ags_expander_height_changed(GObject *gobject,
 				 GParamSpec *pspec,
 				 AgsExpander *expander);
 
+void ags_expander_draw(AgsExpander *expander);
 void ags_expander_insert_child(AgsExpander *expander,
 			       AgsExpanderChild *child);
 void ags_expander_remove_child(AgsExpander *expander,
@@ -127,6 +128,8 @@ ags_expander_init(AgsExpander *expander)
   g_signal_connect(expander, "notify::height\0",
 		   G_CALLBACK(ags_expander_height_changed),
 		   expander);
+
+  expander->flags = 0;
 
   expander->table = (GtkTable *) gtk_table_new(0, 0, FALSE);
   expander->children = NULL;
@@ -258,6 +261,12 @@ ags_expander_child_alloc(guint x, guint y,
   child->height = height;
 
   return(child);
+}
+
+void
+ags_expander_draw(AgsExpander *expander)
+{
+  //TODO:JK: implement me
 }
 
 AgsExpanderChild*

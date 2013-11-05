@@ -533,6 +533,8 @@
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  flags            PCDATA     #REQUIRED
+	  rows             NMTOKEN    #REQUIRED
+	  cols             NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-mixer-input-pad EMPTY>
@@ -561,6 +563,10 @@
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
+	  left-attach      NMTOKEN    #REQUIRED
+	  rigth-attach     NMTOKEN    #REQUIRED
+	  top-attach       NMTOKEN    #REQUIRED
+	  bottom-attach    NMTOKEN    #REQUIRED
 	  rows             NMTOKEN    #REQUIRED
 	  cols             NMTOKEN    #REQUIRED
 	  >

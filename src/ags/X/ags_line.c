@@ -81,7 +81,7 @@ ags_line_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_line = g_type_register_static(GTK_TYPE_MENU_ITEM,
+    ags_type_line = g_type_register_static(GTK_TYPE_VBOX,
 					   "AgsLine\0", &ags_line_info,
 					   0);
 
@@ -158,16 +158,16 @@ ags_line_init(AgsLine *line)
 
   line->channel = NULL;
 
-  line->table = (GtkTable *) gtk_table_new(2, 2, FALSE);
-  gtk_container_add((GtkContainer *) line, (GtkWidget *) line->table);
+  line->pad = NULL;
 
   line->label = (GtkLabel *) gtk_label_new(NULL);
-  gtk_table_attach(line->table,
-		   (GtkWidget *) line->label,
-		   0, 2,
-		   0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
+  gtk_box_pack_start(GTK_BOX(line),
+		     GTK_WIDGET(line->label),
+		     FALSE, FALSE,
+		     0);
+
+  line->expander = ags_expander_new(0, 0);
+  gtk_container_add((GtkContainer *) line, (GtkWidget *) line->expander);
 }
 
 void

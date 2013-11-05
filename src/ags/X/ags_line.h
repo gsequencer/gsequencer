@@ -25,6 +25,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/widget/ags_expander.h>
+
 #define AGS_TYPE_LINE                (ags_line_get_type())
 #define AGS_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE, AgsLine))
 #define AGS_LINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LINE, AgsLineClass))
@@ -44,24 +46,25 @@ typedef enum{
 
 struct _AgsLine
 {
-  GtkMenuItem item;
+  GtkVBox vbox;
 
   guint flags;
 
   gchar *version;
   gchar *build_id;
 
+  AgsChannel *channel;
+
   GtkWidget *pad;
 
-  GtkTable *table;
   GtkLabel *label;
 
-  AgsChannel *channel;
+  AgsExpander *expander;
 };
 
 struct _AgsLineClass
 {
-  GtkMenuItemClass item;
+  GtkVBoxClass vbox;
 
   void (*set_channel)(AgsLine *line, AgsChannel *channel);
 };

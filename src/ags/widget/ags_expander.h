@@ -37,9 +37,15 @@ typedef struct _AgsExpander AgsExpander;
 typedef struct _AgsExpanderClass AgsExpanderClass;
 typedef struct _AgsExpanderChild AgsExpanderChild;
 
+typedef enum{
+  AGS_EXPANDER_DRAW_BORDER        = 1,
+}AgsExpanderFlags;
+
 struct _AgsExpander
 {
   GtkExpander expander;
+
+  guint flags;
 
   GtkTable *table;
 

@@ -901,18 +901,59 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
       }else if(!xmlStrncmp(child->name,
 			   "ags-line-list\0",
 			   13)){
-	GList *line;
+	xmlNode *line_node;
+	GList *start, *list;
 
-	line = NULL;
+	list = NULL;
 
 	ags_file_read_line_list(file,
 				child,
-				&line);
+				&list);
+	start = list;
 
-	ags_container_add_all(GTK_CONTAINER(gobject->option),
-			      line);
+	line_node = child->children;
 
-	g_list_free(line);
+	while(line_node != NULL){
+	  if(line_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(line_node->name,
+			   "ags-line\0",
+			   8)){
+	      guint x, y;
+	      guint width, height;
+
+	      x = g_ascii_strtoull(xmlGetProp(line_node,
+					      "left-attach\0"),
+				   NULL,
+				   10);
+
+	      y = g_ascii_strtoull(xmlGetProp(line_node,
+					      "top-attach\0"),
+				   NULL,
+				   10);
+
+	      width = g_ascii_strtoull(xmlGetProp(line_node,
+						  "bottom-attach\0"),
+				   NULL,
+				   10) - x;
+
+	      height = g_ascii_strtoull(xmlGetProp(line_node,
+						   "right-attach\0"),
+				   NULL,
+				   10) - y;
+
+	      ags_expander_set_add(gobject->expander_set,
+				   GTK_WIDGET(list->data),
+				   x, y,
+				   width, height);
+
+	      list = list->next;
+	    }
+	  }
+
+	  line_node = line_node->next;
+	}
+
+	g_list_free(start);
       }
     }
 
@@ -924,7 +965,10 @@ xmlNode*
 ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 {
   AgsFileLookup *file_lookup;
+  AgsExpanderSetChild *expander_set_child;
   xmlNode *node, *child;
+  xmlNode *line_node;
+  GList *line;
   gchar *id;
 
   id = ags_id_generator_create_uuid();
@@ -965,9 +1009,37 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 		   node,
 		   AGS_PLUGIN(pad));
 
+  line = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+
   child = ags_file_write_line_list(file,
 				   node,
-				   gtk_container_get_children(GTK_CONTAINER(pad->option)));
+				   line);
+
+  line_node = child->children;
+
+  while(line != NULL){
+    expander_set_child = ags_expander_set_child_find(pad->expander_set,
+						     line->data);
+
+    xmlNewProp(line_node,
+	       "left-attach\0",
+	       g_strdup_printf("%d\0", expander_set_child->x));
+
+    xmlNewProp(line_node,
+	       "top-attach\0",
+	       g_strdup_printf("%d\0", expander_set_child->y));
+
+    xmlNewProp(line_node,
+	       "right-attach\0",
+	       g_strdup_printf("%d\0", expander_set_child->x + expander_set_child->width));
+
+    xmlNewProp(line_node,
+	       "bottom-attach\0",
+	       g_strdup_printf("%d\0", expander_set_child->y + expander_set_child->height));
+    
+    line = line->next;
+    line_node = line_node->next;
+  }
 }
 
 void
@@ -1128,8 +1200,6 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
   gobject->build_id = g_strdup(xmlGetProp(node,
 					  AGS_FILE_BUILD_ID_PROP));
 
-  //TODO:JK: implement me
-
   /* child elements */
   child = node->children;
 
@@ -1143,7 +1213,58 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
       }else if(!xmlStrncmp(child->name,
 			   "ags-line-member-list\0",
 			   20)){
-	//TODO:JK: implement me
+	xmlNode *line_member_node;
+	GList *start, *list;
+
+	list = NULL;
+
+	ags_file_read_line_member_node_list(file,
+					    child,
+					    &list);
+	start = list;
+	
+	line_member_node = child->children;
+
+	while(line_member_node != NULL){
+	  if(line_member_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(child->name,
+			   "ags-line-member\0",
+			   15)){
+	      guint x, y;
+	      guint width, height;
+	      x = g_ascii_strtoull(xmlGetProp(line_member_node,
+					      "left-attach\0"),
+				   NULL,
+				   10);
+
+	      y = g_ascii_strtoull(xmlGetProp(line_member_node,
+					      "top-attach\0"),
+				   NULL,
+				   10);
+
+	      width = g_ascii_strtoull(xmlGetProp(line_member_node,
+						  "bottom-attach\0"),
+				   NULL,
+				   10) - x;
+
+	      height = g_ascii_strtoull(xmlGetProp(line_member_node,
+						   "right-attach\0"),
+				   NULL,
+				   10) - y;
+
+	      ags_expander_add(gobject->expander,
+			       GTK_WIDGET(list->data),
+			       x, y,
+			       width, height);	      
+	      
+	      list = list->next;
+	    }
+	  }
+	  
+	  line_member_node = line_member_node->next;
+	}
+
+	g_list_free(start);
       }
     }
 
@@ -1155,7 +1276,10 @@ xmlNode*
 ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 {
   AgsFileLookup *file_lookup;
+  AgsExpanderChild *expander_child;
   xmlNode *node, *child;
+  xmlNode *line_member_node;
+  GList *line_member;
   gchar *id;
 
   id = ags_id_generator_create_uuid();
@@ -1187,18 +1311,42 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 	     AGS_FILE_BUILD_ID_PROP,
 	     line->build_id);
 
-  //TODO:JK: implement me
-
   /* child elements */
   ags_plugin_write(file,
 		   node,
 		   AGS_PLUGIN(line));
 
-  ags_file_write_line_member_list(file,
-				  node,
-				  gtk_container_get_children(GTK_CONTAINER(line->table)));
+  line_member = gtk_container_get_children(GTK_CONTAINER(line->expander));
 
-  //TODO:JK: implement me
+  child = ags_file_write_line_member_list(file,
+					  node,
+					  line_member);
+
+  line_member_node = child->children;
+
+  while(line_member != NULL){
+    expander_child = ags_expander_child_find(line->expander,
+					     line_member->data);
+
+    xmlNewProp(line_member_node,
+	       "left-attach\0",
+	       g_strdup_printf("%d\0", expander_child->x));
+
+    xmlNewProp(line_member_node,
+	       "top-attach\0",
+	       g_strdup_printf("%d\0", expander_child->y));
+
+    xmlNewProp(line_member_node,
+	       "right-attach\0",
+	       g_strdup_printf("%d\0", expander_child->x + expander_child->width));
+
+    xmlNewProp(line_member_node,
+	       "bottom-attach\0",
+	       g_strdup_printf("%d\0", expander_child->y + expander_child->height));
+
+    line_member = line_member->next;
+    line_member_node = line_member_node->next;
+  }
 }
 
 void
