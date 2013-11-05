@@ -64,11 +64,11 @@ struct _AgsExpanderSetChild
 {
   GtkWidget *child;
 
-  guint *x;
-  guint *y;
+  guint x;
+  guint y;
 
-  guint *width;
-  guint *height;
+  guint width;
+  guint height;
 };
 
 GType ags_expander_set_get_type(void);
@@ -88,7 +88,6 @@ void ags_expander_set_add(AgsExpanderSet *expander_set,
 void ags_expander_set_remove(AgsExpanderSet *expander_set,
 			     GtkWidget *widget);
 
-AgsExpanderSet* ags_expander_set_new(guint width, guint height,
-				     guint *x, guint *y);
+AgsExpanderSet* ags_expander_set_new(guint width, guint height);
 
 #endif /*__AGS_EXPANDER_SET_H__*/

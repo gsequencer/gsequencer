@@ -122,6 +122,7 @@ ags_expander_set_init(AgsExpanderSet *expander_set)
 {
   g_object_set(G_OBJECT(expander_set),
 	       "app-paintable\0", TRUE,
+	       "homogeneous", TRUE,
 	       NULL);
 
   g_signal_connect(expander_set, "notify::width\0",
@@ -154,7 +155,9 @@ ags_expander_set_set_property(GObject *gobject,
 
       ghost = (AgsExpanderSetChild *) g_value_get_pointer(value);
 
-
+      ags_expander_set_insert_child(expander_set,
+				    ghost,
+				    TRUE);
     }
     break;
   case PROP_LOCATION:
@@ -163,7 +166,9 @@ ags_expander_set_set_property(GObject *gobject,
 
       location = (AgsExpanderSetChild *) g_value_get_pointer(value);
 
-
+      ags_expander_set_insert_child(expander_set,
+				    location,
+				    FALSE);
     }
     break;
   default:
@@ -342,6 +347,16 @@ ags_expander_set_insert_child(AgsExpanderSet *expander_set,
     list = list->next;
   }
 
+  gtk_table_attach(GTK_TABLE(expander_set),
+		   child->child,
+		   child->x, child->y,
+		   child->x + child->width, child->y + child->height,
+		   GTK_FILL |
+		   GTK_EXPAND,
+		   GTK_FILL |
+		   GTK_EXPAND,
+		   0, 0);
+
   if(ghost){
     expander_set->ghost = g_list_insert(expander_set->ghost,
 					child,
@@ -358,6 +373,9 @@ ags_expander_set_remove_child(AgsExpanderSet *expander_set,
 			      AgsExpanderSetChild *child,
 			      gboolean ghost)
 {
+  gtk_container_remove(GTK_CONTAINER(expander_set),
+		       child->child);
+
   if(ghost){
     expander_set->ghost = g_list_remove(expander_set->ghost,
 					child);
@@ -377,16 +395,6 @@ ags_expander_set_add(AgsExpanderSet *expander_set,
 {
   AgsExpanderSetChild *child;
 
-  gtk_table_attach(GTK_TABLE(expander_set),
-		   widget,
-		   x, y,
-		   x + width, y + height,
-		   GTK_FILL |
-		   GTK_EXPAND,
-		   GTK_FILL |
-		   GTK_EXPAND,
-		   0, 0);
-
   child = ags_expander_set_child_alloc(x, y,
 				       width, height);
   child->child = widget;
@@ -402,17 +410,24 @@ ags_expander_set_add(AgsExpanderSet *expander_set,
   }
 }
 
+void
+ags_expander_set_remove(AgsExpanderSet *expander_set,
+			GtkWidget *widget)
+{
+  ags_expander_set_remove_child(expander_set,
+				ags_expander_set_child_find(expander_set,
+							    widget),
+				FALSE);
+}
+
 AgsExpanderSet*
-ags_expander_set_new(guint width, guint height,
-		     guint *x, guint *y)
+ags_expander_set_new(guint width, guint height)
 {
   AgsExpanderSet *expander_set;
 
   expander_set = (AgsExpanderSet *) g_object_new(AGS_TYPE_EXPANDER_SET,
 						 "width\0", width,
 						 "height\0", height,
-						 "location_x\0", x,
-						 "location_y\0", y,
 						 NULL);
   
   return(expander_set);

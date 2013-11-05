@@ -198,12 +198,13 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_volume_audio_signal.$(OBJEXT) \
 	ags-ags_count_beats_audio.$(OBJEXT) \
 	ags-ags_play_channel.$(OBJEXT) ags-ags_channel.$(OBJEXT) \
-	ags-ags_recall_audio.$(OBJEXT) ags-ags_expander_set.$(OBJEXT) \
-	ags-ags_dial.$(OBJEXT) ags-ags_menu.$(OBJEXT) \
-	ags-ags_htimebar.$(OBJEXT) ags-ags_timebar.$(OBJEXT) \
-	ags-ags_segment.$(OBJEXT) ags-ags_menu_item.$(OBJEXT) \
-	ags-ags_option_menu.$(OBJEXT) ags-ags_table.$(OBJEXT) \
-	ags-ags_led.$(OBJEXT) ags-ags_dynamic_connectable.$(OBJEXT) \
+	ags-ags_recall_audio.$(OBJEXT) ags-ags_expander.$(OBJEXT) \
+	ags-ags_expander_set.$(OBJEXT) ags-ags_dial.$(OBJEXT) \
+	ags-ags_menu.$(OBJEXT) ags-ags_htimebar.$(OBJEXT) \
+	ags-ags_timebar.$(OBJEXT) ags-ags_segment.$(OBJEXT) \
+	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
+	ags-ags_table.$(OBJEXT) ags-ags_led.$(OBJEXT) \
+	ags-ags_dynamic_connectable.$(OBJEXT) \
 	ags-ags_countable.$(OBJEXT) ags-ags_main_loop.$(OBJEXT) \
 	ags-ags_applicable.$(OBJEXT) ags-ags_tree_iterator.$(OBJEXT) \
 	ags-ags_runnable.$(OBJEXT) ags-ags_persistable.$(OBJEXT) \
@@ -850,6 +851,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_output.h ./src/ags/audio/ags_devout.h \
 	./src/ags/audio/ags_channel.c \
 	./src/ags/audio/ags_recall_audio.c \
+	./src/ags/widget/ags_expander.h \
+	./src/ags/widget/ags_expander.c \
 	./src/ags/widget/ags_expander_set.h \
 	./src/ags/widget/ags_expander_set.c \
 	./src/ags/widget/ags_dial.c ./src/ags/widget/ags_menu.c \
@@ -1358,6 +1361,7 @@ include ./$(DEPDIR)/ags-ags_echo.Po
 include ./$(DEPDIR)/ags-ags_editor.Po
 include ./$(DEPDIR)/ags-ags_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_embedded_audio.Po
+include ./$(DEPDIR)/ags-ags_expander.Po
 include ./$(DEPDIR)/ags-ags_expander_set.Po
 include ./$(DEPDIR)/ags-ags_ffplayer.Po
 include ./$(DEPDIR)/ags-ags_ffplayer_callbacks.Po
@@ -3296,6 +3300,20 @@ ags-ags_recall_audio.obj: ./src/ags/audio/ags_recall_audio.c
 #	$(AM_V_CC)source='./src/ags/audio/ags_recall_audio.c' object='ags-ags_recall_audio.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_audio.obj `if test -f './src/ags/audio/ags_recall_audio.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_audio.c'; fi`
+
+ags-ags_expander.o: ./src/ags/widget/ags_expander.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_expander.o -MD -MP -MF $(DEPDIR)/ags-ags_expander.Tpo -c -o ags-ags_expander.o `test -f './src/ags/widget/ags_expander.c' || echo '$(srcdir)/'`./src/ags/widget/ags_expander.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_expander.Tpo $(DEPDIR)/ags-ags_expander.Po
+#	$(AM_V_CC)source='./src/ags/widget/ags_expander.c' object='ags-ags_expander.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_expander.o `test -f './src/ags/widget/ags_expander.c' || echo '$(srcdir)/'`./src/ags/widget/ags_expander.c
+
+ags-ags_expander.obj: ./src/ags/widget/ags_expander.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_expander.obj -MD -MP -MF $(DEPDIR)/ags-ags_expander.Tpo -c -o ags-ags_expander.obj `if test -f './src/ags/widget/ags_expander.c'; then $(CYGPATH_W) './src/ags/widget/ags_expander.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_expander.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_expander.Tpo $(DEPDIR)/ags-ags_expander.Po
+#	$(AM_V_CC)source='./src/ags/widget/ags_expander.c' object='ags-ags_expander.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_expander.obj `if test -f './src/ags/widget/ags_expander.c'; then $(CYGPATH_W) './src/ags/widget/ags_expander.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_expander.c'; fi`
 
 ags-ags_expander_set.o: ./src/ags/widget/ags_expander_set.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_expander_set.o -MD -MP -MF $(DEPDIR)/ags-ags_expander_set.Tpo -c -o ags-ags_expander_set.o `test -f './src/ags/widget/ags_expander_set.c' || echo '$(srcdir)/'`./src/ags/widget/ags_expander_set.c
