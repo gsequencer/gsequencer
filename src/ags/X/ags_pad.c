@@ -290,8 +290,6 @@ ags_pad_show(GtkWidget *widget)
   fprintf(stdout, "ags_pad_show\n\0");
 
   pad = AGS_PAD(widget);
-
-  gtk_widget_show_all(gtk_option_menu_get_menu(pad->option));
 }
 
 void
@@ -335,7 +333,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 					"channel\0", channel,
 					NULL);
 	channel->line_widget = (GtkWidget *) line;
-	ags_expander_set_add((GtkMenuShell *) pad->expander_set,
+	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
 			     i, j,
 			     1, 1);
@@ -344,16 +342,11 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
       }
     }
 
-    /* set selected AgsLine in AgsPad */
-    if(audio_channels_old == 0){
-      pad->selected_line = AGS_LINE(gtk_container_get_children((GtkContainer *) pad->option->menu)->data);
-    }
-
     /* check if we should show and connect the AgsLine */
     if(machine != NULL && GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
       GList *list;
 
-      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(gtk_option_menu_get_menu(pad->option))),
+      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(pad->expander_set)),
 			audio_channels_old);
 
       /* show and connect AgsLine */
@@ -370,7 +363,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     GList *list, *list_start;
 
     list_start =
-      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(gtk_option_menu_get_menu(pad->option))),
+      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(pad->expander_set)),
 			audio_channels);
     
     while(list != NULL){
