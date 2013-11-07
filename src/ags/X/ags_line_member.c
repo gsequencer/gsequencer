@@ -21,9 +21,12 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/X/ags_pad.h>
-
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_devout.h>
+
+#include <ags/widget/ags_dial.h>
+
+#include <ags/X/ags_pad.h>
 
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -38,7 +41,7 @@ void ags_line_member_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_line_member_connect(AgsConnectable *connectable);
 void ags_line_member_disconnect(AgsConnectable *connectable);
-void ags_line_member_finalize(GtkObject *object);
+void ags_line_member_finalize(GObject *gobject);
 
 void ags_line_member_real_change_port(AgsLineMember *line_member,
 				      gpointer port_data);
@@ -179,7 +182,7 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_line_member_finalize(GtkObject *object)
+ags_line_member_finalize(GObject *gobject)
 {
   /* empty */
 }
@@ -207,8 +210,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 				    line_member->control_port, port_data,
 				    NULL);
 
-    ags_task_thread
-    //TODO:JK: implement me
+    ags_task_thread_append_task(task_thread,
+				task);
   }
 
   line_member->port_data = port_data;

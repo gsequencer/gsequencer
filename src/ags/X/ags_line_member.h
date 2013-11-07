@@ -54,7 +54,7 @@ struct _AgsLineMember
 
   gchar *control_port;
 
-  volatile void *port;
+  volatile gpointer *port;
   gpointer port_data;
 
   gboolean port_data_is_pointer;
