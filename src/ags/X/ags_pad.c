@@ -250,10 +250,6 @@ ags_pad_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) pad, "show\0",
 		   G_CALLBACK(ags_pad_show_callback), (gpointer) pad);
 
-  /* GtkOptionMenu */
-  g_signal_connect((GObject *) pad->option, "changed\0",
-		   G_CALLBACK(ags_pad_option_changed_callback), (gpointer) pad);
-
   /* GtkButton */
   g_signal_connect_after((GObject *) pad->group, "clicked\0",
 			 G_CALLBACK(ags_pad_group_clicked_callback), (gpointer) pad);
@@ -265,7 +261,7 @@ ags_pad_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
 
   /* AgsLine */
-  line_list = gtk_container_get_children(GTK_CONTAINER(pad->option->menu));
+  line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
   while(line_list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
@@ -277,13 +273,13 @@ ags_pad_connect(AgsConnectable *connectable)
 void
 ags_pad_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  //TODO:JK: implement me
 }
 
 void
 ags_pad_destroy(GtkObject *object)
 {
-  /* empty */
+  //TODO:JK: implement me
 }
 
 void
@@ -323,7 +319,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   AgsMachine *machine;
   AgsLine *line;
   AgsChannel *channel;
-  guint i;
+  guint i, j;
 
   //  fprintf(stdout, "ags_pad_real_resize_lines: audio_channels = %u ; audio_channels_old = %u\n\0", audio_channels, audio_channels_old);
 
@@ -333,15 +329,19 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 
     /* create AgsLine */
     for(i = audio_channels_old; i < audio_channels; i++){
-      line = (AgsLine *) g_object_new(line_type,
-				      "pad\0", pad,
-				      "channel\0", channel,
-				      NULL);
-      channel->line_widget = (GtkWidget *) line;
-      gtk_menu_shell_insert((GtkMenuShell *) pad->option->menu,
-			    (GtkWidget *) line, i);
-
-      channel = channel->next;
+      for(j = 0; j < 2; j++){
+	line = (AgsLine *) g_object_new(line_type,
+					"pad\0", pad,
+					"channel\0", channel,
+					NULL);
+	channel->line_widget = (GtkWidget *) line;
+	ags_expander_set_add((GtkMenuShell *) pad->expander_set,
+			     (GtkWidget *) line,
+			     i, j,
+			     1, 1);
+	
+	channel = channel->next;
+      }
     }
 
     /* set selected AgsLine in AgsPad */

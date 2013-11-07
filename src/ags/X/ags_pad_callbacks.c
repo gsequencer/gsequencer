@@ -29,7 +29,7 @@ ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pa
   if(old_parent != NULL)
     return;
 
-  pad->selected_line = (AgsLine *) pad->option->menu_item;
+  //  pad->selected_line = (AgsLine *) pad->option->menu_item;
 }
 
 int

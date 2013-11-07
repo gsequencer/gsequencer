@@ -59,7 +59,6 @@ struct _AgsPad
   gchar *build_id;
 
   AgsChannel *channel;
-  AgsLine *selected_line;
 
   AgsExpanderSet *expander_set;
 
