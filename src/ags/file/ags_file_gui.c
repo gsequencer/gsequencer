@@ -42,6 +42,11 @@ void ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						 AgsMachine *machine);
 void ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						  AgsMachine *machine);
+void ags_file_read_line_member_resolve_port_data(AgsFileLookup *file_lookup,
+						 AgsLineMember *line_member);
+void ags_file_write_line_member_resolve_port_data(AgsFileLookup *file_lookup,
+						  AgsLineMember *line_member);
+
 
 void
 ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
@@ -776,78 +781,6 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 }
 
 void
-ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_panel(AgsFile *file, xmlNode *parent, AgsMachine *panel)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_mixer(AgsFile *file, xmlNode *node, AgsMachine *mixer)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_mixer(AgsFile *file, xmlNode *parent, AgsMachine *mixer)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_drum(AgsFile *file, xmlNode *node, AgsMachine *drum)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_drum(AgsFile *file, xmlNode *parent, AgsMachine *drum)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_matrix(AgsFile *file, xmlNode *node, AgsMachine *matrix)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_matrix(AgsFile *file, xmlNode *parent, AgsMachine *matrix)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_synth(AgsFile *file, xmlNode *node, AgsMachine *synth)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_synth(AgsFile *file, xmlNode *parent, AgsMachine *synth)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_ffplayer(AgsFile *file, xmlNode *node, AgsMachine *ffplayer)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_ffplayer(AgsFile *file, xmlNode *parent, AgsMachine *ffplayer)
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 {
   AgsPad *gobject;
@@ -1116,54 +1049,6 @@ ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 }
 
 void
-ags_file_read_mixer_input_pad(AgsFile *file, xmlNode *node, AgsPad *mixer_input_pad)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_mixer_input_pad(AgsFile *file, xmlNode *parent, AgsPad *mixer_input_pad)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_mixer_output_pad(AgsFile *file, xmlNode *node, AgsPad *mixer_output_pad)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_mixer_output_pad(AgsFile *file, xmlNode *parent, AgsPad *mixer_output_pad)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_drum_input_pad(AgsFile *file, xmlNode *node, AgsPad *drum_input_pad)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_drum_input_pad(AgsFile *file, xmlNode *parent, AgsPad *drum_input_pad)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_drum_output_pad(AgsFile *file, xmlNode *node, AgsPad *drum_output_pad)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_drum_output_pad(AgsFile *file, xmlNode *parent, AgsPad *drum_output_pad)
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 {
   AgsLine *gobject;
@@ -1199,6 +1084,10 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 
   gobject->build_id = g_strdup(xmlGetProp(node,
 					  AGS_FILE_BUILD_ID_PROP));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
 
   /* child elements */
   child = node->children;
@@ -1311,6 +1200,10 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 	     AGS_FILE_BUILD_ID_PROP,
 	     line->build_id);
 
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", line->flags));
+
   /* child elements */
   ags_plugin_write(file,
 		   node,
@@ -1386,7 +1279,6 @@ ags_file_read_line_list(AgsFile *file, xmlNode *node, GList **line)
 xmlNode*
 ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 {
-  AgsLine *current;
   xmlNode *node;
   GList *list;
   gchar *id;
@@ -1423,63 +1315,414 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 }
 
 void
-ags_file_read_drum_input_line(AgsFile *file, xmlNode *node, AgsLine *drum_output_line)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_drum_input_line(AgsFile *file, xmlNode *parent, AgsLine *drum_output_line)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_drum_output_line(AgsFile *file, xmlNode *node, AgsLine *drum_output_line)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_drum_output_line(AgsFile *file, xmlNode *parent, AgsLine *drum_output_line)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator *oscillator)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscillator)
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_member)
 {
-  //TODO:JK: implement me
+  AgsLineMember *gobject;
+  GtkWidget *child_widget;
+  xmlNode *child;
+  xmlChar *prop, *content;
+  gchar *widget_type;
+
+  if(*line_member == NULL){
+    gobject = g_object_new(AGS_TYPE_LINE_MEMBER,
+			   NULL);
+    *line_member = gobject;
+  }else{
+    gobject = *line_member;
+  }
+
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->main,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  widget_type = (gchar *) xmlGetProp(node, "widget-type\0");
+  child_widget = (GtkWidget *) g_object_new(g_type_from_name(widget_type),
+					    NULL);
+
+  gtk_container_add(GTK_CONTAINER(gobject),
+		    child_widget);
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->plugin_name = g_strdup(xmlGetProp(node, "plugin-name\0"));
+  gobject->specifier = g_strdup(xmlGetProp(node, "specifier\0"));
+
+  gobject->control_port = g_strdup(xmlGetProp(node, "control-port\0"));
+
+  if(!xmlStrncmp(xmlGetProp(node, "port-data-is-pointer\0"),
+		 AGS_FILE_TRUE,
+		 5)){
+    gobject->port_data_is_pointer = TRUE;
+  }else{
+    gobject->port_data_is_pointer = FALSE;
+  }
+
+  gobject->port_data_type = g_type_from_name(xmlGetProp(node, "port-data-type\0"));
+
+  gobject->task_type = g_type_from_name(xmlGetProp(node, "task-type\0"));
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-value\0",
+		     8)){
+	gpointer port_data;
+	xmlChar *port_data_xml_type;
+	GValue value;
+
+	g_value_init(&value,
+		     gobject->port_data_type);
+
+	ags_file_util_read_value(file,
+				 child,
+				 &value, NULL);
+
+	port_data_xml_type = xmlGetProp(child,
+					AGS_FILE_TYPE_PROP);
+
+	if(!xmlStrncmp(port_data_xml_type,
+		       "GObject\0",
+		       7)){
+	  AgsFileLookup *file_lookup;
+	  GList *list;
+
+	  list = ags_file_lookup_find_by_node(file->lookup,
+					      child);
+	  file_lookup = AGS_FILE_LOOKUP(list->data);
+
+	  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+				 G_CALLBACK(ags_file_read_line_member_resolve_port_data), gobject);
+	}else{
+	  if(!xmlStrncmp(port_data_xml_type,
+			 "gboolean-pointer\0",
+			 16)){
+	    gboolean *data;
+
+	    data = (gboolean *) g_value_get_pointer(&value);
+	  
+	    port_data = (gpointer) data;
+	  }else if(!xmlStrncmp(port_data_xml_type,
+			       "gchar-pointer\0",
+			       13)){
+	    gchar *data;
+
+	    data = (gchar *) g_value_get_pointer(&value);
+	  
+	    port_data = (gpointer) data;
+	  }else if(!xmlStrncmp(port_data_xml_type,
+			       "gint64-pointer\0",
+			       13)){
+	    gint64 *data;
+
+	    data = (gint64 *) g_value_get_pointer(&value);
+	  
+	    port_data = (gpointer) data;
+	  }else if(!xmlStrncmp(port_data_xml_type,
+			       "guint64-pointer\0",
+			       13)){
+	    guint64 *data;
+
+	    data = (guint64 *) g_value_get_pointer(&value);
+	  
+	    port_data = (gpointer) data;
+	  }else if(!xmlStrncmp(port_data_xml_type,
+			       "gdouble-pointer\0",
+			       13)){
+	    gdouble *data;
+
+	    data = (gdouble *) g_value_get_pointer(&value);
+	  
+	    port_data = (gpointer) data;
+	  }
+	  
+	  ags_line_member_change_port(gobject,
+				      port_data);
+	}
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
+ags_file_read_line_member_resolve_port_data(AgsFileLookup *file_lookup,
+					    AgsLineMember *line_member)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) file_lookup->node->content;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  ags_line_member_change_port(line_member->port_data,
+			      id_ref->ref);
 }
 
 xmlNode*
 ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_member)
 {
-  //TODO:JK: implement me
+  xmlNode *node, *child;
+  gchar *id;
+  guint i;
+  GValue a;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", line_member,
+				   NULL));
+  
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-line-member\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", line_member->flags));
+
+  xmlNewProp(node,
+	     "widget-type\0",
+	     g_type_name(line_member->widget_type));
+
+  xmlNewProp(node,
+	     "plugin-name\0",
+	     g_strdup(line_member->plugin_name));
+
+  xmlNewProp(node,
+	     "specifier\0",
+	     g_strdup(line_member->specifier));
+
+  xmlNewProp(node,
+	     "control-port\0",
+	     g_strdup(line_member->control_port));
+
+  xmlNewProp(node,
+	     "port-data-is-pointer\0",
+	     (line_member->port_data_is_pointer ? AGS_FILE_TRUE: AGS_FILE_FALSE)); 
+
+  xmlNewProp(node,
+	     "port-data-type\0",
+	     g_type_name(line_member->port_data_type));
+
+  xmlNewProp(node,
+	     "task-type\0",
+	     g_type_name(line_member->task_type));
+
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
+  if(line_member->port_data_is_pointer){
+    if(line_member->port_data_type == G_TYPE_CHAR){
+      gchar *ptr;
+
+      ptr = (gchar *) line_member->port_data;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(line_member->port_data_type == G_TYPE_BOOLEAN){
+      gboolean *ptr;
+
+      ptr = (gboolean *) line_member->port_data;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(line_member->port_data_type == G_TYPE_UINT64){
+      guint64 *ptr;
+
+      ptr = (guint64 *) line_member->port_data;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(line_member->port_data_type == G_TYPE_INT64){
+      gint64 *ptr;
+
+      ptr = (gint64 *) line_member->port_data;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(line_member->port_data_type == G_TYPE_DOUBLE){
+      gdouble *ptr;
+
+      ptr = (gdouble *) line_member->port_data;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(line_member->port_data_type == G_TYPE_STRING){
+      gchar *ptr;
+
+      ptr = (gchar *) line_member->port_data;
+
+      g_value_init(&a,
+		   G_TYPE_STRING);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(line_member->port_data_type == G_TYPE_POINTER){
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  line_member->port_data);
+    }else if(line_member->port_data_type == G_TYPE_OBJECT){
+      AgsFileLookup *file_lookup;
+
+      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						   "file\0", file,
+						   "node\0", node,
+						   "reference\0", line_member,
+						   NULL);
+      ags_file_add_lookup(file, (GObject *) file_lookup);
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_file_write_line_member_resolve_port_data), line_member);
+    }
+  }else{
+    if(line_member->port_data_type == G_TYPE_CHAR){
+      g_value_init(&a,
+		   G_TYPE_CHAR);
+      g_value_set_schar(&a,
+			((gchar *) line_member->port_data)[0]);
+    }else if(line_member->port_data_type == G_TYPE_BOOLEAN){
+      g_value_init(&a,
+		   G_TYPE_BOOLEAN);
+      g_value_set_boolean(&a,
+			  ((gboolean *) line_member->port_data)[0]);
+    }else if(line_member->port_data_type == G_TYPE_UINT64){
+      g_value_init(&a,
+		   G_TYPE_UINT64);
+      g_value_set_uint64(&a,
+			 ((guint64 *) line_member->port_data)[0]);
+    }else if(line_member->port_data_type == G_TYPE_INT64){
+      g_value_init(&a,
+		   G_TYPE_INT64);
+      g_value_set_int64(&a,
+			 ((gint64 *) line_member->port_data)[0]);
+    }else if(line_member->port_data_type == G_TYPE_DOUBLE){
+      g_value_init(&a,
+		   G_TYPE_DOUBLE);
+      g_value_set_double(&a,
+			 ((gdouble *) line_member->port_data)[0]);
+    }else if(line_member->port_data_type == G_TYPE_STRING){
+      g_value_init(&a,
+		   G_TYPE_STRING);
+      g_value_set_string(&a,
+			 (gchar *) line_member->port_data);
+    }
+  }
+
+  ags_file_util_write_value(file,
+			    node,
+			    ags_id_generator_create_uuid(),
+			    &a, line_member->port_data_type, line_member->port_data_length);
+}
+
+void
+ags_file_write_line_member_resolve_port_data(AgsFileLookup *file_lookup,
+					     AgsLineMember *line_member)
+{
+  /* empty */
 }
 
 void
 ags_file_read_line_member_list(AgsFile *file, xmlNode *node, GList **line_member)
 {
-  //TODO:JK: implement me
+  AgsLineMember *current;
+  GList *list;
+  xmlNode *child;
+  xmlChar *id;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_line_member(file, child, &current);
+
+    list = g_list_prepend(list, current);
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *line_member = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_member)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-line-member-list\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlAddChild(parent,
+	      node);
+
+  list = line_member;
+
+  while(list != NULL){
+    ags_file_write_line_member(file, node, AGS_LINE_MEMBER(list->data));
+
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void

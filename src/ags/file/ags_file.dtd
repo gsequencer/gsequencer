@@ -563,6 +563,7 @@
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
 	  left-attach      NMTOKEN    #REQUIRED
 	  rigth-attach     NMTOKEN    #REQUIRED
 	  top-attach       NMTOKEN    #REQUIRED
@@ -586,18 +587,21 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-line-member EMPTY>
+<!ELEMENT ags-line-member (ags-value)>
 <!ATTLIST ags-line-member
-	  id               ID         #REQUIRED
-	  visualization    CDATA      "AgsDial"
-	  left-attach      NMTOKEN    #REQUIRED
-	  rigth-attach     NMTOKEN    #REQUIRED
-	  top-attach       NMTOKEN    #REQUIRED
-	  bottom-attach    NMTOKEN    #REQUIRED
-	  effect           CDATA      #REQUIRED
-	  recall-type      CDATA      #REQUIRED
-	  control          NMTOKEN    #REQUIRED
-	  recall           IDREF      #REQUIRED
+	  id                   ID         #REQUIRED
+	  flags                PCDATA     #REQUIRED
+	  widget-type          CDATA      "AgsDial"
+	  plugin-name          CDATA      #REQUIRED
+	  specifier            CDATA      #REQUIRED
+	  control-port         CDATA      #REQUIRED
+	  port-data-is-pointer CDATA      #REQUIRED
+	  port-data-type       CDATA      #REQUIRED
+	  task-type            CDATA      #REQUIRED
+	  left-attach          NMTOKEN    #REQUIRED
+	  rigth-attach         NMTOKEN    #REQUIRED
+	  top-attach           NMTOKEN    #REQUIRED
+	  bottom-attach        NMTOKEN    #REQUIRED
 	  >
 
 <!-- dialogs -->

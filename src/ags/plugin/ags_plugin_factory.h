@@ -69,6 +69,9 @@ struct _AgsPluginMetadata
 
   GParameter *control;
   guint control_count;
+
+
+
 };
 
 GType ags_plugin_factory_get_type(void);

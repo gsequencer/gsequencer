@@ -55,6 +55,9 @@ struct _AgsFileLookupClass
 
 GType ags_file_lookup_get_type(void);
 
+GList* ags_file_lookup_find_by_node(GList *file_lookup,
+				    xmlNode *node);
+
 void ags_file_lookup_resolve(AgsFileLookup *lookup);
 
 /* */

@@ -40,11 +40,23 @@ void ags_line_member_connect(AgsConnectable *connectable);
 void ags_line_member_disconnect(AgsConnectable *connectable);
 void ags_line_member_finalize(GtkObject *object);
 
+void ags_line_member_real_change_port(AgsLineMember *line_member,
+				      gpointer port_data);
+
 enum{
+  CHANGE_PORT,
   LAST_SIGNAL,
 };
 
 enum{
+  PROP_WIDGET_TYPE,
+  PROP_PLUGIN_NAME,
+  PROP_SPECIFIER,
+  PROP_CONTROL_PORT,
+  PROP_PORT,
+  PROP_PORT_DATA,
+  PROP_PORT_DATA_LENGTH,
+  PROP_TASK_TYPE,
   PROP_0,
 };
 
@@ -102,6 +114,9 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
   gobject->get_property = ags_line_member_get_property;
 
   gobject->finalize = ags_line_member_finalize;
+
+  /* AgsLineMember */
+  line_member->change_port = ags_line_member_change_port;
 }
 
 void
@@ -114,6 +129,23 @@ ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_line_member_init(AgsLineMember *line_member)
 {
+  line_member->flags = AGS_LINE_MEMBER_RESET_BY_ATOMIC;
+
+  line_member->widget_type = AGS_TYPE_DIAL;
+
+  line_member->plugin_name = NULL;
+  line_member->specifier = NULL;
+
+  line_member->control_port = NULL;
+
+  line_member->port = NULL;
+  line_member->port_data = NULL;
+
+  line_member->port_data_is_pointer = FALSE;
+  line_member->port_data_type = G_TYPE_NONE;
+  line_member->port_data_length = sizeof(guint);
+
+  line_member->task_type = G_TYPE_NONE;
 }
 
 void
@@ -150,6 +182,43 @@ void
 ags_line_member_finalize(GtkObject *object)
 {
   /* empty */
+}
+
+void
+ags_line_member_real_change_port(AgsLineMember *line_member,
+				 gpointer port_data)
+{
+  if((AGS_LINE_MEMBER_RESET_BY_ATOMIC & (line_member->flags)) != 0){
+    g_atomic_pointer_set(line_member->port,
+			 port_data);
+  }
+
+  if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
+    AgsLine *line;
+    AgsTaskThread *task_thread;
+    AgsTask *task;
+
+    line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+					       AGS_TYPE_LINE);
+    
+    task_thread = AGS_DEVOUT(line->channel->devout)->task_thread;
+
+    task = (AgsTask *) g_object_new(line_member->task_type,
+				    line_member->control_port, port_data,
+				    NULL);
+
+    ags_task_thread
+    //TODO:JK: implement me
+  }
+
+  line_member->port_data = port_data;
+}
+
+void
+ags_line_member_change_port(AgsLineMember *line_member,
+			    gpointer port_data)
+{
+  //TODO:JK: implement me
 }
 
 AgsLineMember*

@@ -23,7 +23,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_task.h>
 
 #define AGS_TYPE_LINE_MEMBER                (ags_line_member_get_type())
 #define AGS_LINE_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_MEMBER, AgsLineMember))
@@ -34,34 +35,47 @@
 
 typedef struct _AgsLineMember AgsLineMember;
 typedef struct _AgsLineMemberClass AgsLineMemberClass;
-typedef struct _AgsLineControl AgsLineControl;
+
+typedef enum{
+  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1,
+  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 << 1,
+}AgsLineMemberFlags;
 
 struct _AgsLineMember
 {
   GtkBin bin;
 
-  xmlNode *descriptor;
+  guint flags;
 
-  AgsRecall *recall;
+  GType widget_type;
 
-  GList *control;
+  gchar *plugin_name;
+  gchar *specifier;
 
-  gulong done_handler;
+  gchar *control_port;
+
+  volatile void *port;
+  gpointer port_data;
+
+  gboolean port_data_is_pointer;
+  GType port_data_type;
+  guint port_data_length;
+
+  GType task_type;
 };
 
 struct _AgsLineMemberClass
 {
   GtkBinClass bin;
-};
 
-struct _AgsLineControl
-{
-  GType control_type;
-
-  gpointer value;
+  void (*change_port)(AgsLineMember *line_member,
+		      gpointer port_data);
 };
 
 GType ags_line_member_get_type(void);
+
+void ags_line_member_change_port(AgsLineMember *line_member,
+				 gpointer port_data);
 
 AgsLineMember* ags_line_member_new();
 
