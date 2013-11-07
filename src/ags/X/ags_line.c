@@ -166,6 +166,12 @@ ags_line_init(AgsLine *line)
 		     FALSE, FALSE,
 		     0);
 
+  line->group = gtk_toggle_button_new_with_label("group\0");
+  gtk_box_pack_start(GTK_BOX(line),
+		     GTK_WIDGET(line->group),
+		     FALSE, FALSE,
+		     0);
+
   line->expander = ags_expander_new(0, 0);
   gtk_container_add((GtkContainer *) line, (GtkWidget *) line->expander);
 }
@@ -282,6 +288,16 @@ ags_line_set_channel(AgsLine *line, AgsChannel *channel)
 		line_signals[SET_CHANNEL], 0,
 		channel);
   g_object_unref((GObject *) line);
+}
+
+GList*
+ags_line_find_next_grouped(GList *line)
+{
+  while(line != NULL && (AGS_LINE_GROUPED & (AGS_LINE(line->data)->flags)) != 0){
+    line = line->next;
+  }
+
+  return(line);
 }
 
 AgsLine*

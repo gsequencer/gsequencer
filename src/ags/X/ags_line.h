@@ -42,6 +42,7 @@ typedef struct _AgsLineClass AgsLineClass;
 
 typedef enum{
   AGS_LINE_CONNECTED       = 1,
+  AGS_LINE_GROUPED         = 1 << 1,
 }AgsLineFlags;
 
 struct _AgsLine
@@ -58,6 +59,7 @@ struct _AgsLine
   GtkWidget *pad;
 
   GtkLabel *label;
+  GtkToggleButton *group;
 
   AgsExpander *expander;
 };
@@ -72,6 +74,8 @@ struct _AgsLineClass
 GType ags_line_get_type(void);
 
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
+
+GList* ags_line_find_next_grouped(GList *line);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
 

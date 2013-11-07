@@ -45,8 +45,8 @@ typedef struct _AgsPadClass AgsPadClass;
 typedef enum{
   AGS_PAD_CONNECTED           = 1,
   AGS_PAD_SHOW_GROUPING       = 1 << 1,
-  AGS_PAD_GROUP_PAD           = 1 << 2,
-  AGS_PAD_GROUP_CHANNEL       = 1 << 3,
+  AGS_PAD_GROUP_ALL           = 1 << 2,
+  AGS_PAD_GROUP_LINE          = 1 << 3,
 }AgsPadFlags;
 
 struct _AgsPad
