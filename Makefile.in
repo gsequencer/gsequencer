@@ -625,6 +625,7 @@ SUBDIRS = src
 noinst_LIBRARIES = libags.a
 libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h ./src/ags-lib/object/ags_serializeable.c ./src/ags-lib/object/ags_serializeable.h ./src/ags-lib/lib/ags_math.c ./src/ags-lib/lib/ags_math.h
 ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
+	./src/ags/plugin/ags_plugin_stock.h \
 	./src/ags/plugin/ags_plugin_factory.c \
 	./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/audio/ags_file_stock.h \

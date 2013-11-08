@@ -214,7 +214,6 @@ ags_mixer_set_audio_channels(AgsAudio *audio,
 			   0);
 	ags_pad_resize_lines((AgsPad *) mixer_input_pad, AGS_TYPE_MIXER_INPUT_LINE,
 			     AGS_AUDIO(channel->audio)->audio_channels, 0);
-	gtk_option_menu_set_history(mixer_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) mixer)){
 	  ags_connectable_connect(AGS_CONNECTABLE(mixer_input_pad));
@@ -282,7 +281,6 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
 			   (GtkWidget *) mixer_input_pad, FALSE, FALSE, 0);
 	ags_pad_resize_lines((AgsPad *) mixer_input_pad, AGS_TYPE_MIXER_INPUT_LINE,
 			     AGS_AUDIO(channel->audio)->audio_channels, 0);
-	gtk_option_menu_set_history(mixer_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) mixer)){
 	  ags_connectable_connect(AGS_CONNECTABLE(mixer_input_pad));
