@@ -237,6 +237,17 @@ ags_file_lookup_resolve(AgsFileLookup *file_lookup)
   g_object_unref((GObject *) file_lookup);
 }
 
+GList*
+ags_file_lookup_find_by_node(GList *file_lookup,
+			     xmlNode *node)
+{
+  while(file_lookup != NULL && AGS_FILE_LOOKUP(file_lookup->data)->node != node){
+    file_lookup = file_lookup->next;
+  }
+
+  return(file_lookup);
+}
+
 AgsFileLookup*
 ags_file_lookup_new()
 {

@@ -1107,9 +1107,9 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 
 	list = NULL;
 
-	ags_file_read_line_member_node_list(file,
-					    child,
-					    &list);
+	ags_file_read_line_member_list(file,
+				       child,
+				       &list);
 	start = list;
 	
 	line_member_node = child->children;

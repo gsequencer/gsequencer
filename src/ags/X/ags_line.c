@@ -293,7 +293,7 @@ ags_line_set_channel(AgsLine *line, AgsChannel *channel)
 GList*
 ags_line_find_next_grouped(GList *line)
 {
-  while(line != NULL && (AGS_LINE_GROUPED & (AGS_LINE(line->data)->flags)) != 0){
+  while(line != NULL && (AGS_LINE_GROUPED & (AGS_LINE(line->data)->flags)) == 0){
     line = line->next;
   }
 
