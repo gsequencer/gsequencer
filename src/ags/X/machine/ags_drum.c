@@ -644,7 +644,6 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			   0);
 	ags_pad_resize_lines((AgsPad *) drum_input_pad, AGS_TYPE_DRUM_INPUT_LINE,
 			     audio->audio_channels, 0);
-	gtk_option_menu_set_history(drum_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
@@ -677,7 +676,6 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			   0);
 	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_OUTPUT_LINE,
 			     AGS_AUDIO(channel->audio)->audio_channels, 0);
-	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
@@ -763,7 +761,6 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 			   (GtkWidget *) drum_input_pad, FALSE, FALSE, 0);
 	ags_pad_resize_lines((AgsPad *) drum_input_pad, AGS_TYPE_DRUM_INPUT_LINE,
 			     AGS_AUDIO(channel->audio)->audio_channels, 0);
-	gtk_option_menu_set_history(drum_input_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
@@ -818,7 +815,6 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 	gtk_box_pack_start((GtkBox *) drum->output_pad, (GtkWidget *) drum_output_pad, FALSE, FALSE, 0);
 	ags_pad_resize_lines((AgsPad *) drum_output_pad, AGS_TYPE_DRUM_OUTPUT_LINE,
 			     AGS_AUDIO(channel->audio)->audio_channels, 0);
-	gtk_option_menu_set_history(drum_output_pad->pad.option, 0);
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_output_pad));
@@ -846,14 +842,19 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 void
 ags_drum_set_pattern(AgsDrum *drum)
 {
-  GList *list;
+  AgsLine *selected_line;
+  GList *list, *line;
   guint index0, index1, offset;
   guint i;
 
-  if(drum->selected_pad == NULL || drum->selected_pad->pad.selected_line == NULL){
-    printf("no selected pad or line\n\0");
+  line = ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set)));
+
+  if(drum->selected_pad == NULL || selected_line == NULL){
+    g_message("no selected pad\n\0");
     return;
   }
+
+  selected_line = AGS_LINE(line->data);
 
   for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
 
@@ -875,7 +876,7 @@ ags_drum_set_pattern(AgsDrum *drum)
   drum->flags |= AGS_DRUM_BLOCK_PATTERN;
 
   for(i = 0; i < 16; i++){
-    if(ags_pattern_get_bit((AgsPattern *) drum->selected_pad->pad.selected_line->channel->pattern->data, index0, index1, offset + i))
+    if(ags_pattern_get_bit((AgsPattern *) selected_line->channel->pattern->data, index0, index1, offset + i))
       gtk_toggle_button_set_active((GtkToggleButton *) list->data, TRUE);
     else
       gtk_toggle_button_set_active((GtkToggleButton *) list->data, FALSE);
