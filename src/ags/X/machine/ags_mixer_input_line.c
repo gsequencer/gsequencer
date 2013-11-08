@@ -19,12 +19,16 @@
 #include <ags/X/machine/ags_mixer_input_line.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/plugin/ags_plugin_stock.h>
+
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_volume_channel_run.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_line_member.h>
 
 #include <ags/X/machine/ags_mixer.h>
 
@@ -101,19 +105,40 @@ ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 {
+  AgsLineMember *line_member;
+  GtkWidget *widget;
+
   mixer_input_line->flags = 0;
 
-  mixer_input_line->volume = (GtkVScale *) gtk_vscale_new_with_range(0.0, 2.00, 0.025);
-  gtk_range_set_value((GtkRange *) mixer_input_line->volume, 1.0);
-  gtk_range_set_inverted((GtkRange *) mixer_input_line->volume, TRUE);
-  gtk_scale_set_digits((GtkScale *) mixer_input_line->volume, 3);
-  gtk_widget_set_size_request((GtkWidget *) mixer_input_line->volume, -1, 100);
-  gtk_table_attach(AGS_LINE(mixer_input_line)->table,
-		   (GtkWidget *) mixer_input_line->volume,
+  /* volume */
+  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+					       "widget-type\0", GTK_TYPE_VSCALE,
+					       "plugin-name\0", AGS_PLUGIN_NAME_VOLUME,
+					       "specifier\0", g_type_name(AGS_TYPE_RECALL_CHANNEL),
+					       "control-port\0", g_strdup("adjustmet[0].value\0"),
+					       "port-data-length\0", sizeof(gdouble),
+					       NULL);
+  ags_expander_add(AGS_LINE(mixer_input_line)->expander,
+		   GTK_WIDGET(line_member),
 		   0, 1,
-		   1, 2,
-		   GTK_EXPAND, GTK_EXPAND,
-		   0, 0);
+		   1, 1);
+
+  widget = gtk_bin_get_child(GTK_BIN(line_member));
+
+  gtk_scale_set_digits(GTK_SCALE(widget),
+		       3);
+
+  gtk_range_set_range(GTK_RANGE(widget),
+		      0.0, 2.00);
+  gtk_range_set_increments(GTK_RANGE(widget),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(widget),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(widget),
+			 TRUE);
+
+  gtk_widget_set_size_request(widget,
+			      -1, 100);
 }
 
 void

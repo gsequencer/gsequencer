@@ -132,6 +132,9 @@ ags_expander_init(AgsExpander *expander)
   expander->flags = 0;
 
   expander->table = (GtkTable *) gtk_table_new(0, 0, FALSE);
+  gtk_container_add(GTK_CONTAINER(expander),
+		    GTK_WIDGET(expander->table));
+
   expander->children = NULL;
 }
 
