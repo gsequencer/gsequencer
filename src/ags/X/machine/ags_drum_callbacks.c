@@ -546,9 +546,14 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
     ags_task_thread_append_tasks(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->task_thread,
 				 tasks);
   }else{
-    AgsTogglePatternBit *toggle_pattern_bit;
-    
-    toggle_pattern_bit = ags_toggle_pattern_bit_new((AgsPattern *) drum->selected_pad->pad.selected_line->channel->pattern->data,
+    AgsLine *selected_line;
+    AgsTogglePatternBit *toggle_pattern_bit;    
+    GList *line;
+
+    line = ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set)));
+    selected_line = AGS_LINE(line->data);
+
+    toggle_pattern_bit = ags_toggle_pattern_bit_new(selected_line->channel->pattern->data,
 						    index0, index1,
 						    offset);
 

@@ -130,7 +130,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   gtk_range_set_inverted((GtkRange *) drum_input_line->volume, TRUE);
   gtk_scale_set_digits((GtkScale *) drum_input_line->volume, 3);
   gtk_widget_set_size_request((GtkWidget *) drum_input_line->volume, -1, 100);
-  gtk_table_attach(AGS_LINE(drum_input_line)->table,
+  gtk_table_attach(AGS_LINE(drum_input_line)->expander->table,
 		   (GtkWidget *) drum_input_line->volume,
 		   0, 1,
 		   1, 2,
