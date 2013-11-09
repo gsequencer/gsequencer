@@ -112,10 +112,10 @@ ags_expander_set_class_init(AgsExpanderSetClass *expander_set)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) expander_set;
 
-  widget->realize = ags_expander_set_realize;
-  widget->expose_event = ags_expander_set_expose;
-  widget->size_request = ags_expander_set_size_request;
-  widget->size_allocate = ags_expander_set_size_allocate;
+  //  widget->realize = ags_expander_set_realize;
+  //  widget->expose_event = ags_expander_set_expose;
+  //  widget->size_request = ags_expander_set_size_request;
+  //  widget->size_allocate = ags_expander_set_size_allocate;
 }
 
 void

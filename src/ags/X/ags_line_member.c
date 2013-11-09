@@ -52,6 +52,7 @@ enum{
 };
 
 enum{
+  PROP_0,
   PROP_WIDGET_TYPE,
   PROP_PLUGIN_NAME,
   PROP_SPECIFIER,
@@ -60,7 +61,6 @@ enum{
   PROP_PORT_DATA,
   PROP_PORT_DATA_LENGTH,
   PROP_TASK_TYPE,
-  PROP_0,
 };
 
 static gpointer ags_line_member_parent_class = NULL;
@@ -118,6 +118,17 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 
   gobject->finalize = ags_line_member_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_ulong("widget-type\0",
+				  "widget type of line member\0",
+				  "The widget_type this line member packs\0",
+				  0, G_MAXULONG, 
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WIDGET_TYPE,
+				  param_spec);
+
   /* AgsLineMember */
   line_member->change_port = ags_line_member_change_port;
 }
@@ -157,7 +168,63 @@ ags_line_member_set_property(GObject *gobject,
 		      const GValue *value,
 		      GParamSpec *param_spec)
 {
-  /* empty */
+  AgsLineMember *line_member;
+
+  line_member = AGS_LINE_MEMBER(gobject);
+
+  switch(prop_id){
+  case PROP_WIDGET_TYPE:
+    {
+      GtkWidget *child, *new_child;
+      GType widget_type;
+
+      widget_type = g_value_get_ulong(value);
+
+      if(widget_type == line_member->widget_type){
+	return;
+      }
+
+      child = gtk_bin_get_child(GTK_BIN(line_member));
+
+      if(child != NULL){
+	gtk_widget_destroy(child);
+      }
+
+      new_child = (GtkWidget *) g_object_new(widget_type,
+					     NULL);
+      gtk_container_add(GTK_CONTAINER(line_member),
+			new_child);
+			
+    }
+    break;
+  case PROP_PLUGIN_NAME:
+    {
+    }
+    break;
+  case PROP_SPECIFIER:
+    {
+    }
+    break;
+  case PROP_CONTROL_PORT:
+    {
+    }
+    break;
+  case PROP_PORT_DATA:
+    {
+    }
+    break;
+  case PROP_PORT_DATA_LENGTH:
+    {
+    }
+    break;
+  case PROP_TASK_TYPE:
+    {
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

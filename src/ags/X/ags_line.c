@@ -151,7 +151,7 @@ ags_line_init(AgsLine *line)
 {
   //  g_signal_connect_after((GObject *) line, "parent_set\0",
   //			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
-  line->flags = 0;
+  line->flags = AGS_LINE_GROUPED;
 
   line->version = AGS_LINE_DEFAULT_VERSION;
   line->build_id = AGS_LINE_DEFAULT_BUILD_ID;
@@ -172,7 +172,7 @@ ags_line_init(AgsLine *line)
 		     FALSE, FALSE,
 		     0);
 
-  line->expander = ags_expander_new(0, 0);
+  line->expander = ags_expander_new(2, 2);
   gtk_container_add((GtkContainer *) line, (GtkWidget *) line->expander);
 }
 

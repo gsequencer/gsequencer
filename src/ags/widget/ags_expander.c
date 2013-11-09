@@ -58,6 +58,8 @@ void ags_expander_remove_child(AgsExpander *expander,
 
 enum{
   PROP_0,
+  PROP_WIDTH,
+  PROP_HEIGHT,
   PROP_CHILD,
 };
 
@@ -106,13 +108,43 @@ ags_expander_class_init(AgsExpanderClass *expander)
 
   gobject->finalize = ags_expander_finalize;
 
+  /* properties */
+  param_spec = g_param_spec_uint("width\0",
+				 "width of expander grid\0",
+				 "The width of the expander's grid\0",
+				 0, G_MAXUINT,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WIDTH,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("height\0",
+				 "height of expander\0",
+				 "The height which this expander is packed into\0",
+				 0, G_MAXUINT,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_HEIGHT,
+				  param_spec);
+
+  param_spec = g_param_spec_object("child\0",
+				   "child of expander\0",
+				   "The child which this expander is packed into\0",
+				   GTK_TYPE_WIDGET,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHILD,
+				  param_spec);
+
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) expander;
 
-  widget->realize = ags_expander_realize;
-  widget->expose_event = ags_expander_expose;
-  widget->size_request = ags_expander_size_request;
-  widget->size_allocate = ags_expander_size_allocate;
+  //  widget->realize = ags_expander_realize;
+  //  widget->expose_event = ags_expander_expose;
+  //  widget->size_request = ags_expander_size_request;
+  //  widget->size_allocate = ags_expander_size_allocate;
 }
 
 void
@@ -123,7 +155,7 @@ ags_expander_init(AgsExpander *expander)
 	       NULL);
 
   g_signal_connect(expander, "notify::width\0",
-		   G_CALLBACK(ags_expander_width_changed),
+  		   G_CALLBACK(ags_expander_width_changed),
 		   expander);
   g_signal_connect(expander, "notify::height\0",
 		   G_CALLBACK(ags_expander_height_changed),
@@ -149,6 +181,32 @@ ags_expander_set_property(GObject *gobject,
   expander = AGS_EXPANDER(gobject);
 
   switch(prop_id){
+  case PROP_WIDTH:
+    {
+      guint width, height;
+
+      gtk_table_get_size(expander->table,
+			 &width, &height);
+
+      width = g_value_get_uint(value);
+      
+      gtk_table_resize(expander->table,
+		       width, height);
+    }
+    break;
+  case PROP_HEIGHT:
+    {
+      guint width, height;
+
+      gtk_table_get_size(expander->table,
+			 &width, &height);
+
+      height = g_value_get_uint(value);
+
+      gtk_table_resize(expander->table,
+		       width, height);
+    }
+    break;
   case PROP_CHILD:
     {
       AgsExpanderChild *child;
@@ -176,6 +234,26 @@ ags_expander_get_property(GObject *gobject,
   expander = AGS_EXPANDER(gobject);
 
   switch(prop_id){
+  case PROP_WIDTH:
+    {
+      guint width, height;
+
+      gtk_table_get_size(expander->table,
+			 &width, &height);
+
+      g_value_set_uint(value, width);
+    }
+    break;
+  case PROP_HEIGHT:
+    {
+      guint width, height;
+
+      gtk_table_get_size(expander->table,
+			 &width, &height);
+
+      g_value_set_uint(value, height);
+    }
+    break;
   case PROP_CHILD:
     g_value_set_pointer(value, expander->children);
     break;

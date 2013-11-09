@@ -165,7 +165,7 @@ ags_pad_init(AgsPad *pad)
   pad->version = AGS_PAD_DEFAULT_VERSION;
   pad->build_id = AGS_PAD_DEFAULT_BUILD_ID;
 
-  pad->expander_set = ags_expander_set_new(0, 0);
+  pad->expander_set = ags_expander_set_new(2, 0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, FALSE, FALSE, 0);
 
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
@@ -335,7 +335,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 	channel->line_widget = (GtkWidget *) line;
 	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
-			     i, j,
+			     j, j + 1,
 			     1, 1);
 	
 	channel = channel->next;
