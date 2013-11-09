@@ -38,8 +38,6 @@ void ags_line_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_line_connect(AgsConnectable *connectable);
 void ags_line_disconnect(AgsConnectable *connectable);
-void ags_line_destroy(GtkObject *object);
-void ags_line_show(GtkWidget *widget);
 
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 
@@ -149,8 +147,9 @@ ags_line_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_line_init(AgsLine *line)
 {
-  //  g_signal_connect_after((GObject *) line, "parent_set\0",
-  //			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
+  g_signal_connect_after((GObject *) line, "parent_set\0",
+			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
+
   line->flags = AGS_LINE_GROUPED;
 
   line->version = AGS_LINE_DEFAULT_VERSION;
@@ -173,7 +172,10 @@ ags_line_init(AgsLine *line)
 		     0);
 
   line->expander = ags_expander_new(2, 2);
-  gtk_container_add((GtkContainer *) line, (GtkWidget *) line->expander);
+  gtk_box_pack_start(GTK_BOX(line),
+		     GTK_WIDGET(line->expander),
+		     FALSE, FALSE,
+		     0);
 }
 
 void
@@ -193,6 +195,14 @@ ags_line_set_property(GObject *gobject,
 
       pad = (GtkWidget *) g_value_get_object(value);
 
+      if(line->pad = NULL){
+	g_object_unref(G_OBJECT(line->pad));
+      }
+
+      if(pad != NULL){
+	g_object_ref(G_OBJECT(pad));
+      }
+      
       line->pad = pad;
     }
     break;
@@ -222,6 +232,9 @@ ags_line_get_property(GObject *gobject,
   line = AGS_LINE(gobject);
 
   switch(prop_id){
+  case PROP_PAD:
+    g_value_set_object(value, line->pad);
+    break;
   case PROP_CHANNEL:
     g_value_set_object(value, line->channel);
     break;
@@ -243,13 +256,6 @@ ags_line_connect(AgsConnectable *connectable)
   }
   
   line->flags |= AGS_LINE_CONNECTED;
-
-  /* GtkWidget */
-  g_signal_connect((GObject *) line, "destroy\0",
-		   G_CALLBACK(ags_line_destroy_callback), (gpointer) line);
-
-  g_signal_connect((GObject *) line, "show\0",
-		   G_CALLBACK(ags_line_show_callback), (gpointer) line);
 }
 
 void
@@ -259,20 +265,20 @@ ags_line_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_line_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
-void
-ags_line_show(GtkWidget *widget)
-{
-  /* empty */
-}
-
-void
 ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
+  if(line->channel == channel){
+    return;
+  }
+
+  if(line->channel != NULL){
+    g_object_unref(G_OBJECT(line->channel));
+  }
+
+  if(channel != NULL){
+    g_object_ref(G_OBJECT(channel));
+  }
+
   line->channel = channel;
 
   gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));

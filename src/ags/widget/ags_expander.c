@@ -43,6 +43,8 @@ void ags_expander_size_allocate(GtkWidget *widget,
 gboolean ags_expander_expose(GtkWidget *widget,
 			     GdkEventExpose *event);
 
+void ags_expander_activate(GtkExpander *expander);
+
 void ags_expander_width_changed(GObject *gobject,
 				GParamSpec *pspec,
 				AgsExpander *expander);
@@ -96,6 +98,7 @@ ags_expander_class_init(AgsExpanderClass *expander)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+  GtkExpanderClass *parent;
   GParamSpec *param_spec;
 
   ags_expander_parent_class = g_type_class_peek_parent(expander);
@@ -145,6 +148,11 @@ ags_expander_class_init(AgsExpanderClass *expander)
   //  widget->expose_event = ags_expander_expose;
   //  widget->size_request = ags_expander_size_request;
   //  widget->size_allocate = ags_expander_size_allocate;
+
+  /* GtkExpanderClass */
+  parent = (GtkExpanderClass *) expander;
+
+  parent->activate = ags_expander_activate;
 }
 
 void
@@ -163,7 +171,7 @@ ags_expander_init(AgsExpander *expander)
 
   expander->flags = 0;
 
-  expander->table = (GtkTable *) gtk_table_new(0, 0, FALSE);
+  expander->table = (GtkTable *) gtk_table_new(2, 2, FALSE);
   gtk_container_add(GTK_CONTAINER(expander),
 		    GTK_WIDGET(expander->table));
 
@@ -306,6 +314,18 @@ ags_expander_expose(GtkWidget *widget,
 }
 
 void
+ags_expander_activate(GtkExpander *expander)
+{
+  GTK_EXPANDER_CLASS(ags_expander_parent_class)->activate(expander);
+
+  if(gtk_expander_get_expanded(expander)){
+    gtk_widget_show_all(GTK_WIDGET(AGS_EXPANDER(expander)->table));
+  }else{
+    gtk_widget_hide(GTK_WIDGET(AGS_EXPANDER(expander)->table));
+  }
+}
+
+void
 ags_expander_width_changed(GObject *gobject,
 			   GParamSpec *pspec,
 			   AgsExpander *expander)
@@ -409,8 +429,8 @@ ags_expander_insert_child(AgsExpander *expander,
 
   gtk_table_attach(expander->table,
 		   child->child,
-		   child->x, child->y,
-		   child->x + child->width, child->y + child->height,
+		   child->x, child->x + child->width,
+		   child->y, child->y + child->height,
 		   GTK_FILL |
 		   GTK_EXPAND,
 		   GTK_FILL |
@@ -449,6 +469,10 @@ ags_expander_add(AgsExpander *expander,
     
   ags_expander_insert_child(expander,
 			    child);
+
+  if(GTK_WIDGET_VISIBLE(expander)){
+    gtk_widget_show_all(child->child);
+  }
 }
 
 void

@@ -165,7 +165,7 @@ ags_pad_init(AgsPad *pad)
   pad->version = AGS_PAD_DEFAULT_VERSION;
   pad->build_id = AGS_PAD_DEFAULT_BUILD_ID;
 
-  pad->expander_set = ags_expander_set_new(2, 0);
+  pad->expander_set = ags_expander_set_new(2, 2);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, FALSE, FALSE, 0);
 
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
@@ -295,7 +295,34 @@ ags_pad_show(GtkWidget *widget)
 void
 ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 {
+  AgsChannel *current;
+  GList *line;
+
+  if(pad->channel == channel){
+    return;
+  }
+
+  if(pad->channel != NULL){
+    g_object_unref(G_OBJECT(pad->channel));
+  }
+
+  if(channel != NULL){
+    g_object_ref(G_OBJECT(channel));
+  }
+
   pad->channel = channel;
+
+  line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
+  current = pad->channel;
+  
+  while(line != NULL){
+    g_object_set(G_OBJECT(line->data),
+		 "channel\0", current,
+		 NULL);
+    
+    current = current->next;
+    line = line->next;
+  }
 }
 
 void
@@ -326,7 +353,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     channel = ags_channel_nth(pad->channel, audio_channels_old);
 
     /* create AgsLine */
-    for(i = audio_channels_old; i < audio_channels; i++){
+    for(i = audio_channels_old / 2; i < audio_channels / 2; i++){
       for(j = 0; j < 2; j++){
 	line = (AgsLine *) g_object_new(line_type,
 					"pad\0", pad,
@@ -335,7 +362,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 	channel->line_widget = (GtkWidget *) line;
 	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
-			     j, j + 1,
+			     j, i,
 			     1, 1);
 	
 	channel = channel->next;

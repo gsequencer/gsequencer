@@ -43,7 +43,7 @@ typedef enum{
 
 struct _AgsLineMember
 {
-  GtkBin bin;
+  GtkFrame frame;
 
   guint flags;
 
@@ -66,7 +66,7 @@ struct _AgsLineMember
 
 struct _AgsLineMemberClass
 {
-  GtkBinClass bin;
+  GtkFrameClass frame;
 
   void (*change_port)(AgsLineMember *line_member,
 		      gpointer port_data);

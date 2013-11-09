@@ -226,6 +226,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_machine_editor_callbacks.$(OBJEXT) \
 	ags-ags_property_collection_editor.$(OBJEXT) \
 	ags-ags_line_member.$(OBJEXT) \
+	ags-ags_line_member_callbacks.$(OBJEXT) \
 	ags-ags_line_member_editor.$(OBJEXT) \
 	ags-ags_navigation_callbacks.$(OBJEXT) \
 	ags-ags_machine_callbacks.$(OBJEXT) \
@@ -913,6 +914,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/ags_machine_editor_callbacks.c \
 	./src/ags/X/ags_property_collection_editor.c \
 	./src/ags/X/ags_line_member.c \
+	./src/ags/X/ags_line_member_callbacks.c \
+	./src/ags/X/ags_line_member_callbacks.h \
 	./src/ags/X/ags_line_member_editor.c \
 	./src/ags/X/ags_navigation_callbacks.c \
 	./src/ags/X/ags_window_callbacks.h \
@@ -1394,6 +1397,7 @@ include ./$(DEPDIR)/ags-ags_line_callbacks.Po
 include ./$(DEPDIR)/ags-ags_line_editor.Po
 include ./$(DEPDIR)/ags-ags_line_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_line_member.Po
+include ./$(DEPDIR)/ags-ags_line_member_callbacks.Po
 include ./$(DEPDIR)/ags-ags_line_member_editor.Po
 include ./$(DEPDIR)/ags-ags_line_member_editor_callbacks.Po
 include ./$(DEPDIR)/ags-ags_link_channel.Po
@@ -3847,6 +3851,20 @@ ags-ags_line_member.obj: ./src/ags/X/ags_line_member.c
 #	$(AM_V_CC)source='./src/ags/X/ags_line_member.c' object='ags-ags_line_member.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_line_member.obj `if test -f './src/ags/X/ags_line_member.c'; then $(CYGPATH_W) './src/ags/X/ags_line_member.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_line_member.c'; fi`
+
+ags-ags_line_member_callbacks.o: ./src/ags/X/ags_line_member_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_line_member_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_line_member_callbacks.Tpo -c -o ags-ags_line_member_callbacks.o `test -f './src/ags/X/ags_line_member_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_line_member_callbacks.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_line_member_callbacks.Tpo $(DEPDIR)/ags-ags_line_member_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_line_member_callbacks.c' object='ags-ags_line_member_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_line_member_callbacks.o `test -f './src/ags/X/ags_line_member_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_line_member_callbacks.c
+
+ags-ags_line_member_callbacks.obj: ./src/ags/X/ags_line_member_callbacks.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_line_member_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_line_member_callbacks.Tpo -c -o ags-ags_line_member_callbacks.obj `if test -f './src/ags/X/ags_line_member_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_line_member_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_line_member_callbacks.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_line_member_callbacks.Tpo $(DEPDIR)/ags-ags_line_member_callbacks.Po
+#	$(AM_V_CC)source='./src/ags/X/ags_line_member_callbacks.c' object='ags-ags_line_member_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_line_member_callbacks.obj `if test -f './src/ags/X/ags_line_member_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_line_member_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_line_member_callbacks.c'; fi`
 
 ags-ags_line_member_editor.o: ./src/ags/X/ags_line_member_editor.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_line_member_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_line_member_editor.Tpo -c -o ags-ags_line_member_editor.o `test -f './src/ags/X/ags_line_member_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_line_member_editor.c

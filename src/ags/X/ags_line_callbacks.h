@@ -26,8 +26,6 @@
 #include <ags/X/ags_line.h>
 
 int ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line);
-int ags_line_destroy_callback(GtkObject *object, AgsLine *line);
-int ags_line_show_callback(GtkWidget *widget, AgsLine *line);
 
 void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
 

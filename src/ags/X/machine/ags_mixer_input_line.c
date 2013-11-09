@@ -35,7 +35,6 @@
 void ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line);
 void ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line);
-void ags_mixer_input_line_destroy(GtkObject *object);
 void ags_mixer_input_line_connect(AgsConnectable *connectable);
 void ags_mixer_input_line_disconnect(AgsConnectable *connectable);
 
@@ -113,14 +112,14 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   /* volume */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type\0", GTK_TYPE_VSCALE,
-					       "plugin-name\0", AGS_PLUGIN_NAME_VOLUME,
-					       "specifier\0", g_type_name(AGS_TYPE_RECALL_CHANNEL),
-					       "control-port\0", g_strdup("adjustmet[0].value\0"),
-					       "port-data-length\0", sizeof(gdouble),
+					       //					       "plugin-name\0", AGS_PLUGIN_NAME_VOLUME,
+					       //					       "specifier\0", g_type_name(AGS_TYPE_RECALL_CHANNEL),
+					       //					       "control-port\0", g_strdup("adjustmet[0].value\0"),
+					       //					       "port-data-length\0", sizeof(gdouble),
 					       NULL);
   ags_expander_add(AGS_LINE(mixer_input_line)->expander,
 		   GTK_WIDGET(line_member),
-		   0, 1,
+		   0, 0,
 		   1, 1);
 
   widget = gtk_bin_get_child(GTK_BIN(line_member));
@@ -139,11 +138,6 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 
   gtk_widget_set_size_request(widget,
 			      -1, 100);
-}
-
-void
-ags_mixer_input_line_destroy(GtkObject *object)
-{
 }
 
 void
@@ -232,7 +226,7 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
 							      "recall_channel\0", volume_channel,
 							      "source\0", source,
 							      "recall_container\0", play_volume_channel_container,
-							      "volume\0", &(GTK_RANGE(mixer_input_line->volume)->adjustment->value),
+							      //							      "volume\0", &(GTK_RANGE(mixer_input_line->volume)->adjustment->value),
 							      NULL);
     
     AGS_RECALL(volume_channel_run)->flags |= (AGS_RECALL_TEMPLATE |

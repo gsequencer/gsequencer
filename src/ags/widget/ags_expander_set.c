@@ -126,10 +126,10 @@ ags_expander_set_init(AgsExpanderSet *expander_set)
 	       "homogeneous", TRUE,
 	       NULL);
 
-  g_signal_connect(expander_set, "notify::width\0",
+  g_signal_connect(expander_set, "notify::n-columns\0",
 		   G_CALLBACK(ags_expander_set_width_changed),
 		   expander_set);
-  g_signal_connect(expander_set, "notify::height\0",
+  g_signal_connect(expander_set, "notify::n-rows\0",
 		   G_CALLBACK(ags_expander_set_height_changed),
 		   expander_set);
 
@@ -356,8 +356,8 @@ ags_expander_set_insert_child(AgsExpanderSet *expander_set,
 
   gtk_table_attach(GTK_TABLE(expander_set),
 		   child->child,
-		   child->x, child->y,
-		   child->x + child->width, child->y + child->height,
+		   child->x, child->x + child->width,
+		   child->y, child->y + child->height,
 		   GTK_FILL |
 		   GTK_EXPAND,
 		   GTK_FILL |
@@ -433,8 +433,8 @@ ags_expander_set_new(guint width, guint height)
   AgsExpanderSet *expander_set;
 
   expander_set = (AgsExpanderSet *) g_object_new(AGS_TYPE_EXPANDER_SET,
-						 "width\0", width,
-						 "height\0", height,
+						 "n-columns\0", width,
+						 "n-rows\0", height,
 						 NULL);
   
   return(expander_set);

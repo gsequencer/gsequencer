@@ -21,7 +21,11 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_line_member.h>
+
+int ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineMember *line_member);
 
 #endif /*__AGS_LINE_MEMBER_CALLBACKS_H__*/

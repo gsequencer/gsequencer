@@ -18,3 +18,10 @@
 
 #include <ags/X/ags_line_member_callbacks.h>
 
+int
+ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLineMember *line_member)
+{
+  if(old_parent == NULL){
+    gtk_widget_show_all(widget);
+  }
+}

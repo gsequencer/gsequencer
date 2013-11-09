@@ -44,8 +44,6 @@ struct _AgsMixerInputLine
   AgsLine line;
 
   guint flags;
-
-  GtkVScale *volume;
 };
 
 struct _AgsMixerInputLineClass

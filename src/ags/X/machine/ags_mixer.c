@@ -207,7 +207,9 @@ ags_mixer_set_audio_channels(AgsAudio *audio,
     for(i = 0; i < audio->input_pads; i++){
       if(audio_channels_old == 0){
       /* create AgsPad's if necessary */
-	mixer_input_pad = ags_mixer_input_pad_new(channel);
+	mixer_input_pad = g_object_new(AGS_TYPE_MIXER_INPUT_PAD,
+				       "channel\0", channel,
+				       NULL);
 	gtk_box_pack_start((GtkBox *) mixer->input_pad,
 			   (GtkWidget *) mixer_input_pad,
 			   FALSE, FALSE,

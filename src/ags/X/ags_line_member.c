@@ -90,7 +90,7 @@ ags_line_member_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_line_member = g_type_register_static(GTK_TYPE_BIN,
+    ags_type_line_member = g_type_register_static(GTK_TYPE_FRAME,
 						  "AgsLineMember\0", &ags_line_member_info,
 						  0);
 
@@ -143,6 +143,9 @@ ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_line_member_init(AgsLineMember *line_member)
 {
+  g_signal_connect_after((GObject *) line_member, "parent_set\0",
+			 G_CALLBACK(ags_line_member_parent_set_callback), (gpointer) line_member);
+
   line_member->flags = AGS_LINE_MEMBER_RESET_BY_ATOMIC;
 
   line_member->widget_type = AGS_TYPE_DIAL;
@@ -164,9 +167,9 @@ ags_line_member_init(AgsLineMember *line_member)
 
 void
 ags_line_member_set_property(GObject *gobject,
-		      guint prop_id,
-		      const GValue *value,
-		      GParamSpec *param_spec)
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
 {
   AgsLineMember *line_member;
 
@@ -229,9 +232,9 @@ ags_line_member_set_property(GObject *gobject,
 
 void
 ags_line_member_get_property(GObject *gobject,
-		      guint prop_id,
-		      GValue *value,
-		      GParamSpec *param_spec)
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
 {
   /* empty */
 }
