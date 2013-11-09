@@ -171,10 +171,10 @@ ags_line_init(AgsLine *line)
 		     FALSE, FALSE,
 		     0);
 
-  line->expander = ags_expander_new(2, 2);
+  line->expander = ags_expander_new(1, 1);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->expander),
-		     FALSE, FALSE,
+		     TRUE, TRUE,
 		     0);
 }
 

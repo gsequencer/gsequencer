@@ -110,7 +110,7 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   pad = (AgsPad *) drum_input_pad;
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, TRUE, TRUE, 0);
+  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, TRUE, 0);
   gtk_box_reorder_child((GtkBox *) pad, (GtkWidget *) hbox, 0);
 
   drum_input_pad->open = (GtkButton *) gtk_button_new();

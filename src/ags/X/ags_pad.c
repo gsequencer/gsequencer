@@ -165,8 +165,8 @@ ags_pad_init(AgsPad *pad)
   pad->version = AGS_PAD_DEFAULT_VERSION;
   pad->build_id = AGS_PAD_DEFAULT_BUILD_ID;
 
-  pad->expander_set = ags_expander_set_new(2, 2);
-  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, FALSE, FALSE, 0);
+  pad->expander_set = ags_expander_set_new(1, 1);
+  gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, TRUE, TRUE, 0);
 
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, FALSE, 0);
