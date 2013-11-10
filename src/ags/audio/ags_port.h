@@ -35,6 +35,29 @@ typedef struct _AgsPortClass AgsPortClass;
 struct _AgsPort
 {
   GObject object;
+
+  gchar *plugin_name;
+  gchar *specifier;
+
+  gchar *control_port;
+
+  gboolean port_value_is_pointer;
+  GType port_value_type;
+
+  guint port_value_size;
+
+  union _AgsPortValue{
+    volatile gboolean ags_port_boolean;
+    volatile gint ags_port_int;
+    volatile guint ags_port_uint;
+    volatile gdouble ags_port_double;
+    volatile gboolean *ags_port_boolean_ptr;
+    volatile gint *ags_port_int_ptr;
+    volatile guint *ags_port_uint_ptr;
+    volatile gdouble *ags_port_double_ptr;
+    volatile gpointer ags_port_pointer;
+    volatile GObject *ags_port_gobject;
+  }port_value;
 };
 
 struct _AgsPortClass

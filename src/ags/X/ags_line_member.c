@@ -158,10 +158,6 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->port = NULL;
   line_member->port_data = NULL;
 
-  line_member->port_data_is_pointer = FALSE;
-  line_member->port_data_type = G_TYPE_NONE;
-  line_member->port_data_length = sizeof(guint);
-
   line_member->task_type = G_TYPE_NONE;
 }
 

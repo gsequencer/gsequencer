@@ -24,6 +24,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_port.h>
 #include <ags/audio/ags_task.h>
 
 #define AGS_TYPE_LINE_MEMBER                (ags_line_member_get_type())
@@ -53,13 +54,9 @@ struct _AgsLineMember
   gchar *specifier;
 
   gchar *control_port;
-
-  volatile gpointer *port;
+  
+  AgsPort *port;
   gpointer port_data;
-
-  gboolean port_data_is_pointer;
-  GType port_data_type;
-  guint port_data_length;
 
   GType task_type;
 };

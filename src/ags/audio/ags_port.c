@@ -35,7 +35,6 @@ void ags_port_connect(AgsConnectable *connectable);
 void ags_port_disconnect(AgsConnectable *connectable);
 
 static gpointer ags_port_parent_class = NULL;
-static guint port_signals[LAST_SIGNAL];
 
 GType
 ags_port_get_type (void)
@@ -87,8 +86,6 @@ ags_port_class_init(AgsPortClass *port)
 
   gobject->set_property = ags_port_set_property;
   gobject->get_property = ags_port_get_property;
-
-  gobject->finalize = ags_port_finalize;
 }
 
 void
@@ -103,6 +100,9 @@ ags_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_port_init(AgsPort *port)
 {
+  port->port_value_is_pointer = FALSE;
+  port->port_value_type = G_TYPE_NONE;
+  port->port_value_size = sizeof(guint);
 }
 
 void

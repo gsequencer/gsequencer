@@ -451,7 +451,9 @@ ags_recall_init(AgsRecall *recall)
   recall->child_type = G_TYPE_NONE;
   recall->child_parameters = NULL;
   recall->n_params = 0;
-  
+
+  recall->port = NULL;
+
   recall->handlers = NULL;
 }
 
