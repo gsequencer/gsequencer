@@ -100,9 +100,16 @@ ags_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_port_init(AgsPort *port)
 {
+  port->plugin_name = NULL;
+  port->specifier = NULL;
+
+  port->control_port = NULL;
+
   port->port_value_is_pointer = FALSE;
   port->port_value_type = G_TYPE_NONE;
+
   port->port_value_size = sizeof(guint);
+  port->port_value_length = 1;
 }
 
 void
@@ -153,6 +160,22 @@ ags_port_disconnect(AgsConnectable *connectable)
   AgsPort *port;
 
   port = AGS_PORT(connectable);
+}
+
+gpointer
+ags_port_safe_read(AgsPort *port)
+{
+  gpointer data;
+
+  data = (gpointer) malloc(sizeof(port->port_value_size));
+
+  //TODO:JK: implement me
+}
+
+void
+ags_port_safe_write(AgsPort *port, gpointer data)
+{
+  //TODO:JK: implement me
 }
 
 AgsPort*

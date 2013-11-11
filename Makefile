@@ -118,7 +118,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_timestamp.$(OBJEXT) \
 	ags-ags_timestamp_factory.$(OBJEXT) \
 	ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
-	ags-ags_port.$(OBJEXT) ags-ags_recall_channel.$(OBJEXT) \
+	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
+	ags-ags_recall_channel.$(OBJEXT) \
 	ags-ags_recall_audio_run.$(OBJEXT) ags-ags_pattern.$(OBJEXT) \
 	ags-ags_channel_iter.$(OBJEXT) \
 	ags-ags_set_output_device.$(OBJEXT) \
@@ -647,6 +648,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_timestamp_factory.c \
 	./src/ags/audio/ags_run_order.c ./src/ags/audio/ags_task.c \
 	./src/ags/audio/ags_port.c ./src/ags/audio/ags_port.h \
+	./src/ags/audio/ags_recall_factory.h \
+	./src/ags/audio/ags_recall_factory.c \
 	./src/ags/audio/ags_recall_dependency.h \
 	./src/ags/audio/ags_input.h \
 	./src/ags/audio/ags_recall_channel.c \
@@ -1482,6 +1485,7 @@ include ./$(DEPDIR)/ags-ags_recall_channel.Po
 include ./$(DEPDIR)/ags-ags_recall_channel_run.Po
 include ./$(DEPDIR)/ags-ags_recall_container.Po
 include ./$(DEPDIR)/ags-ags_recall_dependency.Po
+include ./$(DEPDIR)/ags-ags_recall_factory.Po
 include ./$(DEPDIR)/ags-ags_recall_id.Po
 include ./$(DEPDIR)/ags-ags_recall_recycling.Po
 include ./$(DEPDIR)/ags-ags_recycling.Po
@@ -1851,6 +1855,20 @@ ags-ags_port.obj: ./src/ags/audio/ags_port.c
 #	$(AM_V_CC)source='./src/ags/audio/ags_port.c' object='ags-ags_port.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_port.obj `if test -f './src/ags/audio/ags_port.c'; then $(CYGPATH_W) './src/ags/audio/ags_port.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_port.c'; fi`
+
+ags-ags_recall_factory.o: ./src/ags/audio/ags_recall_factory.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_factory.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_factory.Tpo -c -o ags-ags_recall_factory.o `test -f './src/ags/audio/ags_recall_factory.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_factory.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_recall_factory.Tpo $(DEPDIR)/ags-ags_recall_factory.Po
+#	$(AM_V_CC)source='./src/ags/audio/ags_recall_factory.c' object='ags-ags_recall_factory.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_factory.o `test -f './src/ags/audio/ags_recall_factory.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_factory.c
+
+ags-ags_recall_factory.obj: ./src/ags/audio/ags_recall_factory.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_factory.obj -MD -MP -MF $(DEPDIR)/ags-ags_recall_factory.Tpo -c -o ags-ags_recall_factory.obj `if test -f './src/ags/audio/ags_recall_factory.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_factory.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_recall_factory.Tpo $(DEPDIR)/ags-ags_recall_factory.Po
+#	$(AM_V_CC)source='./src/ags/audio/ags_recall_factory.c' object='ags-ags_recall_factory.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_factory.obj `if test -f './src/ags/audio/ags_recall_factory.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_factory.c'; fi`
 
 ags-ags_recall_channel.o: ./src/ags/audio/ags_recall_channel.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_channel.Tpo -c -o ags-ags_recall_channel.o `test -f './src/ags/audio/ags_recall_channel.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_channel.c

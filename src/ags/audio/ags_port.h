@@ -45,6 +45,7 @@ struct _AgsPort
   GType port_value_type;
 
   guint port_value_size;
+  guint port_value_length;
 
   union _AgsPortValue{
     volatile gboolean ags_port_boolean;
@@ -66,6 +67,9 @@ struct _AgsPortClass
 };
 
 GType ags_port_get_type();
+
+gpointer ags_port_safe_read(AgsPort *port);
+void ags_port_safe_write(AgsPort *port, gpointer data);
 
 AgsPort* ags_port_new();
 
