@@ -20,6 +20,36 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_port.h>
+
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run_master.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_loop_channel.h>
+#include <ags/audio/recall/ags_loop_channel_run.h>
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_copy_notation_audio.h>
+#include <ags/audio/recall/ags_copy_notation_audio_run.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_volume_channel_run.h>
+
+#include <string.h>
+
 void ags_recall_factory_class_init(AgsRecallFactoryClass *recall_factory_class);
 void ags_recall_factory_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_factory_init(AgsRecallFactory *recall_factory);
@@ -150,6 +180,85 @@ ags_recall_factory_disconnect(AgsConnectable *connectable)
   AgsRecallFactory *recall_factory;
 
   recall_factory = AGS_RECALL_FACTORY(connectable);
+}
+
+GList*
+ags_recall_factory_create(AgsAudio *audio,
+			  gchar *plugin_name,
+			  guint start_audio_channel, guint stop_audio_channel,
+			  guint start_pad, guint stop_pad)
+{
+  AgsPort *port;
+  GList *list;
+
+  list = NULL;
+
+  if(!strncmp(plugin_name,
+	      "ags-delay\0",
+	      9)){
+    AgsDelayAudio *delay_audio;
+    AgsDelayAudioRun *delay_audio_run;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-count-beats\0",
+		    15)){
+    AgsCountBeatsAudio *count_beats_audio;
+    AgsCountBeatsAudioRun *count_beats_audio_run;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-stream\0",
+		    10)){
+    AgsStreamChannel *stream_channel;
+    AgsStreamChannelRun *stream_channel_run;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-loop\0",
+		    8)){
+    AgsLoopChannel *loop_channel;
+    AgsLoopChannelRun *loop_channel_run;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-play-master\0",
+		    15)){
+    AgsRecallContainer *recall_container;
+    AgsPlayChannel *play_channel;
+    AgsPlayChannelRunMaster *play_channel_run_master;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-play\0",
+		    8)){
+    AgsRecallContainer *recall_container;
+    AgsPlayChannel *play_channel;
+    AgsPlayChannelRun *play_channel_run;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-copy-pattern\0",
+		    16)){
+    AgsRecallContainer *recall_container;
+    AgsCopyPatternChannel *copy_pattern_channel;
+    AgsCopyPatternChannel *copy_pattern_channel_run;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-copy-notation\0",
+		    17)){
+    AgsCopyNotationAudio *copy_notation_audio;
+    AgsCopyNotationAudioRun *copy_notation_audio_run;
+
+    //TODO:JK: implement me
+  }else if(!strncmp(plugin_name,
+		    "ags-volume\0",
+		    10)){
+    //TODO:JK: implement me
+  }
+
+  return(list);
 }
 
 AgsRecallFactory*

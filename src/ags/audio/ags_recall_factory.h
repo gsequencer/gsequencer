@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_audio.h>
+
 #define AGS_TYPE_RECALL_FACTORY                (ags_recall_factory_get_type())
 #define AGS_RECALL_FACTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_FACTORY, AgsRecallFactory))
 #define AGS_RECALL_FACTORY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_FACTORY, AgsRecallFactoryClass))
@@ -44,6 +46,13 @@ struct _AgsRecallFactoryClass
 
 GType ags_recall_factory_get_type();
 
+GList* ags_recall_factory_create(AgsAudio *audio,
+				 gchar *plugin_name,
+				 guint start_audio_channel, guint stop_audio_channel,
+				 guint start_pad, guint stop_pad);
+
+/*  */
+AgsRecallFactory* ags_recall_factory_get_instance();
 AgsRecallFactory* ags_recall_factory_new();
 
 #endif /*__AGS_RECALL_FACTORY_H__*/
