@@ -1319,6 +1319,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 {
   AgsLineMember *gobject;
   GtkWidget *child_widget;
+  AgsPort *port;
   xmlNode *child;
   xmlChar *prop, *content;
   gchar *widget_type;
@@ -1359,20 +1360,15 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 
   gobject->control_port = g_strdup(xmlGetProp(node, "control-port\0"));
 
-  if(!xmlStrncmp(xmlGetProp(node, "port-data-is-pointer\0"),
-		 AGS_FILE_TRUE,
-		 5)){
-    gobject->port_data_is_pointer = TRUE;
-  }else{
-    gobject->port_data_is_pointer = FALSE;
-  }
-
-  gobject->port_data_type = g_type_from_name(xmlGetProp(node, "port-data-type\0"));
+  //TODO:JK: lookup port
+  //gobject->port = ;
 
   gobject->task_type = g_type_from_name(xmlGetProp(node, "task-type\0"));
 
   /* child elements */
   child = node->children;
+
+  port = gobject->port;
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
@@ -1384,7 +1380,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 	GValue value;
 
 	g_value_init(&value,
-		     gobject->port_data_type);
+		     port->port_value_type);
 
 	ags_file_util_read_value(file,
 				 child,
@@ -1476,6 +1472,7 @@ ags_file_read_line_member_resolve_port_data(AgsFileLookup *file_lookup,
 xmlNode*
 ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_member)
 {
+  AgsPort *port;
   xmlNode *node, *child;
   gchar *id;
   guint i;
@@ -1518,24 +1515,14 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	     "control-port\0",
 	     g_strdup(line_member->control_port));
 
-  xmlNewProp(node,
-	     "port-data-is-pointer\0",
-	     (line_member->port_data_is_pointer ? AGS_FILE_TRUE: AGS_FILE_FALSE)); 
-
-  xmlNewProp(node,
-	     "port-data-type\0",
-	     g_type_name(line_member->port_data_type));
-
-  xmlNewProp(node,
-	     "task-type\0",
-	     g_type_name(line_member->task_type));
-
   xmlAddChild(parent,
 	      node);
 
   /* child elements */
-  if(line_member->port_data_is_pointer){
-    if(line_member->port_data_type == G_TYPE_CHAR){
+  port = line_member->port;
+  
+  if(port->port_value_is_pointer){
+    if(port->port_value_type == G_TYPE_CHAR){
       gchar *ptr;
 
       ptr = (gchar *) line_member->port_data;
@@ -1544,7 +1531,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 		   G_TYPE_POINTER);
       g_value_set_pointer(&a,
 			  ptr);
-    }else if(line_member->port_data_type == G_TYPE_BOOLEAN){
+    }else if(port->port_value_type == G_TYPE_BOOLEAN){
       gboolean *ptr;
 
       ptr = (gboolean *) line_member->port_data;
@@ -1553,7 +1540,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 		   G_TYPE_POINTER);
       g_value_set_pointer(&a,
 			  ptr);
-    }else if(line_member->port_data_type == G_TYPE_UINT64){
+    }else if(port->port_value_type == G_TYPE_UINT64){
       guint64 *ptr;
 
       ptr = (guint64 *) line_member->port_data;
@@ -1562,7 +1549,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 		   G_TYPE_POINTER);
       g_value_set_pointer(&a,
 			  ptr);
-    }else if(line_member->port_data_type == G_TYPE_INT64){
+    }else if(port->port_value_type == G_TYPE_INT64){
       gint64 *ptr;
 
       ptr = (gint64 *) line_member->port_data;
@@ -1571,7 +1558,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 		   G_TYPE_POINTER);
       g_value_set_pointer(&a,
 			  ptr);
-    }else if(line_member->port_data_type == G_TYPE_DOUBLE){
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
       gdouble *ptr;
 
       ptr = (gdouble *) line_member->port_data;
@@ -1580,7 +1567,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 		   G_TYPE_POINTER);
       g_value_set_pointer(&a,
 			  ptr);
-    }else if(line_member->port_data_type == G_TYPE_STRING){
+    }else if(port->port_value_type == G_TYPE_STRING){
       gchar *ptr;
 
       ptr = (gchar *) line_member->port_data;
@@ -1589,12 +1576,12 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 		   G_TYPE_STRING);
       g_value_set_pointer(&a,
 			  ptr);
-    }else if(line_member->port_data_type == G_TYPE_POINTER){
+    }else if(port->port_value_type == G_TYPE_POINTER){
       g_value_init(&a,
 		   G_TYPE_POINTER);
       g_value_set_pointer(&a,
 			  line_member->port_data);
-    }else if(line_member->port_data_type == G_TYPE_OBJECT){
+    }else if(port->port_value_type == G_TYPE_OBJECT){
       AgsFileLookup *file_lookup;
 
       file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -1607,32 +1594,32 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 			     G_CALLBACK(ags_file_write_line_member_resolve_port_data), line_member);
     }
   }else{
-    if(line_member->port_data_type == G_TYPE_CHAR){
+    if(port->port_value_type == G_TYPE_CHAR){
       g_value_init(&a,
 		   G_TYPE_CHAR);
       g_value_set_schar(&a,
 			((gchar *) line_member->port_data)[0]);
-    }else if(line_member->port_data_type == G_TYPE_BOOLEAN){
+    }else if(port->port_value_type == G_TYPE_BOOLEAN){
       g_value_init(&a,
 		   G_TYPE_BOOLEAN);
       g_value_set_boolean(&a,
 			  ((gboolean *) line_member->port_data)[0]);
-    }else if(line_member->port_data_type == G_TYPE_UINT64){
+    }else if(port->port_value_type == G_TYPE_UINT64){
       g_value_init(&a,
 		   G_TYPE_UINT64);
       g_value_set_uint64(&a,
 			 ((guint64 *) line_member->port_data)[0]);
-    }else if(line_member->port_data_type == G_TYPE_INT64){
+    }else if(port->port_value_type == G_TYPE_INT64){
       g_value_init(&a,
 		   G_TYPE_INT64);
       g_value_set_int64(&a,
 			 ((gint64 *) line_member->port_data)[0]);
-    }else if(line_member->port_data_type == G_TYPE_DOUBLE){
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
       g_value_init(&a,
 		   G_TYPE_DOUBLE);
       g_value_set_double(&a,
 			 ((gdouble *) line_member->port_data)[0]);
-    }else if(line_member->port_data_type == G_TYPE_STRING){
+    }else if(port->port_value_type == G_TYPE_STRING){
       g_value_init(&a,
 		   G_TYPE_STRING);
       g_value_set_string(&a,
@@ -1643,7 +1630,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   ags_file_util_write_value(file,
 			    node,
 			    ags_id_generator_create_uuid(),
-			    &a, line_member->port_data_type, line_member->port_data_length);
+			    &a, port->port_value_type, port->port_value_size);
 }
 
 void

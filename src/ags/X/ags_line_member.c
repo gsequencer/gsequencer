@@ -258,7 +258,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 				 gpointer port_data)
 {
   if((AGS_LINE_MEMBER_RESET_BY_ATOMIC & (line_member->flags)) != 0){
-    g_atomic_pointer_set(line_member->port,
+    g_atomic_pointer_set(&line_member->port,
 			 port_data);
   }
 
