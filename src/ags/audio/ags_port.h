@@ -71,6 +71,9 @@ GType ags_port_get_type();
 gpointer ags_port_safe_read(AgsPort *port);
 void ags_port_safe_write(AgsPort *port, gpointer data);
 
+GValue* ags_port_safe_get_property(AgsPort *port);
+void ags_port_safe_set_property(AgsPort *port, GValue *value);
+
 AgsPort* ags_port_new();
 
 #endif /*__AGS_PORT_H__*/

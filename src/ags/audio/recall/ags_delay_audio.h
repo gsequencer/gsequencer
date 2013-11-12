@@ -38,14 +38,14 @@ struct _AgsDelayAudio
 {
   AgsRecallAudio recall_audio;
 
-  gdouble bpm;
-  gdouble tact;
+  AgsPort *bpm;
+  AgsPort *tact;
 
   gdouble notation_delay;
   gdouble sequencer_delay;
 
-  gdouble sequencer_duration;
-  gdouble notation_duration;
+  AgsPort *sequencer_duration;
+  AgsPort *notation_duration;
 };
 
 struct _AgsDelayAudioClass

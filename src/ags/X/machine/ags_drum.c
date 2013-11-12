@@ -163,6 +163,7 @@ ags_drum_init(AgsDrum *drum)
   drum->machine.flags |= AGS_MACHINE_IS_SEQUENCER;
   drum->flags = 0;
 
+  //NOTE: following is being resolved by unique access with AgsPort and AgsRecallFactory
   //TODO:JK: move creation of recalls in a own function
 
   /* audio->play */

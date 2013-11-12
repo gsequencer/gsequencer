@@ -49,7 +49,8 @@ GType ags_recall_factory_get_type();
 GList* ags_recall_factory_create(AgsAudio *audio,
 				 gchar *plugin_name,
 				 guint start_audio_channel, guint stop_audio_channel,
-				 guint start_pad, guint stop_pad);
+				 guint start_pad, guint stop_pad,
+				 gboolean is_output);
 
 /*  */
 AgsRecallFactory* ags_recall_factory_get_instance();

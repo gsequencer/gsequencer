@@ -167,13 +167,25 @@ ags_port_safe_read(AgsPort *port)
 {
   gpointer data;
 
-  data = (gpointer) malloc(sizeof(port->port_value_size));
+  data = (gpointer) malloc(port->port_value_length * sizeof(port->port_value_size));
 
   //TODO:JK: implement me
 }
 
 void
 ags_port_safe_write(AgsPort *port, gpointer data)
+{
+  //TODO:JK: implement me
+}
+
+GValue*
+ags_port_safe_get_property(AgsPort *port)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_port_safe_set_property(AgsPort *port, GValue *value)
 {
   //TODO:JK: implement me
 }

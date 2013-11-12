@@ -22,6 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_dependency.h>
 
