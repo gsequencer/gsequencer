@@ -41,11 +41,11 @@ struct _AgsDelayAudio
   AgsPort *bpm;
   AgsPort *tact;
 
-  gdouble notation_delay;
-  gdouble sequencer_delay;
+  AgsPort *notation_delay;
+  AgsPort *sequencer_delay;
 
-  AgsPort *sequencer_duration;
-  AgsPort *notation_duration;
+  AgsPort *sequencer_length;
+  AgsPort *notation_length;
 };
 
 struct _AgsDelayAudioClass

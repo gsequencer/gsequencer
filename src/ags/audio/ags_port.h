@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_PORT                (ags_port_get_type())
 #define AGS_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORT, AgsPort))
 #define AGS_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PORT, AgsPortClass))
@@ -46,6 +48,8 @@ struct _AgsPort
 
   guint port_value_size;
   guint port_value_length;
+
+  pthread_mutex_t mutex;
 
   union _AgsPortValue{
     volatile gboolean ags_port_boolean;

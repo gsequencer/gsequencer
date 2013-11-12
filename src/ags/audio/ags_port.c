@@ -36,6 +36,9 @@ void ags_port_disconnect(AgsConnectable *connectable);
 
 static gpointer ags_port_parent_class = NULL;
 
+#include <stdlib.h>
+#include <string.h>
+
 GType
 ags_port_get_type (void)
 {
@@ -110,6 +113,8 @@ ags_port_init(AgsPort *port)
 
   port->port_value_size = sizeof(guint);
   port->port_value_length = 1;
+
+  pthread_mutex_init(&port->mutex, NULL);
 }
 
 void
@@ -165,17 +170,79 @@ ags_port_disconnect(AgsConnectable *connectable)
 gpointer
 ags_port_safe_read(AgsPort *port)
 {
+  guint overall_size;
   gpointer data;
 
-  data = (gpointer) malloc(port->port_value_length * sizeof(port->port_value_size));
+  overall_size = port->port_value_length * port->port_value_size;
 
-  //TODO:JK: implement me
+  data = (gpointer) malloc(overall_size);
+
+  pthread_mutex_lock(&(port->mutex));
+
+  if(!port->port_value_is_pointer){
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      * (gboolean *) data = port->port_value.ags_port_boolean;
+    }else if(port->port_value_type == G_TYPE_INT){
+      * (gint *) data = port->port_value.ags_port_int;
+    }else if(port->port_value_type == G_TYPE_UINT){
+      * (guint *) data = port->port_value.ags_port_uint;
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      * (gdouble *) data = port->port_value.ags_port_double;
+    }
+  }else{
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);
+    }else if(port->port_value_type == G_TYPE_INT){
+      memcpy(data, port->port_value.ags_port_int_ptr, overall_size);
+    }else if(port->port_value_type == G_TYPE_UINT){
+      memcpy(data, port->port_value.ags_port_uint_ptr, overall_size);
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      memcpy(data, port->port_value.ags_port_double_ptr, overall_size);
+    }else if(port->port_value_type == G_TYPE_POINTER){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_OBJECT){
+      //TODO:JK: implement me
+    }
+  }
+
+  pthread_mutex_unlock(&(port->mutex));
+
+  return(data);
 }
 
 void
 ags_port_safe_write(AgsPort *port, gpointer data)
 {
-  //TODO:JK: implement me
+  pthread_mutex_lock(&(port->mutex));
+      //TODO:JK: implement me
+  if(!port->port_value_is_pointer){
+      //TODO:JK: implement me
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_INT){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_UINT){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      //TODO:JK: implement me
+    }
+  }else{
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_INT){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_UINT){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_POINTER){
+      //TODO:JK: implement me
+    }else if(port->port_value_type == G_TYPE_OBJECT){
+      //TODO:JK: implement me
+    }
+  }
+
+  pthread_mutex_unlock(&(port->mutex));
 }
 
 GValue*
