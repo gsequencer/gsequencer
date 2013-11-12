@@ -167,29 +167,29 @@ ags_port_disconnect(AgsConnectable *connectable)
   port = AGS_PORT(connectable);
 }
 
-gpointer
-ags_port_safe_read(AgsPort *port)
+void
+ags_port_safe_read(AgsPort *port, GValue *value)
 {
   guint overall_size;
   gpointer data;
 
   overall_size = port->port_value_length * port->port_value_size;
 
-  data = (gpointer) malloc(overall_size);
-
   pthread_mutex_lock(&(port->mutex));
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
-      * (gboolean *) data = port->port_value.ags_port_boolean;
+      g_value_set_boolean(value, port->port_value.ags_port_boolean);
     }else if(port->port_value_type == G_TYPE_INT){
-      * (gint *) data = port->port_value.ags_port_int;
+      g_value_set_int(value, port->port_value.ags_port_int);
     }else if(port->port_value_type == G_TYPE_UINT){
-      * (guint *) data = port->port_value.ags_port_uint;
+      g_value_set_uint(value, port->port_value.ags_port_uint);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      * (gdouble *) data = port->port_value.ags_port_double;
+      g_value_set_double(value, port->port_value.ags_port_double);
     }
   }else{
+    data = (gpointer) malloc(overall_size);
+
     if(port->port_value_type == G_TYPE_BOOLEAN){
       memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);
     }else if(port->port_value_type == G_TYPE_INT){
@@ -203,17 +203,18 @@ ags_port_safe_read(AgsPort *port)
     }else if(port->port_value_type == G_TYPE_OBJECT){
       g_warning("ags_port_safe_read: not supported data type %s\0", g_type_name(port->port_value_type));
     }
+
+    g_value_set_pointer(value, data);
   }
 
   pthread_mutex_unlock(&(port->mutex));
-
-  return(data);
 }
 
 void
-ags_port_safe_write(AgsPort *port, gpointer data)
+ags_port_safe_write(AgsPort *port, GValue *value)
 {
   guint overall_size;
+  gpointer data;
 
   overall_size = port->port_value_length * port->port_value_size;
 
@@ -221,15 +222,17 @@ ags_port_safe_write(AgsPort *port, gpointer data)
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
-      port->port_value.ags_port_boolean = * (gboolean *) data;
+      port->port_value.ags_port_boolean = g_value_get_boolean(value);
     }else if(port->port_value_type == G_TYPE_INT){
-      port->port_value.ags_port_int = * (gint *) data;
+      port->port_value.ags_port_int = g_value_get_int(value);
     }else if(port->port_value_type == G_TYPE_UINT){
-      port->port_value.ags_port_uint = * (guint *) data;
+      port->port_value.ags_port_uint = g_value_get_uint(value);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      port->port_value.ags_port_double = * (gdouble *) data;
+      port->port_value.ags_port_double = g_value_get_double(value);
     }
   }else{
+    data = g_value_get_pointer(value);
+
     if(port->port_value_type == G_TYPE_BOOLEAN){
       memcpy(port->port_value.ags_port_boolean_ptr, data, overall_size);
     }else if(port->port_value_type == G_TYPE_INT){
