@@ -144,7 +144,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   param_spec = g_param_spec_object("delay-notation\0",
 				   "delay-notation of recall\0",
 				   "The delay of the notation\0",
-				   AGS_TYPE_DELAY_NOTATION,
+				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY_NOTATION,
@@ -153,7 +153,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   param_spec = g_param_spec_object("sequencer-duration\0",
 				   "sequencer-duration of recall\0",
 				   "The duration of the sequencer\0",
-				   AGS_TYPE_SEQUENCER_DURATION,
+				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SEQUENCER_DURATION,
@@ -162,7 +162,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   param_spec = g_param_spec_object("notation-duration\0",
 				   "notation-duration of recall\0",
 				   "The duration of the notation\0",
-				   AGS_TYPE_NOTATION_DURATION,
+				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTATION_DURATION,
@@ -192,14 +192,81 @@ ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable)
 void
 ags_delay_audio_init(AgsDelayAudio *delay_audio)
 {
-  delay_audio->bpm = AGS_DEVOUT_DEFAULT_BPM;
-  delay_audio->tact = exp2(-2.0);
+  GList *port;
 
-  delay_audio->notation_delay = AGS_DEVOUT_DEFAULT_DELAY * exp2(-4.0);
-  delay_audio->sequencer_delay = AGS_DEVOUT_DEFAULT_DELAY * exp2(-2.0);
+  port = NULL;
 
-  delay_audio->sequencer_duration = 16.0;
-  delay_audio->notation_duration = 1200.0 * 64.0;
+  /* bpm */
+  delay_audio->bpm = g_object_new(AGS_TYPE_PORT,
+				  "plugin-name\0", g_strdup("ags-delay\0"),
+				  "specifier\0", "./bpm[0]\0",
+				  "control-port\0", "0/6\0",
+				  "port-value-is-pointer\0", FALSE,
+				  "value-type\0", G_TYPE_DOUBLE,
+				  "value-size\0", sizeof(gdouble),
+				  "value-length", 1,
+				  NULL);
+  port = g_list_prepend(port, delay_audio->bpm);
+
+  /* tact */
+  delay_audio->tact = g_object_new(AGS_TYPE_PORT,
+				  "plugin-name\0", g_strdup("ags-delay\0"),
+				  "specifier\0", "./tact[0]\0",
+				  "control-port\0", "0/6\0",
+				  "port-value-is-pointer\0", FALSE,
+				  "value-type\0", G_TYPE_DOUBLE,
+				  "value-size\0", sizeof(gdouble),
+				  "value-length", 1,
+				  NULL);
+  port = g_list_prepend(port, delay_audio->tact);
+
+  /* sequencer delay */
+  delay_audio->sequencer_delay = g_object_new(AGS_TYPE_PORT,
+				  "plugin-name\0", g_strdup("ags-delay\0"),
+				  "specifier\0", "./sequencer_delay[0]\0",
+				  "control-port\0", "0/6\0",
+				  "port-value-is-pointer\0", FALSE,
+				  "value-type\0", G_TYPE_DOUBLE,
+				  "value-size\0", sizeof(gdouble),
+				  "value-length", 1,
+				  NULL);
+  port = g_list_prepend(port, delay_audio->sequencer_delay);
+
+  /* notation delay */
+  delay_audio->notation_delay = g_object_new(AGS_TYPE_PORT,
+				  "plugin-name\0", g_strdup("ags-delay\0"),
+				  "specifier\0", "./notation_delay[0]\0",
+				  "control-port\0", "0/6\0",
+				  "port-value-is-pointer\0", FALSE,
+				  "value-type\0", G_TYPE_DOUBLE,
+				  "value-size\0", sizeof(gdouble),
+				  "value-length", 1,
+				  NULL);
+  port = g_list_prepend(port, delay_audio->notation_delay);
+
+  /* sequencer duration */
+  duration_audio->sequencer_duration = g_object_new(AGS_TYPE_PORT,
+				  "plugin-name\0", g_strdup("ags-duration\0"),
+				  "specifier\0", "./sequencer_duration[0]\0",
+				  "control-port\0", "0/6\0",
+				  "port-value-is-pointer\0", FALSE,
+				  "value-type\0", G_TYPE_DOUBLE,
+				  "value-size\0", sizeof(gdouble),
+				  "value-length", 1,
+				  NULL);
+  port = g_list_prepend(port, duration_audio->sequencer_duration);
+
+  /* notation duration */
+  duration_audio->notation_duration = g_object_new(AGS_TYPE_PORT,
+				  "plugin-name\0", g_strdup("ags-duration\0"),
+				  "specifier\0", "./notation_duration[0]\0",
+				  "control-port\0", "0/6\0",
+				  "port-value-is-pointer\0", FALSE,
+				  "value-type\0", G_TYPE_DOUBLE,
+				  "value-size\0", sizeof(gdouble),
+				  "value-length", 1,
+				  NULL);
+  port = g_list_prepend(port, duration_audio->notation_duration);
 }
 
 void
