@@ -101,6 +101,8 @@ ags_port_class_init(AgsPortClass *port)
 
   gobject->set_property = ags_port_set_property;
   gobject->get_property = ags_port_get_property;
+
+  /* properties */
 }
 
 void

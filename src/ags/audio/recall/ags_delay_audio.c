@@ -114,27 +114,60 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
   gobject->finalize = ags_delay_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("notation_delay\0",
-				 "notation delay for timeing\0",
-				 "The notation delay whenever a tic occures\0",
-				 0,
-				 65535,
-				 AGS_DEVOUT_DEFAULT_DELAY * exp2(-4.0),
-				 G_PARAM_READABLE);
+  param_spec = g_param_spec_object("bpm\0",
+				   "bpm of recall\0",
+				   "The recall's bpm\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION_DELAY,
+				  PROP_BPM,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("sequencer_delay\0",
-				 "sequencer delay for timeing\0",
-				 "The sequencer delay whenever a tic occures\0",
-				 0,
-				 AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
-				 AGS_DEVOUT_DEFAULT_DELAY * exp2(-2.0),
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("tact\0",
+				   "tact of recall\0",
+				   "The recall's tact\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SEQUENCER_DELAY,
+				  PROP_TACT,
 				  param_spec);
+
+  param_spec = g_param_spec_object("delay-sequencer\0",
+				   "delay-sequencer of recall\0",
+				   "The delay of the sequencer\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY_SEQUENCER,
+				  param_spec);
+
+  param_spec = g_param_spec_object("delay-notation\0",
+				   "delay-notation of recall\0",
+				   "The delay of the notation\0",
+				   AGS_TYPE_DELAY_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY_NOTATION,
+				  param_spec);
+
+  param_spec = g_param_spec_object("sequencer-duration\0",
+				   "sequencer-duration of recall\0",
+				   "The duration of the sequencer\0",
+				   AGS_TYPE_SEQUENCER_DURATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEQUENCER_DURATION,
+				  param_spec);
+
+  param_spec = g_param_spec_object("notation-duration\0",
+				   "notation-duration of recall\0",
+				   "The duration of the notation\0",
+				   AGS_TYPE_NOTATION_DURATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION_DURATION,
+				  param_spec);
+
 
   /* signals */
   delay_audio_signals[SEQUENCER_DURATION_CHANGED] = 
