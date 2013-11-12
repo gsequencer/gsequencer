@@ -52,16 +52,16 @@ struct _AgsPort
   pthread_mutex_t mutex;
 
   union _AgsPortValue{
-    volatile gboolean ags_port_boolean;
-    volatile gint ags_port_int;
-    volatile guint ags_port_uint;
-    volatile gdouble ags_port_double;
-    volatile gboolean *ags_port_boolean_ptr;
-    volatile gint *ags_port_int_ptr;
-    volatile guint *ags_port_uint_ptr;
-    volatile gdouble *ags_port_double_ptr;
-    volatile gpointer ags_port_pointer;
-    volatile GObject *ags_port_gobject;
+    gboolean ags_port_boolean;
+    gint ags_port_int;
+    guint ags_port_uint;
+    gdouble ags_port_double;
+    gboolean *ags_port_boolean_ptr;
+    gint *ags_port_int_ptr;
+    guint *ags_port_uint_ptr;
+    gdouble *ags_port_double_ptr;
+    gpointer ags_port_pointer;
+    GObject *ags_port_gobject;
   }port_value;
 };
 

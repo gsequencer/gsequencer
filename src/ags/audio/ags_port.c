@@ -199,9 +199,9 @@ ags_port_safe_read(AgsPort *port)
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       memcpy(data, port->port_value.ags_port_double_ptr, overall_size);
     }else if(port->port_value_type == G_TYPE_POINTER){
-      //TODO:JK: implement me
+      g_warning("ags_port_safe_read: not supported data type %s\0", g_type_name(port->port_value_type));
     }else if(port->port_value_type == G_TYPE_OBJECT){
-      //TODO:JK: implement me
+      g_warning("ags_port_safe_read: not supported data type %s\0", g_type_name(port->port_value_type));
     }
   }
 
@@ -213,32 +213,35 @@ ags_port_safe_read(AgsPort *port)
 void
 ags_port_safe_write(AgsPort *port, gpointer data)
 {
+  guint overall_size;
+
+  overall_size = port->port_value_length * port->port_value_size;
+
   pthread_mutex_lock(&(port->mutex));
-      //TODO:JK: implement me
+
   if(!port->port_value_is_pointer){
-      //TODO:JK: implement me
     if(port->port_value_type == G_TYPE_BOOLEAN){
-      //TODO:JK: implement me
+      port->port_value.ags_port_boolean = * (gboolean *) data;
     }else if(port->port_value_type == G_TYPE_INT){
-      //TODO:JK: implement me
+      port->port_value.ags_port_int = * (gint *) data;
     }else if(port->port_value_type == G_TYPE_UINT){
-      //TODO:JK: implement me
+      port->port_value.ags_port_uint = * (guint *) data;
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      //TODO:JK: implement me
+      port->port_value.ags_port_double = * (gdouble *) data;
     }
   }else{
     if(port->port_value_type == G_TYPE_BOOLEAN){
-      //TODO:JK: implement me
+      memcpy(port->port_value.ags_port_boolean_ptr, data, overall_size);
     }else if(port->port_value_type == G_TYPE_INT){
-      //TODO:JK: implement me
+      memcpy(port->port_value.ags_port_int_ptr, data, overall_size);
     }else if(port->port_value_type == G_TYPE_UINT){
-      //TODO:JK: implement me
+      memcpy(port->port_value.ags_port_uint_ptr, data, overall_size);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      //TODO:JK: implement me
+      memcpy(port->port_value.ags_port_double_ptr, data, overall_size);
     }else if(port->port_value_type == G_TYPE_POINTER){
-      //TODO:JK: implement me
+      g_warning("ags_port_safe_write: not supported data type %s\0", g_type_name(port->port_value_type));
     }else if(port->port_value_type == G_TYPE_OBJECT){
-      //TODO:JK: implement me
+      g_warning("ags_port_safe_write: not supported data type %s\0", g_type_name(port->port_value_type));
     }
   }
 
