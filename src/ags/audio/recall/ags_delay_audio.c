@@ -50,6 +50,10 @@ enum{
   PROP_0,
   PROP_NOTATION_DELAY,
   PROP_SEQUENCER_DELAY,
+  PROP_TACT,
+  PROP_BPM,
+  PROP_SEQUENCER_DURATION,
+  PROP_NOTATION_DURATION,
 };
 
 static gpointer ags_delay_audio_parent_class = NULL;

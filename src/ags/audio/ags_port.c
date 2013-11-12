@@ -34,6 +34,18 @@ void ags_port_get_property(GObject *gobject,
 void ags_port_connect(AgsConnectable *connectable);
 void ags_port_disconnect(AgsConnectable *connectable);
 
+enum{
+  PROP_0,
+  PROP_PLUGIN_NAME,
+  PROP_SPECIFIER,
+  PROP_CONTROL_PORT,
+  PROP_PORT_VALUE_IS_POINTER,
+  PROP_PORT_VALUE_TYPE,
+  PROP_PORT_VALUE_SIZE,
+  PROP_PORT_VALUE_LENGTH,
+  PROP_PORT_VALUE,
+};
+
 static gpointer ags_port_parent_class = NULL;
 
 #include <stdlib.h>
@@ -128,6 +140,65 @@ ags_port_set_property(GObject *gobject,
   port = AGS_PORT(gobject);
 
   switch(prop_id){
+  case PROP_PLUGIN_NAME:
+    {
+      gchar *plugin_name;
+
+      plugin_name = g_value_get_string(value);
+
+      if(port->plugin_name != NULL){
+	free(port->plugin_name);
+      }
+      
+      port->plugin_name = plugin_name;
+    }
+    break;
+  case PROP_SPECIFIER:
+    {
+      gchar *specifier;
+
+      specifier = g_value_get_string(value);
+
+      if(port->specifier != NULL){
+	free(port->specifier);
+      }
+      
+      port->specifier = specifier;
+    }
+    break;
+  case PROP_CONTROL_PORT:
+    {
+      gchar *control_port;
+
+      control_port = g_value_get_string(value);
+
+      if(port->control_port != NULL){
+	free(port->control_port);
+      }
+      
+      port->control_port = control_port;
+    }
+    break;
+  case PROP_PORT_VALUE_IS_POINTER:
+    {
+      port->port_value_is_pointer = g_value_get_boolean(value);
+    }
+    break;
+  case PROP_PORT_VALUE_TYPE:
+    {
+      port->port_value_type = g_value_get_gtype(value);
+    }
+    break;
+  case PROP_PORT_VALUE_SIZE:
+    {
+      port->port_value_size = g_value_get_uint(value);
+    }
+    break;
+  case PROP_PORT_VALUE_LENGTH:
+    {
+      port->port_value_length = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -145,6 +216,27 @@ ags_port_get_property(GObject *gobject,
   port = AGS_PORT(gobject);
 
   switch(prop_id){
+  case PROP_PLUGIN_NAME:
+    g_value_set_string(port->plugin_name);
+    break;
+  case PROP_SPECIFIER:
+    g_value_set_string(port->specifier);
+    break;
+  case PROP_CONTROL_PORT:
+    g_value_set_string(port->control_port);
+    break;
+  case PROP_PORT_VALUE_IS_POINTER:
+    g_value_set_boolean(port->port_value_is_pointer);
+    break;
+  case PROP_PORT_VALUE_TYPE:
+    g_value_set_gtype(port->port_value_type);
+    break;
+  case PROP_PORT_VALUE_SIZE:
+    g_value_set_uint(port->port_value_size);
+    break;
+  case PROP_PORT_VALUE_LENGTH:
+    g_value_set_uint(port->port_value_length);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

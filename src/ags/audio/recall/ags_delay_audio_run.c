@@ -303,6 +303,8 @@ void
 ags_delay_audio_run_run_pre(AgsRecall *recall)
 {
   AgsDelayAudioRun *delay_audio_run;
+  guint notation_delay, sequencer_delay;
+  GValue value = { 0, };
 
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre(recall);
 
@@ -316,7 +318,21 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }else{
     AgsDelayAudio *delay_audio;
 
-    delay_audio = AGS_DELAY_AUDIO(delay_audio_run->recall_audio_run.recall_audio);
+    delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
+
+    /* read notation-delay port */
+    g_value_init(&value, G_TYPE_UINT);
+
+    ags_port_safe_read(delay_audio->notation_delay, &value);
+
+    notation_delay = g_value_get_uint(&value);
+
+    /* read sequencer-delay port */
+    g_value_reset(&value);
+
+    ags_port_safe_read(delay_audio->sequencer_delay, &value);
+
+    sequencer_delay = g_value_get_uint(&value);
 
     if(delay_audio_run->hide_ref != 0)
       delay_audio_run->hide_ref_counter += 1;
@@ -325,7 +341,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       AgsDevout *devout;
       guint run_order;
       guint delay, attack;
-      guint frames;
 
       devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
@@ -334,8 +349,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       }else{
 	run_order = 0;
       }
-
-      frames = (guint) ceil(delay_audio->notation_delay * (gdouble) devout->buffer_size);
 
       /* delay and attack */
       attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
@@ -359,11 +372,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       AgsDevout *devout;
       guint run_order;
       guint delay, attack;
-      guint frames;
 
       devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
-
-      frames = (guint) ceil(delay_audio->sequencer_delay * (gdouble) devout->buffer_size);
 
       /* delay and attack */
       attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
@@ -397,14 +407,14 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
       delay_audio_run->hide_ref_counter = 0;
 
-      if(delay_audio_run->notation_counter == (guint) ceil(delay_audio->notation_delay) - 1){
+      if(delay_audio_run->notation_counter == (guint) ceil(notation_delay) - 1){
 	delay_audio_run->notation_counter = 0;
       }else{
 	delay_audio_run->notation_counter += 1;
       }
 
-      if(delay_audio_run->sequencer_counter == (guint) ceil(delay_audio->sequencer_delay) - 1){
-	  delay_audio_run->sequencer_counter = 0;
+      if(delay_audio_run->sequencer_counter == (guint) ceil(sequencer_delay) - 1){
+	delay_audio_run->sequencer_counter = 0;
       }else{
 	delay_audio_run->sequencer_counter += 1;
       }
