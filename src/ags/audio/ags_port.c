@@ -217,25 +217,25 @@ ags_port_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_PLUGIN_NAME:
-    g_value_set_string(port->plugin_name);
+    g_value_set_string(value, port->plugin_name);
     break;
   case PROP_SPECIFIER:
-    g_value_set_string(port->specifier);
+    g_value_set_string(value, port->specifier);
     break;
   case PROP_CONTROL_PORT:
-    g_value_set_string(port->control_port);
+    g_value_set_string(value, port->control_port);
     break;
   case PROP_PORT_VALUE_IS_POINTER:
-    g_value_set_boolean(port->port_value_is_pointer);
+    g_value_set_boolean(value, port->port_value_is_pointer);
     break;
   case PROP_PORT_VALUE_TYPE:
-    g_value_set_gtype(port->port_value_type);
+    g_value_set_gtype(value, port->port_value_type);
     break;
   case PROP_PORT_VALUE_SIZE:
-    g_value_set_uint(port->port_value_size);
+    g_value_set_uint(value, port->port_value_size);
     break;
   case PROP_PORT_VALUE_LENGTH:
-    g_value_set_uint(port->port_value_length);
+    g_value_set_uint(value, port->port_value_length);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
