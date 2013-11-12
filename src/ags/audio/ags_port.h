@@ -61,7 +61,7 @@ struct _AgsPort
     guint *ags_port_uint_ptr;
     gdouble *ags_port_double_ptr;
     gpointer ags_port_pointer;
-    GObject *ags_port_gobject;
+    GObject *ags_port_object;
   }port_value;
 };
 
@@ -75,8 +75,8 @@ GType ags_port_get_type();
 gpointer ags_port_safe_read(AgsPort *port);
 void ags_port_safe_write(AgsPort *port, gpointer data);
 
-GValue* ags_port_safe_get_property(AgsPort *port);
-void ags_port_safe_set_property(AgsPort *port, GValue *value);
+void ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value);
+void ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
 
 AgsPort* ags_port_new();
 

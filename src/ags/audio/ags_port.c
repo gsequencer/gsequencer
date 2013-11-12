@@ -248,16 +248,28 @@ ags_port_safe_write(AgsPort *port, gpointer data)
   pthread_mutex_unlock(&(port->mutex));
 }
 
-GValue*
-ags_port_safe_get_property(AgsPort *port)
+void
+ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  //TODO:JK: implement me
+  pthread_mutex_lock(&(port->mutex));
+
+  g_object_get_property(port->port_value.ags_port_object,
+			property_name,
+			value);
+
+  pthread_mutex_unlock(&(port->mutex));
 }
 
 void
-ags_port_safe_set_property(AgsPort *port, GValue *value)
+ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  //TODO:JK: implement me
+  pthread_mutex_lock(&(port->mutex));
+
+  g_object_set_property(port->port_value.ags_port_object,
+			property_name,
+			value);
+
+  pthread_mutex_unlock(&(port->mutex));
 }
 
 AgsPort*
