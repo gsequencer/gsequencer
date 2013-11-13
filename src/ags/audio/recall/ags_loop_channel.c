@@ -237,7 +237,7 @@ ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 						     AgsLoopChannel *loop_channel)
 {
   gdouble sequencer_duration;
-  GValue value = { 0, };
+  GValue value = {0,};
 
   g_value_init(&value, G_TYPE_DOUBLE);
 

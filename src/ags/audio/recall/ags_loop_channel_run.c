@@ -26,7 +26,6 @@
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_id.h>
 
@@ -184,10 +183,6 @@ ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run)
   AGS_RECALL(loop_channel_run)->child_type = G_TYPE_NONE;
 
   loop_channel_run->count_beats_audio_run = NULL;
-
-  loop_channel_run->template = NULL;
-
-  loop_channel_run->audio_signal = NULL;
 }
 
 void
@@ -417,7 +412,7 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
 
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(recall);
 
-  template = loop_channel_run->template;
+  template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run)->data);
 
   list = template->dependencies;
 
@@ -458,9 +453,6 @@ ags_loop_channel_run_duplicate(AgsRecall *recall,
 											      recall_id,
 											      n_params, parameter);
   
-  //TODO:JK this is really ugly
-  copy->template = recall;
-
   return((AgsRecall *) copy);
 }
 
@@ -498,9 +490,6 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 						    audio_signal,
 						    delay, attack);
     audio_signal->stream_current = audio_signal->stream_beginning;
-    loop_channel_run->audio_signal = g_list_prepend(loop_channel_run->audio_signal,
-						    audio_signal);
-    g_object_ref(G_OBJECT(audio_signal));
 
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));    
     ags_recycling_add_audio_signal(recycling,
@@ -517,21 +506,7 @@ void
 ags_loop_channel_run_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 							 AgsLoopChannelRun *loop_channel_run)
 {
-  AgsAudioSignal *audio_signal;
-  GList *list;
-  guint length;
-
-  list = loop_channel_run->audio_signal;
-  length = (guint) ceil(delay_audio->sequencer_duration * delay_audio->sequencer_delay);
-
-  while(list != NULL){
-    audio_signal = AGS_AUDIO_SIGNAL(list->data);
-
-    ags_audio_signal_stream_safe_resize(audio_signal,
-					length);
-
-    list = list->next;
-  }
+  //TODO:JK: implement abort code if necessary
 }
 
 void
@@ -559,9 +534,6 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
   //	 run_order);
   
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
-    ags_list_free_and_unref_link(loop_channel_run->audio_signal);
-    loop_channel_run->audio_signal = NULL;
-
     ags_loop_channel_run_create_audio_signals(loop_channel_run);
   }
 }

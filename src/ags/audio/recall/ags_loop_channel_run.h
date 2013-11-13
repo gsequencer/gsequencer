@@ -47,10 +47,6 @@ struct _AgsLoopChannelRun
   gulong loop_handler;
   gulong stop_handler;
   gulong sequencer_duration_changed_handler;
-
-  AgsRecall *template;
-
-  GList *audio_signal;
 };
 
 struct _AgsLoopChannelRunClass
