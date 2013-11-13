@@ -473,40 +473,164 @@ ags_delay_audio_finalize(GObject *gobject)
 }
 
 void
-ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble bpm)
+ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
 {
   AgsDevout *devout;
   AgsDelayAudio *delay_audio;
-  
+  gdouble old_bpm;
+  gdouble sequencer_delay, notation_delay;
+  gdouble sequencer_duration, notation_duration;
+  GValue value = {0,};
+
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
   devout = AGS_DEVOUT(AGS_RECALL(delay_audio)->devout);
 
-  delay_audio->notation_delay *= (delay_audio->bpm / bpm);
-  delay_audio->sequencer_delay *= (delay_audio->bpm / bpm);
+  /* retrieve old bpm */
+  g_value_init(&value, G_TYPE_DOUBLE);
 
-  delay_audio->bpm = bpm;
+  ags_port_safe_read(delay_audio->bpm, &value);
+  old_bpm = g_value_get_double(&value);
 
-  delay_audio->sequencer_duration *= (delay_audio->bpm / bpm);
+  /* retrieve sequencer_delay */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->sequencer_delay, &value);
+  sequencer_delay = g_value_get_double(&value);
+
+  /* retrieve notation_delay */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->notation_delay, &value);
+  notation_delay = g_value_get_double(&value);
+
+  /* retrieve sequencer_duration */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->sequencer_duration, &value);
+  sequencer_duration = g_value_get_double(&value);
+
+  /* retrieve notation_duration */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->notation_duration, &value);
+  notation_duration = g_value_get_double(&value);
+
+  /* -- start adjust -- */
+  /* notation-delay */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, notation_delay * (old_bpm / new_bpm));
+  ags_port_safe_write(delay_audio->notation_delay, &value);
+
+  /* sequencer-delay */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, sequencer_delay * (old_bpm / new_bpm));
+  ags_port_safe_write(delay_audio->sequencer_delay, &value);
+
+  /**/
+  g_value_reset(&value);
+
+  g_value_set_double(&value, new_bpm);
+  ags_port_safe_write(delay_audio->bpm, &value);
+
+  /* notation-duration */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, notation_duration * (old_bpm / new_bpm));
+  ags_port_safe_write(delay_audio->notation_duration, &value);
+
+  /* sequencer-duration */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, sequencer_duration * (old_bpm / new_bpm));
+  ags_port_safe_write(delay_audio->sequencer_duration, &value);
+
+  /* -- finish adjust -- */
+
+  /* emit changed */
   ags_delay_audio_sequencer_duration_changed(delay_audio);
 }
 
 void
-ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact)
+ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
 {
   AgsDevout *devout;
   AgsDelayAudio *delay_audio;
-  
+  gdouble old_tact;
+  gdouble sequencer_delay, notation_delay;
+  gdouble sequencer_duration, notation_duration;
+  GValue value = {0,};
+
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
   devout = AGS_DEVOUT(AGS_RECALL(delay_audio)->devout);
 
-//  delay_audio->notation_delay *= (delay_audio->tact / tact);
-  delay_audio->sequencer_delay *= (tact / delay_audio->tact);
+  /* retrieve old tact */
+  g_value_init(&value, G_TYPE_DOUBLE);
 
-  delay_audio->tact = tact;
+  ags_port_safe_read(delay_audio->tact, &value);
+  old_tact = g_value_get_double(&value);
 
-  delay_audio->sequencer_duration *= (tact / delay_audio->tact);
+  /* retrieve sequencer_delay */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->sequencer_delay, &value);
+  sequencer_delay = g_value_get_double(&value);
+
+  /* retrieve notation_delay */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->notation_delay, &value);
+  notation_delay = g_value_get_double(&value);
+
+  /* retrieve sequencer_duration */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->sequencer_duration, &value);
+  sequencer_duration = g_value_get_double(&value);
+
+  /* retrieve notation_duration */
+  g_value_reset(&value);
+
+  ags_port_safe_read(delay_audio->notation_duration, &value);
+  notation_duration = g_value_get_double(&value);
+
+  /* -- start adjust -- */
+  /* notation-delay */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, notation_delay * (old_tact / new_tact));
+  ags_port_safe_write(delay_audio->notation_delay, &value);
+
+  /* sequencer-delay */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, sequencer_delay * (old_tact / new_tact));
+  ags_port_safe_write(delay_audio->sequencer_delay, &value);
+
+  /**/
+  g_value_reset(&value);
+
+  g_value_set_double(&value, new_tact);
+  ags_port_safe_write(delay_audio->tact, &value);
+
+  /* notation-duration */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, notation_duration * (old_tact / new_tact));
+  ags_port_safe_write(delay_audio->notation_duration, &value);
+
+  /* sequencer-duration */
+  g_value_reset(&value);
+
+  g_value_set_double(&value, sequencer_duration * (old_tact / new_tact));
+  ags_port_safe_write(delay_audio->sequencer_duration, &value);
+
+  /* -- finish adjust -- */
+
+  /* emit changed */
   ags_delay_audio_sequencer_duration_changed(delay_audio);
 }
 
@@ -514,10 +638,13 @@ void
 ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration)
 {
   AgsDelayAudio *delay_audio;
+  GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  delay_audio->sequencer_duration = duration;
+  g_value_init(&value, G_TYPE_DOUBLE);
+
+  g_value_set_double(&value, duration);
   ags_delay_audio_sequencer_duration_changed(delay_audio);
 }
 
@@ -525,10 +652,14 @@ void
 ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration)
 {
   AgsDelayAudio *delay_audio;
+  GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  delay_audio->notation_duration = duration;
+  g_value_init(&value, G_TYPE_DOUBLE);
+
+  g_value_set_double(&value, duration);
+  ags_delay_audio_notation_duration_changed(delay_audio);
 }
 
 void
