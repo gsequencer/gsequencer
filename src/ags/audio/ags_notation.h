@@ -35,6 +35,8 @@
 #define AGS_NOTATION_MINIMUM_NOTE_LENGTH (exp2(-4.0)) // same as (1.0 / 16.0)
 #define AGS_NOTATION_MAXIMUM_NOTE_LENGTH (256.0)
 
+#define AGS_NOTATION_DEFAULT_DURATION (65535.0 / 256.0 / AGS_NOTATION_TICS_PER_BEAT)
+
 typedef struct _AgsNotation AgsNotation;
 typedef struct _AgsNotationClass AgsNotationClass;
 
