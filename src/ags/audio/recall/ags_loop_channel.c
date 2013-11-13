@@ -236,9 +236,18 @@ void
 ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 						     AgsLoopChannel *loop_channel)
 {
+  gdouble sequencer_duration;
+  GValue value = { 0, };
+
+  g_value_init(&value, G_TYPE_DOUBLE);
+
+  ags_port_safe_read(delay_audio->sequencer_duration, &value);
+
+  sequencer_duration = g_value_get_double(&value);
+
   /* resize audio signal */
   ags_channel_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel)->source,
-				  (guint) ceil(delay_audio->sequencer_duration * delay_audio->sequencer_delay));
+				  (guint) ceil(sequencer_duration) + 1);
 }
 
 AgsLoopChannel*
