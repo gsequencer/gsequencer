@@ -336,10 +336,11 @@ ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
   count_beats_audio_run->delay_audio_run = NULL;
 }
 
-void ags_count_beats_audio_run_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec)
+void
+ags_count_beats_audio_run_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
@@ -434,10 +435,11 @@ void ags_count_beats_audio_run_set_property(GObject *gobject,
   };
 }
 
-void ags_count_beats_audio_run_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec)
+void
+ags_count_beats_audio_run_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
   

@@ -211,7 +211,6 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   port = g_list_prepend(port, delay_audio->bpm);
 
-
   /* tact */
   delay_audio->tact = g_object_new(AGS_TYPE_PORT,
 				   "plugin-name\0", g_strdup("ags-delay\0"),
@@ -286,6 +285,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   delay_audio->notation_duration->port_value.ags_port_double = AGS_NOTATION_DEFAULT_DURATION;
 
   port = g_list_prepend(port, delay_audio->notation_duration);
+
+  /*  */
+  AGS_RECALL(delay_audio)->port = port;
 }
 
 void

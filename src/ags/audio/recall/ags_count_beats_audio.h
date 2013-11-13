@@ -38,12 +38,12 @@ struct _AgsCountBeatsAudio
 {
   AgsRecallAudio recall_audio;
 
-  gboolean loop;
+  AgsPort *loop;
 
-  guint notation_loop_start;
-  guint notation_loop_end;
-  guint sequencer_loop_start;
-  guint sequencer_loop_end;
+  AgsPort *notation_loop_start;
+  AgsPort *notation_loop_end;
+  AgsPort *sequencer_loop_start;
+  AgsPort *sequencer_loop_end;
 };
 
 struct _AgsCountBeatsAudioClass
