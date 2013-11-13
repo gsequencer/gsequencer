@@ -182,6 +182,19 @@ ags_recall_factory_disconnect(AgsConnectable *connectable)
   recall_factory = AGS_RECALL_FACTORY(connectable);
 }
 
+/**
+ * ags_recall_factory_create:
+ * @audio an #AgsAudio that should keep the recalls
+ * @plugin_name the plugin identifier to instantiate 
+ * @start_audio_channel the first audio channel to apply
+ * @stop_audio_channel the last audio channel to apply
+ * @start_pad the first pad to apply
+ * @stop_pad the last pad to apply
+ * @is_output select output or input of audio
+ * Returns: The available AgsPort objects to modify of the plugin.
+ *
+ * Instantiate #AgsRecall by this factory.
+ */
 GList*
 ags_recall_factory_create(AgsAudio *audio,
 			  gchar *plugin_name,
@@ -232,6 +245,7 @@ ags_recall_factory_create(AgsAudio *audio,
 						   AGS_RECALL_SEQUENCER |
 						   AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) delay_audio, TRUE);
+    ags_connectable_connect(AGS_CONNECTABLE(delay_audio));
 
     delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
 							"devout\0", audio->devout,
@@ -243,6 +257,7 @@ ags_recall_factory_create(AgsAudio *audio,
 						       AGS_RECALL_SEQUENCER |
 						       AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) delay_audio_run, TRUE);
+    ags_connectable_connect(AGS_CONNECTABLE(delay_audio_run));
 
     /* recall */
     recall_container = ags_recall_container_new();
@@ -255,6 +270,7 @@ ags_recall_factory_create(AgsAudio *audio,
 						 NULL);
     AGS_RECALL(delay_audio)->flags |= (AGS_RECALL_TEMPLATE);
     ags_audio_add_recall(audio, (GObject *) delay_audio, FALSE);
+    ags_connectable_connect(AGS_CONNECTABLE(delay_audio));
 
     delay_audio_run = (AgsDelayAudioRun *) g_object_new(AGS_TYPE_DELAY_AUDIO_RUN,
 							"devout\0", audio->devout,
@@ -266,6 +282,7 @@ ags_recall_factory_create(AgsAudio *audio,
 						       AGS_RECALL_SEQUENCER |
 						       AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) delay_audio_run, FALSE);
+    ags_connectable_connect(AGS_CONNECTABLE(delay_audio_run));
   }else if(!strncmp(plugin_name,
 		    "ags-count-beats\0",
 		    15)){
@@ -288,6 +305,7 @@ ags_recall_factory_create(AgsAudio *audio,
 							 AGS_RECALL_SEQUENCER |
 							 AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) count_beats_audio, TRUE);
+    ags_connectable_connect(AGS_CONNECTABLE(count_beats_audio));
 
     count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 								   "devout\0", audio->devout,
@@ -299,6 +317,7 @@ ags_recall_factory_create(AgsAudio *audio,
 							     AGS_RECALL_SEQUENCER |
 							     AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) count_beats_audio_run, TRUE);
+    ags_connectable_connect(AGS_CONNECTABLE(count_beats_audio_run));
 
     /* recall */
     recall_container = ags_recall_container_new();
@@ -314,17 +333,20 @@ ags_recall_factory_create(AgsAudio *audio,
 							 AGS_RECALL_SEQUENCER |
 							 AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) count_beats_audio, FALSE);
+    ags_connectable_connect(AGS_CONNECTABLE(count_beats_audio));
 
     count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 								   "devout\0", audio->devout,
 								   "recall_audio\0", count_beats_audio,
 								   "recall_container\0", recall_container,
+								   //TODO:JK: add missing dependency "delay-audio\0"
 								   NULL);
     ags_recall_set_flags(AGS_RECALL(count_beats_audio_run), (AGS_RECALL_TEMPLATE |
 							     AGS_RECALL_PLAYBACK |
 							     AGS_RECALL_SEQUENCER |
 							     AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) count_beats_audio_run, FALSE);
+    ags_connectable_connect(AGS_CONNECTABLE(count_beats_audio_run));
   }else if(!strncmp(plugin_name,
 		    "ags-stream\0",
 		    10)){
