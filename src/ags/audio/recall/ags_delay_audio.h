@@ -44,8 +44,8 @@ struct _AgsDelayAudio
   AgsPort *notation_delay;
   AgsPort *sequencer_delay;
 
-  AgsPort *sequencer_length;
-  AgsPort *notation_length;
+  AgsPort *sequencer_duration;
+  AgsPort *notation_duration;
 };
 
 struct _AgsDelayAudioClass
