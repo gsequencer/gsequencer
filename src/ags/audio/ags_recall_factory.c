@@ -643,12 +643,88 @@ ags_recall_factory_create(AgsAudio *audio,
     AgsPlayChannel *play_channel;
     AgsPlayChannelRun *play_channel_run;
 
+    /* play */
+    recall_container = ags_recall_container_new();
+    recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
     for(i = 0; i < stop_pad - start_pad; i++){
       channel = ags_channel_nth(channel,
 				start_audio_channel);
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	//TODO:JK: implement me
+	ags_channel_add_recall_container(channel, (GObject *) recall_container);
+
+	/* AgsPlayChannel */
+	play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
+						       "devout\0", AGS_DEVOUT(audio->devout),
+						       "channel\0", channel,
+						       "recall_container\0", recall_container,
+						       "audio_channel\0", j,
+						       NULL);
+	ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
+							AGS_RECALL_PLAYBACK |
+							AGS_RECALL_SEQUENCER |
+							AGS_RECALL_NOTATION));
+	ags_channel_add_recall(channel, (GObject *) play_channel, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(play_channel));
+
+	/* AgsPlayChannelRun */
+	play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
+							      "devout\0", audio->devout,
+							      "channel\0", channel,
+							      "recall_channel\0", play_channel,
+							      "recall_container\0", recall_container,
+							      "audio_channel\0", j,
+							      NULL);
+	ags_recall_set_flags(AGS_RECALL(play_channel_run), (AGS_RECALL_TEMPLATE |
+							    AGS_RECALL_PLAYBACK |
+							    AGS_RECALL_SEQUENCER |
+							    AGS_RECALL_NOTATION));
+	ags_channel_add_recall(channel, (GObject *) play_channel_run, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(play_channel_run));
+      }
+    }
+
+    /* recall */
+    recall_container = ags_recall_container_new();
+    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
+    for(i = 0; i < stop_pad - start_pad; i++){
+      channel = ags_channel_nth(channel,
+				start_audio_channel);
+      
+      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	ags_channel_add_recall_container(channel, (GObject *) recall_container);
+
+	/* AgsPlayChannel */
+	play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
+						       "devout\0", AGS_DEVOUT(audio->devout),
+						       "channel\0", channel,
+						       "recall_container\0", recall_container,
+						       "audio_channel\0", j,
+						       NULL);
+	ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
+							AGS_RECALL_PLAYBACK |
+							AGS_RECALL_SEQUENCER |
+							AGS_RECALL_NOTATION));
+	ags_channel_add_recall(channel, (GObject *) play_channel, FALSE);
+	ags_connectable_connect(AGS_CONNECTABLE(play_channel));
+
+	/* AgsPlayChannelRun */
+	play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
+							      "devout\0", audio->devout,
+							      "channel\0", channel,
+							      "recall_channel\0", play_channel,
+							      "recall_container\0", recall_container,
+							      "audio_channel\0", j,
+							      NULL);
+	ags_recall_set_flags(AGS_RECALL(play_channel_run), (AGS_RECALL_TEMPLATE |
+							    AGS_RECALL_PLAYBACK |
+							    AGS_RECALL_SEQUENCER |
+							    AGS_RECALL_NOTATION));
+	ags_channel_add_recall(channel, (GObject *) play_channel_run, FALSE);
+	ags_connectable_connect(AGS_CONNECTABLE(play_channel_run));
       }
     }
   }else if(!strncmp(plugin_name,
