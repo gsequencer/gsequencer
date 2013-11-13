@@ -281,6 +281,7 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 
   line->channel = channel;
 
+  /* set label */
   gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
 }
 

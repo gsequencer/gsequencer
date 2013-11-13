@@ -103,7 +103,70 @@ ags_port_class_init(AgsPortClass *port)
   gobject->get_property = ags_port_get_property;
 
   /* properties */
-  //TODO:JK: implement me
+  param_spec = g_param_spec_string("plugin-name\0",
+				   "plugin-name of port\0",
+				   "The plugin-name this port belongs to\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN_NAME,
+				  param_spec);
+
+  param_spec = g_param_spec_string("specifier\0",
+				   "specifier of port\0",
+				   "The specifier this port is identified by\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SPECIFIER,
+				  param_spec);
+
+  param_spec = g_param_spec_string("control-port\0",
+				   "control-port of port\0",
+				   "The control-port this port is numbered\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROL_PORT,
+				  param_spec);
+
+  param_spec = g_param_spec_boolean("port-value-is-pointer\0",
+				    "port-value-is-pointer indicates if value is a pointer\0",
+				    "The port-value-is-pointer indicates if value is a pointer\0",
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_VALUE_IS_POINTER,
+				  param_spec);
+
+  param_spec = g_param_spec_gtype("port-value-type\0",
+				  "port-value-type tells you the type of the values\0",
+				  "The port-value-type tells you the type of the values\0",
+				  G_TYPE_DOUBLE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_VALUE_TYPE,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("port-value-size\0",
+				 "port-value-size is the size of a single entry\0",
+				 "The port-value-size is the size of a single entry\0",
+				 1, 8,
+				 sizeof(gdouble),
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_VALUE_SIZE,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("port-value-length\0",
+				 "port-value-length is the array size\0",
+				 "The port-value-length is the array size\0",
+				 0, 65535,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_VALUE_LENGTH,
+				  param_spec);
 }
 
 void
@@ -124,9 +187,9 @@ ags_port_init(AgsPort *port)
   port->control_port = NULL;
 
   port->port_value_is_pointer = FALSE;
-  port->port_value_type = G_TYPE_NONE;
+  port->port_value_type = G_TYPE_DOUBLE;
 
-  port->port_value_size = sizeof(guint);
+  port->port_value_size = sizeof(gdouble);
   port->port_value_length = 1;
 
   pthread_mutex_init(&port->mutex, NULL);

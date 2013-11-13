@@ -172,6 +172,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     stop = 1;
 
     if(drum != NULL){
+      //deprecated
       delay_audio = drum->play_delay_audio;
       delay_audio = drum->play_delay_audio;
       stop = (guint) ceil(delay_audio->sequencer_duration * delay_audio->sequencer_delay);
