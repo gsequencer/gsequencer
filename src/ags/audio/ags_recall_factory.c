@@ -258,7 +258,46 @@ ags_recall_factory_create(AgsAudio *audio,
     AgsCountBeatsAudio *count_beats_audio;
     AgsCountBeatsAudioRun *count_beats_audio_run;
 
-    //TODO:JK: implement me
+    /* play */
+    recall_container = ags_recall_container_new();
+    recall_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
+    count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							    "devout\0", audio->devout,
+							    "audio\0", audio,
+							    "recall_container\0", recall_container,
+							    NULL);
+    AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE);
+    ags_audio_add_recall(audio, (GObject *) count_beats_audio, TRUE);
+
+    count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+								   "devout\0", audio->devout,
+								   "recall_audio\0", count_beats_audio,
+								   "recall_container\0", recall_container,
+								   NULL);
+    AGS_RECALL(count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE);
+    ags_audio_add_recall(audio, (GObject *) count_beats_audio_run, TRUE);
+
+    /* recall */
+    recall_container = ags_recall_container_new();
+    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
+    count_beats_audio = (AgsCountBeatsAudio *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO,
+							    "devout\0", audio->devout,
+							    "audio\0", audio,
+							    "recall_container\0", recall_container,
+							    NULL);
+    AGS_RECALL(count_beats_audio)->flags |= (AGS_RECALL_TEMPLATE);
+    ags_audio_add_recall(audio, (GObject *) count_beats_audio, FALSE);
+
+    count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+								   "devout\0", audio->devout,
+								   "recall_audio\0", count_beats_audio,
+								   "recall_container\0", recall_container,
+								   NULL);
+    AGS_RECALL(count_beats_audio_run)->flags |= (AGS_RECALL_TEMPLATE);
+    ags_audio_add_recall(audio, (GObject *) count_beats_audio_run, FALSE);
   }else if(!strncmp(plugin_name,
 		    "ags-stream\0",
 		    10)){
