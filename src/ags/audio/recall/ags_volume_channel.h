@@ -37,6 +37,8 @@ typedef struct _AgsVolumeChannelClass AgsVolumeChannelClass;
 struct _AgsVolumeChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsPort *volume;
 };
 
 struct _AgsVolumeChannelClass

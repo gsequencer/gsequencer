@@ -36,18 +36,18 @@
 typedef struct _AgsVolumeChannelRun AgsVolumeChannelRun;
 typedef struct _AgsVolumeChannelRunClass AgsVolumeChannelRunClass;
 
-struct _AgsVolumeChannelRun{
+struct _AgsVolumeChannelRun
+{
   AgsRecallChannelRun recall_channel_run;
-
-  gdouble *volume;
 };
 
-struct _AgsVolumeChannelRunClass{
+struct _AgsVolumeChannelRunClass
+{
   AgsRecallChannelRunClass recall_channel_run;
 };
 
 GType ags_volume_channel_run_get_type();
 
-AgsVolumeChannelRun* ags_volume_channel_run_new(AgsChannel *channel, gdouble *volume);
+AgsVolumeChannelRun* ags_volume_channel_run_new(AgsChannel *channel);
 
 #endif /*__AGS_VOLUME_CHANNEL_RUN_H__*/

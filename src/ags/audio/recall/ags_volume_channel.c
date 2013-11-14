@@ -23,9 +23,22 @@
 void ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel);
 void ags_volume_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_volume_channel_init(AgsVolumeChannel *volume_channel);
+void ags_volume_channel_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_volume_channel_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_volume_channel_connect(AgsConnectable *connectable);
 void ags_volume_channel_disconnect(AgsConnectable *connectable);
 void ags_volume_channel_finalize(GObject *gobject);
+
+enum{
+  PROP_0,
+  PROP_VOLUME,
+};
 
 static gpointer ags_volume_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_channel_parent_connectable_interface;
@@ -72,13 +85,27 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_volume_channel_parent_class = g_type_class_peek_parent(volume_channel);
 
   /* GObjectClass */
   gobject = (GObjectClass *) volume_channel;
 
+  gobject->set_property = ags_volume_channel_set_property;
+  gobject->get_property = ags_volume_channel_get_property;
+
   gobject->finalize = ags_volume_channel_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("volume\0",
+				   "volume to apply\0",
+				   "The volume to apply on the channel\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
 }
 
 void
@@ -93,13 +120,88 @@ ags_volume_channel_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 {
-  /* empty */
+  /* volume */
+  volume_channel->volume = g_object_new(AGS_TYPE_PORT,
+					"plugin-name\0", g_strdup("ags-volume\0"),
+					"specifier\0", "./volume[0]\0",
+					"control-port\0", "1/1\0",
+					"port-value-is-pointer\0", FALSE,
+					"value-type\0", G_TYPE_DOUBLE,
+					"value-size\0", sizeof(gdouble),
+					"value-length", 1,
+					NULL);
+}
+
+void
+ags_volume_channel_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsVolumeChannel *volume_channel;
+
+  volume_channel = AGS_VOLUME_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_VOLUME:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == volume_channel->volume){
+	return;
+      }
+
+      if(volume_channel->volume != NULL){
+	g_object_unref(G_OBJECT(volume_channel->volume));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      volume_channel->volume = port;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_volume_channel_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsVolumeChannel *volume_channel;
+
+  volume_channel = AGS_VOLUME_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_VOLUME:
+    {
+      g_value_set_object(value, volume_channel->volume);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_volume_channel_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsVolumeChannel *volume_channel;
+
+  volume_channel = AGS_VOLUME_CHANNEL(gobject);
+
+  if(volume_channel->volume != NULL){
+    g_object_unref(G_OBJECT(volume_channel->volume));
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_volume_channel_parent_class)->finalize(gobject);
