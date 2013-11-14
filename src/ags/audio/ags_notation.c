@@ -21,8 +21,10 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_tactable.h>
+#include <ags/object/ags_portlet.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_port.h>
 
 #include <stdlib.h>
 #include <errno.h>
@@ -30,12 +32,19 @@
 void ags_notation_class_init(AgsNotationClass *notation);
 void ags_notation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notation_tactable_interface_init(AgsTactableInterface *tactable);
+void ags_notation_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_notation_init(AgsNotation *notation);
 void ags_notation_connect(AgsConnectable *connectable);
 void ags_notation_disconnect(AgsConnectable *connectable);
 void ags_notation_finalize(GObject *object);
 
 void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm);
+
+void ags_notation_set_port(AgsPortlet *portlet, AgsPort *port);
+void ags_notation_get_port(AgsPortlet *portlet);
+GList* ags_notation_list_safe_properties(AgsPortlet *portlet);
+void ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
+void ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
 void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						     xmlNodePtr root_node, char *version,
@@ -80,6 +89,12 @@ ags_notation_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_portlet_interface_info = {
+      (GInterfaceInitFunc) ags_notation_portlet_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_notation = g_type_register_static(G_TYPE_OBJECT,
 					       "AgsNotation\0",
 					       &ags_notation_info,
@@ -92,6 +107,10 @@ ags_notation_get_type()
     g_type_add_interface_static(ags_type_notation,
 				AGS_TYPE_TACTABLE,
 				&ags_tactable_interface_info);
+
+    g_type_add_interface_static(ags_type_notation,
+				AGS_TYPE_PORTLET,
+				&ags_portlet_interface_info);
   }
 
   return(ags_type_notation);
@@ -120,6 +139,16 @@ void
 ags_notation_tactable_interface_init(AgsTactableInterface *tactable)
 {
   tactable->change_bpm = ags_notation_change_bpm;
+}
+
+void
+ags_notation_portlet_interface_init(AgsPortletInterface *portlet)
+{
+  portlet->set_port = ags_notation_set_port;
+  portlet->get_port = ags_notation_get_port;
+  portlet->list_safe_properties = ags_notation_list_safe_properties;
+  portlet->safe_set_property = ags_notation_safe_set_property;
+  portlet->safe_get_property = ags_notation_safe_get_property;
 }
 
 void
@@ -177,7 +206,43 @@ ags_notation_finalize(GObject *gobject)
 void
 ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm)
 {
-  /* empty */
+  //TODO:JK: implement me
+}
+
+void
+ags_notation_set_port(AgsPortlet *portlet, AgsPort *port)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_notation_get_port(AgsPortlet *portlet)
+{
+  //TODO:JK: implement me
+}
+
+GList*
+ags_notation_list_safe_properties(AgsPortlet *portlet)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: implement me
+
+  return(list);
+}
+
+void
+ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+{
+  //TODO:JK: implement me
 }
 
 void

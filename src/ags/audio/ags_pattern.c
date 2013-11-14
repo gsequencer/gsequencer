@@ -20,16 +20,27 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_portlet.h>
+
+#include <ags/audio/ags_port.h>
+
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
 
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
 void ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_pattern_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_pattern_init(AgsPattern *pattern);
 void ags_pattern_connect(AgsConnectable *connectable);
 void ags_pattern_disconnect(AgsConnectable *connectable);
 void ags_pattern_finalize(GObject *gobject);
+
+void ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port);
+void ags_pattern_get_port(AgsPortlet *portlet);
+GList* ags_pattern_list_safe_properties(AgsPortlet *portlet);
+void ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
+void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
 static gpointer ags_pattern_parent_class = NULL;
 
@@ -57,6 +68,12 @@ ags_pattern_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_portlet_interface_info = {
+      (GInterfaceInitFunc) ags_pattern_portlet_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_pattern = g_type_register_static(G_TYPE_OBJECT,
 					      "AgsPattern\0",
 					      &ags_pattern_info,
@@ -65,6 +82,10 @@ ags_pattern_get_type (void)
     g_type_add_interface_static(ags_type_pattern,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_pattern,
+				AGS_TYPE_PORTLET,
+				&ags_portlet_interface_info);
   }
 
   return (ags_type_pattern);
@@ -87,6 +108,16 @@ ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_pattern_connect;
   connectable->disconnect = ags_pattern_disconnect;
+}
+
+void
+ags_pattern_portlet_interface_init(AgsPortletInterface *portlet)
+{
+  portlet->set_port = ags_pattern_set_port;
+  portlet->get_port = ags_pattern_get_port;
+  portlet->list_safe_properties = ags_pattern_list_safe_properties;
+  portlet->safe_set_property = ags_pattern_safe_set_property;
+  portlet->safe_get_property = ags_pattern_safe_get_property;
 }
 
 void
@@ -132,6 +163,42 @@ ags_pattern_finalize(GObject *gobject)
   free(pattern->pattern);
 
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
+}
+
+void
+ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_get_port(AgsPortlet *portlet)
+{
+  //TODO:JK: implement me
+}
+
+GList*
+ags_pattern_list_safe_properties(AgsPortlet *portlet)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: implement me
+
+  return(list);
+}
+
+void
+ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+{
+  //TODO:JK: implement me
 }
 
 AgsPattern*
