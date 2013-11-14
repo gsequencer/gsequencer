@@ -41,7 +41,7 @@ struct _AgsPlayChannel
 {
   AgsRecallChannel recall_channel;
 
-  guint audio_channel;
+  AgsPort *audio_channel;
 };
 
 struct _AgsPlayChannelClass

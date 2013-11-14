@@ -471,6 +471,35 @@ ags_delay_audio_get_property(GObject *gobject,
 void
 ags_delay_audio_finalize(GObject *gobject)
 {
+  AgsDelayAudio *delay_audio;
+
+  delay_audio = AGS_DELAY_AUDIO(gobject);
+
+  if(delay_audio->bpm != NULL){
+    g_object_unref(G_OBJECT(delay_audio->bpm));
+  }
+
+  if(delay_audio->tact != NULL){
+    g_object_unref(G_OBJECT(delay_audio->tact));
+  }
+
+  if(delay_audio->notation_delay != NULL){
+    g_object_unref(G_OBJECT(delay_audio->notation_delay));
+  }
+
+  if(delay_audio->sequencer_delay != NULL){
+    g_object_unref(G_OBJECT(delay_audio->sequencer_delay));
+  }
+
+  if(delay_audio->notation_duration != NULL){
+    g_object_unref(G_OBJECT(delay_audio->notation_duration));
+  }
+
+  if(delay_audio->sequencer_duration != NULL){
+    g_object_unref(G_OBJECT(delay_audio->sequencer_duration));
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_delay_audio_parent_class)->finalize(gobject);
 }
 

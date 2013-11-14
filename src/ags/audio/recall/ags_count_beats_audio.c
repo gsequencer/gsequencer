@@ -385,6 +385,31 @@ ags_count_beats_audio_get_property(GObject *gobject,
 void
 ags_count_beats_audio_finalize(GObject *gobject)
 {
+  AgsCountBeatsAudio *count_beats_audio;
+
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(gobject);
+
+  if(count_beats_audio->loop != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->loop));
+  }
+
+  if(count_beats_audio->notation_loop_start != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->notation_loop_start));
+  }
+
+  if(count_beats_audio->notation_loop_end != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->notation_loop_end));
+  }
+
+  if(count_beats_audio->sequencer_loop_start != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->sequencer_loop_start));
+  }
+
+  if(count_beats_audio->sequencer_loop_end != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->sequencer_loop_end));
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_count_beats_audio_parent_class)->finalize(gobject);
 }
 

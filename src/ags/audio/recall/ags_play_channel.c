@@ -104,13 +104,11 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
   gobject->finalize = ags_play_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("audio_channel\0",
-				 "assigned audio Channel\0",
-				 "The audio channel this recall does output to\0",
-				 0,
-				 65536,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("audio-channel\0",
+				   "assigned audio Channel\0",
+				   "The audio channel this recall does output to\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
@@ -128,7 +126,15 @@ ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
-  play_channel->audio_channel = 0;
+  play_channel->audio_channel = g_object_new(AGS_TYPE_PORT,
+					     "plugin-name\0", g_strdup("ags-play\0"),
+					     "specifier\0", "./audio-channel[0]\0",
+					     "control-port\0", "1/1\0",
+					     "port-value-is-pointer\0", FALSE,
+					     "value-type\0", G_TYPE_UINT,
+					     "value-size\0", sizeof(guint),
+					     "value-length", 1,
+					     NULL);
 }
 
 
@@ -145,7 +151,23 @@ ags_play_channel_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO_CHANNEL:
     {
-      play_channel->audio_channel = g_value_get_uint(value);
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == play_channel->audio_channel){
+	return;
+      }
+
+      if(play_channel->audio_channel != NULL){
+	g_object_unref(G_OBJECT(play_channel->audio_channel));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      play_channel->audio_channel = port;
     }
     break;
   default:
@@ -167,7 +189,7 @@ ags_play_channel_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO_CHANNEL:
     {
-      g_value_set_uint(value, play_channel->audio_channel);
+      g_value_set_object(value, play_channel->audio_channel);
     }
     break;
   default:
@@ -182,6 +204,10 @@ ags_play_channel_finalize(GObject *gobject)
   AgsPlayChannel *play_channel;
 
   play_channel = AGS_PLAY_CHANNEL(gobject);
+
+  if(play_channel->audio_channel != NULL){
+    g_object_unref(G_OBJECT(play_channel->audio_channel));
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_channel_parent_class)->finalize(gobject);
@@ -213,8 +239,9 @@ ags_play_channel_new(AgsDevout *devout,
 
   play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
 						 "devout\0", devout,
-						 "audio_channel\0", audio_channel,
 						 NULL);
   
+  play_channel->audio_channel->port_value.ags_port_uint = audio_channel;
+
   return(play_channel);
 }
