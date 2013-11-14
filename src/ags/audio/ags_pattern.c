@@ -1,4 +1,4 @@
-/* AGS - Advanced GTK Sequencer
+%/* AGS - Advanced GTK Sequencer
  * Copyright (C) 2005-2011 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,14 +30,17 @@
 
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
 void ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_pattern_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_pattern_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_pattern_init(AgsPattern *pattern);
 void ags_pattern_connect(AgsConnectable *connectable);
 void ags_pattern_disconnect(AgsConnectable *connectable);
 void ags_pattern_finalize(GObject *gobject);
 
+void ags_pattern_change_bpm(AgsTactable *tactable, gdouble bpm);
+
 void ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port);
-void ags_pattern_get_port(AgsPortlet *portlet);
+AgsPort* ags_pattern_get_port(AgsPortlet *portlet);
 GList* ags_pattern_list_safe_properties(AgsPortlet *portlet);
 void ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
@@ -68,6 +71,12 @@ ags_pattern_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_tactable_interface_info = {
+      (GInterfaceInitFunc) ags_pattern_tactable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_portlet_interface_info = {
       (GInterfaceInitFunc) ags_pattern_portlet_interface_init,
       NULL, /* interface_finalize */
@@ -82,6 +91,10 @@ ags_pattern_get_type (void)
     g_type_add_interface_static(ags_type_pattern,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_pattern,
+				AGS_TYPE_TACTABLE,
+				&ags_tactable_interface_info);
 
     g_type_add_interface_static(ags_type_pattern,
 				AGS_TYPE_PORTLET,
@@ -108,6 +121,12 @@ ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_pattern_connect;
   connectable->disconnect = ags_pattern_disconnect;
+}
+
+void
+ags_pattern_tactable_interface_init(AgsTactableInterface *tactable)
+{
+  tactable->change_bpm = ags_pattern_change_bpm;
 }
 
 void
@@ -166,15 +185,23 @@ ags_pattern_finalize(GObject *gobject)
 }
 
 void
-ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port)
+ags_pattern_change_bpm(AgsTactable *tactable, gdouble bpm)
 {
   //TODO:JK: implement me
 }
 
 void
+ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port)
+{
+  //TODO:JK: implement me
+}
+
+AgsPort*
 ags_pattern_get_port(AgsPortlet *portlet)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 GList*

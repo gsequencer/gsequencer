@@ -41,7 +41,7 @@ void ags_notation_finalize(GObject *object);
 void ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm);
 
 void ags_notation_set_port(AgsPortlet *portlet, AgsPort *port);
-void ags_notation_get_port(AgsPortlet *portlet);
+AgsPort* ags_notation_get_port(AgsPortlet *portlet);
 GList* ags_notation_list_safe_properties(AgsPortlet *portlet);
 void ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
@@ -215,10 +215,12 @@ ags_notation_set_port(AgsPortlet *portlet, AgsPort *port)
   //TODO:JK: implement me
 }
 
-void
+AgsPort*
 ags_notation_get_port(AgsPortlet *portlet)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 GList*
