@@ -56,7 +56,7 @@ ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port)
   g_return_if_fail(AGS_IS_PORTLET(portlet));
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
   g_return_if_fail(portlet_interface->set_port);
-  portlet_interface->set_port(portlet);
+  portlet_interface->set_port(portlet, port);
 }
 
 AgsPort*
@@ -82,23 +82,23 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
 }
 
 void
-ags_portlet_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_portlet_get_safe_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
   AgsPortletInterface *portlet_interface;
 
   g_return_if_fail(AGS_IS_PORTLET(portlet));
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
-  g_return_if_fail(portlet_interface->get_property);
-  portlet_interface->get_property(portlet, property_name, value);
+  g_return_if_fail(portlet_interface->safe_get_property);
+  portlet_interface->safe_get_property(portlet, property_name, value);
 }
 
 void
-ags_portlet_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_portlet_set_safe_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
   AgsPortletInterface *portlet_interface;
 
   g_return_if_fail(AGS_IS_PORTLET(portlet));
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
-  g_return_if_fail(portlet_interface->set_property);
-  portlet_interface->set_property(portlet, property_name, value);
+  g_return_if_fail(portlet_interface->safe_set_property);
+  portlet_interface->safe_set_property(portlet, property_name, value);
 }

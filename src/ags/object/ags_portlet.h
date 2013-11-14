@@ -21,6 +21,8 @@
 
 #include <glib-object.h>
 
+#include <ags/audio/ags_port.h>
+
 #define AGS_TYPE_PORTLET                    (ags_portlet_get_type())
 #define AGS_PORTLET(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORTLET, AgsPortlet))
 #define AGS_PORTLET_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_PORTLET, AgsPortletInterface))

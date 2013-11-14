@@ -205,6 +205,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_timebar.$(OBJEXT) ags-ags_segment.$(OBJEXT) \
 	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
 	ags-ags_table.$(OBJEXT) ags-ags_led.$(OBJEXT) \
+	ags-ags_portlet.$(OBJEXT) \
 	ags-ags_dynamic_connectable.$(OBJEXT) \
 	ags-ags_countable.$(OBJEXT) ags-ags_main_loop.$(OBJEXT) \
 	ags-ags_applicable.$(OBJEXT) ags-ags_tree_iterator.$(OBJEXT) \
@@ -872,7 +873,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/widget/ags_menu.h ./src/ags/widget/ags_option_menu.c \
 	./src/ags/widget/ags_htimebar.h ./src/ags/widget/ags_table.c \
 	./src/ags/widget/ags_led.h ./src/ags/widget/ags_led.c \
-	./src/ags/object/ags_marshal.h \
+	./src/ags/object/ags_marshal.h ./src/ags/object/ags_portlet.h \
+	./src/ags/object/ags_portlet.c \
 	./src/ags/object/ags_dynamic_connectable.c \
 	./src/ags/object/ags_countable.c \
 	./src/ags/object/ags_main_loop.h \
@@ -1470,6 +1472,7 @@ include ./$(DEPDIR)/ags-ags_playable.Po
 include ./$(DEPDIR)/ags-ags_plugin.Po
 include ./$(DEPDIR)/ags-ags_plugin_factory.Po
 include ./$(DEPDIR)/ags-ags_port.Po
+include ./$(DEPDIR)/ags-ags_portlet.Po
 include ./$(DEPDIR)/ags-ags_preferences.Po
 include ./$(DEPDIR)/ags-ags_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_property_collection_editor.Po
@@ -3493,6 +3496,20 @@ ags-ags_led.obj: ./src/ags/widget/ags_led.c
 #	$(AM_V_CC)source='./src/ags/widget/ags_led.c' object='ags-ags_led.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_led.obj `if test -f './src/ags/widget/ags_led.c'; then $(CYGPATH_W) './src/ags/widget/ags_led.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_led.c'; fi`
+
+ags-ags_portlet.o: ./src/ags/object/ags_portlet.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_portlet.o -MD -MP -MF $(DEPDIR)/ags-ags_portlet.Tpo -c -o ags-ags_portlet.o `test -f './src/ags/object/ags_portlet.c' || echo '$(srcdir)/'`./src/ags/object/ags_portlet.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_portlet.Tpo $(DEPDIR)/ags-ags_portlet.Po
+#	$(AM_V_CC)source='./src/ags/object/ags_portlet.c' object='ags-ags_portlet.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_portlet.o `test -f './src/ags/object/ags_portlet.c' || echo '$(srcdir)/'`./src/ags/object/ags_portlet.c
+
+ags-ags_portlet.obj: ./src/ags/object/ags_portlet.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_portlet.obj -MD -MP -MF $(DEPDIR)/ags-ags_portlet.Tpo -c -o ags-ags_portlet.obj `if test -f './src/ags/object/ags_portlet.c'; then $(CYGPATH_W) './src/ags/object/ags_portlet.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_portlet.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_portlet.Tpo $(DEPDIR)/ags-ags_portlet.Po
+#	$(AM_V_CC)source='./src/ags/object/ags_portlet.c' object='ags-ags_portlet.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_portlet.obj `if test -f './src/ags/object/ags_portlet.c'; then $(CYGPATH_W) './src/ags/object/ags_portlet.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_portlet.c'; fi`
 
 ags-ags_dynamic_connectable.o: ./src/ags/object/ags_dynamic_connectable.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_dynamic_connectable.o -MD -MP -MF $(DEPDIR)/ags-ags_dynamic_connectable.Tpo -c -o ags-ags_dynamic_connectable.o `test -f './src/ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_dynamic_connectable.c
