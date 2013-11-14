@@ -34,6 +34,14 @@ void ags_notation_connectable_interface_init(AgsConnectableInterface *connectabl
 void ags_notation_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_notation_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_notation_init(AgsNotation *notation);
+void ags_notation_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec);
+void ags_notation_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec);
 void ags_notation_connect(AgsConnectable *connectable);
 void ags_notation_disconnect(AgsConnectable *connectable);
 void ags_notation_finalize(GObject *object);
@@ -120,12 +128,19 @@ void
 ags_notation_class_init(AgsNotationClass *notation)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_notation_parent_class = g_type_class_peek_parent(notation);
 
   gobject = (GObjectClass *) notation;
 
+  gobject->set_property = ags_notation_set_property;
+  gobject->get_property = ags_notation_get_property;
+
   gobject->finalize = ags_notation_finalize;
+
+  /* properties */
+  //TODO:JK: implement me
 }
 
 void
@@ -188,6 +203,40 @@ void
 ags_notation_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+void
+ags_notation_set_property(GObject *gobject,
+			 guint prop_id,
+			 const GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsNotation *notation;
+
+  notation = AGS_NOTATION(gobject);
+
+  switch(prop_id){
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_notation_get_property(GObject *gobject,
+			 guint prop_id,
+			 GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsNotation *notation;
+
+  notation = AGS_NOTATION(gobject);
+
+  switch(prop_id){
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
