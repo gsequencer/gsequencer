@@ -201,6 +201,7 @@ ags_notation_init(AgsNotation *notation)
 {
   notation->flags = 0;
 
+  //TODO:JK: define timestamp
   notation->timestamp = NULL;
   
   notation->audio_channel = 0;
@@ -257,7 +258,7 @@ ags_notation_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      if(port == notation->port){
+      if(port == (AgsPort *) notation->port){
 	return;
       }
 
@@ -446,12 +447,17 @@ ags_notation_get_port(AgsPortlet *portlet)
 GList*
 ags_notation_list_safe_properties(AgsPortlet *portlet)
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   static GList *list = NULL;
+
+  phtread_mutex_lock(&mutex);
 
   if(list == NULL){
     list = g_list_prepend(list, "current-notes\0");
     list = g_list_prepend(list, "next-notes\0");
   }
+
+  phtread_mutex_unlock(&mutex);
 
   return(list);
 }
@@ -459,6 +465,8 @@ ags_notation_list_safe_properties(AgsPortlet *portlet)
 void
 ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
+  //TODO:JK: add check for safe property
+
   g_object_set_property(G_OBJECT(portlet),
 			property_name, value);
 }
@@ -466,6 +474,8 @@ ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue
 void
 ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
+  //TODO:JK: add check for safe property
+
   g_object_get_property(G_OBJECT(portlet),
 			property_name, value);
 }

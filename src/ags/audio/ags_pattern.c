@@ -54,6 +54,13 @@ GList* ags_pattern_list_safe_properties(AgsPortlet *portlet);
 void ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
+enum{
+  PROP_0,
+  PROP_PORT,
+  PROP_CURRENT_BIT,
+  PROP_NEXT_BIT,
+};
+
 static gpointer ags_pattern_parent_class = NULL;
 
 GType
@@ -129,7 +136,32 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   gobject->finalize = ags_pattern_finalize;
 
   /* properties */
-  //TODO:JK: implement me
+  param_spec = g_param_spec_object("port\0",
+				   "port of pattern\0",
+				   "The port of pattern\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
+				  param_spec);
+
+  param_spec = g_param_spec_boolean("current-bit\0",
+				    "current bit for offset\0",
+				    "The current bit for offset\0",
+				    FALSE,
+				    G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CURRENT_BIT,
+				  param_spec);
+
+  param_spec = g_param_spec_boolean("next-bit\0",
+				    "next bit for offset\0",
+				    "The next bit for offset\0",
+				    FALSE,
+				    G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NEXT_BIT,
+				  param_spec);
 }
 
 void
@@ -158,13 +190,23 @@ ags_pattern_portlet_interface_init(AgsPortletInterface *portlet)
 void
 ags_pattern_init(AgsPattern *pattern)
 {
-  pattern->timestamp = 0;
+  //TODO:JK: define timestamp
+  pattern->timestamp = NULL;
 
   pattern->dim[0] = 0;
   pattern->dim[1] = 0;
   pattern->dim[2] = 0;
 
   pattern->pattern = NULL;
+
+  pattern->port = NULL;
+
+  pattern->i = 0;
+  pattern->j = 0;
+  pattern->bit = 0;
+
+  pattern->current_bit = FALSE;
+  pattern->next_bit = FALSE;
 }
 
 void
@@ -190,6 +232,27 @@ ags_pattern_set_property(GObject *gobject,
   pattern = AGS_PATTERN(gobject);
 
   switch(prop_id){
+  case PROP_PORT:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == (GObject *) pattern->port){
+	return;
+      }
+
+      if(pattern->port != NULL){
+	g_object_unref(G_OBJECT(pattern->port));
+      }
+
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      pattern->port = (GObject *) port;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -207,6 +270,15 @@ ags_pattern_get_property(GObject *gobject,
   pattern = AGS_PATTERN(gobject);
 
   switch(prop_id){
+  case PROP_PORT:
+    g_value_set_object(value, pattern->port);
+    break;
+  case PROP_CURRENT_BIT:
+    g_value_set_boolean(value, pattern->current_bit);
+    break;
+  case PROP_NEXT_BIT:
+    g_value_set_boolean(value, pattern->next_bit);
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -243,25 +315,37 @@ ags_pattern_change_bpm(AgsTactable *tactable, gdouble bpm)
 void
 ags_pattern_set_port(AgsPortlet *portlet, AgsPort *port)
 {
-  //TODO:JK: implement me
+  g_object_set(G_OBJECT(portlet),
+	       "port\0", port,
+	       NULL);
 }
 
 AgsPort*
 ags_pattern_get_port(AgsPortlet *portlet)
 {
-  //TODO:JK: implement me
+  AgsPort *port;
 
-  return(NULL);
+  g_object_get(G_OBJECT(portlet),
+	       "port\0", &port,
+	       NULL);
+
+  return(port);
 }
 
 GList*
 ags_pattern_list_safe_properties(AgsPortlet *portlet)
 {
-  GList *list;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static GList *list = NULL;
 
-  list = NULL;
+  phtread_mutex_lock(&mutex);
 
-  //TODO:JK: implement me
+  if(list == NULL){
+    list = g_list_prepend(list, "current-bit\0");
+    list = g_list_prepend(list, "next-bit\0");
+  }
+
+  phtread_mutex_unlock(&mutex);
 
   return(list);
 }
@@ -269,13 +353,19 @@ ags_pattern_list_safe_properties(AgsPortlet *portlet)
 void
 ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
-  //TODO:JK: implement me
+  //TODO:JK: add check for safe property
+
+  g_object_set_property(G_OBJECT(portlet),
+			property_name, value);
 }
 
 void
 ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
-  //TODO:JK: implement me
+  //TODO:JK: add check for safe property
+
+  g_object_get_property(G_OBJECT(portlet),
+			property_name, value);
 }
 
 AgsPattern*
@@ -462,8 +552,15 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 }
 
 gboolean
-ags_pattern_get_current(AgsPattern *pattern)
+ags_pattern_get_current_bit(AgsPattern *pattern)
 {
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_pattern_get_next_bit(AgsPattern *pattern)
+{
+  //TODO:JK: implement me
 }
 
 AgsPattern*
