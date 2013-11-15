@@ -426,25 +426,32 @@ ags_notation_change_bpm(AgsTactable *tactable, gdouble bpm)
 void
 ags_notation_set_port(AgsPortlet *portlet, AgsPort *port)
 {
-  //TODO:JK: implement me
+  g_object_set(G_OBJECT(portlet),
+	       "port\0", port,
+	       NULL);
 }
 
 AgsPort*
 ags_notation_get_port(AgsPortlet *portlet)
 {
-  //TODO:JK: implement me
+  AgsPort *port;
 
-  return(NULL);
+  g_object_get(G_OBJECT(portlet),
+	       "port\0", &port,
+	       NULL);
+
+  return(port);
 }
 
 GList*
 ags_notation_list_safe_properties(AgsPortlet *portlet)
 {
-  GList *list;
+  static GList *list = NULL;
 
-  list = NULL;
-
-  //TODO:JK: implement me
+  if(list == NULL){
+    list = g_list_prepend(list, "current-notes\0");
+    list = g_list_prepend(list, "next-notes\0");
+  }
 
   return(list);
 }
@@ -452,13 +459,15 @@ ags_notation_list_safe_properties(AgsPortlet *portlet)
 void
 ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
-  //TODO:JK: implement me
+  g_object_set_property(G_OBJECT(portlet),
+			property_name, value);
 }
 
 void
 ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
-  //TODO:JK: implement me
+  g_object_get_property(G_OBJECT(portlet),
+			property_name, value);
 }
 
 void

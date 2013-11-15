@@ -181,6 +181,8 @@ ags_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_port_init(AgsPort *port)
 {
+  pthread_mutexattr_t mutexattr;
+
   port->plugin_name = NULL;
   port->specifier = NULL;
 
@@ -192,7 +194,10 @@ ags_port_init(AgsPort *port)
   port->port_value_size = sizeof(gdouble);
   port->port_value_length = 1;
 
-  pthread_mutex_init(&port->mutex, NULL);
+  pthread_mutex_attr_init(&mutexattr);
+  pthread_mutexattr_settype(&mutexattr, PTHREAD_MUTEX_RECURSIVE);
+
+  pthread_mutex_init(&port->mutex, &mutexattr);
 }
 
 void
