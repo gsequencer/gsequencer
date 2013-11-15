@@ -71,6 +71,11 @@ struct _AgsNotation
   gdouble offset;
 
   GList *selection;
+
+  GObject *port;
+
+  GList *current_notes;
+  GList *next_notes;
 };
 
 struct _AgsNotationClass
@@ -122,6 +127,8 @@ void ags_notation_insert_from_clipboard(AgsNotation *notation,
 					xmlNodePtr content,
 					gboolean reset_x_offset, guint x_offset,
 					gboolean reset_y_offset, guint y_offset);
+
+GList* ags_notation_get_current(AgsNotation *notation);
 
 AgsNotation* ags_notation_new(guint audio_channel);
 

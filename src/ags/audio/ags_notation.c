@@ -61,11 +61,18 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						     gboolean from_x_offset, guint x_offset,
 						     gboolean from_y_offset, guint y_offset);
 
-static gpointer ags_notation_parent_class = NULL;
+#define AGS_NOTATION_CLIPBOARD_VERSION "0.3.12\0"
+#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
+#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
 
-#define AGS_NOTATION_CLIPBOARD_VERSION "0.3.12"
-#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml"
-#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano"
+enum{
+  PROP_0,
+  PROP_PORT,
+  PROP_CURRENT_NOTES,
+  PROP_NEXT_NOTES,
+};
+
+static gpointer ags_notation_parent_class = NULL;
 
 GType
 ags_notation_get_type()
@@ -140,7 +147,30 @@ ags_notation_class_init(AgsNotationClass *notation)
   gobject->finalize = ags_notation_finalize;
 
   /* properties */
-  //TODO:JK: implement me
+  param_spec = g_param_spec_object("port\0",
+				   "port of notation\0",
+				   "The port of notation\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
+				  param_spec);
+
+  param_spec = g_param_spec_pointer("current-notes\0",
+				    "current notes for offset\0",
+				    "The current notes for offset\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CURRENT_NOTES,
+				  param_spec);
+
+  param_spec = g_param_spec_pointer("next-notes\0",
+				    "next notes for offset\0",
+				    "The next notes for offset\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NEXT_NOTES,
+				  param_spec);
 }
 
 void
@@ -191,6 +221,11 @@ ags_notation_init(AgsNotation *notation)
   notation->offset = 0.0;
 
   notation->selection = NULL;
+
+  notation->port = NULL;
+
+  notation->current_notes = NULL;
+  notation->next_notes = NULL;
 }
 
 void
@@ -216,6 +251,87 @@ ags_notation_set_property(GObject *gobject,
   notation = AGS_NOTATION(gobject);
 
   switch(prop_id){
+  case PROP_PORT:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == notation->port){
+	return;
+      }
+
+      if(notation->port != NULL){
+	g_object_unref(G_OBJECT(notation->port));
+      }
+
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      notation->port = (GObject *) port;
+    }
+    break;
+  case PROP_CURRENT_NOTES:
+    {
+      AgsPort *port;
+      GList *current_notes, *list;
+
+      current_notes = (GList *) g_value_get_pointer(value);
+
+      port = AGS_PORT(notation->port);
+
+      pthread_mutex_lock(&(port->mutex));
+
+      if(notation->current_notes != NULL){
+	ags_list_free_and_unref_link(notation->current_notes);
+      }
+
+      if(current_notes != NULL){
+	list = current_notes;
+
+	while(list != NULL){
+	  g_object_ref(G_OBJECT(list->data));
+
+	  list = list->next;
+	}
+      }
+
+      notation->current_notes = current_notes;
+
+      pthread_mutex_unlock(&(port->mutex));
+    }
+    break;
+  case PROP_NEXT_NOTES:
+    {
+      AgsPort *port;
+      GList *next_notes, *list;
+
+      next_notes = (GList *) g_value_get_pointer(value);
+
+      port = AGS_PORT(notation->port);
+
+      pthread_mutex_lock(&(port->mutex));
+
+      if(notation->next_notes != NULL){
+	ags_list_free_and_unref_link(notation->next_notes);
+      }
+
+      if(next_notes != NULL){
+	list = next_notes;
+
+	while(list != NULL){
+	  g_object_ref(G_OBJECT(list->data));
+
+	  list = list->next;
+	}
+      }
+
+      notation->next_notes = next_notes;
+
+      pthread_mutex_unlock(&(port->mutex));
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -224,15 +340,64 @@ ags_notation_set_property(GObject *gobject,
 
 void
 ags_notation_get_property(GObject *gobject,
-			 guint prop_id,
-			 GValue *value,
-			 GParamSpec *param_spec)
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
 {
   AgsNotation *notation;
 
   notation = AGS_NOTATION(gobject);
 
   switch(prop_id){
+  case PROP_PORT:
+    g_value_set_object(value, notation->port);
+    break;
+  case PROP_CURRENT_NOTES:
+    {
+      AgsPort *port;
+      GList *start, *list;
+
+      port = AGS_PORT(notation->port);
+
+      pthread_mutex_lock(&(port->mutex));
+
+      start = 
+	list = g_list_copy(notation->current_notes);
+
+      while(list != NULL){
+	g_object_ref(G_OBJECT(list->data));
+
+	list = list->next;
+      }
+
+      pthread_mutex_unlock(&(port->mutex));
+
+      g_value_set_pointer(value, (gpointer) start);
+    }
+    break;
+  case PROP_NEXT_NOTES:
+    {
+      AgsPort *port;
+      GList *start, *list;
+
+      port = AGS_PORT(notation->port);
+
+      pthread_mutex_lock(&(port->mutex));
+
+      start = 
+	list = g_list_copy(notation->next_notes);
+
+      while(list != NULL){
+	g_object_ref(G_OBJECT(list->data));
+
+	list = list->next;
+      }
+
+      pthread_mutex_unlock(&(port->mutex));
+
+      g_value_set_pointer(value, (gpointer) start);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1006,6 +1171,18 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
       }
     }
   }
+}
+
+GList*
+ags_notation_get_current(AgsNotation *notation)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: get current
+
+  return(list);
 }
 
 AgsNotation*

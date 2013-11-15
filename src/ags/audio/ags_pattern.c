@@ -461,6 +461,11 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
     pattern->pattern[i][j][k] |= value;
 }
 
+gboolean
+ags_pattern_get_current(AgsPattern *pattern)
+{
+}
+
 AgsPattern*
 ags_pattern_new()
 {

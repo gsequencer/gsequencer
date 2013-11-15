@@ -71,6 +71,7 @@ struct _AgsPortClass
 };
 
 GType ags_port_get_type();
+
 void ags_port_safe_read(AgsPort *port, GValue *value);
 void ags_port_safe_write(AgsPort *port, GValue *value);
 
