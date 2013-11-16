@@ -123,7 +123,7 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
   gobject->finalize = ags_copy_pattern_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("count_beats_audio_run\0",
+  param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
 				   "the AgsCountBeatsAudioRun which emits beat signal\0",
 				   AGS_TYPE_COUNT_BEATS_AUDIO_RUN,

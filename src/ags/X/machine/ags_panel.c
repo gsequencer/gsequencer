@@ -203,8 +203,9 @@ ags_panel_set_audio_channels(AgsAudio *audio,
       /* ags-play */
       ags_recall_factory_create(audio,
 				"ags-play-master\0",
-				0, audio->audio_channels,
+				0, audio_channels,
 				input->pad, input->pad + 1,
+				FALSE,
 				FALSE);
 
       /* GtkWidgets */

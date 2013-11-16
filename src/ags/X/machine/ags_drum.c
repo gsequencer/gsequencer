@@ -185,9 +185,10 @@ ags_drum_init(AgsDrum *drum)
   /* ags-delay */
   ags_recall_factory_create(audio,
 			    "ags-delay\0",
-			    0, audio->audio_channels,
-			    0, audio->output_pads,
-			    TRUE);
+			    0, 0,
+			    0, 0,
+			    TRUE,
+			    FALSE);
   
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
   
@@ -204,59 +205,63 @@ ags_drum_init(AgsDrum *drum)
   /* ags-count-beats */
   ags_recall_factory_create(audio,
 			    "ags-count-beats\0",
-			    0, audio->audio_channels,
-			    0, audio->output_pads,
-			    TRUE);
+			    0, 0,
+			    0, 0,
+			    TRUE,
+			    FALSE);
   
   list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
   
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(play_count_beats_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
   }
 
   list = ags_recall_find_type(audio->recall, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
   if(list != NULL){
     recall_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  }
-  
-  /* set dependency */
-  g_object_set(G_OBJECT(play_count_beats_audio_run),
-	       "delay-audio-run\0", play_delay_audio_run,
-	       NULL);
 
-  g_object_set(G_OBJECT(recall_count_beats_audio_run),
-	       "delay-audio-run\0", recall_delay_audio_run,
-	       NULL);
+    /* set dependency */  
+    g_object_set(G_OBJECT(recall_count_beats_audio_run),
+		 "delay-audio-run\0", recall_delay_audio_run,
+		 NULL);
+  }
 
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
 			    "ags-copy-pattern\0",
-			    0, audio->audio_channels,
-			    0, audio->input_pads,
+			    0, 0,
+			    0, 0,
+			    FALSE,
 			    FALSE);
 
   list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
   
   if(list != NULL){
     play_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(play_copy_pattern_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
   }
 
   list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
 
   if(list != NULL){
     recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
+		 "count-beats-audio-run\0", recall_count_beats_audio_run,
+		 NULL);
   }
   
-  /* set dependency */
-  g_object_set(G_OBJECT(play_copy_pattern_audio_run),
-	       "count-beats-run\0", play_count_beats_audio_run,
-	       NULL);
-
-  g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
-	       "count-beats-run\0", recall_count_beats_audio_run,
-	       NULL);
-
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) drum))->data, (GtkWidget *) drum->vbox);

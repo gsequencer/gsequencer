@@ -54,7 +54,7 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
   audio->devout = (GObject *) window->devout;
   
   AGS_MACHINE(ffplayer)->name = g_strdup_printf("Default %d\0",
-					     ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
+						ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_FFPLAYER);
 }

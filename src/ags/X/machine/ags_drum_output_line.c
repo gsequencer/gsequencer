@@ -239,7 +239,8 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 			      "ags-loop\0",
 			      0, audio->audio_channels,
 			      output->pad, output->pad + 1,
-			      TRUE);
+			      TRUE,
+			      FALSE);
 
     list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL);
   
@@ -284,10 +285,11 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* ags-stream */
     ags_recall_factory_create(audio,
-			      "ags-stream-channel\0",
+			      "ags-stream\0",
 			      0, audio->audio_channels,
 			      output->pad, output->pad + 1,
-			      TRUE);
+			      TRUE,
+			      FALSE);
   }
 }
 

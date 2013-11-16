@@ -208,6 +208,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
   AgsAudio *audio;
   AgsChannel *source;
+  AgsChannel *current, *destination;
+  AgsCopyChannel *copy_channel;
 
   GList *list;
   guint i;
@@ -221,17 +223,19 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   source = line->channel;
 
   /* ags-play */
-  ags_recall_factory_create(audio,
-			    "ags-play\0",
-			    0, audio->audio_channels,
-			    source->pad, source->pad + 1,
-			    FALSE);
+  //  ags_recall_factory_create(audio,
+  //			    "ags-play\0",
+  //			    0, audio->audio_channels,
+  //			    source->pad, source->pad + 1,
+  //			    FALSE,
+  //			    FALSE);
 
   /* ags-volume */
   ags_recall_factory_create(audio,
 			    "ags-volume\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
+			    FALSE,
 			    FALSE);
 
   /* ags-copy */
@@ -239,13 +243,44 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    "ags-copy\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
+			    FALSE,
 			    FALSE);
+
+  current = source;
+  
+  while(current != NULL){
+    destination = ags_channel_nth(audio->output,
+				  current->audio_channel);
+
+    list = current->play;
+
+    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
+      copy_channel = AGS_COPY_CHANNEL(list->data);
+
+      g_object_set(G_OBJECT(copy_channel),
+		   "destination\0", destination,
+		   NULL);
+    }
+
+    list = current->recall;
+
+    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
+      copy_channel = AGS_COPY_CHANNEL(list->data);
+
+      g_object_set(G_OBJECT(copy_channel),
+		   "destination\0", destination,
+		   NULL);
+    }
+
+    current = current->next;
+  }
 
   /* ags-stream */
   ags_recall_factory_create(audio,
 			    "ags-stream\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
+			    FALSE,
 			    FALSE);
 
   drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;

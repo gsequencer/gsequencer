@@ -50,7 +50,8 @@ GList* ags_recall_factory_create(AgsAudio *audio,
 				 gchar *plugin_name,
 				 guint start_audio_channel, guint stop_audio_channel,
 				 guint start_pad, guint stop_pad,
-				 gboolean is_output);
+				 gboolean is_output,
+				 gboolean remap);
 
 /*  */
 AgsRecallFactory* ags_recall_factory_get_instance();

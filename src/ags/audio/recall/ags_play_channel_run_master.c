@@ -152,7 +152,7 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
   gobject->finalize = ags_play_channel_run_master_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("stream_channel_run\0",
+  param_spec = g_param_spec_object("stream-channel-run\0",
 				   "assigned AgsStreamChannelRun\0",
 				   "an assigned AgsStreamChannelRun\0",
 				   AGS_TYPE_STREAM_CHANNEL_RUN,
@@ -443,7 +443,7 @@ ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
       stream_channel_run = (AgsStreamChannelRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       g_object_set(G_OBJECT(recall),
-		   "stream_channel_run\0", stream_channel_run,
+		   "stream-channel-run\0", stream_channel_run,
 		   NULL);
 
       i++;
@@ -528,7 +528,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 
 	if(list != NULL){
 	  g_object_set(G_OBJECT(play_channel_run_master),
-		       "stream_channel_run\0", AGS_STREAM_CHANNEL_RUN(list->data),
+		       "stream-channel-run\0", AGS_STREAM_CHANNEL_RUN(list->data),
 		       NULL);
 
 	  container = AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run_master)->container);
@@ -540,7 +540,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 
 	    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(current_master)->flags)) == 0){
 	      g_object_set(G_OBJECT(current_master),
-			   "stream_channel_run\0", AGS_STREAM_CHANNEL_RUN(list->data),
+			   "stream-channel-run\0", AGS_STREAM_CHANNEL_RUN(list->data),
 			   NULL);
 	    }
 	    
