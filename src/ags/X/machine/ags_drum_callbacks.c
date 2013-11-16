@@ -74,7 +74,6 @@ void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsDevout *devout;
   AgsAudio *audio;
   AgsApplyBpm *apply_bpm;
   AgsApplyTact *apply_tact;
@@ -93,53 +92,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 					    ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_DRUM);
-
-  devout = AGS_DEVOUT(audio->devout);
-
-  /* AgsDevout */
-  /* play */
-  g_object_set(G_OBJECT(drum->play_delay_audio),
-	       "devout\0", devout,
-	       NULL);
-  g_object_set(G_OBJECT(drum->play_delay_audio_run),
-	       "devout\0", devout,
-	       NULL);
-
-  g_object_set(G_OBJECT(drum->play_count_beats_audio),
-	       "devout\0", devout,
-	       NULL);
-  g_object_set(G_OBJECT(drum->play_count_beats_audio_run),
-	       "devout\0", devout,
-	       NULL);
-
-  g_object_set(G_OBJECT(drum->play_copy_pattern_audio),
-	       "devout\0", devout,
-	       NULL);
-  g_object_set(G_OBJECT(drum->play_copy_pattern_audio_run),
-	       "devout\0", devout,
-	       NULL);
-
-  /* recall */
-  g_object_set(G_OBJECT(drum->recall_delay_audio),
-	       "devout\0", devout,
-	       NULL);
-  g_object_set(G_OBJECT(drum->recall_delay_audio_run),
-	       "devout\0", devout,
-	       NULL);
-
-  g_object_set(G_OBJECT(drum->recall_count_beats_audio),
-	       "devout\0", devout,
-	       NULL);
-  g_object_set(G_OBJECT(drum->recall_count_beats_audio_run),
-	       "devout\0", devout,
-	       NULL);
-
-  g_object_set(G_OBJECT(drum->recall_copy_pattern_audio),
-	       "devout\0", devout,
-	       NULL);
-  g_object_set(G_OBJECT(drum->recall_copy_pattern_audio_run),
-	       "devout\0", devout,
-	       NULL);
 
   /* bpm */
   bpm = window->navigation->bpm->adjustment->value;
@@ -179,25 +131,37 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_r
 				  AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsRecallContainer *recall_container;
-  AgsCountBeatsAudioRun *count_beats_audio_run;
+  AgsAudio *audio;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsToggleLed *toggle_led;
   GList *list;
   guint counter, active_led;
   
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
-  list = AGS_RECALL_CONTAINER(AGS_RECALL(drum->recall_count_beats_audio_run)->container)->recall_audio_run;
-  list = ags_recall_find_group_id(list,
-				  AGS_RECALL(delay_audio_run)->recall_id->group_id);
+  audio = AGS_MACHINE(drum)->audio;
 
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  counter = count_beats_audio_run->sequencer_counter;
+  /* get some recalls */
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO);
+  
+  if(list != NULL){
+    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+  }
+
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  
+  if(list != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  }
+
+  /* set optical feedback */
+  counter = play_count_beats_audio_run->sequencer_counter;
 
   drum->active_led = counter;
 
   if(drum->active_led == 0){
-    active_led = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio)->sequencer_loop_end - 1;
+    active_led = play_count_beats_audio->sequencer_loop_end - 1;
   }else{
     active_led = drum->active_led - 1;
   }

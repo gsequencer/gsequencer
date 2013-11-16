@@ -43,6 +43,15 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+
 #include <math.h>
 
 void ags_drum_class_init(AgsDrumClass *drum);
