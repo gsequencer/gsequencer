@@ -170,25 +170,38 @@ ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth
 				    AgsMatrix *matrix)
 {
   AgsWindow *window;
+  AgsAudio *audio;
   AgsRecallContainer *recall_container;
-  AgsCountBeatsAudioRun *count_beats_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsToggleLed *toggle_led;
   GList *list;
   guint counter, active_led;
   
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
 
-  list = AGS_RECALL_CONTAINER(AGS_RECALL(matrix->recall_count_beats_audio_run)->container)->recall_audio_run;
-  list = ags_recall_find_group_id(list,
-				  AGS_RECALL(delay_audio_run)->recall_id->group_id);
+  audio = AGS_MACHINE(matrix)->audio;
 
-  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  counter = count_beats_audio_run->sequencer_counter;
+  /* get some recalls */
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO);
+  
+  if(list != NULL){
+    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+  }
+
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  
+  if(list != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  }
+
+  /* set optical feedback */
+  counter = play_count_beats_audio_run->sequencer_counter;
 
   matrix->active_led = counter;
 
   if(matrix->active_led == 0){
-    active_led = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio)->sequencer_loop_end - 1;
+    active_led = (guint) floor(play_count_beats_audio->sequencer_loop_end->port_value.ags_port_double) - 1;
   }else{
     active_led = matrix->active_led - 1;
   }
@@ -208,14 +221,36 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 
   if(matrix->selected != NULL){
     if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
+      AgsAudio *audio;
+      AgsCopyPatternAudio *recall_copy_pattern_audio, *play_copy_pattern_audio;
+      GList *list;
+
+      audio = AGS_MACHINE(matrix)->audio;
+
+      /* refresh GUI */
       toggle = matrix->selected;
       matrix->selected = NULL;
+
       gtk_toggle_button_set_active(toggle, FALSE);
+
       matrix->selected = (GtkToggleButton*) widget;
       ags_matrix_draw_matrix(matrix);
 
-      matrix->play_copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
-      matrix->recall_copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
+      /* modify port */
+      list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
+  
+      if(list != NULL){
+	play_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+      }
+
+      list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
+  
+      if(list != NULL){
+	recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+      }
+
+      play_copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
+      recall_copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_MATRIX_INDEX));
     }else{
       toggle = matrix->selected;
       matrix->selected = NULL;

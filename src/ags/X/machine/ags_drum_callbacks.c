@@ -161,7 +161,7 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_r
   drum->active_led = counter;
 
   if(drum->active_led == 0){
-    active_led = play_count_beats_audio->sequencer_loop_end - 1;
+    active_led =  (guint) floor(play_count_beats_audio->sequencer_loop_end->port_value.ags_port_double) - 1;
   }else{
     active_led = drum->active_led - 1;
   }

@@ -49,23 +49,6 @@ struct _AgsMatrix
 
   guint flags;
 
-  /* these recall will be moved to a mapping list in AgsAudio in a future release */
-  AgsDelayAudio *play_delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsCopyPatternAudio *play_copy_pattern_audio;
-  AgsCopyPatternAudioRun *play_copy_pattern_audio_run;
-
-  AgsDelayAudio *recall_delay_audio;
-  AgsDelayAudioRun *recall_delay_audio_run;
-  AgsCountBeatsAudio *recall_count_beats_audio;
-  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-  AgsCopyPatternAudio *recall_copy_pattern_audio;
-  AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
-
-  AgsPlayNotation *play_notation;
-
   GtkTable *table;
 
   GtkToggleButton *run;
