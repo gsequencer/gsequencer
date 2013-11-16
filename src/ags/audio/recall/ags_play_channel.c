@@ -131,9 +131,9 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 					     "specifier\0", "./audio-channel[0]\0",
 					     "control-port\0", "1/1\0",
 					     "port-value-is-pointer\0", FALSE,
-					     "value-type\0", G_TYPE_UINT,
-					     "value-size\0", sizeof(guint),
-					     "value-length\0", 1,
+					     "port-value-type\0", G_TYPE_UINT,
+					     "port-value-size\0", sizeof(guint),
+					     "port-value-length\0", 1,
 					     NULL);
 }
 

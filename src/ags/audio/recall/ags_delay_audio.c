@@ -212,9 +212,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 				  "specifier\0", "./bpm[0]\0",
 				  "control-port\0", "1/6\0",
 				  "port-value-is-pointer\0", FALSE,
-				  "value-type\0", G_TYPE_DOUBLE,
-				  "value-size\0", sizeof(gdouble),
-				  "value-length", 1,
+				  "port-value-type\0", G_TYPE_DOUBLE,
+				  "port-value-size\0", sizeof(gdouble),
+				  "port-value-length", 1,
 				  NULL);
 
   delay_audio->bpm->port_value.ags_port_double = AGS_DEVOUT_DEFAULT_BPM;
@@ -227,9 +227,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 				   "specifier\0", "./tact[0]\0",
 				   "control-port\0", "2/6\0",
 				   "port-value-is-pointer\0", FALSE,
-				   "value-type\0", G_TYPE_DOUBLE,
-				   "value-size\0", sizeof(gdouble),
-				   "value-length", 1,
+				   "port-value-type\0", G_TYPE_DOUBLE,
+				   "port-value-size\0", sizeof(gdouble),
+				   "port-value-length", 1,
 				   NULL);
 
   delay_audio->tact->port_value.ags_port_double = AGS_DEVOUT_DEFAULT_TACT;
@@ -242,9 +242,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 					      "specifier\0", "./sequencer_delay[0]\0",
 					      "control-port\0", "3/6\0",
 					      "port-value-is-pointer\0", FALSE,
-					      "value-type\0", G_TYPE_DOUBLE,
-					      "value-size\0", sizeof(gdouble),
-					      "value-length", 1,
+					      "port-value-type\0", G_TYPE_DOUBLE,
+					      "port-value-size\0", sizeof(gdouble),
+					      "port-value-length", 1,
 					      NULL);
 
   delay_audio->sequencer_delay->port_value.ags_port_double = AGS_DEVOUT_DEFAULT_DELAY;
@@ -257,9 +257,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 					     "specifier\0", "./notation_delay[0]\0",
 					     "control-port\0", "4/6\0",
 					     "port-value-is-pointer\0", FALSE,
-					     "value-type\0", G_TYPE_DOUBLE,
-					     "value-size\0", sizeof(gdouble),
-					     "value-length", 1,
+					     "port-value-type\0", G_TYPE_DOUBLE,
+					     "port-value-size\0", sizeof(gdouble),
+					     "port-value-length", 1,
 					     NULL);
 
   delay_audio->notation_delay->port_value.ags_port_double = AGS_DEVOUT_DEFAULT_DELAY;
@@ -272,9 +272,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 						 "specifier\0", "./sequencer_duration[0]\0",
 						 "control-port\0", "5/6\0",
 						 "port-value-is-pointer\0", FALSE,
-						 "value-type\0", G_TYPE_DOUBLE,
-						 "value-size\0", sizeof(gdouble),
-						 "value-length", 1,
+						 "port-value-type\0", G_TYPE_DOUBLE,
+						 "port-value-size\0", sizeof(gdouble),
+						 "port-value-length", 1,
 						 NULL);
 
   delay_audio->sequencer_duration->port_value.ags_port_double = AGS_NOTATION_DEFAULT_DURATION;
@@ -287,9 +287,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 						"specifier\0", "./notation_duration[0]\0",
 						"control-port\0", "6/6\0",
 						"port-value-is-pointer\0", FALSE,
-						"value-type\0", G_TYPE_DOUBLE,
-						"value-size\0", sizeof(gdouble),
-						"value-length", 1,
+						"port-value-type\0", G_TYPE_DOUBLE,
+						"port-value-size\0", sizeof(gdouble),
+						"port-value-length", 1,
 						NULL);
 
   delay_audio->notation_duration->port_value.ags_port_double = AGS_NOTATION_DEFAULT_DURATION;

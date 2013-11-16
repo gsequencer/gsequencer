@@ -145,9 +145,9 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 					 "specifier\0", "./loop[0]\0",
 					 "control-port\0", "1/5\0",
 					 "port-value-is-pointer\0", FALSE,
-					 "value-type\0", G_TYPE_BOOLEAN,
-					 "value-size\0", sizeof(gboolean),
-					 "value-length", 1,
+					 "port-value-type\0", G_TYPE_BOOLEAN,
+					 "port-value-size\0", sizeof(gboolean),
+					 "port-value-length", 1,
 					 NULL);
 
   count_beats_audio->loop->port_value.ags_port_boolean = FALSE;
@@ -160,9 +160,9 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 							"specifier\0", "./notation-loop-start[0]\0",
 							"control-port\0", "2/5\0",
 							"port-value-is-pointer\0", FALSE,
-							"value-type\0", G_TYPE_DOUBLE,
-							"value-size\0", sizeof(gdouble),
-							"value-length", 1,
+							"port-value-type\0", G_TYPE_DOUBLE,
+							"port-value-size\0", sizeof(gdouble),
+							"port-value-length", 1,
 							NULL);
 
   count_beats_audio->notation_loop_start->port_value.ags_port_double = 0.0;
@@ -175,9 +175,9 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						      "specifier\0", "./notation-loop-end[0]\0",
 						      "control-port\0", "3/5\0",
 						      "port-value-is-pointer\0", FALSE,
-						      "value-type\0", G_TYPE_DOUBLE,
-						      "value-size\0", sizeof(gdouble),
-						      "value-length", 1,
+						      "port-value-type\0", G_TYPE_DOUBLE,
+						      "port-value-size\0", sizeof(gdouble),
+						      "port-value-length", 1,
 						      NULL);
 
   count_beats_audio->notation_loop_end->port_value.ags_port_double = 16.0;
@@ -190,9 +190,9 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 							 "specifier\0", "./sequencer-loop-start[0]\0",
 							 "control-port\0", "4/5\0",
 							 "port-value-is-pointer\0", FALSE,
-							 "value-type\0", G_TYPE_DOUBLE,
-							 "value-size\0", sizeof(gdouble),
-							 "value-length", 1,
+							 "port-value-type\0", G_TYPE_DOUBLE,
+							 "port-value-size\0", sizeof(gdouble),
+							 "port-value-length", 1,
 							 NULL);
 
   count_beats_audio->sequencer_loop_start->port_value.ags_port_double = 0.0;
@@ -205,9 +205,9 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						       "specifier\0", "./sequencer-loop-end[0]\0",
 						       "control-port\0", "5/5\0",
 						       "port-value-is-pointer\0", FALSE,
-						       "value-type\0", G_TYPE_DOUBLE,
-						       "value-size\0", sizeof(gdouble),
-						       "value-length", 1,
+						       "port-value-type\0", G_TYPE_DOUBLE,
+						       "port-value-size\0", sizeof(gdouble),
+						       "port-value-length", 1,
 						       NULL);
 
   count_beats_audio->sequencer_loop_end->port_value.ags_port_double = 16.0;

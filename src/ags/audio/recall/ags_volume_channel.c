@@ -126,9 +126,9 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 					"specifier\0", "./volume[0]\0",
 					"control-port\0", "1/1\0",
 					"port-value-is-pointer\0", FALSE,
-					"value-type\0", G_TYPE_DOUBLE,
-					"value-size\0", sizeof(gdouble),
-					"value-length", 1,
+					"port-value-type\0", G_TYPE_DOUBLE,
+					"port-value-size\0", sizeof(gdouble),
+					"port-value-length", 1,
 					NULL);
 }
 

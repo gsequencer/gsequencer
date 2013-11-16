@@ -142,7 +142,7 @@ ags_port_class_init(AgsPortClass *port)
   param_spec = g_param_spec_gtype("port-value-type\0",
 				  "port-value-type tells you the type of the values\0",
 				  "The port-value-type tells you the type of the values\0",
-				  G_TYPE_DOUBLE,
+				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_VALUE_TYPE,

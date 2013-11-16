@@ -190,7 +190,6 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 
   if(audio_channels_old < audio_channels){
     AgsChannel *input, *output;
-    AgsRecallContainer *play_channel_container;
     AgsPlayChannel *play_channel;
     AgsPlayChannelRunMaster *play_channel_run;
     GtkHBox *hbox;
@@ -200,44 +199,13 @@ ags_panel_set_audio_channels(AgsAudio *audio,
     output = ags_channel_nth(audio->output, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
 
     for(i = audio_channels_old; i < audio_channels; i++){
-      /* AgsPlayChannel */
-      play_channel_container = ags_recall_container_new();
-      play_channel_container->flags |= AGS_RECALL_CONTAINER_PLAY;
-      ags_channel_add_recall_container(input, (GObject *) play_channel_container);
-      
-      play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						     "devout\0", AGS_DEVOUT(AGS_AUDIO(input->audio)->devout),
-						     "source\0", input,
-						     "recall_container\0", play_channel_container,
-						     "audio_channel\0", i,
-						     NULL);
-      
-      ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
-						      AGS_RECALL_OUTPUT_ORIENTATED));
-      ags_channel_add_recall(input, (GObject *) play_channel, TRUE);
 
-      if(GTK_WIDGET_VISIBLE(panel))
-	ags_connectable_connect(AGS_CONNECTABLE(play_channel));
-      
-      /* AgsPlayChannelRun */
-      play_channel_run = (AgsPlayChannelRunMaster *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN_MASTER,
-								  "devout\0", audio->devout,
-								  "source\0", input,
-								  "recall_channel\0", play_channel,
-								  "audio_channel\0", i,
-								  "recall_container\0", play_channel_container,
-								  NULL);
-      
-      ags_recall_set_flags(AGS_RECALL(play_channel_run), (AGS_RECALL_TEMPLATE |
-							  AGS_RECALL_PLAYBACK |
-							  AGS_RECALL_SEQUENCER |
-							  AGS_RECALL_PERSISTENT_SEQUENCER |
-							  AGS_RECALL_NOTATION |
-							  AGS_RECALL_OUTPUT_ORIENTATED));
-      ags_channel_add_recall(input, (GObject *) play_channel_run, TRUE);
-
-      if(GTK_WIDGET_VISIBLE(panel))
-	ags_connectable_connect(AGS_CONNECTABLE(play_channel_run));
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				"ags-play-master\0",
+				0, audio->audio_channels,
+				input->pad, input->pad + 1,
+				FALSE);
 
       /* GtkWidgets */
       hbox = (GtkHBox*) gtk_hbox_new(FALSE, 0);
