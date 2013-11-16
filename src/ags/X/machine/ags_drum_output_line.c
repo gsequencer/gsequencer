@@ -189,14 +189,18 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 {
   if((AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL & (drum_output_line->flags)) == 0){
     AgsDrum *drum;
+
     AgsAudio *audio;
+    AgsRecallContainer *recall_container;
+
     AgsChannel *output;
-    AgsRecallContainer *play_stream_channel_container, *recall_stream_channel_container, *play_loop_channel_container;
     AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
     AgsLoopChannel *loop_channel;
     AgsLoopChannelRun *loop_channel_run;
     AgsStreamChannel *play_stream_channel, *recall_stream_channel;
     AgsStreamChannelRun *play_stream_channel_run, *recall_stream_channel_run;
+
+    GList *list;
 
     printf("ags_drum_output_line_map_recall\n\0");
 
