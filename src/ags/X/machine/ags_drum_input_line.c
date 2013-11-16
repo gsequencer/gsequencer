@@ -225,28 +225,28 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    "ags-play\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    TRUE);
+			    FALSE);
 
   /* ags-volume */
   ags_recall_factory_create(audio,
 			    "ags-volume\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    TRUE);
+			    FALSE);
 
   /* ags-copy */
   ags_recall_factory_create(audio,
 			    "ags-copy\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    TRUE);
+			    FALSE);
 
   /* ags-stream */
   ags_recall_factory_create(audio,
 			    "ags-stream\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    TRUE);
+			    FALSE);
 
   drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;
 }

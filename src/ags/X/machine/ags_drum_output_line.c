@@ -241,25 +241,25 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 			      output->pad, output->pad + 1,
 			      TRUE);
 
-    list = ags_recall_find_type(audio->play, AGS_TYPE_LOOP_CHANNEL);
+    list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL);
   
     if(list != NULL){
       play_loop_channel = AGS_LOOP_CHANNEL(list->data);
     }
 
-    list = ags_recall_find_type(audio->recall, AGS_TYPE_LOOP_CHANNEL);
+    list = ags_recall_find_type(output->recall, AGS_TYPE_LOOP_CHANNEL);
 
     if(list != NULL){
       recall_loop_channel = AGS_LOOP_CHANNEL(list->data);
     }
 
-    list = ags_recall_find_type(audio->play, AGS_TYPE_LOOP_CHANNEL_RUN);
+    list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL_RUN);
   
     if(list != NULL){
       play_loop_channel_run = AGS_LOOP_CHANNEL_RUN(list->data);
     }
 
-    list = ags_recall_find_type(audio->recall, AGS_TYPE_LOOP_CHANNEL_RUN);
+    list = ags_recall_find_type(output->recall, AGS_TYPE_LOOP_CHANNEL_RUN);
 
     if(list != NULL){
       recall_loop_channel_run = AGS_LOOP_CHANNEL_RUN(list->data);

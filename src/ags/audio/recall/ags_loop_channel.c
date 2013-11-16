@@ -103,7 +103,7 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
   gobject->finalize = ags_loop_channel_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("delay_audio\0",
+  param_spec = g_param_spec_object("delay-audio\0",
 				   "assigned delay-audio\0",
 				   "The delay-audio it is assigned with\0",
 				   AGS_TYPE_DELAY_AUDIO,

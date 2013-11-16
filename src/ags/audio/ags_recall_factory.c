@@ -496,6 +496,8 @@ ags_recall_factory_create(AgsAudio *audio,
     }
 
     /* recall */
+    channel = start;
+
     recall_container = ags_recall_container_new();
     ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
@@ -593,6 +595,8 @@ ags_recall_factory_create(AgsAudio *audio,
     }
 
     /* recall */
+    channel = start;
+
     recall_container = ags_recall_container_new();
     ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
@@ -657,10 +661,11 @@ ags_recall_factory_create(AgsAudio *audio,
 
 	/* AgsPlayChannel */
 	play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						       "devout\0", AGS_DEVOUT(audio->devout),
-						       "channel\0", channel,
+						       "devout\0", audio->devout,
+						       "source\0", channel,
 						       "recall_container\0", recall_container,
-						       "audio_channel\0", j,
+						       //TODO:JK: set default
+						       // "audio_channel\0", j,
 						       NULL);
 	ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
 							AGS_RECALL_PLAYBACK |
@@ -672,7 +677,7 @@ ags_recall_factory_create(AgsAudio *audio,
 	/* AgsPlayChannelRun */
 	play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
 							      "devout\0", audio->devout,
-							      "channel\0", channel,
+							      "source\0", channel,
 							      "recall_channel\0", play_channel,
 							      "recall_container\0", recall_container,
 							      "audio_channel\0", j,
@@ -687,6 +692,8 @@ ags_recall_factory_create(AgsAudio *audio,
     }
 
     /* recall */
+    channel = start;
+
     recall_container = ags_recall_container_new();
     ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
@@ -802,6 +809,8 @@ ags_recall_factory_create(AgsAudio *audio,
     }
 
     /* recall */
+    channel = start;
+
     recall_container = ags_recall_container_new();
     ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
@@ -946,7 +955,7 @@ ags_recall_factory_create(AgsAudio *audio,
 	/* AgsVolumeChannel */
 	volume_channel = (AgsVolumeChannel *) g_object_new(AGS_TYPE_VOLUME_CHANNEL,
 							   "devout\0", audio->devout,
-							   "channel\0", channel,
+							   "source\0", channel,
 							   "recall_container\0", recall_container,
 							   NULL);
 							      
@@ -960,7 +969,7 @@ ags_recall_factory_create(AgsAudio *audio,
 	volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
 								  "devout\0", audio->devout,
 								  "recall_channel\0", volume_channel,
-								  "channel\0", channel,
+								  "source\0", channel,
 								  "recall_container\0", recall_container,
 								  NULL);
 	AGS_RECALL(volume_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
@@ -976,6 +985,8 @@ ags_recall_factory_create(AgsAudio *audio,
     }
 
     /* recall */
+    channel = start;
+
     recall_container = ags_recall_container_new();
     ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
@@ -989,7 +1000,7 @@ ags_recall_factory_create(AgsAudio *audio,
 	/* AgsVolumeChannel */
 	volume_channel = (AgsVolumeChannel *) g_object_new(AGS_TYPE_VOLUME_CHANNEL,
 							   "devout\0", audio->devout,
-							   "channel\0", channel,
+							   "source\0", channel,
 							   "recall_container\0", recall_container,
 							   NULL);
 							      
@@ -1003,7 +1014,7 @@ ags_recall_factory_create(AgsAudio *audio,
 	volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
 								  "devout\0", audio->devout,
 								  "recall_channel\0", volume_channel,
-								  "channel\0", channel,
+								  "source\0", channel,
 								  "recall_container\0", recall_container,
 								  NULL);
 	AGS_RECALL(volume_channel_run)->flags |= (AGS_RECALL_TEMPLATE |

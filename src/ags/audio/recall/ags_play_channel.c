@@ -133,7 +133,7 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 					     "port-value-is-pointer\0", FALSE,
 					     "value-type\0", G_TYPE_UINT,
 					     "value-size\0", sizeof(guint),
-					     "value-length", 1,
+					     "value-length\0", 1,
 					     NULL);
 }
 
