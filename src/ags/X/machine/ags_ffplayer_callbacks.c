@@ -57,15 +57,6 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
 					     ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_FFPLAYER);
-
-  /* AgsPlayNotation */
-  g_object_set(G_OBJECT(ffplayer->play_notation),
-	       "devout\0", audio->devout,
-	       NULL);
-
-  g_object_set(G_OBJECT(ffplayer->recall_notation),
-	       "devout\0", audio->devout,
-	       NULL);
 }
 
 void

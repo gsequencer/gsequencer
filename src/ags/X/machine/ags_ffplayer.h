@@ -48,18 +48,6 @@ struct _AgsFFPlayer
 {
   AgsMachine machine;
 
-  AgsDelayAudio *play_delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsPlayNotation *play_notation;
-
-  AgsDelayAudio *recall_delay_audio;
-  AgsDelayAudioRun *recall_delay_audio_run;
-  AgsCountBeatsAudio *recall_count_beats_audio;
-  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-  AgsPlayNotation *recall_notation;
-
   GtkButton *open;
 
   guint control_width;
