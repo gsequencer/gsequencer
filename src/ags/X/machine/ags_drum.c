@@ -538,6 +538,14 @@ ags_drum_set_audio_channels(AgsAudio *audio,
     AgsChannel *channel;
     GList *list_pad;
 
+    /* ags-copy-pattern */
+    ags_recall_factory_create(audio,
+			      "ags-copy-pattern\0",
+			      audio_channels_old, audio_channels,
+			      0, audio->input_pads,
+			      FALSE,
+			      TRUE);
+
     /* AgsInput */
     channel = audio->input;
     list_input_pad = gtk_container_get_children((GtkContainer *) drum->input_pad);
@@ -604,6 +612,14 @@ ags_drum_set_audio_channels(AgsAudio *audio,
   }else if(audio_channels < audio_channels_old){
     GList *list_output_pad_next, *list_input_pad_next;
 
+    /* ags-copy-pattern */
+    ags_recall_factory_create(audio,
+			      "ags-copy-pattern\0",
+			      audio_channels, audio_channels_old,
+			      0, audio->input_pads,
+			      FALSE,
+			      TRUE);
+
     list_output_pad = gtk_container_get_children((GtkContainer *) drum->output_pad);
     list_input_pad = gtk_container_get_children((GtkContainer *) drum->input_pad);
 
@@ -661,6 +677,16 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
     AgsDrumInputPad *drum_input_pad;
 
     if(pads_old < pads){
+
+      /* ags-copy-pattern */
+      ags_recall_factory_create(audio,
+				"ags-copy-pattern\0",
+				0, audio->audio_channels,
+				pads_old, pads,
+				FALSE,
+				TRUE);
+
+      /**/
       channel = ags_channel_nth(audio->input, pads_old * audio->audio_channels);
 
       for(i = pads_old; i < pads; i++){
@@ -686,6 +712,14 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
       }
     }else{
+      /* ags-copy-pattern */
+      ags_recall_factory_create(audio,
+				"ags-copy-pattern\0",
+				0, audio->audio_channels,
+				pads_old, pads,
+				FALSE,
+				TRUE);
+
       /* destroy AgsPad's */
       if(pads == 0){
 	drum->selected_pad = NULL;

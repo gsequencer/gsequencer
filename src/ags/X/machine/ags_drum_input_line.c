@@ -260,6 +260,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       g_object_set(G_OBJECT(copy_channel),
 		   "destination\0", destination,
 		   NULL);
+
+      list = list->next;
     }
 
     list = current->recall;
@@ -270,6 +272,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       g_object_set(G_OBJECT(copy_channel),
 		   "destination\0", destination,
 		   NULL);
+
+      list = list->next;
     }
 
     current = current->next;
