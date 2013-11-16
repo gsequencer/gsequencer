@@ -186,9 +186,6 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
   AgsLine *line;
   AgsAudio *audio;
   AgsChannel *source;
-  AgsRecallContainer *play_volume_channel_container;
-  AgsVolumeChannel *volume_channel;
-  AgsVolumeChannelRun *volume_channel_run;
   guint i;
 
   line = AGS_LINE(mixer_input_line);
@@ -202,41 +199,12 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
   if((AGS_MIXER_INPUT_LINE_MAPPED_RECALL & (mixer_input_line->flags)) == 0){
     mixer_input_line->flags |= AGS_MIXER_INPUT_LINE_MAPPED_RECALL;
 
-    /* volume */
-    /* recall for channel->play */
-    play_volume_channel_container = ags_recall_container_new();
-    ags_channel_add_recall_container(source, (GObject *) play_volume_channel_container);
-
-    /* AgsVolumeChannel */
-    volume_channel = (AgsVolumeChannel *) g_object_new(AGS_TYPE_VOLUME_CHANNEL,
-						       "devout\0", audio->devout,
-						       "source\0", source,
-						       "recall_container\0", play_volume_channel_container,
-						       NULL);
-							      
-    AGS_RECALL(volume_channel)->flags |= (AGS_RECALL_TEMPLATE |
-					  AGS_RECALL_PLAYBACK |
-					  AGS_RECALL_PROPAGATE_DONE |
-					  AGS_RECALL_OUTPUT_ORIENTATED);
-    ags_channel_add_recall(source, (GObject *) volume_channel, TRUE);
-
-    /* AgsVolumeChannelRun */
-    volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
-							      "devout\0", audio->devout,
-							      "recall_channel\0", volume_channel,
-							      "source\0", source,
-							      "recall_container\0", play_volume_channel_container,
-							      //							      "volume\0", &(GTK_RANGE(mixer_input_line->volume)->adjustment->value),
-							      NULL);
-    
-    AGS_RECALL(volume_channel_run)->flags |= (AGS_RECALL_TEMPLATE |
-					      AGS_RECALL_PLAYBACK |
-					      AGS_RECALL_PROPAGATE_DONE |
-					      AGS_RECALL_OUTPUT_ORIENTATED);
-    ags_channel_add_recall(source, (GObject *) volume_channel_run, TRUE);
-
-    if(GTK_WIDGET_VISIBLE(mixer))
-      ags_connectable_connect(AGS_CONNECTABLE(volume_channel_run));
+    /* ags-volume */
+    ags_recall_factory_create(audio,
+			      "ags-volume\0",
+			      0, audio->audio_channels,
+			      source->pad, source->pad + 1,
+			      FALSE);
   }
 }
 
