@@ -450,14 +450,14 @@ ags_notation_list_safe_properties(AgsPortlet *portlet)
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   static GList *list = NULL;
 
-  phtread_mutex_lock(&mutex);
+  pthread_mutex_lock(&mutex);
 
   if(list == NULL){
     list = g_list_prepend(list, "current-notes\0");
     list = g_list_prepend(list, "next-notes\0");
   }
 
-  phtread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(&mutex);
 
   return(list);
 }

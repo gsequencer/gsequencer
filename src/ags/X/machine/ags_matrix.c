@@ -680,11 +680,12 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
       source = ags_channel_nth(audio->output, pads_old);
 
-      delay_audio = matrix->play_delay_audio;
+      stop = 1;
+      list = ags_recall_find_type(AGS_AUDIO(source->audio)->play, AGS_TYPE_DELAY_AUDIO);
 
-      if(delay_audio != NULL)
-	stop = (guint) ceil(delay_audio->sequencer_duration * delay_audio->sequencer_delay);
-
+      if(list != NULL && (delay_audio = AGS_DELAY_AUDIO(list->data)) != NULL){
+	stop = (guint) ceil(delay_audio->sequencer_duration->port_value.ags_port_double);
+      }
 
       audio_signal = ags_audio_signal_get_template(source->first_recycling->audio_signal);
       ags_audio_signal_stream_resize(audio_signal, stop);

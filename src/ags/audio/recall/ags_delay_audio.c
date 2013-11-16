@@ -42,6 +42,7 @@ void ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble du
 void ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
 
 enum{
+  NOTATION_DURATION_CHANGED,
   SEQUENCER_DURATION_CHANGED,
   LAST_SIGNAL,
 };
@@ -170,8 +171,17 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 
 
   /* signals */
+  delay_audio_signals[NOTATION_DURATION_CHANGED] = 
+    g_signal_new("notation-duration-changed\0",
+		 G_TYPE_FROM_CLASS(delay_audio),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsDelayAudioClass, notation_duration_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
   delay_audio_signals[SEQUENCER_DURATION_CHANGED] = 
-    g_signal_new("sequencer_duration_changed\0",
+    g_signal_new("sequencer-duration-changed\0",
 		 G_TYPE_FROM_CLASS(delay_audio),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioClass, sequencer_duration_changed),
@@ -691,6 +701,17 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 
   g_value_set_double(&value, duration);
   ags_delay_audio_notation_duration_changed(delay_audio);
+}
+
+void
+ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio)
+{
+  g_return_if_fail(AGS_IS_DELAY_AUDIO(delay_audio));
+
+  g_object_ref((GObject *) delay_audio);
+  g_signal_emit(G_OBJECT(delay_audio),
+		delay_audio_signals[NOTATION_DURATION_CHANGED], 0);
+  g_object_unref((GObject *) delay_audio);
 }
 
 void
