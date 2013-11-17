@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_recall_container.h>
 
 #define AGS_TYPE_RECALL_FACTORY                (ags_recall_factory_get_type())
 #define AGS_RECALL_FACTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_FACTORY, AgsRecallFactory))
@@ -39,7 +40,8 @@ typedef enum{
   AGS_RECALL_FACTORY_INPUT,
   AGS_RECALL_FACTORY_REMAP,
   AGS_RECALL_FACTORY_ADD,
-  AGS_RECALL_FACTORY_REMOVE,
+  AGS_RECALL_FACTORY_PLAY,
+  AGS_RECALL_FACTORY_RECALL
 }AgsRecallFactoryCreateFlags;
 
 struct _AgsRecallFactory
@@ -55,11 +57,14 @@ struct _AgsRecallFactoryClass
 GType ags_recall_factory_get_type();
 
 GList* ags_recall_factory_create(AgsAudio *audio,
-				 AgsRecallContainer *recall_container,
+				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 				 gchar *plugin_name,
 				 guint start_audio_channel, guint stop_audio_channel,
 				 guint start_pad, guint stop_pad,
 				 guint create_flags, guint recall_flags);
+
+void ags_recall_factory_remove(AgsAudio *audio,
+			       AgsRecallContainer *recall_container);
 
 /*  */
 AgsRecallFactory* ags_recall_factory_get_instance();
