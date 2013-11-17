@@ -22,6 +22,7 @@
 
 #include <ags/plugin/ags_plugin_stock.h>
 
+#include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
@@ -201,10 +202,14 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
 
     /* ags-volume */
     ags_recall_factory_create(audio,
+			      NULL, NULL,
 			      "ags-volume\0",
 			      0, audio->audio_channels,
 			      source->pad, source->pad + 1,
-			      FALSE);
+			      (AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
 }
 

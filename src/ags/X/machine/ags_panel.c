@@ -24,6 +24,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
@@ -200,11 +201,13 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 
     /* ags-play */
     ags_recall_factory_create(audio,
+			      NULL, NULL,
 			      "ags-play-master\0",
 			      audio_channels_old, audio_channels,
 			      input->pad, input->pad + 1,
-			      FALSE,
-			      TRUE);
+			      (AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_PLAY),
+			      0);
 
     for(i = audio_channels_old; i < audio_channels; i++){
 
@@ -231,13 +234,9 @@ ags_panel_set_audio_channels(AgsAudio *audio,
     GList *list2, *list3;
 
     /* ags-play */
-    ags_recall_factory_create(audio,
-			      "ags-play-master\0",
-			      audio_channels_old, audio_channels,
-			      input->pad, input->pad + 1,
-			      FALSE,
-			      TRUE);
-
+    //TODO:JK: implement me
+    //    ags_recall_factory_remove(audio,
+    //			      );
 
     list0 = g_list_nth(gtk_container_get_children((GtkContainer *) panel->vbox),
 		       audio_channels_old);

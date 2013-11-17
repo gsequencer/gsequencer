@@ -26,6 +26,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
@@ -233,19 +234,23 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
   /* ags-volume */
   ags_recall_factory_create(audio,
+			    NULL, NULL,
 			    "ags-volume\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    FALSE,
-			    FALSE);
+			    (AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
   /* ags-copy */
   ags_recall_factory_create(audio,
+			    NULL, NULL,
 			    "ags-copy\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    FALSE,
-			    FALSE);
+			    (AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
   current = source;
   
@@ -308,11 +313,13 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
   /* ags-stream */
   ags_recall_factory_create(audio,
+			    NULL, NULL,
 			    "ags-stream\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    FALSE,
-			    FALSE);
+			    (AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
   drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;
 }

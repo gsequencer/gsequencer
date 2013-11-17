@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_recall_factory.h>
+
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
@@ -236,11 +238,14 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* ags-loop */
     ags_recall_factory_create(audio,
+			      NULL, NULL,
 			      "ags-loop\0",
 			      0, audio->audio_channels,
 			      output->pad, output->pad + 1,
-			      TRUE,
-			      FALSE);
+			      (AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
 
     list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL);
   
@@ -288,11 +293,14 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 
     /* ags-stream */
     ags_recall_factory_create(audio,
+			      NULL, NULL,
 			      "ags-stream\0",
 			      0, audio->audio_channels,
 			      output->pad, output->pad + 1,
-			      TRUE,
-			      FALSE);
+			      (AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
 }
 

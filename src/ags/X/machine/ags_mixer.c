@@ -24,6 +24,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 
 #include <ags/X/ags_pad.h>

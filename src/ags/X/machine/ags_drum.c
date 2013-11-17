@@ -40,6 +40,7 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
@@ -184,11 +185,13 @@ ags_drum_init(AgsDrum *drum)
 
   /* ags-delay */
   ags_recall_factory_create(audio,
+			    NULL, NULL,
 			    "ags-delay\0",
 			    0, 0,
 			    0, 0,
-			    TRUE,
-			    FALSE);
+			    (AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
   
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
   
@@ -204,11 +207,13 @@ ags_drum_init(AgsDrum *drum)
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
+			    NULL, NULL,
 			    "ags-count-beats\0",
 			    0, 0,
 			    0, 0,
-			    TRUE,
-			    FALSE);
+			    (AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
   
   list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
   
@@ -234,11 +239,13 @@ ags_drum_init(AgsDrum *drum)
 
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
+			    NULL, NULL,
 			    "ags-copy-pattern\0",
 			    0, 0,
 			    0, 0,
-			    FALSE,
-			    FALSE);
+			    (AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
 
   list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
   
@@ -540,11 +547,13 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 
     /* ags-copy-pattern */
     ags_recall_factory_create(audio,
+			      NULL, NULL,
 			      "ags-copy-pattern\0",
 			      audio_channels_old, audio_channels,
 			      0, audio->input_pads,
-			      FALSE,
-			      TRUE);
+			      (AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
 
     /* AgsInput */
     channel = audio->input;
@@ -613,12 +622,9 @@ ags_drum_set_audio_channels(AgsAudio *audio,
     GList *list_output_pad_next, *list_input_pad_next;
 
     /* ags-copy-pattern */
-    ags_recall_factory_create(audio,
-			      "ags-copy-pattern\0",
-			      audio_channels, audio_channels_old,
-			      0, audio->input_pads,
-			      FALSE,
-			      TRUE);
+    //TODO:JK: implement me
+    //    ags_recall_factory_remove(audio,
+    //			      );
 
     list_output_pad = gtk_container_get_children((GtkContainer *) drum->output_pad);
     list_input_pad = gtk_container_get_children((GtkContainer *) drum->input_pad);
@@ -680,11 +686,13 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 
       /* ags-copy-pattern */
       ags_recall_factory_create(audio,
+				NULL, NULL,
 				"ags-copy-pattern\0",
 				0, audio->audio_channels,
 				pads_old, pads,
-				FALSE,
-				TRUE);
+				(AGS_RECALL_FACTORY_ADD |
+				 AGS_RECALL_FACTORY_RECALL),
+				0);
 
       /**/
       channel = ags_channel_nth(audio->input, pads_old * audio->audio_channels);
@@ -713,12 +721,9 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
       }
     }else{
       /* ags-copy-pattern */
-      ags_recall_factory_create(audio,
-				"ags-copy-pattern\0",
-				0, audio->audio_channels,
-				pads_old, pads,
-				FALSE,
-				TRUE);
+      //TODO:JK: implement me
+      //      ags_recall_factory_remove(audio,
+      //			);
 
       /* destroy AgsPad's */
       if(pads == 0){
