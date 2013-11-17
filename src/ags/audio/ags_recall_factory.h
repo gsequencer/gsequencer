@@ -34,6 +34,14 @@
 typedef struct _AgsRecallFactory AgsRecallFactory;
 typedef struct _AgsRecallFactoryClass AgsRecallFactoryClass;
 
+typedef enum{
+  AGS_RECALL_FACTORY_OUTPUT,
+  AGS_RECALL_FACTORY_INPUT,
+  AGS_RECALL_FACTORY_REMAP,
+  AGS_RECALL_FACTORY_ADD,
+  AGS_RECALL_FACTORY_REMOVE,
+}AgsRecallFactoryCreateFlags;
+
 struct _AgsRecallFactory
 {
   GObject object;
@@ -47,11 +55,11 @@ struct _AgsRecallFactoryClass
 GType ags_recall_factory_get_type();
 
 GList* ags_recall_factory_create(AgsAudio *audio,
+				 AgsRecallContainer *recall_container,
 				 gchar *plugin_name,
 				 guint start_audio_channel, guint stop_audio_channel,
 				 guint start_pad, guint stop_pad,
-				 gboolean is_output,
-				 gboolean remap);
+				 guint create_flags, guint recall_flags);
 
 /*  */
 AgsRecallFactory* ags_recall_factory_get_instance();

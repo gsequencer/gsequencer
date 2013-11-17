@@ -185,23 +185,25 @@ ags_recall_factory_disconnect(AgsConnectable *connectable)
 /**
  * ags_recall_factory_create:
  * @audio an #AgsAudio that should keep the recalls
+ * @recall_container an #AgsRecallContainer to indetify what recall to use
  * @plugin_name the plugin identifier to instantiate 
  * @start_audio_channel the first audio channel to apply
  * @stop_audio_channel the last audio channel to apply
  * @start_pad the first pad to apply
  * @stop_pad the last pad to apply
- * @is_output select output or input of audio
+ * @create_flags modify the behaviour of this function
+ * @recall_flags flags to be set for #AgsRecall
  * Returns: The available AgsPort objects to modify of the plugin.
  *
  * Instantiate #AgsRecall by this factory.
  */
 GList*
 ags_recall_factory_create(AgsAudio *audio,
+			  AgsRecallContainer *recall_container,
 			  gchar *plugin_name,
 			  guint start_audio_channel, guint stop_audio_channel,
 			  guint start_pad, guint stop_pad,
-			  gboolean is_output,
-			  gboolean remap)
+			  guint create_flags, guint recall_flags)
 {
   AgsChannel *start, *channel;
   AgsPort *port;
@@ -864,6 +866,18 @@ ags_recall_factory_create(AgsAudio *audio,
       AGS_RECALL(copy_pattern_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 						    AGS_RECALL_SEQUENCER);
       ags_audio_add_recall(audio, (GObject *) copy_pattern_audio_run, TRUE);
+    }else{
+      GList *list;
+
+      list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
+
+      copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+
+      recall_container = AGS_RECALL(copy_pattern_audio)->container;
+
+      list = ags_recall_find_template(container->recall_audio_run);
+
+      copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
     }
 
     for(i = 0; i < stop_pad - start_pad; i++){
