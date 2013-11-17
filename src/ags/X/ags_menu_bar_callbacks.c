@@ -311,8 +311,8 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   drum->machine.audio->audio_channels = 2;
 
   /* AgsDrumInputPad */
-  ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
+  ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
 }
 
 void

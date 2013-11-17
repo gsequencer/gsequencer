@@ -142,7 +142,7 @@ ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run)
   gobject->finalize = ags_loop_channel_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("count_beats_audio_run\0",
+  param_spec = g_param_spec_object("count-beats-audio-run\0",
 				   "assigned AgsCountBeatsAudioRun\0",
 				   "The pointer to a counter object which indicates when looping should happen\0",
 				   G_TYPE_OBJECT,
@@ -255,19 +255,19 @@ ags_loop_channel_run_set_property(GObject *gobject,
 	    delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(loop_channel_run->count_beats_audio_run->delay_audio_run)->recall_audio);
 	    
 	    loop_channel_run->sequencer_duration_changed_handler =
-	      g_signal_connect(G_OBJECT(delay_audio), "sequencer_duration_changed\0",
+	      g_signal_connect(G_OBJECT(delay_audio), "sequencer-duration-changed\0",
 			       G_CALLBACK(ags_loop_channel_run_sequencer_duration_changed_callback), loop_channel_run);
 	    
 	    /* AgsCountBeatsAudioRun */
 	    loop_channel_run->start_handler =
-	      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer_start\0",
+	      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer-start\0",
 			       G_CALLBACK(ags_loop_channel_run_loop_callback), loop_channel_run);
 	    
 	    loop_channel_run->loop_handler =
-	      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer_loop\0",
+	      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer-loop\0",
 			       G_CALLBACK(ags_loop_channel_run_loop_callback), loop_channel_run);
 	    loop_channel_run->stop_handler =
-	      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer_stop\0",
+	      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer-stop\0",
 			       G_CALLBACK(ags_loop_channel_run_loop_callback), loop_channel_run);
 	  }
 	}
@@ -348,23 +348,25 @@ ags_loop_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
     AgsDelayAudio *delay_audio;
 
     /* AgsDelayAudio */
-    delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(loop_channel_run->count_beats_audio_run->delay_audio_run)->recall_audio);
+    if(loop_channel_run->count_beats_audio_run->delay_audio_run != NULL){
+      delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(loop_channel_run->count_beats_audio_run->delay_audio_run)->recall_audio);
 
-    loop_channel_run->sequencer_duration_changed_handler =
-      g_signal_connect(G_OBJECT(delay_audio), "sequencer_duration_changed\0",
-		       G_CALLBACK(ags_loop_channel_run_sequencer_duration_changed_callback), loop_channel_run);
+      loop_channel_run->sequencer_duration_changed_handler =
+	g_signal_connect(G_OBJECT(delay_audio), "sequencer-duration-changed\0",
+			 G_CALLBACK(ags_loop_channel_run_sequencer_duration_changed_callback), loop_channel_run);
+    }
 
     /* AgsCountBeatsAudioRun */
     loop_channel_run->start_handler =
-      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer_start\0",
+      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer-start\0",
 		       G_CALLBACK(ags_loop_channel_run_start_callback), loop_channel_run);
     
     loop_channel_run->loop_handler =
-      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer_loop\0",
+      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer-loop\0",
 		       G_CALLBACK(ags_loop_channel_run_loop_callback), loop_channel_run);
     
     loop_channel_run->stop_handler =
-      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer_stop\0",
+      g_signal_connect(G_OBJECT(loop_channel_run->count_beats_audio_run), "sequencer-stop\0",
 		       G_CALLBACK(ags_loop_channel_run_stop_callback), loop_channel_run);
   }
 }
@@ -437,7 +439,7 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
   }
   
   g_object_set(G_OBJECT(recall),
-	       "count_beats_audio_run\0", count_beats_audio_run,
+	       "count-beats-audio-run\0", count_beats_audio_run,
 	       NULL);
 }
 
@@ -553,8 +555,8 @@ ags_loop_channel_run_new(AgsChannel *channel,
   AgsLoopChannelRun *loop_channel_run;
 
   loop_channel_run = (AgsLoopChannelRun *) g_object_new(AGS_TYPE_LOOP_CHANNEL_RUN,
-							"channel\0", channel,
-							"count_beats_audio_run\0", count_beats_audio_run,
+							"source\0", channel,
+							"count-beats-audio-run\0", count_beats_audio_run,
 							NULL);
 
   if(is_template){

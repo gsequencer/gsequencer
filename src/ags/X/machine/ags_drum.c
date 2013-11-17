@@ -423,7 +423,7 @@ ags_drum_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
   AgsDrum *drum;
-  AgsDelayAudioRun *recall_delay_audio_run;
+  AgsDelayAudioRun *play_delay_audio_run;
   AgsRecallHandler *recall_handler;
   GList *list;
   int i;
@@ -433,20 +433,20 @@ ags_drum_connect(AgsConnectable *connectable)
   drum = AGS_DRUM(connectable);
 
   /* recalls */
-  list = ags_recall_find_type(AGS_AUDIO(AGS_MACHINE(drum)->audio)->recall, AGS_TYPE_DELAY_AUDIO_RUN);
+  list = ags_recall_find_type(AGS_AUDIO(AGS_MACHINE(drum)->audio)->play, AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
-    recall_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "sequencer-count\0";
+    recall_handler->callback = G_CALLBACK(ags_drum_sequencer_count_callback);
+    recall_handler->data = (gpointer) drum;
+
+    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
   }
   
-  recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-  recall_handler->signal_name = "sequencer_count\0";
-  recall_handler->callback = G_CALLBACK(ags_drum_sequencer_count_callback);
-  recall_handler->data = (gpointer) drum;
-
-  ags_recall_add_handler(AGS_RECALL(recall_delay_audio_run), recall_handler);
-
   /* AgsDrum */
   g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);

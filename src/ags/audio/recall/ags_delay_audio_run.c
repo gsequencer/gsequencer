@@ -150,7 +150,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 
   /* signals */
   delay_audio_run_signals[NOTATION_ALLOC_OUTPUT] =
-    g_signal_new("notation_alloc_output\0",
+    g_signal_new("notation-alloc-output\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_output),
@@ -161,7 +161,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   delay_audio_run_signals[NOTATION_ALLOC_INPUT] =
-    g_signal_new("notation_alloc_input\0",
+    g_signal_new("notation-alloc-input\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_input),
@@ -172,7 +172,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   delay_audio_run_signals[NOTATION_COUNT] =
-    g_signal_new("notation_count\0",
+    g_signal_new("notation-count\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_count),
@@ -183,7 +183,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   delay_audio_run_signals[SEQUENCER_ALLOC_OUTPUT] =
-    g_signal_new("sequencer_alloc_output\0",
+    g_signal_new("sequencer-alloc-output\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_output),
@@ -194,7 +194,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   delay_audio_run_signals[SEQUENCER_ALLOC_INPUT] =
-    g_signal_new("sequencer_alloc_input\0",
+    g_signal_new("sequencer-alloc-input\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_input),
@@ -205,7 +205,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   delay_audio_run_signals[SEQUENCER_COUNT] =
-    g_signal_new("sequencer_count\0",
+    g_signal_new("sequencer-count\0",
 		 G_TYPE_FROM_CLASS(delay_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_count),
@@ -310,6 +310,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
+  g_message("debug\0");
+
   if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&
      delay_audio_run->dependency_ref == 0){
     delay_audio_run->notation_counter = 0;
@@ -390,7 +392,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 	run_order = 0;
       }
 
-      //      g_message("ags_delay_audio_run_run_pre: alloc sequencer[%d]\0", run_order);
+      g_message("ags_delay_audio_run_run_pre: alloc sequencer[%d]\0", run_order);
 
 
       /* sequencer speed */

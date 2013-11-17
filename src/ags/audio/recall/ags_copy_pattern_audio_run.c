@@ -322,7 +322,7 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "count_beats_audio_run\0", count_beats_audio_run,
+	       "count-beats-audio-run\0", count_beats_audio_run,
 	       NULL);
 }
 
@@ -371,7 +371,7 @@ ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
-								   "count_beats_audio_run\0", count_beats_audio_run,
+								   "count-beats-audio-run\0", count_beats_audio_run,
 								   NULL);
 
   return(copy_pattern_audio_run);

@@ -149,12 +149,20 @@ ags_loop_channel_set_property(GObject *gobject,
       if(loop_channel->delay_audio == delay_audio)
 	return;
 
-      if(loop_channel->delay_audio != NULL)
+      if(loop_channel->delay_audio != NULL){
 	g_object_unref(G_OBJECT(loop_channel->delay_audio));
-
-      if(delay_audio != NULL)
-	g_object_ref(G_OBJECT(delay_audio));
 	
+	g_signal_handler_disconnect(G_OBJECT(loop_channel),
+				    loop_channel->sequencer_duration_changed_handler);
+      }
+
+      if(delay_audio != NULL){
+	g_object_ref(G_OBJECT(delay_audio));
+
+	loop_channel->sequencer_duration_changed_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio), "sequencer-duration-changed\0",
+									    G_CALLBACK(ags_loop_channel_sequencer_duration_changed_callback), loop_channel);
+      }
+
       loop_channel->delay_audio = delay_audio;
     }
     break;
@@ -210,7 +218,7 @@ ags_loop_channel_connect(AgsConnectable *connectable)
   loop_channel = AGS_LOOP_CHANNEL(connectable);
 
   if(loop_channel->delay_audio != NULL){
-    loop_channel->sequencer_duration_changed_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio), "sequencer_duration_changed\0",
+    loop_channel->sequencer_duration_changed_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio), "sequencer-duration-changed\0",
 									G_CALLBACK(ags_loop_channel_sequencer_duration_changed_callback), loop_channel);
   }
 }

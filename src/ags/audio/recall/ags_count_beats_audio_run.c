@@ -179,7 +179,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   gobject->finalize = ags_count_beats_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("delay_audio_run\0",
+  param_spec = g_param_spec_object("delay-audio-run\0",
 				   "assigned AgsDelayAudioRun\0",
 				   "The AgsDelayAudioRun which emits sequencer_alloc_output sequencer_count signal\0",
 				   AGS_TYPE_DELAY_AUDIO_RUN,
@@ -188,7 +188,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 				  PROP_DELAY_AUDIO_RUN,
 				  param_spec);
   
-  param_spec = g_param_spec_uint("notation_counter\0",
+  param_spec = g_param_spec_uint("notation-counter\0",
 				 "notation counter indicates offset\0",
 				 "The notation counter indicates the offset in the notation\0",
 				 0,
@@ -199,7 +199,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 				  PROP_NOTATION_COUNTER,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("sequencer_counter\0",
+  param_spec = g_param_spec_uint("sequencer-counter\0",
 				 "sequencer counter indicates offset\0",
 				 "The sequenecer counter indicates the offset in the sequencer\0",
 				 0,
@@ -228,7 +228,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 
   /* signals */
   count_beats_audio_run_signals[NOTATION_START] =
-    g_signal_new("notation_start\0",
+    g_signal_new("notation-start\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, notation_start),
@@ -238,7 +238,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_UINT);
 
   count_beats_audio_run_signals[NOTATION_LOOP] =
-    g_signal_new("notation_loop\0",
+    g_signal_new("notation-loop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, notation_loop),
@@ -248,7 +248,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_UINT);
 
   count_beats_audio_run_signals[NOTATION_STOP] =
-    g_signal_new("notation_stop\0",
+    g_signal_new("notation-stop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, notation_stop),
@@ -258,7 +258,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_UINT);
 
   count_beats_audio_run_signals[SEQUENCER_START] =
-    g_signal_new("sequencer_start\0",
+    g_signal_new("sequencer-start\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, sequencer_start),
@@ -268,7 +268,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_UINT);
 
   count_beats_audio_run_signals[SEQUENCER_LOOP] =
-    g_signal_new("sequencer_loop\0",
+    g_signal_new("sequencer-loop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, sequencer_loop),
@@ -278,7 +278,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 G_TYPE_UINT);
 
   count_beats_audio_run_signals[SEQUENCER_STOP] =
-    g_signal_new("sequencer_stop\0",
+    g_signal_new("sequencer-stop\0",
 		 G_TYPE_FROM_CLASS(count_beats_audio_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsCountBeatsAudioRunClass, sequencer_stop),
@@ -580,7 +580,7 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   }
 
   g_object_set(G_OBJECT(recall),
-	       "delay_audio_run\0", delay_audio_run,
+	       "delay-audio-run\0", delay_audio_run,
 	       NULL);
 }
 

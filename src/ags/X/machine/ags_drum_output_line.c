@@ -246,42 +246,45 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
   
     if(list != NULL){
       play_loop_channel = AGS_LOOP_CHANNEL(list->data);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(play_loop_channel),
+		   "delay-audio\0", play_delay_audio,
+		   NULL);
     }
 
     list = ags_recall_find_type(output->recall, AGS_TYPE_LOOP_CHANNEL);
 
     if(list != NULL){
       recall_loop_channel = AGS_LOOP_CHANNEL(list->data);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_loop_channel),
+		   "delay-audio\0", recall_delay_audio,
+		   NULL);
     }
 
     list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL_RUN);
   
     if(list != NULL){
       play_loop_channel_run = AGS_LOOP_CHANNEL_RUN(list->data);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(play_loop_channel_run),
+		   "count-beats-audio-run\0", play_count_beats_audio_run,
+		   NULL);
     }
 
     list = ags_recall_find_type(output->recall, AGS_TYPE_LOOP_CHANNEL_RUN);
 
     if(list != NULL){
       recall_loop_channel_run = AGS_LOOP_CHANNEL_RUN(list->data);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_loop_channel_run),
+		   "count-beats-audio-run\0", recall_count_beats_audio_run,
+		   NULL);
     }
-
-    /* set dependency */
-    g_object_set(G_OBJECT(play_loop_channel),
-		 "delay-audio\0", play_delay_audio,
-		 NULL);
-
-    g_object_set(G_OBJECT(recall_loop_channel),
-		 "delay-audio\0", recall_delay_audio,
-		 NULL);
-
-    g_object_set(G_OBJECT(play_loop_channel_run),
-		 "count-beats-audio-run\0", play_count_beats_audio_run,
-		 NULL);
-
-    g_object_set(G_OBJECT(recall_loop_channel_run),
-		 "count-beats-audio-run\0", recall_count_beats_audio_run,
-		 NULL);
 
     /* ags-stream */
     ags_recall_factory_create(audio,

@@ -29,7 +29,6 @@ ags_panel_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPanel
     return;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
-  panel->machine.audio->devout = (GObject *) window->devout;
 
   AGS_MACHINE(panel)->name = g_strdup_printf("Default %d\0",
 					     ags_window_find_machine_counter(window, AGS_TYPE_PANEL)->counter);

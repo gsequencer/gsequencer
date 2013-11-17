@@ -210,6 +210,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsChannel *source;
   AgsChannel *current, *destination;
   AgsCopyChannel *copy_channel;
+  AgsCopyChannelRun *copy_channel_run;
 
   GList *list;
   guint i;
@@ -252,6 +253,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     destination = ags_channel_nth(audio->output,
 				  current->audio_channel);
 
+    /* play */
     list = current->play;
 
     while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
@@ -264,12 +266,37 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       list = list->next;
     }
 
+    list = current->play;
+
+    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
+      copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
+
+      g_object_set(G_OBJECT(copy_channel_run),
+		   "destination\0", destination,
+		   NULL);
+
+      list = list->next;
+    }
+
+    /* recall */
     list = current->recall;
 
     while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
       copy_channel = AGS_COPY_CHANNEL(list->data);
 
       g_object_set(G_OBJECT(copy_channel),
+		   "destination\0", destination,
+		   NULL);
+
+      list = list->next;
+    }
+
+    list = current->recall;
+    
+    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
+      copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
+
+      g_object_set(G_OBJECT(copy_channel_run),
 		   "destination\0", destination,
 		   NULL);
 

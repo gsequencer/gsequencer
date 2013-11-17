@@ -185,28 +185,28 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 			     gpointer data)
 {
   AgsPanel *panel;
+  AgsChannel *input, *output;
 
   panel = (AgsPanel *) audio->machine;
 
+  input = ags_channel_nth(audio->input, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
+  output = ags_channel_nth(audio->output, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
+
   if(audio_channels_old < audio_channels){
-    AgsChannel *input, *output;
     AgsPlayChannel *play_channel;
     AgsPlayChannelRunMaster *play_channel_run;
     GtkHBox *hbox;
     guint i;
 
-    input = ags_channel_nth(audio->input, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
-    output = ags_channel_nth(audio->output, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
+    /* ags-play */
+    ags_recall_factory_create(audio,
+			      "ags-play-master\0",
+			      audio_channels_old, audio_channels,
+			      input->pad, input->pad + 1,
+			      FALSE,
+			      TRUE);
 
     for(i = audio_channels_old; i < audio_channels; i++){
-
-      /* ags-play */
-      ags_recall_factory_create(audio,
-				"ags-play-master\0",
-				0, audio_channels,
-				input->pad, input->pad + 1,
-				FALSE,
-				FALSE);
 
       /* GtkWidgets */
       hbox = (GtkHBox*) gtk_hbox_new(FALSE, 0);
@@ -229,6 +229,15 @@ ags_panel_set_audio_channels(AgsAudio *audio,
   }else{
     GList *list0, *list1;
     GList *list2, *list3;
+
+    /* ags-play */
+    ags_recall_factory_create(audio,
+			      "ags-play-master\0",
+			      audio_channels_old, audio_channels,
+			      input->pad, input->pad + 1,
+			      FALSE,
+			      TRUE);
+
 
     list0 = g_list_nth(gtk_container_get_children((GtkContainer *) panel->vbox),
 		       audio_channels_old);

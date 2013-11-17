@@ -214,23 +214,28 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
   loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 
   /* AgsCopyPatternAudio */
-  list = ags_recall_find_type(drum->machine.audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
+  list = AGS_MACHINE(drum)->audio->play;
 
-  if(list != NULL){
+  while((list = ags_recall_find_type(list,
+				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->loop = loop;
+    count_beats_audio->loop->port_value.ags_port_boolean = loop;
+
+    list = list->next;
   }
 
-  list = ags_recall_find_type(drum->machine.audio->recall,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
+  list = AGS_MACHINE(drum)->audio->recall;
 
-  if(list != NULL){
+  while((list = ags_recall_find_type(list,
+				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->loop = loop;
+    count_beats_audio->loop->port_value.ags_port_boolean = loop;
+
+    list = list->next;
   }
+
 }
 
 void
@@ -252,31 +257,36 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
     AgsStartDevout *start_devout;
+    GList *tasks;
 
     printf("drum: on\n\0");
+
+    tasks = NULL;
 
     /* create init task */
     init_audio = ags_init_audio_new(AGS_MACHINE(drum)->audio,
 				    FALSE, TRUE, FALSE);
-
-    /* append AgsInitAudio */
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(init_audio));
+    tasks = g_list_prepend(tasks,
+			   init_audio);
 
     /* create append task */
     append_audio = ags_append_audio_new(G_OBJECT(audio_loop),
 					AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play));
 
-    /* append AgsAppendAudio */
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(append_audio));
+    tasks = g_list_prepend(tasks,
+			   append_audio);
 
     /* create start task */
     start_devout = ags_start_devout_new(devout);
 
-    /* append AgsStartDevout */
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(start_devout));
+    tasks = g_list_prepend(tasks,
+			   start_devout);
+
+    /* append tasks */
+    tasks = g_list_reverse(tasks);
+    
+    ags_task_thread_append_tasks(task_thread,
+				 tasks);
 
   }else{
     printf("drum: off\n\0");
