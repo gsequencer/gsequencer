@@ -36,12 +36,12 @@ typedef struct _AgsRecallFactory AgsRecallFactory;
 typedef struct _AgsRecallFactoryClass AgsRecallFactoryClass;
 
 typedef enum{
-  AGS_RECALL_FACTORY_OUTPUT,
-  AGS_RECALL_FACTORY_INPUT,
-  AGS_RECALL_FACTORY_REMAP,
-  AGS_RECALL_FACTORY_ADD,
-  AGS_RECALL_FACTORY_PLAY,
-  AGS_RECALL_FACTORY_RECALL
+  AGS_RECALL_FACTORY_OUTPUT    = 1,
+  AGS_RECALL_FACTORY_INPUT     = 1 << 1,
+  AGS_RECALL_FACTORY_REMAP     = 1 << 2,
+  AGS_RECALL_FACTORY_ADD       = 1 << 3,
+  AGS_RECALL_FACTORY_PLAY      = 1 << 4,
+  AGS_RECALL_FACTORY_RECALL    = 1 << 5,
 }AgsRecallFactoryCreateFlags;
 
 struct _AgsRecallFactory

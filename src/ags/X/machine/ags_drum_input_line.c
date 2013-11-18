@@ -258,31 +258,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     destination = ags_channel_nth(audio->output,
 				  current->audio_channel);
 
-    /* play */
-    list = current->play;
-
-    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
-      copy_channel = AGS_COPY_CHANNEL(list->data);
-
-      g_object_set(G_OBJECT(copy_channel),
-		   "destination\0", destination,
-		   NULL);
-
-      list = list->next;
-    }
-
-    list = current->play;
-
-    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
-      copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
-
-      g_object_set(G_OBJECT(copy_channel_run),
-		   "destination\0", destination,
-		   NULL);
-
-      list = list->next;
-    }
-
     /* recall */
     list = current->recall;
 
@@ -317,7 +292,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    "ags-stream\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_RECALL |
+			    (AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 

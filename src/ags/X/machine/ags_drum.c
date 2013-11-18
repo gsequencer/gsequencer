@@ -215,16 +215,6 @@ ags_drum_init(AgsDrum *drum)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
   
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-  
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(play_count_beats_audio_run),
-		 "delay-audio-run\0", play_delay_audio_run,
-		 NULL);
-  }
 
   list = ags_recall_find_type(audio->recall, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
@@ -246,17 +236,6 @@ ags_drum_init(AgsDrum *drum)
 			    (AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
-
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-  
-  if(list != NULL){
-    play_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(play_copy_pattern_audio_run),
-		 "count-beats-audio-run\0", play_count_beats_audio_run,
-		 NULL);
-  }
 
   list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
 
@@ -551,7 +530,8 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			      "ags-copy-pattern\0",
 			      audio_channels_old, audio_channels,
 			      0, audio->input_pads,
-			      (AGS_RECALL_FACTORY_ADD |
+			      (AGS_RECALL_FACTORY_REMAP |
+			       AGS_RECALL_FACTORY_ADD |
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
 
@@ -690,7 +670,8 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 				"ags-copy-pattern\0",
 				0, audio->audio_channels,
 				pads_old, pads,
-				(AGS_RECALL_FACTORY_ADD |
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_REMAP |
 				 AGS_RECALL_FACTORY_RECALL),
 				0);
 
