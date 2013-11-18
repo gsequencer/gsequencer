@@ -776,7 +776,6 @@ ags_recall_factory_create_delay(AgsAudio *audio,
 {
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
-  AgsChannel *start, *channel;
   AgsPort *port;
   GList *list;
   guint i, j;
@@ -785,16 +784,6 @@ ags_recall_factory_create_delay(AgsAudio *audio,
   
   if(audio == NULL){
     return(NULL);
-  }
-
-  if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
-    start =
-      channel = ags_channel_nth(audio->output,
-				start_pad * audio->audio_channels);
-  }else{
-    start =
-      channel = ags_channel_nth(audio->input,
-				start_pad * audio->audio_channels);;
   }
 
   list = NULL;
@@ -1001,12 +990,16 @@ ags_recall_factory_create_loop(AgsAudio *audio,
 
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
-    if(play_container == NULL){
-      play_container = ags_recall_container_new();
-    }
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+      if(play_container == NULL){
+	play_container = ags_recall_container_new();
+      }
 
-    play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
-    ags_audio_add_recall_container(audio, (GObject *) play_container);
+      play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_audio_add_recall_container(audio, (GObject *) play_container);
+    }else{
+      //TODO:JK: implement me
+    }
 
     for(i = 0; i < stop_pad - start_pad; i++){
       channel = ags_channel_nth(channel,
@@ -1054,11 +1047,15 @@ ags_recall_factory_create_loop(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
 
-    if(recall_container == NULL){
-      recall_container = ags_recall_container_new();
-    }
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+      if(recall_container == NULL){
+	recall_container = ags_recall_container_new();
+      }
 
-    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+      ags_audio_add_recall_container(audio, (GObject *) recall_container);
+    }else{
+      //TODO:JK: implement me
+    }
 
     for(i = 0; i < stop_pad - start_pad; i++){
       channel = ags_channel_nth(channel,

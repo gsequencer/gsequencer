@@ -195,10 +195,8 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     AgsChannel *output;
     AgsDelayAudio *recall_delay_audio;
     AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-    AgsLoopChannel *play_loop_channel, *recall_loop_channel;
-    AgsLoopChannelRun *play_loop_channel_run, *recall_loop_channel_run;
-    AgsStreamChannel *play_stream_channel, *recall_stream_channel;
-    AgsStreamChannelRun *play_stream_channel_run, *recall_stream_channel_run;
+    AgsLoopChannel *recall_loop_channel;
+    AgsLoopChannelRun *recall_loop_channel_run;
 
     GList *list;
 

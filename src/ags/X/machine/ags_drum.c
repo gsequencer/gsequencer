@@ -151,13 +151,6 @@ ags_drum_init(AgsDrum *drum)
   AgsAudio *audio;
   AgsRecallContainer *recall_container;
 
-  AgsDelayAudio *play_delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsCopyPatternAudio *play_copy_pattern_audio;
-  AgsCopyPatternAudioRun *play_copy_pattern_audio_run;
-
   AgsDelayAudio *recall_delay_audio;
   AgsDelayAudioRun *recall_delay_audio_run;
   AgsCountBeatsAudio *recall_count_beats_audio;
@@ -192,12 +185,6 @@ ags_drum_init(AgsDrum *drum)
 			    (AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
-  
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
-  
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-  }
 
   list = ags_recall_find_type(audio->recall, AGS_TYPE_DELAY_AUDIO_RUN);
 
@@ -215,7 +202,6 @@ ags_drum_init(AgsDrum *drum)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
   
-
   list = ags_recall_find_type(audio->recall, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
   if(list != NULL){

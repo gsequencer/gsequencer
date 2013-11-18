@@ -159,7 +159,7 @@ ags_loop_channel_set_property(GObject *gobject,
       if(delay_audio != NULL){
 	g_object_ref(G_OBJECT(delay_audio));
 
-	loop_channel->sequencer_duration_changed_handler = g_signal_connect(G_OBJECT(loop_channel->delay_audio), "sequencer-duration-changed\0",
+	loop_channel->sequencer_duration_changed_handler = g_signal_connect(G_OBJECT(delay_audio), "sequencer-duration-changed\0",
 									    G_CALLBACK(ags_loop_channel_sequencer_duration_changed_callback), loop_channel);
       }
 
