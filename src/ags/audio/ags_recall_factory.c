@@ -1263,14 +1263,20 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       GList *list;
 
       if(recall_container == NULL){
-	list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
+	list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
 
-	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	if(list != NULL){
+	  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	  
+	  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(copy_pattern_audio)->container);
 
-	recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(copy_pattern_audio)->container);
+	  list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
 
-	list = ags_recall_find_template(recall_container->recall_audio_run);
-	copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+	  if(list != NULL){
+	    g_message("debug\0");
+	    copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+	  }
+	}
       }else{
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(recall_container->recall_audio);
 
@@ -1292,7 +1298,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 								      "source\0", channel,
 								      // "destination\0", destination,
 								      "recall_container\0", recall_container,
-								      "pattern\0", channel->pattern->data,
+								      //"pattern\0", channel->pattern->data,
 								      NULL);
 	ags_recall_set_flags(AGS_RECALL(copy_pattern_channel), (AGS_RECALL_TEMPLATE |
 								AGS_RECALL_SEQUENCER));
