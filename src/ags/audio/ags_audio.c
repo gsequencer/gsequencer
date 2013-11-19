@@ -1881,7 +1881,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
     recall = AGS_RECALL(list_recall->data);
     
     ags_recall_resolve_dependencies(recall);
-    
+
     list_recall = list_recall->next;
   }
 }
@@ -1954,7 +1954,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 			   guint audio_signal_level, gboolean called_by_output)
 {
   AgsRecall *recall, *copy;
-  AgsRecallID *recall_id, *current_recall_id;
+  AgsRecallID *recall_id;
   AgsRunOrder *run_order;
   GList *list_recall_start, *list_recall;
   gboolean immediate_new_level;
@@ -1988,22 +1988,15 @@ ags_audio_duplicate_recall(AgsAudio *audio,
        AGS_IS_RECALL_AUDIO(recall) ||
        !((playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
 	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
-	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0))){
+	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0)) ||
+       ((called_by_output && ((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0)) ||
+	(!called_by_output && ((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0)))){
       list_recall = list_recall->next;
       continue;
-    }    
-
-    current_group_id = ags_recall_get_appropriate_group_id(recall,
-							   (GObject *) audio,
-							   recall_id,
-							   called_by_output);
-
-    current_recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
-								   current_group_id,
-								   first_recycling, last_recycling);
+    }
 
     /* duplicate the recall */
-    copy = ags_recall_duplicate(recall, current_recall_id);
+    copy = ags_recall_duplicate(recall, recall_id);
 
     g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
 
@@ -2076,6 +2069,8 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
       if(stage == 0){
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
+    
 	recall->flags &= (~AGS_RECALL_HIDE);
 	ags_recall_run_init_pre(recall);
 	recall->flags &= (~AGS_RECALL_REMOVE);
@@ -2084,7 +2079,6 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
       }else{
 	ags_recall_run_init_post(recall);
 	
-	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
 	//	  recall->flags |= AGS_RECALL_RUN_INITIALIZED;
       }
     }

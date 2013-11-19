@@ -205,7 +205,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 			      "ags-play-master\0",
 			      audio_channels_old, audio_channels,
 			      input->pad, input->pad + 1,
-			      (AGS_RECALL_FACTORY_ADD |
+			      (AGS_RECALL_FACTORY_INPUT,
+			       AGS_RECALL_FACTORY_ADD |
 			       AGS_RECALL_FACTORY_PLAY),
 			      0);
 

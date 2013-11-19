@@ -182,11 +182,12 @@ ags_drum_init(AgsDrum *drum)
 			    "ags-delay\0",
 			    0, 0,
 			    0, 0,
-			    (AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_DELAY_AUDIO_RUN);
+  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
     recall_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
@@ -198,11 +199,12 @@ ags_drum_init(AgsDrum *drum)
 			    "ags-count-beats\0",
 			    0, 0,
 			    0, 0,
-			    (AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
   if(list != NULL){
     recall_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
@@ -219,7 +221,8 @@ ags_drum_init(AgsDrum *drum)
 			    "ags-copy-pattern\0",
 			    0, 0,
 			    0, 0,
-			    (AGS_RECALL_FACTORY_ADD |
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
@@ -516,7 +519,8 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			      "ags-copy-pattern\0",
 			      audio_channels_old, audio_channels,
 			      0, audio->input_pads,
-			      (AGS_RECALL_FACTORY_REMAP |
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_REMAP |
 			       AGS_RECALL_FACTORY_ADD |
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);

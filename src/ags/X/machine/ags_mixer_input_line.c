@@ -206,7 +206,8 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
 			      "ags-volume\0",
 			      0, audio->audio_channels,
 			      source->pad, source->pad + 1,
-			      (AGS_RECALL_FACTORY_PLAY |
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);

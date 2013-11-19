@@ -210,13 +210,13 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     drum = AGS_DRUM(audio->machine);
 
     /* get some recalls */
-    list = ags_recall_find_type(audio->recall, AGS_TYPE_DELAY_AUDIO);
+    list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
 
     if(list != NULL){
       recall_delay_audio = AGS_DELAY_AUDIO(list->data);
     }
 
-    list = ags_recall_find_type(audio->recall, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+    list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
     if(list != NULL){
       recall_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);

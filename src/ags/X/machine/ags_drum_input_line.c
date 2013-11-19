@@ -238,7 +238,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    "ags-volume\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_RECALL |
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
@@ -248,7 +249,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    "ags-copy\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_RECALL |
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
@@ -292,7 +294,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    "ags-stream\0",
 			    0, audio->audio_channels,
 			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_PLAY |
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);

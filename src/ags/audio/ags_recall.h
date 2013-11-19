@@ -49,8 +49,9 @@ typedef enum{
   AGS_RECALL_PLAYBACK              = 1 <<  3,
   AGS_RECALL_SEQUENCER             = 1 <<  4,
   AGS_RECALL_NOTATION              = 1 <<  5,
-  AGS_RECALL_DISTINCTS_REAL        = 1 <<  6,
-  AGS_RECALL_IS_REAL               = 1 <<  7,
+  //TODO:JK: remove because it's useless
+  //  AGS_RECALL_DISTINCTS_REAL        = 1 <<  6,
+  //  AGS_RECALL_IS_REAL               = 1 <<  7,
   AGS_RECALL_INPUT_ORIENTATED      = 1 <<  8,
   AGS_RECALL_OUTPUT_ORIENTATED     = 1 <<  9,
   AGS_RECALL_PERSISTENT            = 1 << 10,
