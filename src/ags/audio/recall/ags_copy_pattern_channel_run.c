@@ -157,8 +157,6 @@ ags_copy_pattern_channel_run_dynamic_connectable_interface_init(AgsDynamicConnec
 void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
-  AGS_RECALL(copy_pattern_channel_run)->flags |= (AGS_RECALL_SEQUENCER |
-						  AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(copy_pattern_channel_run)->child_type = G_TYPE_NONE;
 }
 
@@ -186,6 +184,7 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   AgsDelayAudioRun *delay_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
 
   ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -198,11 +197,12 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
 
   /* connect sequencer_alloc in AgsDelayAudioRun */
-  delay_audio_run = copy_pattern_audio_run->count_beats_audio_run->delay_audio_run;
+  count_beats_audio_run = copy_pattern_audio_run->count_beats_audio_run;
+  delay_audio_run = count_beats_audio_run->delay_audio_run;
 
   g_object_ref(G_OBJECT(delay_audio_run));
   copy_pattern_channel_run->sequencer_alloc_handler =
-    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer_alloc_input\0",
+    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input\0",
 		     G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
 }
 

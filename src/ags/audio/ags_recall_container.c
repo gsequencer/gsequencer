@@ -212,16 +212,18 @@ ags_recall_container_set_property(GObject *gobject,
 
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
 
-      if((AgsRecallContainer *) AGS_RECALL(recall_audio)->container == recall_container)
+      if(recall_container->recall_audio == recall_audio)
 	return;
 
-      /* remove old */
-      if(AGS_RECALL(recall_audio)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_audio));
-      
-      /* add new */
-      if(recall_audio != NULL)
-	ags_packable_pack(AGS_PACKABLE(recall_audio), G_OBJECT(recall_container));
+      if(recall_container->recall_audio != NULL){
+	g_object_unref(G_OBJECT(recall_container->recall_audio));
+      }
+
+      if(recall_audio != NULL){
+	g_object_ref(G_OBJECT(recall_audio));
+      }
+
+      recall_container->recall_audio = recall_audio;
     }
     break;
   case PROP_RECALL_AUDIO_RUN_TYPE:
@@ -239,16 +241,15 @@ ags_recall_container_set_property(GObject *gobject,
 
       recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
 
-      if((AgsRecallContainer *) AGS_RECALL(recall_audio_run)->container == recall_container)
+      if(recall_audio_run == NULL ||
+	 g_list_find(recall_container->recall_audio_run, recall_audio_run) != NULL)
 	return;
 
-      /* remove old */
-      if(AGS_RECALL(recall_audio_run)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_audio_run));
+      if(recall_audio_run != NULL){
+	g_object_ref(G_OBJECT(recall_audio_run));
+      }
 
-      /* add new */
-      if(recall_audio_run != NULL)
-	ags_packable_pack(AGS_PACKABLE(recall_audio_run), G_OBJECT(recall_container));
+      recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run, recall_audio_run);
     }
     break;
   case PROP_RECALL_CHANNEL_TYPE:
@@ -266,16 +267,15 @@ ags_recall_container_set_property(GObject *gobject,
 
       recall_channel = (AgsRecallChannel *) g_value_get_object(value);
 
-      if((AgsRecallContainer *) AGS_RECALL(recall_channel)->container == recall_container)
+      if(recall_channel == NULL ||
+	 g_list_find(recall_container->recall_channel, recall_channel) != NULL)
 	return;
 
-      /* remove old */
-      if(AGS_RECALL(recall_channel)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_channel));
+      if(recall_channel != NULL){
+	g_object_ref(G_OBJECT(recall_channel));
+      }
 
-      /* add new */
-      if(recall_channel != NULL)
-	ags_packable_pack(AGS_PACKABLE(recall_channel), G_OBJECT(recall_container));
+      recall_container->recall_channel = g_list_prepend(recall_container->recall_channel, recall_channel);
     }
     break;
   case PROP_RECALL_CHANNEL_RUN_TYPE:
@@ -293,16 +293,15 @@ ags_recall_container_set_property(GObject *gobject,
 
       recall_channel_run = (AgsRecallChannelRun *) g_value_get_object(value);
 
-      if((AgsRecallContainer *) AGS_RECALL(recall_channel_run)->container == recall_container)
+      if(recall_channel_run == NULL ||
+	 g_list_find(recall_container->recall_channel_run, recall_channel_run) != NULL)
 	return;
 
-      /* remove old */
-      if(AGS_RECALL(recall_channel_run)->container != NULL)
-	ags_packable_unpack(AGS_PACKABLE(recall_channel_run));
+      if(recall_channel_run != NULL){
+	g_object_ref(G_OBJECT(recall_channel_run));
+      }
 
-      /* add new */
-      if(recall_channel_run != NULL)
-	ags_packable_pack(AGS_PACKABLE(recall_channel_run), G_OBJECT(recall_container));
+      recall_container->recall_channel_run = g_list_prepend(recall_container->recall_channel_run, recall_channel_run);
     }
     break;
   default:

@@ -192,6 +192,7 @@ GList* ags_recall_find_type_with_group_id(GList *recall, GType type, AgsGroupId 
 GList* ags_recall_find_group_id(GList *recall, AgsGroupId group_id);
 GList* ags_recall_find_provider(GList *recall, GObject *provider);
 GList* ags_recall_find_provider_with_group_id(GList *recall, GObject *provider, AgsGroupId group_id);
+GList* ags_recall_find_parent_group_id_output_orientated(GList *recall, AgsGroupId parent_group_id);
 
 void ags_recall_run_init(AgsRecall *recall, guint stage);
 

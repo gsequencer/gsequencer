@@ -161,8 +161,6 @@ ags_copy_pattern_audio_run_dynamic_connectable_interface_init(AgsDynamicConnecta
 void
 ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
-  AGS_RECALL(copy_pattern_audio_run)->flags |= AGS_RECALL_SEQUENCER;
-
   copy_pattern_audio_run->hide_ref = 0;
   copy_pattern_audio_run->hide_ref_counter = 0;
 
@@ -292,6 +290,7 @@ void
 ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 {
   AgsRecall *template;
+  AgsRecallContainer *recall_container;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -301,10 +300,18 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
 
-  template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run)->data);
+  recall_container = AGS_RECALL_CONTAINER(recall->container);
+
+  list = ags_recall_find_template(recall_container->recall_audio_run);
+
+  if(list != NULL){
+    template = AGS_RECALL(list->data);
+  }else{
+    g_warning("AgsRecallClass::resolve - missing dependency");
+    return;
+  }
 
   list = template->dependencies;
-  group_id = recall->recall_id->group_id;
 
   count_beats_audio_run = NULL;
   i_stop = 1;
@@ -313,6 +320,15 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
+      if(((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0 &&
+	  (AGS_RECALL_INPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0) ||
+	 ((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0 &&
+	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
+	group_id = recall->recall_id->group_id;
+      }else{
+	group_id = recall->recall_id->parent_group_id;
+      }
+
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
 
       i++;

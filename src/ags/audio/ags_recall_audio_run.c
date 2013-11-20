@@ -328,11 +328,8 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   if(AGS_IS_COPY_PATTERN_AUDIO_RUN(packable))
     g_message("debug: AGS_IS_COPY_PATTERN_AUDIO_RUN(packable)\n\0");
 
-  recall_container = AGS_RECALL_CONTAINER(container);
-  recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run,
-						      AGS_RECALL(packable));
-
   recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
+  recall_container = AGS_RECALL_CONTAINER(container);
 
   /* set AgsRecallAudio */
   g_object_set(G_OBJECT(recall_audio_run),
@@ -362,6 +359,9 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
     }
   }
 
+  g_object_set(G_OBJECT(recall_container),
+	       "recall_audio_run\0", AGS_RECALL(packable),
+	       NULL);
 
   return(FALSE);
 }

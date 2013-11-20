@@ -151,10 +151,10 @@ ags_drum_init(AgsDrum *drum)
   AgsAudio *audio;
   AgsRecallContainer *recall_container;
 
-  AgsDelayAudio *recall_delay_audio;
-  AgsDelayAudioRun *recall_delay_audio_run;
-  AgsCountBeatsAudio *recall_count_beats_audio;
-  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
+  AgsDelayAudio *play_delay_audio;
+  AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsCopyPatternAudio *recall_copy_pattern_audio;
   AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
 
@@ -190,7 +190,7 @@ ags_drum_init(AgsDrum *drum)
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
-    recall_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
   }
   
   /* ags-count-beats */
@@ -207,17 +207,19 @@ ags_drum_init(AgsDrum *drum)
   list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
   if(list != NULL){
-    recall_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
 
     /* set dependency */  
-    g_object_set(G_OBJECT(recall_count_beats_audio_run),
-		 "delay-audio-run\0", recall_delay_audio_run,
+    g_object_set(G_OBJECT(play_count_beats_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
   }
 
   /* ags-copy-pattern */
+  drum->copy_pattern_container = ags_recall_container_new();
+
   ags_recall_factory_create(audio,
-			    NULL, NULL,
+			    NULL, drum->copy_pattern_container,
 			    "ags-copy-pattern\0",
 			    0, 0,
 			    0, 0,
@@ -233,7 +235,7 @@ ags_drum_init(AgsDrum *drum)
 
     /* set dependency */
     g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
-		 "count-beats-audio-run\0", recall_count_beats_audio_run,
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }
   
@@ -521,7 +523,6 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			      0, audio->input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_REMAP |
-			       AGS_RECALL_FACTORY_ADD |
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
 
@@ -656,7 +657,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 
       /* ags-copy-pattern */
       ags_recall_factory_create(audio,
-				NULL, NULL,
+				NULL, drum->copy_pattern_container,
 				"ags-copy-pattern\0",
 				0, audio->audio_channels,
 				pads_old, pads,

@@ -290,8 +290,9 @@ ags_recall_channel_pack(AgsPackable *packable, GObject *container)
 
   recall_container = AGS_RECALL_CONTAINER(container);
 
-  recall_container->recall_channel = g_list_prepend(recall_container->recall_channel,
-						    AGS_RECALL(packable));
+  g_object_set(G_OBJECT(recall_container),
+	       "recall_channel\0", AGS_RECALL(packable),
+	       NULL);
 
   /* set in AgsRecallChannelRun */
   list = recall_container->recall_channel_run;

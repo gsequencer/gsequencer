@@ -25,6 +25,8 @@
 
 #include <ags/X/ags_machine.h>
 
+#include <ags/audio/ags_recall_container.h>
+
 #include <ags/X/machine/ags_drum_input_pad.h>
 
 #define AGS_TYPE_DRUM                (ags_drum_get_type())
@@ -46,6 +48,8 @@ struct _AgsDrum
   AgsMachine machine;
 
   guint flags;
+
+  AgsRecallContainer *copy_pattern_container;
 
   GtkButton *open;
 

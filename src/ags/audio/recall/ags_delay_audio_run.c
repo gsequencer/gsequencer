@@ -289,9 +289,6 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   /* call parent class */
   AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_init_pre(recall);
 
-  /* AgsRecall */
-  recall->flags |= AGS_RECALL_PERSISTENT;
-
   /* AgsDelayAudioRun */
   delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);

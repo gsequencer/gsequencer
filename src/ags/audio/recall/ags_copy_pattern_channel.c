@@ -98,8 +98,6 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
 void
 ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
 {
-  AGS_RECALL(copy_pattern_channel)->flags |= AGS_RECALL_SEQUENCER;
-
   copy_pattern_channel->pattern = NULL;
 }
 

@@ -184,8 +184,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   drum_input_line = AGS_DRUM_INPUT_LINE(line);
 
-  printf("ags_drum_input_line_set_channel - channel: %u\n\0",
-	 channel->line);
+  g_message("ags_drum_input_line_set_channel - channel: %u\0",
+	    channel->line);
 
   if(line->channel != NULL){
     drum_input_line->flags &= (~AGS_DRUM_INPUT_LINE_MAPPED_RECALL);

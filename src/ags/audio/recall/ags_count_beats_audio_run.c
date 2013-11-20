@@ -390,19 +390,19 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
 	    count_beats_audio_run->sequencer_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer_alloc_output\0",
+	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-output\0",
 			       G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback), count_beats_audio_run);
 
 	    count_beats_audio_run->sequencer_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer_count\0",
+	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-count\0",
 			       G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
 
 	    count_beats_audio_run->notation_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "notation_alloc_output\0",
+	      g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-output\0",
 			       G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback), count_beats_audio_run);
 
 	    count_beats_audio_run->notation_count_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "notation_count\0",
+	      g_signal_connect(G_OBJECT(delay_audio_run), "notation-count\0",
 			       G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
 	  }
 	}
@@ -503,11 +503,11 @@ ags_count_beats_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connect
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(dynamic_connectable);
 
   count_beats_audio_run->sequencer_alloc_output_handler =
-    g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "sequencer_alloc_output\0",
+    g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "sequencer-alloc-output\0",
 		     G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback), count_beats_audio_run);
 
   count_beats_audio_run->sequencer_count_handler =
-    g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "sequencer_count\0",
+    g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "sequencer-count\0",
 		     G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
 }
 

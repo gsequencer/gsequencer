@@ -503,16 +503,46 @@ ags_recall_set_property(GObject *gobject,
 
       container = (AgsRecallContainer *) g_value_get_object(value);
 
-      if((AgsRecallContainer *) recall->container == container)
+      if((AgsRecallContainer *) recall->container == container ||
+	 !(AGS_IS_RECALL_AUDIO(recall) ||
+	   AGS_IS_RECALL_AUDIO_RUN(recall) ||
+	   AGS_IS_RECALL_CHANNEL(recall) ||
+	   AGS_IS_RECALL_CHANNEL_RUN(recall)))
 	return;
 
-      /* remove from old */
-      if(recall->container != NULL)
+      if(recall->container != NULL){
 	ags_packable_unpack(AGS_PACKABLE(recall));
 
-      /* add to new */
-      if(container != NULL)
+	g_object_unref(G_OBJECT(recall->container));
+      }
+
+      if(container != NULL){
+	g_object_ref(G_OBJECT(container));
+
 	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(container));
+
+	if(AGS_IS_RECALL_AUDIO(recall)){
+	  g_object_set(G_OBJECT(container),
+		       "recall_audio\0", recall,
+		       NULL);
+	}else if(AGS_IS_RECALL_AUDIO_RUN(recall)){
+	  g_object_set(G_OBJECT(container),
+		       "recall_audio_run\0", recall,
+		       NULL);
+	}else if(AGS_IS_RECALL_CHANNEL(recall)){
+	  g_object_set(G_OBJECT(container),
+		       "recall_channel\0", recall,
+		       NULL);
+	}else if(AGS_IS_RECALL_CHANNEL_RUN(recall)){
+	  g_object_set(G_OBJECT(container),
+		       "recall_channel_run\0", recall,
+		       NULL);
+	}else{
+	  return;
+	}
+      }
+
+      recall->container = container;
     }
     break;
   case PROP_DEPENDENCY:
@@ -683,7 +713,6 @@ ags_recall_disconnect(AgsConnectable *connectable)
   recall->flags &= (~AGS_RECALL_CONNECTED);
 }
 
-
 gboolean
 ags_recall_pack(AgsPackable *packable, GObject *container)
 {
@@ -699,8 +728,6 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
     return(TRUE);
 
   g_message("===== packing: %s\n\0", G_OBJECT_TYPE_NAME(recall));
-
-  recall->container = container;
 
   return(FALSE);
 }
@@ -881,6 +908,8 @@ ags_recall_resolve_dependencies(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
+  g_message("resolving %s\0", G_OBJECT_TYPE_NAME(recall));
+  
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[RESOLVE_DEPENDENCIES], 0);
@@ -1784,6 +1813,12 @@ ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, AgsGr
   }
 
   return(NULL);
+}
+
+GList*
+ags_recall_find_parent_group_id_output_orientated(GList *recall, AgsGroupId parent_group_id)
+{
+  //TODO:JK: implement me
 }
 
 void

@@ -228,7 +228,6 @@ ags_recall_audio_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-
 gboolean
 ags_recall_audio_pack(AgsPackable *packable, GObject *container)
 {
@@ -240,7 +239,9 @@ ags_recall_audio_pack(AgsPackable *packable, GObject *container)
 
   recall_container = AGS_RECALL_CONTAINER(container);
 
-  recall_container->recall_audio = AGS_RECALL(packable);
+  g_object_set(G_OBJECT(recall_container),
+	       "recall_audio\0", AGS_RECALL(packable),
+	       NULL);
 
   /* set in AgsRecallAudioRun */
   list = recall_container->recall_audio_run;
