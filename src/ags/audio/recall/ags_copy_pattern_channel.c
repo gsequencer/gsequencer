@@ -198,7 +198,7 @@ ags_copy_pattern_channel_template_find_source_and_destination(GList *recall,
 AgsCopyPatternChannel*
 ags_copy_pattern_channel_new(AgsChannel *destination,
 			     AgsChannel *source,
-			     AgsPattern *pattern)
+			     AgsPort *pattern)
 {
   AgsCopyPatternChannel *copy_pattern_channel;
 

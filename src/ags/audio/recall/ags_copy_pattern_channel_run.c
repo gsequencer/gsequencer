@@ -332,6 +332,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
+  gboolean current_bit;
+  GValue offset_value = { 0, };
+  GValue current_bit_value = { 0, };  
 
   g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback[%d]\0", run_order);
   
@@ -348,9 +351,21 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   /* get AgsCopyPatternChannel */
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
 
-  if(ags_pattern_get_bit((AgsPattern *) copy_pattern_channel->pattern,
-			 copy_pattern_audio->i, copy_pattern_audio->j,
-			 copy_pattern_audio_run->count_beats_audio_run->sequencer_counter)){
+  /* write pattern port - current offset */
+  g_value_init(&offset_value, G_TYPE_UINT);
+  g_value_set_uint(&offset_value,
+		   copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
+
+  ags_port_safe_set_property(copy_pattern_channel->pattern,
+			     "offset\0", &offset_value);
+
+  /* read pattern port - current bit */
+  ags_port_safe_get_property(copy_pattern_channel->pattern,
+			     "current-bit\0", &current_bit_value);
+
+  current_bit = g_value_get_boolean(&current_bit_value);
+
+  if(current_bit){
     AgsDevout *devout;
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
@@ -359,9 +374,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   
     devout = AGS_DEVOUT(AGS_RECALL(copy_pattern_channel_run)->devout);
 
-    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\n\0",
-	   AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
-	   copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
+    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
+	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
+	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
 
     /* get source */
     source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;

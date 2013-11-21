@@ -57,6 +57,9 @@ void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GV
 enum{
   PROP_0,
   PROP_PORT,
+  PROP_FIRST_INDEX,
+  PROP_SECOND_INDEX,
+  PROP_OFFSET,
   PROP_CURRENT_BIT,
   PROP_NEXT_BIT,
 };
@@ -143,6 +146,36 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("first-index\0",
+				 "the first index\0",
+				 "The first index to select pattern\0",
+				 0, 256,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OFFSET,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("second-index\0",
+				 "the second index\0",
+				 "The second index to select pattern\0",
+				 0, 256,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OFFSET,
+				  param_spec);
+
+  param_spec = g_param_spec_uint("offset\0",
+				 "the offset\0",
+				 "The offset within the pattern\0",
+				 0, 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OFFSET,
 				  param_spec);
 
   param_spec = g_param_spec_boolean("current-bit\0",
@@ -238,7 +271,7 @@ ags_pattern_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
-      if(port == (GObject *) pattern->port){
+      if(port == (AgsPort *) pattern->port){
 	return;
       }
 
@@ -251,6 +284,33 @@ ags_pattern_set_property(GObject *gobject,
       }
 
       pattern->port = (GObject *) port;
+    }
+    break;
+  case PROP_FIRST_INDEX:
+    {
+      guint i;
+
+      i = g_value_get_uint(value);
+
+      pattern->i = i;
+    }
+    break;
+  case PROP_SECOND_INDEX:
+    {
+      guint j;
+
+      j = g_value_get_uint(value);
+
+      pattern->j = j;
+    }
+    break;
+  case PROP_OFFSET:
+    {
+      guint bit;
+
+      bit = g_value_get_uint(value);
+
+      pattern->bit = bit;
     }
     break;
   default:
@@ -272,6 +332,15 @@ ags_pattern_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_PORT:
     g_value_set_object(value, pattern->port);
+    break;
+  case PROP_FIRST_INDEX:
+    g_value_set_uint(value, pattern->i);
+    break;
+  case PROP_SECOND_INDEX:
+    g_value_set_uint(value, pattern->j);
+    break;
+  case PROP_OFFSET:
+    g_value_set_uint(value, pattern->bit);
     break;
   case PROP_CURRENT_BIT:
     g_value_set_boolean(value, pattern->current_bit);

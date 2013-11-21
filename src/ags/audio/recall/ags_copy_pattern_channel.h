@@ -40,7 +40,7 @@ struct _AgsCopyPatternChannel
 {
   AgsRecallChannel recall_channel;
 
-  AgsPattern *pattern;
+  AgsPort *pattern;
 };
 
 struct _AgsCopyPatternChannelClass
@@ -56,6 +56,6 @@ GList* ags_copy_pattern_channel_template_find_source_and_destination(GList *reca
 
 AgsCopyPatternChannel* ags_copy_pattern_channel_new(AgsChannel *destination,
 						    AgsChannel *source,
-						    AgsPattern *pattern);
+						    AgsPort *pattern);
 
 #endif /*__AGS_COPY_PATTERN_CHANNEL_H__*/
