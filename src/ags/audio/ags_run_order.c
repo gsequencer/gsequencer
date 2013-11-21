@@ -107,7 +107,6 @@ ags_run_order_init(AgsRunOrder *run_order)
   run_order->run_order = NULL;
 }
 
-
 void
 ags_run_order_set_property(GObject *gobject,
 			   guint prop_id,
