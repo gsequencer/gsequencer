@@ -260,6 +260,9 @@ ags_recall_channel_finalize(GObject *gobject)
   if(recall_channel->source != NULL)
     g_object_unref(recall_channel->source);
 
+  if(recall_channel->destination != NULL)
+    g_object_unref(G_OBJECT(recall_channel->destination));
+
   G_OBJECT_CLASS(ags_recall_channel_parent_class)->finalize(gobject);
 }
 

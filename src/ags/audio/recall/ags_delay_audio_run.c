@@ -307,8 +307,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
-  g_message("debug\0");
-
   if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0 &&
      delay_audio_run->dependency_ref == 0){
     delay_audio_run->notation_counter = 0;
@@ -320,18 +318,18 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
 
     /* read notation-delay port */
-    g_value_init(&value, G_TYPE_UINT);
+    g_value_init(&value, G_TYPE_DOUBLE);
 
     ags_port_safe_read(delay_audio->notation_delay, &value);
 
-    notation_delay = g_value_get_uint(&value);
+    notation_delay = (guint) ceil(g_value_get_double(&value));
 
     /* read sequencer-delay port */
     g_value_reset(&value);
 
     ags_port_safe_read(delay_audio->sequencer_delay, &value);
 
-    sequencer_delay = g_value_get_uint(&value);
+    sequencer_delay = (guint) ceil(g_value_get_double(&value));
 
     if(delay_audio_run->hide_ref != 0)
       delay_audio_run->hide_ref_counter += 1;

@@ -278,7 +278,13 @@ ags_play_channel_run_get_property(GObject *gobject,
 void
 ags_play_channel_run_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsPlayChannelRun *play_channel_run;
+
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
+
+  if(play_channel_run->stream_channel_run != NULL){
+    g_object_unref(G_OBJECT(play_channel_run->stream_channel_run));
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_channel_run_parent_class)->finalize(gobject);

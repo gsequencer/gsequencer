@@ -1825,6 +1825,8 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
    * TODO:JK: thread synchronisation
    */
 
+  g_object_ref(G_OBJECT(recall));
+
   if(play){
     audio->play = g_list_append(audio->play, recall);
   }else{
@@ -1844,6 +1846,8 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
   }else{
     audio->recall = g_list_remove(audio->recall, recall);
   }
+
+  g_object_unref(G_OBJECT(recall));
 }
 
 /*

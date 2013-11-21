@@ -165,8 +165,7 @@ ags_copy_pattern_channel_finalize(GObject *gobject)
 
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(gobject);
 
-  if(AGS_RECALL_CHANNEL(copy_pattern_channel)->destination != NULL)
-    g_object_unref(G_OBJECT(AGS_RECALL_CHANNEL(copy_pattern_channel)->destination));
+  /* empty */
 
   G_OBJECT_CLASS(ags_copy_pattern_channel_parent_class)->finalize(gobject);
 }

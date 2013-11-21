@@ -27,6 +27,8 @@
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
+#include <math.h>
+
 void ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_audio_run);
 void ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -62,17 +64,17 @@ void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
 
 void ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							      guint nth_run, guint attack,
+							      guint nth_run, guint delay, guint attack,
 							      AgsCountBeatsAudioRun *count_beats_audio_run);
 void ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_run,
-						       guint nth_run, guint attack,
+						       guint nth_run, guint delay, guint attack,
 						       AgsCountBeatsAudioRun *count_beats_audio_run);
 
 void ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							       guint nth_run, guint attack,
+							       guint nth_run, guint delay, guint attack,
 							       AgsCountBeatsAudioRun *count_beats_audio_run);
 void ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-							guint nth_run, guint attack,
+							guint nth_run, guint delay, guint attack,
 							AgsCountBeatsAudioRun *count_beats_audio_run);
 
 enum{
@@ -721,7 +723,7 @@ ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audi
 
 void
 ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							 guint nth_run, guint attack,
+							 guint nth_run, guint delay, guint attack,
 							 AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
@@ -735,7 +737,7 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 					       nth_run);
     }
 
-    if(count_beats_audio->loop){
+    if(count_beats_audio->loop->port_value.ags_port_boolean){
       if(count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
 	ags_count_beats_audio_run_notation_loop(count_beats_audio_run,
 						nth_run);
@@ -754,12 +756,12 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 
 void
 ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							  guint nth_run, guint attack,
+							  guint nth_run, guint delay, guint attack,
 							  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
 
-  count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
 
   if(count_beats_audio_run->sequencer_counter == 0){
@@ -770,7 +772,7 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 						nth_run);
     }
 
-    if(count_beats_audio->loop){
+    if(count_beats_audio->loop->port_value.ags_port_boolean){
       if(count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
 	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
       
@@ -800,12 +802,12 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 
 void
 ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_run,
-						   guint nth_run, guint attack,
+						   guint nth_run, guint delay, guint attack,
 						   AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
 
-  count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   /* 
    * Block counter for sequencer and notation counter
@@ -815,8 +817,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   }
 
   if(count_beats_audio_run->notation_hide_ref_counter == count_beats_audio_run->hide_ref){
-    if(count_beats_audio->loop){
-      if(count_beats_audio_run->notation_counter == count_beats_audio->notation_loop_end - 1){
+    if(count_beats_audio->loop->port_value.ags_port_boolean){
+      if(count_beats_audio_run->notation_counter == (guint) ceil(count_beats_audio->notation_loop_end->port_value.ags_port_double) - 1){
 	count_beats_audio_run->notation_counter = 0;
       }
     }else{
@@ -829,12 +831,12 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
 
 void
 ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-						   guint nth_run, guint attack,
+						   guint nth_run, guint delay, guint attack,
 						   AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
 
-  count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   /* 
    * Block counter for sequencer and notation counter
@@ -846,15 +848,16 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   if(count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
     //    g_message("sequencer: tic\0");
   
-    if(count_beats_audio->loop){
-      if(count_beats_audio_run->sequencer_counter == count_beats_audio->sequencer_loop_end - 1){
+    if(count_beats_audio->loop->port_value.ags_port_boolean){
+      if(count_beats_audio_run->sequencer_counter == (guint) ceil(count_beats_audio->sequencer_loop_end->port_value.ags_port_double) - 1){
 	count_beats_audio_run->sequencer_counter = 0;
       }else{
 	count_beats_audio_run->sequencer_counter += 1;
       }
     }else{
-      if(count_beats_audio_run->sequencer_counter == count_beats_audio->sequencer_loop_end - 1)
+      if(count_beats_audio_run->sequencer_counter == (guint) ceil(count_beats_audio->sequencer_loop_end->port_value.ags_port_double) - 1){
 	return;
+      }
 
       count_beats_audio_run->sequencer_counter += 1;
     }

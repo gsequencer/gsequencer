@@ -699,6 +699,8 @@ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
    * TODO:JK: thread synchronisation
    */
 
+  g_object_ref(G_OBJECT(recall_id));
+
   channel->recall_id = g_list_prepend(channel->recall_id,
 				      recall_id);
 }
@@ -709,6 +711,8 @@ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
   /*
    * TODO:JK: thread synchronisation
    */
+
+  g_object_ref(G_OBJECT(container));
 
   channel->container = g_list_prepend(channel->container, container);
 }
@@ -735,6 +739,7 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
   /*
    * TODO:JK: thread synchronisation
    */
+  g_object_ref(G_OBJECT(recall));
 
   if(play){
     channel->play = g_list_append(channel->play, recall);
@@ -1875,6 +1880,10 @@ ags_channel_recursive_play(AgsChannel *channel,
     AgsRecallID *child_recall_id;
     gboolean child_do_recall;
 
+    if(input == NULL){
+      return;
+    }
+
     audio = AGS_AUDIO(input->audio);
 
     /* check if we go down */
@@ -1897,6 +1906,10 @@ ags_channel_recursive_play(AgsChannel *channel,
 					      gboolean do_recall, gboolean input_has_new_group_id){
     AgsRecallID *input_recall_id;
 
+    if(input == NULL){
+      return;
+    }
+
     /* iterate AgsInputs */
     while(input != NULL){
       /* get AgsRecallID of AgsInput */
@@ -1918,6 +1931,10 @@ ags_channel_recursive_play(AgsChannel *channel,
     AgsGroupId next_group_id;
     gboolean input_do_recall, input_has_new_group_id;
     
+    if(output == NULL){
+      return;
+    }
+
     audio = AGS_AUDIO(output->audio);
     
     /* check if the AgsOutput's group_id is the same of AgsInput */
@@ -1972,7 +1989,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 	
 	ags_audio_play(audio,
 		       output->first_recycling, output->last_recycling,
-		       next_group_id,
+		       group_id,
 		       stage,
 		       do_recall);
       }else{

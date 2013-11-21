@@ -52,8 +52,9 @@ AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 						  AgsRecallID *recall_id,
 						  guint *n_params, GParameter *parameter);
 
-void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run, guint run_order,
-							   guint attack,
+void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
+							   guint run_order,
+							   guint delay, guint attack,
 							   AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
 
@@ -200,7 +201,7 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
   count_beats_audio_run = copy_pattern_audio_run->count_beats_audio_run;
   delay_audio_run = count_beats_audio_run->delay_audio_run;
 
-  g_object_ref(G_OBJECT(delay_audio_run));
+  //  g_object_ref(G_OBJECT(delay_audio_run));
   copy_pattern_channel_run->sequencer_alloc_handler =
     g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input\0",
 		     G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
@@ -226,7 +227,7 @@ ags_copy_pattern_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_c
 
   g_signal_handler_disconnect(G_OBJECT(delay_audio_run),
 			      copy_pattern_channel_run->sequencer_alloc_handler);
-  g_object_unref(G_OBJECT(delay_audio_run));
+  //  g_object_unref(G_OBJECT(delay_audio_run));
 }
 
 void
@@ -323,7 +324,8 @@ ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 
 void
 ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
-						      guint run_order, guint attack,
+						      guint run_order,
+						      guint delay, guint attack,
 						      AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AgsChannel *output, *source;
@@ -331,7 +333,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
 
-  //  g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback[%d]\0", run_order);
+  g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback[%d]\0", run_order);
   
   if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
     return;
