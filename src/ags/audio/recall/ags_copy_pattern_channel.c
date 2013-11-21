@@ -88,7 +88,7 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
   param_spec = g_param_spec_object("pattern\0",
 				   "pattern to play\0",
 				   "The pattern which has to be played\0",
-				   AGS_TYPE_PATTERN,
+				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PATTERN,
@@ -98,7 +98,15 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
 void
 ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
 {
-  copy_pattern_channel->pattern = NULL;
+  copy_pattern_channel->pattern = g_object_new(AGS_TYPE_PORT,
+					       "plugin-name\0", g_strdup("ags-copy-pattern\0"),
+					       "specifier\0", "./pattern[0]\0",
+					       "control-port\0", "1/1\0",
+					       "port-value-is-pointer\0", TRUE,
+					       "port-value-type\0", G_TYPE_OBJECT,
+					       NULL);
+
+  copy_pattern_channel->pattern->port_value.ags_port_object = NULL;
 }
 
 void
@@ -114,9 +122,9 @@ ags_copy_pattern_channel_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_PATTERN:
     {
-      AgsPattern *pattern;
+      AgsPort *pattern;
 
-      pattern = (AgsPattern *) g_value_get_object(value);
+      pattern = (AgsPort *) g_value_get_object(value);
 
       if(copy_pattern_channel->pattern == pattern)
 	return;

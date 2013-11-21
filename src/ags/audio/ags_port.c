@@ -197,7 +197,7 @@ ags_port_init(AgsPort *port)
   pthread_mutexattr_init(&mutexattr);
   pthread_mutexattr_settype(&mutexattr, PTHREAD_MUTEX_RECURSIVE);
 
-  pthread_mutex_init(&port->mutex, &mutexattr);
+  pthread_mutex_init(&(port->mutex), &mutexattr);
 }
 
 void

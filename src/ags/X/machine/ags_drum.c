@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_portlet.h>
+
 #include <ags/widget/ags_led.h>
 
 #include <ags/X/machine/ags_drum_input_pad.h>
@@ -514,7 +516,11 @@ ags_drum_set_audio_channels(AgsAudio *audio,
     AgsDrumInputPad *drum_input_pad;
     AgsDrumOutputPad *drum_output_pad;
     AgsChannel *channel;
+    AgsCopyPatternChannel *copy_pattern_channel;
+    AgsPattern *pattern;
     GList *list_pad;
+    GList *list;
+    guint i, j;
 
     /* ags-copy-pattern */
     ags_recall_factory_create(audio,
@@ -555,8 +561,28 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 
       channel = channel->next_pad;
 
-      if(audio_channels_old != 0)
+      if(audio_channels_old != 0){
 	list_input_pad = list_input_pad->next;
+      }
+    }
+
+    /* set pattern object on port */
+    for(i = 0; i < audio->input_pads; i++){
+      channel = ags_channel_nth(audio->input, audio_channels_old);
+
+      for(j = audio_channels_old; j < audio_channels; j++){
+	list = ags_recall_template_find_type(channel->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
+	copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
+
+	list = channel->pattern;
+	pattern = AGS_PATTERN(list->data);
+
+	copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
+
+	ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
+	
+	channel = channel->next;
+      }
     }
 
     /* AgsOutput */
@@ -655,6 +681,9 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
     AgsDrumInputPad *drum_input_pad;
 
     if(pads_old < pads){
+      AgsCopyPatternChannel *copy_pattern_channel;
+      AgsPattern *pattern;
+      GList *list;
 
       /* ags-copy-pattern */
       ags_recall_factory_create(audio,
@@ -685,6 +714,27 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 	channel = channel->next_pad;
       }
 
+
+      /* set pattern object on port */
+      channel = ags_channel_pad_nth(audio->input, pads_old);
+      
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  list = ags_recall_template_find_type(channel->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
+	  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
+
+	  list = channel->pattern;
+	  pattern = AGS_PATTERN(list->data);
+
+	  copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
+	  
+	  ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
+	  
+	  channel = channel->next;
+	}
+      }
+
+      /* reset edit button */
       if(pads_old == 0){
 	GtkToggleButton *selected_edit_button;
 
