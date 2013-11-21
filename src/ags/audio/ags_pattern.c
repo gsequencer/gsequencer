@@ -275,29 +275,50 @@ ags_pattern_set_property(GObject *gobject,
     break;
   case PROP_FIRST_INDEX:
     {
+      AgsPort *port;
       guint i;
 
       i = g_value_get_uint(value);
 
+      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+
+      pthread_mutex_lock(&(port->mutex));
+
       pattern->i = i;
+
+      pthread_mutex_unlock(&(port->mutex));
     }
     break;
   case PROP_SECOND_INDEX:
     {
+      AgsPort *port;
       guint j;
 
       j = g_value_get_uint(value);
 
+      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+
+      pthread_mutex_lock(&(port->mutex));
+
       pattern->j = j;
+
+      pthread_mutex_unlock(&(port->mutex));
     }
     break;
   case PROP_OFFSET:
     {
+      AgsPort *port;
       guint bit;
 
       bit = g_value_get_uint(value);
 
+      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+
+      pthread_mutex_lock(&(port->mutex));
+
       pattern->bit = bit;
+
+      pthread_mutex_unlock(&(port->mutex));
     }
     break;
   default:
@@ -321,13 +342,43 @@ ags_pattern_get_property(GObject *gobject,
     g_value_set_object(value, pattern->port);
     break;
   case PROP_FIRST_INDEX:
-    g_value_set_uint(value, pattern->i);
+    {
+      AgsPort *port;
+
+      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+
+      pthread_mutex_lock(&(port->mutex));
+
+      g_value_set_uint(value, pattern->i);
+
+      pthread_mutex_unlock(&(port->mutex));
+    }
     break;
   case PROP_SECOND_INDEX:
-    g_value_set_uint(value, pattern->j);
+    {
+      AgsPort *port;
+
+      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+
+      pthread_mutex_lock(&(port->mutex));
+
+      g_value_set_uint(value, pattern->j);
+
+      pthread_mutex_unlock(&(port->mutex));
+    }
     break;
   case PROP_OFFSET:
-    g_value_set_uint(value, pattern->bit);
+    {
+      AgsPort *port;
+
+      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+
+      pthread_mutex_lock(&(port->mutex));
+
+      g_value_set_uint(value, pattern->bit);
+
+      pthread_mutex_unlock(&(port->mutex));
+    }
     break;
   case PROP_CURRENT_BIT:
     {
@@ -337,7 +388,7 @@ ags_pattern_get_property(GObject *gobject,
 
       pthread_mutex_lock(&(port->mutex));
 
-      g_value_set_boolean(value, ags_pattern_get_bit(pattern->pattern,
+      g_value_set_boolean(value, ags_pattern_get_bit(pattern,
 						     pattern->i,
 						     pattern->j,
 						     pattern->bit));
