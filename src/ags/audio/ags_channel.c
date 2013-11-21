@@ -2295,17 +2295,16 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 {
   AgsAudio *audio;
   AgsRecycling *first_recycling, *last_recycling;
-  AgsGroupId next_group_id;
-  guint next_audio_signal_level;
   gboolean stage_stop;
 
-  auto void ags_channel_recursive_play_init_arrange_group_id_up(AgsChannel *channel);
+  auto void ags_channel_recursive_play_init_arrange_group_id_up(AgsChannel *channel,
+								guint audio_signal_level);
   auto void ags_channel_recursive_play_init_arrange_group_id_down_input(AgsChannel *output,
 									AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
-									guint recall_level);
+									guint audio_signal_level);
   auto void ags_channel_recursive_play_init_arrange_group_id_down(AgsChannel *output,
 								  AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
-								  guint recall_level);
+								  guint audio_signal_level);
 
   auto void ags_channel_recursive_play_init_duplicate_up(AgsChannel *channel,
 							 gboolean playback, gboolean sequencer, gboolean notation,
@@ -2320,11 +2319,14 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							   guint audio_signal_level);
 
   auto void ags_channel_recursive_play_init_resolve_up(AgsChannel *channel,
-						       AgsGroupId group_id);
+						       AgsGroupId group_id,
+						       guint audio_signal_level);
   auto void ags_channel_recursive_play_init_resolve_down_input(AgsChannel *output,
-							       AgsGroupId group_id);
+							       AgsGroupId group_id,
+							   guint audio_signal_level);
   auto void ags_channel_recursive_play_init_resolve_down(AgsChannel *output,
-							 AgsGroupId group_id);
+							 AgsGroupId group_id,
+							 guint audio_signal_level);
 
   auto void ags_channel_recursive_play_init_up(AgsChannel *channel);
   auto void ags_channel_recursive_play_init_down_input(AgsChannel *output,
@@ -2334,7 +2336,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   /*
    * arrangeing group ids is done from the axis to the root and then from the axis to the leafs
    */
-  void ags_channel_recursive_play_init_arrange_group_id_up(AgsChannel *channel)
+  void ags_channel_recursive_play_init_arrange_group_id_up(AgsChannel *channel,
+							   guint audio_signal_level)
   {
     AgsAudio *audio;
     AgsChannel *current;
@@ -2354,13 +2357,13 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       current->recall_id = ags_recall_id_add(current->recall_id,
 					     0, group_id, child_group_id,
 					     current->first_recycling, current->last_recycling,
-					     FALSE);
+					     ((audio_signal_level > 1) ? TRUE: FALSE));
 
       /* AgsAudio */
       audio->recall_id = ags_recall_id_add(audio->recall_id,
 					   0, group_id, child_group_id,
 					   current->first_recycling, current->last_recycling,
-					   FALSE);
+					   ((audio_signal_level > 1) ? TRUE: FALSE));
 
       /* AgsOutput */
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
@@ -2377,7 +2380,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       current->recall_id = ags_recall_id_add(current->recall_id,
 					     0, group_id, child_group_id,
 					     current->first_recycling, current->last_recycling,
-					     FALSE);
+					     ((audio_signal_level > 1) ? TRUE: FALSE));
 
       /* iterate */
       if(current->link == NULL){
@@ -2395,12 +2398,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   }
   void ags_channel_recursive_play_init_arrange_group_id_down_input(AgsChannel *output,
 								   AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
-								   guint recall_level)
+								   guint audio_signal_level)
   {
     AgsAudio *audio;
     AgsChannel *input;
     AgsGroupId next_parent_group_id, next_group_id, next_child_group_id;
-    guint next_recall_level;
+    guint next_audio_signal_level;
 
     audio = AGS_AUDIO(output->audio);
 
@@ -2417,32 +2420,25 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
 	next_child_group_id = ags_recall_id_generate_group_id();
 
-	next_recall_level = recall_level + 1;
+	next_audio_signal_level = audio_signal_level + 1;
       }else{
 	next_parent_group_id = parent_group_id;
 	next_group_id = group_id;
 	next_child_group_id = child_group_id;
 
-	next_recall_level = recall_level;
+	next_audio_signal_level = audio_signal_level;
       }
     
       while(input != NULL){
-	if(parent_group_id == 0){
-	  input->recall_id = ags_recall_id_add(input->recall_id,
-					       parent_group_id, group_id, child_group_id,
-					       input->first_recycling, input->last_recycling,
-					       FALSE);
-	}else{
-	  input->recall_id = ags_recall_id_add(input->recall_id,
-					       parent_group_id, group_id, child_group_id,
-					       input->first_recycling, input->last_recycling,
-					       ((recall_level > 1) ? TRUE: FALSE));
-	}
+	input->recall_id = ags_recall_id_add(input->recall_id,
+					     parent_group_id, group_id, child_group_id,
+					     input->first_recycling, input->last_recycling,
+					     ((audio_signal_level > 1) ? TRUE: FALSE));
 
 	if(input->link != NULL){
 	  ags_channel_recursive_play_init_arrange_group_id_down(input->link,
 								next_parent_group_id, next_group_id, next_child_group_id,
-								next_recall_level);
+								next_audio_signal_level);
 	}
 
 	input = input->next_pad;
@@ -2456,37 +2452,30 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
 	next_child_group_id = ags_recall_id_generate_group_id();
 
-	next_recall_level = recall_level + 1;
+	next_audio_signal_level = audio_signal_level + 1;
       }else{
 	next_parent_group_id = parent_group_id;
 	next_group_id = group_id;
 	next_child_group_id = child_group_id;
 
-	next_recall_level = recall_level;
+	next_audio_signal_level = audio_signal_level;
       }
 
-      if(parent_group_id == 0){
-	input->recall_id = ags_recall_id_add(input->recall_id,
-					     parent_group_id, group_id, child_group_id,
-					     input->first_recycling, input->last_recycling,
-					     FALSE);
-      }else{
-	input->recall_id = ags_recall_id_add(input->recall_id,
-					     parent_group_id, group_id, child_group_id,
-					     input->first_recycling, input->last_recycling,
-					     ((recall_level > 1) ? TRUE: FALSE));
-      }
+      input->recall_id = ags_recall_id_add(input->recall_id,
+					   parent_group_id, group_id, child_group_id,
+					   input->first_recycling, input->last_recycling,
+					   ((audio_signal_level > 1) ? TRUE: FALSE));
 
       if(input->link != NULL){
 	ags_channel_recursive_play_init_arrange_group_id_down(input->link,
 							      next_parent_group_id, next_group_id, next_child_group_id,
-							      next_recall_level);
+							      next_audio_signal_level);
       }
     }
   }
   void ags_channel_recursive_play_init_arrange_group_id_down(AgsChannel *output,
 							     AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
-							     guint recall_level)
+							     guint audio_signal_level)
   {
     AgsAudio *audio;
 
@@ -2495,17 +2484,10 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     }
 
     /* AgsOutput */
-    if(parent_group_id == 0){
-      output->recall_id = ags_recall_id_add(output->recall_id,
-					    parent_group_id, group_id, child_group_id,
-					    output->first_recycling, output->last_recycling,
-					    FALSE);
-    }else{
-      output->recall_id = ags_recall_id_add(output->recall_id,
-					    parent_group_id, group_id, child_group_id,
-					    output->first_recycling, output->last_recycling,
-					    ((recall_level > 1) ? TRUE: FALSE));
-    }
+    output->recall_id = ags_recall_id_add(output->recall_id,
+					  parent_group_id, group_id, child_group_id,
+					  output->first_recycling, output->last_recycling,
+					  ((audio_signal_level > 1) ? TRUE: FALSE));
 
     /* AgsAudio */
     audio = AGS_AUDIO(output->audio);
@@ -2520,30 +2502,30 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       audio->recall_id = ags_recall_id_add(audio->recall_id,
 					   parent_group_id, group_id, child_group_id,
 					   output->first_recycling, output->last_recycling,
-					   ((recall_level > 1) ? TRUE: FALSE));
+					   ((audio_signal_level > 1) ? TRUE: FALSE));
       
       /* add the new group id to AgsAudio */
       audio->recall_id = ags_recall_id_add(audio->recall_id,
 					   group_id, child_group_id, next_group_id,
 					   ags_output_find_first_input_recycling(AGS_OUTPUT(output)), ags_output_find_last_input_recycling(AGS_OUTPUT(output)),
-					   FALSE);
+					   ((audio_signal_level > 1) ? TRUE: FALSE));
       
       
       /* AgsInput */
       ags_channel_recursive_play_init_arrange_group_id_down_input(output,
 								  group_id, child_group_id, next_group_id,
-								  recall_level + 1);
+								  audio_signal_level + 1);
     }else{
       /* add group id to AgsAudio */
       audio->recall_id = ags_recall_id_add(audio->recall_id,
 					   parent_group_id, group_id, child_group_id,
 					   output->first_recycling, output->last_recycling,
-					   ((recall_level > 0) ? TRUE: FALSE));
+					   ((audio_signal_level > 0) ? TRUE: FALSE));
 
       /* AgsInput */
       ags_channel_recursive_play_init_arrange_group_id_down_input(output,
 								  parent_group_id, group_id, child_group_id,
-								  recall_level);
+								  audio_signal_level);
     }
   }
 
@@ -2785,7 +2767,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
    * resolving recall dependencies has to be done from the root to the leafs
    */
   void ags_channel_recursive_play_init_resolve_up(AgsChannel *channel,
-						  AgsGroupId group_id)
+						  AgsGroupId group_id,
+						  guint audio_signal_level)
   {
     AgsAudio *audio;
     AgsChannel *current;
@@ -2851,11 +2834,13 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     }
   }
   void ags_channel_recursive_play_init_resolve_down_input(AgsChannel *output,
-							  AgsGroupId group_id)
+							  AgsGroupId group_id,
+							  guint audio_signal_level)
   {
     AgsAudio *audio;
     AgsChannel *input, *input_start;
     AgsGroupId next_group_id;
+    guint next_audio_signal_level;
 
     audio = AGS_AUDIO(output->audio);
 
@@ -2871,8 +2856,10 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* retrieve group id and audio signal level of link */
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	next_group_id = ags_recall_id_find_group_id(input->recall_id, group_id)->child_group_id;
+	next_audio_signal_level = audio_signal_level + 1;
       }else{
 	next_group_id = group_id;
+	next_audio_signal_level = audio_signal_level;
       }
 
       /* resolve recall dependencies on input */
@@ -2892,7 +2879,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	if(input->link != NULL){
 	  /* follow the links */
 	  ags_channel_recursive_play_init_resolve_down(input->link,
-						       next_group_id);
+						       next_group_id,
+						       next_audio_signal_level);
 	}
 
 	/* iterate */
@@ -2919,12 +2907,14 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       if(input->link != NULL){
 	/* follow the links */
 	ags_channel_recursive_play_init_resolve_down(input->link,
-						     next_group_id);
+						     next_group_id,
+						     next_audio_signal_level);
       }
     }
   }
   void ags_channel_recursive_play_init_resolve_down(AgsChannel *output,
-						    AgsGroupId group_id)
+						    AgsGroupId group_id,
+						    guint audio_signal_level)
   {
     AgsAudio *audio;
 
@@ -2959,7 +2949,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       /* traverse the tree */
       ags_channel_recursive_play_init_resolve_down_input(output,
-							 next_group_id);
+							 next_group_id,
+							 audio_signal_level + 1);
     }else{
       /* resolve dependencies on audio */
       ags_audio_resolve_recall(audio,
@@ -2968,7 +2959,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
       /* traverse the tree */
       ags_channel_recursive_play_init_resolve_down_input(output,
-							 group_id);
+							 group_id,
+							 audio_signal_level);
     }
   }
 
@@ -3133,6 +3125,10 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   /*
    * entry point
    */
+  if(channel == NULL){
+    return;
+  }
+
   first_recycling = channel->first_recycling;
   last_recycling = channel->last_recycling;
 
@@ -3140,68 +3136,58 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
   /* arrange group_id */
   if(arrange_group_id){
-    /* go to the root */
-    ags_channel_recursive_play_init_arrange_group_id_up(channel);
+    ags_channel_recursive_play_init_arrange_group_id_up(channel,
+							audio_signal_level);
 
-    /* iterate the leafes */
     if(AGS_IS_OUTPUT(channel)){
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	AgsRecycling *first_recycling;
 	AgsRecycling *last_recycling;
-	AgsGroupId new_group_id;
+	AgsGroupId next_group_id;
 
-	new_group_id = ags_recall_id_generate_group_id();
+	next_group_id = ags_recall_id_generate_group_id();
 
-	ags_channel_recursive_play_init_arrange_group_id_down_input(channel,
-								    group_id, child_group_id, new_group_id,
-								    1);
-
-	audio->recall_id = ags_recall_id_add(audio->recall_id,
-					     0, group_id, child_group_id,
-					     channel->first_recycling, channel->last_recycling,
-					     FALSE);
 	
 	first_recycling = ags_output_find_first_input_recycling(AGS_OUTPUT(channel));
 	last_recycling = ags_output_find_last_input_recycling(AGS_OUTPUT(channel));
 
 	audio->recall_id = ags_recall_id_add(audio->recall_id,
-					     group_id, child_group_id, new_group_id,
+					     group_id, child_group_id, next_group_id,
 					     first_recycling, last_recycling,
-					     FALSE);
+					     ((audio_signal_level + 1 > 1) ? TRUE: FALSE));
+
+	ags_channel_recursive_play_init_arrange_group_id_down_input(channel,
+								    group_id, child_group_id, next_group_id,
+								    audio_signal_level + 1);
       }else{
 	ags_channel_recursive_play_init_arrange_group_id_down_input(channel,
 								    0, group_id, child_group_id,
-								    0);
-
-
-	audio->recall_id = ags_recall_id_add(audio->recall_id,
-					     0, group_id, child_group_id,
-					     first_recycling, last_recycling,
-					     FALSE);
+								    audio_signal_level);
       }
     }else{
       if(channel->link != NULL){
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	  ags_channel_recursive_play_init_arrange_group_id_down(channel->link,
 								group_id, child_group_id, ags_recall_id_generate_group_id(),
-								1);
+								audio_signal_level + 1);
 	}else{
-	  ags_channel_recursive_play_init_arrange_group_id_down_input(channel->link,
-								      0, group_id, child_group_id,
-								      0);
+	  ags_channel_recursive_play_init_arrange_group_id_down(channel->link,
+								0, group_id, child_group_id,
+								audio_signal_level);
 	}
       }
-
-      audio->recall_id = ags_recall_id_add(audio->recall_id,
-					   0, group_id, child_group_id,
-					   first_recycling, last_recycling,
-					   FALSE);
-
     }
   }
 
   /* duplicate AgsRecall templates */
   if(duplicate_templates){
+    AgsGroupId next_group_id;
+    guint next_audio_signal_level;
+
+    ags_channel_recursive_play_init_duplicate_up(channel,
+						 playback, sequencer, notation,
+						 group_id);
+
     if(AGS_IS_OUTPUT(channel)){
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	next_group_id = child_group_id;
@@ -3210,12 +3196,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	next_group_id = group_id;
 	next_audio_signal_level = audio_signal_level;
       }
-
-      ags_audio_duplicate_recall(audio,
-				 playback, sequencer, notation,
-				 first_recycling, last_recycling,
-				 group_id,
-				 next_audio_signal_level, TRUE);
 
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	AgsRecycling *first_recycling, *last_recycling;
@@ -3228,19 +3208,19 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				   first_recycling, last_recycling,
 				   next_group_id,
 				   next_audio_signal_level, FALSE);
+
+	ags_channel_recursive_play_init_duplicate_down_input(channel,
+							     playback, sequencer, notation,
+							     next_group_id,
+							     next_audio_signal_level);
       }else{
-	ags_audio_duplicate_recall(audio,
-				   playback, sequencer, notation,
-				   first_recycling, last_recycling,
-				   next_group_id,
-				   next_audio_signal_level, FALSE);
+	ags_channel_recursive_play_init_duplicate_down_input(channel,
+							     playback, sequencer, notation,
+							     next_group_id,
+							     next_audio_signal_level);
       }
-      
-      ags_channel_recursive_play_init_duplicate_down_input(channel,
-							   playback, sequencer, notation,
-							   next_group_id,
-							   next_audio_signal_level);
     }else{
+      /* traverse the tree */
       if(channel->link != NULL){
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	  ags_channel_recursive_play_init_duplicate_down(channel->link,
@@ -3248,93 +3228,54 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 							 child_group_id,
 							 audio_signal_level + 1);
 	}else{
-	  ags_channel_recursive_play_init_duplicate_down_input(channel->link,
-							       playback, sequencer, notation,
-							       group_id,
-							       audio_signal_level);
+	  ags_channel_recursive_play_init_duplicate_down(channel->link,
+							 playback, sequencer, notation,
+							 group_id,
+							 audio_signal_level);
 	}
       }
     }
-
-    ags_channel_recursive_play_init_duplicate_up(channel,
-						 playback, sequencer, notation,
-						 group_id);
   }
 
   /* resolve dependencies */
   if(resolve_dependencies){
+    ags_channel_recursive_play_init_resolve_up(channel,
+					       group_id,
+					       audio_signal_level);
+
     if(AGS_IS_OUTPUT(channel)){
-      /* start from the leafs */
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	AgsRecycling *first_recycling;
 	AgsRecycling *last_recycling;
-
-	ags_channel_recursive_play_init_resolve_down_input(channel,
-							   child_group_id);
 
 	first_recycling = ags_output_find_first_input_recycling(AGS_OUTPUT(channel));
 	last_recycling = ags_output_find_last_input_recycling(AGS_OUTPUT(channel));
 
 	ags_audio_resolve_recall(audio,
-				 channel->first_recycling, channel->last_recycling,
-				 group_id);
-
-	ags_audio_resolve_recall(audio,
 				 first_recycling, last_recycling,
 				 child_group_id);
 
-	/* go to the root */
-	/* resolve output */
-	ags_channel_resolve_recall(channel,
-				   group_id);
-	
-	ags_channel_recursive_play_init_resolve_up_input(channel->link,
-							 group_id);
+	ags_channel_recursive_play_init_resolve_down_input(channel,
+							   child_group_id,
+							   audio_signal_level + 1);
       }else{
 	ags_channel_recursive_play_init_resolve_down_input(channel,
-							   group_id);
-
-	ags_audio_resolve_recall(audio,
-				 channel->first_recycling, channel->last_recycling,
-				 group_id);
-
-	/* go to the root */
-	ags_channel_recursive_play_init_resolve_up_input(channel->link,
-							 group_id);
+							   group_id,
+							   audio_signal_level);
       }
     }else{
-      AgsChannel *output;
-
-      /* start from the leafs */
+      /* traverse the tree */
       if(channel->link != NULL){
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	  ags_channel_recursive_play_init_resolve_down(channel->link,
-						       child_group_id);
+						       child_group_id,
+						       audio_signal_level + 1);
 	}else{
 	  ags_channel_recursive_play_init_resolve_down(channel->link,
-						       group_id);
+						       group_id,
+						       audio_signal_level);
 	}
       }
-
-      ags_channel_resolve_recall(channel,
-				 group_id);
-
-      ags_audio_resolve_recall(audio,
-			       channel->first_recycling, channel->last_recycling,
-			       group_id);
-      
-
-      /* go to the root */
-      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	output = ags_channel_nth(audio->output,
-				 channel->audio_channel);
-      }else{
-	output = ags_channel_nth(audio->output,
-				 channel->line);
-      }
-
-      ags_channel_recursive_play_init_resolve_up_output(output,
-							group_id);
     }
   }
 
@@ -3342,8 +3283,9 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   if(stage == -1){
     stage = 0;
     stage_stop = 3;
-  }else
+  }else{
     stage_stop = stage + 1;
+  }
 
   for(; stage < stage_stop; stage++){
     if(AGS_IS_OUTPUT(channel)){
@@ -3354,10 +3296,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	ags_channel_recursive_play_init_down_input(channel,
 						   child_group_id);
 
-	ags_audio_init_recall(audio, stage,
-			      channel->first_recycling, channel->last_recycling,
-			      group_id);
-
 	first_recycling = ags_output_find_first_input_recycling(AGS_OUTPUT(channel));
 	last_recycling = ags_output_find_last_input_recycling(AGS_OUTPUT(channel));
 
@@ -3367,10 +3305,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       }else{
 	ags_channel_recursive_play_init_down_input(channel,
 						   group_id);
-
-	ags_audio_init_recall(audio, stage,
-			      channel->first_recycling, channel->last_recycling,
-			      group_id);
       }
     }else{
       if(channel->link != NULL){
@@ -3378,8 +3312,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	  ags_channel_recursive_play_init_down(channel->link,
 					       child_group_id);
 	}else{
-	  ags_channel_recursive_play_init_down_input(channel->link,
-						     group_id);
+	  ags_channel_recursive_play_init_down(channel->link,
+					       group_id);
 	}
       }
     }
