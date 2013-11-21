@@ -61,7 +61,6 @@ enum{
   PROP_SECOND_INDEX,
   PROP_OFFSET,
   PROP_CURRENT_BIT,
-  PROP_NEXT_BIT,
 };
 
 static gpointer ags_pattern_parent_class = NULL;
@@ -186,15 +185,6 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   g_object_class_install_property(gobject,
 				  PROP_CURRENT_BIT,
 				  param_spec);
-
-  param_spec = g_param_spec_boolean("next-bit\0",
-				    "next bit for offset\0",
-				    "The next bit for offset\0",
-				    FALSE,
-				    G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NEXT_BIT,
-				  param_spec);
 }
 
 void
@@ -237,9 +227,6 @@ ags_pattern_init(AgsPattern *pattern)
   pattern->i = 0;
   pattern->j = 0;
   pattern->bit = 0;
-
-  pattern->current_bit = FALSE;
-  pattern->next_bit = FALSE;
 }
 
 void
@@ -343,10 +330,20 @@ ags_pattern_get_property(GObject *gobject,
     g_value_set_uint(value, pattern->bit);
     break;
   case PROP_CURRENT_BIT:
-    g_value_set_boolean(value, pattern->current_bit);
-    break;
-  case PROP_NEXT_BIT:
-    g_value_set_boolean(value, pattern->next_bit);
+    {
+      AgsPort *port;
+
+      port = ags_portlet_get_port(AGS_PORTLET(pattern));
+
+      pthread_mutex_lock(&(port->mutex));
+
+      g_value_set_boolean(value, ags_pattern_get_bit(pattern->pattern,
+						     pattern->i,
+						     pattern->j,
+						     pattern->bit));
+
+      pthread_mutex_unlock(&(port->mutex));
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -410,9 +407,11 @@ ags_pattern_list_safe_properties(AgsPortlet *portlet)
   pthread_mutex_lock(&mutex);
 
   if(list == NULL){
+    list = g_list_prepend(list, "first-index\0");
+    list = g_list_prepend(list, "second-index\0");
+    list = g_list_prepend(list, "offset\0");
     list = g_list_prepend(list, "current-bit\0");
-    list = g_list_prepend(list, "next-bit\0");
-  }
+ }
 
   pthread_mutex_unlock(&mutex);
 
@@ -618,18 +617,6 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
     pattern->pattern[i][j][k] &= (~value);
   else
     pattern->pattern[i][j][k] |= value;
-}
-
-gboolean
-ags_pattern_get_current_bit(AgsPattern *pattern)
-{
-  //TODO:JK: implement me
-}
-
-gboolean
-ags_pattern_get_next_bit(AgsPattern *pattern)
-{
-  //TODO:JK: implement me
 }
 
 AgsPattern*

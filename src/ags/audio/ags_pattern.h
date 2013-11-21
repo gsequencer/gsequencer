@@ -47,9 +47,6 @@ struct _AgsPattern
   guint i;
   guint j;
   guint bit;
-
-  gboolean current_bit;
-  gboolean next_bit;
 };
 
 struct _AgsPatternClass
@@ -65,9 +62,6 @@ void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint leng
 
 gboolean ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit);
 void ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit);
-
-gboolean ags_pattern_get_current_bit(AgsPattern *pattern);
-gboolean ags_pattern_get_next_bit(AgsPattern *pattern);
 
 AgsPattern* ags_pattern_new();
 
