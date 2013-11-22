@@ -29,8 +29,9 @@
 
 void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
 
-void ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-				       guint attack,
+void ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
+				       guint nth_run,
+				       guint delay, guint attack,
 				       AgsDrum *drum);
 void ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum);
 

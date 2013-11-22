@@ -413,7 +413,7 @@ ags_drum_connect(AgsConnectable *connectable)
   drum = AGS_DRUM(connectable);
 
   /* recalls */
-  list = ags_recall_find_type(AGS_AUDIO(AGS_MACHINE(drum)->audio)->play, AGS_TYPE_DELAY_AUDIO_RUN);
+  list = ags_recall_template_find_type(AGS_AUDIO(AGS_MACHINE(drum)->audio)->play, AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
@@ -424,7 +424,7 @@ ags_drum_connect(AgsConnectable *connectable)
     recall_handler->callback = G_CALLBACK(ags_drum_sequencer_count_callback);
     recall_handler->data = (gpointer) drum;
 
-    //    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
+    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
   }
   
   /* AgsDrum */

@@ -126,8 +126,9 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 }
 
 void
-ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-				  guint attack,
+ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
+				  guint nth_run,
+				  guint delay, guint attack,
 				  AgsDrum *drum)
 {
   AgsWindow *window;
@@ -143,13 +144,16 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_r
   audio = AGS_MACHINE(drum)->audio;
 
   /* get some recalls */
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO);
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
   
   if(list != NULL){
     play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
   }
 
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  list = ags_recall_find_type_with_group_id(audio->play,
+					    AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+					    AGS_RECALL(delay_audio_run)->recall_id->group_id);
   
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);

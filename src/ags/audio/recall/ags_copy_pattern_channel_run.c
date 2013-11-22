@@ -360,6 +360,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 			     "offset\0", &offset_value);
 
   /* read pattern port - current bit */
+  g_value_init(&current_bit_value, G_TYPE_BOOLEAN);
   ags_port_safe_get_property(copy_pattern_channel->pattern,
 			     "current-bit\0", &current_bit_value);
 
