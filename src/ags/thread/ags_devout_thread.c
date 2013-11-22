@@ -166,15 +166,19 @@ ags_devout_thread_start(AgsThread *thread)
   /*  */
   devout_thread->error = NULL;
 
-  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-    if(devout->out.alsa.handle == NULL){
-      ags_devout_alsa_init(devout,
-			   devout_thread->error);
+
+  AGS_DEVOUT_GET_CLASS(devout)->play_init(devout,
+					  &(devout_thread->error));
+
+  //  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+  //    if(devout->out.alsa.handle == NULL){
+  //      ags_devout_alsa_init(devout,
+  //			   devout_thread->error);
       
-      devout->flags &= (~AGS_DEVOUT_START_PLAY);      
-      g_message("ags_devout_alsa_play\0");
-    }
-  }
+  //      devout->flags &= (~AGS_DEVOUT_START_PLAY);      
+  //      g_message("ags_devout_alsa_play\0");
+  //    }
+  //  }
 
 
   if(devout_thread->error != NULL){
@@ -212,8 +216,11 @@ ags_devout_thread_run(AgsThread *thread)
   // g_message("play\0");
 
   error = NULL;
-  ags_devout_alsa_play(devout,
-		       &error);
+
+  AGS_DEVOUT_GET_CLASS(devout)->play(devout,
+				     &error);
+  //  ags_devout_alsa_play(devout,
+  //		       &error);
 
   if(error != NULL){
     //TODO:JK: implement me
@@ -242,7 +249,8 @@ ags_devout_thread_stop(AgsThread *thread)
   devout->flags &= ~(AGS_DEVOUT_PLAY);
 
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-    ags_devout_alsa_free(devout);
+    AGS_DEVOUT_GET_CLASS(devout)->stop(devout);
+    //    ags_devout_alsa_free(devout);
   }
 }
 

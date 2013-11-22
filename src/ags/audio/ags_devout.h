@@ -137,7 +137,7 @@ struct _AgsDevout
   union{
     struct _AgsAO{
       ao_device *device;
-      ao_sample_format format;
+      ao_sample_format *format;
       int driver_ao;
     }ao;
     struct _AgsOss{
@@ -164,6 +164,12 @@ struct _AgsDevout
 struct _AgsDevoutClass
 {
   GObjectClass object;
+
+  void (*play_init)(AgsDevout *devout,
+		    GError **error);
+  void (*play)(AgsDevout *devout,
+	       GError **error);
+  void (*stop)(AgsDevout *devout);
 
   void (*tic)(AgsDevout *devout);
 

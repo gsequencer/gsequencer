@@ -2607,7 +2607,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* AgsAudio */
       ags_audio_duplicate_recall(audio,
 				 playback, sequencer, notation,
-				 first_recycling, last_recycling,
+				 current->first_recycling, current->last_recycling,
 				 group_id,
 				 0, TRUE);
 

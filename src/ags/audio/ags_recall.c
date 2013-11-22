@@ -921,6 +921,8 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 {
   GList *list;
 
+  g_message("ags_recall_real_run_init_pre: %s\0", G_OBJECT_TYPE_NAME(recall));
+
   list = recall->children;
 
   while(list != NULL){
@@ -956,6 +958,8 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 {
   GList *list;
 
+  g_message("ags_recall_real_run_init_inter: %s\0", G_OBJECT_TYPE_NAME(recall));
+
   list = recall->children;
 
   while(list != NULL){
@@ -990,6 +994,8 @@ void
 ags_recall_real_run_init_post(AgsRecall *recall)
 {
   GList *list;
+
+  g_message("ags_recall_real_run_init_post: %s\0", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 
@@ -1028,7 +1034,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list;
 
-  //  g_message("ags_recall_real_run_pre: %s\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags_recall_real_run_pre: %s\0", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 
@@ -1065,7 +1071,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
 {
   GList *list;
 
-  //  g_message("ags_recall_real_run_inter: %s\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags_recall_real_run_inter: %s\0", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 
@@ -1102,7 +1108,7 @@ ags_recall_real_run_post(AgsRecall *recall)
 {
   GList *list, *list_next;
 
-  //  g_message("ags_recall_real_run_post: %s\0", G_OBJECT_TYPE_NAME(recall));
+  g_message("ags_recall_real_run_post: %s\0", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 

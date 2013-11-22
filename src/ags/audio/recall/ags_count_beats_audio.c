@@ -180,7 +180,7 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 						      "port-value-length", 1,
 						      NULL);
 
-  count_beats_audio->notation_loop_end->port_value.ags_port_double = 16.0;
+  count_beats_audio->notation_loop_end->port_value.ags_port_double = 64.0;
 
   port = g_list_prepend(port, count_beats_audio->notation_loop_end);
 

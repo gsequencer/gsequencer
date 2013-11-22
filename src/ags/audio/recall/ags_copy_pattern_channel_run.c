@@ -336,8 +336,6 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   GValue offset_value = { 0, };
   GValue current_bit_value = { 0, };  
 
-  g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback[%d]\0", run_order);
-  
   if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
     return;
   }

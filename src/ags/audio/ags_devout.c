@@ -55,6 +55,13 @@ void ags_devout_alsa_play(AgsDevout *devout,
 			  GError **error);
 void ags_devout_alsa_free(AgsDevout *devout);
 
+void ags_devout_ao_init(AgsDevout *devout,
+			  GError **error);
+void ags_devout_ao_play(AgsDevout *devout,
+			  GError **error);
+void ags_devout_ao_free(AgsDevout *devout);
+
+
 enum{
   PROP_0,
   PROP_DEVICE,
@@ -230,7 +237,12 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  param_spec);
 
   /* AgsDevoutClass */
+  devout->play_init = ags_devout_ao_init;
+  devout->play = ags_devout_ao_play;
+  devout->stop = ags_devout_ao_free;
+
   devout->tic = NULL;
+  devout->note_offset_changed = NULL;
 
   devout_signals[TIC] =
     g_signal_new("tic\0",
@@ -257,7 +269,7 @@ ags_devout_init(AgsDevout *devout)
   guint i;
   
   /* flags */
-  devout->flags = AGS_DEVOUT_ALSA;
+  devout->flags = AGS_DEVOUT_LIBAO;
 
   /* quality */
   devout->dsp_channels = 2;
@@ -267,8 +279,9 @@ ags_devout_init(AgsDevout *devout)
   devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
-  devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = g_strdup("hw:0\0");
+  //  devout->out.alsa.handle = NULL;
+  //  devout->out.alsa.device = g_strdup("hw:0\0");
+  devout->out.ao.driver_ao = ao_driver_id("pulse\0");
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
@@ -336,6 +349,7 @@ ags_devout_set_property(GObject *gobject,
 
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
 	//TODO:JK: implement me
+	devout->out.ao.driver_ao = ao_driver_id(device);
       }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
 	devout->out.oss.device = device;
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
@@ -739,10 +753,6 @@ void
 ags_devout_alsa_play(AgsDevout *devout,
 		     GError **error)
 {
-  AgsDevoutThread *devout_thread;
- 
-  devout_thread = devout->devout_thread;
-    
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -853,6 +863,91 @@ ags_devout_alsa_free(AgsDevout *devout)
   snd_pcm_close(devout->out.alsa.handle);
 
   devout->out.alsa.handle = NULL;
+}
+
+void
+ags_devout_ao_init(AgsDevout *devout,
+		   GError **error)
+{
+  ao_sample_format *format;
+
+  format = (ao_sample_format *) malloc(sizeof(ao_sample_format));
+
+  format->bits = devout->bits;
+  format->rate = devout->frequency;
+  format->channels = devout->dsp_channels;
+  format->byte_format = AO_FMT_NATIVE;
+  format->matrix = g_strdup("L,R\0");
+
+  devout->out.ao.format = format;
+  devout->out.ao.device = ao_open_live(devout->out.ao.driver_ao,
+				       devout->out.ao.format,
+				       NULL);
+}
+
+void
+ags_devout_ao_play(AgsDevout *devout,
+		   GError **error)
+{
+  int rc;
+
+  /*  */
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+      
+    rc = ao_play(devout->out.ao.device,
+		 (void *) devout->buffer[0],
+		 devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    memset(devout->buffer[0], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+
+    rc = ao_play(devout->out.ao.device,
+		 (void *) devout->buffer[1],
+		 devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    memset(devout->buffer[1], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+
+    rc = ao_play(devout->out.ao.device,
+		 (void *) devout->buffer[2],
+		 devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
+    memset(devout->buffer[2], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+
+    rc = ao_play(devout->out.ao.device,
+		 (void *) devout->buffer[3],
+		 devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  }
+
+  /*
+    if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
+    devout->offset++;
+  */
+
+  /* determine if attack should be switched */
+  devout->delay_counter += 1;
+
+  if(devout->delay_counter >= devout->delay[devout->tic_counter]){
+    /* tic */
+    ags_devout_tic(devout);
+
+    devout->tic_counter += 1;
+
+    if(devout->tic_counter == AGS_NOTATION_TICS_PER_BEAT){
+      devout->tic_counter = 0;
+    }
+
+    /* delay */
+    devout->delay_counter = 0;
+  }
+
+  /* switch buffer flags */
+  ags_devout_switch_buffer_flag(devout);
+}
+
+void
+ags_devout_ao_free(AgsDevout *devout)
+{
+  ao_close(devout->out.ao.device);
 }
 
 AgsDevout*
