@@ -61,7 +61,6 @@ void ags_devout_ao_play(AgsDevout *devout,
 			  GError **error);
 void ags_devout_ao_free(AgsDevout *devout);
 
-
 enum{
   PROP_0,
   PROP_DEVICE,
@@ -237,12 +236,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  param_spec);
 
   /* AgsDevoutClass */
-  devout->play_init = ags_devout_ao_init;
-  devout->play = ags_devout_ao_play;
-  devout->stop = ags_devout_ao_free;
-
   devout->tic = NULL;
-  devout->note_offset_changed = NULL;
 
   devout_signals[TIC] =
     g_signal_new("tic\0",
@@ -269,7 +263,7 @@ ags_devout_init(AgsDevout *devout)
   guint i;
   
   /* flags */
-  devout->flags = AGS_DEVOUT_LIBAO;
+  devout->flags = AGS_DEVOUT_ALSA;
 
   /* quality */
   devout->dsp_channels = 2;
@@ -279,9 +273,8 @@ ags_devout_init(AgsDevout *devout)
   devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 
   //  devout->out.oss.device = NULL;
-  //  devout->out.alsa.handle = NULL;
-  //  devout->out.alsa.device = g_strdup("hw:0\0");
-  devout->out.ao.driver_ao = ao_driver_id("pulse\0");
+  devout->out.alsa.handle = NULL;
+  devout->out.alsa.device = g_strdup("hw:0\0");
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
@@ -349,7 +342,6 @@ ags_devout_set_property(GObject *gobject,
 
       if((AGS_DEVOUT_LIBAO & (devout->flags)) != 0){
 	//TODO:JK: implement me
-	devout->out.ao.driver_ao = ao_driver_id(device);
       }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
 	devout->out.oss.device = device;
       }else if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
@@ -753,6 +745,10 @@ void
 ags_devout_alsa_play(AgsDevout *devout,
 		     GError **error)
 {
+  AgsDevoutThread *devout_thread;
+ 
+  devout_thread = devout->devout_thread;
+    
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));

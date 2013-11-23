@@ -2579,8 +2579,6 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 						    AgsGroupId group_id)
   {
     AgsAudio *audio;
-    AgsRecycling *first_recycling;
-    AgsRecycling *last_recycling;
     AgsChannel *current;
     AgsRecallID *recall_id;
 
