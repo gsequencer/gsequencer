@@ -135,7 +135,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_string("device\0",
 				   "the device identifier\0",
 				   "The device to perform output to\0",
-				   "hw:0\0",
+				   "default\0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -236,7 +236,12 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  param_spec);
 
   /* AgsDevoutClass */
+  devout->play_init = ags_devout_ao_init;
+  devout->play = ags_devout_ao_play;
+  devout->stop = ags_devout_ao_free;
+
   devout->tic = NULL;
+  devout->note_offset_changed = NULL;
 
   devout_signals[TIC] =
     g_signal_new("tic\0",
@@ -274,7 +279,7 @@ ags_devout_init(AgsDevout *devout)
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = g_strdup("hw:0\0");
+  devout->out.alsa.device = g_strdup("default\0");
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
@@ -298,10 +303,14 @@ ags_devout_init(AgsDevout *devout)
 
   start = default_tic_frames % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
 
-  memset(devout->delay, AGS_DEVOUT_DEFAULT_DELAY, 2 * (int) ceil(AGS_NOTATION_TICS_PER_BEAT));
+  //TODO:JK: more work
+  //  memset(devout->delay, AGS_DEVOUT_DEFAULT_DELAY, 2 * (int) ceil(AGS_NOTATION_TICS_PER_BEAT));
+  memset(devout->delay, 0, 2 * (int) ceil(AGS_NOTATION_TICS_PER_BEAT));
 
   for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
-    devout->attack[i] = (start + i * default_tic_frames) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+    //TODO:JK: more work
+    //    devout->attack[i] = (start + i * default_tic_frames) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+    devout->attack[i] = 0;
   }
 
   memcpy(&(devout->attack[i]), devout->attack, (int) ceil(AGS_NOTATION_TICS_PER_BEAT));

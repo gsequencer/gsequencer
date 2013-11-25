@@ -165,6 +165,12 @@ struct _AgsDevoutClass
 {
   GObjectClass object;
 
+  void (*play_init)(AgsDevout *devout,
+		    GError **error);
+  void (*play)(AgsDevout *devout,
+	       GError **error);
+  void (*stop)(AgsDevout *devout);
+
   void (*tic)(AgsDevout *devout);
 
   void (*note_offset_changed)(AgsDevout *devout, guint note_offset);

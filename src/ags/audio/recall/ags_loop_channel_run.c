@@ -421,7 +421,7 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
   channel = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source;
   audio = AGS_AUDIO(channel->audio);
 
-  group_id = recall->recall_id->child_group_id;
+  group_id = recall->recall_id->group_id;
 
   count_beats_audio_run = NULL;
   i_stop = 1;
@@ -497,8 +497,8 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
     ags_recycling_add_audio_signal(recycling,
 				   audio_signal);
 
-    g_message("+++++++++++++++++++++++++\n\nloop channel created: AgsAudioSignal#%llx\n\n+++++++++++++++++++++++++\0",
-	      (long long unsigned int) audio_signal);
+    g_message("+++++++++++++++++++++++++\n\nloop channel created: AgsAudioSignal#%llx[%u]\n\n+++++++++++++++++++++++++\0",
+	      (long long unsigned int) audio_signal, audio_signal->length);
 
     recycling = recycling->next;
   }
@@ -516,10 +516,10 @@ ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run
 				    guint run_order,
 				    AgsLoopChannelRun *loop_channel_run)
 {
-
-  //  g_message("ags_loop_channel_run_start_callback - run_order: %u; %u\n\0",
-  //	 AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
-  //	 run_order);
+  
+  g_message("ags_loop_channel_run_start_callback - run_order: %u; %u\n\0",
+	    AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
+	    run_order);
 
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
     ags_loop_channel_run_create_audio_signals(loop_channel_run);
@@ -531,9 +531,9 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				   guint run_order,
 				   AgsLoopChannelRun *loop_channel_run)
 {
-  //  g_message("ags_loop_channel_run_loop_callback - run_order: %u; %u\n\0",
-  //	 AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
-  //	 run_order);
+   g_message("ags_loop_channel_run_loop_callback - run_order: %u; %u\n\0",
+	     AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
+	     run_order);
   
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
     ags_loop_channel_run_create_audio_signals(loop_channel_run);

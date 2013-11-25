@@ -402,6 +402,8 @@ main(int argc, char **argv)
   gtk_init(&argc, &argv);
   ipatch_init();
 
+  ao_initialize();
+
   if(!single_thread){
     AbyssInit(&error);
 

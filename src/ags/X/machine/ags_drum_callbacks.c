@@ -160,7 +160,7 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   /* set optical feedback */
-  counter = play_count_beats_audio_run->sequencer_counter;
+  counter = (guint) floor(play_count_beats_audio_run->sequencer_counter);
 
   drum->active_led = counter;
 

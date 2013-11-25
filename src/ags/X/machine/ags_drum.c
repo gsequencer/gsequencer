@@ -424,7 +424,8 @@ ags_drum_connect(AgsConnectable *connectable)
     recall_handler->callback = G_CALLBACK(ags_drum_sequencer_count_callback);
     recall_handler->data = (gpointer) drum;
 
-    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
+    //TODO:JK: uncomment me
+    //    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
   }
   
   /* AgsDrum */

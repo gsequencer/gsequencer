@@ -2275,6 +2275,8 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     recall = AGS_RECALL(list_recall->data);
     
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
+       recall->recall_id == NULL ||
+       recall->recall_id->group_id != group_id ||
        AGS_IS_RECALL_CHANNEL(recall)){
       list_recall = list_recall->next;
       continue;

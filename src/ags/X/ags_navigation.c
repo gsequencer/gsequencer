@@ -321,8 +321,9 @@ ags_navigation_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
   /* devout */
-  g_signal_connect((GObject *) navigation->devout, "tic\0",
-		   G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
+  //TODO:JK: uncomment me
+  //  g_signal_connect((GObject *) navigation->devout, "tic\0",
+  //		   G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",

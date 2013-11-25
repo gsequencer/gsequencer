@@ -170,11 +170,13 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
     devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
-    stop = 1;
     list = ags_recall_find_type(AGS_AUDIO(channel->audio)->play, AGS_TYPE_DELAY_AUDIO);
 
+    stop = 4 * 16 * AGS_DEVOUT_DEFAULT_DELAY + 1;
+
     if(list != NULL && (delay_audio = AGS_DELAY_AUDIO(list->data)) != NULL){
-      stop = (guint) ceil(delay_audio->sequencer_duration->port_value.ags_port_double);
+      //      stop = (guint) ceil(delay_audio->sequencer_duration->port_value.ags_port_double);
+    }else{
     }
 
     audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
@@ -226,14 +228,14 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-loop\0",
-			      0, audio->audio_channels,
+			      output->audio_channel, output->audio_channel + 1,
 			      output->pad, output->pad + 1,
 			      (AGS_RECALL_FACTORY_OUTPUT |
-			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_PLAY | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
-    list = ags_recall_find_type(output->recall, AGS_TYPE_LOOP_CHANNEL);
+    list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL);
 
     if(list != NULL){
       recall_loop_channel = AGS_LOOP_CHANNEL(list->data);
@@ -244,7 +246,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
 		   NULL);
     }
 
-    list = ags_recall_find_type(output->recall, AGS_TYPE_LOOP_CHANNEL_RUN);
+    list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL_RUN);
 
     if(list != NULL){
       recall_loop_channel_run = AGS_LOOP_CHANNEL_RUN(list->data);
@@ -259,7 +261,7 @@ ags_drum_output_line_map_recall(AgsDrumOutputLine *drum_output_line)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream\0",
-			      0, audio->audio_channels,
+			      output->audio_channel, output->audio_channel + 1,
 			      output->pad, output->pad + 1,
 			      (AGS_RECALL_FACTORY_OUTPUT |
 			       AGS_RECALL_FACTORY_PLAY |

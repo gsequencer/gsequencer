@@ -396,8 +396,9 @@ ags_editor_connect(AgsConnectable *connectable)
 			  G_CALLBACK (ags_editor_hscrollbar_value_changed), (gpointer) editor);
 
   /*  */
-  g_signal_connect((GObject *) editor->devout, "tic\0",
-		   G_CALLBACK(ags_editor_tic_callback), (gpointer) editor);
+  //TODO:JK: uncomment me
+  //  g_signal_connect((GObject *) editor->devout, "tic\0",
+  //		   G_CALLBACK(ags_editor_tic_callback), (gpointer) editor);
 
   /*  */
   ags_toolbar_connect(editor->toolbar);

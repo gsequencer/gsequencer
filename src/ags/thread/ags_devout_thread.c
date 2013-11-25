@@ -169,7 +169,7 @@ ags_devout_thread_start(AgsThread *thread)
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
     if(devout->out.alsa.handle == NULL){
       ags_devout_alsa_init(devout,
-			   devout_thread->error);
+      			   devout_thread->error);
       
       devout->flags &= (~AGS_DEVOUT_START_PLAY);      
       g_message("ags_devout_alsa_play\0");
@@ -213,8 +213,8 @@ ags_devout_thread_run(AgsThread *thread)
 
   error = NULL;
   ags_devout_alsa_play(devout,
-		       &error);
-
+  		       &error);
+  
   if(error != NULL){
     //TODO:JK: implement me
   }
@@ -240,9 +240,10 @@ ags_devout_thread_stop(AgsThread *thread)
   AGS_THREAD_CLASS(ags_devout_thread_parent_class)->stop(thread);
 
   devout->flags &= ~(AGS_DEVOUT_PLAY);
-
+  
   if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
     ags_devout_alsa_free(devout);
+  }else{  
   }
 }
 

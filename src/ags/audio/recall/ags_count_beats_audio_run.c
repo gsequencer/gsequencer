@@ -324,8 +324,6 @@ ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *counta
 void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
-  count_beats_audio_run->first_run_counter = 0;
-
   count_beats_audio_run->notation_counter = 0;
   count_beats_audio_run->sequencer_counter = 0;
 
@@ -640,7 +638,12 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
 
-  count_beats_audio_run->first_run_counter = 0;
+  count_beats_audio_run->first_run = TRUE;
+
+  count_beats_audio_run->notation_hide_ref_counter = 0;
+  count_beats_audio_run->sequencer_hide_ref_counter = 0;
+
+  count_beats_audio_run->sequencer_counter = 0;
 }
 
 void
@@ -730,17 +733,21 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
 
+  if(count_beats_audio_run->hide_ref != 0){
+    count_beats_audio_run->notation_hide_ref_counter += 1;
+  }
+
   if(count_beats_audio_run->notation_counter == 0){
     /* emit notation signals */
-    if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
+    if(count_beats_audio_run->notation_hide_ref_counter == count_beats_audio_run->hide_ref){
       ags_count_beats_audio_run_notation_start(count_beats_audio_run,
-					       nth_run);
+					       nth_run + 1);
     }
 
     if(count_beats_audio->loop->port_value.ags_port_boolean){
-      if(count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
+      if(count_beats_audio_run->notation_hide_ref_counter == count_beats_audio_run->hide_ref){
 	ags_count_beats_audio_run_notation_loop(count_beats_audio_run,
-						nth_run);
+						nth_run + 1);
 
 	g_message("ags_count_beats_audio_run_notation_alloc_output_callback: loop\n\0");
       }
@@ -748,6 +755,10 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
 	g_message("ags_count_beats_audio_run_notation_alloc_output_callback: done\n\0");
 
+	//TODO:JK: verify me
+	ags_count_beats_audio_run_notation_stop(count_beats_audio_run,
+						nth_run + 1);
+	
 	ags_recall_done(AGS_RECALL(count_beats_audio_run));
       }
     }
@@ -763,21 +774,26 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
+  if(count_beats_audio_run->hide_ref != 0){
+    count_beats_audio_run->sequencer_hide_ref_counter += 1;
+  }
 
-  if(count_beats_audio_run->sequencer_counter == 0){
+  if(count_beats_audio_run->first_run &&
+     count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
+    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
+    ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
+					      nth_run + 1);
+  }
+
+  if(!count_beats_audio_run->first_run &&
+     (gdouble) count_beats_audio_run->sequencer_counter == 0){
     /* emit sequencer signals */
-    if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
-      g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
-      ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
-						nth_run);
-    }
-
     if(count_beats_audio->loop->port_value.ags_port_boolean){
-      if(count_beats_audio_run->first_run_counter == count_beats_audio_run->hide_ref){
+      if(count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
 	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
       
 	ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
-						 nth_run);
+						 nth_run + 1);
       }
     }else{
       /* emit stop signals */
@@ -785,18 +801,15 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: done\n\0");
 
 	ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
-						 nth_run);
-	
-	ags_count_beats_audio_run_notation_stop(count_beats_audio_run,
-						nth_run);
+						 nth_run + 1);
 	
 	ags_recall_done(AGS_RECALL(count_beats_audio_run));
       }
     }
+  }
 
-    if(count_beats_audio_run->first_run_counter != count_beats_audio_run->hide_ref){
-      count_beats_audio_run->first_run_counter += 1;
-    }
+  if(count_beats_audio_run->first_run){
+    count_beats_audio_run->first_run = FALSE;
   }
 }
 
@@ -812,17 +825,19 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   /* 
    * Block counter for sequencer and notation counter
    */
-  if(count_beats_audio_run->hide_ref != 0){
-    count_beats_audio_run->notation_hide_ref_counter += 1;
-  }
-
   if(count_beats_audio_run->notation_hide_ref_counter == count_beats_audio_run->hide_ref){
     if(count_beats_audio->loop->port_value.ags_port_boolean){
       if(count_beats_audio_run->notation_counter == (guint) ceil(count_beats_audio->notation_loop_end->port_value.ags_port_double) - 1){
 	count_beats_audio_run->notation_counter = 0;
+      }else{
+	count_beats_audio_run->notation_counter += 1;
       }
     }else{
-      count_beats_audio_run->notation_counter += 1;
+      if(count_beats_audio_run->notation_counter >= count_beats_audio->notation_loop_end->port_value.ags_port_double - 1.0){
+	return;
+      }
+
+      count_beats_audio_run->sequencer_counter += 1;
     }
 
     count_beats_audio_run->notation_hide_ref_counter = 0;
@@ -841,21 +856,17 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   /* 
    * Block counter for sequencer and notation counter
    */
-  if(count_beats_audio_run->hide_ref != 0){
-    count_beats_audio_run->sequencer_hide_ref_counter += 1;
-  }
-
   if(count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
     //    g_message("sequencer: tic\0");
   
     if(count_beats_audio->loop->port_value.ags_port_boolean){
-      if(count_beats_audio_run->sequencer_counter == (guint) ceil(count_beats_audio->sequencer_loop_end->port_value.ags_port_double) - 1){
+      if(count_beats_audio_run->sequencer_counter / 4.0 >= count_beats_audio->sequencer_loop_end->port_value.ags_port_double - 1.0){
 	count_beats_audio_run->sequencer_counter = 0;
       }else{
 	count_beats_audio_run->sequencer_counter += 1;
       }
     }else{
-      if(count_beats_audio_run->sequencer_counter == (guint) ceil(count_beats_audio->sequencer_loop_end->port_value.ags_port_double) - 1){
+      if(count_beats_audio_run->sequencer_counter / 4.0 >= count_beats_audio->sequencer_loop_end->port_value.ags_port_double - 1.0){
 	return;
       }
 

@@ -56,7 +56,8 @@ void ags_run_order_insert_channel(AgsRunOrder *run_order, AgsChannel *channel, g
 void ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel);
 AgsRunOrder* ags_run_order_find_channel(AgsRunOrder *run_order, AgsChannel *channel);
 
-AgsRunOrder* ags_run_order_find_group_id(GList *run_order, AgsGroupId group_id);
+AgsRunOrder* ags_run_order_find_group_id(GList *run_order,
+					 AgsGroupId group_id); //TODO:JK: add AgsRecycling *first_recycling, AgsRecycling *last_recycling
 
 AgsRunOrder* ags_run_order_new(AgsRecallID *recall_id);
 

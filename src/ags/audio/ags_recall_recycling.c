@@ -702,15 +702,16 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->parent_group_id){
+     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->parent_group_id &&
+     recall_recycling->destination == audio_signal->recycling){
     //    g_message("ags_recall_recycling_destination_add_audio_signal_callback %s[%llx]\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling), (long long unsigned int) recall_recycling);
 
-    //    g_message("ags_recall_recycling_destination_add_audio_signal - channel: %s[%u]\n\0",
-    //	      G_OBJECT_TYPE_NAME(recall_recycling),
-    //	      AGS_CHANNEL(recall_recycling->source->channel)->line);
-
     if((AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION & (recall_recycling->flags)) != 0){
+      g_message("ags_recall_recycling_destination_add_audio_signal - channel: %s[%u]\n\0",
+		G_OBJECT_TYPE_NAME(recall_recycling),
+		AGS_CHANNEL(recall_recycling->source->channel)->line);
+
       if((AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR & (recall_recycling->flags)) == 0){
 	//	if(recall_recycling->child_destination != NULL){
 	//	  g_object_unref(recall_recycling->child_destination);

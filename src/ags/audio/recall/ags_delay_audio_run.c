@@ -389,7 +389,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
       g_message("ags_delay_audio_run_run_pre: alloc sequencer[%d]\0", run_order);
 
-
       /* sequencer speed */
       //      g_message("ags_delay_audio_run_run_pre[%d]\0", run_order);
       ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,
@@ -410,7 +409,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 	delay_audio_run->notation_counter += 1;
       }
 
-      if(delay_audio_run->sequencer_counter == (guint) ceil(sequencer_delay) - 1){
+      if(delay_audio_run->sequencer_counter >= sequencer_delay * 4.0 - 1.0){
 	delay_audio_run->sequencer_counter = 0;
       }else{
 	delay_audio_run->sequencer_counter += 1;

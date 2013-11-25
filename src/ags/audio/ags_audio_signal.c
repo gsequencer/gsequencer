@@ -400,19 +400,19 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
   stream = g_list_alloc();
   stream->data = (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
 
-  end_old = audio_signal->stream_end;
+  if(audio_signal->stream_end != NULL){
+    end_old = audio_signal->stream_end;
 
-  if(end_old != NULL){
     stream->prev = end_old;
     end_old->next = stream;
   }else{
     audio_signal->stream_beginning = stream;
-    audio_signal->stream_current = stream;
+    //    audio_signal->stream_current = stream;
   }
 
   audio_signal->stream_end = stream;
 
-  audio_signal->length++;
+  audio_signal->length += 1;
 }
 
 /**
@@ -429,30 +429,28 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
   guint i;
 
   if(audio_signal->length < length){
-    GList *start, *stream, *end_old;
+    GList *stream, *end_old;
 
-    start =
-      stream = g_list_alloc();
-    stream->data = (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
+    stream = NULL;
 
     for(i = audio_signal->length; i < length; i++){
-      stream->next = g_list_alloc();
-      stream->next->prev = stream;
-      stream = stream->next;
-      stream->data = (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
+      stream = g_list_prepend(stream,
+			      (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size));
     }
 
-    end_old = audio_signal->stream_end;
+    stream = g_list_reverse(stream);
 
-    if(end_old != NULL){
-      start->prev = end_old;
+    if(audio_signal->stream_end != NULL){
+      end_old = audio_signal->stream_end;
+      audio_signal->stream_end = g_list_last(stream);
+
+      stream->prev = end_old;
       end_old->next = stream;
     }else{
-      audio_signal->stream_beginning = start;
+      audio_signal->stream_beginning = stream;
+      audio_signal->stream_end = g_list_last(stream);
       //      audio_signal->stream_current = start;
     }
-    
-    audio_signal->stream_end = stream;
   }else if(audio_signal->length > length){
     GList *stream, *stream_end, *stream_next;
     gboolean check_current;
@@ -726,14 +724,14 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
     size = devout->buffer_size * sizeof(signed short);
 
+    //TODO:JK: actualize me
     ags_audio_signal_stream_resize(audio_signal, (audio_signal->delay +
-						  (guint) ceil(((double) audio_signal->attack +
-								(double) audio_signal->length) /
-							       (double) devout->buffer_size)));
-    
-    if(audio_signal->attack + template->last_frame > devout->buffer_size){
+						  template->length)); /* (guint) ceil(((double) audio_signal->attack + /
+									   (double) devout->buffer_size) */
+
+    //    if(audio_signal->attack + template->last_frame > devout->buffer_size){
       ags_audio_signal_add_stream(audio_signal);
-    }
+      //    }
 
     stream =
       start = g_list_nth(audio_signal->stream_beginning,
@@ -749,11 +747,13 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
       if(k == devout->buffer_size){
 	k = 0;
 	
-	if(stream->next == NULL && template_k != devout->buffer_size){
+	stream = stream->next;
+      }
+
+      if(k == 0){
+	if(stream->next == NULL){
 	  ags_audio_signal_add_stream(audio_signal);
 	}
-
-	stream = stream->next;
       }
 
       if(template_k == devout->buffer_size){

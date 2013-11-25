@@ -40,7 +40,7 @@ struct _AgsCountBeatsAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
 
-  guint first_run_counter;
+  gboolean first_run;
 
   guint notation_counter;
   guint sequencer_counter;
