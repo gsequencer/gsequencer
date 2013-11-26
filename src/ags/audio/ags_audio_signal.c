@@ -321,7 +321,8 @@ ags_audio_signal_finalize(GObject *gobject)
   if(audio_signal->recall_id != NULL)
     g_object_unref(audio_signal->recall_id);
 
-  ags_list_free_and_free_link(audio_signal->stream_beginning);
+  if(audio_signal->stream_beginning != NULL)
+    ags_list_free_and_free_link(audio_signal->stream_beginning);
 
   g_message("post: finalize AgsAudioSignal\0");
 
@@ -396,9 +397,11 @@ void
 ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 {
   GList *stream, *end_old;
+  signed short *buffer;
 
   stream = g_list_alloc();
-  stream->data = (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
+  buffer = ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
+  stream->data = buffer;
 
   if(audio_signal->stream_end != NULL){
     end_old = audio_signal->stream_end;
@@ -407,7 +410,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
     end_old->next = stream;
   }else{
     audio_signal->stream_beginning = stream;
-    //    audio_signal->stream_current = stream;
+    audio_signal->stream_current = stream;
   }
 
   audio_signal->stream_end = stream;
@@ -430,12 +433,15 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 
   if(audio_signal->length < length){
     GList *stream, *end_old;
+    signed short *buffer;
 
     stream = NULL;
 
     for(i = audio_signal->length; i < length; i++){
+      buffer = ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size);
+
       stream = g_list_prepend(stream,
-			      (gpointer) ags_stream_alloc(AGS_DEVOUT(audio_signal->devout)->buffer_size));
+			      buffer);
     }
 
     stream = g_list_reverse(stream);
@@ -449,7 +455,7 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
     }else{
       audio_signal->stream_beginning = stream;
       audio_signal->stream_end = g_list_last(stream);
-      //      audio_signal->stream_current = start;
+      audio_signal->stream_current = stream;
     }
   }else if(audio_signal->length > length){
     GList *stream, *stream_end, *stream_next;
@@ -730,7 +736,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 									   (double) devout->buffer_size) */
 
     //    if(audio_signal->attack + template->last_frame > devout->buffer_size){
-      ags_audio_signal_add_stream(audio_signal);
+    //      ags_audio_signal_add_stream(audio_signal);
       //    }
 
     stream =

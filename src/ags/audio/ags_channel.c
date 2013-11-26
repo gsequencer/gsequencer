@@ -1364,11 +1364,14 @@ ags_channel_resize_audio_signal(AgsChannel *channel, guint length)
   AgsAudioSignal *audio_signal;
   GList *list_recall_id;
   GList *list_audio_signal;
-  guint length_old;
 
   audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-  length_old = audio_signal->length;
-  ags_audio_signal_stream_resize(audio_signal, length);
+
+  if(audio_signal != NULL){
+    ags_audio_signal_stream_resize(audio_signal, length);
+  }else{
+    g_warning("no template audio signal\0");
+  }
 
   list_recall_id = channel->recall_id;
 
@@ -1381,10 +1384,7 @@ ags_channel_resize_audio_signal(AgsChannel *channel, guint length)
       audio_signal = AGS_AUDIO_SIGNAL(list_audio_signal->data);
 
       if(audio_signal != NULL){
-	if(length_old < length)
-	  ags_audio_signal_stream_resize(audio_signal, length);
-	else
-	  ags_audio_signal_stream_resize(audio_signal, length);
+	ags_audio_signal_stream_resize(audio_signal, length);
       }
 
       list_audio_signal = list_audio_signal->next;

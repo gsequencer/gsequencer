@@ -167,9 +167,6 @@ ags_gui_thread_start(AgsThread *thread)
   gui_thread->iter = 0.0;
 
   /*  */
-  GDK_THREADS_LEAVE();
-
-  /*  */
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
     AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
   }
@@ -208,7 +205,6 @@ ags_gui_thread_run(AgsThread *thread)
 
     /*  */
     pthread_mutex_lock(&(task_thread->launch_mutex));
-
     if(success){
       /*  */
       pthread_mutex_unlock(&(thread->suspend_mutex));
@@ -218,11 +214,10 @@ ags_gui_thread_run(AgsThread *thread)
     }
 
     /*  */
+    gdk_threads_enter();
+    gdk_threads_leave();
+
     g_main_context_iteration(main_context, FALSE);
-
-    GDK_THREADS_ENTER();
-
-    GDK_THREADS_LEAVE();
 
     /*  */
     success = pthread_mutex_trylock(&(thread->suspend_mutex));
@@ -230,6 +225,7 @@ ags_gui_thread_run(AgsThread *thread)
     /*  */
     pthread_mutex_unlock(&(task_thread->launch_mutex));
 
+    /*  */
     g_atomic_int_set(&thread->critical_region,
 		     FALSE);
 

@@ -401,6 +401,7 @@ ags_audio_loop_start(AgsThread *thread)
     
     /*  */
     ags_thread_start(audio_loop->task_thread);
+    ags_thread_start(audio_loop->gui_thread);
   }
 }
 

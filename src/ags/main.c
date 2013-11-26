@@ -399,6 +399,11 @@ main(int argc, char **argv)
 
   LIBXML_TEST_VERSION;
 
+  g_thread_init(NULL);
+  gdk_threads_init();
+
+  //  gdk_threads_enter();
+
   gtk_init(&argc, &argv);
   ipatch_init();
 
@@ -447,8 +452,6 @@ main(int argc, char **argv)
     /*  */
     main->gui_loop = AGS_AUDIO_LOOP(main->main_loop)->gui_thread;
 
-    ags_thread_start(main->gui_loop);
-
 #ifdef _USE_PTH
     pth_join(main->gui_loop->thread,
 	     NULL);
@@ -495,6 +498,8 @@ main(int argc, char **argv)
 
     ags_thread_start(single_thread);
   }
+
+  //  gdk_threads_leave();
 
   return(0);
 }

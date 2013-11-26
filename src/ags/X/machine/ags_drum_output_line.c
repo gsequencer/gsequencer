@@ -162,25 +162,24 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     AgsDrum *drum;
     AgsDevout *devout;
     AgsAudioSignal *audio_signal;
-    AgsDelayAudio *delay_audio;
-    GList *list;
-    guint sequencer_duration;
     guint stop;
 
     drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
     devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
-    list = ags_recall_find_type(AGS_AUDIO(channel->audio)->play, AGS_TYPE_DELAY_AUDIO);
+    stop = (guint) ceil(4.0 * 16.0 * AGS_DEVOUT_DEFAULT_DELAY + 1.0);
 
-    stop = 4 * 16 * AGS_DEVOUT_DEFAULT_DELAY + 1;
+    audio_signal = ags_audio_signal_new(devout,
+					channel->first_recycling,
+					NULL);
+    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    ags_audio_signal_stream_resize(audio_signal,
+				   stop);
+    ags_recycling_add_audio_signal(channel->first_recycling,
+				   audio_signal);
 
-    if(list != NULL && (delay_audio = AGS_DELAY_AUDIO(list->data)) != NULL){
-      //      stop = (guint) ceil(delay_audio->sequencer_duration->port_value.ags_port_double);
-    }else{
-    }
-
-    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-    ags_audio_signal_stream_resize(audio_signal, stop);
+    //    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+    //    ags_audio_signal_stream_resize(audio_signal, stop);
 
     ags_drum_output_line_map_recall(drum_output_line);
   }
