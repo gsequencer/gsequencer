@@ -60,13 +60,13 @@ void ags_loop_channel_run_sequencer_duration_changed_callback(AgsDelayAudio *del
 							      AgsLoopChannelRun *loop_channel_run);
 
 void ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
-					 guint nth_run,
+					 guint run_order,
 					 AgsLoopChannelRun *loop_channel_run);
 void ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
-					guint nth_run,
+					guint run_order,
 					AgsLoopChannelRun *loop_channel_run);
 void ags_loop_channel_run_stop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
-					guint nth_run,
+					guint run_order,
 					AgsLoopChannelRun *loop_channel_run);
 
 enum{
@@ -531,9 +531,9 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				   guint run_order,
 				   AgsLoopChannelRun *loop_channel_run)
 {
-   g_message("ags_loop_channel_run_loop_callback - run_order: %u; %u\n\0",
-	     AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
-	     run_order);
+  g_message("ags_loop_channel_run_loop_callback - run_order: %u; %u\0",
+	    AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
+	    run_order);
   
   if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
     ags_loop_channel_run_create_audio_signals(loop_channel_run);
