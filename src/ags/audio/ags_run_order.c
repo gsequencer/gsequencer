@@ -101,6 +101,8 @@ ags_run_order_class_init(AgsRunOrderClass *run_order)
 void
 ags_run_order_init(AgsRunOrder *run_order)
 {
+  run_order->flags = 0;
+
   run_order->recall_id = NULL;
 
   run_order->run_count = 0;
@@ -286,6 +288,8 @@ ags_run_order_changed_output(AgsRunOrder *run_order, AgsChannel *output,
 void
 ags_run_order_add_channel(AgsRunOrder *run_order, AgsChannel *channel)
 {
+  g_object_ref(G_OBJECT(channel));
+
   run_order->run_order = g_list_append(run_order->run_order, channel);
   run_order->run_count++;
 
@@ -297,6 +301,8 @@ ags_run_order_insert_channel(AgsRunOrder *run_order, AgsChannel *channel, guint 
 {
   GList *list;
   guint i;
+
+  g_object_ref(G_OBJECT(channel));
 
   run_order->run_order = g_list_insert(run_order->run_order, channel, (gint) position);
   run_order->run_count++;
@@ -341,6 +347,8 @@ ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel)
       list = list->next;
     }
   }
+
+  g_object_unref(G_OBJECT(channel));
 }
 
 AgsRunOrder*

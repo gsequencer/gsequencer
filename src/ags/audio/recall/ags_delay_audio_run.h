@@ -42,7 +42,7 @@ struct _AgsDelayAudioRun
 
   guint hide_ref;
   guint hide_ref_counter;
-
+  
   guint notation_counter;
   guint sequencer_counter;
 };

@@ -34,9 +34,22 @@
 typedef struct _AgsRunOrder AgsRunOrder;
 typedef struct _AgsRunOrderClass AgsRunOrderClass;
 
+typedef enum{
+  AGS_RUN_ORDER_DUPLICATE_DONE           = 1,
+  AGS_RUN_ORDER_RESOLVE_DONE             = 1 << 1,
+  AGS_RUN_ORDER_RUN_INIT_PRE_DONE        = 1 << 2,
+  AGS_RUN_ORDER_RUN_INIT_INTER_DONE      = 1 << 3,
+  AGS_RUN_ORDER_RUN_INIT_POST_DONE       = 1 << 4,
+  AGS_RUN_ORDER_RUN_PRE_DONE             = 1 << 5,
+  AGS_RUN_ORDER_RUN_INTER_DONE           = 1 << 6,
+  AGS_RUN_ORDER_RUN_POST_DONE            = 1 << 7,
+}AgsRunOrderFlags;
+
 struct _AgsRunOrder
 {
   GObject object;
+
+  guint flags;
 
   AgsRecallID *recall_id;
 

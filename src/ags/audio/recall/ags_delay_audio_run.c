@@ -344,7 +344,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-    run_order = delay_audio_run->hide_ref_counter;
+    run_order = delay_audio_run->hide_ref_counter + 1;
 
     /* delay and attack */
     attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
@@ -379,30 +379,27 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 			   0:
 			   devout->tic_counter + 1)];
 
-    /* run order */
-    if(delay_audio_run->hide_ref != 0){
-      run_order = delay_audio_run->hide_ref_counter + 1;
-    }else{
-      run_order = 0;
-    }
+    run_order = delay_audio_run->hide_ref_counter + 1;
 
-    g_message("ags_delay_audio_run_run_pre: alloc sequencer[%d]\0", run_order);
+    g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]\0",
+	      delay_audio_run,
+	      run_order);
 
     /* sequencer speed */
-    //      g_message("ags_delay_audio_run_run_pre[%d]\0", run_order);
-    ags_delay_audio_run_sequencer_alloc_output(delay_audio_run, run_order,
+    ags_delay_audio_run_sequencer_alloc_output(delay_audio_run,
+					       run_order,
 					       delay, attack);
 
-    ags_delay_audio_run_sequencer_alloc_input(delay_audio_run, run_order,
+    ags_delay_audio_run_sequencer_alloc_input(delay_audio_run,
+					      run_order,
 					      delay, attack);
-    ags_delay_audio_run_sequencer_count(delay_audio_run, run_order,
+    ags_delay_audio_run_sequencer_count(delay_audio_run,
+					run_order,
 					delay, attack);
   }
 
   if(delay_audio_run->hide_ref != 0){
-    delay_audio_run->hide_ref_counter += 1;
-
-    if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
+    if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref - 1){
       delay_audio_run->hide_ref_counter = 0;
 
       if(delay_audio_run->notation_counter == (guint) ceil(notation_delay) - 1){
@@ -416,6 +413,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
       }else{
 	delay_audio_run->sequencer_counter += 1;
       }
+    }else{
+      delay_audio_run->hide_ref_counter += 1;
     }
   }
 }

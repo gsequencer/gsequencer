@@ -1872,18 +1872,24 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 
   if(recall_id == NULL)
     g_message("group_id = %llu\n\0", (long long unsigned int) group_id);
-  
-  if((AGS_RECALL_ID_AUDIO_RESOLVED & (recall_id->flags)) != 0){
-    return;
-  }
-
-  recall_id->flags |= AGS_RECALL_ID_AUDIO_RESOLVED;
-  
+    
   /* get the appropriate lists */
   if(recall_id->parent_group_id == 0){
     list_recall = audio->play;
+
+    if((AGS_RECALL_ID_AUDIO_RESOLVED_PLAY & (recall_id->flags)) != 0){
+      return;
+    }else{
+      recall_id->flags |= AGS_RECALL_ID_AUDIO_RESOLVED_PLAY;
+    }
   }else{
     list_recall = audio->recall;
+
+    if((AGS_RECALL_ID_AUDIO_RESOLVED_RECALL & (recall_id->flags)) != 0){
+      return;
+    }else{
+      recall_id->flags |= AGS_RECALL_ID_AUDIO_RESOLVED_RECALL;
+    }
   }
   
   while((list_recall = ags_recall_find_group_id(list_recall, group_id)) != NULL){
@@ -1976,7 +1982,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 							 first_recycling, last_recycling);
   
 
-  if(audio_signal_level == 0)
+  if(recall_id->parent_group_id == 0)
     list_recall_start = 
       list_recall = audio->play;
   else
@@ -2001,12 +2007,20 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 	(!called_by_output && ((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0)))){
       list_recall = list_recall->next;
       continue;
-    }
+    }  
 
+    /* set run order */
     run_order = ags_run_order_find_group_id(audio->run_order,
 					    recall_id->group_id);
-  
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+
+    if(run_order == NULL){
+      run_order = ags_run_order_new(recall_id);
+      ags_audio_add_run_order(audio, run_order);
+    }
+
+    /* duplicate template only once */
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
+       run_order->run_count <= 1){
       /* duplicate the recall */
       copy = ags_recall_duplicate(recall, recall_id);
     
@@ -2022,7 +2036,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       }
 
       /* append to AgsAudio */
-      if(audio_signal_level == 0)
+      if(recall_id->parent_group_id == 0)
 	audio->play = g_list_append(audio->play, copy);
       else
 	audio->recall = g_list_append(audio->recall, copy);
@@ -2036,12 +2050,6 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
     /* iterate */
     list_recall = list_recall->next;
-  }
-  
-  /* set run order */
-  if(run_order == NULL){
-    run_order = ags_run_order_new(recall_id);
-    ags_audio_add_run_order(audio, run_order);
   }
 }
 

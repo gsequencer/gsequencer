@@ -49,8 +49,6 @@ struct _AgsDrum
 
   guint flags;
 
-  AgsRecallContainer *copy_pattern_container;
-
   GtkButton *open;
 
   GtkCheckButton *loop_button;

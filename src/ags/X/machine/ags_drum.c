@@ -151,7 +151,6 @@ ags_drum_init(AgsDrum *drum)
   GtkRadioButton *radio_button;
 
   AgsAudio *audio;
-  AgsRecallContainer *recall_container;
 
   AgsDelayAudio *play_delay_audio;
   AgsDelayAudioRun *play_delay_audio_run;
@@ -219,10 +218,8 @@ ags_drum_init(AgsDrum *drum)
   }
 
   /* ags-copy-pattern */
-  drum->copy_pattern_container = ags_recall_container_new();
-
   ags_recall_factory_create(audio,
-			    NULL, drum->copy_pattern_container,
+			    NULL, NULL,
 			    "ags-copy-pattern\0",
 			    0, 0,
 			    0, 0,
@@ -688,7 +685,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 
       /* ags-copy-pattern */
       ags_recall_factory_create(audio,
-				NULL, drum->copy_pattern_container,
+				NULL, NULL,
 				"ags-copy-pattern\0",
 				0, audio->audio_channels,
 				pads_old, pads,
