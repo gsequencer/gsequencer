@@ -762,7 +762,8 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 
 void
 ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
-							  guint run_order, guint delay, guint attack,
+							  guint run_order,
+							  guint delay, guint attack,
 							  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
@@ -807,8 +808,9 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 
 void
 ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_run,
-						   guint run_order, guint delay, guint attack,
-						   AgsCountBeatsAudioRun *count_beats_audio_run)
+						  guint run_order,
+						  guint delay, guint attack,
+						  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
 

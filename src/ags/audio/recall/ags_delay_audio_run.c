@@ -411,7 +411,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 	delay_audio_run->notation_counter += 1;
       }
 
-      if(delay_audio_run->sequencer_counter >= (guint) sequencer_delay - 1.0){
+      if(delay_audio_run->sequencer_counter >= (guint) ceil(sequencer_delay) - 1){
 	delay_audio_run->sequencer_counter = 0;
       }else{
 	delay_audio_run->sequencer_counter += 1;

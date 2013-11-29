@@ -167,7 +167,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
     devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
-    stop = (guint) ceil(4.0 * 16.0 * AGS_DEVOUT_DEFAULT_DELAY + 1.0);
+    stop = (guint) ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 4.0) + 1.0);
 
     audio_signal = ags_audio_signal_new(devout,
 					channel->first_recycling,
