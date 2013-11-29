@@ -1899,12 +1899,6 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     ags_audio_add_run_order(audio, run_order);
   }
 
-  if((AGS_RUN_ORDER_DUPLICATE_DONE & (run_order->flags)) == 0){
-    run_order->flags |= AGS_RUN_ORDER_DUPLICATE_DONE;
-  }else{
-    return;
-  }
-
   /*  */
   if(recall_id->parent_group_id == 0)
     list_recall_start = 
@@ -1912,7 +1906,27 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   else
     list_recall_start =
       list_recall = audio->recall;
-  
+
+  /* return if already duplicated */
+  if((AGS_RUN_ORDER_DUPLICATE_DONE & (run_order->flags)) == 0){
+    run_order->flags |= AGS_RUN_ORDER_DUPLICATE_DONE;
+  }else{
+    /* notify run */
+    while((list_recall = ags_recall_find_group_id(list_recall, recall_id->group_id)) != NULL){
+      recall = AGS_RECALL(list_recall->data);
+    
+      /* notify run */
+      ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
+    
+      list_recall = list_recall->next;
+    }
+
+    list_recall = list_recall_start;
+
+    return;
+  }
+
+  /*  */  
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
     immediate_new_level = TRUE;
   }else{
@@ -1939,7 +1953,10 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
       /* duplicate the recall */
       copy = ags_recall_duplicate(recall, recall_id);
-    
+
+      /* notify run */
+      ags_recall_notify_dependency(copy, AGS_RECALL_NOTIFY_RUN, 1);
+
       g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
 
       /* set appropriate flag */
@@ -1960,9 +1977,6 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       /* connect */
       ags_connectable_connect(AGS_CONNECTABLE(copy));
     }
-
-    /* notify run */
-    ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
 
     /* iterate */
     list_recall = list_recall->next;
@@ -2049,22 +2063,22 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 
   switch(stage){
   case 0:
-    if((AGS_RUN_ORDER_RUN_PRE_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_PRE_DONE;
+    if((AGS_RUN_ORDER_RUN_INIT_PRE_DONE & (run_order->flags)) == 0){
+      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_PRE_DONE;
     }else{
       return;
     }
     break;
   case 1:
-    if((AGS_RUN_ORDER_RUN_INTER_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_INTER_DONE;
+    if((AGS_RUN_ORDER_RUN_INIT_INTER_DONE & (run_order->flags)) == 0){
+      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_INTER_DONE;
     }else{
       return;
     }
     break;
   case 2:
-    if((AGS_RUN_ORDER_RUN_POST_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_POST_DONE;
+    if((AGS_RUN_ORDER_RUN_INIT_POST_DONE & (run_order->flags)) == 0){
+      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_POST_DONE;
     }else{
       return;
     }
@@ -2123,33 +2137,6 @@ ags_audio_play(AgsAudio *audio,
   run_order = ags_run_order_find_group_id(audio->run_order,
 					  recall_id->group_id);
 
-  switch(stage){
-  case 0:
-    if((AGS_RUN_ORDER_RUN_INIT_PRE_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_PRE_DONE;
-      run_order->flags &= (~AGS_RUN_ORDER_RUN_INIT_POST_DONE);
-    }else{
-      return;
-    }
-    break;
-  case 1:
-    if((AGS_RUN_ORDER_RUN_INIT_INTER_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_INTER_DONE;
-      run_order->flags &= (~AGS_RUN_ORDER_RUN_INIT_PRE_DONE);
-    }else{
-      return;
-    }
-    break;
-  case 2:
-    if((AGS_RUN_ORDER_RUN_INIT_POST_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_POST_DONE;
-      run_order->flags &= (~AGS_RUN_ORDER_RUN_INIT_INTER_DONE);
-    }else{
-      return;
-    }
-    break;
-  }
-  
   if(do_recall)
     list = audio->recall;
   else

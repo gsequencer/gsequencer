@@ -2021,7 +2021,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 
 	ags_audio_play(audio,
 		       output->first_recycling, output->last_recycling,
-		       input_recall_id->group_id,
+		       group_id,
 		       stage,
 		       input_do_recall);
       }
@@ -2047,7 +2047,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 
       ags_audio_play(audio,
 		     output->first_recycling, output->last_recycling,
-		     next_group_id,
+		     group_id,
 		     stage,
 		     input_do_recall);
     }
