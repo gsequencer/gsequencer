@@ -344,7 +344,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-    run_order = delay_audio_run->hide_ref_counter + 1;
+    run_order = delay_audio_run->hide_ref_counter;
 
     /* delay and attack */
     attack = devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
@@ -356,11 +356,14 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 			   devout->tic_counter + 1)];
       
     /* notation speed */
-    ags_delay_audio_run_notation_alloc_output(delay_audio_run, run_order,
+    ags_delay_audio_run_notation_alloc_output(delay_audio_run,
+					      run_order,
 					      delay, attack);
-    ags_delay_audio_run_notation_alloc_input(delay_audio_run, run_order,
+    ags_delay_audio_run_notation_alloc_input(delay_audio_run,
+					     run_order,
 					     delay, attack);
-    ags_delay_audio_run_notation_count(delay_audio_run, run_order,
+    ags_delay_audio_run_notation_count(delay_audio_run,
+				       run_order,
 				       delay, attack);
   }
 
@@ -379,7 +382,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 			   0:
 			   devout->tic_counter + 1)];
 
-    run_order = delay_audio_run->hide_ref_counter + 1;
+    run_order = delay_audio_run->hide_ref_counter;
 
     g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]\0",
 	      delay_audio_run,

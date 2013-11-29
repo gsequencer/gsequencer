@@ -2157,38 +2157,29 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   }
 
   audio = AGS_AUDIO(channel->audio);
-    
+
+  /*  */
   if(AGS_IS_OUTPUT(channel)){
     immediate_new_level = FALSE;
 
-    /* find or create run order */
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      run_order = ags_run_order_find_group_id(audio->run_order,
-					      recall_id->child_group_id);
+    /* run order */
+    run_order = ags_run_order_find_group_id(audio->run_order,
+					    recall_id->group_id);
 
-      if(run_order == NULL){
-	AgsRecallID *audio_recall_id;
+    if(run_order == NULL){
+      AgsRecallID *audio_recall_id;
 
-	audio_recall_id = ags_recall_id_find_group_id(audio->recall_id,
-						      recall_id->child_group_id);
+      audio_recall_id = ags_recall_id_find_group_id(audio->recall_id,
+						    recall_id->group_id);
   
-	run_order = ags_run_order_new(audio_recall_id);
-	ags_audio_add_run_order(audio, run_order);
-      }
-    }else{
-      run_order = ags_run_order_find_group_id(audio->run_order,
-					      group_id);
-
-      if(run_order == NULL){
-	AgsRecallID *audio_recall_id;
-
-	audio_recall_id = ags_recall_id_find_group_id(audio->recall_id,
-						      recall_id->group_id);
-  
-	run_order = ags_run_order_new(audio_recall_id);
-	ags_audio_add_run_order(audio, run_order);
-      }
+      run_order = ags_run_order_new(audio_recall_id);
+      ags_audio_add_run_order(audio, run_order);
     }
+
+    if(AGS_IS_OUTPUT(channel)){
+      ags_run_order_add_channel(run_order,
+				channel);
+    }    
   }else{
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       immediate_new_level = TRUE;
@@ -2237,11 +2228,6 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 
     /* iterate */    
     list_recall = list_recall->next;
-  }
-  
-  if(AGS_IS_OUTPUT(channel)){
-    ags_run_order_add_channel(run_order,
-			      channel);
   }
 }
 
