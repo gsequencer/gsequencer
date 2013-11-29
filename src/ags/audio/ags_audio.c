@@ -2127,6 +2127,7 @@ ags_audio_play(AgsAudio *audio,
   case 0:
     if((AGS_RUN_ORDER_RUN_INIT_PRE_DONE & (run_order->flags)) == 0){
       run_order->flags |= AGS_RUN_ORDER_RUN_INIT_PRE_DONE;
+      run_order->flags &= (~AGS_RUN_ORDER_RUN_INIT_POST_DONE);
     }else{
       return;
     }
@@ -2134,6 +2135,7 @@ ags_audio_play(AgsAudio *audio,
   case 1:
     if((AGS_RUN_ORDER_RUN_INIT_INTER_DONE & (run_order->flags)) == 0){
       run_order->flags |= AGS_RUN_ORDER_RUN_INIT_INTER_DONE;
+      run_order->flags &= (~AGS_RUN_ORDER_RUN_INIT_PRE_DONE);
     }else{
       return;
     }
@@ -2141,6 +2143,7 @@ ags_audio_play(AgsAudio *audio,
   case 2:
     if((AGS_RUN_ORDER_RUN_INIT_POST_DONE & (run_order->flags)) == 0){
       run_order->flags |= AGS_RUN_ORDER_RUN_INIT_POST_DONE;
+      run_order->flags &= (~AGS_RUN_ORDER_RUN_INIT_INTER_DONE);
     }else{
       return;
     }
