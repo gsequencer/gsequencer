@@ -373,8 +373,8 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "destination\0", recall_channel->destination,
 				 "source\0", recall_channel->source,
+				 "destination\0", recall_channel->destination,
 				 NULL);
 
   copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,

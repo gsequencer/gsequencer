@@ -23,6 +23,7 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/recall/ags_play_audio.h>
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
@@ -379,6 +380,7 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 				      guint start_pad, guint stop_pad,
 				      guint create_flags, guint recall_flags)
 {
+  AgsPlayAudio *play_audio;
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run_master;
   AgsChannel *start, *channel;
@@ -406,12 +408,39 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
-    if(play_container == NULL){
-      play_container = ags_recall_container_new();
-    }
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+      if(play_container == NULL){
+	play_container = ags_recall_container_new();
+      }
 
-    play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
-    ags_audio_add_recall_container(audio, (GObject *) play_container);
+      play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_audio_add_recall_container(audio, (GObject *) play_container);
+
+      /*  */
+      play_audio = (AgsPlayAudio *) g_object_new(AGS_TYPE_PLAY_AUDIO,
+						 "devout\0", audio->devout,
+						 "audio\0", audio,
+						 "recall_container\0", play_container,
+						 NULL);
+      AGS_RECALL(play_audio)->flags |= (AGS_RECALL_TEMPLATE |
+					(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+					AGS_RECALL_PLAYBACK |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
+      ags_audio_add_recall(audio, (GObject *) play_audio, TRUE);
+    }else{
+      GList *list;
+
+      if(play_container == NULL){
+	list = ags_recall_find_type(audio->play, AGS_TYPE_PLAY_AUDIO);
+
+	play_audio = AGS_PLAY_AUDIO(list->data);
+
+	play_container = AGS_RECALL_CONTAINER(AGS_RECALL(play_audio)->container);
+      }else{
+	play_audio = AGS_PLAY_AUDIO(play_container->recall_audio);
+      }
+    }
 
     for(i = 0; i < stop_pad - start_pad; i++){
       channel = ags_channel_nth(channel,
@@ -462,11 +491,38 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
 
-    if(recall_container == NULL){
-      recall_container = ags_recall_container_new();
-    }
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+      if(recall_container == NULL){
+	recall_container = ags_recall_container_new();
+      }
 
-    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+      ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
+      /*  */
+      play_audio = (AgsPlayAudio *) g_object_new(AGS_TYPE_PLAY_AUDIO,
+						 "devout\0", audio->devout,
+						 "audio\0", audio,
+						 "recall_container\0", recall_container,
+						 NULL);
+      AGS_RECALL(play_audio)->flags |= (AGS_RECALL_TEMPLATE |
+					(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+					AGS_RECALL_PLAYBACK |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
+      ags_audio_add_recall(audio, (GObject *) play_audio, FALSE);
+    }else{
+      GList *list;
+      
+      if(recall_container == NULL){
+	list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_AUDIO);
+
+	play_audio = AGS_PLAY_AUDIO(list->data);
+
+	recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(play_audio)->container);
+      }else{
+	play_audio = AGS_PLAY_AUDIO(recall_container->recall_audio);
+      }
+    }
 
     for(i = 0; i < stop_pad - start_pad; i++){
       channel = ags_channel_nth(channel,

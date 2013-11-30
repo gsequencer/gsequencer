@@ -2198,7 +2198,9 @@ ags_audio_recursive_play_init(AgsAudio *audio,
 
     while(channel != NULL){
       ags_channel_recursive_play_init(channel, stage,
-				      arrange_group_id, duplicate_templates, playback, sequencer, notation, resolve_dependencies,
+				      arrange_group_id, duplicate_templates,
+				      playback, sequencer, notation,
+				      resolve_dependencies,
 				      group_id, child_group_id,
 				      0);
 

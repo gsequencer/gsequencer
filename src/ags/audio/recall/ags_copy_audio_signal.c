@@ -212,6 +212,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   destination = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination;
 
   if(destination == NULL){
+    g_warning("no destination\0");
     return;
   }
 

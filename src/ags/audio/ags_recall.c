@@ -29,6 +29,10 @@
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -1783,9 +1787,39 @@ ags_recall_find_provider(GList *recall_i, GObject *provider)
 	  return(recall_i);
 	}
       }
+    }else if(AGS_IS_RECYCLING(provider)){
+      if(AGS_IS_RECALL_RECYCLING(recall)){
+	if(((GObject *) AGS_RECALL_RECYCLING(recall)->source) == provider){
+	  return(recall_i);
+	}
+      }
+    }else if(AGS_IS_AUDIO_SIGNAL(provider)){
+      if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
+	if(((GObject *) AGS_RECALL_AUDIO_SIGNAL(recall)->source) == provider){
+	  return(recall_i);
+	}
+      }
     }
 
     recall_i = recall_i->next;
+  }
+
+  return(NULL);
+}
+
+GList*
+ags_recall_template_find_provider(GList *recall, GObject *provider)
+{
+  GList *list;
+
+  list = recall;
+
+  while((list = (ags_recall_find_provider(list, provider))) != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
+      return(list);
+    }
+
+    list = list->next;
   }
 
   return(NULL);

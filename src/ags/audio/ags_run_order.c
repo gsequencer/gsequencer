@@ -294,10 +294,12 @@ ags_run_order_add_channel(AgsRunOrder *run_order, AgsChannel *channel)
 {
   g_object_ref(G_OBJECT(channel));
 
-  run_order->run_order = g_list_append(run_order->run_order, channel);
-  run_order->run_count++;
+  g_message("=== channel: %llx\0", channel);
 
+  run_order->run_order = g_list_append(run_order->run_order, channel);
   ags_run_order_changed_output(run_order, channel, run_order->run_count, 0);
+
+  run_order->run_count++;
 }
 
 void

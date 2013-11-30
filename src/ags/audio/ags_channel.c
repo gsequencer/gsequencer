@@ -2176,16 +2176,58 @@ ags_channel_duplicate_recall(AgsChannel *channel,
       ags_audio_add_run_order(audio, run_order);
     }
 
-    if(AGS_IS_OUTPUT(channel)){
+    if(AGS_IS_OUTPUT(channel) &&
+       g_list_index(run_order->run_order, channel) == -1){
       ags_run_order_add_channel(run_order,
 				channel);
     }    
   }else{
+    AgsChannel *output;
+    AgsGroupId group_id;
+
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       immediate_new_level = TRUE;
     }else{
       immediate_new_level = FALSE;
     }
+
+    /* run order */
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      if(recall_id->parent_group_id != 0){
+	group_id = recall_id->parent_group_id;
+      }else{
+	group_id = recall_id->group_id;
+      }
+    }else{
+      group_id = recall_id->group_id;
+    }
+
+    run_order = ags_run_order_find_group_id(audio->run_order,
+					    group_id);
+
+    if(run_order == NULL){
+      AgsRecallID *audio_recall_id;
+
+      audio_recall_id = ags_recall_id_find_group_id(audio->recall_id,
+						    group_id);
+  
+      run_order = ags_run_order_new(audio_recall_id);
+      ags_audio_add_run_order(audio, run_order);
+    }
+
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+      output = ags_channel_nth(audio->output,
+			       channel->audio_channel);
+    }else{
+      output = ags_channel_nth(audio->output,
+			       channel->line);
+    }
+
+    if(g_list_index(run_order->run_order, output) == -1){
+      ags_run_order_add_channel(run_order,
+				output);
+    }    
+
   }
 
   while(list_recall != NULL){

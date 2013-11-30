@@ -255,11 +255,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    0);
 
   current = source;
-  
-  while(current != NULL){
-    destination = ags_channel_nth(audio->output,
-				  current->audio_channel);
+  destination = ags_channel_nth(audio->output,
+				current->audio_channel);
 
+  while(destination != NULL){
     /* recall */
     list = current->recall;
 
@@ -285,7 +284,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
       list = list->next;
     }
 
-    current = current->next;
+    destination = destination->next_pad;
   }
 
   /* ags-stream */

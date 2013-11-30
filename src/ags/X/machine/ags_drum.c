@@ -694,7 +694,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 				 AGS_RECALL_FACTORY_RECALL),
 				0);
 
-      /**/
+      /*  */
       channel = ags_channel_nth(audio->input, pads_old * audio->audio_channels);
 
       for(i = pads_old; i < pads; i++){

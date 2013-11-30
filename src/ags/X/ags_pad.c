@@ -319,7 +319,7 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
     g_object_set(G_OBJECT(line->data),
 		 "channel\0", current,
 		 NULL);
-    
+
     current = current->next;
     line = line->next;
   }

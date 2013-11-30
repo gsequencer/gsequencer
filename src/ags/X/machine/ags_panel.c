@@ -130,11 +130,21 @@ ags_panel_init(AgsPanel *panel)
   g_signal_connect_after((GObject *) panel, "parent_set\0",
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
+  AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_SYNC);
+
+  /* ags-play */
+  ags_recall_factory_create(AGS_MACHINE(panel)->audio,
+			    NULL, NULL,
+			    "ags-play-master\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT,
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) panel))->data, (GtkWidget *) panel->vbox);
-
-
-  panel->machine.audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_SYNC);
 }
 
 static void
@@ -190,9 +200,6 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 
   panel = (AgsPanel *) audio->machine;
 
-  input = ags_channel_nth(audio->input, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
-  output = ags_channel_nth(audio->output, ((audio_channels_old == 0) ? 0: audio_channels_old -1));
-
   if(audio_channels_old < audio_channels){
     AgsPlayChannel *play_channel;
     AgsPlayChannelRunMaster *play_channel_run;
@@ -204,11 +211,14 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 			      NULL, NULL,
 			      "ags-play-master\0",
 			      audio_channels_old, audio_channels,
-			      input->pad, input->pad + 1,
+			      0, audio->input_pads,
 			      (AGS_RECALL_FACTORY_INPUT,
-			       AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_REMAP |
 			       AGS_RECALL_FACTORY_PLAY),
 			      0);
+    /*  */
+    input = ags_channel_nth(audio->input, audio_channels_old);
+    output = ags_channel_nth(audio->output, audio_channels_old);
 
     for(i = audio_channels_old; i < audio_channels; i++){
 

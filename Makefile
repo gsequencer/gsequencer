@@ -172,6 +172,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_delay_audio_run.$(OBJEXT) \
 	ags-ags_volume_channel_run.$(OBJEXT) \
 	ags-ags_copy_notation_audio_run.$(OBJEXT) \
+	ags-ags_play_audio.$(OBJEXT) \
 	ags-ags_play_channel_run_master.$(OBJEXT) \
 	ags-ags_play_note.$(OBJEXT) ags-ags_play_audio_file.$(OBJEXT) \
 	ags-ags_play_channel_run.$(OBJEXT) ags-ags_echo.$(OBJEXT) \
@@ -784,6 +785,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/recall/ags_delay_audio_run.c \
 	./src/ags/audio/recall/ags_volume_channel_run.c \
 	./src/ags/audio/recall/ags_copy_notation_audio_run.c \
+	./src/ags/audio/recall/ags_play_audio.h \
+	./src/ags/audio/recall/ags_play_audio.c \
 	./src/ags/audio/recall/ags_play_channel_run_master.c \
 	./src/ags/audio/recall/ags_count_beats_audio.h \
 	./src/ags/audio/recall/ags_stream_audio_signal.h \
@@ -1459,6 +1462,7 @@ include ./$(DEPDIR)/ags-ags_pattern.Po
 include ./$(DEPDIR)/ags-ags_performance_preferences.Po
 include ./$(DEPDIR)/ags-ags_performance_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_persistable.Po
+include ./$(DEPDIR)/ags-ags_play_audio.Po
 include ./$(DEPDIR)/ags-ags_play_audio_file.Po
 include ./$(DEPDIR)/ags-ags_play_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_play_channel.Po
@@ -2852,6 +2856,20 @@ ags-ags_copy_notation_audio_run.obj: ./src/ags/audio/recall/ags_copy_notation_au
 #	$(AM_V_CC)source='./src/ags/audio/recall/ags_copy_notation_audio_run.c' object='ags-ags_copy_notation_audio_run.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_copy_notation_audio_run.obj `if test -f './src/ags/audio/recall/ags_copy_notation_audio_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_copy_notation_audio_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_copy_notation_audio_run.c'; fi`
+
+ags-ags_play_audio.o: ./src/ags/audio/recall/ags_play_audio.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_play_audio.o -MD -MP -MF $(DEPDIR)/ags-ags_play_audio.Tpo -c -o ags-ags_play_audio.o `test -f './src/ags/audio/recall/ags_play_audio.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_play_audio.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_play_audio.Tpo $(DEPDIR)/ags-ags_play_audio.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_play_audio.c' object='ags-ags_play_audio.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_play_audio.o `test -f './src/ags/audio/recall/ags_play_audio.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_play_audio.c
+
+ags-ags_play_audio.obj: ./src/ags/audio/recall/ags_play_audio.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_play_audio.obj -MD -MP -MF $(DEPDIR)/ags-ags_play_audio.Tpo -c -o ags-ags_play_audio.obj `if test -f './src/ags/audio/recall/ags_play_audio.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_play_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_play_audio.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_play_audio.Tpo $(DEPDIR)/ags-ags_play_audio.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_play_audio.c' object='ags-ags_play_audio.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_play_audio.obj `if test -f './src/ags/audio/recall/ags_play_audio.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_play_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_play_audio.c'; fi`
 
 ags-ags_play_channel_run_master.o: ./src/ags/audio/recall/ags_play_channel_run_master.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_play_channel_run_master.o -MD -MP -MF $(DEPDIR)/ags-ags_play_channel_run_master.Tpo -c -o ags-ags_play_channel_run_master.o `test -f './src/ags/audio/recall/ags_play_channel_run_master.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_play_channel_run_master.c
