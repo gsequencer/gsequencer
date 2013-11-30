@@ -209,8 +209,6 @@ ags_devout_thread_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(thread->devout);
 
-  // g_message("play\0");
-
   error = NULL;
   ags_devout_alsa_play(devout,
   		       &error);

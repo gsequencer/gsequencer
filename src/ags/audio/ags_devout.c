@@ -135,7 +135,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_string("device\0",
 				   "the device identifier\0",
 				   "The device to perform output to\0",
-				   "default\0",
+				   "hw:0\0",
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -279,7 +279,7 @@ ags_devout_init(AgsDevout *devout)
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = g_strdup("default\0");
+  devout->out.alsa.device = g_strdup("hw:0\0");
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));

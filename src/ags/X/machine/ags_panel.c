@@ -204,6 +204,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
     AgsPlayChannel *play_channel;
     AgsPlayChannelRunMaster *play_channel_run;
     GtkHBox *hbox;
+    AgsChannel *channel;
+    GList *list;
     guint i;
 
     /* ags-play */
@@ -216,6 +218,23 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 			       AGS_RECALL_FACTORY_REMAP |
 			       AGS_RECALL_FACTORY_PLAY),
 			      0);
+    
+    channel = audio->input;
+
+    while(channel != NULL){
+      list = channel->play;
+
+      while((list = ags_recall_template_find_type(list,
+						  AGS_TYPE_PLAY_CHANNEL)) != NULL){
+
+	AGS_PLAY_CHANNEL(list->data)->audio_channel->port_value.ags_port_uint = channel->audio_channel;
+
+	list = list->next;
+      }
+
+      channel = channel->next;
+    }
+
     /*  */
     input = ags_channel_nth(audio->input, audio_channels_old);
     output = ags_channel_nth(audio->output, audio_channels_old);

@@ -26,8 +26,10 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_play_channel.h>
 
 #include <stdlib.h>
 
@@ -207,10 +209,11 @@ ags_play_audio_signal_run_init_pre(AgsRecall *recall)
 void
 ags_play_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsPlayAudioSignal *play_audio_signal;
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *source;
+  AgsPlayChannel *play_channel;
+  AgsPlayAudioSignal *play_audio_signal;
   GList *stream;
   signed short *buffer0, *buffer1;
   guint audio_channel;
@@ -249,7 +252,9 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  audio_channel = AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel;
+  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+
+  audio_channel = play_channel->audio_channel->port_value.ags_port_uint;
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);

@@ -486,6 +486,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					(GObject *) recycling,
 					(GObject *) AGS_RECALL(loop_channel_run)->recall_id);
+    audio_signal->stream_current = audio_signal->stream_beginning;
     
     /*  */
     ags_recycling_create_audio_signal_with_defaults(recycling,

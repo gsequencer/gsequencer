@@ -130,6 +130,8 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
 					"port-value-size\0", sizeof(gdouble),
 					"port-value-length", 1,
 					NULL);
+
+  volume_channel->volume->port_value.ags_port_double = 1.0;
 }
 
 void
