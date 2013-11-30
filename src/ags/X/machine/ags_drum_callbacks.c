@@ -138,6 +138,8 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
   AgsToggleLed *toggle_led;
   GList *list;
   guint counter, active_led;
+  gdouble active_led_old, active_led_new;
+  GValue value = {0,};
   
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
@@ -160,19 +162,22 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   /* set optical feedback */
-  counter = (guint) floor(play_count_beats_audio_run->sequencer_counter);
+  active_led_new = play_count_beats_audio_run->sequencer_counter;
+  drum->active_led = (guint) active_led_new;
 
-  drum->active_led = counter;
+  if(active_led_new == 0){
+    g_value_init(&value, G_TYPE_DOUBLE);
+    ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
+		       &value);
 
-  if(drum->active_led == 0){
-    active_led =  (guint) floor(play_count_beats_audio->sequencer_loop_end->port_value.ags_port_double) - 1;
+    active_led_old = g_value_get_double(&value) - 1.0;
   }else{
-    active_led = drum->active_led - 1;
+    active_led_old = (gdouble) drum->active_led - 1.0;
   }
 
   toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->led)),
-				  drum->active_led,
-				  active_led);
+				  (guint) active_led_new,
+				  (guint) active_led_old);
 
   ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
 			      AGS_TASK(toggle_led));

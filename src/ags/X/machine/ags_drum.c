@@ -331,7 +331,7 @@ ags_drum_init(AgsDrum *drum)
 		   0, 0);
 
   gtk_option_menu_set_menu(drum->tact, (GtkWidget *) ags_tact_menu_new());
-  gtk_option_menu_set_history(drum->tact, 6);
+  gtk_option_menu_set_history(drum->tact, 4);
 
   /* duration */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -422,7 +422,7 @@ ags_drum_connect(AgsConnectable *connectable)
     recall_handler->data = (gpointer) drum;
 
     //TODO:JK: uncomment me
-    //    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
+    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
   }
   
   /* AgsDrum */
