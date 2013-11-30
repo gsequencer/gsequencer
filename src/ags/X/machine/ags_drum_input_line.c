@@ -45,6 +45,7 @@
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_line_callbacks.h>
 
 #include <ags/X/machine/ags_drum.h>
 
@@ -165,6 +166,10 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_pads\0",
 			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
+
+  /* AgsDrumInputLine */
+  g_signal_connect(G_OBJECT(drum_input_line->volume), "value-changed\0",
+		   G_CALLBACK(ags_line_volume_callback), AGS_LINE(drum_input_line));
 }
 
 void

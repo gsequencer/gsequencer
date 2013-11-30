@@ -23,6 +23,8 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_id.h>
 
+#include <ags/audio/recall/ags_volume_channel.h>
+
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
 {
@@ -46,5 +48,37 @@ ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
     }else{
       ags_channel_remove_recall(AGS_CHANNEL(line->channel), (GObject *) recall, TRUE);
     }
+  }
+}
+
+void
+ags_line_volume_callback(GtkRange *range,
+			 AgsLine *line)
+{
+  AgsVolumeChannel *volume_channel;
+  GList *list;
+  GValue value = {0,};
+
+  g_value_init(&value, G_TYPE_DOUBLE);
+  g_value_set_double(&value, gtk_range_get_value(range));
+
+  list = line->channel->play;
+
+  while((list = ags_recall_find_type(list, AGS_TYPE_VOLUME_CHANNEL)) != NULL){
+    volume_channel = AGS_VOLUME_CHANNEL(list->data);
+    ags_port_safe_write(volume_channel->volume,
+			&value);
+
+    list = list->next;
+  }
+
+  list = line->channel->recall;
+
+  while((list = ags_recall_find_type(list, AGS_TYPE_VOLUME_CHANNEL)) != NULL){
+    volume_channel = AGS_VOLUME_CHANNEL(list->data);
+    ags_port_safe_write(volume_channel->volume,
+			&value);
+
+    list = list->next;
   }
 }

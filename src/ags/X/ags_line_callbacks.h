@@ -29,4 +29,8 @@ int ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLi
 
 void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
 
+/* AgsLine */
+void ags_line_volume_callback(GtkRange *range,
+			      AgsLine *line);
+
 #endif /*__AGS_LINE_CALLBACKS_H__*/
