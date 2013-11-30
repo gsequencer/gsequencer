@@ -834,12 +834,12 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
    */
   if(count_beats_audio_run->notation_hide_ref_counter == count_beats_audio_run->hide_ref){
     gdouble loop_end;
-    GValue value;
+    GValue value = {0,};
 
     g_value_init(&value, G_TYPE_DOUBLE);
     ags_port_safe_read(count_beats_audio->notation_loop_end, &value);
 
-    loop_end = g_value_get_boolean(&value);
+    loop_end = g_value_get_double(&value);
 
     if(loop){
       if(count_beats_audio_run->notation_counter == (guint) ceil(loop_end) - 1){
@@ -884,12 +884,12 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
    */
   if(count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
     gdouble loop_end;
-    GValue value;
+    GValue value = {0,};
 
     g_value_init(&value, G_TYPE_DOUBLE);
     ags_port_safe_read(count_beats_audio->sequencer_loop_end, &value);
 
-    loop_end = g_value_get_boolean(&value);
+    loop_end = g_value_get_double(&value);
 
     //    g_message("sequencer: tic\0");
     if(count_beats_audio_run->first_run){

@@ -210,7 +210,9 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     AgsDevout *devout;
     AgsVolumeChannel *volume_channel;
     signed short *buffer;
+    gdouble volume;
     guint i;
+    GValue value = {0,};
 
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source->devout);
 
@@ -218,8 +220,13 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 
     buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
 
+    g_value_init(&value, G_TYPE_DOUBLE);
+    ags_port_safe_read(volume_channel->volume, &value);
+
+    volume = g_value_get_double(&value);
+
     for(i = 0; i < devout->buffer_size; i++){
-      buffer[i] = (signed short) ((0xffff) & (int)((gdouble)volume_channel->volume->port_value.ags_port_double * (gdouble)buffer[i]));
+      buffer[i] = (signed short) ((0xffff) & (int)((gdouble)volume * (gdouble)buffer[i]));
     }
   }else{
     ags_recall_done(recall);
