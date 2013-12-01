@@ -46,7 +46,6 @@ struct _AgsLoopChannelRun
   gulong start_handler;
   gulong loop_handler;
   gulong stop_handler;
-  gulong sequencer_duration_changed_handler;
 };
 
 struct _AgsLoopChannelRunClass

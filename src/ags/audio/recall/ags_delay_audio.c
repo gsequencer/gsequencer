@@ -247,7 +247,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 					      "port-value-length", 1,
 					      NULL);
 
-  delay_audio->sequencer_delay->port_value.ags_port_double = AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 6.0);
+  delay_audio->sequencer_delay->port_value.ags_port_double = AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 4.0);
 
   port = g_list_prepend(port, delay_audio->sequencer_delay);
 
@@ -277,7 +277,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 						 "port-value-length", 1,
 						 NULL);
 
-  delay_audio->sequencer_duration->port_value.ags_port_double = AGS_NOTATION_DEFAULT_DURATION / exp2(8.0 - 6.0);
+  delay_audio->sequencer_duration->port_value.ags_port_double = ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 4.0) + 1.0);
 
   port = g_list_prepend(port, delay_audio->sequencer_duration);
 
@@ -602,8 +602,9 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
   gdouble old_tact;
   gdouble sequencer_delay, notation_delay;
   gdouble sequencer_duration, notation_duration;
+  gdouble factor;
   GValue value = {0,};
-
+  
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
   devout = AGS_DEVOUT(AGS_RECALL(delay_audio)->devout);
@@ -639,16 +640,18 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
   notation_duration = g_value_get_double(&value);
 
   /* -- start adjust -- */
+  factor = (new_tact / old_tact);
+
   /* notation-delay */
   g_value_reset(&value);
 
-  g_value_set_double(&value, notation_delay * (old_tact / new_tact));
+  g_value_set_double(&value, notation_delay * factor);
   ags_port_safe_write(delay_audio->notation_delay, &value);
 
   /* sequencer-delay */
   g_value_reset(&value);
 
-  g_value_set_double(&value, sequencer_delay * (old_tact / new_tact));
+  g_value_set_double(&value, sequencer_delay * factor);
   ags_port_safe_write(delay_audio->sequencer_delay, &value);
 
   /**/
@@ -660,13 +663,13 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
   /* notation-duration */
   g_value_reset(&value);
 
-  g_value_set_double(&value, notation_duration * (old_tact / new_tact));
+  g_value_set_double(&value, notation_duration * factor);
   ags_port_safe_write(delay_audio->notation_duration, &value);
 
   /* sequencer-duration */
   g_value_reset(&value);
 
-  g_value_set_double(&value, sequencer_duration * (old_tact / new_tact));
+  g_value_set_double(&value, sequencer_duration * factor);
   ags_port_safe_write(delay_audio->sequencer_duration, &value);
 
   /* -- finish adjust -- */

@@ -842,7 +842,7 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
     loop_end = g_value_get_double(&value);
 
     if(loop){
-      if(count_beats_audio_run->notation_counter == (guint) ceil(loop_end) - 1){
+      if(count_beats_audio_run->notation_counter >= loop_end - 1.0){
 	count_beats_audio_run->notation_counter = 0;
       }else{
 	count_beats_audio_run->notation_counter += 1;

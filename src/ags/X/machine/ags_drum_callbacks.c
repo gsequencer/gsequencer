@@ -74,55 +74,16 @@ void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
 {
   AgsWindow *window;
-  AgsAudio *audio;
-  AgsApplyBpm *apply_bpm;
-  AgsApplyTact *apply_tact;
-  AgsApplySequencerLength *apply_sequencer_length;
-  double bpm, tact, length;
 
   if(old_parent != NULL)
     return;
 
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
-  audio = drum->machine.audio;
-  audio->devout = (GObject *) window->devout;
-
   AGS_MACHINE(drum)->name = g_strdup_printf("Default %d\0",
 					    ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_DRUM);
-
-  /* bpm */
-  bpm = window->navigation->bpm->adjustment->value;
-
-  /*  if(bpm > 60.0){
-    bpm = exp2(-1.0 * 60.0 / bpm);
-  }else{
-    bpm = exp2(60.0 / bpm);
-    } * /
-
-  apply_bpm = ags_apply_bpm_new(G_OBJECT(AGS_MACHINE(drum)->audio),
-				bpm);
-  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
-			      AGS_TASK(apply_bpm));
-
-  /* tact * /
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
-
-  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
-  				  tact);
-  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
-  			      AGS_TASK(apply_tact));
-
-  /* length * /
-  length = GTK_SPIN_BUTTON(drum->length_spin)->adjustment->value;
-
-  apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
-							  length);
-  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
-			      AGS_TASK(apply_sequencer_length));
-  */
 }
 
 void

@@ -140,7 +140,8 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
-void ags_channel_resize_audio_signal(AgsChannel *channel, guint size);
+void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
+					  guint size);
 
 void ags_channel_find_input_recall_id(AgsChannel *input,
 				      AgsGroupId group_id,
