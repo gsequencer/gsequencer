@@ -29,6 +29,8 @@ int ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLi
 
 void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
 
+int ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
+
 /* AgsLine */
 void ags_line_volume_callback(GtkRange *range,
 			      AgsLine *line);

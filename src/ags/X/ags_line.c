@@ -166,6 +166,7 @@ ags_line_init(AgsLine *line)
 		     0);
 
   line->group = gtk_toggle_button_new_with_label("group\0");
+  gtk_toggle_button_set_active(line->group, TRUE);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->group),
 		     FALSE, FALSE,
@@ -254,6 +255,9 @@ ags_line_connect(AgsConnectable *connectable)
   if((AGS_LINE_CONNECTED & (line->flags)) != 0){
     return;
   }
+
+  g_signal_connect_after((GObject *) line->group, "clicked\0",
+			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
   
   line->flags |= AGS_LINE_CONNECTED;
 }

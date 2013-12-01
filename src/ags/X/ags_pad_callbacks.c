@@ -52,6 +52,42 @@ ags_pad_option_changed_callback(GtkWidget *widget, AgsPad *pad)
 int
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
+  AgsLine *line;
+  GtkContainer *container;
+  GList *list;
+
+  if(gtk_toggle_button_get_active(pad->group)){
+    container = (GtkContainer *) pad->expander_set;
+
+    list = gtk_container_get_children(container);
+    
+    while(list != NULL){
+      line = AGS_LINE(list->data);
+
+      if(!gtk_toggle_button_get_active(line->group)){
+	gtk_toggle_button_set_active(line->group, TRUE);
+      }
+
+      list = list->next;
+    }
+  }else{
+    container = (GtkContainer *) pad->expander_set;
+
+    list = gtk_container_get_children(container);
+    
+    while(list != NULL){
+      line = AGS_LINE(list->data);
+
+      if(!gtk_toggle_button_get_active(line->group)){
+	return(0);
+      }
+
+      list = list->next;
+    }
+
+    gtk_toggle_button_set_active(pad->group, TRUE);
+  }
+
   return(0);
 }
 
@@ -68,7 +104,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   }else{
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
 
-    if((machine->flags & AGS_MACHINE_SOLO) != 0){
+    if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
       container = (GtkContainer *) (AGS_IS_OUTPUT(pad->channel) ? machine->output: machine->input);
       list = gtk_container_get_children(container);
 

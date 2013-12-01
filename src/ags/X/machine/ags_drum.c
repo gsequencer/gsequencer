@@ -817,12 +817,12 @@ ags_drum_set_pattern(AgsDrum *drum)
 
   line = ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set)));
 
+  selected_line = AGS_LINE(line->data);
+
   if(drum->selected_pad == NULL || selected_line == NULL){
     g_message("no selected pad\n\0");
     return;
   }
-
-  selected_line = AGS_LINE(line->data);
 
   for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
 

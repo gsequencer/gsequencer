@@ -25,6 +25,8 @@
 
 #include <ags/audio/recall/ags_volume_channel.h>
 
+#include <ags/X/ags_pad.h>
+
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
 {
@@ -49,6 +51,55 @@ ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
       ags_channel_remove_recall(AGS_CHANNEL(line->channel), (GObject *) recall, TRUE);
     }
   }
+}
+
+int
+ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
+{
+  AgsPad *pad;
+  AgsLine *current;
+  GtkContainer *container;
+  GList *list;
+
+  pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_PAD);
+
+  container = (GtkContainer *) pad->expander_set;
+
+  list = gtk_container_get_children(container);
+
+  if(gtk_toggle_button_get_active(line->group)){    
+    while(list != NULL){
+      current = AGS_LINE(list->data);
+
+      if(!gtk_toggle_button_get_active(current->group)){
+	return(0);
+      }
+
+      list = list->next;
+    }
+
+    gtk_toggle_button_set_active(pad->group, TRUE);
+  }else{
+    if(g_list_length(list) > 1){
+      if(gtk_toggle_button_get_active(pad->group)){
+	gtk_toggle_button_set_active(pad->group, FALSE);
+      }
+
+      while(list != NULL){
+	current = AGS_LINE(list->data);
+
+	if(gtk_toggle_button_get_active(current->group)){
+	  return(0);
+	}
+
+	list = list->next;
+      } 
+    }
+
+    gtk_toggle_button_set_active(line->group, TRUE);
+  }
+
+  return(0);
 }
 
 void
