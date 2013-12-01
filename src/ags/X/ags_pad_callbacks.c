@@ -18,8 +18,14 @@
 
 #include <ags/X/ags_pad_callbacks.h>
 
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
+
+#include <ags/audio/task/recall/ags_set_muted.h>
 
 #include <ags/X/ags_machine.h>
 
@@ -96,11 +102,28 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
   GtkContainer *container;
-  GList *list;
+  AgsTaskThread *task_thread;
+  AgsChannel *current;
+  AgsSetMuted *set_muted;
+  GList *list, *tasks;
+
+  task_thread = AGS_DEVOUT(AGS_AUDIO(pad->channel->audio)->devout)->task_thread;
+
+  current = pad->channel;
+  tasks = NULL;
 
   if(gtk_toggle_button_get_active(pad->mute)){
     if(gtk_toggle_button_get_active(pad->solo))
       gtk_toggle_button_set_active(pad->solo, FALSE);
+
+    /* mute */
+    while(current != pad->channel->next_pad){
+      set_muted = ags_set_muted_new(G_OBJECT(current),
+				    TRUE);
+      tasks = g_list_prepend(tasks, set_muted);
+
+      current = current->next;
+    }
   }else{
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
 
@@ -115,7 +138,19 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
       machine->flags &= ~(AGS_MACHINE_SOLO);
     }
+
+    /* unmute */
+    while(current != pad->channel->next_pad){
+      set_muted = ags_set_muted_new(G_OBJECT(current),
+				    FALSE);
+      tasks = g_list_prepend(tasks, set_muted);
+
+      current = current->next;
+    }
   }
+
+  ags_task_thread_append_tasks(task_thread,
+			       tasks);
 
   return(0);
 }

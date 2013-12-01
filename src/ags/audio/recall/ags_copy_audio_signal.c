@@ -26,6 +26,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/recall/ags_copy_channel.h>
 
@@ -190,10 +192,13 @@ void
 ags_copy_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsDevout *devout;
+  AgsCopyChannel *copy_channel;
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;
   //  AgsAttack *attack;
   GList *stream_source, *stream_destination;
+  gboolean muted;
+  GValue value = {0,};
 
   AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter(recall);
 
@@ -213,6 +218,19 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   if(destination == NULL){
     g_warning("no destination\0");
+    return;
+  }
+
+  copy_channel = AGS_COPY_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+
+  g_value_init(&value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(copy_channel->muted,
+		     &value);
+
+  muted = g_value_get_boolean(&value);
+  g_value_unset(&value);
+
+  if(muted){
     return;
   }
 

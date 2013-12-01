@@ -217,7 +217,9 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   GList *stream;
   signed short *buffer0, *buffer1;
   guint audio_channel;
-  GValue value = {0,};
+  gboolean muted;
+  GValue muted_value = {0,};
+  GValue audio_channel_value = {0,};
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
 
@@ -255,11 +257,21 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 
-  g_value_init(&value, G_TYPE_UINT);
-  ags_port_safe_read(play_channel->audio_channel,
-		     &value);
+  g_value_init(&muted_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(play_channel->muted,
+		     &muted_value);
 
-  audio_channel = g_value_get_uint(&value);
+  muted = g_value_get_boolean(&muted_value);
+
+  if(muted){
+    return;
+  }
+
+  g_value_init(&audio_channel_value, G_TYPE_UINT);
+  ags_port_safe_read(play_channel->audio_channel,
+		     &audio_channel_value);
+
+  audio_channel = g_value_get_uint(&audio_channel_value);
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);

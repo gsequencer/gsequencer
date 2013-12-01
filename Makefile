@@ -153,6 +153,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_append_audio.$(OBJEXT) \
 	ags-ags_scroll_on_play.$(OBJEXT) \
 	ags-ags_display_tact.$(OBJEXT) ags-ags_apply_bpm.$(OBJEXT) \
+	ags-ags_set_muted.$(OBJEXT) \
 	ags-ags_apply_sequencer_length.$(OBJEXT) \
 	ags-ags_apply_tact.$(OBJEXT) ags-ags_append_channel.$(OBJEXT) \
 	ags-ags_remove_audio_signal.$(OBJEXT) \
@@ -734,6 +735,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/task/ags_cancel_audio.h \
 	./src/ags/audio/task/recall/ags_apply_bpm.c \
 	./src/ags/audio/task/recall/ags_apply_tact.h \
+	./src/ags/audio/task/recall/ags_set_muted.h \
+	./src/ags/audio/task/recall/ags_set_muted.c \
 	./src/ags/audio/task/recall/ags_apply_sequencer_length.c \
 	./src/ags/audio/task/recall/ags_apply_bpm.h \
 	./src/ags/audio/task/recall/ags_apply_tact.c \
@@ -1521,6 +1524,7 @@ include ./$(DEPDIR)/ags-ags_server_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_set_audio_channels.Po
 include ./$(DEPDIR)/ags-ags_set_buffer_size.Po
 include ./$(DEPDIR)/ags-ags_set_devout_play_flags.Po
+include ./$(DEPDIR)/ags-ags_set_muted.Po
 include ./$(DEPDIR)/ags-ags_set_output_device.Po
 include ./$(DEPDIR)/ags-ags_set_samplerate.Po
 include ./$(DEPDIR)/ags-ags_sf2_chooser.Po
@@ -2452,6 +2456,20 @@ ags-ags_apply_bpm.obj: ./src/ags/audio/task/recall/ags_apply_bpm.c
 #	$(AM_V_CC)source='./src/ags/audio/task/recall/ags_apply_bpm.c' object='ags-ags_apply_bpm.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_apply_bpm.obj `if test -f './src/ags/audio/task/recall/ags_apply_bpm.c'; then $(CYGPATH_W) './src/ags/audio/task/recall/ags_apply_bpm.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/recall/ags_apply_bpm.c'; fi`
+
+ags-ags_set_muted.o: ./src/ags/audio/task/recall/ags_set_muted.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_muted.o -MD -MP -MF $(DEPDIR)/ags-ags_set_muted.Tpo -c -o ags-ags_set_muted.o `test -f './src/ags/audio/task/recall/ags_set_muted.c' || echo '$(srcdir)/'`./src/ags/audio/task/recall/ags_set_muted.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_set_muted.Tpo $(DEPDIR)/ags-ags_set_muted.Po
+#	$(AM_V_CC)source='./src/ags/audio/task/recall/ags_set_muted.c' object='ags-ags_set_muted.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_muted.o `test -f './src/ags/audio/task/recall/ags_set_muted.c' || echo '$(srcdir)/'`./src/ags/audio/task/recall/ags_set_muted.c
+
+ags-ags_set_muted.obj: ./src/ags/audio/task/recall/ags_set_muted.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_set_muted.obj -MD -MP -MF $(DEPDIR)/ags-ags_set_muted.Tpo -c -o ags-ags_set_muted.obj `if test -f './src/ags/audio/task/recall/ags_set_muted.c'; then $(CYGPATH_W) './src/ags/audio/task/recall/ags_set_muted.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/recall/ags_set_muted.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_set_muted.Tpo $(DEPDIR)/ags-ags_set_muted.Po
+#	$(AM_V_CC)source='./src/ags/audio/task/recall/ags_set_muted.c' object='ags-ags_set_muted.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_muted.obj `if test -f './src/ags/audio/task/recall/ags_set_muted.c'; then $(CYGPATH_W) './src/ags/audio/task/recall/ags_set_muted.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/recall/ags_set_muted.c'; fi`
 
 ags-ags_apply_sequencer_length.o: ./src/ags/audio/task/recall/ags_apply_sequencer_length.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_apply_sequencer_length.o -MD -MP -MF $(DEPDIR)/ags-ags_apply_sequencer_length.Tpo -c -o ags-ags_apply_sequencer_length.o `test -f './src/ags/audio/task/recall/ags_apply_sequencer_length.c' || echo '$(srcdir)/'`./src/ags/audio/task/recall/ags_apply_sequencer_length.c
