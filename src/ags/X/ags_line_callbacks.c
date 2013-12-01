@@ -67,7 +67,9 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
   list = gtk_container_get_children(container);
 
-  if(gtk_toggle_button_get_active(line->group)){    
+  if(gtk_toggle_button_get_active(line->group)){
+    ags_line_group_changed(line);
+
     while(list != NULL){
       current = AGS_LINE(list->data);
 
@@ -89,6 +91,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 	current = AGS_LINE(list->data);
 
 	if(gtk_toggle_button_get_active(current->group)){
+	  ags_line_group_changed(line);
 	  return(0);
 	}
 

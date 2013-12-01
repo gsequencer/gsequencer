@@ -43,6 +43,7 @@ void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 
 enum{
   SET_CHANNEL,
+  GROUP_CHANGED,
   LAST_SIGNAL,
 };
 
@@ -126,6 +127,8 @@ ags_line_class_init(AgsLineClass *line)
   /* AgsLineClass */
   line->set_channel = ags_line_real_set_channel;
 
+  line->group_changed = NULL;
+
   line_signals[SET_CHANNEL] =
     g_signal_new("set_channel\0",
 		 G_TYPE_FROM_CLASS(line),
@@ -135,6 +138,15 @@ ags_line_class_init(AgsLineClass *line)
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
+
+  line_signals[GROUP_CHANGED] =
+    g_signal_new("group_changed\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, group_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -150,7 +162,7 @@ ags_line_init(AgsLine *line)
   g_signal_connect_after((GObject *) line, "parent_set\0",
 			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
 
-  line->flags = AGS_LINE_GROUPED;
+  line->flags = 0;
 
   line->version = AGS_LINE_DEFAULT_VERSION;
   line->build_id = AGS_LINE_DEFAULT_BUILD_ID;
@@ -301,10 +313,21 @@ ags_line_set_channel(AgsLine *line, AgsChannel *channel)
   g_object_unref((GObject *) line);
 }
 
+void
+ags_line_group_changed(AgsLine *line)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[GROUP_CHANGED], 0);
+  g_object_unref((GObject *) line);
+}
+
 GList*
 ags_line_find_next_grouped(GList *line)
 {
-  while(line != NULL && (AGS_LINE_GROUPED & (AGS_LINE(line->data)->flags)) == 0){
+  while(line != NULL && !gtk_toggle_button_get_active(AGS_LINE(line->data)->group)){
     line = line->next;
   }
 

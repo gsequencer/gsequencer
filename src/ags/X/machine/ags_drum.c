@@ -813,13 +813,10 @@ ags_drum_set_pattern(AgsDrum *drum)
   AgsLine *selected_line;
   GList *list, *line;
   guint index0, index1, offset;
+  gboolean set_active;
   guint i;
 
-  line = ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set)));
-
-  selected_line = AGS_LINE(line->data);
-
-  if(drum->selected_pad == NULL || selected_line == NULL){
+  if(drum->selected_pad == NULL){
     g_message("no selected pad\n\0");
     return;
   }
@@ -844,10 +841,22 @@ ags_drum_set_pattern(AgsDrum *drum)
   drum->flags |= AGS_DRUM_BLOCK_PATTERN;
 
   for(i = 0; i < 16; i++){
-    if(ags_pattern_get_bit((AgsPattern *) selected_line->channel->pattern->data, index0, index1, offset + i))
-      gtk_toggle_button_set_active((GtkToggleButton *) list->data, TRUE);
-    else
-      gtk_toggle_button_set_active((GtkToggleButton *) list->data, FALSE);
+    set_active = TRUE;
+
+    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set));
+
+    while((line = ags_line_find_next_grouped(line)) != NULL){
+      selected_line = AGS_LINE(line->data);
+
+      if(!ags_pattern_get_bit((AgsPattern *) selected_line->channel->pattern->data, index0, index1, offset + i)){
+	set_active = FALSE;
+	break;
+      }
+
+      line = line->next;
+    }
+
+    gtk_toggle_button_set_active((GtkToggleButton *) list->data, set_active);
 
     list = list->next;
   }

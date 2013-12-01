@@ -57,6 +57,7 @@ void ags_drum_input_line_connect(AgsConnectable *connectable);
 void ags_drum_input_line_disconnect(AgsConnectable *connectable);
 
 void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
+void ags_drum_input_line_group_changed(AgsLine *line);
 
 static gpointer ags_drum_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_line_parent_connectable_interface;
@@ -108,6 +109,8 @@ ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line)
   line = AGS_LINE_CLASS(drum_input_line);
 
   line->set_channel = ags_drum_input_line_set_channel;
+  
+  line->group_changed = ags_drum_input_line_group_changed;
 }
 
 void
@@ -203,6 +206,15 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     ags_drum_input_line_map_recall(drum_input_line, 0);
   }
+}
+
+void
+ags_drum_input_line_group_changed(AgsLine *line)
+{
+  AgsDrum *drum;
+
+  drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_DRUM);
+  ags_drum_set_pattern(drum);
 }
 
 void
