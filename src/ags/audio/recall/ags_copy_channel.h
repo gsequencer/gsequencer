@@ -38,6 +38,8 @@ typedef struct _AgsCopyChannelClass AgsCopyChannelClass;
 struct _AgsCopyChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsPort *muted;
 };
 
 struct _AgsCopyChannelClass

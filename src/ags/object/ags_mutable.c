@@ -16,32 +16,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/object/ags_playable.h>
+#include <ags/object/ags_mutable.h>
 
-void ags_playable_base_init(AgsPlayableInterface *interface);
+void ags_mutable_base_init(AgsMutableInterface *interface);
 
 GType
-ags_playable_get_type()
+ags_mutable_get_type()
 {
-  static GType ags_type_playable = 0;
+  static GType ags_type_mutable = 0;
 
-  if(!ags_type_playable){
-    static const GTypeInfo ags_playable_info = {
-      sizeof(AgsPlayableInterface),
-      (GBaseInitFunc) ags_playable_base_init,
+  if(!ags_type_mutable){
+    static const GTypeInfo ags_mutable_info = {
+      sizeof(AgsMutableInterface),
+      (GBaseInitFunc) ags_mutable_base_init,
       NULL, /* base_finalize */
     };
 
-    ags_type_playable = g_type_register_static(G_TYPE_INTERFACE,
-					       "AgsPlayable\0", &ags_playable_info,
+    ags_type_mutable = g_type_register_static(G_TYPE_INTERFACE,
+					       "AgsMutable\0", &ags_mutable_info,
 					       0);
   }
 
-  return(ags_type_playable);
+  return(ags_type_mutable);
 }
 
 void
-ags_playable_base_init(AgsPlayableInterface *interface)
+ags_mutable_base_init(AgsMutableInterface *interface)
 {
   /* empty */
 }

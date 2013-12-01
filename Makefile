@@ -212,9 +212,9 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_applicable.$(OBJEXT) ags-ags_tree_iterator.$(OBJEXT) \
 	ags-ags_runnable.$(OBJEXT) ags-ags_persistable.$(OBJEXT) \
 	ags-ags_seekable.$(OBJEXT) ags-ags_plugin.$(OBJEXT) \
-	ags-ags_playable.$(OBJEXT) ags-ags_marshal.$(OBJEXT) \
-	ags-ags_tactable.$(OBJEXT) ags-ags_packable.$(OBJEXT) \
-	ags-ags_preferences.$(OBJEXT) \
+	ags-ags_mutable.$(OBJEXT) ags-ags_playable.$(OBJEXT) \
+	ags-ags_marshal.$(OBJEXT) ags-ags_tactable.$(OBJEXT) \
+	ags-ags_packable.$(OBJEXT) ags-ags_preferences.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) \
 	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
@@ -894,7 +894,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/object/ags_persistable.c \
 	./src/ags/object/ags_seekable.c \
 	./src/ags/object/ags_tactable.h ./src/ags/object/ags_plugin.h \
-	./src/ags/object/ags_plugin.c ./src/ags/object/ags_playable.c \
+	./src/ags/object/ags_plugin.c ./src/ags/object/ags_mutable.h \
+	./src/ags/object/ags_mutable.c ./src/ags/object/ags_playable.c \
 	./src/ags/object/ags_marshal.c ./src/ags/object/ags_playable.h \
 	./src/ags/object/ags_tactable.c \
 	./src/ags/object/ags_packable.c \
@@ -1438,6 +1439,7 @@ include ./$(DEPDIR)/ags-ags_mixer.Po
 include ./$(DEPDIR)/ags-ags_mixer_callbacks.Po
 include ./$(DEPDIR)/ags-ags_mixer_input_line.Po
 include ./$(DEPDIR)/ags-ags_mixer_input_pad.Po
+include ./$(DEPDIR)/ags-ags_mutable.Po
 include ./$(DEPDIR)/ags-ags_navigation.Po
 include ./$(DEPDIR)/ags-ags_navigation_callbacks.Po
 include ./$(DEPDIR)/ags-ags_notation.Po
@@ -3654,6 +3656,20 @@ ags-ags_plugin.obj: ./src/ags/object/ags_plugin.c
 #	$(AM_V_CC)source='./src/ags/object/ags_plugin.c' object='ags-ags_plugin.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_plugin.obj `if test -f './src/ags/object/ags_plugin.c'; then $(CYGPATH_W) './src/ags/object/ags_plugin.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_plugin.c'; fi`
+
+ags-ags_mutable.o: ./src/ags/object/ags_mutable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mutable.o -MD -MP -MF $(DEPDIR)/ags-ags_mutable.Tpo -c -o ags-ags_mutable.o `test -f './src/ags/object/ags_mutable.c' || echo '$(srcdir)/'`./src/ags/object/ags_mutable.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mutable.Tpo $(DEPDIR)/ags-ags_mutable.Po
+#	$(AM_V_CC)source='./src/ags/object/ags_mutable.c' object='ags-ags_mutable.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mutable.o `test -f './src/ags/object/ags_mutable.c' || echo '$(srcdir)/'`./src/ags/object/ags_mutable.c
+
+ags-ags_mutable.obj: ./src/ags/object/ags_mutable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mutable.obj -MD -MP -MF $(DEPDIR)/ags-ags_mutable.Tpo -c -o ags-ags_mutable.obj `if test -f './src/ags/object/ags_mutable.c'; then $(CYGPATH_W) './src/ags/object/ags_mutable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_mutable.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mutable.Tpo $(DEPDIR)/ags-ags_mutable.Po
+#	$(AM_V_CC)source='./src/ags/object/ags_mutable.c' object='ags-ags_mutable.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mutable.obj `if test -f './src/ags/object/ags_mutable.c'; then $(CYGPATH_W) './src/ags/object/ags_mutable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_mutable.c'; fi`
 
 ags-ags_playable.o: ./src/ags/object/ags_playable.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_playable.o -MD -MP -MF $(DEPDIR)/ags-ags_playable.Tpo -c -o ags-ags_playable.o `test -f './src/ags/object/ags_playable.c' || echo '$(srcdir)/'`./src/ags/object/ags_playable.c

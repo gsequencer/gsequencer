@@ -20,16 +20,34 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_mutable.h>
+
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_copy_channel_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_copy_channel_init(AgsCopyChannel *copy_channel);
-void ags_copy_channel_finalize(GObject *gobject);
+void ags_copy_channel_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_copy_channel_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
 void ags_copy_channel_connect(AgsConnectable *connectable);
 void ags_copy_channel_disconnect(AgsConnectable *connectable);
 void ags_copy_channel_finalize(GObject *gobject);
 
+void ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted);
+
+enum{
+  PROP_0,
+  PROP_MUTED,
+};
+
 static gpointer ags_copy_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_channel_parent_connectable_interface;
+static AgsMutableInterface *ags_copy_channel_parent_mutable_interface;
 
 GType
 ags_copy_channel_get_type()
@@ -54,6 +72,12 @@ ags_copy_channel_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_mutable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_channel_mutable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsCopyChannel\0",
@@ -63,6 +87,10 @@ ags_copy_channel_get_type()
     g_type_add_interface_static(ags_type_copy_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_channel,
+				AGS_TYPE_MUTABLE,
+				&ags_mutable_interface_info);
   }
 
   return(ags_type_copy_channel);
@@ -78,27 +106,127 @@ ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable
 }
 
 void
+ags_copy_channel_mutable_interface_init(AgsMutableInterface *mutable)
+{
+  ags_copy_channel_parent_mutable_interface = g_type_interface_peek_parent(mutable);
+
+  mutable->set_muted = ags_copy_channel_set_muted;
+}
+
+void
 ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_copy_channel_parent_class = g_type_class_peek_parent(copy_channel);
 
   /* GObjectClass */
   gobject = (GObjectClass *) copy_channel;
 
+  gobject->set_property = ags_copy_channel_set_property;
+  gobject->get_property = ags_copy_channel_get_property;
+
   gobject->finalize = ags_copy_channel_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("muted\0",
+				   "mute channel\0",
+				   "Mute the channel\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MUTED,
+				  param_spec);
 }
 
 void
 ags_copy_channel_init(AgsCopyChannel *copy_channel)
 {
-  /* empty */
+  copy_channel->muted = g_object_new(AGS_TYPE_PORT,
+				     "plugin-name\0", g_strdup("ags-copy\0"),
+				     "specifier\0", "./muted[0]\0",
+				     "control-port\0", "1/1\0",
+				     "port-value-is-pointer\0", FALSE,
+				     "port-value-type\0", G_TYPE_BOOLEAN,
+				     "port-value-size\0", sizeof(gboolean),
+				     "port-value-length\0", 1,
+				     NULL);
+  copy_channel->muted->port_value.ags_port_boolean = FALSE;
+}
+
+void
+ags_copy_channel_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsCopyChannel *copy_channel;
+
+  copy_channel = AGS_COPY_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_MUTED:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == copy_channel->muted){
+	return;
+      }
+
+      if(copy_channel->muted != NULL){
+	g_object_unref(G_OBJECT(copy_channel->muted));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      copy_channel->muted = port;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }  
+}
+
+void
+ags_copy_channel_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsCopyChannel *copy_channel;
+
+  copy_channel = AGS_COPY_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_MUTED:
+    {
+      g_value_set_object(value, copy_channel->muted);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_copy_channel_finalize(GObject *gobject)
 {
+  AgsCopyChannel *copy_channel;
+
+  copy_channel = AGS_COPY_CHANNEL(gobject);
+
+  if(copy_channel->muted != NULL){
+    g_object_unref(G_OBJECT(copy_channel->muted));
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_copy_channel_parent_class)->finalize(gobject);
 }
 
@@ -116,6 +244,17 @@ ags_copy_channel_disconnect(AgsConnectable *connectable)
   ags_copy_channel_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted)
+{
+  GValue value = {0,};
+
+  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean(&value, muted);
+
+  ags_port_safe_write(AGS_COPY_CHANNEL(mutable)->muted, &value);
 }
 
 AgsCopyChannel*
