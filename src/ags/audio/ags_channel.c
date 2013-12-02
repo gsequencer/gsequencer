@@ -1363,7 +1363,10 @@ ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 				     guint length)
 {
   AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
   GList *list;
+  guint new_length;
+  gdouble factor;
 
   recycling = channel->first_recycling;
 
@@ -1371,8 +1374,28 @@ ags_channel_safe_resize_audio_signal(AgsChannel *channel,
     list = recycling->audio_signal;
 
     while(list != NULL){
-      ags_audio_signal_stream_safe_resize(AGS_AUDIO_SIGNAL(list->data),
-					  length);
+      audio_signal = AGS_AUDIO_SIGNAL(list->data);
+
+      if(audio_signal->stream_current != NULL){
+	if(length < audio_signal->length){
+	  factor = audio_signal->length / length;
+
+	  new_length = length + (factor *
+	    g_list_position(audio_signal->stream_beginning,
+			    audio_signal->stream_current));
+	}else{
+	  factor = length / audio_signal->length;
+
+	  new_length = length - (factor *
+	    g_list_position(audio_signal->stream_beginning,
+			    audio_signal->stream_current));
+	}
+      }else{
+	new_length = length;
+      }
+
+      ags_audio_signal_stream_safe_resize(audio_signal,
+					  new_length);
 
       list = list->next;
     }

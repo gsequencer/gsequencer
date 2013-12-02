@@ -254,14 +254,8 @@ ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
   sequencer_duration = g_value_get_double(&value);
 
   /* resize audio signal */
-  recycling = AGS_RECALL_CHANNEL(loop_channel)->source->first_recycling;
-
-  while(recycling != AGS_RECALL_CHANNEL(loop_channel)->source->last_recycling->next){
-    ags_audio_signal_stream_safe_resize(ags_audio_signal_get_template(recycling->audio_signal),
-					(guint) ceil(sequencer_duration) + 1);
-
-    recycling = recycling->next;
-  }
+  ags_channel_safe_resize_audio_signal(AGS_RECALL_CHANNEL(loop_channel)->source,
+				       (guint) sequencer_duration);
 }
 
 AgsLoopChannel*
