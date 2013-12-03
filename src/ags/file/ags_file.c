@@ -34,6 +34,7 @@
 
 #include <ags/main.h>
 
+#include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_gui.h>
 
@@ -279,25 +280,68 @@ ags_file_str2md5(gchar *content, guint strlen, unsigned long len)
 void
 ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 {
-  //TODO:JK: implement me
+  if(id_ref == NULL)
+    return;
+
+  g_object_ref(G_OBJECT(id_ref));
+
+  file->id_refs = g_list_prepend(file->id_refs,
+				 id_ref);
 }
 
 GObject*
 ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *file_id_ref;
+  GList *list;
+
+  list = file->id_refs;
+
+  while(list != NULL){
+    file_id_ref = AGS_FILE_ID_REF(list->data);
+
+    if(!g_strcmp0((gchar *) xmlXPathCastNodeToString(file_id_ref->node), xpath)){
+      return((GObject *) file_id_ref);
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
 }
 
 GObject*
 ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *file_id_ref;
+  GList *list;
+
+  list = file->id_refs;
+
+  while(list != NULL){
+    file_id_ref = AGS_FILE_ID_REF(list->data);
+
+    if(file_id_ref->ref == ref){
+      return((GObject *) file_id_ref);
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
 }
 
 void
 ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 {
-  //TODO:JK: implement me
+  if(file_lookup == NULL){
+    return;
+  }
+
+  g_object_ref(G_OBJECT(file_lookup));
+
+  file->lookup = g_list_prepend(file->lookup,
+				file_lookup);
 }
 
 void
