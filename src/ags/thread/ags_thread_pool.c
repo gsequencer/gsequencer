@@ -117,6 +117,8 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
 
   g_atomic_int_set(&thread_pool->newly_pulled,
 		   0);
+  g_atomic_int_set(&thread_pool->queued,
+		   0);
 
   thread_pool->returnable_thread = list;
   thread_pool->running_thread = NULL;
@@ -170,7 +172,7 @@ ags_thread_pool_creation_thread(void *ptr)
   
   thread_pool = AGS_THREAD_POOL(ptr);
 
-  while((AGS_THREAD_POOL_RUNNING & (g_atomic_int_get(thread_pool->flags))) != 0){
+  while((AGS_THREAD_POOL_RUNNING & (g_atomic_int_get(&thread_pool->flags))) != 0){
     pthread_mutex_lock(&(thread_pool->creation_mutex));
 
     while(g_atomic_int_get(&thread_pool->newly_pulled) == 0){
@@ -208,7 +210,7 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
     while(list != NULL){
       returnable_thread = AGS_RETURNABLE_THREAD(list->data);
 
-      if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
+      if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&returnable_thread->flags))) == 0){
 	g_atomic_int_or(&returnable_thread->flags,
 			AGS_RETURNABLE_THREAD_IN_USE);
 	thread_pool->running_thread = g_list_prepend(thread_pool->running_thread,
@@ -221,7 +223,7 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
     }
 
     if(n_threads + 1 < thread_pool->max_threads){
-      g_atomic_int_incr(&thread_pool->newly_pulled);
+      g_atomic_int_inc(&thread_pool->newly_pulled);
 
       pthread_mutex_lock(&(thread_pool->creation_mutex));
       
@@ -236,13 +238,19 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   if((n_threads = g_list_length(thread_pool->running_thread)) < thread_pool->max_threads){
     ags_thread_pool_pull_running();
   }else{
+    g_atomic_int_inc(&thread_pool->queued);
+
     while((n_threads = g_list_length(thread_pool->running_thread)) == thread_pool->max_threads){
       pthread_cond_wait(&(thread_pool->return_cond),
 			&(thread_pool->return_mutex));
     }
 
+    g_atomic_int_dec_and_test(&thread_pool->queued);
     ags_thread_pool_pull_running();
   }
+
+  g_atomic_int_or(&returnable_thread->flags,
+		  AGS_RETURNABLE_THREAD_IN_USE);
 
   pthread_mutex_unlock(&(thread_pool->return_mutex));
 
@@ -253,7 +261,18 @@ void
 ags_thread_pool_stop_callback(AgsThread *thread,
 			      AgsThreadPool *thread_pool)
 {
-  //TODO:JK: implement me
+  pthread_mutex_lock(&(thread_pool->return_mutex));
+
+  thread_pool->running_thread = g_list_remove(thread_pool->running_thread,
+					      thread);
+  g_atomic_int_and(&(AGS_RETURNABLE_THREAD(thread)->flags),
+		   (~AGS_RETURNABLE_THREAD_IN_USE));
+
+  if(g_atomic_int_get(&thread_pool->queued) > 0){
+    pthread_cond_signal(&(thread_pool->return_cond));
+  }
+
+  pthread_mutex_unlock(&(thread_pool->return_mutex));
 }
 
 AgsThreadPool*

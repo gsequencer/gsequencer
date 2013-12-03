@@ -51,6 +51,7 @@ struct _AgsThreadPool
   pthread_cond_t creation_cond;
 
   volatile guint newly_pulled;
+  volatile guint queued;
 
   GList *returnable_thread;
   GList *running_thread;
