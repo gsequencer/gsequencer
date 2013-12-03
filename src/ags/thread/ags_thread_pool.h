@@ -44,8 +44,10 @@ struct _AgsThreadPool
 
   volatile guint flags;
 
-  guint max_unused_threads;
-  guint max_threads;
+  volatile guint max_unused_threads;
+  volatile guint max_threads;
+
+  pthread_t thread;
 
   pthread_mutex_t creation_mutex;
   pthread_cond_t creation_cond;
@@ -63,11 +65,15 @@ struct _AgsThreadPool
 struct _AgsThreadPoolClass
 {
   GObjectClass object;
+
+  void (*start)(AgsThreadPool *thread_pool);
 };
 
 GType ags_thread_pool_get_type();
 
 AgsThread* ags_thread_pool_pull(AgsThreadPool *thread_pool);
+
+void ags_thread_pool_start(AgsThreadPool *thread_pool);
 
 AgsThreadPool* ags_thread_pool_new();
 

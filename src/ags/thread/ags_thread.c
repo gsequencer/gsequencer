@@ -348,6 +348,9 @@ ags_thread_get_property(GObject *gobject,
       g_value_set_object(value, G_OBJECT(thread->devout));
     }
     break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
   }
 }
 
