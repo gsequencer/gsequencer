@@ -102,6 +102,8 @@ GType ags_file_get_type(void);
 gchar* ags_file_str2md5(gchar *content, guint strlen, unsigned long len);
 
 void ags_file_add_id_ref(AgsFile *file, GObject *id_ref);
+
+GObject* ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node);
 GObject* ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath);
 GObject* ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref);
 

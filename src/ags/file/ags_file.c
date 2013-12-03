@@ -34,6 +34,7 @@
 
 #include <ags/main.h>
 
+#include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_gui.h>
@@ -290,7 +291,7 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 }
 
 GObject*
-ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
+ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
 {
   AgsFileIdRef *file_id_ref;
   GList *list;
@@ -300,11 +301,56 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   while(list != NULL){
     file_id_ref = AGS_FILE_ID_REF(list->data);
 
-    if(!g_strcmp0((gchar *) xmlXPathCastNodeToString(file_id_ref->node), xpath)){
+    if(file_id_ref->node == node){
       return((GObject *) file_id_ref);
     }
 
     list = list->next;
+  }
+
+  return(NULL);
+}
+
+GObject*
+ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
+{
+  AgsFileIdRef *file_id_ref;
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  guint i;
+
+  /* Create xpath evaluation context */
+  xpath_context = xmlXPathNewContext(file->doc);
+
+  if(xpath_context == NULL) {
+    fprintf(stderr,"Error: unable to create new XPath context\n");
+
+    return(NULL);
+  }
+
+  /* Evaluate xpath expression */
+  xpath_object = xmlXPathEvalExpression(xpath, xpath_context);
+
+  if(xpath_object == NULL) {
+    fprintf(stderr,"Error: unable to evaluate xpath expression \"%s\"\n", xpath);
+    xmlXPathFreeContext(xpath_context); 
+
+    return(NULL);
+  }
+    
+
+  if(!g_strcmp0((gchar *) xmlXPathCastNodeToString(file_id_ref->node), xpath)){
+    return((GObject *) file_id_ref);
+  }
+
+  node = xpath_object->nodesetval->nodeTab;
+
+  for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+    if(node[i]->type == XML_ELEMENT_NODE){
+      return(ags_file_find_id_ref_by_node(file,
+					  node[i]));
+    }
   }
 
   return(NULL);
@@ -347,7 +393,64 @@ ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 void
 ags_file_real_write(AgsFile *file)
 {
+  AgsMain *main;
+  xmlNode *root_node;
+  GList *list;
+
+  file->doc = xmlNewDoc(BAD_CAST "1.0\0");
+  root_node = xmlNewNode(NULL, BAD_CAST "ags\0");
+  xmlDocSetRootElement(file->doc, root_node);
+
+  /* write clip board */
   //TODO:JK: implement me
+
+  /* write scripts */
+  //TODO:JK: implement me
+
+  /* write cluster */
+  //TODO:JK: implement me
+
+  /* write client */
+  //TODO:JK: implement me
+
+  /* write server */
+  //TODO:JK: implement me
+
+  /* write main */
+  ags_file_write_main(file,
+		      root_node,
+		      file->main);
+
+  /* write embedded audio */
+  //TODO:JK: implement me
+
+  /* write file link */
+  //TODO:JK: implement me
+ 
+  /* write history */
+  //TODO:JK: implement me
+
+  /* resolve */
+  ags_file_write_resolve(file);
+
+  /* 
+   * Dumping document to file
+   */
+  xmlSaveFormatFileEnc(file->name, file->doc, "UTF-8\0", 1);
+
+  /*free the document */
+  xmlFreeDoc(file->doc);
+
+  /*
+   *Free the global variables that may
+   *have been allocated by the parser.
+   */
+  xmlCleanupParser();
+
+  /*
+   * this is to debug memory for regression tests
+   */
+  xmlMemoryDump();
 }
 
 void
@@ -365,7 +468,15 @@ ags_file_write(AgsFile *file)
 void
 ags_file_real_write_resolve(AgsFile *file)
 {
-  //TODO:JK: implement me
+  GList *list;
+
+  list = file->lookup;
+
+  while(list != NULL){
+    ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
+
+    list = list->next;
+  }
 }
 
 void
@@ -451,6 +562,9 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
 void
 ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main)
 {
+  xmlNode *node;
+
+
   //TODO:JK: implement me
 }
 
