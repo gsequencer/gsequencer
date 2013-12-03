@@ -338,11 +338,6 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
 
     return(NULL);
   }
-    
-
-  if(!g_strcmp0((gchar *) xmlXPathCastNodeToString(file_id_ref->node), xpath)){
-    return((GObject *) file_id_ref);
-  }
 
   node = xpath_object->nodesetval->nodeTab;
 
