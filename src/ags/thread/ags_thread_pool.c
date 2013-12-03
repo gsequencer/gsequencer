@@ -22,6 +22,8 @@
 
 #include <ags/thread/ags_returnable_thread.h>
 
+#include <stdlib.h>
+
 void ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool);
 void ags_thread_pool_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_pool_init(AgsThreadPool *thread_pool);
@@ -173,8 +175,6 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
 
   for(i = 0; i < g_atomic_int_get(&thread_pool->max_unused_threads); i++){
     thread = (AgsThread *) ags_returnable_thread_new();
-    ags_thread_start(thread);
-    ags_thread_suspend(thread);
     list = g_list_prepend(list, thread);
   }
 
@@ -185,6 +185,8 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
 
   thread_pool->returnable_thread = list;
   thread_pool->running_thread = NULL;
+
+  thread_pool->stop_handler = NULL;
 }
 
 void
@@ -248,12 +250,22 @@ ags_thread_pool_connect(AgsConnectable *connectable)
 {
   AgsThreadPool *thread_pool;
   GList *list;
+  guint n_threads;
+  guint i;
 
   thread_pool = AGS_THREAD_POOL(connectable);
 
   list = thread_pool->returnable_thread;
+  n_threads = g_list_length(thread_pool->returnable_thread);
 
-  //TODO:JK: implement me
+  thread_pool->stop_handler = (gulong *) malloc(n_threads * sizeof(gulong));
+
+  for(i = 0; i < n_threads; i++);{
+    thread_pool->stop_handler[i] = g_signal_connect(G_OBJECT(list->data), "stop\0",
+						    G_CALLBACK(ags_thread_pool_stop_callback), (gpointer) thread_pool);
+
+    list = list->next;
+  }
 }
 
 void
@@ -261,12 +273,20 @@ ags_thread_pool_disconnect(AgsConnectable *connectable)
 {
   AgsThreadPool *thread_pool;
   GList *list;
+  guint n_threads;
+  guint i;
 
   thread_pool = AGS_THREAD_POOL(connectable);
 
   list = thread_pool->returnable_thread;
+  n_threads = g_list_length(thread_pool->returnable_thread);
 
-  //TODO:JK: implement me
+  for(i = 0; i < n_threads; i++);{
+    g_signal_handler_disconnect(G_OBJECT(list->data),
+				thread_pool->stop_handler[i]);
+
+    list = list->next;
+  }
 }
 
 void
@@ -322,6 +342,7 @@ ags_thread_pool_creation_thread(void *ptr)
 {
   AgsThreadPool *thread_pool;
   AgsThread *thread;
+  guint n_threads;
   guint i, i_stop;
   
   thread_pool = AGS_THREAD_POOL(ptr);
@@ -329,14 +350,22 @@ ags_thread_pool_creation_thread(void *ptr)
   while((AGS_THREAD_POOL_RUNNING & (g_atomic_int_get(&thread_pool->flags))) != 0){
     pthread_mutex_lock(&(thread_pool->creation_mutex));
 
+    g_atomic_int_or(&thread_pool->flags,
+		    AGS_THREAD_POOL_READY);
+
     while(g_atomic_int_get(&thread_pool->newly_pulled) == 0){
       pthread_cond_wait(&(thread_pool->creation_cond),
 			&(thread_pool->creation_mutex));
     }
 
+    n_threads = g_list_length(thread_pool->returnable_thread);
+
     i_stop = g_atomic_int_get(&thread_pool->newly_pulled);
     g_atomic_int_set(&thread_pool->newly_pulled,
 		     0);
+
+    g_atomic_int_and(&thread_pool->flags,
+		     (~AGS_THREAD_POOL_READY));
 
     pthread_mutex_unlock(&(thread_pool->creation_mutex));
 
@@ -344,9 +373,13 @@ ags_thread_pool_creation_thread(void *ptr)
 	  g_list_length(thread_pool->returnable_thread) < g_atomic_int_get(&thread_pool->max_threads);
 	i++){
       thread = (AgsThread *) ags_returnable_thread_new();
-      ags_thread_start(thread);
-      ags_thread_suspend(thread);
       thread_pool->returnable_thread = g_list_prepend(thread_pool->returnable_thread, thread);
+      thread_pool->stop_handler = (gulong *) realloc(thread_pool->stop_handler,
+						     n_threads + 1);
+      thread_pool->stop_handler[n_threads] = g_signal_connect(G_OBJECT(thread), "stop\0",
+							      G_CALLBACK(ags_thread_pool_stop_callback), (gpointer) thread_pool);
+
+      n_threads++;
     }
   }
 }
@@ -383,7 +416,9 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 
       pthread_mutex_lock(&(thread_pool->creation_mutex));
       
-      pthread_cond_signal(&(thread_pool->creation_cond));
+      if((AGS_THREAD_POOL_READY & (g_atomic_int_get(&thread_pool->flags))) != 0){
+	pthread_cond_signal(&(thread_pool->creation_cond));
+      }
 
       pthread_mutex_unlock(&(thread_pool->creation_mutex));
     }

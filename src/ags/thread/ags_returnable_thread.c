@@ -31,6 +31,7 @@ void ags_returnable_thread_start(AgsThread *thread);
 void ags_returnable_thread_stop(AgsThread *thread);
 
 static gpointer ags_returnable_thread_parent_class = NULL;
+static AgsConnectableInterface *ags_returnable_thread_parent_connectable_interface;
 
 GType
 ags_returnable_thread_get_type()
@@ -90,6 +91,8 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
 void
 ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_returnable_thread_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->connect = ags_returnable_thread_connect;
   connectable->disconnect = ags_returnable_thread_disconnect;
 }
@@ -104,12 +107,16 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 void
 ags_returnable_thread_connect(AgsConnectable *connectable)
 {
+  ags_returnable_thread_parent_connectable_interface->connect(connectable);
+
   /* empty */
 }
 
 void
 ags_returnable_thread_disconnect(AgsConnectable *connectable)
 {
+  ags_returnable_thread_parent_connectable_interface->disconnect(connectable);
+
   /* empty */
 }
 
@@ -125,17 +132,17 @@ ags_returnable_thread_finalize(GObject *gobject)
 void
 ags_returnable_thread_start(AgsThread *thread)
 {
-  AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
-
-  //TODO:JK: implement me
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) == 0){
+    AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
+  }else{
+    ags_thread_resume(thread);
+  }
 }
 
 void
 ags_returnable_thread_stop(AgsThread *thread)
 {
-  //TODO:JK: implement me
-
-  AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->stop(thread);
+  ags_thread_suspend(thread);
 }
 
 AgsReturnableThread*

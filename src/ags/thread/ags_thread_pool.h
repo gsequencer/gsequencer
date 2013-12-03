@@ -36,6 +36,7 @@ typedef struct _AgsThreadPoolClass AgsThreadPoolClass;
 
 typedef enum{
   AGS_THREAD_POOL_RUNNING  = 1,
+  AGS_THREAD_POOL_READY    = 1 << 1,
 }AgsThreadPoolFlags;
 
 struct _AgsThreadPool
@@ -60,6 +61,8 @@ struct _AgsThreadPool
 
   pthread_mutex_t return_mutex;
   pthread_cond_t return_cond;
+
+  gulong *stop_handler;
 };
 
 struct _AgsThreadPoolClass
