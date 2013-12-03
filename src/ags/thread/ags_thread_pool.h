@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_THREAD_POOL                (ags_thread_pool_get_type())
 #define AGS_THREAD_POOL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD_POOL, AgsThreadPool))
@@ -34,11 +34,29 @@
 typedef struct _AgsThreadPool AgsThreadPool;
 typedef struct _AgsThreadPoolClass AgsThreadPoolClass;
 
+typedef enum{
+  AGS_THREAD_POOL_RUNNING  = 1,
+}AgsThreadPoolFlags;
+
 struct _AgsThreadPool
 {
   GObject object;
 
+  volatile guint flags;
+
+  guint max_unused_threads;
+  guint max_threads;
+
+  pthread_mutex_t creation_mutex;
+  pthread_cond_t creation_cond;
+
+  volatile guint newly_pulled;
+
   GList *returnable_thread;
+  GList *running_thread;
+
+  pthread_mutex_t return_mutex;
+  pthread_cond_t return_cond;
 };
 
 struct _AgsThreadPoolClass
@@ -47,6 +65,8 @@ struct _AgsThreadPoolClass
 };
 
 GType ags_thread_pool_get_type();
+
+AgsThread* ags_thread_pool_pull(AgsThreadPool *thread_pool);
 
 AgsThreadPool* ags_thread_pool_new();
 

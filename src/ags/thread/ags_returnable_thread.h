@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_returnable_thread.h>
+#include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_RETURNABLE_THREAD                (ags_returnable_thread_get_type())
 #define AGS_RETURNABLE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RETURNABLE_THREAD, AgsReturnableThread))
@@ -34,9 +34,15 @@
 typedef struct _AgsReturnableThread AgsReturnableThread;
 typedef struct _AgsReturnableThreadClass AgsReturnableThreadClass;
 
+typedef enum{
+  AGS_RETURNABLE_THREAD_IN_USE     = 1,
+}AgsReturnableThreadFlags;
+
 struct _AgsReturnableThread
 {
   AgsThread thread;
+
+  volatile guint flags;
 };
 
 struct _AgsReturnableThreadClass

@@ -27,6 +27,9 @@ void ags_returnable_thread_connect(AgsConnectable *connectable);
 void ags_returnable_thread_disconnect(AgsConnectable *connectable);
 void ags_returnable_thread_finalize(GObject *gobject);
 
+void ags_returnable_thread_start(AgsThread *thread);
+void ags_returnable_thread_stop(AgsThread *thread);
+
 static gpointer ags_returnable_thread_parent_class = NULL;
 
 GType
@@ -53,7 +56,7 @@ ags_returnable_thread_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_returnable_thread = g_type_register_static(G_TYPE_OBJECT,
+    ags_type_returnable_thread = g_type_register_static(AGS_TYPE_THREAD,
 							"AgsReturnableThread\0",
 							&ags_returnable_thread_info,
 							0);
@@ -70,6 +73,7 @@ void
 ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
 {
   GObjectClass *gobject;
+  AgsThreadClass *thread;
 
   ags_returnable_thread_parent_class = g_type_class_peek_parent(returnable_thread);
 
@@ -77,6 +81,10 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   gobject = (GObjectClass *) returnable_thread;
 
   gobject->finalize = ags_returnable_thread_finalize;
+
+  /* AgsThreadClass */
+  thread->start = ags_returnable_thread_start;
+  thread->stop = ags_returnable_thread_stop;
 }
 
 void
@@ -89,6 +97,8 @@ ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 {
+  g_atomic_int_set(&(returnable_thread->flags),
+		   0);
 }
 
 void
@@ -110,6 +120,22 @@ ags_returnable_thread_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_returnable_thread_parent_class)->finalize(gobject);
+}
+
+void
+ags_returnable_thread_start(AgsThread *thread)
+{
+  AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_returnable_thread_stop(AgsThread *thread)
+{
+  //TODO:JK: implement me
+
+  AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->stop(thread);
 }
 
 AgsReturnableThread*
