@@ -112,6 +112,12 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
+		     "ags-audio-list\0",
+		     15)){
+	ags_file_read_audio_list(file,
+				 child,
+				 &gobject->audio);
+      }else if(!xmlStrncmp(child->name,
 		     "ags-attack-data\0",
 		     15)){
 	xmlChar *checksum;
@@ -234,6 +240,11 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   xmlNewProp(node,
 	     "bpm\0",
 	     g_strdup_printf("%Lf\0", devout->bpm));
+  
+  /* ags-audio-list */
+  ags_file_write_audio_list(file,
+			    node,
+			    devout->audio);
 
   /* ags-delay-data */
   child = xmlNewNode(AGS_FILE_DEFAULT_NS,

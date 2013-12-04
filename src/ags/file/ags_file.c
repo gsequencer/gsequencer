@@ -20,6 +20,7 @@
 #include <ags/file/ags_file_thread.h>
 #include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_gui.h>
+#include <ags/file/ags_file_stock.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +38,8 @@
 #include <libxml/xmlsave.h>
 
 #include <ags/main.h>
+
+#include <ags/util/ags_id_generator.h>
 
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -579,6 +582,24 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
     gobject = (AgsMain *) *main;
   }
 
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  /* properties */
+  gobject->version = xmlGetProp(node,
+				AGS_FILE_VERSION_PROP);
+
+  gobject->build_id = xmlGetProp(node,
+				 AGS_FILE_BUILD_ID_PROP);
+
+  //TODO:JK: check version compatibelity
+
+  /* child elements */
   child = node->children;
 
   while(child != NULL){
@@ -588,10 +609,10 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
 		     15)){
 	ags_file_read_audio_loop(file,
 				 child,
-				 &gobject->main_loop);
-      }else if(!xmlStrncmp("ags-devout\0",
+				 (AgsAudioLoop **) &gobject->main_loop);
+      }else if(!xmlStrncmp("ags-devout-list\0",
 			   child->name,
-			   11)){
+			   16)){
 	ags_file_read_devout_list(file,
 				  child,
 				  &gobject->devout);
@@ -611,10 +632,46 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
 void
 ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main)
 {
-  xmlNode *node;
+  xmlNode *node, *child;
+  gchar *id;
 
+  id = ags_id_generator_create_uuid();
 
-  //TODO:JK: implement me
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", main,
+				   NULL));
+
+  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+		    "ags-main\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_MAIN(main)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_MAIN(main)->build_id);
+
+  /* ags-audio-list */
+  ags_file_write_audio_loop(file,
+			    node,
+			    AGS_AUDIO_LOOP(AGS_MAIN(main)->main_loop));
+
+  ags_file_write_devout_list(file,
+			     node,
+			     AGS_MAIN(main)->devout);
+
+  ags_file_write_window(file,
+			node,
+			AGS_MAIN(main)->window);
 }
 
 AgsFile*

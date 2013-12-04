@@ -123,6 +123,9 @@ ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_main_init(AgsMain *main)
 {
+  main->version = AGS_VERSION;
+  main->build_id = AGS_BUILD_ID;
+
   main->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
 				      "file\0", stdout,
 				      NULL);

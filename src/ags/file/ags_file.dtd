@@ -163,7 +163,7 @@
 	  >
 
 <!-- main -->
-<!ELEMENT ags-main (ags-audio-loop, ags-devout-list, ags-audio-list, ags-window)>
+<!ELEMENT ags-main (ags-audio-loop, ags-devout-list, ags-window)>
 <!ATTLIST ags-main
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
@@ -185,7 +185,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-devout (ags-delay-data, ags-attack-data)>
+<!ELEMENT ags-devout (ags-audio-list, ags-delay-data, ags-attack-data)>
 <!ATTLIST ags-devout
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
