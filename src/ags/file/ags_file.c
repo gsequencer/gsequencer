@@ -66,6 +66,14 @@ void ags_file_real_read_resolve(AgsFile *file);
 void ags_file_real_read_start(AgsFile *file);
 
 enum{
+  PROP_0,
+  PROP_FILENAME,
+  PROP_ENCODING,
+  PROP_AUDIO_FORMAT,
+  PROP_AUDIO_ENCODING,
+};
+
+enum{
   WRITE,
   WRITE_RESOLVE,
   READ,
@@ -108,6 +116,7 @@ void
 ags_file_class_init(AgsFileClass *file)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_file_parent_class = g_type_class_peek_parent(file);
 
@@ -118,6 +127,43 @@ ags_file_class_init(AgsFileClass *file)
   gobject->set_property = ags_file_set_property;
 
   gobject->finalize = ags_file_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_string("filename\0",
+				   "filename to read or write\0",
+				   "The filename to read or write to.\0",
+				   "unnamed\0",
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  param_spec = g_param_spec_string("encoding\0",
+				   "encoding to use\0",
+				   "The encoding of the XML document.\0",
+				   AGS_FILE_DEFAULT_NS,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ENCODING,
+				  param_spec);
+
+  param_spec = g_param_spec_string("audio format\0",
+				   "audio format to use\0",
+				   "The audio format used to embedded audio.\0",
+				   AGS_FILE_DEFAULT_AUDIO_FORMAT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_FORMAT,
+				  param_spec);
+
+  param_spec = g_param_spec_string("audio encoding\0",
+				   "audio encoding to use\0",
+				   "The audio encoding used to embedded audio.\0",
+				   AGS_FILE_DEFAULT_AUDIO_ENCODING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_ENCODING,
+				  param_spec);
 
   /* AgsFileClass */
   file->write = ags_file_real_write;
@@ -207,7 +253,51 @@ ags_file_set_property(GObject *gobject,
 		      const GValue *value,
 		      GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsFile *file;
+
+  file = AGS_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      file->name = filename;
+    }
+    break;
+  case PROP_ENCODING:
+    {
+      gchar *encoding;
+
+      encoding = g_value_get_string(value);
+
+      file->encoding = encoding;
+    }
+    break;
+  case PROP_AUDIO_FORMAT:
+    {
+      gchar *audio_format;
+
+      audio_format = g_value_get_string(value);
+
+      file->audio_format = audio_format;
+    }
+    break;
+  case PROP_AUDIO_ENCODING:
+    {
+      gchar *audio_encoding;
+
+      audio_encoding = g_value_get_string(value);
+
+      file->audio_encoding = audio_encoding;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -216,7 +306,35 @@ ags_file_get_property(GObject *gobject,
 		      GValue *value,
 		      GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsFile *file;
+
+  file = AGS_FILE(gobject);
+
+  switch(prop_id){
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, file->name);
+    }
+    break;
+  case PROP_ENCODING:
+    {
+      g_value_set_string(value, file->encoding);
+    }
+    break;
+  case PROP_AUDIO_FORMAT:
+    {
+      g_value_set_string(value, file->audio_format);
+    }
+    break;
+  case PROP_AUDIO_ENCODING:
+    {
+      g_value_set_string(value, file->audio_encoding);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
