@@ -71,6 +71,7 @@ enum{
   PROP_ENCODING,
   PROP_AUDIO_FORMAT,
   PROP_AUDIO_ENCODING,
+  PROP_MAIN,
 };
 
 enum{
@@ -165,6 +166,15 @@ ags_file_class_init(AgsFileClass *file)
 				  PROP_AUDIO_ENCODING,
 				  param_spec);
 
+  param_spec = g_param_spec_object("main\0",
+				   "main object of file\0",
+				   "The main object to write to file.\0",
+				   AGS_TYPE_MAIN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAIN,
+				  param_spec);
+
   /* AgsFileClass */
   file->write = ags_file_real_write;
   file->write_resolve = ags_file_real_write_resolve;
@@ -235,16 +245,19 @@ ags_file_init(AgsFile *file)
   file->id_refs = NULL;
   file->lookup = NULL;
 
+  file->main = NULL;
+
   file->clipboard = NULL;
   file->property = NULL;
   file->script = NULL;
   file->cluster = NULL;
   file->client = NULL;
   file->server = NULL;
-  file->main = NULL;
+
+  file->history = NULL;
+
   file->embedded_audio = NULL;
   file->file_link = NULL;
-  file->history = NULL;
 }
 
 void
@@ -294,6 +307,27 @@ ags_file_set_property(GObject *gobject,
       file->audio_encoding = audio_encoding;
     }
     break;
+  case PROP_MAIN:
+    {
+      GObject *main;
+
+      main = g_value_get_object(value);
+
+      if(file->main == main){
+	return;
+      }
+
+      if(file->main != NULL){
+	g_object_unref(file->main);
+      }
+
+      if(main != NULL){
+	g_object_ref(main);
+      }
+
+      file->main = main;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -329,6 +363,11 @@ ags_file_get_property(GObject *gobject,
   case PROP_AUDIO_ENCODING:
     {
       g_value_set_string(value, file->audio_encoding);
+    }
+    break;
+  case PROP_MAIN:
+    {
+      g_value_set_object(value, file->main);
     }
     break;
   default:

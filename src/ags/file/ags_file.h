@@ -73,16 +73,19 @@ struct _AgsFile
   GList *lookup;
   GList *launch;
 
+  GObject *main;
+
   GObject *clipboard;
   GList *property;
   GList *script;
   GObject *cluster;
   GObject *client;
   GObject *server;
-  GObject *main;
+
+  GObject *history;
+
   GList *embedded_audio;
   GList *file_link;
-  GObject *history;
 };
 
 struct _AgsFileClass
