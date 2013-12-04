@@ -495,7 +495,82 @@ ags_file_write_resolve(AgsFile *file)
 void
 ags_file_real_read(AgsFile *file)
 {
-  //TODO:JK: implement me
+  AgsMain *main;
+  xmlNode *root_node, *child;
+
+  /* parse the file and get the DOM */
+  file->doc = xmlReadFile(file->name, NULL, 0);
+
+  if(file->doc == NULL){
+    printf("error: could not parse file %s\n", file->name);
+  }
+
+  /*Get the root element node */
+  root_node = xmlDocGetRootElement(file->doc);
+
+  /* child elements */
+  child = root_node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-clip-board\0",
+		     child->name,
+		     15)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-script-list\0",
+			   child->name,
+			   16)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-cluster\0",
+			   child->name,
+			   12)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-client\0",
+			   child->name,
+			   11)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-server\0",
+			   child->name,
+			   11)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-main\0",
+			   child->name,
+			   9)){
+	main = NULL;
+
+	ags_file_read_main(file,
+			   child,
+			   (GObject **) &main);
+      }else if(!xmlStrncmp("ags-embedded-audio-list\0",
+			   child->name,
+			   24)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-file-link-list\0",
+			   child->name,
+			   19)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp("ags-history\0",
+			   child->name,
+			   12)){
+	//TODO:JK: implement me
+      }
+    }
+  }
+
+  /* resolve */
+  ags_file_read_resolve(file);
+
+  /* start */
+  ags_file_read_start(file);
+
+  /*free the document */
+  xmlFreeDoc(file->doc);
+
+  /*
+   *Free the global variables that may
+   *have been allocated by the parser.
+   */
+  xmlCleanupParser();
 }
 
 void
@@ -512,7 +587,15 @@ ags_file_read(AgsFile *file)
 void
 ags_file_real_read_resolve(AgsFile *file)
 {
-  //TODO:JK: implement me
+  GList *list;
+
+  list = file->lookup;
+
+  while(list != NULL){
+    ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
+
+    list = list->next;
+  }
 }
 
 void
@@ -529,19 +612,7 @@ ags_file_read_resolve(AgsFile *file)
 void
 ags_file_real_read_start(AgsFile *file)
 {
-  pid_t pid;
-
-  pid = fork();
-
-  if(pid == 0){
-    /* child pid */
-
-    //TODO:JK: implement me
-  }else if(pid > 0){
-    /* parent pid */
-
-    //TODO:JK: implement me
-  }
+  //TODO:JK: implement me
 }
 
 void
