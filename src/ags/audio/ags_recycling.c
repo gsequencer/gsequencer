@@ -193,7 +193,7 @@ ags_recycling_set_property(GObject *gobject,
 
       devout = (AgsDevout *) g_value_get_object(value);
 
-      ags_recycling_set_devout(recycling, devout);
+      ags_recycling_set_devout(recycling, (GObject *) devout);
     }
     break;
   default:

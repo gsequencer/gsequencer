@@ -155,10 +155,6 @@ struct _AgsDevout
   GObject *main;
   
   GList *audio;
-
-  AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
-  AgsDevoutThread *devout_thread;
 };
 
 struct _AgsDevoutClass

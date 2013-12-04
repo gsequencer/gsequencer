@@ -19,13 +19,13 @@
 #include <ags/file/ags_file_sound.h>
 
 void
-ags_file_read_audio_loop(AgsFile *file, xmlNode *node, AgsAudioLoop *audio_loop)
+ags_file_read_audio_loop(AgsFile *file, xmlNode *node, AgsAudioLoop **audio_loop)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_file_write_audio_loop(AgsFile *file, xmlNode *parent, AgsAudioLoop **audio_loop)
+ags_file_write_audio_loop(AgsFile *file, xmlNode *parent, AgsAudioLoop *audio_loop)
 {
   //TODO:JK: implement me
 }

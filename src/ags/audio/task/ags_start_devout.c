@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_devout_thread.h>
 
@@ -143,8 +145,8 @@ ags_start_devout_launch(AgsTask *task)
 
   devout = start_devout->devout;
 
-  audio_loop = devout->audio_loop;
-  devout_thread = devout->devout_thread;
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop);
+  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
 
   /* append to AgsDevout */
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |

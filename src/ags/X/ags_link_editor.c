@@ -19,8 +19,14 @@
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_link_editor_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
 #include <ags/object/ags_applicable.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -214,7 +220,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, NULL);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->task_thread,
+      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->main)->main_loop)->task_thread),
 				  AGS_TASK(link_channel));
     }else{
       guint link_line;
@@ -232,7 +238,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
       link_channel = ags_link_channel_new(channel, link);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->task_thread,
+      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->main)->main_loop)->task_thread),
 				  AGS_TASK(link_channel));
     }
   }

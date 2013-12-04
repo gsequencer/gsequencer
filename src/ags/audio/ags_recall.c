@@ -546,7 +546,7 @@ ags_recall_set_property(GObject *gobject,
 	}
       }
 
-      recall->container = container;
+      recall->container = (GObject *) container;
     }
     break;
   case PROP_DEPENDENCY:

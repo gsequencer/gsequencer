@@ -18,6 +18,9 @@
 
 #include <ags/X/ags_pad_callbacks.h>
 
+#include <ags/main.h>
+
+#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -107,7 +110,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   AgsSetMuted *set_muted;
   GList *list, *tasks;
 
-  task_thread = AGS_DEVOUT(AGS_AUDIO(pad->channel->audio)->devout)->task_thread;
+  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(pad->channel->audio)->devout)->main)->main_loop)->task_thread);
 
   current = pad->channel;
   tasks = NULL;

@@ -29,6 +29,7 @@
 
 #include <ags/lib/ags_log.h>
 #include <ags/thread/ags_thread.h>
+#include <ags/thread/ags_thread_pool.h>
 #include <ags/server/ags_server.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/X/ags_window.h>
@@ -55,11 +56,11 @@ struct _AgsMain
   xmlrpc_env env;
 
   AgsThread *main_loop;
-  AgsThread *gui_loop;
+  AgsThreadPool *thread_pool;
 
   AgsServer *server;
 
-  AgsDevout *devout;
+  GList *devout;
 
   AgsWindow *window;
 
@@ -72,6 +73,9 @@ struct _AgsMainClass
 };
 
 GType ags_main_get_type();
+
+void ags_main_add_devout(AgsMain *main,
+			 AgsDevout *devout);
 
 void ags_main_quit(AgsMain *main);
 

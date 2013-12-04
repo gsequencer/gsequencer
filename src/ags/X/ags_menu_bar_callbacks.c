@@ -234,7 +234,7 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(panel)->audio);
-  ags_task_thread_append_task(window->devout->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -263,7 +263,7 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(mixer)->audio);
-  ags_task_thread_append_task(window->devout->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -294,7 +294,7 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(drum)->audio);
-  ags_task_thread_append_task(window->devout->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
   
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -328,7 +328,7 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(matrix)->audio);
-  ags_task_thread_append_task(window->devout->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -357,7 +357,7 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(synth)->audio);
-  ags_task_thread_append_task(window->devout->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -386,7 +386,7 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(ffplayer)->audio);
-  ags_task_thread_append_task(window->devout->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,

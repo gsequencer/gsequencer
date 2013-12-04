@@ -148,7 +148,7 @@ ags_append_audio_launch(AgsTask *task)
   audio_loop->play_audio_ref += 1;
 
   /* add to server registry */
-  server = AGS_MAIN(audio_loop->main);
+  server = AGS_MAIN(audio_loop->main)->server;
 
   if((AGS_SERVER_RUNNING & (server->flags)) != 0){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->devout_play->source));

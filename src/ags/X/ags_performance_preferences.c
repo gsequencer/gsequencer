@@ -102,7 +102,7 @@ ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *
 void
 ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences)
 {
-  performance_preferences->super_threaded = gtk_check_button_new_with_label("Super Threaded\0");
+  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label("Super Threaded\0");
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->super_threaded),
 		     FALSE, FALSE,

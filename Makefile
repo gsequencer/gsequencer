@@ -113,9 +113,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
 	ags-ags_file_lookup.$(OBJEXT) ags-ags_file_util.$(OBJEXT) \
-	ags-ags_file_sound.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
-	ags-ags_file_link.$(OBJEXT) ags-ags_embedded_audio.$(OBJEXT) \
-	ags-ags_timestamp.$(OBJEXT) \
+	ags-ags_file_thread.$(OBJEXT) ags-ags_file_sound.$(OBJEXT) \
+	ags-ags_file_gui.$(OBJEXT) ags-ags_file_link.$(OBJEXT) \
+	ags-ags_embedded_audio.$(OBJEXT) ags-ags_timestamp.$(OBJEXT) \
 	ags-ags_timestamp_factory.$(OBJEXT) \
 	ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
@@ -642,6 +642,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/file/ags_file_lookup.h \
 	./src/ags/file/ags_file_lookup.c \
 	./src/ags/file/ags_file_util.h ./src/ags/file/ags_file_util.c \
+	./src/ags/audio/ags_file_thread.h \
+	./src/ags/file/ags_file_thread.c \
 	./src/ags/audio/ags_file_sound.h \
 	./src/ags/file/ags_file_sound.c ./src/ags/audio/ags_file_gui.h \
 	./src/ags/file/ags_file_gui.c ./src/ags/file/ags_file_link.h \
@@ -1397,6 +1399,7 @@ include ./$(DEPDIR)/ags-ags_file_lookup.Po
 include ./$(DEPDIR)/ags-ags_file_selection.Po
 include ./$(DEPDIR)/ags-ags_file_selection_callbacks.Po
 include ./$(DEPDIR)/ags-ags_file_sound.Po
+include ./$(DEPDIR)/ags-ags_file_thread.Po
 include ./$(DEPDIR)/ags-ags_file_util.Po
 include ./$(DEPDIR)/ags-ags_free_selection.Po
 include ./$(DEPDIR)/ags-ags_garbage_collector.Po
@@ -1751,6 +1754,20 @@ ags-ags_file_util.obj: ./src/ags/file/ags_file_util.c
 #	$(AM_V_CC)source='./src/ags/file/ags_file_util.c' object='ags-ags_file_util.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_util.obj `if test -f './src/ags/file/ags_file_util.c'; then $(CYGPATH_W) './src/ags/file/ags_file_util.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_util.c'; fi`
+
+ags-ags_file_thread.o: ./src/ags/file/ags_file_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_file_thread.Tpo -c -o ags-ags_file_thread.o `test -f './src/ags/file/ags_file_thread.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_file_thread.Tpo $(DEPDIR)/ags-ags_file_thread.Po
+#	$(AM_V_CC)source='./src/ags/file/ags_file_thread.c' object='ags-ags_file_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_thread.o `test -f './src/ags/file/ags_file_thread.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_thread.c
+
+ags-ags_file_thread.obj: ./src/ags/file/ags_file_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_thread.obj -MD -MP -MF $(DEPDIR)/ags-ags_file_thread.Tpo -c -o ags-ags_file_thread.obj `if test -f './src/ags/file/ags_file_thread.c'; then $(CYGPATH_W) './src/ags/file/ags_file_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_file_thread.Tpo $(DEPDIR)/ags-ags_file_thread.Po
+#	$(AM_V_CC)source='./src/ags/file/ags_file_thread.c' object='ags-ags_file_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_thread.obj `if test -f './src/ags/file/ags_file_thread.c'; then $(CYGPATH_W) './src/ags/file/ags_file_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_thread.c'; fi`
 
 ags-ags_file_sound.o: ./src/ags/file/ags_file_sound.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_sound.o -MD -MP -MF $(DEPDIR)/ags-ags_file_sound.Tpo -c -o ags-ags_file_sound.o `test -f './src/ags/file/ags_file_sound.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_sound.c

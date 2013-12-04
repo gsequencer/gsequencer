@@ -27,6 +27,9 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_marshal.h>
 
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -233,7 +236,7 @@ ags_audio_set_property(GObject *gobject,
 
       devout = (AgsDevout *) g_value_get_object(value);
 
-      ags_audio_set_devout(audio, devout);
+      ags_audio_set_devout(audio, (GObject *) devout);
     }
     break;
   default:
@@ -546,7 +549,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(AGS_DEVOUT(audio->devout)->task_thread,
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->main)->main_loop)->task_thread),
 				AGS_TASK(audio_set_recycling));
   }
 
@@ -636,7 +639,7 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(AGS_DEVOUT(audio->devout)->task_thread,
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->main)->main_loop)->task_thread),
 				AGS_TASK(audio_set_recycling));
   }
 

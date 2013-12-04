@@ -323,11 +323,6 @@ ags_devout_init(AgsDevout *devout)
 
   /* all AgsAudio */
   devout->audio = NULL;
-
-  /* threads */
-  devout->audio_loop = NULL;
-  devout->task_thread = NULL;
-  devout->devout_thread = NULL;
 }
 
 void
@@ -483,11 +478,6 @@ ags_devout_finalize(GObject *gobject)
 
   /* free AgsAttack */
   free(devout->attack);
-
-  /*  */
-  g_object_unref(G_OBJECT(devout->audio_loop));
-  g_object_unref(G_OBJECT(devout->task_thread));
-  g_object_unref(G_OBJECT(devout->devout_thread));
 
   /* call parent */
   G_OBJECT_CLASS(ags_devout_parent_class)->finalize(gobject);
@@ -753,11 +743,7 @@ ags_devout_alsa_init(AgsDevout *devout,
 void
 ags_devout_alsa_play(AgsDevout *devout,
 		     GError **error)
-{
-  AgsDevoutThread *devout_thread;
- 
-  devout_thread = devout->devout_thread;
-    
+{    
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -962,7 +948,10 @@ ags_devout_new(GObject *main)
 
   devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
   
-  devout->main = main;
+  if(main != NULL){
+    g_object_ref(G_OBJECT(main));
+    devout->main = main;
+  }
 
   return(devout);
 }

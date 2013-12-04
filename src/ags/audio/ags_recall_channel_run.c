@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/main.h>
+
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>
@@ -25,10 +27,14 @@
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
@@ -625,7 +631,7 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
     list = recall_container->recall_channel;
 
     if((list = ags_recall_find_provider(list,
-					AGS_RECALL_CHANNEL_RUN(packable)->source)) != NULL){
+					G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->source))) != NULL){
       g_object_set(G_OBJECT(packable),
 		   "recall_channel\0", AGS_RECALL_CHANNEL(list->data),
 		   NULL);
@@ -745,7 +751,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
     }else{
       AgsAudio *audio;
       AgsChannel *output;
-      AgsGroupId *group_id;
+      AgsGroupId group_id;
 
       audio = AGS_AUDIO(copy->source->audio);
 
@@ -879,7 +885,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
-	  ags_task_thread_append_task(devout->task_thread,
+	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
 				      (AgsTask *) cancel_recall);
 	}
 
@@ -947,7 +953,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
-	  ags_task_thread_append_task(devout->task_thread,
+	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
 				      (AgsTask *) cancel_recall);
 	}
 

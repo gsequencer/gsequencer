@@ -23,9 +23,8 @@
 
 #include <ags/main.h>
 
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_pad.h>
-#include <ags/X/ags_navigation.h>
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -59,6 +58,10 @@
 #include <ags/audio/recall/ags_play_audio_signal.h>
 
 #include <ags/audio/file/ags_audio_file.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_navigation.h>
 
 #include <stdlib.h>
 #include <math.h>
@@ -140,7 +143,7 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
-  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(toggle_led));
 }
 
@@ -219,9 +222,9 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
   devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
-  audio_loop = devout->audio_loop;
-  task_thread = devout->task_thread;
-  devout_thread = devout->devout_thread;
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop);
+  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
     AgsInitAudio *init_audio;
@@ -326,7 +329,7 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				  tact);
 
-  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(apply_tact));
 }
 
@@ -344,7 +347,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 							  length);
 
-  ags_task_thread_append_task(AGS_DEVOUT(window->devout)->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
 			      AGS_TASK(apply_sequencer_length));
 }
 
@@ -484,7 +487,7 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   }
 
   /* append AgsTogglePatternBit */
-  ags_task_thread_append_tasks(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->task_thread,
+  ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->main)->main_loop)->task_thread),
 			       tasks);
 }
 

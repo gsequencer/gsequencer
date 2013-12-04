@@ -770,7 +770,10 @@ ags_audio_loop_new(GObject *devout, GObject *main)
 					     "devout\0", devout,
 					     NULL);
 
-  audio_loop->main = main;
+  if(main != NULL){
+    g_object_ref(G_OBJECT(main));
+    audio_loop->main = main;
+  }
 
   return(audio_loop);
 }

@@ -18,8 +18,14 @@
 
 #include <ags/audio/recall/ags_stream_recycling.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
 
@@ -207,7 +213,7 @@ ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall, AgsStreamRecycl
   remove_audio_signal = ags_remove_audio_signal_new(AGS_RECALL_RECYCLING(stream_recycling)->source,
 						    AGS_RECALL_AUDIO_SIGNAL(recall)->source);
 
-  ags_task_thread_append_task(AGS_DEVOUT(recall->devout)->task_thread,
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(recall->devout)->main)->main_loop)->task_thread),
 			      AGS_TASK(remove_audio_signal));
 }
 

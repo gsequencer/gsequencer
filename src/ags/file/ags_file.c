@@ -17,10 +17,14 @@
  */
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_thread.h>
+#include <ags/file/ags_file_sound.h>
+#include <ags/file/ags_file_gui.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 
 #include <openssl/md5.h>
 
@@ -522,7 +526,19 @@ ags_file_read_resolve(AgsFile *file)
 void
 ags_file_real_read_start(AgsFile *file)
 {
-  //TODO:JK: implement me
+  pid_t pid;
+
+  pid = fork();
+
+  if(pid == 0){
+    /* child pid */
+
+    //TODO:JK: implement me
+  }else if(pid > 0){
+    /* parent pid */
+
+    //TODO:JK: implement me
+  }
 }
 
 void
@@ -551,7 +567,45 @@ ags_file_write_server(AgsFile *file, xmlNode *parent, GObject *server)
 void
 ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
 {
-  //TODO:JK: implement me
+  AgsMain *gobject;
+  xmlNode *child;
+
+  if(*main == NULL){
+    gobject = g_object_new(AGS_TYPE_WINDOW,
+			   NULL);
+
+    *main = (GObject *) gobject;
+  }else{
+    gobject = (AgsMain *) *main;
+  }
+
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-audio-loop\0",
+		     child->name,
+		     15)){
+	ags_file_read_audio_loop(file,
+				 child,
+				 &gobject->main_loop);
+      }else if(!xmlStrncmp("ags-devout\0",
+			   child->name,
+			   11)){
+	ags_file_read_devout_list(file,
+				  child,
+				  &gobject->devout);
+      }else if(!xmlStrncmp("ags-window\0",
+			   child->name,
+			   11)){
+	ags_file_read_window(file,
+			     child,
+			     &gobject->window);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 void

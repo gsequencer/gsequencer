@@ -18,6 +18,11 @@
 
 #include <ags/X/ags_editor_callbacks.h>
 
+#include <ags/main.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/task/ags_scroll_on_play.h>
 
 #include <ags/X/ags_window.h>
@@ -914,8 +919,8 @@ ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor)
   AgsTaskThread *task_thread;
   AgsScrollOnPlay *scroll_on_play;
 
-  task_thread = devout->task_thread;
+  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread);
 
-  scroll_on_play = ags_scroll_on_play_new(editor);  
+  scroll_on_play = ags_scroll_on_play_new((GtkWidget *) editor);  
   ags_task_thread_append_task(task_thread, AGS_TASK(scroll_on_play));
 }
