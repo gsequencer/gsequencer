@@ -1414,8 +1414,6 @@ ags_thread_loop(void *ptr)
   void ags_thread_loop_sync(AgsThread *thread){
     guint tic;
 
-    ags_thread_lock(main_loop);
-
     if(!ags_thread_is_tree_ready(thread)){
       g_atomic_int_or(&(thread->flags),
 		      AGS_THREAD_WAIT_0);
@@ -1500,6 +1498,7 @@ ags_thread_loop(void *ptr)
     }
 
     /* run in hierarchy */
+    ags_thread_lock(main_loop);
     ags_thread_lock(thread);
 
     ags_thread_loop_sync(thread);

@@ -27,8 +27,6 @@
 #include <math.h>
 #include <unistd.h>
 
-#include <openssl/md5.h>
-
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
