@@ -919,7 +919,7 @@ ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor)
   AgsTaskThread *task_thread;
   AgsScrollOnPlay *scroll_on_play;
 
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread);
+  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
 
   scroll_on_play = ags_scroll_on_play_new((GtkWidget *) editor);  
   ags_task_thread_append_task(task_thread, AGS_TASK(scroll_on_play));

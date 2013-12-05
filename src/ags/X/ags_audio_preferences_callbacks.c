@@ -51,7 +51,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 						gtk_combo_box_get_active_text(audio_preferences->card));
 
   /* append AgsSetOutputDevice */
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_output_device));
   
   /* reset dialog */
@@ -75,7 +75,7 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
 						  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetAudioChannels */
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_audio_channels));
 }
 
@@ -96,7 +96,7 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_samplerate));
 }
 
@@ -117,6 +117,6 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(set_buffer_size));
 }

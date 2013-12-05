@@ -152,7 +152,7 @@ struct _AgsDevout
     }alsa;
   }out;
 
-  GObject *main;
+  GObject *ags_main;
   
   GList *audio;
 };
@@ -202,6 +202,6 @@ void ags_devout_tic(AgsDevout *devout);
 
 void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
 
-AgsDevout* ags_devout_new(GObject *main);
+AgsDevout* ags_devout_new(GObject *ags_main);
 
 #endif /*__AGS_DEVOUT_H__*/

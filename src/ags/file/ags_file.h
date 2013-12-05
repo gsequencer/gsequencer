@@ -60,7 +60,7 @@ struct _AgsFile
 
   guint flags;
 
-  gchar *name;
+  gchar *filename;
   gchar *encoding;
   gchar *dtd;
 
@@ -73,7 +73,7 @@ struct _AgsFile
   GList *lookup;
   GList *launch;
 
-  GObject *main;
+  GObject *ags_main;
 
   GObject *clipboard;
   GList *property;
@@ -102,7 +102,7 @@ struct _AgsFileClass
 
 GType ags_file_get_type(void);
 
-gchar* ags_file_str2md5(gchar *content, guint strlen, unsigned long len);
+gchar* ags_file_str2md5(gchar *content, guint strlen);
 
 void ags_file_add_id_ref(AgsFile *file, GObject *id_ref);
 

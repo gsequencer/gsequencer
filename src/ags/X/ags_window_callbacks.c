@@ -49,7 +49,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     AgsFile *file;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->main,
+				    "main\0", window->ags_main,
 				    "filename\0", g_strdup(window->name),
 				    NULL);
     ags_file_write(file);
@@ -57,7 +57,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(AGS_MAIN(window->main));
+    ags_main_quit(AGS_MAIN(window->ags_main));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }

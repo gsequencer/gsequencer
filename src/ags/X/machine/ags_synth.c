@@ -465,7 +465,7 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
 
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 				AGS_TASK(apply_synth));
 
     channel = channel->next;
@@ -493,7 +493,7 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
 
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 				AGS_TASK(apply_synth));
 
     list_oscillator = list_oscillator->next;

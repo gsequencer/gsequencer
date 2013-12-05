@@ -411,7 +411,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 	link_channel = ags_link_channel_new(channel, NULL);
 
 	/* append AgsLinkChannel */
-	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->main)->main_loop)->task_thread),
+	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
 				    AGS_TASK(link_channel));
 
 	channel = channel->next;
@@ -432,7 +432,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 	link_channel = ags_link_channel_new(channel, link);
 
 	/* append AgsLinkChannel */
-	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->main)->main_loop)->task_thread),
+	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
 				    AGS_TASK(link_channel));
 
 	channel = channel->next;

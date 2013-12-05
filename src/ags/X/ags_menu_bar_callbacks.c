@@ -48,9 +48,6 @@
 void ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 void ags_menu_bar_open_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 
-void ags_menu_bar_save_as_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
-void ags_menu_bar_save_as_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
-
 gboolean
 ags_menu_bar_destroy_callback(GtkObject *object, AgsMenuBar *menu_bar)
 {
@@ -91,8 +88,8 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
   file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_DIALOG);
 
-  file = ags_file_new(window->main);
-  file->name = g_strdup(gtk_file_selection_get_filename(file_selection));
+  file = ags_file_new(window->ags_main);
+  file->filename = g_strdup(gtk_file_selection_get_filename(file_selection));
   ags_file_read(file);
 
   g_object_unref(G_OBJECT(file));
@@ -118,7 +115,7 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   //TODO:JK: revise me
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", window->main,
+				  "main\0", window->ags_main,
 				  "filename\0", g_strdup(window->name),
 				  NULL);
   ags_file_write(file);
@@ -128,47 +125,39 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  GtkFileSelection *file_selection;
-
-  file_selection = (GtkFileSelection *) gtk_file_selection_new(g_strdup("save file as\0"));
-  gtk_file_selection_set_select_multiple(file_selection, FALSE);
-
-  gtk_widget_show_all((GtkWidget *) file_selection);
-
-  g_signal_connect((GObject *) file_selection->ok_button, "clicked\0",
-		   G_CALLBACK(ags_menu_bar_save_as_ok_callback), (gpointer) menu_bar);
-  g_signal_connect((GObject *) file_selection->cancel_button, "clicked\0",
-		   G_CALLBACK(ags_menu_bar_save_as_cancel_callback), (gpointer) menu_bar);
-}
-
-void
-ags_menu_bar_save_as_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
-{
-  GtkFileSelection *file_selection;
   AgsWindow *window;
-  AgsFile *file;
+  GtkFileChooserDialog *file_chooser;
+  gint response;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
-  file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_FILE_SELECTION);
 
-  //TODO:JK: revise me
-  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", window->main,
-				  "filename\0", g_strdup(gtk_file_selection_get_filename((GtkFileSelection *) file_selection)),
-				  NULL);
-  ags_file_write(file);
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("save file as\0"),
+								      (GtkWindow *) window,
+								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
+								      NULL);
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
+  gtk_widget_show_all((GtkWidget *) file_chooser);
 
-  g_object_unref(G_OBJECT(file));
-  gtk_widget_destroy((GtkWidget *) file_selection);
-}
+  response = gtk_dialog_run(GTK_DIALOG(file_chooser));
 
-void
-ags_menu_bar_save_as_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
-{
-  GtkFileSelection *file_selection;
+  if(response == GTK_RESPONSE_ACCEPT){
+    AgsFile *file;
+    gchar *filename;
 
-  file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_FILE_SELECTION);
-  gtk_widget_destroy((GtkWidget *) file_selection);
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
+
+    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				    "main\0", window->ags_main,
+				    "filename\0", filename,
+				    NULL);
+    ags_file_write(file);
+  
+    g_object_unref(G_OBJECT(file));
+  }
+
+  gtk_widget_destroy((GtkWidget *) file_chooser);
 }
 
 void
@@ -199,7 +188,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     //TODO:JK: revise me
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->main,
+				    "main\0", window->ags_main,
 				    "filename\0", g_strdup(window->name),
 				    NULL);
 
@@ -208,7 +197,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(AGS_MAIN(window->main));
+    ags_main_quit(AGS_MAIN(window->ags_main));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }
@@ -234,7 +223,7 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(panel)->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -263,7 +252,7 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(mixer)->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -294,7 +283,7 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(drum)->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
   
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -328,7 +317,7 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(matrix)->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -357,7 +346,7 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(synth)->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,
@@ -386,7 +375,7 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   add_audio = ags_add_audio_new(window->devout,
 				AGS_MACHINE(ffplayer)->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
 
   gtk_box_pack_start((GtkBox *) window->machines,

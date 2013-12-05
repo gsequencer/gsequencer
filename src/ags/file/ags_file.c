@@ -47,7 +47,7 @@
 #include <ags/file/ags_file_gui.h>
 
 void ags_file_class_init(AgsFileClass *file);
-void ags_file_init (AgsFile *file);
+void ags_file_init(AgsFile *file);
 void ags_file_set_property(GObject *gobject,
 			   guint prop_id,
 			   const GValue *value,
@@ -233,7 +233,7 @@ ags_file_init(AgsFile *file)
 {
   file->flags = 0;
 
-  file->name = NULL;
+  file->filename = "unnamed\0";
   file->encoding = AGS_FILE_DEFAULT_ENCODING;
   file->dtd = AGS_FILE_DEFAULT_DTD;
 
@@ -245,7 +245,7 @@ ags_file_init(AgsFile *file)
   file->id_refs = NULL;
   file->lookup = NULL;
 
-  file->main = NULL;
+  file->ags_main = NULL;
 
   file->clipboard = NULL;
   file->property = NULL;
@@ -277,7 +277,7 @@ ags_file_set_property(GObject *gobject,
 
       filename = g_value_get_string(value);
 
-      file->name = filename;
+      file->filename = filename;
     }
     break;
   case PROP_ENCODING:
@@ -309,23 +309,23 @@ ags_file_set_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      GObject *main;
+      GObject *ags_main;
 
-      main = g_value_get_object(value);
+      ags_main = g_value_get_object(value);
 
-      if(file->main == main){
+      if(file->ags_main == ags_main){
 	return;
       }
 
-      if(file->main != NULL){
-	g_object_unref(file->main);
+      if(file->ags_main != NULL){
+	g_object_unref(file->ags_main);
       }
 
-      if(main != NULL){
-	g_object_ref(main);
+      if(ags_main != NULL){
+	g_object_ref(ags_main);
       }
 
-      file->main = main;
+      file->ags_main = ags_main;
     }
     break;
   default:
@@ -347,7 +347,7 @@ ags_file_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      g_value_set_string(value, file->name);
+      g_value_set_string(value, file->filename);
     }
     break;
   case PROP_ENCODING:
@@ -367,7 +367,7 @@ ags_file_get_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      g_value_set_object(value, file->main);
+      g_value_set_object(value, file->ags_main);
     }
     break;
   default:
@@ -408,38 +408,16 @@ ags_file_finalize(GObject *gobject)
 }
 
 gchar*
-ags_file_str2md5(gchar *content, guint strlen, unsigned long len)
+ags_file_str2md5(gchar *content, guint strlen)
 {
-  gchar *checksum;
-  MD5_CTX c;
-  unsigned char *digest;
-  guint checksumlen;
-  guint i, i_stop;
+  GChecksum *checksum;
+  gchar *str;
 
-  checksumlen = sqrt(len / 2);
-  checksum = (gchar *) malloc((checksumlen + 1) * sizeof(gchar));
+  str = g_compute_checksum_for_string(G_CHECKSUM_MD5,
+				      content,
+				      strlen);
 
-  MD5_Init(&c);
-
-  i_stop = (guint) floor((double) strlen / len);
-
-  for(i = 0; i <= i_stop; i++){
-    if(i < i_stop){
-      MD5_Update(&c, &(content[i * len]), len);
-    }else{
-      MD5_Update(&c, &(content[i * len]), strlen % len);
-    }
-  }
-
-  MD5_Final(digest, &c);
-
-  checksum[checksumlen] = '\0';
-
-  for(i = 0; i < checksumlen; i++){
-    sprintf(&(checksum[i * 2]), "%02x", (unsigned int) digest[i]);
-  }
-
-  return(checksum);
+  return(str);
 }
 
 void
@@ -552,12 +530,14 @@ ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 void
 ags_file_real_write(AgsFile *file)
 {
-  AgsMain *main;
+  AgsMain *ags_main;
   xmlNode *root_node;
   GList *list;
 
-  file->doc = xmlNewDoc(BAD_CAST "1.0\0");
-  root_node = xmlNewNode(NULL, BAD_CAST "ags\0");
+  printf("debug: %s\n\0", file->filename);
+
+  file->doc = xmlNewDoc("1.0\0");
+  root_node = xmlNewNode(AGS_FILE_DEFAULT_NS, "ags\0");
   xmlDocSetRootElement(file->doc, root_node);
 
   /* write clip board */
@@ -578,7 +558,7 @@ ags_file_real_write(AgsFile *file)
   /* write main */
   ags_file_write_main(file,
 		      root_node,
-		      file->main);
+		      file->ags_main);
 
   /* write embedded audio */
   //TODO:JK: implement me
@@ -589,13 +569,16 @@ ags_file_real_write(AgsFile *file)
   /* write history */
   //TODO:JK: implement me
 
+  printf("debug: %s\n\0", file->filename);
+
   /* resolve */
   ags_file_write_resolve(file);
 
   /* 
    * Dumping document to file
    */
-  xmlSaveFormatFileEnc(file->name, file->doc, "UTF-8\0", 1);
+  printf("name: %s\n\0", file->filename);
+  xmlSaveFormatFileEnc(file->filename, file->doc, "UTF-8\0", 1);
 
   /*free the document */
   xmlFreeDoc(file->doc);
@@ -652,14 +635,14 @@ ags_file_write_resolve(AgsFile *file)
 void
 ags_file_real_read(AgsFile *file)
 {
-  AgsMain *main;
+  AgsMain *ags_main;
   xmlNode *root_node, *child;
 
   /* parse the file and get the DOM */
-  file->doc = xmlReadFile(file->name, NULL, 0);
+  file->doc = xmlReadFile(file->filename, NULL, 0);
 
   if(file->doc == NULL){
-    printf("error: could not parse file %s\n", file->name);
+    printf("error: could not parse file %s\n", file->filename);
   }
 
   /*Get the root element node */
@@ -693,11 +676,11 @@ ags_file_real_read(AgsFile *file)
       }else if(!xmlStrncmp("ags-main\0",
 			   child->name,
 			   9)){
-	main = NULL;
+	ags_main = NULL;
 
 	ags_file_read_main(file,
 			   child,
-			   (GObject **) &main);
+			   (GObject **) &ags_main);
       }else if(!xmlStrncmp("ags-embedded-audio-list\0",
 			   child->name,
 			   24)){
@@ -796,23 +779,23 @@ ags_file_write_server(AgsFile *file, xmlNode *parent, GObject *server)
 }
 
 void
-ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
+ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 {
   AgsMain *gobject;
   xmlNode *child;
 
-  if(*main == NULL){
+  if(*ags_main == NULL){
     gobject = g_object_new(AGS_TYPE_WINDOW,
 			   NULL);
 
-    *main = (GObject *) gobject;
+    *ags_main = (GObject *) gobject;
   }else{
-    gobject = (AgsMain *) *main;
+    gobject = (AgsMain *) *ags_main;
   }
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->main,
+				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
@@ -858,7 +841,7 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main)
 }
 
 void
-ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main)
+ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 {
   xmlNode *node, *child;
   gchar *id;
@@ -867,10 +850,10 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->main,
+				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
-				   "reference\0", main,
+				   "reference\0", ags_main,
 				   NULL));
 
   node = xmlNewNode(AGS_FILE_DEFAULT_NS,
@@ -882,24 +865,28 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main)
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
-	     AGS_MAIN(main)->version);
+	     AGS_MAIN(ags_main)->version);
 
   xmlNewProp(node,
 	     AGS_FILE_BUILD_ID_PROP,
-	     AGS_MAIN(main)->build_id);
+	     AGS_MAIN(ags_main)->build_id);
 
   /* ags-audio-list */
   ags_file_write_audio_loop(file,
 			    node,
-			    AGS_AUDIO_LOOP(AGS_MAIN(main)->main_loop));
+			    AGS_AUDIO_LOOP(AGS_MAIN(ags_main)->main_loop));
 
   ags_file_write_devout_list(file,
 			     node,
-			     AGS_MAIN(main)->devout);
+			     AGS_MAIN(ags_main)->devout);
 
   ags_file_write_window(file,
 			node,
-			AGS_MAIN(main)->window);
+			AGS_MAIN(ags_main)->window);
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
 }
 
 AgsFile*

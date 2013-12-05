@@ -290,7 +290,7 @@ ags_channel_get_property(GObject *gobject,
 void
 ags_channel_add_to_registry(AgsConnectable *connectable)
 {
-  AgsMain *main;
+  AgsMain *ags_main;
   AgsServer *server;
   AgsChannel *channel;
   AgsRegistryEntry *entry;
@@ -298,9 +298,9 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
   
   channel = AGS_CHANNEL(connectable);
 
-  main = AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->main);
+  ags_main = AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main);
 
-  server = main->server;
+  server = ags_main->server;
 
   entry = ags_registry_entry_alloc(server->registry);
   g_value_set_object(&(entry->entry),

@@ -885,7 +885,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
-	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 				      (AgsTask *) cancel_recall);
 	}
 
@@ -953,7 +953,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	  cancel_recall = ags_cancel_recall_new(recall,
 						NULL);
 
-	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 				      (AgsTask *) cancel_recall);
 	}
 

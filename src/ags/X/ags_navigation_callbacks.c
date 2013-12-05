@@ -96,7 +96,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   apply_bpm = ags_apply_bpm_new(G_OBJECT(window->devout),
 				navigation->bpm->adjustment->value);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(apply_bpm));
 }
 
@@ -147,7 +147,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       list = g_list_prepend(list, init_audio);
     
       /* create append task */
-      append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->main)->main_loop),
+      append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
 					  machine->audio->devout_play);
       
       list = g_list_prepend(list, append_audio);
@@ -163,7 +163,7 @@ ags_navigation_play_callback(GtkWidget *widget,
     list = g_list_reverse(list);
 
     /* append AgsStartDevout */
-    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->main)->main_loop)->task_thread),
+    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 				 list);
   }  
 }
@@ -240,7 +240,7 @@ ags_navigation_tic_callback(AgsDevout *devout,
   AgsTaskThread *task_thread;
   AgsDisplayTact *display_tact;
 
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread);
+  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
 
   display_tact = ags_display_tact_new((GtkWidget *) navigation);
   ags_task_thread_append_task(task_thread, AGS_TASK(display_tact));

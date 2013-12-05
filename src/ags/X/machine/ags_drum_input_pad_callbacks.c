@@ -176,7 +176,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
       devout_play->source = G_OBJECT(play_audio_signal);
 
-      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->main)->main_loop),
+      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->ags_main)->main_loop),
 					    devout_play);
     
       tasks = g_list_prepend(tasks, append_recall);
@@ -196,7 +196,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
       devout_play->source = G_OBJECT(stream_audio_signal);
 
-      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->main)->main_loop),
+      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->ags_main)->main_loop),
 					    devout_play);
     
       tasks = g_list_prepend(tasks, append_recall);
@@ -213,7 +213,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     start_devout = ags_start_devout_new(devout);
     tasks = g_list_prepend(tasks, start_devout);
 
-    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop)->task_thread),
+    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 				 tasks);
   }else{
     if((AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE & (drum_input_pad->flags)) == 0){
@@ -298,7 +298,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 						  (guint) spin_button->adjustment->value, 1);
     }
 
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(AGS_MACHINE(drum)->audio)->devout)->main)->main_loop)->task_thread),
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(AGS_MACHINE(drum)->audio)->devout)->ags_main)->main_loop)->task_thread),
 									AGS_TASK(open_single_file));
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
@@ -330,7 +330,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
   devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->main)->main_loop);
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
   devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
 

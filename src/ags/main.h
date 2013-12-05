@@ -45,7 +45,7 @@
 #define AGS_BUILD_ID "CEST 04-12-2013 03:07\0"
 
 #define __AGS_DEBUG__
-#define AGS_PRIORITY (0)
+#define AGS_PRIORITY (49)
 
 typedef struct _AgsMain AgsMain;
 typedef struct _AgsMainClass AgsMainClass;

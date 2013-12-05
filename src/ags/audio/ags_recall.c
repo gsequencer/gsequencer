@@ -642,7 +642,7 @@ ags_recall_get_property(GObject *gobject,
 void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
-  AgsMain *main;
+  AgsMain *ags_main;
   AgsServer *server;
   AgsRecall *recall;
   AgsRegistryEntry *entry;
@@ -650,9 +650,9 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
   
   recall = AGS_RECALL(connectable);
 
-  main = AGS_MAIN(AGS_DEVOUT(recall->devout)->main);
+  ags_main = AGS_MAIN(AGS_DEVOUT(recall->devout)->ags_main);
 
-  server = main->server;
+  server = ags_main->server;
 
   entry = ags_registry_entry_alloc(server->registry);
   g_value_set_object(&(entry->entry),

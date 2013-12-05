@@ -148,7 +148,7 @@ ags_window_init(AgsWindow *window)
   	       "icon\0", gdk_pixbuf_new_from_file("./doc/images/jumper.png\0", &error),
   	       NULL);
 
-  window->main = NULL;
+  window->ags_main = NULL;
   window->devout = NULL;
 
   window->name = g_strdup("unnamed\0");
@@ -401,13 +401,13 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
 }
 
 AgsWindow*
-ags_window_new(GObject *main)
+ags_window_new(GObject *ags_main)
 {
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW, NULL);
 
-  window->main = main;
+  window->ags_main = ags_main;
 
   return(window);
 }

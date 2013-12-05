@@ -45,9 +45,9 @@
 
 #include "config.h"
 
-void ags_main_class_init(AgsMainClass *main);
+void ags_main_class_init(AgsMainClass *ags_main);
 void ags_main_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_main_init(AgsMain *main);
+void ags_main_init(AgsMain *ags_main);
 void ags_main_connect(AgsConnectable *connectable);
 void ags_main_disconnect(AgsConnectable *connectable);
 void ags_main_finalize(GObject *gobject);
@@ -101,14 +101,14 @@ ags_main_get_type()
 }
 
 void
-ags_main_class_init(AgsMainClass *main)
+ags_main_class_init(AgsMainClass *ags_main)
 {
   GObjectClass *gobject;
 
-  ags_main_parent_class = g_type_class_peek_parent(main);
+  ags_main_parent_class = g_type_class_peek_parent(ags_main);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) main;
+  gobject = (GObjectClass *) ags_main;
 
   gobject->finalize = ags_main_finalize;
 }
@@ -121,14 +121,14 @@ ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
-ags_main_init(AgsMain *main)
+ags_main_init(AgsMain *ags_main)
 {
-  main->version = AGS_VERSION;
-  main->build_id = AGS_BUILD_ID;
+  ags_main->version = AGS_VERSION;
+  ags_main->build_id = AGS_BUILD_ID;
 
-  main->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-				      "file\0", stdout,
-				      NULL);
+  ags_main->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
+					  "file\0", stdout,
+					  NULL);
   ags_colors_alloc();
 
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
@@ -149,9 +149,9 @@ ags_main_disconnect(AgsConnectable *connectable)
 void
 ags_main_finalize(GObject *gobject)
 {
-  AgsMain *main;
+  AgsMain *ags_main;
 
-  main = AGS_MAIN(gobject);
+  ags_main = AGS_MAIN(gobject);
 
   G_OBJECT_CLASS(ags_main_parent_class)->finalize(gobject);
 }
@@ -357,7 +357,7 @@ ags_colors_alloc()
 }
 
 void
-ags_main_add_devout(AgsMain *main,
+ags_main_add_devout(AgsMain *ags_main,
 		    AgsDevout *devout)
 {
   if(devout == NULL){
@@ -365,31 +365,31 @@ ags_main_add_devout(AgsMain *main,
   }
 
   g_object_ref(G_OBJECT(devout));
-  main->devout = g_list_prepend(main->devout,
-				devout);
+  ags_main->devout = g_list_prepend(ags_main->devout,
+				    devout);
 }
 
 void
-ags_main_quit(AgsMain *main)
+ags_main_quit(AgsMain *ags_main)
 {
-  ags_thread_stop(AGS_AUDIO_LOOP(main->main_loop)->gui_thread);
+  ags_thread_stop(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread);
 }
 
 AgsMain*
 ags_main_new()
 {
-  AgsMain *main;
+  AgsMain *ags_main;
 
-  main = (AgsMain *) g_object_new(AGS_TYPE_MAIN,
-				  NULL);
+  ags_main = (AgsMain *) g_object_new(AGS_TYPE_MAIN,
+				      NULL);
 
-  return(main);
+  return(ags_main);
 }
 
 int
 main(int argc, char **argv)
 {
-  AgsMain *main;
+  AgsMain *ags_main;
   AgsDevout *devout;
   AgsWindow *window;
   AgsGuiThread *gui_thread;
@@ -428,17 +428,17 @@ main(int argc, char **argv)
   if(!single_thread){
     AbyssInit(&error);
 
-    main = ags_main_new();
-    xmlrpc_env_init(&(main->env));
+    ags_main = ags_main_new();
+    xmlrpc_env_init(&(ags_main->env));
 
     /* AgsDevout */
-    devout = ags_devout_new((GObject *) main);
-    ags_main_add_devout(main,
+    devout = ags_devout_new((GObject *) ags_main);
+    ags_main_add_devout(ags_main,
 			devout);
 
     /* AgsWindow */
-    main->window =
-      window = ags_window_new((GObject *) main);
+    ags_main->window =
+      window = ags_window_new((GObject *) ags_main);
     g_object_set(G_OBJECT(window),
 		 "devout\0", devout,
 		 NULL);
@@ -451,37 +451,37 @@ main(int argc, char **argv)
     gtk_widget_show_all((GtkWidget *) window);
 
     /* AgsServer */
-    main->server = ags_server_new((GObject *) main);
+    ags_main->server = ags_server_new((GObject *) ags_main);
 
-    /* AgsMainLoop */
-    main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) main));
-    g_object_ref(G_OBJECT(main->main_loop));
+    /* AgsAgs_MainLoop */
+    ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
+    g_object_ref(G_OBJECT(ags_main->main_loop));
     
-    ags_thread_start(main->main_loop);
+    ags_thread_start(ags_main->main_loop);
     
     /* join gui thread */
 #ifdef _USE_PTH
-    pth_join(AGS_AUDIO_LOOP(main->main_loop)->gui_thread->thread,
+    pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	     NULL);
 #else
-    pthread_join(AGS_AUDIO_LOOP(main->main_loop)->gui_thread->thread,
+    pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 		 NULL);
 #endif
   }else{
     AgsSingleThread *single_thread;
 
-    main = ags_main_new();
+    ags_main = ags_main_new();
 
-    devout = ags_devout_new((GObject *) main);
-    ags_main_add_devout(main,
+    devout = ags_devout_new((GObject *) ags_main);
+    ags_main_add_devout(ags_main,
 			devout);
 
     /* threads */
     single_thread = ags_single_thread_new((GObject *) devout);
 
     /* AgsWindow */
-    main->window = 
-      window = ags_window_new((GObject *) main);
+    ags_main->window = 
+      window = ags_window_new((GObject *) ags_main);
     g_object_set(G_OBJECT(window),
 		 "devout\0", devout,
 		 NULL);
@@ -493,8 +493,8 @@ main(int argc, char **argv)
     gtk_widget_show_all((GtkWidget *) window);
 
     /* AgsMainLoop */
-    main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) main));
-    g_object_ref(G_OBJECT(main->main_loop));
+    ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
+    g_object_ref(G_OBJECT(ags_main->main_loop));
     
     ags_thread_start((AgsThread *) single_thread);
   }

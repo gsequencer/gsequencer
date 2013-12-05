@@ -69,9 +69,9 @@ ags_file_id_ref_get_type()
     };
 
     ags_type_file_id_ref = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsFileIdRef\0",
-					     &ags_file_id_ref_info,
-					     0);
+						  "AgsFileIdRef\0",
+						  &ags_file_id_ref_info,
+						  0);
   }
 
   return (ags_type_file_id_ref);
@@ -111,11 +111,10 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  PROP_XPATH,
 				  param_spec);
 
-  param_spec = g_param_spec_object("reference\0",
-				   "reference of the locator\0",
-				   "The reference resulted by the xpath locator\0",
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("reference\0",
+				    "reference of the locator\0",
+				    "The reference resulted by the xpath locator\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_REFERENCE,
 				  param_spec);
@@ -185,15 +184,9 @@ ags_file_id_ref_set_property(GObject *gobject,
     break;
   case PROP_REFERENCE:
     {
-      GObject *ref;
+      gpointer ref;
 
-      ref = (GObject *) g_value_get_object(value);
-
-      if(file_id_ref->ref != NULL)
-	g_object_unref(file_id_ref->ref);
-
-      if(ref != NULL)
-	g_object_ref(ref);
+      ref = (gpointer) g_value_get_pointer(value);
 
       file_id_ref->ref = ref;
     }
