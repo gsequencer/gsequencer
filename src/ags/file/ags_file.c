@@ -24,8 +24,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-#include <unistd.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -82,7 +80,7 @@ enum{
 };
 
 static gpointer ags_file_parent_class = NULL;
-static guint file_signals[LAST_SIGNAL];
+static guint file_signals[LAST_SIGNAL] = { 0 };
 
 GType
 ags_file_get_type (void)
@@ -131,7 +129,7 @@ ags_file_class_init(AgsFileClass *file)
   param_spec = g_param_spec_string("filename\0",
 				   "filename to read or write\0",
 				   "The filename to read or write to.\0",
-				   "unnamed\0",
+				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
@@ -231,7 +229,7 @@ ags_file_init(AgsFile *file)
 {
   file->flags = 0;
 
-  file->filename = "unnamed\0";
+  file->filename = NULL;
   file->encoding = AGS_FILE_DEFAULT_ENCODING;
   file->dtd = AGS_FILE_DEFAULT_DTD;
 
@@ -531,8 +529,6 @@ ags_file_real_write(AgsFile *file)
   AgsMain *ags_main;
   xmlNode *root_node;
   GList *list;
-
-  printf("debug: %s\n\0", file->filename);
 
   file->doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(AGS_FILE_DEFAULT_NS, "ags\0");

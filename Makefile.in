@@ -125,7 +125,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_set_output_device.$(OBJEXT) \
 	ags-ags_set_audio_channels.$(OBJEXT) \
 	ags-ags_set_buffer_size.$(OBJEXT) \
-	ags-ags_set_samplerate.$(OBJEXT) \
+	ags-ags_set_samplerate.$(OBJEXT) ags-ags_save_file.$(OBJEXT) \
 	ags-ags_init_channel.$(OBJEXT) ags-ags_append_recall.$(OBJEXT) \
 	ags-ags_set_devout_play_flags.$(OBJEXT) \
 	ags-ags_link_channel.$(OBJEXT) ags-ags_toggle_led.$(OBJEXT) \
@@ -671,6 +671,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/task/ags_set_buffer_size.c \
 	./src/ags/audio/task/ags_set_samplerate.h \
 	./src/ags/audio/task/ags_set_samplerate.c \
+	./src/ags/audio/task/ags_save_file.h \
+	./src/ags/audio/task/ags_save_file.c \
 	./src/ags/audio/task/ags_audio_set_recycling.h \
 	./src/ags/audio/task/ags_init_channel.c \
 	./src/ags/audio/task/ags_append_recall.c \
@@ -1182,7 +1184,7 @@ agscluster_SOURCES = ./src/ags-cluster/file/ags_file_cluster.h ./src/ags-cluster
 test_SOURCES = ./src/ags/test/ags_test_thread.c
 AM_CPPFLAGS = -I./src/
 ags_CFLAGS = $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(LIBSNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
-ags_LDFLAGS = -ldl $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(LIBSNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -lcrypto
+ags_LDFLAGS = -ldl $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(LIBSNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt
 ags_LDADD = libags.a
 agsclient_CFLAGS = $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_CLIENT_CFLAGS)
 agsclient_LDFLAGS = -ldl $(UUID_LIBS) $(LIBXML2_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_CLIENT_LIBS)
@@ -1524,6 +1526,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ruler_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_run_order.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_runnable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_save_file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_scroll_on_play.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_seekable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_segment.Po@am__quote@
@@ -2018,6 +2021,20 @@ ags-ags_set_samplerate.obj: ./src/ags/audio/task/ags_set_samplerate.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_set_samplerate.c' object='ags-ags_set_samplerate.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_set_samplerate.obj `if test -f './src/ags/audio/task/ags_set_samplerate.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_set_samplerate.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_set_samplerate.c'; fi`
+
+ags-ags_save_file.o: ./src/ags/audio/task/ags_save_file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_save_file.o -MD -MP -MF $(DEPDIR)/ags-ags_save_file.Tpo -c -o ags-ags_save_file.o `test -f './src/ags/audio/task/ags_save_file.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_save_file.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_save_file.Tpo $(DEPDIR)/ags-ags_save_file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_save_file.c' object='ags-ags_save_file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_save_file.o `test -f './src/ags/audio/task/ags_save_file.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_save_file.c
+
+ags-ags_save_file.obj: ./src/ags/audio/task/ags_save_file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_save_file.obj -MD -MP -MF $(DEPDIR)/ags-ags_save_file.Tpo -c -o ags-ags_save_file.obj `if test -f './src/ags/audio/task/ags_save_file.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_save_file.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_save_file.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_save_file.Tpo $(DEPDIR)/ags-ags_save_file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/task/ags_save_file.c' object='ags-ags_save_file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_save_file.obj `if test -f './src/ags/audio/task/ags_save_file.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_save_file.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_save_file.c'; fi`
 
 ags-ags_init_channel.o: ./src/ags/audio/task/ags_init_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_init_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_init_channel.Tpo -c -o ags-ags_init_channel.o `test -f './src/ags/audio/task/ags_init_channel.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_init_channel.c

@@ -235,7 +235,7 @@ ags_file_id_ref_get_property(GObject *gobject,
     break;
   case PROP_REFERENCE:
     {
-      g_value_set_object(value, file_id_ref->ref);
+      g_value_set_pointer(value, file_id_ref->ref);
     }
     break;
   case PROP_MAIN:

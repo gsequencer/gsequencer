@@ -36,11 +36,10 @@
 #define AGS_FILE_DEFAULT_NS NULL
 #define AGS_FILE_DEFAULT_PREFIX NULL
 
-#define AGS_FILE_CHECKSUM_PRECISION (512)
-#define AGS_FILE_CHECKSUM_LENGTH (sqrt((double) AGS_FILE_CHECKSUM_PRECISION / 2.0))
+#define AGS_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
 
-#define AGS_FILE_DEFAULT_AUDIO_FORMAT ("raw\0")
-#define AGS_FILE_DEFAULT_AUDIO_ENCODING ("base64\0")
+#define AGS_FILE_DEFAULT_AUDIO_FORMAT "raw\0"
+#define AGS_FILE_DEFAULT_AUDIO_ENCODING "base64\0"
 
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
