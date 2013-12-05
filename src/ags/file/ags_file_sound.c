@@ -207,7 +207,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 				   "reference\0", devout,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-devout\0");
 
   xmlNewProp(node,
@@ -245,7 +245,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 			    devout->audio);
 
   /* ags-delay-data */
-  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  child = xmlNewNode(NULL,
 		     "ags-delay-data\0");
   content = NULL;
 	  
@@ -275,7 +275,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 	      child);
 
   /* ags-attack-data */
-  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  child = xmlNewNode(NULL,
 		     "ags-attack-data\0");
   content = NULL;
 	  
@@ -370,7 +370,7 @@ ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout)
 				   "reference\0", list,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-devout-list\0");
 
   xmlNewProp(node,
@@ -434,7 +434,7 @@ ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play)
 
   id = ags_id_generator_create_uuid();
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-devout-play\0");
 
   ags_file_add_id_ref(file,
@@ -507,7 +507,7 @@ ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play)
 
   id = ags_id_generator_create_uuid();
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-devout-play-list\0");
 
   ags_file_add_id_ref(file,
@@ -594,8 +594,8 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 
 	xpath_context = xmlXPathNewContext(file->doc);
 
-	if(AGS_FILE_DEFAULT_NS != NULL){
-	  xmlXPathRegisterNs(xpath_context, AGS_FILE_DEFAULT_PREFIX, AGS_FILE_DEFAULT_NS);
+	if(NULL != NULL){
+	  xmlXPathRegisterNs(xpath_context, AGS_FILE_DEFAULT_PREFIX, NULL);
 	}
 
 	xpath_object = xmlXPathNodeEval(child,
@@ -688,7 +688,7 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 				   "reference\0", audio,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-audio\0");
 
   xmlNewProp(node,
@@ -721,7 +721,7 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
   /* ags-channel-list output */
   channel = audio->output;
 
-  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  child = xmlNewNode(NULL,
 		     "ags-channel-list\0");
   xmlAddChild(node,
 	      child);
@@ -737,7 +737,7 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
   /* ags-channel-list input */
   channel = audio->input;
 
-  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  child = xmlNewNode(NULL,
 		     "ags-channel-list\0");
   xmlAddChild(node,
 	      child);
@@ -833,7 +833,7 @@ ags_file_write_audio_list(AgsFile *file, xmlNode *parent, GList *audio)
 				   "reference\0", list,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-audio-list\0");
 
   xmlNewProp(node,
@@ -872,8 +872,8 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 
     xpath_context = xmlXPathNewContext(file->doc);
     
-    if(AGS_FILE_DEFAULT_NS != NULL){
-      xmlXPathRegisterNs(xpath_context, AGS_FILE_DEFAULT_PREFIX, AGS_FILE_DEFAULT_NS);
+    if(NULL != NULL){
+      xmlXPathRegisterNs(xpath_context, AGS_FILE_DEFAULT_PREFIX, NULL);
     }
     
     xpath_object = xmlXPathNodeEval(node,
@@ -1045,7 +1045,7 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 				   "reference\0", channel,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-channel\0");
 
   /* well known properties */
@@ -1201,7 +1201,7 @@ ags_file_write_channel_list(AgsFile *file, xmlNode *parent, GList *channel)
 				   "reference\0", channel,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-channel-list\0");
 
   xmlNewProp(node,
@@ -1266,7 +1266,7 @@ ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 
   input = AGS_INPUT(channel);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-input\0");
 
   id = ags_id_generator_create_uuid();
@@ -1316,7 +1316,7 @@ ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 
   output = AGS_OUTPUT(channel);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-output\0");
 
   id = ags_id_generator_create_uuid();
@@ -1535,7 +1535,7 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   gchar *id;
   guint i;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall\0");
 
   id = ags_id_generator_create_uuid();
@@ -1624,7 +1624,7 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   }
   
   /* dependencies */
-  child = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  child = xmlNewNode(NULL,
 		     "ags-dependency-list\0");
 
   xmlNewProp(child,
@@ -1634,7 +1634,7 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   list = recall->dependencies;
 
   for(i = 0; list != NULL; i++){
-    dependency_node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+    dependency_node = xmlNewNode(NULL,
 				 "ags-dependency\0");
 
     xmlNewProp(dependency_node,
@@ -1756,7 +1756,7 @@ ags_file_write_recall_list(AgsFile *file, xmlNode *parent, GList *recall)
 				   "reference\0", recall,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall-list\0");
 
   xmlNewProp(node,
@@ -1819,7 +1819,7 @@ ags_file_write_recall_audio(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 
   recall_audio = AGS_RECALL_AUDIO(recall);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall-audio\0");
 
   id = ags_id_generator_create_uuid();
@@ -1886,7 +1886,7 @@ ags_file_write_recall_audio_run(AgsFile *file, xmlNode *parent, AgsRecall *recal
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall-audio-run\0");
 
   id = ags_id_generator_create_uuid();
@@ -1953,7 +1953,7 @@ ags_file_write_recall_channel(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall-channel\0");
 
   id = ags_id_generator_create_uuid();
@@ -2020,7 +2020,7 @@ ags_file_write_recall_channel_run(AgsFile *file, xmlNode *parent, AgsRecall *rec
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall-channel-run\0");
 
   id = ags_id_generator_create_uuid();
@@ -2088,7 +2088,7 @@ ags_file_write_recall_recycling(AgsFile *file, xmlNode *parent, AgsRecall *recal
 
   recall_recycling = AGS_RECALL_RECYCLING(recall);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall-recycling\0");
 
   id = ags_id_generator_create_uuid();
@@ -2155,7 +2155,7 @@ ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *re
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall);
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recall-audio-signal\0");
 
   id = ags_id_generator_create_uuid();
@@ -2236,7 +2236,7 @@ ags_file_write_recycling(AgsFile *file, xmlNode *parent, AgsRecycling *recycling
   xmlNode *node;
   gchar *id;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recycling\0");
 
   id = ags_id_generator_create_uuid();
@@ -2320,7 +2320,7 @@ ags_file_write_recycling_list(AgsFile *file, xmlNode *parent, GList *recycling)
 				   "reference\0", recycling,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-recycling-list\0");
 
   xmlNewProp(node,
@@ -2440,7 +2440,7 @@ ags_file_write_audio_signal(AgsFile *file, xmlNode *parent, AgsAudioSignal *audi
   xmlNode *node;
   gchar *id;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-audio-signal\0");
 
   id = ags_id_generator_create_uuid();
@@ -2563,7 +2563,7 @@ ags_file_write_audio_signal_list(AgsFile *file, xmlNode *parent, GList *audio_si
 				   "reference\0", audio_signal,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-audio-signal-list\0");
 
   xmlNewProp(node,
@@ -2653,7 +2653,7 @@ ags_file_write_stream(AgsFile *file, xmlNode *parent,
   xmlChar *content;
   gchar *id;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-stream\0");
 
   id = ags_id_generator_create_uuid();
@@ -2799,7 +2799,7 @@ ags_file_write_stream_list(AgsFile *file, xmlNode *parent,
 				   "reference\0", stream,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-stream-list\0");
 
   xmlNewProp(node,
@@ -2892,7 +2892,7 @@ ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
   xmlChar *content;
   gchar *id;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-pattern\0");
 
   id = ags_id_generator_create_uuid();
@@ -2990,7 +2990,7 @@ ags_file_write_pattern_list(AgsFile *file, xmlNode *parent, GList *pattern)
 				   "reference\0", pattern,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-pattern-list\0");
 
   xmlNewProp(node,
@@ -3068,7 +3068,7 @@ ags_file_write_pattern_data(AgsFile *file, xmlNode *parent,
   gchar *id;
   guint k;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-pattern-data\0");
 
   id = ags_id_generator_create_uuid();
@@ -3163,7 +3163,7 @@ ags_file_write_pattern_data_list(AgsFile *file, xmlNode *parent,
 				   "reference\0", pattern,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-pattern-data-list\0");
 
   xmlNewProp(node,
@@ -3278,7 +3278,7 @@ ags_file_write_notation(AgsFile *file, xmlNode *parent, AgsNotation *notation)
   xmlNode *node;
   gchar *id;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-notation\0");
 
   id = ags_id_generator_create_uuid();
@@ -3396,7 +3396,7 @@ ags_file_write_notation_list(AgsFile *file, xmlNode *parent, GList *notation)
 				   "reference\0", notation,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-notation-list\0");
 
   xmlNewProp(node,
@@ -3476,7 +3476,7 @@ ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note)
   xmlNode *node;
   gchar *id;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-note\0");
 
   id = ags_id_generator_create_uuid();
@@ -3573,7 +3573,7 @@ ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note)
 				   "reference\0", note,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-note-list\0");
 
   xmlNewProp(node,
@@ -3713,7 +3713,7 @@ ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
   guint n_properties, n_params;
   guint i, j;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-task\0");
 
   id = ags_id_generator_create_uuid();
@@ -3843,7 +3843,7 @@ ags_file_write_task_list(AgsFile *file, xmlNode *parent, GList *task)
 				   "reference\0", task,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-task-list\0");
 
   xmlNewProp(node,
@@ -3915,7 +3915,7 @@ ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp
   xmlNode *node;
   gchar *id;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-timestamp\0");
 
   id = ags_id_generator_create_uuid();
@@ -4003,7 +4003,7 @@ ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp)
 				   "reference\0", timestamp,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-timestamp-list\0");
 
   xmlNewProp(node,

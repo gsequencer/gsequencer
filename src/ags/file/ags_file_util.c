@@ -346,7 +346,7 @@ ags_file_util_write_value(AgsFile *file,
     return;
   }
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-value\0");  
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
@@ -578,7 +578,7 @@ ags_file_util_write_parameter(AgsFile *file,
     return;
   }
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-parameter\0");  
 
   xmlNewProp(node,
@@ -630,7 +630,7 @@ ags_file_util_write_dependency(AgsFile *file,
 {
   xmlNode *node;
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-dependency\0");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,

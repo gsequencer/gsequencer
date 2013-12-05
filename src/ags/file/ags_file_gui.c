@@ -148,7 +148,7 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 				   "reference\0", window,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-window\0");
 
   xmlNewProp(node,
@@ -225,7 +225,7 @@ ags_file_write_menu_bar(AgsFile *file, xmlNode *parent, AgsMenuBar *menu_bar)
 				   "reference\0", menu_bar,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-menu-bar\0");
 
   xmlNewProp(node,
@@ -291,7 +291,7 @@ ags_file_write_machine_counter(AgsFile *file, xmlNode *parent, AgsMachineCounter
 				   "reference\0", machine_counter,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-machine-counter\0");
 
   xmlNewProp(node,
@@ -370,7 +370,7 @@ ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machi
 				   "reference\0", list,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-machine-counter-list\0");
 
   xmlNewProp(node,
@@ -578,7 +578,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 				   "reference\0", machine,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-machine\0");
 
   xmlNewProp(node,
@@ -759,7 +759,7 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 				   "reference\0", list,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-machine-list\0");
 
   xmlNewProp(node,
@@ -914,7 +914,7 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 				   "reference\0", pad,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-pad\0");
 
   xmlNewProp(node,
@@ -1027,7 +1027,7 @@ ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 				   "reference\0", list,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-pad-list\0");
 
   xmlNewProp(node,
@@ -1181,7 +1181,7 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 				   "reference\0", line,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-line\0");
 
   xmlNewProp(node,
@@ -1293,7 +1293,7 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 				   "reference\0", list,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-line-list\0");
 
   xmlNewProp(node,
@@ -1488,7 +1488,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 				   "reference\0", line_member,
 				   NULL));
   
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-line-member\0");
 
   xmlNewProp(node,
@@ -1691,7 +1691,7 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
 				   "reference\0", list,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-line-member-list\0");
 
   xmlNewProp(node,

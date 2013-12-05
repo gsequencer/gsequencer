@@ -133,7 +133,8 @@ ags_save_file_launch(AgsTask *task)
   AgsSaveFile *save_file;
 
   save_file = AGS_SAVE_FILE(task);
-  
+
+  g_message(save_file->file->filename);
   ags_file_write(save_file->file);
 }
 
@@ -144,6 +145,7 @@ ags_save_file_new(AgsFile *file)
 
   save_file = (AgsSaveFile *) g_object_new(AGS_TYPE_SAVE_FILE,
 					   NULL);
+  g_object_ref(file);
   save_file->file = file;
 
   return(save_file);

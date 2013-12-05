@@ -22,17 +22,6 @@
 #include <ags/file/ags_file_gui.h>
 #include <ags/file/ags_file_stock.h>
 
-#include <stdlib.h>
-#include <string.h>
-
-#include <libxml/parser.h>
-#include <libxml/xlink.h>
-#include <libxml/xpath.h>
-#include <libxml/valid.h>
-#include <libxml/xmlIO.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/xmlsave.h>
-
 #include <ags/main.h>
 
 #include <ags/util/ags_id_generator.h>
@@ -41,6 +30,14 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_gui.h>
+
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
 
 void ags_file_class_init(AgsFileClass *file);
 void ags_file_init(AgsFile *file);
@@ -138,7 +135,7 @@ ags_file_class_init(AgsFileClass *file)
   param_spec = g_param_spec_string("encoding\0",
 				   "encoding to use\0",
 				   "The encoding of the XML document.\0",
-				   AGS_FILE_DEFAULT_NS,
+				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ENCODING,
@@ -273,7 +270,8 @@ ags_file_set_property(GObject *gobject,
 
       filename = g_value_get_string(value);
 
-      file->filename = filename;
+      g_message(filename);
+      file->filename = g_strdup(filename);
     }
     break;
   case PROP_ENCODING:
@@ -528,10 +526,13 @@ ags_file_real_write(AgsFile *file)
 {
   AgsMain *ags_main;
   xmlNode *root_node;
+  FILE *file_out;
   GList *list;
+  xmlChar *buffer;
+  int size;
 
   file->doc = xmlNewDoc("1.0\0");
-  root_node = xmlNewNode(AGS_FILE_DEFAULT_NS, "ags\0");
+  root_node = xmlNewNode(NULL, "ags\0");
   xmlDocSetRootElement(file->doc, root_node);
 
   /* write clip board */
@@ -563,16 +564,21 @@ ags_file_real_write(AgsFile *file)
   /* write history */
   //TODO:JK: implement me
 
-  printf("debug: %s\n\0", file->filename);
-
   /* resolve */
   ags_file_write_resolve(file);
 
   /* 
    * Dumping document to file
    */
-  printf("name: %s\n\0", file->filename);
-  xmlSaveFormatFileEnc(file->filename, file->doc, "UTF-8\0", 1);
+  //  xmlSaveFormatFileEnc(file->filename, file->doc, "UTF-8\0", 1);
+  xmlDocDumpFormatMemoryEnc(file->doc, &buffer, &size, file->encoding, TRUE);
+
+  file_out = fopen(file->filename, "w+\0");
+  fwrite(buffer, size, sizeof(xmlChar), file_out);
+  fflush(file_out);
+  fclose(file_out);
+
+  g_message(file->filename);
 
   /*free the document */
   xmlFreeDoc(file->doc);
@@ -850,7 +856,7 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 				   "reference\0", ags_main,
 				   NULL));
 
-  node = xmlNewNode(AGS_FILE_DEFAULT_NS,
+  node = xmlNewNode(NULL,
 		    "ags-main\0");
 
   xmlNewProp(node,

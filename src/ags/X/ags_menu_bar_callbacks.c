@@ -18,10 +18,6 @@
 
 #include <ags/X/ags_menu_bar_callbacks.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/stat.h>
-
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/main.h>
@@ -34,6 +30,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 
+#include <ags/audio/task/ags_save_file.h>
 #include <ags/audio/task/ags_add_audio.h>
 
 #include <ags/X/ags_window.h>
@@ -44,6 +41,10 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/stat.h>
 
 void ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 void ags_menu_bar_open_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
@@ -131,29 +132,34 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("save file as\0"),
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("save file as\0",
 								      (GtkWindow *) window,
-								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      GTK_FILE_CHOOSER_ACTION_SAVE,
+								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
 								      NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
+  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(file_chooser), TRUE);
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
   response = gtk_dialog_run(GTK_DIALOG(file_chooser));
 
   if(response == GTK_RESPONSE_ACCEPT){
     AgsFile *file;
-    gchar *filename;
+    AgsSaveFile *save_file;
+    char *filename;
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "main\0", window->ags_main,
-				    "filename\0", filename,
+				    "filename\0", g_strdup(filename),
 				    NULL);
-    ags_file_write(file);
-  
+
+    save_file = ags_save_file_new(file);
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+				AGS_TASK(save_file));
+
     g_object_unref(G_OBJECT(file));
   }
 
