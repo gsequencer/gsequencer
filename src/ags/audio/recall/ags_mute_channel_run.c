@@ -200,7 +200,6 @@ ags_mute_channel_run_new(AgsChannel *source)
 
   mute_channel_run = (AgsMuteChannelRun *) g_object_new(AGS_TYPE_MUTE_CHANNEL_RUN,
 							"source\0", source,
-							"devout\0", devout,
 							NULL);
 
   return(mute_channel_run);

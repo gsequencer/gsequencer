@@ -18,6 +18,10 @@
 
 #include <ags/audio/recall/ags_mute_audio.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/object/ags_mutable.h>
+
 void ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio);
 void ags_mute_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mute_audio_mutable_interface_init(AgsMutableInterface *mutable);
@@ -30,6 +34,8 @@ void ags_mute_audio_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
+void ags_mute_audio_connect(AgsConnectable *connectable);
+void ags_mute_audio_disconnect(AgsConnectable *connectable);
 void ags_mute_audio_finalize(GObject *gobject);
 
 void ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted);

@@ -26,9 +26,12 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/audio/recall/ags_mute_audio.h>
 #include <ags/audio/recall/ags_mute_channel.h>
 
 #include <stdlib.h>
@@ -228,12 +231,12 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   /* check audio */
   mute_audio = AGS_MUTE_AUDIO(AGS_RECALL_CONTAINER(AGS_RECALL(mute_channel)->container)->recall_audio);
 
-  g_value_init(&audoi_value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(mute_audoi->muted,
-		     &audoi_value);
+  g_value_init(&audio_value, G_TYPE_BOOLEAN);
+  ags_port_safe_read(mute_audio->muted,
+		     &audio_value);
 
-  audio_muted = g_value_get_boolean(&audoi_value);
-  g_value_unset(&audoi_value);
+  audio_muted = g_value_get_boolean(&audio_value);
+  g_value_unset(&audio_value);
 
   /* if not muted return */
   if(!channel_muted && !audio_muted){
@@ -241,7 +244,7 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   }
 
   /* mute */
-  memset((signed short *) stream_source->data, 0, devout->buffer_size * siezof(signed short));
+  memset((signed short *) stream_source->data, 0, devout->buffer_size * sizeof(signed short));
 }
 
 AgsRecall*

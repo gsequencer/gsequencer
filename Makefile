@@ -176,7 +176,11 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_play_audio.$(OBJEXT) \
 	ags-ags_play_channel_run_master.$(OBJEXT) \
 	ags-ags_play_note.$(OBJEXT) ags-ags_play_audio_file.$(OBJEXT) \
-	ags-ags_play_channel_run.$(OBJEXT) ags-ags_echo.$(OBJEXT) \
+	ags-ags_play_channel_run.$(OBJEXT) \
+	ags-ags_mute_audio.$(OBJEXT) ags-ags_mute_channel.$(OBJEXT) \
+	ags-ags_mute_channel_run.$(OBJEXT) \
+	ags-ags_mute_recycling.$(OBJEXT) \
+	ags-ags_mute_audio_signal.$(OBJEXT) ags-ags_echo.$(OBJEXT) \
 	ags-ags_copy_pattern_audio.$(OBJEXT) \
 	ags-ags_stream_channel.$(OBJEXT) ags-ags_amplifier.$(OBJEXT) \
 	ags-ags_count_beats_audio_run.$(OBJEXT) \
@@ -802,6 +806,16 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/recall/ags_copy_channel_run.h \
 	./src/ags/audio/recall/ags_play_audio_file.c \
 	./src/ags/audio/recall/ags_play_channel_run.c \
+	./src/ags/audio/recall/ags_mute_audio.h \
+	./src/ags/audio/recall/ags_mute_audio.c \
+	./src/ags/audio/recall/ags_mute_channel.h \
+	./src/ags/audio/recall/ags_mute_channel.c \
+	./src/ags/audio/recall/ags_mute_channel_run.h \
+	./src/ags/audio/recall/ags_mute_channel_run.c \
+	./src/ags/audio/recall/ags_mute_recycling.h \
+	./src/ags/audio/recall/ags_mute_recycling.c \
+	./src/ags/audio/recall/ags_mute_audio_signal.h \
+	./src/ags/audio/recall/ags_mute_audio_signal.c \
 	./src/ags/audio/recall/ags_echo.c \
 	./src/ags/audio/recall/ags_copy_pattern_audio.c \
 	./src/ags/audio/recall/ags_volume_audio_signal.h \
@@ -1453,6 +1467,11 @@ include ./$(DEPDIR)/ags-ags_mixer_callbacks.Po
 include ./$(DEPDIR)/ags-ags_mixer_input_line.Po
 include ./$(DEPDIR)/ags-ags_mixer_input_pad.Po
 include ./$(DEPDIR)/ags-ags_mutable.Po
+include ./$(DEPDIR)/ags-ags_mute_audio.Po
+include ./$(DEPDIR)/ags-ags_mute_audio_signal.Po
+include ./$(DEPDIR)/ags-ags_mute_channel.Po
+include ./$(DEPDIR)/ags-ags_mute_channel_run.Po
+include ./$(DEPDIR)/ags-ags_mute_recycling.Po
 include ./$(DEPDIR)/ags-ags_navigation.Po
 include ./$(DEPDIR)/ags-ags_navigation_callbacks.Po
 include ./$(DEPDIR)/ags-ags_notation.Po
@@ -2987,6 +3006,76 @@ ags-ags_play_channel_run.obj: ./src/ags/audio/recall/ags_play_channel_run.c
 #	$(AM_V_CC)source='./src/ags/audio/recall/ags_play_channel_run.c' object='ags-ags_play_channel_run.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_play_channel_run.obj `if test -f './src/ags/audio/recall/ags_play_channel_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_play_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_play_channel_run.c'; fi`
+
+ags-ags_mute_audio.o: ./src/ags/audio/recall/ags_mute_audio.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_audio.o -MD -MP -MF $(DEPDIR)/ags-ags_mute_audio.Tpo -c -o ags-ags_mute_audio.o `test -f './src/ags/audio/recall/ags_mute_audio.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_audio.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_audio.Tpo $(DEPDIR)/ags-ags_mute_audio.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_audio.c' object='ags-ags_mute_audio.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_audio.o `test -f './src/ags/audio/recall/ags_mute_audio.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_audio.c
+
+ags-ags_mute_audio.obj: ./src/ags/audio/recall/ags_mute_audio.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_audio.obj -MD -MP -MF $(DEPDIR)/ags-ags_mute_audio.Tpo -c -o ags-ags_mute_audio.obj `if test -f './src/ags/audio/recall/ags_mute_audio.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_audio.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_audio.Tpo $(DEPDIR)/ags-ags_mute_audio.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_audio.c' object='ags-ags_mute_audio.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_audio.obj `if test -f './src/ags/audio/recall/ags_mute_audio.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_audio.c'; fi`
+
+ags-ags_mute_channel.o: ./src/ags/audio/recall/ags_mute_channel.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_mute_channel.Tpo -c -o ags-ags_mute_channel.o `test -f './src/ags/audio/recall/ags_mute_channel.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_channel.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_channel.Tpo $(DEPDIR)/ags-ags_mute_channel.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_channel.c' object='ags-ags_mute_channel.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_channel.o `test -f './src/ags/audio/recall/ags_mute_channel.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_channel.c
+
+ags-ags_mute_channel.obj: ./src/ags/audio/recall/ags_mute_channel.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_channel.obj -MD -MP -MF $(DEPDIR)/ags-ags_mute_channel.Tpo -c -o ags-ags_mute_channel.obj `if test -f './src/ags/audio/recall/ags_mute_channel.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_channel.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_channel.Tpo $(DEPDIR)/ags-ags_mute_channel.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_channel.c' object='ags-ags_mute_channel.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_channel.obj `if test -f './src/ags/audio/recall/ags_mute_channel.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_channel.c'; fi`
+
+ags-ags_mute_channel_run.o: ./src/ags/audio/recall/ags_mute_channel_run.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_channel_run.o -MD -MP -MF $(DEPDIR)/ags-ags_mute_channel_run.Tpo -c -o ags-ags_mute_channel_run.o `test -f './src/ags/audio/recall/ags_mute_channel_run.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_channel_run.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_channel_run.Tpo $(DEPDIR)/ags-ags_mute_channel_run.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_channel_run.c' object='ags-ags_mute_channel_run.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_channel_run.o `test -f './src/ags/audio/recall/ags_mute_channel_run.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_channel_run.c
+
+ags-ags_mute_channel_run.obj: ./src/ags/audio/recall/ags_mute_channel_run.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_channel_run.obj -MD -MP -MF $(DEPDIR)/ags-ags_mute_channel_run.Tpo -c -o ags-ags_mute_channel_run.obj `if test -f './src/ags/audio/recall/ags_mute_channel_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_channel_run.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_channel_run.Tpo $(DEPDIR)/ags-ags_mute_channel_run.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_channel_run.c' object='ags-ags_mute_channel_run.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_channel_run.obj `if test -f './src/ags/audio/recall/ags_mute_channel_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_channel_run.c'; fi`
+
+ags-ags_mute_recycling.o: ./src/ags/audio/recall/ags_mute_recycling.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_recycling.o -MD -MP -MF $(DEPDIR)/ags-ags_mute_recycling.Tpo -c -o ags-ags_mute_recycling.o `test -f './src/ags/audio/recall/ags_mute_recycling.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_recycling.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_recycling.Tpo $(DEPDIR)/ags-ags_mute_recycling.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_recycling.c' object='ags-ags_mute_recycling.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_recycling.o `test -f './src/ags/audio/recall/ags_mute_recycling.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_recycling.c
+
+ags-ags_mute_recycling.obj: ./src/ags/audio/recall/ags_mute_recycling.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_recycling.obj -MD -MP -MF $(DEPDIR)/ags-ags_mute_recycling.Tpo -c -o ags-ags_mute_recycling.obj `if test -f './src/ags/audio/recall/ags_mute_recycling.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_recycling.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_recycling.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_recycling.Tpo $(DEPDIR)/ags-ags_mute_recycling.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_recycling.c' object='ags-ags_mute_recycling.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_recycling.obj `if test -f './src/ags/audio/recall/ags_mute_recycling.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_recycling.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_recycling.c'; fi`
+
+ags-ags_mute_audio_signal.o: ./src/ags/audio/recall/ags_mute_audio_signal.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_audio_signal.o -MD -MP -MF $(DEPDIR)/ags-ags_mute_audio_signal.Tpo -c -o ags-ags_mute_audio_signal.o `test -f './src/ags/audio/recall/ags_mute_audio_signal.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_audio_signal.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_audio_signal.Tpo $(DEPDIR)/ags-ags_mute_audio_signal.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_audio_signal.c' object='ags-ags_mute_audio_signal.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_audio_signal.o `test -f './src/ags/audio/recall/ags_mute_audio_signal.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_mute_audio_signal.c
+
+ags-ags_mute_audio_signal.obj: ./src/ags/audio/recall/ags_mute_audio_signal.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_mute_audio_signal.obj -MD -MP -MF $(DEPDIR)/ags-ags_mute_audio_signal.Tpo -c -o ags-ags_mute_audio_signal.obj `if test -f './src/ags/audio/recall/ags_mute_audio_signal.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_audio_signal.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_mute_audio_signal.Tpo $(DEPDIR)/ags-ags_mute_audio_signal.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_mute_audio_signal.c' object='ags-ags_mute_audio_signal.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_mute_audio_signal.obj `if test -f './src/ags/audio/recall/ags_mute_audio_signal.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_mute_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_mute_audio_signal.c'; fi`
 
 ags-ags_echo.o: ./src/ags/audio/recall/ags_echo.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_echo.o -MD -MP -MF $(DEPDIR)/ags-ags_echo.Tpo -c -o ags-ags_echo.o `test -f './src/ags/audio/recall/ags_echo.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_echo.c
