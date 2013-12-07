@@ -22,6 +22,8 @@
 
 #include <ags/main.h>
 
+#include <ags/audio/task/ags_save_file.h>
+
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 {

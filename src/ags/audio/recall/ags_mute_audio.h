@@ -16,38 +16,36 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_PLAY_AUDIO_H__
-#define __AGS_PLAY_AUDIO_H__
+#ifndef __AGS_MUTE_AUDIO_H__
+#define __AGS_MUTE_AUDIO_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_audio.h>
 
-#define AGS_TYPE_PLAY_AUDIO                (ags_play_audio_get_type())
-#define AGS_PLAY_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_AUDIO, AgsPlayAudio))
-#define AGS_PLAY_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_AUDIO, AgsPlayAudio))
-#define AGS_IS_PLAY_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PLAY_AUDIO))
-#define AGS_IS_PLAY_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLAY_AUDIO))
-#define AGS_PLAY_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PLAY_AUDIO, AgsPlayAudioClass))
+#define AGS_TYPE_MUTE_AUDIO                (ags_mute_audio_get_type())
+#define AGS_MUTE_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MUTE_AUDIO, AgsMuteAudio))
+#define AGS_MUTE_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MUTE_AUDIO, AgsMuteAudio))
+#define AGS_IS_MUTE_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MUTE_AUDIO))
+#define AGS_IS_MUTE_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MUTE_AUDIO))
+#define AGS_MUTE_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MUTE_AUDIO, AgsMuteAudioClass))
 
-typedef struct _AgsPlayAudio AgsPlayAudio;
-typedef struct _AgsPlayAudioClass AgsPlayAudioClass;
+typedef struct _AgsMuteAudio AgsMuteAudio;
+typedef struct _AgsMuteAudioClass AgsMuteAudioClass;
 
-struct _AgsPlayAudio
+struct _AgsMuteAudio
 {
   AgsRecallAudio recall_audio;
-
-  AgsPort *muted;
 };
 
-struct _AgsPlayAudioClass
+struct _AgsMuteAudioClass
 {
   AgsRecallAudioClass recall_audio;
 };
 
-GType ags_play_audio_get_type();
+GType ags_mute_audio_get_type();
 
-AgsPlayAudio* ags_play_audio_new();
+AgsMuteAudio* ags_mute_audio_new();
 
-#endif /*__AGS_PLAY_AUDIO_H__*/
+#endif /*__AGS_MUTE_AUDIO_H__*/
