@@ -22,10 +22,16 @@
 
 #include <ags/main.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
+#include <libxml/tree.h>
 
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -310,7 +316,7 @@ ags_copy_channel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", G_OJBECT(plugin),
+				   "reference\0", G_OBJECT(plugin),
 				   NULL));
 }
 
@@ -323,7 +329,7 @@ ags_copy_channel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-devout\0");
+		    "ags-copy-channel\0");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -333,7 +339,7 @@ ags_copy_channel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
-				   "reference\0", devout,
+				   "reference\0", G_OBJECT(plugin),
 				   NULL));
 }
 

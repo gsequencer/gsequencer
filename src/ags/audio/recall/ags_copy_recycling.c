@@ -19,21 +19,36 @@
 #include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <libxml/tree.h>
+
 void ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling);
 void ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
+void ags_copy_recycling_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_recycling_init(AgsCopyRecycling *copy_recycling);
 void ags_copy_recycling_connect(AgsConnectable *connectable);
 void ags_copy_recycling_disconnect(AgsConnectable *connectable);
 void ags_copy_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_copy_recycling_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_copy_recycling_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_copy_recycling_finalize(GObject *gobject);
 
 void ags_copy_recycling_done(AgsRecall *recall);
@@ -77,6 +92,12 @@ ags_copy_recycling_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_copy_recycling_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_copy_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 						     "AgsCopyRecycling\0",
 						     &ags_copy_recycling_info,
@@ -89,6 +110,10 @@ ags_copy_recycling_get_type()
     g_type_add_interface_static(ags_type_copy_recycling,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_recycling,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_copy_recycling);
@@ -122,6 +147,13 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
 }
 
 void
+ags_copy_recycling_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->read = ags_copy_recycling_read;
+  plugin->write = ags_copy_recycling_write;
+}
+
+void
 ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_copy_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
@@ -142,11 +174,11 @@ ags_copy_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInter
 void
 ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 {
-  AGS_RECALL(copy_channel_run)->name = "ags-copy\0";
-  AGS_RECALL(copy_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_channel_run)->build_id = AGS_BUILD_ID;
-  AGS_RECALL(copy_channel_run)->xml_type = "ags-copy-recycling\0";
-  AGS_RECALL(copy_channel_run)->port = NULL;
+  AGS_RECALL(copy_recycling)->name = "ags-copy\0";
+  AGS_RECALL(copy_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_recycling)->xml_type = "ags-copy-recycling\0";
+  AGS_RECALL(copy_recycling)->port = NULL;
 
   AGS_RECALL(copy_recycling)->child_type = AGS_TYPE_COPY_AUDIO_SIGNAL;
   AGS_RECALL_RECYCLING(copy_recycling)->flags |= AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION;
@@ -203,6 +235,41 @@ ags_copy_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable
   ags_copy_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
   /* empty */
+}
+
+void
+ags_copy_recycling_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", G_OBJECT(plugin),
+				   NULL));
+}
+
+xmlNode*
+ags_copy_recycling_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-copy-recycling\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", G_OBJECT(plugin),
+				   NULL));
 }
 
 void 

@@ -32,7 +32,7 @@
 #include <ags/widget/ags_cartesian.h>
 
 #define AGS_FILE_DEFAULT_VERSION "0.4.0\0"
-#define AGS_EFFECTS_DEFAULT_VERSION "0.4.0\0"
+#define AGS_FILE_EFFECTS_DEFAULT_VERSION "0.4.0\0"
 #define AGS_CLIPBOARD_DEFAULT_VERSION "0.4.0\0"
 
 #define AGS_FILE_FALSE "FALSE\0"
