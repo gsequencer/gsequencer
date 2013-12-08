@@ -43,6 +43,7 @@
 
 #define AGS_VERSION "0.4.0-beta\0"
 #define AGS_BUILD_ID "CEST 04-12-2013 03:07\0"
+#define AGS_EFFECTS_DEFAULT_VERSION "0.4.0-beta\0"
 
 #define __AGS_DEBUG__
 #define AGS_PRIORITY (49)

@@ -20,11 +20,17 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 #include <ags/object/ags_mutable.h>
+#include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
 
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_channel_mutable_interface_init(AgsMutableInterface *mutable);
+void ags_copy_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_channel_init(AgsCopyChannel *copy_channel);
 void ags_copy_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -36,6 +42,9 @@ void ags_copy_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_copy_channel_connect(AgsConnectable *connectable);
 void ags_copy_channel_disconnect(AgsConnectable *connectable);
+void ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port);
+void ags_copy_channel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_copy_channel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_copy_channel_finalize(GObject *gobject);
 
 void ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted);
@@ -78,6 +87,12 @@ ags_copy_channel_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_copy_channel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_copy_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsCopyChannel\0",
@@ -91,6 +106,10 @@ ags_copy_channel_get_type()
     g_type_add_interface_static(ags_type_copy_channel,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_channel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_copy_channel);
@@ -111,6 +130,14 @@ ags_copy_channel_mutable_interface_init(AgsMutableInterface *mutable)
   ags_copy_channel_parent_mutable_interface = g_type_interface_peek_parent(mutable);
 
   mutable->set_muted = ags_copy_channel_set_muted;
+}
+
+void
+ags_copy_channel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->set_ports = ags_copy_channel_set_ports;
+  plugin->read = ags_copy_channel_read;
+  plugin->write = ags_copy_channel_write;
 }
 
 void
@@ -143,6 +170,15 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
 void
 ags_copy_channel_init(AgsCopyChannel *copy_channel)
 {
+  GList *port;
+
+  AGS_RECALL(copy_channel)->name = "ags-copy\0";
+  AGS_RECALL(copy_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_channel)->xml_type = "ags-copy-channel\0";
+
+  port = NULL;
+
   copy_channel->muted = g_object_new(AGS_TYPE_PORT,
 				     "plugin-name\0", g_strdup("ags-copy\0"),
 				     "specifier\0", "./muted[0]\0",
@@ -153,6 +189,10 @@ ags_copy_channel_init(AgsCopyChannel *copy_channel)
 				     "port-value-length\0", 1,
 				     NULL);
   copy_channel->muted->port_value.ags_port_boolean = FALSE;
+
+  port = g_list_prepend(port, copy_channel->muted);
+
+  AGS_RECALL(copy_channel)->port = port;
 }
 
 void
@@ -244,6 +284,57 @@ ags_copy_channel_disconnect(AgsConnectable *connectable)
   ags_copy_channel_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"muted[0]\0",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "muted\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
+}
+
+void
+ags_copy_channel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", G_OJBECT(plugin),
+				   NULL));
+}
+
+xmlNode*
+ags_copy_channel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-devout\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", devout,
+				   NULL));
 }
 
 void

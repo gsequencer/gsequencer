@@ -33,8 +33,6 @@
 
 #define AGS_FILE_DEFAULT_ENCODING "UTF-8\0"
 #define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
-#define AGS_FILE_DEFAULT_NS "ags\0"
-#define AGS_FILE_DEFAULT_PREFIX "ags-"
 
 #define AGS_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
 

@@ -49,6 +49,9 @@ struct _AgsPluginInterface
   gchar* (*get_xml_type)(AgsPlugin *plugin);
   void (*set_xml_type)(AgsPlugin *plugin, gchar *xml_type);  
 
+  GList* (*get_ports)(AgsPlugin *plugin);
+  void (*set_ports)(AgsPlugin *plugin, GList *ports);
+
   void (*read)(AgsFile *file,
 	       xmlNode *node,
 	       AgsPlugin *plugin);
@@ -70,6 +73,9 @@ void ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 gchar* ags_plugin_get_xml_type(AgsPlugin *plugin);
 void ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+
+GList* ags_plugin_get_ports(AgsPlugin *plugin);
+void ags_plugin_set_ports(AgsPlugin *plugin, GList *ports);
 
 void ags_plugin_read(AgsFile *file,
 		     xmlNode *node,

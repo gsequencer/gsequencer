@@ -27,6 +27,7 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -49,6 +50,7 @@ void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_packable_interface_init(AgsPackableInterface *packable);
 void ags_recall_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
+void ags_recall_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_init(AgsRecall *recall);
 void ags_recall_set_property(GObject *gobject,
 			     guint prop_id,
@@ -66,6 +68,15 @@ gboolean ags_recall_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_unpack(AgsPackable *packable);
 void ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+gchar* ags_recall_get_name(AgsPlugin *plugin);
+void ags_recall_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_recall_get_version(AgsPlugin *plugin);
+void ags_recall_set_version(AgsPlugin *plugin, gchar *version);
+gchar* ags_recall_get_build_id(AgsPlugin *plugin);
+void ags_recall_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_recall_get_xml_type(AgsPlugin *plugin);
+void ags_recall_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+GList* ags_recall_get_ports(AgsPlugin *plugin);
 void ags_recall_finalize(GObject *recall);
 
 void ags_recall_real_run_init_pre(AgsRecall *recall);
@@ -153,6 +164,12 @@ ags_recall_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_recall_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_recall = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsRecall\0",
 					     &ags_recall_info,
@@ -169,6 +186,10 @@ ags_recall_get_type (void)
     g_type_add_interface_static(ags_type_recall,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_recall,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_recall);
@@ -431,6 +452,21 @@ ags_recall_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dy
 }
 
 void
+ags_recall_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_recall_get_name;
+  plugin->set_name = ags_recall_set_name;
+  plugin->get_version = ags_recall_get_version;
+  plugin->set_version = ags_recall_set_version;
+  plugin->get_build_id = ags_recall_get_build_id;
+  plugin->set_build_id = ags_recall_set_build_id;
+  plugin->get_xml_type = ags_recall_get_xml_type;
+  plugin->set_xml_type = ags_recall_set_xml_type;
+  plugin->get_ports = ags_recall_get_ports;
+  plugin->set_ports = NULL;
+}
+
+void
 ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
@@ -443,6 +479,8 @@ ags_recall_init(AgsRecall *recall)
 
   recall->effect = NULL;
   recall->name = NULL;
+
+  recall->xml_type = NULL;
 
   recall->dependency_names = NULL;
   recall->dependencies = NULL;
@@ -818,6 +856,60 @@ ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   }
 
   recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
+}
+
+gchar*
+ags_recall_get_name(AgsPlugin *plugin)
+{
+  return(AGS_RECALL(plugin)->name);
+}
+
+void
+ags_recall_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_RECALL(plugin)->name = name;
+}
+
+gchar*
+ags_recall_get_version(AgsPlugin *plugin)
+{
+  return(AGS_RECALL(plugin)->version);
+}
+
+void
+ags_recall_set_version(AgsPlugin *plugin, gchar *version)
+{
+  AGS_RECALL(plugin)->version = version;
+}
+
+gchar*
+ags_recall_get_build_id(AgsPlugin *plugin)
+{
+  return(AGS_RECALL(plugin)->build_id);
+}
+
+void
+ags_recall_set_build_id(AgsPlugin *plugin, gchar *build_id)
+{
+  AGS_RECALL(plugin)->build_id = build_id;
+}
+
+gchar*
+ags_recall_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_RECALL(plugin)->xml_type);
+}
+
+void
+ags_recall_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_RECALL(plugin)->xml_type = xml_type;
+}
+
+GList*
+ags_recall_get_ports(AgsPlugin *plugin)
+{
+  return(AGS_RECALL(plugin)->port);
 }
 
 void

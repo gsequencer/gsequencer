@@ -19,7 +19,11 @@
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -41,6 +45,8 @@ void ags_copy_audio_signal_connect(AgsConnectable *connectable);
 void ags_copy_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_copy_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_copy_audio_signal_set_ports(AgsPlugin *plugin, GList *ports);
+
 void ags_copy_audio_signal_finalize(GObject *gobject);
 
 void ags_copy_audio_signal_run_inter(AgsRecall *recall);
@@ -140,6 +146,12 @@ ags_copy_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableIn
 void
 ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal)
 {
+  AGS_RECALL(copy_audio_signal)->name = "ags-copy\0";
+  AGS_RECALL(copy_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_audio_signal)->xml_type = "ags-copy-audio-signal\0";
+  AGS_RECALL(copy_audio_signal)->port = NULL;
+
   AGS_RECALL(copy_audio_signal)->child_type = G_TYPE_NONE;
 }
 
@@ -177,6 +189,12 @@ ags_copy_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connecta
   ags_copy_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* empty */
+}
+
+void
+ags_copy_audio_signal_set_ports(AgsPlugin *plugin, GList *ports)
+{
+  //TODO:JK: implement me
 }
 
 void

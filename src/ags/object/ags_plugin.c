@@ -148,6 +148,31 @@ ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
   plugin_interface->set_xml_type(plugin, xml_type);
 }
 
+GList*
+ags_plugin_get_ports(AgsPlugin *plugin)
+{
+  AgsPluginInterface *plugin_interface;
+  GList *ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
+  plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
+  g_return_val_if_fail(plugin_interface->get_ports, NULL);
+  ret_val = plugin_interface->get_ports(plugin);
+
+  return(ret_val);
+}
+
+void
+ags_plugin_set_ports(AgsPlugin *plugin, GList *ports)
+{
+  AgsPluginInterface *plugin_interface;
+
+  g_return_if_fail(AGS_IS_PLUGIN(plugin));
+  plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
+  g_return_if_fail(plugin_interface->set_ports);
+  plugin_interface->set_ports(plugin, ports);
+}
+
 void
 ags_plugin_read(AgsFile *file,
 		xmlNode *node,

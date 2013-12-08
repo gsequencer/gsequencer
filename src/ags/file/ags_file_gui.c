@@ -139,6 +139,12 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
   guint i;
 
   id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-window\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -147,13 +153,6 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", window,
 				   NULL));
-  
-  node = xmlNewNode(NULL,
-		    "ags-window\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
@@ -216,6 +215,12 @@ ags_file_write_menu_bar(AgsFile *file, xmlNode *parent, AgsMenuBar *menu_bar)
   guint i;
 
   id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-menu-bar\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -224,13 +229,6 @@ ags_file_write_menu_bar(AgsFile *file, xmlNode *parent, AgsMenuBar *menu_bar)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", menu_bar,
 				   NULL));
-  
-  node = xmlNewNode(NULL,
-		    "ags-menu-bar\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlAddChild(parent,
 	      node);
@@ -282,6 +280,12 @@ ags_file_write_machine_counter(AgsFile *file, xmlNode *parent, AgsMachineCounter
   guint i;
 
   id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-machine-counter\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -290,13 +294,6 @@ ags_file_write_machine_counter(AgsFile *file, xmlNode *parent, AgsMachineCounter
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", machine_counter,
 				   NULL));
-  
-  node = xmlNewNode(NULL,
-		    "ags-machine-counter\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
@@ -362,6 +359,12 @@ ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machi
 
   id = ags_id_generator_create_uuid();
 
+  node = xmlNewNode(NULL,
+		    "ags-machine-counter-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -369,13 +372,6 @@ ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machi
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", list,
 				   NULL));
-
-  node = xmlNewNode(NULL,
-		    "ags-machine-counter-list\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlAddChild(parent,
 	      node);
@@ -570,6 +566,12 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 
   id = ags_id_generator_create_uuid();
 
+  node = xmlNewNode(NULL,
+		    "ags-machine\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -577,17 +579,10 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", machine,
 				   NULL));
-  
-  node = xmlNewNode(NULL,
-		    "ags-machine\0");
 
   xmlNewProp(node,
 	     AGS_FILE_TYPE_PROP,
 	     G_OBJECT_TYPE_NAME(machine));
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
@@ -751,6 +746,12 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 
   id = ags_id_generator_create_uuid();
 
+  node = xmlNewNode(NULL,
+		    "ags-machine-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -758,13 +759,6 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", list,
 				   NULL));
-
-  node = xmlNewNode(NULL,
-		    "ags-machine-list\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlAddChild(parent,
 	      node);
@@ -905,6 +899,12 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
   gchar *id;
 
   id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-pad\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -913,17 +913,10 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", pad,
 				   NULL));
-  
-  node = xmlNewNode(NULL,
-		    "ags-pad\0");
 
   xmlNewProp(node,
 	     AGS_FILE_TYPE_PROP,
 	     G_OBJECT_TYPE_NAME(pad));
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
@@ -1019,6 +1012,12 @@ ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 
   id = ags_id_generator_create_uuid();
 
+  node = xmlNewNode(NULL,
+		    "ags-pad-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -1026,13 +1025,6 @@ ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", list,
 				   NULL));
-
-  node = xmlNewNode(NULL,
-		    "ags-pad-list\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlAddChild(parent,
 	      node);
@@ -1172,6 +1164,12 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
   gchar *id;
 
   id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-line\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -1180,17 +1178,10 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", line,
 				   NULL));
-  
-  node = xmlNewNode(NULL,
-		    "ags-line\0");
 
   xmlNewProp(node,
 	     AGS_FILE_TYPE_PROP,
 	     G_OBJECT_TYPE_NAME(line));
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
@@ -1285,6 +1276,12 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 
   id = ags_id_generator_create_uuid();
 
+  node = xmlNewNode(NULL,
+		    "ags-line-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -1292,13 +1289,6 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", list,
 				   NULL));
-
-  node = xmlNewNode(NULL,
-		    "ags-line-list\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlAddChild(parent,
 	      node);
@@ -1479,6 +1469,12 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   GValue a;
 
   id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-line-member\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -1487,13 +1483,6 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", line_member,
 				   NULL));
-  
-  node = xmlNewNode(NULL,
-		    "ags-line-member\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
@@ -1683,6 +1672,12 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
 
   id = ags_id_generator_create_uuid();
 
+  node = xmlNewNode(NULL,
+		    "ags-line-member-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -1690,13 +1685,6 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
 				   "reference\0", list,
 				   NULL));
-
-  node = xmlNewNode(NULL,
-		    "ags-line-member-list\0");
-
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
 
   xmlAddChild(parent,
 	      node);

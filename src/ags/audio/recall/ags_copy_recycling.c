@@ -142,6 +142,12 @@ ags_copy_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInter
 void
 ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 {
+  AGS_RECALL(copy_channel_run)->name = "ags-copy\0";
+  AGS_RECALL(copy_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_channel_run)->xml_type = "ags-copy-recycling\0";
+  AGS_RECALL(copy_channel_run)->port = NULL;
+
   AGS_RECALL(copy_recycling)->child_type = AGS_TYPE_COPY_AUDIO_SIGNAL;
   AGS_RECALL_RECYCLING(copy_recycling)->flags |= AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION;
 }

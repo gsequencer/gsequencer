@@ -91,6 +91,8 @@ struct _AgsRecall
   gchar *effect;
   gchar *name;
 
+  gchar *xml_type;
+
   gchar **dependency_names;
   GList *dependencies;
 
