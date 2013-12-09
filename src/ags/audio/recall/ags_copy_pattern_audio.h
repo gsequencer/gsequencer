@@ -39,8 +39,8 @@ struct _AgsCopyPatternAudio
 {
   AgsRecallAudio recall_audio;
 
-  guint i;
-  guint j;
+  AgsPort *bank_index_0;
+  AgsPort *bank_index_1;
 };
 
 struct _AgsCopyPatternAudioClass

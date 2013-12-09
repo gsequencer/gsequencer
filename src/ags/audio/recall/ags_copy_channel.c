@@ -22,16 +22,8 @@
 
 #include <ags/main.h>
 
-#include <ags/util/ags_id_generator.h>
-
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-
-#include <libxml/tree.h>
 
 void ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel);
 void ags_copy_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -49,8 +41,6 @@ void ags_copy_channel_get_property(GObject *gobject,
 void ags_copy_channel_connect(AgsConnectable *connectable);
 void ags_copy_channel_disconnect(AgsConnectable *connectable);
 void ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port);
-void ags_copy_channel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_copy_channel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_copy_channel_finalize(GObject *gobject);
 
 void ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted);
@@ -142,8 +132,6 @@ void
 ags_copy_channel_plugin_interface_init(AgsPluginInterface *plugin)
 {
   plugin->set_ports = ags_copy_channel_set_ports;
-  plugin->read = ags_copy_channel_read;
-  plugin->write = ags_copy_channel_write;
 }
 
 void
@@ -306,41 +294,6 @@ ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port)
 
     port = port->next;
   }
-}
-
-void
-ags_copy_channel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
-				   "reference\0", G_OBJECT(plugin),
-				   NULL));
-}
-
-xmlNode*
-ags_copy_channel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  xmlNode *node;
-  gchar *id;
-
-  id = ags_id_generator_create_uuid();
-
-  node = xmlNewNode(NULL,
-		    "ags-copy-channel\0");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
-				   "reference\0", G_OBJECT(plugin),
-				   NULL));
 }
 
 void

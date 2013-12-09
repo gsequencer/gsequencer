@@ -370,16 +370,30 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       if(list != NULL){
+	GValue value = {0,};
+
+	g_value_init(&value, G_TYPE_UINT);
+	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	copy_pattern_audio->i = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
+	ags_port_safe_write(copy_pattern_audio->bank_index_0, &value);
+
+	g_value_unset(&value);
       }
 
       list = ags_recall_find_type(AGS_MACHINE(drum)->audio->recall,
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       if(list != NULL){
+	GValue value = {0,};
+
+	g_value_init(&value, G_TYPE_UINT);
+	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	copy_pattern_audio->i = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
+	ags_port_safe_write(copy_pattern_audio->bank_index_0, &value);
+
+	g_value_unset(&value);
       }
     }else if(! gtk_toggle_button_get_active(drum->selected0)){
       toggle_button = drum->selected0;
@@ -411,16 +425,30 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       if(list != NULL){
+	GValue value = {0,};
+
+	g_value_init(&value, G_TYPE_UINT);
+	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
+	ags_port_safe_write(copy_pattern_audio->bank_index_1, &value);
+
+	g_value_unset(&value);
       }
 
       list = ags_recall_find_type(AGS_MACHINE(drum)->audio->recall,
 				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
       if(list != NULL){
+	GValue value = {0,};
+
+	g_value_init(&value, G_TYPE_UINT);
+	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	copy_pattern_audio->j = GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX));
+	ags_port_safe_write(copy_pattern_audio->bank_index_1, &value);
+
+	g_value_unset(&value);
       }
     }else if(!gtk_toggle_button_get_active(drum->selected1)){
       toggle_button = drum->selected1;

@@ -17,12 +17,16 @@
  */
 
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
-
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/main.h>
+
+#include <ags/object/ags_plugin.h>
+
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
+void ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio);
 void ags_copy_pattern_audio_set_property(GObject *gobject,
 					 guint prop_id,
@@ -32,6 +36,7 @@ void ags_copy_pattern_audio_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
+void ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_copy_pattern_audio_finalize(GObject *gobject);
 
 enum{
@@ -69,6 +74,13 @@ ags_copy_pattern_audio_get_type()
   return(ags_type_copy_pattern_audio);
 }
 
+
+void
+ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->set_ports = ags_copy_pattern_audio_set_ports;
+}
+
 void
 ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 {
@@ -86,24 +98,20 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
   gobject->finalize = ags_copy_pattern_audio_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("bank_index_0\0",
-				 "current bank index 0\0",
-				 "The current bank index 0 of the AgsPattern\0",
-				 0,
-				 256,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("bank-index-0\0",
+				   "current bank index 0\0",
+				   "The current bank index 0 of the AgsPattern\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BANK_INDEX_0,
 				  param_spec);
 
-  param_spec = g_param_spec_uint("bank_index_1\0",
-				 "current bank index 1\0",
-				 "The current bank index 1 of the AgsPattern\0",
-				 0,
-				 256,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("bank-index-1\0",
+				   "current bank index 1\0",
+				   "The current bank index 1 of the AgsPattern\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BANK_INDEX_1,
 				  param_spec);
@@ -112,8 +120,42 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 void
 ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 {
-  copy_pattern_audio->i = 0;
-  copy_pattern_audio->j = 0;
+  GList *port;
+
+  AGS_RECALL(copy_pattern_audio)->name = "ags-copy-pattern\0";
+  AGS_RECALL(copy_pattern_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_pattern_audio)->xml_type = "ags-copy-pattern-audio\0";
+
+  port = NULL;
+
+  copy_pattern_audio->bank_index_0 = g_object_new(AGS_TYPE_PORT,
+						  "plugin-name\0", g_strdup("ags-copy\0"),
+						  "specifier\0", "./bank-index-0[0]\0",
+						  "control-port\0", "1/1\0",
+						  "port-value-is-pointer\0", FALSE,
+						  "port-value-type\0", G_TYPE_UINT,
+						  "port-value-size\0", sizeof(gboolean),
+						  "port-value-length\0", 1,
+						  NULL);
+  copy_pattern_audio->bank_index_0->port_value.ags_port_uint = 0;
+
+  port = g_list_prepend(port, copy_pattern_audio->bank_index_0);
+
+  copy_pattern_audio->bank_index_1 = g_object_new(AGS_TYPE_PORT,
+						  "plugin-name\0", g_strdup("ags-copy\0"),
+						  "specifier\0", "./bank-index-0[0]\0",
+						  "control-port\0", "1/1\0",
+						  "port-value-is-pointer\0", FALSE,
+						  "port-value-type\0", G_TYPE_UINT,
+						  "port-value-size\0", sizeof(gboolean),
+						  "port-value-length\0", 1,
+						  NULL);
+  copy_pattern_audio->bank_index_1->port_value.ags_port_uint = 0;
+
+  port = g_list_prepend(port, copy_pattern_audio->bank_index_1);
+
+  AGS_RECALL(copy_pattern_audio)->port = port;
 }
 
 void
@@ -129,20 +171,44 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_BANK_INDEX_0:
     {
-      guint i;
+      AgsPort *port;
 
-      i = g_value_get_uint(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-      copy_pattern_audio->i = i;
+      if(port == copy_pattern_audio->bank_index_0){
+	return;
+      }
+
+      if(copy_pattern_audio->bank_index_0 != NULL){
+	g_object_unref(G_OBJECT(copy_pattern_audio->bank_index_0));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      copy_pattern_audio->bank_index_0 = port;
     }
     break;
   case PROP_BANK_INDEX_1:
     {
-      guint j;
+      AgsPort *port;
 
-      j = g_value_get_uint(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-      copy_pattern_audio->j = j;
+      if(port == copy_pattern_audio->bank_index_1){
+	return;
+      }
+
+      if(copy_pattern_audio->bank_index_1 != NULL){
+	g_object_unref(G_OBJECT(copy_pattern_audio->bank_index_1));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      copy_pattern_audio->bank_index_1 = port;
     }
     break;
   default:
@@ -157,25 +223,48 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
 				    GValue *value,
 				    GParamSpec *param_spec)
 {
-  AgsCopyPatternAudio *copy_pattern;
+  AgsCopyPatternAudio *copy_pattern_audio;
   
-  copy_pattern = AGS_COPY_PATTERN_AUDIO(gobject);
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
 
   switch(prop_id){
   case PROP_BANK_INDEX_0:
     {
-      g_value_set_uint(value, copy_pattern->i);
+      g_value_set_object(value, copy_pattern_audio->bank_index_0);
     }
     break;
   case PROP_BANK_INDEX_1:
     {
-      g_value_set_uint(value, copy_pattern->j);
+      g_value_set_object(value, copy_pattern_audio->bank_index_1);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   };
+}
+
+void
+ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"bank-index-0[0]\0",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "bank-index-0\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "bank-index-1[0]\0",
+		      9)){
+      g_object_set(G_OBJECT(plugin),
+		   "bank-index-1\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+
+    port = port->next;
+  }
 }
 
 void

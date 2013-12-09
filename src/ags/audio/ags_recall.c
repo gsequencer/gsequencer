@@ -22,12 +22,18 @@
 
 #include <ags/main.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -45,6 +51,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <libxml/tree.h>
 
 void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -77,6 +85,8 @@ void ags_recall_set_build_id(AgsPlugin *plugin, gchar *build_id);
 gchar* ags_recall_get_xml_type(AgsPlugin *plugin);
 void ags_recall_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 GList* ags_recall_get_ports(AgsPlugin *plugin);
+void ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_recall_finalize(GObject *recall);
 
 void ags_recall_real_run_init_pre(AgsRecall *recall);
@@ -463,6 +473,8 @@ ags_recall_plugin_interface_init(AgsPluginInterface *plugin)
   plugin->get_xml_type = ags_recall_get_xml_type;
   plugin->set_xml_type = ags_recall_set_xml_type;
   plugin->get_ports = ags_recall_get_ports;
+  plugin->read = ags_recall_read;
+  plugin->write = ags_recall_write;
   plugin->set_ports = NULL;
 }
 
@@ -910,6 +922,44 @@ GList*
 ags_recall_get_ports(AgsPlugin *plugin)
 {
   return(AGS_RECALL(plugin)->port);
+}
+
+void
+ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", G_OBJECT(plugin),
+				   NULL));
+}
+
+xmlNode*
+ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    AGS_RECALL(plugin)->xml_type);
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", G_OBJECT(plugin),
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
