@@ -17,15 +17,17 @@
  */
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
 #include <ags/object/ags_seekable.h>
 
 #include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_count_beats_audio.h>
 
 #include <math.h>
 
@@ -324,6 +326,12 @@ ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *counta
 void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
+  AGS_RECALL(count_beats_audio_run)->name = "ags-count-beats\0";
+  AGS_RECALL(count_beats_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(count_beats_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(count_beats_audio_run)->xml_type = "ags-count-beats-audio-run\0";
+  AGS_RECALL(count_beats_audio_run)->port = NULL;
+
   count_beats_audio_run->notation_counter = 0;
   count_beats_audio_run->sequencer_counter = 0;
 

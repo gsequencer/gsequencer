@@ -259,13 +259,13 @@ ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port)
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
 		"bank-index-0[0]\0",
-		9)){
+		16)){
       g_object_set(G_OBJECT(plugin),
 		   "bank-index-0\0", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
 		      "bank-index-1[0]\0",
-		      9)){
+		      16)){
       g_object_set(G_OBJECT(plugin),
 		   "bank-index-1\0", AGS_PORT(port->data),
 		   NULL);

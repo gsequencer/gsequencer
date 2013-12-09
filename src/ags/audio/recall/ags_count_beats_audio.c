@@ -17,11 +17,15 @@
  */
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
-
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
+
+#include <ags/main.h>
+
+#include <ags/object/ags_plugin.h>
 
 void ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio);
 void ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio);
+void ags_count_beats_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_count_beats_audio_set_property(GObject *gobject,
 					guint prop_id,
 					const GValue *value,
@@ -30,6 +34,7 @@ void ags_count_beats_audio_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
+void ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_count_beats_audio_finalize(GObject *gobject);
 
 enum{
@@ -61,13 +66,29 @@ ags_count_beats_audio_get_type()
       (GInstanceInitFunc) ags_count_beats_audio_init,
     };
     
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_count_beats_audio_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
     ags_type_count_beats_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 							"AgsCountBeatsAudio\0",
 							&ags_count_beats_audio_info,
 							0);
+
+    g_type_add_interface_static(ags_type_count_beats_audio,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_count_beats_audio);
+}
+
+void
+ags_count_beats_audio_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->set_ports = ags_count_beats_audio_set_ports;
 }
 
 void
@@ -136,6 +157,11 @@ void
 ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 {
   GList *port;
+
+  AGS_RECALL(count_beats_audio)->name = "ags-count-beats\0";
+  AGS_RECALL(count_beats_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(count_beats_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(count_beats_audio)->xml_type = "ags-count-beats-audio\0";
 
   port = NULL;
 
@@ -380,6 +406,46 @@ ags_count_beats_audio_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   };
+}
+
+void
+ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"loop[0]\0",
+		8)){
+      g_object_set(G_OBJECT(plugin),
+		   "loop\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "notation-loop-start[0]\0",
+		      23)){
+      g_object_set(G_OBJECT(plugin),
+		   "notation-loop-start\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "notation-loop-end[0]\0",
+		      21)){
+      g_object_set(G_OBJECT(plugin),
+		   "notation-loop-end\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "sequencer-loop-start[0]\0",
+		      24)){
+      g_object_set(G_OBJECT(plugin),
+		   "sequencer-loop-start\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "sequencer-loop-end[0]\0",
+		      22)){
+      g_object_set(G_OBJECT(plugin),
+		   "sequencer-loop-end\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
 }
 
 void

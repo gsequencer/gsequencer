@@ -17,17 +17,18 @@
  */
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
-
-#include <ags/object/ags_marshal.h>
+#include <ags/audio/recall/ags_delay_audio.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
 
 #include <stdlib.h>
 #include <math.h>
@@ -238,6 +239,12 @@ ags_delay_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInte
 void
 ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 {
+  AGS_RECALL(delay_audio_run)->name = "ags-delay\0";
+  AGS_RECALL(delay_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(delay_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(delay_audio_run)->xml_type = "ags-delay-audio-run\0";
+  AGS_RECALL(delay_audio_run)->port = NULL;
+
   delay_audio_run->dependency_ref = 0;
 
   delay_audio_run->hide_ref = 0;
