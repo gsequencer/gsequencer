@@ -17,12 +17,16 @@
  */
 
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
-
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/main.h>
+
+#include <ags/object/ags_plugin.h>
+
 void ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_channel);
+void ags_copy_pattern_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel);
 void ags_copy_pattern_channel_set_property(GObject *gobject,
 					   guint prop_id,
@@ -32,6 +36,7 @@ void ags_copy_pattern_channel_get_property(GObject *gobject,
 					   guint prop_id,
 					   GValue *value,
 					   GParamSpec *param_spec);
+void ags_copy_pattern_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_copy_pattern_channel_finalize(GObject *gobject);
 
 enum{
@@ -59,13 +64,29 @@ ags_copy_pattern_channel_get_type()
       (GInstanceInitFunc) ags_copy_pattern_channel_init,
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_copy_pattern_channel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };    
+
     ags_type_copy_pattern_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 							   "AgsCopyPatternChannel\0",
 							   &ags_copy_pattern_channel_info,
 							   0);
+
+    g_type_add_interface_static(ags_type_copy_pattern_channel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_copy_pattern_channel);
+}
+
+void
+ags_copy_pattern_channel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->set_ports = ags_copy_pattern_channel_set_ports;
 }
 
 void
@@ -98,6 +119,15 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
 void
 ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
 {
+  GList *port;
+
+  AGS_RECALL(copy_pattern_channel)->name = "ags-copy-pattern\0";
+  AGS_RECALL(copy_pattern_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_pattern_channel)->xml_type = "ags-copy-pattern-channel\0";
+  
+  port = NULL;
+
   copy_pattern_channel->pattern = g_object_new(AGS_TYPE_PORT,
 					       "plugin-name\0", g_strdup("ags-copy-pattern\0"),
 					       "specifier\0", "./pattern[0]\0",
@@ -107,6 +137,10 @@ ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
 					       NULL);
 
   copy_pattern_channel->pattern->port_value.ags_port_object = NULL;
+
+  port = g_list_prepend(port, copy_pattern_channel->pattern);
+
+  AGS_RECALL(copy_pattern_channel)->port = port;
 }
 
 void
@@ -163,6 +197,22 @@ ags_copy_pattern_channel_get_property(GObject *gobject,
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
+  }
+}
+
+void
+ags_copy_pattern_channel_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"pattern[0]\0",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "pattern\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
   }
 }
 

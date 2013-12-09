@@ -19,6 +19,9 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_recall_container.h>
@@ -161,6 +164,12 @@ ags_copy_pattern_audio_run_dynamic_connectable_interface_init(AgsDynamicConnecta
 void
 ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
+  AGS_RECALL(copy_pattern_audio_run)->name = "ags-copy-pattern\0";
+  AGS_RECALL(copy_pattern_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_pattern_audio_run)->xml_type = "ags-copy-pattern-audio-run\0";
+  AGS_RECALL(copy_pattern_audio_run)->port = NULL;
+
   copy_pattern_audio_run->hide_ref = 0;
   copy_pattern_audio_run->hide_ref_counter = 0;
 
