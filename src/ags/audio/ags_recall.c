@@ -494,7 +494,6 @@ ags_recall_init(AgsRecall *recall)
 
   recall->xml_type = NULL;
 
-  recall->dependency_names = NULL;
   recall->dependencies = NULL;
 
   recall->recall_id = NULL;

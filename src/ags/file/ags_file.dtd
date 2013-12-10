@@ -36,7 +36,6 @@
 <!ELEMENT ags-dependency EMPTY>
 <!ATTLIST ags-dependency
 	  id               ID         #REQUIRED
-	  name             CDATA      #REQUIRED
 	  xpath            CDATA      #REQUIRED
 	  >
 

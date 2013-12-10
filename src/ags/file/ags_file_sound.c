@@ -46,10 +46,6 @@ void ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 					 AgsRecall *recall);
 void ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 					  AgsRecall *recall);
-void ags_file_read_recall_resolve_dependency(AgsFileLookup *file_lookup,
-					     AgsRecall *recall);
-void ags_file_write_recall_resolve_dependency(AgsFileLookup *file_lookup,
-					      AgsRecall *recall);
 
 void ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
 					  AgsTask *task);
@@ -1326,8 +1322,8 @@ ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 void
 ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 {
-  AgsRecall *gobject;
   AgsFileLookup *file_lookup;
+  AgsRecall *gobject;
   xmlNode *child;
   xmlChar *type_name;
 
@@ -1445,27 +1441,6 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
 	g_list_free(start);
       }else if(!xmlStrncmp(child->name,
-			   "ags-dependency-list\0",
-			   19)){
-	xmlNode *dependency_node;
-
-	dependency_node = child->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							 "file\0", file,
-							 "node\0", dependency_node,
-							 "reference\0", gobject,
-							 NULL);
-	    ags_file_add_lookup(file, (GObject *) file_lookup);
-	    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			     G_CALLBACK(ags_file_read_recall_resolve_dependency), gobject);
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
 	ags_file_util_read_parameter(child,
@@ -1493,29 +1468,11 @@ ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
   recall->devout = (GObject *) id_ref->ref;
 }
 
-void
-ags_file_read_recall_resolve_dependency(AgsFileLookup *file_lookup,
-					AgsRecall *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath\0");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  g_object_set(G_OBJECT(recall),
-	       xmlGetProp(file_lookup->node, "name\0"), id_ref->ref,
-	       NULL);
-}
-
 xmlNode*
 ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 {
   AgsFileLookup *file_lookup;
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
+  xmlNode *node;
   GList *list;
   gchar *id;
   guint i;
@@ -1607,46 +1564,6 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
 			       recall->children);
   }
   
-  /* dependencies */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list\0");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  list = recall->dependencies;
-
-  for(i = 0; list != NULL; i++){
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency\0");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       ags_id_generator_create_uuid());
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_NAME_PROP,
-	       recall->dependency_names[i]);
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file\0", file,
-						 "node\0", dependency_node,
-						 "reference\0", list->data,
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		     G_CALLBACK(ags_file_write_recall_resolve_dependency), recall);
-
-    list = list->next;
-  }
-
-  xmlAddChild(node,
-	      child);
-
   /* child parameters */
   ags_file_util_write_parameter(file,
 				node,
@@ -1669,23 +1586,6 @@ ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 
   xmlNewProp(file_lookup->node,
 	     "devout\0",
-	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
-}
-
-void
-ags_file_write_recall_resolve_dependency(AgsFileLookup *file_lookup,
-					 AgsRecall *recall)
-{
-
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath\0",
 	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
 }
 

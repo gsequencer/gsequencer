@@ -93,7 +93,6 @@ struct _AgsRecall
 
   gchar *xml_type;
 
-  gchar **dependency_names;
   GList *dependencies;
 
   AgsRecallID *recall_id;

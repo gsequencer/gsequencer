@@ -53,6 +53,7 @@ enum{
 static gpointer ags_copy_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_copy_channel_parent_mutable_interface;
+static AgsPluginInterface *ags_copy_channel_parent_plugin_interface;
 
 GType
 ags_copy_channel_get_type()
@@ -131,6 +132,8 @@ ags_copy_channel_mutable_interface_init(AgsMutableInterface *mutable)
 void
 ags_copy_channel_plugin_interface_init(AgsPluginInterface *plugin)
 {
+  ags_copy_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
   plugin->set_ports = ags_copy_channel_set_ports;
 }
 
