@@ -1349,26 +1349,11 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 void
 ags_thread_real_start(AgsThread *thread)
 {
-  AgsThread *main_loop;
-  guint current_tic;
   guint val;
 
   if(thread == NULL){
     return;
   }
-
-  /*  */
-  main_loop = ags_thread_get_toplevel(thread);
-
-  ags_thread_lock(main_loop);
-
-  current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-  g_atomic_int_or(&(thread->flags),
-		  (AGS_THREAD_RUNNING |
-		   AGS_THREAD_INITIAL_RUN));
-  
-  ags_thread_unlock(main_loop);
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
@@ -1462,7 +1447,16 @@ ags_thread_loop(void *ptr)
 
   main_loop = ags_thread_get_toplevel(thread);
 
+  /*  */
+  ags_thread_lock(main_loop);
+
   current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_RUNNING |
+		   AGS_THREAD_INITIAL_RUN));
+  
+  ags_thread_unlock(main_loop);
 
   running = g_atomic_int_get(&(thread->flags));
 

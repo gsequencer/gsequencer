@@ -1091,7 +1091,7 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   if(channel->pattern != NULL){
     ags_file_write_pattern_list(file,
 				node,
-				channel->recall);
+				channel->pattern);
   }
 
   /* ags-input or ags-output */
