@@ -17,8 +17,12 @@
  */
 
 #include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/recall/ags_stream_recycling.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -27,8 +31,6 @@
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/task/ags_cancel_recall.h>
-
-#include <ags/audio/recall/ags_stream_recycling.h>
 
 void ags_stream_channel_run_class_init(AgsStreamChannelRunClass *stream_channel_run);
 void ags_stream_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -135,6 +137,12 @@ ags_stream_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableI
 void
 ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run)
 {
+  AGS_RECALL(stream_channel_run)->name = "ags-stream\0";
+  AGS_RECALL(stream_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(stream_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_channel_run)->xml_type = "ags-stream-audio-signal\0";
+  AGS_RECALL(stream_channel_run)->port = NULL;
+
   AGS_RECALL(stream_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(stream_channel_run)->child_type = AGS_TYPE_STREAM_RECYCLING;
 }

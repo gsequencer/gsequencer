@@ -17,17 +17,19 @@
  */
 
 #include <ags/audio/recall/ags_volume_recycling.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_volume_audio_signal.h>
+
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
 
 #include <ags/lib/ags_parameter.h>
 
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_audio_signal.h>
 
 void ags_volume_recycling_class_init(AgsVolumeRecyclingClass *volume_recycling);
 void ags_volume_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -135,6 +137,12 @@ ags_volume_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_volume_recycling_init(AgsVolumeRecycling *volume_recycling)
 {
+  AGS_RECALL(volume_recycling)->name = "ags-volume\0";
+  AGS_RECALL(volume_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(volume_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(volume_recycling)->xml_type = "ags-volume-recycling\0";
+  AGS_RECALL(volume_recycling)->port = NULL;
+
   AGS_RECALL(volume_recycling)->child_type = AGS_TYPE_VOLUME_AUDIO_SIGNAL;
 }
 

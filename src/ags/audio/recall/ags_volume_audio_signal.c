@@ -17,16 +17,18 @@
  */
 
 #include <ags/audio/recall/ags_volume_audio_signal.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
 
 #include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
 
-#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
-
-#include <ags/audio/recall/ags_volume_channel.h>
 
 void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signal);
 void ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -149,7 +151,11 @@ ags_volume_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectable
 void
 ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal)
 {
-  /* empty */
+  AGS_RECALL(volume_audio_signal)->name = "ags-volume\0";
+  AGS_RECALL(volume_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(volume_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(volume_audio_signal)->xml_type = "ags-volume-audio-signal\0";
+  AGS_RECALL(volume_audio_signal)->port = NULL;
 }
 
 void

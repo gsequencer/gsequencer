@@ -17,6 +17,7 @@
  */
 
 #include <ags/audio/recall/ags_stream_recycling.h>
+#include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <ags/main.h>
 
@@ -28,8 +29,6 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
-
-#include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
 
@@ -143,6 +142,12 @@ ags_stream_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_stream_recycling_init(AgsStreamRecycling *stream_recycling)
 {
+  AGS_RECALL(stream_recycling)->name = "ags-stream\0";
+  AGS_RECALL(stream_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(stream_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_recycling)->xml_type = "ags-stream-recycling\0";
+  AGS_RECALL(stream_recycling)->port = NULL;
+
   AGS_RECALL(stream_recycling)->child_type = AGS_TYPE_STREAM_AUDIO_SIGNAL;
 }
 

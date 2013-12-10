@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_channel_init(AgsStreamChannel *stream_channel);
@@ -93,7 +95,11 @@ ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_stream_channel_init(AgsStreamChannel *stream_channel)
 {
-  /* empty */
+  AGS_RECALL(stream_channel)->name = "ags-stream\0";
+  AGS_RECALL(stream_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(stream_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_channel)->xml_type = "ags-stream-channel\0";
+  AGS_RECALL(stream_channel)->port = NULL;
 }
 
 void
