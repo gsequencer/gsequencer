@@ -420,7 +420,7 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
   if(id_ref == NULL)
     return;
 
-  g_object_ref(G_OBJECT(id_ref));
+  g_object_ref(id_ref);
 
   file->id_refs = g_list_prepend(file->id_refs,
 				 id_ref);

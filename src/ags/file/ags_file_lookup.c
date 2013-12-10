@@ -153,12 +153,16 @@ ags_file_lookup_set_property(GObject *gobject,
 
       file = (AgsFile *) g_value_get_object(value);
 
+      if(file_lookup->file == file){
+	return;
+      }
+
       if(file_lookup->file != NULL){
 	g_object_unref(G_OBJECT(file_lookup->file));
       }
 
       if(file != NULL){
-	g_object_ref(G_OBJECT(file_lookup->file));
+	g_object_ref(file);
       }
 
       file_lookup->file = file;

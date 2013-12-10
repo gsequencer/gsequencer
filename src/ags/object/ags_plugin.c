@@ -183,7 +183,7 @@ ags_plugin_read(AgsFile *file,
   g_return_if_fail(AGS_IS_PLUGIN(plugin));
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
   g_return_if_fail(plugin_interface->read);
-  plugin_interface->read(plugin, node, plugin);
+  plugin_interface->read(file, node, plugin);
 }
 
 xmlNode*
@@ -197,7 +197,7 @@ ags_plugin_write(AgsFile *file,
   g_return_val_if_fail(AGS_IS_PLUGIN(plugin), NULL);
   plugin_interface = AGS_PLUGIN_GET_INTERFACE(plugin);
   g_return_val_if_fail(plugin_interface->write, NULL);
-  ret_val = plugin_interface->write(plugin, parent, plugin);
+  ret_val = plugin_interface->write(file, parent, plugin);
 
   return(ret_val);
 }

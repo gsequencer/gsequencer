@@ -714,6 +714,8 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
   xmlAddChild(node,
 	      child);
 
+  //TODO:JK: generate id and add id ref
+
   while(channel != NULL){
     ags_file_write_channel(file,
 			   child,
@@ -729,6 +731,8 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 		     "ags-channel-list\0");
   xmlAddChild(node,
 	      child);
+
+  //TODO:JK: generate id and add id ref
 
   while(channel != NULL){
     ags_file_write_channel(file,

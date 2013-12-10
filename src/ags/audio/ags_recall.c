@@ -955,11 +955,13 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "main\0", file->ags_main,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
-				   "reference\0", G_OBJECT(plugin),
+				   "reference\0", plugin,
 				   NULL));
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
