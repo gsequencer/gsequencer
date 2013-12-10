@@ -18,11 +18,16 @@
 
 #include <ags/audio/recall/ags_loop_channel_run.h>
 
+#include <ags/object/ags_dynamic_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/lib/ags_list.h>
 
 #include <ags-lib/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
+
 #include <ags/object/ags_countable.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -179,6 +184,12 @@ ags_loop_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run)
 {
+  AGS_RECALL(loop_channel_run)->name = "ags-loop\0";
+  AGS_RECALL(loop_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(loop_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(loop_channel_run)->xml_type = "ags-loop-channel-run\0";
+  AGS_RECALL(loop_channel_run)->port = NULL;
+
   AGS_RECALL(loop_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(loop_channel_run)->child_type = G_TYPE_NONE;
 

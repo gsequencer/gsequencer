@@ -18,13 +18,17 @@
 
 #include <ags/audio/recall/ags_mute_audio.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_mutable.h>
+#include <ags/object/ags_plugin.h>
 
 void ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio);
 void ags_mute_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mute_audio_mutable_interface_init(AgsMutableInterface *mutable);
+void ags_mute_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_mute_audio_init(AgsMuteAudio *mute_audio);
 void ags_mute_audio_set_property(GObject *gobject,
 				   guint prop_id,
@@ -36,6 +40,7 @@ void ags_mute_audio_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_mute_audio_connect(AgsConnectable *connectable);
 void ags_mute_audio_disconnect(AgsConnectable *connectable);
+void ags_mute_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_mute_audio_finalize(GObject *gobject);
 
 void ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted);
@@ -78,6 +83,12 @@ ags_mute_audio_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_mute_audio_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_mute_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 						 "AgsMuteAudio\0",
@@ -91,6 +102,10 @@ ags_mute_audio_get_type()
     g_type_add_interface_static(ags_type_mute_audio,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
+
+    g_type_add_interface_static(ags_type_mute_audio,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_mute_audio);
@@ -141,8 +156,23 @@ ags_mute_audio_mutable_interface_init(AgsMutableInterface *mutable)
 }
 
 void
+ags_mute_audio_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->set_ports = ags_mute_audio_set_ports;
+}
+
+void
 ags_mute_audio_init(AgsMuteAudio *mute_audio)
 {
+  GList *port;
+
+  AGS_RECALL(mute_audio)->name = "ags-mute\0";
+  AGS_RECALL(mute_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(mute_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_audio)->xml_type = "ags-mute-audio\0";
+
+  port = NULL;
+
   mute_audio->muted = g_object_new(AGS_TYPE_PORT,
 				   "plugin-name\0", g_strdup("ags-mute\0"),
 				   "specifier\0", "./muted[0]\0",
@@ -153,6 +183,11 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
 				   "port-value-length\0", 1,
 				   NULL);
   mute_audio->muted->port_value.ags_port_boolean = FALSE;
+
+  port = g_list_prepend(port, mute_audio->muted);
+
+  /*  */
+  AGS_RECALL(mute_audio)->port = port;
 }
 
 
@@ -217,21 +252,6 @@ ags_mute_audio_get_property(GObject *gobject,
 }
 
 void
-ags_mute_audio_finalize(GObject *gobject)
-{
-  AgsMuteAudio *mute_audio;
-
-  mute_audio = AGS_MUTE_AUDIO(gobject);
-
-  if(mute_audio->muted != NULL){
-    g_object_unref(G_OBJECT(mute_audio->muted));
-  }
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_mute_audio_parent_class)->finalize(gobject);
-}
-
-void
 ags_mute_audio_connect(AgsConnectable *connectable)
 {
   ags_mute_audio_parent_connectable_interface->connect(connectable);
@@ -245,6 +265,37 @@ ags_mute_audio_disconnect(AgsConnectable *connectable)
   ags_mute_audio_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_mute_audio_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"muted[0]\0",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "muted\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
+}
+
+void
+ags_mute_audio_finalize(GObject *gobject)
+{
+  AgsMuteAudio *mute_audio;
+
+  mute_audio = AGS_MUTE_AUDIO(gobject);
+
+  if(mute_audio->muted != NULL){
+    g_object_unref(G_OBJECT(mute_audio->muted));
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_mute_audio_parent_class)->finalize(gobject);
 }
 
 void

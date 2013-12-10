@@ -19,6 +19,9 @@
 #include <ags/audio/recall/ags_mute_recycling.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/recall/ags_mute_audio_signal.h>
@@ -142,6 +145,12 @@ ags_mute_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInter
 void
 ags_mute_recycling_init(AgsMuteRecycling *mute_recycling)
 {
+  AGS_RECALL(mute_recycling)->name = "ags-mute\0";
+  AGS_RECALL(mute_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(mute_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_recycling)->xml_type = "ags-mute-recycling\0";
+  AGS_RECALL(mute_recycling)->port = NULL;
+
   AGS_RECALL(mute_recycling)->child_type = AGS_TYPE_MUTE_AUDIO_SIGNAL;
 }
 

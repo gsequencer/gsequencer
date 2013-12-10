@@ -17,14 +17,16 @@
  */
 
 #include <ags/audio/recall/ags_mute_channel_run.h>
+#include <ags/audio/recall/ags_mute_recycling.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/recall/ags_mute_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -133,6 +135,12 @@ ags_mute_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_mute_channel_run_init(AgsMuteChannelRun *mute_channel_run)
 {
+  AGS_RECALL(mute_channel_run)->name = "ags-mute\0";
+  AGS_RECALL(mute_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(mute_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_channel_run)->xml_type = "ags-mute-channel-run\0";
+  AGS_RECALL(mute_channel_run)->port = NULL;
+
   AGS_RECALL(mute_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
 					  AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(mute_channel_run)->child_type = AGS_TYPE_MUTE_RECYCLING;

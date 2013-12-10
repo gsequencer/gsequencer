@@ -17,6 +17,7 @@
  */
 
 #include <ags/audio/recall/ags_copy_channel_run.h>
+#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -26,8 +27,6 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>

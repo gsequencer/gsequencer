@@ -18,7 +18,11 @@
 
 #include <ags/audio/recall/ags_loop_channel.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/object/ags_plugin.h>
 
 #include <math.h>
 
@@ -125,6 +129,12 @@ ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_loop_channel_init(AgsLoopChannel *loop_channel)
 {
+  AGS_RECALL(loop_channel)->name = "ags-loop\0";
+  AGS_RECALL(loop_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(loop_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(loop_channel)->xml_type = "ags-loop-channel\0";
+  AGS_RECALL(loop_channel)->port = NULL;
+
   loop_channel->delay_audio = NULL;
   loop_channel->sequencer_duration_changed_handler = 0;
 }
