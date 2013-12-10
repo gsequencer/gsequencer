@@ -22,12 +22,18 @@
 
 #include <ags/main.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/lib/ags_list.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_countable.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -41,6 +47,7 @@
 void ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run);
 void ags_loop_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_loop_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
+void ags_loop_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run);
 void ags_loop_channel_run_set_property(GObject *gobject,
 				       guint prop_id,
@@ -55,6 +62,8 @@ void ags_loop_channel_run_connect(AgsConnectable *connectable);
 void ags_loop_channel_run_disconnect(AgsConnectable *connectable);
 void ags_loop_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_loop_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
+void ags_loop_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_loop_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_loop_channel_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_loop_channel_run_duplicate(AgsRecall *recall,
@@ -74,6 +83,11 @@ void ags_loop_channel_run_stop_callback(AgsCountBeatsAudioRun *count_beats_audio
 					guint run_order,
 					AgsLoopChannelRun *loop_channel_run);
 
+void ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
+						   AgsPlugin *plugin);
+void ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
+						  AgsPlugin *plugin);
+
 enum{
   PROP_0,
   PROP_COUNT_BEATS_AUDIO_RUN,
@@ -82,6 +96,7 @@ enum{
 static gpointer ags_loop_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_loop_channel_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_loop_channel_run_parent_dynamic_connectable_interface;
+static AgsPluginInterface *ags_loop_channel_run_parent_plugin_interface;
 
 GType
 ags_loop_channel_run_get_type()
@@ -179,6 +194,15 @@ ags_loop_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 
   dynamic_connectable->connect_dynamic = ags_loop_channel_run_connect_dynamic;
   dynamic_connectable->disconnect_dynamic = ags_loop_channel_run_disconnect_dynamic;
+}
+
+void
+ags_loop_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_loop_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->read = ags_loop_channel_run_read;
+  plugin->write = ags_loop_channel_run_write;
 }
 
 void
@@ -375,6 +399,98 @@ ags_loop_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
 }
 
 void
+ags_loop_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *iter;
+
+  /* read parent */
+  ags_loop_channel_run_parent_plugin_interface->read(file, node, plugin);
+
+  /* read depenendency */
+  iter = node->parent->parent->children;
+
+  while(iter != NULL){
+    if(iter->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(iter->name,
+		     "ags-dependency-list\0",
+		     19)){
+	xmlNode *dependency_node;
+
+	dependency_node = iter->children;
+
+	while(dependency_node != NULL){
+	  if(dependency_node->type == XML_ELEMENT_NODE){
+	    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+							 "file\0", file,
+							 "node\0", dependency_node,
+							 "reference\0", plugin,
+							 NULL);
+	    ags_file_add_lookup(file, (GObject *) file_lookup);
+	    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_loop_channel_run_read_resolve_dependency), plugin);
+	  }
+	  
+	  dependency_node = dependency_node->next;
+	}
+      }
+    }
+
+    iter = iter->next;
+  }
+}
+
+xmlNode*
+ags_loop_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *node, *child;
+  xmlNode *dependency_node;
+  GList *list;
+
+  /* write parent */
+  node = ags_loop_channel_run_parent_plugin_interface->write(file, parent, plugin);
+
+  /* write dependencies */
+  child = xmlNewNode(NULL,
+		     "ags-dependency-list\0");
+
+  xmlNewProp(child,
+	     AGS_FILE_ID_PROP,
+	     ags_id_generator_create_uuid());
+
+  list = AGS_RECALL(plugin)->dependencies;
+
+  while(list != NULL){
+    dependency_node = xmlNewNode(NULL,
+				 "ags-dependency\0");
+
+    xmlNewProp(dependency_node,
+	       AGS_FILE_ID_PROP,
+	       ags_id_generator_create_uuid());
+
+    xmlAddChild(child,
+		dependency_node);
+
+    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						 "file\0", file,
+						 "node\0", dependency_node,
+						 "reference\0", list->data,
+						 NULL);
+    ags_file_add_lookup(file, (GObject *) file_lookup);
+    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		     G_CALLBACK(ags_loop_channel_run_write_resolve_dependency), plugin);
+
+    list = list->next;
+  }
+
+  xmlAddChild(parent->parent,
+	      child);
+
+  return(node);
+}
+
+void
 ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
 {
   AgsAudio *audio;
@@ -514,6 +630,41 @@ ags_loop_channel_run_stop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				   guint run_order,
 				   AgsLoopChannelRun *loop_channel_run)
 {
+}
+
+void
+ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
+					      AgsPlugin *plugin)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "xpath\0",
+	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
+}
+
+void
+ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
+					     AgsPlugin *plugin)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "xpath\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
+    g_object_set(G_OBJECT(plugin),
+		 "count-beats-audio-run\0", id_ref->ref,
+		 NULL);
+  }
 }
 
 AgsLoopChannelRun*

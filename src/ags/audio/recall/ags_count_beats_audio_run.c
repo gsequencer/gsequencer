@@ -1072,7 +1072,6 @@ void
 ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 						   AgsPlugin *plugin)
 {
-
   AgsFileIdRef *id_ref;
   gchar *id;
 
