@@ -49,7 +49,7 @@ struct _AgsFileIdRef
 
   xmlNode *node;
   gchar *xpath;
-  GObject *ref;
+  gpointer ref;
 };
 
 struct _AgsFileIdRefClass

@@ -42,11 +42,6 @@ void ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						 AgsMachine *machine);
 void ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						  AgsMachine *machine);
-void ags_file_read_line_member_resolve_port_data(AgsFileLookup *file_lookup,
-						 AgsLineMember *line_member);
-void ags_file_write_line_member_resolve_port_data(AgsFileLookup *file_lookup,
-						  AgsLineMember *line_member);
-
 
 void
 ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
@@ -930,6 +925,9 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x\0", pad->flags));
 
+  xmlAddChild(parent,
+	      node);
+
   /* child elements */
   ags_plugin_write(file,
 		   node,
@@ -1195,12 +1193,15 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x\0", line->flags));
 
+  xmlAddChild(parent,
+	      node);
+
   /* child elements */
   ags_plugin_write(file,
 		   node,
 		   AGS_PLUGIN(line));
 
-  line_member = gtk_container_get_children(GTK_CONTAINER(line->expander));
+  line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
 
   child = ags_file_write_line_member_list(file,
 					  node,
@@ -1309,7 +1310,6 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 {
   AgsLineMember *gobject;
   GtkWidget *child_widget;
-  AgsPort *port;
   xmlNode *child;
   xmlChar *prop, *content;
   gchar *widget_type;
@@ -1354,119 +1354,13 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   //gobject->port = ;
 
   gobject->task_type = g_type_from_name(xmlGetProp(node, "task-type\0"));
-
-  /* child elements */
-  child = node->children;
-
-  port = gobject->port;
-
-  while(child != NULL){
-    if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child->name,
-		     "ags-value\0",
-		     8)){
-	gpointer port_data;
-	xmlChar *port_data_xml_type;
-	GValue value;
-
-	g_value_init(&value,
-		     port->port_value_type);
-
-	ags_file_util_read_value(file,
-				 child,
-				 &value, NULL);
-
-	port_data_xml_type = xmlGetProp(child,
-					AGS_FILE_TYPE_PROP);
-
-	if(!xmlStrncmp(port_data_xml_type,
-		       "GObject\0",
-		       7)){
-	  AgsFileLookup *file_lookup;
-	  GList *list;
-
-	  list = ags_file_lookup_find_by_node(file->lookup,
-					      child);
-	  file_lookup = AGS_FILE_LOOKUP(list->data);
-
-	  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
-				 G_CALLBACK(ags_file_read_line_member_resolve_port_data), gobject);
-	}else{
-	  if(!xmlStrncmp(port_data_xml_type,
-			 "gboolean-pointer\0",
-			 16)){
-	    gboolean *data;
-
-	    data = (gboolean *) g_value_get_pointer(&value);
-	  
-	    port_data = (gpointer) data;
-	  }else if(!xmlStrncmp(port_data_xml_type,
-			       "gchar-pointer\0",
-			       13)){
-	    gchar *data;
-
-	    data = (gchar *) g_value_get_pointer(&value);
-	  
-	    port_data = (gpointer) data;
-	  }else if(!xmlStrncmp(port_data_xml_type,
-			       "gint64-pointer\0",
-			       13)){
-	    gint64 *data;
-
-	    data = (gint64 *) g_value_get_pointer(&value);
-	  
-	    port_data = (gpointer) data;
-	  }else if(!xmlStrncmp(port_data_xml_type,
-			       "guint64-pointer\0",
-			       13)){
-	    guint64 *data;
-
-	    data = (guint64 *) g_value_get_pointer(&value);
-	  
-	    port_data = (gpointer) data;
-	  }else if(!xmlStrncmp(port_data_xml_type,
-			       "gdouble-pointer\0",
-			       13)){
-	    gdouble *data;
-
-	    data = (gdouble *) g_value_get_pointer(&value);
-	  
-	    port_data = (gpointer) data;
-	  }
-	  
-	  ags_line_member_change_port(gobject,
-				      port_data);
-	}
-      }
-    }
-
-    child = child->next;
-  }
-}
-
-void
-ags_file_read_line_member_resolve_port_data(AgsFileLookup *file_lookup,
-					    AgsLineMember *line_member)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) file_lookup->node->content;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  ags_line_member_change_port(line_member->port_data,
-			      id_ref->ref);
 }
 
 xmlNode*
 ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_member)
 {
-  AgsPort *port;
-  xmlNode *node, *child;
+  xmlNode *node;
   gchar *id;
-  guint i;
-  GValue a;
 
   id = ags_id_generator_create_uuid();
   
@@ -1505,128 +1399,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	     g_strdup(line_member->control_port));
 
   xmlAddChild(parent,
-	      node);
-
-  /* child elements */
-  port = line_member->port;
-  
-  if(port->port_value_is_pointer){
-    if(port->port_value_type == G_TYPE_CHAR){
-      gchar *ptr;
-
-      ptr = (gchar *) line_member->port_data;
-
-      g_value_init(&a,
-		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
-			  ptr);
-    }else if(port->port_value_type == G_TYPE_BOOLEAN){
-      gboolean *ptr;
-
-      ptr = (gboolean *) line_member->port_data;
-
-      g_value_init(&a,
-		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
-			  ptr);
-    }else if(port->port_value_type == G_TYPE_UINT64){
-      guint64 *ptr;
-
-      ptr = (guint64 *) line_member->port_data;
-
-      g_value_init(&a,
-		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
-			  ptr);
-    }else if(port->port_value_type == G_TYPE_INT64){
-      gint64 *ptr;
-
-      ptr = (gint64 *) line_member->port_data;
-
-      g_value_init(&a,
-		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
-			  ptr);
-    }else if(port->port_value_type == G_TYPE_DOUBLE){
-      gdouble *ptr;
-
-      ptr = (gdouble *) line_member->port_data;
-
-      g_value_init(&a,
-		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
-			  ptr);
-    }else if(port->port_value_type == G_TYPE_STRING){
-      gchar *ptr;
-
-      ptr = (gchar *) line_member->port_data;
-
-      g_value_init(&a,
-		   G_TYPE_STRING);
-      g_value_set_pointer(&a,
-			  ptr);
-    }else if(port->port_value_type == G_TYPE_POINTER){
-      g_value_init(&a,
-		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
-			  line_member->port_data);
-    }else if(port->port_value_type == G_TYPE_OBJECT){
-      AgsFileLookup *file_lookup;
-
-      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						   "file\0", file,
-						   "node\0", node,
-						   "reference\0", line_member,
-						   NULL);
-      ags_file_add_lookup(file, (GObject *) file_lookup);
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
-			     G_CALLBACK(ags_file_write_line_member_resolve_port_data), line_member);
-    }
-  }else{
-    if(port->port_value_type == G_TYPE_CHAR){
-      g_value_init(&a,
-		   G_TYPE_CHAR);
-      g_value_set_schar(&a,
-			((gchar *) line_member->port_data)[0]);
-    }else if(port->port_value_type == G_TYPE_BOOLEAN){
-      g_value_init(&a,
-		   G_TYPE_BOOLEAN);
-      g_value_set_boolean(&a,
-			  ((gboolean *) line_member->port_data)[0]);
-    }else if(port->port_value_type == G_TYPE_UINT64){
-      g_value_init(&a,
-		   G_TYPE_UINT64);
-      g_value_set_uint64(&a,
-			 ((guint64 *) line_member->port_data)[0]);
-    }else if(port->port_value_type == G_TYPE_INT64){
-      g_value_init(&a,
-		   G_TYPE_INT64);
-      g_value_set_int64(&a,
-			 ((gint64 *) line_member->port_data)[0]);
-    }else if(port->port_value_type == G_TYPE_DOUBLE){
-      g_value_init(&a,
-		   G_TYPE_DOUBLE);
-      g_value_set_double(&a,
-			 ((gdouble *) line_member->port_data)[0]);
-    }else if(port->port_value_type == G_TYPE_STRING){
-      g_value_init(&a,
-		   G_TYPE_STRING);
-      g_value_set_string(&a,
-			 (gchar *) line_member->port_data);
-    }
-  }
-
-  ags_file_util_write_value(file,
-			    node,
-			    ags_id_generator_create_uuid(),
-			    &a, port->port_value_type, port->port_value_size);
-}
-
-void
-ags_file_write_line_member_resolve_port_data(AgsFileLookup *file_lookup,
-					     AgsLineMember *line_member)
-{
-  /* empty */
+	      node);  
 }
 
 void

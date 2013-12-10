@@ -47,6 +47,9 @@ void ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 void ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 					  AgsRecall *recall);
 
+void ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
+					   AgsPort *port);
+
 void ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
 					  AgsTask *task);
 
@@ -232,7 +235,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
 
   xmlNewProp(node,
 	     "bpm\0",
-	     g_strdup_printf("%Lf\0", devout->bpm));
+	     g_strdup_printf("%f\0", devout->bpm));
   
   /* ags-audio-list */
   ags_file_write_audio_list(file,
@@ -301,7 +304,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   /*  */  
   xmlNewProp(node,
 	     "delay-counter\0",
-	     g_strdup_printf("%Lf\0", devout->delay_counter));
+	     g_strdup_printf("%f\0", devout->delay_counter));
 
   xmlNewProp(node,
 	     "device\0",
@@ -1054,6 +1057,9 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_write_channel_resolve_link), channel);
 
+  xmlAddChild(parent,
+	      node);
+
   /* ags-recycling */
   if(is_output){
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0){
@@ -1422,7 +1428,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 					  gobject);
       }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
-			   15)){
+			   16)){
 	GList *list, *start;
 
 	ags_file_read_recall_list(file,
@@ -1440,6 +1446,17 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 	}
 
 	g_list_free(start);
+      }else if(!xmlStrncmp(child->name,
+			   "ags-port-list\0",
+			   14)){
+	GList *start;
+
+	ags_file_read_port_list(file,
+				child,
+				&start);
+
+	ags_plugin_set_ports(AGS_PLUGIN(recall),
+			     start);
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
@@ -1562,6 +1579,12 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
     ags_file_write_recall_list(file,
 			       node,
 			       recall->children);
+  }
+
+  if(recall->port != NULL){
+    ags_file_write_port_list(file,
+			     node,
+			     recall->port);
   }
   
   /* child parameters */
@@ -2061,6 +2084,254 @@ ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *re
   ags_plugin_write(file,
 		   node,
 		   AGS_PLUGIN(recall));
+
+  return(node);
+}
+
+void
+ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
+{
+  AgsPort *gobject;
+  AgsFileLookup *file_lookup;
+  xmlNode *child;
+  GList *list;
+  GValue value = {0,};
+
+  if(*port == NULL){
+    gobject = g_object_new(AGS_TYPE_PORT,
+			   NULL);
+    *port = gobject;
+  }else{
+    gobject = *port;
+  }
+
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->ags_main,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+
+
+  /* child elements */
+  g_value_init(&value,
+	       gobject->port_value_type);
+
+  ags_file_util_read_value(file,
+			   child,
+			   &value, NULL);
+
+  list = ags_file_lookup_find_by_node(file->lookup,
+				      child);
+  file_lookup = AGS_FILE_LOOKUP(list->data);
+
+  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			 G_CALLBACK(ags_file_read_port_resolve_port_value), gobject);
+}
+
+void
+ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
+				      AgsPort *port)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) file_lookup->node->content;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  ags_port_safe_write(port,
+		      id_ref->ref);
+}
+
+xmlNode*
+ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *node;
+  gchar *id;
+  GValue a = {0,};
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-port\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", port,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);  
+
+  if(port->port_value_is_pointer){
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      gboolean *ptr;
+
+      ptr = (gboolean *) port->port_value.ags_port_boolean_ptr;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(port->port_value_type == G_TYPE_UINT64){
+      guint64 *ptr;
+
+      ptr = (guint64 *) port->port_value.ags_port_uint_ptr;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(port->port_value_type == G_TYPE_INT64){
+      gint64 *ptr;
+
+      ptr = (gint64 *) port->port_value.ags_port_int_ptr;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      gdouble *ptr;
+
+      ptr = (gdouble *) port->port_value.ags_port_double_ptr;
+
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  ptr);
+    }else if(port->port_value_type == G_TYPE_POINTER){
+      g_value_init(&a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(&a,
+			  port->port_value.ags_port_pointer);
+    }else if(port->port_value_type == G_TYPE_OBJECT){
+      g_value_init(&a,
+		   G_TYPE_OBJECT);
+      g_value_set_pointer(&a,
+			  port->port_value.ags_port_object);
+    }
+  }else{
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      g_value_init(&a,
+		   G_TYPE_BOOLEAN);
+      g_value_set_boolean(&a,
+			  port->port_value.ags_port_boolean);
+    }else if(port->port_value_type == G_TYPE_UINT64){
+      g_value_init(&a,
+		   G_TYPE_UINT64);
+      g_value_set_uint64(&a,
+			 port->port_value.ags_port_uint);
+    }else if(port->port_value_type == G_TYPE_INT64){
+      g_value_init(&a,
+		   G_TYPE_INT64);
+      g_value_set_int64(&a,
+			 port->port_value.ags_port_int);
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      g_value_init(&a,
+		   G_TYPE_DOUBLE);
+      g_value_set_double(&a,
+			 port->port_value.ags_port_double);
+    }
+  }
+
+  /*  */
+  //TODO:JK: uncomment me
+  //  ags_file_util_write_value(file,
+  ///			    node,
+  //			    ags_id_generator_create_uuid(),
+  //			    &a, port->port_value_type, port->port_value_size);
+}
+
+void
+ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
+{
+  AgsPort *current;
+  xmlNode *child;
+  GList *list;
+
+  list = NULL;
+  child = node->children;
+
+  while(child != NULL){
+    current = NULL;
+    ags_file_read_port(file,
+		       child,
+		       &current);
+    
+    list = g_list_prepend(list,
+			  current);
+    
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+
+  if(*port != NULL){
+    ags_list_free_and_unref_link(*port);
+  }
+
+  *port = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", list,
+				   NULL));
+}
+
+xmlNode*
+ags_file_write_port_list(AgsFile *file, xmlNode *parent, GList *port)
+{
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-port-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", port,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
+  list = port;
+
+  while(list != NULL){
+    ags_file_write_port(file,
+			node,
+			AGS_PORT(list->data));
+    
+    list = list->next;
+  }
 
   return(node);
 }
@@ -2689,6 +2960,7 @@ ags_file_write_stream_list(AgsFile *file, xmlNode *parent,
   xmlAddChild(parent,
 	      node);
 
+  /* child elements */
   list = stream;
 
   for(i = 0; list != NULL; i++){
@@ -2802,6 +3074,9 @@ ags_file_write_pattern(AgsFile *file, xmlNode *parent, AgsPattern *pattern)
 	     "length\0",
 	     g_strdup_printf("%d\0",
 			     pattern->dim[2]));
+
+  xmlAddChild(parent,
+	      node);
 
   /* child elements */
   if(pattern->timestamp != NULL){

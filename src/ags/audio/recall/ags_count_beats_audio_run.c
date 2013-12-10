@@ -192,6 +192,46 @@ ags_count_beats_audio_run_get_type()
 }
 
 void
+ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_count_beats_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_count_beats_audio_run_connect;
+  connectable->disconnect = ags_count_beats_audio_run_disconnect;
+}
+
+void
+ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
+{
+  ags_count_beats_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
+
+  dynamic_connectable->connect_dynamic = ags_count_beats_audio_run_connect_dynamic;
+  dynamic_connectable->disconnect_dynamic = ags_count_beats_audio_run_disconnect_dynamic;
+}
+
+void
+ags_count_beats_audio_run_seekable_interface_init(AgsSeekableInterface *seekable)
+{
+  seekable->seek = ags_count_beats_audio_run_seek;
+}
+
+void
+ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *countable)
+{
+  countable->get_notation_counter = ags_count_beats_audio_run_get_notation_counter;
+  countable->get_sequencer_counter = ags_count_beats_audio_run_get_sequencer_counter;
+}
+
+void
+ags_count_beats_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_count_beats_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->read = ags_count_beats_audio_run_read;
+  plugin->write = ags_count_beats_audio_run_write;
+}
+
+void
 ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_audio_run)
 {
   GObjectClass *gobject;
@@ -316,46 +356,6 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
-}
-
-void
-ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_count_beats_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_count_beats_audio_run_connect;
-  connectable->disconnect = ags_count_beats_audio_run_disconnect;
-}
-
-void
-ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_count_beats_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_count_beats_audio_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_count_beats_audio_run_disconnect_dynamic;
-}
-
-void
-ags_count_beats_audio_run_seekable_interface_init(AgsSeekableInterface *seekable)
-{
-  seekable->seek = ags_count_beats_audio_run_seek;
-}
-
-void
-ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *countable)
-{
-  countable->get_notation_counter = ags_count_beats_audio_run_get_notation_counter;
-  countable->get_sequencer_counter = ags_count_beats_audio_run_get_sequencer_counter;
-}
-
-void
-ags_count_beats_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_count_beats_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_count_beats_audio_run_read;
-  plugin->write = ags_count_beats_audio_run_write;
 }
 
 void
@@ -637,6 +637,7 @@ ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugi
   xmlNode *node, *child;
   xmlNode *dependency_node;
   GList *list;
+  gchar *id;
 
   /* write parent */
   node = ags_count_beats_audio_run_parent_plugin_interface->write(file, parent, plugin);
@@ -652,12 +653,14 @@ ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugi
   list = AGS_RECALL(plugin)->dependencies;
 
   while(list != NULL){
+    id = ags_id_generator_create_uuid();
+
     dependency_node = xmlNewNode(NULL,
 				 "ags-dependency\0");
 
     xmlNewProp(dependency_node,
 	       AGS_FILE_ID_PROP,
-	       ags_id_generator_create_uuid());
+	       id);
 
     xmlAddChild(child,
 		dependency_node);
@@ -1077,11 +1080,12 @@ ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
 
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+  //TODO:JK: uncomment
+  //  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
-  xmlNewProp(file_lookup->node,
-	     "xpath\0",
-	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
+  //  xmlNewProp(file_lookup->node,
+  //	     "xpath\0",
+  //	     g_strdup_printf("xpath=*/[@id='%s']\0", 
 }
 
 AgsCountBeatsAudioRun*

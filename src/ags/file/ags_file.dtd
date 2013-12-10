@@ -389,7 +389,7 @@
 	  is-play          CDATA      #REQUIRED
 	  >
 
-<!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-audio-signal)?, ags-recall-list?, ags-dependency-list, ags-parameter)>
+<!ELEMENT ags-recall ((ags-recall-audio|ags-recall-audio-run|ags-recall-channel|ags-recall-channel-run|ags-recall-recycling|ags-recall-audio-signal)?, ags-recall-list?, ags-port-list?, ags-dependency-list?,  ags-parameter?)>
 <!ATTLIST ags-recall
 	  type                   CDATA      #REQUIRED
 	  id                     ID         #REQUIRED
@@ -439,6 +439,17 @@
 <!ELEMENT ags-recall-audio-signal EMPTY>
 <!ATTLIST ags-recall-audio-signal
 	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-port-list (ags-port*)>
+<!ATTLIST ags-port-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-port (ags-value)>
+<!ATTLIST ags-port
+	  port-data-is-pointer CDATA      #REQUIRED
+	  port-data-type       CDATA      #REQUIRED
 	  >
 
 <!--GUI Widgets -->
@@ -586,7 +597,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-line-member (ags-value)>
+<!ELEMENT ags-line-member>
 <!ATTLIST ags-line-member
 	  id                   ID         #REQUIRED
 	  flags                PCDATA     #REQUIRED
@@ -594,8 +605,6 @@
 	  plugin-name          CDATA      #REQUIRED
 	  specifier            CDATA      #REQUIRED
 	  control-port         CDATA      #REQUIRED
-	  port-data-is-pointer CDATA      #REQUIRED
-	  port-data-type       CDATA      #REQUIRED
 	  task-type            CDATA      #REQUIRED
 	  left-attach          NMTOKEN    #REQUIRED
 	  rigth-attach         NMTOKEN    #REQUIRED

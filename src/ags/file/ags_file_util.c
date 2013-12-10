@@ -449,11 +449,11 @@ ags_file_util_write_value(AgsFile *file,
 	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						     "file\0", file,
 						     "node\0", node,
-						     "reference\0", (GObject *) g_value_get_pointer(value),
+						     "reference\0", g_value_get_pointer(value),
 						     NULL);
 	ags_file_add_lookup(file, (GObject *) file_lookup);
 	g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			 G_CALLBACK(ags_file_util_write_value_resolve), value);
+			 G_CALLBACK(ags_file_util_write_value_resolve), g_value_get_pointer(value));
       }
 
       type_str = AGS_FILE_POINTER_PROP;
@@ -468,7 +468,7 @@ ags_file_util_write_value(AgsFile *file,
 						   NULL);
       ags_file_add_lookup(file, (GObject *) file_lookup);
       g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		       G_CALLBACK(ags_file_util_write_value_resolve), value);
+		       G_CALLBACK(ags_file_util_write_value_resolve), g_value_get_object(value));
 
       type_str = AGS_FILE_OBJECT_PROP;
     }
@@ -495,7 +495,11 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, g_value_get_pointer(value));
+  if(G_VALUE_HOLDS_OBJECT(value)){
+    id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, g_value_get_object(value));
+  }else{
+    id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, g_value_get_pointer(value));
+  }
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 

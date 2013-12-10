@@ -44,8 +44,12 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/widget/ags_expander_set.h>
+#include <ags/widget/ags_expander.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
+#include <ags/X/ags_line_member.h>
 
 #include <ags/X/machine/ags_drum.h>
 
@@ -125,22 +129,26 @@ ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
+  AgsLineMember *line_member;
+
   g_signal_connect_after((GObject *) drum_input_line, "parent_set\0",
 			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
 
   drum_input_line->flags = 0;
+
+  line_member = ags_line_member_new();
+  ags_expander_add(AGS_LINE(drum_input_line)->expander,
+		   GTK_WIDGET(line_member),
+		   0, 0,
+		   1, 1);
 
   drum_input_line->volume = (GtkVScale *) gtk_vscale_new_with_range(0.0, 2.00, 0.025);
   gtk_range_set_value((GtkRange *) drum_input_line->volume, 1.0);
   gtk_range_set_inverted((GtkRange *) drum_input_line->volume, TRUE);
   gtk_scale_set_digits((GtkScale *) drum_input_line->volume, 3);
   gtk_widget_set_size_request((GtkWidget *) drum_input_line->volume, -1, 100);
-  gtk_table_attach(AGS_LINE(drum_input_line)->expander->table,
-		   (GtkWidget *) drum_input_line->volume,
-		   0, 1,
-		   1, 2,
-		   GTK_EXPAND, GTK_EXPAND,
-		   0, 0);
+  gtk_container_add(GTK_CONTAINER(line_member),
+		    GTK_WIDGET(drum_input_line->volume));
 }
 
 void
@@ -223,7 +231,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 {
   AgsDrum *drum;
   AgsLine *line;
-
+  AgsLineMember *line_member;
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;

@@ -39,6 +39,7 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_task.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_port.h>
 #include <ags/audio/ags_timestamp.h>
 
 /* AgsDevout */
@@ -102,6 +103,13 @@ xmlNode* ags_file_write_recall_recycling(AgsFile *file, xmlNode *parent, AgsReca
 
 void ags_file_read_recall_audio_signal(AgsFile *file, xmlNode *node, AgsRecall *recall);
 xmlNode* ags_file_write_recall_audio_signal(AgsFile *file, xmlNode *parent, AgsRecall *recall);
+
+/* AgsPort */
+void ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port);
+xmlNode* ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port);
+
+void ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port);
+xmlNode* ags_file_write_port_list(AgsFile *file, xmlNode *parent, GList *port);
 
 /* AgsRecycling */
 void ags_file_read_recycling(AgsFile *file, xmlNode *node, AgsRecycling **recycling);
