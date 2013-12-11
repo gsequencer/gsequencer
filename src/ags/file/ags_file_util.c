@@ -352,11 +352,19 @@ ags_file_util_write_value(AgsFile *file,
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  content = NULL;
+
   switch(G_VALUE_TYPE(value)){
   case G_TYPE_CHAR:
     {
       content = BAD_CAST g_strdup_printf("%c\0", g_value_get_schar(value));
       type_str = AGS_FILE_CHAR_PROP;
+    }
+    break;
+  case G_TYPE_BOOLEAN:
+    {
+      content = BAD_CAST g_strdup_printf("%d\0", g_value_get_boolean(value));
+      type_str = AGS_FILE_BOOLEAN_PROP;
     }
     break;
   case G_TYPE_INT64:
@@ -449,11 +457,11 @@ ags_file_util_write_value(AgsFile *file,
 	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						     "file\0", file,
 						     "node\0", node,
-						     "reference\0", g_value_get_pointer(value),
+						     "reference\0", value,
 						     NULL);
 	ags_file_add_lookup(file, (GObject *) file_lookup);
 	g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			 G_CALLBACK(ags_file_util_write_value_resolve), g_value_get_pointer(value));
+			 G_CALLBACK(ags_file_util_write_value_resolve), value);
       }
 
       type_str = AGS_FILE_POINTER_PROP;
@@ -464,11 +472,11 @@ ags_file_util_write_value(AgsFile *file,
       file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						   "file\0", file,
 						   "node\0", node,
-						   "reference\0", (GObject *) g_value_get_object(value),
+						   "reference\0", value,
 						   NULL);
       ags_file_add_lookup(file, (GObject *) file_lookup);
       g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		       G_CALLBACK(ags_file_util_write_value_resolve), g_value_get_object(value));
+		       G_CALLBACK(ags_file_util_write_value_resolve), value);
 
       type_str = AGS_FILE_OBJECT_PROP;
     }
@@ -506,6 +514,9 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
   xmlNewProp(file_lookup->node,
 	     "link\0",
 	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
+
+  g_value_unset(value);
+  g_free(value);
 }
 
 void

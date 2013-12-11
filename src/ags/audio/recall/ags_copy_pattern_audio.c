@@ -47,6 +47,16 @@ enum{
 
 static gpointer ags_copy_pattern_audio_parent_class = NULL;
 
+static const gchar *ags_copy_pattern_audio_plugin_name = "ags-copy-pattern\0";
+static const gchar *ags_copy_pattern_audio_specifier[] = {
+  "./bank-index-0[0]\0",
+  "./bank-index-1[0]\0"  
+};
+static const gchar *ags_copy_pattern_audio_control_port[] = {
+  "1/2\0",
+  "2/2\0"
+};
+
 GType
 ags_copy_pattern_audio_get_type()
 {
@@ -139,9 +149,9 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
   port = NULL;
 
   copy_pattern_audio->bank_index_0 = g_object_new(AGS_TYPE_PORT,
-						  "plugin-name\0", g_strdup("ags-copy\0"),
-						  "specifier\0", "./bank-index-0[0]\0",
-						  "control-port\0", "1/2\0",
+						  "plugin-name\0", ags_copy_pattern_audio_plugin_name,
+						  "specifier\0", ags_copy_pattern_audio_specifier[0],
+						  "control-port\0", ags_copy_pattern_audio_control_port[0],
 						  "port-value-is-pointer\0", FALSE,
 						  "port-value-type\0", G_TYPE_UINT,
 						  "port-value-size\0", sizeof(gboolean),
@@ -152,9 +162,9 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
   port = g_list_prepend(port, copy_pattern_audio->bank_index_0);
 
   copy_pattern_audio->bank_index_1 = g_object_new(AGS_TYPE_PORT,
-						  "plugin-name\0", g_strdup("ags-copy\0"),
-						  "specifier\0", "./bank-index-0[0]\0",
-						  "control-port\0", "2/2\0",
+						  "plugin-name\0", ags_copy_pattern_audio_plugin_name,
+						  "specifier\0", ags_copy_pattern_audio_specifier[1],
+						  "control-port\0", ags_copy_pattern_audio_control_port[1],
 						  "port-value-is-pointer\0", FALSE,
 						  "port-value-type\0", G_TYPE_UINT,
 						  "port-value-size\0", sizeof(gboolean),

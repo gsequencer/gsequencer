@@ -20,12 +20,17 @@
 #include <ags/X/ags_pad_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/X/ags_machine.h>
 
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_pad_init(AgsPad *pad);
 void ags_pad_set_property(GObject *gobject,
 			  guint prop_id,
@@ -37,6 +42,17 @@ void ags_pad_get_property(GObject *gobject,
 			  GParamSpec *param_spec);
 void ags_pad_connect(AgsConnectable *connectable);
 void ags_pad_disconnect(AgsConnectable *connectable);
+gchar* ags_pad_get_name(AgsPlugin *plugin);
+void ags_pad_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_pad_get_version(AgsPlugin *plugin);
+void ags_pad_set_version(AgsPlugin *plugin, gchar *version);
+gchar* ags_pad_get_build_id(AgsPlugin *plugin);
+void ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_pad_get_xml_type(AgsPlugin *plugin);
+void ags_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+GList* ags_pad_get_ports(AgsPlugin *plugin);
+void ags_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_pad_destroy(GtkObject *object);
 void ags_pad_show(GtkWidget *widget);
 
@@ -82,6 +98,12 @@ ags_pad_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_pad_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_pad = g_type_register_static(GTK_TYPE_VBOX,
 					  "AgsPad\0", &ags_pad_info,
 					  0);
@@ -89,6 +111,10 @@ ags_pad_get_type(void)
     g_type_add_interface_static(ags_type_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_pad,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_pad);
@@ -149,6 +175,23 @@ ags_pad_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_pad_connect;
   connectable->disconnect = ags_pad_disconnect;
+}
+
+void
+ags_pad_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_pad_get_name;
+  plugin->set_name = ags_pad_set_name;
+  plugin->get_version = ags_pad_get_version;
+  plugin->set_version = ags_pad_set_version;
+  plugin->get_build_id = ags_pad_get_build_id;
+  plugin->set_build_id = ags_pad_set_build_id;
+  plugin->get_xml_type = ags_pad_get_xml_type;
+  plugin->set_xml_type = ags_pad_set_xml_type;
+  plugin->get_ports = ags_pad_get_ports;
+  plugin->read = ags_pad_read;
+  plugin->write = ags_pad_write;
+  plugin->set_ports = NULL;
 }
 
 void
@@ -276,6 +319,81 @@ ags_pad_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
 }
+
+gchar*
+ags_pad_get_name(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_pad_set_name(AgsPlugin *plugin, gchar *name)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_pad_get_version(AgsPlugin *plugin)
+{
+  return(AGS_PAD(plugin)->version);
+}
+
+void
+ags_pad_set_version(AgsPlugin *plugin, gchar *version)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_pad_get_build_id(AgsPlugin *plugin)
+{
+  return(AGS_PAD(plugin)->build_id);
+}
+
+void
+ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_pad_get_xml_type(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  //TODO:JK: implement me
+}
+
+GList*
+ags_pad_get_ports(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
 
 void
 ags_pad_destroy(GtkObject *object)

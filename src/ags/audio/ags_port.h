@@ -38,10 +38,10 @@ struct _AgsPort
 {
   GObject object;
 
-  gchar *plugin_name;
-  gchar *specifier;
+  const gchar *plugin_name;
+  const gchar *specifier;
 
-  gchar *control_port;
+  const gchar *control_port;
 
   gboolean port_value_is_pointer;
   GType port_value_type;

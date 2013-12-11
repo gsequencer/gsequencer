@@ -66,6 +66,24 @@ static gpointer ags_delay_audio_parent_class = NULL;
 
 static guint delay_audio_signals[LAST_SIGNAL];
 
+static const gchar *ags_delay_audio_plugin_name = "ags-delay\0";
+static const gchar *ags_delay_audio_specifier[] = {
+  "./bpm[0]\0",
+  "./tact[0]\0",
+  "./sequencer_delay[0]\0",
+  "./notation_delay[0]\0",
+  "./sequencer_duration[0]\0",
+  "./notation_duration[0]\0"
+};
+static const gchar *ags_delay_audio_control_port[] = {
+  "1/6\0",
+  "2/6\0",
+  "3/6\0",
+  "4/6\0",
+  "5/6\0",
+  "6/6\0",
+};
+
 GType
 ags_delay_audio_get_type()
 {
@@ -234,9 +252,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* bpm */
   delay_audio->bpm = g_object_new(AGS_TYPE_PORT,
-				  "plugin-name\0", g_strdup("ags-delay\0"),
-				  "specifier\0", "./bpm[0]\0",
-				  "control-port\0", "1/6\0",
+				  "plugin-name\0", ags_delay_audio_plugin_name,
+				  "specifier\0", ags_delay_audio_specifier[0],
+				  "control-port\0", ags_delay_audio_control_port[0],
 				  "port-value-is-pointer\0", FALSE,
 				  "port-value-type\0", G_TYPE_DOUBLE,
 				  "port-value-size\0", sizeof(gdouble),
@@ -249,9 +267,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* tact */
   delay_audio->tact = g_object_new(AGS_TYPE_PORT,
-				   "plugin-name\0", g_strdup("ags-delay\0"),
-				   "specifier\0", "./tact[0]\0",
-				   "control-port\0", "2/6\0",
+				   "plugin-name\0", ags_delay_audio_plugin_name,
+				   "specifier\0", ags_delay_audio_specifier[1],
+				   "control-port\0", ags_delay_audio_control_port[1],
 				   "port-value-is-pointer\0", FALSE,
 				   "port-value-type\0", G_TYPE_DOUBLE,
 				   "port-value-size\0", sizeof(gdouble),
@@ -264,9 +282,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* sequencer delay */
   delay_audio->sequencer_delay = g_object_new(AGS_TYPE_PORT,
-					      "plugin-name\0", g_strdup("ags-delay\0"),
-					      "specifier\0", "./sequencer_delay[0]\0",
-					      "control-port\0", "3/6\0",
+					      "plugin-name\0", ags_delay_audio_plugin_name,
+					      "specifier\0", ags_delay_audio_specifier[2],
+					      "control-port\0", ags_delay_audio_control_port[2],
 					      "port-value-is-pointer\0", FALSE,
 					      "port-value-type\0", G_TYPE_DOUBLE,
 					      "port-value-size\0", sizeof(gdouble),
@@ -279,9 +297,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* notation delay */
   delay_audio->notation_delay = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name\0", g_strdup("ags-delay\0"),
-					     "specifier\0", "./notation_delay[0]\0",
-					     "control-port\0", "4/6\0",
+					     "plugin-name\0", ags_delay_audio_plugin_name,
+					     "specifier\0", ags_delay_audio_specifier[3],
+					     "control-port\0", ags_delay_audio_control_port[3],
 					     "port-value-is-pointer\0", FALSE,
 					     "port-value-type\0", G_TYPE_DOUBLE,
 					     "port-value-size\0", sizeof(gdouble),
@@ -294,9 +312,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* sequencer duration */
   delay_audio->sequencer_duration = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name\0", g_strdup("ags-duration\0"),
-						 "specifier\0", "./sequencer_duration[0]\0",
-						 "control-port\0", "5/6\0",
+						 "plugin-name\0", ags_delay_audio_plugin_name,
+						 "specifier\0", ags_delay_audio_specifier[4],
+						 "control-port\0", ags_delay_audio_control_port[4],
 						 "port-value-is-pointer\0", FALSE,
 						 "port-value-type\0", G_TYPE_DOUBLE,
 						 "port-value-size\0", sizeof(gdouble),
@@ -309,9 +327,9 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* notation duration */
   delay_audio->notation_duration = g_object_new(AGS_TYPE_PORT,
-						"plugin-name\0", g_strdup("ags-duration\0"),
-						"specifier\0", "./notation_duration[0]\0",
-						"control-port\0", "6/6\0",
+						"plugin-name\0", ags_delay_audio_plugin_name,
+						"specifier\0", ags_delay_audio_specifier[5],
+						"control-port\0", ags_delay_audio_control_port[5],
 						"port-value-is-pointer\0", FALSE,
 						"port-value-type\0", G_TYPE_DOUBLE,
 						"port-value-size\0", sizeof(gdouble),

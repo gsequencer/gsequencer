@@ -21,12 +21,17 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
+#include <ags/object/ags_plugin.h>
+
 #include <ags/X/ags_pad.h>
 
 #include <ags/audio/ags_channel.h>
 
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_line_init(AgsLine *line);
 void ags_line_set_property(GObject *gobject,
 			   guint prop_id,
@@ -38,6 +43,17 @@ void ags_line_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_line_connect(AgsConnectable *connectable);
 void ags_line_disconnect(AgsConnectable *connectable);
+gchar* ags_line_get_name(AgsPlugin *plugin);
+void ags_line_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_line_get_version(AgsPlugin *plugin);
+void ags_line_set_version(AgsPlugin *plugin, gchar *version);
+gchar* ags_line_get_build_id(AgsPlugin *plugin);
+void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_line_get_xml_type(AgsPlugin *plugin);
+void ags_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+GList* ags_line_get_ports(AgsPlugin *plugin);
+void ags_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 
@@ -80,6 +96,12 @@ ags_line_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_line_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_line = g_type_register_static(GTK_TYPE_VBOX,
 					   "AgsLine\0", &ags_line_info,
 					   0);
@@ -87,6 +109,10 @@ ags_line_get_type(void)
     g_type_add_interface_static(ags_type_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_line,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_line);
@@ -157,6 +183,23 @@ ags_line_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_line_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_line_get_name;
+  plugin->set_name = ags_line_set_name;
+  plugin->get_version = ags_line_get_version;
+  plugin->set_version = ags_line_set_version;
+  plugin->get_build_id = ags_line_get_build_id;
+  plugin->set_build_id = ags_line_set_build_id;
+  plugin->get_xml_type = ags_line_get_xml_type;
+  plugin->set_xml_type = ags_line_set_xml_type;
+  plugin->get_ports = ags_line_get_ports;
+  plugin->read = ags_line_read;
+  plugin->write = ags_line_write;
+  plugin->set_ports = NULL;
+}
+
+void
 ags_line_init(AgsLine *line)
 {
   g_signal_connect_after((GObject *) line, "parent_set\0",
@@ -177,7 +220,7 @@ ags_line_init(AgsLine *line)
 		     FALSE, FALSE,
 		     0);
 
-  line->group = gtk_toggle_button_new_with_label("group\0");
+  line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("group\0");
   gtk_toggle_button_set_active(line->group, TRUE);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->group),
@@ -277,7 +320,85 @@ ags_line_connect(AgsConnectable *connectable)
 void
 ags_line_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_line_get_name(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_line_set_name(AgsPlugin *plugin, gchar *name)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_line_get_version(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(AGS_LINE(plugin)->version);
+}
+
+void
+ags_line_set_version(AgsPlugin *plugin, gchar *version)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_line_get_build_id(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(AGS_LINE(plugin)->build_id);
+}
+
+void
+ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_line_get_xml_type(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  //TODO:JK: implement me
+}
+
+GList*
+ags_line_get_ports(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void

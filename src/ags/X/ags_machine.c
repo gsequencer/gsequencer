@@ -19,9 +19,11 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/main.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
@@ -36,9 +38,21 @@
 
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_machine_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_machine_init(AgsMachine *machine);
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
+gchar* ags_machine_get_name(AgsPlugin *plugin);
+void ags_machine_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_machine_get_version(AgsPlugin *plugin);
+void ags_machine_set_version(AgsPlugin *plugin, gchar *version);
+gchar* ags_machine_get_build_id(AgsPlugin *plugin);
+void ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_machine_get_xml_type(AgsPlugin *plugin);
+void ags_machine_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+GList* ags_machine_get_ports(AgsPlugin *plugin);
+void ags_machine_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_machine_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 static void ags_machine_finalize(GObject *gobject);
 void ags_machine_show(GtkWidget *widget);
 
@@ -70,6 +84,12 @@ ags_machine_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_machine_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_machine = g_type_register_static(GTK_TYPE_HANDLE_BOX,
 					      "AgsMachine\0", &ags_machine_info,
 					      0);
@@ -77,6 +97,10 @@ ags_machine_get_type(void)
     g_type_add_interface_static(ags_type_machine,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_machine,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_machine);
@@ -106,6 +130,23 @@ ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->connect = ags_machine_connect;
   connectable->disconnect = ags_machine_disconnect;
+}
+
+void
+ags_machine_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_machine_get_name;
+  plugin->set_name = ags_machine_set_name;
+  plugin->get_version = ags_machine_get_version;
+  plugin->set_version = ags_machine_set_version;
+  plugin->get_build_id = ags_machine_get_build_id;
+  plugin->set_build_id = ags_machine_set_build_id;
+  plugin->get_xml_type = ags_machine_get_xml_type;
+  plugin->set_xml_type = ags_machine_set_xml_type;
+  plugin->get_ports = ags_machine_get_ports;
+  plugin->read = ags_machine_read;
+  plugin->write = ags_machine_write;
+  plugin->set_ports = NULL;
 }
 
 void
@@ -179,8 +220,81 @@ ags_machine_connect(AgsConnectable *connectable)
 void
 ags_machine_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  //TODO:JK: implement me
 }
+
+gchar*
+ags_machine_get_name(AgsPlugin *plugin)
+{
+  return(AGS_MACHINE(plugin)->name);
+}
+
+void
+ags_machine_set_name(AgsPlugin *plugin, gchar *name)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_machine_get_version(AgsPlugin *plugin)
+{
+  return(AGS_MACHINE(plugin)->version);
+}
+
+void
+ags_machine_set_version(AgsPlugin *plugin, gchar *version)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_machine_get_build_id(AgsPlugin *plugin)
+{
+  return(AGS_MACHINE(plugin)->build_id);
+}
+
+void
+ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_machine_get_xml_type(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_machine_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  //TODO:JK: implement me
+}
+
+GList*
+ags_machine_get_ports(AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_machine_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_machine_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
 
 static void
 ags_machine_finalize(GObject *gobject)

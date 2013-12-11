@@ -49,6 +49,14 @@ enum{
 static gpointer ags_volume_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_channel_parent_connectable_interface;
 
+static const gchar *ags_volume_channel_plugin_name = "ags-volume\0";
+static const gchar *ags_volume_channel_specifier[] = {
+  "./volume[0]\0"
+};
+static const gchar *ags_volume_channel_control_port[] = {
+  "1/1\0"
+};
+
 GType
 ags_volume_channel_get_type()
 {

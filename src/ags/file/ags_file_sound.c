@@ -2117,6 +2117,22 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
 				   "reference\0", gobject,
 				   NULL));
 
+  gobject->plugin_name = g_strdup(xmlGetProp(node, "plugin-name\0"));
+  gobject->specifier = g_strdup(xmlGetProp(node, "specifier\0"));
+
+  gobject->control_port = g_strdup(xmlGetProp(node, "control-port\0"));
+
+  gobject->port_value_is_pointer = g_ascii_strtoull(xmlGetProp(node, "port-data-is-pointer\0"),
+						    NULL,
+						    10);
+  gobject->port_value_type = g_type_from_name(xmlGetProp(node, "plugin-data-type\0"));
+
+  gobject->port_value_size = g_ascii_strtoull(xmlGetProp(node, "port-data-size\0"),
+					      NULL,
+					      10);
+  gobject->port_value_length = g_ascii_strtoull(xmlGetProp(node, "port-data-length\0"),
+						NULL,
+						10);
 
 
   /* child elements */
@@ -2156,7 +2172,7 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
   AgsFileLookup *file_lookup;
   xmlNode *node;
   gchar *id;
-  GValue a = {0,};
+  GValue *a;
 
   id = ags_id_generator_create_uuid();
   
@@ -2174,8 +2190,39 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
 				   "reference\0", port,
 				   NULL));
 
+  xmlNewProp(node,
+	     "plugin-name\0",
+	     g_strdup(port->plugin_name));
+
+  xmlNewProp(node,
+	     "specifier\0",
+	     g_strdup(port->specifier));
+
+  xmlNewProp(node,
+	     "control-port\0",
+	     g_strdup(port->control_port));
+
+  xmlNewProp(node,
+	     "port-data-is-pointer\0",
+	     g_strdup_printf("%d\0", port->port_value_is_pointer));
+
+  xmlNewProp(node,
+	     "port-data-type\0",
+	     g_strdup(g_type_name(port->port_value_type)));
+
+  xmlNewProp(node,
+	     "port-data-size\0",
+	     g_strdup_printf("%d\0", port->port_value_size));
+
+  xmlNewProp(node,
+	     "port-data-length\0",
+	     g_strdup_printf("%d\0", port->port_value_length));
+
   xmlAddChild(parent,
 	      node);  
+
+  /* child elements */
+  a = g_new0(GValue, 1);
 
   if(port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -2183,78 +2230,77 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
 
       ptr = (gboolean *) port->port_value.ags_port_boolean_ptr;
 
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
+      g_value_set_pointer(a,
 			  ptr);
     }else if(port->port_value_type == G_TYPE_UINT64){
       guint64 *ptr;
 
       ptr = (guint64 *) port->port_value.ags_port_uint_ptr;
 
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
+      g_value_set_pointer(a,
 			  ptr);
     }else if(port->port_value_type == G_TYPE_INT64){
       gint64 *ptr;
 
       ptr = (gint64 *) port->port_value.ags_port_int_ptr;
 
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
+      g_value_set_pointer(a,
 			  ptr);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       gdouble *ptr;
 
       ptr = (gdouble *) port->port_value.ags_port_double_ptr;
 
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
+      g_value_set_pointer(a,
 			  ptr);
     }else if(port->port_value_type == G_TYPE_POINTER){
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_POINTER);
-      g_value_set_pointer(&a,
+      g_value_set_pointer(a,
 			  port->port_value.ags_port_pointer);
-    }else if(port->port_value_type == G_TYPE_OBJECT){
-      g_value_init(&a,
-		   G_TYPE_OBJECT);
-      g_value_set_pointer(&a,
-			  port->port_value.ags_port_object);
     }
   }else{
     if(port->port_value_type == G_TYPE_BOOLEAN){
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_BOOLEAN);
-      g_value_set_boolean(&a,
+      g_value_set_boolean(a,
 			  port->port_value.ags_port_boolean);
     }else if(port->port_value_type == G_TYPE_UINT64){
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_UINT64);
-      g_value_set_uint64(&a,
+      g_value_set_uint64(a,
 			 port->port_value.ags_port_uint);
     }else if(port->port_value_type == G_TYPE_INT64){
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_INT64);
-      g_value_set_int64(&a,
+      g_value_set_int64(a,
 			 port->port_value.ags_port_int);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      g_value_init(&a,
+      g_value_init(a,
 		   G_TYPE_DOUBLE);
-      g_value_set_double(&a,
+      g_value_set_double(a,
 			 port->port_value.ags_port_double);
+    }else if(port->port_value_type == G_TYPE_OBJECT){
+      g_value_init(a,
+		   G_TYPE_OBJECT);
+      g_value_set_object(a,
+			 port->port_value.ags_port_object);
     }
   }
 
   /*  */
-  //TODO:JK: uncomment me
-  //  ags_file_util_write_value(file,
-  ///			    node,
-  //			    ags_id_generator_create_uuid(),
-  //			    &a, port->port_value_type, port->port_value_size);
+  ags_file_util_write_value(file,
+  			    node,
+  			    ags_id_generator_create_uuid(),
+  			    a, port->port_value_type, port->port_value_size);
 }
 
 void

@@ -55,6 +55,14 @@ static AgsConnectableInterface *ags_copy_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_copy_channel_parent_mutable_interface;
 static AgsPluginInterface *ags_copy_channel_parent_plugin_interface;
 
+static const gchar *ags_copy_channel_plugin_name = "ags-copy\0";
+static const gchar *ags_copy_channel_plugin_specifier[] = {
+  "./muted[0]\0",
+};
+static const gchar *ags_copy_channel_plugin_control_port[] = {
+  "1/1\0",
+};
+
 GType
 ags_copy_channel_get_type()
 {
@@ -177,9 +185,9 @@ ags_copy_channel_init(AgsCopyChannel *copy_channel)
   port = NULL;
 
   copy_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", g_strdup("ags-copy\0"),
-				     "specifier\0", "./muted[0]\0",
-				     "control-port\0", "1/1\0",
+				     "plugin-name\0", ags_copy_channel_plugin_name,
+				     "specifier\0", ags_copy_channel_plugin_specifier[0],
+				     "control-port\0", ags_copy_channel_plugin_control_port[0],
 				     "port-value-is-pointer\0", FALSE,
 				     "port-value-type\0", G_TYPE_BOOLEAN,
 				     "port-value-size\0", sizeof(gboolean),

@@ -46,6 +46,14 @@ enum{
 
 static gpointer ags_copy_pattern_channel_parent_class = NULL;
 
+static const gchar *ags_copy_pattern_channel_plugin_name = "ags-copy-pattern\0";
+static const gchar *ags_copy_pattern_channel_specifier[] = {
+  "./pattern[0]\0"  
+};
+static const gchar *ags_copy_pattern_channel_control_port[] = {
+  "1/1\0"
+};
+
 GType
 ags_copy_pattern_channel_get_type()
 {
@@ -129,10 +137,10 @@ ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel)
   port = NULL;
 
   copy_pattern_channel->pattern = g_object_new(AGS_TYPE_PORT,
-					       "plugin-name\0", g_strdup("ags-copy-pattern\0"),
-					       "specifier\0", "./pattern[0]\0",
-					       "control-port\0", "1/1\0",
-					       "port-value-is-pointer\0", TRUE,
+					       "plugin-name\0", ags_copy_pattern_channel_plugin_name,
+					       "specifier\0", ags_copy_pattern_channel_specifier[0],
+					       "control-port\0", ags_copy_pattern_channel_control_port[0],
+					       "port-value-is-pointer\0", FALSE,
 					       "port-value-type\0", G_TYPE_OBJECT,
 					       NULL);
 

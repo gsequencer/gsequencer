@@ -448,6 +448,11 @@
 
 <!ELEMENT ags-port (ags-value)>
 <!ATTLIST ags-port
+	  plugin-name          CDATA      #REQUIRED
+	  specifier            CDATA      #REQUIRED
+	  control-port         CDATA      #REQUIRED
+	  port-data-size       NMTOKEN    #REQUIRED
+	  port-data-length     NMTOKEN    #REQUIRED
 	  port-data-is-pointer CDATA      #REQUIRED
 	  port-data-type       CDATA      #REQUIRED
 	  >
