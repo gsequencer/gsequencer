@@ -159,8 +159,6 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     save_file = ags_save_file_new(file);
     ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 				AGS_TASK(save_file));
-
-    g_object_unref(G_OBJECT(file));
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);

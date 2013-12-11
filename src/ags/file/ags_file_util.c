@@ -482,7 +482,7 @@ ags_file_util_write_value(AgsFile *file,
     }
     break;
   default:
-    g_warning("ags_file_util_write_value\0");
+    g_warning("ags_file_util_write_value %s\0", G_VALUE_TYPE_NAME(value));
   }
 
   xmlNewProp(node,

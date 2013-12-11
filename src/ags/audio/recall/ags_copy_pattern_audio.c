@@ -153,8 +153,8 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 						  "specifier\0", ags_copy_pattern_audio_specifier[0],
 						  "control-port\0", ags_copy_pattern_audio_control_port[0],
 						  "port-value-is-pointer\0", FALSE,
-						  "port-value-type\0", G_TYPE_UINT,
-						  "port-value-size\0", sizeof(gboolean),
+						  "port-value-type\0", G_TYPE_UINT64,
+						  "port-value-size\0", sizeof(guint),
 						  "port-value-length\0", 1,
 						  NULL);
   copy_pattern_audio->bank_index_0->port_value.ags_port_uint = 0;
@@ -166,8 +166,8 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 						  "specifier\0", ags_copy_pattern_audio_specifier[1],
 						  "control-port\0", ags_copy_pattern_audio_control_port[1],
 						  "port-value-is-pointer\0", FALSE,
-						  "port-value-type\0", G_TYPE_UINT,
-						  "port-value-size\0", sizeof(gboolean),
+						  "port-value-type\0", G_TYPE_UINT64,
+						  "port-value-size\0", sizeof(guint),
 						  "port-value-length\0", 1,
 						  NULL);
   copy_pattern_audio->bank_index_1->port_value.ags_port_uint = 0;

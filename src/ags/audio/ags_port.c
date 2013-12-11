@@ -213,29 +213,29 @@ ags_port_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_PLUGIN_NAME:
     {
-      const gchar *plugin_name;
+      gchar *plugin_name;
 
-      plugin_name = (const gchar *) g_value_get_string(value);
+      plugin_name = (gchar *) g_value_get_string(value);
       
-      port->plugin_name = plugin_name;
+      port->plugin_name = g_strdup(plugin_name);
     }
     break;
   case PROP_SPECIFIER:
     {
-      const gchar *specifier;
+      gchar *specifier;
 
-      specifier = (const gchar *) g_value_get_string(value);
+      specifier = (gchar *) g_value_get_string(value);
 
-      port->specifier = specifier;
+      port->specifier = g_strdup(specifier);
     }
     break;
   case PROP_CONTROL_PORT:
     {
-      const gchar *control_port;
+      gchar *control_port;
 
-      control_port = (const gchar *) g_value_get_string(value);
+      control_port = (gchar *) g_value_get_string(value);
       
-      port->control_port = control_port;
+      port->control_port = g_strdup(control_port);
     }
     break;
   case PROP_PORT_VALUE_IS_POINTER:

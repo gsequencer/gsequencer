@@ -2192,15 +2192,15 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
 
   xmlNewProp(node,
 	     "plugin-name\0",
-	     g_strdup(port->plugin_name));
+	     port->plugin_name);
 
   xmlNewProp(node,
 	     "specifier\0",
-	     g_strdup(port->specifier));
+	     port->specifier);
 
   xmlNewProp(node,
 	     "control-port\0",
-	     g_strdup(port->control_port));
+	     port->control_port);
 
   xmlNewProp(node,
 	     "port-data-is-pointer\0",
@@ -2219,7 +2219,7 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
 	     g_strdup_printf("%d\0", port->port_value_length));
 
   xmlAddChild(parent,
-	      node);  
+	      node);
 
   /* child elements */
   a = g_new0(GValue, 1);
@@ -2301,6 +2301,8 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
   			    node,
   			    ags_id_generator_create_uuid(),
   			    a, port->port_value_type, port->port_value_size);
+
+  return(node);
 }
 
 void

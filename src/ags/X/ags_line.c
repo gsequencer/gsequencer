@@ -340,8 +340,6 @@ ags_line_set_name(AgsPlugin *plugin, gchar *name)
 gchar*
 ags_line_get_version(AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
-
   return(AGS_LINE(plugin)->version);
 }
 
@@ -354,8 +352,6 @@ ags_line_set_version(AgsPlugin *plugin, gchar *version)
 gchar*
 ags_line_get_build_id(AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
-
   return(AGS_LINE(plugin)->build_id);
 }
 
