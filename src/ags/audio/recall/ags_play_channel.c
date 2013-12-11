@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 #include <ags/object/ags_mutable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -55,6 +57,16 @@ enum{
 static gpointer ags_play_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_play_channel_parent_mutable_interface;
+
+static const gchar *ags_play_channel_plugin_name = "ags-play\0";
+static const gchar *ags_play_channel_specifier[] = {
+  "./audio-channel[0]\0",
+  "./muted[0]\0",
+};
+static const gchar *ags_play_channel_control_port[] = {
+  "1/2\0",
+  "2/2\0",
+};
 
 GType
 ags_play_channel_get_type()
@@ -160,27 +172,43 @@ ags_play_channel_mutable_interface_init(AgsMutableInterface *mutable)
 void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
+  GList *port;
+
+  AGS_RECALL(play_channel)->name = "ags-play\0";
+  AGS_RECALL(play_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(play_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel)->xml_type = "ags-play-channel\0";
+
+  port = NULL;
+
   play_channel->audio_channel = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name\0", g_strdup("ags-play\0"),
-					     "specifier\0", "./audio-channel[0]\0",
-					     "control-port\0", "1/2\0",
+					     "plugin-name\0", ags_play_channel_plugin_name,
+					     "specifier\0", ags_play_channel_specifier[0],
+					     "control-port\0", ags_play_channel_control_port[0],
 					     "port-value-is-pointer\0", FALSE,
-					     "port-value-type\0", G_TYPE_UINT,
+					     "port-value-type\0", G_TYPE_UINT64,
 					     "port-value-size\0", sizeof(guint),
 					     "port-value-length\0", 1,
 					     NULL);
   play_channel->audio_channel->port_value.ags_port_uint = 0;
 
+  port = g_list_prepend(port, play_channel->audio_channel);
+
   play_channel->muted = g_object_new(AGS_TYPE_PORT,
-				     "plugin-name\0", g_strdup("ags-play\0"),
-				     "specifier\0", "./muted[0]\0",
-				     "control-port\0", "2/2\0",
+				     "plugin-name\0", ags_play_channel_plugin_name,
+				     "specifier\0", ags_play_channel_specifier[1],
+				     "control-port\0", ags_play_channel_control_port[1],
 				     "port-value-is-pointer\0", FALSE,
 				     "port-value-type\0", G_TYPE_BOOLEAN,
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
   play_channel->muted->port_value.ags_port_boolean = FALSE;
+
+  port = g_list_prepend(port, play_channel->muted);
+
+  /* set port */
+  AGS_RECALL(play_channel)->port = port;
 }
 
 void

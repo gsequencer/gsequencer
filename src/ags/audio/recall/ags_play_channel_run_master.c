@@ -19,6 +19,9 @@
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -192,6 +195,12 @@ ags_play_channel_run_master_dynamic_connectable_interface_init(AgsDynamicConnect
 void
 ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_master)
 {
+  AGS_RECALL(play_channel_run_master)->name = "ags-play\0";
+  AGS_RECALL(play_channel_run_master)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(play_channel_run_master)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel_run_master)->xml_type = "ags-play-channel-run-master\0";
+  AGS_RECALL(play_channel_run_master)->port = NULL;
+
   AGS_RECALL(play_channel_run_master)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(play_channel_run_master)->child_type = AGS_TYPE_PLAY_RECYCLING;
 

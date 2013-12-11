@@ -197,6 +197,7 @@ ags_copy_channel_init(AgsCopyChannel *copy_channel)
 
   port = g_list_prepend(port, copy_channel->muted);
 
+  /* set port */
   AGS_RECALL(copy_channel)->port = port;
 }
 

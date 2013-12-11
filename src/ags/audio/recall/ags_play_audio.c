@@ -18,6 +18,8 @@
 
 #include <ags/audio/recall/ags_play_audio.h>
 
+#include <ags/main.h>
+
 void ags_play_audio_class_init(AgsPlayAudioClass *play_audio);
 void ags_play_audio_init(AgsPlayAudio *play_audio);
 void ags_play_audio_finalize(GObject *gobject);
@@ -68,7 +70,10 @@ ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
 void
 ags_play_audio_init(AgsPlayAudio *play_audio)
 {
-  /* empty */
+  AGS_RECALL(play_audio)->name = "ags-play\0";
+  AGS_RECALL(play_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(play_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_audio)->xml_type = "ags-play-audio\0";
 }
 
 void

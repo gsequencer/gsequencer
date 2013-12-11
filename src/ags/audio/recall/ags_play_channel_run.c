@@ -19,6 +19,9 @@
 #include <ags/audio/recall/ags_play_channel_run.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -73,6 +76,8 @@ enum{
 static gpointer ags_play_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_play_channel_run_parent_dynamic_connectable_interface;
+
+static const gchar *ags_play_channel_run_plugin_name = "ags-play\0";
 
 GType
 ags_play_channel_run_get_type()
@@ -179,6 +184,12 @@ ags_play_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInt
 void
 ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
 {
+  AGS_RECALL(play_channel_run)->name = "ags-play\0";
+  AGS_RECALL(play_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(play_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel_run)->xml_type = "ags-play-channel-run\0";
+  AGS_RECALL(play_channel_run)->port = NULL;
+
   AGS_RECALL(play_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(play_channel_run)->child_type = AGS_TYPE_PLAY_RECYCLING;
 
