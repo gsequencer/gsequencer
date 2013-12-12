@@ -31,6 +31,9 @@
 #include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_gui.h>
 
+#include <ags/thread/ags_thread.h>
+#include <ags/thread/ags_audio_loop.h>
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -637,6 +640,7 @@ ags_file_real_read(AgsFile *file)
 {
   AgsMain *ags_main;
   xmlNode *root_node, *child;
+  pid_t pid_num;
 
   /* parse the file and get the DOM */
   file->doc = xmlReadFile(file->filename, NULL, 0);
@@ -789,6 +793,8 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 			   NULL);
 
     *ags_main = (GObject *) gobject;
+
+    ags_init(gobject, 0, NULL);
   }else{
     gobject = (AgsMain *) *ags_main;
   }
@@ -802,6 +808,10 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 				   NULL));
   
   /* properties */
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
   gobject->version = xmlGetProp(node,
 				AGS_FILE_VERSION_PROP);
 
@@ -837,6 +847,17 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     }
 
     child = child->next;
+  }
+
+  if((AGS_MAIN_SINGLE_THREAD & (gobject->flags)) == 0){
+    /* join gui thread */
+#ifdef _USE_PTH
+    pth_join(AGS_AUDIO_LOOP(gobject->main_loop)->gui_thread->thread,
+	     NULL);
+#else
+    pthread_join(AGS_AUDIO_LOOP(gobject->main_loop)->gui_thread->thread,
+		 NULL);
+#endif
   }
 }
 

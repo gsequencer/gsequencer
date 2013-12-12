@@ -216,7 +216,15 @@ ags_port_set_property(GObject *gobject,
       gchar *plugin_name;
 
       plugin_name = (gchar *) g_value_get_string(value);
+
+      if(port->plugin_name == plugin_name){
+	return;
+      }
       
+      if(port->plugin_name != NULL){
+	g_free(port->plugin_name);
+      }
+
       port->plugin_name = g_strdup(plugin_name);
     }
     break;
@@ -225,6 +233,14 @@ ags_port_set_property(GObject *gobject,
       gchar *specifier;
 
       specifier = (gchar *) g_value_get_string(value);
+
+      if(port->specifier == specifier){
+	return;
+      }
+
+      if(port->specifier != NULL){
+	g_free(port->specifier);
+      }
 
       port->specifier = g_strdup(specifier);
     }
@@ -235,6 +251,14 @@ ags_port_set_property(GObject *gobject,
 
       control_port = (gchar *) g_value_get_string(value);
       
+      if(port->control_port == control_port){
+	return;
+      }
+
+      if(port->control_port != NULL){
+	g_free(port->control_port);
+      }
+
       port->control_port = g_strdup(control_port);
     }
     break;

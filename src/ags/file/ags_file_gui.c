@@ -599,6 +599,9 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 	     AGS_FILE_NAME_PROP,
 	     machine->name);
 
+  xmlAddChild(parent,
+	      node);  
+
   /* audio */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
@@ -610,24 +613,26 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 		   G_CALLBACK(ags_file_write_machine_resolve_audio), machine);
 
   /* machine-editor */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", machine,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_write_machine_resolve_machine_editor), machine);
+  //TODO:JK: uncomment me
+  //  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+  //					       "file\0", file,
+  //					       "node\0", node,
+  //					       "reference\0", machine,
+  //					       NULL);
+  //  ags_file_add_lookup(file, (GObject *) file_lookup);
+  //  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+  //		   G_CALLBACK(ags_file_write_machine_resolve_machine_editor), machine);
 
   /* rename-dialog */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", machine,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_write_machine_resolve_rename_dialog), machine);
+  //TODO:JK: uncomment me
+  //  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+  //					       "file\0", file,
+  //					       "node\0", node,
+  //					       "reference\0", machine,
+  //					       NULL);
+  //  ags_file_add_lookup(file, (GObject *) file_lookup);
+  //  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+  //		   G_CALLBACK(ags_file_write_machine_resolve_rename_dialog), machine);
 
   /* child elements */
   ags_plugin_write(file,
@@ -1506,7 +1511,29 @@ ags_file_read_machine_editor(AgsFile *file, xmlNode *node, AgsMachineEditor **ma
 xmlNode*
 ags_file_write_machine_editor(AgsFile *file, xmlNode *parent, AgsMachineEditor *machine_editor)
 {
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-machine-editor\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "reference\0", machine_editor,
+				   NULL));
+
   //TODO:JK: implement me
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 void

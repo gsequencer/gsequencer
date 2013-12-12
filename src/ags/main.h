@@ -51,9 +51,15 @@
 typedef struct _AgsMain AgsMain;
 typedef struct _AgsMainClass AgsMainClass;
 
+typedef enum{
+  AGS_MAIN_SINGLE_THREAD      = 1,
+}AgsMainFlags;
+
 struct _AgsMain
 {
   GObject object;
+
+  guint flags;
 
   gchar *version;
   gchar *build_id;
