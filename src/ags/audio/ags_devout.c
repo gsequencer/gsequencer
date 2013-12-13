@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags/main.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -63,6 +65,7 @@ void ags_devout_ao_free(AgsDevout *devout);
 
 enum{
   PROP_0,
+  PROP_MAIN,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -132,6 +135,15 @@ ags_devout_class_init(AgsDevoutClass *devout)
   gobject->finalize = ags_devout_finalize;
 
   /* properties */
+  param_spec = g_param_spec_object("main\0",
+				   "the main object\0",
+				   "The main object\0",
+				   AGS_TYPE_MAIN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAIN,
+				  param_spec);
+
   param_spec = g_param_spec_string("device\0",
 				   "the device identifier\0",
 				   "The device to perform output to\0",
@@ -338,6 +350,27 @@ ags_devout_set_property(GObject *gobject,
   //TODO:JK: implement set functionality
   
   switch(prop_id){
+  case PROP_MAIN:
+    {
+      AgsMain *ags_main;
+
+      ags_main = g_value_get_object(value);
+
+      if(devout->ags_main == ags_main){
+	return;
+      }
+
+      if(devout->ags_main != NULL){
+	g_object_unref(G_OBJECT(devout->ags_main));
+      }
+
+      if(ags_main != NULL){
+	g_object_ref(G_OBJECT(ags_main));
+      }
+
+      devout->ags_main = ags_main;
+    }
+    break;
   case PROP_DEVICE:
     {
       char *device;
@@ -355,34 +388,42 @@ ags_devout_set_property(GObject *gobject,
     break;
   case PROP_DSP_CHANNELS:
     {
+	//TODO:JK: implement me
     }
     break;
   case PROP_PCM_CHANNELS:
     {
+	//TODO:JK: implement me
     }
     break;
   case PROP_BITS:
     {
+	//TODO:JK: implement me
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+	//TODO:JK: implement me
     }
     break;
   case PROP_FREQUENCY:
     {
+	//TODO:JK: implement me
     }
     break;
   case PROP_BUFFER:
     {
+	//TODO:JK: implement me
     }
     break;
   case PROP_BPM:
     {
+	//TODO:JK: implement me
     }
     break;
   case PROP_TASK:
     {
+	//TODO:JK: implement me
     }
     break;
   default:

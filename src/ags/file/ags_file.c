@@ -273,6 +273,10 @@ ags_file_set_property(GObject *gobject,
 
       filename = g_value_get_string(value);
 
+      if(file->filename == filename){
+	return;
+      }
+
       g_message(filename);
       file->filename = g_strdup(filename);
     }
@@ -699,6 +703,8 @@ ags_file_real_read(AgsFile *file)
 	//TODO:JK: implement me
       }
     }
+
+    child = child->next;
   }
 
   /* resolve */
@@ -787,17 +793,25 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 {
   AgsMain *gobject;
   xmlNode *child;
+  int argc;
+  static const gchar *argv[] = {
+    "./ags\0",
+  };
 
   if(*ags_main == NULL){
-    gobject = g_object_new(AGS_TYPE_WINDOW,
+    gobject = g_object_new(AGS_TYPE_MAIN,
 			   NULL);
 
     *ags_main = (GObject *) gobject;
-
-    ags_init(gobject, 0, NULL);
   }else{
     gobject = (AgsMain *) *ags_main;
   }
+
+  argc = 1;
+  g_object_set(G_OBJECT(file),
+	       "main\0", gobject,
+	       NULL);
+  ags_init(gobject, argc, argv);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -849,6 +863,8 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     child = child->next;
   }
 
+  gtk_widget_show_all(GTK_WIDGET(gobject->window));
+
   if((AGS_MAIN_SINGLE_THREAD & (gobject->flags)) == 0){
     /* join gui thread */
 #ifdef _USE_PTH
@@ -869,6 +885,9 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 
   id = ags_id_generator_create_uuid();
 
+  node = xmlNewNode(NULL,
+		    "ags-main\0");
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -877,12 +896,13 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 				   "reference\0", ags_main,
 				   NULL));
 
-  node = xmlNewNode(NULL,
-		    "ags-main\0");
-
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", AGS_MAIN(ags_main)->flags));
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,

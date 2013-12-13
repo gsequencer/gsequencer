@@ -716,10 +716,16 @@ ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_machine(file, child, &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-machine\0",
+		     12)){
+	current = NULL;
+	ags_file_read_machine(file, child, &current);
 
-    list = g_list_prepend(list, current);
+	list = g_list_prepend(list, current);
+      }
+    }
 
     child = child->next;
   }
@@ -985,10 +991,16 @@ ags_file_read_pad_list(AgsFile *file, xmlNode *node, GList **pad)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_pad(file, child, &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-pad\0",
+		     8)){
+	current = NULL;
+	ags_file_read_pad(file, child, &current);
 
-    list = g_list_prepend(list, current);
+	list = g_list_prepend(list, current);
+      }
+    }
 
     child = child->next;
   }
@@ -1253,10 +1265,16 @@ ags_file_read_line_list(AgsFile *file, xmlNode *node, GList **line)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_line(file, child, &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-line\0",
+		     9)){
+	current = NULL;
+	ags_file_read_line(file, child, &current);
 
-    list = g_list_prepend(list, current);
+	list = g_list_prepend(list, current);
+      }
+    }
 
     child = child->next;
   }
@@ -1421,10 +1439,16 @@ ags_file_read_line_member_list(AgsFile *file, xmlNode *node, GList **line_member
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_line_member(file, child, &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-line-member\0",
+		     16)){
+	current = NULL;
+	ags_file_read_line_member(file, child, &current);
 
-    list = g_list_prepend(list, current);
+	list = g_list_prepend(list, current);
+      }
+    }
 
     child = child->next;
   }

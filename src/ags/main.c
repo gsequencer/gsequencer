@@ -134,6 +134,11 @@ ags_main_init(AgsMain *ags_main)
 					  NULL);
   ags_colors_alloc();
 
+  ags_main->main_loop = NULL;
+  ags_main->thread_pool = NULL;
+  ags_main->server = NULL;
+  ags_main->devout = NULL;
+  ags_main->window = NULL;
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 }
 

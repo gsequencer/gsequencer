@@ -92,21 +92,16 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
   file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_DIALOG);
 
-  filename = gtk_file_selection_get_filename(file_selection);
+  filename = g_strdup(gtk_file_selection_get_filename(file_selection));
 
-  pid_num = fork();
-
-  if(pid_num != 0){
-    return;
-  }
-
-  file = g_object_new(AGS_TYPE_FILE,
-		      "filename\0", filename,
-		      NULL);
-  ags_file_read(file);
-
-  g_object_unref(G_OBJECT(file));
-  gtk_widget_destroy((GtkWidget *) file_selection);
+  //  if((pid_num = fork()) != 0){
+    gtk_widget_destroy((GtkWidget *) file_selection);
+    //  }else{
+    file = g_object_new(AGS_TYPE_FILE,
+			"filename\0", filename,
+			NULL);
+    ags_file_read(file);
+    //  }
 }
 
 void

@@ -330,10 +330,15 @@ ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_devout(file, child, &current);
-
-    list = g_list_prepend(list, current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-devout\0",
+		     11)){
+	current = NULL;
+	ags_file_read_devout(file, child, &current);
+	list = g_list_prepend(list, current);
+      }
+    }
 
     child = child->next;
   }
@@ -473,10 +478,16 @@ ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_devout_play(file, child, &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-devout-play\0",
+		     16)){
+	current = NULL;
+	ags_file_read_devout_play(file, child, &current);
 
-    list = g_list_prepend(list, current);
+	list = g_list_prepend(list, current);
+      }
+    }
 
     child = child->next;
   }
@@ -584,11 +595,14 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
       if(!xmlStrncmp(child->name,
 		     "ags-channel-list\0",
 		     16)){
+	xmlXPathContext *xpath_context;
 	xmlXPathObject *xpath_object;
+
+	xpath_context = xmlXPathNewContext(file->doc);
 
 	xpath_object = xmlXPathNodeEval(child,
 					"./ags-channel/ags-output\0",
-					NULL);
+					xpath_context);
 
 	if(xpath_object->nodesetval != NULL){
 	  AgsChannel *channel;
@@ -598,10 +612,16 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	  channel_node = child->children;
 
 	  while(channel != NULL){
-	    /* ags-channel output */
-	    ags_file_read_channel(file,
-				  channel_node,
-				  &channel);
+	    if(channel_node->type == XML_ELEMENT_NODE){
+	      if(!xmlStrncmp(channel_node->name,
+			     "ags-channel\0",
+			     12)){
+		/* ags-channel output */
+		ags_file_read_channel(file,
+				      channel_node,
+				      &channel);
+	      }
+	    }
 
 	    channel = channel->next;
 	    channel_node = channel_node->next;
@@ -614,12 +634,19 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	  channel_node = child->children;
 
 	  while(channel != NULL){
-	    /* ags-channel output */
-	    ags_file_read_channel(file,
-				  channel_node,
-				  &channel);
+	    if(channel_node->type == XML_ELEMENT_NODE){
+	      if(!xmlStrncmp(channel_node->name,
+			     "ags-channel\0",
+			     12)){
+		/* ags-channel output */
+		ags_file_read_channel(file,
+				      channel_node,
+				      &channel);
+		
+		channel = channel->next;
+	      }
+	    }
 
-	    channel = channel->next;
 	    channel_node = channel_node->next;
 	  }
 	}
@@ -656,6 +683,8 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	AGS_DEVOUT_PLAY(gobject->devout_play)->source = (GObject *) gobject;
       }
     }
+    
+    child = child->next;
   }
 }
 
@@ -791,13 +820,19 @@ ags_file_read_audio_list(AgsFile *file, xmlNode *node, GList **audio)
 				   NULL));
   
   while(child != NULL){
-    current = NULL;
-    ags_file_read_audio(file,
-			child,
-			&current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-audio\0",
+		     10)){
+	current = NULL;
+	ags_file_read_audio(file,
+			    child,
+			    &current);
 
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
 
     child = child->next;
   }
@@ -857,11 +892,14 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
   gboolean is_output;
 
   if(*channel == NULL){
+    xmlXPathContext *xpath_context;
     xmlXPathObject *xpath_object;
+    
+    xpath_context = xmlXPathNewContext(file->doc);
 
     xpath_object = xmlXPathNodeEval(node,
 				    "./ags-output\0",
-				    NULL);
+				    xpath_context);
 
 
     if(xpath_object->nodesetval != NULL){
@@ -986,6 +1024,8 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 	AGS_DEVOUT_PLAY(gobject->devout_play)->source = (GObject *) gobject;
       }
     }
+
+    child = child->next;
   }
 }
 
@@ -1146,13 +1186,19 @@ ags_file_read_channel_list(AgsFile *file, xmlNode *node, GList **channel)
   child = node->children;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_channel(file,
-			  child,
-			  &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-channel\0",
+		     12)){
+	current = NULL;
+	ags_file_read_channel(file,
+			      child,
+			      &current);
 
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
 
     child = child->next;
   }
@@ -1623,13 +1669,19 @@ ags_file_read_recall_list(AgsFile *file, xmlNode *node, GList **recall)
   child = node->children;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_recall(file,
-			 child,
-			 &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-recall\0",
+		     11)){
+	current = NULL;
+	ags_file_read_recall(file,
+			     child,
+			     &current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -1713,6 +1765,8 @@ ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall *recall)
 			AGS_PLUGIN(recall));
       }
     }
+    
+    child = child->next;
   }
 }
 
@@ -1780,6 +1834,8 @@ ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall *recall)
 			AGS_PLUGIN(recall));
       }
     }
+
+    child == child->next;
   }
 }
 
@@ -1847,6 +1903,8 @@ ags_file_read_recall_channel(AgsFile *file, xmlNode *node, AgsRecall *recall)
 			AGS_PLUGIN(recall));
       }
     }
+
+    child == child->next;
   }
 }
 
@@ -1914,6 +1972,8 @@ ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall *recall
 			AGS_PLUGIN(recall));
       }
     }
+    
+    child == child->next;
   }
 }
 
@@ -1982,6 +2042,8 @@ ags_file_read_recall_recycling(AgsFile *file, xmlNode *node, AgsRecall *recall)
 			AGS_PLUGIN(recall));
       }
     }
+    
+    child = child->next;
   }
 }
 
@@ -2049,6 +2111,8 @@ ags_file_read_recall_audio_signal(AgsFile *file, xmlNode *node, AgsRecall *recal
 			AGS_PLUGIN(recall));
       }
     }
+
+    child = child->next;
   }
 }
 
@@ -2316,13 +2380,19 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
   child = node->children;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_port(file,
-		       child,
-		       &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-port\0",
+		     9)){
+	current = NULL;
+	ags_file_read_port(file,
+			   child,
+			   &current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -2482,13 +2552,19 @@ ags_file_read_recycling_list(AgsFile *file, xmlNode *node, GList **recycling)
   child = node->children;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_recycling(file,
-			    child,
-			    &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-recycling\0",
+		     14)){
+	current = NULL;
+	ags_file_read_recycling(file,
+				child,
+				&current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -2719,13 +2795,19 @@ ags_file_read_audio_signal_list(AgsFile *file, xmlNode *node, GList **audio_sign
   child = node->children;
 
   while(child != NULL){
-    current = NULL;
-    ags_file_read_audio_signal(file,
-			       child,
-			       &current);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-audio-signal\0",
+		     17)){
+	current = NULL;
+	ags_file_read_audio_signal(file,
+				   child,
+				   &current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -2942,22 +3024,28 @@ ags_file_read_stream_list(AgsFile *file, xmlNode *node,
   index = NULL;
 
   for(i = 0; child != NULL; i++){
-    current = NULL;
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-stream\0",
+		     11)){
+	current = NULL;
 
-    if(index == NULL){
-      index = (guint *) malloc(sizeof(guint));
-    }else{
-      index = (guint *) realloc(index,
-				(i + 1) * sizeof(guint));
+	if(index == NULL){
+	  index = (guint *) malloc(sizeof(guint));
+	}else{
+	  index = (guint *) realloc(index,
+				    (i + 1) * sizeof(guint));
+	}
+
+	ags_file_read_stream(file, child,
+			     &current, &(index[i]),
+			     buffer_size);
+    
+	list = g_list_prepend(list,
+			    current);
+      }
     }
 
-    ags_file_read_stream(file, child,
-			 &current, &(index[i]),
-			 buffer_size);
-    
-    list = g_list_prepend(list,
-			  current);
-    
     child = child->next;
   }
 
@@ -3151,13 +3239,19 @@ ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-pattern\0",
+		     12)){
+	current = NULL;
 
-    ags_file_read_pattern(file, child,
-			  &current);
+	ags_file_read_pattern(file, child,
+			      &current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -3328,9 +3422,15 @@ ags_file_read_pattern_data_list(AgsFile *file, xmlNode *node,
   child = node->children;
 
   while(child != NULL){
-    ags_file_read_pattern_data(file, child,
-			       pattern, &i, &j,
-			       length);
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-pattern-data\0",
+		     17)){
+	ags_file_read_pattern_data(file, child,
+				   pattern, &i, &j,
+				   length);
+      }
+    }
     
     child = child->next;
   }
@@ -3555,13 +3655,19 @@ ags_file_read_notation_list(AgsFile *file, xmlNode *node, GList **notation)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-notation\0",
+		     13)){
+	current = NULL;
     
-    ags_file_read_notation(file, child,
-			   &current);
+	ags_file_read_notation(file, child,
+			       &current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -3731,13 +3837,19 @@ ags_file_read_note_list(AgsFile *file, xmlNode *node, GList **note)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-note\0",
+		     9)){
+	current = NULL;
     
-    ags_file_read_note(file, child,
-		       &current);
+	ags_file_read_note(file, child,
+			   &current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -3999,13 +4111,19 @@ ags_file_read_task_list(AgsFile *file, xmlNode *node, GList **task)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-task\0",
+		     9)){
+	current = NULL;
     
-    ags_file_read_task(file, child,
-		       &current);
+	ags_file_read_task(file, child,
+			   &current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
@@ -4158,13 +4276,19 @@ ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp)
   list = NULL;
 
   while(child != NULL){
-    current = NULL;
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-timestamp\0",
+		     14)){
+	current = NULL;
     
-    ags_file_read_timestamp(file, child,
-			    &current);
+	ags_file_read_timestamp(file, child,
+				&current);
     
-    list = g_list_prepend(list,
-			  current);
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
     
     child = child->next;
   }
