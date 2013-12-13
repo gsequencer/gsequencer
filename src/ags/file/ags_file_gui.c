@@ -872,12 +872,12 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 				   10);
 
 	      width = g_ascii_strtoull(xmlGetProp(line_node,
-						  "bottom-attach\0"),
+						  "right-attach\0"),
 				   NULL,
 				   10) - x;
 
 	      height = g_ascii_strtoull(xmlGetProp(line_node,
-						   "right-attach\0"),
+						   "bottom-attach\0"),
 				   NULL,
 				   10) - y;
 
@@ -1146,12 +1146,12 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 				   10);
 
 	      width = g_ascii_strtoull(xmlGetProp(line_member_node,
-						  "bottom-attach\0"),
+						  "right-attach\0"),
 				   NULL,
 				   10) - x;
 
 	      height = g_ascii_strtoull(xmlGetProp(line_member_node,
-						   "right-attach\0"),
+						   "bottom-attach\0"),
 				   NULL,
 				   10) - y;
 
@@ -1343,7 +1343,9 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   xmlNode *child;
   xmlChar *prop, *content;
   gchar *widget_type;
-
+  gchar *task_type;
+  static gboolean widget_type_is_registered = FALSE;
+  
   if(*line_member == NULL){
     gobject = g_object_new(AGS_TYPE_LINE_MEMBER,
 			   NULL);
@@ -1364,6 +1366,12 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 				   "reference\0", gobject,
 				   NULL));
 
+  if(!widget_type_is_registered){
+    ags_main_register_widget_type();
+
+    widget_type_is_registered = TRUE;
+  }
+
   widget_type = (gchar *) xmlGetProp(node, "widget-type\0");
   child_widget = (GtkWidget *) g_object_new(g_type_from_name(widget_type),
 					    NULL);
@@ -1383,7 +1391,9 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   //TODO:JK: lookup port
   //gobject->port = ;
 
-  gobject->task_type = g_type_from_name(xmlGetProp(node, "task-type\0"));
+  if((task_type = xmlGetProp(node, "task-type\0")) != NULL){
+    gobject->task_type = g_type_from_name(task_type);
+  }
 }
 
 xmlNode*

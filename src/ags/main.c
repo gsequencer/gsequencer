@@ -18,7 +18,6 @@
 #define __USE_UNIX98
 #include <sys/mman.h>
 
-#include <X11/Xthreads.h>
 #include <gtk/gtk.h>
 
 #include <ags/main.h>
@@ -502,6 +501,12 @@ ags_main_register_task_type()
 }
 
 void
+ags_main_register_widget_type()
+{
+  ags_dial_get_type();
+}
+
+void
 ags_main_register_machine_type()
 {
   ags_panel_get_type();
@@ -547,7 +552,6 @@ main(int argc, char **argv)
 
   LIBXML_TEST_VERSION;
 
-  XInitThreads();
   g_thread_init(NULL);
   gdk_threads_init();
 

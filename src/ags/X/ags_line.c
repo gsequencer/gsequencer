@@ -207,8 +207,8 @@ ags_line_init(AgsLine *line)
 
   line->flags = 0;
 
-  line->version = AGS_LINE_DEFAULT_VERSION;
-  line->build_id = AGS_LINE_DEFAULT_BUILD_ID;
+  line->version = AGS_VERSION;
+  line->build_id = AGS_BUILD_ID;
 
   line->channel = NULL;
 

@@ -91,6 +91,7 @@ void ags_main_add_devout(AgsMain *main,
 void ags_main_register_recall_type();
 void ags_main_register_task_type();
 
+void ags_main_register_widget_type();
 void ags_main_register_machine_type();
 
 void ags_main_quit(AgsMain *main);
