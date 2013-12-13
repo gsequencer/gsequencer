@@ -283,7 +283,8 @@ ags_file_util_read_value(AgsFile *file,
 
     /* xpath */
     if(xpath != NULL)
-      *xpath = content;
+      *xpath = xmlGetProp(node,
+			  "link\0");
   }else if(!xmlStrcmp(type_str, AGS_FILE_OBJECT_PROP)){
     g_value_init(&a, G_TYPE_OBJECT);
 
@@ -306,10 +307,14 @@ ags_file_util_read_value(AgsFile *file,
 
     /* xpath */
     if(xpath != NULL)
-      *xpath = content;
+      *xpath = xmlGetProp(node,
+			  "link\0");
   }else{
-    g_warning("ags_file_util_read_value: unsupported type\0");
+    g_warning("ags_file_util_read_value: unsupported type: %s\0", type_str);
+    return;
   }
+
+  
 }
 
 void

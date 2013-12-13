@@ -140,7 +140,7 @@ ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run)
   AGS_RECALL(stream_channel_run)->name = "ags-stream\0";
   AGS_RECALL(stream_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(stream_channel_run)->build_id = AGS_BUILD_ID;
-  AGS_RECALL(stream_channel_run)->xml_type = "ags-stream-audio-signal\0";
+  AGS_RECALL(stream_channel_run)->xml_type = "ags-stream-channel-run\0";
   AGS_RECALL(stream_channel_run)->port = NULL;
 
   AGS_RECALL(stream_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;

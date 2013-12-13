@@ -88,6 +88,9 @@ GType ags_main_get_type();
 void ags_main_add_devout(AgsMain *main,
 			 AgsDevout *devout);
 
+void ags_main_register_recall_type();
+void ags_main_register_task_type();
+
 void ags_main_quit(AgsMain *main);
 
 AgsMain* ags_main_new();

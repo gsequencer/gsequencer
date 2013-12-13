@@ -18,6 +18,7 @@
 #define __USE_UNIX98
 #include <sys/mman.h>
 
+#include <X11/Xthreads.h>
 #include <gtk/gtk.h>
 
 #include <ags/main.h>
@@ -161,18 +162,6 @@ ags_init(AgsMain *ags_main, int argc, gchar **argv)
   }
 
   mlockall(MCL_CURRENT | MCL_FUTURE);
-
-  LIBXML_TEST_VERSION;
-
-  g_thread_init(NULL);
-  gdk_threads_init();
-
-  //  gdk_threads_enter();
-
-  gtk_init(&argc, &argv);
-  ipatch_init();
-
-  ao_initialize();
 
   if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
     AbyssInit(&error);
@@ -475,6 +464,44 @@ ags_main_add_devout(AgsMain *ags_main,
 }
 
 void
+ags_main_register_recall_type()
+{
+  ags_play_audio_get_type();
+  ags_play_channel_get_type();
+  ags_play_channel_run_get_type();
+  ags_play_channel_run_master_get_type();
+
+  ags_stream_channel_get_type();
+  ags_stream_channel_run_get_type();
+
+  ags_loop_channel_get_type();
+  ags_loop_channel_run_get_type();
+
+  ags_copy_channel_get_type();
+  ags_copy_channel_run_get_type();
+
+  ags_volume_channel_get_type();
+  ags_volume_channel_run_get_type();
+
+  ags_delay_audio_get_type();
+  ags_delay_audio_run_get_type();
+
+  ags_count_beats_audio_get_type();
+  ags_count_beats_audio_run_get_type();
+
+  ags_copy_pattern_audio_get_type();
+  ags_copy_pattern_audio_run_get_type();
+  ags_copy_pattern_channel_get_type();
+  ags_copy_pattern_channel_run_get_type();
+}
+
+void
+ags_main_register_task_type()
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_main_quit(AgsMain *ags_main)
 {
   ags_thread_stop(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread);
@@ -497,6 +524,19 @@ main(int argc, char **argv)
   AgsMain *ags_main;
   gboolean single_thread = FALSE;
   guint i;
+
+  LIBXML_TEST_VERSION;
+
+  XInitThreads();
+  g_thread_init(NULL);
+  gdk_threads_init();
+
+  //  gdk_threads_enter();
+
+  gtk_init(&argc, &argv);
+  ipatch_init();
+
+  ao_initialize();
 
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--single-thread\0", 16)){
