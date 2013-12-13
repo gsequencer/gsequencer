@@ -502,6 +502,26 @@ ags_main_register_task_type()
 }
 
 void
+ags_main_register_machine_type()
+{
+  ags_panel_get_type();
+
+  ags_mixer_get_type();
+  ags_mixer_input_pad_get_type();
+  ags_mixer_input_line_get_type();
+
+  ags_drum_get_type();
+  ags_drum_output_pad_get_type();
+  ags_drum_output_line_get_type();
+  ags_drum_input_pad_get_type();
+  ags_drum_input_line_get_type();
+
+  ags_matrix_get_type();
+
+  ags_synth_get_type();
+}
+
+void
 ags_main_quit(AgsMain *ags_main)
 {
   ags_thread_stop(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread);

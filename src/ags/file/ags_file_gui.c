@@ -389,8 +389,15 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
   AgsFileLookup *file_lookup;
   GType machine_type;
   xmlNode *child;
+  static gboolean machine_type_is_registered = FALSE;
 
   if(*machine == NULL){
+    if(!machine_type_is_registered){
+      ags_main_register_machine_type();
+
+      machine_type_is_registered = TRUE;
+    }
+
     machine_type = g_type_from_name(xmlGetProp(node,
 					       AGS_FILE_TYPE_PROP));
 
