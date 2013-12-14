@@ -463,6 +463,8 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   xmlNode **node;
   guint i;
 
+  xpath = &(xpath[6]);
+
   /* Create xpath evaluation context */
   xpath_context = xmlXPathNewContext(file->doc);
 
@@ -795,7 +797,7 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
   xmlNode *child;
   int argc;
   static const gchar *argv[] = {
-    "./ags\0",
+    "ags\0",
   };
 
   if(*ags_main == NULL){
@@ -811,13 +813,12 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
   g_object_set(G_OBJECT(file),
 	       "main\0", gobject,
 	       NULL);
-  ags_init(gobject, argc, argv);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
   
@@ -864,17 +865,6 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
   }
 
   gtk_widget_show_all(GTK_WIDGET(gobject->window));
-
-  if((AGS_MAIN_SINGLE_THREAD & (gobject->flags)) == 0){
-    /* join gui thread */
-#ifdef _USE_PTH
-    pth_join(AGS_AUDIO_LOOP(gobject->main_loop)->gui_thread->thread,
-	     NULL);
-#else
-    pthread_join(AGS_AUDIO_LOOP(gobject->main_loop)->gui_thread->thread,
-		 NULL);
-#endif
-  }
 }
 
 void
@@ -892,7 +882,7 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=*/[@id='%s']\0", id),
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
 				   "reference\0", ags_main,
 				   NULL));
 

@@ -82,11 +82,10 @@ ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 {
-  AgsMain *ags_main;
   AgsWindow *window;
   GtkFileSelection *file_selection;
-  pid_t pid_num;
   AgsFile *file;
+  pid_t pid_num;
   char *filename;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
@@ -94,16 +93,10 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 
   filename = g_strdup(gtk_file_selection_get_filename(file_selection));
 
-  pid_num = fork();
-
-  if(pid_num == 0){
-    file = g_object_new(AGS_TYPE_FILE,
-			"filename\0", filename,
-			NULL);
-    ags_file_read(file);
-  }else if(pid_num > 0){
-    gtk_widget_destroy((GtkWidget *) file_selection);
-  }
+  file = g_object_new(AGS_TYPE_FILE,
+		      "filename\0", filename,
+		      NULL);
+  ags_file_read(file);
 }
 
 void
