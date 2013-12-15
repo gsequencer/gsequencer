@@ -497,13 +497,9 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 		       6)){
 	  ags_container_add_all(gobject->output,
 				pad);
-
-	  //TODO:JK: set AgsChannel
 	}else{
 	  ags_container_add_all(gobject->input,
 				pad);
-
-	  //TODO:JK: set AgsChannel
 	}
 
 	g_list_free(pad);
@@ -526,8 +522,9 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
-  //TODO:JK: use g_object_set
-  machine->audio = (AgsAudio *) id_ref->ref;
+  g_object_set(G_OBJECT(machine->audio),
+	       "audio\0", (AgsAudio *) id_ref->ref,
+	       NULL);
 }
 
 void
@@ -866,6 +863,7 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 				&list);
 	start = list;
 
+	/* add line to pad */
 	line_node = child->children;
 
 	while(line_node != NULL){
@@ -1141,6 +1139,16 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 				       &list);
 	start = list;
 	
+	/* remove default line members */
+	gtk_widget_destroy(gobject->expander);
+
+	gobject->expander = ags_expander_new(1, 1);
+	gtk_box_pack_start(GTK_BOX(gobject),
+			   GTK_WIDGET(gobject->expander),
+			   TRUE, TRUE,
+			   0);
+
+	/* add line member to line */
 	line_member_node = child->children;
 
 	while(line_member_node != NULL){
@@ -1151,32 +1159,30 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 	      guint x, y;
 	      guint width, height;
 
-	      if(list->data != NULL){
-		x = g_ascii_strtoull(xmlGetProp(line_member_node,
-						"left-attach\0"),
-				     NULL,
-				     10);
+	      x = g_ascii_strtoull(xmlGetProp(line_member_node,
+					      "left-attach\0"),
+				   NULL,
+				   10);
 
-		y = g_ascii_strtoull(xmlGetProp(line_member_node,
-						"top-attach\0"),
-				     NULL,
-				     10);
+	      y = g_ascii_strtoull(xmlGetProp(line_member_node,
+					      "top-attach\0"),
+				   NULL,
+				   10);
 
-		width = g_ascii_strtoull(xmlGetProp(line_member_node,
-						    "right-attach\0"),
-					 NULL,
-					 10) - x;
+	      width = g_ascii_strtoull(xmlGetProp(line_member_node,
+						  "right-attach\0"),
+				       NULL,
+				       10) - x;
 
-		height = g_ascii_strtoull(xmlGetProp(line_member_node,
-						     "bottom-attach\0"),
-					  NULL,
-					  10) - y;
+	      height = g_ascii_strtoull(xmlGetProp(line_member_node,
+						   "bottom-attach\0"),
+					NULL,
+					10) - y;
 
-		ags_expander_add(gobject->expander,
-				 GTK_WIDGET(list->data),
-				 x, y,
-				 width, height);	      
-	      }
+	      ags_expander_add(gobject->expander,
+			       GTK_WIDGET(list->data),
+			       x, y,
+			       width, height);	      
 	      
 	      list = list->next;
 	    }

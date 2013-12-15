@@ -268,6 +268,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_property_collection_editor_callbacks.$(OBJEXT) \
 	ags-ags_machine.$(OBJEXT) ags-ags_mixer_input_line.$(OBJEXT) \
 	ags-ags_panel_callbacks.$(OBJEXT) \
+	ags-ags_panel_input_pad.$(OBJEXT) \
+	ags-ags_panel_input_line.$(OBJEXT) \
 	ags-ags_drum_input_line_callbacks.$(OBJEXT) \
 	ags-ags_mixer.$(OBJEXT) ags-ags_drum.$(OBJEXT) \
 	ags-ags_mixer_input_pad.$(OBJEXT) \
@@ -1021,6 +1023,10 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/ags_machine.c ./src/ags/X/ags_machine_editor.h \
 	./src/ags/X/machine/ags_mixer_input_line.c \
 	./src/ags/X/machine/ags_panel_callbacks.c \
+	./src/ags/X/machine/ags_panel_input_pad.h \
+	./src/ags/X/machine/ags_panel_input_pad.c \
+	./src/ags/X/machine/ags_panel_input_line.h \
+	./src/ags/X/machine/ags_panel_input_line.c \
 	./src/ags/X/machine/ags_drum_input_line_callbacks.c \
 	./src/ags/X/machine/ags_synth_callbacks.h \
 	./src/ags/X/machine/ags_mixer.c \
@@ -1491,6 +1497,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_pad_editor_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_panel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_panel_callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_panel_input_line.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_panel_input_pad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_parameter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_pattern.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_performance_preferences.Po@am__quote@
@@ -4672,6 +4680,34 @@ ags-ags_panel_callbacks.obj: ./src/ags/X/machine/ags_panel_callbacks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/X/machine/ags_panel_callbacks.c' object='ags-ags_panel_callbacks.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_panel_callbacks.obj `if test -f './src/ags/X/machine/ags_panel_callbacks.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_panel_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_panel_callbacks.c'; fi`
+
+ags-ags_panel_input_pad.o: ./src/ags/X/machine/ags_panel_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_panel_input_pad.o -MD -MP -MF $(DEPDIR)/ags-ags_panel_input_pad.Tpo -c -o ags-ags_panel_input_pad.o `test -f './src/ags/X/machine/ags_panel_input_pad.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_panel_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_panel_input_pad.Tpo $(DEPDIR)/ags-ags_panel_input_pad.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/X/machine/ags_panel_input_pad.c' object='ags-ags_panel_input_pad.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_panel_input_pad.o `test -f './src/ags/X/machine/ags_panel_input_pad.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_panel_input_pad.c
+
+ags-ags_panel_input_pad.obj: ./src/ags/X/machine/ags_panel_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_panel_input_pad.obj -MD -MP -MF $(DEPDIR)/ags-ags_panel_input_pad.Tpo -c -o ags-ags_panel_input_pad.obj `if test -f './src/ags/X/machine/ags_panel_input_pad.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_panel_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_panel_input_pad.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_panel_input_pad.Tpo $(DEPDIR)/ags-ags_panel_input_pad.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/X/machine/ags_panel_input_pad.c' object='ags-ags_panel_input_pad.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_panel_input_pad.obj `if test -f './src/ags/X/machine/ags_panel_input_pad.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_panel_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_panel_input_pad.c'; fi`
+
+ags-ags_panel_input_line.o: ./src/ags/X/machine/ags_panel_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_panel_input_line.o -MD -MP -MF $(DEPDIR)/ags-ags_panel_input_line.Tpo -c -o ags-ags_panel_input_line.o `test -f './src/ags/X/machine/ags_panel_input_line.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_panel_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_panel_input_line.Tpo $(DEPDIR)/ags-ags_panel_input_line.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/X/machine/ags_panel_input_line.c' object='ags-ags_panel_input_line.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_panel_input_line.o `test -f './src/ags/X/machine/ags_panel_input_line.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_panel_input_line.c
+
+ags-ags_panel_input_line.obj: ./src/ags/X/machine/ags_panel_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_panel_input_line.obj -MD -MP -MF $(DEPDIR)/ags-ags_panel_input_line.Tpo -c -o ags-ags_panel_input_line.obj `if test -f './src/ags/X/machine/ags_panel_input_line.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_panel_input_line.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_panel_input_line.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_panel_input_line.Tpo $(DEPDIR)/ags-ags_panel_input_line.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/X/machine/ags_panel_input_line.c' object='ags-ags_panel_input_line.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_panel_input_line.obj `if test -f './src/ags/X/machine/ags_panel_input_line.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_panel_input_line.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_panel_input_line.c'; fi`
 
 ags-ags_drum_input_line_callbacks.o: ./src/ags/X/machine/ags_drum_input_line_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_drum_input_line_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_drum_input_line_callbacks.Tpo -c -o ags-ags_drum_input_line_callbacks.o `test -f './src/ags/X/machine/ags_drum_input_line_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_drum_input_line_callbacks.c
