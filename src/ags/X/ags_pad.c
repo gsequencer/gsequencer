@@ -208,6 +208,7 @@ ags_pad_init(AgsPad *pad)
   pad->version = AGS_VERSION;
   pad->build_id = AGS_BUILD_ID;
 
+  pad->cols = 2;
   pad->expander_set = ags_expander_set_new(1, 1);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, TRUE, TRUE, 0);
 
@@ -472,8 +473,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     channel = ags_channel_nth(pad->channel, audio_channels_old);
 
     /* create AgsLine */
-    for(i = audio_channels_old / 2; i < audio_channels / 2; i++){
-      for(j = 0; j < 2; j++){
+    for(i = audio_channels_old / pad->cols; i < audio_channels / pad->cols; i++){
+      for(j = 0; j < pad->cols; j++){
 	line = (AgsLine *) g_object_new(line_type,
 					"pad\0", pad,
 					"channel\0", channel,

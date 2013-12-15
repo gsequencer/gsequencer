@@ -26,6 +26,8 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run_master.h>
 #include <ags/audio/recall/ags_mute_channel.h>
 #include <ags/audio/recall/ags_mute_channel_run.h>
 
@@ -44,6 +46,8 @@ void ags_panel_input_line_init(AgsPanelInputLine *panel_input_line);
 void ags_panel_input_line_connect(AgsConnectable *connectable);
 void ags_panel_input_line_disconnect(AgsConnectable *connectable);
 void ags_panel_input_line_finalize(GObject *gobject);
+
+void ags_panel_input_line_show(GtkWidget *line);
 
 void ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_panel_input_line_group_changed(AgsLine *line);
@@ -91,6 +95,7 @@ void
 ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsLineClass *line;
 
   ags_panel_input_line_parent_class = g_type_class_peek_parent(panel_input_line);
@@ -99,6 +104,11 @@ ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line)
   gobject = (GObjectClass *) panel_input_line;
 
   gobject->finalize = ags_panel_input_line_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) panel_input_line;
+
+  widget->show = ags_panel_input_line_show;
 
   /* AgsLineClass */
   line = AGS_LINE_CLASS(panel_input_line);
@@ -122,7 +132,17 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 
   panel_input_line->flags = 0;
 
-  //TODO:JK: implement me
+  line_member = ags_line_member_new();
+  line_member->flags |= AGS_LINE_MEMBER_DEFAULT_TEMPLATE;
+  line_member->widget_type = GTK_TYPE_CHECK_BUTTON;
+  ags_expander_add(AGS_LINE(panel_input_line)->expander,
+		   GTK_WIDGET(line_member),
+		   0, 0,
+		   1, 1);
+
+  panel_input_line->mute = (GtkCheckButton *) gtk_check_button_new_with_label("mute\0");
+  gtk_container_add(GTK_CONTAINER(line_member),
+		    GTK_WIDGET(panel_input_line->mute));
 }
 
 void
@@ -159,6 +179,14 @@ ags_panel_input_line_finalize(GObject *gobject)
 }
 
 void
+ags_panel_input_line_show(GtkWidget *line)
+{
+  GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show(line);
+
+  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
+}
+
+void
 ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsPanelInputLine *panel_input_line;
@@ -183,6 +211,46 @@ void
 ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 				guint output_pad_start)
 {
+  AgsPanel *panel;
+  AgsLine *line;
+
+  AgsAudio *audio;
+  AgsChannel *source;
+  AgsChannel *current;
+  AgsPlayChannel *play_channel;
+  AgsPlayChannelRunMaster *play_channel_run;
+
+  GList *list;
+
+  line = AGS_LINE(panel_input_line);
+
+  audio = AGS_AUDIO(line->channel->audio);
+
+  panel = AGS_PANEL(audio->machine);
+
+  source = line->channel;
+
+  /* ags-play */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-master\0",
+			    source->audio_channel, source->audio_channel + 1,
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT,
+			     AGS_RECALL_FACTORY_REMAP |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+
+  /* set audio channel */
+  list = source->play;
+
+  while((list = ags_recall_template_find_type(list,
+					      AGS_TYPE_PLAY_CHANNEL)) != NULL){
+
+    AGS_PLAY_CHANNEL(list->data)->audio_channel->port_value.ags_port_uint = source->audio_channel;
+
+    list = list->next;
+  }
 }
 
 AgsPanelInputLine*

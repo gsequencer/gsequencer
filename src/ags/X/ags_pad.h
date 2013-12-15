@@ -60,6 +60,7 @@ struct _AgsPad
 
   AgsChannel *channel;
 
+  guint cols;
   AgsExpanderSet *expander_set;
 
   GtkToggleButton *group;

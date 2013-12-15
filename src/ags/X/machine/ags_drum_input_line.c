@@ -234,6 +234,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsDrum *drum;
   AgsLine *line;
   AgsLineMember *line_member;
+
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;

@@ -33,6 +33,8 @@ void ags_panel_input_pad_connect(AgsConnectable *connectable);
 void ags_panel_input_pad_disconnect(AgsConnectable *connectable);
 void ags_panel_input_pad_finalize(GObject *gobject);
 
+void ags_panel_input_pad_show(GtkWidget *pad);
+
 void ags_panel_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_panel_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
@@ -80,6 +82,7 @@ void
 ags_panel_input_pad_class_init(AgsPanelInputPadClass *panel_input_pad)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsPadClass *pad;
 
   ags_panel_input_pad_parent_class = g_type_class_peek_parent(panel_input_pad);
@@ -88,6 +91,11 @@ ags_panel_input_pad_class_init(AgsPanelInputPadClass *panel_input_pad)
   gobject = (GObjectClass *) panel_input_pad;
 
   gobject->finalize = ags_panel_input_pad_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) panel_input_pad;
+
+  widget->show = ags_panel_input_pad_show;
 
   /* AgsPadClass */
   pad = (AgsPadClass *) panel_input_pad;
@@ -112,8 +120,9 @@ ags_panel_input_pad_init(AgsPanelInputPad *panel_input_pad)
   GtkVBox *vbox;
 
   pad = (AgsPad *) panel_input_pad;
+  pad->cols = 1;
 
-  vbox = (GtkHBox *) gtk_vbox_new(FALSE, 0);
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) vbox, FALSE, TRUE, 0);
   gtk_box_reorder_child((GtkBox *) pad, (GtkWidget *) vbox, 0);
 }
@@ -148,6 +157,16 @@ ags_panel_input_pad_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_panel_input_pad_parent_class)->finalize(gobject);
 
   /* empty */
+}
+
+void
+ags_panel_input_pad_show(GtkWidget *pad)
+{
+  GTK_WIDGET_CLASS(ags_panel_input_pad_parent_class)->show(pad);
+
+  gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->group));
+  gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->mute));
+  gtk_widget_hide(GTK_WIDGET(AGS_PAD(pad)->solo));
 }
 
 void

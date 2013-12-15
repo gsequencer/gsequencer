@@ -33,6 +33,9 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/machine/ags_panel_input_pad.h>
+#include <ags/X/machine/ags_panel_input_line.h>
+
 void ags_panel_class_init(AgsPanelClass *panel);
 void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_init(AgsPanel *panel);
@@ -202,93 +205,68 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 			     gpointer data)
 {
   AgsPanel *panel;
-  AgsChannel *input, *output;
+  GList *list_input_pad;
+  guint i;
 
   panel = (AgsPanel *) audio->machine;
 
-  if(audio_channels_old < audio_channels){
-    AgsPlayChannel *play_channel;
-    AgsPlayChannelRunMaster *play_channel_run;
-    GtkHBox *hbox;
-    AgsChannel *channel;
-    GList *list;
-    guint i;
-
-    /* ags-play */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play-master\0",
-			      audio_channels_old, audio_channels,
-			      0, audio->input_pads,
-			      (AGS_RECALL_FACTORY_INPUT,
-			       AGS_RECALL_FACTORY_REMAP |
-			       AGS_RECALL_FACTORY_PLAY),
-			      0);
+  list_input_pad = gtk_container_get_children((GtkContainer *) AGS_MACHINE(panel)->input);
     
+  if(audio_channels > audio_channels_old){
+    AgsPanelInputPad *panel_input_pad;
+    AgsChannel *channel;
+
+    /* AgsInput */
     channel = audio->input;
 
-    while(channel != NULL){
-      list = channel->play;
+    for(i = 0; i < audio->input_pads; i++){
+      if(audio_channels_old == 0){
+      /* create AgsPad's if necessary */
+	panel_input_pad = ags_panel_input_pad_new(channel);
+	gtk_box_pack_start((GtkBox *) AGS_MACHINE(panel)->input,
+			   (GtkWidget *) panel_input_pad,
+			   FALSE, FALSE,
+			   0);
+	ags_pad_resize_lines((AgsPad *) panel_input_pad, AGS_TYPE_PANEL_INPUT_LINE,
+			     audio->audio_channels, 0);
 
-      while((list = ags_recall_template_find_type(list,
-						  AGS_TYPE_PLAY_CHANNEL)) != NULL){
+	if(GTK_WIDGET_VISIBLE((GtkWidget *) panel)){
+	  ags_connectable_connect(AGS_CONNECTABLE(panel_input_pad));
+	  gtk_widget_show_all((GtkWidget *) panel_input_pad);
+	}
+      }else{
+	panel_input_pad = AGS_PANEL_INPUT_PAD(list_input_pad->data);
 
-	AGS_PLAY_CHANNEL(list->data)->audio_channel->port_value.ags_port_uint = channel->audio_channel;
-
-	list = list->next;
+	ags_pad_resize_lines((AgsPad *) panel_input_pad, AGS_TYPE_PANEL_INPUT_LINE,
+			     audio_channels, audio_channels_old);
       }
 
-      channel = channel->next;
+      channel = channel->next_pad;
+
+      if(audio_channels_old != 0){
+	list_input_pad = list_input_pad->next;
+      }
     }
+  }else if(audio_channels < audio_channels_old){
+    GList *list_input_pad_next;
 
-    /*  */
-    input = ags_channel_nth(audio->input, audio_channels_old);
-    output = ags_channel_nth(audio->output, audio_channels_old);
+    if(audio_channels == 0){
+      /* AgsInput */
+      while(list_input_pad != NULL){
+	list_input_pad_next = list_input_pad->next;
 
-    for(i = audio_channels_old; i < audio_channels; i++){
+	gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
 
-      /* GtkWidgets */
-      hbox = (GtkHBox*) gtk_hbox_new(FALSE, 0);
-      gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
+	list_input_pad->next = list_input_pad_next;
+      }
+    }else{
+      /* AgsInput */
+      for(i = 0; list_input_pad != NULL; i++){
+	ags_pad_resize_lines(AGS_PAD(list_input_pad->data), AGS_TYPE_PANEL_INPUT_PAD,
+			     audio_channels, audio_channels_old);
 
-      gtk_box_pack_start((GtkBox *) hbox, 
-			 (GtkWidget *) gtk_label_new(g_strdup_printf("channel %d: \0", i)),
-			 FALSE, FALSE, 0);
-
-      gtk_box_pack_start((GtkBox *) hbox,
-			 (GtkWidget *) gtk_check_button_new_with_label("mute\0"),
-			 FALSE, FALSE, 0);
-
-      if(GTK_WIDGET_VISIBLE((GtkWidget *) panel))
-	gtk_widget_show_all((GtkWidget *) hbox);
-
-      input = input->next;
-      output = output->next;
-    }
-  }else{
-    GList *list0, *list1;
-    GList *list2, *list3;
-
-    /* ags-play */
-    //TODO:JK: implement me
-    //    ags_recall_factory_remove(audio,
-    //			      );
-
-    list0 = g_list_nth(gtk_container_get_children((GtkContainer *) panel->vbox),
-		       audio_channels_old);
-
-    while(list0 != NULL){
-      list1 = list0->next;
-      list2 = gtk_container_get_children((GtkContainer *) list0->data);
-
-      list3 = list2->next;
-      gtk_widget_destroy((GtkWidget *) list2->data);
-
-      gtk_widget_destroy((GtkWidget *) list3->data);
-
-      gtk_widget_destroy((GtkWidget *) list0->data);
-
-      list0 = list1;
+	list_input_pad = list_input_pad->next;
+      }
     }
   }
 }
@@ -298,7 +276,48 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 		   guint pads, guint pads_old,
 		   gpointer data)
 {
-  printf("AgsPanel only audio channels can be adjusted\n\0");
+  AgsPanel *panel;
+
+  panel = (AgsPanel *) audio->machine;
+
+  if(type == AGS_TYPE_INPUT){
+    if(pads_old < pads){
+      AgsPanelInputPad *panel_input_pad;
+      AgsChannel *channel;
+      guint i;
+
+      /*  */
+      channel = ags_channel_nth(audio->input, pads_old * audio->audio_channels);
+
+      for(i = pads_old; i < pads; i++){
+	panel_input_pad = ags_panel_input_pad_new(channel);
+	gtk_box_pack_start((GtkBox *) AGS_MACHINE(panel)->input,
+			   (GtkWidget *) panel_input_pad, FALSE, FALSE, 0);
+	ags_pad_resize_lines((AgsPad *) panel_input_pad, AGS_TYPE_PANEL_INPUT_LINE,
+			     AGS_AUDIO(channel->audio)->audio_channels, 0);
+
+	if(GTK_WIDGET_VISIBLE((GtkWidget *) panel)){
+	  ags_connectable_connect(AGS_CONNECTABLE(panel_input_pad));
+	  gtk_widget_show_all((GtkWidget *) panel_input_pad);
+	}
+
+	channel = channel->next_pad;
+      }
+    }else{
+      GList *list, *list_next;
+
+      list = gtk_container_get_children((GtkContainer *) AGS_MACHINE(panel)->input);
+      list = g_list_nth(list, pads);
+
+      while(list != NULL){
+	list_next = list->next;
+
+	gtk_widget_destroy((GtkWidget *) list->data);
+
+	list = list_next;
+      }
+    }
+  }
 }
 
 AgsPanel*
