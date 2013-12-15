@@ -67,9 +67,11 @@ struct _AgsMachine
   AgsAudio *audio;
 
   GType output_pad_type;
+  GType output_line_type;
   GtkContainer *output;
 
   GType input_pad_type;
+  GType input_line_type;
   GtkContainer *input;
 
   GtkMenu *popup;

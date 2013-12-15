@@ -1364,13 +1364,6 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   gchar *task_type;
   static gboolean widget_type_is_registered = FALSE;
   
-  if(!xmlStrncmp(xmlGetProp(node, "default-template\0"),
-		 AGS_FILE_TRUE,
-		 5)){
-    *line_member = NULL;
-    return;
-  }
-
   if(*line_member == NULL){
     gobject = g_object_new(AGS_TYPE_LINE_MEMBER,
 			   NULL);
@@ -1462,10 +1455,6 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   xmlNewProp(node,
 	     "control-port\0",
 	     g_strdup(line_member->control_port));
-
-  xmlNewProp(node,
-	     "default-template\0",
-	     g_strdup(((AGS_LINE_MEMBER_TEMPLATE & (line_member->flags))!= 0) ? AGS_FILE_TRUE: AGS_FILE_FALSE));
 
   xmlAddChild(parent,
 	      node);  

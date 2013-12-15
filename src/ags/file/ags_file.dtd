@@ -611,7 +611,6 @@
 	  specifier            CDATA      #REQUIRED
 	  control-port         CDATA      #REQUIRED
 	  task-type            CDATA      #REQUIRED
-	  default-template     NMTOKEN    "true"
 	  left-attach          NMTOKEN    #REQUIRED
 	  rigth-attach         NMTOKEN    #REQUIRED
 	  top-attach           NMTOKEN    #REQUIRED
