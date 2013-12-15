@@ -132,6 +132,7 @@ ags_line_class_init(AgsLineClass *line)
   gobject->set_property = ags_line_set_property;
   gobject->get_property = ags_line_get_property;
 
+  /* properties */
   param_spec = g_param_spec_object("pad\0",
 				   "parent pad\0",
 				   "The pad which is its parent\0",
@@ -251,7 +252,11 @@ ags_line_set_property(GObject *gobject,
 
       pad = (GtkWidget *) g_value_get_object(value);
 
-      if(line->pad = NULL){
+      if(line->pad == pad){
+	return;
+      }
+
+      if(line->pad != NULL){
 	g_object_unref(G_OBJECT(line->pad));
       }
 

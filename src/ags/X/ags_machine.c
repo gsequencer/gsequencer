@@ -40,6 +40,14 @@ void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_machine_init(AgsMachine *machine);
+void ags_machine_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec);
+void ags_machine_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec);
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
 gchar* ags_machine_get_name(AgsPlugin *plugin);
@@ -59,6 +67,11 @@ void ags_machine_show(GtkWidget *widget);
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 
 static gpointer ags_machine_parent_class = NULL;
+
+enum{
+  PROP_0,
+  PROP_AUDIO,
+};
 
 GType
 ags_machine_get_type(void)
@@ -116,8 +129,21 @@ ags_machine_class_init(AgsMachineClass *machine)
 
   /* GtkObjectClass */
   gobject = (GObjectClass *) machine;
+  
+  gobject->set_property = ags_machine_set_property;
+  gobject->get_property = ags_machine_get_property;
 
   gobject->finalize = ags_machine_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("audio\0",
+				   "assigned audio\0",
+				   "The audio it is assigned to\0",
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) machine;
@@ -162,6 +188,9 @@ ags_machine_init(AgsMachine *machine)
 
   machine->name = NULL;
 
+  machine->output_pad_type = G_TYPE_NONE;
+  machine->input_pad_type = G_TYPE_NONE;
+
   frame = (GtkFrame *) gtk_frame_new(NULL);
   gtk_container_add((GtkContainer *) machine, (GtkWidget *) frame);
 
@@ -174,6 +203,114 @@ ags_machine_init(AgsMachine *machine)
   machine->popup = ags_machine_popup_new(machine);
   machine->properties = NULL;
   machine->rename = NULL;
+}
+
+void
+ags_machine_set_property(GObject *gobject,
+			 guint prop_id,
+			 const GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsMachine *machine;
+
+  machine = AGS_MACHINE(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    {
+      GtkWidget *audio;
+
+      audio = (GtkWidget *) g_value_get_object(value);
+
+      if(machine->audio != NULL){
+	GList *pad;
+
+	pad = gtk_container_get_children(machine->output);
+
+	while(pad != NULL){
+	  gtk_widget_destroy(pad->data);
+
+	  pad = pad->next;
+	}
+
+	pad = gtk_container_get_children(machine->input);
+	
+	while(pad != NULL){
+	  gtk_widget_destroy(pad->data);
+
+	  pad = pad->next;
+	}
+
+	g_object_unref(G_OBJECT(machine->audio));
+      }
+
+      if(audio != NULL){
+	AgsPad *pad;
+	AgsChannel *channel;
+	guint i;
+
+	channel = audio->output;
+
+	for(i = 0; i < audio->output_pads; i++){
+	  pad = g_object_new(machine->output_type,
+			     "channel\0", channel,
+			     NULL);
+	  gtk_container_add(machine->output,
+			    GTK_WIDGET(pad));
+	  ags_connectable_connect(AGS_CONNECTABLE(pad));
+	  
+	  ags_pad_resize_lines(pad,
+			       audio->audio_channels);
+
+	  channel = channel->next_pad;
+	}
+
+	channel = audio->input;
+
+	for(i = 0; i < audio->input_pads; i++){
+	  pad = g_object_new(machine->input_type,
+			     "channel\0", channel,
+			     NULL);
+	  gtk_container_add(machine->output,
+			    pad);
+	  ags_connectable_connect(AGS_CONNECTABLE(pad));
+
+	  ags_pad_resize_lines(pad,
+			       audio->audio_channels);
+
+	  channel = channel->next_pad;
+	}
+
+	g_object_ref(G_OBJECT(audio));
+      }
+      
+      machine->audio = audio;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_machine_get_property(GObject *gobject,
+			 guint prop_id,
+			 GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsMachine *machine;
+
+  machine = AGS_MACHINE(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO:
+    g_value_set_object(value, machine->audio);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

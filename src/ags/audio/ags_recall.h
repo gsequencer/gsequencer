@@ -35,8 +35,8 @@
 
 #define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 
-#define AGS_RECALL_DEFAULT_VERSION "0.4.0\0"
-#define AGS_RECALL_DEFAULT_BUILD_ID "0.4.0\0"
+#define AGS_RECALL_DEFAULT_VERSION "0.4.0-beta\0"
+#define AGS_RECALL_DEFAULT_BUILD_ID "0.4.0-beta\0"
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
@@ -45,12 +45,12 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
 typedef enum{
   AGS_RECALL_CONNECTED             = 1,
   AGS_RECALL_RUN_INITIALIZED       = 1 <<  1, //TODO:JK: rename to AGS_RECALL_RUN_CONNECTED
-  AGS_RECALL_TEMPLATE              = 1 <<  2, // if a sequencer's AgsOutput->recall is called all AgsRecalls with this flag has to be duplicated
+  AGS_RECALL_TEMPLATE              = 1 <<  2,
   AGS_RECALL_PLAYBACK              = 1 <<  3,
   AGS_RECALL_SEQUENCER             = 1 <<  4,
   AGS_RECALL_NOTATION              = 1 <<  5,
+  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  6,
   //TODO:JK: remove because it's useless
-  //  AGS_RECALL_DISTINCTS_REAL        = 1 <<  6,
   //  AGS_RECALL_IS_REAL               = 1 <<  7,
   AGS_RECALL_INPUT_ORIENTATED      = 1 <<  8,
   AGS_RECALL_OUTPUT_ORIENTATED     = 1 <<  9,

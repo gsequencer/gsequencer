@@ -38,8 +38,9 @@ typedef struct _AgsLineMember AgsLineMember;
 typedef struct _AgsLineMemberClass AgsLineMemberClass;
 
 typedef enum{
-  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1,
-  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 << 1,
+  AGS_LINE_MEMBER_DEFAULT_TEMPLATE      = 1,
+  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
+  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 << 2,
 }AgsLineMemberFlags;
 
 struct _AgsLineMember

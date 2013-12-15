@@ -333,7 +333,7 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
   }else if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
     g_value_set_object(value, (GObject *) id_ref->ref);
   }else{
-    g_warning("ags_file_util_read_parameter_resolve: unknown type of GValue\0");
+    g_warning("ags_file_util_read_value_resolve: unknown type of GValue\0");
   }
 }
 
@@ -518,7 +518,7 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
 
   xmlNewProp(file_lookup->node,
 	     "link\0",
-	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
+	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 
   g_value_unset(value);
   g_free(value);

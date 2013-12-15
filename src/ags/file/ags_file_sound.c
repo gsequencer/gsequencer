@@ -588,8 +588,6 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 					      NULL,
 					      10));
 
-  child = node->children;
-
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,

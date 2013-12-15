@@ -32,8 +32,8 @@
 #define AGS_IS_MACHINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MACHINE))
 #define AGS_MACHINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE, AgsMachineClass))
 
-#define AGS_MACHINE_DEFAULT_VERSION "0.4.0\0"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "0.4.0\0"
+#define AGS_MACHINE_DEFAULT_VERSION "0.4.0-beta\0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "0.4.0-beta\0"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
@@ -66,7 +66,10 @@ struct _AgsMachine
 
   AgsAudio *audio;
 
+  GType output_pad_type;
   GtkContainer *output;
+
+  GType input_pad_type;
   GtkContainer *input;
 
   GtkMenu *popup;

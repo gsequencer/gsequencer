@@ -137,6 +137,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   drum_input_line->flags = 0;
 
   line_member = ags_line_member_new();
+  line_member->flags |= AGS_LINE_MEMBER_DEFAULT_TEMPLATE;
+  line_member->widget_type = GTK_TYPE_VSCALE;
   ags_expander_add(AGS_LINE(drum_input_line)->expander,
 		   GTK_WIDGET(line_member),
 		   0, 0,
