@@ -424,6 +424,8 @@ void
 ags_main_register_machine_type()
 {
   ags_panel_get_type();
+  ags_panel_input_pad_get_type();
+  ags_panel_input_line_get_type();
 
   ags_mixer_get_type();
   ags_mixer_input_pad_get_type();

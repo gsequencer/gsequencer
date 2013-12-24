@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_drum.h>
@@ -52,6 +54,7 @@ static GList* ags_window_standard_machine_counter();
 enum{
   PROP_0,
   PROP_DEVOUT,
+  PROP_MAIN,
 };
 
 static gpointer ags_window_parent_class = NULL;
@@ -118,6 +121,16 @@ ags_window_class_init(AgsWindowClass *window)
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
+
+  param_spec = g_param_spec_object("ags-main\0",
+				   "assigned ags_main\0",
+				   "The AgsMain it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MAIN,
+				  param_spec);
+
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) window;
@@ -221,6 +234,26 @@ ags_window_set_property(GObject *gobject,
       g_object_set(G_OBJECT(window->navigation),
 		   "devout\0", devout,
 		   NULL);
+    }
+    break;
+  case PROP_MAIN:
+    {
+      AgsMain *ags_main;
+
+      ags_main = g_value_get_object(value);
+
+      if(window->ags_main == ags_main)
+	return;
+
+      if(window->ags_main != NULL){
+	g_object_unref(window->ags_main);
+      }
+
+      if(ags_main != NULL){
+	g_object_ref(ags_main);
+      }
+
+      window->ags_main = ags_main;
     }
     break;
   default:

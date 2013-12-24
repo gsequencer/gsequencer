@@ -58,6 +58,7 @@ struct _AgsWindow
   guint flags;
 
   GObject *ags_main;
+
   AgsDevout *devout;
 
   char *name;

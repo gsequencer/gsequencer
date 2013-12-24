@@ -175,6 +175,8 @@ ags_drum_init(AgsDrum *drum)
 		   AGS_AUDIO_ASYNC);
 
   AGS_MACHINE(drum)->flags |= AGS_MACHINE_IS_SEQUENCER;
+  AGS_MACHINE(drum)->input_pad_type = AGS_TYPE_DRUM_INPUT_PAD;
+
   drum->flags = 0;
 
   /* ags-delay */
@@ -247,11 +249,11 @@ ags_drum_init(AgsDrum *drum)
   gtk_box_pack_start((GtkBox *) drum->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
   drum->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  drum->machine.input = (GtkContainer *) drum->input_pad;
+  AGS_MACHINE(drum)->input = (GtkContainer *) drum->input_pad;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum->input_pad, FALSE, FALSE, 0);
 
   drum->output_pad = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  drum->machine.output = (GtkContainer *) drum->output_pad;
+  AGS_MACHINE(drum)->output = (GtkContainer *) drum->output_pad;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum->output_pad, FALSE, FALSE, 0);
 
   drum->selected_pad = NULL;

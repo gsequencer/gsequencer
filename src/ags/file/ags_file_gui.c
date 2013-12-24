@@ -61,7 +61,7 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
   }
 
   g_object_set(G_OBJECT(gobject),
-	       "main\0", file->ags_main,
+	       "ags-main\0", file->ags_main,
 	       NULL);
 
   ags_file_add_id_ref(file,
@@ -411,10 +411,6 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
     gobject = *machine;
   }
 
-  g_object_set(G_OBJECT(gobject),
-	       "main\0", file->ags_main,
-	       NULL);
-
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -522,7 +518,7 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
-  g_object_set(G_OBJECT(machine->audio),
+  g_object_set(G_OBJECT(machine),
 	       "audio\0", (AgsAudio *) id_ref->ref,
 	       NULL);
 }
@@ -817,11 +813,7 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
   }else{
     gobject = *pad;
   }
-
-  g_object_set(G_OBJECT(gobject),
-	       "main\0", file->ags_main,
-	       NULL);
-
+  
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -873,6 +865,10 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 			   8)){
 	      guint x, y;
 	      guint width, height;
+
+	      g_object_set(G_OBJECT(list->data),
+			   "pad\0", gobject,
+			   NULL);
 
 	      x = g_ascii_strtoull(xmlGetProp(line_node,
 					      "left-attach\0"),
@@ -1093,10 +1089,6 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
   }else{
     gobject = *line;
   }
-
-  g_object_set(G_OBJECT(gobject),
-	       "main\0", file->ags_main,
-	       NULL);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -1377,10 +1369,6 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   }else{
     gobject = *line_member;
   }
-
-  g_object_set(G_OBJECT(gobject),
-	       "main\0", file->ags_main,
-	       NULL);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
