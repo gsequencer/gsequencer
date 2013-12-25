@@ -858,6 +858,8 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 	ags_file_read_window(file,
 			     child,
 			     &gobject->window);
+
+	ags_connectable_connect(gobject->window);
       }
     }
 

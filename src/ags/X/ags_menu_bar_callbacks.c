@@ -87,6 +87,11 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
   AgsFile *file;
   pid_t pid_num;
   char *filename;
+  gchar **argv;
+
+  g_shell_parse_argv("ags\0", NULL, &argv, NULL);
+  g_spawn_async(NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  g_strfreev(argv);
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
   file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_DIALOG);

@@ -26,9 +26,19 @@
 
 #include <ags/file/ags_file.h>
 
+#include <ags/thread/ags_thread.h>
 #include <ags/thread/ags_audio_loop.h>
 
-void ags_file_read_audio_loop(AgsFile *file, xmlNode *node, AgsAudioLoop **audio_loop);
+void ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread);
+xmlNode* ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread);
+
+void ags_file_read_thread_list(AgsFile *file, xmlNode *node, GList **thread);
+xmlNode* ags_file_write_thread_list(AgsFile *file, xmlNode *parent, GList *thread);
+
+void ags_file_read_thread_pool(AgsFile *file, xmlNode *node, AgsThreadPool **thread_pool);
+xmlNode* ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread_pool);
+
+void ags_file_read_audio_loop(AgsFile *file, xmlNode *node, AgsAudioLoop *audio_loop);
 xmlNode* ags_file_write_audio_loop(AgsFile *file, xmlNode *parent, AgsAudioLoop *audio_loop);
 
 #endif /*__AGS_FILE_THREAD_H__*/

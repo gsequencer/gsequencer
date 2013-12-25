@@ -162,7 +162,7 @@
 	  >
 
 <!-- main -->
-<!ELEMENT ags-main (ags-audio-loop, ags-devout-list, ags-window)>
+<!ELEMENT ags-main (ags-audio-loop, ags-devout-list, ags-window, ags-thread, ags-thread-pool)>
 <!ATTLIST ags-main
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
@@ -171,12 +171,43 @@
 	  >
 
 <!-- thread -->
+<!ELEMENT ags-thread-list (ags-thread*)>
+<!ATTLIST ags-thread-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-thread (ags-thread*, (ags-audio-loop | ags-task-thread | ags-gui-thread |ags-devout-thread | ags-export-thread | ags-recycling-thread | ags-timestamp-thread | ags-single-thread))>
+<!ATTLIST ags-thread
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+>
+
+<!ELEMENT ags-thread-pool (ags-thread-list)>
+<!ATTLIST ags-thread
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+>
+
 <!ELEMENT ags-audio-loop (ags-parameter, ags-parameter, ags-parameter, ags-parameter)>
 <!ATTLIST ags-audio-loop
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
 	  frequency        NMTOKEN    #REQUIRED
 >
+
+<!ELEMENT ags-task-thread EMPTY>
+
+<!ELEMENT ags-gui-thread EMPTY>
+
+<!ELEMENT ags-devout-thread EMPTY>
+
+<!ELEMENT ags-export-thread EMPTY>
+
+<!ELEMENT ags-recycling-thread EMPTY>
+
+<!ELEMENT ags-timestamp-thread EMPTY>
+
+<!ELEMENT ags-single-thread EMPTY>
 
 <!-- audio -->
 <!ELEMENT ags-devout-list (ags-devout*)>
