@@ -443,6 +443,23 @@ ags_main_register_machine_type()
 }
 
 void
+ags_main_register_thread_type()
+{
+  ags_thread_get_type();
+
+  ags_audio_loop_get_type();
+  ags_task_thread_get_type();
+  ags_devout_thread_get_type();
+  ags_iterator_thread_get_type();
+  ags_recycling_thread_get_type();
+  ags_timestamp_thread_get_type();
+  ags_gui_thread_get_type();
+
+  ags_thread_pool_get_type();
+  ags_returnable_thread_get_type();
+}
+
+void
 ags_main_quit(AgsMain *ags_main)
 {
   ags_thread_stop(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread);

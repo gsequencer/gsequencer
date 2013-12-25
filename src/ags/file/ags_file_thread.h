@@ -26,6 +26,8 @@
 
 #include <ags/file/ags_file.h>
 
+#include <ags/thread/ags_thread_pool.h>
+
 #include <ags/thread/ags_thread.h>
 #include <ags/thread/ags_audio_loop.h>
 

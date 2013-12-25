@@ -178,6 +178,7 @@
 
 <!ELEMENT ags-thread (ags-thread*, (ags-audio-loop | ags-task-thread | ags-gui-thread |ags-devout-thread | ags-export-thread | ags-recycling-thread | ags-timestamp-thread | ags-single-thread))>
 <!ATTLIST ags-thread
+	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
 >
