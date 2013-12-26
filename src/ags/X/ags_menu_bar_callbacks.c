@@ -98,10 +98,17 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 
   filename = g_strdup(gtk_file_selection_get_filename(file_selection));
 
-  file = g_object_new(AGS_TYPE_FILE,
-		      "filename\0", filename,
-		      NULL);
-  ags_file_read(file);
+  pid_num = fork();
+
+  if(pid_num == -1){
+  }else if(pid_num == 0){
+    file = g_object_new(AGS_TYPE_FILE,
+			"filename\0", filename,
+			NULL);
+    ags_file_read(file);
+  }else{
+    gtk_widget_destroy(file_selection);
+  }
 }
 
 void

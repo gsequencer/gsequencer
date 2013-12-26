@@ -241,6 +241,7 @@ ags_file_init(AgsFile *file)
 
   file->id_refs = NULL;
   file->lookup = NULL;
+  file->launch = NULL;
 
   file->ags_main = NULL;
 
@@ -521,7 +522,7 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
 void
 ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 {
-  if(file_lookup == NULL){
+  if(file == NULL || file_lookup == NULL){
     return;
   }
 
@@ -529,6 +530,19 @@ ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 
   file->lookup = g_list_prepend(file->lookup,
 				file_lookup);
+}
+
+void
+ags_file_add_launch(AgsFile *file, GObject *file_launch)
+{
+  if(file == NULL || file_launch == NULL){
+    return;
+  }
+
+  g_object_ref(G_OBJECT(file_launch));
+
+  file->launch = g_list_prepend(file->launch,
+				file_launch);
 }
 
 void
@@ -765,7 +779,15 @@ ags_file_read_resolve(AgsFile *file)
 void
 ags_file_real_read_start(AgsFile *file)
 {
-  //TODO:JK: implement me
+  GList *list;
+
+  list = file->launch;
+
+  while(list != NULL){
+    ags_file_launch_start(AGS_FILE_LAUNCH(list->data));
+
+    list = list->next;
+  }
 }
 
 void
@@ -867,6 +889,8 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 			     &gobject->window);
 
 	ags_connectable_connect(gobject->window);
+
+	gtk_widget_show_all(gobject->window);
       }
     }
 

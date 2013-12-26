@@ -22,6 +22,9 @@
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_launch.h>
+
+void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
 
 void
 ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
@@ -67,6 +70,15 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 					    NULL,
 					    16);
 
+  /* start */
+  if((AGS_THREAD_RUNNING & (gobject->flags)) != 0){
+    file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+						 NULL);
+    ags_file_add_launch(file, (GObject *) file_launch);
+    g_signal_connect(G_OBJECT(file_launch), "start\0",
+		     G_CALLBACK(ags_file_read_thread_start), gobject);
+  }
+
   /* read children */
   child = node->children;
 
@@ -100,12 +112,13 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
     child = child->next;
   }
+}
 
-  /* start thread */
-  if((AGS_THREAD_RUNNING & (gobject->flags)) != 0){
-    gobject->flags &= (~AGS_THREAD_RUNNING);
-    ags_thread_start(gobject);
-  }
+void
+ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
+{
+  gobject->flags &= (~AGS_THREAD_RUNNING);  
+  ags_thread_start(gobject);
 }
 
 xmlNode*

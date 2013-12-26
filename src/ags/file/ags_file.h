@@ -107,7 +107,9 @@ GObject* ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node);
 GObject* ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath);
 GObject* ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref);
 
-void ags_file_add_lookup(AgsFile *file, GObject *id_ref);
+void ags_file_add_lookup(AgsFile *file, GObject *file_lookup);
+
+void ags_file_add_launch(AgsFile *file, GObject *file_launch);
 
 void ags_file_write(AgsFile *file);
 void ags_file_write_resolve(AgsFile *file);
