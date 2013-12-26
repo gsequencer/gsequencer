@@ -20,15 +20,6 @@
 
 void ags_file_launch_class_init(AgsFileLaunchClass *file_launch);
 void ags_file_launch_init (AgsFileLaunch *file_launch);
-void ags_file_launch_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_file_launch_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_file_launch_finalize(GObject *gobject);
 
 enum{
   START,
@@ -75,11 +66,6 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
   /* GObjectClass */
   gobject = (GObjectClass *) file_launch;
 
-  gobject->get_property = ags_file_launch_get_property;
-  gobject->set_property = ags_file_launch_set_property;
-
-  gobject->finalize = ags_file_launch_finalize;
-
   /* AgsFileLaunchClass */
   file_launch->start = NULL;
 
@@ -97,29 +83,6 @@ void
 ags_file_launch_init(AgsFileLaunch *file_launch)
 {
   /* empty */
-}
-
-void
-ags_file_launch_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_launch_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_launch_finalize(GObject *gobject)
-{
 }
 
 void

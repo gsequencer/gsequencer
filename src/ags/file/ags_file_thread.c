@@ -22,9 +22,23 @@
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
 void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
+
+void ags_file_read_audio_loop_resolve_task_thread(AgsFileLookup *file_lookup,
+						  AgsAudioLoop *audio_loop);
+void ags_file_write_audio_loop_resolve_task_thread(AgsFileLookup *file_lookup,
+						   AgsAudioLoop *audio_loop);
+void ags_file_read_audio_loop_resolve_gui_thread(AgsFileLookup *file_lookup,
+						 AgsAudioLoop *audio_loop);
+void ags_file_write_audio_loop_resolve_gui_thread(AgsFileLookup *file_lookup,
+						  AgsAudioLoop *audio_loop);
+void ags_file_read_audio_loop_resolve_devout_thread(AgsFileLookup *file_lookup,
+						    AgsAudioLoop *audio_loop);
+void ags_file_write_audio_loop_resolve_devout_thread(AgsFileLookup *file_lookup,
+						     AgsAudioLoop *audio_loop);
 
 void
 ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
@@ -272,12 +286,144 @@ ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread
 void
 ags_file_read_audio_loop(AgsFile *file, xmlNode *node, AgsAudioLoop *audio_loop)
 {
-  //TODO:JK: implement me
+  xmlNode *child;
+
+  audio_loop = AGS_AUDIO_LOOP(audio_loop);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", audio_loop,
+				   NULL));
+}
+
+void
+ags_file_read_audio_loop_resolve_task_thread(AgsFileLookup *file_lookup,
+					     AgsAudioLoop *audio_loop)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "task-thread\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref != NULL){
+    g_object_set(G_OBJECT(audio_loop),
+		 "task-thread\0", (AgsThread *) id_ref->ref,
+		 NULL);
+  }
+}
+
+void
+ags_file_read_audio_loop_resolve_gui_thread(AgsFileLookup *file_lookup,
+					    AgsAudioLoop *audio_loop)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "gui-thread\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref != NULL){
+    g_object_set(G_OBJECT(audio_loop),
+		 "gui-thread\0", (AgsThread *) id_ref->ref,
+		 NULL);
+  }
+}
+
+void
+ags_file_read_audio_loop_resolve_devout_thread(AgsFileLookup *file_lookup,
+					       AgsAudioLoop *audio_loop)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "devout-thread\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref != NULL){
+    g_object_set(G_OBJECT(audio_loop),
+		 "devout-thread\0", (AgsThread *) id_ref->ref,
+		 NULL);
+  }
 }
 
 xmlNode*
 ags_file_write_audio_loop(AgsFile *file, xmlNode *parent, AgsAudioLoop *audio_loop)
 {
-  //TODO:JK: implement me
+  AgsFileLookup *file_lookup;
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-audio-loop\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
+				   "reference\0", audio_loop,
+				   NULL));
 }
 
+void
+ags_file_write_audio_loop_resolve_task_thread(AgsFileLookup *file_lookup,
+					      AgsAudioLoop *audio_loop)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, audio_loop->task_thread);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "task-thread\0",
+	     g_strdup_printf("xpath=//ags-audio-loop[@id='%s']\0", id));
+}
+
+void
+ags_file_write_audio_loop_resolve_gui_thread(AgsFileLookup *file_lookup,
+					     AgsAudioLoop *audio_loop)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, audio_loop->gui_thread);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "gui-thread\0",
+	     g_strdup_printf("xpath=//ags-audio-loop[@id='%s']\0", id));
+}
+
+void
+ags_file_write_audio_loop_resolve_devout_thread(AgsFileLookup *file_lookup,
+						AgsAudioLoop *audio_loop)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, audio_loop->devout_thread);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "devout-thread\0",
+	     g_strdup_printf("xpath=//ags-audio-loop[@id='%s']\0", id));
+}
