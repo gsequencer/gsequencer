@@ -18,6 +18,10 @@
 
 #include <ags/file/ags_file_thread.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/file/ags_file_stock.h>
@@ -26,6 +30,11 @@
 #include <ags/file/ags_file_launch.h>
 
 void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
+
+void ags_file_read_thread_resolve_devout(AgsFileLookup *file_lookup,
+					 AgsAudioLoop *audio_loop);
+void ags_file_write_thread_resolve_devout(AgsFileLookup *file_lookup,
+					  AgsAudioLoop *audio_loop);
 
 void ags_file_read_audio_loop_resolve_task_thread(AgsFileLookup *file_lookup,
 						  AgsAudioLoop *audio_loop);
@@ -43,6 +52,7 @@ void ags_file_write_audio_loop_resolve_devout_thread(AgsFileLookup *file_lookup,
 void
 ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 {
+  AgsFileLookup *file_lookup;
   AgsFileLaunch *file_launch;
   AgsThread *gobject;
   xmlNode *child;
@@ -94,6 +104,16 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 		     G_CALLBACK(ags_file_read_thread_start), gobject);
   }
 
+  /* devout */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_thread_resolve_devout), gobject);
+
   /* read children */
   child = node->children;
 
@@ -102,19 +122,54 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
       if(!xmlStrncmp(child->name,
 		     "ags-thread-list\0",
 		     16)){
-	GList *list;
+	if(AGS_IS_AUDIO_LOOP(gobject)){
+	  xmlXPathContext *xpath_context;
+	  xmlXPathObject *xpath_object;
+    
+	  xpath_context = xmlXPathNewContext(file->doc);
 
-	list = NULL;
+	  xpath_object = xmlXPathNodeEval(child,
+					  "./ags-thread[@type='AgsTaskThread']\0",
+					  xpath_context);
 
-	ags_file_read_thread_list(file,
-				  child,
-				  &list);
+	  ags_file_read_thread(file,
+			       xpath_object->nodesetval->nodeTab[0],
+			       &(AGS_AUDIO_LOOP(gobject)->task_thread));
 
-	while(list != NULL){
-	  ags_thread_add_child(gobject,
-			       list->data);
+	  xpath_context = xmlXPathNewContext(file->doc);
 
-	  list = list->next;
+	  xpath_object = xmlXPathNodeEval(child,
+					  "./ags-thread[@type='AgsDevoutThread']\0",
+					  xpath_context);
+
+	  ags_file_read_thread(file,
+			       xpath_object->nodesetval->nodeTab[0],
+			       &(AGS_AUDIO_LOOP(gobject)->devout_thread));
+
+	  xpath_context = xmlXPathNewContext(file->doc);
+
+	  xpath_object = xmlXPathNodeEval(child,
+					  "./ags-thread[@type='AgsGuiThread']\0",
+					  xpath_context);
+
+	  ags_file_read_thread(file,
+			       xpath_object->nodesetval->nodeTab[0],
+			       &(AGS_AUDIO_LOOP(gobject)->gui_thread));
+	}else{
+	  GList *list;
+
+	  list = NULL;
+
+	  ags_file_read_thread_list(file,
+				    child,
+				    &list);
+
+	  while(list != NULL){
+	    ags_thread_add_child(gobject,
+				 list->data);
+
+	    list = list->next;
+	  }
 	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-audio-loop\0",
@@ -127,18 +182,29 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
     child = child->next;
   }
+
+  if((AGS_THREAD_RUNNING & (gobject->flags)) != 0){
+    gobject->flags &= (~AGS_THREAD_RUNNING);  
+  }
+}
+
+void 
+ags_file_read_thread_resolve_devout(AgsFileLookup *file_lookup,
+				    AgsAudioLoop *audio_loop)
+{
+  //TODO:JK: implement me
 }
 
 void
 ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
-  thread->flags &= (~AGS_THREAD_RUNNING);  
   ags_thread_start(thread);
 }
 
 xmlNode*
 ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 {
+  AgsFileLookup *file_lookup;
   AgsThread *current;
   xmlNode *node, *child;
   gchar *id;
@@ -167,6 +233,16 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x\0", thread->flags));
 
+  /* devout */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", thread,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_thread_resolve_devout), thread);
+
   xmlAddChild(parent,
 	      node);
 
@@ -190,6 +266,13 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 			  current);
     current = current->next;
   }
+}
+
+void
+ags_file_write_thread_resolve_devout(AgsFileLookup *file_lookup,
+				     AgsAudioLoop *audio_loop)
+{
+  //TODO:JK: implement me
 }
 
 void
@@ -300,34 +383,34 @@ ags_file_read_audio_loop(AgsFile *file, xmlNode *node, AgsAudioLoop *audio_loop)
 				   NULL));
 
   /* task-thread */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", audio_loop,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_audio_loop_resolve_task_thread), audio_loop);
+  //  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+  //					       "file\0", file,
+  //					       "node\0", node,
+  //					       "reference\0", audio_loop,
+  //					       NULL);
+  //  ags_file_add_lookup(file, (GObject *) file_lookup);
+  //  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+  //		   G_CALLBACK(ags_file_read_audio_loop_resolve_task_thread), audio_loop);
 
   /* gui-thread */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", audio_loop,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_audio_loop_resolve_gui_thread), audio_loop);
+  //  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+  //					       "file\0", file,
+  //					       "node\0", node,
+  //					       "reference\0", audio_loop,
+  //					       NULL);
+  //  ags_file_add_lookup(file, (GObject *) file_lookup);
+  //  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+  //		   G_CALLBACK(ags_file_read_audio_loop_resolve_gui_thread), audio_loop);
 
   /* devout-thread */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", audio_loop,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_audio_loop_resolve_devout_thread), audio_loop);
+  //  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+  //					       "file\0", file,
+  //					       "node\0", node,
+  //					       "reference\0", audio_loop,
+  //					       NULL);
+  //  ags_file_add_lookup(file, (GObject *) file_lookup);
+  //  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+  //		   G_CALLBACK(ags_file_read_audio_loop_resolve_devout_thread), audio_loop);
 }
 
 void

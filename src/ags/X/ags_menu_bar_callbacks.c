@@ -43,8 +43,11 @@
 #include <ags/X/machine/ags_ffplayer.h>
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <sys/stat.h>
+
+#include <X11/Xlib.h>
 
 void ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
 void ags_menu_bar_open_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
@@ -84,31 +87,35 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   GtkFileSelection *file_selection;
-  AgsFile *file;
-  pid_t pid_num;
   char *filename;
   gchar **argv;
-
-  g_shell_parse_argv("ags\0", NULL, &argv, NULL);
-  g_spawn_async(NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
-  g_strfreev(argv);
+  GError *error;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
   file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_DIALOG);
 
   filename = g_strdup(gtk_file_selection_get_filename(file_selection));
 
-  pid_num = fork();
+  error = NULL;
 
-  if(pid_num == -1){
-  }else if(pid_num == 0){
-    file = g_object_new(AGS_TYPE_FILE,
-			"filename\0", filename,
-			NULL);
-    ags_file_read(file);
-  }else{
-    gtk_widget_destroy(file_selection);
+  g_shell_parse_argv(g_strdup_printf("./ags --filename %s\0",
+				     filename),
+		     NULL, &argv, NULL);
+  g_spawn_async(get_current_dir_name(),
+		argv,
+		NULL,
+		0,
+		NULL,
+		NULL,
+		NULL,
+		&error);
+  g_strfreev(argv);
+
+  if(error != NULL && error->message != NULL){
+    g_message(error->message);
   }
+  
+  gtk_widget_destroy(file_selection);
 }
 
 void

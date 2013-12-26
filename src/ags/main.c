@@ -26,6 +26,8 @@
 
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/file/ags_file.h>
+
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_gui_thread.h>
 #include <ags/thread/ags_single_thread.h>
@@ -42,6 +44,8 @@
 
 #include <libintl.h>
 #include <stdio.h>
+
+#include <X11/Xlib.h>
 
 #include "config.h"
 
@@ -483,12 +487,15 @@ main(int argc, char **argv)
   AgsDevout *devout;
   AgsWindow *window;
   AgsGuiThread *gui_thread;
+  gchar *filename;
   struct sched_param param;
   const char *error;
   gboolean single_thread = FALSE;
   guint i;
 
   LIBXML_TEST_VERSION;
+
+  XInitThreads();
 
   g_thread_init(NULL);
   gdk_threads_init();
@@ -500,101 +507,125 @@ main(int argc, char **argv)
 
   ao_initialize();
 
+  filename = NULL;
+
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--single-thread\0", 16)){
       single_thread = TRUE;
+    }else if(!strncmp(argv[i], "--filename\0", 11)){
+      filename = argv[i + 1];
+      i++;
     }
   }
 
-  ags_main = ags_main_new();
+  if(filename != NULL){
+    AgsFile *file;
 
-  if(single_thread){
-    ags_main->flags = AGS_MAIN_SINGLE_THREAD;
-  }
+    file = g_object_new(AGS_TYPE_FILE,
+			"filename\0", filename,
+			NULL);
+    ags_file_read(file);
 
-
-  /* Declare ourself as a real time task */
-  param.sched_priority = AGS_PRIORITY;
-
-  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed\0");
-  }
-
-  mlockall(MCL_CURRENT | MCL_FUTURE);
-
-  if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
-    AbyssInit(&error);
-
-    xmlrpc_env_init(&(ags_main->env));
-
-    /* AgsDevout */
-    devout = ags_devout_new((GObject *) ags_main);
-    ags_main_add_devout(ags_main,
-			devout);
-
-    /* AgsWindow */
-    ags_main->window =
-      window = ags_window_new((GObject *) ags_main);
-    g_object_set(G_OBJECT(window),
-		 "devout\0", devout,
-		 NULL);
-    g_object_ref(G_OBJECT(window));
-
-    gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-    gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-    ags_connectable_connect(window);
-    gtk_widget_show_all((GtkWidget *) window);
-
-    /* AgsServer */
-    ags_main->server = ags_server_new((GObject *) ags_main);
-
-    /* AgsAgs_MainLoop */
-    ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
-    g_object_ref(G_OBJECT(ags_main->main_loop));
-    
-    ags_thread_start(ags_main->main_loop);
-  }else{
-    AgsSingleThread *single_thread;
-
-    devout = ags_devout_new((GObject *) ags_main);
-    ags_main_add_devout(ags_main,
-			devout);
-
-    /* threads */
-    single_thread = ags_single_thread_new((GObject *) devout);
-
-    /* AgsWindow */
-    ags_main->window = 
-      window = ags_window_new((GObject *) ags_main);
-    g_object_set(G_OBJECT(window),
-		 "devout\0", devout,
-		 NULL);
-
-    gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-    gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-    ags_connectable_connect(window);
-    gtk_widget_show_all((GtkWidget *) window);
-
-    /* AgsMainLoop */
-    ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
-    g_object_ref(G_OBJECT(ags_main->main_loop));
-    
-    ags_thread_start((AgsThread *) single_thread);
-  }
-
-  //  gdk_threads_leave();
-
-  if(!single_thread){
-    /* join gui thread */
 #ifdef _USE_PTH
-    pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+    pth_join(AGS_AUDIO_LOOP(AGS_MAIN(file->ags_main)->main_loop)->gui_thread->thread,
 	     NULL);
 #else
-    pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+    g_message("joining\0");
+    pthread_join(AGS_AUDIO_LOOP(AGS_MAIN(file->ags_main)->main_loop)->gui_thread->thread,
 		 NULL);
+    g_message("done\0");
 #endif
+  }else{
+    ags_main = ags_main_new();
+
+    if(single_thread){
+      ags_main->flags = AGS_MAIN_SINGLE_THREAD;
+    }
+
+
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_PRIORITY;
+
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+
+    if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
+      AbyssInit(&error);
+
+      xmlrpc_env_init(&(ags_main->env));
+
+      /* AgsDevout */
+      devout = ags_devout_new((GObject *) ags_main);
+      ags_main_add_devout(ags_main,
+			  devout);
+
+      /* AgsWindow */
+      ags_main->window =
+	window = ags_window_new((GObject *) ags_main);
+      g_object_set(G_OBJECT(window),
+		   "devout\0", devout,
+		   NULL);
+      g_object_ref(G_OBJECT(window));
+
+      gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+      gtk_paned_set_position((GtkPaned *) window->paned, 300);
+
+      ags_connectable_connect(window);
+      gtk_widget_show_all((GtkWidget *) window);
+
+      /* AgsServer */
+      ags_main->server = ags_server_new((GObject *) ags_main);
+
+      /* AgsAgs_MainLoop */
+      ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
+      g_object_ref(G_OBJECT(ags_main->main_loop));
+    
+      ags_thread_start(ags_main->main_loop);
+    }else{
+      AgsSingleThread *single_thread;
+
+      devout = ags_devout_new((GObject *) ags_main);
+      ags_main_add_devout(ags_main,
+			  devout);
+
+      /* threads */
+      single_thread = ags_single_thread_new((GObject *) devout);
+
+      /* AgsWindow */
+      ags_main->window = 
+	window = ags_window_new((GObject *) ags_main);
+      g_object_set(G_OBJECT(window),
+		   "devout\0", devout,
+		   NULL);
+
+      gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+      gtk_paned_set_position((GtkPaned *) window->paned, 300);
+
+      ags_connectable_connect(window);
+      gtk_widget_show_all((GtkWidget *) window);
+
+      /* AgsMainLoop */
+      ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
+      g_object_ref(G_OBJECT(ags_main->main_loop));
+    
+      ags_thread_start((AgsThread *) single_thread);
+    }
+
+    //  gdk_threads_leave();
+
+    if(!single_thread){
+      /* join gui thread */
+#ifdef _USE_PTH
+      pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+	       NULL);
+#else
+      pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+		   NULL);
+#endif
+    }
   }
 
   return(0);
