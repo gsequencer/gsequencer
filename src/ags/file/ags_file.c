@@ -31,6 +31,7 @@
 #include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_gui.h>
 
+#include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_thread.h>
 #include <ags/thread/ags_audio_loop.h>
 
@@ -840,12 +841,18 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-audio-loop\0",
+      if(!xmlStrncmp("ags-thread\0",
 		     child->name,
-		     15)){
-	ags_file_read_audio_loop(file,
-				 child,
-				 (AgsAudioLoop **) &gobject->main_loop);
+		     11)){
+	ags_file_read_thread(file,
+			     child,
+			     (AgsThread **) &gobject->main_loop);
+      }else if(!xmlStrncmp("ags-thread-pool\0",
+			   child->name,
+			   16)){
+	ags_file_read_thread_pool(file,
+				  child,
+				  (AgsThreadPool **) &gobject->thread_pool);
       }else if(!xmlStrncmp("ags-devout-list\0",
 			   child->name,
 			   16)){
@@ -905,9 +912,13 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 	     AGS_MAIN(ags_main)->build_id);
 
   /* ags-audio-list */
-  ags_file_write_audio_loop(file,
-			    node,
-			    AGS_AUDIO_LOOP(AGS_MAIN(ags_main)->main_loop));
+  ags_file_write_thread(file,
+			node,
+			AGS_THREAD(AGS_MAIN(ags_main)->main_loop));
+
+  ags_file_write_thread_pool(file,
+			     node,
+			     AGS_THREAD_POOL(AGS_MAIN(ags_main)->thread_pool));
 
   ags_file_write_devout_list(file,
 			     node,
