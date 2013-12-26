@@ -96,7 +96,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 void
 ags_file_launch_init(AgsFileLaunch *file_launch)
 {
-  file_launch->data = NULL;
+  /* empty */
 }
 
 void

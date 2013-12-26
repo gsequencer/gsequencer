@@ -28,6 +28,7 @@
 
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_launch.h>
 #include <ags/file/ags_file_sound.h>
 #include <ags/file/ags_file_gui.h>
 

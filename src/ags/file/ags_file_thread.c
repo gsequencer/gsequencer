@@ -29,6 +29,7 @@ void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
 void
 ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 {
+  AgsFileLaunch *file_launch;
   AgsThread *gobject;
   xmlNode *child;
   xmlChar *type_name;
@@ -117,8 +118,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 void
 ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
-  gobject->flags &= (~AGS_THREAD_RUNNING);  
-  ags_thread_start(gobject);
+  thread->flags &= (~AGS_THREAD_RUNNING);  
+  ags_thread_start(thread);
 }
 
 xmlNode*

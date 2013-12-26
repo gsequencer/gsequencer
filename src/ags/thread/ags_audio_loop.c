@@ -57,6 +57,9 @@ void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
 
 enum{
   PROP_0,
+  PROP_TASK_THREAD,
+  PROP_GUI_THREAD,
+  PROP_DEVOUT_THREAD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
   PROP_PLAY_AUDIO,
@@ -130,6 +133,33 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   gobject->finalize = ags_audio_loop_finalize;
 
   /* properties */
+  param_spec = g_param_spec_object("task-thread\0",
+				   "task thread to run\0",
+				   "The task thread to run\0",
+				   AGS_TYPE_TASK_THREAD,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK_THREAD,
+				  param_spec);
+
+  param_spec = g_param_spec_object("devout-thread\0",
+				   "devout thread to run\0",
+				   "The devout thread to run\0",
+				   AGS_TYPE_DEVOUT_THREAD,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVOUT_THREAD,
+				  param_spec);
+
+  param_spec = g_param_spec_object("gui-thread\0",
+				   "gui thread to run\0",
+				   "The gui thread to run\0",
+				   AGS_TYPE_GUI_THREAD,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_GUI_THREAD,
+				  param_spec);
+
   param_spec = g_param_spec_object("play_recall\0",
 				   "recall to run\0",
 				   "A recall to run\0",
@@ -252,6 +282,57 @@ ags_audio_loop_set_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_TASK_THREAD:
+    {
+      AgsThread *thread;
+
+      thread = (AgsThread *) g_value_get_object(value);
+
+      if(audio_loop->task_thread != NULL){
+	g_object_unref(G_OBJECT(audio_loop->task_thread));
+      }
+
+      if(thread != NULL){
+	g_object_ref(G_OBJECT(thread));
+      }
+
+      audio_loop->task_thread = thread;
+    }
+    break;
+  case PROP_GUI_THREAD:
+    {
+      AgsThread *thread;
+
+      thread = (AgsThread *) g_value_get_object(value);
+
+      if(audio_loop->gui_thread != NULL){
+	g_object_unref(G_OBJECT(audio_loop->gui_thread));
+      }
+
+      if(thread != NULL){
+	g_object_ref(G_OBJECT(thread));
+      }
+
+      audio_loop->gui_thread = thread;
+    }
+    break;
+  case PROP_DEVOUT_THREAD:
+    {
+      AgsThread *thread;
+
+      thread = (AgsThread *) g_value_get_object(value);
+
+      if(audio_loop->devout_thread != NULL){
+	g_object_unref(G_OBJECT(audio_loop->devout_thread));
+      }
+
+      if(thread != NULL){
+	g_object_ref(G_OBJECT(thread));
+      }
+
+      audio_loop->devout_thread = thread;
+    }
+    break;
   case PROP_PLAY_RECALL:
     {
       AgsRecall *recall;
@@ -305,6 +386,21 @@ ags_audio_loop_get_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_TASK_THREAD:
+    {
+      g_value_set_object(value, audio_loop->task_thread);
+    }
+    break;
+  case PROP_GUI_THREAD:
+    {
+      g_value_set_object(value, audio_loop->gui_thread);
+    }
+    break;
+  case PROP_DEVOUT_THREAD:
+    {
+      g_value_set_object(value, audio_loop->devout_thread);
+    }
+    break;
   case PROP_PLAY_RECALL:
     {
       g_value_set_pointer(value, audio_loop->play_recall);

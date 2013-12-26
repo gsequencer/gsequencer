@@ -112,10 +112,11 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
-	ags-ags_file_lookup.$(OBJEXT) ags-ags_file_util.$(OBJEXT) \
-	ags-ags_file_thread.$(OBJEXT) ags-ags_file_sound.$(OBJEXT) \
-	ags-ags_file_gui.$(OBJEXT) ags-ags_file_link.$(OBJEXT) \
-	ags-ags_embedded_audio.$(OBJEXT) ags-ags_timestamp.$(OBJEXT) \
+	ags-ags_file_lookup.$(OBJEXT) ags-ags_file_launch.$(OBJEXT) \
+	ags-ags_file_util.$(OBJEXT) ags-ags_file_thread.$(OBJEXT) \
+	ags-ags_file_sound.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
+	ags-ags_file_link.$(OBJEXT) ags-ags_embedded_audio.$(OBJEXT) \
+	ags-ags_timestamp.$(OBJEXT) \
 	ags-ags_timestamp_factory.$(OBJEXT) \
 	ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
@@ -645,6 +646,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/file/ags_file_id_ref.c \
 	./src/ags/file/ags_file_lookup.h \
 	./src/ags/file/ags_file_lookup.c \
+	./src/ags/file/ags_file_launch.h \
+	./src/ags/file/ags_file_launch.c \
 	./src/ags/file/ags_file_util.h ./src/ags/file/ags_file_util.c \
 	./src/ags/audio/ags_file_thread.h \
 	./src/ags/file/ags_file_thread.c \
@@ -1414,6 +1417,7 @@ include ./$(DEPDIR)/ags-ags_ffplayer_callbacks.Po
 include ./$(DEPDIR)/ags-ags_file.Po
 include ./$(DEPDIR)/ags-ags_file_gui.Po
 include ./$(DEPDIR)/ags-ags_file_id_ref.Po
+include ./$(DEPDIR)/ags-ags_file_launch.Po
 include ./$(DEPDIR)/ags-ags_file_link.Po
 include ./$(DEPDIR)/ags-ags_file_lookup.Po
 include ./$(DEPDIR)/ags-ags_file_selection.Po
@@ -1768,6 +1772,20 @@ ags-ags_file_lookup.obj: ./src/ags/file/ags_file_lookup.c
 #	$(AM_V_CC)source='./src/ags/file/ags_file_lookup.c' object='ags-ags_file_lookup.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_lookup.obj `if test -f './src/ags/file/ags_file_lookup.c'; then $(CYGPATH_W) './src/ags/file/ags_file_lookup.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_lookup.c'; fi`
+
+ags-ags_file_launch.o: ./src/ags/file/ags_file_launch.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_launch.o -MD -MP -MF $(DEPDIR)/ags-ags_file_launch.Tpo -c -o ags-ags_file_launch.o `test -f './src/ags/file/ags_file_launch.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_launch.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_file_launch.Tpo $(DEPDIR)/ags-ags_file_launch.Po
+#	$(AM_V_CC)source='./src/ags/file/ags_file_launch.c' object='ags-ags_file_launch.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_launch.o `test -f './src/ags/file/ags_file_launch.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_launch.c
+
+ags-ags_file_launch.obj: ./src/ags/file/ags_file_launch.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_launch.obj -MD -MP -MF $(DEPDIR)/ags-ags_file_launch.Tpo -c -o ags-ags_file_launch.obj `if test -f './src/ags/file/ags_file_launch.c'; then $(CYGPATH_W) './src/ags/file/ags_file_launch.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_launch.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_file_launch.Tpo $(DEPDIR)/ags-ags_file_launch.Po
+#	$(AM_V_CC)source='./src/ags/file/ags_file_launch.c' object='ags-ags_file_launch.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_launch.obj `if test -f './src/ags/file/ags_file_launch.c'; then $(CYGPATH_W) './src/ags/file/ags_file_launch.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_launch.c'; fi`
 
 ags-ags_file_util.o: ./src/ags/file/ags_file_util.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file_util.o -MD -MP -MF $(DEPDIR)/ags-ags_file_util.Tpo -c -o ags-ags_file_util.o `test -f './src/ags/file/ags_file_util.c' || echo '$(srcdir)/'`./src/ags/file/ags_file_util.c
