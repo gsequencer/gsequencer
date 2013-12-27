@@ -101,7 +101,7 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
   g_shell_parse_argv(g_strdup_printf("./ags --filename %s\0",
 				     filename),
 		     NULL, &argv, NULL);
-  g_spawn_async(get_current_dir_name(),
+  g_spawn_async(NULL,
 		argv,
 		NULL,
 		0,
@@ -111,10 +111,6 @@ ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 		&error);
   g_strfreev(argv);
 
-  if(error != NULL && error->message != NULL){
-    g_message(error->message);
-  }
-  
   gtk_widget_destroy(file_selection);
 }
 
