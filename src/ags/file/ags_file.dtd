@@ -187,6 +187,7 @@
 <!ATTLIST ags-thread
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
+	  devout           CDATA      #REQUIRED
 >
 
 <!ELEMENT ags-audio-loop (ags-parameter, ags-parameter, ags-parameter, ags-parameter)>
@@ -647,6 +648,8 @@
 	  rigth-attach         NMTOKEN    #REQUIRED
 	  top-attach           NMTOKEN    #REQUIRED
 	  bottom-attach        NMTOKEN    #REQUIRED
+	  width                NMTOKEN    #REQUIRED
+	  height               NMTOKEN    #REQUIRED
 	  >
 
 <!-- dialogs -->

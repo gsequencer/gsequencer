@@ -1132,7 +1132,7 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 	start = list;
 	
 	/* remove default line members */
-	gtk_widget_destroy(gobject->expander);
+	gtk_widget_destroy(GTK_WIDGET(gobject->expander));
 
 	gobject->expander = ags_expander_new(1, 1);
 	gtk_box_pack_start(GTK_BOX(gobject),
@@ -1150,7 +1150,9 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 			   15)){
 	      guint x, y;
 	      guint width, height;
+	      guint control_width, control_height;
 
+	      /* pack */
 	      x = g_ascii_strtoull(xmlGetProp(line_member_node,
 					      "left-attach\0"),
 				   NULL,
@@ -1175,7 +1177,22 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 			       GTK_WIDGET(list->data),
 			       x, y,
 			       width, height);	      
+
+	      /* set size request */
+	      control_width = g_ascii_strtoull(xmlGetProp(line_member_node,
+							  "width\0"),
+					       NULL,
+					       10);
+
+	      control_height = g_ascii_strtoull(xmlGetProp(line_member_node,
+							   "height\0"),
+						NULL,
+						10);
+
+	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
+					  control_width, control_height);
 	      
+	      /* iterate */
 	      list = list->next;
 	    }
 	  }
@@ -1200,6 +1217,7 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
   xmlNode *line_member_node;
   GList *line_member;
   gchar *id;
+  guint control_width, control_height;
 
   id = ags_id_generator_create_uuid();
   
@@ -1268,6 +1286,17 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
     xmlNewProp(line_member_node,
 	       "bottom-attach\0",
 	       g_strdup_printf("%d\0", expander_child->y + expander_child->height));
+
+    gtk_widget_get_size_request(expander_child->child,
+				&control_height, &control_width);
+
+    xmlNewProp(line_member_node,
+	       "width\0",
+	       g_strdup_printf("%d\0", control_width));
+
+    xmlNewProp(line_member_node,
+	       "height\0",
+	       g_strdup_printf("%d\0", control_height));
 
     line_member = line_member->next;
     line_member_node = line_member_node->next;
