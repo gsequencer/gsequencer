@@ -640,9 +640,7 @@
 	  id                   ID         #REQUIRED
 	  flags                PCDATA     #REQUIRED
 	  widget-type          CDATA      "AgsDial"
-	  plugin-name          CDATA      #REQUIRED
-	  specifier            CDATA      #REQUIRED
-	  control-port         CDATA      #REQUIRED
+	  port                 CDATA      #REQUIRED
 	  task-type            CDATA      #REQUIRED
 	  left-attach          NMTOKEN    #REQUIRED
 	  rigth-attach         NMTOKEN    #REQUIRED

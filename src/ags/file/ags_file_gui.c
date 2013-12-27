@@ -45,6 +45,11 @@ void ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 void ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						  AgsMachine *machine);
 
+void ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
+					    AgsLineMember *line_member);
+void ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
+					     AgsLineMember *line_member);
+
 void
 ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 {
@@ -1383,6 +1388,7 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 void
 ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_member)
 {
+  AgsFileLookup *file_lookup;
   AgsLineMember *gobject;
   GtkWidget *child_widget;
   xmlNode *child;
@@ -1424,22 +1430,42 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 					    NULL,
 					    16);
 
-  gobject->plugin_name = g_strdup(xmlGetProp(node, "plugin-name\0"));
-  gobject->specifier = g_strdup(xmlGetProp(node, "specifier\0"));
-
-  gobject->control_port = g_strdup(xmlGetProp(node, "control-port\0"));
-
-  //TODO:JK: lookup port
-  //gobject->port = ;
-
   if((task_type = xmlGetProp(node, "task-type\0")) != NULL){
     gobject->task_type = g_type_from_name(task_type);
   }
+
+  /* port */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_line_member_resolve_port), gobject);
+}
+
+void
+ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
+				       AgsLineMember *line_member)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "port\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  g_object_set(G_OBJECT(line_member),
+	       "port\0", (AgsPort *) id_ref->ref,
+	       NULL);
 }
 
 xmlNode*
 ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_member)
 {
+  AgsFileLookup *file_lookup;
   xmlNode *node;
   gchar *id;
 
@@ -1467,20 +1493,40 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	     "widget-type\0",
 	     g_type_name(line_member->widget_type));
 
-  xmlNewProp(node,
-	     "plugin-name\0",
-	     g_strdup(line_member->plugin_name));
+  if(line_member->task_type != G_TYPE_NONE){
+    xmlNewProp(node,
+	       AGS_FILE_FLAGS_PROP,
+	       g_strdup_printf("%s\0", g_type_name(line_member->task_type)));
+  }
 
-  xmlNewProp(node,
-	     "specifier\0",
-	     g_strdup(line_member->specifier));
-
-  xmlNewProp(node,
-	     "control-port\0",
-	     g_strdup(line_member->control_port));
+  /* port */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", line_member,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_write_line_member_resolve_port), line_member);
 
   xmlAddChild(parent,
 	      node);  
+}
+
+void
+ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
+					AgsLineMember *line_member)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->port);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "port\0",
+	     g_strdup_printf("xpath=//ags-port[@id='%s']\0", id));
 }
 
 void
