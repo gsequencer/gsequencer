@@ -1287,8 +1287,8 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 	       "bottom-attach\0",
 	       g_strdup_printf("%d\0", expander_child->y + expander_child->height));
 
-    gtk_widget_get_size_request(expander_child->child,
-				&control_height, &control_width);
+    gtk_widget_get_size_request(GTK_BIN(expander_child->child)->child,
+				&control_width, &control_height);
 
     xmlNewProp(line_member_node,
 	       "width\0",
