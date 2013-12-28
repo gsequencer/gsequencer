@@ -36,6 +36,12 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
+
 #include <ags/audio/task/ags_apply_synth.h>
 
 #include <ags/X/machine/ags_oscillator.h>
@@ -145,7 +151,7 @@ ags_synth_init(AgsSynth *synth)
   AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
   AgsCountBeatsAudio *play_count_beats_audio, *recall_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
-  AgsPlayNotation *play_notation, *recall_notation;
+  AgsPlayNotationAudioRun *play_notation, *recall_notation;
   AgsRecallAudio *play_audio, *recall_audio;
   GtkMenu *menu;
   GtkVBox *vbox;

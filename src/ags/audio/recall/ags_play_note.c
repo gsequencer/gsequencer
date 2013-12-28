@@ -20,7 +20,7 @@
 
 #include <ags/audio/ags_recall_id.h>
 
-#include <ags/audio/recall/ags_play_notation.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
 
 void ags_play_note_class_init(AgsPlayNoteClass *play_note);
@@ -120,7 +120,7 @@ ags_play_note_connect(AgsPlayNote *play_note)
 void
 ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 {
-  AgsPlayNotation *play_notation;
+  AgsPlayNotationAudioRun *play_notation_audio_run;
   AgsPlayNote *play_note;
   AgsChannel *channel;
   AgsRecycling *recycling;
@@ -156,10 +156,10 @@ ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, g
     list_play_audio_signal->data = (gpointer) play_audio_signal;
   }
 
-  play_notation = (AgsPlayNotation *) recall->parent;
+  play_notation_audio_run = (AgsPlayNotationAudioRun *) recall->parent;
   play_note = (AgsPlayNote *) recall;
 
-  channel = ags_channel_nth_pad(play_notation->channel, play_note->note->y);
+  channel = ags_channel_nth_pad(play_notation_audio_run->channel, play_note->note->y);
 
   if(channel != NULL){
     recycling = channel->first_recycling;
@@ -177,7 +177,7 @@ ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, g
     }else{
       guint length;
       
-      length = ((double) (play_note->note->x[1] - play_note->note->x[0]) * ((double) play_note->devout->frequence * 60.0 / play_notation->bpm[0] / 16.0));
+      length = ((double) (play_note->note->x[1] - play_note->note->x[0]) * ((double) play_note->devout->frequence * 60.0 / play_notation_audio_run->bpm[0] / 16.0));
 
       while(recycling != channel->last_recycling->next){
 	audio_signal = ags_recycling_add_audio_signal_with_length(recycling, length);

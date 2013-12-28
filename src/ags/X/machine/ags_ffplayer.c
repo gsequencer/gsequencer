@@ -29,8 +29,13 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/X/ags_editor.h>
 
@@ -140,7 +145,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AgsCountBeatsAudio *play_count_beats_audio, *recall_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
   AgsRecallAudio *play_audio, *recall_audio;
-  AgsPlayNotation *play_notation, *recall_notation;
+  AgsPlayNotationAudioRun *play_notation, *recall_notation;
   GtkTable *table;
   GtkHScrollbar *hscrollbar;
   GtkVBox *vbox;

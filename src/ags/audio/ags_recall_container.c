@@ -10,7 +10,7 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/audio/recall/ags_play_notation.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
 void ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -29,14 +29,21 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_loop_channel.h>
 #include <ags/audio/recall/ags_loop_channel_run.h>
 #include <ags/audio/recall/ags_copy_channel.h>
 #include <ags/audio/recall/ags_copy_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/widget/ags_led.h>
 
@@ -485,14 +492,14 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     grow = FALSE;
 
   if(type == AGS_TYPE_INPUT){
-    AgsPlayNotation  *play_notation;
+    AgsPlayNotationAudioRun  *play_notation;
     GList *list, *notation;
 
     list = audio->recall;
 
     while((list = ags_recall_find_type(list,
-				       AGS_TYPE_PLAY_NOTATION)) != NULL){
-      play_notation = AGS_PLAY_NOTATION(list->data);
+				       AGS_TYPE_PLAY_NOTATION_AUDIO_RUN)) != NULL){
+      play_notation = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
 
       notation = audio->notation;
 	

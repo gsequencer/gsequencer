@@ -25,6 +25,7 @@
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_timestamp.h>
 
 #include <stdlib.h>
 #include <errno.h>
@@ -478,6 +479,37 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
 
   g_object_get_property(G_OBJECT(portlet),
 			property_name, value);
+}
+
+GList*
+ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
+				 GObject *gobject)
+{
+  AgsTimestamp *timestamp, *current_timestamp;
+
+  timestamp = AGS_TIMESTAMP(gobject);
+
+  while(notation != NULL){
+    if(AGS_NOTATION(notation->data)->audio_channel != audio_channel){
+      notation = notation->next;
+      continue;
+    }
+
+    current_timestamp = AGS_NOTATION(notation->data)->timestamp;
+
+    if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
+      if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
+	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_NOTATION_DEFAULT_DURATION){
+	  return(notation);
+	}
+      }
+    }
+
+    notation = notation->next;
+  }
+
+  return(NULL);
 }
 
 void
