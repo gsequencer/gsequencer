@@ -97,7 +97,7 @@ ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audi
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
+				  PROP_NOTATION,
 				  param_spec);
 }
 
@@ -136,7 +136,7 @@ ags_play_notation_audio_set_property(GObject *gobject,
 				     const GValue *value,
 				     GParamSpec *param_spec)
 {
-  AgsPlayChannel *play_notation_audio;
+  AgsPlayNotationAudio *play_notation_audio;
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
 
@@ -174,7 +174,7 @@ ags_play_notation_audio_get_property(GObject *gobject,
 				     GValue *value,
 				     GParamSpec *param_spec)
 {
-  AgsPlayChannel *play_notation_audio;
+  AgsPlayNotationAudio *play_notation_audio;
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
 
@@ -193,7 +193,7 @@ ags_play_notation_audio_get_property(GObject *gobject,
 void
 ags_play_notation_audio_finalize(GObject *gobject)
 {
-  AgsPlayChannel *play_notation_audio;
+  AgsPlayNotationAudio *play_notation_audio;
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
 

@@ -201,6 +201,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_copy_notation_audio.$(OBJEXT) \
 	ags-ags_copy_pattern_channel.$(OBJEXT) \
 	ags-ags_copy_pattern_channel_run.$(OBJEXT) \
+	ags-ags_play_notation_audio.$(OBJEXT) \
 	ags-ags_play_notation_audio_run.$(OBJEXT) \
 	ags-ags_stream_channel_run.$(OBJEXT) ags-ags_stream.$(OBJEXT) \
 	ags-ags_volume_audio_signal.$(OBJEXT) \
@@ -838,6 +839,7 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/recall/ags_delay_audio_run.h \
 	./src/ags/audio/recall/ags_synths.h \
 	./src/ags/audio/recall/ags_loop_channel.c \
+	./src/ags/audio/recall/ags_play_notation_audio.h \
 	./src/ags/audio/recall/ags_play_notation_audio_run.h \
 	./src/ags/audio/recall/ags_copy_recycling.h \
 	./src/ags/audio/recall/ags_copy_channel.c \
@@ -871,6 +873,7 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/recall/ags_delay_audio.h \
 	./src/ags/audio/recall/ags_stream_channel.h \
 	./src/ags/audio/recall/ags_volume_channel.h \
+	./src/ags/audio/recall/ags_play_notation_audio.c \
 	./src/ags/audio/recall/ags_play_notation_audio_run.c \
 	./src/ags/audio/recall/ags_echo.h \
 	./src/ags/audio/recall/ags_count_beats_audio_run.h \
@@ -1514,6 +1517,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_channel_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_channel_run_master.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_notation_audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_notation_audio_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_note.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_play_pattern.Po@am__quote@
@@ -3424,6 +3428,20 @@ ags-ags_copy_pattern_channel_run.obj: ./src/ags/audio/recall/ags_copy_pattern_ch
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/recall/ags_copy_pattern_channel_run.c' object='ags-ags_copy_pattern_channel_run.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_copy_pattern_channel_run.obj `if test -f './src/ags/audio/recall/ags_copy_pattern_channel_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_copy_pattern_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_copy_pattern_channel_run.c'; fi`
+
+ags-ags_play_notation_audio.o: ./src/ags/audio/recall/ags_play_notation_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_play_notation_audio.o -MD -MP -MF $(DEPDIR)/ags-ags_play_notation_audio.Tpo -c -o ags-ags_play_notation_audio.o `test -f './src/ags/audio/recall/ags_play_notation_audio.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_play_notation_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_play_notation_audio.Tpo $(DEPDIR)/ags-ags_play_notation_audio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/recall/ags_play_notation_audio.c' object='ags-ags_play_notation_audio.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_play_notation_audio.o `test -f './src/ags/audio/recall/ags_play_notation_audio.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_play_notation_audio.c
+
+ags-ags_play_notation_audio.obj: ./src/ags/audio/recall/ags_play_notation_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_play_notation_audio.obj -MD -MP -MF $(DEPDIR)/ags-ags_play_notation_audio.Tpo -c -o ags-ags_play_notation_audio.obj `if test -f './src/ags/audio/recall/ags_play_notation_audio.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_play_notation_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_play_notation_audio.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_play_notation_audio.Tpo $(DEPDIR)/ags-ags_play_notation_audio.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='./src/ags/audio/recall/ags_play_notation_audio.c' object='ags-ags_play_notation_audio.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_play_notation_audio.obj `if test -f './src/ags/audio/recall/ags_play_notation_audio.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_play_notation_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_play_notation_audio.c'; fi`
 
 ags-ags_play_notation_audio_run.o: ./src/ags/audio/recall/ags_play_notation_audio_run.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_play_notation_audio_run.o -MD -MP -MF $(DEPDIR)/ags-ags_play_notation_audio_run.Tpo -c -o ags-ags_play_notation_audio_run.o `test -f './src/ags/audio/recall/ags_play_notation_audio_run.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_play_notation_audio_run.c
