@@ -117,9 +117,9 @@ ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
 					       "plugin-name\0", ags_play_notation_audio_plugin_name,
 					       "specifier\0", ags_play_notation_audio_specifier[0],
 					       "control-port\0", ags_play_notation_audio_control_port[0],
-					       "port-value-is-pointer\0", FALSE,
-					       "port-value-type\0", G_TYPE_OBJECT,
-					       "port-value-size\0", sizeof(GObject *),
+					       "port-value-is-pointer\0", TRUE,
+					       "port-value-type\0", G_TYPE_POINTER,
+					       "port-value-size\0", sizeof(gpointer),
 					       "port-value-length\0", 1,
 						    NULL);
   play_notation_audio->notation->port_value.ags_port_uint = 0;
@@ -196,10 +196,6 @@ ags_play_notation_audio_finalize(GObject *gobject)
   AgsPlayNotationAudio *play_notation_audio;
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
-
-  if(play_notation_audio->notation != NULL){
-    g_object_unref(G_OBJECT(play_notation_audio->notation));
-  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_notation_audio_parent_class)->finalize(gobject);
