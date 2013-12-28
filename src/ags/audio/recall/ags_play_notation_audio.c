@@ -22,9 +22,30 @@
 
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);
 void ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio);
+void ags_play_notation_audio_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+void ags_play_notation_audio_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
 void ags_play_notation_audio_finalize(GObject *gobject);
 
+enum{
+  PROP_0,
+  PROP_NOTATION,
+};
+
 static gpointer ags_play_notation_audio_parent_class = NULL;
+
+static const gchar *ags_play_notation_audio_plugin_name = "ags-play\0";
+static const gchar *ags_play_notation_audio_specifier[] = {
+  "./notation[0]\0"
+};
+static const gchar *ags_play_notation_audio_control_port[] = {
+  "1/1\0",
+};
 
 GType
 ags_play_notation_audio_get_type()
@@ -64,22 +85,121 @@ ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audi
   /* GObjectClass */
   gobject = (GObjectClass *) play_notation_audio;
 
+  gobject->set_property = ags_play_notation_audio_set_property;
+  gobject->get_property = ags_play_notation_audio_get_property;
+
   gobject->finalize = ags_play_notation_audio_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("notation\0",
+				   "assigned notation\0",
+				   "The notation this recall does play\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
 }
 
 void
 ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
 {
+  GList *port;
+
   AGS_RECALL(play_notation_audio)->name = "ags-play-notation\0";
   AGS_RECALL(play_notation_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(play_notation_audio)->build_id = AGS_BUILD_ID;
   AGS_RECALL(play_notation_audio)->xml_type = "ags-play-notation-audio\0";
+
+  port = NULL;
+
+  play_notation_audio->notation = g_object_new(AGS_TYPE_PORT,
+					       "plugin-name\0", ags_play_notation_audio_plugin_name,
+					       "specifier\0", ags_play_notation_audio_specifier[0],
+					       "control-port\0", ags_play_notation_audio_control_port[0],
+					       "port-value-is-pointer\0", FALSE,
+					       "port-value-type\0", G_TYPE_OBJECT,
+					       "port-value-size\0", sizeof(GObject *),
+					       "port-value-length\0", 1,
+						    NULL);
+  play_notation_audio->notation->port_value.ags_port_uint = 0;
+
+  port = g_list_prepend(port, play_notation_audio->notation);
+
+  /* set port */
+  AGS_RECALL(play_notation_audio)->port = port;
+}
+
+void
+ags_play_notation_audio_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec)
+{
+  AgsPlayChannel *play_notation_audio;
+
+  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == play_notation_audio->notation){
+	return;
+      }
+
+      if(play_notation_audio->notation != NULL){
+	g_object_unref(G_OBJECT(play_notation_audio->notation));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      play_notation_audio->notation = port;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }  
+}
+
+void
+ags_play_notation_audio_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec)
+{
+  AgsPlayChannel *play_notation_audio;
+
+  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_NOTATION:
+    {
+      g_value_set_object(value, play_notation_audio->notation);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_play_notation_audio_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsPlayChannel *play_notation_audio;
+
+  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
+
+  if(play_notation_audio->notation != NULL){
+    g_object_unref(G_OBJECT(play_notation_audio->notation));
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_notation_audio_parent_class)->finalize(gobject);
