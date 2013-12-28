@@ -505,6 +505,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 						 guint delay, guint attack,
 						 AgsPlayNotationAudioRun *play_notation_audio_run)
 {
+  AgsPlayNotationAudio *play_notation_audio;
   AgsNotation *notation;
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel, *next_pad;
@@ -515,13 +516,15 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsRecycling *recycling;
   GList *list;
   guint i;
+  GValue *value = {0,};
 
   list = play_notation_audio_run->notation;
 
   if(list == NULL)
     return;
 
-  audio = AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio->audio;
+  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
+  audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
 
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
     run_order = ags_run_order_find_group_id(audio->run_order,
@@ -531,13 +534,21 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 					    AGS_RECALL(play_notation_audio_run)->recall_id->group_id);
   }
 
-  //FIXME:JK: this is wrong
-  channel = ags_channel_nth(audio->output, nth_run - 1);
+  g_value_init(&value, G_TYPE_POINTER);
+  ags_port_safe_read(play_notation_audio->notation,
+		     &value);
 
-  notation = AGS_NOTATION(g_list_nth(audio->notation, channel->audio_channel)->data);
+  list = (GList *) g_value_get_pointer(&value);
+
+  channel = g_list_nth(run_order->channel,
+		       nth_run - 1);
+
+  notation = AGS_NOTATION(ags_notation_find_near_timestamp(list, channel->audio_channel,
+							   NULL)->data);
 
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    channel = ags_channel_nth(audio->input, channel->audio_channel);
+    channel = ags_channel_nth(audio->input,
+			      channel->audio_channel);
   }
 
   current_position = notation->notes; // start_loop
