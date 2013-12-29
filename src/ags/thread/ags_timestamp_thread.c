@@ -20,12 +20,17 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_timestamp.h>
+#include <ags/audio/ags_devout.h>
+
 void ags_timestamp_thread_class_init(AgsTimestampThreadClass *timestamp_thread);
 void ags_timestamp_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_timestamp_thread_init(AgsTimestampThread *timestamp_thread);
 void ags_timestamp_thread_connect(AgsConnectable *connectable);
 void ags_timestamp_thread_disconnect(AgsConnectable *connectable);
 void ags_timestamp_thread_finalize(GObject *gobject);
+
+void ags_timestamp_thread_run(AgsThread *thread);
 
 static gpointer ags_timestamp_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_timestamp_thread_parent_connectable_interface;
@@ -83,6 +88,8 @@ ags_timestamp_thread_class_init(AgsTimestampThreadClass *timestamp_thread)
 
   /* AgsThread */
   thread = (AgsThreadClass *) timestamp_thread;
+
+  thread->run = ags_timestamp_thread_run;
 }
 
 void
@@ -97,7 +104,8 @@ ags_timestamp_thread_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_timestamp_thread_init(AgsTimestampThread *timestamp_thread)
 {
-  timestamp_thread->current_timestamp = NULL;
+  timestamp_thread->current_timestamp = ags_timestamp_new();
+  timestamp_thread->current_latency = ags_timestamp_new();
 }
 
 void
@@ -129,6 +137,26 @@ ags_timestamp_thread_finalize(GObject *gobject)
 
   /*  */
   G_OBJECT_CLASS(ags_timestamp_thread_parent_class)->finalize(gobject);
+}
+
+void
+ags_timestamp_thread_run(AgsThread *thread)
+{
+  AgsTimestampThread *timestamp_thread;
+  AgsDevout *devout;
+  guint duration;
+  time_t timer;
+
+  timestamp_thread = AGS_TIMESTAMP_THREAD(thread);
+  devout = AGS_DEVOUT(thread->devout);
+
+  duration = (devout->tic_counter /
+	      (devout->frequency / devout->buffer_size) *
+	      AGS_MICROSECONDS_PER_SECOND);
+  
+  timer = time(&(AGS_TIMESTAMP(timestamp_thread->current_timestamp)->timer.unix_time.time_val));
+  AGS_TIMESTAMP(timestamp_thread->current_latency)->timer.unix_time.time_val = timer - duration;
+  AGS_TIMESTAMP(timestamp_thread->timestamp)->timer.unix_time.time_val = duration;
 }
 
 AgsTimestampThread*

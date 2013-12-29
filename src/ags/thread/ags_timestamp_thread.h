@@ -31,6 +31,15 @@
 #define AGS_IS_TIMESTAMP_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TIMESTAMP_THREAD))
 #define AGS_TIMESTAMP_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_TIMESTAMP_THREAD, AgsTimestampThreadClass))
 
+#define AGS_MICROSECONDS_PER_SECOND (1000000.0)
+#define AGS_TIMESTAMP_THREAD_DEFAULT_BPM (120.0)
+#define AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE (44100.0)
+#define AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE (256.0)
+#define AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE (AGS_MICROSECONDS_PER_SECOND * \
+					     60.0 / AGS_TIMESTAMP_THREAD_DEFAULT_BPM)
+#define AGS_TIMESTAMP_THREAD_DEFAULT_TIC (AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE / \
+					  AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE / AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE)
+
 typedef struct _AgsTimestampThread AgsTimestampThread;
 typedef struct _AgsTimestampThreadClass AgsTimestampThreadClass;
 
@@ -39,6 +48,9 @@ struct _AgsTimestampThread
   AgsThread thread;
 
   GObject *current_timestamp;
+  GObject *current_latency;
+
+  GObject *timestamp;
 };
 
 struct _AgsTimestampThreadClass

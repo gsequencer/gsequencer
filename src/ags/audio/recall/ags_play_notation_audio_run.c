@@ -17,9 +17,17 @@
  */
 
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/main.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_devout_thread.h>
+#include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
@@ -55,7 +63,6 @@ void ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_au
 
 enum{
   PROP_0,
-  PROP_NOTATION,
   PROP_DELAY_AUDIO_RUN,
   PROP_COUNT_BEATS_AUDIO_RUN,
 };
@@ -129,15 +136,6 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
   gobject->finalize = ags_play_notation_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("notation\0",
-				   "assigned notation\0",
-				   "the assigned AgsNotation\0",
-				   AGS_TYPE_NOTATION,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NOTATION,
-				  param_spec);
-
   param_spec = g_param_spec_object("delay-audio-run\0",
 				   "assigned AgsDelayAudioRun\0",
 				   "the AgsDelayAudioRun which emits notation_alloc_input signal\0",
@@ -184,8 +182,6 @@ ags_play_notation_audio_run_dynamic_connectable_interface_init(AgsDynamicConnect
 void
 ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  play_notation_audio_run->notation = NULL;
-
   play_notation_audio_run->delay_audio_run = NULL;
 
   play_notation_audio_run->count_beats_audio_run = NULL;
@@ -202,20 +198,6 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
   switch(prop_id){
-  case PROP_NOTATION:
-    {
-      AgsNotation *notation;
-
-      notation = g_value_get_object(value);
-
-      if(g_list_find(play_notation_audio_run->notation, notation) != NULL || notation == NULL){
-	return;
-      }
-
-      g_object_ref(notation);
-      play_notation_audio_run->notation = g_list_append(play_notation_audio_run->notation, notation);
-    }
-    break;
   case PROP_DELAY_AUDIO_RUN:
     {
       AgsDelayAudioRun *delay_audio_run;
@@ -345,22 +327,6 @@ ags_play_notation_audio_run_finalize(GObject *gobject)
 
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(gobject);
 
-  if(play_notation_audio_run->notation != NULL){
-    GList *current;
-
-    current = play_notation_audio_run->notation;
-
-    while(current != NULL){
-      g_object_unref(G_OBJECT(current->data));
-
-      current = current->next;
-    }
-
-    current = play_notation_audio_run->notation;
-    play_notation_audio_run->notation = NULL;
-    g_list_free(current);
-  }
-
   if(play_notation_audio_run->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(play_notation_audio_run->delay_audio_run));
   }
@@ -478,23 +444,10 @@ ags_play_notation_audio_run_duplicate(AgsRecall *recall,
 				      guint *n_params, GParameter *parameter)
 {
   AgsPlayNotationAudioRun *copy, *play_notation_audio_run;
-  GList *current;
 
   copy = AGS_PLAY_NOTATION_AUDIO_RUN(AGS_RECALL_CLASS(ags_play_notation_audio_run_parent_class)->duplicate(recall,
 													   recall_id,
 													   n_params, parameter));
-
-  play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(recall);
-
-  current = play_notation_audio_run->notation;
-
-  while(current != NULL){
-    g_object_set(G_OBJECT(copy),
-		 "notation\0", current->data,
-		 NULL);
-
-    current = current->next;
-  }
 
   return((AgsRecall *) copy);
 }
@@ -505,12 +458,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 						 guint delay, guint attack,
 						 AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  AgsPlayNotationAudio *play_notation_audio;
-  AgsNotation *notation;
+  AgsTimestampThread *timestamp_thread;
+  AgsDevout *devout;
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel, *next_pad;
   AgsAudioSignal *audio_signal;
+  AgsNotation *notation;
   AgsRunOrder *run_order;
+  AgsPlayNotationAudio *play_notation_audio;
   GList *current_position;
   AgsNote *note;
   AgsRecycling *recycling;
@@ -518,13 +473,15 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   guint i;
   GValue *value = {0,};
 
-  list = play_notation_audio_run->notation;
+  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
+
+  list = play_notation_audio->notation;
 
   if(list == NULL)
     return;
 
-  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
+  devout = AGS_DEVOUT(audio->devout);
 
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
     run_order = ags_run_order_find_group_id(audio->run_order,
@@ -540,11 +497,13 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   list = (GList *) g_value_get_pointer(&value);
 
-  channel = g_list_nth(run_order->channel,
+ channel = g_list_nth(run_order->run_order,
 		       nth_run - 1);
 
+ timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
+
   notation = AGS_NOTATION(ags_notation_find_near_timestamp(list, channel->audio_channel,
-							   NULL)->data);
+							   timestamp_thread->timestamp)->data);
 
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     channel = ags_channel_nth(audio->input,

@@ -487,6 +487,10 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 {
   AgsTimestamp *timestamp, *current_timestamp;
 
+  if(gobject == NULL){
+    return(NULL);
+  }
+  
   timestamp = AGS_TIMESTAMP(gobject);
 
   while(notation != NULL){
