@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_timestamp_thread.h>
+
 #include <ags/audio/ags_devout.h>
 
 void ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread);
@@ -109,6 +111,9 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(devout_thread);
+
+  devout_thread->timestamp_thread = ags_timestamp_thread_new();
+  ags_thread_add_child(thread, devout_thread->timestamp_thread);
 
   devout_thread->error = NULL;
 }

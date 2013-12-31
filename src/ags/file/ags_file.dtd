@@ -181,13 +181,13 @@
 	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
+	  devout           CDATA      #REQUIRED
 >
 
 <!ELEMENT ags-thread-pool (ags-thread-list)>
-<!ATTLIST ags-thread
+<!ATTLIST ags-thread-pool
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
-	  devout           CDATA      #REQUIRED
 >
 
 <!ELEMENT ags-audio-loop (ags-parameter, ags-parameter, ags-parameter, ags-parameter)>
@@ -263,6 +263,7 @@
 <!ATTLIST ags-audio
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
+	  devout           CDATA      #REQUIRED
 	  sequence-length  NMTOKEN    16
 	  audio-channels   NMTOKEN    2
 	  output-pads      NMTOKEN    1
@@ -496,6 +497,7 @@
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
 	  name             CDATA      #REQUIRED
+	  devout           CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-menu-bar EMPTY>
