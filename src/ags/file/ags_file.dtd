@@ -39,6 +39,11 @@
 	  xpath            CDATA      #REQUIRED
 	  >
 
+<!ELEMENT ags-object (ags-parameter)>
+<!ATTLIST ags-object
+	  id                   ID         #REQUIRED
+	  >
+
 <!-- root node -->
 <!ELEMENT ags (ags-clip-board?, ags-script-list?, ags-cluster?, ags-client?, ags-server?, ags-main?, ags-embedded-audio-list?, ags-file-link-list?, ags-history?)>
 <!ATTLIST ags
@@ -637,7 +642,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-line-member>
+<!ELEMENT ags-line-member (ags-object?)>
 <!ATTLIST ags-line-member
 	  id                   ID         #REQUIRED
 	  flags                PCDATA     #REQUIRED

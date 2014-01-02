@@ -60,6 +60,14 @@ xmlNode* ags_file_util_write_dependency(AgsFile *file,
 					gchar *id,
 					gchar *name, xmlChar *xpath);
 
+/* object */
+void ags_file_util_read_object(AgsFile *file,
+			       xmlNode *node,
+			       GObject **gobject);
+xmlNode* ags_file_util_write_object(AgsFile *file,
+				    xmlNode *parent,
+				    GObject *gobject);
+
 /* history */
 void ags_file_util_read_history(AgsFile *file, xmlNode *node, AgsHistory **history);
 xmlNode* ags_file_util_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history);

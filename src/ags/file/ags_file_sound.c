@@ -4145,7 +4145,7 @@ ags_file_write_task(AgsFile *file, xmlNode *parent, AgsTask *task)
   for(i = 0, j = 0; i < n_properties; i++){
     if(g_type_is_a(param_spec[i]->owner_type,
 		   AGS_TYPE_TASK)){
-      if(parameter == 0){
+      if(parameter == NULL){
 	parameter = (GParameter *) g_new(GParameter,
 					 1);
       }else{

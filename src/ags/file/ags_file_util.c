@@ -671,6 +671,118 @@ ags_file_util_write_dependency(AgsFile *file,
 }
 
 void
+ags_file_util_read_object(AgsFile *file,
+			  xmlNode *node,
+			  GObject **ptr)
+{
+  GObject *gobject;
+  xmlNode *child;
+
+  if(ptr == NULL){
+    return;
+  }else{
+    gobject = *ptr;
+  }
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-parameter\0",
+		     14)){
+	GParameter *parameter;
+	guint n_params;
+	guint i;
+
+	parameter = NULL;
+
+	ags_file_util_read_parameter(file,
+				     child,
+				     NULL,
+				     &parameter, &n_params, NULL);
+	
+	for(i = 0; i < n_params; i++){
+	  g_object_set_property(gobject,
+				parameter[i].name, &(parameter[i].value));
+	}
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+xmlNode*
+ags_file_util_write_object(AgsFile *file,
+			   xmlNode *parent,
+			   GObject *gobject)
+{
+  xmlNode *node;
+  GParamSpec **param_spec;
+  GParameter *parameter;
+  gchar *id;
+  guint n_properties;
+  guint i;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-object\0");
+    
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
+				   "reference\0", gobject,
+				   NULL));
+
+  param_spec = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject),
+					      &n_properties);
+
+  parameter = NULL;
+
+  for(i = 0; i < n_properties; i++){
+    if(parameter == NULL){
+      parameter = (GParameter *) g_new(GParameter,
+				       1);
+    }else{
+      parameter = (GParameter *) g_renew(GParameter,
+					 parameter,
+					 (i + 1));
+    }
+
+    parameter[i].name = param_spec[i]->name;
+    g_object_get_property(G_OBJECT(gobject),
+			  param_spec[i]->name,
+			  &(parameter[i].value));
+  }
+
+  n_properties = i;
+
+  ags_file_util_write_parameter(file,
+				node,
+				ags_id_generator_create_uuid(),
+				parameter, n_properties);
+
+  return(node);
+}
+
+void
 ags_file_read_history(AgsFile *file, xmlNode *node, AgsHistory **history)
 {
   //TODO:JK: implement me
