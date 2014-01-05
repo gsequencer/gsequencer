@@ -48,7 +48,7 @@ typedef enum{
 
 struct _AgsDial
 {
-  GtkRange range;
+  GtkWidget widget;
 
   guint flags;
 
@@ -67,6 +67,8 @@ struct _AgsDial
 
   gint sleep_interval;
 
+  GtkAdjustment *adjustment;
+
   pthread_t idle_thread;
   pthread_attr_t idle_thread_attr;
   pthread_mutex_t idle_mutex;
@@ -81,7 +83,7 @@ struct _AgsDial
 
 struct _AgsDialClass
 {
-  GtkRangeClass range;
+  GtkWidgetClass widget;
 };
 
 GType ags_dial_get_type(void);

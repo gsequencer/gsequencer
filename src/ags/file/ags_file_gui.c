@@ -1561,28 +1561,28 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 
     upper = (gdouble) g_ascii_strtod(xmlGetProp(node, "upper\0"),
 				     NULL);
-    gtk_adjustem_set_upper(adjustment,
-			   upper);
+    gtk_adjustment_set_upper(adjustment,
+			     upper);
     
     lower = (gdouble) g_ascii_strtod(xmlGetProp(node, "lower\0"),
 				     NULL);
-    gtk_adjustem_set_upper(adjustment,
-			   lower);
+    gtk_adjustment_set_upper(adjustment,
+			     lower);
     
     step = (gdouble) g_ascii_strtod(xmlGetProp(node, "step\0"),
 				    NULL);
-    gtk_adjustem_set_step_increment(adjustment,
-				    step);
+    gtk_adjustment_set_step_increment(adjustment,
+				      step);
     
     page = (gdouble) g_ascii_strtod(xmlGetProp(node, "page\0"),
 				    NULL);
-    gtk_adjustem_set_page_size(adjustment,
-			       page);
+    gtk_adjustment_set_page_size(adjustment,
+				 page);
     
     value = (gdouble) g_ascii_strtod(xmlGetProp(node, "value\0"),
 				     NULL);
-    gtk_adjustem_set_value(adjustment,
-			   value);
+    gtk_adjustment_set_value(adjustment,
+			     value);
   }
   
   /* flags */
@@ -1695,7 +1695,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   if(GTK_IS_TOGGLE_BUTTON(child_widget)){
     xmlNewProp(node,
 	       "value\0",
-	       g_strdup_printf("%s\0", ((gtk_toggle_button_is_active(GTK_TOGGLE_BUTTON(child_widget))) ?
+	       g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(child_widget))) ?
 					AGS_FILE_TRUE:
 					AGS_FILE_FALSE)));
   }else if(AGS_IS_DIAL(child_widget)){

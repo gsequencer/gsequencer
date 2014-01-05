@@ -62,7 +62,7 @@ ags_dial_get_type(void)
       (GInstanceInitFunc) ags_dial_init,
     };
 
-    ags_type_dial = g_type_register_static(GTK_TYPE_RANGE,
+    ags_type_dial = g_type_register_static(GTK_TYPE_WIDGET,
 					   "AgsDial\0", &ags_dial_info,
 					   0);
   }
@@ -335,7 +335,7 @@ ags_dial_button_press(GtkWidget *widget,
 
 gboolean
 ags_dial_button_release(GtkWidget *widget,
-			GdkEventButton   *event)
+			GdkEventButton *event)
 {
   AgsDial *dial;
 
@@ -347,7 +347,7 @@ ags_dial_button_release(GtkWidget *widget,
   if((AGS_DIAL_BUTTON_DOWN_PRESSED & (dial->flags)) != 0){
     GtkAdjustment *adjustment;
 
-    adjustment = GTK_RANGE(dial)->adjustment;
+    adjustment = dial->adjustment;
 
     if(adjustment->value > adjustment->lower){
       gtk_adjustment_set_value(adjustment,
@@ -360,7 +360,7 @@ ags_dial_button_release(GtkWidget *widget,
   }else if((AGS_DIAL_BUTTON_UP_PRESSED & (dial->flags)) != 0){
     GtkAdjustment *adjustment;
 
-    adjustment = GTK_RANGE(dial)->adjustment;
+    adjustment = dial->adjustment;
 
     if(adjustment->value < adjustment->upper){
       gtk_adjustment_set_value(adjustment,
@@ -387,7 +387,7 @@ ags_dial_motion_notify(GtkWidget *widget,
     GtkAdjustment *adjustment;
     gboolean gravity_up;
 
-    adjustment = GTK_RANGE(dial)->adjustment;
+    adjustment = dial->adjustment;
 
     if(dial->gravity_y < dial->current_y){
       if(dial->gravity_x < dial->current_x){
@@ -598,7 +598,7 @@ ags_dial_draw(AgsDial *dial)
   }
 
   /* draw value */
-  translated_value = (gdouble) scale_precision / GTK_RANGE(dial)->adjustment->upper * GTK_RANGE(dial)->adjustment->value;
+  translated_value = (gdouble) scale_precision / dial->adjustment->upper * dial->adjustment->value;
 
   //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);
