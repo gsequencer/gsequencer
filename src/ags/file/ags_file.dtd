@@ -685,7 +685,8 @@
 	  lower                NMTOKEN    #IMPLIED
 	  step                 NMTOKEN    #IMPLIED
 	  page                 NMTOKEN    #IMPLIED
-	  value                NMTOKEN    #IMPLIED
+	  value                CDATA      #IMPLIED
+	  inverted             CDATA      #IMPLIED
 	  >
 
 <!-- dialogs -->

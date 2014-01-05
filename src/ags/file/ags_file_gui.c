@@ -1550,6 +1550,13 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
     adjustment = AGS_DIAL(child_widget)->adjustment;
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
+
+    if(!xmlStrncmp(AGS_FILE_TRUE,
+		   xmlGetProp(node, "inverted\0"),
+		   9)){
+      gtk_range_set_inverted(GTK_RANGE(child_widget),
+			     TRUE);
+    }
   }
 
   //TODO:JK: implement more types
@@ -1559,15 +1566,15 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
     gdouble step, page;
     gdouble value;
 
+    lower = (gdouble) g_ascii_strtod(xmlGetProp(node, "lower\0"),
+				     NULL);
+    gtk_adjustment_set_lower(adjustment,
+			     lower);
+
     upper = (gdouble) g_ascii_strtod(xmlGetProp(node, "upper\0"),
 				     NULL);
     gtk_adjustment_set_upper(adjustment,
 			     upper);
-    
-    lower = (gdouble) g_ascii_strtod(xmlGetProp(node, "lower\0"),
-				     NULL);
-    gtk_adjustment_set_upper(adjustment,
-			     lower);
     
     step = (gdouble) g_ascii_strtod(xmlGetProp(node, "step\0"),
 				    NULL);
@@ -1616,6 +1623,10 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
 			       "port\0");
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref == NULL){
+    return;
+  }
 
   g_object_set(G_OBJECT(line_member),
 	       "port\0", (AgsPort *) id_ref->ref,
@@ -1702,6 +1713,12 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
     adjustment = AGS_DIAL(child_widget)->adjustment;
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
+
+    xmlNewProp(node,
+	       "inverted\0",
+	       g_strdup_printf("%s\0", (gtk_range_get_inverted(GTK_RANGE(child_widget)) ?
+					AGS_FILE_TRUE :
+					AGS_FILE_FALSE)));
   }
 
   if(adjustment != NULL){
