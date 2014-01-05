@@ -24,6 +24,8 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <string.h>
+
 void ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
 				      GValue *value);
 void ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
@@ -386,7 +388,7 @@ ags_file_util_write_value(AgsFile *file,
     break;
   case G_TYPE_DOUBLE:
     {
-      content = BAD_CAST g_strdup_printf("%lf\0", g_value_get_double(value));
+      content = BAD_CAST g_strdup_printf("%f\0", g_value_get_double(value));
       type_str = AGS_FILE_DOUBLE_PROP;
     }
     break;
@@ -514,14 +516,18 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
     id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, g_value_get_pointer(value));
   }
 
+  if(id_ref == NULL){
+    return;
+  }
+
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
   xmlNewProp(file_lookup->node,
 	     "link\0",
 	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 
-  g_value_unset(value);
-  g_free(value);
+  //  g_value_unset(value);
+  //  g_free(value);
 }
 
 void
@@ -715,6 +721,12 @@ ags_file_util_read_object(AgsFile *file,
 	  g_object_set_property(gobject,
 				parameter[i].name, &(parameter[i].value));
 	}
+      }else if(!xmlStrncmp(child->name,
+			   "ags-widget\0",
+			   11)){
+	ags_file_read_widget(file,
+			     child,
+			     gobject);
       }
     }
 
@@ -734,6 +746,10 @@ ags_file_util_write_object(AgsFile *file,
   guint n_properties;
   guint i;
 
+  if(gobject == NULL){
+    return;
+  }
+
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
@@ -751,6 +767,12 @@ ags_file_util_write_object(AgsFile *file,
 				   "reference\0", gobject,
 				   NULL));
 
+
+
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
   param_spec = g_object_class_list_properties(G_OBJECT_GET_CLASS(gobject),
 					      &n_properties);
 
@@ -766,6 +788,10 @@ ags_file_util_write_object(AgsFile *file,
 					 (i + 1));
     }
 
+    memset(&parameter[i].value, 0, sizeof(GValue));
+    g_value_init(&parameter[i].value,
+		 param_spec[i]->value_type);
+
     parameter[i].name = param_spec[i]->name;
     g_object_get_property(G_OBJECT(gobject),
 			  param_spec[i]->name,
@@ -778,6 +804,12 @@ ags_file_util_write_object(AgsFile *file,
 				node,
 				ags_id_generator_create_uuid(),
 				parameter, n_properties);
+
+  if(GTK_IS_WIDGET(gobject)){
+    ags_file_write_widget(file,
+			  node,
+			  GTK_WIDGET(gobject));
+  }
 
   return(node);
 }

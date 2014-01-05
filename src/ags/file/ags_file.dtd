@@ -39,9 +39,17 @@
 	  xpath            CDATA      #REQUIRED
 	  >
 
-<!ELEMENT ags-object (ags-parameter)>
+<!ELEMENT ags-object (ags-widget | ags-plugin | ags-parameter)>
 <!ATTLIST ags-object
 	  id                   ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-plugin EMPTY
+	  type                   CDATA      #REQUIRED
+	  id                     ID         #REQUIRED
+	  version                CDATA      #REQUIRED
+	  build-id               CDATA      #REQUIRED
+	  flags                  PCDATA     #REQUIRED	  
 	  >
 
 <!-- root node -->
@@ -497,6 +505,20 @@
 	  >
 
 <!--GUI Widgets -->
+<!ELEMENT ags-widget
+	  width                NMTOKEN    #REQUIRED
+	  height               NMTOKEN    #REQUIRED
+	  xalign               NMTOKEN    #IMPLIED
+	  xpad                 NMTOKEN    #IMPLIED
+	  yalign               NMTOKEN    #IMPLIED
+	  ypad                 NMTOKEN    #IMPLIED
+	  upper                NMTOKEN    #IMPLIED
+	  lower                NMTOKEN    #IMPLIED
+	  step                 NMTOKEN    #IMPLIED
+	  page                 NMTOKEN    #IMPLIED
+	  value                NMTOKEN    #IMPLIED
+	  >
+
 <!ELEMENT ags-window (ags-menu-bar, ags-machine-counter-list, ags-machine-list, ags-editor, ags-navigation, ags-dialog-list, ags-machine-editor-list)>
 <!ATTLIST ags-window
 	  id               ID         #REQUIRED
@@ -653,8 +675,6 @@
 	  rigth-attach         NMTOKEN    #REQUIRED
 	  top-attach           NMTOKEN    #REQUIRED
 	  bottom-attach        NMTOKEN    #REQUIRED
-	  width                NMTOKEN    #REQUIRED
-	  height               NMTOKEN    #REQUIRED
 	  >
 
 <!-- dialogs -->

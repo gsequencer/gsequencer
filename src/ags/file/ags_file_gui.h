@@ -55,6 +55,10 @@
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
+/* GtkWidget */
+void ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget);
+xmlNode* ags_file_write_widget(AgsFile *file, xmlNode *parent, GtkWidget *widget);
+
 /* AgsWindow */
 void ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window);
 xmlNode* ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window);

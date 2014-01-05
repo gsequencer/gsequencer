@@ -56,6 +56,18 @@ void ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
 					     AgsLineMember *line_member);
 
 void
+ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_widget(AgsFile *file, xmlNode *parent, GtkWidget *widget)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 {
   AgsWindow *gobject;
@@ -1505,6 +1517,23 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_read_line_member_resolve_port), gobject);
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-object\0",
+		     11)){
+	ags_file_util_read_object(file,
+				  child,
+				  &child_widget);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 void
@@ -1528,6 +1557,7 @@ xmlNode*
 ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_member)
 {
   AgsFileLookup *file_lookup;
+  GtkWidget *child_widget;
   xmlNode *node;
   gchar *id;
 
@@ -1572,9 +1602,15 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 		   G_CALLBACK(ags_file_write_line_member_resolve_port), line_member);
 
   xmlAddChild(parent,
-	      node);  
-}
+	      node);
 
+  /* child elements */
+  child_widget = gtk_bin_get_child(GTK_BIN(line_member));
+
+  ags_file_util_write_object(file,
+			     node,
+			     child_widget);
+}
 void
 ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
 					AgsLineMember *line_member)
