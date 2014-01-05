@@ -1627,6 +1627,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 {
   AgsFileLookup *file_lookup;
   GtkWidget *child_widget;
+  GtkAdjustment *adjustment;
   xmlNode *node;
   gchar *id;
 
@@ -1658,6 +1659,73 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
     xmlNewProp(node,
 	       AGS_FILE_FLAGS_PROP,
 	       g_strdup_printf("%s\0", g_type_name(line_member->task_type)));
+  }
+
+  child_widget = gtk_bin_get_child(GTK_BIN(line_member));
+  
+  /*  */
+  if(GTK_IS_MISC(child_widget)){
+    gfloat xalign, yalign;
+    gint xpad, ypad;
+    
+    gtk_misc_get_alignment(GTK_MISC(child_widget),
+			   &xalign, &yalign);
+    xmlNewProp(node,
+	       "xalign\0",
+	       g_strdup_printf("%d\0", xalign));
+    xmlNewProp(node,
+	       "yalign\0",
+	       g_strdup_printf("%d\0", yalign));
+    
+    gtk_misc_get_padding(GTK_MISC(child_widget),
+			 &xpad, &ypad);
+    xmlNewProp(node,
+	       "xpad\0",
+	       g_strdup_printf("%d\0", xpad));
+    xmlNewProp(node,
+	       "ypad\0",
+	       g_strdup_printf("%d\0", ypad));
+    
+  }
+
+  /*  */
+  adjustment = NULL;
+
+  /*  */
+  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+    xmlNewProp(node,
+	       "value\0",
+	       g_strdup_printf("%s\0", ((gtk_toggle_button_is_active(GTK_TOGGLE_BUTTON(child_widget))) ?
+					AGS_FILE_TRUE:
+					AGS_FILE_FALSE)));
+  }else if(AGS_IS_DIAL(child_widget)){
+    adjustment = AGS_DIAL(child_widget)->adjustment;
+  }else if(GTK_IS_RANGE(child_widget)){
+    adjustment = GTK_RANGE(child_widget)->adjustment;
+  }
+
+  if(adjustment != NULL){
+    gdouble upper, lower;
+    gdouble page, step;
+    gdouble value;
+
+    xmlNewProp(node,
+	       "upper\0",
+	       g_strdup_printf("%f\0", adjustment->upper));
+    xmlNewProp(node,
+	       "lower\0",
+	       g_strdup_printf("%f\0", adjustment->lower));
+    
+    xmlNewProp(node,
+	       "page\0",
+	       g_strdup_printf("%f\0", adjustment->page_size));
+    xmlNewProp(node,
+	       "step\0",
+	       g_strdup_printf("%f\0", adjustment->step_increment));
+    
+    xmlNewProp(node,
+	       "value\0",
+	       g_strdup_printf("%f\0", adjustment->value));
   }
 
   /* port */
