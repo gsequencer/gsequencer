@@ -664,7 +664,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-line-member (ags-object?)>
+<!ELEMENT ags-line-member EMPTY>
 <!ATTLIST ags-line-member
 	  id                   ID         #REQUIRED
 	  flags                PCDATA     #REQUIRED
@@ -675,6 +675,17 @@
 	  rigth-attach         NMTOKEN    #REQUIRED
 	  top-attach           NMTOKEN    #REQUIRED
 	  bottom-attach        NMTOKEN    #REQUIRED
+	  width                NMTOKEN    #REQUIRED
+	  height               NMTOKEN    #REQUIRED
+	  xalign               NMTOKEN    #IMPLIED
+	  xpad                 NMTOKEN    #IMPLIED
+	  yalign               NMTOKEN    #IMPLIED
+	  ypad                 NMTOKEN    #IMPLIED
+	  upper                NMTOKEN    #IMPLIED
+	  lower                NMTOKEN    #IMPLIED
+	  step                 NMTOKEN    #IMPLIED
+	  page                 NMTOKEN    #IMPLIED
+	  value                NMTOKEN    #IMPLIED
 	  >
 
 <!-- dialogs -->

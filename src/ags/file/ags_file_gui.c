@@ -1464,11 +1464,13 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 {
   AgsFileLookup *file_lookup;
   AgsLineMember *gobject;
+  GtkAdjustment *adjustment;
   GtkWidget *child_widget;
   xmlNode *child;
   xmlChar *prop, *content;
   gchar *widget_type;
   gchar *task_type;
+  guint width, height;
   static gboolean widget_type_is_registered = FALSE;
   
   if(*line_member == NULL){
@@ -1500,6 +1502,90 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   gtk_container_add(GTK_CONTAINER(gobject),
 		    child_widget);
 
+  /* size */
+  width = (guint) g_ascii_strtoull(xmlGetProp(node, "width\0"),
+				   NULL,
+				   10);
+
+  height = (guint) g_ascii_strtoull(xmlGetProp(node, "height\0"),
+				    NULL,
+				    10);
+
+  gtk_widget_set_size_request(child_widget,
+			      width, height);
+
+  /* check misc */
+  if(GTK_IS_MISC(child_widget)){
+    guint xalign, yalign;
+    guint xpad, ypad;
+
+    xalign = (guint) g_ascii_strtoull(xmlGetProp(node, "xalign\0"),
+				      NULL,
+				      10);
+
+    yalign = (guint) g_ascii_strtoull(xmlGetProp(node, "yalign\0"),
+				      NULL,
+				      10);
+
+    xpad = (guint) g_ascii_strtoull(xmlGetProp(node, "xpad\0"),
+				    NULL,
+				    10);
+    
+    ypad = (guint) g_ascii_strtoull(xmlGetProp(node, "ypad\0"),
+				    NULL,
+				    10);
+  }
+
+  /* check adjustment and toggle types */
+  adjustment = NULL;
+
+  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+    if(!xmlStrncmp(AGS_FILE_TRUE,
+		   xmlGetProp(node, "value\0"),
+		   5)){
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(child_widget),
+				   TRUE);
+    }
+  }else if(AGS_IS_DIAL(child_widget)){
+    adjustment = AGS_DIAL(child_widget)->adjustment;
+  }else if(GTK_IS_RANGE(child_widget)){
+    adjustment = GTK_RANGE(child_widget)->adjustment;
+  }
+
+  //TODO:JK: implement more types
+
+  if(adjustment != NULL){
+    gdouble upper, lower;
+    gdouble step, page;
+    gdouble value;
+
+    upper = (gdouble) g_ascii_strtod(xmlGetProp(node, "upper\0"),
+				     NULL);
+    gtk_adjustem_set_upper(adjustment,
+			   upper);
+    
+    lower = (gdouble) g_ascii_strtod(xmlGetProp(node, "lower\0"),
+				     NULL);
+    gtk_adjustem_set_upper(adjustment,
+			   lower);
+    
+    step = (gdouble) g_ascii_strtod(xmlGetProp(node, "step\0"),
+				    NULL);
+    gtk_adjustem_set_step_increment(adjustment,
+				    step);
+    
+    page = (gdouble) g_ascii_strtod(xmlGetProp(node, "page\0"),
+				    NULL);
+    gtk_adjustem_set_page_size(adjustment,
+			       page);
+    
+    value = (gdouble) g_ascii_strtod(xmlGetProp(node, "value\0"),
+				     NULL);
+    gtk_adjustem_set_value(adjustment,
+			   value);
+  }
+  
+  /* flags */
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
 					    NULL,
 					    16);
@@ -1507,7 +1593,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   if((task_type = xmlGetProp(node, "task-type\0")) != NULL){
     gobject->task_type = g_type_from_name(task_type);
   }
-
+  
   /* port */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
@@ -1517,23 +1603,6 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_read_line_member_resolve_port), gobject);
-
-  /* child elements */
-  child = node->children;
-
-  while(child != NULL){
-    if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child->name,
-		     "ags-object\0",
-		     11)){
-	ags_file_util_read_object(file,
-				  child,
-				  &child_widget);
-      }
-    }
-
-    child = child->next;
-  }
 }
 
 void
@@ -1603,14 +1672,8 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
   xmlAddChild(parent,
 	      node);
-
-  /* child elements */
-  child_widget = gtk_bin_get_child(GTK_BIN(line_member));
-
-  ags_file_util_write_object(file,
-			     node,
-			     child_widget);
 }
+
 void
 ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
 					AgsLineMember *line_member)
