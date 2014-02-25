@@ -222,6 +222,8 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 
   GList *list;
 
+  g_message("------------ debug ------------\0");
+
   line = AGS_LINE(panel_input_line);
 
   audio = AGS_AUDIO(line->channel->audio);
@@ -237,8 +239,8 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 			    source->audio_channel, source->audio_channel + 1,
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_REMAP |
-			     AGS_RECALL_FACTORY_PLAY),
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
   /* set audio channel */

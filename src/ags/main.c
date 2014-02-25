@@ -553,9 +553,11 @@ main(int argc, char **argv)
     mlockall(MCL_CURRENT | MCL_FUTURE);
 
     if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
+#ifdef AGS_WITH_XMLRPC_C
       AbyssInit(&error);
 
       xmlrpc_env_init(&(ags_main->env));
+#endif /* AGS_WITH_XMLRPC_C */
 
       /* AgsDevout */
       devout = ags_devout_new((GObject *) ags_main);

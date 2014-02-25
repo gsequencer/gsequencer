@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
 #include <ags/server/ags_server.h>
 
 #include <ags-lib/object/ags_connectable.h>
@@ -137,12 +136,17 @@ ags_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsServer *server;
   AgsRegistry *registry;
+
+#ifdef AGS_WITH_XMLRPC_C
   struct xmlrpc_method_info3 *method_info;
+#endif /* AGS_WITH_XMLRPC_C */
 
   server = AGS_SERVER(connectable);
   
   registry = AGS_REGISTRY(server->registry);
 
+
+#ifdef AGS_WITH_XMLRPC_C
   /* create object */
   method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
   method_info->methodName = "ags_server_create_object\0";
@@ -160,6 +164,7 @@ ags_server_add_to_registry(AgsConnectable *connectable)
   xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
 			      registry->registry,
 			      method_info);
+#endif /* AGS_WITH_XMLRPC_C */
 
   /* children */
   ags_connectable_add_to_registry(AGS_CONNECTABLE(server->registry));
@@ -204,7 +209,9 @@ ags_server_real_start(AgsServer *server)
   main = AGS_MAIN(server->main);
 
   registry = AGS_REGISTRY(server->registry);
+#ifdef AGS_WITH_XMLRPC_C
   registry->registry = xmlrpc_registry_new(&(main->env));
+#endif /* AGS_WITH_XMLRPC_C */
 
   ags_connectable_add_to_registry(AGS_CONNECTABLE(main->main_loop));
   ags_connectable_add_to_registry(AGS_CONNECTABLE(server));
@@ -216,6 +223,7 @@ ags_server_real_start(AgsServer *server)
   server->socket_fd = socket(AF_INET, SOCK_RDM, PF_INET);
   bind(server->socket_fd, &(server->address), sizeof(struct sockaddr_in));
 
+#ifdef AGS_WITH_XMLRPC_C
   SocketUnixCreateFd(server->socket_fd, &(server->socket));
 
   ServerCreateSocket2(&(server->abyss_server), server->socket, &error);
@@ -231,6 +239,7 @@ ags_server_real_start(AgsServer *server)
        the connection.
     */
   } 
+#endif /* AGS_WITH_XMLRPC_C */
 }
 
 void
@@ -262,6 +271,7 @@ ags_server_lookup(void *server_info)
   return(NULL);
 }
 
+#ifdef AGS_WITH_XMLRPC_C
 xmlrpc_value*
 ags_server_create_object(xmlrpc_env *env,
 			 xmlrpc_value *param_array,
@@ -403,6 +413,7 @@ ags_server_object_set_property(xmlrpc_env *env,
 
   return(NULL);
 }
+#endif /* AGS_WITH_XMLRPC_C */
 
 AgsServer*
 ags_server_new(GObject *main)

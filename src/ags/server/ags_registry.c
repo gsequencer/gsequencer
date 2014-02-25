@@ -122,6 +122,7 @@ ags_registry_add_to_registry(AgsConnectable *connectable)
   registry = AGS_REGISTRY(connectable);
   server = AGS_SERVER(registry->server);
 
+#ifdef AGS_WITH_XMLRPC_C
   /* bulk */
   method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
   method_info->methodName = "ags_registry_entry_bulk\0";
@@ -130,6 +131,7 @@ ags_registry_add_to_registry(AgsConnectable *connectable)
   xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
 			      registry->registry,
 			      method_info);
+#endif /* AGS_WITH_XMLRPC_C */
 }
 
 void
@@ -214,6 +216,7 @@ ags_registry_entry_find(AgsRegistry *registry,
   return(entry);
 }
 
+#ifdef AGS_WITH_XMLRPC_C
 xmlrpc_value*
 ags_registry_entry_bulk(xmlrpc_env *env,
 			xmlrpc_value *param_array,
@@ -240,12 +243,15 @@ ags_registry_entry_bulk(xmlrpc_env *env,
     item = xmlrpc_string_new(env, entry->id);
 
     xmlrpc_array_append_item(env, bulk, item);
+
+    current = current->next;
   }
 
   pthread_mutex_unlock(&(registry->mutex));
 
   return(bulk);
 }
+#endif /* AGS_WITH_XMLRPC_C */
 
 AgsRegistry*
 ags_registry_new()

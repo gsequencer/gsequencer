@@ -255,9 +255,11 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   gtk_widget_show_all(GTK_WIDGET(panel));
 
-  panel->machine.audio->input_pads =
-    panel->machine.audio->output_pads = 1;
-  ags_audio_set_audio_channels(panel->machine.audio, 2);
+  AGS_MACHINE(panel)->audio->audio_channels = 2;
+  ags_audio_set_pads(AGS_MACHINE(panel)->audio,
+		     AGS_TYPE_INPUT, 1);
+  ags_audio_set_pads(AGS_MACHINE(panel)->audio,
+		     AGS_TYPE_OUTPUT, 1);
 }
 
 void
@@ -321,8 +323,8 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   drum->machine.audio->audio_channels = 2;
 
   /* AgsDrumInputPad */
-  ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
+  ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
 }
 
 void

@@ -118,6 +118,7 @@ ags_remote_task_add_to_registry(AgsConnectable *connectable)
   server = AGS_SERVER(remote_task->server);
   registry = AGS_REGISTRY(server->registry);
 
+#ifdef AGS_WITH_XMLRPC_C
   /* bulk */
   method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
   method_info->methodName = "ags_remote_task_launch\0";
@@ -126,6 +127,7 @@ ags_remote_task_add_to_registry(AgsConnectable *connectable)
   xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
 			      registry->registry,
 			      method_info);
+#endif /* AGS_WITH_XMLRPC_C */
 }
 
 void
@@ -156,6 +158,7 @@ ags_remote_task_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_remote_task_parent_class)->finalize(gobject);
 }
 
+#ifdef AGS_WITH_XMLRPC_C
 xmlrpc_value*
 ags_remote_task_launch(xmlrpc_env *env,
 		       xmlrpc_value *param_array,
@@ -223,6 +226,7 @@ ags_remote_task_launch_timed(xmlrpc_env *env,
   /* launch timed */
   //TODO:JK: implement me
 }
+#endif /* AGS_WITH_XMLRPC_C */
 
 AgsRemoteTask*
 ags_remote_task_new()
