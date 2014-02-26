@@ -558,6 +558,8 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   guint delay, attack;
   guint tic_counter_incr;
 
+  //  g_message("debug\0");
+
   devout = AGS_DEVOUT(AGS_RECALL(loop_channel_run)->devout);
 
   /* recycling */

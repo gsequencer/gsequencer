@@ -550,7 +550,7 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 	play_channel_run_master = (AgsPlayChannelRunMaster *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN_MASTER,
 									   "devout\0", audio->devout,
 									   "source\0", channel,
-									   // "recall_channel\0", play_channel,
+									   "recall_channel\0", play_channel,
 									   "recall_container\0", recall_container,
 									   NULL);
 	ags_recall_set_flags(AGS_RECALL(play_channel_run_master), (AGS_RECALL_TEMPLATE |

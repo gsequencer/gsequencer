@@ -159,13 +159,11 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
   }
 
   if(channel != NULL){
-    AgsDrum *drum;
     AgsDevout *devout;
     AgsAudioSignal *audio_signal;
     guint stop;
 
-    drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line->pad), AGS_TYPE_DRUM);
-    devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
+    devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
     stop = (guint) ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 4.0) + 1.0);
 
@@ -180,6 +178,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     //    audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
     //    ags_audio_signal_stream_resize(audio_signal, stop);
+    ags_drum_output_line_add_default_recall(AGS_DRUM_OUTPUT_LINE(line));
   }
 }
 
