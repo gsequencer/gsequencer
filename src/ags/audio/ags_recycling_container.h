@@ -22,18 +22,21 @@
 
 #include <ags/audio/ags_recycling.h>
 
-#define AGS_TYPE_RECYCLING                          (ags_recycling_container_get_type())
-#define AGS_RECYCLING_CONTAINER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECYCLING, AgsRecyclingContainer))
-#define AGS_RECYCLING_CONTAINER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECYCLING, AgsRecyclingContainerClass))
-#define AGS_IS_RECYCLING(obj)                       (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RECYCLING))
-#define AGS_IS_RECYCLING_CLASS(class)               (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECYCLING))
-#define AGS_RECYCLING_CONTAINER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECYCLING, AgsRecyclingContainerClass))
+#define AGS_TYPE_RECYCLING_CONTAINER                (ags_recycling_container_get_type())
+#define AGS_RECYCLING_CONTAINER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECYCLING_CONTAINER, AgsRecyclingContainer))
+#define AGS_RECYCLING_CONTAINER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECYCLING_CONTAINER, AgsRecyclingContainerClass))
+#define AGS_IS_RECYCLING_CONTAINER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RECYCLING_CONTAINER))
+#define AGS_IS_RECYCLING_CONTAINER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECYCLING_CONTAINER))
+#define AGS_RECYCLING_CONTAINER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECYCLING_CONTAINER, AgsRecyclingContainerClass))
 
 typedef struct _AgsRecyclingContainer AgsRecyclingContainer;
+typedef struct _AgsRecyclingContainerClass AgsRecyclingContainerClass;
 
 struct _AgsRecyclingContainer
 {
   GObject object;
+
+  GList *children;
 };
 
 struct _AgsRecyclingContainerClass
@@ -46,6 +49,9 @@ GType ags_recycling_container_get_type();
 void ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
 				 AgsRecycling *recycling);
 void ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
+				    AgsRecycling *recycling);
+
+GList* ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 				    AgsRecycling *recycling);
 
 AgsRecyclingContainer* ags_recycling_container_new();

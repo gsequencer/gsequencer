@@ -160,7 +160,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_remove_audio_signal.$(OBJEXT) \
 	ags-ags_notation.$(OBJEXT) ags-ags_recall_id.$(OBJEXT) \
 	ags-ags_recall_channel_run.$(OBJEXT) ags-ags_note.$(OBJEXT) \
-	ags-ags_devout.$(OBJEXT) ags-ags_garbage_collector.$(OBJEXT) \
+	ags-ags_recycling_container.$(OBJEXT) ags-ags_devout.$(OBJEXT) \
+	ags-ags_garbage_collector.$(OBJEXT) \
 	ags-ags_recycling.$(OBJEXT) \
 	ags-ags_recall_dependency.$(OBJEXT) \
 	ags-ags_recall_audio_signal.$(OBJEXT) \
@@ -757,6 +758,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_recall_audio_run.h \
 	./src/ags/audio/ags_notation.h ./src/ags/audio/ags_note.c \
 	./src/ags/audio/ags_recycling.h \
+	./src/ags/audio/ags_recycling_container.h \
+	./src/ags/audio/ags_recycling_container.c \
 	./src/ags/audio/ags_recall_channel.h \
 	./src/ags/audio/ags_audio_signal.h \
 	./src/ags/audio/ags_recall_audio_signal.h \
@@ -1538,6 +1541,7 @@ include ./$(DEPDIR)/ags-ags_recall_factory.Po
 include ./$(DEPDIR)/ags-ags_recall_id.Po
 include ./$(DEPDIR)/ags-ags_recall_recycling.Po
 include ./$(DEPDIR)/ags-ags_recycling.Po
+include ./$(DEPDIR)/ags-ags_recycling_container.Po
 include ./$(DEPDIR)/ags-ags_recycling_thread.Po
 include ./$(DEPDIR)/ags-ags_registry.Po
 include ./$(DEPDIR)/ags-ags_remote_task.Po
@@ -2664,6 +2668,20 @@ ags-ags_note.obj: ./src/ags/audio/ags_note.c
 #	$(AM_V_CC)source='./src/ags/audio/ags_note.c' object='ags-ags_note.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_note.obj `if test -f './src/ags/audio/ags_note.c'; then $(CYGPATH_W) './src/ags/audio/ags_note.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_note.c'; fi`
+
+ags-ags_recycling_container.o: ./src/ags/audio/ags_recycling_container.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recycling_container.o -MD -MP -MF $(DEPDIR)/ags-ags_recycling_container.Tpo -c -o ags-ags_recycling_container.o `test -f './src/ags/audio/ags_recycling_container.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recycling_container.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_recycling_container.Tpo $(DEPDIR)/ags-ags_recycling_container.Po
+#	$(AM_V_CC)source='./src/ags/audio/ags_recycling_container.c' object='ags-ags_recycling_container.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recycling_container.o `test -f './src/ags/audio/ags_recycling_container.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recycling_container.c
+
+ags-ags_recycling_container.obj: ./src/ags/audio/ags_recycling_container.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recycling_container.obj -MD -MP -MF $(DEPDIR)/ags-ags_recycling_container.Tpo -c -o ags-ags_recycling_container.obj `if test -f './src/ags/audio/ags_recycling_container.c'; then $(CYGPATH_W) './src/ags/audio/ags_recycling_container.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recycling_container.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_recycling_container.Tpo $(DEPDIR)/ags-ags_recycling_container.Po
+#	$(AM_V_CC)source='./src/ags/audio/ags_recycling_container.c' object='ags-ags_recycling_container.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recycling_container.obj `if test -f './src/ags/audio/ags_recycling_container.c'; then $(CYGPATH_W) './src/ags/audio/ags_recycling_container.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recycling_container.c'; fi`
 
 ags-ags_devout.o: ./src/ags/audio/ags_devout.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_devout.o -MD -MP -MF $(DEPDIR)/ags-ags_devout.Tpo -c -o ags-ags_devout.o `test -f './src/ags/audio/ags_devout.c' || echo '$(srcdir)/'`./src/ags/audio/ags_devout.c
