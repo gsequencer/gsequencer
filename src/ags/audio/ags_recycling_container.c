@@ -92,6 +92,13 @@ ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
   return(NULL);
 }
 
+GList*
+ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
+				    AgsRecycling *recycling)
+{
+  return(NULL);
+}
+
 AgsRecyclingContainer*
 ags_recycling_container_new()
 {

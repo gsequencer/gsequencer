@@ -30,14 +30,11 @@
 #define AGS_IS_RECALL_ID(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RECALL_ID))
 #define AGS_IS_RECALL_ID_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECALL_ID))
 #define AGS_RECALL_ID_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECALL_ID, AgsRecallIDClass))
-#define AGS_POINTER_TO_GROUP_ID(ptr)      ((AgsGroupId)(gulong)(ptr))
-#define AGS_GROUP_ID_TO_POINTER(id)       ((gpointer)(AgsGroupId)(id))
 
 #define AGS_GROUP_ID_NOT_EXISTIBLE 0
 
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
-typedef gulong AgsGroupId;
 
 typedef enum{
   AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE     = 1,
@@ -55,9 +52,7 @@ struct _AgsRecallID
 
   guint flags;
 
-  AgsGroupId parent_group_id;
-  AgsGroupId group_id;
-  AgsGroupId child_group_id;
+  AgsRecyclingContainer *recycling_container;
 
   AgsRecycling *first_recycling; // identify the channel in AgsAudio
   AgsRecycling *last_recycling; // identify the channel in AgsAudio
@@ -76,17 +71,9 @@ gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
 void ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage);
 void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
 
-GList* ags_recall_id_add(GList *recall_id_list,
-			 AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
-			 AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			 gboolean higher_level_is_recall);
-AgsRecallID* ags_recall_id_find_group_id(GList *recall_id_list,
-					 AgsGroupId group_id);
-AgsRecallID* ags_recall_id_find_group_id_with_recycling(GList *recall_id_list,
-							AgsGroupId group_id,
-							AgsRecycling *first_recycling, AgsRecycling *last_recycling);
-AgsRecallID* ags_recall_id_find_parent_group_id(GList *recall_id_list,
-						AgsGroupId parent_group_id);
+GList* ags_recall_id_append(GList *recall_id_list,
+			    AgsRecyclingContainer *recycling_container,
+			    AgsRecycling *first_recycling, AgsRecycling *last_recycling);
 
 void ags_recall_id_reset_recycling(GList *recall_ids,
 				   AgsRecycling *old_first_recycling,

@@ -36,6 +36,10 @@ struct _AgsRecyclingContainer
 {
   GObject object;
 
+  AgsRecycling **recycling;
+  guint length;
+
+  AgsRecyclingContainer *parent;
   GList *children;
 };
 
@@ -53,6 +57,8 @@ void ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
 
 GList* ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 				    AgsRecycling *recycling);
+GList* ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
+					   AgsRecycling *recycling);
 
 AgsRecyclingContainer* ags_recycling_container_new();
 
