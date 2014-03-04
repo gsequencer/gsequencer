@@ -119,38 +119,54 @@ void
 ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 {
   AgsDevout *devout;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+  AgsDevoutThread *devout_thread;
   AgsGroupId group_id;
 
   devout = AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout);
+
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
     AgsStartDevout *start_devout;
+    GList *tasks;
+
+    printf("matrix: on\n\0");
+
+    tasks = NULL;
 
     /* create init task */
     init_audio = ags_init_audio_new(AGS_MACHINE(matrix)->audio,
 				    FALSE, TRUE, FALSE);
-
-    /* append AgsInitAudio */
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
-				AGS_TASK(init_audio));
+    tasks = g_list_prepend(tasks,
+			   init_audio);
 
     /* create append task */
-    append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(devout->ags_main)->main_loop),
+    append_audio = ags_append_audio_new(G_OBJECT(audio_loop),
 					AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
 
-    /* append AgsAppendAudio */
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
-				AGS_TASK(append_audio));
+    tasks = g_list_prepend(tasks,
+			   append_audio);
 
     /* create start task */
-    start_devout = ags_start_devout_new(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout));
+    start_devout = ags_start_devout_new(devout);
 
-    /* append AgsStartDevout */
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
-				AGS_TASK(start_devout));
+    tasks = g_list_prepend(tasks,
+			   start_devout);
+
+    /* append tasks */
+    tasks = g_list_reverse(tasks);
+    
+    ags_task_thread_append_tasks(task_thread,
+				 tasks);
   }else{
+    printf("matrix: off\n\0");
+
     /* abort code */
     if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags)) == 0){
       AgsCancelAudio *cancel_audio;
@@ -159,8 +175,8 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
       cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->group_id[1],
 					  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
 
-      /* append AgsAppendAudio */
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+      /* append AgsCancelAudio */
+      ags_task_thread_append_task(task_thread,
 				  AGS_TASK(cancel_audio));
     }else{
       AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;

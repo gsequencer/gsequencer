@@ -260,7 +260,6 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     
     ags_task_thread_append_tasks(task_thread,
 				 tasks);
-
   }else{
     printf("drum: off\n\0");
 

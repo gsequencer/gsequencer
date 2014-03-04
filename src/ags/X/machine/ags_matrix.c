@@ -187,7 +187,7 @@ ags_matrix_init(AgsMatrix *matrix)
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_HAS_NOTATION);
-  audio->audio_channels = 1;
+  //  audio->audio_channels = 1;
 
   AGS_MACHINE(matrix)->flags |= AGS_MACHINE_IS_SEQUENCER;
   matrix->flags = 0;
@@ -543,7 +543,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	ags_recycling_add_audio_signal(source->first_recycling,
 				       audio_signal);
 
-	ags_drum_output_line_add_default_recall(AGS_DRUM_OUTPUT_LINE(line));
+	/* depending on destination */
+       	ags_matrix_output_map_recall(matrix, 0);
       }
       
       /* map recalls */
