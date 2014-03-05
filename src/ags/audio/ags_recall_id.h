@@ -52,10 +52,8 @@ struct _AgsRecallID
 
   guint flags;
 
+  GObject *recycling;
   AgsRecyclingContainer *recycling_container;
-
-  AgsRecycling *first_recycling; // identify the channel in AgsAudio
-  AgsRecycling *last_recycling; // identify the channel in AgsAudio
 };
 
 struct _AgsRecallIDClass
@@ -65,20 +63,13 @@ struct _AgsRecallIDClass
 
 GType ags_recall_id_get_type(void);
 
-AgsGroupId ags_recall_id_generate_group_id();
-
 gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
 void ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage);
 void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
 
 GList* ags_recall_id_append(GList *recall_id_list,
-			    AgsRecyclingContainer *recycling_container,
-			    AgsRecycling *first_recycling, AgsRecycling *last_recycling);
+			    AgsRecallID *recall_id);
 
-void ags_recall_id_reset_recycling(GList *recall_ids,
-				   AgsRecycling *old_first_recycling,
-				   AgsRecycling *first_recycling, AgsRecycling *last_recycling);
-
-AgsRecallID* ags_recall_id_new();
+AgsRecallID* ags_recall_id_new(AgsRecycling *recycling);
 
 #endif /*__AGS_RECALL_ID_H__*/

@@ -65,6 +65,11 @@ ags_recycling_container_class_init(AgsRecyclingContainerClass *recycling_contain
 void
 ags_recycling_container_init(AgsRecyclingContainer *recycling_container)
 {
+  recycling_container->recycling = NULL;
+  recycling_container->length = 0;
+
+  recycling_container->parent = NULL;
+  recycling_container->children = NULL;
 }
 
 void
@@ -73,34 +78,64 @@ ags_recycling_container_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recycling_container_parent_class)->finalize(gobject);
 }
 
-void
+AgsRecyclingContainer*
 ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
 			    AgsRecycling *recycling)
 {
 }
 
-void
+AgsRecyclingContainer*
 ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
 			       AgsRecycling *recycling)
 {
 }
 
-GList*
+void
+ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
+			       AgsRecycling *recycling,
+			       gint position)
+{
+  if(recycling_container == NULL){
+    return;
+  }
+
+  recycling_container->recycling[position] = recycling;
+}
+
+gint
 ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 			     AgsRecycling *recycling)
 {
-  return(NULL);
+  gint i;
+
+  for(i = 0; i < recycling_container->length; i++){
+    if(recycling_container->recycling == recycling){
+      return(i);
+    }
+  }
+
+  return(-1);
 }
 
-GList*
+gint
 ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
 				    AgsRecycling *recycling)
 {
-  return(NULL);
+  gint i;
+
+  for(i = 0; recycling != NULL; i++){
+    if(AGS_RECALL_ID(recycling_container->parent)->recycling == recycling){
+      return(i);
+    }
+
+    recycling_container = AGS_RECALL_ID(recycling_container->parent)->recycling_container;
+  }
+
+  return(-1);
 }
 
 AgsRecyclingContainer*
-ags_recycling_container_new()
+ags_recycling_container_new(gint length)
 {
   AgsRecyclingContainer *recycling_container;
 

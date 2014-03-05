@@ -37,9 +37,9 @@ struct _AgsRecyclingContainer
   GObject object;
 
   AgsRecycling **recycling;
-  guint length;
+  gint length;
 
-  AgsRecyclingContainer *parent;
+  GObject *parent;
   GList *children;
 };
 
@@ -50,17 +50,19 @@ struct _AgsRecyclingContainerClass
 
 GType ags_recycling_container_get_type();
 
-void ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
-				 AgsRecycling *recycling);
-void ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
-				    AgsRecycling *recycling);
+AgsRecyclingContainer* ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
+						   AgsRecycling *recycling);
+AgsRecyclingContainer* ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
+						      AgsRecycling *recycling);
+void ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
+				    AgsRecycling *recycling,
+				    gint position);
 
-GList* ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
-				    AgsRecycling *recycling);
-GList* ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
-					   AgsRecycling *recycling);
+gint ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
+				  AgsRecycling *recycling);
+gint ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
+					 AgsRecycling *recycling);
 
-AgsRecyclingContainer* ags_recycling_container_new();
+AgsRecyclingContainer* ags_recycling_container_new(gint length);
 
 #endif /*__AGS_RECYCLING_CONTAINER_H__*/
-
