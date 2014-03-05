@@ -108,10 +108,6 @@ void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
-void ags_audio_find_group_id_from_child(AgsAudio *audio,
-					AgsChannel *input, AgsRecallID *input_recall_id, gboolean input_do_recall,
-					AgsRecallID **child_recall_id, gboolean *child_do_recall);
-
 void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 
 void ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order);
@@ -128,28 +124,21 @@ void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 
 void ags_audio_duplicate_recall(AgsAudio *audio,
 				gboolean playback, gboolean sequencer, gboolean notation,
-				AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-				AgsGroupId group_id,
-				guint audio_signal_level, gboolean called_by_output);
+				AgsRecallID *recall_id);
 void ags_audio_init_recall(AgsAudio *audio, gint stage,
-			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			   AgsGroupId group_id);
+			   AgsRecallID *recall_id);
 void ags_audio_resolve_recall(AgsAudio *audio,
-			      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			      AgsGroupId group_id);
+			      AgsRecallID *recall_id);
 
 void ags_audio_play(AgsAudio *audio,
-		    AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-		    AgsGroupId group_id,
-		    gint stage, gboolean do_recall);
+		    AgsRecallID *recall_id,
+		    gint stage);
 
 guint ags_audio_recursive_play_init(AgsAudio *audio,
 				    gboolean playback, gboolean sequencer, gboolean notation);
 
 void ags_audio_cancel(AgsAudio *audio,
-		      AgsGroupId group_id,
-		      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-		      gboolean do_recall);
+		      AgsRecallID *recall_id);
 
 void ags_audio_open_files(AgsAudio *audio,
 			  GSList *filenames,

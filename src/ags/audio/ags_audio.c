@@ -580,6 +580,8 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
       audio->flags |= AGS_AUDIO_INPUT_HAS_RECYCLING;
     }
   }
+
+  //TODO:JK: automatization of setting recycling_container root
 }
     
 
@@ -1754,21 +1756,6 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
   audio->sequence_length = sequence_length;
 }
 
-
-void
-ags_audio_find_group_id_from_child(AgsAudio *audio,
-				   AgsChannel *input, AgsRecallID *input_recall_id, gboolean input_do_recall,
-				   AgsRecallID **child_recall_id, gboolean *child_do_recall)
-{
-  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
-    (*child_recall_id) = ags_recall_id_find_parent_group_id(input->link->recall_id, input_recall_id->group_id);
-    (*child_do_recall) = TRUE;
-  }else{
-    (*child_recall_id) = ags_recall_id_find_group_id(input->link->recall_id, input_recall_id->group_id);
-    (*child_do_recall) = input_do_recall;
-  }
-}
-
 void
 ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order)
 {
@@ -1866,7 +1853,7 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
  * @notation duplicate for notation
  * @first_recycling the first #AgsRecycling the #AgsRecall\s belongs to
  * @last_recycling the last #AgsRecycling the #AgsRecall\s belongs to
- * @group_id the current #AgsGroupId
+ * @recall_id an #AgsRecallID
  * @audio_signal_level how many #AgsRecycling\s has been passed until @first_recycling and @last_recycling
  * were reached.
  * @called_by_output
@@ -1876,26 +1863,18 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
 			   gboolean playback, gboolean sequencer, gboolean notation,
-			   AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			   AgsGroupId group_id,
-			   guint audio_signal_level, gboolean called_by_output)
+			   AgsRecallID *recall_id)
 {
   AgsRecall *recall, *copy;
-  AgsRecallID *recall_id;
   AgsRunOrder *run_order;
   GList *list_recall_start, *list_recall;
   gboolean immediate_new_level;
-  AgsGroupId current_group_id;
   
   g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
-
-  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
-							 group_id,
-							 first_recycling, last_recycling);
   
   /* set run order */
-  run_order = ags_run_order_find_group_id(audio->run_order,
-					  recall_id->group_id);
+  run_order = ags_run_order_find_recycling_container(audio->run_order,
+						     recall_id->recycling_container);
 
   if(run_order == NULL){
     run_order = ags_run_order_new(recall_id);
@@ -1915,7 +1894,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     run_order->flags |= AGS_RUN_ORDER_DUPLICATE_DONE;
   }else{
     /* notify run */
-    while((list_recall = ags_recall_find_group_id(list_recall, recall_id->group_id)) != NULL){
+    while((list_recall = ags_recall_find_recycling_container(list_recall, recall_id->recycling_container)) != NULL){
       recall = AGS_RECALL(list_recall->data);
     
       /* notify run */
@@ -1990,23 +1969,17 @@ ags_audio_duplicate_recall(AgsAudio *audio,
  * AgsRecall related
  */
 void ags_audio_resolve_recall(AgsAudio *audio,
-			      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			      AgsGroupId group_id)
+			      AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsRecallID *recall_id;
   AgsRunOrder *run_order;
-  GList *list_recall;
-  
-  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
-							 group_id,
-							 first_recycling, last_recycling);
+  GList *list_recall;  
 
   if(recall_id == NULL)
     g_message("group_id = %llu\n\0", (long long unsigned int) group_id);
 
-  run_order = ags_run_order_find_group_id(audio->run_order,
-					  recall_id->group_id);
+  run_order = ags_run_order_find_recycling_container(audio->run_order,
+						     recall_id->recycling_container);
 
   if((AGS_RUN_ORDER_RESOLVE_DONE & (run_order->flags)) == 0){
     run_order->flags |= AGS_RUN_ORDER_RESOLVE_DONE;
@@ -2050,19 +2023,14 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 void
 ags_audio_init_recall(AgsAudio *audio, gint stage,
 		      AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-		      AgsGroupId group_id)
+		      AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsRecallID *recall_id;
   AgsRunOrder *run_order;
   GList *list_recall;
   
-  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
-							 group_id,
-							 first_recycling, last_recycling);
-
-  run_order = ags_run_order_find_group_id(audio->run_order,
-					  recall_id->group_id);
+  run_order = ags_run_order_find_recycling_container(audio->run_order,
+						     recall_id->group_id);
 
   switch(stage){
   case 0:
@@ -2124,21 +2092,14 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 
 void
 ags_audio_play(AgsAudio *audio,
-	       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-	       AgsGroupId group_id,
-	       gint stage, gboolean do_recall)
+	       AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsRecallID *recall_id;
   AgsRunOrder *run_order;
   GList *list, *list_next;
 
-  recall_id = ags_recall_id_find_group_id_with_recycling(audio->recall_id,
-							 group_id,
-							 first_recycling, last_recycling);
-
-  run_order = ags_run_order_find_group_id(audio->run_order,
-					  recall_id->group_id);
+  run_order = ags_run_order_find_recycling_container(audio->run_order,
+						     recall_id->recycling_container);
 
   if(do_recall)
     list = audio->recall;
@@ -2179,12 +2140,8 @@ ags_audio_recursive_play_init(AgsAudio *audio,
 			      gboolean playback, gboolean sequencer, gboolean notation)
 {
   AgsChannel *channel;
-  AgsGroupId group_id, child_group_id;
   gint stage;
   gboolean arrange_group_id, duplicate_templates, resolve_dependencies;
-
-  group_id = ags_recall_id_generate_group_id();
-  child_group_id = ags_recall_id_generate_group_id();
 
   for(stage = 0; stage < 3; stage++){
     channel = audio->output;
@@ -2204,7 +2161,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
 				      arrange_group_id, duplicate_templates,
 				      playback, sequencer, notation,
 				      resolve_dependencies,
-				      group_id, child_group_id,
+				      NULL,
 				      0);
 
       channel = channel->next;
@@ -2219,9 +2176,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
  */
 void
 ags_audio_cancel(AgsAudio *audio,
-		 AgsGroupId group_id,
-		 AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-		 gboolean do_recall)
+		 AgsRecallID *recall_id)
 {
   AgsRecall *recall;
   GList *list, *list_next;

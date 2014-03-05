@@ -76,9 +76,9 @@ struct _AgsChannel
 
   gpointer devout_play;
 
+  GObject *recycling_container_root;
   GList *recall_id; // there may be several recall's running
   GList *container;
-  //  GList *play_container;
 
   GList *recall;
   GList *play;
@@ -140,43 +140,37 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
+GObject* ags_channel_find_recycling_container_root(AgsChannel *channel);
+GObject* ags_channel_find_recycling_container(AgsChannel *channel);
+
 void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 					  guint size);
 
-void ags_channel_find_input_recall_id(AgsChannel *input,
-				      AgsGroupId group_id,
-				      gboolean find_parent_group_id,
-				      AgsRecallID **input_recall_id);
-void ags_channel_recall_id_set(AgsChannel *output, AgsGroupId group_id, gboolean ommit_own_channel,
-			       guint mode, ...);
-
 void ags_channel_resolve_recall(AgsChannel *channel,
-				AgsGroupId group_id);
+				AgsRecallID *recall_id);
 
 void ags_channel_play(AgsChannel *channel,
 		      AgsRecallID *recall_id, gint stage,
 		      gboolean do_recall);
 void ags_channel_recursive_play_threaded(AgsChannel *channel,
-					 AgsGroupId group_id, gint stage);
+					 AgsRecallID *recall_id, gint stage);
 void ags_channel_recursive_play(AgsChannel *channel,
-				AgsGroupId group_id, gint stage);
+				AgsRecallID *recall_id, gint stage);
 void ags_channel_duplicate_recall(AgsChannel *channel,
 				  gboolean playback, gboolean sequencer, gboolean notation,
-				  AgsGroupId group_id,
-				  guint audio_signal_level);
+				  AgsRecallID *recall_id);
 void ags_channel_init_recall(AgsChannel *channel, gint stage,
-			     AgsGroupId group_id);
+			     AgsRecallID *recall_id);
 void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-				     gboolean arrange_group_id, gboolean duplicate_templates,
+				     gboolean arrange_recall_id, gboolean duplicate_templates,
 				     gboolean playback, gboolean sequencer, gboolean notation,
 				     gboolean resolve_dependencies,
-				     AgsGroupId group_id, AgsGroupId child_group_id,
-				     guint audio_signal_level);
+				     AgsRecallID *recall_id);
 
-void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id, gboolean do_recall);
-void ags_channel_recursive_cancel(AgsChannel *channel, AgsGroupId group_id);
+void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id);
+void ags_channel_recursive_cancel(AgsChannel *channel, AgsRecallID *recall_id);
 
-void ags_channel_recursive_reset_group_ids(AgsChannel *channel, AgsChannel *link,
+void ags_channel_recursive_reset_recall_id(AgsChannel *channel, AgsChannel *link,
 					   AgsChannel *old_channel_link, AgsChannel *old_link_link);
 
 AgsChannel* ags_channel_new(GObject *audio);
