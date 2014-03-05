@@ -1426,12 +1426,12 @@ ags_recall_remove(AgsRecall *recall)
 /**
  * ags_recall_is_done:
  * @recall an #AgsRecall
- * @group_id an #AgsGroupId
+ * @recycling_container an #AgsRecyclingContainer
  *
  * Check if recall is over.
  */
 gboolean
-ags_recall_is_done(GList *recalls, AgsGroupId group_id)
+ags_recall_is_done(GList *recalls, GObject *recycling_container)
 {
   AgsRecall *recall;
 
@@ -1439,7 +1439,7 @@ ags_recall_is_done(GList *recalls, AgsGroupId group_id)
     recall = AGS_RECALL(recalls->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0)
-      if(recall->recall_id != NULL && recall->recall_id->group_id != group_id && (AGS_RECALL_DONE & (recall->flags)) == 0)
+      if(recall->recall_id != NULL && recall->recall_id->recycling_container != recycling_container && (AGS_RECALL_DONE & (recall->flags)) == 0)
 	return(FALSE);
 
     recalls = recalls->next;
@@ -1731,7 +1731,7 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
     
     if(((recall_id != NULL &&
 	 recall->recall_id != NULL &&
-	 recall_id->group_id == recall->recall_id->group_id) ||
+	 recall_id->recycling_container == recall->recall_id->recycling_container) ||
 	(recall_id == NULL &&
 	 recall->recall_id == NULL)) &&
 	!g_strcmp0(G_OBJECT_TYPE_NAME(G_OBJECT(recall)), effect))
@@ -1822,17 +1822,17 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 }
 
 /**
- * ags_recall_find_type_with_group_id:
+ * ags_recall_find_type_with_recycling_container:
  * @recall_i a #GList containing recalls
  * @type a #GType
- * @group_id an #AgsGroupId
+ * @recycling_container an #AgsRecyclingContainer
  * Returns: a #GList containing recalls, or #NULL if not found
  * 
- * Finds next matching recall for type which has @group_id, see #AgsRecallId for further
- * details about #AgsGroupId. Intended to be used as iteration function.
+ * Finds next matching recall for type which has @recycling_container, see #AgsRecallId for further
+ * details about #AgsRecyclingContainer. Intended to be used as iteration function.
  */
 GList*
-ags_recall_find_type_with_group_id(GList *recall_i, GType type, AgsGroupId group_id)
+ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObject *recycling_container)
 {
   AgsRecall *recall;
 
@@ -1841,7 +1841,7 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, AgsGroupId group
 
     if(G_OBJECT_TYPE(recall) == type &&
        recall->recall_id != NULL &&
-       recall->recall_id->group_id == group_id)
+       recall->recall_id->recycling_container == recycling_container)
       return(recall_i);
 
     recall_i = recall_i->next;
@@ -1851,30 +1851,30 @@ ags_recall_find_type_with_group_id(GList *recall_i, GType type, AgsGroupId group
 }
 
 /**
- * ags_recall_find_group_id:
+ * ags_recall_find_recycling_container:
  * @recall_i a #GList containing recalls
  * @type a #GType
- * @group_id an #AgsGroupId
+ * @recycling_container an #AgsRecyclingContainer
  * Returns: a #GList containing recalls, or #NULL if not found
  * 
- * Finds next matching recall which has @group_id, see #AgsRecallId for further
- * details about #AgsGroupId. Intended to be used as iteration function.
+ * Finds next matching recall which has @recycling_container, see #AgsRecallId for further
+ * details about #AgsRecyclingContainer. Intended to be used as iteration function.
  */
 GList*
-ags_recall_find_group_id(GList *recall_i, AgsGroupId group_id)
+ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_container)
 {
   AgsRecall *recall;
 
-  g_message("ags_recall_find_group_id: group_id = %lu\n\0", group_id);
+  g_message("ags_recall_find_recycling_container: recycling_container = %llx\n\0", recycling_container);
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
     if(recall->recall_id != NULL)
-      g_message("ags_recall_find_group_id: recall_id->group_id = %llu\n\0", (long long unsigned int) recall->recall_id->group_id);
+      g_message("ags_recall_find_recycling_container: recall_id->recycling_contianer = %llx\n\0", (long long unsigned int) recall->recall_id->recycling_container);
 
     if(recall->recall_id != NULL &&
-       recall->recall_id->group_id == group_id){
+       recall->recall_id->recycling_container == recycling_container){
 	return(recall_i);
     }
 
@@ -1972,13 +1972,13 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
  * ags_recall_find_type:
  * @recall_i a #GList containing recalls
  * @provider a #GObject
- * @group_id an #AgsGroupId
+ * @recycling_container an #AgsRecyclingContainer
  * Returns: a #GList containing recalls, or #NULL if not found
  * 
- * Like ags_recall_find_provider() but given additionally @group_id as search parameter.
+ * Like ags_recall_find_provider() but given additionally @recycling_container as search parameter.
  */
 GList*
-ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, AgsGroupId group_id)
+ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *provider, GObject *recycling_container)
 {
   AgsRecall *recall;
 
@@ -1986,7 +1986,7 @@ ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, AgsGr
     recall = AGS_RECALL(recall_i->data);
     
     if(recall->recall_id != NULL &&
-       recall->recall_id->group_id == group_id){
+       recall->recall_id->recycling_container == recycling_container){
       return(recall_i);
     }
 
@@ -1994,12 +1994,6 @@ ags_recall_find_provider_with_group_id(GList *recall_i, GObject *provider, AgsGr
   }
 
   return(NULL);
-}
-
-GList*
-ags_recall_find_parent_group_id_output_orientated(GList *recall, AgsGroupId parent_group_id)
-{
-  //TODO:JK: implement me
 }
 
 void
@@ -2044,49 +2038,6 @@ ags_recall_remove_handler(AgsRecall *recall,
 {
   recall->handlers = g_list_remove(recall->handlers,
 				   recall_handler);
-}
-
-/**
- * ags_recall_get_appropriate_group_id:
- * @recall the recall to check against
- * @audio the AgsAudio @recall belongs to
- * @recall_id the standard #AgsRecallId
- * @called_by_output
- * Returns: an AgsGroupId
- *
- * Retrieve the appropriate #AgsGroupId for an #AgsRecall.
- */
-AgsGroupId
-ags_recall_get_appropriate_group_id(AgsRecall *recall,
-				    GObject *audio,
-				    AgsRecallID *recall_id,
-				    gboolean called_by_output)
-{
-  AgsGroupId current_group_id;
-
-  if(called_by_output){
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
-      if((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0){
-	current_group_id = recall_id->group_id;
-      }else{
-	current_group_id = recall_id->child_group_id;
-      }
-    }else{
-      current_group_id = recall_id->group_id;
-    }
-  }else{
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
-      if((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0){
-	current_group_id = recall_id->group_id;
-      }else{
-	current_group_id = recall_id->parent_group_id;
-      }
-    }else{
-      current_group_id = recall_id->group_id;
-    }
-  }
-
-  return(current_group_id);
 }
 
 AgsRecall*

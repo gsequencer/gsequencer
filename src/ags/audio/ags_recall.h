@@ -166,7 +166,7 @@ void ags_recall_done(AgsRecall *recall);
 void ags_recall_cancel(AgsRecall *recall);
 void ags_recall_remove(AgsRecall *recall);
 
-gboolean ags_recall_is_done(GList *recalls, AgsGroupId group_id);
+gboolean ags_recall_is_done(GList *recalls, GObject *recycling_container);
 
 AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 				AgsRecallID *recall_id);
@@ -189,12 +189,11 @@ GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effe
 GList* ags_recall_find_type(GList *recall, GType type);
 GList* ags_recall_find_template(GList *recall);
 GList* ags_recall_template_find_type(GList *recall, GType type);
-GList* ags_recall_find_type_with_group_id(GList *recall, GType type, AgsGroupId group_id);
-GList* ags_recall_find_group_id(GList *recall, AgsGroupId group_id);
+GList* ags_recall_find_type_with_recycling_container(GList *recall, GType type, GObject *recycling_container);
+GList* ags_recall_find_recycling_container(GList *recall, GObject *recycling_container);
 GList* ags_recall_find_provider(GList *recall, GObject *provider);
 GList* ags_recall_template_find_provider(GList *recall, GObject *provider);
-GList* ags_recall_find_provider_with_group_id(GList *recall, GObject *provider, AgsGroupId group_id);
-GList* ags_recall_find_parent_group_id_output_orientated(GList *recall, AgsGroupId parent_group_id);
+GList* ags_recall_find_provider_with_recycling_container(GList *recall, GObject *provider, GObject *recycling_container);
 
 void ags_recall_run_init(AgsRecall *recall, guint stage);
 
@@ -206,12 +205,6 @@ void ags_recall_add_handler(AgsRecall *recall,
 			    AgsRecallHandler *recall_handler);
 void ags_recall_remove_handler(AgsRecall *recall,
 			       AgsRecallHandler *recall_handler);
-
-
-AgsGroupId ags_recall_get_appropriate_group_id(AgsRecall *recall,
-					       GObject *audio,
-					       AgsRecallID *recall_id,
-					       gboolean called_by_output);
 
 AgsRecall* ags_recall_new();
 
