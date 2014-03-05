@@ -50,13 +50,17 @@ struct _AgsRecyclingContainerClass
 
 GType ags_recycling_container_get_type();
 
+void ags_recycling_container_replace(AgsRecyclingContainer *recycling_container,
+				     AgsRecycling *recycling,
+				     gint position);
+
 AgsRecyclingContainer* ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
 						   AgsRecycling *recycling);
 AgsRecyclingContainer* ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
 						      AgsRecycling *recycling);
-void ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
-				    AgsRecycling *recycling,
-				    gint position);
+AgsRecyclingContainer* ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
+						      AgsRecycling *recycling,
+						      gint position);
 
 gint ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 				  AgsRecycling *recycling);

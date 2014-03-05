@@ -78,28 +78,78 @@ ags_recycling_container_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recycling_container_parent_class)->finalize(gobject);
 }
 
-AgsRecyclingContainer*
-ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
-			    AgsRecycling *recycling)
-{
-}
-
-AgsRecyclingContainer*
-ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
-			       AgsRecycling *recycling)
-{
-}
-
 void
-ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
-			       AgsRecycling *recycling,
-			       gint position)
+ags_recycling_container_replace(AgsRecyclingContainer *recycling_container,
+				AgsRecycling *recycling,
+				gint position)
 {
   if(recycling_container == NULL){
     return;
   }
 
   recycling_container->recycling[position] = recycling;
+}
+
+AgsRecyclingContainer*
+ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
+			    AgsRecycling *recycling)
+{
+  AgsRecyclingContainer *new_recyclingcontainer;
+  gint new_length;
+
+  new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+								   NULL);
+
+  new_length = recycling_container->length + 1;
+
+  new_recycling_container->recycling = (AgsRecycling **) malloc(new_length * sizeof(AgsRecycling *));
+
+  memcpy(new_recycling_container->recycling, recycling_container->recycling, new_length * sizeof(AgsRecycling *));
+  new_recycling_container->recycling[new_length] = recycling;
+
+  return(new_recycling_container);
+}
+
+AgsRecyclingContainer*
+ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
+			       AgsRecycling *recycling)
+{
+  AgsRecyclingContainer *new_recyclingcontainer;
+  gint new_length;
+
+  new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+								   NULL);
+
+  new_length = recycling_container->length - 1;
+
+  new_recycling_container->recycling = (AgsRecycling **) malloc(new_length * sizeof(AgsRecycling *));
+
+  memcpy(new_recycling_container->recycling, recycling_container->recycling, (new_length - position) * sizeof(AgsRecycling *));
+  memcpy(&(new_recycling_container->recycling[position + 1]), recycling_container->recycling, (-1 * (position - new_length)) * sizeof(AgsRecycling *));
+
+  return(new_recycling_container);
+}
+
+AgsRecyclingContainer*
+ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
+			       AgsRecycling *recycling,
+			       gint position)
+{
+  AgsRecyclingContainer *new_recyclingcontainer;
+  gint new_length;
+
+  new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+								   NULL);
+
+  new_length = recycling_container->length + 1;
+
+  new_recycling_container->recycling = (AgsRecycling **) malloc(new_length * sizeof(AgsRecycling *));
+
+  memcpy(new_recycling_container->recycling, recycling_container->recycling, (new_length - position) * sizeof(AgsRecycling *));
+  new_recycling_container->recycling[position] = recycling;
+  memcpy(&(new_recycling_container->recycling[position + 1]), recycling_container->recycling, (-1 * (position - new_length)) * sizeof(AgsRecycling *));
+
+  return(new_recycling_container);
 }
 
 gint
@@ -138,8 +188,16 @@ AgsRecyclingContainer*
 ags_recycling_container_new(gint length)
 {
   AgsRecyclingContainer *recycling_container;
+  gint i;
 
-  recycling_container = NULL;
+  recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+				     NULL);
+
+  recycling_container->recycling = (AgsRecycling **) malloc(length * sizeof(AgsRecycling *));
+
+  for(i = 0; i < length; i++){
+    recycling_container->recycling = NULL;
+  }
 
   return(recycling_container);
 }
