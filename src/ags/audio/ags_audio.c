@@ -1882,7 +1882,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   }
 
   /*  */
-  if(recall_id->parent_group_id == 0)
+  if(recall_id->parent == NULL)
     list_recall_start = 
       list_recall = audio->play;
   else
@@ -1951,7 +1951,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       }
 
       /* append to AgsAudio */
-      if(recall_id->parent_group_id == 0)
+      if(recall_id->parent == NULL)
 	audio->play = g_list_append(audio->play, copy);
       else
 	audio->recall = g_list_append(audio->recall, copy);
@@ -1976,7 +1976,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   GList *list_recall;  
 
   if(recall_id == NULL)
-    g_message("group_id = %llu\n\0", (long long unsigned int) group_id);
+    g_message("recall_id = NULL\0");
 
   run_order = ags_run_order_find_recycling_container(audio->run_order,
 						     recall_id->recycling_container);
@@ -1988,7 +1988,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   }
     
   /* get the appropriate lists */
-  if(recall_id->parent_group_id == 0){
+  if(recall_id->parent == NULL){
     list_recall = audio->play;
 
     if((AGS_RECALL_ID_AUDIO_RESOLVED_PLAY & (recall_id->flags)) != 0){
@@ -2006,7 +2006,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
     }
   }
   
-  while((list_recall = ags_recall_find_group_id(list_recall, group_id)) != NULL){
+  while((list_recall = ags_recall_find_recall_id(list_recall, recall_id)) != NULL){
     recall = AGS_RECALL(list_recall->data);
     
     ags_recall_resolve_dependencies(recall);
@@ -2030,7 +2030,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
   GList *list_recall;
   
   run_order = ags_run_order_find_recycling_container(audio->run_order,
-						     recall_id->group_id);
+						     recall_id->recycling_container);
 
   switch(stage){
   case 0:
@@ -2056,7 +2056,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
     break;
   }
 
-  if(recall_id->parent_group_id == 0)
+  if(recall_id->parent == NULL)
     list_recall = audio->play;
   else
     list_recall = audio->recall;
@@ -2113,7 +2113,7 @@ ags_audio_play(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       (recall->recall_id->group_id != recall_id->group_id)){
+       (recall->recall_id->recycling_container != recall_id->recycling_container)){
       list = list_next;
 
       continue;
@@ -2135,30 +2135,30 @@ ags_audio_play(AgsAudio *audio,
 /*
  * AgsRecall related
  */
-guint
+AgsRecallID*
 ags_audio_recursive_play_init(AgsAudio *audio,
 			      gboolean playback, gboolean sequencer, gboolean notation)
 {
   AgsChannel *channel;
   gint stage;
-  gboolean arrange_group_id, duplicate_templates, resolve_dependencies;
+  gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
 
   for(stage = 0; stage < 3; stage++){
     channel = audio->output;
 
     if(stage == 0){
-      arrange_group_id = TRUE;
+      arrange_recall_id = TRUE;
       duplicate_templates = TRUE;
       resolve_dependencies = TRUE;
     }else{
-      arrange_group_id = FALSE;
+      arrange_recall_id = FALSE;
       duplicate_templates = FALSE;
       resolve_dependencies = FALSE;
     }
 
     while(channel != NULL){
       ags_channel_recursive_play_init(channel, stage,
-				      arrange_group_id, duplicate_templates,
+				      arrange_recall_id, duplicate_templates,
 				      playback, sequencer, notation,
 				      resolve_dependencies,
 				      NULL,
@@ -2168,7 +2168,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
     }
   }
 
-  return(group_id);
+  return(recall_id);
 }
 
 /*
@@ -2193,7 +2193,7 @@ ags_audio_cancel(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
        recall->recall_id == NULL ||
-       recall->recall_id->group_id != group_id ||
+       recall->recall_id->recycling_container != recall_id->recycling_container ||
        !(recall->recall_id->first_recycling != first_recycling && recall->recall_id->last_recycling != last_recycling)){
       list = list_next;
 

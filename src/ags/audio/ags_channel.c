@@ -916,7 +916,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     }
   }
 
-  /* reset group_id */
+  /* reset recall_id */
   ags_channel_recursive_reset_recall_ids(input, output,
 					 input_link, output_link);
 }
@@ -1488,22 +1488,19 @@ ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 
 void
 ags_channel_resolve_recall(AgsChannel *channel,
-			   AgsGroupId group_id)
+			   AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsRecallID *recall_id;
   GList *list_recall;
 
-  recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
-  
   /* get the appropriate lists */
-  if(recall_id->parent_group_id == 0){
+  if(recall_id->parent == NULL){
     list_recall = channel->play;
   }else{
     list_recall = channel->recall;
   }
   
-  while((list_recall = ags_recall_find_group_id(list_recall, group_id)) != NULL){
+  while((list_recall = ags_recall_find_recall_id(list_recall, recall_id)) != NULL){
     recall = AGS_RECALL(list_recall->data);
 
     ags_recall_resolve_dependencies(recall);
@@ -1530,7 +1527,7 @@ ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboole
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       recall->recall_id->group_id != recall_id->group_id){
+       recall->recall_id->recycling_container != recall_id->recycling_container){
       list = list_next;
 
       continue;
@@ -1552,22 +1549,20 @@ ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboole
 /**
  * ags_channel_recursive_play_threaded:
  * @channel
- * @group_id
+ * @recall_id
  * @stage
  *
  *
  */
 void
 ags_channel_recursive_play_threaded(AgsChannel *channel,
-				    AgsGroupId group_id, gint stage)
+				    AgsRecallID *recall_id, gint stage)
 {
-  AgsRecallID *recall_id;
-
   auto void ags_channel_recursive_play_input_sync_threaded(AgsChannel *input, AgsRecallID *input_recall_id,
 							   gboolean do_recall);
   auto void ags_channel_recursive_play_input_async_threaded(AgsChannel *input,
-							    AgsGroupId output_group_id,
-							    gboolean do_recall, gboolean input_has_new_group_id);
+							    AgsRecallID output_recall_id,
+							    gboolean do_recall, gboolean input_has_new_recycling);
   auto void ags_channel_recursive_play_output_threaded(AgsChannel *output, AgsRecallID *output_recall_id,
 						       gboolean do_recall);
   auto void ags_channel_recursive_play_up_threaded(AgsChannel *channel, AgsRecallID *recall_id);
@@ -1582,11 +1577,27 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 
     /* check if we go down */
     if(input->link != NULL){
+      gint child_position;
+
       /* check if there is a new group_id */
-      ags_audio_find_group_id_from_child(audio,
-					 input, input_recall_id, do_recall,
-					 &child_recall_id, &child_do_recall);
+      child_position = ags_recycling_container_find_child(input_recall_id->recycling_container,
+							  input->first_recycling);
       
+      if(child_position == -1){
+	child_recall_id = input_recall_id;
+      }else{
+	GList *list;
+
+	list = g_list_nth(input_recall_id->children,
+			  child_position);
+
+	if(list != NULL){
+	  child_recall_id = AGS_RECYCLING_CONTAINER(list->data)->recall_id;
+	}else{
+	  child_recall_id = NULL;
+	}
+      }
+
       /* go down */
       ags_channel_recursive_play_output_threaded(input->link, child_recall_id,
 						 child_do_recall);

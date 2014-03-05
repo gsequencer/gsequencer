@@ -65,6 +65,8 @@ ags_recycling_container_class_init(AgsRecyclingContainerClass *recycling_contain
 void
 ags_recycling_container_init(AgsRecyclingContainer *recycling_container)
 {
+  recycling_container->recall_id = NULL;
+
   recycling_container->recycling = NULL;
   recycling_container->length = 0;
 
@@ -162,6 +164,27 @@ ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
     if(recycling_container->recycling == recycling){
       return(i);
     }
+  }
+
+  return(-1);
+}
+
+gint
+ags_recycling_container_find_child(AgsRecyclingContainer *recycling_container,
+				   AgsRecycling *recycling)
+{
+  GList *child;
+  gint i;
+
+  child = recycling_container->children;
+
+  for(i = 0; child != NULL; i++){
+    if(ags_recycling_container_find(AGS_RECYCLING_CONTAINER(child->data),
+				    recycling) != -1){
+      return(i);
+    }
+
+    child = child->next;
   }
 
   return(-1);

@@ -36,6 +36,8 @@ struct _AgsRecyclingContainer
 {
   GObject object;
 
+  GObject *recall_id;
+
   AgsRecycling **recycling;
   gint length;
 
@@ -64,6 +66,8 @@ AgsRecyclingContainer* ags_recycling_container_insert(AgsRecyclingContainer *rec
 
 gint ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 				  AgsRecycling *recycling);
+gint ags_recycling_container_find_child(AgsRecyclingContainer *recycling_container,
+					AgsRecycling *recycling);
 gint ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
 					 AgsRecycling *recycling);
 
