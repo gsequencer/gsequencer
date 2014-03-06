@@ -38,7 +38,7 @@ void ags_run_order_changed_output(AgsRunOrder *run_order,
 void ags_run_order_changed_input(AgsRunOrder *run_order,
 				 AgsChannel *input,
 				 guint new_position, guint old_position,
-				 AgsGroupId group_id, gboolean do_play);
+				 AgsRecyclingID *recall_id);
 
 enum{
   PROP_0,
@@ -189,7 +189,7 @@ void
 ags_run_order_changed_input(AgsRunOrder *run_order,
 			    AgsChannel *input,
 			    guint new_position, guint old_position,
-			    AgsGroupId group_id, gboolean do_play)
+			    AgsRecallID *recall_id)
 {
   GList *list;
 
@@ -202,7 +202,7 @@ ags_run_order_changed_input(AgsRunOrder *run_order,
   while(list != NULL){
     if(AGS_IS_RECALL_CHANNEL_RUN(list->data) &&
        AGS_RECALL(list->data)->recall_id != NULL &&
-       AGS_RECALL(list->data)->recall_id->group_id == group_id &&
+       AGS_RECALL(list->data)->recall_id->recycling_container == recall_id->recycling_container &&
        AGS_RECALL_CHANNEL_RUN(list->data)->run_order == old_position){
       //      g_message("ags_run_order_changed_input\n\0");
       ags_recall_channel_run_run_order_changed(AGS_RECALL_CHANNEL_RUN(list->data),
@@ -221,18 +221,27 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
   AgsAudio *audio;
   AgsChannel *input;
   GList *list;
-  AgsGroupId output_group_id, input_group_id;
+  AgsGroupId output_recall_id, input_recall_id;
   gboolean output_do_play, input_do_play;
 
   audio = AGS_AUDIO(output->audio);
 
   /* get some parameters */
-  output_group_id = run_order->recall_id->group_id;
+  output_recall_id = run_order->recall_id;
 
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
-    input_group_id = run_order->recall_id->group_id;
+    input_recall_id = output_recall_id;
   }else{
-    input_group_id = run_order->recall_id->child_group_id;
+    gint position;
+
+    position = ags_recycling_container_find_child(run_order->recall_id->recycling_container,
+						  audio->input->first_recycling);
+
+    if(position != -1){
+      input_recall_id = run_order->recall_id->recycling_container;
+    }else{
+      input_recall_id = NULL;
+    }
   }
 
   /* choose appropriate list */
@@ -266,7 +275,7 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
     ags_run_order_changed_input(run_order,
 				input,
 				new_position, old_position,
-				input_group_id, input_do_play);
+				input_recall_id);
   }
 
   /* set output */
@@ -358,10 +367,10 @@ ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel)
 }
 
 AgsRunOrder*
-ags_run_order_find_group_id(GList *run_order_i, AgsGroupId group_id)
+ags_run_order_find_recall_id(GList *run_order_i, AgsRecallID *recall_id)
 {
   while(run_order_i != NULL){
-    if(AGS_RUN_ORDER(run_order_i->data)->recall_id->group_id == group_id){
+    if(AGS_RUN_ORDER(run_order_i->data)->recall_id == recall_id){
       return(AGS_RUN_ORDER(run_order_i->data));
     }
 

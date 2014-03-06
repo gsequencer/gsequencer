@@ -53,6 +53,9 @@ gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
 void ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage);
 void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
 
+AgsRecallID* ags_recall_id_find_recycling_container(GList *recall_id_list,
+						    AgsRecyclingContainer *recycling_container);
+
 GList* ags_recall_id_append(GList *recall_id_list,
 			    AgsRecallID *recall_id);
 

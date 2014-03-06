@@ -1510,12 +1510,14 @@ ags_channel_resolve_recall(AgsChannel *channel,
 }
 
 void
-ags_channel_play(AgsChannel *channel, AgsRecallID *recall_id, gint stage, gboolean do_recall)
+ags_channel_play(AgsChannel *channel,
+		 AgsRecallID *recall_id,
+		 gint stage)
 {
   AgsRecall *recall;
   GList *list, *list_next;
   
-  if(do_recall)
+  if(recall_id->recycling_container->parent != NULL)
     list = channel->recall;
   else
     list = channel->play;
@@ -1899,7 +1901,6 @@ ags_channel_recursive_play(AgsChannel *channel,
   void ags_channel_recursive_play_input_sync(AgsChannel *input, AgsRecallID *input_recall_id){
     AgsAudio *audio;
     AgsRecallID *child_recall_id;
-    gboolean child_do_recall;
 
     if(input == NULL){
       return;
@@ -1931,11 +1932,14 @@ ags_channel_recursive_play(AgsChannel *channel,
       }
       
       /* go down */
-      ags_channel_recursive_play_output(input->link, child_recall_id);
+      ags_channel_recursive_play_output(input->link,
+					child_recall_id);
     }
       
     /* call input */
-    ags_channel_play(input, input_recall_id, stage);
+    ags_channel_play(input,
+		     input_recall_id,
+		     stage);
   }
   void ags_channel_recursive_play_input_async(AgsChannel *input,
 					      AgsRecallID *output_recall_id){
@@ -1969,7 +1973,8 @@ ags_channel_recursive_play(AgsChannel *channel,
       }
 
       /* go down */	
-      ags_channel_recursive_play_input_sync(input, input_recall_id);
+      ags_channel_recursive_play_input_sync(input,
+					    input_recall_id);
 
       /* iterate */
       input = input->next_pad;
@@ -2048,8 +2053,8 @@ ags_channel_recursive_play(AgsChannel *channel,
 	
 	input = ags_channel_nth(audio->input, output->line);
 		  
-	ags_channel_recursive_play_input_sync(input, input_recall_id,
-					      input_do_recall);
+	ags_channel_recursive_play_input_sync(input,
+					      input_recall_id);
 
 	/* call audio */
 	if(input_recall_id->recycling_container != output_recall_id->recycling_container){
@@ -2094,7 +2099,9 @@ ags_channel_recursive_play(AgsChannel *channel,
     }
     
     /* call output */
-    ags_channel_play(output, output_recall_id, stage, do_recall);
+    ags_channel_play(output,
+		     output_recall_id,
+		     stage);
   }
   void ags_channel_recursive_play_up(AgsChannel *channel, AgsRecallID *recall_id){
     AgsAudio *audio;
@@ -2172,8 +2179,7 @@ ags_channel_recursive_play(AgsChannel *channel,
  * @playback if a #AgsRecall that is dedicated to a playback should be duplicated
  * @sequencer if a #AgsRecall that is dedicated to a sequencer should be duplicated
  * @notation if a #AgsRecall that is dedicated to a notation should be duplicated
- * @group_id the #AgsGroupID the newly allocated #AgsRecall objects belongs to
- * @audio_signal_level how many parental #AgsAudioSignal this @group_id has
+ * @recall_id the #AgsRecallID the newly allocated #AgsRecall objects belongs to
  *
  * Duplicate #AgsRecall templates for use with ags_channel_recursive_play(),
  * but ags_channel_recursive_play_init() may call this function for you.
@@ -2181,21 +2187,16 @@ ags_channel_recursive_play(AgsChannel *channel,
 void
 ags_channel_duplicate_recall(AgsChannel *channel,
 			     gboolean playback, gboolean sequencer, gboolean notation,
-			     AgsGroupId group_id,
-			     guint audio_signal_level)
+			     AgsRecallID *recall_id)
 {
   AgsAudio *audio;
-  AgsRecall *copy;
+  AgsRecall *recall, *copy;
   AgsRunOrder *run_order;
-  AgsRecallID *recall_id;
-  AgsRecall *recall;
   GList *list_recall;
   gboolean immediate_new_level;
   
-  recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
-  
   /* get the appropriate lists */
-  if(recall_id->parent_group_id == 0){
+  if(recall_id->recycling_container->parent == NULL){
     list_recall = channel->play;
   }else{
     list_recall = channel->recall;
@@ -2208,14 +2209,14 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     immediate_new_level = FALSE;
 
     /* run order */
-    run_order = ags_run_order_find_group_id(audio->run_order,
-					    recall_id->group_id);
+    run_order = ags_run_order_find_recall_id(audio->run_order,
+					     recall_id);
 
     if(run_order == NULL){
       AgsRecallID *audio_recall_id;
 
-      audio_recall_id = ags_recall_id_find_group_id(audio->recall_id,
-						    recall_id->group_id);
+      audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
+							       recall_id->recycling_container);
   
       run_order = ags_run_order_new(audio_recall_id);
       ags_audio_add_run_order(audio, run_order);

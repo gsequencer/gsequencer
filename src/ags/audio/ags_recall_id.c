@@ -208,6 +208,25 @@ ags_recall_id_add(GList *recall_id_list,
 }
 
 AgsRecallID*
+ags_recall_id_find_recycling_container(GList *recall_id_list,
+				       AgsRecyclingContainer *recycling_container)
+{
+  AgsRecallID *recall_id;
+
+  while(recall_id_list != NULL){
+    recall_id = AGS_RECALL_ID(recall_id_list->data);
+
+    if(recall_id->recycling_container == recycling_container){
+      return(recall_id);
+    }
+
+    recall_id_list = recall_id_list->next;
+  }
+
+  return(recall_id);
+}
+
+AgsRecallID*
 ags_recall_id_new(AgsRecycling *recycling)
 {
   AgsRecallID *recall_id;
