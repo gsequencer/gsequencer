@@ -26,13 +26,25 @@
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
 void ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_id_init(AgsRecallID *recall_id);
+void ags_recall_id_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_recall_id_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_recall_id_connect(AgsConnectable *connectable);
 void ags_recall_id_disconnect(AgsConnectable *connectable);
 void ags_recall_id_finalize(GObject *gobject);
 
-static gpointer ags_recall_id_parent_class = NULL;
+enum{
+  PROP_0,
+  PROP_RECYCLING,
+  PROP_RECYCLING_CONTAINER,
+};
 
-static guint ags_recall_id_counter = 1;
+static gpointer ags_recall_id_parent_class = NULL;
 
 GType
 ags_recall_id_get_type(void)
@@ -75,11 +87,36 @@ void
 ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_recall_id_parent_class = g_type_class_peek_parent(recall_id);
 
+  /* GObjectClass */
   gobject = (GObjectClass *) recall_id;
+
+  gobject->set_property = ags_recall_id_set_property;
+  gobject->get_property = ags_recall_id_get_property;
+
   gobject->finalize = ags_recall_id_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("recycling\0",
+				   "assigned recycling\0",
+				   "The recycling it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recycling_container\0",
+				   "assigned recycling container\0",
+				   "The recycling container it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING_CONTAINER,
+				  param_spec);
 }
 
 void
@@ -96,6 +133,86 @@ ags_recall_id_init(AgsRecallID *recall_id)
 
   recall_id->recycling = NULL;
   recall_id->recycling_container = NULL;
+}
+
+void
+ags_recall_id_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsRecallID *recall_id;
+
+  recall_id = AGS_RECALL_ID(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      AgsRecycling *recycling;
+
+      recycling = g_value_get_object(value);
+
+      if(recall_id->recycling == recycling)
+	return;
+
+      if(recall_id->recycling != NULL){
+	g_object_unref(recycling);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      recall_id->recycling = recycling;
+    }
+    break;
+  case PROP_RECYCLING_CONTAINER:
+    {
+      AgsRecyclingContainer *recycling_container;
+
+      recycling_container = g_value_get_object(value);
+
+      if(recall_id->recycling_container == recycling_container)
+	return;
+
+      if(recall_id->recycling_container != NULL){
+	g_object_unref(recycling_container);
+      }
+
+      if(recycling_container != NULL){
+	g_object_ref(recycling_container);
+      }
+
+      recall_id->recycling_container = recycling_container;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_recall_id_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsRecallID *recall_id;
+
+  recall_id = AGS_RECALL_ID(gobject);
+
+  switch(prop_id){
+  case PROP_RECYCLING:
+    g_value_set_object(value, recall_id->recycling);
+    break;
+  case PROP_RECYCLING_CONTAINER:
+    g_value_set_object(value, recall_id->recycling_container);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

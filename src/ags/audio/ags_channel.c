@@ -242,8 +242,13 @@ ags_channel_set_property(GObject *gobject,
       if(channel->audio == audio)
 	return;
 
-      if(audio != NULL)
+      if(channel->audio != NULL){
+	g_object_unref(channel->audio);
+      }
+
+      if(audio != NULL){
 	g_object_ref(audio);
+      }
 
       channel->audio = audio;
     }
@@ -2406,50 +2411,43 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   gboolean stage_stop;
 
   auto void ags_channel_recursive_play_init_arrange_group_id_up(AgsChannel *channel,
-								guint audio_signal_level);
+								AgsRecallID *recall_id);
   auto void ags_channel_recursive_play_init_arrange_group_id_down_input(AgsChannel *output,
-									AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
-									guint audio_signal_level);
+									AgsRecallID *recall_id;
   auto void ags_channel_recursive_play_init_arrange_group_id_down(AgsChannel *output,
-								  AgsGroupId parent_group_id, AgsGroupId group_id, AgsGroupId child_group_id,
-								  guint audio_signal_level);
+								  AgsRecallID *recall_id);
 
   auto void ags_channel_recursive_play_init_duplicate_up(AgsChannel *channel,
 							 gboolean playback, gboolean sequencer, gboolean notation,
-							 AgsGroupId group_id);
+							 AgsRecallID *recall_id);
   auto void ags_channel_recursive_play_init_duplicate_down_input(AgsChannel *output,
 								 gboolean playback, gboolean sequencer, gboolean notation,
-								 AgsGroupId group_id,
-								 guint audio_signal_level);
+								 AgsRecallID *recall_id);
   auto void ags_channel_recursive_play_init_duplicate_down(AgsChannel *output,
 							   gboolean playback, gboolean sequencer, gboolean notation,
-							   AgsGroupId group_id,
-							   guint audio_signal_level);
+							   AgsRecallID *recall_id);
 
   auto void ags_channel_recursive_play_init_resolve_up(AgsChannel *channel,
-						       AgsGroupId group_id,
-						       guint audio_signal_level);
+						       AgsRecallID *recall_id);
   auto void ags_channel_recursive_play_init_resolve_down_input(AgsChannel *output,
-							       AgsGroupId group_id,
-							   guint audio_signal_level);
+							       AgsRecallID *recall_id;
   auto void ags_channel_recursive_play_init_resolve_down(AgsChannel *output,
-							 AgsGroupId group_id,
-							 guint audio_signal_level);
+							 AgsRecallID *recall_id);
 
   auto void ags_channel_recursive_play_init_up(AgsChannel *channel);
   auto void ags_channel_recursive_play_init_down_input(AgsChannel *output,
-						       AgsGroupId group_id);
-  auto void ags_channel_recursive_play_init_down(AgsChannel *output, AgsGroupId group_id);
+						       AgsRecallID *recall_id);
+  auto void ags_channel_recursive_play_init_down(AgsChannel *output,
+						 AgsRecallID *recall_id);
 
   /*
    * arrangeing group ids is done from the axis to the root and then from the axis to the leafs
    */
   void ags_channel_recursive_play_init_arrange_group_id_up(AgsChannel *channel,
-							   guint audio_signal_level)
+							   AgsRecallID *recall_id)
   {
     AgsAudio *audio;
     AgsChannel *current;
-    AgsRecallID *recall_id;
     
     audio = AGS_AUDIO(channel->audio);
     
@@ -2461,11 +2459,18 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
     /* goto toplevel AgsChannel */
     while(current != NULL){
+      AgsRecallID *current_recall_id;
+
+      current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+				       "recycling\0", current->first_recycling,
+				       "recycling_container\0", recall_id->recycling_container,
+				       NULL);
+
       /* AgsInput */
-      current->recall_id = ags_recall_id_add(current->recall_id,
-					     0, group_id, child_group_id,
-					     current->first_recycling, current->last_recycling,
-					     ((audio_signal_level > 1) ? TRUE: FALSE));
+      current->recall_id = ags_recall_id_append(current->recall_id,
+						0, group_id, child_group_id,
+						current->first_recycling, current->last_recycling,
+						((audio_signal_level > 1) ? TRUE: FALSE));
 
       /* AgsAudio */
       audio->recall_id = ags_recall_id_add(audio->recall_id,
