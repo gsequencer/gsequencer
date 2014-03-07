@@ -2229,7 +2229,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     }    
   }else{
     AgsChannel *output;
-    AgsGroupId group_id;
+    AgsRecallID *level_recall_id;
 
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       immediate_new_level = TRUE;
@@ -2240,22 +2240,22 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* run order */
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
       if(recall_id->parent_group_id != 0){
-	group_id = recall_id->parent_group_id;
+	level_recall_id = AGS_RECALL_ID(recall_id->recycling_container->parent->recall_id);
       }else{
-	group_id = recall_id->group_id;
+	level_recall_id = recall_id;
       }
     }else{
-      group_id = recall_id->group_id;
+      level_recall_id = recall_id;
     }
 
-    run_order = ags_run_order_find_group_id(audio->run_order,
-					    group_id);
+    run_order = ags_run_order_find_recall_id(audio->run_order,
+					     level_recall_id);
 
     if(run_order == NULL){
       AgsRecallID *audio_recall_id;
 
-      audio_recall_id = ags_recall_id_find_group_id(audio->recall_id,
-						    group_id);
+      audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
+							       recall_id->recycling_container);
   
       run_order = ags_run_order_new(audio_recall_id);
       ags_audio_add_run_order(audio, run_order);
@@ -2303,7 +2303,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     }
 
     /* append to AgsAudio */
-    if(recall_id->parent_group_id == 0)
+    if(recall_id->recycling_container->parent == NULL)
       channel->play = g_list_append(channel->play, copy);
     else
       channel->recall = g_list_append(channel->recall, copy);
@@ -2322,25 +2322,21 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 /**
  * ags_channel_init_recall:
  * @channel an #AgsChannel that contains the recalls
- * @group_id the #AgsGroupId this recall belongs to
+ * @recall_id the #AgsRecallId this recall belongs to
  *
  * Prepare #AgsRecall objects to become runnning, ags_channel_recursive_play_init()
  * may call this function for you.
  */
 void
 ags_channel_init_recall(AgsChannel *channel, gint stage,
-			AgsGroupId group_id)
+			AgsRecallId *recall_id)
 {
   AgsRecall *recall;
-  AgsRecallID *recall_id;
   GList *list_recall;
   
-  recall_id = ags_recall_id_find_group_id(channel->recall_id, group_id);
+  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %llu %llu\n\0", stage, AGS_AUDIO(channel->audio)->input_lines, (long long unsigned int) channel->audio_channel, (long long unsigned int) channel->pad);  
 
-  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %llu %llu\n\0", stage, AGS_AUDIO(channel->audio)->input_lines, (long long unsigned int) channel->audio_channel, (long long unsigned int) channel->pad);
-  
-
-  if(recall_id->parent_group_id == 0)
+  if(recall_id->recycling_container->parent == NULL)
     list_recall = channel->play;
   else
     list_recall = channel->recall;
@@ -2350,7 +2346,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       recall->recall_id->group_id != group_id ||
+       recall->recall_id->recall_container != recall_id->recycling_container ||
        AGS_IS_RECALL_CHANNEL(recall)){
       list_recall = list_recall->next;
       continue;
@@ -2384,7 +2380,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
  * @stage valid values for @stage are: -1 for running all three stages, or the stages 0 through 2 to run
  * just the specified stage. With stage is meant the #AgsRecall::run_init_pre, #AgsRecall::run_init_inter
  * and #AgsRecall::run_init_post stages.
- * @arrange_group_id %TRUE if new #AgsRecallID objects should be created and therefor valid #AgsGroupId\s
+ * @arrange_recall_id %TRUE if new #AgsRecallID objects should be created
  * @duplicate_templates %TRUE if the #AgsRecall templates should be duplicated
  * @playback %TRUE if the purpose is a simple playback of the tree, this option is used to omit the
  * duplication of #AgsRecall templates which haven't set @AGS_RECALL_PLAYBACK flag
@@ -2393,9 +2389,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
  * @notation %TRUE if the purpose is playing the tree for a notation, this option is used to omit the
  * duplication of #AgsRecall templates which haven't set the @AGS_RECALL_NOTATION flag
  * @resolve_dependencies %TRUE if the
- * @group_id the initial group id
- * @child_group_id the initial child group id
- * @audio_signal_level the current audio signal level
+ * @recall_id the initial recall id
  *
  * Make the tree ready for a new #AgsDevoutPlay.
  */

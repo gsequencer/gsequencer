@@ -41,7 +41,7 @@ struct _AgsRecyclingContainer
   AgsRecycling **recycling;
   gint length;
 
-  GObject *parent;
+  AgsRecyclingContainer *parent;
   GList *children;
 };
 
