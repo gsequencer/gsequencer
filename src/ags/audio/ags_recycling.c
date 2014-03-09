@@ -482,6 +482,34 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
   return(NULL);
 }
 
+
+gint
+ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
+		       AgsRecycling *recycling)
+{
+  AgsRecycling *current;
+  gint position;
+
+  if(start_recycling == NULL){
+    return(-1);
+  }
+
+  current = start_recycling;
+  position = -1;
+
+  while(current != end_region){
+    position++;
+
+    if(current == recycling){
+      return(position);
+    }
+
+    current = current->next;
+  }
+
+  return(-1);
+}
+
 AgsRecycling*
 ags_recycling_new(GObject *devout)
 {
