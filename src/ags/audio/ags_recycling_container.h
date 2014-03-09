@@ -39,7 +39,7 @@ struct _AgsRecyclingContainer
   GObject *recall_id;
 
   AgsRecycling **recycling;
-  gint length;
+  guint64 length;
 
   AgsRecyclingContainer *parent;
   GList *children;
@@ -70,6 +70,11 @@ gint ags_recycling_container_find_child(AgsRecyclingContainer *recycling_contain
 					AgsRecycling *recycling);
 gint ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
 					 AgsRecycling *recycling);
+
+void ags_recycling_container_add_child(AgsRecyclingContainer *parent,
+				       AgsRecyclingContainer *child);
+void ags_recycling_container_remove_child(AgsRecyclingContainer *parent,
+					  AgsRecyclingContainer *child);
 
 AgsRecyclingContainer* ags_recycling_container_new(gint length);
 
