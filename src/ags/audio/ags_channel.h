@@ -150,8 +150,7 @@ void ags_channel_resolve_recall(AgsChannel *channel,
 				AgsRecallID *recall_id);
 
 void ags_channel_play(AgsChannel *channel,
-		      AgsRecallID *recall_id, gint stage,
-		      gboolean do_recall);
+		      AgsRecallID *recall_id, gint stage);
 void ags_channel_recursive_play_threaded(AgsChannel *channel,
 					 AgsRecallID *recall_id, gint stage);
 void ags_channel_recursive_play(AgsChannel *channel,

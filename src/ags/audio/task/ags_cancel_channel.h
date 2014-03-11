@@ -42,7 +42,7 @@ struct _AgsCancelChannel
   AgsTask task;
 
   AgsChannel *channel;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   AgsDevoutPlay *play;
 };
@@ -54,7 +54,7 @@ struct _AgsCancelChannelClass
 
 GType ags_cancel_channel_get_type();
 
-AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel, AgsGroupId group_id,
+AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
 					 AgsDevoutPlay *play);
 
 #endif /*__AGS_CANCEL_CHANNEL_H__*/

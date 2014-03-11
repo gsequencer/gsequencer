@@ -137,31 +137,31 @@ void
 ags_init_audio_launch(AgsTask *task)
 {
   AgsInitAudio *init_audio;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   init_audio = AGS_INIT_AUDIO(task);
 
   /* init audio */
   if(init_audio->playback){
-    group_id = ags_audio_recursive_play_init(init_audio->audio,
-					     TRUE, FALSE, FALSE);
-    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->group_id[0] = group_id;
+    recall_id = ags_audio_recursive_play_init(init_audio->audio,
+					      TRUE, FALSE, FALSE);
+    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->recall_id[0] = recall_id;
     
     AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
   }
 
   if(init_audio->sequencer){
-    group_id = ags_audio_recursive_play_init(init_audio->audio,
-					     FALSE, TRUE, FALSE);
-    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->group_id[1] = group_id;
+    recall_id = ags_audio_recursive_play_init(init_audio->audio,
+					      FALSE, TRUE, FALSE);
+    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->recall_id[1] = recall_id;
     
     AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
   }
 
   if(init_audio->notation){
-    group_id = ags_audio_recursive_play_init(init_audio->audio,
-					     FALSE, FALSE, TRUE);
-    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->group_id[2] = group_id;
+    recall_id = ags_audio_recursive_play_init(init_audio->audio,
+					      FALSE, FALSE, TRUE);
+    AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->recall_id[2] = recall_id;
     
     AGS_DEVOUT_PLAY(init_audio->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
   }

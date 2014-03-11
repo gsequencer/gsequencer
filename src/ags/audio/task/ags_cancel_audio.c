@@ -103,7 +103,7 @@ void
 ags_cancel_audio_init(AgsCancelAudio *cancel_audio)
 {
   cancel_audio->audio = NULL;
-  cancel_audio->group_id = 0;
+  cancel_audio->recall_id = NULL;
 
   cancel_audio->play = NULL;
 }
@@ -148,7 +148,7 @@ ags_cancel_audio_launch(AgsTask *task)
   channel = audio->output;
 
   while(channel != NULL){
-    ags_channel_recursive_cancel(channel, cancel_audio->group_id);
+    ags_channel_recursive_cancel(channel, cancel_audio->recall_id);
 
     channel = channel->next;
   }
@@ -159,7 +159,7 @@ ags_cancel_audio_launch(AgsTask *task)
 }
 
 AgsCancelAudio*
-ags_cancel_audio_new(AgsAudio *audio, AgsGroupId group_id,
+ags_cancel_audio_new(AgsAudio *audio, AgsRecallID *recall_id,
 		     AgsDevoutPlay *play)
 {
   AgsCancelAudio *cancel_audio;
@@ -168,7 +168,7 @@ ags_cancel_audio_new(AgsAudio *audio, AgsGroupId group_id,
 						 NULL);
 
   cancel_audio->audio = audio;
-  cancel_audio->group_id = group_id;
+  cancel_audio->recall_id = recall_id;
 
   cancel_audio->play = play;
 

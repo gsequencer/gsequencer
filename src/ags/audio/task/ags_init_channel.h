@@ -42,8 +42,7 @@ struct _AgsInitChannel
   AgsChannel *channel;
   gboolean play_pad;
 
-  AgsGroupId group_id[3];
-  AgsGroupId child_group_id[3];
+  AgsRecallID *recall_id[3];
 
   gboolean playback;
   gboolean sequencer;
@@ -58,7 +57,7 @@ struct _AgsInitChannelClass
 GType ags_init_channel_get_type();
 
 AgsInitChannel* ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
-				     AgsGroupId group_id[3], AgsGroupId child_group_id[3],
+				     AgsRecallID *recall_id[3], 
 				     gboolean playback, gboolean sequencer, gboolean notation);
 
 #endif /*__AGS_INIT_CHANNEL_H__*/

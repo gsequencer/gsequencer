@@ -101,7 +101,7 @@ void
 ags_cancel_channel_init(AgsCancelChannel *cancel_channel)
 {
   cancel_channel->channel = NULL;
-  cancel_channel->group_id = 0;
+  cancel_channel->recall_id = NULL;
 
   cancel_channel->play = NULL;
 }
@@ -139,7 +139,7 @@ ags_cancel_channel_launch(AgsTask *task)
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   /* cancel AgsChannel */
-  ags_channel_recursive_cancel(cancel_channel->channel, cancel_channel->group_id);
+  ags_channel_recursive_cancel(cancel_channel->channel, cancel_channel->recall_id);
 
   /* set remove flag */
   if(cancel_channel->play != NULL)
@@ -147,7 +147,7 @@ ags_cancel_channel_launch(AgsTask *task)
 }
 
 AgsCancelChannel*
-ags_cancel_channel_new(AgsChannel *channel, AgsGroupId group_id,
+ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
 		       AgsDevoutPlay *play)
 {
   AgsCancelChannel *cancel_channel;
@@ -156,7 +156,7 @@ ags_cancel_channel_new(AgsChannel *channel, AgsGroupId group_id,
 						     NULL);
 
   cancel_channel->channel = channel;
-  cancel_channel->group_id = group_id;
+  cancel_channel->recall_id = recall_id;
 
   cancel_channel->play = play;
 

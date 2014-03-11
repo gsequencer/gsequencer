@@ -42,7 +42,7 @@ struct _AgsCancelAudio
   AgsTask task;
 
   AgsAudio *audio;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   AgsDevoutPlay *play;
 };
@@ -54,7 +54,7 @@ struct _AgsCancelAudioClass
 
 GType ags_cancel_audio_get_type();
 
-AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio, AgsGroupId group_id,
+AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio, AgsRecallID *recall_id,
 				     AgsDevoutPlay *play);
 
 #endif /*__AGS_CANCEL_AUDIO_H__*/
