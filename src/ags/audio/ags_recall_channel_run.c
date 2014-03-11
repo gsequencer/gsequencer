@@ -93,12 +93,10 @@ void ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *c
 								   AgsRecallChannelRun *recall_channel_run);
 
 
-AgsGroupId ags_recall_channel_run_real_get_audio_run_group_id(AgsRecallChannelRun *recall_channel_run);
 void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
 						   guint run_order);
 
 enum{
-  GET_AUDIO_RUN_GROUP_ID,
   RUN_ORDER_CHANGED,
   LAST_SIGNAL,
 };
@@ -247,7 +245,6 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   recall->duplicate = ags_recall_channel_run_duplicate;
 
   /* AgsRecallChannelRunClass */
-  recall_channel_run->get_audio_run_group_id = ags_recall_channel_run_real_get_audio_run_group_id;
   recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
 
   /* signals */
@@ -260,15 +257,6 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
-
-  recall_channel_run_signals[GET_AUDIO_RUN_GROUP_ID] =
-    g_signal_new("get_audio_run_group_id\0",
-		 G_TYPE_FROM_CLASS (recall_channel_run),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, get_audio_run_group_id),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_ULONG__VOID,
-		 G_TYPE_ULONG, 0);
 }
 
 void
@@ -591,7 +579,7 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   AgsRecallAudioRun *recall_audio_run;
   AgsRecallContainer *recall_container;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   if(ags_recall_channel_run_parent_packable_interface->pack(packable, container))
     return(TRUE);
@@ -602,10 +590,10 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   list = recall_container->recall_audio_run;
 
   if(AGS_RECALL(packable)->recall_id != NULL){
-    group_id = AGS_RECALL(packable)->recall_id->group_id; //TODO:JK: remove ags_recall_channel_run_get_audio_run_group_id(AGS_RECALL_CHANNEL_RUN(packable));
+    recall_id = AGS_RECALL(packable)->recall_id; //TODO:JK: remove ags_recall_channel_run_get_audio_run_group_id(AGS_RECALL_CHANNEL_RUN(packable));
       
-    list = ags_recall_find_group_id(list,
-				    group_id);
+    list = ags_recall_find_recycling_container(list,
+					       recall_id->recycling_container);
 
     if(list != NULL){
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
@@ -651,7 +639,7 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
   AgsRecall *recall;
   AgsRecallContainer *recall_container;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   recall = AGS_RECALL(packable);
 
@@ -736,22 +724,22 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 												 n_params, parameter));
   
   if(AGS_IS_OUTPUT(copy->source)){
-    run_order = ags_run_order_find_group_id(AGS_AUDIO(copy->source->audio)->run_order,
-					    recall_id->group_id);
+    run_order = ags_run_order_find_recall_id(AGS_AUDIO(copy->source->audio)->run_order,
+					     recall_id);
 
     copy->run_order = g_list_index(run_order->run_order,
 				   copy->source);
   }else{
     if(copy->destination != NULL){
       run_order = ags_run_order_find_group_id(AGS_AUDIO(copy->destination->audio)->run_order,
-					      recall_id->parent_group_id);
+					      recall_id->recycling_container->parent->recall_id);
 
       copy->run_order = g_list_index(run_order->run_order,
 				     copy->destination);
     }else{
       AgsAudio *audio;
       AgsChannel *output;
-      AgsGroupId group_id;
+      AgsRecallID *recall_id;
 
       audio = AGS_AUDIO(copy->source->audio);
 
@@ -764,18 +752,18 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
       }
 
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-	if(recall_id->parent_group_id != 0){
-	  group_id = recall_id->parent_group_id;
+	if(recall_id->recycling_container->parent != NULL){
+	  recall_id = recall_id->recycling_container->parent->recall_id;
 	}else{
-	  group_id = recall_id->group_id;
+	  recall_id = recall_id;
 	}
       }else{
-	group_id = recall_id->group_id;
+	recall_id = recall_id;
       }
 
-      run_order = ags_run_order_find_group_id(audio->run_order,
-					      group_id);
-
+      run_order = ags_run_order_find_recall_id(audio->run_order,
+					       recall_id);
+      
       copy->run_order = g_list_index(run_order->run_order,
 				     output);
     }

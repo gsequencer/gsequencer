@@ -159,7 +159,7 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
 }
 
 GObject*
-ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId group_id)
+ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id)
 {
   AgsRecallContainer *recall_container;
   AgsRecall *dependency;
@@ -177,8 +177,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId
   }else if(AGS_IS_RECALL_AUDIO_RUN(dependency)){
     GList *recall_list;
 
-    recall_list = ags_recall_find_group_id(recall_container->recall_audio_run,
-					   group_id);
+    recall_list = ags_recall_find_recycling_container(recall_container->recall_audio_run,
+						      recall_id->recycling_container);
 
     if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));
@@ -193,9 +193,9 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId
   }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
     GList *recall_list;
 
-    recall_list = ags_recall_find_provider_with_group_id(recall_container->recall_channel_run,
-							 (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
-							 group_id);
+    recall_list = ags_recall_find_provider_with_recycling_container(recall_container->recall_channel_run,
+								    (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
+								    recall_id->recycling_container);
 
     if(recall_list != NULL)
       return(G_OBJECT(recall_list->data));

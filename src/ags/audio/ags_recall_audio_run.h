@@ -46,13 +46,9 @@ struct _AgsRecallAudioRun
 struct _AgsRecallAudioRunClass
 {
   AgsRecallClass recall;
-
-  AgsGroupId (*get_channel_run_group_id)(AgsRecallAudioRun *recall_audio_run);
 };
 
 GType ags_recall_audio_run_get_type();
-
-AgsGroupId ags_recall_audio_run_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run);
 
 AgsRecallAudioRun* ags_recall_audio_run_new();
 

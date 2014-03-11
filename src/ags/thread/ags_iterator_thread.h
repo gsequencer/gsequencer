@@ -53,7 +53,7 @@ struct _AgsIteratorThread
   AgsThread *recycling_thread;
 
   AgsChannel *channel;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
   gint stage;
 };
 

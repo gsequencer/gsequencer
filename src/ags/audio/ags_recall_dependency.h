@@ -52,7 +52,7 @@ GList* ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject
 GList* ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
 							 GObject *provider);
 
-GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsGroupId group_id);
+GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id);
 
 AgsRecallDependency* ags_recall_dependency_new(GObject *dependency);
 

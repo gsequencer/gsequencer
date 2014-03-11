@@ -38,7 +38,7 @@ void ags_run_order_changed_output(AgsRunOrder *run_order,
 void ags_run_order_changed_input(AgsRunOrder *run_order,
 				 AgsChannel *input,
 				 guint new_position, guint old_position,
-				 AgsRecyclingID *recall_id);
+				 AgsRecallID *recall_id);
 
 enum{
   PROP_0,
@@ -193,7 +193,7 @@ ags_run_order_changed_input(AgsRunOrder *run_order,
 {
   GList *list;
 
-  if(do_play){
+  if(recall_id->recycling_container->parent == NULL){
     list = input->play;
   }else{
     list = input->recall;
@@ -221,8 +221,7 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
   AgsAudio *audio;
   AgsChannel *input;
   GList *list;
-  AgsGroupId output_recall_id, input_recall_id;
-  gboolean output_do_play, input_do_play;
+  AgsRecallID *output_recall_id, *input_recall_id;
 
   audio = AGS_AUDIO(output->audio);
 
@@ -244,19 +243,6 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
     }
   }
 
-  /* choose appropriate list */
-  input_do_play = FALSE;
-
-  if(run_order->recall_id->parent_group_id == 0){
-    output_do_play = TRUE;
-    
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
-      input_do_play = TRUE;
-    }
-  }else{
-    output_do_play = FALSE;
-  }
-
   /* set input */
   if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
     input = ags_channel_nth(audio->input, output->audio_channel);
@@ -265,7 +251,7 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
       ags_run_order_changed_input(run_order,
 				  input,
 				  new_position, old_position,
-				  input_group_id, input_do_play);
+				  input_recall_id);
 
       input = input->next_pad;
     }
@@ -279,7 +265,7 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
   }
 
   /* set output */
-  if(output_do_play){
+  if(output_recall_id->recycling_container->parent == NULL){
     list = output->play;
   }else{
     list = output->recall;
@@ -288,7 +274,7 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
   while(list != NULL){
     if(AGS_IS_RECALL_CHANNEL_RUN(list->data) &&
        ((AGS_RECALL(list->data)->recall_id != NULL &&
-	 AGS_RECALL(list->data)->recall_id->group_id == output_group_id)) &&
+	 AGS_RECALL(list->data)->recall_id->recycling_container == output_recall_id->recycling_container)) &&
        AGS_RECALL_CHANNEL_RUN(list->data)->run_order == old_position){
       ags_recall_channel_run_run_order_changed(AGS_RECALL_CHANNEL_RUN(list->data),
 					       new_position);

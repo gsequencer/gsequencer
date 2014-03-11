@@ -423,7 +423,7 @@ GList*
 ags_recall_container_find(GList *recall_container,
 			  GType type,
 			  guint find_flags,
-			  AgsGroupId group_id)
+			  AgsRecallID *recall_id)
 {
   AgsRecallContainer *current;
   AgsRecall *recall;
@@ -479,7 +479,7 @@ ags_recall_container_find(GList *recall_container,
     if(recall != NULL){
       if(((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) == 0 || G_OBJECT_TYPE(recall) == type) &&
 	 ((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) == 0 || (AGS_RECALL_TEMPLATE & (recall->flags)) != 0) &&
-	 ((AGS_RECALL_CONTAINER_FIND_GROUP_ID & find_flags) == 0 || (recall->recall_id != NULL && recall->recall_id->group_id == group_id))){
+	 ((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) == 0 || (recall->recall_id != NULL && recall->recall_id == recall_id))){
 	break;
       }
     }

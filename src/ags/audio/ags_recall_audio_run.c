@@ -56,10 +56,7 @@ AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
-AgsGroupId ags_recall_audio_run_real_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run);
-
 enum{
-  GET_CHANNEL_RUN_GROUP_ID,
   LAST_SIGNAL,
 };
 
@@ -164,16 +161,6 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   recall->duplicate = ags_recall_audio_run_duplicate;
 
   /* AgsRecallAudioRunClass */
-  recall_audio_run->get_channel_run_group_id = ags_recall_audio_run_real_get_channel_run_group_id;
-
-  recall_audio_run_signals[GET_CHANNEL_RUN_GROUP_ID] =
-    g_signal_new("get_channel_run_group_id\0",
-		 G_TYPE_FROM_CLASS (recall_audio_run),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecallAudioRunClass, get_channel_run_group_id),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_ULONG__VOID,
-		 G_TYPE_ULONG, 0);
 }
 
 void
@@ -320,7 +307,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   AgsRecallAudioRun *recall_audio_run;
   AgsRecallContainer *recall_container;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   if(ags_recall_audio_run_parent_packable_interface->pack(packable, container))
     return(TRUE);
@@ -340,9 +327,9 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   list = recall_container->recall_channel_run;
 
   if(AGS_RECALL(packable)->recall_id != NULL){
-    group_id = ags_recall_audio_run_get_channel_run_group_id(AGS_RECALL_AUDIO_RUN(packable));
+    recall_id = AGS_RECALL(packable)->recall_id;
 
-    while((list = ags_recall_find_group_id(list, group_id)) != NULL){
+    while((list = ags_recall_find_recycling_container(list, recall_id->recycling_container)) != NULL){
       g_object_set(G_OBJECT(list->data),
 		   "recall_audio_run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
@@ -373,7 +360,7 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   AgsRecall *recall;
   AgsRecallContainer *recall_container;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   recall = AGS_RECALL(packable);
 
@@ -400,9 +387,9 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   list = recall_container->recall_channel_run;
 
   if(AGS_RECALL(packable)->recall_id != NULL){
-    group_id = ags_recall_audio_run_get_channel_run_group_id(AGS_RECALL_AUDIO_RUN(packable));
+    recall_id = AGS_RECALL(packable)->recall_id;
 
-    while((list = ags_recall_find_group_id(list, group_id)) != NULL){
+    while((list = ags_recall_find_recycling_container(list, recall_id->recycling_container)) != NULL){
       g_object_set(G_OBJECT(list->data),
 		   "recall_audio_run\0", NULL,
 		   NULL);
@@ -456,55 +443,6 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 	       NULL);
 
   return((AgsRecall *) copy);
-}
-
-AgsGroupId
-ags_recall_audio_run_real_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run)
-{
-  AgsAudio *audio;
-  AgsRecall *recall;
-  AgsGroupId group_id;
-
-  recall = AGS_RECALL(recall_audio_run);
-
-  if(recall->recall_id == NULL)
-    return(G_MAXULONG);
-
-  audio = AGS_AUDIO(recall_audio_run->recall_audio->audio);
-
-  if((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0){
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      group_id = recall->recall_id->child_group_id;
-    }else{
-      group_id = recall->recall_id->group_id;
-    }
-  }else if((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0){
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      group_id = recall->recall_id->parent_group_id;
-    }else{
-      group_id = recall->recall_id->group_id;
-    }
-  }else{
-    group_id = recall->recall_id->group_id;
-  }
-
-  return(group_id);
-}
-
-AgsGroupId
-ags_recall_audio_run_get_channel_run_group_id(AgsRecallAudioRun *recall_audio_run)
-{
-  AgsGroupId group_id;
-
-  g_return_val_if_fail(AGS_IS_RECALL_AUDIO_RUN(recall_audio_run), G_MAXULONG);
-
-  g_object_ref(G_OBJECT(recall_audio_run));
-  g_signal_emit(G_OBJECT(recall_audio_run),
-		recall_audio_run_signals[GET_CHANNEL_RUN_GROUP_ID], 0,
-		&group_id);
-  g_object_unref(G_OBJECT(recall_audio_run));
-
-  return(group_id);
 }
 
 AgsRecallAudioRun*

@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recycling_container.h>
 
 #define AGS_TYPE_RECALL_ID                (ags_recall_id_get_type ())
 #define AGS_RECALL_ID(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), AGS_TYPE_RECALL_ID, AgsRecallID))

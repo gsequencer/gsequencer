@@ -75,13 +75,12 @@ GType ags_recycling_thread_get_type();
 void ags_recycling_thread_play_channel(AgsRecyclingThread *recycling_thread,
 				       GObject *channel,
 				       AgsRecallID *recall_id,
-				       gint stage, gboolean do_recall);
+				       gint stage);
 
 void ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
 				     GObject *output, GObject *audio,
-				     AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-				     AgsRecallID *recall_id, AgsGroupId next_group_id,
-				     gint stage, gboolean do_recall);
+				     AgsRecallID *recall_id,
+				     gint stage);
 
 AgsRecyclingThread* ags_recycling_thread_new();
 

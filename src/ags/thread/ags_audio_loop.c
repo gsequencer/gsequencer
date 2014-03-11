@@ -692,15 +692,15 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
 	/* not super threaded */
 	if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
-	  ags_channel_recursive_play(channel, play->group_id[0], stage);
+	  ags_channel_recursive_play(channel, play->recall_id[0], stage);
 	}
 
 	if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
-	  ags_channel_recursive_play(channel, play->group_id[1], stage);
+	  ags_channel_recursive_play(channel, play->recall_id[1], stage);
 	}
 
 	if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
-	  ags_channel_recursive_play(channel, play->group_id[2], stage);
+	  ags_channel_recursive_play(channel, play->recall_id[2], stage);
 	}
 
       }else{
@@ -778,15 +778,15 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
 	  /* not super threaded */
 	  if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->group_id[0], stage);
+	    ags_channel_recursive_play(output, play->recall_id[0], stage);
 	  }
 
 	  if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->group_id[1], stage);
+	    ags_channel_recursive_play(output, play->recall_id[1], stage);
 	  }
 
 	  if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->group_id[2], stage);
+	    ags_channel_recursive_play(output, play->recall_id[2], stage);
 	  }
 
 	}else{

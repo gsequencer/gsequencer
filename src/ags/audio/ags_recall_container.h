@@ -41,7 +41,7 @@ typedef enum{
 typedef enum{
   AGS_RECALL_CONTAINER_FIND_TYPE,
   AGS_RECALL_CONTAINER_FIND_TEMPLATE,
-  AGS_RECALL_CONTAINER_FIND_GROUP_ID,
+  AGS_RECALL_CONTAINER_FIND_RECALL_ID,
 }AgsRecallContainerFindFlags;
 
 struct _AgsRecallContainer
@@ -78,7 +78,7 @@ GList* ags_recall_container_get_recall_channel_run(AgsRecallContainer *container
 GList* ags_recall_container_find(GList *recall_container,
 				 GType type,
 				 guint find_flags,
-				 AgsGroupId group_id);
+				 AgsRecallID *recall_id);
 
 AgsRecallContainer* ags_recall_container_new();
 
