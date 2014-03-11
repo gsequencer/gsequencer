@@ -500,7 +500,7 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
   guint i, i_stop;
 
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(recall);
@@ -512,7 +512,7 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
   channel = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source;
   audio = AGS_AUDIO(channel->audio);
 
-  group_id = recall->recall_id->group_id;
+  recall_id = recall->recall_id;
 
   count_beats_audio_run = NULL;
   i_stop = 1;
@@ -521,7 +521,7 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
-      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
 
       i++;
     }

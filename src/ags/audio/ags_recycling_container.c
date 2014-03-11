@@ -18,6 +18,10 @@
 
 #include <ags/audio/ags_recycling_container.h>
 
+#include <ags/audio/ags_recall_id.h>
+
+#include <stdlib.h>
+
 void ags_recycling_container_class_init(AgsRecyclingContainerClass *recycling_container_class);
 void ags_recycling_container_init(AgsRecyclingContainer *recycling_container);
 void ags_recycling_container_set_property(GObject *gobject,
@@ -130,6 +134,7 @@ ags_recycling_container_set_property(GObject *gobject,
 				     GParamSpec *param_spec)
 {
   AgsRecyclingContainer *recycling_container;
+  guint i;
 
   recycling_container = AGS_RECYCLING_CONTAINER(gobject);
 
@@ -252,7 +257,7 @@ AgsRecyclingContainer*
 ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
 			    AgsRecycling *recycling)
 {
-  AgsRecyclingContainer *new_recyclingcontainer;
+  AgsRecyclingContainer *new_recycling_container;
   gint new_length;
 
   new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
@@ -272,8 +277,9 @@ AgsRecyclingContainer*
 ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
 			       AgsRecycling *recycling)
 {
-  AgsRecyclingContainer *new_recyclingcontainer;
+  AgsRecyclingContainer *new_recycling_container;
   gint new_length;
+  gint position;
 
   new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
 								   NULL);
@@ -281,6 +287,8 @@ ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
   new_length = recycling_container->length - 1;
 
   new_recycling_container->recycling = (AgsRecycling **) malloc(new_length * sizeof(AgsRecycling *));
+
+  for(position = 0; recycling_container->recycling[position] != recycling; position++);
 
   memcpy(new_recycling_container->recycling, recycling_container->recycling, (new_length - position) * sizeof(AgsRecycling *));
   memcpy(&(new_recycling_container->recycling[position + 1]), recycling_container->recycling, (-1 * (position - new_length)) * sizeof(AgsRecycling *));
@@ -293,7 +301,7 @@ ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
 			       AgsRecycling *recycling,
 			       gint position)
 {
-  AgsRecyclingContainer *new_recyclingcontainer;
+  AgsRecyclingContainer *new_recycling_container;
   gint new_length;
 
   new_recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,

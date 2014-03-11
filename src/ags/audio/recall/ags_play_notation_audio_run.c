@@ -402,7 +402,7 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
   guint i, i_stop;
 
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(recall);
@@ -410,7 +410,7 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run)->data);
 
   list = template->dependencies;
-  group_id = recall->recall_id->group_id;
+  recall_id = recall->recall_id;
 
   delay_audio_run = NULL;
   count_beats_audio_run = NULL;
@@ -420,11 +420,11 @@ ags_play_notation_audio_run_resolve_dependencies(AgsRecall *recall)
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
-      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+      delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
 
       i++;
     }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
-      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
 
       i++;
     }
@@ -484,11 +484,11 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   devout = AGS_DEVOUT(audio->devout);
 
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-    run_order = ags_run_order_find_group_id(audio->run_order,
-					    AGS_RECALL(play_notation_audio_run)->recall_id->child_group_id);
+    run_order = ags_run_order_find_recall_id(audio->run_order,
+					     AGS_RECALL(play_notation_audio_run)->recall_id);
   }else{
-    run_order = ags_run_order_find_group_id(audio->run_order,
-					    AGS_RECALL(play_notation_audio_run)->recall_id->group_id);
+    run_order = ags_run_order_find_recall_id(audio->run_order,
+					     AGS_RECALL(play_notation_audio_run)->recall_id);
   }
 
   g_value_init(&value, G_TYPE_POINTER);

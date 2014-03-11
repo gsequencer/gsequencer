@@ -607,7 +607,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->group_id){
+     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container){
 
     //    g_message("ags_recall_recycling_source_add_audio_signal_callback %s[%llx]\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling), (long long unsigned int) recall_recycling);
@@ -659,7 +659,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->group_id){
+     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container){
 
     //    g_message("ags_recall_recycling_source_remove_audio_signal - channel: %s[%u]\n\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling),
@@ -707,7 +707,7 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->parent_group_id &&
+     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container->parent &&
      recall_recycling->destination == (AgsRecycling *) audio_signal->recycling){
     //    g_message("ags_recall_recycling_destination_add_audio_signal_callback %s[%llx]\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling), (long long unsigned int) recall_recycling);
@@ -755,7 +755,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
   //TODO:JK: recall should always have a recall_id but needs a fix
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->group_id == recall->recall_id->parent_group_id &&
+     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container->parent &&
      recall_recycling->child_destination == audio_signal){
 
     //    g_message("ags_recall_recycling_destination_remove_audio_signal - channel: %s[%u]\n\0",

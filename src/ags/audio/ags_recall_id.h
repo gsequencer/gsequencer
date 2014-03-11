@@ -35,9 +35,21 @@
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
+typedef enum{
+  AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE         = 1,
+  AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE       = 1 << 1,
+  AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE        = 1 << 2,
+  AGS_RECALL_ID_CANCELED                        = 1 << 3,
+  AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL          = 1 << 4,
+  AGS_RECALL_ID_AUDIO_RESOLVED_PLAY             = 1 << 5,
+  AGS_RECALL_ID_AUDIO_RESOLVED_RECALL           = 1 << 6,
+}AgsRecallIDFlags;
+
 struct _AgsRecallID
 {
   GObject object;
+  
+  guint flags;
 
   GObject *recycling;
   AgsRecyclingContainer *recycling_container;

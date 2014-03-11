@@ -431,7 +431,7 @@ ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
   AgsRecallDependency *recall_dependency;
   AgsStreamChannelRun *stream_channel_run;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
   guint i, i_stop;
 
   play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(recall);
@@ -439,7 +439,7 @@ ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run)->data);
 
   list = template->dependencies;
-  group_id = recall->recall_id->group_id;
+  recall_id = recall->recall_id;
 
   stream_channel_run = NULL;
 
@@ -449,7 +449,7 @@ ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_STREAM_CHANNEL_RUN(recall_dependency->dependency)){
-      stream_channel_run = (AgsStreamChannelRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+      stream_channel_run = (AgsStreamChannelRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
 
       g_object_set(G_OBJECT(recall),
 		   "stream-channel-run\0", stream_channel_run,

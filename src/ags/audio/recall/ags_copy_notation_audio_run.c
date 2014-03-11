@@ -322,7 +322,7 @@ ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   GList *list;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
   guint i, i_stop;
 
   copy_notation_audio_run = AGS_COPY_NOTATION_AUDIO_RUN(recall);
@@ -330,7 +330,7 @@ ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall)
   template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_audio_run)->data);
 
   list = template->dependencies;
-  group_id = recall->recall_id->group_id;
+  recall_id = recall->recall_id;
 
   count_beats_audio_run = NULL;
   i_stop = 1;
@@ -339,7 +339,7 @@ ags_copy_notation_audio_run_resolve_dependencies(AgsRecall *recall)
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
-      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, group_id);
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
 
       i++;
     }
