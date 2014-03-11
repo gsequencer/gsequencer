@@ -64,6 +64,8 @@ AgsRecyclingContainer* ags_recycling_container_insert(AgsRecyclingContainer *rec
 						      AgsRecycling *recycling,
 						      gint position);
 
+AgsRecyclingContainer* ags_recycling_container_get_toplevel(AgsRecyclingContainer *recycling_container);
+
 gint ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 				  AgsRecycling *recycling);
 gint ags_recycling_container_find_child(AgsRecyclingContainer *recycling_container,
@@ -75,6 +77,8 @@ void ags_recycling_container_add_child(AgsRecyclingContainer *parent,
 				       AgsRecyclingContainer *child);
 void ags_recycling_container_remove_child(AgsRecyclingContainer *parent,
 					  AgsRecyclingContainer *child);
+
+GList* ags_recycling_container_get_child_recall_id(AgsRecyclingContainer *recycling_container);
 
 AgsRecyclingContainer* ags_recycling_container_new(gint length);
 

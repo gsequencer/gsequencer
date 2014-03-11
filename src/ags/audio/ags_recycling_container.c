@@ -310,6 +310,20 @@ ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
   return(new_recycling_container);
 }
 
+AgsRecyclingContainer*
+ags_recycling_container_get_toplevel(AgsRecyclingContainer *recycling_container)
+{
+  if(recycling_container == NULL){
+    return(NULL);
+  }
+
+  while(recycling_container->parent != NULL){
+    recycling_container = recycling_container->parent;
+  }
+
+  return(recycling_container);
+}
+
 gint
 ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 			     AgsRecycling *recycling)
@@ -393,6 +407,29 @@ ags_recycling_container_remove_child(AgsRecyclingContainer *parent,
   child->parent = NULL;
   parent->children = g_list_remove(parent->children,
 				   child);
+}
+
+GList*
+ags_recycling_container_get_child_recall_id(AgsRecyclingContainer *recycling_container)
+{
+  GList *child;
+  GList *recall_id_list;
+
+  if(recycling_container == NULL){
+    return(NULL);
+  }
+
+  child = recycling_container->children;
+  recall_id_list = NULL;
+  
+  while(child != NULL){
+    recall_id_list = g_list_prepend(recall_id_list,
+				    AGS_RECYCLING_CONTAINER(child->data)->recall_id);
+
+    child = child->next;
+  }
+
+  return(recall_id_list);
 }
 
 AgsRecyclingContainer*
