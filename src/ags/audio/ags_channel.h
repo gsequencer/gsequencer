@@ -169,8 +169,8 @@ void ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_recursive_cancel(AgsChannel *channel, AgsRecallID *recall_id);
 
-void ags_channel_recursive_reset_recall_id(AgsChannel *channel, AgsChannel *link,
-					   AgsChannel *old_channel_link, AgsChannel *old_link_link);
+void ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
+					    AgsChannel *old_channel_link, AgsChannel *old_link_link);
 
 void ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *recall_id, gboolean ommit_own_channel,
 			       guint mode, ...);
