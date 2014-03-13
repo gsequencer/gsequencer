@@ -1048,9 +1048,10 @@ ags_channel_set_recycling(AgsChannel *channel,
   }
   void ags_channel_set_recycling_recursive_output(AgsChannel *output){
     /* update input AgsRecallIDs */
-    ags_recall_id_reset_recycling(output->recall_id,
-				  output->first_recycling,
-				  replace_with_first_recycling, replace_with_last_recycling);
+    //TODO:JK: check for compliance
+    //    ags_recall_id_reset_recycling(output->recall_id,
+    //				  output->first_recycling,
+    //				  replace_with_first_recycling, replace_with_last_recycling);
 
     if(replace_first)
       output->first_recycling = replace_with_first_recycling;
@@ -3365,8 +3366,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	gint recycling_length;
 	gint i;
 
-	recycling_length = ags_recycling_position(recall_id->recycling_container,
-						  channel->first_recycling, channel->last_recycling->next,
+	recycling_length = ags_recycling_position(channel->first_recycling, channel->last_recycling->next,
 						  channel->last_recycling);
 
 	recycling_container = (AgsRecyclingContainer *) g_object_new(AGS_TYPE_RECYCLING_CONTAINER,

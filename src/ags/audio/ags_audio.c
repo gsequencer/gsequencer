@@ -2004,7 +2004,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
     }
   }
   
-  while((list_recall = ags_recall_find_recall_id(list_recall, recall_id)) != NULL){
+  while((list_recall = ags_recall_find_recycling_container(list_recall, recall_id->recycling_container)) != NULL){
     recall = AGS_RECALL(list_recall->data);
     
     ags_recall_resolve_dependencies(recall);
