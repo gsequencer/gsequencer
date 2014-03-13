@@ -38,7 +38,7 @@ ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *
 void
 ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
 {
-  if(recall->recall_id != NULL && recall->recall_id->parent_group_id != 0){
+  if(recall->recall_id != NULL && recall->recall_id->recycling_container->parent != NULL){
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
       ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, FALSE);
     }else{

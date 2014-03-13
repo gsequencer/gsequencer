@@ -122,7 +122,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
   AgsDevoutThread *devout_thread;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   devout = AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout);
 
@@ -172,7 +172,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
       AgsCancelAudio *cancel_audio;
 
       /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->group_id[1],
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->recall_id[1],
 					  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
 
       /* append AgsCancelAudio */

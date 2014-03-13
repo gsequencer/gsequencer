@@ -19,17 +19,18 @@
 #ifndef __AGS_RUN_ORDER_H__
 #define __AGS_RUN_ORDER_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_id.h>
 
-#define AGS_TYPE_RUN_ORDER                (ags_run_order_get_type ())
-#define AGS_RUN_ORDER(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), AGS_TYPE_RUN_ORDER, AgsRunOrder))
-#define AGS_RUN_ORDER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST ((class), AGS_TYPE_RUN_ORDER, AgsRunOrderClass))
-#define AGS_IS_RUN_ORDER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RUN_ORDER))
+#define AGS_TYPE_RUN_ORDER                (ags_run_order_get_type())
+#define AGS_RUN_ORDER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RUN_ORDER, AgsRunOrder))
+#define AGS_RUN_ORDER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RUN_ORDER, AgsRunOrderClass))
+#define AGS_IS_RUN_ORDER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RUN_ORDER))
 #define AGS_IS_RUN_ORDER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RUN_ORDER))
-#define AGS_RUN_ORDER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RUN_ORDER, AgsRunOrderClass))
+#define AGS_RUN_ORDER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RUN_ORDER, AgsRunOrderClass))
 
 typedef struct _AgsRunOrder AgsRunOrder;
 typedef struct _AgsRunOrderClass AgsRunOrderClass;
@@ -70,6 +71,8 @@ void ags_run_order_remove_channel(AgsRunOrder *run_order, AgsChannel *channel);
 
 AgsRunOrder* ags_run_order_find_recall_id(GList *run_order,
 					  AgsRecallID *recall_id);
+AgsRunOrder* ags_run_order_find_recycling_container(GList *run_order,
+						    GObject *recycling_container);
 
 AgsRunOrder* ags_run_order_new(AgsRecallID *recall_id);
 

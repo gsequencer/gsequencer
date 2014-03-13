@@ -77,7 +77,7 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
   all_done = TRUE;
 
   while(channel != next_pad){
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->group_id[0] != devout_play->group_id[0]){
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] != devout_play->recall_id[0]){
       channel = channel->next;
       continue;
     }
@@ -85,7 +85,7 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
     current_recall = channel->play;
     
     if(!ags_recall_is_done(current_recall,
-			   devout_play->group_id[0])){
+			   devout_play->recall_id[0])){
       all_done = FALSE;
       break;
     }

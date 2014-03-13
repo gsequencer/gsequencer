@@ -330,6 +330,15 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 				     AgsRecallID *recall_id,
 				     gint stage)
 {
+  AgsChannel *input;
+  if((AGS_AUDIO_ASYNC & (AGS_AUDIO(audio)->flags)) != 0){
+    input = ags_channel_nth(AGS_AUDIO(audio)->input,
+			    AGS_CHANNEL(output)->audio_channel);
+  }else{
+    input = ags_channel_nth(AGS_AUDIO(audio)->input,
+			    AGS_CHANNEL(output)->line);
+  }
+
   while((AGS_RECYCLING_THREAD_RUNNING & (recycling_thread->flags)) != 0){
     ags_recycling_thread_fifo(recycling_thread);
 
@@ -338,19 +347,21 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
       gint child_position;
 
       /* input_recall_id - check if there is a new recycling */
-      child_position = ags_recycling_container_find_child(output_recall_id->recycling_container,
+      child_position = ags_recycling_container_find_child(recall_id->recycling_container,
 							  input->first_recycling);
       
       if(child_position == -1){
-	input_recall_id = output_recall_id;
+	input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
+								 recall_id->recycling_container);
       }else{
 	GList *list;
 
-	list = g_list_nth(output_recall_id->children,
+	list = g_list_nth(recall_id->recycling_container->children,
 			  child_position);
 
 	if(list != NULL){
-	  input_recall_id = AGS_RECYCLING_CONTAINER(list->data)->recall_id;
+	  input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
+								   AGS_RECYCLING_CONTAINER(list->data));
 	}else{
 	  input_recall_id = NULL;
 	}

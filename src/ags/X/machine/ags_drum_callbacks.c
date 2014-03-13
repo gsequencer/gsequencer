@@ -117,9 +117,9 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
     play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
   }
 
-  list = ags_recall_find_type_with_group_id(audio->play,
-					    AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-					    AGS_RECALL(delay_audio_run)->recall_id->group_id);
+  list = ags_recall_find_type_with_recycling_container(audio->play,
+						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+						       (GObject *) AGS_RECALL(delay_audio_run)->recall_id->recycling_container);
   
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
@@ -218,7 +218,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
   AgsDevoutThread *devout_thread;
-  AgsGroupId group_id;
+  AgsRecallID *recall_id;
 
   devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
@@ -268,7 +268,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
       AgsCancelAudio *cancel_audio;
 
       /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->group_id[1],
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->recall_id[1],
 					  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play));
 
       /* append AgsCancelAudio */
