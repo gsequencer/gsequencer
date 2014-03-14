@@ -374,12 +374,10 @@ ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
 {
   gint i;
 
-  for(i = 0; recycling != NULL; i++){
-    if(AGS_RECALL_ID(recycling_container->parent)->recycling == recycling){
+  for(i = 0; i < recycling_container->parent->length; i++){
+    if(recycling_container->parent->recycling[i] == recycling){
       return(i);
     }
-
-    recycling_container = AGS_RECALL_ID(recycling_container->parent)->recycling_container;
   }
 
   return(-1);
