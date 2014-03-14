@@ -339,7 +339,7 @@ ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
   gint i;
 
   for(i = 0; i < recycling_container->length; i++){
-    if(recycling_container->recycling == recycling){
+    if(recycling_container->recycling[i] == recycling){
       return(i);
     }
   }
@@ -397,8 +397,8 @@ ags_recycling_container_add_child(AgsRecyclingContainer *parent,
   g_object_ref(G_OBJECT(child));
 
   child->parent = parent;
-  parent->children = g_list_prepend(parent->children,
-				    child);
+  parent->children = g_list_append(parent->children,
+				   child);
 }
 
 void
@@ -431,8 +431,8 @@ ags_recycling_container_get_child_recall_id(AgsRecyclingContainer *recycling_con
   recall_id_list = NULL;
   
   while(child != NULL){
-    recall_id_list = g_list_prepend(recall_id_list,
-				    AGS_RECYCLING_CONTAINER(child->data)->recall_id);
+    recall_id_list = g_list_append(recall_id_list,
+				   AGS_RECYCLING_CONTAINER(child->data)->recall_id);
 
     child = child->next;
   }
