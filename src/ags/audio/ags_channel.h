@@ -76,7 +76,7 @@ struct _AgsChannel
 
   gpointer devout_play;
 
-  GObject *recycling_container_root;
+  //  GObject *recycling_container_root;
   GList *recall_id; // there may be several recall's running
   GList *container;
 
@@ -139,9 +139,6 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 				   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
-
-GObject* ags_channel_find_recycling_container_root(AgsChannel *channel);
-GObject* ags_channel_find_recycling_container(AgsChannel *channel);
 
 void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 					  guint size);

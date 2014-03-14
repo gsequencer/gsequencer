@@ -2023,11 +2023,12 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 		      AgsRecallID *recall_id)
 {
   AgsRecall *recall;
+  AgsRecallID *output_recall_id;
   AgsRunOrder *run_order;
   GList *list_recall;
   
-  run_order = ags_run_order_find_recycling_container(audio->run_order,
-						     recall_id->recycling_container);
+  run_order = ags_run_order_find_recall_id(audio->run_order,
+					   output_recall_id);
 
   switch(stage){
   case 0:

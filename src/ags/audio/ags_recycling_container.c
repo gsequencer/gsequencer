@@ -172,7 +172,7 @@ ags_recycling_container_set_property(GObject *gobject,
       recycling_container->length = length;
 
       for(i = 0; i < length; i++){
-	recycling_container->recycling = NULL;
+	recycling_container->recycling[i] = NULL;
       }
     }
     break;

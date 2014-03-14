@@ -221,7 +221,8 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
   AgsAudio *audio;
   AgsChannel *input;
   GList *list;
-  AgsRecallID *output_recall_id, *input_recall_id;
+  AgsRecallID *output_recall_id, *default_recall_id;
+  gint child_position;
 
   audio = AGS_AUDIO(output->audio);
 
@@ -230,46 +231,64 @@ ags_run_order_changed_output(AgsRunOrder *run_order,
 
   /* set input */
   if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-    gint child_position;
 
     input = ags_channel_nth(audio->input, output->audio_channel);
 
     while(input != NULL){
-
       child_position = ags_recycling_container_find_child(output_recall_id->recycling_container,
 							  input->first_recycling);
       
       if(child_position == -1){
-	input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
-								 output_recall_id->recycling_container);
+	default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
+								   output_recall_id->recycling_container);
       }else{
 	GList *list;
 
-	list = g_list_nth(input_recall_id->recycling_container->children,
+	list = g_list_nth(output_recall_id->recycling_container->children,
 			  child_position);
 
 	if(list != NULL){
-	  input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
-								   AGS_RECYCLING_CONTAINER(list->data));
+	  default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
+								     AGS_RECYCLING_CONTAINER(list->data));
 	}else{
-	  input_recall_id = NULL;
+	  default_recall_id = NULL;
 	}
       }
 
       ags_run_order_changed_input(run_order,
 				  input,
 				  new_position, old_position,
-				  input_recall_id);
+				  default_recall_id);
 
       input = input->next_pad;
     }
   }else{
     input = ags_channel_nth(audio->input, output->line);
 
+    child_position = ags_recycling_container_find_child(output_recall_id->recycling_container,
+							input->first_recycling);
+      
+    if(child_position == -1){
+      default_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
+								 output_recall_id->recycling_container);
+    }else{
+      GList *list;
+
+      list = g_list_nth(default_recall_id->recycling_container->children,
+			child_position);
+
+      if(list != NULL){
+	default_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
+								   AGS_RECYCLING_CONTAINER(list->data));
+      }else{
+	default_recall_id = NULL;
+      }
+    }
+
     ags_run_order_changed_input(run_order,
 				input,
 				new_position, old_position,
-				input_recall_id);
+				default_recall_id);
   }
 
   /* set output */

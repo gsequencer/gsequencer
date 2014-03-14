@@ -133,7 +133,7 @@ ags_panel_init(AgsPanel *panel)
   g_signal_connect_after((GObject *) panel, "parent_set\0",
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
-  AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING | AGS_AUDIO_SYNC);
+  AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_SYNC);
 
   /* ags-play */
   ags_recall_factory_create(AGS_MACHINE(panel)->audio,

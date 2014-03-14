@@ -176,7 +176,7 @@ ags_recall_id_set_property(GObject *gobject,
 	return;
 
       if(recall_id->recycling_container != NULL){
-	g_object_unref(recycling_container);
+	g_object_unref(recall_id->recycling_container);
       }
 
       if(recycling_container != NULL){
@@ -340,7 +340,7 @@ ags_recall_id_find_recycling_container(GList *recall_id_list,
     recall_id_list = recall_id_list->next;
   }
 
-  return(recall_id);
+  return(NULL);
 }
 
 AgsRecallID*

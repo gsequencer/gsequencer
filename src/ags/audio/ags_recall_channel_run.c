@@ -704,7 +704,10 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 				 AgsRecallID *recall_id,
 				 guint *n_params, GParameter *parameter)
 {
+  AgsAudio *audio;
+  AgsChannel *output;
   AgsRecallChannelRun *recall_channel_run, *copy;
+  AgsRecallID *output_recall_id;
   AgsRunOrder *run_order;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
@@ -721,53 +724,49 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   copy = AGS_RECALL_CHANNEL_RUN(AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
 												 recall_id,
 												 n_params, parameter));
-  
+
+  audio = AGS_AUDIO(copy->source->audio);
+
   if(AGS_IS_OUTPUT(copy->source)){
-    run_order = ags_run_order_find_recall_id(AGS_AUDIO(copy->source->audio)->run_order,
-					     recall_id);
-
-    copy->run_order = g_list_index(run_order->run_order,
-				   copy->source);
+    output = copy->source;
+    output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
+							      recall_id->recycling_container);
   }else{
-    if(copy->destination != NULL){
-      run_order = ags_run_order_find_recall_id(AGS_AUDIO(copy->destination->audio)->run_order,
-					       recall_id->recycling_container->parent->recall_id);
+    AgsRecallID *default_recall_id, *audio_recall_id;
 
-      copy->run_order = g_list_index(run_order->run_order,
-				     copy->destination);
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+      output = ags_channel_nth(audio->output,
+			       copy->source->audio_channel);
     }else{
-      AgsAudio *audio;
-      AgsChannel *output;
-      AgsRecallID *recall_id;
+      output = ags_channel_nth(audio->output,
+			       copy->source->line);
+    }
 
-      audio = AGS_AUDIO(copy->source->audio);
 
-      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	output = ags_channel_nth(audio->output,
-				 copy->source->audio_channel);
-      }else{
-	output = ags_channel_nth(audio->output,
-				 copy->source->line);
-      }
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
+								 recall_id->recycling_container);
 
-      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-	if(recall_id->recycling_container->parent != NULL){
-	  recall_id = recall_id->recycling_container->parent->recall_id;
-	}else{
-	  recall_id = recall_id;
-	}
-      }else{
-	recall_id = recall_id;
-      }
+      audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
+							       default_recall_id->recycling_container->parent);
 
-      run_order = ags_run_order_find_recall_id(audio->run_order,
-					       recall_id);
-      
-      copy->run_order = g_list_index(run_order->run_order,
-				     output);
+      output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
+								audio_recall_id->recycling_container);
+    }else{
+      audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
+							       recall_id->recycling_container);
+
+      output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
+								audio_recall_id->recycling_container);
     }
   }
 
+  run_order = ags_run_order_find_recycling_container(audio->run_order,
+						     output_recall_id->recycling_container);
+  
+  copy->run_order = g_list_index(run_order->run_order,
+				 output);
+  
   if(copy->destination != NULL){
     ags_recall_channel_run_remap_child_destination(copy,
 						   NULL, NULL,
