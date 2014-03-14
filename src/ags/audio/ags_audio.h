@@ -134,8 +134,8 @@ void ags_audio_play(AgsAudio *audio,
 		    AgsRecallID *recall_id,
 		    gint stage);
 
-AgsRecallID* ags_audio_recursive_play_init(AgsAudio *audio,
-					   gboolean playback, gboolean sequencer, gboolean notation);
+GList* ags_audio_recursive_play_init(AgsAudio *audio,
+				     gboolean playback, gboolean sequencer, gboolean notation);
 
 void ags_audio_cancel(AgsAudio *audio,
 		      AgsRecallID *recall_id);

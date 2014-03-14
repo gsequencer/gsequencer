@@ -2023,13 +2023,12 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 		      AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsRecallID *output_recall_id;
   AgsRunOrder *run_order;
   GList *list_recall;
-  
-  run_order = ags_run_order_find_recall_id(audio->run_order,
-					   output_recall_id);
 
+  run_order = ags_run_order_find_recycling_container(audio->run_order,
+						     recall_id->recycling_container);
+  
   switch(stage){
   case 0:
     if((AGS_RUN_ORDER_RUN_INIT_PRE_DONE & (run_order->flags)) == 0){
@@ -2134,16 +2133,22 @@ ags_audio_play(AgsAudio *audio,
 /*
  * AgsRecall related
  */
-AgsRecallID*
+GList*
 ags_audio_recursive_play_init(AgsAudio *audio,
 			      gboolean playback, gboolean sequencer, gboolean notation)
 {
   AgsChannel *channel;
+  AgsRecallID *recall_id;
+  GList *list, *list_start;
   gint stage;
   gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
 
+  list = NULL;
+  list_start = NULL;
+
   for(stage = 0; stage < 3; stage++){
     channel = audio->output;
+    list = list_start;
 
     if(stage == 0){
       arrange_recall_id = TRUE;
@@ -2156,18 +2161,31 @@ ags_audio_recursive_play_init(AgsAudio *audio,
     }
 
     while(channel != NULL){
-      ags_channel_recursive_play_init(channel, stage,
-				      arrange_recall_id, duplicate_templates,
-				      playback, sequencer, notation,
-				      resolve_dependencies,
-				      NULL);
+      if(stage == 0){
+	recall_id = ags_channel_recursive_play_init(channel, stage,
+						    arrange_recall_id, duplicate_templates,
+						    playback, sequencer, notation,
+						    resolve_dependencies,
+						    NULL);
+	
+	
+	list_start = g_list_append(list_start,
+				   recall_id);
+      }else{
+	ags_channel_recursive_play_init(channel, stage,
+					arrange_recall_id, duplicate_templates,
+					playback, sequencer, notation,
+					resolve_dependencies,
+					AGS_RECALL_ID(list->data));
+
+	list = list->next;
+      }
 
       channel = channel->next;
     }
   }
 
-  //TODO:JK: implement me
-  return(NULL);
+  return(list_start);
 }
 
 /*
