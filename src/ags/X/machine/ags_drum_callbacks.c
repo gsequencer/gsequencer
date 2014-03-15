@@ -244,7 +244,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     /* create append task */
     append_audio = ags_append_audio_new(G_OBJECT(audio_loop),
-					AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play));
+					G_OBJECT(AGS_MACHINE(drum)->audio));
 
     tasks = g_list_prepend(tasks,
 			   append_audio);
@@ -264,19 +264,16 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     printf("drum: off\n\0");
 
     /* abort code */
-    if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags)) == 0){
+    if(ags_audio_is_playing(AGS_MACHINE(drum)->audio)){
       AgsCancelAudio *cancel_audio;
 
       /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->recall_id[1],
-					  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play));
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio,
+					  FALSE, TRUE, FALSE);
 
       /* append AgsCancelAudio */
       ags_task_thread_append_task(task_thread,
 				  AGS_TASK(cancel_audio));
-    }else{
-      AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
-      AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
     }
   }
 }
@@ -310,7 +307,7 @@ ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum
   //  delay = AGS_DELAY(recall);
   //  drum = AGS_DRUM(AGS_AUDIO(delay->recall.parent)->machine);
   //  drum->block_run = TRUE;
-  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
+  //  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
   gtk_toggle_button_set_active(drum->run, FALSE);
 }
 

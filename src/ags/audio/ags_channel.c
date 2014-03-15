@@ -1822,7 +1822,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 {
   auto void ags_channel_recursive_play_input_sync(AgsChannel *input, AgsRecallID *input_recall_id);
   auto void ags_channel_recursive_play_input_async(AgsChannel *input,
-						   AgsRecallID *output_recall_id);
+						   AgsRecallID *default_recall_id);
   auto void ags_channel_recursive_play_output(AgsChannel *output, AgsRecallID *output_recall_id);
   auto void ags_channel_recursive_play_up(AgsChannel *channel, AgsRecallID *recall_id);
 
@@ -1915,7 +1915,7 @@ ags_channel_recursive_play(AgsChannel *channel,
   void ags_channel_recursive_play_output(AgsChannel *output, AgsRecallID *output_recall_id){
     AgsAudio *audio;
     AgsChannel *input;
-    AgsRecallID *default_recall_id;
+    AgsRecallID *audio_recall_id, *default_recall_id;
     gint child_position;
     
     if(output == NULL){
@@ -4158,15 +4158,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       list = g_list_prepend(list,
 			    (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id: current->devout_play));
     }
-
-    /* collect devout play */
-    if(audio->devout_play != NULL &&
-       ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
-	(AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
-	(AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0)){
-      list = g_list_prepend(list,
-			    (collect_recall_id ? AGS_DEVOUT_PLAY(audio->devout_play)->recall_id: audio->devout_play));
-    }
     
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0)
       return(list);
@@ -4207,15 +4198,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	  (AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0)){
 	list = g_list_prepend(list,
 			      (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id: current->devout_play));
-      }
-
-      /* audio */
-      if(audio->devout_play != NULL &&
-	 ((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0 ||
-	  (AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(audio->devout_play)->flags)) != 0)){
-	list = g_list_prepend(list,
-			      (collect_recall_id ? AGS_DEVOUT_PLAY(audio->devout_play)->recall_id: audio->devout_play));
       }
 
       /* output */

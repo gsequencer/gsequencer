@@ -725,14 +725,6 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	ags_file_read_notation_list(file,
 				    child,
 				    &(gobject->notation));
-      }else if(!xmlStrncmp(child->name,
-			   "ags-devout-play\0",
-			   15)){
-	/* ags-devout-play */
-	ags_file_read_devout_play(file,
-				  node,
-				  (AgsDevoutPlay **) &gobject->devout_play);
-	AGS_DEVOUT_PLAY(gobject->devout_play)->source = (GObject *) gobject;
       }
     }
     
@@ -875,11 +867,6 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
   ags_file_write_notation_list(file,
 			       node,
 			       audio->notation);
-
-  /* ags-devout-play */
-  ags_file_write_devout_play(file,
-			     node,
-			     audio->devout_play);
 
   return(node);
 }

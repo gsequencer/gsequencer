@@ -103,9 +103,10 @@ void
 ags_cancel_audio_init(AgsCancelAudio *cancel_audio)
 {
   cancel_audio->audio = NULL;
-  cancel_audio->recall_id = NULL;
 
-  cancel_audio->play = NULL;
+  cancel_audio->playback = FALSE;
+  cancel_audio->sequencer = FALSE;
+  cancel_audio->notation = FALSE;
 }
 
 void
@@ -142,25 +143,52 @@ ags_cancel_audio_launch(AgsTask *task)
 
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
-  /* cancel AgsAudio */
   audio = cancel_audio->audio;
 
-  channel = audio->output;
+  /* cancel playback */
+  if(cancel_audio->playback){
+    channel = audio->output;
 
-  while(channel != NULL){
-    ags_channel_recursive_cancel(channel, cancel_audio->recall_id);
+    while(channel != NULL){
+      ags_channel_recursive_cancel(channel,
+				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+      
+      channel = channel->next;
+    }
+  }
 
-    channel = channel->next;
+  /* cancel sequencer */
+  if(cancel_audio->sequencer){
+    channel = audio->output;
+
+    while(channel != NULL){
+      ags_channel_recursive_cancel(channel,
+				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+      
+      channel = channel->next;
+    }
+  }
+
+  /* cancel notation */
+  if(cancel_audio->notation){
+    channel = audio->output;
+
+    while(channel != NULL){
+      ags_channel_recursive_cancel(channel,
+				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+      
+      channel = channel->next;
+    }
   }
 
   /* set remove flag */
-  if(cancel_audio->play != NULL)
-    cancel_audio->play->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
+  //  if(cancel_audio->play != NULL)
+  //    cancel_audio->play->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
 }
 
 AgsCancelAudio*
-ags_cancel_audio_new(AgsAudio *audio, AgsRecallID *recall_id,
-		     AgsDevoutPlay *play)
+ags_cancel_audio_new(AgsAudio *audio,
+		     gboolean playback, gboolean sequencer, gboolean notation)
 {
   AgsCancelAudio *cancel_audio;
 
@@ -168,9 +196,10 @@ ags_cancel_audio_new(AgsAudio *audio, AgsRecallID *recall_id,
 						 NULL);
 
   cancel_audio->audio = audio;
-  cancel_audio->recall_id = recall_id;
 
-  cancel_audio->play = play;
+  cancel_audio->playback = playback;
+  cancel_audio->sequencer = sequencer;
+  cancel_audio->notation = notation;
 
   return(cancel_audio);
 }

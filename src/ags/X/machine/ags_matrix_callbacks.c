@@ -148,7 +148,7 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 
     /* create append task */
     append_audio = ags_append_audio_new(G_OBJECT(audio_loop),
-					AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
+					G_OBJECT(AGS_MACHINE(matrix)->audio));
 
     tasks = g_list_prepend(tasks,
 			   append_audio);
@@ -168,19 +168,19 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
     printf("matrix: off\n\0");
 
     /* abort code */
-    if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags)) == 0){
+    if(ags_audio_is_playing(AGS_MACHINE(matrix)->audio)){
       AgsCancelAudio *cancel_audio;
 
       /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio, AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->recall_id[1],
-					  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play));
+      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio,
+					  FALSE, FALSE, TRUE);
 
       /* append AgsCancelAudio */
       ags_task_thread_append_task(task_thread,
 				  AGS_TASK(cancel_audio));
     }else{
-      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
-      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
+      //      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
+      //      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
     }
   }
 }
@@ -380,10 +380,14 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
   list = ags_recall_find_type(AGS_MACHINE(matrix)->audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
 
+  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean(&value, loop);
+
   if(list != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->loop = loop;
+    ags_port_safe_write(count_beats_audio->loop,
+			&value);
   }
 
   list = ags_recall_find_type(AGS_MACHINE(matrix)->audio->recall,
@@ -404,7 +408,7 @@ ags_matrix_run_delay_done(AgsRecall *recall, AgsMatrix *matrix)
   //  delay = AGS_DELAY(recall);
   //  matrix = AGS_MATRIX(AGS_AUDIO(delay->recall.parent)->machine);
   //  matrix->block_run = TRUE;
-  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
+  //  AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
   gtk_toggle_button_set_active(matrix->run, FALSE);
 
 }

@@ -71,8 +71,6 @@ struct _AgsAudio
 
   GList *notation;
 
-  gpointer devout_play;
-
   GList *recall_id;
   GList *run_order;
 
@@ -129,6 +127,8 @@ void ags_audio_init_recall(AgsAudio *audio, gint stage,
 			   AgsRecallID *recall_id);
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id);
+
+gboolean ags_audio_is_playing(AgsAudio *audio);
 
 void ags_audio_play(AgsAudio *audio,
 		    AgsRecallID *recall_id,

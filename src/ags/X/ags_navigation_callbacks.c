@@ -148,7 +148,7 @@ ags_navigation_play_callback(GtkWidget *widget,
     
       /* create append task */
       append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
-					  machine->audio->devout_play);
+					  machine->audio);
       
       list = g_list_prepend(list, append_audio);
     }

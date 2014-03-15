@@ -103,7 +103,7 @@ void
 ags_append_audio_init(AgsAppendAudio *append_audio)
 {
   append_audio->audio_loop = NULL;
-  append_audio->devout_play = NULL;
+  append_audio->audio = NULL;
 }
 
 void
@@ -142,22 +142,20 @@ ags_append_audio_launch(AgsTask *task)
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
 
   /* append to AgsDevout */
-  append_audio->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  audio_loop->play_audio = g_list_append(audio_loop->play_audio,
-					 append_audio->devout_play);
-  audio_loop->play_audio_ref += 1;
+  ags_audio_loop_add_audio(audio_loop,
+			   append_audio->audio);
 
   /* add to server registry */
   server = AGS_MAIN(audio_loop->main)->server;
 
   if((AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->devout_play->source));
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->audio));
   }
 }
 
 AgsAppendAudio*
 ags_append_audio_new(GObject *audio_loop,
-		     AgsDevoutPlay *devout_play)
+		     GObject *audio)
 {
   AgsAppendAudio *append_audio;
 
@@ -165,7 +163,7 @@ ags_append_audio_new(GObject *audio_loop,
 						 NULL);
 
   append_audio->audio_loop = audio_loop;
-  append_audio->devout_play = devout_play;
+  append_audio->audio = audio;
 
   return(append_audio);
 }

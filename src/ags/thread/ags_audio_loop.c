@@ -535,19 +535,9 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
-  /* play audio */
-  if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) != 0){
-    ags_audio_loop_play_audio(audio_loop);
-
-    if(audio_loop->play_audio_ref == 0){
-      audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
-    }
-  }
-
   if((AGS_THREAD_RUNNING & (AGS_THREAD(audio_loop->devout_thread)->flags)) != 0 &&
      audio_loop->play_recall_ref == 0 &&
      audio_loop->play_channel_ref == 0 &&
-     audio_loop->play_audio_ref == 0 &&
      audio_loop->play_notation_ref == 0){
     ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
   }
@@ -725,95 +715,6 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
 	audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
 	audio_loop->play_channel = g_list_remove(audio_loop->play_channel, (gpointer) play);
-      }
-
-      list_play = list_next_play;
-    }
-  }
-}
-
-/**
- * ags_audio_loop_play_audio:
- * @audio_loop an #AgsAudioLoop
- *
- * Like ags_audio_loop_play_channel() except that it runs all channels within
- * #AgsAudio.
- */
-void
-ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
-{
-  AgsDevoutPlay *play;
-  AgsAudio *audio;
-  AgsChannel *output;
-  GList *list_play, *list_next_play;
-  gint stage;
-
-  if(audio_loop->play_audio == NULL){
-    if((AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING & (audio_loop->flags)) != 0){
-      audio_loop->flags &= (~(AGS_AUDIO_LOOP_PLAY_AUDIO |
-			      AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING));
-    }else{
-      audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING;
-    }
-  }
-
-  audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING);
-
-  /* entry point */
-  audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_AUDIO;
-
-  /* run the 3 stages */
-  for(stage = 0; stage < 3; stage++){
-    list_play = audio_loop->play_audio;
-
-    while(list_play != NULL){
-      list_next_play = list_play->next;
-
-      play = (AgsDevoutPlay *) list_play->data;
-      audio = AGS_AUDIO(play->source);
-
-      output = audio->output;
-
-      while(output != NULL){
-	if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
-	  /* not super threaded */
-	  if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->recall_id[0], stage);
-	  }
-
-	  if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->recall_id[1], stage);
-	  }
-
-	  if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->recall_id[2], stage);
-	  }
-
-	}else{
-	  /* super threaded */
-	  if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
-	    play->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[0]->tic_cond));
-	  }
-
-	  if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
-	    play->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[1]->tic_cond));
-	  }
-
-	  if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
-	    play->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[2]->tic_cond));
-	  }
-
-	}
-
-	output = output->next;
-      }
-
-      if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
-	audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
-	audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play);
       }
 
       list_play = list_next_play;

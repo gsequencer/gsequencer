@@ -202,9 +202,6 @@ ags_audio_init(AgsAudio *audio)
 
   audio->notation = NULL;
 
-  audio->devout_play = ags_devout_play_alloc();
-  AGS_DEVOUT_PLAY(audio->devout_play)->source = (GObject *) audio;
-
   audio->recall_id = NULL;
   audio->run_order = NULL;
 
@@ -302,9 +299,6 @@ ags_audio_finalize(GObject *gobject)
 
   /* free some lists */
   ags_list_free_and_unref_link(audio->notation);
-
-  if(audio->devout_play != NULL)
-    ags_devout_play_free(audio->devout_play);
 
   ags_list_free_and_unref_link(audio->recall_id);
   ags_list_free_and_unref_link(audio->run_order);
@@ -1719,24 +1713,27 @@ ags_audio_real_set_pads(AgsAudio *audio,
       if(pads > audio->input_pads){
 	AgsChannel *prev;
 
-	prev = ags_channel_pad_last(channel);
-	recycling_prev = NULL;
+	if(link_recycling){
+	  prev = ags_channel_pad_last(channel);
+	  recycling_prev = NULL;
 
-	while(prev != NULL){
-	  if(link_recycling){
+	  while(prev != NULL){
 	    recycling = prev->first_recycling;
 
 	    recycling_prev = g_list_append(recycling_prev,
 					   recycling);
-	  }
 
-	  prev = prev->next;
+	    prev = prev->next;
+	  }
 	}
 	
 	recycling_iter = recycling_prev;
 
 	ags_audio_set_pads_grow();
 
+	if(link_recycling){
+	  g_list_free(recycling_prev);
+	}
       }else if(pads == 0){
 	ags_audio_set_pads_unlink_zero();
 
@@ -2107,6 +2104,30 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
     
     list_recall = list_recall->next;
   }
+}
+
+gboolean
+ags_audio_is_playing(AgsAudio *audio)
+{
+  AgsChannel *output;
+  AgsRecallID *recall_id;
+  AgsDevoutPlay *devout_play;
+  
+  output = audio->output;
+
+  while(output != NULL){
+    devout_play = AGS_DEVOUT_PLAY(output->devout_play);
+
+    if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0 ||
+       (AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0 ||
+       (AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+      return(TRUE);
+    }
+
+    output = output->next;
+  }
+
+  return(FALSE);
 }
 
 void
