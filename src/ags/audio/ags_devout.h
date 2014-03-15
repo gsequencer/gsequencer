@@ -62,6 +62,7 @@
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef struct _AgsDevoutPlay AgsDevoutPlay;
+typedef struct _AgsDevoutPlayDomain AgsDevoutPlayDomain;
 
 typedef enum
 {
@@ -174,6 +175,17 @@ struct _AgsDevoutClass
   void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
 };
 
+struct _AgsDevoutPlayDomain
+{
+  GObject *domain;
+  
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
+
+  GList *devout_play;
+};
+
 struct _AgsDevoutPlay
 {
   guint flags;
@@ -189,6 +201,9 @@ struct _AgsDevoutPlay
 GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
+
+AgsDevoutPlayDomain* ags_devout_play_domain_alloc();
+void ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain);
 
 AgsDevoutPlay* ags_devout_play_alloc();
 void ags_devout_play_free(AgsDevoutPlay *devout_play);

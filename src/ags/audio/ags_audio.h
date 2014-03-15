@@ -69,6 +69,8 @@ struct _AgsAudio
   AgsChannel *output;
   AgsChannel *input;
 
+  gpointer devout_play_domain;
+
   GList *notation;
 
   GList *recall_id;

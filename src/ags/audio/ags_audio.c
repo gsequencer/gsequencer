@@ -200,6 +200,8 @@ ags_audio_init(AgsAudio *audio)
   audio->output = NULL;
   audio->input = NULL;
 
+  audio->devout_play_domain = ags_devout_play_domain_alloc();
+
   audio->notation = NULL;
 
   audio->recall_id = NULL;

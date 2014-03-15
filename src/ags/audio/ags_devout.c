@@ -530,6 +530,32 @@ ags_devout_connect(AgsDevout *devout)
   /* empty */
 }
 
+AgsDevoutPlayDomain*
+ags_devout_play_domain_alloc()
+{
+  AgsDevoutPlayDomain *devout_play_domain;
+
+  devout_play_domain = (AgsDevoutPlayDomain *) malloc(sizeof(AgsDevoutPlayDomain));
+
+  devout_play_domain->domain = NULL;
+
+  devout_play_domain->playback = FALSE;
+  devout_play_domain->sequencer = FALSE;
+  devout_play_domain->notation = FALSE;
+
+  devout_play_domain->devout_play = NULL;
+
+  return(devout_play_domain);
+}
+
+void
+ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain)
+{
+  g_list_free(devout_play_domain->devout_play);
+
+  free(devout_play_domain);
+}
+
 AgsDevoutPlay*
 ags_devout_play_alloc()
 {
