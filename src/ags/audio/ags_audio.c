@@ -201,6 +201,7 @@ ags_audio_init(AgsAudio *audio)
   audio->input = NULL;
 
   audio->devout_play_domain = ags_devout_play_domain_alloc();
+  AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = audio;
 
   audio->notation = NULL;
 
