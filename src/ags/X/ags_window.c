@@ -173,8 +173,8 @@ ags_window_init(AgsWindow *window)
 
   window->menu_bar = ags_menu_bar_new();
   gtk_box_pack_start((GtkBox *) vbox,
-		     (GtkWidget *) window->menu_bar,
-		     FALSE, FALSE, 0);
+  		     (GtkWidget *) window->menu_bar,
+  		     FALSE, FALSE, 0);
 
   window->paned = (GtkVPaned *) gtk_vpaned_new();
   gtk_box_pack_start((GtkBox*) vbox, (GtkWidget*) window->paned, TRUE, TRUE, 0);
@@ -188,7 +188,7 @@ ags_window_init(AgsWindow *window)
 					(GtkWidget *) window->machines);
   window->editor = ags_editor_new();
   gtk_paned_add2((GtkPaned *) window->paned,
-		 (GtkWidget *) window->editor);
+  		 (GtkWidget *) window->editor);
 
   window->navigation = ags_navigation_new();
   gtk_box_pack_start((GtkBox *) vbox,

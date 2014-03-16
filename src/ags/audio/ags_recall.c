@@ -780,7 +780,7 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
      (container != NULL && !AGS_IS_RECALL_CONTAINER(container)))
     return(TRUE);
 
-  g_message("===== packing: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+  //  g_message("===== packing: %s\0", G_OBJECT_TYPE_NAME(recall));
 
   return(FALSE);
 }

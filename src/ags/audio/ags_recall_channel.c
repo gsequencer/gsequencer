@@ -286,23 +286,25 @@ gboolean
 ags_recall_channel_pack(AgsPackable *packable, GObject *container)
 {
   AgsRecallContainer *recall_container;
+  AgsRecallChannel *recall_channel;
   GList *list;
 
   if(ags_recall_channel_parent_packable_interface->pack(packable, container))
     return(TRUE);
 
   recall_container = AGS_RECALL_CONTAINER(container);
+  recall_channel = AGS_RECALL_CHANNEL(packable);
 
-  g_object_set(G_OBJECT(recall_container),
-	       "recall_channel\0", AGS_RECALL(packable),
+  g_object_set(container,
+	       "recall_channel\0", recall_channel,
 	       NULL);
 
   /* set in AgsRecallChannelRun */
   list = recall_container->recall_channel_run;
 
-  while((list = ags_recall_find_provider(list, G_OBJECT(AGS_RECALL_CHANNEL(packable)->source))) != NULL){
+  while((list = ags_recall_find_provider(list, G_OBJECT(recall_channel->source))) != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "recall_channel\0", AGS_RECALL_CHANNEL(packable),
+		 "recall_channel\0", recall_channel,
 		 NULL);
 
     list = list->next;

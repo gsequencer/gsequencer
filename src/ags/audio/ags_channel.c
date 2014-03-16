@@ -742,7 +742,7 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
   /*
    * TODO:JK: thread synchronisation
    */
-  g_object_ref(G_OBJECT(recall));
+  g_object_ref(recall);
 
   if(play){
     channel->play = g_list_append(channel->play, recall);

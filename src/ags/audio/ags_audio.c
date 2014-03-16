@@ -1416,8 +1416,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    recycling->next = channel->first_recycling;
 	    recycling->next->prev = recycling;
 
-	    recycling_current = g_list_append(recycling_current,
-					      channel->first_recycling);
+	    recycling_current = g_list_prepend(recycling_current,
+					       channel->first_recycling);
 	  }
 
 	  channel->first_recycling->channel = (GObject *) channel;
@@ -1440,13 +1440,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
       }
 
       if(alloc_recycling){
-	g_list_free(recycling_prev);
-	
-	recycling_prev =
-	  recycling_iter = recycling_current;
+	if(link_recycling){
+	  g_list_free(recycling_prev);
+	    
+	  recycling_prev =
+	    recycling_iter = g_list_reverse(recycling_current);
+	}
       }
     }
-
+    
     if(alloc_recycling){
       if(link_recycling){
 	g_list_free(recycling_prev);
@@ -1733,10 +1735,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	recycling_iter = recycling_prev;
 
 	ags_audio_set_pads_grow();
-
-	if(link_recycling){
-	  g_list_free(recycling_prev);
-	}
       }else if(pads == 0){
 	ags_audio_set_pads_unlink_zero();
 

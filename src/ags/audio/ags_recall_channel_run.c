@@ -589,7 +589,7 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   list = recall_container->recall_audio_run;
 
   if(AGS_RECALL(packable)->recall_id != NULL){
-    recall_id = AGS_RECALL(packable)->recall_id; //TODO:JK: remove ags_recall_channel_run_get_audio_run_group_id(AGS_RECALL_CHANNEL_RUN(packable));
+    recall_id = AGS_RECALL(packable)->recall_id;
       
     list = ags_recall_find_recycling_container(list,
 					       recall_id->recycling_container);

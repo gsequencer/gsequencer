@@ -1285,7 +1285,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 								      "source\0", channel,
 								      // "destination\0", destination,
 								      "recall_container\0", play_container,
-								      "pattern\0", channel->pattern->data,
+								      // "pattern\0", channel->pattern->data,
 								      NULL);
 	ags_recall_set_flags(AGS_RECALL(copy_pattern_channel), (AGS_RECALL_TEMPLATE |
 								(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
@@ -1358,7 +1358,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 	  
 	  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(copy_pattern_audio)->container);
 
-	  list = ags_recall_template_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+	  list = ags_recall_find_template(recall_container->recall_audio_run);
 
 	  if(list != NULL){
 	    g_message("debug\0");
@@ -1666,7 +1666,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
  * @stop_pad the last pad to apply
  * @create_flags modify the behaviour of this function
  * @recall_flags flags to be set for #AgsRecall
- * Returns: The available AgsPort objects to modify of the plugin.
+ * Returns: The available AgsPort objects of the plugin to modify.
  *
  * Instantiate #AgsRecall by this factory.
  */
