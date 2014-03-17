@@ -541,7 +541,24 @@ ags_audio_loop_run(AgsThread *thread)
      audio_loop->play_notation_ref == 0){
     ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
   }
-    
+
+  /* play audio */
+  if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) != 0){
+    ags_audio_loop_play_audio(audio_loop);
+
+    if(audio_loop->play_audio_ref == 0){
+      audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
+    }
+  }
+
+  if((AGS_THREAD_RUNNING & (AGS_THREAD(audio_loop->devout_thread)->flags)) != 0 &&
+     audio_loop->play_recall_ref == 0 &&
+     audio_loop->play_channel_ref == 0 &&
+     audio_loop->play_audio_ref == 0 &&
+     audio_loop->play_notation_ref == 0){
+    ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
+  }
+
   /* determine if attack should be switched */
   devout->delay_counter += 1;
       
@@ -818,9 +835,11 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
+  g_object_ref(G_OBJECT(audio));
+  audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
+					  AGS_AUDIO(audio)->devout_play_domain);
 
-
-  //TODO:JK: implement me
+  audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
 }
 
 void
