@@ -291,7 +291,7 @@ ags_devout_init(AgsDevout *devout)
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
-  devout->out.alsa.device = g_strdup("default\0");
+  devout->out.alsa.device = g_strdup("hw:0\0");
 
   /* buffer */
   devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));

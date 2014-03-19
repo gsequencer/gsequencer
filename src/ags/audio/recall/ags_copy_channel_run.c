@@ -35,6 +35,7 @@ void ags_copy_channel_run_class_init(AgsCopyChannelRunClass *copy_channel_run);
 void ags_copy_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run);
+gboolean ags_copy_channel_run_is_ready(AgsConnectable *connectable);
 void ags_copy_channel_run_connect(AgsConnectable *connectable);
 void ags_copy_channel_run_disconnect(AgsConnectable *connectable);
 void ags_copy_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
@@ -119,6 +120,7 @@ ags_copy_channel_run_connectable_interface_init(AgsConnectableInterface *connect
 {
   ags_copy_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
+  connectable->is_ready = ags_copy_channel_run_is_ready;
   connectable->connect = ags_copy_channel_run_connect;
   connectable->disconnect = ags_copy_channel_run_disconnect;
 }
@@ -144,6 +146,20 @@ ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run)
   AGS_RECALL(copy_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
 					  AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(copy_channel_run)->child_type = AGS_TYPE_COPY_RECYCLING;
+}
+
+gboolean
+ags_copy_channel_run_is_ready(AgsConnectable *connectable)
+{
+  AgsRecallChannelRun *recall_channel_run;
+
+  recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
+
+  if(recall_channel_run->source != NULL && recall_channel_run->destination != NULL){
+    return(TRUE);
+  }
+
+  return(FALSE);
 }
 
 void

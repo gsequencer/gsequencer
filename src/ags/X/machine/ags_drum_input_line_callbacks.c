@@ -19,6 +19,8 @@
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -62,9 +64,12 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 	  recall = current->play;
 
 	  while(recall != NULL){
-	    g_object_set(G_OBJECT(recall->data),
-			 "destination\0", output,
-			 NULL);
+	    if(AGS_IS_RECALL_CHANNEL_RUN(recall->data)){
+	      g_object_set(G_OBJECT(recall->data),
+			   "destination\0", output,
+			   NULL);
+	      ags_connectable_connect(AGS_CONNECTABLE(recall->data));
+	    }
 
 	    recall = recall->next;
 	  }
@@ -72,9 +77,13 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 	  recall = current->recall;
 
 	  while(recall != NULL){
-	    g_object_set(G_OBJECT(recall->data),
-			 "destination\0", output,
-			 NULL);
+	    if(AGS_IS_RECALL_CHANNEL_RUN(recall->data)){
+	      g_object_set(G_OBJECT(recall->data),
+			   "destination\0", output,
+			   NULL);
+
+	      ags_connectable_connect(AGS_CONNECTABLE(recall->data));
+	    }
 
 	    recall = recall->next;
 	  }
