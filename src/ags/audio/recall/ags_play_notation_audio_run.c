@@ -464,7 +464,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsChannel *selected_channel, *channel, *next_pad;
   AgsAudioSignal *audio_signal;
   AgsNotation *notation;
-  AgsRunOrder *run_order;
   AgsPlayNotationAudio *play_notation_audio;
   GList *current_position;
   AgsNote *note;
@@ -483,25 +482,18 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
   devout = AGS_DEVOUT(audio->devout);
 
-  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-    run_order = ags_run_order_find_recall_id(audio->run_order,
-					     AGS_RECALL(play_notation_audio_run)->recall_id);
-  }else{
-    run_order = ags_run_order_find_recall_id(audio->run_order,
-					     AGS_RECALL(play_notation_audio_run)->recall_id);
-  }
-
   g_value_init(&value, G_TYPE_POINTER);
   ags_port_safe_read(play_notation_audio->notation,
 		     &value);
 
   list = (GList *) g_value_get_pointer(&value);
 
- channel = g_list_nth(run_order->run_order,
-		       nth_run - 1);
-
- timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
-
+  channel = NULL;
+  //  channel = ags_channel_nth(audio->output,
+  //			    );
+  
+  timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
+  
   notation = AGS_NOTATION(ags_notation_find_near_timestamp(list, channel->audio_channel,
 							   timestamp_thread->timestamp)->data);
 

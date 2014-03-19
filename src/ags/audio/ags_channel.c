@@ -40,7 +40,6 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_run_order.h>
 
 #include <stdio.h>
 
@@ -2102,7 +2101,6 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 {
   AgsAudio *audio;
   AgsRecall *recall, *copy;
-  AgsRunOrder *run_order;
   GList *list_recall;
   
   /* get the appropriate lists */
@@ -2115,21 +2113,7 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   audio = AGS_AUDIO(channel->audio);
 
   /*  */
-  if(AGS_IS_OUTPUT(channel)){
-    /* run order */
-    run_order = ags_run_order_find_recall_id(audio->run_order,
-					     recall_id);
-
-    if(run_order == NULL){
-      run_order = ags_run_order_new(recall_id);
-      ags_audio_add_run_order(audio, run_order);
-    }
-
-    if(g_list_index(run_order->run_order, channel) == -1){
-      ags_run_order_add_channel(run_order,
-				channel);
-    }    
-  }else{
+  if(AGS_IS_INPUT(channel)){
     AgsChannel *output;
     AgsRecallID *output_recall_id, *default_recall_id, *audio_recall_id;
 
@@ -2159,19 +2143,6 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 
       output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
 								audio_recall_id->recycling_container);
-    }
-
-    run_order = ags_run_order_find_recall_id(audio->run_order,
-					     output_recall_id);
-
-    if(run_order == NULL){
-      run_order = ags_run_order_new(output_recall_id);
-      ags_audio_add_run_order(audio, run_order);
-    }
-
-    if(g_list_index(run_order->run_order, output) == -1){
-      ags_run_order_add_channel(run_order,
-				output);
     }
   }
 
@@ -3695,7 +3666,7 @@ ags_channel_recursive_cancel(AgsChannel *channel,
 
     /* call input */
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-      if((AGS_RECALL_ID_CANCELED & (output_recall_id->flags)) != 0){
+      if((AGS_RECALL_ID_CANCEL & (output_recall_id->flags)) != 0){
 	/* block sync|async for this run */
 	ags_channel_recall_id_set(output,
 				  output_recall_id,
@@ -5150,7 +5121,7 @@ ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *default_recall_id, gb
 	ags_recall_id_set_run_stage(recall_id, stage);
 	break;
       case AGS_CHANNEL_RECALL_ID_CANCEL:
-	recall_id->flags |= AGS_RECALL_ID_CANCELED;
+	recall_id->flags |= AGS_RECALL_ID_CANCEL;
 	break;
       }
 
@@ -5168,7 +5139,7 @@ ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *default_recall_id, gb
 	ags_recall_id_set_run_stage(recall_id, stage);
 	break;
       case AGS_CHANNEL_RECALL_ID_CANCEL:
-	recall_id->flags |= AGS_RECALL_ID_CANCELED;
+	recall_id->flags |= AGS_RECALL_ID_CANCEL;
 	break;
       }
 
@@ -5187,7 +5158,7 @@ ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *default_recall_id, gb
 
       break;
     case AGS_CHANNEL_RECALL_ID_CANCEL:
-      recall_id->flags |= AGS_RECALL_ID_CANCELED;
+      recall_id->flags |= AGS_RECALL_ID_CANCEL;
 
       break;
     }

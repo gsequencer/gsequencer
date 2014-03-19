@@ -36,13 +36,15 @@ typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
 typedef enum{
-  AGS_RECALL_ID_RUN_PRE_SYNC_ASYNC_DONE         = 1,
-  AGS_RECALL_ID_RUN_INTER_SYNC_ASYNC_DONE       = 1 << 1,
-  AGS_RECALL_ID_RUN_POST_SYNC_ASYNC_DONE        = 1 << 2,
-  AGS_RECALL_ID_CANCELED                        = 1 << 3,
-  AGS_RECALL_ID_HIGHER_LEVEL_IS_RECALL          = 1 << 4,
-  AGS_RECALL_ID_AUDIO_RESOLVED_PLAY             = 1 << 5,
-  AGS_RECALL_ID_AUDIO_RESOLVED_RECALL           = 1 << 6,
+  AGS_RECALL_ID_DUPLICATE         = 1,
+  AGS_RECALL_ID_RESOLVE           = 1 << 1,
+  AGS_RECALL_ID_INIT_PRE          = 1 << 2,
+  AGS_RECALL_ID_INIT_INTER        = 1 << 3,
+  AGS_RECALL_ID_INIT_POST         = 1 << 4,
+  AGS_RECALL_ID_PRE               = 1 << 5,
+  AGS_RECALL_ID_INTER             = 1 << 6,
+  AGS_RECALL_ID_POST              = 1 << 7,
+  AGS_RECALL_ID_CANCEL            = 1 << 8,
 }AgsRecallIDFlags;
 
 struct _AgsRecallID

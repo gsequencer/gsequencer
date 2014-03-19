@@ -708,7 +708,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   AgsChannel *output;
   AgsRecallChannelRun *recall_channel_run, *copy;
   AgsRecallID *output_recall_id;
-  AgsRunOrder *run_order;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
@@ -760,13 +759,14 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 								audio_recall_id->recycling_container);
     }
   }
+  
+  if(recall_id->recycling_container->parent != NULL){
+    copy->run_order = ags_recycling_container_find_child(recall_id->recycling_container->parent,
+							 recall_id->recycling_container);
+  }else if(copy->destination != NULL){
+    copy->run_order = copy->destination->audio_channel;
+  }
 
-  run_order = ags_run_order_find_recycling_container(audio->run_order,
-						     output_recall_id->recycling_container);
-  
-  copy->run_order = g_list_index(run_order->run_order,
-				 output);
-  
   if(copy->destination != NULL){
     ags_recall_channel_run_remap_child_destination(copy,
 						   NULL, NULL,

@@ -209,7 +209,6 @@ ags_audio_init(AgsAudio *audio)
   audio->notation = NULL;
 
   audio->recall_id = NULL;
-  audio->run_order = NULL;
 
   audio->container;
 
@@ -307,7 +306,6 @@ ags_audio_finalize(GObject *gobject)
   ags_list_free_and_unref_link(audio->notation);
 
   ags_list_free_and_unref_link(audio->recall_id);
-  ags_list_free_and_unref_link(audio->run_order);
 
   ags_list_free_and_unref_link(audio->recall);
   ags_list_free_and_unref_link(audio->play);
@@ -1780,20 +1778,6 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 }
 
 void
-ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order)
-{
-  g_object_ref(G_OBJECT(run_order));
-  audio->run_order = g_list_prepend(audio->run_order, run_order);
-}
-
-void
-ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order)
-{
-  audio->run_order = g_list_remove(audio->run_order, run_order);
-  g_object_unref(G_OBJECT(run_order));
-}
-
-void
 ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
 {
   /*
@@ -1889,19 +1873,14 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 			   AgsRecallID *recall_id)
 {
   AgsRecall *recall, *copy;
-  AgsRunOrder *run_order;
   GList *list_recall_start, *list_recall;
   gboolean immediate_new_level;
   
   g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
   
-  /* set run order */
-  run_order = ags_run_order_find_recycling_container(audio->run_order,
-						     recall_id->recycling_container);
-
-  if(run_order == NULL){
-    run_order = ags_run_order_new(recall_id);
-    ags_audio_add_run_order(audio, run_order);
+  /* return if already duplicated */
+  if((AGS_RECALL_ID_DUPLICATE & (recall_id->flags)) != 0){
+    return;
   }
 
   /*  */
@@ -1911,25 +1890,6 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   else
     list_recall_start =
       list_recall = audio->recall;
-
-  /* return if already duplicated */
-  if((AGS_RUN_ORDER_DUPLICATE_DONE & (run_order->flags)) == 0){
-    run_order->flags |= AGS_RUN_ORDER_DUPLICATE_DONE;
-  }else{
-    /* notify run */
-    while((list_recall = ags_recall_find_recycling_container(list_recall, recall_id->recycling_container)) != NULL){
-      recall = AGS_RECALL(list_recall->data);
-    
-      /* notify run */
-      ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
-    
-      list_recall = list_recall->next;
-    }
-
-    list_recall = list_recall_start;
-
-    return;
-  }
 
   /*  */  
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
@@ -1952,8 +1912,6 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
     /* duplicate template only once */
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
-      run_order->flags |= AGS_RUN_ORDER_DUPLICATE_DONE;
-
       /* duplicate the recall */
       copy = ags_recall_duplicate(recall, recall_id);
 
@@ -1993,40 +1951,21 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsRunOrder *run_order;
   GList *list_recall;  
 
-  if(recall_id == NULL)
-    g_message("recall_id = NULL\0");
-
-  run_order = ags_run_order_find_recycling_container(audio->run_order,
-						     recall_id->recycling_container);
-
-  if((AGS_RUN_ORDER_RESOLVE_DONE & (run_order->flags)) == 0){
-    run_order->flags |= AGS_RUN_ORDER_RESOLVE_DONE;
-  }else{
+  /* return if already duplicated */
+  if((AGS_RECALL_ID_RESOLVE & (recall_id->flags)) != 0){
     return;
   }
     
   /* get the appropriate lists */
   if(recall_id->recycling_container->parent == NULL){
     list_recall = audio->play;
-
-    if((AGS_RECALL_ID_AUDIO_RESOLVED_PLAY & (recall_id->flags)) != 0){
-      return;
-    }else{
-      recall_id->flags |= AGS_RECALL_ID_AUDIO_RESOLVED_PLAY;
-    }
   }else{
     list_recall = audio->recall;
-
-    if((AGS_RECALL_ID_AUDIO_RESOLVED_RECALL & (recall_id->flags)) != 0){
-      return;
-    }else{
-      recall_id->flags |= AGS_RECALL_ID_AUDIO_RESOLVED_RECALL;
-    }
   }
-  
+
+  /* resolve */  
   while((list_recall = ags_recall_find_recycling_container(list_recall, recall_id->recycling_container)) != NULL){
     recall = AGS_RECALL(list_recall->data);
     
@@ -2046,41 +1985,34 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 		      AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsRunOrder *run_order;
   GList *list_recall;
 
-  run_order = ags_run_order_find_recycling_container(audio->run_order,
-						     recall_id->recycling_container);
-  
+  /* return if already initialized */
   switch(stage){
   case 0:
-    if((AGS_RUN_ORDER_RUN_INIT_PRE_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_PRE_DONE;
-    }else{
+    if((AGS_RECALL_ID_INIT_PRE & (recall_id->flags)) != 0){
       return;
     }
     break;
   case 1:
-    if((AGS_RUN_ORDER_RUN_INIT_INTER_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_INTER_DONE;
-    }else{
+    if((AGS_RECALL_ID_INIT_INTER & (recall_id->flags)) != 0){
       return;
     }
     break;
   case 2:
-    if((AGS_RUN_ORDER_RUN_INIT_POST_DONE & (run_order->flags)) == 0){
-      run_order->flags |= AGS_RUN_ORDER_RUN_INIT_POST_DONE;
-    }else{
+    if((AGS_RECALL_ID_INIT_POST & (recall_id->flags)) != 0){
       return;
     }
     break;
   }
 
+  /* retrieve appropriate recalls */
   if(recall_id->recycling_container->parent == NULL)
     list_recall = audio->play;
   else
     list_recall = audio->recall;
 
+  /* init  */
   while(list_recall != NULL){
     recall = AGS_RECALL(list_recall->data);
     
@@ -2140,17 +2072,34 @@ ags_audio_play(AgsAudio *audio,
 	       gint stage)
 {
   AgsRecall *recall;
-  AgsRunOrder *run_order;
   GList *list, *list_next;
 
-  run_order = ags_run_order_find_recycling_container(audio->run_order,
-						     recall_id->recycling_container);
+  /* return if already played */
+  switch(stage){
+  case 0:
+    if((AGS_RECALL_ID_PRE & (recall_id->flags)) != 0){
+      return;
+    }
+    break;
+  case 1:
+    if((AGS_RECALL_ID_INTER & (recall_id->flags)) != 0){
+      return;
+    }
+    break;
+  case 2:
+    if((AGS_RECALL_ID_POST & (recall_id->flags)) != 0){
+      return;
+    }
+    break;
+  }
 
+  /* retrieve appropriate recalls */
   if(recall_id->recycling_container->parent == NULL)
     list = audio->play;
   else
     list = audio->recall;
 
+  /* play */
   while(list != NULL){
     list_next = list->next;
 

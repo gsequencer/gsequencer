@@ -23,7 +23,6 @@
 #include <gtk/gtk.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_run_order.h>
 
 #define AGS_TYPE_AUDIO                (ags_audio_get_type ())
 #define AGS_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO, AgsAudio))
@@ -74,7 +73,6 @@ struct _AgsAudio
   GList *notation;
 
   GList *recall_id;
-  GList *run_order;
 
   GList *container;
 
@@ -109,9 +107,6 @@ void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
 void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
-
-void ags_audio_add_run_order(AgsAudio *audio, AgsRunOrder *run_order);
-void ags_audio_remove_run_order(AgsAudio *audio, AgsRunOrder *run_order);
 
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);

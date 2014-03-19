@@ -117,8 +117,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_file_sound.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
 	ags-ags_file_link.$(OBJEXT) ags-ags_embedded_audio.$(OBJEXT) \
 	ags-ags_timestamp.$(OBJEXT) \
-	ags-ags_timestamp_factory.$(OBJEXT) \
-	ags-ags_run_order.$(OBJEXT) ags-ags_task.$(OBJEXT) \
+	ags-ags_timestamp_factory.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
 	ags-ags_recall_channel.$(OBJEXT) \
 	ags-ags_recall_audio_run.$(OBJEXT) ags-ags_pattern.$(OBJEXT) \
@@ -655,8 +654,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_timestamp.c \
 	./src/ags/audio/ags_timestamp_factory.h \
 	./src/ags/audio/ags_timestamp_factory.c \
-	./src/ags/audio/ags_run_order.c ./src/ags/audio/ags_task.c \
-	./src/ags/audio/ags_port.c ./src/ags/audio/ags_port.h \
+	./src/ags/audio/ags_task.c ./src/ags/audio/ags_port.c \
+	./src/ags/audio/ags_port.h \
 	./src/ags/audio/ags_recall_factory.h \
 	./src/ags/audio/ags_recall_factory.c \
 	./src/ags/audio/ags_recall_dependency.h \
@@ -779,8 +778,7 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_audio_signal.c \
 	./src/ags/audio/ags_synths.c \
 	./src/ags/audio/ags_recall_recycling.c \
-	./src/ags/audio/ags_audio.c ./src/ags/audio/ags_run_order.h \
-	./src/ags/audio/ags_recall.c \
+	./src/ags/audio/ags_audio.c ./src/ags/audio/ags_recall.c \
 	./src/ags/audio/file/ags_ipatch_sf2_reader.c \
 	./src/ags/audio/file/ags_ipatch.h \
 	./src/ags/audio/file/ags_audio_file_xml.c \
@@ -1555,7 +1553,6 @@ include ./$(DEPDIR)/ags-ags_resize_editor.Po
 include ./$(DEPDIR)/ags-ags_returnable_thread.Po
 include ./$(DEPDIR)/ags-ags_ruler.Po
 include ./$(DEPDIR)/ags-ags_ruler_callbacks.Po
-include ./$(DEPDIR)/ags-ags_run_order.Po
 include ./$(DEPDIR)/ags-ags_runnable.Po
 include ./$(DEPDIR)/ags-ags_save_file.Po
 include ./$(DEPDIR)/ags-ags_scroll_on_play.Po
@@ -1898,20 +1895,6 @@ ags-ags_timestamp_factory.obj: ./src/ags/audio/ags_timestamp_factory.c
 #	$(AM_V_CC)source='./src/ags/audio/ags_timestamp_factory.c' object='ags-ags_timestamp_factory.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_timestamp_factory.obj `if test -f './src/ags/audio/ags_timestamp_factory.c'; then $(CYGPATH_W) './src/ags/audio/ags_timestamp_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_timestamp_factory.c'; fi`
-
-ags-ags_run_order.o: ./src/ags/audio/ags_run_order.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_run_order.o -MD -MP -MF $(DEPDIR)/ags-ags_run_order.Tpo -c -o ags-ags_run_order.o `test -f './src/ags/audio/ags_run_order.c' || echo '$(srcdir)/'`./src/ags/audio/ags_run_order.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_run_order.Tpo $(DEPDIR)/ags-ags_run_order.Po
-#	$(AM_V_CC)source='./src/ags/audio/ags_run_order.c' object='ags-ags_run_order.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_run_order.o `test -f './src/ags/audio/ags_run_order.c' || echo '$(srcdir)/'`./src/ags/audio/ags_run_order.c
-
-ags-ags_run_order.obj: ./src/ags/audio/ags_run_order.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_run_order.obj -MD -MP -MF $(DEPDIR)/ags-ags_run_order.Tpo -c -o ags-ags_run_order.obj `if test -f './src/ags/audio/ags_run_order.c'; then $(CYGPATH_W) './src/ags/audio/ags_run_order.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_run_order.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_run_order.Tpo $(DEPDIR)/ags-ags_run_order.Po
-#	$(AM_V_CC)source='./src/ags/audio/ags_run_order.c' object='ags-ags_run_order.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_run_order.obj `if test -f './src/ags/audio/ags_run_order.c'; then $(CYGPATH_W) './src/ags/audio/ags_run_order.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_run_order.c'; fi`
 
 ags-ags_task.o: ./src/ags/audio/ags_task.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_task.o -MD -MP -MF $(DEPDIR)/ags-ags_task.Tpo -c -o ags-ags_task.o `test -f './src/ags/audio/ags_task.c' || echo '$(srcdir)/'`./src/ags/audio/ags_task.c

@@ -222,8 +222,6 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 
   GList *list;
 
-  g_message("------------ debug ------------\0");
-
   line = AGS_LINE(panel_input_line);
 
   audio = AGS_AUDIO(line->channel->audio);
