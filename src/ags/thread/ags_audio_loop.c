@@ -535,13 +535,6 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
-  if((AGS_THREAD_RUNNING & (AGS_THREAD(audio_loop->devout_thread)->flags)) != 0 &&
-     audio_loop->play_recall_ref == 0 &&
-     audio_loop->play_channel_ref == 0 &&
-     audio_loop->play_notation_ref == 0){
-    ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
-  }
-
   /* play audio */
   if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) != 0){
     ags_audio_loop_play_audio(audio_loop);
@@ -551,6 +544,7 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
+  /* decide if we stop */
   if((AGS_THREAD_RUNNING & (AGS_THREAD(audio_loop->devout_thread)->flags)) != 0 &&
      audio_loop->play_recall_ref == 0 &&
      audio_loop->play_channel_ref == 0 &&

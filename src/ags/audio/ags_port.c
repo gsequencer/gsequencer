@@ -174,6 +174,9 @@ ags_port_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->add_to_registry = NULL;
   connectable->remove_from_registry = NULL;
+
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_port_connect;
   connectable->disconnect = ags_port_disconnect;
 }

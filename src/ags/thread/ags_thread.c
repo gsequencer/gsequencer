@@ -222,6 +222,8 @@ ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree)
 void
 ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_thread_connect;
   connectable->disconnect = ags_thread_disconnect;
 }

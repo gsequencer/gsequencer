@@ -177,6 +177,8 @@ ags_notation_class_init(AgsNotationClass *notation)
 void
 ags_notation_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_notation_connect;
   connectable->disconnect = ags_notation_disconnect;
 }

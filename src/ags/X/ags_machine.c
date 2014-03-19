@@ -156,6 +156,8 @@ ags_machine_class_init(AgsMachineClass *machine)
 void
 ags_machine_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_machine_connect;
   connectable->disconnect = ags_machine_disconnect;
 }
@@ -461,8 +463,6 @@ ags_machine_connect(AgsConnectable *connectable)
 
   /* AgsAudio */
   ags_connectable_connect(AGS_CONNECTABLE(machine->audio));
-
-  /* GtkObject * /
 
   /* GtkWidget */
   g_signal_connect(G_OBJECT (machine), "button_press_event\0",

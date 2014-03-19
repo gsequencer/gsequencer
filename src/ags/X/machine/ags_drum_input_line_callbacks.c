@@ -49,7 +49,41 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 {
   if(type == AGS_TYPE_OUTPUT){
     if(pads > pads_old){
-      ags_drum_input_line_map_recall(drum_input_line, pads_old);
+      AgsChannel *current, *output;
+      GList *recall;
+
+      output = audio->output;
+
+      while(output != NULL){
+	current = ags_channel_nth(audio->input,
+				  output->audio_channel);
+
+	while(current != NULL){
+	  recall = current->play;
+
+	  while(recall != NULL){
+	    g_object_set(G_OBJECT(recall->data),
+			 "destination\0", output,
+			 NULL);
+
+	    recall = recall->next;
+	  }
+
+	  recall = current->recall;
+
+	  while(recall != NULL){
+	    g_object_set(G_OBJECT(recall->data),
+			 "destination\0", output,
+			 NULL);
+
+	    recall = recall->next;
+	  }
+
+	  current = current->next_pad;
+	}
+
+	output = output->next;
+      }
     }else{
       /* empty */
     }

@@ -380,7 +380,7 @@ ags_recall_channel_run_set_property(GObject *gobject,
 	old_end_region = NULL;
       }
 
-      if(destination != NULL){
+      if(destination != NULL){    
 	g_object_ref(G_OBJECT(destination));
 
 	new_start_region = destination->first_recycling;

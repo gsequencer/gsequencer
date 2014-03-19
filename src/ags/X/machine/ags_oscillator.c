@@ -80,6 +80,8 @@ ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable)
 
   ags_oscillator_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_oscillator_connect;
   connectable->disconnect = ags_oscillator_disconnect;
 }

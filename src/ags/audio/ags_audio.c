@@ -177,6 +177,9 @@ ags_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->add_to_registry = ags_audio_add_to_registry;
   connectable->remove_from_registry = ags_audio_remove_from_registry;
+
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_audio_connect;
   connectable->disconnect = ags_audio_disconnect;
 }

@@ -70,6 +70,7 @@ void ags_recall_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_recall_add_to_registry(AgsConnectable *connectable);
 void ags_recall_remove_from_registry(AgsConnectable *connectable);
+gboolean ags_recall_is_connected(AgsConnectable *connectable);
 void ags_recall_connect(AgsConnectable *connectable);
 void ags_recall_disconnect(AgsConnectable *connectable);
 gboolean ags_recall_pack(AgsPackable *packable, GObject *container);
@@ -443,6 +444,9 @@ ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->add_to_registry = ags_recall_add_to_registry;
   connectable->remove_from_registry = ags_recall_remove_from_registry;
+
+  connectable->is_ready = NULL;
+  connectable->is_connected = ags_recall_is_connected;
   connectable->connect = ags_recall_connect;
   connectable->disconnect = ags_recall_disconnect;
 }
@@ -714,6 +718,20 @@ void
 ags_recall_remove_from_registry(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
+}
+
+gboolean
+ags_recall_is_connected(AgsConnectable *connectable)
+{
+  AgsRecall *recall;
+
+  recall = AGS_RECALL(connectable);
+
+  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 void

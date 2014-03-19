@@ -169,6 +169,9 @@ ags_channel_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->add_to_registry = ags_channel_add_to_registry;
   connectable->remove_from_registry = ags_channel_remove_from_registry;
+
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_channel_connect;
   connectable->disconnect = ags_channel_disconnect;
 }
@@ -345,7 +348,7 @@ ags_channel_connect(AgsConnectable *connectable)
 
   channel = AGS_CHANNEL(connectable);
 
-  ags_connectable_add_to_registry(connectable);
+  //  ags_connectable_add_to_registry(connectable);
 
   /* connect recall ids */
   list = channel->recall_id;
@@ -385,10 +388,12 @@ ags_channel_connect(AgsConnectable *connectable)
   /* connect recycling */
   recycling = channel->first_recycling;
 
-  while(recycling != channel->last_recycling->next){
-    ags_connectable_connect(AGS_CONNECTABLE(recycling));
-
-    recycling = recycling->next;
+  if(recycling != NULL){
+    while(recycling != channel->last_recycling->next){
+      ags_connectable_connect(AGS_CONNECTABLE(recycling));
+      
+      recycling = recycling->next;
+    }
   }
 
   /* connect pattern and notation */

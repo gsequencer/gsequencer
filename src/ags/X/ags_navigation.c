@@ -114,6 +114,8 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 void
 ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_navigation_connect;
   connectable->disconnect = ags_navigation_disconnect;
 }

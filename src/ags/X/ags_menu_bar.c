@@ -76,6 +76,8 @@ ags_menu_bar_get_type(void)
 void
 ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_menu_bar_connect;
   connectable->disconnect = ags_menu_bar_disconnect;
 }

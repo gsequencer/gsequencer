@@ -119,6 +119,8 @@ ags_pad_editor_class_init(AgsPadEditorClass *pad_editor)
 void
 ags_pad_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_pad_editor_connect;
   connectable->disconnect = ags_pad_editor_disconnect;
 }

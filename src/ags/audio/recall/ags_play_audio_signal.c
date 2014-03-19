@@ -264,7 +264,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   muted = g_value_get_boolean(&muted_value);
 
   if(muted){
-    return;
+    //    return;
   }
 
   g_value_init(&audio_channel_value, G_TYPE_UINT);
@@ -275,7 +275,6 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
-
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel + source->attack * devout->pcm_channels]),
 					   devout->pcm_channels,
 					   (signed short *) stream->data, 1,

@@ -220,6 +220,8 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     guint i;
     GValue value = {0,};
 
+    return;
+
     devout = AGS_DEVOUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source->devout);
 
     volume_channel = AGS_VOLUME_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);

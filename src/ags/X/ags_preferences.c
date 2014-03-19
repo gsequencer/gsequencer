@@ -103,6 +103,8 @@ ags_preferences_class_init(AgsPreferencesClass *preferences)
 void
 ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_preferences_connect;
   connectable->disconnect = ags_preferences_disconnect;
 }

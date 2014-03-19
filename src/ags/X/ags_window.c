@@ -142,6 +142,8 @@ ags_window_class_init(AgsWindowClass *window)
 void
 ags_window_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_window_connect;
   connectable->disconnect = ags_window_disconnect;
 }

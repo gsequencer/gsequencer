@@ -155,6 +155,8 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 void
 ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_recycling_connect;
   connectable->disconnect = ags_recycling_disconnect;
 }

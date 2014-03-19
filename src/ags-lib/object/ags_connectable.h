@@ -39,6 +39,9 @@ struct _AgsConnectableInterface
   void (*add_to_registry)(AgsConnectable *connectable);
   void (*remove_from_registry)(AgsConnectable *connectable);
 
+  gboolean (*is_ready)(AgsConnectable *connectable);
+  gboolean (*is_connected)(AgsConnectable *connectable);
+
   void (*connect)(AgsConnectable *connectable);
   void (*disconnect)(AgsConnectable *connectable);
 };

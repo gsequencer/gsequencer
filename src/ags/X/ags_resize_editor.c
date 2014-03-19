@@ -99,6 +99,8 @@ ags_resize_editor_connectable_interface_init(AgsConnectableInterface *connectabl
 {
   ags_resize_editor_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_resize_editor_connect;
   connectable->disconnect = ags_resize_editor_disconnect;
 }

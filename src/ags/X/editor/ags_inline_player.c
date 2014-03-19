@@ -121,6 +121,8 @@ ags_inline_player_class_init(AgsInlinePlayerClass *inline_player)
 void
 ags_inline_player_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_inline_player_connect;
   connectable->disconnect = ags_inline_player_disconnect;
 }

@@ -141,6 +141,8 @@ ags_file_selection_class_init(AgsFileSelectionClass *file_selection)
 void
 ags_file_selection_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_file_selection_connect;
   connectable->disconnect = ags_file_selection_disconnect;
 }

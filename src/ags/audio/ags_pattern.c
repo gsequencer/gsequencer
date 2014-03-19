@@ -190,6 +190,8 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 void
 ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_pattern_connect;
   connectable->disconnect = ags_pattern_disconnect;
 }

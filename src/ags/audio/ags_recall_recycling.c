@@ -604,7 +604,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   AgsRecallAudioSignal *recall_audio_signal;
 
   recall = AGS_RECALL(recall_recycling);
-
+  
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
      AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container){
@@ -701,13 +701,15 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 							   AgsAudioSignal *audio_signal,
 							   AgsRecallRecycling *recall_recycling)
 {
+  AgsRecyclingContainer *output_recycling_container;
   AgsRecall *recall;
 
   recall = AGS_RECALL(recall_recycling);
+  output_recycling_container = recall->recall_id->recycling_container->parent;
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) == 0 &&
      audio_signal->recall_id != NULL && recall->recall_id != NULL &&
-     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == recall->recall_id->recycling_container->parent &&
+     AGS_RECALL_ID(audio_signal->recall_id)->recycling_container == output_recycling_container &&
      recall_recycling->destination == (AgsRecycling *) audio_signal->recycling){
     //    g_message("ags_recall_recycling_destination_add_audio_signal_callback %s[%llx]\0",
     //	      G_OBJECT_TYPE_NAME(recall_recycling), (long long unsigned int) recall_recycling);

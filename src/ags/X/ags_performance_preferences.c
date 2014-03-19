@@ -95,6 +95,8 @@ ags_performance_preferences_class_init(AgsPerformancePreferencesClass *performan
 void
 ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_performance_preferences_connect;
   connectable->disconnect = ags_performance_preferences_disconnect;
 }

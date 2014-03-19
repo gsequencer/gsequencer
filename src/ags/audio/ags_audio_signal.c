@@ -170,6 +170,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 void
 ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_audio_signal_connect;
   connectable->disconnect = ags_audio_signal_disconnect;
 }

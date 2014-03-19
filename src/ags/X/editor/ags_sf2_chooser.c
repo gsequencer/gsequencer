@@ -123,6 +123,8 @@ ags_sf2_chooser_class_init(AgsSF2ChooserClass *sf2_chooser)
 void
 ags_sf2_chooser_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_sf2_chooser_connect;
   connectable->disconnect = ags_sf2_chooser_disconnect;
 }

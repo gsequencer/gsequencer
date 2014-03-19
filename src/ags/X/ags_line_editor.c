@@ -117,6 +117,8 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
 void
 ags_line_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_line_editor_connect;
   connectable->disconnect = ags_line_editor_disconnect;
 }

@@ -110,6 +110,8 @@ ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preferences)
 void
 ags_audio_preferences_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
   connectable->connect = ags_audio_preferences_connect;
   connectable->disconnect = ags_audio_preferences_disconnect;
 }
