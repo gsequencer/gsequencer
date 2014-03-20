@@ -645,6 +645,9 @@ ags_recall_factory_create_copy(AgsAudio *audio,
 							    AGS_RECALL_NOTATION));
 	ags_channel_add_recall(channel, (GObject *) copy_channel_run, TRUE);
 	ags_connectable_connect(AGS_CONNECTABLE(copy_channel_run));
+
+	/* iterate */
+	channel = channel->next;
       }
     }
   }
@@ -694,6 +697,9 @@ ags_recall_factory_create_copy(AgsAudio *audio,
 							    AGS_RECALL_NOTATION));
 	ags_channel_add_recall(channel, (GObject *) copy_channel_run, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(copy_channel_run));
+
+	/* iterate */
+	channel = channel->next;
       }
     }
   }

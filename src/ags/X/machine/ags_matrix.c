@@ -550,13 +550,15 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	  channel = channel->next;
 	}
       }
-
-      /* depending on destination */
-      ags_matrix_input_map_recall(matrix, 0);
     }
+
+    /* depending on destination */
+    ags_matrix_input_map_recall(matrix, 0);
   }else{
     if(grow){
+      AgsChannel *current, *output;
       AgsDelayAudio *delay_audio;
+      GList *recall;
       GList *list;
       guint stop;
 
@@ -582,13 +584,51 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
 	/* depending on destination */
        	ags_matrix_output_map_recall(matrix, 0);
-      }
-      
-      /* map recalls */
-      ags_matrix_output_map_recall(matrix, pads_old);
-      
-      /* iterate */
-      source = source->next;
+
+
+	/* map recalls */
+	ags_matrix_output_map_recall(matrix, pads_old);
+
+	output = audio->output;
+
+	while(output != NULL){
+	  current = ags_channel_nth(audio->input,
+				    output->audio_channel);
+
+	  while(current != NULL){
+	    recall = current->play;
+
+	    while(recall != NULL){
+	      if(AGS_IS_RECALL_CHANNEL_RUN(recall->data)){
+		g_object_set(G_OBJECT(recall->data),
+			     "destination\0", output,
+			     NULL);
+		ags_connectable_connect(AGS_CONNECTABLE(recall->data));
+	      }
+
+	      recall = recall->next;
+	    }
+
+	    recall = current->recall;
+
+	    while(recall != NULL){
+	      if(AGS_IS_RECALL_CHANNEL_RUN(recall->data)){
+		g_object_set(G_OBJECT(recall->data),
+			     "destination\0", output,
+			     NULL);
+
+		ags_connectable_connect(AGS_CONNECTABLE(recall->data));
+	      }
+
+	      recall = recall->next;
+	    }
+
+	    current = current->next_pad;
+	  }
+
+	  output = output->next;
+	}
+      }      
     }
   }
 }
@@ -608,61 +648,67 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   source = ags_channel_nth(audio->input,
 			   input_pad_start * audio->audio_channels);
 
-  /* ags-copy */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-copy\0",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, audio->input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
   current = source;
-  destination = ags_channel_nth(audio->output,
-				current->audio_channel);
 
-  while(destination != NULL){
-    /* recall */
-    list = current->recall;
+  while(current != NULL){
+    /* ags-copy */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-copy\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
 
-    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
-      copy_channel = AGS_COPY_CHANNEL(list->data);
 
-      g_object_set(G_OBJECT(copy_channel),
-		   "destination\0", destination,
-		   NULL);
+    destination = ags_channel_nth(audio->output,
+				  current->audio_channel);
 
-      list = list->next;
-    }
+    while(destination != NULL){
+      /* recall */
+      list = current->recall;
 
-    list = current->recall;
+      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
+	copy_channel = AGS_COPY_CHANNEL(list->data);
+
+	g_object_set(G_OBJECT(copy_channel),
+		     "destination\0", destination,
+		     NULL);
+
+	list = list->next;
+      }
+
+      list = current->recall;
     
-    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
-      copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
+      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
+	copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
 
-      g_object_set(G_OBJECT(copy_channel_run),
-		   "destination\0", destination,
-		   NULL);
+	g_object_set(G_OBJECT(copy_channel_run),
+		     "destination\0", destination,
+		     NULL);
 
-      list = list->next;
+	list = list->next;
+      }
+
+      destination = destination->next_pad;
     }
 
-    destination = destination->next_pad;
-  }
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
 
-  /* ags-stream */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-stream\0",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+    current = current->next_pad;
+  }
 }
 
 void

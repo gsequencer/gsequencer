@@ -2328,6 +2328,11 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 	goto ags_channel_recursive_play_init_up_OUTPUT;
       }else{
 	current = current->link;
+
+	if(current == NULL){
+	  return;
+	}
+
 	audio = AGS_AUDIO(current->audio);
       }
     }else{

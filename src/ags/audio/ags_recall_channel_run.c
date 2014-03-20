@@ -519,8 +519,6 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
 
   ags_recall_channel_run_parent_connectable_interface->connect(connectable);
 
-  g_message("ags_recall_channel_run_connect\0");
-
   /* AgsCopyChannelRun */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
