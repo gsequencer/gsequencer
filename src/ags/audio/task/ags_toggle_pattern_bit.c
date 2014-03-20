@@ -29,8 +29,14 @@ void ags_toggle_pattern_bit_finalize(GObject *gobject);
 
 void ags_toggle_pattern_bit_launch(AgsTask *task);
 
+enum{
+  REFRESH_GUI,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_toggle_pattern_bit_parent_class = NULL;
 static AgsConnectableInterface *ags_toggle_pattern_bit_parent_connectable_interface;
+static guint toggle_pattern_bit_signals[LAST_SIGNAL];
 
 GType
 ags_toggle_pattern_bit_get_type()
@@ -82,10 +88,23 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
 
   gobject->finalize = ags_toggle_pattern_bit_finalize;
 
+  /* signals */
+  toggle_pattern_bit_signals[REFRESH_GUI] =
+    g_signal_new("refresh-gui\0",
+		 G_TYPE_FROM_CLASS (toggle_pattern_bit),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsTogglePatternBitClass, refresh_gui),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
   /* task */
   task = (AgsTaskClass *) toggle_pattern_bit;
 
   task->launch = ags_toggle_pattern_bit_launch;
+
+  /* toggle pattern bit */
+  toggle_pattern_bit->refresh_gui = NULL;
 }
 
 void
@@ -101,6 +120,7 @@ void
 ags_toggle_pattern_bit_init(AgsTogglePatternBit *toggle_pattern_bit)
 {
   toggle_pattern_bit->pattern = NULL;
+  toggle_pattern_bit->line = 0;
 
   toggle_pattern_bit->index_i = 0;
   toggle_pattern_bit->index_j = 0;
@@ -141,10 +161,24 @@ ags_toggle_pattern_bit_launch(AgsTask *task)
   ags_pattern_toggle_bit((AgsPattern *) toggle_pattern_bit->pattern,
 			 toggle_pattern_bit->index_i, toggle_pattern_bit->index_j,
 			 toggle_pattern_bit->bit);
+
+  ags_toggle_pattern_bit_refresh_gui(toggle_pattern_bit);
+}
+
+void
+ags_toggle_pattern_bit_refresh_gui(AgsTogglePatternBit *toggle_pattern_bit)
+{
+  g_return_if_fail(AGS_IS_TOGGLE_PATTERN_BIT(toggle_pattern_bit));
+
+  g_object_ref(G_OBJECT(toggle_pattern_bit));
+  g_signal_emit(G_OBJECT(toggle_pattern_bit),
+		toggle_pattern_bit_signals[REFRESH_GUI], 0);
+  g_object_unref(G_OBJECT(toggle_pattern_bit));
 }
 
 AgsTogglePatternBit*
 ags_toggle_pattern_bit_new(AgsPattern *pattern,
+			   guint line,
 			   guint index_i, guint index_j,
 			   guint bit)
 {
@@ -154,6 +188,7 @@ ags_toggle_pattern_bit_new(AgsPattern *pattern,
 							    NULL);
 
   toggle_pattern_bit->pattern = pattern;
+  toggle_pattern_bit->line = line;
 
   toggle_pattern_bit->index_i = index_i;
   toggle_pattern_bit->index_j = index_j;

@@ -342,16 +342,21 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 				AGS_MACHINE(matrix)->audio);
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(add_audio));
-
+  
   gtk_box_pack_start((GtkBox *) window->machines,
-		     (GtkWidget *) matrix,
+		     GTK_WIDGET(matrix),
 		     FALSE, FALSE, 0);
 
+  /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(matrix));
 
-  gtk_widget_show_all((GtkWidget *) matrix);
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(matrix));
 
+  /* */
   matrix->machine.audio->audio_channels = 1;
+
+  /* AgsMatrixInputPad */
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_OUTPUT, 1);
 }

@@ -40,6 +40,7 @@ struct _AgsTogglePatternBit
   AgsTask task;
 
   AgsPattern *pattern;
+  guint line;
 
   guint index_i;
   guint index_j;
@@ -49,11 +50,16 @@ struct _AgsTogglePatternBit
 struct _AgsTogglePatternBitClass
 {
   AgsTaskClass task;
+
+  void (*refresh_gui)(AgsTogglePatternBit *toggle_pattern_bit);
 };
 
 GType ags_toggle_pattern_bit_get_type();
 
+void ags_toggle_pattern_bit_refresh_gui(AgsTogglePatternBit *toggle_pattern_bit);
+
 AgsTogglePatternBit* ags_toggle_pattern_bit_new(AgsPattern *pattern,
+						guint line,
 						guint index_i, guint index_j,
 						guint bit);
 

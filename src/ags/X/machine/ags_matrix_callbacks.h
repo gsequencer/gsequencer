@@ -32,7 +32,7 @@ void ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 void ags_matrix_run_callback(GtkWidget *widget, AgsMatrix *matrix);
 
 void ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-					 guint attack,
+					 guint delay, guint attack,
 					 AgsMatrix *matrix);
 
 void ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix);

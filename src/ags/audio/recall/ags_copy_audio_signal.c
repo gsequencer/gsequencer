@@ -240,7 +240,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   g_value_unset(&value);
 
   if(muted){
-    //    return;
+    return;
   }
 
   stream_destination = destination->stream_current;

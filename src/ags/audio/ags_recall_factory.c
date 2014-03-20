@@ -1580,6 +1580,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
 							  AGS_RECALL_SEQUENCER |
 							  AGS_RECALL_NOTATION));
 	ags_channel_add_recall(channel, (GObject *) volume_channel, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(volume_channel));
 
 	/* AgsVolumeChannelRun */
 	volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
@@ -1606,7 +1607,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
 
-    if(play_container == NULL){
+    if(recall_container == NULL){
       recall_container = ags_recall_container_new();
     }
 
@@ -1632,6 +1633,7 @@ ags_recall_factory_create_volume(AgsAudio *audio,
 							  AGS_RECALL_SEQUENCER |
 							  AGS_RECALL_NOTATION));
 	ags_channel_add_recall(channel, (GObject *) volume_channel, FALSE);
+	ags_connectable_connect(AGS_CONNECTABLE(volume_channel));
 
 	/* AgsVolumeChannelRun */
 	volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,

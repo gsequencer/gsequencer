@@ -34,6 +34,7 @@
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_toggle_led.h>
+#include <ags/audio/task/ags_toggle_pattern_bit.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 #include <ags/audio/task/recall/ags_apply_tact.h>
@@ -52,67 +53,25 @@
 
 #include <math.h>
 
+void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
+				     AgsMatrix *matrix);
+
 extern const char *AGS_MATRIX_INDEX;
 
 void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
 {
   AgsWindow *window;
-  AgsDevout *devout;
-  AgsAudio *audio;
-  AgsApplyBpm *apply_bpm;
-  AgsApplyTact *apply_tact;
-  AgsApplySequencerLength *apply_sequencer_length;
-  double bpm, tact, length;
 
   if(old_parent != NULL)
     return;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
-  audio = matrix->machine.audio;
-  audio->devout = (GObject *) window->devout;
 
   AGS_MACHINE(matrix)->name = g_strdup_printf("Default %d\0",
 					      ags_window_find_machine_counter(window, AGS_TYPE_MATRIX)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_MATRIX);
-
-  devout = AGS_DEVOUT(audio->devout);
-
-
-  /* bpm */
-  bpm = window->navigation->bpm->adjustment->value;
-
-  /*
-  if(bpm > 60.0){
-    bpm = exp2(-1.0 * 60.0 / bpm);
-  }else{
-    bpm = exp2(60.0 / bpm);
-  }
-  */
-
-  apply_bpm = ags_apply_bpm_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
-				bpm);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(apply_bpm));
-
-  /* tact */
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
- 
-  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
-  				  tact);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(apply_tact));
-
-  /* length */
-  length = GTK_SPIN_BUTTON(matrix->length_spin)->adjustment->value;
-
-  apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
-							  length);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(apply_sequencer_length));
-
-  //  fprintf(stdout, "ags_matrix_parent_set_callback: delay_audio->delay = %d\n\0", delay_audio->delay);
 }
 
 void
@@ -173,21 +132,18 @@ ags_matrix_run_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
 
       /* create cancel task */
       cancel_audio = ags_cancel_audio_new(AGS_MACHINE(matrix)->audio,
-					  FALSE, FALSE, TRUE);
+					  FALSE, TRUE, FALSE);
 
       /* append AgsCancelAudio */
       ags_task_thread_append_task(task_thread,
 				  AGS_TASK(cancel_audio));
-    }else{
-      //      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
-      //      AGS_DEVOUT_PLAY(AGS_MACHINE(matrix)->audio->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
     }
   }
 }
 
 void
 ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-				    guint attack,
+				    guint delay, guint attack,
 				    AgsMatrix *matrix)
 {
   AgsWindow *window;
@@ -308,6 +264,7 @@ gboolean
 ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsMatrix *matrix)
 {
   if (event->button == 1){
+    AgsTogglePatternBit *toggle_pattern_bit;
     AgsChannel *channel;
     guint i, j;
 
@@ -316,8 +273,15 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
 
     channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, i + (guint) matrix->adjustment->value);
 
-    ags_pattern_toggle_bit((AgsPattern *) channel->pattern->data, 0, strtol(matrix->selected->button.label_text, NULL, 10) -1, j);
-    ags_matrix_redraw_gutter_point(matrix, channel, j, i);
+    toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
+						    i + (guint) matrix->adjustment->value,
+						    0, strtol(matrix->selected->button.label_text, NULL, 10) - 1,
+						    j);
+    g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+		     G_CALLBACK(ags_matrix_refresh_gui_callback), matrix);
+
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout)->ags_main)->main_loop)->task_thread),
+				AGS_TASK(toggle_pattern_bit));
   }else if (event->button == 3){
   }
 
@@ -372,31 +336,30 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
   AgsCountBeatsAudio *count_beats_audio;
   GList *list;
   gboolean loop;
-  GValue value = {0,};
 
   loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 
   /* AgsCopyPatternAudio */
-  list = ags_recall_find_type(AGS_MACHINE(matrix)->audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
+  list = AGS_MACHINE(matrix)->audio->play;
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
-  g_value_set_boolean(&value, loop);
-
-  if(list != NULL){
+  while((list = ags_recall_find_type(list,
+				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    ags_port_safe_write(count_beats_audio->loop,
-			&value);
+    count_beats_audio->loop->port_value.ags_port_boolean = loop;
+
+    list = list->next;
   }
 
-  list = ags_recall_find_type(AGS_MACHINE(matrix)->audio->recall,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
+  list = AGS_MACHINE(matrix)->audio->recall;
 
-  if(list != NULL){
+  while((list = ags_recall_find_type(list,
+				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->loop = loop;
+    count_beats_audio->loop->port_value.ags_port_boolean = loop;
+
+    list = list->next;
   }
 }
 
@@ -456,3 +419,14 @@ ags_matrix_play_cancel(AgsRecall *recall, AgsMatrix *matrix)
 {
 }
 
+void
+ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
+				AgsMatrix *matrix)
+{
+  AgsChannel *channel;
+  guint line;
+
+  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, toggle_pattern_bit->line);
+
+  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, toggle_pattern_bit->line - (guint) matrix->adjustment->value);
+}

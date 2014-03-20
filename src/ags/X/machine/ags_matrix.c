@@ -370,7 +370,7 @@ void
 ags_matrix_connect(AgsConnectable *connectable)
 {
   AgsMatrix *matrix;
-  AgsDelayAudioRun *recall_delay_audio_run;
+  AgsDelayAudioRun *play_delay_audio_run;
   AgsRecallHandler *recall_handler;
   GList *list;
   int i;
@@ -380,19 +380,20 @@ ags_matrix_connect(AgsConnectable *connectable)
   matrix = AGS_MATRIX(connectable);
 
   /* recalls */
-  list = ags_recall_find_type(AGS_AUDIO(AGS_MACHINE(matrix)->audio)->recall, AGS_TYPE_DELAY_AUDIO_RUN);
+  list = ags_recall_template_find_type(AGS_AUDIO(AGS_MACHINE(matrix)->audio)->play, AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
-    recall_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "sequencer-count\0";
+    recall_handler->callback = G_CALLBACK(ags_matrix_sequencer_count_callback);
+    recall_handler->data = (gpointer) matrix;
+
+    //TODO:JK: uncomment me
+    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
   }
-  
-  recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-  recall_handler->signal_name = "sequencer_count\0";
-  recall_handler->callback = G_CALLBACK(ags_matrix_sequencer_count_callback);
-  recall_handler->data = (gpointer) matrix;
-
-  ags_recall_add_handler(AGS_RECALL(recall_delay_audio_run), recall_handler);
 
   /* AgsMatrix */
   g_signal_connect(G_OBJECT(matrix->run), "clicked\0",
@@ -727,7 +728,7 @@ ags_matrix_redraw_gutter_point (AgsMatrix *matrix, AgsChannel *channel, guint j,
   if(channel->pattern == NULL)
     return;
 
-  if(ags_pattern_get_bit((AgsPattern *) channel->pattern->data, 0, strtol(matrix->selected->button.label_text, NULL, 10) -1, j))
+  if(ags_pattern_get_bit((AgsPattern *) channel->pattern->data, 0, strtol(matrix->selected->button.label_text, NULL, 10) - 1, j))
     ags_matrix_highlight_gutter_point(matrix, j, i);
   else
     ags_matrix_unpaint_gutter_point(matrix, j, i);

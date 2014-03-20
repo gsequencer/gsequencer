@@ -134,6 +134,24 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_WIDGET_TYPE,
 				  param_spec);
 
+  param_spec = g_param_spec_string("plugin-name\0",
+				   "plugin name to control\0",
+				   "The plugin's name to control\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN_NAME,
+				  param_spec);
+
+  param_spec = g_param_spec_string("control-port\0",
+				   "control port index\0",
+				   "The index of the port to control\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROL_PORT,
+				  param_spec);
+
   /* AgsLineMember */
   line_member->change_port = ags_line_member_change_port;
 }

@@ -501,6 +501,7 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
     selected_line = AGS_LINE(line->data);
 
     toggle_pattern_bit = ags_toggle_pattern_bit_new(selected_line->channel->pattern->data,
+						    selected_line->channel->line,
 						    index0, index1,
 						    offset);
 
