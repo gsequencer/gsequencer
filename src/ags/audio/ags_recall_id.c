@@ -259,6 +259,7 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
   case 2:
     if((AGS_RECALL_ID_POST & (id->flags)) == 0)
       return(TRUE);
+    break;
   }
 
   return(FALSE);
@@ -334,6 +335,25 @@ ags_recall_id_find_recycling_container(GList *recall_id_list,
     recall_id = AGS_RECALL_ID(recall_id_list->data);
 
     if(recall_id->recycling_container == recycling_container){
+      return(recall_id);
+    }
+
+    recall_id_list = recall_id_list->next;
+  }
+
+  return(NULL);
+}
+
+AgsRecallID*
+ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
+					      AgsRecyclingContainer *parent_recycling_container)
+{
+  AgsRecallID *recall_id;
+
+  while(recall_id_list != NULL){
+    recall_id = AGS_RECALL_ID(recall_id_list->data);
+
+    if(recall_id->recycling_container->parent == parent_recycling_container){
       return(recall_id);
     }
 

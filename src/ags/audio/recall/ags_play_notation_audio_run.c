@@ -470,7 +470,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsRecycling *recycling;
   GList *list;
   guint i;
-  GValue *value = {0,};
+  GValue value = {0,};
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
@@ -488,9 +488,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   list = (GList *) g_value_get_pointer(&value);
 
-  channel = NULL;
-  //  channel = ags_channel_nth(audio->output,
-  //			    );
+  channel = ags_channel_nth(audio->output,
+			    nth_run);
   
   timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
   
@@ -522,7 +521,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
-							     note->x[1] - note->x[0],
+							     AGS_DEVOUT_DEFAULT_BUFFER_SIZE * (note->x[1] - note->x[0]),
 							     delay, attack);
 	  ags_audio_signal_connect(audio_signal);
 

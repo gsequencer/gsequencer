@@ -271,7 +271,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   ags_port_safe_read(play_channel->audio_channel,
 		     &audio_channel_value);
 
-  audio_channel = g_value_get_uint(&audio_channel_value);
+  audio_channel = play_channel->audio_channel->port_value.ags_port_uint; //g_value_get_uint(&audio_channel_value);
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);

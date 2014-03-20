@@ -1874,30 +1874,32 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 {
   AgsRecall *recall, *copy;
   GList *list_recall_start, *list_recall;
-  gboolean immediate_new_level;
   
   g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
-  
-  /* return if already duplicated */
-  if((AGS_RECALL_ID_DUPLICATE & (recall_id->flags)) != 0){
-    return;
-  }
 
-  /*  */
+  /* get the appropriate list */
   if(recall_id->recycling_container->parent == NULL)
     list_recall_start = 
       list_recall = audio->play;
   else
     list_recall_start =
       list_recall = audio->recall;
+  
+  /* return if already duplicated */
+  if((AGS_RECALL_ID_DUPLICATE & (recall_id->flags)) != 0){
+    while(list_recall != NULL){
+      /* notify run */
+      ags_recall_notify_dependency(AGS_RECALL(list_recall->data), AGS_RECALL_NOTIFY_RUN, 1);
 
-  /*  */  
-  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-    immediate_new_level = TRUE;
+      list_recall = list_recall->next;
+    }
+
+    return;
   }else{
-    immediate_new_level = FALSE;
+    //TODO:JK: optimize tree see deprecated AgsRunOrder
   }
 
+  /* duplicate */
   while(list_recall != NULL){
     recall = AGS_RECALL(list_recall->data);
     

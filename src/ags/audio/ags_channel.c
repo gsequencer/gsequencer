@@ -1622,12 +1622,12 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
       input = ags_channel_nth(audio->input,
 			      output->audio_channel);
 
-      if(ags_recall_id_get_run_stage(output_recall_id, stage)){
+      //      if(ags_recall_id_get_run_stage(output_recall_id, stage)){
 	/* block sync|async for this run */
-	ags_channel_recall_id_set(output, output_recall_id, TRUE,
-				  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
-				  "stage\0", stage,
-				  NULL);
+      //	ags_channel_recall_id_set(output, output_recall_id, TRUE,
+      //			  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
+      //			  "stage\0", stage,
+      //			  NULL);
 
 
 	/* input_recall_id - check if there is a new recycling */
@@ -1654,12 +1654,12 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 	/* run in AGS_AUDIO_ASYNC mode */
 	ags_channel_recursive_play_input_async_threaded(input,
 							default_recall_id);
-      }else{
+	//      }else{
 	/* unblock sync|async for next run */
-	if((AGS_CHANNEL_RUNNING & (output->flags)) != 0){
-	  ags_recall_id_unset_run_stage(output_recall_id, stage);
-	}
-      }
+	//	if((AGS_CHANNEL_RUNNING & (output->flags)) != 0){
+	//	  ags_recall_id_unset_run_stage(output_recall_id, stage);
+	//	}
+	//      }
 
       /* call audio */
       if(default_recall_id->recycling_container != output_recall_id->recycling_container){
@@ -1951,39 +1951,40 @@ ags_channel_recursive_play(AgsChannel *channel,
     
     /* call input */
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-      if(ags_recall_id_get_run_stage(output_recall_id, stage)){
-	input = ags_channel_nth(audio->input,
-				output->audio_channel);
-
-	/* block sync|async for this run */
-	ags_channel_recall_id_set(output, output_recall_id, TRUE,
-				  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
-				  "stage\0", stage,
-				  NULL);
-
+      //      if(ags_recall_id_get_run_stage(output_recall_id, stage)){
+      input = ags_channel_nth(audio->input,
+			      output->audio_channel);
+      
+      //TODO:JK: optimize tree see deprecated AgsRunOrder
+      /* block sync|async for this run */
+	//	ags_channel_recall_id_set(output, output_recall_id, TRUE,
+	//			  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
+	//			  "stage\0", stage,
+	//			  NULL);
+      
 	/* traverse the tree - run in AGS_AUDIO_ASYNC mode */
-	ags_channel_recursive_play_input_async(input,
-					       default_recall_id);
-      }else{
-	/* unblock sync|async for next run */
-	if((AGS_CHANNEL_RUNNING & (output->flags)) != 0){
-	  ags_recall_id_unset_run_stage(output_recall_id, stage);
-	}
-      }
-
+      ags_channel_recursive_play_input_async(input,
+					     default_recall_id);
+      //      }else{
+      /* unblock sync|async for next run */
+      //	if((AGS_CHANNEL_RUNNING & (output->flags)) != 0){
+      //TODO:JK: optimize tree see deprecated AgsRunOrder
+      //	  ags_recall_id_unset_run_stage(output_recall_id, stage);
+      //	}
+    
       /* call audio */
       if(default_recall_id->recycling_container != output_recall_id->recycling_container){
 	ags_audio_play(audio,
 		       default_recall_id,
 		       stage);
       }
-	
+    
       ags_audio_play(audio,
 		     output_recall_id,
 		     stage);
     }else{
       input = ags_channel_nth(audio->input,
-			      output->line);
+			    output->line);
 		  
       ags_channel_recursive_play_input_sync(input,
 					    default_recall_id);
@@ -3666,18 +3667,18 @@ ags_channel_recursive_cancel(AgsChannel *channel,
 
     /* call input */
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-      if((AGS_RECALL_ID_CANCEL & (output_recall_id->flags)) != 0){
+      //      if((AGS_RECALL_ID_CANCEL & (output_recall_id->flags)) != 0){
 	/* block sync|async for this run */
-	ags_channel_recall_id_set(output,
-				  output_recall_id,
-				  TRUE,
-				  AGS_CHANNEL_RECALL_ID_CANCEL,
-				  NULL);
+	//	ags_channel_recall_id_set(output,
+	//			  output_recall_id,
+	//			  TRUE,
+	//			  AGS_CHANNEL_RECALL_ID_CANCEL,
+	//			  NULL);
 
 	/* follow the links */
 	ags_channel_recursive_cancel_input_async(ags_channel_nth(audio->input, output->audio_channel),
 						 output_recall_id);
-      }
+	//      }
     }else{      
       /* input_recall_id - check if there is a new recycling */
       child_position = ags_recycling_container_find_child(output_recall_id->recycling_container,
@@ -5113,12 +5114,15 @@ ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *default_recall_id, gb
   case TRUE:
     current = output->next_pad;
     while(current != NULL){
-      recall_id = ags_recall_id_find_recycling_container(current->recall_id,
-							 default_recall_id->recycling_container);
+      recall_id = ags_recall_id_find_parent_recycling_container(current->recall_id,
+								default_recall_id->recycling_container->parent);
+
+      if(recall_id == NULL)
+	return;
 
       switch(mode){
       case AGS_CHANNEL_RECALL_ID_RUN_STAGE:
-	ags_recall_id_set_run_stage(recall_id, stage);
+	ags_recall_id_set_run_stage(default_recall_id, stage);
 	break;
       case AGS_CHANNEL_RECALL_ID_CANCEL:
 	recall_id->flags |= AGS_RECALL_ID_CANCEL;
@@ -5131,12 +5135,12 @@ ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *default_recall_id, gb
     current = output->prev_pad;
 
     while(current != NULL){
-      recall_id = ags_recall_id_find_recycling_container(current->recall_id,
-							 default_recall_id->recycling_container);
+      recall_id = ags_recall_id_find_parent_recycling_container(current->recall_id,
+								default_recall_id->recycling_container->parent);
 
       switch(mode){
       case AGS_CHANNEL_RECALL_ID_RUN_STAGE:
-	ags_recall_id_set_run_stage(recall_id, stage);
+	ags_recall_id_set_run_stage(default_recall_id, stage);
 	break;
       case AGS_CHANNEL_RECALL_ID_CANCEL:
 	recall_id->flags |= AGS_RECALL_ID_CANCEL;
@@ -5149,12 +5153,15 @@ ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *default_recall_id, gb
     if(ommit_own_channel)
       break;
 
-    recall_id = ags_recall_id_find_recycling_container(output->recall_id,
-						       default_recall_id->recycling_container);
+    recall_id = ags_recall_id_find_parent_recycling_container(output->recall_id,
+							      default_recall_id->recycling_container->parent);
+
+    if(recall_id == NULL)
+      return;
 
     switch(mode){
     case AGS_CHANNEL_RECALL_ID_RUN_STAGE:
-      ags_recall_id_set_run_stage(recall_id, stage);
+      ags_recall_id_set_run_stage(default_recall_id, stage);
 
       break;
     case AGS_CHANNEL_RECALL_ID_CANCEL:

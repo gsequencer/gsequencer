@@ -761,10 +761,16 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   }
   
   if(recall_id->recycling_container->parent != NULL){
-    copy->run_order = ags_recycling_container_find_child(recall_id->recycling_container->parent,
-							 recall_id->recycling_container);
+    copy->run_order = g_list_index(recall_id->recycling_container->parent->children,
+				   recall_id->recycling_container);
   }else if(copy->destination != NULL){
     copy->run_order = copy->destination->audio_channel;
+  }else{
+    AgsRecycling *recycling;
+
+    recycling = AGS_RECYCLING(recall_id->recycling);
+
+    copy->run_order = AGS_CHANNEL(recycling->channel)->audio_channel;
   }
 
   if(copy->destination != NULL){
