@@ -139,6 +139,7 @@ ags_task_thread_connect(AgsConnectable *connectable)
 
   task_thread = AGS_TASK_THREAD(connectable);
 
+  //TODO:JK broken
   ags_connectable_connect(AGS_CONNECTABLE(task_thread->thread_pool));
 }
 
@@ -176,7 +177,7 @@ ags_task_thread_start(AgsThread *thread)
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
 
-  task_thread->thread_pool->main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
+  task_thread->thread_pool->main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(AGS_THREAD(task_thread)));
   ags_thread_pool_start(task_thread->thread_pool);
 }
 

@@ -190,8 +190,6 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
   thread_pool->running_thread = NULL;
 
   thread_pool->stop_handler = (gulong *) malloc(AGS_THREAD_POOL_DEFAULT_MAX_THREADS * sizeof(gulong));
-
-
 }
 
 void
@@ -253,22 +251,7 @@ ags_thread_pool_get_property(GObject *gobject,
 void
 ags_thread_pool_connect(AgsConnectable *connectable)
 {
-  AgsThreadPool *thread_pool;
-  GList *list;
-  guint n_threads;
-  guint i;
-
-  thread_pool = AGS_THREAD_POOL(connectable);
-
-  list = thread_pool->returnable_thread;
-  n_threads = g_list_length(thread_pool->returnable_thread);
-
-  for(i = 0; i < n_threads; i++);{
-    thread_pool->stop_handler[i] = g_signal_connect(G_OBJECT(list->data), "stop\0",
-						    G_CALLBACK(ags_thread_pool_stop_callback), (gpointer) thread_pool);
-
-    list = list->next;
-  }
+  /* empty */
 }
 
 void
@@ -329,9 +312,12 @@ ags_thread_pool_check_stop(AgsThreadPool *thread_pool)
     if(count >= g_atomic_int_get(&thread_pool->max_unused_threads)){
       thread_pool->returnable_thread = g_list_remove(thread_pool->returnable_thread,
 						     returnable_thread);
-      g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
-		       (~AGS_THREAD_RUNNING));
-      count--;
+
+      if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
+	g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
+			 (~AGS_THREAD_RUNNING));
+	count--;
+      }
     }
 
     list = list_next;
@@ -378,10 +364,11 @@ ags_thread_pool_creation_thread(void *ptr)
       thread = (AgsThread *) ags_returnable_thread_new();
       thread_pool->returnable_thread = g_list_prepend(thread_pool->returnable_thread, thread);
 
-      thread_pool->stop_handler[n_threads + i] = g_signal_connect(G_OBJECT(thread), "stop\0",
-							      G_CALLBACK(ags_thread_pool_stop_callback), (gpointer) thread_pool);
       ags_thread_add_child(AGS_THREAD(thread_pool->main_loop),
 			   thread);
+      thread_pool->stop_handler[n_threads + i] = g_signal_connect(G_OBJECT(thread), "stop\0",
+							      G_CALLBACK(ags_thread_pool_stop_callback), (gpointer) thread_pool);
+      ags_connectable_connect(AGS_CONNECTABLE(thread));
 
       n_threads++;
     }
@@ -472,6 +459,18 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 
   pthread_create(&thread_pool->thread, NULL,
 		 &(ags_thread_pool_creation_thread), thread_pool);
+
+  list = thread_pool->returnable_thread;
+
+  while(list != NULL){
+    ags_thread_add_child(AGS_THREAD(thread_pool->main_loop),
+			 AGS_THREAD(list->data));
+    thread_pool->stop_handler[i] = g_signal_connect(G_OBJECT(list->data), "stop\0",
+						    G_CALLBACK(ags_thread_pool_stop_callback), (gpointer) thread_pool);
+    ags_thread_start(AGS_THREAD(list->data));
+
+    list = list->next;
+  }
 }
 
 void
