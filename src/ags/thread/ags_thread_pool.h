@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/object/ags_main_loop.h>
+
 #include <ags/thread/ags_thread.h>
 
 #define AGS_TYPE_THREAD_POOL                (ags_thread_pool_get_type())
@@ -56,6 +58,7 @@ struct _AgsThreadPool
   volatile guint newly_pulled;
   volatile guint queued;
 
+  AgsMainLoop *main_loop;
   GList *returnable_thread;
   GList *running_thread;
 
@@ -78,6 +81,6 @@ AgsThread* ags_thread_pool_pull(AgsThreadPool *thread_pool);
 
 void ags_thread_pool_start(AgsThreadPool *thread_pool);
 
-AgsThreadPool* ags_thread_pool_new();
+AgsThreadPool* ags_thread_pool_new(AgsMainLoop *main_loop);
 
 #endif /*__AGS_THREAD_POOL_H__*/

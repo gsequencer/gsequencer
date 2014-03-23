@@ -34,8 +34,8 @@ void ags_task_thread_finalize(GObject *gobject);
 void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
 
-void* ags_task_thread_append_task_thread(void *ptr);
-void* ags_task_thread_append_tasks_thread(void *ptr);
+void ags_task_thread_append_task_queue(AgsThread *thread);
+void ags_task_thread_append_tasks_queue(AgsThread *thread);
 
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
@@ -126,14 +126,20 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   task_thread->exec = NULL;
   task_thread->queue = NULL;
+
+  task_thread->thread_pool = ags_thread_pool_new(NULL);
 }
 
 void
 ags_task_thread_connect(AgsConnectable *connectable)
 {
+  AgsTaskThread *task_thread;
+
   ags_task_thread_parent_connectable_interface->connect(connectable);
 
-  /* empty */
+  task_thread = AGS_TASK_THREAD(connectable);
+
+  ags_connectable_connect(AGS_CONNECTABLE(task_thread->thread_pool));
 }
 
 void
@@ -162,9 +168,16 @@ ags_task_thread_finalize(GObject *gobject)
 void
 ags_task_thread_start(AgsThread *thread)
 {
+  AgsTaskThread *task_thread;
+
+  task_thread = AGS_TASK_THREAD(thread);
+
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
+
+  task_thread->thread_pool->main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
+  ags_thread_pool_start(task_thread->thread_pool);
 }
 
 void
@@ -236,8 +249,8 @@ ags_task_thread_run(AgsThread *thread)
   }
 }
 
-void*
-ags_task_thread_append_task_thread(void *ptr)
+void
+ags_task_thread_append_task_queue(AgsThread *thread)
 {
   AgsTask *task;
   AgsTaskThread *task_thread;
@@ -245,7 +258,7 @@ ags_task_thread_append_task_thread(void *ptr)
   gboolean initial_wait;
   int ret;
 
-  append = (AgsTaskThreadAppend *) ptr;
+  append = (AgsTaskThreadAppend *) thread->data;
 
   task_thread = append->task_thread;
   task = AGS_TASK(append->data);
@@ -266,8 +279,8 @@ ags_task_thread_append_task_thread(void *ptr)
   /*  */
   //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
 
-  /*  */
-  pthread_exit(NULL);
+  /* give back to pool */
+  ags_thread_stop(thread);
 }
 
 /**
@@ -281,19 +294,22 @@ void
 ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 {
   AgsTaskThreadAppend *append;
-  pthread_t thread;
+  AgsThread *thread;
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
   append->task_thread = task_thread;
   append->data = task;
 
-  pthread_create(&thread, NULL,
-		 &ags_task_thread_append_task_thread, append);
+  thread = ags_thread_pool_pull(task_thread->thread_pool);
+  thread->data = append;
+
+  AGS_THREAD_GET_CLASS(thread)->run = ags_task_thread_append_task_queue;
+  ags_thread_start(thread);
 }
 
-void*
-ags_task_thread_append_tasks_thread(void *ptr)
+void
+ags_task_thread_append_tasks_queue(AgsThread *thread)
 {
   AgsTask *task;
   AgsTaskThread *task_thread;
@@ -302,7 +318,7 @@ ags_task_thread_append_tasks_thread(void *ptr)
   gboolean initial_wait;
   int ret;
 
-  append = (AgsTaskThreadAppend *) ptr;
+  append = (AgsTaskThreadAppend *) thread->data;
 
   task_thread = append->task_thread;
   list = (GList *) append->data;
@@ -320,8 +336,8 @@ ags_task_thread_append_tasks_thread(void *ptr)
   /*  */
   pthread_mutex_unlock(&(task_thread->read_mutex));
 
-  /*  */
-  pthread_exit(NULL);
+  /* give back to pool */
+  ags_thread_stop(thread);
 }
 
 /**
@@ -336,15 +352,18 @@ void
 ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 {
   AgsTaskThreadAppend *append;
-  pthread_t thread;
+  AgsThread *thread;
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
   append->task_thread = task_thread;
   append->data = list;
 
-  pthread_create(&thread, NULL,
-		 &ags_task_thread_append_tasks_thread, append);
+  thread = ags_thread_pool_pull(task_thread->thread_pool);
+  thread->data = append;
+
+  AGS_THREAD_GET_CLASS(thread)->run = ags_task_thread_append_tasks_queue;  
+  ags_thread_start(thread);
 }
 
 AgsTaskThread*

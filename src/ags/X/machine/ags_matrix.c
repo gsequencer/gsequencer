@@ -556,6 +556,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
       /* depending on destination */
       ags_matrix_input_map_recall(matrix, pads_old);
+    }else{
+      matrix->mapped_input_pad = audio->input_pads;
     }
   }else{
     if(grow){
@@ -631,6 +633,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
       /* depending on destination */
       ags_matrix_output_map_recall(matrix, pads_old);
+    }else{
+      matrix->mapped_output_pad = audio->output_pads;
     }
   }
 }

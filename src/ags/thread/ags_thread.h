@@ -124,7 +124,7 @@ struct _AgsThread
 
   AgsThread *children;
 
-  GObject *data;
+  gpointer data;
 };
 
 struct _AgsThreadClass
@@ -191,6 +191,6 @@ void ags_thread_resume(AgsThread *thread);
 void ags_thread_timelock(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
 
-AgsThread* ags_thread_new(GObject *data);
+AgsThread* ags_thread_new(gpointer data);
 
 #endif /*__AGS_THREAD_H__*/

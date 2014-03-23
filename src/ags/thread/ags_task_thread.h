@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_thread.h>
+#include <ags/thread/ags_thread_pool.h>
 
 #include <ags/audio/ags_task.h>
 
@@ -51,6 +52,8 @@ struct _AgsTaskThread
 
   GList *exec;
   GList *queue;
+
+  AgsThreadPool *thread_pool;
 };
 
 struct _AgsTaskThreadClass

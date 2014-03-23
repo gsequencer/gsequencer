@@ -1974,11 +1974,11 @@ ags_thread_stop(AgsThread *thread)
  * ags_thread_new:
  * @data an #GObject
  *
- * Create a new #AgsThread you may provide an #GObject as @data
+ * Create a new #AgsThread you may provide a #gpointer as @data
  * to your thread routine.
  */
 AgsThread*
-ags_thread_new(GObject *data)
+ags_thread_new(gpointer data)
 {
   AgsThread *thread;
 

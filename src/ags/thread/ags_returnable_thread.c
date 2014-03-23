@@ -29,6 +29,7 @@ void ags_returnable_thread_finalize(GObject *gobject);
 
 void ags_returnable_thread_start(AgsThread *thread);
 void ags_returnable_thread_stop(AgsThread *thread);
+void ags_returnable_thread_run(AgsThread *thread);
 
 static gpointer ags_returnable_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_returnable_thread_parent_connectable_interface;
@@ -86,6 +87,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   /* AgsThreadClass */
   thread->start = ags_returnable_thread_start;
   thread->stop = ags_returnable_thread_stop;
+  thread->run = ags_returnable_thread_run;
 }
 
 void
@@ -133,6 +135,8 @@ void
 ags_returnable_thread_start(AgsThread *thread)
 {
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) == 0){
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_RUNNING);
     AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
   }else{
     ags_thread_resume(thread);
@@ -142,7 +146,17 @@ ags_returnable_thread_start(AgsThread *thread)
 void
 ags_returnable_thread_stop(AgsThread *thread)
 {
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_WAIT_0);
+  
   ags_thread_suspend(thread);
+}
+
+void
+ags_returnable_thread_run(AgsThread *thread)
+{
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_WAIT_0);
 }
 
 AgsReturnableThread*
