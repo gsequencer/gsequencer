@@ -41,6 +41,9 @@ struct _AgsMatrix
 
   guint flags;
 
+  guint mapped_output_pad;
+  guint mapped_input_pad;
+
   GtkTable *table;
 
   GtkToggleButton *run;

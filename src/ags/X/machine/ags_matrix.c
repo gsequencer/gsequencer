@@ -257,6 +257,9 @@ ags_matrix_init(AgsMatrix *matrix)
 		 NULL);
   }
 
+  matrix->mapped_input_pad = 0;
+  matrix->mapped_output_pad = 0;
+
   /* create widgets */
   frame = (GtkFrame *) (gtk_container_get_children((GtkContainer *) matrix))->data;
 
@@ -550,10 +553,10 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	  channel = channel->next;
 	}
       }
-    }
 
-    /* depending on destination */
-    ags_matrix_input_map_recall(matrix, 0);
+      /* depending on destination */
+      ags_matrix_input_map_recall(matrix, pads_old);
+    }
   }else{
     if(grow){
       AgsChannel *current, *output;
@@ -570,21 +573,17 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	guint stop;
 	
 	devout = AGS_DEVOUT(AGS_AUDIO(source->audio)->devout);
-	
+
 	stop = (guint) ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY * exp2(8.0 - 4.0) + 1.0);
-	
+
 	audio_signal = ags_audio_signal_new(devout,
 					    source->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_audio_signal_stream_resize(audio_signal,
-				   stop);
+				       stop);
 	ags_recycling_add_audio_signal(source->first_recycling,
 				       audio_signal);
-
-	/* depending on destination */
-       	ags_matrix_output_map_recall(matrix, 0);
-
 
 	/* map recalls */
 	ags_matrix_output_map_recall(matrix, pads_old);
@@ -628,7 +627,10 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
 	  output = output->next;
 	}
-      }      
+      }
+
+      /* depending on destination */
+      ags_matrix_output_map_recall(matrix, pads_old);
     }
   }
 }
@@ -644,6 +646,12 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   GList *list;
 
   audio = AGS_MACHINE(matrix)->audio;
+
+  if(matrix->mapped_input_pad > input_pad_start){
+    return;
+  }else{
+    matrix->mapped_input_pad = audio->input_pads;
+  }
 
   source = ags_channel_nth(audio->input,
 			   input_pad_start * audio->audio_channels);
@@ -723,9 +731,15 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
   AgsLoopChannelRun *recall_loop_channel_run;
 
   GList *list;
-  
+
   audio = AGS_MACHINE(matrix)->audio;
 
+  if(matrix->mapped_output_pad > output_pad_start){
+    return;
+  }else{
+    matrix->mapped_output_pad = audio->output_pads;
+  }
+  
   source = ags_channel_nth(audio->output,
 			   output_pad_start * audio->audio_channels);
 
@@ -751,7 +765,7 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 			    NULL, NULL,
 			    "ags-loop\0",
 			    source->audio_channel, source->audio_channel + 1,
-			    output_pad_start, audio->output_pads,
+			    output_pad_start, output_pad_start + 1,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_PLAY | 
 			     AGS_RECALL_FACTORY_ADD),
