@@ -231,23 +231,8 @@ ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_thread_init(AgsThread *thread)
 {
-  struct sigaction sa;
-
   g_atomic_int_set(&(thread->flags),
 		   0);
-
-  sigfillset(&thread->wait_mask);
-  sigdelset(&thread->wait_mask, AGS_THREAD_SUSPEND_SIG);
-  sigdelset(&thread->wait_mask, AGS_THREAD_RESUME_SIG);
-
-  sigfillset(&sa.sa_mask);
-  sa.sa_flags = 0;
-
-  sa.sa_handler = ags_thread_resume_handler;
-  sigaction(AGS_THREAD_RESUME_SIG, &sa, NULL);
-
-  sa.sa_handler = ags_thread_suspend_handler;
-  sigaction(AGS_THREAD_SUSPEND_SIG, &sa, NULL);
 
   pthread_attr_init(&(thread->thread_attr));
 
@@ -397,7 +382,9 @@ ags_thread_finalize(GObject *gobject)
 void
 ags_thread_resume_handler(int sig)
 {
-  g_atomic_int_and(&ags_thread_self->flags,
+  g_message("resume\0");
+
+  g_atomic_int_and(&(ags_thread_self->flags),
 		   (~AGS_THREAD_SUSPENDED));
 
   ags_thread_resume(ags_thread_self);
@@ -406,14 +393,16 @@ ags_thread_resume_handler(int sig)
 void
 ags_thread_suspend_handler(int sig)
 {
-  if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&ags_thread_self->flags))) != 0) return;
+  g_message("suspend\0");
 
-  g_atomic_int_or(&ags_thread_self->flags,
+  if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
+
+  g_atomic_int_or(&(ags_thread_self->flags),
 		  AGS_THREAD_SUSPENDED);
 
   ags_thread_suspend(ags_thread_self);
 
-  do sigsuspend(&ags_thread_self->wait_mask); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&ags_thread_self->flags))) != 0);
+  do sigsuspend(&(ags_thread_self->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0);
 }
 
 void

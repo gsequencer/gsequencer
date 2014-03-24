@@ -28,8 +28,9 @@ void ags_returnable_thread_disconnect(AgsConnectable *connectable);
 void ags_returnable_thread_finalize(GObject *gobject);
 
 void ags_returnable_thread_start(AgsThread *thread);
-void ags_returnable_thread_stop(AgsThread *thread);
 void ags_returnable_thread_run(AgsThread *thread);
+void ags_returnable_thread_suspend(AgsThread *thread);
+void ags_returnable_thread_resume(AgsThread *thread);
 
 enum{
   SAFE_RUN,
@@ -92,8 +93,9 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
 
   /* AgsThreadClass */
   thread->start = ags_returnable_thread_start;
-  thread->stop = ags_returnable_thread_stop;
   thread->run = ags_returnable_thread_run;
+  thread->suspend = ags_returnable_thread_suspend;
+  thread->resume = ags_returnable_thread_resume;
 
   /* AgsReturnableThreadClass */
   returnable_thread->safe_run = NULL;
@@ -158,22 +160,9 @@ ags_returnable_thread_finalize(GObject *gobject)
 void
 ags_returnable_thread_start(AgsThread *thread)
 {
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) == 0){
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_RUNNING);
-    AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
-  }else{
-    ags_thread_resume(thread);
-  }
-}
+  AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
 
-void
-ags_returnable_thread_stop(AgsThread *thread)
-{
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_WAIT_0);
-  
-  ags_thread_suspend(thread);
+  pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
 }
 
 void
@@ -193,9 +182,7 @@ ags_returnable_thread_run(AgsThread *thread)
 
   pthread_mutex_unlock(&(returnable_thread->reset_mutex));
 
-
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_WAIT_0);
+  pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
 }
 
 void
@@ -207,6 +194,19 @@ ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
   g_signal_emit(G_OBJECT(returnable_thread),
 		returnable_thread_signals[SAFE_RUN], 0);
   g_object_unref(G_OBJECT(returnable_thread));
+}
+
+void
+ags_returnable_thread_suspend(AgsThread *thread)
+{
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_WAIT_0);
+}
+
+void
+ags_returnable_thread_resume(AgsThread *thread)
+{
+  /* empty */
 }
 
 AgsReturnableThread*

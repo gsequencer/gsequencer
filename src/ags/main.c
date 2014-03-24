@@ -67,6 +67,9 @@ extern GtkStyle *notebook_style;
 extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
 
+extern void ags_thread_resume_handler(int sig);
+extern void ags_thread_suspend_handler(int sig);
+
 GType
 ags_main_get_type()
 {
@@ -127,6 +130,9 @@ ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_main_init(AgsMain *ags_main)
 {
+  sigset_t wait_mask;
+  struct sigaction sa;
+
   ags_main->flags = 0;
 
   ags_main->version = AGS_VERSION;
@@ -143,6 +149,19 @@ ags_main_init(AgsMain *ags_main)
   ags_main->devout = NULL;
   ags_main->window = NULL;
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
+
+  sigfillset(&(wait_mask));
+  sigdelset(&(wait_mask), AGS_THREAD_SUSPEND_SIG);
+  sigdelset(&(wait_mask), AGS_THREAD_RESUME_SIG);
+
+  sigfillset(&(sa.sa_mask));
+  sa.sa_flags = 0;
+
+  sa.sa_handler = ags_thread_resume_handler;
+  sigaction(AGS_THREAD_RESUME_SIG, &sa, NULL);
+
+  sa.sa_handler = ags_thread_suspend_handler;
+  sigaction(AGS_THREAD_SUSPEND_SIG, &sa, NULL);
 }
 
 void

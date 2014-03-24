@@ -58,7 +58,7 @@ struct _AgsReturnableThreadClass
 
 GType ags_returnable_thread_get_type();
 
-void ags_thread_safe_run(AgsReturnableThread *returnable_thread);
+void ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread);
 
 AgsReturnableThread* ags_returnable_thread_new();
 
