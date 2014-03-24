@@ -36,6 +36,7 @@ typedef struct _AgsReturnableThreadClass AgsReturnableThreadClass;
 
 typedef enum{
   AGS_RETURNABLE_THREAD_IN_USE     = 1,
+  AGS_RETURNABLE_THREAD_RESET      = 1 << 1,
 }AgsReturnableThreadFlags;
 
 struct _AgsReturnableThread
@@ -43,14 +44,21 @@ struct _AgsReturnableThread
   AgsThread thread;
 
   volatile guint flags;
+
+  pthread_mutex_t reset_mutex;
+  volatile void *safe_data;
 };
 
 struct _AgsReturnableThreadClass
 {
   AgsThreadClass thread;
+
+  void (*safe_run)(AgsReturnableThread *returnable_thread);
 };
 
 GType ags_returnable_thread_get_type();
+
+void ags_thread_safe_run(AgsReturnableThread *returnable_thread);
 
 AgsReturnableThread* ags_returnable_thread_new();
 

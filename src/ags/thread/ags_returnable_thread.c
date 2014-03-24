@@ -31,8 +31,14 @@ void ags_returnable_thread_start(AgsThread *thread);
 void ags_returnable_thread_stop(AgsThread *thread);
 void ags_returnable_thread_run(AgsThread *thread);
 
+enum{
+  SAFE_RUN,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_returnable_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_returnable_thread_parent_connectable_interface;
+static guint returnable_thread_signals[LAST_SIGNAL];
 
 GType
 ags_returnable_thread_get_type()
@@ -88,6 +94,20 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   thread->start = ags_returnable_thread_start;
   thread->stop = ags_returnable_thread_stop;
   thread->run = ags_returnable_thread_run;
+
+  /* AgsReturnableThreadClass */
+  returnable_thread->safe_run = NULL;
+
+  /* signals */
+  returnable_thread_signals[SAFE_RUN] =
+    g_signal_new("safe-run\0",
+		 G_TYPE_FROM_CLASS (returnable_thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsReturnableThreadClass, safe_run),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
 }
 
 void
@@ -104,6 +124,10 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 {
   g_atomic_int_set(&(returnable_thread->flags),
 		   0);
+
+  pthread_mutex_init(&(returnable_thread->reset_mutex), NULL);
+  g_atomic_pointer_set(&(returnable_thread->safe_data),
+		       NULL);
 }
 
 void
@@ -155,8 +179,34 @@ ags_returnable_thread_stop(AgsThread *thread)
 void
 ags_returnable_thread_run(AgsThread *thread)
 {
+  AgsReturnableThread *returnable_thread;
+
+  returnable_thread = AGS_RETURNABLE_THREAD(thread);
+
+  pthread_mutex_lock(&(returnable_thread->reset_mutex));
+
+  ags_returnable_thread_safe_run(returnable_thread);
+
+  if((AGS_RETURNABLE_THREAD_RESET & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
+    AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run = NULL;
+  }
+
+  pthread_mutex_unlock(&(returnable_thread->reset_mutex));
+
+
   g_atomic_int_or(&(thread->flags),
 		  AGS_THREAD_WAIT_0);
+}
+
+void
+ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
+{
+  g_return_if_fail(AGS_IS_RETURNABLE_THREAD(returnable_thread));
+
+  g_object_ref(G_OBJECT(returnable_thread));
+  g_signal_emit(G_OBJECT(returnable_thread),
+		returnable_thread_signals[SAFE_RUN], 0);
+  g_object_unref(G_OBJECT(returnable_thread));
 }
 
 AgsReturnableThread*
