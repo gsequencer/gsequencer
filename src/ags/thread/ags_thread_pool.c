@@ -368,6 +368,9 @@ ags_thread_pool_creation_thread(void *ptr)
 	  g_list_length(thread_pool->returnable_thread) < g_atomic_int_get(&(thread_pool->max_threads));
 	i++){
       thread = (AgsThread *) ags_returnable_thread_new(thread_pool);
+      g_atomic_int_or(&(thread->flags),
+		      AGS_THREAD_SUSPEND);
+      
       thread_pool->returnable_thread = g_list_prepend(thread_pool->returnable_thread, thread);
 
       ags_thread_add_child(AGS_THREAD(thread_pool->parent),
@@ -474,6 +477,8 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   list = thread_pool->returnable_thread;
 
   while(list != NULL){
+    g_atomic_int_or(&(AGS_THREAD(list->data)->flags),
+		    AGS_THREAD_SUSPEND);
     ags_thread_add_child(AGS_THREAD(thread_pool->parent),
 			 AGS_THREAD(list->data));
     ags_thread_start(AGS_THREAD(list->data));
