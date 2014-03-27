@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_thread_pool.h>
+
 void ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread);
 void ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_returnable_thread_init(AgsReturnableThread *returnable_thread);
@@ -92,6 +94,8 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   gobject->finalize = ags_returnable_thread_finalize;
 
   /* AgsThreadClass */
+  thread = (AgsThread *) returnable_thread;
+
   thread->start = ags_returnable_thread_start;
   thread->run = ags_returnable_thread_run;
   thread->suspend = ags_returnable_thread_suspend;
@@ -125,7 +129,9 @@ void
 ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 {
   g_atomic_int_set(&(returnable_thread->flags),
-		   0);
+		   AGS_RETURNABLE_THREAD_RETURN_ON_SUSPEND);
+  g_atomic_int_or(&(AGS_THREAD(returnable_thread)->flags),
+		  AGS_THREAD_READY);
 
   pthread_mutex_init(&(returnable_thread->reset_mutex), NULL);
   g_atomic_pointer_set(&(returnable_thread->safe_data),
@@ -161,8 +167,6 @@ void
 ags_returnable_thread_start(AgsThread *thread)
 {
   AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
-
-  pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
 }
 
 void
@@ -170,9 +174,19 @@ ags_returnable_thread_run(AgsThread *thread)
 {
   AgsReturnableThread *returnable_thread;
 
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_READY);
+    pthread_kill(thread->thread, AGS_THREAD_SUSPEND_SIG);
+  }
+
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
 
+  g_message("reset:0\0");
+  
   pthread_mutex_lock(&(returnable_thread->reset_mutex));
+
+  g_message("reset:1\0");
 
   ags_returnable_thread_safe_run(returnable_thread);
 
@@ -199,23 +213,86 @@ ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
 void
 ags_returnable_thread_suspend(AgsThread *thread)
 {
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_WAIT_0);
+  AgsReturnableThread *returnable_thread;
+
+  returnable_thread = AGS_RETURNABLE_THREAD(thread);
+
+  if((AGS_RETURNABLE_THREAD_RETURN_ON_SUSPEND & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
+    AgsThread *main_loop;
+    AgsThreadPool *thread_pool;
+
+    g_message("return on suspend\0");
+
+    /* release thread in thread pool */
+    thread_pool = returnable_thread->thread_pool;
+
+    pthread_mutex_lock(&(thread_pool->return_mutex));
+
+    thread_pool->running_thread = g_list_remove(thread_pool->running_thread,
+						thread);
+    g_atomic_int_and(&(AGS_RETURNABLE_THREAD(thread)->flags),
+		     (~AGS_RETURNABLE_THREAD_IN_USE));
+
+    if(g_atomic_int_get(&thread_pool->queued) > 0){
+      pthread_cond_signal(&(thread_pool->return_cond));
+    }
+
+    ags_thread_pool_check_stop(thread_pool);
+
+    pthread_mutex_unlock(&(thread_pool->return_mutex));
+
+    /*  */
+    main_loop = ags_thread_get_toplevel(thread);
+
+    /* avoid blocking thread tree */
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_READY);
+
+    /* check for locked tree */
+    ags_thread_lock(main_loop);
+    ags_thread_lock(thread);
+
+    if(ags_thread_is_tree_ready(thread)){
+      guint tic;
+      guint next_tic;
+
+      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      ags_thread_unlock(main_loop);
+
+      if(tic = 2){
+	next_tic = 0;
+      }else if(tic = 0){
+	next_tic = 1;
+      }else if(tic = 1){
+	next_tic = 2;
+      }
+
+      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_thread_main_loop_unlock_children(main_loop);
+      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+    }
+  }
 }
 
 void
 ags_returnable_thread_resume(AgsThread *thread)
 {
-  /* empty */
+  g_message("_.- resume\0");
+
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_READY));
 }
 
 AgsReturnableThread*
-ags_returnable_thread_new()
+ags_returnable_thread_new(GObject *thread_pool)
 {
   AgsReturnableThread *returnable_thread;
 
   returnable_thread = (AgsReturnableThread *) g_object_new(AGS_TYPE_RETURNABLE_THREAD,
 							   NULL);
+
+  returnable_thread->thread_pool = thread_pool;
 
   return(returnable_thread);
 }

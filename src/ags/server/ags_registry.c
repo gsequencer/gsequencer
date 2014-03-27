@@ -104,7 +104,9 @@ ags_registry_init(AgsRegistry *registry)
   pthread_mutex_init(&(registry->mutex),
 		     NULL);
 
+#ifdef AGS_WITH_XMLRPC_C
   registry->registry = NULL;
+#endif
   
   registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
   registry->counter = 0;

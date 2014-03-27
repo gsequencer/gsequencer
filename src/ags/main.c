@@ -59,6 +59,10 @@ void ags_main_finalize(GObject *gobject);
 void ags_colors_alloc();
 
 static gpointer ags_main_parent_class = NULL;
+sigset_t ags_wait_mask;
+
+extern void ags_thread_resume_handler(int sig);
+extern void ags_thread_suspend_handler(int sig);
 
 extern GtkStyle *matrix_style;
 extern GtkStyle *ffplayer_style;
@@ -66,9 +70,6 @@ extern GtkStyle *editor_style;
 extern GtkStyle *notebook_style;
 extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
-
-extern void ags_thread_resume_handler(int sig);
-extern void ags_thread_suspend_handler(int sig);
 
 GType
 ags_main_get_type()
@@ -130,7 +131,6 @@ ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_main_init(AgsMain *ags_main)
 {
-  sigset_t wait_mask;
   struct sigaction sa;
 
   ags_main->flags = 0;
@@ -150,9 +150,9 @@ ags_main_init(AgsMain *ags_main)
   ags_main->window = NULL;
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 
-  sigfillset(&(wait_mask));
-  sigdelset(&(wait_mask), AGS_THREAD_SUSPEND_SIG);
-  sigdelset(&(wait_mask), AGS_THREAD_RESUME_SIG);
+  sigfillset(&(ags_wait_mask));
+  sigdelset(&(ags_wait_mask), AGS_THREAD_SUSPEND_SIG);
+  sigdelset(&(ags_wait_mask), AGS_THREAD_RESUME_SIG);
 
   sigfillset(&(sa.sa_mask));
   sa.sa_flags = 0;

@@ -4,8 +4,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#ifdef AGS_WITH_XMLRPC_C
 #include <xmlrpc.h>
 #include <xmlrpc_server.h>
+#endif
 
 #define AGS_TYPE_REMOTE_TASK                (ags_remote_task_get_type())
 #define AGS_REMOTE_TASK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REMOTE_TASK, AgsRemoteTask))
@@ -32,6 +34,7 @@ struct _AgsRemoteTaskClass
 GType ags_remote_task_get_type();
 
 
+#ifdef AGS_WITH_XMLRPC_C
 xmlrpc_value* ags_remote_task_launch(xmlrpc_env *env,
 				     xmlrpc_value *param_array,
 				     void *server_info);
@@ -39,6 +42,7 @@ xmlrpc_value* ags_remote_task_launch(xmlrpc_env *env,
 xmlrpc_value* ags_remote_task_launch_timed(xmlrpc_env *env,
 					   xmlrpc_value *param_array,
 					   void *server_info);
+#endif
 
 AgsRemoteTask* ags_remote_task_new();
 

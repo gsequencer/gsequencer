@@ -727,6 +727,10 @@ ags_thread_is_current_ready(AgsThread *current)
     return(TRUE);
   }
 
+  if((AGS_THREAD_READY & (val)) != 0){
+    return(TRUE);
+  }
+
   return(FALSE);
 }
 

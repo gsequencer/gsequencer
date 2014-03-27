@@ -9,12 +9,14 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#ifdef AGS_WITH_XMLRPC_C
 #include <xmlrpc-c/util.h>
 
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/abyss.h>
 #include <xmlrpc-c/server.h>
 #include <xmlrpc-c/server_abyss.h>
+#endif
 
 #include "config.h"
 
@@ -42,8 +44,10 @@ struct _AgsServer
 
   guint flags;
 
+#ifdef AGS_WITH_XMLRPC_C
   TServer abyss_server;
   TSocket *socket;
+#endif
   int socket_fd;
   struct sockaddr_in address;
 
@@ -68,6 +72,7 @@ void ags_server_start(AgsServer *server);
 
 AgsServer* ags_server_lookup(void *server_info);
 
+#ifdef AGS_WITH_XMLRPC_C
 xmlrpc_value* ags_server_create_object(xmlrpc_env *env,
 				       xmlrpc_value *param_array,
 				       void *server_info);
@@ -75,6 +80,7 @@ xmlrpc_value* ags_server_create_object(xmlrpc_env *env,
 xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env,
 					     xmlrpc_value *param_array,
 					     void *server_info);
+#endif
 
 AgsServer* ags_server_new(GObject *main);
 

@@ -64,8 +64,6 @@ struct _AgsThreadPool
 
   pthread_mutex_t return_mutex;
   pthread_cond_t return_cond;
-
-  gulong *stop_handler;
 };
 
 struct _AgsThreadPoolClass

@@ -6,8 +6,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#ifdef AGS_WITH_XMLRPC_C
 #include <xmlrpc.h>
 #include <xmlrpc_server.h>
+#endif
 
 #define AGS_TYPE_REGISTRY                (ags_registry_get_type())
 #define AGS_REGISTRY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REGISTRY, AgsRegistry))
@@ -28,7 +30,9 @@ struct _AgsRegistry
 
   pthread_mutex_t mutex;
 
+#ifdef AGS_WITH_XMLRPC_C
   xmlrpc_registry *registry;
+#endif
 
   GObject *server;
 
@@ -59,9 +63,11 @@ void ags_registry_add(AgsRegistry *registry,
 AgsRegistryEntry* ags_registry_entry_find(AgsRegistry *registry,
 					  gchar *id);
 
+#ifdef AGS_WITH_XMLRPC_C
 xmlrpc_value* ags_registry_entry_bulk(xmlrpc_env *env,
 				      xmlrpc_value *param_array,
 				      void *server_info);
+#endif
 
 AgsRegistry* ags_registry_new();
 

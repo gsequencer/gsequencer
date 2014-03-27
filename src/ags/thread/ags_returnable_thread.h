@@ -35,8 +35,9 @@ typedef struct _AgsReturnableThread AgsReturnableThread;
 typedef struct _AgsReturnableThreadClass AgsReturnableThreadClass;
 
 typedef enum{
-  AGS_RETURNABLE_THREAD_IN_USE     = 1,
-  AGS_RETURNABLE_THREAD_RESET      = 1 << 1,
+  AGS_RETURNABLE_THREAD_IN_USE              = 1,
+  AGS_RETURNABLE_THREAD_RESET               = 1 << 1,
+  AGS_RETURNABLE_THREAD_RETURN_ON_SUSPEND   = 1 << 2,
 }AgsReturnableThreadFlags;
 
 struct _AgsReturnableThread
@@ -44,6 +45,8 @@ struct _AgsReturnableThread
   AgsThread thread;
 
   volatile guint flags;
+
+  GObject *thread_pool;
 
   pthread_mutex_t reset_mutex;
   volatile void *safe_data;
@@ -60,6 +63,6 @@ GType ags_returnable_thread_get_type();
 
 void ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread);
 
-AgsReturnableThread* ags_returnable_thread_new();
+AgsReturnableThread* ags_returnable_thread_new(GObject *thread_pool);
 
 #endif /*__AGS_RETURNABLE_THREAD_H__*/
