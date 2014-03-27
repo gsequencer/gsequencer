@@ -1516,10 +1516,39 @@ ags_thread_loop(void *ptr)
 
     /* suspend request */
     if((AGS_THREAD_SUSPEND & (g_atomic_int_get(&(thread->flags)))) != 0){
-      pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
-
       g_atomic_int_and(&(thread->flags),
 		       (~AGS_THREAD_SUSPEND));
+      g_atomic_int_or(&(thread->flags),
+		      AGS_THREAD_READY);
+
+      /* check for locked tree */
+      ags_thread_lock(main_loop);
+      ags_thread_lock(thread);
+      
+      if(ags_thread_is_tree_ready(thread)){
+	guint tic;
+	guint next_tic;
+	
+	tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+	
+	ags_thread_unlock(main_loop);
+	
+	if(tic = 2){
+	  next_tic = 0;
+	}else if(tic = 0){
+	  next_tic = 1;
+	}else if(tic = 1){
+	  next_tic = 2;
+	}
+	
+	ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+	ags_thread_main_loop_unlock_children(main_loop);
+	ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+      }else{
+	ags_thread_unlock(main_loop);
+      }
+
+      pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
     }
 
     /* set idle flag */

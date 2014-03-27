@@ -167,6 +167,9 @@ ags_returnable_thread_finalize(GObject *gobject)
 void
 ags_returnable_thread_start(AgsThread *thread)
 {
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_SUSPEND);
+
   AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->start(thread);
 }
 
@@ -174,15 +177,6 @@ void
 ags_returnable_thread_run(AgsThread *thread)
 {
   AgsReturnableThread *returnable_thread;
-
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_READY);
-    g_atomic_int_and(&(thread->flags),
-		     (~AGS_THREAD_INITIAL_RUN));
-    g_message("!!!!!!!!!!!!!!!!!!!\0");
-    pthread_kill(thread->thread, AGS_THREAD_SUSPEND_SIG);
-  }
 
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
 
@@ -225,7 +219,6 @@ ags_returnable_thread_suspend(AgsThread *thread)
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
 
   if((AGS_RETURNABLE_THREAD_RETURN_ON_SUSPEND & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
-    AgsThread *main_loop;
     AgsThreadPool *thread_pool;
 
     g_message("return on suspend\0");
@@ -247,40 +240,6 @@ ags_returnable_thread_suspend(AgsThread *thread)
     ags_thread_pool_check_stop(thread_pool);
 
     pthread_mutex_unlock(&(thread_pool->return_mutex));
-
-    /*  */
-    main_loop = ags_thread_get_toplevel(thread);
-
-    /* avoid blocking thread tree */
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_READY);
-
-    /* check for locked tree */
-    ags_thread_lock(main_loop);
-    ags_thread_lock(thread);
-
-    if(ags_thread_is_tree_ready(thread)){
-      guint tic;
-      guint next_tic;
-
-      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-      ags_thread_unlock(main_loop);
-
-      if(tic = 2){
-	next_tic = 0;
-      }else if(tic = 0){
-	next_tic = 1;
-      }else if(tic = 1){
-	next_tic = 2;
-      }
-
-      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_main_loop_unlock_children(main_loop);
-      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-    }else{
-      ags_thread_unlock(main_loop);
-    }
 
     g_message("return on suspend@END\0");
   }
