@@ -202,7 +202,8 @@ ags_returnable_thread_run(AgsThread *thread)
     pthread_mutex_unlock(&(returnable_thread->reset_mutex));
   }
 
-  pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_SUSPEND);
 }
 
 void

@@ -1514,6 +1514,14 @@ ags_thread_loop(void *ptr)
       }
     }
 
+    /* suspend request */
+    if((AGS_THREAD_SUSPEND & (g_atomic_int_get(&(thread->flags)))) != 0){
+      pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
+
+      g_atomic_int_and(&(thread->flags),
+		       (~AGS_THREAD_SUSPEND));
+    }
+
     /* set idle flag */
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_IDLE);
