@@ -393,7 +393,7 @@ ags_thread_resume_handler(int sig)
 void
 ags_thread_suspend_handler(int sig)
 {
-  g_message("suspend\0");
+  g_message("-suspend\0");
 
   if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
 

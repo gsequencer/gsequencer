@@ -171,6 +171,15 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
   g_atomic_int_set(&(thread_pool->max_threads),
 		   AGS_THREAD_POOL_DEFAULT_MAX_THREADS);
 
+  pthread_mutex_init(&(thread_pool->creation_mutex), NULL);
+  pthread_cond_init(&(thread_pool->creation_cond), NULL);
+
+  g_atomic_int_set(&(thread_pool->newly_pulled),
+		   0);
+  g_atomic_int_set(&(thread_pool->queued),
+		   0);
+
+  thread_pool->parent = NULL;
   list = NULL;
 
   for(i = 0; i < g_atomic_int_get(&(thread_pool->max_unused_threads)); i++){
@@ -179,13 +188,11 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
     list = g_list_prepend(list, thread);
   }
 
-  g_atomic_int_set(&(thread_pool->newly_pulled),
-		   0);
-  g_atomic_int_set(&(thread_pool->queued),
-		   0);
-
   thread_pool->returnable_thread = list;
   thread_pool->running_thread = NULL;
+
+  pthread_mutex_init(&(thread_pool->return_mutex), NULL);
+  pthread_cond_init(&(thread_pool->return_cond), NULL);
 }
 
 void
@@ -363,7 +370,7 @@ ags_thread_pool_creation_thread(void *ptr)
       thread = (AgsThread *) ags_returnable_thread_new(thread_pool);
       thread_pool->returnable_thread = g_list_prepend(thread_pool->returnable_thread, thread);
 
-      ags_thread_add_child(AGS_THREAD(thread_pool->main_loop),
+      ags_thread_add_child(AGS_THREAD(thread_pool->parent),
 			   thread);
       ags_connectable_connect(AGS_CONNECTABLE(thread));
 
@@ -467,7 +474,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   list = thread_pool->returnable_thread;
 
   while(list != NULL){
-    ags_thread_add_child(AGS_THREAD(thread_pool->main_loop),
+    ags_thread_add_child(AGS_THREAD(thread_pool->parent),
 			 AGS_THREAD(list->data));
     ags_thread_start(AGS_THREAD(list->data));
 
@@ -487,14 +494,14 @@ ags_thread_pool_start(AgsThreadPool *thread_pool)
 }
 
 AgsThreadPool*
-ags_thread_pool_new(AgsMainLoop *main_loop)
+ags_thread_pool_new(AgsThread *parent)
 {
   AgsThreadPool *thread_pool;
 
   thread_pool = (AgsThreadPool *) g_object_new(AGS_TYPE_THREAD_POOL,
 					       NULL);
 
-  thread_pool->main_loop = main_loop;
+  thread_pool->parent = parent;
 
   return(thread_pool);
 }

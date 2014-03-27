@@ -58,7 +58,7 @@ struct _AgsThreadPool
   volatile guint newly_pulled;
   volatile guint queued;
 
-  AgsMainLoop *main_loop;
+  AgsMainLoop *parent;
   GList *returnable_thread;
   GList *running_thread;
 
@@ -79,6 +79,6 @@ AgsThread* ags_thread_pool_pull(AgsThreadPool *thread_pool);
 
 void ags_thread_pool_start(AgsThreadPool *thread_pool);
 
-AgsThreadPool* ags_thread_pool_new(AgsMainLoop *main_loop);
+AgsThreadPool* ags_thread_pool_new(AgsThread *parent);
 
 #endif /*__AGS_THREAD_POOL_H__*/
