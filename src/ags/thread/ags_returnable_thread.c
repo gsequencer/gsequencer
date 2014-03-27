@@ -190,15 +190,17 @@ ags_returnable_thread_run(AgsThread *thread)
   
   pthread_mutex_lock(&(returnable_thread->reset_mutex));
 
-  g_message("reset:1\0");
+  if(AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run != NULL){
+    g_message("reset:1\0");
 
-  ags_returnable_thread_safe_run(returnable_thread);
+    ags_returnable_thread_safe_run(returnable_thread);
 
-  if((AGS_RETURNABLE_THREAD_RESET & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
-    AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run = NULL;
+    if((AGS_RETURNABLE_THREAD_RESET & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
+      AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run = NULL;
+    }
+
+    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
   }
-
-  pthread_mutex_unlock(&(returnable_thread->reset_mutex));
 
   pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
 }
