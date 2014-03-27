@@ -332,8 +332,6 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread)
   int ret;
 
   g_message("task a\0");
-  g_atomic_int_or(&(returnable_thread->flags),
-		  AGS_RETURNABLE_THREAD_RESET);
 
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 

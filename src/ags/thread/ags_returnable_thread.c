@@ -129,7 +129,7 @@ void
 ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 {
   g_atomic_int_set(&(returnable_thread->flags),
-		   (AGS_RETURNABLE_THREAD_RETURN_ON_SUSPEND ||
+		   (AGS_RETURNABLE_THREAD_RETURN_ON_SUSPEND |
 		    AGS_RETURNABLE_THREAD_RESET));
   g_atomic_int_or(&(AGS_THREAD(returnable_thread)->flags),
 		  AGS_THREAD_READY);
@@ -194,10 +194,15 @@ ags_returnable_thread_run(AgsThread *thread)
     }
 
     pthread_mutex_unlock(&(returnable_thread->reset_mutex));
+  }else{
+    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
   }
 
   g_atomic_int_or(&(thread->flags),
 		  AGS_THREAD_SUSPEND);
+
+  g_atomic_int_and(&(AGS_RETURNABLE_THREAD(thread)->flags),
+		   (~AGS_RETURNABLE_THREAD_IN_USE));
 }
 
 void
@@ -230,8 +235,6 @@ ags_returnable_thread_suspend(AgsThread *thread)
 
     thread_pool->running_thread = g_list_remove(thread_pool->running_thread,
 						thread);
-    g_atomic_int_and(&(AGS_RETURNABLE_THREAD(thread)->flags),
-		     (~AGS_RETURNABLE_THREAD_IN_USE));
 
     if(g_atomic_int_get(&(thread_pool->queued)) > 0){
       pthread_cond_signal(&(thread_pool->return_cond));

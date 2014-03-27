@@ -22,6 +22,8 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/thread/ags_returnable_thread.h>
+
 #include <ags/audio/ags_devout.h>
 
 #include <stdio.h>
@@ -1518,12 +1520,9 @@ ags_thread_loop(void *ptr)
     if((AGS_THREAD_SUSPEND & (g_atomic_int_get(&(thread->flags)))) != 0){
       g_atomic_int_and(&(thread->flags),
 		       (~AGS_THREAD_SUSPEND));
-      g_atomic_int_or(&(thread->flags),
-		      AGS_THREAD_READY);
 
       /* check for locked tree */
       ags_thread_lock(main_loop);
-      ags_thread_lock(thread);
       
       if(ags_thread_is_tree_ready(thread)){
 	guint tic;
@@ -1548,7 +1547,32 @@ ags_thread_loop(void *ptr)
 	ags_thread_unlock(main_loop);
       }
 
-      pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
+      if(AGS_IS_RETURNABLE_THREAD(thread)){
+	if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(AGS_RETURNABLE_THREAD(thread)->flags)))) == 0){
+	  g_atomic_int_or(&(thread->flags),
+			  AGS_THREAD_READY);
+	  
+	  //TODO:JK: believed to be unsafe
+	  ags_thread_unlock(thread);
+
+	  pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
+
+	  ags_thread_lock(thread);
+	}else{
+	  g_atomic_int_and(&(thread->flags),
+			   (~AGS_THREAD_READY));
+	}
+      }else{
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_READY);
+
+	//TODO:JK: believed to be unsafe
+	ags_thread_unlock(thread);
+
+	pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
+
+	ags_thread_lock(thread);
+      }
     }
 
     /* set idle flag */
