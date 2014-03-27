@@ -271,7 +271,11 @@ ags_returnable_thread_suspend(AgsThread *thread)
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
       ags_thread_main_loop_unlock_children(main_loop);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+    }else{
+      ags_thread_unlock(main_loop);
     }
+
+    g_message("return on suspend@END\0");
   }
 }
 

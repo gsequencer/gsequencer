@@ -175,6 +175,7 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
 
   for(i = 0; i < g_atomic_int_get(&(thread_pool->max_unused_threads)); i++){
     thread = (AgsThread *) ags_returnable_thread_new(thread_pool);
+
     list = g_list_prepend(list, thread);
   }
 
@@ -295,7 +296,7 @@ ags_thread_pool_check_stop(AgsThreadPool *thread_pool)
 
     returnable_thread = AGS_RETURNABLE_THREAD(list->data);
 
-    if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
+    if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
       count++;
     }
 
@@ -314,6 +315,8 @@ ags_thread_pool_check_stop(AgsThreadPool *thread_pool)
   }
 
   pthread_mutex_unlock(&(thread_pool->creation_mutex));
+
+  g_message("ags_thread_pool_check_stop@END\0");
 }
 
 void*
@@ -326,8 +329,11 @@ ags_thread_pool_creation_thread(void *ptr)
   
   thread_pool = AGS_THREAD_POOL(ptr);
 
+  g_message("ags_thread_pool_creation_thread\0");
+
   while((AGS_THREAD_POOL_RUNNING & (g_atomic_int_get(&(thread_pool->flags)))) != 0){
-    g_message("ags_thread_pool_creation_thread\0");
+    g_message("ags_thread_pool_creation_thread@loopStart\0");
+
     pthread_mutex_lock(&(thread_pool->creation_mutex));
 
     g_atomic_int_or(&(thread_pool->flags),
@@ -343,6 +349,8 @@ ags_thread_pool_creation_thread(void *ptr)
     i_stop = g_atomic_int_get(&(thread_pool->newly_pulled));
     g_atomic_int_set(&thread_pool->newly_pulled,
 		     0);
+
+    g_message("ags_thread_pool_creation_thread@loop0\0");
 
     g_atomic_int_and(&(thread_pool->flags),
 		     (~AGS_THREAD_POOL_READY));
@@ -361,6 +369,8 @@ ags_thread_pool_creation_thread(void *ptr)
 
       n_threads++;
     }
+
+    g_message("ags_thread_pool_creation_thread@loopEND\0");
   }
 }
 
@@ -435,6 +445,8 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 		  AGS_RETURNABLE_THREAD_IN_USE);
 
   pthread_mutex_unlock(&(thread_pool->return_mutex));
+
+  g_message("ags_thread_pool_pull@END\0");
 
   return(AGS_THREAD(returnable_thread));
 }
