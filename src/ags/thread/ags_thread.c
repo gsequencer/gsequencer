@@ -395,7 +395,10 @@ ags_thread_resume_handler(int sig)
 void
 ags_thread_suspend_handler(int sig)
 {
-  g_message("-suspend\0");
+  //  g_message("-suspend\0");
+
+  if(ags_thread_self == NULL)
+    return;
 
   if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
 
@@ -1514,48 +1517,6 @@ ags_thread_loop(void *ptr)
 	current_tic = 1;
 	break;
       }
-    }
-
-    /* suspend request */
-    if((AGS_THREAD_SUSPEND & (g_atomic_int_get(&(thread->flags)))) != 0){
-      g_atomic_int_and(&(thread->flags),
-		       (~AGS_THREAD_SUSPEND));
-
-      g_atomic_int_or(&(thread->flags),
-		      AGS_THREAD_READY);
-
-      /* check for locked tree */
-      ags_thread_lock(main_loop);
-      
-      if(ags_thread_is_tree_ready(thread)){
-	guint tic;
-	guint next_tic;
-	
-	tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-	
-	ags_thread_unlock(main_loop);
-	
-	if(tic = 2){
-	  next_tic = 0;
-	}else if(tic = 0){
-	  next_tic = 1;
-	}else if(tic = 1){
-	  next_tic = 2;
-	}
-	
-	ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-	ags_thread_main_loop_unlock_children(main_loop);
-	ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-      }else{
-	ags_thread_unlock(main_loop);
-      }
-	  
-      //TODO:JK: believed to be unsafe
-      ags_thread_unlock(thread);
-
-      pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
-
-      ags_thread_lock(thread);
     }
 
     /* set idle flag */

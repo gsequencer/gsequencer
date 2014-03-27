@@ -129,7 +129,7 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   task_thread->exec = NULL;
   task_thread->queue = NULL;
 
-  task_thread->thread_pool = ags_thread_pool_new(NULL);
+  task_thread->thread_pool = ags_thread_pool_new(task_thread);
 }
 
 void
@@ -179,7 +179,6 @@ ags_task_thread_start(AgsThread *thread)
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
 
-  task_thread->thread_pool->parent = AGS_THREAD(task_thread);
   ags_thread_pool_start(task_thread->thread_pool);
 }
 
@@ -333,6 +332,8 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread)
 
   g_message("task a\0");
 
+  g_atomic_int_or(&(returnable_thread->flags),
+		  AGS_RETURNABLE_THREAD_RESET);
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   task_thread = append->task_thread;

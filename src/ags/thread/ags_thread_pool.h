@@ -58,9 +58,11 @@ struct _AgsThreadPool
   volatile guint newly_pulled;
   volatile guint queued;
 
-  AgsMainLoop *parent;
+  AgsThread *parent;
   GList *returnable_thread;
   GList *running_thread;
+
+  pthread_mutex_t pull_mutex;
 
   pthread_mutex_t return_mutex;
   pthread_cond_t return_cond;

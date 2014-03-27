@@ -37,7 +37,6 @@ typedef struct _AgsReturnableThreadClass AgsReturnableThreadClass;
 typedef enum{
   AGS_RETURNABLE_THREAD_IN_USE              = 1,
   AGS_RETURNABLE_THREAD_RESET               = 1 << 1,
-  AGS_RETURNABLE_THREAD_RETURN_ON_SUSPEND   = 1 << 2,
 }AgsReturnableThreadFlags;
 
 struct _AgsReturnableThread
