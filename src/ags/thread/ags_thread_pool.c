@@ -436,6 +436,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   while(list != NULL){
     ags_thread_add_child(AGS_THREAD(thread_pool->parent),
 			 AGS_THREAD(list->data));
+    ags_thread_start(AGS_THREAD(list->data));
 
     list = list->next;
   }

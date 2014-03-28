@@ -175,11 +175,11 @@ ags_task_thread_start(AgsThread *thread)
 
   task_thread = AGS_TASK_THREAD(thread);
 
+  ags_thread_pool_start(task_thread->thread_pool);
+
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
-
-  ags_thread_pool_start(task_thread->thread_pool);
 }
 
 void

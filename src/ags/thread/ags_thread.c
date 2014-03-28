@@ -568,8 +568,18 @@ ags_thread_last(AgsThread *thread)
 void
 ags_thread_remove_child(AgsThread *thread, AgsThread *child)
 {
+  AgsThread *main_loop;
+
   if(thread == NULL || child == NULL){
     return;
+  }
+
+  main_loop = ags_thread_get_toplevel(thread);
+
+  ags_thread_lock(main_loop);
+
+  if(thread->children == child){
+    thread->children = child->next;
   }
 
   if(child->prev != NULL){
@@ -583,18 +593,26 @@ ags_thread_remove_child(AgsThread *thread, AgsThread *child)
   child->parent = NULL;
   child->prev = NULL;
   child->next = NULL;
+
+  ags_thread_unlock(main_loop);
 }
 
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
 {
+  AgsThread *main_loop;
+
   if(thread == NULL || child == NULL){
     return;
   }
-  
+
+  main_loop = ags_thread_get_toplevel(thread);
+
   if(child->parent != NULL){
     ags_thread_remove_child(child->parent, child);
   }
+
+  ags_thread_lock(main_loop);
 
   /*  */
   if(thread->children == NULL){
@@ -610,9 +628,11 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
     child->parent = thread;
   }
 
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) != 0){
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     ags_thread_start(child);
   }
+
+  ags_thread_unlock(main_loop);
 }
 
 /**
