@@ -127,10 +127,7 @@ void
 ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 {
   g_atomic_int_set(&(returnable_thread->flags),
-		   (AGS_RETURNABLE_THREAD_RESET));
-  g_atomic_int_or(&(AGS_THREAD(returnable_thread)->flags),
-		  AGS_THREAD_READY);
-
+		   0);
   pthread_mutex_init(&(returnable_thread->reset_mutex), NULL);
   g_atomic_pointer_set(&(returnable_thread->safe_data),
 		       NULL);
@@ -169,8 +166,64 @@ ags_returnable_thread_start(AgsThread *thread)
 
 void
 ags_returnable_thread_run(AgsThread *thread)
-{  
-  pthread_kill((thread->thread), AGS_THREAD_SUSPEND_SIG);
+{
+  AgsReturnableThread *returnable_thread;
+  AgsThreadPool *thread_pool;
+
+  //  g_message("reset:0\0");
+  
+  /* retrieve some variables */
+  returnable_thread = AGS_RETURNABLE_THREAD(thread);
+  thread_pool = returnable_thread->thread_pool;
+  
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    g_message("initial\0");
+    //    pthread_kill(thread->thread, AGS_THREAD_SUSPEND_SIG);
+  }
+
+  /* safe run */
+  pthread_mutex_lock(&(returnable_thread->reset_mutex));
+
+  if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
+    g_message("0x%x\0", thread);
+
+    g_message("reset:1\0");
+
+    ags_returnable_thread_safe_run(returnable_thread);
+
+    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
+
+    /* release thread in thread pool */
+    g_message("return on suspend\0");
+
+    pthread_mutex_lock(&(thread_pool->creation_mutex));
+
+    thread_pool->running_thread = g_list_remove(thread_pool->running_thread,
+						thread);
+
+    pthread_mutex_unlock(&(thread_pool->creation_mutex));
+
+    pthread_mutex_lock(&(thread_pool->return_mutex));
+
+    if(g_atomic_int_get(&(thread_pool->queued)) > 0){
+      pthread_cond_signal(&(thread_pool->return_cond));
+    }
+
+    pthread_mutex_unlock(&(thread_pool->return_mutex));
+
+    g_message("return on suspend@END\0");
+
+    ags_returnable_thread_disconnect(returnable_thread);
+    g_atomic_int_and(&(returnable_thread->flags),
+		     (~AGS_RETURNABLE_THREAD_IN_USE));
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_RUNNING));
+
+    ags_thread_remove_child(thread->parent,
+			    thread);
+  }else{
+    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
+  }
 }
 
 void
@@ -187,58 +240,23 @@ ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
 void
 ags_returnable_thread_resume(AgsThread *thread)
 {
-  AgsThreadPool *thread_pool;
-  AgsReturnableThread *returnable_thread;
-
-  g_message("reset:0\0");
-  
-  /* retrieve some variables */
-  returnable_thread = AGS_RETURNABLE_THREAD(thread);
-
-  thread_pool = returnable_thread->thread_pool;
-
-  /* safe run */
-  pthread_mutex_lock(&(returnable_thread->reset_mutex));
-
-  if(AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run != NULL){
-    g_message("reset:1\0");
-
-    ags_returnable_thread_safe_run(returnable_thread);
-
-    if((AGS_RETURNABLE_THREAD_RESET & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
-      AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run = NULL;
-    }
-
-    g_atomic_int_and(&(AGS_RETURNABLE_THREAD(thread)->flags),
-		     (~AGS_RETURNABLE_THREAD_IN_USE));
-
-    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
-  }else{
-    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
-  }
-
-  /* release thread in thread pool */
-  g_message("return on suspend\0");
-
-  pthread_mutex_lock(&(thread_pool->pull_mutex));
-
-  thread_pool->running_thread = g_list_remove(thread_pool->running_thread,
-					      thread);
-
-  pthread_mutex_unlock(&(thread_pool->pull_mutex));
-
-  pthread_mutex_lock(&(thread_pool->return_mutex));
-
-  if(g_atomic_int_get(&(thread_pool->queued)) > 0){
-    pthread_cond_signal(&(thread_pool->return_cond));
-  }
-
-  pthread_mutex_unlock(&(thread_pool->return_mutex));
-
-  g_message("return on suspend@END\0");
-
+  /* empty */
   g_atomic_int_and(&(thread->flags),
-		   (~AGS_THREAD_RUNNING));
+		   (~AGS_THREAD_READY));
+}
+
+void
+ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
+{
+  returnable_thread->handler = g_signal_connect(G_OBJECT(returnable_thread), "safe-run\0",
+						G_CALLBACK(callback), returnable_thread);
+}
+
+void
+ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
+{
+  g_signal_handler_disconnect(G_OBJECT(returnable_thread),
+			      returnable_thread->handler);
 }
 
 AgsReturnableThread*

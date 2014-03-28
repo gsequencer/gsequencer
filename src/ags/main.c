@@ -516,7 +516,7 @@ main(int argc, char **argv)
 
   XInitThreads();
 
-  //  g_thread_init(NULL);
+  g_thread_init(NULL);
   gdk_threads_init();
 
   //  gdk_threads_enter();

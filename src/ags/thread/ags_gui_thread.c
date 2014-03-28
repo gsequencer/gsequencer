@@ -123,9 +123,9 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   //  g_atomic_int_or(&(thread->flags),
   //		  AGS_THREAD_TIMELOCK_RUN);
 
-  g_cond_init(&gui_thread->cond);
-  g_mutex_init(&gui_thread->mutex);
-
+  g_cond_init(&(gui_thread->cond));
+  g_mutex_init(&(gui_thread->mutex));
+  
   gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
   gui_thread->iter = 0;
   gui_thread->iter_stop = 1;
@@ -209,7 +209,7 @@ ags_gui_thread_run(AgsThread *thread)
       /*  */
       pthread_mutex_unlock(&(thread->suspend_mutex));
     }else{
-      g_atomic_int_set(&thread->critical_region,
+      g_atomic_int_set(&(thread->critical_region),
 		       TRUE);
     }
 
@@ -226,7 +226,7 @@ ags_gui_thread_run(AgsThread *thread)
     pthread_mutex_unlock(&(task_thread->launch_mutex));
 
     /*  */
-    g_atomic_int_set(&thread->critical_region,
+    g_atomic_int_set(&(thread->critical_region),
 		     FALSE);
 
     if(success)
@@ -250,6 +250,9 @@ ags_gui_thread_run(AgsThread *thread)
     if(gui_thread->iter >= gui_thread->iter_stop){
       ags_gui_thread_do_gtk_iteration();
       gui_thread->iter = 0;
+    }else{
+      gdk_threads_enter();
+      gdk_threads_leave();
     }
 
   }else{

@@ -36,8 +36,8 @@ void ags_task_thread_finalize(GObject *gobject);
 void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
 
-void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread);
-void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread);
+void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
+void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
 
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
@@ -239,7 +239,7 @@ ags_task_thread_run(AgsThread *thread)
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
-      //      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
 
       ags_task_launch(task);
 
@@ -252,7 +252,7 @@ ags_task_thread_run(AgsThread *thread)
 }
 
 void
-ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread)
+ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data)
 {
   AgsTask *task;
   AgsTaskThread *task_thread;
@@ -261,9 +261,6 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread)
   int ret;
 
   g_message("task b\0");
-  g_atomic_int_or(&(returnable_thread->flags),
-		  AGS_RETURNABLE_THREAD_RESET);
-
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   task_thread = append->task_thread;
@@ -313,15 +310,18 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread)->safe_data),
 		       append);
 
-  AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run = ags_task_thread_append_task_queue;
-
+  ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread),
+					 ags_task_thread_append_task_queue);
+  g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),
+		  AGS_RETURNABLE_THREAD_IN_USE);
+    
   pthread_mutex_unlock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
 
-  pthread_kill((thread->thread), AGS_THREAD_RESUME_SIG);
+  //  pthread_kill((thread->thread), AGS_THREAD_RESUME_SIG);
 }
 
 void
-ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread)
+ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data)
 {
   AgsTask *task;
   AgsTaskThread *task_thread;
@@ -331,9 +331,6 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread)
   int ret;
 
   g_message("task a\0");
-
-  g_atomic_int_or(&(returnable_thread->flags),
-		  AGS_RETURNABLE_THREAD_RESET);
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   task_thread = append->task_thread;
@@ -378,14 +375,18 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 
   pthread_mutex_lock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
 
+
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread)->safe_data),
 		       append);
 
-  AGS_RETURNABLE_THREAD_GET_CLASS(thread)->safe_run = ags_task_thread_append_tasks_queue;  
+  ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread),
+					 ags_task_thread_append_tasks_queue);
+  g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),
+		  AGS_RETURNABLE_THREAD_IN_USE);
 
   pthread_mutex_unlock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
 
-  pthread_kill((thread->thread), AGS_THREAD_RESUME_SIG);
+  //  pthread_kill((thread->thread), AGS_THREAD_RESUME_SIG);
 }
 
 AgsTaskThread*
