@@ -321,8 +321,6 @@ ags_thread_pool_creation_thread(void *ptr)
     g_atomic_int_and(&(thread_pool->flags),
 		     (~AGS_THREAD_POOL_READY));
 
-    pthread_mutex_unlock(&(thread_pool->creation_mutex));
-
     for(i = 0; i < i_stop; i++){
       thread = (AgsThread *) ags_returnable_thread_new(thread_pool);
       thread_pool->returnable_thread = g_list_prepend(thread_pool->returnable_thread, thread);
@@ -333,6 +331,8 @@ ags_thread_pool_creation_thread(void *ptr)
 
       n_threads++;
     }
+
+    pthread_mutex_unlock(&(thread_pool->creation_mutex));
 
     g_message("ags_thread_pool_creation_thread@loopEND\0");
   }

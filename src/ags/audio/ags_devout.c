@@ -797,7 +797,7 @@ ags_devout_alsa_init(AgsDevout *devout,
 			  SND_PCM_ACCESS_RW_INTERLEAVED,
 			  devout->dsp_channels,
 			  devout->frequency,
-			  1,
+			  0,
 			  (unsigned int) floor(1000000.0 / devout->frequency * devout->buffer_size));
 
   if(rc < 0) {
