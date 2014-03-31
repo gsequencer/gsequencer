@@ -1662,7 +1662,7 @@ ags_thread_loop(void *ptr)
     {
       static const struct timespec req = {
 	0,
-	(250000000 * 1 / 45),
+	(250000000 * (1 / 45)),
       };
 
       if(!AGS_IS_DEVOUT_THREAD(thread)){
