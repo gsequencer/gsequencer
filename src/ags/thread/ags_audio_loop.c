@@ -549,16 +549,9 @@ ags_audio_loop_run(AgsThread *thread)
      audio_loop->play_channel_ref == 0 &&
      audio_loop->play_audio_ref == 0 &&
      audio_loop->play_notation_ref == 0){
-    static const struct timespec req = {
-      0,
-      250000000,
-    };
-
     if((AGS_THREAD_RUNNING & (AGS_THREAD(audio_loop->devout_thread)->flags)) != 0){
       ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
     }
-
-    nanosleep(&req, NULL);
   }
 
   /* determine if attack should be switched */

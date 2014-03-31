@@ -1522,7 +1522,7 @@ ags_thread_loop(void *ptr)
     ags_thread_lock(thread);
 
     ags_thread_loop_sync(thread);
-    
+
     /* */
     switch(current_tic){
     case 2:
@@ -1657,6 +1657,18 @@ ags_thread_loop(void *ptr)
     }
 
     pthread_mutex_unlock(&(thread->timelock_mutex));
+
+    /* and now async */
+    {
+      static const struct timespec req = {
+	0,
+	(250000000 * 1 / 45),
+      };
+
+      if(!AGS_IS_DEVOUT_THREAD(thread)){
+	nanosleep(&req, NULL);
+      }
+    }
 
     /* run */
     ags_thread_run(thread);
