@@ -438,6 +438,60 @@ ags_recycling_container_get_child_recall_id(AgsRecyclingContainer *recycling_con
   return(recall_id_list);
 }
 
+void
+ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_container,
+					AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
+					AgsRecycling *new_first_recycling, AgsRecycling *new_last_recycling)
+{
+  AgsRecycling *recycling, *old_recycling;
+  guint new_length;
+  guint first_index, last_index;
+  guint i;
+
+  /* retrieve new length of recycling array */
+  new_length = ags_recycling_position(new_first_recycling, new_last_recycling,
+				      new_last_recycling);
+
+  /* retrieve indices to replace */
+  first_index = ags_recycling_container_find(recycling_container,
+					     old_first_recycling);
+
+  last_index = ags_recycling_container_find(recycling_container,
+					    old_last_recycling);
+
+  /* replace */
+  recycling = new_first_recycling;
+  old_recycling = old_first_recycling;
+
+  for(i = 0; i < last_index - first_index &&
+	i < new_length;
+      i++){
+    ags_recycling_container_replace(recycling_container,
+				    recycling,
+				    first_index + i);
+    recycling = recycling->next;
+    old_recycling = old_recycling->next;
+  }
+
+  /* insert or remove */
+  if(new_length < last_index - first_index){
+    for(; i < last_index - first_index; i++){
+      ags_recycling_container_remove(recycling_container,
+				     old_recycling);
+
+      old_recycling = old_recycling->next;
+    }
+  }else{
+    for(; i < last_index - first_index; i++){
+      ags_recycling_container_insert(recycling_container,
+				     recycling,
+				     first_index + i);
+
+      recycling = recycling->next;
+    }
+  }
+}
+
 AgsRecyclingContainer*
 ags_recycling_container_new(gint length)
 {

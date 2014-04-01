@@ -952,6 +952,7 @@ ags_channel_set_recycling(AgsChannel *channel,
   AgsChannel *prev_channel, *next_channel;
   AgsRecycling *nth_recycling, *next_recycling, *stop_recycling;
   AgsRecycling *parent;
+  GList *list;
   gboolean replace_first, replace_last;
   gboolean find_prev, find_next;
   gboolean change_old_last, change_old_first;
@@ -965,17 +966,6 @@ ags_channel_set_recycling(AgsChannel *channel,
 
   gboolean ags_channel_set_recycling_recursive_input(AgsChannel *input){
     AgsChannel *nth_channel_prev, *nth_channel_next;
-
-    //TODO:JK: check for compliance
-    /* update input AgsRecallIDs */
-    //    ags_recall_id_reset_recycling(input->recall_id,
-    //				  input->first_recycling,
-    //				  replace_with_first_recycling, replace_with_last_recycling);
-
-    /* update audio AgsRecallIDs */
-    //    ags_recall_id_reset_recycling(audio->recall_id,
-    //				  input->first_recycling,
-    //				  replace_with_first_recycling, replace_with_last_recycling);
 
     if(replace_first){
       /* set recycling */
@@ -1224,7 +1214,18 @@ ags_channel_set_recycling(AgsChannel *channel,
       replace_last = FALSE;
   }
 
-  /* set recycling */
+  /* set recycling - update AgsRecyclingContainer */
+  list = channel->recall_id;
+
+  while(list != NULL){
+    ags_recycling_container_reset_recycling(AGS_RECALL_ID(list->data)->recycling_container,
+					    old_first_recycling, old_last_recycling,
+					    first_recycling, last_recycling);
+
+    list = list->next;
+  }
+
+  /* set recycling - update AgsChannel */
   if(AGS_IS_INPUT(channel)){
     AgsChannel *output;
 
@@ -1286,7 +1287,6 @@ ags_channel_set_recycling(AgsChannel *channel,
       next_channel->first_recycling->prev = NULL;
     }
   }
-  
 
   /* destroy old recycling */
   if(destroy_old && old_first_recycling != NULL){
