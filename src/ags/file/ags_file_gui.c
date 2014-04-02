@@ -1997,7 +1997,47 @@ ags_file_write_resize_editor(AgsFile *file, xmlNode *parent, AgsResizeEditor *re
 void
 ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 {
-  //TODO:JK: implement me
+  AgsEditor *gobject;
+  xmlNode *child;
+
+  if(*editor == NULL){
+    gobject = (AgsEditor *) g_object_new(AGS_TYPE_EDITOR,
+					 NULL);
+    *editor = gobject;
+  }else{
+    gobject = *editor;
+  }
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->version = g_strdup(xmlGetProp(node,
+					 AGS_FILE_VERSION_PROP));
+
+  gobject->build_id = g_strdup(xmlGetProp(node,
+					  AGS_FILE_BUILD_ID_PROP));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "\0",
+		     1)){
+	//TODO:JK: implement me
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -2019,6 +2059,18 @@ ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar)
 }
 
 void
+ags_file_read_editor_pane(AgsFile *file, xmlNode *node, GtkVBox **editor_pane)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_editor_pane(AgsFile *file, xmlNode *parent, GtkVBox *editor_pane)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_read_notebook(AgsFile *file, xmlNode *node, AgsNotebook **notebook)
 {
   //TODO:JK: implement me
@@ -2026,6 +2078,30 @@ ags_file_read_notebook(AgsFile *file, xmlNode *node, AgsNotebook **notebook)
 
 xmlNode*
 ags_file_write_notebook(AgsFile *file, xmlNode *parent, AgsNotebook *notebook)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_notebook_tab_list(AgsFile *file, xmlNode *node, GList **notebook_tab_list)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_notebook_tab_list(AgsFile *file, xmlNode *parent, GList *notebook_tab_list)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_file_read_notebook_tab(AgsFile *file, xmlNode *node, AgsNotebookTab **notebook_tab)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_notebook_tab(AgsFile *file, xmlNode *parent, AgsNotebookTab *notebook_tab)
 {
   //TODO:JK: implement me
 }

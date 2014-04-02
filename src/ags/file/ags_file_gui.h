@@ -181,9 +181,19 @@ xmlNode* ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor
 void ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar);
 xmlNode* ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar);
 
+/* GtkVBox */
+void ags_file_read_editor_pane(AgsFile *file, xmlNode *node, GtkVBox **editor_pane);
+xmlNode* ags_file_write_editor_pane(AgsFile *file, xmlNode *parent, GtkVBox *editor_pane);
+
 /* AgsNotebook */
 void ags_file_read_notebook(AgsFile *file, xmlNode *node, AgsNotebook **notebook);
 xmlNode* ags_file_write_notebook(AgsFile *file, xmlNode *parent, AgsNotebook *notebook);
+
+void ags_file_read_notebook_tab_list(AgsFile *file, xmlNode *node, GList **notebook_tab_list);
+xmlNode* ags_file_write_notebook_tab_list(AgsFile *file, xmlNode *parent, GList *notebook_tab_list);
+
+void ags_file_read_notebook_tab(AgsFile *file, xmlNode *node, AgsNotebookTab **notebook_tab);
+xmlNode* ags_file_write_notebook_tab(AgsFile *file, xmlNode *parent, AgsNotebookTab *notebook_tab);
 
 /* AgsNavigation */
 void ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigation);
