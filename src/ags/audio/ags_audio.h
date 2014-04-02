@@ -118,7 +118,6 @@ void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 
 void ags_audio_duplicate_recall(AgsAudio *audio,
-				gboolean playback, gboolean sequencer, gboolean notation,
 				AgsRecallID *recall_id);
 void ags_audio_init_recall(AgsAudio *audio, gint stage,
 			   AgsRecallID *recall_id);

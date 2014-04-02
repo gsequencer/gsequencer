@@ -1869,14 +1869,26 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
  */
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
-			   gboolean playback, gboolean sequencer, gboolean notation,
 			   AgsRecallID *recall_id)
 {
   AgsRecall *recall, *copy;
   GList *list_recall_start, *list_recall;
+  gboolean playback, sequencer, notation;
   
   g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
 
+  if((AGS_RECALL_ID_PLAYBACK & (recall_id->flags)) != 0){
+    playback = TRUE;
+  }
+
+  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0){
+    sequencer = TRUE;
+  }
+
+  if((AGS_RECALL_ID_NOTATION & (recall_id->flags)) != 0){
+    notation = TRUE;
+  }
+  
   /* get the appropriate list */
   if(recall_id->recycling_container->parent == NULL)
     list_recall_start = 

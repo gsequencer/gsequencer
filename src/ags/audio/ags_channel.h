@@ -153,7 +153,6 @@ void ags_channel_recursive_play_threaded(AgsChannel *channel,
 void ags_channel_recursive_play(AgsChannel *channel,
 				AgsRecallID *recall_id, gint stage);
 void ags_channel_duplicate_recall(AgsChannel *channel,
-				  gboolean playback, gboolean sequencer, gboolean notation,
 				  AgsRecallID *recall_id);
 void ags_channel_init_recall(AgsChannel *channel, gint stage,
 			     AgsRecallID *recall_id);
