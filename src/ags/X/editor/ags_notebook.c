@@ -91,6 +91,54 @@ ags_notebook_show(GtkWidget *widget)
 {
 }
 
+guint
+ags_notebook_tab_index(AgsNotebook *notebook,
+		       GObject *notation)
+{
+  GList *list;
+  guint i;
+
+  list = notebook->tabs;
+
+  for(i = 0; list != NULL; i++){
+    if(AGS_NOTEBOOK_TAB(list->data)->notation == notation){
+      return(i);
+    }
+
+    list = list->next;
+  }
+  
+  return(G_MAXUINT);
+}
+
+guint
+ags_notebook_add_tab(AgsNotebook *notebook)
+{
+}
+
+guint
+ags_notebook_insert_tab(AgsNotebook *notebook)
+{
+}
+
+void
+ags_notebook_remove_tab(AgsNotebook *notebook,
+			guint nth)
+{
+}
+
+void
+ags_notebook_add_child(AgsNotebook *notebook,
+		       GtkWidget *child, guint mode)
+{
+}
+
+void
+ags_notebook_remove_child(AgsNotebook *notebook,
+			  GtkWidget *child)
+{
+}
+
 AgsNotebook*
 ags_notebook_new()
 {
