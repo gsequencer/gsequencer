@@ -265,7 +265,6 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *source, *destination;
-  //  AgsAttack *attack;
   AgsBufferAudioSignal *buffer_audio_signal;
   AgsBufferRecycling *buffer_recycling;
   AgsBufferChannel *buffer_channel;

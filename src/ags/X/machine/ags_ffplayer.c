@@ -56,6 +56,8 @@ void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 			   guint pads, guint pads_old,
 			   gpointer data);
 
+void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start);
+void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start);
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
 static gpointer ags_ffplayer_parent_class = NULL;
@@ -167,6 +169,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   
   AGS_MACHINE(ffplayer)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(ffplayer)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
+
+  ffplayer->mapped_input_pad = 0;
+  ffplayer->mapped_output_pad = 0;
 
   /* create widgets */
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
@@ -297,7 +302,6 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				gpointer data)
 {
   AgsFFPlayer *ffplayer;
-  AgsChannel *source;
   gboolean grow;
 
   ffplayer = AGS_FFPLAYER(audio->machine);
@@ -322,6 +326,7 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 		      gpointer data)
 {
   AgsFFPlayer *ffplayer;
+  gboolean grow;
 
   ffplayer = AGS_FFPLAYER(audio->machine);
 
@@ -329,9 +334,62 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
     return;
   }
 
-  if(pads_old < pads){
+  if(pads_old == pads)
+    return;
+  if(pads_old < pads)
+    grow = TRUE;
+  else
+    grow = FALSE;
+
+  if(type == AGS_TYPE_INPUT){
+    AgsPlayNotationAudioRun  *play_notation;
+    GList *list, *notation;
+
+    list = audio->recall;
+
+    while((list = ags_recall_find_type(list,
+				       AGS_TYPE_PLAY_NOTATION_AUDIO_RUN)) != NULL){
+      play_notation = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+
+      notation = audio->notation;
+	
+      while(notation != NULL){
+	g_object_set(G_OBJECT(play_notation),
+		     "notation\0", notation->data,
+		     NULL);
+	
+	notation = notation->next;
+      }
+
+      list = list->next;
+    }
+
+    if(grow){
+      /* depending on destination */
+      ags_ffplayer_input_map_recall(ffplayer, pads_old);
+    }else{
+      ffplayer->mapped_input_pad = audio->input_pads;
+    }
   }else{
+    if(grow){
+      /* depending on destination */
+      ags_ffplayer_output_map_recall(ffplayer, pads_old);
+    }else{
+      ffplayer->mapped_output_pad = audio->output_pads;
+    }
   }
+}
+
+void
+ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
+{
+  //TODO:JK: implement me
 }
 
 void

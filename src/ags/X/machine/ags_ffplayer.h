@@ -42,6 +42,9 @@ struct _AgsFFPlayer
 {
   AgsMachine machine;
 
+  guint mapped_output_pad;
+  guint mapped_input_pad;
+
   GtkButton *open;
 
   guint control_width;
