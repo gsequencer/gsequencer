@@ -28,6 +28,8 @@ void ags_notebook_destroy(GtkObject *object);
 void ags_notebook_show(GtkWidget *widget);
 void ags_notebook_paint(AgsNotebook *notebook);
 
+AgsNotebookTab* ags_notebook_tab_alloc();
+
 GtkStyle *notebook_style;
 
 GType
@@ -47,7 +49,7 @@ ags_notebook_get_type(void)
       (GtkClassInitFunc) NULL,
     };
 
-    notebook_type = gtk_type_unique (GTK_TYPE_NOTEBOOK, &notebook_info);
+    notebook_type = gtk_type_unique (GTK_TYPE_HBOX, &notebook_info);
   }
 
   return (notebook_type);
@@ -62,6 +64,11 @@ void
 ags_notebook_init(AgsNotebook *notebook)
 {
   gtk_widget_set_style((GtkWidget *) notebook, notebook_style);
+
+  notebook->flags = 0;
+
+  notebook->tabs = NULL;
+  notebook->child = NULL;
 }
 
 void
@@ -91,7 +98,22 @@ ags_notebook_show(GtkWidget *widget)
 {
 }
 
-guint
+AgsNotebookTab*
+ags_notebook_tab_alloc()
+{
+  AgsNotebookTab *notebook_tab;
+
+  notebook_tab = (AgsNotebookTab *) malloc(sizeof(AgsNotebookTab));
+
+  notebook_tab->flags = 0;
+
+  notebook_tab->toggle = NULL;
+  notebook_tab->notation = NULL;
+
+  return(notebook_tab);
+}
+
+gint
 ags_notebook_tab_index(AgsNotebook *notebook,
 		       GObject *notation)
 {
@@ -108,22 +130,44 @@ ags_notebook_tab_index(AgsNotebook *notebook,
     list = list->next;
   }
   
-  return(G_MAXUINT);
+  return(-1);
 }
 
-guint
+gint
 ags_notebook_add_tab(AgsNotebook *notebook)
 {
+  AgsNotebookTab *tab;
+  gint index;
+
+  tab = ags_notebook_tab_alloc();
+
+  notebook->tabs = g_list_prepend(notebook->tabs,
+				  tab);
+  index = g_list_length(notebook->tabs);
+
+  tab->toggle = gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
+								 index + 1));
+
+  return(index);
 }
 
-guint
-ags_notebook_insert_tab(AgsNotebook *notebook)
+gint
+ags_notebook_next_active_tab(AgsNotebook *notebook,
+			     gint position)
+{
+  GList *list;
+  guint i;
+}
+
+void
+ags_notebook_insert_tab(AgsNotebook *notebook,
+			gint position)
 {
 }
 
 void
 ags_notebook_remove_tab(AgsNotebook *notebook,
-			guint nth)
+			gint nth)
 {
 }
 

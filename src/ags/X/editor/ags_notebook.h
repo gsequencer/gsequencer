@@ -67,13 +67,16 @@ struct _AgsNotebookTab
 
 GType ags_notebook_get_type(void);
 
-guint ags_notebook_tab_index(AgsNotebook *notebook,
-			     GObject *notation);
+gint ags_notebook_tab_index(AgsNotebook *notebook,
+			    GObject *notation);
+gint ags_notebook_next_active_tab(AgsNotebook *notebook,
+				  gint position);
 
-guint ags_notebook_add_tab(AgsNotebook *notebook);
-guint ags_notebook_insert_tab(AgsNotebook *notebook);
+gint ags_notebook_add_tab(AgsNotebook *notebook);
+void ags_notebook_insert_tab(AgsNotebook *notebook,
+			     gint position);
 void ags_notebook_remove_tab(AgsNotebook *notebook,
-			     guint nth);
+			     gint nth);
 
 void ags_notebook_add_child(AgsNotebook *notebook,
 			    GtkWidget *child, guint mode);
