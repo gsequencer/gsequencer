@@ -30,6 +30,14 @@ void ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *conn
 void ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_buffer_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_buffer_channel_init(AgsBufferChannel *buffer_channel);
+void ags_buffer_channel_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_buffer_channel_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_buffer_channel_connect(AgsConnectable *connectable);
 void ags_buffer_channel_disconnect(AgsConnectable *connectable);
 void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
@@ -142,23 +150,118 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+  GParamSpec *param_spec;
 
   ags_buffer_channel_parent_class = g_type_class_peek_parent(buffer_channel);
 
   /* GObjectClass */
   gobject = (GObjectClass *) buffer_channel;
 
+  gobject->set_property = ags_buffer_channel_set_property;
+  gobject->get_property = ags_buffer_channel_get_property;
+
   gobject->finalize = ags_buffer_channel_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("muted\0",
+				   "mute channel\0",
+				   "Mute the channel\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MUTED,
+				  param_spec);
 }
 
 void
 ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
 {
+  GList *port;
+
   AGS_RECALL(buffer_channel)->name = "ags-buffer\0";
   AGS_RECALL(buffer_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(buffer_channel)->build_id = AGS_BUILD_ID;
   AGS_RECALL(buffer_channel)->xml_type = "ags-buffer-channel\0";
-  AGS_RECALL(buffer_channel)->port = NULL;
+
+  port = NULL;
+
+  buffer_channel->muted = g_object_new(AGS_TYPE_PORT,
+				     "plugin-name\0", ags_buffer_channel_plugin_name,
+				     "specifier\0", ags_buffer_channel_plugin_specifier[0],
+				     "control-port\0", ags_buffer_channel_plugin_control_port[0],
+				     "port-value-is-pointer\0", FALSE,
+				     "port-value-type\0", G_TYPE_BOOLEAN,
+				     "port-value-size\0", sizeof(gboolean),
+				     "port-value-length\0", 1,
+				     NULL);
+  buffer_channel->muted->port_value.ags_port_boolean = FALSE;
+
+  port = g_list_prepend(port, buffer_channel->muted);
+
+  /* set port */
+  AGS_RECALL(buffer_channel)->port = port;
+
+}
+
+
+void
+ags_buffer_channel_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsBufferChannel *buffer_channel;
+
+  buffer_channel = AGS_BUFFER_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_MUTED:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == buffer_channel->muted){
+	return;
+      }
+
+      if(buffer_channel->muted != NULL){
+	g_object_unref(G_OBJECT(buffer_channel->muted));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      buffer_channel->muted = port;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }  
+}
+
+void
+ags_buffer_channel_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
+{
+  AgsBufferChannel *buffer_channel;
+
+  buffer_channel = AGS_BUFFER_CHANNEL(gobject);
+
+  switch(prop_id){
+  case PROP_MUTED:
+    {
+      g_value_set_object(value, buffer_channel->muted);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
