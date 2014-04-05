@@ -197,6 +197,10 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_copy_pattern_audio_run.$(OBJEXT) \
 	ags-ags_stream_audio_signal.$(OBJEXT) \
 	ags-ags_play_pattern.$(OBJEXT) \
+	ags-ags_buffer_channel.$(OBJEXT) \
+	ags-ags_buffer_recycling.$(OBJEXT) \
+	ags-ags_buffer_audio_signal.$(OBJEXT) \
+	ags-ags_buffer_channel_run.$(OBJEXT) \
 	ags-ags_copy_channel_run.$(OBJEXT) \
 	ags-ags_copy_notation_audio.$(OBJEXT) \
 	ags-ags_copy_pattern_channel.$(OBJEXT) \
@@ -854,6 +858,14 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/recall/ags_play_pattern.c \
 	./src/ags/audio/recall/ags_loop_channel_run.h \
 	./src/ags/audio/recall/ags_play_channel.h \
+	./src/ags/audio/recall/ags_buffer_channel.h \
+	./src/ags/audio/recall/ags_buffer_channel.c \
+	./src/ags/audio/recall/ags_buffer_recycling.h \
+	./src/ags/audio/recall/ags_buffer_recycling.c \
+	./src/ags/audio/recall/ags_buffer_audio_signal.h \
+	./src/ags/audio/recall/ags_buffer_audio_signal.c \
+	./src/ags/audio/recall/ags_buffer_channel_run.h \
+	./src/ags/audio/recall/ags_buffer_channel_run.c \
 	./src/ags/audio/recall/ags_copy_channel.h \
 	./src/ags/audio/recall/ags_copy_channel_run.c \
 	./src/ags/audio/recall/ags_play_channel_run_master.h \
@@ -1364,6 +1376,10 @@ include ./$(DEPDIR)/ags-ags_audio_preferences.Po
 include ./$(DEPDIR)/ags-ags_audio_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_audio_set_recycling.Po
 include ./$(DEPDIR)/ags-ags_audio_signal.Po
+include ./$(DEPDIR)/ags-ags_buffer_audio_signal.Po
+include ./$(DEPDIR)/ags-ags_buffer_channel.Po
+include ./$(DEPDIR)/ags-ags_buffer_channel_run.Po
+include ./$(DEPDIR)/ags-ags_buffer_recycling.Po
 include ./$(DEPDIR)/ags-ags_cancel_audio.Po
 include ./$(DEPDIR)/ags-ags_cancel_channel.Po
 include ./$(DEPDIR)/ags-ags_cancel_recall.Po
@@ -3365,6 +3381,62 @@ ags-ags_play_pattern.obj: ./src/ags/audio/recall/ags_play_pattern.c
 #	$(AM_V_CC)source='./src/ags/audio/recall/ags_play_pattern.c' object='ags-ags_play_pattern.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_play_pattern.obj `if test -f './src/ags/audio/recall/ags_play_pattern.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_play_pattern.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_play_pattern.c'; fi`
+
+ags-ags_buffer_channel.o: ./src/ags/audio/recall/ags_buffer_channel.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_buffer_channel.Tpo -c -o ags-ags_buffer_channel.o `test -f './src/ags/audio/recall/ags_buffer_channel.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_channel.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_channel.Tpo $(DEPDIR)/ags-ags_buffer_channel.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_channel.c' object='ags-ags_buffer_channel.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_channel.o `test -f './src/ags/audio/recall/ags_buffer_channel.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_channel.c
+
+ags-ags_buffer_channel.obj: ./src/ags/audio/recall/ags_buffer_channel.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_channel.obj -MD -MP -MF $(DEPDIR)/ags-ags_buffer_channel.Tpo -c -o ags-ags_buffer_channel.obj `if test -f './src/ags/audio/recall/ags_buffer_channel.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_channel.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_channel.Tpo $(DEPDIR)/ags-ags_buffer_channel.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_channel.c' object='ags-ags_buffer_channel.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_channel.obj `if test -f './src/ags/audio/recall/ags_buffer_channel.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_channel.c'; fi`
+
+ags-ags_buffer_recycling.o: ./src/ags/audio/recall/ags_buffer_recycling.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_recycling.o -MD -MP -MF $(DEPDIR)/ags-ags_buffer_recycling.Tpo -c -o ags-ags_buffer_recycling.o `test -f './src/ags/audio/recall/ags_buffer_recycling.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_recycling.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_recycling.Tpo $(DEPDIR)/ags-ags_buffer_recycling.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_recycling.c' object='ags-ags_buffer_recycling.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_recycling.o `test -f './src/ags/audio/recall/ags_buffer_recycling.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_recycling.c
+
+ags-ags_buffer_recycling.obj: ./src/ags/audio/recall/ags_buffer_recycling.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_recycling.obj -MD -MP -MF $(DEPDIR)/ags-ags_buffer_recycling.Tpo -c -o ags-ags_buffer_recycling.obj `if test -f './src/ags/audio/recall/ags_buffer_recycling.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_recycling.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_recycling.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_recycling.Tpo $(DEPDIR)/ags-ags_buffer_recycling.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_recycling.c' object='ags-ags_buffer_recycling.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_recycling.obj `if test -f './src/ags/audio/recall/ags_buffer_recycling.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_recycling.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_recycling.c'; fi`
+
+ags-ags_buffer_audio_signal.o: ./src/ags/audio/recall/ags_buffer_audio_signal.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_audio_signal.o -MD -MP -MF $(DEPDIR)/ags-ags_buffer_audio_signal.Tpo -c -o ags-ags_buffer_audio_signal.o `test -f './src/ags/audio/recall/ags_buffer_audio_signal.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_audio_signal.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_audio_signal.Tpo $(DEPDIR)/ags-ags_buffer_audio_signal.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_audio_signal.c' object='ags-ags_buffer_audio_signal.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_audio_signal.o `test -f './src/ags/audio/recall/ags_buffer_audio_signal.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_audio_signal.c
+
+ags-ags_buffer_audio_signal.obj: ./src/ags/audio/recall/ags_buffer_audio_signal.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_audio_signal.obj -MD -MP -MF $(DEPDIR)/ags-ags_buffer_audio_signal.Tpo -c -o ags-ags_buffer_audio_signal.obj `if test -f './src/ags/audio/recall/ags_buffer_audio_signal.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_audio_signal.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_audio_signal.Tpo $(DEPDIR)/ags-ags_buffer_audio_signal.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_audio_signal.c' object='ags-ags_buffer_audio_signal.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_audio_signal.obj `if test -f './src/ags/audio/recall/ags_buffer_audio_signal.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_audio_signal.c'; fi`
+
+ags-ags_buffer_channel_run.o: ./src/ags/audio/recall/ags_buffer_channel_run.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_channel_run.o -MD -MP -MF $(DEPDIR)/ags-ags_buffer_channel_run.Tpo -c -o ags-ags_buffer_channel_run.o `test -f './src/ags/audio/recall/ags_buffer_channel_run.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_channel_run.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_channel_run.Tpo $(DEPDIR)/ags-ags_buffer_channel_run.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_channel_run.c' object='ags-ags_buffer_channel_run.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_channel_run.o `test -f './src/ags/audio/recall/ags_buffer_channel_run.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_buffer_channel_run.c
+
+ags-ags_buffer_channel_run.obj: ./src/ags/audio/recall/ags_buffer_channel_run.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_buffer_channel_run.obj -MD -MP -MF $(DEPDIR)/ags-ags_buffer_channel_run.Tpo -c -o ags-ags_buffer_channel_run.obj `if test -f './src/ags/audio/recall/ags_buffer_channel_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_channel_run.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_buffer_channel_run.Tpo $(DEPDIR)/ags-ags_buffer_channel_run.Po
+#	$(AM_V_CC)source='./src/ags/audio/recall/ags_buffer_channel_run.c' object='ags-ags_buffer_channel_run.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_buffer_channel_run.obj `if test -f './src/ags/audio/recall/ags_buffer_channel_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_buffer_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_buffer_channel_run.c'; fi`
 
 ags-ags_copy_channel_run.o: ./src/ags/audio/recall/ags_copy_channel_run.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_copy_channel_run.o -MD -MP -MF $(DEPDIR)/ags-ags_copy_channel_run.Tpo -c -o ags-ags_copy_channel_run.o `test -f './src/ags/audio/recall/ags_copy_channel_run.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_copy_channel_run.c

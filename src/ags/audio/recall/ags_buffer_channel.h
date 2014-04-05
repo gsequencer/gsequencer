@@ -37,6 +37,8 @@ typedef struct _AgsBufferChannelClass AgsBufferChannelClass;
 struct _AgsBufferChannel
 {
   AgsRecallChannel recall_channel;
+
+  AgsPort *muted;
 };
 
 struct _AgsBufferChannelClass
