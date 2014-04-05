@@ -46,6 +46,7 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/widget/ags_led.h>
@@ -474,6 +475,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   guint i, j;
   gboolean grow;
 
+  GValue value = {0,};
+
   if(type == AGS_TYPE_INPUT && pads < 8){
     printf("AgsMatrix minimum input pad count 8\n\0");
     pads = 8;
@@ -489,31 +492,37 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     grow = FALSE;
 
   if(type == AGS_TYPE_INPUT){
-    AgsPlayNotationAudioRun  *play_notation;
+    AgsPlayNotationAudio  *play_notation;
     AgsCopyPatternChannel *copy_pattern_channel;
     AgsPattern *pattern;
     GList *list, *notation;
 
-    list = audio->recall;
+    if(grow){
+      /*  */
+      list = audio->recall;
 
-    while((list = ags_recall_find_type(list,
-				       AGS_TYPE_PLAY_NOTATION_AUDIO_RUN)) != NULL){
-      play_notation = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
+	play_notation = AGS_PLAY_NOTATION_AUDIO(list->data);
 
-      notation = audio->notation;
+	ags_port_safe_read(play_notation->notation,
+			   &value);
+
+	if(g_value_get_object(&value) == NULL){
+	  notation = audio->notation;
 	
-      while(notation != NULL){
-	g_object_set(G_OBJECT(play_notation),
-		     "notation\0", notation->data,
-		     NULL);
+	  while(notation != NULL){
+	    g_object_set(G_OBJECT(play_notation),
+			 "notation\0", notation->data,
+			 NULL);
 	
-	notation = notation->next;
+	    notation = notation->next;
+	  }
+	}
+	
+	list = list->next;
       }
 
-      list = list->next;
-    }
-
-    if(grow){
       /* ags-copy-pattern */
       ags_recall_factory_create(audio,
 				NULL, NULL,

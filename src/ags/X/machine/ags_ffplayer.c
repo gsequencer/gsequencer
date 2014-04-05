@@ -26,6 +26,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
@@ -33,8 +34,13 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/recall/ags_buffer_channel.h>
+#include <ags/audio/recall/ags_buffer_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/X/ags_editor.h>
@@ -327,6 +333,8 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 {
   AgsFFPlayer *ffplayer;
   gboolean grow;
+  
+  GValue value = {0,};
 
   ffplayer = AGS_FFPLAYER(audio->machine);
 
@@ -342,29 +350,35 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
     grow = FALSE;
 
   if(type == AGS_TYPE_INPUT){
-    AgsPlayNotationAudioRun  *play_notation;
+    AgsPlayNotationAudio  *play_notation;
     GList *list, *notation;
 
-    list = audio->recall;
+    if(grow){
+      /* set notation for AgsPlayNotationAudioRun recall */
+      list = audio->recall;
 
-    while((list = ags_recall_find_type(list,
-				       AGS_TYPE_PLAY_NOTATION_AUDIO_RUN)) != NULL){
-      play_notation = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
+	play_notation = AGS_PLAY_NOTATION_AUDIO(list->data);
 
-      notation = audio->notation;
+	ags_port_safe_read(play_notation->notation,
+			   &value);
+
+	if(g_value_get_object(&value) == NULL){
+	  notation = audio->notation;
 	
-      while(notation != NULL){
-	g_object_set(G_OBJECT(play_notation),
-		     "notation\0", notation->data,
-		     NULL);
+	  while(notation != NULL){
+	    g_object_set(G_OBJECT(play_notation),
+			 "notation\0", notation->data,
+			 NULL);
 	
-	notation = notation->next;
+	    notation = notation->next;
+	  }
+	}
+
+	list = list->next;
       }
 
-      list = list->next;
-    }
-
-    if(grow){
       /* depending on destination */
       ags_ffplayer_input_map_recall(ffplayer, pads_old);
     }else{
@@ -383,13 +397,115 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 void
 ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  AgsChannel *source, *current, *destination;
+  AgsCopyChannel *copy_channel;
+  AgsCopyChannelRun *copy_channel_run;
+
+  GList *list;
+
+  audio = AGS_MACHINE(ffplayer)->audio;
+
+  if(ffplayer->mapped_input_pad > input_pad_start){
+    return;
+  }else{
+    ffplayer->mapped_input_pad = audio->input_pads;
+  }
+
+  source = ags_channel_nth(audio->input,
+			   input_pad_start * audio->audio_channels);
+
+  current = source;
+
+  while(current != NULL){
+    /* ags-copy */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-copy\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+
+    destination = ags_channel_nth(audio->output,
+				  current->audio_channel);
+
+    while(destination != NULL){
+      /* recall */
+      list = current->recall;
+
+      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
+	copy_channel = AGS_COPY_CHANNEL(list->data);
+
+	g_object_set(G_OBJECT(copy_channel),
+		     "destination\0", destination,
+		     NULL);
+
+	list = list->next;
+      }
+
+      list = current->recall;
+    
+      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
+	copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
+
+	g_object_set(G_OBJECT(copy_channel_run),
+		     "destination\0", destination,
+		     NULL);
+
+	list = list->next;
+      }
+
+      destination = destination->next_pad;
+    }
+
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
 }
 
 void
 ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  AgsChannel *source;
+
+  audio = AGS_MACHINE(ffplayer)->audio;
+
+  if(ffplayer->mapped_output_pad > output_pad_start){
+    return;
+  }else{
+    ffplayer->mapped_output_pad = audio->output_pads;
+  }
+  
+  source = ags_channel_nth(audio->output,
+			   output_pad_start * audio->audio_channels);
+
+  /* ags-stream */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-buffer\0",
+			    source->audio_channel, source->audio_channel + 1,
+			    output_pad_start, audio->output_pads,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 }
 
 void

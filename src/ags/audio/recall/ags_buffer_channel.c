@@ -267,7 +267,13 @@ ags_buffer_channel_get_property(GObject *gobject,
 void
 ags_buffer_channel_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsBufferChannel *buffer_channel;
+
+  buffer_channel = AGS_BUFFER_CHANNEL(gobject);
+
+  if(buffer_channel->muted != NULL){
+    g_object_unref(G_OBJECT(buffer_channel->muted));
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_channel_parent_class)->finalize(gobject);
