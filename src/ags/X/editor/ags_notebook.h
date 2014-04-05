@@ -44,9 +44,11 @@ typedef enum{
 
 struct _AgsNotebook
 {
-  GtkHBox hbox;
+  GtkVBox vbox;
 
   guint flags;
+
+  GtkHBox *hbox;
 
   GList *tabs;
   GtkWidget *child;
@@ -54,7 +56,7 @@ struct _AgsNotebook
 
 struct _AgsNotebookClass
 {
-  GtkHBoxClass hbox;
+  GtkVBoxClass vbox;
 };
 
 struct _AgsNotebookTab
@@ -79,7 +81,7 @@ void ags_notebook_remove_tab(AgsNotebook *notebook,
 			     gint nth);
 
 void ags_notebook_add_child(AgsNotebook *notebook,
-			    GtkWidget *child, guint mode);
+			    GtkWidget *child);
 void ags_notebook_remove_child(AgsNotebook *notebook,
 			       GtkWidget *child);
 
