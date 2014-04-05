@@ -19,6 +19,8 @@
 #include <ags/X/editor/ags_note_edit.h>
 #include <ags/X/editor/ags_note_edit_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/X/ags_editor.h>
 
 void ags_note_edit_class_init(AgsNoteEditClass *note_edit);

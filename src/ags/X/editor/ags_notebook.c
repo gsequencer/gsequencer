@@ -19,11 +19,15 @@
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_notebook_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/X/ags_editor.h>
 
 void ags_notebook_class_init(AgsNotebookClass *notebook);
+void ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notebook_init(AgsNotebook *notebook);
-void ags_notebook_connect(AgsNotebook *notebook);
+void ags_notebook_connect(AgsConnectable *connectable);
+void ags_notebook_disconnect(AgsConnectable *connectable);
 void ags_notebook_destroy(GtkObject *object);
 void ags_notebook_show(GtkWidget *widget);
 void ags_notebook_paint(AgsNotebook *notebook);
@@ -69,6 +73,15 @@ ags_notebook_get_type(void)
 }
 
 void
+ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_notebook_connect;
+  connectable->disconnect = ags_notebook_disconnect;
+}
+
+void
 ags_notebook_class_init(AgsNotebookClass *notebook)
 {
 }
@@ -91,9 +104,12 @@ ags_notebook_init(AgsNotebook *notebook)
 }
 
 void
-ags_notebook_connect(AgsNotebook *notebook)
+ags_notebook_connect(AgsConnectable *connectable)
 {
+  AgsNotebook *notebook;
   AgsEditor *editor;
+
+  notebook = AGS_NOTEBOOK(connectable);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
 
@@ -105,6 +121,11 @@ ags_notebook_connect(AgsNotebook *notebook)
 
   g_signal_connect((GObject *) editor, "change_machine\0",
 		   G_CALLBACK(ags_notebook_change_machine_callback), notebook);
+}
+
+void
+ags_notebook_disconnect(AgsConnectable *connectable)
+{
 }
 
 void
