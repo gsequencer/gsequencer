@@ -22,15 +22,38 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_mutable.h>
+#include <ags/object/ags_plugin.h>
+
 void ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel);
 void ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable);
+void ags_buffer_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_buffer_channel_init(AgsBufferChannel *buffer_channel);
 void ags_buffer_channel_connect(AgsConnectable *connectable);
 void ags_buffer_channel_disconnect(AgsConnectable *connectable);
+void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_buffer_channel_finalize(GObject *gobject);
+
+void ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted);
+
+enum{
+  PROP_0,
+  PROP_MUTED,
+};
 
 static gpointer ags_buffer_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_channel_parent_connectable_interface;
+static AgsMutableInterface *ags_buffer_channel_parent_mutable_interface;
+static AgsPluginInterface *ags_buffer_channel_parent_plugin_interface;
+
+static const gchar *ags_buffer_channel_plugin_name = "ags-buffer\0";
+static const gchar *ags_buffer_channel_plugin_specifier[] = {
+  "./muted[0]\0",
+};
+static const gchar *ags_buffer_channel_plugin_control_port[] = {
+  "1/1\0",
+};
 
 GType
 ags_buffer_channel_get_type()
@@ -56,6 +79,18 @@ ags_buffer_channel_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_mutable_interface_info = {
+      (GInterfaceInitFunc) ags_buffer_channel_mutable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_buffer_channel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_buffer_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						     "AgsBufferChannel\0",
 						     &ags_buffer_channel_info,
@@ -64,9 +99,42 @@ ags_buffer_channel_get_type()
     g_type_add_interface_static(ags_type_buffer_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_buffer_channel,
+				AGS_TYPE_MUTABLE,
+				&ags_mutable_interface_info);
+
+    g_type_add_interface_static(ags_type_buffer_channel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return (ags_type_buffer_channel);
+}
+
+void
+ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_buffer_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_buffer_channel_connect;
+  connectable->disconnect = ags_buffer_channel_disconnect;
+}
+
+void
+ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable)
+{
+  ags_buffer_channel_parent_mutable_interface = g_type_interface_peek_parent(mutable);
+
+  mutable->set_muted = ags_buffer_channel_set_muted;
+}
+
+void
+ags_buffer_channel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_buffer_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->set_ports = ags_buffer_channel_set_ports;
 }
 
 void
@@ -81,15 +149,6 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
   gobject = (GObjectClass *) buffer_channel;
 
   gobject->finalize = ags_buffer_channel_finalize;
-}
-
-void
-ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_buffer_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_buffer_channel_connect;
-  connectable->disconnect = ags_buffer_channel_disconnect;
 }
 
 void
@@ -125,6 +184,33 @@ ags_buffer_channel_disconnect(AgsConnectable *connectable)
   ags_buffer_channel_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"muted[0]\0",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "muted\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
+}
+
+void
+ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted)
+{
+  GValue value = {0,};
+
+  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean(&value, muted);
+
+  ags_port_safe_write(AGS_BUFFER_CHANNEL(mutable)->muted, &value);
 }
 
 AgsBufferChannel*
