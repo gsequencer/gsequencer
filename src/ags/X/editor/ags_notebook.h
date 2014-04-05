@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_NOTEBOOK                (ags_notebook_get_type())

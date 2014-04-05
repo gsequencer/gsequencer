@@ -35,24 +35,37 @@ GtkStyle *notebook_style;
 GType
 ags_notebook_get_type(void)
 {
-  static GType notebook_type = 0;
+  static GType ags_type_notebook = 0;
 
-  if (!notebook_type){
-    static const GtkTypeInfo notebook_info = {
-      "AgsNotebook\0",
-      sizeof(AgsNotebook), /* base_init */
-      sizeof(AgsNotebookClass), /* base_finalize */
-      (GtkClassInitFunc) ags_notebook_class_init,
-      (GtkObjectInitFunc) ags_notebook_init,
+  if(!ags_type_notebook){
+    static const GTypeInfo ags_notebook_info = {
+      sizeof (AgsNotebookClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_notebook_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsNotebook),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_notebook_init,
     };
 
-    notebook_type = gtk_type_unique (GTK_TYPE_VBOX, &notebook_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_notebook_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_notebook = g_type_register_static(GTK_TYPE_VBOX,
+					       "AgsNotebook\0", &ags_notebook_info,
+					       0);
+    
+    g_type_add_interface_static(ags_type_notebook,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (notebook_type);
+  return(ags_type_notebook);
 }
 
 void
@@ -68,6 +81,10 @@ ags_notebook_init(AgsNotebook *notebook)
   notebook->flags = 0;
 
   notebook->hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(notebook),
+		     GTK_WIDGET(notebook->hbox),
+		     FALSE, FALSE,
+		     0);
 
   notebook->tabs = NULL;
   notebook->child = NULL;
