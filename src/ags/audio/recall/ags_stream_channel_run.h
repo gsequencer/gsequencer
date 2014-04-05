@@ -39,8 +39,6 @@ typedef struct _AgsStreamChannelRunClass AgsStreamChannelRunClass;
 struct _AgsStreamChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
-
-  gulong channel_recycling_changed_handler;
 };
 
 struct _AgsStreamChannelRunClass
