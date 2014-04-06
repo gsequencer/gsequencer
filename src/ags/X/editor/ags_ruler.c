@@ -117,28 +117,9 @@ ags_ruler_paint(AgsRuler *ruler)
 {
   AgsEditor *editor;
   GtkWidget *widget;
-  guint i;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) ruler, AGS_TYPE_EDITOR);
   widget = GTK_WIDGET(ruler);
-
-  gdk_draw_rectangle(widget->window,
-		     widget->style->bg_gc[0],
-		     TRUE,
-		     0, 0,
-		     widget->allocation.width, widget->allocation.height);
-
-  //  attr->end_index = 382;
-
-  //  pango_layout_set_text();
-
-  for(i = 0; i < (guint) floor((double)(widget->allocation.width - 60 - GTK_WIDGET(editor->vscrollbar)->allocation.width) / (double)editor->control_current.control_width); i++){
-    gdk_draw_line(widget->window,
-		  widget->style->fg_gc[0],
-		  i * editor->control_current.control_width + 60, widget->allocation.height - 6,
-		  i * editor->control_current.control_width + 60, widget->allocation.height);
-
-  }
 }
 
 AgsRuler*

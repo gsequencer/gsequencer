@@ -189,7 +189,7 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->position_time = (GtkLabel *) gtk_label_new("00:00.00\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_time, FALSE, FALSE, 2);
 
-  navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_EDITOR_MAX_CONTROLS * 64.0, 1.0);
+  navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_tact, FALSE, FALSE, 2);
 
 
@@ -199,7 +199,7 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->duration_time = (GtkLabel *) gtk_label_new("0000:00.00\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
-  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_EDITOR_MAX_CONTROLS * 64.0, 1.0);
+  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
 
 

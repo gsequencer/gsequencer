@@ -31,6 +31,7 @@
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_meter.h>
+#include <ags/X/editor/ags_note_edit.h>
 
 #include <ags/X/ags_machine.h>
 
@@ -46,26 +47,8 @@
 
 #define AGS_EDITOR_DEFAULT "default\0"
 
-#define AGS_EDITOR_MAX_CONTROLS 1200
-
 typedef struct _AgsEditor AgsEditor;
 typedef struct _AgsEditorClass AgsEditorClass;
-
-typedef enum{
-  AGS_EDITOR_RESETING_VERTICALLY    = 1,
-  AGS_EDITOR_RESETING_HORIZONTALLY  = 1 <<  1,
-  AGS_EDITOR_POSITION_CURSOR        = 1 <<  2,
-  AGS_EDITOR_ADDING_NOTE            = 1 <<  3,
-  AGS_EDITOR_DELETING_NOTE          = 1 <<  4,
-  AGS_EDITOR_SELECTING_NOTES        = 1 <<  5,
-}AgsEditorFlags;
-
-typedef enum{
-  AGS_EDITOR_RESET_VSCROLLBAR   = 1,
-  AGS_EDITOR_RESET_HSCROLLBAR   = 1 <<  1,
-  AGS_EDITOR_RESET_WIDTH        = 1 <<  2,
-  AGS_EDITOR_RESET_HEIGHT       = 1 <<  3, // reserved
-}AgsEditorResetFlags;
 
 struct _AgsEditor
 {
@@ -78,6 +61,8 @@ struct _AgsEditor
 
   AgsDevout *devout;
 
+  GtkMenu *popup;
+
   GtkVBox *index_radio;
   GtkRadioButton *selected;
 
@@ -86,68 +71,7 @@ struct _AgsEditor
   AgsNotebook *notebook;
 
   AgsMeter *meter;
-  GtkDrawingArea *drawing_area;
-
-  GtkMenu *popup;
-
-  struct _AgsEditorControl{ // values retrieved by mouse pressed and released callback
-    AgsNote *note;
-
-    guint x0_offset;
-    guint y0_offset;
-    guint x0;
-    guint y0;
-
-    guint x1_offset;
-    guint y1_offset;
-    guint x1;
-    guint y1;
-  }control;
-
-  guint width;
-  guint height;
-  guint map_width;
-  guint map_height;
-
-  guint control_height;
-  guint control_margin_y;
-
-  guint control_width;
-
-  guint y0;
-  guint y1;
-
-  guint nth_y;
-  guint stop_y;
-
-  struct _AgsEditorControlCurrent{ // values for drawing refering to current tic and zoom
-    guint control_count;
-
-    guint control_width;
-
-    guint x0;
-    guint x1;
-
-    guint nth_x;
-  }control_current;
-
-  struct _AgsEditorControlUnit{ // values for drawing refering to smallest tic and current zoom
-    guint control_count;
-
-    guint control_width;
-
-    guint x0;
-    guint x1;
-
-    guint nth_x;
-    guint stop_x;
-  }control_unit;
-
-  guint selected_x;
-  guint selected_y;
-  
-  GtkVScrollbar *vscrollbar;
-  GtkHScrollbar *hscrollbar;
+  AgsNoteEdit *note_edit;
 
   guint tact_counter;
 };
@@ -162,13 +86,6 @@ struct _AgsEditorClass
 GType ags_editor_get_type(void);
 
 void ags_editor_change_machine(AgsEditor *editor, AgsMachine *machine);
-
-void ags_editor_reset_vertically(AgsEditor *editor, guint flags);
-void ags_editor_reset_horizontally(AgsEditor *editor, guint flags);
-
-void ags_editor_draw_segment(AgsEditor *editor, cairo_t *cr);
-void ags_editor_draw_position(AgsEditor *editor, cairo_t *cr);
-void ags_editor_draw_notation(AgsEditor *editor, cairo_t *cr);
 
 AgsEditor* ags_editor_new();
 
