@@ -32,13 +32,6 @@
 #include <ags/X/editor/ags_meter.h>
 #include <ags/X/editor/ags_note_edit.h>
 
-#include <ags/X/machine/ags_panel.h>
-#include <ags/X/machine/ags_mixer.h>
-#include <ags/X/machine/ags_drum.h>
-#include <ags/X/machine/ags_matrix.h>
-#include <ags/X/machine/ags_synth.h>
-#include <ags/X/machine/ags_ffplayer.h>
-
 #include <math.h>
 #include <string.h>
 #include <cairo.h>
@@ -54,9 +47,9 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
   if(old_parent != NULL)
     return;
   
-  editor->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_editor_reset_horizontally(editor, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-  editor->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }
 
 gboolean
@@ -71,6 +64,17 @@ void
 ags_editor_show_callback(GtkWidget *widget, AgsEditor *editor)
 {
   ags_editor_show(widget);
+}
+
+gboolean
+ags_editor_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsEditor *editor)
+{
+  if(event->button == 3)
+    gtk_menu_popup (GTK_MENU (editor->popup),
+                    NULL, NULL, NULL, NULL,
+                    event->button, event->time);
+
+  return(TRUE);
 }
 
 void
@@ -235,41 +239,17 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
 
       editor->note_edit->map_height = pads * editor->note_edit->control_height;
     
-      editor->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-      ags_editor_reset_vertically(editor, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
-      editor->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+      editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+      ags_note_edit_reset_vertically(editor->note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+      editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
       
-      editor->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-      ags_editor_reset_horizontally(editor, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-      editor->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
+      editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+      ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+      editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
     }
   }
 
   gtk_widget_destroy((GtkWidget *) dialog);
-}
-
-void
-ags_editor_vscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
-{
-  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & editor->flags) != 0){
-    return;
-  }
-
-  editor->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-  ags_editor_reset_vertically(editor, 0);
-  editor->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
-}
-
-void
-ags_editor_hscrollbar_value_changed(GtkRange *range, AgsEditor *editor)
-{
-  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & editor->flags) != 0){
-    return;
-  }
-
-  editor->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_editor_reset_horizontally(editor, 0);
-  editor->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }
 
 void

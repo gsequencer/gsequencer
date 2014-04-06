@@ -20,21 +20,12 @@
 
 #include <ags/X/ags_editor.h>
 
-gboolean
-ags_note_edit_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsNoteEdit *note_edit)
-{
-  AgsEditor *editor;
-
-  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
-						 AGS_TYPE_EDITOR);
-
-  if(event->button == 3)
-    gtk_menu_popup (GTK_MENU (editor->popup),
-                    NULL, NULL, NULL, NULL,
-                    event->button, event->time);
-
-  return(TRUE);
-}
+#include <ags/X/machine/ags_panel.h>
+#include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_ffplayer.h>
 
 gboolean
 ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNoteEdit *note_edit)
@@ -697,4 +688,28 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
   }
 
   return(FALSE);
+}
+
+void
+ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
+{
+  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & note_edit->flags) != 0){
+    return;
+  }
+
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+  ags_note_edit_reset_vertically(note_edit, 0);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+}
+
+void
+ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
+{
+  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & note_edit->flags) != 0){
+    return;
+  }
+
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(note_edit, 0);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }

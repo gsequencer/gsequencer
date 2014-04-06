@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-AC_PREREQ([2.68])
-AC_INIT([ags], [0.3.16-SNAPSHOT], [joel@weedlight.ch])
+AC_PREREQ([2.69])
+AC_INIT([ags],[0.3.16-SNAPSHOT],[joel@weedlight.ch])
 AM_INIT_AUTOMAKE([ags], [0.3.99-SNAPSHOT])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])
@@ -9,7 +9,7 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
-AC_PROG_LIBTOOL
+LT_INIT
 
 #AGS_WITH_XMLRPC_C
 
@@ -27,7 +27,7 @@ AC_CHECK_LIB([rt], [main])
 
 AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_WITH_PTHREAD], [1], ["great!"]), AC_DEFINE([AGS_LINUX_SIGNALS], [1], ["YOUR CHANCE"]))
 
-PKG_CHECK_MODULES([UUID], [uuid >= 2.20.0])
+PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
 
@@ -55,7 +55,7 @@ PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
-PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-xlib-2.0 >= 2.26.1])
+PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.26.1])
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
 

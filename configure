@@ -2896,7 +2896,6 @@ END
   fi
 fi
 
-
 ac_config_headers="$ac_config_headers config.h"
 
 
@@ -4917,8 +4916,7 @@ else
     ;;
   *)
     lt_cv_sys_max_cmd_len=`(getconf ARG_MAX) 2> /dev/null`
-    if test -n "$lt_cv_sys_max_cmd_len" && \
-	test undefined != "$lt_cv_sys_max_cmd_len"; then
+    if test -n "$lt_cv_sys_max_cmd_len"; then
       lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \/ 4`
       lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \* 3`
     else
@@ -5319,6 +5317,10 @@ freebsd* | dragonfly*)
   fi
   ;;
 
+gnu*)
+  lt_cv_deplibs_check_method=pass_all
+  ;;
+
 haiku*)
   lt_cv_deplibs_check_method=pass_all
   ;;
@@ -5357,11 +5359,11 @@ irix5* | irix6* | nonstopux*)
   ;;
 
 # This must be glibc/ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
+linux* | k*bsd*-gnu | kopensolaris*-gnu)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd* | netbsdelf*-gnu)
+netbsd*)
   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so\.[0-9]+\.[0-9]+|_pic\.a)$'
   else
@@ -6439,7 +6441,7 @@ ia64-*-hpux*)
   rm -rf conftest*
   ;;
 
-x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
+x86_64-*kfreebsd*-gnu|x86_64-*linux*|ppc*-*linux*|powerpc*-*linux*| \
 s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
   # Find out which ABI we are using.
   echo 'int i;' > conftest.$ac_ext
@@ -6455,19 +6457,9 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	    LD="${LD-ld} -m elf_i386_fbsd"
 	    ;;
 	  x86_64-*linux*)
-	    case `/usr/bin/file conftest.o` in
-	      *x86-64*)
-		LD="${LD-ld} -m elf32_x86_64"
-		;;
-	      *)
-		LD="${LD-ld} -m elf_i386"
-		;;
-	    esac
+	    LD="${LD-ld} -m elf_i386"
 	    ;;
-	  powerpc64le-*)
-	    LD="${LD-ld} -m elf32lppclinux"
-	    ;;
-	  powerpc64-*)
+	  ppc64-*linux*|powerpc64-*linux*)
 	    LD="${LD-ld} -m elf32ppclinux"
 	    ;;
 	  s390x-*linux*)
@@ -6486,10 +6478,7 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*linux*)
 	    LD="${LD-ld} -m elf_x86_64"
 	    ;;
-	  powerpcle-*)
-	    LD="${LD-ld} -m elf64lppc"
-	    ;;
-	  powerpc-*)
+	  ppc*-*linux*|powerpc*-*linux*)
 	    LD="${LD-ld} -m elf64ppc"
 	    ;;
 	  s390*-*linux*|s390*-*tpf*)
@@ -8293,7 +8282,7 @@ lt_prog_compiler_static=
       lt_prog_compiler_static='-non_shared'
       ;;
 
-    linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
+    linux* | k*bsd*-gnu | kopensolaris*-gnu)
       case $cc_basename in
       # old Intel for x86_64 which still supported -KPIC.
       ecc*)
@@ -8771,9 +8760,6 @@ $as_echo_n "checking whether the $compiler linker ($LD) supports shared librarie
   openbsd*)
     with_gnu_ld=no
     ;;
-  linux* | k*bsd*-gnu | gnu*)
-    link_all_deplibs=no
-    ;;
   esac
 
   ld_shlibs=yes
@@ -8995,7 +8981,7 @@ _LT_EOF
       fi
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -9172,7 +9158,6 @@ _LT_EOF
 	if test "$aix_use_runtimelinking" = yes; then
 	  shared_flag="$shared_flag "'${wl}-G'
 	fi
-	link_all_deplibs=no
       else
 	# not using gcc
 	if test "$host_cpu" = ia64; then
@@ -9626,7 +9611,7 @@ $as_echo "$lt_cv_irix_exported_symbol" >&6; }
       link_all_deplibs=yes
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -10463,6 +10448,17 @@ freebsd* | dragonfly*)
   esac
   ;;
 
+gnu*)
+  version_type=linux # correct to gnu/linux during the next big refactor
+  need_lib_prefix=no
+  need_version=no
+  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}${major} ${libname}${shared_ext}'
+  soname_spec='${libname}${release}${shared_ext}$major'
+  shlibpath_var=LD_LIBRARY_PATH
+  shlibpath_overrides_runpath=no
+  hardcode_into_libs=yes
+  ;;
+
 haiku*)
   version_type=linux # correct to gnu/linux during the next big refactor
   need_lib_prefix=no
@@ -10579,7 +10575,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be glibc/ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
+linux* | k*bsd*-gnu | kopensolaris*-gnu)
   version_type=linux # correct to gnu/linux during the next big refactor
   need_lib_prefix=no
   need_version=no
@@ -10641,18 +10637,6 @@ fi
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
-  ;;
-
-netbsdelf*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -12006,12 +11990,12 @@ if test -n "$UUID_CFLAGS"; then
     pkg_cv_UUID_CFLAGS="$UUID_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"uuid >= 2.20.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "uuid >= 2.20.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"uuid >= 1.0.2\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "uuid >= 1.0.2") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_UUID_CFLAGS=`$PKG_CONFIG --cflags "uuid >= 2.20.0" 2>/dev/null`
+  pkg_cv_UUID_CFLAGS=`$PKG_CONFIG --cflags "uuid >= 1.0.2" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -12023,12 +12007,12 @@ if test -n "$UUID_LIBS"; then
     pkg_cv_UUID_LIBS="$UUID_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"uuid >= 2.20.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "uuid >= 2.20.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"uuid >= 1.0.2\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "uuid >= 1.0.2") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_UUID_LIBS=`$PKG_CONFIG --libs "uuid >= 2.20.0" 2>/dev/null`
+  pkg_cv_UUID_LIBS=`$PKG_CONFIG --libs "uuid >= 1.0.2" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -12049,14 +12033,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        UUID_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "uuid >= 2.20.0" 2>&1`
+	        UUID_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "uuid >= 1.0.2" 2>&1`
         else
-	        UUID_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "uuid >= 2.20.0" 2>&1`
+	        UUID_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "uuid >= 1.0.2" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$UUID_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (uuid >= 2.20.0) were not met:
+	as_fn_error $? "Package requirements (uuid >= 1.0.2) were not met:
 
 $UUID_PKG_ERRORS
 
@@ -12664,12 +12648,12 @@ if test -n "$GDKPIXBUF_CFLAGS"; then
     pkg_cv_GDKPIXBUF_CFLAGS="$GDKPIXBUF_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.26.1\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.26.1") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-2.0 >= 2.26.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-2.0 >= 2.26.1") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GDKPIXBUF_CFLAGS=`$PKG_CONFIG --cflags "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>/dev/null`
+  pkg_cv_GDKPIXBUF_CFLAGS=`$PKG_CONFIG --cflags "gdk-pixbuf-2.0 >= 2.26.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -12681,12 +12665,12 @@ if test -n "$GDKPIXBUF_LIBS"; then
     pkg_cv_GDKPIXBUF_LIBS="$GDKPIXBUF_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-xlib-2.0 >= 2.26.1\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-xlib-2.0 >= 2.26.1") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gdk-pixbuf-2.0 >= 2.26.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gdk-pixbuf-2.0 >= 2.26.1") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_GDKPIXBUF_LIBS=`$PKG_CONFIG --libs "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>/dev/null`
+  pkg_cv_GDKPIXBUF_LIBS=`$PKG_CONFIG --libs "gdk-pixbuf-2.0 >= 2.26.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -12707,14 +12691,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>&1`
+	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gdk-pixbuf-2.0 >= 2.26.1" 2>&1`
         else
-	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gdk-pixbuf-xlib-2.0 >= 2.26.1" 2>&1`
+	        GDKPIXBUF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gdk-pixbuf-2.0 >= 2.26.1" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GDKPIXBUF_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gdk-pixbuf-xlib-2.0 >= 2.26.1) were not met:
+	as_fn_error $? "Package requirements (gdk-pixbuf-2.0 >= 2.26.1) were not met:
 
 $GDKPIXBUF_PKG_ERRORS
 
