@@ -171,16 +171,22 @@ ags_toolbar_init(AgsToolbar *toolbar)
   menu = (GtkMenu *) gtk_menu_new();
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(AGS_TOOLBAR_MODE_SINGLE_CHANNEL);
+  gtk_widget_set_state(GTK_WIDGET(item),
+		       GTK_STATE_INSENSITIVE);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(AGS_TOOLBAR_MODE_MULTI_CHANNEL);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(AGS_TOOLBAR_MODE_ALL_CHANNELS);
+  gtk_widget_set_state(GTK_WIDGET(item),
+		       GTK_STATE_INSENSITIVE);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
   toolbar->mode = (GtkOptionMenu *) gtk_option_menu_new();
   gtk_option_menu_set_menu(toolbar->mode, (GtkWidget *) menu);
+  gtk_option_menu_set_history(toolbar->mode,
+			      1);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->mode, NULL, NULL);
 }
 

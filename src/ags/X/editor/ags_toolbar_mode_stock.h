@@ -19,8 +19,8 @@
 #ifndef __AGS_TOOLBAR_MODE_STOCK_H__
 #define __AGS_TOOLBAR_MODE_STOCK_H__
 
-#define AGS_TOOLBAR_MODE_SINGLE_CHANNEL "single channel"
-#define AGS_TOOLBAR_MODE_MULTI_CHANNEL "multi channel"
-#define AGS_TOOLBAR_MODE_ALL_CHANNELS "all channels"
+#define AGS_TOOLBAR_MODE_SINGLE_CHANNEL "single channel\0"
+#define AGS_TOOLBAR_MODE_MULTI_CHANNEL "multi channel\0"
+#define AGS_TOOLBAR_MODE_ALL_CHANNELS "all channels\0"
 
 #endif /*__AGS_TOOLBAR_MODE_STOCK_H__*/
