@@ -42,14 +42,15 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
     GtkWidget *widget;
 
     for(; i < stop; i++)
-      gtk_notebook_remove_page((GtkNotebook *) notebook, 0);
+      ags_notebook_remove_tab((GtkNotebook *) notebook,
+			      0);
   }
   void ags_notebook_change_machine_grow(){
     AgsRuler *ruler;
 
     for(; i < stop; i++){
       ruler = ags_ruler_new();
-      gtk_notebook_append_page((GtkNotebook *) notebook, (GtkWidget *) ruler, gtk_label_new(g_strdup_printf("channel %d\0", i)));
+      ags_notebook_add_tab((GtkNotebook *) notebook);
 
       if(GTK_WIDGET_VISIBLE(GTK_WIDGET(notebook)))
 	ags_ruler_connect(ruler);
@@ -58,7 +59,7 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
 
   if(machine == NULL){
     i = 0;
-    stop = gtk_notebook_get_n_pages((GtkNotebook *) notebook);
+    stop = 1;
     ags_notebook_change_machine_shrink();
   }else{
     machine_old = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE)));
@@ -83,7 +84,5 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
 
   g_object_set_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE), machine);
   
-  gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook),
-				0);
   gtk_widget_show_all((GtkWidget *) notebook);
 }

@@ -164,8 +164,10 @@ ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
     list_notation = machine->audio->notation;
 
     if(gtk_option_menu_get_history(toolbar->mode) == 0){
-      if(gtk_notebook_get_n_pages((GtkNotebook *) editor->notebook) > 0){
-	list_notation = g_list_nth(list_notation, gtk_notebook_get_current_page((GtkNotebook *) editor->notebook));
+      if(editor->notebook->tabs != NULL){
+	list_notation = g_list_nth(list_notation,
+				   ags_notebook_next_active_tab(editor->notebook,
+								0));
 
 	if(widget == (GtkWidget *) toolbar->copy)
 	  notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));

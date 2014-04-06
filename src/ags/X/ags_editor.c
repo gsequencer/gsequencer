@@ -229,7 +229,7 @@ ags_editor_init(AgsEditor *editor)
   editor->note_edit = ags_note_edit_new();
   gtk_table_attach(table, (GtkWidget *) editor->note_edit,
 		   0, 1, 2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
   editor->tact_counter = 0;
@@ -316,10 +316,10 @@ ags_editor_connect(AgsConnectable *connectable)
   //		   G_CALLBACK(ags_editor_tic_callback), (gpointer) editor);
 
   /*  */
-  ags_toolbar_connect(AGS_CONNECTABLE(editor->toolbar));
-  ags_notebook_connect(AGS_CONNECTABLE(editor->notebook));
-  ags_meter_connect(AGS_CONNECTABLE(editor->meter));
-  ags_note_edit_connect(AGS_CONNECTABLE(editor->note_edit));
+  ags_connectable_connect(AGS_CONNECTABLE(editor->toolbar));
+  ags_connectable_connect(AGS_CONNECTABLE(editor->notebook));
+  ags_connectable_connect(AGS_CONNECTABLE(editor->meter));
+  ags_connectable_connect(AGS_CONNECTABLE(editor->note_edit));
 }
 
 void

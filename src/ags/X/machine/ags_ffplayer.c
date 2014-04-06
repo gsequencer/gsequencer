@@ -166,7 +166,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
   audio = AGS_MACHINE(ffplayer)->audio;
-  audio->flags |= (//AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_TAKES_FILE |
 		   AGS_AUDIO_ASYNC |
