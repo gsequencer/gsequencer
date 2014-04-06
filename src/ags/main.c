@@ -70,6 +70,7 @@ extern GtkStyle *editor_style;
 extern GtkStyle *notebook_style;
 extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
+extern GtkStyle *note_edit_style;
 
 GType
 ags_main_get_type()
@@ -383,6 +384,30 @@ ags_colors_alloc()
     meter_style->base[0].green = 0 *(65535/255);
     meter_style->base[0].blue = 0 * (65535/255);
     meter_style->base[0].pixel = (gulong)(0*65536 + 0*256 + 0);
+
+
+    /* note_edit style */
+    note_edit_style = gtk_style_new();
+    note_edit_style->fg[0].red = 255 * (65535/255);
+    note_edit_style->fg[0].green = 240 *(65535/255);
+    note_edit_style->fg[0].blue = 200 * (65535/255);
+    note_edit_style->fg[0].pixel = (gulong)(255*65536 + 240*256 + 200);
+
+    note_edit_style->bg[0].red = 255 * (65535/255);
+    note_edit_style->bg[0].green = 255 *(65535/255);
+    note_edit_style->bg[0].blue = 100 * (65535/255);
+    note_edit_style->bg[0].pixel = (gulong)(255*65536 + 255*256 + 255);
+
+    note_edit_style->mid[0].red = 250 * (65535/255);
+    note_edit_style->mid[0].green = 0 *(65535/255);
+    note_edit_style->mid[0].blue = 250 * (65535/255);
+    note_edit_style->mid[0].pixel = (gulong)(150*65536 + 150*256 + 250);
+
+
+    note_edit_style->base[0].red = 250 * (65535/255);
+    note_edit_style->base[0].green = 250 *(65535/255);
+    note_edit_style->base[0].blue = 250 * (65535/255);
+    note_edit_style->base[0].pixel = (gulong)(250*65536 + 250*256 + 250);
   }
 }
 

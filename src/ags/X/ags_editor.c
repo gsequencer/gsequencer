@@ -228,7 +228,7 @@ ags_editor_init(AgsEditor *editor)
 
   editor->note_edit = ags_note_edit_new();
   gtk_table_attach(table, (GtkWidget *) editor->note_edit,
-		   0, 1, 1, 2,
+		   0, 1, 2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -319,7 +319,7 @@ ags_editor_connect(AgsConnectable *connectable)
   ags_toolbar_connect(AGS_CONNECTABLE(editor->toolbar));
   ags_notebook_connect(AGS_CONNECTABLE(editor->notebook));
   ags_meter_connect(AGS_CONNECTABLE(editor->meter));
-  ags_note_edit_connect(AGS_CONNECTABLE(editor->meter));
+  ags_note_edit_connect(AGS_CONNECTABLE(editor->note_edit));
 }
 
 void

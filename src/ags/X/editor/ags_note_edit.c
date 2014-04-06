@@ -75,6 +75,10 @@ ags_note_edit_get_type(void)
 void
 ags_note_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_note_edit_connect;
+  connectable->disconnect = ags_note_edit_disconnect;
 }
 
 void
@@ -538,7 +542,7 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
   i = 0;
 
-  selected_channel = ags_notebook_next_active_tab((GtkNotebook *) editor->notebook,
+  selected_channel = ags_notebook_next_active_tab(editor->notebook,
 						  i);
   
   if(selected_channel == -1)

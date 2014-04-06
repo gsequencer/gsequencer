@@ -19,13 +19,17 @@
 #include <ags/X/editor/ags_meter.h>
 #include <ags/X/editor/ags_meter_callbacks.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/X/ags_editor.h>
 
 #include <math.h>
 
 void ags_meter_class_init(AgsMeterClass *meter);
+void ags_meter_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_meter_init(AgsMeter *meter);
-void ags_meter_connect(AgsMeter *meter);
+void ags_meter_connect(AgsConnectable *connectable);
+void ags_meter_disconnect(AgsConnectable *connectable);
 void ags_meter_destroy(GtkObject *object);
 void ags_meter_show(GtkWidget *widget);
 
@@ -34,29 +38,51 @@ GtkStyle *meter_style;
 GType
 ags_meter_get_type(void)
 {
-  static GType meter_type = 0;
+  static GType ags_type_meter = 0;
 
-  if (!meter_type){
-    static const GtkTypeInfo meter_info = {
-      "AgsMeter\0",
-      sizeof(AgsMeter), /* base_init */
-      sizeof(AgsMeterClass), /* base_finalize */
-      (GtkClassInitFunc) ags_meter_class_init,
-      (GtkObjectInitFunc) ags_meter_init,
+  if (!ags_type_meter){
+    static const GTypeInfo ags_meter_info = {
+      sizeof (AgsMeterClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_meter_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsMeter),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_meter_init,
     };
 
-    meter_type = gtk_type_unique (GTK_TYPE_DRAWING_AREA, &meter_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_meter_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_meter = g_type_register_static(GTK_TYPE_DRAWING_AREA,
+					    "AgsMeter\0", &ags_meter_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_meter,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (meter_type);
+  return (ags_type_meter);
 }
 
 void
 ags_meter_class_init(AgsMeterClass *meter)
 {
+}
+
+void
+ags_meter_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_meter_connect;
+  connectable->disconnect = ags_meter_disconnect;
 }
 
 void
@@ -75,8 +101,12 @@ ags_meter_init(AgsMeter *meter)
 }
 
 void
-ags_meter_connect(AgsMeter *meter)
+ags_meter_connect(AgsConnectable *connectable)
 {
+  AgsMeter *meter;
+
+  meter = AGS_METER(connectable);
+
   g_signal_connect((GObject *) meter, "destroy\0",
 		   G_CALLBACK(ags_meter_destroy_callback), (gpointer) meter);
 
@@ -88,6 +118,11 @@ ags_meter_connect(AgsMeter *meter)
 
   g_signal_connect((GObject *) meter, "configure_event\0",
   		   G_CALLBACK(ags_meter_configure_event), (gpointer) meter);
+}
+
+void
+ags_meter_disconnect(AgsConnectable *connectable)
+{
 }
 
 void

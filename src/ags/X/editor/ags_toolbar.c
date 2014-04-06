@@ -20,6 +20,8 @@
 #include <ags/X/editor/ags_toolbar_callbacks.h>
 #include <ags/X/editor/ags_toolbar_mode_stock.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/X/ags_menu_bar.h>
 
 #include <gtk/gtkhbox.h>
@@ -34,37 +36,61 @@
 #include <gtk/gtkstock.h>
 
 void ags_toolbar_class_init(AgsToolbarClass *toolbar);
+void ags_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_toolbar_init(AgsToolbar *toolbar);
-void ags_toolbar_connect(AgsToolbar *toolbar);
+void ags_toolbar_connect(AgsConnectable *connectable);
+void ags_toolbar_disconnect(AgsConnectable *connectable);
 void ags_toolbar_destroy(GtkObject *object);
 void ags_toolbar_show(GtkWidget *widget);
 
 GType
 ags_toolbar_get_type(void)
 {
-  static GType toolbar_type = 0;
+  static GType ags_type_toolbar = 0;
 
-  if (!toolbar_type){
-    static const GtkTypeInfo toolbar_info = {
-      "AgsToolbar\0",
-      sizeof(AgsToolbar), /* base_init */
-      sizeof(AgsToolbarClass), /* base_finalize */
-      (GtkClassInitFunc) ags_toolbar_class_init,
-      (GtkObjectInitFunc) ags_toolbar_init,
+  if (!ags_type_toolbar){
+    static const GTypeInfo ags_toolbar_info = {
+      sizeof (AgsToolbarClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_toolbar_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      (GtkClassInitFunc) NULL,
+      sizeof (AgsToolbar),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_toolbar_init,
     };
 
-    toolbar_type = gtk_type_unique (GTK_TYPE_TOOLBAR, &toolbar_info);
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_toolbar_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_toolbar = g_type_register_static(GTK_TYPE_TOOLBAR,
+					    "AgsToolbar\0", &ags_toolbar_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_toolbar,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
-  return (toolbar_type);
+  return (ags_type_toolbar);
 }
 
 void
 ags_toolbar_class_init(AgsToolbarClass *toolbar)
 {
+}
+
+void
+ags_toolbar_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_toolbar_connect;
+  connectable->disconnect = ags_toolbar_disconnect;
 }
 
 void
@@ -153,9 +179,12 @@ ags_toolbar_init(AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_connect(AgsToolbar *toolbar)
+ags_toolbar_connect(AgsConnectable *connectable)
 {
+  AgsToolbar *toolbar;
   GList *list;
+
+  toolbar = AGS_TOOLBAR(connectable);
 
   g_signal_connect((GObject *) toolbar, "destroy\0",
 		   G_CALLBACK(ags_toolbar_destroy_callback), (gpointer) toolbar);
@@ -197,6 +226,11 @@ ags_toolbar_connect(AgsToolbar *toolbar)
   list = list->next;
   g_signal_connect((GObject *) list->data, "activate\0",
 		   G_CALLBACK(ags_toolbar_mode_group_channels_callback), (gpointer) toolbar);
+}
+
+void
+ags_toolbar_disconnect(AgsConnectable *connectable)
+{
 }
 
 void
