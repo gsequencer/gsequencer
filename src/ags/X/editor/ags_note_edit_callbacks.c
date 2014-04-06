@@ -199,6 +199,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     GList *list_notation;
     guint note_x, note_y;
     guint note_offset_x1;
+    gint history;
 
     if(note_edit->control.x0 >= note_edit->map_width)
       note_edit->control.x0 = note_edit->map_width - 1;
@@ -215,24 +216,47 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
+    history = gtk_option_menu_get_history(editor->toolbar->mode);
 
-    if(gtk_option_menu_get_history(editor->toolbar->mode) == 0){
-      if(editor->notebook->tabs != NULL){
-	list_notation = g_list_nth(list_notation,
-				   ags_notebook_next_active_tab(editor->notebook,
-								0));
+    switch(history){
+    case 0:
+      {
+	if(editor->notebook->tabs != NULL){
+	  list_notation = g_list_nth(list_notation,
+				     ags_notebook_next_active_tab(editor->notebook,
+								  0));
 
-	note0 = ags_note_duplicate(note);
+	  note0 = ags_note_duplicate(note);
 
-	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+	}
       }
-    }else{
-      while(list_notation != NULL){
-	note0 = ags_note_duplicate(note);
+    case 1:
+      {
+	gint i;
 
-	ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+	i = 0;
+	
+	while((list_notation = g_list_nth(list_notation,
+					  ags_notebook_next_active_tab(editor->notebook,
+								       i))) != NULL){
+	  note0 = ags_note_duplicate(note);
 
-	list_notation = list_notation->next;
+	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+
+	  list_notation = list_notation->next;
+	  i++;
+	}
+      }
+    case 2:
+      {
+	while(list_notation != NULL){
+	  note0 = ags_note_duplicate(note);
+
+	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+
+	  list_notation = list_notation->next;
+	}
       }
     }
 
@@ -297,6 +321,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
   void ags_note_edit_drawing_area_button_release_event_delete_point(){
     GList *list_notation;
     guint x, y;
+    gint history;
 
     x = note_edit->control.x0_offset + note_edit->control.x0;
     y = note_edit->control.y0_offset + note_edit->control.y0;
@@ -307,7 +332,9 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     /* select notes */
     list_notation = machine->audio->notation;
 
-    if(gtk_option_menu_get_history(editor->toolbar->mode) == 0){
+    history = gtk_option_menu_get_history(editor->toolbar->mode);
+
+    if(history == 0){
       if(editor->notebook->tabs != NULL){
 	list_notation = g_list_nth(list_notation,
 				   ags_notebook_next_active_tab(editor->notebook,
@@ -316,8 +343,22 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
 					     x, y);
       }
-    }else{
-      while(list_notation != NULL ){
+    }else if(history == 1){
+      gint i;
+
+      i = 0;
+
+      while((list_notation = g_list_nth(list_notation,
+					ags_notebook_next_active_tab(editor->notebook,
+								     i))) != NULL){
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     x, y);
+
+	list_notation = list_notation->next;
+	i++;
+      }
+    }else if(history == 2){
+      while(list_notation != NULL){
 	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
 					     x, y);
 
