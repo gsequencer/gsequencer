@@ -340,12 +340,60 @@ ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_mode_default_callback(GtkWidget *widget, AgsToolbar *toolbar)
+ags_toolbar_mode_callback(GtkWidget *widget, AgsToolbar *toolbar)
 {
-}
+  AgsEditor *editor;
+  AgsNotebook *notebook;
+  GList *list;
+  gint history;
 
-void
-ags_toolbar_mode_group_channels_callback(GtkWidget *widget, AgsToolbar *toolbar)
-{
-}
+  /* retrieve some variables */
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(toolbar),
+						 AGS_TYPE_EDITOR);
 
+  notebook = editor->notebook;
+
+  /* toggle AgsNotebook */
+  history = gtk_option_menu_get_history(toolbar->mode);
+
+  switch(history){
+  case 0:
+    {
+      list = g_list_reverse(notebook->tabs);
+
+      if(list != NULL){
+	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				     TRUE);
+
+	list = list->next;
+      }
+
+      while(list != NULL){
+	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				     FALSE);	
+
+	list = list->next;
+      }
+    }
+    break;
+  case 1:
+    {
+      //NOTE: you're on your own
+    }
+    break;
+  case 2:
+    {
+      list = g_list_reverse(notebook->tabs);
+
+      while(list != NULL){
+	gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				     TRUE);
+
+	list = list->next;
+      }
+    }
+    break;
+  default:
+    g_message("unknown editor mode\0");
+  }
+}

@@ -38,7 +38,6 @@ void ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
 void ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
 
-void ags_toolbar_mode_default_callback(GtkWidget *widget, AgsToolbar *toolbar);
-void ags_toolbar_mode_group_channels_callback(GtkWidget *widget, AgsToolbar *toolbar);
+void ags_toolbar_mode_callback(GtkWidget *widget, AgsToolbar *toolbar);
 
 #endif /*__AGS_TOOLBAR_CALLBACKS_H__*/
