@@ -228,7 +228,7 @@ ags_editor_init(AgsEditor *editor)
 
   editor->note_edit = ags_note_edit_new();
   gtk_table_attach(table, (GtkWidget *) editor->note_edit,
-		   0, 1, 2, 3,
+		   1, 2, 1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
