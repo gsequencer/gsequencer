@@ -311,9 +311,8 @@ ags_editor_connect(AgsConnectable *connectable)
                     G_CALLBACK (ags_editor_button_press_callback), (gpointer) editor);
 
   /*  */
-  //TODO:JK: uncomment me
-  //  g_signal_connect((GObject *) editor->devout, "tic\0",
-  //		   G_CALLBACK(ags_editor_tic_callback), (gpointer) editor);
+  g_signal_connect((GObject *) editor->devout, "tic\0",
+  		   G_CALLBACK(ags_editor_tic_callback), (gpointer) editor);
 
   /*  */
   ags_connectable_connect(AGS_CONNECTABLE(editor->toolbar));
@@ -350,6 +349,21 @@ ags_editor_show(GtkWidget *widget)
 void
 ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
 {
+  GList *tabs, *notation;
+
+  /* retrieve some variables */
+  notation = AGS_AUDIO(machine->audio)->notation;
+
+  tabs = editor->notebook->tabs;
+
+  /* set notation on tabs */
+  while(tabs != NULL &&
+	notation != NULL){
+    AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
+
+    tabs = tabs->next;
+    notation = notation->next;
+  }
 }
 
 void
