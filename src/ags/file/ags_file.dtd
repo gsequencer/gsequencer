@@ -777,9 +777,10 @@
 <!ELEMENT ags-toolbar EMPTY>
 <!ATTLIST ags-toolbar
 	  id               ID         #REQUIRED
-	  mode             CDATA      "edit"
-	  tic              CDATA      "1/8"
-	  zoom             CDATA      "1:8"
+	  edit-mode        CDATA      "edit"
+	  tic              CDATA      "1/1"
+	  zoom             CDATA      "1:4"
+	  mode             CDATA      "multi-channel"
 	  >
 
 <!ELEMENT ags-notebook (ags-notebook-tab-list)>
