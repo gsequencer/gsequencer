@@ -542,54 +542,145 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
   i = 0;
 
-  selected_channel = ags_notebook_next_active_tab(editor->notebook,
-						  i);
-  
-  if(selected_channel == -1)
-    return;
+  while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+							 i)) != -1){
+    list_notation = g_list_nth(machine->audio->notation,
+			       selected_channel);
+    list_note = AGS_NOTATION(list_notation->data)->notes;
 
-  list_notation = g_list_nth(machine->audio->notation,
-			     selected_channel);
-  list_note = AGS_NOTATION(list_notation->data)->notes;
+    control_height = note_edit->control_height - 2 * note_edit->control_margin_y;
 
-  control_height = note_edit->control_height - 2 * note_edit->control_margin_y;
+    x_offset = (guint) GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
 
-  x_offset = (guint) GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
+    /* draw controls smaller than note_edit->nth_x */
+    while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] < note_edit->control_unit.nth_x){
+      if(note->x[1] >= note_edit->control_unit.nth_x){
+	if(note->y >= note_edit->nth_y && note->y <= note_edit->stop_y){
+	  x = 0;
+	  y = (note->y - note_edit->nth_y) * note_edit->control_height + note_edit->y0 + note_edit->control_margin_y;
 
-  /* draw controls smaller than note_edit->nth_x */
-  while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] < note_edit->control_unit.nth_x){
-    if(note->x[1] >= note_edit->control_unit.nth_x){
+	  width = (guint) ((double) note->x[1] * note_edit->control_unit.control_width - (double) x_offset);
+
+	  if(width > widget->allocation.width)
+	    width = widget->allocation.width;
+
+	  height = control_height;
+
+	  /* draw note */
+	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	  cairo_fill(cr);
+
+	  /* check if note is selected */
+	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_stroke(cr);
+
+	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	  }
+	}else if(note->y == (note_edit->nth_y - 1) && note_edit->y0 != 0){
+	  if(note_edit->y0 > note_edit->control_margin_y){
+	    x = 0;
+	    width = (guint) ((double) note->x[1] * (double) note_edit->control_unit.control_width - x_offset);
+
+	    if(width > widget->allocation.width)
+	      width = widget->allocation.width;
+
+	    if(note_edit->y0 > control_height + note_edit->control_margin_y){
+	      y = note_edit->y0 - (control_height + note_edit->control_margin_y);
+	      height = control_height;
+	    }else{
+	      y = 0;
+	      height = note_edit->y0 - note_edit->control_margin_y;
+	    }
+
+	    /* draw note */
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_fill(cr);
+
+	    /* check if note is selected */
+	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    
+	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	      cairo_stroke(cr);
+	    
+	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    }
+	  }
+	}else if(note->y == (note_edit->stop_y + 1) && note_edit->y1 != 0){
+	  if(note_edit->y1 > note_edit->control_margin_y){
+	    x = 0;
+	    width = note->x[1] * note_edit->control_unit.control_width - x_offset;
+
+	    if(width > widget->allocation.width)
+	      width = widget->allocation.width;
+
+	    y = (note->y - note_edit->nth_y) * note_edit->control_height + note_edit->control_margin_y;
+
+	    if(note_edit->y1 > control_height + note_edit->control_margin_y){
+	      height = control_height;
+	    }else{
+	      height = note_edit->y1 - note_edit->control_margin_y;
+	    }
+
+	    /* draw note */
+	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	    cairo_fill(cr);
+	  
+	    /* check if note is selected */
+	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    
+	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+	      cairo_stroke(cr);
+	    
+	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    }
+	  }
+	}
+      }
+
+      list_note = list_note->next;
+    }
+
+    /* draw controls equal or greater than note_edit->nth_x */
+    while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] <= note_edit->control_unit.stop_x){
       if(note->y >= note_edit->nth_y && note->y <= note_edit->stop_y){
-	x = 0;
-	y = (note->y - note_edit->nth_y) * note_edit->control_height + note_edit->y0 + note_edit->control_margin_y;
+	x = (guint) note->x[0] * note_edit->control_unit.control_width;
+	y = (note->y - note_edit->nth_y) * note_edit->control_height +
+	  note_edit->y0 +
+	  note_edit->control_margin_y;
 
-	width = (guint) ((double) note->x[1] * note_edit->control_unit.control_width - (double) x_offset);
+	width = note->x[1] * note_edit->control_unit.control_width - x;
+	x -= x_offset;
 
-	if(width > widget->allocation.width)
-	  width = widget->allocation.width;
+	if(x + width > widget->allocation.width)
+	  width = widget->allocation.width - x;
 
 	height = control_height;
 
-	/* draw note */
+	/* draw note*/
 	cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	cairo_fill(cr);
 
 	/* check if note is selected */
 	if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
 	  cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
-
+	
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_stroke(cr);
-
+	
 	  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	}
       }else if(note->y == (note_edit->nth_y - 1) && note_edit->y0 != 0){
 	if(note_edit->y0 > note_edit->control_margin_y){
-	  x = 0;
-	  width = (guint) ((double) note->x[1] * (double) note_edit->control_unit.control_width - x_offset);
-
-	  if(width > widget->allocation.width)
-	    width = widget->allocation.width;
+	  x = note->x[0] * note_edit->control_unit.control_width - x_offset;
+	  width = note->x[1] * note_edit->control_unit.control_width - x_offset - x;
+      
+	  if(x + width > widget->allocation.width)
+	    width = widget->allocation.width - x;
 
 	  if(note_edit->y0 > control_height + note_edit->control_margin_y){
 	    y = note_edit->y0 - (control_height + note_edit->control_margin_y);
@@ -606,20 +697,20 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
 	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
-	    
+
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
-	    
+
 	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	  }
 	}
       }else if(note->y == (note_edit->stop_y + 1) && note_edit->y1 != 0){
 	if(note_edit->y1 > note_edit->control_margin_y){
-	  x = 0;
-	  width = note->x[1] * note_edit->control_unit.control_width - x_offset;
-
-	  if(width > widget->allocation.width)
-	    width = widget->allocation.width;
+	  x = note->x[0] * note_edit->control_unit.control_width - x_offset;
+	  width = note->x[1] * note_edit->control_unit.control_width - x_offset - x;
+      
+	  if(x + width > widget->allocation.width)
+	    width = widget->allocation.width - x;
 
 	  y = (note->y - note_edit->nth_y) * note_edit->control_height + note_edit->control_margin_y;
 
@@ -632,115 +723,23 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 	  /* draw note */
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_fill(cr);
-	  
+
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
 	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
-	    
+
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
-	    
+
 	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 	  }
 	}
       }
+
+      list_note = list_note->next;
     }
 
-    list_note = list_note->next;
-  }
-
-  /* draw controls equal or greater than note_edit->nth_x */
-  while(list_note != NULL && (note = (AgsNote *) list_note->data)->x[0] <= note_edit->control_unit.stop_x){
-    if(note->y >= note_edit->nth_y && note->y <= note_edit->stop_y){
-      x = (guint) note->x[0] * note_edit->control_unit.control_width;
-      y = (note->y - note_edit->nth_y) * note_edit->control_height +
-	note_edit->y0 +
-	note_edit->control_margin_y;
-
-      width = note->x[1] * note_edit->control_unit.control_width - x;
-      x -= x_offset;
-
-      if(x + width > widget->allocation.width)
-	width = widget->allocation.width - x;
-
-      height = control_height;
-
-      /* draw note*/
-      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
-      cairo_fill(cr);
-
-      /* check if note is selected */
-      if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
-	
-	cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
-	cairo_stroke(cr);
-	
-	cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-      }
-    }else if(note->y == (note_edit->nth_y - 1) && note_edit->y0 != 0){
-      if(note_edit->y0 > note_edit->control_margin_y){
-	x = note->x[0] * note_edit->control_unit.control_width - x_offset;
-	width = note->x[1] * note_edit->control_unit.control_width - x_offset - x;
-      
-	if(x + width > widget->allocation.width)
-	  width = widget->allocation.width - x;
-
-	if(note_edit->y0 > control_height + note_edit->control_margin_y){
-	  y = note_edit->y0 - (control_height + note_edit->control_margin_y);
-	  height = control_height;
-	}else{
-	  y = 0;
-	  height = note_edit->y0 - note_edit->control_margin_y;
-	}
-
-	/* draw note */
-	cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
-	cairo_fill(cr);
-
-	/* check if note is selected */
-	if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	  cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
-
-	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
-	  cairo_stroke(cr);
-
-	  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-	}
-      }
-    }else if(note->y == (note_edit->stop_y + 1) && note_edit->y1 != 0){
-      if(note_edit->y1 > note_edit->control_margin_y){
-	x = note->x[0] * note_edit->control_unit.control_width - x_offset;
-	width = note->x[1] * note_edit->control_unit.control_width - x_offset - x;
-      
-	if(x + width > widget->allocation.width)
-	  width = widget->allocation.width - x;
-
-	y = (note->y - note_edit->nth_y) * note_edit->control_height + note_edit->control_margin_y;
-
-	if(note_edit->y1 > control_height + note_edit->control_margin_y){
-	  height = control_height;
-	}else{
-	  height = note_edit->y1 - note_edit->control_margin_y;
-	}
-
-	/* draw note */
-	cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
-	cairo_fill(cr);
-
-	/* check if note is selected */
-	if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	  cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
-
-	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
-	  cairo_stroke(cr);
-
-	  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-	}
-      }
-    }
-
-    list_note = list_note->next;
+    i++;
   }
 }
 
