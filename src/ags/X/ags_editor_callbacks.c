@@ -122,22 +122,10 @@ void
 ags_editor_popup_add_index_callback(GtkWidget *widget, GtkMenu *popup)
 {
   AgsEditor *editor;
-  GtkRadioButton *radio_button;
-  GList *list;
-
+  
   editor = AGS_EDITOR(g_object_get_data((GObject *) popup, g_type_name(AGS_TYPE_EDITOR)));
 
-  radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(editor->selected, g_strdup(AGS_EDITOR_DEFAULT));
-  g_object_set_data((GObject *) radio_button, (char *) g_type_name(AGS_TYPE_MACHINE), NULL);
-  g_object_set_data((GObject *) radio_button, (char *) g_type_name(AGS_TYPE_CHANNEL), GUINT_TO_POINTER(0));
-  g_signal_connect((GObject *) radio_button, "toggled\0",
-		   G_CALLBACK(ags_editor_index_callback), editor);
-  gtk_box_pack_start((GtkBox *) editor->index_radio, (GtkWidget *) radio_button, FALSE, FALSE, 0);
-
-  gtk_widget_show((GtkWidget *) radio_button);
-
-  if(editor->selected == NULL)
-    editor->selected = radio_button;
+  ags_editor_add_index(editor);
 }
 
 void

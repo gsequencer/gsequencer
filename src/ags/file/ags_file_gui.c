@@ -2032,9 +2032,35 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "\0",
-		     1)){
-	//TODO:JK: implement me
+		     "ags-toolbar\0",
+		     12)){
+	ags_file_read_toolbar(file,
+			      child,
+			      &gobject->toolbar);
+      }else if(!xmlStrncmp(child->name,
+		     "ags-editor-pane-list\0",
+		     11)){
+	GList *list;
+
+	list = NULL;
+
+	ags_file_read_editor_pane_list(file,
+				       child,
+				       &list);
+
+	while(list != NULL){
+	  ags_editor_add_index(gobject);
+	  ags_editor_change_machine(gobject,
+				    list->data);
+
+	  list = list->next;
+	}
+      }else if(!xmlStrncmp(child->name,
+		     "ags-notebook\0",
+		     13)){
+	ags_file_read_notebook(file,
+			       child,
+			       &gobject->notebook);
       }
     }
   }
@@ -2060,6 +2086,19 @@ ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar)
 
 void
 ags_file_read_editor_pane(AgsFile *file, xmlNode *node, GtkVBox **editor_pane)
+{
+  //TODO:JK: implement me
+}
+
+
+void
+ags_file_read_editor_pane_list(AgsFile *file, xmlNode *node, GList **list)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_editor_pane_list(AgsFile *file, xmlNode *parent, GList *list)
 {
   //TODO:JK: implement me
 }

@@ -182,6 +182,9 @@ void ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar);
 xmlNode* ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar);
 
 /* GtkVBox */
+void ags_file_read_editor_pane_list(AgsFile *file, xmlNode *node, GList **list);
+xmlNode* ags_file_write_editor_pane_list(AgsFile *file, xmlNode *parent, GList *list);
+
 void ags_file_read_editor_pane(AgsFile *file, xmlNode *node, GtkVBox **editor_pane);
 xmlNode* ags_file_write_editor_pane(AgsFile *file, xmlNode *parent, GtkVBox *editor_pane);
 

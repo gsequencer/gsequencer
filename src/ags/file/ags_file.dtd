@@ -761,7 +761,7 @@
 	  >
 
 <!-- editor -->
-<!ELEMENT ags-editor (ags-toolbar, ags-editor-pane, ags-notebook)>
+<!ELEMENT ags-editor (ags-toolbar, ags-editor-pane-list, ags-notebook)>
 <!ATTLIST ags-editor
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
@@ -769,7 +769,12 @@
 	  flags            PCDATA     #REQUIRED
 	  >
 
-<!ELEMENT ags-editor-pane (IDREF*)>
+<!ELEMENT ags-editor-pane-list (ags-editor-pane*)>
+<!ATTLIST ags-editor-pane-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-editor-pane (IDREF)>
 <!ATTLIST ags-editor-pane
 	  id               ID         #REQUIRED
 	  >

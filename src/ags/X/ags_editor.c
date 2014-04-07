@@ -44,11 +44,13 @@ void ags_editor_disconnect(AgsConnectable *connectable);
 void ags_editor_destroy(GtkObject *object);
 void ags_editor_show(GtkWidget *widget);
 
+void ags_editor_real_add_index(AgsEditor *editor);
 void ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine);
 
 GtkMenu* ags_editor_popup_new(AgsEditor *editor);
 
 enum{
+  ADD_INDEX,
   CHANGE_MACHINE,
   LAST_SIGNAL,
 };
@@ -127,7 +129,17 @@ ags_editor_class_init(AgsEditorClass *editor)
 				  param_spec);
 
   /*  */
+  editor->add_index = ags_editor_real_add_index;
   editor->change_machine = ags_editor_real_change_machine;
+
+  editor_signals[ADD_INDEX] =
+    g_signal_new("add_index\0",
+                 G_TYPE_FROM_CLASS (editor),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsEditorClass, add_index),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE, 0);
 
   editor_signals[CHANGE_MACHINE] =
     g_signal_new("change_machine\0",
@@ -344,6 +356,36 @@ ags_editor_show(GtkWidget *widget)
     list = list->next;
   }
   */
+}
+
+void
+ags_editor_real_add_index(AgsEditor *editor)
+{
+  GtkRadioButton *radio_button;
+  GList *list;
+
+  radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(editor->selected, g_strdup(AGS_EDITOR_DEFAULT));
+  g_object_set_data((GObject *) radio_button, (char *) g_type_name(AGS_TYPE_MACHINE), NULL);
+  g_object_set_data((GObject *) radio_button, (char *) g_type_name(AGS_TYPE_CHANNEL), GUINT_TO_POINTER(0));
+  g_signal_connect((GObject *) radio_button, "toggled\0",
+		   G_CALLBACK(ags_editor_index_callback), editor);
+  gtk_box_pack_start((GtkBox *) editor->index_radio, (GtkWidget *) radio_button, FALSE, FALSE, 0);
+
+  gtk_widget_show((GtkWidget *) radio_button);
+
+  if(editor->selected == NULL)
+    editor->selected = radio_button;
+}
+
+void
+ags_editor_add_index(AgsEditor *editor)
+{
+  g_return_if_fail(AGS_IS_EDITOR(editor));
+
+  g_object_ref((GObject *) editor);
+  g_signal_emit((GObject *) editor,
+		editor_signals[ADD_INDEX], 0);
+  g_object_unref((GObject *) editor);
 }
 
 void

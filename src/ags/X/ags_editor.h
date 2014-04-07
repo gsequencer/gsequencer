@@ -80,11 +80,13 @@ struct _AgsEditorClass
 {
   GtkVBoxClass vbox;
 
+  void (*add_index)(AgsEditor *editor);
   void (*change_machine)(AgsEditor *editor, AgsMachine *machine);
 };
 
 GType ags_editor_get_type(void);
 
+void ags_editor_add_index(AgsEditor *editor);
 void ags_editor_change_machine(AgsEditor *editor, AgsMachine *machine);
 
 AgsEditor* ags_editor_new();
