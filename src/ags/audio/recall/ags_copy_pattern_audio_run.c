@@ -51,8 +51,6 @@ void ags_copy_pattern_audio_run_connect(AgsConnectable *connectable);
 void ags_copy_pattern_audio_run_disconnect(AgsConnectable *connectable);
 void ags_copy_pattern_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_pattern_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_copy_pattern_audio_run_finalize(GObject *gobject);
 
 void ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall);
@@ -60,11 +58,6 @@ AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
 						AgsRecallID *recall_id,
 						guint *n_params, GParameter *parameter);
 void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
-
-void ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-							 AgsPlugin *plugin);
-void ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-							AgsPlugin *plugin);
 
 enum{
   PROP_0,

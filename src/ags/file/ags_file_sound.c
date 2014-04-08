@@ -1605,7 +1605,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 				child,
 				&start);
 
-	ags_plugin_set_ports(AGS_PLUGIN(recall),
+	ags_plugin_set_ports(AGS_PLUGIN(gobject),
 			     start);
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
@@ -2282,17 +2282,17 @@ void
 ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 				      AgsPort *port)
 {
-  AgsFileIdRef *id_ref;
   gchar *xpath;
-
+  
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "link\0");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(id_ref != NULL){
+  
+  if(G_VALUE_HOLDS((GValue *) file_lookup->ref, G_TYPE_POINTER)){
     ags_port_safe_write(port,
-			id_ref->ref);
+			g_value_get_pointer((GValue *) file_lookup->ref));
+  }else if(G_VALUE_HOLDS((GValue *) file_lookup->ref, G_TYPE_OBJECT)){
+    ags_port_safe_write(port,
+			g_value_get_object((GValue *) file_lookup->ref));
   }
 }
 

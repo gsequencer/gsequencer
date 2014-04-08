@@ -105,10 +105,6 @@ ags_copy_channel_run_get_type()
     g_type_add_interface_static(ags_type_copy_channel_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
-
-    g_type_add_interface_static(ags_type_copy_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
   return(ags_type_copy_channel_run);

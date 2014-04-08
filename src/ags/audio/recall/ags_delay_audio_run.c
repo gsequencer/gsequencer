@@ -44,8 +44,6 @@ void ags_delay_audio_run_disconnect(AgsConnectable *connectable);
 void ags_delay_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_delay_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_delay_audio_run_finalize(GObject *gobject);
-xmlNode* ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-void ags_delay_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 
 void ags_delay_audio_run_run_init_pre(AgsRecall *recall);
 void ags_delay_audio_run_run_pre(AgsRecall *recall);
@@ -255,9 +253,6 @@ void
 ags_delay_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_delay_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_delay_audio_run_read;
-  plugin->write = ags_delay_audio_run_write;
 }
 
 void
@@ -302,18 +297,6 @@ void
 ags_delay_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   ags_delay_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-xmlNode*
-ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_delay_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  //TODO:JK: implement me
 }
 
 void
