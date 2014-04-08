@@ -2148,6 +2148,8 @@ ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
   list = gtk_container_get_children(GTK_CONTAINER(editor->index_radio));
   parameter = NULL;
 
+  list = list->next;
+
   for(i = 0; list != NULL; i++){
     if(parameter == NULL){
       parameter = (GParameter *) g_new(GParameter,
@@ -2159,8 +2161,10 @@ ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
     }
 
     parameter[i].name = "machine\0";
-
+    
     machine = (AgsMachine *) g_object_get_data((GObject *) list->data, (char *) g_type_name(AGS_TYPE_MACHINE));
+    memset(&(parameter[i].value), 0, sizeof(GValue));
+    g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
     g_value_set_object(&(parameter[i].value),
 		       machine);
 

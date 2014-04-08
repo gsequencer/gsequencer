@@ -4290,6 +4290,10 @@ ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp
   xmlNode *node;
   gchar *id;
 
+  if(timestamp == NULL){
+    return;
+  }
+
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
