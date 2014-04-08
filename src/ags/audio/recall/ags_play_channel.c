@@ -23,6 +23,7 @@
 #include <ags/main.h>
 
 #include <ags/object/ags_mutable.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -33,6 +34,7 @@
 void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
 void ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_mutable_interface_init(AgsMutableInterface *mutable);
+void ags_play_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_channel_init(AgsPlayChannel *play_channel);
 void ags_play_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -57,6 +59,7 @@ enum{
 static gpointer ags_play_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_play_channel_parent_mutable_interface;
+static AgsPluginInterface *ags_play_channel_parent_plugin_interface;
 
 static const gchar *ags_play_channel_plugin_name = "ags-play\0";
 static const gchar *ags_play_channel_specifier[] = {
@@ -98,6 +101,12 @@ ags_play_channel_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_play_channel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };    
+
     ags_type_play_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsPlayChannel\0",
 						   &ags_play_channel_info,
@@ -110,6 +119,10 @@ ags_play_channel_get_type()
     g_type_add_interface_static(ags_type_play_channel,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
+
+    g_type_add_interface_static(ags_type_play_channel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_play_channel);
@@ -167,6 +180,12 @@ ags_play_channel_mutable_interface_init(AgsMutableInterface *mutable)
   ags_play_channel_parent_mutable_interface = g_type_interface_peek_parent(mutable);
 
   mutable->set_muted = ags_play_channel_set_muted;
+}
+
+void
+ags_play_channel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_play_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void

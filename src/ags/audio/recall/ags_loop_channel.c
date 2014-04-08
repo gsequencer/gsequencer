@@ -47,6 +47,7 @@ void ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_a
 
 static gpointer ags_loop_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_loop_channel_parent_connectable_interface;
+static AgsPluginInterface *ags_loop_channel_parent_plugin_interface;
 
 enum{
   PROP_0,
@@ -140,7 +141,7 @@ ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_loop_channel_plugin_interface_init(AgsPluginInterface *plugin)
 {
-  //TODO:JK: implement me
+  ags_loop_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void

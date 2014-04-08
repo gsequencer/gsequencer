@@ -22,8 +22,11 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_plugin.h>
+
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
 void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_stream_channel_init(AgsStreamChannel *stream_channel);
 void ags_stream_channel_connect(AgsConnectable *connectable);
 void ags_stream_channel_disconnect(AgsConnectable *connectable);
@@ -31,6 +34,7 @@ void ags_stream_channel_finalize(GObject *gobject);
 
 static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
+static AgsPluginInterface *ags_stream_channel_parent_plugin_interface;
 
 GType
 ags_stream_channel_get_type()
@@ -56,6 +60,12 @@ ags_stream_channel_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_stream_channel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };    
+
     ags_type_stream_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						     "AgsStreamChannel\0",
 						     &ags_stream_channel_info,
@@ -64,6 +74,10 @@ ags_stream_channel_get_type()
     g_type_add_interface_static(ags_type_stream_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_stream_channel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return (ags_type_stream_channel);
@@ -90,6 +104,12 @@ ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectab
 
   connectable->connect = ags_stream_channel_connect;
   connectable->disconnect = ags_stream_channel_disconnect;
+}
+
+void
+ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_stream_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void
