@@ -28,6 +28,7 @@
 
 void ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel);
 void ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_loop_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_loop_channel_init(AgsLoopChannel *loop_channel);
 void ags_loop_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -75,6 +76,12 @@ ags_loop_channel_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_loop_channel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_loop_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsLoopChannel\0",
@@ -84,6 +91,10 @@ ags_loop_channel_get_type()
     g_type_add_interface_static(ags_type_loop_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_loop_channel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return (ags_type_loop_channel);
@@ -124,6 +135,12 @@ ags_loop_channel_connectable_interface_init(AgsConnectableInterface *connectable
 
   connectable->connect = ags_loop_channel_connect;
   connectable->disconnect = ags_loop_channel_disconnect;
+}
+
+void
+ags_loop_channel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  //TODO:JK: implement me
 }
 
 void

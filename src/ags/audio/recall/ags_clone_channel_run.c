@@ -19,7 +19,9 @@
 #include <ags/audio/recall/ags_clone_channel_run.h>
 
 #include <ags-lib/object/ags_connectable.h>
+
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -37,6 +39,7 @@
 void ags_clone_channel_run_class_init(AgsCloneChannelRunClass *clone_channel_run);
 void ags_clone_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_clone_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
+void ags_clone_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_clone_channel_run_init(AgsCloneChannelRun *clone_channel_run);
 void ags_clone_channel_run_set_property(GObject *gobject,
 					guint prop_id,
@@ -67,6 +70,7 @@ enum{
 static gpointer ags_clone_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_clone_channel_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_clone_channel_run_parent_dynamic_connectable_interface;
+static AgsPluginInterface *ags_clone_channel_run_parent_plugin_interface;
 
 GType
 ags_clone_channel_run_get_type()
@@ -98,6 +102,12 @@ ags_clone_channel_run_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_clone_channel_run_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_clone_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							"AgsCloneChannelRun\0",
 							&ags_clone_channel_run_info,
@@ -110,6 +120,10 @@ ags_clone_channel_run_get_type()
     g_type_add_interface_static(ags_type_clone_channel_run,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_clone_channel_run,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_clone_channel_run);
@@ -157,6 +171,12 @@ ags_clone_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableIn
 
   dynamic_connectable->connect_dynamic = ags_clone_channel_run_connect_dynamic;
   dynamic_connectable->disconnect_dynamic = ags_clone_channel_run_disconnect_dynamic;
+}
+
+void
+ags_clone_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_clone_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void

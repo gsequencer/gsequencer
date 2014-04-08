@@ -617,21 +617,23 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 		   G_CALLBACK(ags_file_read_audio_resolve_devout), gobject);
 
   /* read child elements */
+  child = node->children;
+
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
 		     "ags-channel-list\0",
-		     16)){
+		     17)){
 	xmlXPathContext *xpath_context;
 	xmlXPathObject *xpath_object;
 
 	xpath_context = xmlXPathNewContext(file->doc);
+	xmlXPathSetContextNode(child,
+			       xpath_context);
+	xpath_object = xmlXPathEval("./ags-channel/ags-output\0",
+				    xpath_context);
 
-	xpath_object = xmlXPathNodeEval(child,
-					"./ags-channel/ags-output\0",
-					xpath_context);
-
-	if(xpath_object->nodesetval != NULL){
+	if(xmlXPathCastToBoolean(xpath_object)){
 	  AgsChannel *channel;
 	  xmlNode *channel_node;
 	  
@@ -984,17 +986,17 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
     xpath_context = xmlXPathNewContext(file->doc);
 
     xpath_object = xmlXPathNodeEval(node,
-				    "./ags-output\0",
+				    "./ags-channel/ags-output\0",
 				    xpath_context);
 
 
-    if(xpath_object->nodesetval != NULL){
-      gobject = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
+    if(xpath_object != NULL){
+      gobject = (AgsChannel *) g_object_new(AGS_TYPE_OUTPUT,
 					    NULL);
 
       is_output = TRUE;
     }else{
-      gobject = (AgsChannel *) g_object_new(AGS_TYPE_CHANNEL,
+      gobject = (AgsChannel *) g_object_new(AGS_TYPE_INPUT,
 					    NULL);
 
       is_output = FALSE;

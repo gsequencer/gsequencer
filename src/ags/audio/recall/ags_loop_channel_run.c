@@ -128,6 +128,12 @@ ags_loop_channel_run_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_loop_channel_run_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_loop_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						       "AgsLoopChannelRun\0",
 						       &ags_loop_channel_run_info,
@@ -139,6 +145,10 @@ ags_loop_channel_run_get_type()
     g_type_add_interface_static(ags_type_loop_channel_run,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_loop_channel_run,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return (ags_type_loop_channel_run);

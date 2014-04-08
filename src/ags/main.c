@@ -454,6 +454,9 @@ ags_main_register_recall_type()
   ags_copy_pattern_audio_run_get_type();
   ags_copy_pattern_channel_get_type();
   ags_copy_pattern_channel_run_get_type();
+
+  ags_buffer_channel_get_type();
+  ags_buffer_channel_run_get_type();
 }
 
 void

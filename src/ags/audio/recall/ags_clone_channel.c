@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_plugin.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 
@@ -28,6 +30,7 @@
 
 void ags_clone_channel_class_init(AgsCloneChannelClass *clone_channel);
 void ags_clone_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_clone_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_clone_channel_init(AgsCloneChannel *clone_channel);
 void ags_clone_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -40,6 +43,7 @@ void ags_clone_channel_get_property(GObject *gobject,
 void ags_clone_channel_connect(AgsConnectable *connectable);
 void ags_clone_channel_disconnect(AgsConnectable *connectable);
 void ags_clone_channel_finalize(GObject *gobject);
+void ags_clone_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 enum{
   PROP_0,
@@ -48,6 +52,7 @@ enum{
 
 static gpointer ags_clone_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_clone_channel_parent_connectable_interface;
+static AgsPluginInterface *ags_clone_channel_parent_plugin_interface;
 
 GType
 ags_clone_channel_get_type()
@@ -73,6 +78,12 @@ ags_clone_channel_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_clone_channel_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_clone_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						    "AgsCloneChannel\0",
 						    &ags_clone_channel_info,
@@ -81,6 +92,10 @@ ags_clone_channel_get_type()
     g_type_add_interface_static(ags_type_clone_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_clone_channel,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_clone_channel);
@@ -126,11 +141,18 @@ ags_clone_channel_connectable_interface_init(AgsConnectableInterface *connectabl
 }
 
 void
+ags_clone_channel_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_clone_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->set_ports = ags_clone_channel_set_ports;
+}
+
+void
 ags_clone_channel_init(AgsCloneChannel *clone_channel)
 {
   clone_channel->audio_channel = 0;
 }
-
 
 void
 ags_clone_channel_set_property(GObject *gobject,
@@ -203,6 +225,22 @@ ags_clone_channel_disconnect(AgsConnectable *connectable)
   ags_clone_channel_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_clone_channel_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"muted[0]\0",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "muted\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
 }
 
 AgsCloneChannel*
