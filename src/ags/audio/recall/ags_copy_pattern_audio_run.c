@@ -190,9 +190,6 @@ void
 ags_copy_pattern_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_copy_pattern_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->read = ags_copy_pattern_audio_run_read;
-  plugin->write = ags_copy_pattern_audio_run_write;
 }
 
 void
@@ -329,154 +326,6 @@ ags_copy_pattern_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_con
   ags_copy_pattern_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
-void
-ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *iter;
-
-  /* read parent */
-  ags_copy_pattern_audio_run_parent_plugin_interface->read(file, node, plugin);
-
-  /* read depenendency */
-  iter = node->parent->parent->children;
-
-  while(iter != NULL){
-    if(iter->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(iter->name,
-		     "ags-dependency-list\0",
-		     19)){
-	xmlNode *dependency_node;
-
-	dependency_node = iter->children;
-
-	while(dependency_node != NULL){
-	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							 "file\0", file,
-							 "node\0", dependency_node,
-							 "reference\0", plugin,
-							 NULL);
-	    ags_file_add_lookup(file, (GObject *) file_lookup);
-	    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			     G_CALLBACK(ags_copy_pattern_audio_run_read_resolve_dependency), plugin);
-	  }
-	  
-	  dependency_node = dependency_node->next;
-	}
-      }
-    }
-
-    iter = iter->next;
-  }
-}
-
-xmlNode*
-ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFileLookup *file_lookup;
-  xmlNode *node, *child;
-  xmlNode *dependency_node;
-  GList *list;
-
-  /* write parent */
-  node = ags_copy_pattern_audio_run_parent_plugin_interface->write(file, parent, plugin);
-
-  /* write dependencies */
-  child = xmlNewNode(NULL,
-		     "ags-dependency-list\0");
-
-  xmlNewProp(child,
-	     AGS_FILE_ID_PROP,
-	     ags_id_generator_create_uuid());
-
-  list = AGS_RECALL(plugin)->dependencies;
-
-  while(list != NULL){
-    dependency_node = xmlNewNode(NULL,
-				 "ags-dependency\0");
-
-    xmlNewProp(dependency_node,
-	       AGS_FILE_ID_PROP,
-	       ags_id_generator_create_uuid());
-
-    xmlAddChild(child,
-		dependency_node);
-
-    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						 "file\0", file,
-						 "node\0", dependency_node,
-						 "reference\0", list->data,
-						 NULL);
-    ags_file_add_lookup(file, (GObject *) file_lookup);
-    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		     G_CALLBACK(ags_copy_pattern_audio_run_write_resolve_dependency), plugin);
-
-    list = list->next;
-  }
-
-  xmlAddChild(parent->parent,
-	      child);
-
-  return(node);
-}
-
-void
-ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
-{
-  AgsRecall *template;
-  AgsRecallContainer *recall_container;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-  AgsRecallDependency *recall_dependency;
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-  GList *list;
-  AgsRecallID *recall_id;
-  guint i, i_stop;
-
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
-
-  recall_container = AGS_RECALL_CONTAINER(recall->container);
-
-  list = ags_recall_find_template(recall_container->recall_audio_run);
-
-  if(list != NULL){
-    template = AGS_RECALL(list->data);
-  }else{
-    g_warning("AgsRecallClass::resolve - missing dependency");
-    return;
-  }
-
-  list = template->dependencies;
-
-  count_beats_audio_run = NULL;
-  i_stop = 1;
-
-  for(i = 0; i < i_stop && list != NULL;){
-    recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
-
-    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
-      if(((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0 &&
-	  (AGS_RECALL_INPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0) ||
-	 ((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0 &&
-	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
-	recall_id = recall->recall_id;
-      }else{
-	recall_id = recall->recall_id->recycling_container->parent->recall_id;
-      }
-
-      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
-
-      i++;
-    }
-
-    list = list->next;
-  }
-
-  g_object_set(G_OBJECT(recall),
-	       "count-beats-audio-run\0", count_beats_audio_run,
-	       NULL);
-}
-
 AgsRecall*
 ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
 				     AgsRecallID *recall_id,
@@ -517,38 +366,57 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mod
 }
 
 void
-ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						    AgsPlugin *plugin)
+ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
 {
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath\0",
-	     g_strdup_printf("xpath=*/[@id='%s']\0", id));
-}
-
-void
-ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						   AgsPlugin *plugin)
-{
-  AgsFileIdRef *id_ref;
-  gchar *xpath;
-
-  xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "xpath\0");
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
-
-  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(plugin),
-		 "count-beats-audio-run\0", id_ref->ref,
-		 NULL);
+  AgsRecall *template;
+  AgsRecallContainer *recall_container;
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsRecallDependency *recall_dependency;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  GList *list;
+  AgsRecallID *recall_id;
+  guint i, i_stop;
+  
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
+  
+  recall_container = AGS_RECALL_CONTAINER(recall->container);
+  
+  list = ags_recall_find_template(recall_container->recall_audio_run);
+  if(list != NULL){
+    template = AGS_RECALL(list->data);
+  }else{
+    g_warning("AgsRecallClass::resolve - missing dependency");
+    return;
   }
+
+  list = template->dependencies;
+  count_beats_audio_run = NULL;
+  i_stop = 1;
+
+  for(i = 0; i < i_stop && list != NULL;){
+    recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
+
+    if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
+      if(((AGS_RECALL_INPUT_ORIENTATED & (recall->flags)) != 0 &&
+	  (AGS_RECALL_INPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0) ||
+	 ((AGS_RECALL_OUTPUT_ORIENTATED & (recall->flags)) != 0 &&
+	  (AGS_RECALL_OUTPUT_ORIENTATED & (AGS_RECALL(recall_dependency->dependency)->flags)) != 0)){
+	recall_id = recall->recall_id;
+      }else{
+	recall_id = recall->recall_id->recycling_container->parent->recall_id;
+      }
+
+      count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
+
+      i++;
+    }
+
+    list = list->next;
+  }
+
+  g_object_set(G_OBJECT(recall),
+	       "count-beats-audio-run\0", count_beats_audio_run,
+	       NULL);
 }
 
 AgsCopyPatternAudioRun*
