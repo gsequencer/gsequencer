@@ -699,7 +699,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
 					       "node\0", node,
-					       "reference\0", machine,
+					       "reference\0", machine->audio,
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
