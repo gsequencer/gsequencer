@@ -58,6 +58,7 @@ enum{
 enum{
   PROP_0,
   PROP_DEVOUT,
+  PROP_MACHINE,
 };
 
 static gpointer ags_editor_parent_class = NULL;
@@ -126,6 +127,15 @@ ags_editor_class_init(AgsEditorClass *editor)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
+				  param_spec);
+
+  param_spec = g_param_spec_object("machine\0",
+				   "add machine\0",
+				   "The machine to add\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MACHINE,
 				  param_spec);
 
   /*  */
@@ -273,6 +283,20 @@ ags_editor_set_property(GObject *gobject,
       editor->devout = devout;
     }
     break;
+  case PROP_MACHINE:
+    {
+      AgsMachine *machine;
+
+      machine = (AgsMachine *) g_value_get_object(value);
+
+      if(machine != NULL){
+	g_object_ref(machine);
+
+	ags_editor_add_index(editor);
+	ags_editor_change_machine(editor, machine);
+      }
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -405,6 +429,31 @@ ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
 
     tabs = tabs->next;
     notation = notation->next;
+  }
+
+  /* set label and reset drawing */
+  if(machine != NULL){
+    guint pads;
+
+    gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine), ": \0", machine->name, NULL));
+    g_object_set_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE), machine);
+
+
+    if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
+      pads = machine->audio->input_pads;
+    }else{
+      pads = machine->audio->output_pads;
+    }
+
+    editor->note_edit->map_height = pads * editor->note_edit->control_height;
+    
+    editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+    ags_note_edit_reset_vertically(editor->note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+    editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+      
+    editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+    ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+    editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
   }
 }
 

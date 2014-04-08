@@ -55,6 +55,9 @@ void ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
 void ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
 					     AgsLineMember *line_member);
 
+void ags_file_read_editor_resolve_parameter(AgsFileLookup *file_lookup,
+					    AgsEditor *editor);
+
 void
 ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget)
 {
@@ -2038,26 +2041,30 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 			      child,
 			      &gobject->toolbar);
       }else if(!xmlStrncmp(child->name,
-		     "ags-editor-pane-list\0",
-		     11)){
-	GList *list;
+			   "ags-parameter\0",
+			   11)){
+	AgsFileLookup *file_lookup;
+	GParameter *parameter;
+	gint n_params;
 
-	list = NULL;
+	parameter = NULL;
+	n_params = 0;
 
-	ags_file_read_editor_pane_list(file,
-				       child,
-				       &list);
+	ags_file_util_read_parameter(file,
+				     child,
+				     &parameter, &n_params, NULL);
 
-	while(list != NULL){
-	  ags_editor_add_index(gobject);
-	  ags_editor_change_machine(gobject,
-				    list->data);
-
-	  list = list->next;
-	}
+	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						     "file\0", file,
+						     "node\0", node,
+						     "reference\0", parameter,
+						     NULL);
+	ags_file_add_lookup(file, (GObject *) file_lookup);
+	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			       G_CALLBACK(ags_file_read_editor_resolve_parameter), gobject);
       }else if(!xmlStrncmp(child->name,
-		     "ags-notebook\0",
-		     13)){
+			   "ags-notebook\0",
+			   13)){
 	ags_file_read_notebook(file,
 			       child,
 			       &gobject->notebook);
@@ -2066,11 +2073,44 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
   }
 }
 
+void
+ags_file_read_editor_resolve_parameter(AgsFileLookup *file_lookup,
+				       AgsEditor *editor)
+{
+  GParameter *parameter;
+  GParamSpec **param_spec;
+  guint n_properties;
+  guint i, j;
+
+  parameter = (GParameter *) file_lookup->ref;
+
+  param_spec = g_object_class_list_properties(G_OBJECT_GET_CLASS(editor),
+					      &n_properties);
+
+  for(i = 0, j = 0; i < n_properties; i++){
+    if(g_type_is_a(param_spec[i]->owner_type,
+		   AGS_TYPE_EDITOR)){
+	
+      g_object_set_property(G_OBJECT(editor),
+			    parameter[j].name,
+			    &parameter[j].value);
+
+      j++;
+    }
+  }
+}
+
 xmlNode*
 ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
 {
+  AgsFileIdRef *id_ref;
+  AgsMachine *machine;
+  GParameter *parameter;
   xmlNode *node;
+  GList *list;
+  guint n_properties, n_params;
   gchar *id;
+  gint i;
 
   id = ags_id_generator_create_uuid();
   
@@ -2104,8 +2144,37 @@ ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
 	      node);  
 
   /* child elements */
+  /* child parameters */
+  list = gtk_container_get_children(GTK_CONTAINER(editor->index_radio));
+  parameter = NULL;
+
+  for(i = 0; list != NULL; i++){
+    if(parameter == NULL){
+      parameter = (GParameter *) g_new(GParameter,
+				       1);
+    }else{
+      parameter = (GParameter *) g_renew(GParameter,
+					 parameter,
+					 (i + 1));
+    }
+
+    parameter[i].name = "machine\0";
+
+    machine = (AgsMachine *) g_object_get_data((GObject *) list->data, (char *) g_type_name(AGS_TYPE_MACHINE));
+    g_value_set_object(&(parameter[i].value),
+		       machine);
+
+    list = list->next;
+  }
+
+  n_params = i;
+
+  ags_file_util_write_parameter(file,
+				node,
+				ags_id_generator_create_uuid(),
+				parameter, n_params);
+
   ags_file_write_toolbar(file, node, editor->toolbar);
-  ags_file_write_editor_pane_list(file, node, gtk_container_get_children(GTK_CONTAINER(editor->index_radio)));
   ags_file_write_notebook(file, node, editor->notebook);
 }
 
@@ -2117,31 +2186,6 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 
 xmlNode*
 ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_read_editor_pane(AgsFile *file, xmlNode *node, GtkVBox **editor_pane)
-{
-  //TODO:JK: implement me
-}
-
-
-void
-ags_file_read_editor_pane_list(AgsFile *file, xmlNode *node, GList **list)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_editor_pane_list(AgsFile *file, xmlNode *parent, GList *list)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_file_write_editor_pane(AgsFile *file, xmlNode *parent, GtkVBox *editor_pane)
 {
   //TODO:JK: implement me
 }

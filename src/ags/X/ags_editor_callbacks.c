@@ -213,28 +213,6 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
     machine1 = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE));
     
     ags_editor_change_machine(editor, machine0);
-        
-    if(machine0 != NULL){
-      guint pads;
-
-      gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine0), ": \0", machine0->name, NULL));
-
-      if((AGS_AUDIO_NOTATION_DEFAULT & (machine0->audio->flags)) != 0){
-	pads = machine0->audio->input_pads;
-      }else{
-	pads = machine0->audio->output_pads;
-      }
-
-      editor->note_edit->map_height = pads * editor->note_edit->control_height;
-    
-      editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-      ags_note_edit_reset_vertically(editor->note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
-      editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
-      
-      editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-      ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-      editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
-    }
   }
 
   gtk_widget_destroy((GtkWidget *) dialog);

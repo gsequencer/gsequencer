@@ -1608,8 +1608,8 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
-	ags_file_util_read_parameter(child,
-				     NULL,
+	ags_file_util_read_parameter(file,
+				     child, NULL,
 				     &(gobject->child_parameters), NULL, NULL);
       }
     }
