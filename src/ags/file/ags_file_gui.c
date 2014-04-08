@@ -2069,7 +2069,44 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 xmlNode*
 ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-editor\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
+				   "reference\0", editor,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     editor->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     editor->build_id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", editor->flags));
+
+  xmlAddChild(parent,
+	      node);  
+
+  /* child elements */
+  ags_file_write_toolbar(file, node, editor->toolbar);
+  ags_file_write_editor_pane_list(file, node, gtk_container_get_children(GTK_CONTAINER(editor->index_radio)));
+  ags_file_write_notebook(file, node, editor->notebook);
 }
 
 void
