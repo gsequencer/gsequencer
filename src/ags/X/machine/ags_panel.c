@@ -134,6 +134,7 @@ ags_panel_init(AgsPanel *panel)
 			 G_CALLBACK(ags_panel_parent_set_callback), (gpointer) panel);
 
   AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_SYNC);
+  AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
 
   /* ags-play */
   ags_recall_factory_create(AGS_MACHINE(panel)->audio,

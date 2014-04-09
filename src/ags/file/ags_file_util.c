@@ -328,6 +328,10 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
 
   xpath = (gchar *) xmlNodeGetContent(file_lookup->node);
 
+  if(xpath == NULL){
+    return;
+  }
+
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(G_VALUE_HOLDS(value, G_TYPE_POINTER)){
@@ -335,7 +339,7 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
   }else if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
     g_value_set_object(value, (GObject *) id_ref->ref);
   }else{
-    g_warning("ags_file_util_read_value_resolve: unknown type of GValue\0");
+    //    g_warning("ags_file_util_read_value_resolve: unknown type of GValue\0");
   }
 }
 
@@ -510,9 +514,9 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  if(G_VALUE_HOLDS_OBJECT(value)){
+  if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
     id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, g_value_get_object(value));
-  }else{
+  }else if(G_VALUE_HOLDS(value, G_TYPE_POINTER)){
     id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, g_value_get_pointer(value));
   }
 

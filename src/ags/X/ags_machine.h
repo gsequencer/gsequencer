@@ -61,6 +61,8 @@ struct _AgsMachine
   gchar *version;
   gchar *build_id;
 
+  gchar *xml_type;
+
   guint flags;
   guint file_input_flags;
 
@@ -75,6 +77,8 @@ struct _AgsMachine
   GType input_pad_type;
   GType input_line_type;
   GtkContainer *input;
+
+  GList *port;
 
   GtkMenu *popup;
   GtkDialog *properties;

@@ -132,11 +132,12 @@ ags_mixer_init(AgsMixer *mixer)
   g_signal_connect_after((GObject *) mixer, "parent_set\0",
 			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
 
-  mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  mixer->machine.input = (GtkContainer *) mixer->input_pad;
-  gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->input_pad);
+  AGS_MACHINE(mixer)->input_pad_type = AGS_TYPE_MIXER_INPUT_PAD;
+  AGS_MACHINE(mixer)->audio->flags |= (AGS_AUDIO_ASYNC);
 
-  mixer->machine.audio->flags |= (AGS_AUDIO_ASYNC);
+  mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
+  gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->input_pad);
 }
 
 void

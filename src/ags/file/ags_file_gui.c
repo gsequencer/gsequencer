@@ -735,8 +735,8 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 
   /* child elements */
   ags_plugin_write(file,
-		   node,
-		   AGS_PLUGIN(machine));
+  		   node,
+  		   AGS_PLUGIN(machine));
 
   if(machine->output != NULL){
     child = ags_file_write_pad_list(file,
@@ -1045,8 +1045,8 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 
   /* child elements */
   ags_plugin_write(file,
-		   node,
-		   AGS_PLUGIN(pad));
+  		   node,
+  		   AGS_PLUGIN(pad));
 
   line = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
@@ -1344,8 +1344,8 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 
   /* child elements */
   ags_plugin_write(file,
-		   node,
-		   AGS_PLUGIN(line));
+  		   node,
+  		   AGS_PLUGIN(line));
 
   line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
 

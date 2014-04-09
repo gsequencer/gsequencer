@@ -28,6 +28,10 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
 #include <ags/audio/ags_input.h>
 
 #include <ags/audio/file/ags_audio_file.h>
@@ -66,6 +70,8 @@ static void ags_machine_finalize(GObject *gobject);
 void ags_machine_show(GtkWidget *widget);
 
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
+
+#define AGS_DEFAULT_MACHINE "ags-default-machine\0"
 
 static gpointer ags_machine_parent_class = NULL;
 
@@ -190,6 +196,8 @@ ags_machine_init(AgsMachine *machine)
   machine->version = AGS_MACHINE_DEFAULT_VERSION;
   machine->build_id = AGS_MACHINE_DEFAULT_BUILD_ID;
 
+  machine->xml_type = "ags-default-machine\0";
+
   machine->name = NULL;
 
   machine->output_pad_type = G_TYPE_NONE;
@@ -203,6 +211,8 @@ ags_machine_init(AgsMachine *machine)
 
   machine->output = NULL;
   machine->input = NULL;
+
+  machine->port = NULL;
 
   machine->popup = ags_machine_popup_new(machine);
   machine->properties = NULL;
@@ -331,7 +341,7 @@ ags_machine_set_property(GObject *gobject,
 
 	    i = 0;
 
-	    while(pad != NULL){
+	    while(pad != NULL && input != NULL){
 	      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
 
 	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->input_line_type,
@@ -503,6 +513,8 @@ ags_machine_get_name(AgsPlugin *plugin)
 void
 ags_machine_set_name(AgsPlugin *plugin, gchar *name)
 {
+  AGS_MACHINE(plugin)->name = name;
+
   //TODO:JK: implement me
 }
 
@@ -515,6 +527,8 @@ ags_machine_get_version(AgsPlugin *plugin)
 void
 ags_machine_set_version(AgsPlugin *plugin, gchar *version)
 {
+  AGS_MACHINE(plugin)->version = version;
+
   //TODO:JK: implement me
 }
 
@@ -527,43 +541,73 @@ ags_machine_get_build_id(AgsPlugin *plugin)
 void
 ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id)
 {
+  AGS_MACHINE(plugin)->build_id = build_id;
+
   //TODO:JK: implement me
 }
 
 gchar*
 ags_machine_get_xml_type(AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
+  return(AGS_MACHINE(plugin)->xml_type);
 
-  return(NULL);
+  //TODO:JK: implement me
 }
 
 void
 ags_machine_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 {
+  AGS_MACHINE(plugin)->xml_type = xml_type;
+
   //TODO:JK: implement me
 }
 
 GList*
 ags_machine_get_ports(AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
+  return(AGS_MACHINE(plugin)->port);
 
-  return(NULL);
+  //TODO:JK: implement me
 }
 
 void
 ags_machine_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", G_OBJECT(plugin),
+				   NULL));
 }
 
 xmlNode*
 ags_machine_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
 
-  return(NULL);
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    AGS_MACHINE(plugin)->xml_type);
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
+				   "reference\0", G_OBJECT(plugin),
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 
@@ -609,7 +653,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
   GList *list;
 
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
-		    
+
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
 		     0, "NULL\0",
