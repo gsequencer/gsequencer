@@ -461,9 +461,6 @@ ags_machine_connect(AgsConnectable *connectable)
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
-  /* AgsAudio */
-  ags_connectable_connect(AGS_CONNECTABLE(machine->audio));
-
   /* GtkWidget */
   g_signal_connect(G_OBJECT (machine), "button_press_event\0",
 		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);

@@ -120,16 +120,19 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
 		     15)){
 	GList *list;
 
+	list = NULL;
+
 	ags_file_read_audio_list(file,
 				 child,
-				 &gobject->audio);
-
-	list = gobject->audio;
+				 &list);
 
 	while(list != NULL){
 	  g_object_set(G_OBJECT(list->data),
 		       "devout\0", gobject,
 		       NULL);
+
+	  ags_devout_add_audio(gobject,
+			       G_OBJECT(list->data));
 
 	  list = list->next;
 	}
@@ -1127,6 +1130,10 @@ ags_file_read_channel_resolve_link(AgsFileLookup *file_lookup,
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "link\0");
 
+  if(xpath == NULL){
+    return;
+  }
+
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref != NULL){
@@ -1134,7 +1141,7 @@ ags_file_read_channel_resolve_link(AgsFileLookup *file_lookup,
     
     error = NULL;
 
-    ags_channel_set_link(channel->link,
+    ags_channel_set_link(channel,
 			 (AgsChannel *) id_ref->ref,
 			 &error);
   }
@@ -1184,14 +1191,16 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 
 
   /* link */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", channel,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_write_channel_resolve_link), channel);
+  if(channel->link != NULL){
+    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						 "file\0", file,
+						 "node\0", node,
+						 "reference\0", channel->link,
+						 NULL);
+    ags_file_add_lookup(file, (GObject *) file_lookup);
+    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		     G_CALLBACK(ags_file_write_channel_resolve_link), channel);
+  }
 
   xmlAddChild(parent,
 	      node);

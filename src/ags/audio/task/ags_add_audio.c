@@ -138,6 +138,9 @@ ags_add_audio_launch(AgsTask *task)
   /* add audio */
   ags_devout_add_audio(add_audio->devout,
 		       G_OBJECT(add_audio->audio));
+
+  /* AgsAudio */
+  ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
 }
 
 AgsAddAudio*

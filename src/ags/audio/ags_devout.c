@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/main.h>
 
 #include <sys/stat.h>
@@ -34,6 +36,7 @@
 #include <ags/audio/ags_notation.h>
 
 void ags_devout_class_init(AgsDevoutClass *devout);
+void ags_devout_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_devout_init(AgsDevout *devout);
 void ags_devout_set_property(GObject *gobject,
 			     guint prop_id,
@@ -43,6 +46,8 @@ void ags_devout_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
+void ags_devout_disconnect(AgsConnectable *connectable);
+void ags_devout_connect(AgsConnectable *connectable);
 void ags_devout_finalize(GObject *gobject);
 
 void ags_devout_real_change_bpm(AgsDevout *devout, double bpm);
@@ -525,9 +530,26 @@ ags_devout_finalize(GObject *gobject)
 }
 
 void
-ags_devout_connect(AgsDevout *devout)
+ags_devout_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsDevout *devout;
+  GList *list;
+
+  devout = AGS_DEVOUT(connectable);
+  
+  list = devout->audio;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_devout_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
 }
 
 AgsDevoutPlayDomain*
