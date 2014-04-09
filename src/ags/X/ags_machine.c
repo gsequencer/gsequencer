@@ -227,7 +227,7 @@ ags_machine_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
       
-      reset = FALSE;
+      reset = TRUE;
 
       if(machine->audio != NULL){
 	GList *pad;
@@ -253,8 +253,8 @@ ags_machine_set_property(GObject *gobject,
 	    
 	    pad = pad->next;
 	  }
-	}else{
-	  reset = TRUE;
+	  
+	  reset = FALSE;
 	}
       }
 

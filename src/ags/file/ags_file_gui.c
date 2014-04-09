@@ -143,8 +143,13 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 				   child,
 				   &list);
 
-	ags_container_add_all(GTK_CONTAINER(gobject->machines),
-			      list);
+	while(list != NULL){
+	  gtk_box_pack_start((GtkBox *) gobject->machines,
+			     GTK_WIDGET(list->data),
+			     FALSE, FALSE, 0);
+
+	  list = list->next;
+	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-editor\0",
 			   10)){
@@ -529,14 +534,15 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 		   G_CALLBACK(ags_file_read_machine_resolve_audio), gobject);
 
   /* machine-editor */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", gobject,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_machine_resolve_machine_editor), gobject);
+  //TODO:JK: uncomment me
+  //  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+  //					       "file\0", file,
+  //					       "node\0", node,
+  //					       "reference\0", gobject,
+  //					       NULL);
+  //  ags_file_add_lookup(file, (GObject *) file_lookup);
+  //  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+  //		   G_CALLBACK(ags_file_read_machine_resolve_machine_editor), gobject);
 
   /* rename-dialog */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,

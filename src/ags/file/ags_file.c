@@ -729,6 +729,8 @@ ags_file_real_read(AgsFile *file)
 
   /* resolve */
   ags_file_read_resolve(file);
+  ags_connectable_connect(AGS_CONNECTABLE(ags_main));
+  g_message("DEBUG\0");
 
   /* start */
   ags_file_read_start(file);
@@ -896,7 +898,6 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     child = child->next;
   }
 
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
   gtk_widget_show_all(GTK_WIDGET(gobject->window));
 }
 

@@ -114,10 +114,20 @@ ags_devout_get_type (void)
       (GInstanceInitFunc) ags_devout_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_devout_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_devout = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsDevout\0",
 					     &ags_devout_info,
 					     0);
+
+    g_type_add_interface_static(ags_type_devout,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return (ags_type_devout);
@@ -274,6 +284,15 @@ GQuark
 ags_devout_error_quark()
 {
   return(g_quark_from_static_string("ags-devout-error-quark\0"));
+}
+
+void
+ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_devout_connect;
+  connectable->disconnect = ags_devout_disconnect;
 }
 
 void
