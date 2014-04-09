@@ -22,6 +22,8 @@
 #include <ags/file/ags_file_gui.h>
 #include <ags/file/ags_file_stock.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
 #include <ags/main.h>
 
 #include <ags/util/ags_id_generator.h>
@@ -867,13 +869,13 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
       if(!xmlStrncmp("ags-thread\0",
 		     child->name,
 		     11)){
-	ags_file_read_thread(file,
-		     child,
-		     (AgsThread **) &gobject->main_loop);
+		ags_file_read_thread(file,
+			     child,
+			     (AgsThread **) &gobject->main_loop);
       }else if(!xmlStrncmp("ags-thread-pool\0",
 			   child->name,
 			   16)){
-	ags_file_read_thread_pool(file,
+		ags_file_read_thread_pool(file,
 			  child,
 			  (AgsThreadPool **) &gobject->thread_pool);
       }else if(!xmlStrncmp("ags-devout-list\0",
@@ -888,14 +890,13 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 	ags_file_read_window(file,
 			     child,
 			     &gobject->window);
-
-	ags_connectable_connect(gobject->window);
       }
     }
 
     child = child->next;
   }
 
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
   gtk_widget_show_all(GTK_WIDGET(gobject->window));
 }
 
@@ -934,7 +935,11 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 	     AGS_FILE_BUILD_ID_PROP,
 	     AGS_MAIN(ags_main)->build_id);
 
-  /* ags-audio-list */
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
   ags_file_write_thread(file,
 			node,
 			AGS_THREAD(AGS_MAIN(ags_main)->main_loop));
@@ -950,10 +955,6 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
   ags_file_write_window(file,
 			node,
 			AGS_MAIN(ags_main)->window);
-
-  /* add to parent */
-  xmlAddChild(parent,
-	      node);
 }
 
 AgsFile*

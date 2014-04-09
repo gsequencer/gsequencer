@@ -288,6 +288,7 @@ void
 ags_window_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
+  GList *list;
 
   window = AGS_WINDOW(connectable);
 
@@ -295,6 +296,15 @@ ags_window_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_window_delete_event_callback), NULL);
 
   ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
+
+  list = gtk_container_get_children(window->machines);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
   ags_connectable_connect(AGS_CONNECTABLE(window->editor));
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
 }

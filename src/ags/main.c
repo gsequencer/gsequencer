@@ -59,7 +59,7 @@ void ags_main_finalize(GObject *gobject);
 void ags_colors_alloc();
 
 static gpointer ags_main_parent_class = NULL;
-sigset_t ags_wait_mask;
+static sigset_t ags_wait_mask;
 
 extern void ags_thread_resume_handler(int sig);
 extern void ags_thread_suspend_handler(int sig);
@@ -168,7 +168,23 @@ ags_main_init(AgsMain *ags_main)
 void
 ags_main_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsMain *ags_main;
+  GList *list;
+
+  ags_main = AGS_MAIN(connectable);
+
+  ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
+  ags_connectable_connect(AGS_CONNECTABLE(ags_main->thread_pool));
+
+  list = ags_main->devout;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  ags_connectable_connect(AGS_CONNECTABLE(ags_main->window));
 }
 
 void
