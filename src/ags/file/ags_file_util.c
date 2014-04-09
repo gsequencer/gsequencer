@@ -524,7 +524,7 @@ ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
 
   xmlNewProp(file_lookup->node,
 	     "link\0",
-	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
+	     g_strdup_printf("xpath=//[@id='%s']\0", id));
 
   //  g_value_unset(value);
   //  g_free(value);
