@@ -640,10 +640,9 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	  AgsChannel *channel;
 	  xmlNode *channel_node;
 	  
-	  channel = gobject->output;
 	  channel_node = child->children;
 
-	  while(channel != NULL){
+	  while(channel_node != NULL){
 	    if(channel_node->type == XML_ELEMENT_NODE){
 	      if(!xmlStrncmp(channel_node->name,
 			     "ags-channel\0",
@@ -669,7 +668,6 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	      }
 	    }
 
-	    channel = channel->next;
 	    channel_node = channel_node->next;
 	  }
 	}else{
@@ -678,7 +676,7 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	  
 	  channel_node = child->children;
 
-	  while(channel != NULL){
+	  while(channel_node != NULL){
 	    if(channel_node->type == XML_ELEMENT_NODE){
 	      if(!xmlStrncmp(channel_node->name,
 			     "ags-channel\0",
@@ -697,13 +695,13 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 		channel = ags_channel_nth(gobject->input,
 					  pad * gobject->audio_channels + audio_channel);
 
-		/* ags-channel output */
+		/* ags-channel input */
 		ags_file_read_channel(file,
 				      channel_node,
 				      &channel);
 	      }
 	    }
-
+	    
 	    channel_node = channel_node->next;
 	  }
 	}
@@ -987,13 +985,14 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
     xmlXPathObject *xpath_object;
     
     xpath_context = xmlXPathNewContext(file->doc);
+    xmlXPathSetContextNode(node,
+			   xpath_context);
 
-    xpath_object = xmlXPathNodeEval(node,
-				    "./ags-channel/ags-output\0",
-				    xpath_context);
+    xpath_object = xmlXPathEval("./ags-output\0",
+				xpath_context);
 
 
-    if(xpath_object != NULL){
+    if(xmlXPathCastToBoolean(xpath_object)){
       gobject = (AgsChannel *) g_object_new(AGS_TYPE_OUTPUT,
 					    NULL);
 
@@ -1033,12 +1032,12 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 					    16);
 
   /* well known properties */
-  //  pad = (guint) g_ascii_strtoull(xmlGetProp(node, "pad\0"),
-  //				 NULL,
-  //				 10);
-  //  audio_channel = (guint) g_ascii_strtoull(xmlGetProp(node, "audio-channel\0"),
-  //					   NULL,
-  //					   10);
+  pad = (guint) g_ascii_strtoull(xmlGetProp(node, "pad\0"),
+				 NULL,
+				 10);
+  audio_channel = (guint) g_ascii_strtoull(xmlGetProp(node, "audio-channel\0"),
+  					   NULL,
+  					   10);
 
   if(!preset){
     gobject->pad = pad;
