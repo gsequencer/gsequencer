@@ -453,39 +453,45 @@
 	  next-grouped           IDREF      #REQUIRED
 	  >
 
+<!ELEMENT ags-recall-container (ags-parameter)>
+<!ATTLIST ags-recall-container
+	  id               ID         #REQUIRED
+	  >
+
 <!ELEMENT ags-recall-audio EMPTY>
 <!ATTLIST ags-recall-audio
 	  id               ID         #REQUIRED
+	  audio-ref        IDREF      "../"
 	  >
 
 <!ELEMENT ags-recall-audio-run EMPTY>
 <!ATTLIST ags-recall-audio-run
 	  id               ID         #REQUIRED
+	  audio-ref        IDREF      "../"
 	  >
 
 <!ELEMENT ags-recall-channel EMPTY>
 <!ATTLIST ags-recall-channel
 	  id               ID         #REQUIRED
+	  channel-ref      IDREF      "../"
 	  >
 
 <!ELEMENT ags-recall-channel-run EMPTY>
 <!ATTLIST ags-recall-channel-run
 	  id               ID         #REQUIRED
+	  channel-ref      IDREF      "../"
 	  >
 
 <!ELEMENT ags-recall-recycling EMPTY>
 <!ATTLIST ags-recall-recycling
 	  id               ID         #REQUIRED
-	  >
-
-<!ELEMENT ags-recall-recycling-run EMPTY>
-<!ATTLIST ags-recall-recycling-run
-	  id               ID         #REQUIRED
+	  recycling-ref    IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-recall-audio-signal EMPTY>
 <!ATTLIST ags-recall-audio-signal
 	  id               ID         #REQUIRED
+	  audio-signal-ref IDREF      #REQUIRED
 	  >
 
 <!ELEMENT ags-port-list (ags-port*)>

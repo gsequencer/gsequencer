@@ -391,6 +391,8 @@ ags_audio_connect(AgsConnectable *connectable)
 
   audio = AGS_AUDIO(connectable);
 
+  g_message("connecting channel\0");
+
   /* connect channels */
   channel = audio->output;
 
@@ -417,6 +419,8 @@ ags_audio_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
+  g_message("connecting container\0");
+
   /* connect recall containers */
   list = audio->container;
 
@@ -425,6 +429,8 @@ ags_audio_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  g_message("connecting recalls\0");
 
   /* connect recalls */
   list = audio->recall;
@@ -459,6 +465,8 @@ ags_audio_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  g_message("connecting notation\0");
 
   /* connect notation */
   if(audio->notation != NULL)

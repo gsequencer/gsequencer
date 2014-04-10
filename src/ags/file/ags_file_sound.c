@@ -2270,14 +2270,19 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
 				 child, NULL,
 				 &value, NULL);
 
-	list = ags_file_lookup_find_by_node(file->lookup,
-					    child);
-
-	if(list != NULL){
-	  file_lookup = AGS_FILE_LOOKUP(list->data);
-
-	  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
-				 G_CALLBACK(ags_file_read_port_resolve_port_value), gobject);
+	if(gobject->port_value_type == G_TYPE_POINTER ||
+	   gobject->port_value_type == G_TYPE_OBJECT){
+	  list = ags_file_lookup_find_by_node(file->lookup,
+					      child);
+	  
+	  if(list != NULL){
+	    file_lookup = AGS_FILE_LOOKUP(list->data);
+	    
+	    g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+				   G_CALLBACK(ags_file_read_port_resolve_port_value), gobject);
+	  }
+	}else{
+	  //TODO:JK: implement me
 	}
       }
     }

@@ -176,6 +176,8 @@ ags_main_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
   ags_connectable_connect(AGS_CONNECTABLE(ags_main->thread_pool));
 
+  g_message("connected threads\0");
+
   list = ags_main->devout;
 
   while(list != NULL){
@@ -184,7 +186,10 @@ ags_main_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
+  g_message("connected audio\0");
+
   ags_connectable_connect(AGS_CONNECTABLE(ags_main->window));
+  g_message("connected gui\0");
 }
 
 void

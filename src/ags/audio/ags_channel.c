@@ -367,6 +367,8 @@ ags_channel_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
+  g_message("connecting recall\0");
+
   /* connect recalls */
   list = channel->recall;
 
@@ -384,6 +386,8 @@ ags_channel_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
+  g_message("connecting recycling\0");
+
   /* connect recycling */
   recycling = channel->first_recycling;
 
@@ -394,6 +398,8 @@ ags_channel_connect(AgsConnectable *connectable)
       recycling = recycling->next;
     }
   }
+
+  g_message("connecting pattern\0");
 
   /* connect pattern and notation */
   list = channel->pattern;

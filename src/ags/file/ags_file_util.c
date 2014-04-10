@@ -40,7 +40,7 @@ ags_file_util_read_value(AgsFile *file,
   xmlChar *type_str;
   xmlChar *value_str;
   xmlChar *content;
-  GValue a = G_VALUE_INIT;
+  GValue a = {0,};
 
   if(id != NULL)
     *id = xmlGetProp(node, AGS_FILE_ID_PROP);
@@ -265,8 +265,9 @@ ags_file_util_read_value(AgsFile *file,
       *xpath = NULL;
   }else if(!xmlStrcmp(type_str, AGS_FILE_POINTER_PROP)){
     g_value_init(&a, G_TYPE_POINTER);
+    g_value_init(value, G_TYPE_POINTER);
 
-    g_value_set_pointer(&a, NULL);
+    //    g_value_set_pointer(&a, NULL);
 
     if(value != NULL)
       g_value_copy(&a, value);
@@ -289,8 +290,9 @@ ags_file_util_read_value(AgsFile *file,
 			  "link\0");
   }else if(!xmlStrcmp(type_str, AGS_FILE_OBJECT_PROP)){
     g_value_init(&a, G_TYPE_OBJECT);
+    g_value_init(value, G_TYPE_OBJECT);
 
-    g_value_set_object(&a, NULL);
+    //    g_value_set_object(&a, NULL);
     
     if(value != NULL)
       g_value_copy(&a, value);
@@ -326,7 +328,8 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *xpath;
 
-  xpath = (gchar *) xmlNodeGetContent(file_lookup->node);
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "link\0");
 
   if(xpath == NULL){
     return;
@@ -338,8 +341,10 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
     g_value_set_pointer(value, (gpointer) id_ref->ref);
   }else if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
     g_value_set_object(value, (GObject *) id_ref->ref);
+  }else if(G_VALUE_HOLDS(value, G_TYPE_STRING)){
+    g_value_set_string(value, (gpointer) id_ref->ref);
   }else{
-    //    g_warning("ags_file_util_read_value_resolve: unknown type of GValue\0");
+    g_warning("ags_file_util_read_value_resolve: unknown type of GValue %s\0", G_VALUE_TYPE_NAME(value));
   }
 }
 
@@ -566,6 +571,7 @@ ags_file_util_read_parameter(AgsFile *file,
     xpath_iter = xpath_arr + i;
 
     parameter_arr[i].name = name_arr[i];
+    memset(&(parameter_arr[i].value), 0, sizeof(GValue));
     ags_file_util_read_value(file,
 			     child, NULL,
 			     &(parameter_arr[i].value), (xmlChar **) &xpath_iter);
