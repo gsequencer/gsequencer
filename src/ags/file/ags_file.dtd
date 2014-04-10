@@ -453,6 +453,11 @@
 	  next-grouped           IDREF      #REQUIRED
 	  >
 
+<!ELEMENT ags-recall-container-list (ags-recall-container*)>
+<!ATTLIST ags-recall-container-list
+	  id               ID         #REQUIRED
+	  >
+
 <!ELEMENT ags-recall-container (ags-parameter)>
 <!ATTLIST ags-recall-container
 	  id               ID         #REQUIRED

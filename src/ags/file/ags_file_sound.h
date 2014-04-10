@@ -39,6 +39,7 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_task.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_timestamp.h>
 
@@ -85,6 +86,12 @@ xmlNode* ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall
 
 void ags_file_read_recall_list(AgsFile *file, xmlNode *node, GList **recall);
 xmlNode* ags_file_write_recall_list(AgsFile *file, xmlNode *parent, GList *recall);
+
+void ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer **recall_container);
+xmlNode* ags_file_write_recall_container(AgsFile *file, xmlNode *parent, AgsRecallContainer *recall_container);
+
+void ags_file_read_recall_container_list(AgsFile *file, xmlNode *node, GList **recall_container);
+xmlNode* ags_file_write_recall_container_list(AgsFile *file, xmlNode *parent, GList *recall_container);
 
 void ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall *recall);
 xmlNode* ags_file_write_recall_audio(AgsFile *file, xmlNode *parent, AgsRecall *recall);
