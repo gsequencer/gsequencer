@@ -714,6 +714,8 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
       }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
 			   15)){
+	GList *list;
+
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
 		       AGS_FILE_TRUE,
 		       5)){
@@ -721,11 +723,23 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	  ags_file_read_recall_list(file,
 				    child,
 				    &(gobject->play));
+
+	  list = gobject->play;
 	}else{
 	  /* ags-recall-list recall */
 	  ags_file_read_recall_list(file,
 				    child,
 				    &(gobject->recall));
+
+	  list = gobject->recall;
+	}
+
+	while(list != NULL){
+	  g_object_set(G_OBJECT(list->data),
+		       "audio\0", gobject,
+		       NULL);
+
+	  list = list->next;
 	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-notation-list\0",
@@ -1088,6 +1102,8 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
       }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
 			   15)){
+	GList *list;
+
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
 		       AGS_FILE_TRUE,
 		       5)){
@@ -1095,11 +1111,23 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 	  ags_file_read_recall_list(file,
 				    child,
 				    &(gobject->play));
+
+	  list = gobject->play;
 	}else{
 	  /* ags-recall-list recall */
 	  ags_file_read_recall_list(file,
 				    child,
 				    &(gobject->recall));
+
+	  list = gobject->recall;
+	}
+
+	while(list != NULL){
+	  g_object_set(G_OBJECT(list->data),
+		       "channel", gobject,
+		       NULL);
+
+	  list = list->next;
 	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-pattern-list\0",

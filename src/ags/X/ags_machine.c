@@ -180,8 +180,8 @@ ags_machine_plugin_interface_init(AgsPluginInterface *plugin)
   plugin->get_xml_type = ags_machine_get_xml_type;
   plugin->set_xml_type = ags_machine_set_xml_type;
   plugin->get_ports = ags_machine_get_ports;
-  plugin->read = ags_machine_read;
-  plugin->write = ags_machine_write;
+  plugin->read = NULL; // ags_machine_read;
+  plugin->write = NULL; // ags_machine_write;
   plugin->set_ports = NULL;
 }
 
