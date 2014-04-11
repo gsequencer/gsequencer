@@ -706,6 +706,12 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	  }
 	}
       }else if(!xmlStrncmp(child->name,
+			   "ags-recall-container-list\0",
+			   26)){
+	ags_file_read_recall_container_list(file,
+					    child,
+					    &(gobject->container));
+      }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
 			   15)){
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
@@ -812,6 +818,7 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
   xmlAddChild(parent,
 	      node);
 
+  /* child elements */
   /* ags-channel-list output */
   channel = audio->output;
 
@@ -847,6 +854,11 @@ ags_file_write_audio(AgsFile *file, xmlNode *parent, AgsAudio *audio)
 
     channel = channel->next;
   }
+
+  /* ags-recall-container */
+  ags_file_write_recall_container_list(file,
+				       node,
+				       audio->container);
 
   /* ags-recall-list play */
   child = ags_file_write_recall_list(file,
@@ -1068,6 +1080,12 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 				child,
 				&(gobject->first_recycling));
       }else if(!xmlStrncmp(child->name,
+			   "ags-recall-container-list\0",
+			   26)){
+	ags_file_read_recall_container_list(file,
+					    child,
+					    &(gobject->container));
+      }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
 			   15)){
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
@@ -1218,6 +1236,11 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 			       channel->first_recycling);
     }
   }
+
+  /* ags-recall-container */
+  ags_file_write_recall_container_list(file,
+				       node,
+				       channel->container);
 
   /* ags-recall-list play */
   child = ags_file_write_recall_list(file,
@@ -1921,11 +1944,11 @@ ags_file_write_recall_container(AgsFile *file, xmlNode *parent, AgsRecallContain
 					   (i + 1) * sizeof(GParameter));
       }
 
-      parameter[0].name = prop;
+      parameter[i].name = prop;
 
-      memset(&(parameter[0].value), 0, sizeof(GValue));
-      g_value_init(&(parameter[0].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[0].value),
+      memset(&(parameter[i].value), 0, sizeof(GValue));
+      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+      g_value_set_object(&(parameter[i].value),
 			 list->data);
 
       list = list->next;
