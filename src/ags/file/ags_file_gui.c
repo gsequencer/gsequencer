@@ -194,7 +194,6 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
   AgsFileLookup *file_lookup;
   xmlNode *node, *child;
   gchar *id;
-  guint i;
 
   id = ags_id_generator_create_uuid();
   

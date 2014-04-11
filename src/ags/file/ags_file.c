@@ -841,6 +841,8 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     gobject = (AgsMain *) *ags_main;
   }
 
+  file->ags_main = gobject;
+
   argc = 1;
   g_object_set(G_OBJECT(file),
 	       "main\0", gobject,

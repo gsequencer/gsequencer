@@ -197,7 +197,7 @@
 	  devout           CDATA      #REQUIRED
 >
 
-<!ELEMENT ags-thread-pool (ags-thread-list)>
+<!ELEMENT ags-thread-pool (ags-parameter?)>
 <!ATTLIST ags-thread-pool
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
