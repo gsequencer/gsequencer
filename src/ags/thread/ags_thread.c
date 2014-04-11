@@ -353,7 +353,17 @@ ags_thread_iterate_nested(AgsTreeIterator *tree,
 void
 ags_thread_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsThread *thread, *child;
+
+  thread = AGS_THREAD(connectable);
+
+  child = thread->children;
+
+  while(child != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(child));
+
+    child = child->next;
+  }
 }
 
 void

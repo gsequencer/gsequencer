@@ -145,7 +145,7 @@ ags_main_init(AgsMain *ags_main)
   ags_colors_alloc();
 
   ags_main->main_loop = NULL;
-  ags_main->thread_pool = NULL;
+  ags_main->thread_pool = ags_thread_pool_new(NULL);
   ags_main->server = NULL;
   ags_main->devout = NULL;
   ags_main->window = NULL;
@@ -652,6 +652,8 @@ main(int argc, char **argv)
       /* AgsAgs_MainLoop */
       ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
       g_object_ref(G_OBJECT(ags_main->main_loop));
+
+      ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
     
       ags_thread_start(ags_main->main_loop);
     }else{

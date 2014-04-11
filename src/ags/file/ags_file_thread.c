@@ -104,6 +104,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     ags_file_add_launch(file, (GObject *) file_launch);
     g_signal_connect(G_OBJECT(file_launch), "start\0",
 		     G_CALLBACK(ags_file_read_thread_start), gobject);
+
+    gobject->flags &= (~AGS_THREAD_RUNNING);
   }
 
   /* devout */
@@ -137,6 +139,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(AGS_AUDIO_LOOP(gobject)->task_thread));
+	  ags_thread_add_child(gobject,
+			       AGS_AUDIO_LOOP(gobject)->task_thread);
 
 	  xpath_context = xmlXPathNewContext(file->doc);
 
@@ -147,6 +151,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(AGS_AUDIO_LOOP(gobject)->devout_thread));
+	  ags_thread_add_child(gobject,
+			       AGS_AUDIO_LOOP(gobject)->devout_thread);
 
 	  xpath_context = xmlXPathNewContext(file->doc);
 
@@ -157,6 +163,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(AGS_AUDIO_LOOP(gobject)->gui_thread));
+	  ags_thread_add_child(gobject,
+			       AGS_AUDIO_LOOP(gobject)->gui_thread);
 	}else{
 	  GList *list;
 
@@ -183,10 +191,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     }
 
     child = child->next;
-  }
-
-  if((AGS_THREAD_RUNNING & (gobject->flags)) != 0){
-    gobject->flags &= (~AGS_THREAD_RUNNING);  
   }
 }
 

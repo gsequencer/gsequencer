@@ -41,6 +41,7 @@ ags_file_util_read_value(AgsFile *file,
   xmlChar *value_str;
   xmlChar *content;
   GValue a = {0,};
+  GValue *a_ptr;
 
   if(id != NULL)
     *id = xmlGetProp(node, AGS_FILE_ID_PROP);
@@ -296,25 +297,27 @@ ags_file_util_read_value(AgsFile *file,
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_POINTER_PROP,
 		       9)){
-    g_value_init(&a, G_TYPE_POINTER);
+    //FIXME:JK: ugly
+    a_ptr = (GValue *) malloc(sizeof(GValue));
+    memset(a_ptr, 0, sizeof(GValue));
+    g_value_init(a_ptr, G_TYPE_POINTER);
     g_value_init(value, G_TYPE_POINTER);
 
-    g_value_set_pointer(&a, NULL);
+    g_value_set_pointer(a_ptr, NULL);
 
-    if(value != NULL)
-      g_value_copy(&a, value);
-    else
-      g_value_unset(&a);
+    if(value != NULL){
+      g_value_copy(a_ptr, value);
+    }
 
     /* gpointer */
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						 "file\0", file,
 						 "node\0", node,
-						 "reference\0", value,
+						 "reference\0", a_ptr,
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
     g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		     G_CALLBACK(ags_file_util_read_value_resolve), value);
+		     G_CALLBACK(ags_file_util_read_value_resolve), a_ptr);
 
     /* xpath */
     if(xpath != NULL)
@@ -323,25 +326,26 @@ ags_file_util_read_value(AgsFile *file,
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_OBJECT_PROP,
 		       8)){
-    g_value_init(&a, G_TYPE_OBJECT);
+    //FIXME:JK: ugly
+    a_ptr = (GValue *) malloc(sizeof(GValue));
+    memset(a_ptr, 0, sizeof(GValue));
+    g_value_init(a_ptr, G_TYPE_OBJECT);
     g_value_init(value, G_TYPE_OBJECT);
 
-    g_value_set_object(&a, NULL);
+    g_value_set_object(a_ptr, NULL);
     
     if(value != NULL)
-      g_value_copy(&a, value);
-    else
-      g_value_unset(&a);
+      g_value_copy(a_ptr, value);
 
     /* GObject */
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						 "file\0", file,
 						 "node\0", node,
-						 "reference\0", value,
+						 "reference\0", a_ptr,
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
     g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		     G_CALLBACK(ags_file_util_read_value_resolve), value);
+		     G_CALLBACK(ags_file_util_read_value_resolve), a_ptr);
 
     /* xpath */
     if(xpath != NULL)
@@ -507,6 +511,10 @@ ags_file_util_write_value(AgsFile *file,
 
 	type_str = AGS_FILE_DOUBLE_POINTER_PROP;
       }else{
+	//FIXME:JK: ugly
+	value = (GValue *) malloc(sizeof(GValue));
+	memset(value, 0, sizeof(GValue));
+
 	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						     "file\0", file,
 						     "node\0", node,
@@ -522,6 +530,10 @@ ags_file_util_write_value(AgsFile *file,
     break;
   case G_TYPE_OBJECT:
     {
+      //FIXME:JK: ugly
+      value = (GValue *) malloc(sizeof(GValue));
+      memset(value, 0, sizeof(GValue));
+
       file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						   "file\0", file,
 						   "node\0", node,
