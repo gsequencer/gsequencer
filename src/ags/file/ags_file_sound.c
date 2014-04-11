@@ -1102,7 +1102,8 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
       }else if(!xmlStrncmp(child->name,
 			   "ags-recall-list\0",
 			   15)){
-	GList *list;
+	AgsChannel *destination;
+	GList *start, *list;
 
 	if(!xmlStrncmp(xmlGetProp(child, "is-play\0"),
 		       AGS_FILE_TRUE,
@@ -1112,19 +1113,31 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 				    child,
 				    &(gobject->play));
 
-	  list = gobject->play;
+	  start = gobject->play;
 	}else{
 	  /* ags-recall-list recall */
 	  ags_file_read_recall_list(file,
 				    child,
 				    &(gobject->recall));
 
-	  list = gobject->recall;
+	  start = gobject->recall;
+	}
+
+	list = start;
+
+	//FIXME:JK: should rather be resolved
+	if((AGS_AUDIO_ASYNC & (AGS_AUDIO(gobject)->flags)) != 0){
+	  //	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+	  //				gobject->audio_channel);
+	}else{
+	  //	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+	  //				gobject->line);
 	}
 
 	while(list != NULL){
 	  g_object_set(G_OBJECT(list->data),
-		       "channel", gobject,
+		       "source\0", gobject,
+		       //	       "destination\0", destination,
 		       NULL);
 
 	  list = list->next;
@@ -1935,11 +1948,15 @@ ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer 
 		     14)){
 	GParameter *parameter;
 
+	parameter = NULL;
+
 	ags_file_util_read_parameter(file,
 				     child, NULL,
-				     &parameter, NULL, NULL);
+				     NULL, NULL, NULL);
       }
     }
+
+    child = child->next;
   }
 }
 
@@ -2493,7 +2510,6 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
   AgsFileLookup *file_lookup;
   xmlNode *child;
   GList *list;
-  GValue value = {0,};
 
   if(*port == NULL){
     gobject = g_object_new(AGS_TYPE_PORT,
@@ -2537,6 +2553,8 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
       if(!xmlStrncmp(child->name,
 		     "ags-value\0",
 		     10)){
+	GValue value = {0,};
+
 	g_value_init(&value,
 		     gobject->port_value_type);
 
