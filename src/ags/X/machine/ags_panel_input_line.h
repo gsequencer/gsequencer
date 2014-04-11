@@ -35,15 +35,9 @@
 typedef struct _AgsPanelInputLine AgsPanelInputLine;
 typedef struct _AgsPanelInputLineClass AgsPanelInputLineClass;
 
-typedef enum{
-  AGS_PANEL_INPUT_LINE_MAPPED_RECALL  =  1,
-}AgsPanelInputLineFlags;
-
 struct _AgsPanelInputLine
 {
   AgsLine line;
-
-  guint flags;
 
   GtkCheckButton *mute;
 };

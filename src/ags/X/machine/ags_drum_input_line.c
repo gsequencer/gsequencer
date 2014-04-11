@@ -134,8 +134,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   g_signal_connect_after((GObject *) drum_input_line, "parent_set\0",
 			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
 
-  drum_input_line->flags = 0;
-
   line_member = ags_line_member_new();
   line_member->flags |= AGS_LINE_MEMBER_DEFAULT_TEMPLATE;
   line_member->widget_type = GTK_TYPE_VSCALE;
@@ -206,7 +204,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 	    channel->line);
 
   if(line->channel != NULL){
-    drum_input_line->flags &= (~AGS_DRUM_INPUT_LINE_MAPPED_RECALL);
+    line->flags &= (~AGS_LINE_MAPPED_RECALL);
   }
 
   if(channel != NULL){
@@ -214,7 +212,9 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     channel->pattern->data = (gpointer) ags_pattern_new();
     ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
 
-    ags_drum_input_line_map_recall(drum_input_line, 0);
+    if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
+      ags_drum_input_line_map_recall(drum_input_line, 0);
+    }
   }
 }
 
@@ -245,6 +245,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   guint i;
 
   line = AGS_LINE(drum_input_line);
+  line->flags |= AGS_LINE_MAPPED_RECALL;
 
   audio = AGS_AUDIO(line->channel->audio);
 
@@ -326,8 +327,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
-
-  drum_input_line->flags |= AGS_DRUM_INPUT_LINE_MAPPED_RECALL;
 }
 
 AgsDrumInputLine*

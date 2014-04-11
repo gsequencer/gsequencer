@@ -130,8 +130,6 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
 
-  panel_input_line->flags = 0;
-
   line_member = ags_line_member_new();
   line_member->flags |= AGS_LINE_MEMBER_DEFAULT_TEMPLATE;
   line_member->widget_type = GTK_TYPE_CHECK_BUTTON;
@@ -199,11 +197,13 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 	    channel->line);
 
   if(line->channel != NULL){
-    panel_input_line->flags &= (~AGS_PANEL_INPUT_LINE_MAPPED_RECALL);
+    line->flags &= (~AGS_LINE_MAPPED_RECALL);
   }
 
   if(channel != NULL){
-    ags_panel_input_line_map_recall(panel_input_line, 0);
+    if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
+      ags_panel_input_line_map_recall(panel_input_line, 0);
+    }
   }
 }
 
@@ -223,6 +223,7 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
   GList *list;
 
   line = AGS_LINE(panel_input_line);
+  line->flags |= AGS_LINE_MAPPED_RECALL;
 
   audio = AGS_AUDIO(line->channel->audio);
 

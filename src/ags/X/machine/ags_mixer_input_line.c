@@ -108,8 +108,6 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   AgsLineMember *line_member;
   GtkWidget *widget;
 
-  mixer_input_line->flags = 0;
-
   /* volume */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type\0", GTK_TYPE_VSCALE,
@@ -173,11 +171,14 @@ ags_mixer_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   mixer_input_line = AGS_MIXER_INPUT_LINE(line);
 
   if(line->channel != NULL){
-    mixer_input_line->flags &= (~AGS_MIXER_INPUT_LINE_MAPPED_RECALL);
+    line->flags &= (~AGS_LINE_MAPPED_RECALL);
   }
 
-  if(channel != NULL)
-    ags_mixer_input_line_map_recall(mixer_input_line);
+  if(channel != NULL){
+    if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
+      ags_mixer_input_line_map_recall(mixer_input_line);
+    }
+  }
 }
 
 void
@@ -190,6 +191,7 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
   guint i;
 
   line = AGS_LINE(mixer_input_line);
+  line->flags |= AGS_LINE_MAPPED_RECALL;
 
   audio = AGS_AUDIO(line->channel->audio);
 
@@ -197,21 +199,17 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
 
   source = line->channel;
 
-  if((AGS_MIXER_INPUT_LINE_MAPPED_RECALL & (mixer_input_line->flags)) == 0){
-    mixer_input_line->flags |= AGS_MIXER_INPUT_LINE_MAPPED_RECALL;
-
-    /* ags-volume */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-volume\0",
-			      source->audio_channel, source->audio_channel + 1,
-			      source->pad, source->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-  }
+  /* ags-volume */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-volume\0",
+			    source->audio_channel, source->audio_channel + 1,
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 }
 
 AgsMixerInputLine*

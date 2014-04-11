@@ -35,15 +35,9 @@
 typedef struct _AgsDrumOutputLine AgsDrumOutputLine;
 typedef struct _AgsDrumOutputLineClass AgsDrumOutputLineClass;
 
-typedef enum{
-  AGS_DRUM_OUTPUT_LINE_MAPPED_RECALL  =  1,
-}AgsDrumOutputLineFlags;
-
 struct _AgsDrumOutputLine
 {
   AgsLine line;
-
-  guint flags;
 };
 
 struct _AgsDrumOutputLineClass

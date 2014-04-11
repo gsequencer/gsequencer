@@ -35,15 +35,9 @@
 typedef struct _AgsDrumInputLine AgsDrumInputLine;
 typedef struct _AgsDrumInputLineClass AgsDrumInputLineClass;
 
-typedef enum{
-  AGS_DRUM_INPUT_LINE_MAPPED_RECALL  =  1,
-}AgsDrumInputLineFlags;
-
 struct _AgsDrumInputLine
 {
   AgsLine line;
-
-  guint flags;
 
   GtkVScale *volume;
 };

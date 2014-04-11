@@ -1195,6 +1195,7 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
 					    NULL,
 					    16);
+  gobject->flags |= AGS_LINE_PREMAPPED_RECALL;
 
   /* child elements */
   child = node->children;
