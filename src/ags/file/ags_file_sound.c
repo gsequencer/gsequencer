@@ -1207,9 +1207,11 @@ ags_file_read_channel_resolve_link(AgsFileLookup *file_lookup,
     
     error = NULL;
 
-    ags_channel_set_link(channel,
-			 (AgsChannel *) id_ref->ref,
-			 &error);
+    if(channel->link == NULL){
+      ags_channel_set_link(channel,
+			   (AgsChannel *) id_ref->ref,
+			   &error);
+    }
   }
 }
 

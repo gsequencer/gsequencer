@@ -608,6 +608,8 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
   g_object_set(G_OBJECT(machine),
 	       "audio\0", (AgsAudio *) id_ref->ref,
 	       NULL);
+
+  AGS_AUDIO(id_ref->ref)->machine = machine;
 }
 
 void
