@@ -1126,12 +1126,12 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 	list = start;
 
 	//FIXME:JK: should rather be resolved
-	if((AGS_AUDIO_ASYNC & (AGS_AUDIO(gobject)->flags)) != 0){
-	  //	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
-	  //				gobject->audio_channel);
+	if((AGS_AUDIO_ASYNC & (AGS_AUDIO(gobject->audio)->flags)) != 0){
+	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+	  				gobject->audio_channel);
 	}else{
-	  //	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
-	  //				gobject->line);
+	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+	  				gobject->line);
 	}
 
 	while(list != NULL){
@@ -1946,10 +1946,6 @@ ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer 
       if(!xmlStrncmp(child->name,
 		     "ags-parameter\0",
 		     14)){
-	GParameter *parameter;
-
-	parameter = NULL;
-
 	ags_file_util_read_parameter(file,
 				     child, NULL,
 				     NULL, NULL, NULL);

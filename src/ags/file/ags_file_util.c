@@ -45,7 +45,9 @@ ags_file_util_read_value(AgsFile *file,
   if(id != NULL)
     *id = xmlGetProp(node, AGS_FILE_ID_PROP);
 
-  type_str = xmlGetProp(node, AGS_FILE_TYPE_PROP);
+  type_str = xmlGetProp(node, "type\0");
+
+  g_message("type === %s\0", type_str);
 
   content = xmlNodeGetContent(node);
 
@@ -597,25 +599,31 @@ ags_file_util_read_parameter(AgsFile *file,
   child = node->children;
 
   while(*name_iter != NULL && child != NULL){
-    if(parameter_arr == NULL){
-      parameter_arr = (GParameter *) g_new(GParameter, 1);
-      xpath_arr = (xmlChar **) malloc(sizeof(xmlChar *));
-    }else{
-      parameter_arr = (GParameter *) g_renew(GParameter, parameter_arr, i + 1);
-      xpath_arr = (xmlChar **) realloc(xpath_arr, (i + 1) * sizeof(xmlChar *));
+    if(child->type == XML_ELEMENT_NODE &&
+       !xmlStrncmp(child->name,
+		   "ags-value\0",
+		   11)){
+      if(parameter_arr == NULL){
+	parameter_arr = (GParameter *) g_new(GParameter, 1);
+	xpath_arr = (xmlChar **) malloc(sizeof(xmlChar *));
+      }else{
+	parameter_arr = (GParameter *) g_renew(GParameter, parameter_arr, i + 1);
+	xpath_arr = (xmlChar **) realloc(xpath_arr, (i + 1) * sizeof(xmlChar *));
+      }
+
+      xpath_iter = xpath_arr + i;
+
+      parameter_arr[i].name = name_arr[i];
+      memset(&(parameter_arr[i].value), 0, sizeof(GValue));
+      ags_file_util_read_value(file,
+			       child, NULL,
+			       &(parameter_arr[i].value), (xmlChar **) &xpath_iter);
+
+      name_iter++;
+      i++;
     }
 
-    xpath_iter = xpath_arr + i;
-
-    parameter_arr[i].name = name_arr[i];
-    memset(&(parameter_arr[i].value), 0, sizeof(GValue));
-    ags_file_util_read_value(file,
-			     child, NULL,
-			     &(parameter_arr[i].value), (xmlChar **) &xpath_iter);
-
     child = child->next;
-    name_iter++;
-    i++;
   }
 
   g_free(name_arr);
