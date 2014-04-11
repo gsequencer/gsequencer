@@ -46,6 +46,7 @@ void ags_play_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_play_channel_connect(AgsConnectable *connectable);
 void ags_play_channel_disconnect(AgsConnectable *connectable);
+void ags_play_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_play_channel_finalize(GObject *gobject);
 
 void ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted);
@@ -186,6 +187,8 @@ void
 ags_play_channel_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_play_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->set_ports = ags_play_channel_set_ports;
 }
 
 void
@@ -351,6 +354,28 @@ ags_play_channel_disconnect(AgsConnectable *connectable)
   ags_play_channel_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_play_channel_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"audio-channel[0]\0",
+		17)){
+      g_object_set(G_OBJECT(plugin),
+		   "audio-channel\0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		"muted[0]\0",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "muted\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
 }
 
 void

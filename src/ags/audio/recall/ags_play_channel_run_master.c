@@ -23,6 +23,7 @@
 #include <ags/main.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -41,6 +42,7 @@
 void ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channel_run_master);
 void ags_play_channel_run_master_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_run_master_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
+void ags_play_channel_run_master_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_master);
 void ags_play_channel_run_master_set_property(GObject *gobject,
 					      guint prop_id,
@@ -89,6 +91,7 @@ enum{
 static gpointer ags_play_channel_run_master_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_run_master_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_play_channel_run_master_parent_dynamic_connectable_interface;
+static AgsPluginInterface *ags_play_channel_run_master_parent_plugin_interface;
 
 GType
 ags_play_channel_run_master_get_type()
@@ -120,6 +123,12 @@ ags_play_channel_run_master_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_play_channel_run_master_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };    
+
     ags_type_play_channel_run_master = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							      "AgsPlayChannelRunMaster\0",
 							      &ags_play_channel_run_master_info,
@@ -132,6 +141,10 @@ ags_play_channel_run_master_get_type()
     g_type_add_interface_static(ags_type_play_channel_run_master,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_play_channel_run_master,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_play_channel_run_master);
@@ -190,6 +203,12 @@ ags_play_channel_run_master_dynamic_connectable_interface_init(AgsDynamicConnect
 
   dynamic_connectable->connect_dynamic = ags_play_channel_run_master_connect_dynamic;
   dynamic_connectable->disconnect_dynamic = ags_play_channel_run_master_disconnect_dynamic;
+}
+
+void
+ags_play_channel_run_master_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_play_channel_run_master_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void

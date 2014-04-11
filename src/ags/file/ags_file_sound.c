@@ -47,6 +47,11 @@ void ags_file_read_channel_resolve_link(AgsFileLookup *file_lookup,
 void ags_file_write_channel_resolve_link(AgsFileLookup *file_lookup,
 					 AgsChannel *channel);
 
+void ags_file_read_recall_container_resolve_parameter(AgsFileLookup *file_lookup,
+						      AgsRecallContainer *recall_container);
+
+void ags_file_read_recall_resolve_parameter(AgsFileLookup *file_lookup,
+					    AgsRecall *recall);
 void ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 					 AgsRecall *recall);
 void ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
@@ -568,11 +573,12 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
   AgsAudio *gobject;
   AgsFileLookup *file_lookup;
   xmlNode *child;
+  guint pads;
 
-  if(*audio == NULL){
+  if(audio[0] == NULL){
     gobject = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
 					NULL);
-    *audio = gobject;
+    audio[0] = gobject;
   }else{
     gobject = *audio;
   }
@@ -597,17 +603,19 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 						     NULL,
 						     10);
 
+  pads= (guint) g_ascii_strtoull(xmlGetProp(node, "output-pads\0"),
+				 NULL,
+				 10);
   ags_audio_set_pads(gobject,
 		     AGS_TYPE_OUTPUT,
-		     (guint) g_ascii_strtoull(xmlGetProp(node, "output-pads\0"),
-					      NULL,
-					      10));
+		     pads);
 
+  pads = (guint) g_ascii_strtoull(xmlGetProp(node, "input-pads\0"),
+				  NULL,
+				  10);
   ags_audio_set_pads(gobject,
 		     AGS_TYPE_INPUT,
-		     (guint) g_ascii_strtoull(xmlGetProp(node, "input-pads\0"),
-					      NULL,
-					      10));
+		     pads);
 
   /* devout */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -1006,7 +1014,7 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
   guint pad, audio_channel;
   gboolean is_output;
 
-  if(*channel == NULL){
+  if(channel[0] == NULL){
     xmlXPathContext *xpath_context;
     xmlXPathObject *xpath_object;
     
@@ -1126,18 +1134,18 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 	list = start;
 
 	//FIXME:JK: should rather be resolved
-	if((AGS_AUDIO_ASYNC & (AGS_AUDIO(gobject->audio)->flags)) != 0){
-	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
-	  				gobject->audio_channel);
-	}else{
-	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
-	  				gobject->line);
-	}
+	//	if((AGS_AUDIO_ASYNC & (AGS_AUDIO(gobject->audio)->flags)) != 0){
+	//	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+	//	  				gobject->audio_channel);
+	//	}else{
+	//	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+	//	  				gobject->line);
+	//	}
 
 	while(list != NULL){
 	  g_object_set(G_OBJECT(list->data),
 		       "source\0", gobject,
-		       //	       "destination\0", destination,
+		       //		       "destination\0", destination,
 		       NULL);
 
 	  list = list->next;
@@ -1693,6 +1701,13 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 }
 
 void
+ags_file_read_recall_resolve_parameter(AgsFileLookup *file_lookup,
+				       AgsRecall *recall)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 				    AgsRecall *recall)
 {
@@ -1954,6 +1969,13 @@ ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer 
 
     child = child->next;
   }
+}
+
+void
+ags_file_read_recall_container_resolve_parameter(AgsFileLookup *file_lookup,
+						 AgsRecallContainer *recall_container)
+{
+  //TODO:JK: implement me
 }
 
 xmlNode*

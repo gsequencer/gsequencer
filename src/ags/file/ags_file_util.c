@@ -47,8 +47,6 @@ ags_file_util_read_value(AgsFile *file,
 
   type_str = xmlGetProp(node, "type\0");
 
-  g_message("type === %s\0", type_str);
-
   content = xmlNodeGetContent(node);
 
   if(!xmlStrncmp(type_str,
@@ -381,7 +379,7 @@ ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
   }else if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
     g_value_set_object(value, (GObject *) id_ref->ref);
   }else if(G_VALUE_HOLDS(value, G_TYPE_STRING)){
-    g_value_set_string(value, (gpointer) id_ref->ref);
+    g_value_set_string(value, (gchar *) id_ref->ref);
   }else{
     g_warning("ags_file_util_read_value_resolve: unknown type of GValue %s\0", G_VALUE_TYPE_NAME(value));
   }
