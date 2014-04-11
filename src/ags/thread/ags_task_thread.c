@@ -182,6 +182,10 @@ ags_task_thread_start(AgsThread *thread)
 
   ags_thread_pool_start(task_thread->thread_pool);
 
+  while((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
+    usleep(500000);
+  }
+
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }

@@ -654,7 +654,7 @@ main(int argc, char **argv)
       g_object_ref(G_OBJECT(ags_main->main_loop));
 
       ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
-    
+
       ags_thread_start(ags_main->main_loop);
     }else{
       AgsSingleThread *single_thread;
