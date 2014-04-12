@@ -1613,7 +1613,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
   set_async_link = FALSE;
 
   /*  */
-  if(type == AGS_TYPE_OUTPUT){
+  if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
     pads_old = audio->output_pads;
     link_recycling = FALSE;
 
@@ -1644,8 +1644,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       /*  */
       ags_audio_set_pads_grow_one();
-      channel =
-	audio->output = start;
+
+      g_message(" -- - grow out\0");
+
+      channel = start;
+      audio->output = start;
 
       pads_old =
 	audio->output_pads = 1;
@@ -1679,10 +1682,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
     audio->output_lines = pads * audio->audio_channels;
 
     if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-      audio->input_pads = pads;
-      audio->input_lines = pads * audio->audio_channels;
+      //TODO:JK: fix me
+      //      audio->input_pads = pads;
+      //      audio->input_lines = pads * audio->audio_channels;
     }
-  }else if(type == AGS_TYPE_INPUT){
+  }else if(g_type_is_a(type, AGS_TYPE_INPUT)){
     pads_old = audio->input_pads;
 
     if(pads_old == pads)
@@ -1715,15 +1719,19 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       /*  */
       ags_audio_set_pads_grow_one();
-      channel =
-	audio->input = start;
+
+      channel = start;
+      audio->input = start;
 
       pads_old =
 	audio->input_pads = 1;
-    }else
+    }else{
       channel = audio->input;
+    }
 
-    if(pads > 1)
+    g_message(" -- - grow in\0");
+
+    if(pads > 1){
       if(pads > audio->input_pads){
 	AgsChannel *prev;
 
@@ -1755,9 +1763,12 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	ags_audio_set_pads_shrink();
       }
+    }
 
     audio->input_pads = pads;
     audio->input_lines = pads * audio->audio_channels;
+  }else{
+    g_warning("unknown channel type\0");
   }
 }
 
@@ -1769,7 +1780,7 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   g_return_if_fail(AGS_IS_AUDIO(audio));
 
   g_object_ref((GObject *) audio);
-  pads_old = (type == AGS_TYPE_OUTPUT) ? audio->output_pads: audio->input_pads;
+  pads_old = ((g_type_is_a(type, AGS_TYPE_OUTPUT)) ? audio->output_pads: audio->input_pads);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_PADS], 0,
 		type, pads, pads_old);

@@ -303,11 +303,11 @@ ags_file_util_read_value(AgsFile *file,
     g_value_init(a_ptr, G_TYPE_POINTER);
     g_value_init(value, G_TYPE_POINTER);
 
-    g_value_set_pointer(a_ptr, NULL);
+    //    g_value_set_pointer(a_ptr, NULL);
 
-    if(value != NULL){
-      g_value_copy(a_ptr, value);
-    }
+    //    if(value != NULL){
+    //      g_value_copy(a_ptr, value);
+    //    }
 
     /* gpointer */
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -332,10 +332,10 @@ ags_file_util_read_value(AgsFile *file,
     g_value_init(a_ptr, G_TYPE_OBJECT);
     g_value_init(value, G_TYPE_OBJECT);
 
-    g_value_set_object(a_ptr, NULL);
+    //    g_value_set_object(a_ptr, NULL);
     
-    if(value != NULL)
-      g_value_copy(a_ptr, value);
+    //    if(value != NULL)
+    //      g_value_copy(a_ptr, value);
 
     /* GObject */
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -511,10 +511,6 @@ ags_file_util_write_value(AgsFile *file,
 
 	type_str = AGS_FILE_DOUBLE_POINTER_PROP;
       }else{
-	//FIXME:JK: ugly
-	value = (GValue *) malloc(sizeof(GValue));
-	memset(value, 0, sizeof(GValue));
-
 	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						     "file\0", file,
 						     "node\0", node,
@@ -530,10 +526,6 @@ ags_file_util_write_value(AgsFile *file,
     break;
   case G_TYPE_OBJECT:
     {
-      //FIXME:JK: ugly
-      value = (GValue *) malloc(sizeof(GValue));
-      memset(value, 0, sizeof(GValue));
-
       file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						   "file\0", file,
 						   "node\0", node,

@@ -236,22 +236,22 @@ ags_channel_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO:
     {
-      GObject *audio;
+      AgsAudio *audio;
 
-      audio = g_value_get_object(value);
+      audio = (AgsAudio *) g_value_get_object(value);
 
       if(channel->audio == audio)
 	return;
 
       if(channel->audio != NULL){
-	g_object_unref(channel->audio);
+	g_object_unref(G_OBJECT(channel->audio));
       }
 
       if(audio != NULL){
-	g_object_ref(audio);
+	g_object_ref(G_OBJECT(audio));
       }
 
-      channel->audio = audio;
+      channel->audio = (GObject *) audio;
     }
     break;
   case PROP_DEVOUT:

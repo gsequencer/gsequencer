@@ -645,7 +645,6 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 				    xpath_context);
 
 	if(xmlXPathCastToBoolean(xpath_object)){
-	  AgsChannel *channel;
 	  xmlNode *channel_node;
 	  
 	  channel_node = child->children;
@@ -655,6 +654,7 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	      if(!xmlStrncmp(channel_node->name,
 			     "ags-channel\0",
 			     12)){
+		AgsChannel *channel;
 		guint pad, audio_channel;
 
 		pad = (guint) g_ascii_strtoull(xmlGetProp(channel_node,
@@ -670,6 +670,8 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 					  pad * gobject->audio_channels + audio_channel);
 
 		/* ags-channel output */
+		g_message("read out\0");
+
 		ags_file_read_channel(file,
 				      channel_node,
 				      &channel);
@@ -679,7 +681,6 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	    channel_node = channel_node->next;
 	  }
 	}else{
-	  AgsChannel *channel;
 	  xmlNode *channel_node;
 	  
 	  channel_node = child->children;
@@ -689,6 +690,7 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 	      if(!xmlStrncmp(channel_node->name,
 			     "ags-channel\0",
 			     12)){
+		AgsChannel *channel;
 		guint pad, audio_channel;
 
 		pad = (guint) g_ascii_strtoull(xmlGetProp(channel_node,
@@ -704,6 +706,8 @@ ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio)
 					  pad * gobject->audio_channels + audio_channel);
 
 		/* ags-channel input */
+		g_message("read in\0");
+
 		ags_file_read_channel(file,
 				      channel_node,
 				      &channel);
@@ -1014,7 +1018,7 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
   guint pad, audio_channel;
   gboolean is_output;
 
-  if(channel[0] == NULL){
+  if(*channel == NULL){
     xmlXPathContext *xpath_context;
     xmlXPathObject *xpath_object;
     
@@ -1134,19 +1138,29 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 	list = start;
 
 	//FIXME:JK: should rather be resolved
-	//	if((AGS_AUDIO_ASYNC & (AGS_AUDIO(gobject->audio)->flags)) != 0){
-	//	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
-	//	  				gobject->audio_channel);
-	//	}else{
-	//	  destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
-	//	  				gobject->line);
-	//	}
+	if(AGS_IS_INPUT(gobject)){
+	  if((AGS_AUDIO_ASYNC & (AGS_AUDIO(gobject->audio)->flags)) != 0){
+	    destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+					  gobject->audio_channel);
+	  }else{
+	    destination = ags_channel_nth(AGS_AUDIO(gobject->audio)->output,
+					  gobject->line);
+	  }
+	}else{
+	  destination == NULL;
+	}
 
 	while(list != NULL){
-	  g_object_set(G_OBJECT(list->data),
-		       "source\0", gobject,
-		       //		       "destination\0", destination,
-		       NULL);
+	  if(destination == NULL){
+	    g_object_set(G_OBJECT(list->data),
+			 "source\0", gobject,
+			 NULL);
+	  }else{
+	    g_object_set(G_OBJECT(list->data),
+			 "source\0", gobject,
+			 "destination\0", destination,
+			 NULL);
+	  }
 
 	  list = list->next;
 	}
@@ -2014,7 +2028,7 @@ ags_file_write_recall_container(AgsFile *file, xmlNode *parent, AgsRecallContain
       memset(&(parameter[i].value), 0, sizeof(GValue));
       g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
       g_value_set_object(&(parameter[i].value),
-			 list->data);
+			 G_OBJECT(list->data));
 
       list = list->next;
       i++;
@@ -2573,14 +2587,17 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
       if(!xmlStrncmp(child->name,
 		     "ags-value\0",
 		     10)){
-	GValue value = {0,};
+	GValue *value;
 
-	g_value_init(&value,
+	//FIXME:JK: ugly
+	value = g_new0(GValue, 1);
+	memset(value, 0, sizeof(GValue));
+	g_value_init(value,
 		     gobject->port_value_type);
 
 	ags_file_util_read_value(file,
 				 child, NULL,
-				 &value, NULL);
+				 value, NULL);
 
 	if(gobject->port_value_type == G_TYPE_POINTER ||
 	   gobject->port_value_type == G_TYPE_OBJECT){
