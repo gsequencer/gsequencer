@@ -1939,12 +1939,7 @@ ags_recall_find_provider(GList *recall_i, GObject *provider)
 	if(((GObject *) AGS_RECALL_CHANNEL(recall)->source) == provider)
 	  return(recall_i);
       }else if(AGS_IS_RECALL_CHANNEL_RUN(recall)){
-	AgsRecallChannel *recall_channel;
-
-	recall_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
-
-	if(recall_channel != NULL &&
-	   ((GObject *) recall_channel->source) == provider){
+	if(((GObject *) AGS_RECALL_CHANNEL_RUN(recall)->source) == provider){
 	  return(recall_i);
 	}
       }
