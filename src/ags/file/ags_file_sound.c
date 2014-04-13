@@ -37,6 +37,8 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#define AGS_FILE_READ_RECALL_CONTAINER_N_PARAMS "AgsRecallContainerNParams\0"
+
 void ags_file_read_audio_resolve_devout(AgsFileLookup *file_lookup,
 					AgsAudio *audio);
 void ags_file_write_audio_resolve_devout(AgsFileLookup *file_lookup,
@@ -1977,9 +1979,28 @@ ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer 
       if(!xmlStrncmp(child->name,
 		     "ags-parameter\0",
 		     14)){
+	AgsFileLookup *file_lookup;
+	GParameter *parameter;
+	gint n_params;
+
+	parameter = NULL;
+	n_params = 0;
+
 	ags_file_util_read_parameter(file,
 				     child, NULL,
-				     NULL, NULL, NULL);
+				     &parameter, &n_params, NULL);
+
+	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						     "file\0", file,
+						     "node\0", node,
+						     "reference\0", parameter,
+						     NULL);
+
+	ags_file_add_lookup(file, (GObject *) file_lookup);
+	g_object_set_data(G_OBJECT(file_lookup),
+			  AGS_FILE_READ_RECALL_CONTAINER_N_PARAMS, GINT_TO_POINTER(n_params));
+	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			       G_CALLBACK(ags_file_read_recall_container_resolve_parameter), gobject);
       }
     }
 
@@ -1991,7 +2012,73 @@ void
 ags_file_read_recall_container_resolve_parameter(AgsFileLookup *file_lookup,
 						 AgsRecallContainer *recall_container)
 {
-  //TODO:JK: implement me
+  AgsRecallAudio *recall_audio;
+  AgsRecallAudioRun *recall_audio_run;
+  GList *recall_channel;
+  GParameter *parameter;
+  gint n_params;
+  gint i, j;
+
+  parameter = file_lookup->ref;
+  n_params = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(file_lookup),
+					       AGS_FILE_READ_RECALL_CONTAINER_N_PARAMS));
+
+  /* find AgsRecallAudio and AgsRecallAudioRun */
+  recall_audio = NULL;
+  recall_audio_run = NULL;
+
+  for(i = 0; i < n_params; i++){
+    if(G_VALUE_HOLDS(&(parameter[i].value),
+		     AGS_TYPE_RECALL_AUDIO)){
+      recall_audio = g_value_get_object(&(parameter[i].value));
+
+      if(recall_audio_run != NULL){
+	break;
+      }
+    }else if(G_VALUE_HOLDS(&(parameter[i].value),
+			   AGS_TYPE_RECALL_AUDIO_RUN)){
+      recall_audio_run = g_value_get_object(&(parameter[i].value));
+
+      if(recall_audio != NULL){
+	break;
+      }
+    }
+  }
+
+  /* create valid AgsRecallChannelRun */
+  recall_channel = ags_recall_container_get_recall_channel(recall_container);
+  
+  for(i = 0; i < n_params; i++){
+    if(G_VALUE_HOLDS(&(parameter[i].value),
+		     AGS_TYPE_RECALL_CHANNEL)){
+      AgsRecallChannel *recall_channel;
+      
+      recall_channel = g_value_get_object(&(parameter[i].value));
+      g_object_set(G_OBJECT(recall_channel),
+		   "recall-audio\0", recall_audio,
+		   NULL);
+    }else if(G_VALUE_HOLDS(&(parameter[i].value),
+			   AGS_TYPE_RECALL_CHANNEL_RUN)){
+      AgsRecallChannelRun *recall_channel_run;
+      GList *list;
+
+      recall_channel_run = g_value_get_object(&(parameter[i].value));
+
+      g_object_set(G_OBJECT(recall_channel_run),
+		   "recall-audio\0", recall_audio,
+		   NULL);
+
+      list = recall_channel;
+
+      while((list = ags_recall_template_find_provider(list, recall_channel_run->source)) != NULL){
+	g_object_set(G_OBJECT(recall_channel_run),
+		     "recall-channel\0", list->data,
+		     NULL);
+
+	list = list->next;
+      }
+    }
+  }
 }
 
 xmlNode*
@@ -2016,6 +2103,11 @@ ags_file_write_recall_container(AgsFile *file, xmlNode *parent, AgsRecallContain
     }
 
     while(list != NULL){
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) == 0){
+	list = list->next;
+	continue;
+      }
+
       if(parameter == NULL){
 	parameter = (GParameter *) malloc(sizeof(GParameter));
       }else{
