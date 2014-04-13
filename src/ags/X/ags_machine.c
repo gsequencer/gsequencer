@@ -73,12 +73,18 @@ GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 
 #define AGS_DEFAULT_MACHINE "ags-default-machine\0"
 
-static gpointer ags_machine_parent_class = NULL;
+enum{
+  ADD_DEFAULT_RECALLS,
+  LAST_SIGNAL,
+};
 
 enum{
   PROP_0,
   PROP_AUDIO,
 };
+
+static gpointer ags_machine_parent_class = NULL;
+static guint machine_signals[LAST_SIGNAL];
 
 GType
 ags_machine_get_type(void)
@@ -157,6 +163,18 @@ ags_machine_class_init(AgsMachineClass *machine)
   widget = (GtkWidgetClass *) machine;
 
   widget->show = ags_machine_show;
+
+  /* AgsMachineClass */
+  machine->add_default_recalls = NULL;
+
+  machine_signals[ADD_DEFAULT_RECALLS] =
+    g_signal_new("add-default-recalls\0",
+                 G_TYPE_FROM_CLASS (machine),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsMachineClass, add_default_recalls),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE, 0);
 }
 
 void
@@ -471,6 +489,13 @@ ags_machine_connect(AgsConnectable *connectable)
   /* AgsMachine */
   machine = AGS_MACHINE(connectable);
 
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) == 0 &&
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
+    machine->flags |= AGS_MACHINE_MAPPED_RECALL;
+
+    ags_machine_add_default_recalls(machine);
+  }
+
   /* GtkWidget */
   g_signal_connect(G_OBJECT (machine), "button_press_event\0",
 		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
@@ -643,6 +668,17 @@ ags_machine_show(GtkWidget *widget)
 
   frame = (GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data;
   gtk_widget_show_all((GtkWidget *) frame);
+}
+
+void
+ags_machine_add_default_recalls(AgsMachine *machine)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  g_object_ref((GObject *) machine);
+  g_signal_emit((GObject *) machine,
+		machine_signals[ADD_DEFAULT_RECALLS], 0);
+  g_object_unref((GObject *) machine);
 }
 
 GtkListStore*

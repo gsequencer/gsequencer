@@ -25,6 +25,7 @@
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_packable.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -36,8 +37,6 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
-
-#define AGS_FILE_READ_RECALL_CONTAINER_N_PARAMS "AgsRecallContainerNParams\0"
 
 void ags_file_read_audio_resolve_devout(AgsFileLookup *file_lookup,
 					AgsAudio *audio);
@@ -1063,7 +1062,7 @@ ags_file_read_channel(AgsFile *file, xmlNode *node, AgsChannel **channel)
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
   
@@ -1305,9 +1304,12 @@ ags_file_write_channel(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   }
 
   /* ags-recall-container */
-  ags_file_write_recall_container_list(file,
-				       node,
-				       channel->container);
+  if(g_list_find(AGS_AUDIO(channel->audio)->container,
+		 channel->container) != NULL){
+    ags_file_write_recall_container_list(file,
+					 node,
+					 channel->container);
+  }
 
   /* ags-recall-list play */
   child = ags_file_write_recall_list(file,
@@ -1616,6 +1618,8 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 					    NULL,
 					    16);
 
+  gobject->flags |= AGS_RECALL_TEMPLATE;
+
   /* devout */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
@@ -1748,6 +1752,10 @@ ags_file_write_recall(AgsFile *file, xmlNode *parent, AgsRecall *recall)
   GList *list;
   gchar *id;
   guint i;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
+    return(NULL);
+  }
 
   id = ags_id_generator_create_uuid();
 
@@ -1967,7 +1975,7 @@ ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer 
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
 
@@ -1980,27 +1988,32 @@ ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer 
 		     "ags-parameter\0",
 		     14)){
 	AgsFileLookup *file_lookup;
-	GParameter *parameter;
-	gint n_params;
-
-	parameter = NULL;
-	n_params = 0;
+	xmlNode *value_node;
+	GList *list;
 
 	ags_file_util_read_parameter(file,
 				     child, NULL,
-				     &parameter, &n_params, NULL);
+				     NULL, NULL, NULL);
 
-	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-						     "file\0", file,
-						     "node\0", node,
-						     "reference\0", parameter,
-						     NULL);
+	value_node = child->children;
 
-	ags_file_add_lookup(file, (GObject *) file_lookup);
-	g_object_set_data(G_OBJECT(file_lookup),
-			  AGS_FILE_READ_RECALL_CONTAINER_N_PARAMS, GINT_TO_POINTER(n_params));
-	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
-			       G_CALLBACK(ags_file_read_recall_container_resolve_parameter), gobject);
+	while(value_node != NULL){
+	  if(value_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(value_node->name,
+			   "ags-value\0",
+			   10)){
+	      list = ags_file_lookup_find_by_node(file->lookup,
+						  value_node);
+	  
+	      if(list != NULL){
+		file_lookup = AGS_FILE_LOOKUP(list->data);
+		g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+				       G_CALLBACK(ags_file_read_recall_container_resolve_parameter), gobject);
+	      }
+	    }
+	  }
+	  value_node = value_node->next;
+	}
       }
     }
 
@@ -2012,72 +2025,21 @@ void
 ags_file_read_recall_container_resolve_parameter(AgsFileLookup *file_lookup,
 						 AgsRecallContainer *recall_container)
 {
-  AgsRecallAudio *recall_audio;
-  AgsRecallAudioRun *recall_audio_run;
-  GList *recall_channel;
-  GParameter *parameter;
-  gint n_params;
-  gint i, j;
+  GObject *gobject;
+  GValue *value;
 
-  parameter = file_lookup->ref;
-  n_params = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(file_lookup),
-					       AGS_FILE_READ_RECALL_CONTAINER_N_PARAMS));
+  value = file_lookup->ref;
 
-  /* find AgsRecallAudio and AgsRecallAudioRun */
-  recall_audio = NULL;
-  recall_audio_run = NULL;
+  if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
+    gobject = g_value_get_object(value);
 
-  for(i = 0; i < n_params; i++){
-    if(G_VALUE_HOLDS(&(parameter[i].value),
-		     AGS_TYPE_RECALL_AUDIO)){
-      recall_audio = g_value_get_object(&(parameter[i].value));
-
-      if(recall_audio_run != NULL){
-	break;
-      }
-    }else if(G_VALUE_HOLDS(&(parameter[i].value),
-			   AGS_TYPE_RECALL_AUDIO_RUN)){
-      recall_audio_run = g_value_get_object(&(parameter[i].value));
-
-      if(recall_audio != NULL){
-	break;
-      }
+    if(AGS_RECALL(gobject)->container == recall_container){
+      return;
     }
-  }
 
-  /* create valid AgsRecallChannelRun */
-  recall_channel = ags_recall_container_get_recall_channel(recall_container);
-  
-  for(i = 0; i < n_params; i++){
-    if(G_VALUE_HOLDS(&(parameter[i].value),
-		     AGS_TYPE_RECALL_CHANNEL)){
-      AgsRecallChannel *recall_channel;
-      
-      recall_channel = g_value_get_object(&(parameter[i].value));
-      g_object_set(G_OBJECT(recall_channel),
-		   "recall-audio\0", recall_audio,
-		   NULL);
-    }else if(G_VALUE_HOLDS(&(parameter[i].value),
-			   AGS_TYPE_RECALL_CHANNEL_RUN)){
-      AgsRecallChannelRun *recall_channel_run;
-      GList *list;
-
-      recall_channel_run = g_value_get_object(&(parameter[i].value));
-
-      g_object_set(G_OBJECT(recall_channel_run),
-		   "recall-audio\0", recall_audio,
-		   NULL);
-
-      list = recall_channel;
-
-      while((list = ags_recall_template_find_provider(list, recall_channel_run->source)) != NULL){
-	g_object_set(G_OBJECT(recall_channel_run),
-		     "recall-channel\0", list->data,
-		     NULL);
-
-	list = list->next;
-      }
-    }
+    g_object_set(gobject,
+		 "recall_container\0", recall_container,
+		 NULL);
   }
 }
 
@@ -2208,7 +2170,7 @@ ags_file_read_recall_container_list(AgsFile *file, xmlNode *node, GList **recall
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
 		     "ags-recall-container\0",
-		     10)){
+		     21)){
 	current = NULL;
 	ags_file_read_recall_container(file,
 				       child,
@@ -2283,7 +2245,20 @@ ags_file_read_recall_audio(AgsFile *file, xmlNode *node, AgsRecall *recall)
 				   NULL));
 
   /* child elements */
-  //TODO:JK: implement me
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
@@ -2339,7 +2314,20 @@ ags_file_read_recall_audio_run(AgsFile *file, xmlNode *node, AgsRecall *recall)
 				   NULL));
 
   /* child elements */
-  //TODO:JK: implement me
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
@@ -2395,7 +2383,20 @@ ags_file_read_recall_channel(AgsFile *file, xmlNode *node, AgsRecall *recall)
 				   NULL));
 
   /* child elements */
-  //TODO:JK: implement me
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
@@ -2451,7 +2452,20 @@ ags_file_read_recall_channel_run(AgsFile *file, xmlNode *node, AgsRecall *recall
 				   NULL));
 
   /* child elements */
-  //TODO:JK: implement me
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(recall)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(recall));
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*

@@ -43,6 +43,7 @@ static void ags_panel_finalize(GObject *gobject);
 void ags_panel_connect(AgsConnectable *connectable);
 void ags_panel_disconnect(AgsConnectable *connectable);
 void ags_panel_show(GtkWidget *widget);
+void ags_panel_add_default_recalls(AgsMachine *machine);
 
 void ags_panel_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
@@ -97,7 +98,7 @@ ags_panel_class_init(AgsPanelClass *panel)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
-  AgsMachineClass *machine = (AgsMachineClass *) panel;
+  AgsMachineClass *machine;
 
   ags_panel_parent_class = g_type_class_peek_parent(panel);
 
@@ -111,9 +112,10 @@ ags_panel_class_init(AgsPanelClass *panel)
 
   widget->show = ags_panel_show;
 
-  //  machine->read_file = ags_file_read_panel;
-  //  machine->write_file = ags_file_write_panel;
+  /* AgsMachine */
+  machine = (AgsMachineClass *) panel;
 
+  machine->add_default_recalls = ags_panel_add_default_recalls;
 }
 
 void
@@ -135,17 +137,6 @@ ags_panel_init(AgsPanel *panel)
 
   AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_SYNC);
   AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
-
-  /* ags-play */
-  ags_recall_factory_create(AGS_MACHINE(panel)->audio,
-			    NULL, NULL,
-			    "ags-play-master\0",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
 
   panel->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) panel))->data, (GtkWidget *) panel->vbox);
@@ -200,6 +191,21 @@ void
 ags_panel_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_panel_parent_class)->show(widget);
+}
+
+void
+ags_panel_add_default_recalls(AgsMachine *machine)
+{
+  /* ags-play */
+  ags_recall_factory_create(machine->audio,
+			    NULL, NULL,
+			    "ags-play-master\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT,
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
 }
 
 void

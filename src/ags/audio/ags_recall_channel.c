@@ -302,6 +302,8 @@ ags_recall_channel_pack(AgsPackable *packable, GObject *container)
   /* set in AgsRecallChannelRun */
   list = recall_container->recall_channel_run;
 
+  g_message("debug\0");
+
   while((list = ags_recall_find_provider(list, G_OBJECT(recall_channel->source))) != NULL){
     g_object_set(G_OBJECT(list->data),
 		 "recall_channel\0", recall_channel,

@@ -44,6 +44,8 @@ typedef enum{
   AGS_MACHINE_IS_SEQUENCER      = 1 <<  2,
   AGS_MACHINE_IS_SYNTHESIZER    = 1 <<  3,
   AGS_MACHINE_TAKES_FILE_INPUT  = 1 <<  4,
+  AGS_MACHINE_MAPPED_RECALL     = 1 <<  5,
+  AGS_MACHINE_PREMAPPED_RECALL  = 1 <<  5,
 }AgsMachineFlags;
 
 typedef enum{
@@ -88,9 +90,13 @@ struct _AgsMachine
 struct _AgsMachineClass
 {
   GtkHandleBoxClass handle_box;
+
+  void (*add_default_recalls)(AgsMachine *machine);
 };
 
 GType ags_machine_get_type(void);
+
+void ags_machine_add_default_recalls(AgsMachine *machine);
 
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 

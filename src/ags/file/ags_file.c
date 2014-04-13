@@ -480,7 +480,10 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   }
 
   /* Evaluate xpath expression */
-  xpath_object = xmlXPathEvalExpression(xpath, xpath_context);
+  xmlXPathSetContextNode(file->doc->children,
+			 xpath_context);
+
+  xpath_object = xmlXPathEval(xpath, xpath_context);
 
   if(xpath_object == NULL) {
     fprintf(stderr,"Error: unable to evaluate xpath expression \"%s\"\n", xpath);
@@ -498,6 +501,8 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
     }
   }
 
+  g_message("no xpath match: %s\0", xpath);
+  
   return(NULL);
 }
 
