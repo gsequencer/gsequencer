@@ -1508,6 +1508,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   }
 
   widget_type = (gchar *) xmlGetProp(node, "widget-type\0");
+  gobject->widget_type = g_type_from_name(widget_type);
   child_widget = (GtkWidget *) g_object_new(g_type_from_name(widget_type),
 					    NULL);
 

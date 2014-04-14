@@ -31,6 +31,7 @@
 
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
+#include <ags/thread/ags_devout_thread.h>
 
 void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
 
@@ -146,6 +147,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  xmlXPathContext *xpath_context;
 	  xmlXPathObject *xpath_object;
     
+	  /* task thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
 	  xmlXPathSetContextNode(child,
 				 xpath_context);
@@ -160,6 +162,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_thread_add_child(gobject,
 			       AGS_AUDIO_LOOP(gobject)->task_thread);
 
+
+	  /* devout thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
 
 	  xpath_object = xmlXPathNodeEval(child,
@@ -172,6 +176,20 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_thread_add_child(gobject,
 			       AGS_AUDIO_LOOP(gobject)->devout_thread);
 
+	  /* timestamp thread */
+	  xpath_context = xmlXPathNewContext(file->doc);
+
+	  xpath_object = xmlXPathNodeEval(child,
+					  "./ags-thread[@type='AgsDevoutThread']/ags-thread-list/ags-thread[@type='AgsTimestampThread']\0",
+					  xpath_context);
+
+	  ags_file_read_thread(file,
+			       xpath_object->nodesetval->nodeTab[0],
+			       &(AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(gobject)->devout_thread)->timestamp_thread));
+	  ags_thread_add_child(AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(gobject)->devout_thread),
+			       AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(gobject)->devout_thread)->timestamp_thread);
+
+	  /* gui thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
 
 	  xpath_object = xmlXPathNodeEval(child,
@@ -188,16 +206,17 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
 	  list = NULL;
 
-	  ags_file_read_thread_list(file,
-				    child,
-				    &list);
+	  //FIXME:JK: buggy
+	  //	  ags_file_read_thread_list(file,
+	  //			    child,
+	  //			    &list);
 
-	  while(list != NULL){
-	    ags_thread_add_child(gobject,
-				 list->data);
+	  //  while(list != NULL){
+	    //  ags_thread_add_child(gobject,
+	    //			 list->data);
 
-	    list = list->next;
-	  }
+	    // list = list->next;
+	  //  }
 	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-audio-loop\0",

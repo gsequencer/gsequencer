@@ -213,7 +213,7 @@ ags_copy_pattern_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"pattern[0]\0",
+		"./pattern[0]\0",
 		11)){
       g_object_set(G_OBJECT(plugin),
 		   "pattern\0", AGS_PORT(port->data),
