@@ -355,6 +355,8 @@ ags_thread_connect(AgsConnectable *connectable)
 {
   AgsThread *thread, *child;
 
+  g_message("thread connect\0");
+
   thread = AGS_THREAD(connectable);
 
   child = thread->children;
@@ -1390,6 +1392,8 @@ ags_thread_real_start(AgsThread *thread)
   if(thread == NULL){
     return;
   }
+
+  g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
 
   /* */
   val = g_atomic_int_get(&(thread->flags));

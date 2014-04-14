@@ -29,6 +29,9 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
+#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_returnable_thread.h>
+
 void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
 
 void ags_file_read_thread_resolve_devout(AgsFileLookup *file_lookup,
@@ -61,6 +64,11 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   xmlChar *type_name;
   static gboolean thread_type_is_registered = FALSE;
 
+  if(*thread != NULL &&
+     AGS_IS_RETURNABLE_THREAD(*thread)){
+    return;
+  }
+
   if(*thread == NULL){
     GType type;
 
@@ -70,9 +78,12 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
       thread_type_is_registered = TRUE;
     }
 
+    if(type == AGS_TYPE_RETURNABLE_THREAD){
+      return;
+    }
+
     type_name = xmlGetProp(node,
 			   AGS_FILE_TYPE_PROP);
-    g_message(type_name);
 
     type = g_type_from_name(type_name);
 
@@ -84,11 +95,13 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     gobject = *thread;
   }
 
+  g_message(G_OBJECT_TYPE_NAME(gobject));
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
 
@@ -99,13 +112,16 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
   /* start */
   if((AGS_THREAD_RUNNING & (gobject->flags)) != 0){
-    file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-						 NULL);
-    ags_file_add_launch(file, (GObject *) file_launch);
-    g_signal_connect(G_OBJECT(file_launch), "start\0",
-		     G_CALLBACK(ags_file_read_thread_start), gobject);
-
     gobject->flags &= (~AGS_THREAD_RUNNING);
+
+    //FIXME:JK: workaround file setting AGS_THREAD_RUNNING is just ignored
+    if(AGS_IS_AUDIO_LOOP(gobject)){
+      file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+						   NULL);
+      ags_file_add_launch(file, (GObject *) file_launch);
+      g_signal_connect(G_OBJECT(file_launch), "start\0",
+		       G_CALLBACK(ags_file_read_thread_start), gobject);
+    }
   }
 
   /* devout */
@@ -131,6 +147,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  xmlXPathObject *xpath_object;
     
 	  xpath_context = xmlXPathNewContext(file->doc);
+	  xmlXPathSetContextNode(child,
+				 xpath_context);
 
 	  xpath_object = xmlXPathNodeEval(child,
 					  "./ags-thread[@type='AgsTaskThread']\0",
@@ -226,6 +244,10 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
   AgsThread *current;
   xmlNode *node, *child;
   gchar *id;
+
+  if(AGS_IS_RETURNABLE_THREAD(thread)){
+    return;
+  }
 
   id = ags_id_generator_create_uuid();
 
@@ -397,9 +419,10 @@ ags_file_read_thread_pool(AgsFile *file, xmlNode *node, AgsThreadPool **thread_p
     gobject = *thread_pool;
   }
 
-  g_object_set(G_OBJECT(gobject),
-	       "ags-main\0", file->ags_main,
-	       NULL);
+  //TODO:JK: implement me
+  //  g_object_set(G_OBJECT(gobject),
+  //	       "ags-main\0", file->ags_main,
+  //	       NULL);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,

@@ -53,6 +53,7 @@ typedef struct _AgsMainClass AgsMainClass;
 
 typedef enum{
   AGS_MAIN_SINGLE_THREAD      = 1,
+  AGS_MAIN_CONNECTED          = 1 <<  1,
 }AgsMainFlags;
 
 struct _AgsMain

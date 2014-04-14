@@ -173,6 +173,11 @@ ags_main_connect(AgsConnectable *connectable)
 
   ags_main = AGS_MAIN(connectable);
 
+  if((AGS_MAIN_CONNECTED & (ags_main->flags)) != 0)
+    return;
+
+  ags_main->flags |= AGS_MAIN_CONNECTED;
+
   ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
   ags_connectable_connect(AGS_CONNECTABLE(ags_main->thread_pool));
 
@@ -594,12 +599,14 @@ main(int argc, char **argv)
 			NULL);
     ags_file_read(file);
 
+    ags_main = AGS_MAIN(file->ags_main);
+
 #ifdef _USE_PTH
-    pth_join(AGS_AUDIO_LOOP(AGS_MAIN(file->ags_main)->main_loop)->gui_thread->thread,
+    pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	     NULL);
 #else
     g_message("joining\0");
-    pthread_join(AGS_AUDIO_LOOP(AGS_MAIN(file->ags_main)->main_loop)->gui_thread->thread,
+    pthread_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 		 NULL);
     g_message("done\0");
 #endif

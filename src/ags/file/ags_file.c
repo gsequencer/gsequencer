@@ -884,27 +884,27 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 		     11)){
 	ags_file_read_thread(file,
 			     child,
-			     (AgsThread **) &gobject->main_loop);
-
+			     (AgsThread **) &(gobject->main_loop));
+	
 	AGS_AUDIO_LOOP(gobject->main_loop)->main = gobject;
       }else if(!xmlStrncmp("ags-thread-pool\0",
 			   child->name,
 			   16)){
-		ags_file_read_thread_pool(file,
-			  child,
-			  (AgsThreadPool **) &gobject->thread_pool);
+	ags_file_read_thread_pool(file,
+				  child,
+				  (AgsThreadPool **) &(gobject->thread_pool));
       }else if(!xmlStrncmp("ags-devout-list\0",
 			   child->name,
 			   16)){
 	ags_file_read_devout_list(file,
 				  child,
-				  &gobject->devout);
+				  &(gobject->devout));
       }else if(!xmlStrncmp("ags-window\0",
 			   child->name,
 			   11)){
 	ags_file_read_window(file,
 			     child,
-			     &gobject->window);
+			     &(gobject->window));
       }
     }
 

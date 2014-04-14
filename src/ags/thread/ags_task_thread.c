@@ -145,9 +145,6 @@ ags_task_thread_connect(AgsConnectable *connectable)
   task_thread = AGS_TASK_THREAD(connectable);
   task_thread->thread_pool = AGS_MAIN(AGS_AUDIO_LOOP(AGS_THREAD(task_thread)->parent)->main)->thread_pool;
   task_thread->thread_pool->parent = task_thread;
-
-  //TODO:JK broken
-  ags_connectable_connect(AGS_CONNECTABLE(task_thread->thread_pool));
 }
 
 void
