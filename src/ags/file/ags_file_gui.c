@@ -497,6 +497,7 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
     gobject = *machine;
   }
 
+  gobject->flags |= AGS_MACHINE_PREMAPPED_RECALL;
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
@@ -671,7 +672,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", machine,
 				   NULL));
 
@@ -706,7 +707,7 @@ ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
 					       "node\0", node,
-					       "reference\0", machine->audio,
+					       "reference\0", machine,
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
@@ -797,7 +798,7 @@ ags_file_write_machine_resolve_audio(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->audio);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, AGS_AUDIO(machine->audio));
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 

@@ -90,9 +90,9 @@ void ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_
 							AgsCountBeatsAudioRun *count_beats_audio_run);
 
 void ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-							AgsPlugin *plugin);
+							GObject *recall);
 void ags_count_beats_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						       AgsPlugin *plugin);
+						       GObject *recall);
 
 enum{
   NOTATION_START,
@@ -598,7 +598,7 @@ ags_count_beats_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   ags_count_beats_audio_run_parent_plugin_interface->read(file, node, plugin);
 
   /* read depenendency */
-  iter = node->parent->parent->children;
+  iter = node->children;
 
   while(iter != NULL){
     if(iter->type == XML_ELEMENT_NODE){
@@ -611,14 +611,18 @@ ags_count_beats_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
 	while(dependency_node != NULL){
 	  if(dependency_node->type == XML_ELEMENT_NODE){
-	    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-							 "file\0", file,
-							 "node\0", dependency_node,
-							 "reference\0", plugin,
-							 NULL);
-	    ags_file_add_lookup(file, (GObject *) file_lookup);
-	    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-			     G_CALLBACK(ags_count_beats_audio_run_read_resolve_dependency), plugin);
+	    if(!xmlStrncmp(dependency_node->name,
+			   "ags-dependency\0",
+			   15)){
+	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+							   "file\0", file,
+							   "node\0", dependency_node,
+							   "reference\0", G_OBJECT(plugin),
+							   NULL);
+	      ags_file_add_lookup(file, (GObject *) file_lookup);
+	      g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+			       G_CALLBACK(ags_count_beats_audio_run_read_resolve_dependency), G_OBJECT(plugin));
+	    }
 	  }
 	  
 	  dependency_node = dependency_node->next;
@@ -650,6 +654,9 @@ ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugi
 	     AGS_FILE_ID_PROP,
 	     ags_id_generator_create_uuid());
 
+  xmlAddChild(node,
+	      child);
+
   list = AGS_RECALL(plugin)->dependencies;
 
   while(list != NULL){
@@ -668,17 +675,14 @@ ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugi
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						 "file\0", file,
 						 "node\0", dependency_node,
-						 "reference\0", list->data,
+						 "reference\0", G_OBJECT(plugin),
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
     g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		     G_CALLBACK(ags_count_beats_audio_run_write_resolve_dependency), plugin);
+		     G_CALLBACK(ags_count_beats_audio_run_write_resolve_dependency), G_OBJECT(plugin));
 
     list = list->next;
   }
-
-  xmlAddChild(parent->parent,
-	      child);
 
   return(node);
 }
@@ -1054,7 +1058,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
 void
 ags_count_beats_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-						  AgsPlugin *plugin)
+						  GObject *recall)
 {
   AgsFileIdRef *id_ref;
   gchar *xpath;
@@ -1065,7 +1069,7 @@ ags_count_beats_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
-    g_object_set(G_OBJECT(plugin),
+    g_object_set(G_OBJECT(recall),
 		 "delay-audio-run\0", id_ref->ref,
 		 NULL);
   }
@@ -1073,19 +1077,18 @@ ags_count_beats_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 
 void
 ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
-						   AgsPlugin *plugin)
+						   GObject *recall)
 {
   AgsFileIdRef *id_ref;
   gchar *id;
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
 
-  //TODO:JK: uncomment
-  //  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
-  //  xmlNewProp(file_lookup->node,
-  //	     "xpath\0",
-  //	     g_strdup_printf("xpath=*/[@id='%s']\0", 
+  xmlNewProp(file_lookup->node,
+	     "xpath\0",
+  	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 }
 
 AgsCountBeatsAudioRun*

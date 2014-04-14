@@ -40,6 +40,7 @@ void ags_mixer_finalize(GObject *gobject);
 void ags_mixer_connect(AgsConnectable *connectable);
 void ags_mixer_disconnect(AgsConnectable *connectable);
 void ags_mixer_show(GtkWidget *widget);
+void ags_mixer_add_default_recalls(AgsMachine *machine);
 
 void ags_mixer_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
@@ -111,6 +112,7 @@ ags_mixer_class_init(AgsMixerClass *mixer)
   /* AgsMachine */
   machine = (AgsMachineClass *) mixer;
 
+  machine->add_default_recalls = ags_mixer_add_default_recalls;
   //  machine->read_file = ags_file_read_mixer;
   //  machine->write_file = ags_file_write_mixer;
 }
@@ -183,6 +185,12 @@ ags_mixer_disconnect(AgsConnectable *connectable)
 void
 ags_mixer_show(GtkWidget *widget)
 {
+}
+
+void
+ags_mixer_add_default_recalls(AgsMachine *machine)
+{
+  /* empty */
 }
 
 void

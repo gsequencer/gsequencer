@@ -54,6 +54,7 @@ void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_finalize(GObject *gobject);
 void ags_ffplayer_show(GtkWidget *widget);
+void ags_ffplayer_add_default_recalls(AgsMachine *machine);
 
 void ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				     guint audio_channels, guint audio_channels_old,
@@ -129,6 +130,7 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
   /* AgsMachineClass */
   machine = (AgsMachineClass *) ffplayer;
 
+  machine->add_default_recalls = ags_ffplayer_add_default_recalls;
   //  machine->read_file = ags_file_read_ffplayer;
   //  machine->write_file = ags_file_write_ffplayer;
 }
@@ -147,13 +149,6 @@ void
 ags_ffplayer_init(AgsFFPlayer *ffplayer)
 {
   AgsAudio *audio;
-  AgsRecallContainer *recall_container;
-  AgsDelayAudio *delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio, *recall_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
-  AgsRecallAudio *play_audio, *recall_audio;
-  AgsPlayNotationAudioRun *play_notation, *recall_notation;
   GtkTable *table;
   GtkHScrollbar *hscrollbar;
   GtkVBox *vbox;
@@ -300,6 +295,12 @@ void
 ags_ffplayer_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_ffplayer_parent_class)->show(widget);
+}
+
+void
+ags_ffplayer_add_default_recalls(AgsMachine *machine)
+{
+  /* empty */
 }
 
 void

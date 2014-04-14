@@ -602,7 +602,7 @@ ags_machine_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", G_OBJECT(plugin),
 				   NULL));
 }
@@ -625,7 +625,7 @@ ags_machine_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
 				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", id),
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", G_OBJECT(plugin),
 				   NULL));
 

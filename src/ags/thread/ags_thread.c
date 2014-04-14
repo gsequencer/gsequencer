@@ -1673,7 +1673,7 @@ ags_thread_loop(void *ptr)
     pthread_mutex_unlock(&(thread->timelock_mutex));
 
     /* and now async */
-    //FIXME:JK: workaround, really ugly - there should be a need for sleep
+    //FIXME:JK: workaround, really ugly - there shouldn't be a need for sleep
     {
       static const struct timespec req = {
 	0,
