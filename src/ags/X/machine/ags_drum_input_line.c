@@ -214,6 +214,20 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
       ags_drum_input_line_map_recall(drum_input_line, 0);
+    }else{
+      //TODO:JK: make it advanced
+      /* reset edit button */
+      if(line->channel->line == 0){
+	AgsDrum *drum;
+	GtkToggleButton *selected_edit_button;
+
+	drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
+						   AGS_TYPE_DRUM);
+
+	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	drum->selected_edit_button = drum->selected_pad->edit;
+	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+      }
     }
   }
 }

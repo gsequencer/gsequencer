@@ -3836,7 +3836,7 @@ ags_file_read_pattern_data(AgsFile *file, xmlNode *node,
 			  10);
   }
 
-  if(j != NULL){  
+  if(j != NULL){
     *j = g_ascii_strtoull(xmlGetProp(node,
 				     "index-2nd-level\0"),
 			  NULL,

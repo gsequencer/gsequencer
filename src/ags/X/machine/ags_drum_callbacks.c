@@ -467,8 +467,12 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   GList *tasks;
   guint i, index0, index1, offset;
 
+  if(drum->selected_pad == NULL){
+    return;
+  }
+
   if((AGS_DRUM_BLOCK_PATTERN & (drum->flags)) != 0){
-    printf("AgsDrum pattern is blocked\n\0");
+    g_message("AgsDrum pattern is blocked\n\0");
     return;
   }
 
