@@ -19,10 +19,12 @@
 #ifndef __AGS_MAIN_H__
 #define __AGS_MAIN_H__
 
+#ifdef AGS_WITH_XMLRPC_C
 #include <xmlrpc-c/base.h>
 #include <xmlrpc-c/abyss.h>
 #include <xmlrpc-c/server.h>
 #include <xmlrpc-c/server_abyss.h>
+#endif
 
 #include <glib.h>
 #include <glib-object.h>
@@ -65,7 +67,9 @@ struct _AgsMain
   gchar *version;
   gchar *build_id;
 
+#ifdef AGS_WITH_XMLRPC_C
   xmlrpc_env env;
+#endif
 
   AgsThread *main_loop;
   AgsThreadPool *thread_pool;
