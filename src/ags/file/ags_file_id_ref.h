@@ -46,6 +46,7 @@ struct _AgsFileIdRef
   GObject object;
 
   GObject *main;
+  GObject *file;
 
   xmlNode *node;
   gchar *xpath;
@@ -56,12 +57,12 @@ struct _AgsFileIdRefClass
 {
   GObjectClass object;
 
-  void (*resolve)(AgsFileIdRef *file_id_ref);
+  void (*resolved)(AgsFileIdRef *file_id_ref);
 };
 
 GType ags_file_id_ref_get_type();
 
-void ags_file_id_ref_resolve(AgsFileIdRef *file_id_ref);
+void ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref);
 
 AgsFileIdRef* ags_file_id_ref_new();
 

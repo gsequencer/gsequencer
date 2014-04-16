@@ -30,11 +30,8 @@ void ags_file_id_ref_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_file_id_ref_finalize(GObject *gobject);
 
-void ags_file_id_ref_real_serialize(AgsFileIdRef *file_id_ref);
-void ags_file_id_ref_real_resolve(AgsFileIdRef *file_id_ref);
-
 enum{
-  RESOLVE,
+  RESOLVED,
   LAST_SIGNAL,
 };
 
@@ -129,11 +126,11 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  param_spec);
 
   /* signals */
-  file_id_ref_signals[RESOLVE] = 
-    g_signal_new("resolve\0",
+  file_id_ref_signals[RESOLVED] = 
+    g_signal_new("resolved\0",
 		 G_TYPE_FROM_CLASS(file_id_ref),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsFileIdRefClass, resolve),
+		 G_STRUCT_OFFSET(AgsFileIdRefClass, resolved),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -268,19 +265,13 @@ ags_file_id_ref_finalize(GObject *gobject)
 }
 
 void
-ags_file_id_ref_real_resolve(AgsFileIdRef *file_id_ref)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_id_ref_resolve(AgsFileIdRef *file_id_ref)
+ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
 {
   g_return_if_fail(AGS_IS_FILE_ID_REF(file_id_ref));
 
   g_object_ref((GObject *) file_id_ref);
   g_signal_emit(G_OBJECT(file_id_ref),
-		file_id_ref_signals[RESOLVE],
+		file_id_ref_signals[RESOLVED],
 		0);
   g_object_unref((GObject *) file_id_ref);
 }

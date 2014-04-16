@@ -429,31 +429,31 @@ ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"loop[0]\0",
+		"./loop[0]\0",
 		8)){
       g_object_set(G_OBJECT(plugin),
 		   "loop\0", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "notation-loop-start[0]\0",
+		      "./notation-loop-start[0]\0",
 		      23)){
       g_object_set(G_OBJECT(plugin),
 		   "notation-loop-start\0", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "notation-loop-end[0]\0",
+		      "./notation-loop-end[0]\0",
 		      21)){
       g_object_set(G_OBJECT(plugin),
 		   "notation-loop-end\0", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "sequencer-loop-start[0]\0",
+		      "./sequencer-loop-start[0]\0",
 		      24)){
       g_object_set(G_OBJECT(plugin),
 		   "sequencer-loop-start\0", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "sequencer-loop-end[0]\0",
+		      "./sequencer-loop-end[0]\0",
 		      22)){
       g_object_set(G_OBJECT(plugin),
 		   "sequencer-loop-end\0", AGS_PORT(port->data),

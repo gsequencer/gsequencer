@@ -16,11 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+//TODO:JK: add file to AgsFileIdRef
 #include <ags/file/ags_file_sound.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
+
+#include <ags/main.h>
 
 #include <ags/util/ags_id_generator.h>
 
@@ -38,6 +41,8 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#define AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER "ags-file-read-port-list-port-resolved-counter\0"
+
 void ags_file_read_audio_resolve_devout(AgsFileLookup *file_lookup,
 					AgsAudio *audio);
 void ags_file_write_audio_resolve_devout(AgsFileLookup *file_lookup,
@@ -51,15 +56,22 @@ void ags_file_write_channel_resolve_link(AgsFileLookup *file_lookup,
 void ags_file_read_recall_container_resolve_parameter(AgsFileLookup *file_lookup,
 						      AgsRecallContainer *recall_container);
 
+void ags_file_read_recall_resolve_port(AgsFileLookup *file_lookup,
+				       AgsRecall *recall);
 void ags_file_read_recall_resolve_parameter(AgsFileLookup *file_lookup,
 					    AgsRecall *recall);
 void ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
 					 AgsRecall *recall);
+void ags_file_read_recall_port_list_resolved(AgsFileIdRef *file_id_ref,
+					     AgsRecall *recall);
 void ags_file_write_recall_resolve_devout(AgsFileLookup *file_lookup,
 					  AgsRecall *recall);
 
 void ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 					   AgsPort *port);
+
+void ags_file_read_port_list_port_resolved(AgsFileIdRef *file_id_ref,
+					   GList *port_list);
 
 void ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
 					  AgsTask *task);
@@ -1703,12 +1715,12 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 			   14)){
 	GList *start;
 
+	start = NULL;
+
 	ags_file_read_port_list(file,
 				child,
 				&start);
 
-	ags_plugin_set_ports(AGS_PLUGIN(gobject),
-			     start);
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
@@ -1720,6 +1732,13 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
     child = child->next;
   }
+}
+
+void
+ags_file_read_recall_resolve_port(AgsFileLookup *file_lookup,
+				  AgsRecall *recall)
+{
+  //TODO:JK: implement me
 }
 
 void
@@ -1742,6 +1761,14 @@ ags_file_read_recall_resolve_devout(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   recall->devout = (GObject *) id_ref->ref;
+}
+
+void
+ags_file_read_recall_port_list_resolved(AgsFileIdRef *file_id_ref,
+					AgsRecall *recall)
+{
+  ags_plugin_set_ports(AGS_PLUGIN(recall),
+		       file_id_ref->ref);
 }
 
 xmlNode*
@@ -2662,6 +2689,7 @@ ags_file_read_port(AgsFile *file, xmlNode *node, AgsPort **port)
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
+				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
@@ -2730,8 +2758,12 @@ void
 ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 				      AgsPort *port)
 {
+  AgsFileIdRef *file_id_ref;
   gchar *xpath;
   
+  file_id_ref = ags_file_find_id_ref_by_reference(file_lookup->file,
+						  port);
+
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "link\0");
   
@@ -2742,6 +2774,8 @@ ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
     ags_port_safe_write(port,
 			g_value_get_object((GValue *) file_lookup->ref));
   }
+
+  ags_file_id_ref_connected(file_id_ref);
 }
 
 xmlNode*
@@ -2887,8 +2921,9 @@ void
 ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
 {
   AgsPort *current;
+  AgsFileIdRef *port_id_ref;
   xmlNode *child;
-  GList *list;
+  GList *list, *iter;
 
   list = NULL;
   child = node->children;
@@ -2913,15 +2948,51 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
 
   list = g_list_reverse(list);
 
-  *port = list;
+  /* connect resolve */
+  iter = list;
 
+  while(iter != NULL){
+    port_id_ref = ags_file_find_id_ref_by_reference(file,
+						    iter->data);
+    g_signal_connect_after(G_OBJECT(port_id_ref), "resolved\0",
+			   G_CALLBACK(ags_file_read_port_list_port_resolved), list);
+
+    iter = iter->next;
+  }
+
+  /* add id ref */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "main\0", file->ags_main,
+				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", list,
 				   NULL));
+
+  /* set return value */
+  *port = list;
+}
+
+void
+ags_file_read_port_list_port_resolved(AgsFileIdRef *file_id_ref,
+				      GList *port_list)
+{
+  AgsFileIdRef *port_list_file_id_ref;
+  gint counter;
+
+  port_list_file_id_ref = ags_file_find_id_ref_by_reference(file_id_ref->file,
+							    port_list);
+
+  counter = G_POINTER_TO_INT(g_object_get_data(port_list_file_id_ref,
+					       AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER));
+  counter++;
+
+  g_object_set_data(port_list_file_id_ref,
+		    AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER,
+		    GINT_TO_POINTER(counter));
+
+  ags_file_id_ref_resolved(port_list_file_id_ref);
 }
 
 xmlNode*

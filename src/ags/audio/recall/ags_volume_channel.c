@@ -258,7 +258,7 @@ ags_volume_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"volume[0]\0",
+		"./volume[0]\0",
 		10)){
       g_object_set(G_OBJECT(plugin),
 		   "volume\0", AGS_PORT(port->data),

@@ -361,13 +361,13 @@ ags_play_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"audio-channel[0]\0",
+		"./audio-channel[0]\0",
 		17)){
       g_object_set(G_OBJECT(plugin),
 		   "audio-channel\0", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"muted[0]\0",
+		"./muted[0]\0",
 		9)){
       g_object_set(G_OBJECT(plugin),
 		   "muted\0", AGS_PORT(port->data),

@@ -20,7 +20,10 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_plugin.h>
+
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);
+void ags_play_notation_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio);
 void ags_play_notation_audio_set_property(GObject *gobject,
 					  guint prop_id,
@@ -31,6 +34,7 @@ void ags_play_notation_audio_get_property(GObject *gobject,
 					  GValue *value,
 					  GParamSpec *param_spec);
 void ags_play_notation_audio_finalize(GObject *gobject);
+void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 enum{
   PROP_0,
@@ -38,6 +42,7 @@ enum{
 };
 
 static gpointer ags_play_notation_audio_parent_class = NULL;
+static AgsPluginInterface *ags_play_notation_parent_plugin_interface;
 
 static const gchar *ags_play_notation_audio_plugin_name = "ags-play\0";
 static const gchar *ags_play_notation_audio_specifier[] = {
@@ -65,10 +70,21 @@ ags_play_notation_audio_get_type()
       (GInstanceInitFunc) ags_play_notation_audio_init,
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_play_notation_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+
     ags_type_play_notation_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 							  "AgsPlayNotationAudio\0",
 							  &ags_play_notation_audio_info,
 							  0);
+
+    g_type_add_interface_static(ags_type_play_notation_audio,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_play_notation_audio);
@@ -99,6 +115,14 @@ ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audi
   g_object_class_install_property(gobject,
 				  PROP_NOTATION,
 				  param_spec);
+}
+
+void
+ags_play_notation_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  ags_play_notation_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
+  plugin->set_ports = ags_play_notation_audio_set_ports;
 }
 
 void
@@ -199,6 +223,22 @@ ags_play_notation_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_notation_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"./notation[0]\0",
+		16)){
+      g_object_set(G_OBJECT(plugin),
+		   "notation\0", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
 }
 
 AgsPlayNotationAudio*
