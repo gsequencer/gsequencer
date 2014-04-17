@@ -40,6 +40,7 @@ enum{
   PROP_NODE,
   PROP_XPATH,
   PROP_REFERENCE,
+  PROP_FILE,
   PROP_MAIN,
 };
 
@@ -116,6 +117,15 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  PROP_REFERENCE,
 				  param_spec);
 
+  param_spec = g_param_spec_object("file\0",
+				   "file assigned to\0",
+				   "The entire file assigned to\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE,
+				  param_spec);
+
   param_spec = g_param_spec_object("main\0",
 				   "main access\0",
 				   "The main object to access the tree\0",
@@ -140,6 +150,7 @@ void
 ags_file_id_ref_init(AgsFileIdRef *file_id_ref)
 {
   file_id_ref->main = NULL;
+  file_id_ref->file = NULL;
 
   file_id_ref->node = NULL;
   file_id_ref->xpath = NULL;
@@ -186,6 +197,21 @@ ags_file_id_ref_set_property(GObject *gobject,
       ref = (gpointer) g_value_get_pointer(value);
 
       file_id_ref->ref = ref;
+    }
+    break;
+  case PROP_FILE:
+    {
+      GObject *file;
+
+      file = (GObject *) g_value_get_object(value);
+
+      if(file_id_ref->file != NULL)
+	g_object_unref(file_id_ref->file);
+
+      if(file != NULL)
+	g_object_ref(file);
+
+      file_id_ref->file = file;
     }
     break;
   case PROP_MAIN:
@@ -235,6 +261,11 @@ ags_file_id_ref_get_property(GObject *gobject,
       g_value_set_pointer(value, file_id_ref->ref);
     }
     break;
+  case PROP_FILE:
+    {
+      g_value_set_object(value, file_id_ref->file);
+    }
+    break;
   case PROP_MAIN:
     {
       g_value_set_object(value, file_id_ref->main);
@@ -257,8 +288,16 @@ ags_file_id_ref_finalize(GObject *gobject)
     g_free(file_id_ref->xpath);
   }
 
-  if(file_id_ref->ref){
+  if(file_id_ref->ref != NULL){
     g_object_unref(file_id_ref->ref);
+  }
+
+  if(file_id_ref->file != NULL){
+    g_object_unref(file_id_ref->file);
+  }
+
+  if(file_id_ref->main != NULL){
+    g_object_unref(file_id_ref->main);
   }
 
   G_OBJECT_CLASS(ags_file_id_ref_parent_class)->finalize(gobject);
