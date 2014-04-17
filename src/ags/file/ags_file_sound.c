@@ -2815,7 +2815,7 @@ ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 			g_value_get_object((GValue *) file_lookup->ref));
   }
 
-  ags_file_id_ref_connected(file_id_ref);
+  ags_file_id_ref_resolved(file_id_ref);
 }
 
 xmlNode*
@@ -3025,8 +3025,8 @@ ags_file_read_port_list_port_resolved(AgsFileIdRef *file_id_ref,
   port_list_file_id_ref = ags_file_find_id_ref_by_reference(file_id_ref->file,
 							    port_list);
 
-  counter = G_POINTER_TO_INT(g_object_get_data(port_list_file_id_ref,
-					       AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER));
+  counter = GPOINTER_TO_INT(g_object_get_data(port_list_file_id_ref,
+					      AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER));
   counter++;
 
   g_object_set_data(port_list_file_id_ref,
