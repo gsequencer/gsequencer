@@ -179,6 +179,7 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
 
   /* AgsDrumInputLine */
+  //TODO:JK: modify me
   g_signal_connect(G_OBJECT(drum_input_line->volume), "value-changed\0",
 		   G_CALLBACK(ags_line_volume_callback), AGS_LINE(drum_input_line));
 }
