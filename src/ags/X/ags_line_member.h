@@ -58,6 +58,7 @@ struct _AgsLineMember
   
   AgsPort *port;
   gpointer port_data;
+  gboolean active;
 
   GType task_type;
 };

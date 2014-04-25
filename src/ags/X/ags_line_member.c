@@ -180,6 +180,7 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->port = NULL;
   line_member->port_data = NULL;
+  line_member->active = FALSE;
 
   line_member->task_type = G_TYPE_NONE;
 }
@@ -368,23 +369,33 @@ void
 ags_line_member_connect(AgsConnectable *connectable)
 {
   AgsLineMember *line_member;
+  GtkWidget *control;
 
   line_member = AGS_LINE_MEMBER(connectable);
 
+  control = gtk_bin_get_child(GTK_BIN(line_member));
+
   if(line_member->widget_type == AGS_TYPE_DIAL){
-    //TODO:JK: implement me
+    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+		     G_CALLBACK(ags_line_member_dial_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_VSCALE){
-    //TODO:JK: implement me
+    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+		     G_CALLBACK(ags_line_member_vscale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_HSCALE){
-    //TODO:JK: implement me
+    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+		     G_CALLBACK(ags_line_member_hscale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
-    //TODO:JK: implement me
+    g_signal_connect(GTK_WIDGET(control), "value-changed\0",
+		     G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    //TODO:JK: implement me
+    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+		     G_CALLBACK(ags_line_member_check_button_clicked_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    //TODO:JK: implement me
+    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+		     G_CALLBACK(ags_line_member_toggle_button_clicked_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_BUTTON){
-    //TODO:JK: implement me
+    g_signal_connect(GTK_WIDGET(control), "clicked\0",
+		     G_CALLBACK(ags_line_member_button_clicked_callback), line_member);
   }
 }
 
