@@ -58,6 +58,9 @@ void ags_synth_connect(AgsConnectable *connectable);
 void ags_synth_disconnect(AgsConnectable *connectable);
 void ags_synth_show(GtkWidget *widget);
 
+void ags_file_read_synth(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_write_synth(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+
 void ags_synth_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
 				  gpointer data);

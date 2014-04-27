@@ -70,6 +70,9 @@ void ags_matrix_disconnect(AgsConnectable *connectable);
 void ags_matrix_show(GtkWidget *widget);
 void ags_matrix_add_default_recalls(AgsMachine *machine);
 
+void ags_file_read_matrix(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_write_matrix(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+
 void ags_matrix_set_audio_channels(AgsAudio *audio,
 				   guint audio_channels, guint audio_channels_old,
 				   gpointer data);

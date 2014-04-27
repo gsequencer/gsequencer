@@ -45,6 +45,9 @@ void ags_panel_disconnect(AgsConnectable *connectable);
 void ags_panel_show(GtkWidget *widget);
 void ags_panel_add_default_recalls(AgsMachine *machine);
 
+void ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel);
+xmlNode* ags_file_write_panel(AgsFile *file, xmlNode *parent, AgsMachine *panel);
+
 void ags_panel_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
 				  gpointer data);

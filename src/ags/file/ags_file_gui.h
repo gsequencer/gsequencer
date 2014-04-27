@@ -81,23 +81,8 @@ xmlNode* ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *mach
 void ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine);
 xmlNode* ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine);
 
-void ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel);
-xmlNode* ags_file_write_panel(AgsFile *file, xmlNode *parent, AgsMachine *panel);
-
-void ags_file_read_mixer(AgsFile *file, xmlNode *node, AgsMachine *mixer);
-xmlNode* ags_file_write_mixer(AgsFile *file, xmlNode *parent, AgsMachine *mixer);
-
-void ags_file_read_drum(AgsFile *file, xmlNode *node, AgsMachine *drum);
-xmlNode* ags_file_write_drum(AgsFile *file, xmlNode *parent, AgsMachine *drum);
-
-void ags_file_read_matrix(AgsFile *file, xmlNode *node, AgsMachine *matrix);
-xmlNode* ags_file_write_matrix(AgsFile *file, xmlNode *parent, AgsMachine *matrix);
-
-void ags_file_read_synth(AgsFile *file, xmlNode *node, AgsMachine *synth);
-xmlNode* ags_file_write_synth(AgsFile *file, xmlNode *parent, AgsMachine *synth);
-
-void ags_file_read_ffplayer(AgsFile *file, xmlNode *node, AgsMachine *ffplayer);
-xmlNode* ags_file_write_ffplayer(AgsFile *file, xmlNode *parent, AgsMachine *ffplayer);
+void ags_file_read_drum(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_write_drum(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /* AgsPad */
 void ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad);

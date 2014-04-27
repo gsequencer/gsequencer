@@ -39,6 +39,9 @@ void ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line);
 void ags_mixer_input_line_connect(AgsConnectable *connectable);
 void ags_mixer_input_line_disconnect(AgsConnectable *connectable);
 
+void ags_file_read_mixer(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_write_mixer(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+
 void ags_mixer_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 static gpointer ags_mixer_input_line_parent_class = NULL;

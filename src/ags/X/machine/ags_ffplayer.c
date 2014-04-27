@@ -56,6 +56,9 @@ void ags_ffplayer_finalize(GObject *gobject);
 void ags_ffplayer_show(GtkWidget *widget);
 void ags_ffplayer_add_default_recalls(AgsMachine *machine);
 
+void ags_file_read_ffplayer(AgsFile *file, xmlNode *node, AgsPlugin *ffplayer);
+xmlNode* ags_file_write_ffplayer(AgsFile *file, xmlNode *parent, AgsPlugin *ffplayer);
+
 void ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				     guint audio_channels, guint audio_channels_old,
 				     gpointer data);
