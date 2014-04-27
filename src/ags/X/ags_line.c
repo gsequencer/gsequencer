@@ -311,6 +311,7 @@ void
 ags_line_connect(AgsConnectable *connectable)
 {
   AgsLine *line;
+  GList *list;
 
   line = AGS_LINE(connectable);
 
@@ -320,7 +321,17 @@ ags_line_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) line->group, "clicked\0",
 			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
+
+  /* connect line members */
+  list = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
   
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+  
+  /*  */
   line->flags |= AGS_LINE_CONNECTED;
 }
 

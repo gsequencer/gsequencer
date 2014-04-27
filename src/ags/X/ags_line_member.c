@@ -143,6 +143,15 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_PLUGIN_NAME,
 				  param_spec);
 
+  param_spec = g_param_spec_string("specifier\0",
+				   "port specifier\0",
+				   "The specifier of the port\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SPECIFIER,
+				  param_spec);
+
   param_spec = g_param_spec_string("control-port\0",
 				   "control port index\0",
 				   "The index of the port to control\0",

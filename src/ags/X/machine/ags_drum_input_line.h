@@ -38,8 +38,6 @@ typedef struct _AgsDrumInputLineClass AgsDrumInputLineClass;
 struct _AgsDrumInputLine
 {
   AgsLine line;
-
-  GtkVScale *volume;
 };
 
 struct _AgsDrumInputLineClass

@@ -112,9 +112,8 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type\0", GTK_TYPE_VSCALE,
 					       "plugin-name\0", "ags-volume\0",
-					       //					       "specifier\0", g_type_name(AGS_TYPE_RECALL_CHANNEL),
-					       //					       "control-port\0", g_strdup("adjustmet[0].value\0"),
-					       //					       "port-data-length\0", sizeof(gdouble),
+					       "specifier\0", "volume[0]\0",
+					       "control-port\0", "1/1\0",
 					       NULL);
   ags_expander_add(AGS_LINE(mixer_input_line)->expander,
 		   GTK_WIDGET(line_member),

@@ -130,25 +130,38 @@ void
 ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
   AgsLineMember *line_member;
+  GtkWidget *widget;
 
   g_signal_connect_after((GObject *) drum_input_line, "parent_set\0",
 			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
 
-  line_member = ags_line_member_new();
-  line_member->flags |= AGS_LINE_MEMBER_DEFAULT_TEMPLATE;
-  line_member->widget_type = GTK_TYPE_VSCALE;
+  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+					       "widget-type\0", GTK_TYPE_VSCALE,
+					       "plugin-name\0", "ags-volume\0",
+					       "specifier\0", "volume[0]\0",
+					       "control-port\0", "1/1\0",
+					       NULL);
   ags_expander_add(AGS_LINE(drum_input_line)->expander,
 		   GTK_WIDGET(line_member),
 		   0, 0,
 		   1, 1);
 
-  drum_input_line->volume = (GtkVScale *) gtk_vscale_new_with_range(0.0, 2.00, 0.025);
-  gtk_range_set_value((GtkRange *) drum_input_line->volume, 1.0);
-  gtk_range_set_inverted((GtkRange *) drum_input_line->volume, TRUE);
-  gtk_scale_set_digits((GtkScale *) drum_input_line->volume, 3);
-  gtk_widget_set_size_request((GtkWidget *) drum_input_line->volume, -1, 100);
-  gtk_container_add(GTK_CONTAINER(line_member),
-		    GTK_WIDGET(drum_input_line->volume));
+  widget = gtk_bin_get_child(GTK_BIN(line_member));
+
+  gtk_scale_set_digits(GTK_SCALE(widget),
+		       3);
+
+  gtk_range_set_range(GTK_RANGE(widget),
+		      0.0, 2.00);
+  gtk_range_set_increments(GTK_RANGE(widget),
+			   0.025, 0.1);
+  gtk_range_set_value(GTK_RANGE(widget),
+		      1.0);
+  gtk_range_set_inverted(GTK_RANGE(widget),
+			 TRUE);
+
+  gtk_widget_set_size_request(widget,
+			      -1, 100);
 }
 
 void
@@ -172,16 +185,14 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   ags_drum_input_line_parent_connectable_interface->connect(connectable);
 
   /* AgsDrumInputLine */
-  drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) drum_input_line->line.pad, AGS_TYPE_DRUM));
+  drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(drum_input_line)->pad, AGS_TYPE_DRUM));
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
 			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
 
   /* AgsDrumInputLine */
-  //TODO:JK: modify me
-  g_signal_connect(G_OBJECT(drum_input_line->volume), "value-changed\0",
-		   G_CALLBACK(ags_line_volume_callback), AGS_LINE(drum_input_line));
+  /* empty */
 }
 
 void
