@@ -151,9 +151,17 @@ ags_panel_init(AgsPanel *panel)
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) panel))->data, (GtkWidget *) panel->vbox);
 
   AGS_MACHINE(panel)->output = (GtkContainer *) gtk_hbox_new(FALSE, 0);
+  g_object_set(G_OBJECT(AGS_MACHINE(panel)->output),
+	       "expand\0", FALSE,
+	       "fill\0", FALSE,
+	       NULL);
   gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->output, FALSE, FALSE, 0);
 
   AGS_MACHINE(panel)->input = (GtkContainer *) gtk_hbox_new(FALSE, 0);
+  g_object_set(G_OBJECT(AGS_MACHINE(panel)->input),
+	       "expand\0", FALSE,
+	       "fill\0", FALSE,
+	       NULL);
   gtk_box_pack_start((GtkBox *) panel->vbox, (GtkWidget *) AGS_MACHINE(panel)->input, FALSE, FALSE, 0);
 }
 

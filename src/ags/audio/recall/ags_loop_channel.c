@@ -20,9 +20,15 @@
 
 #include <ags/main.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
 
 #include <math.h>
 
@@ -41,6 +47,8 @@ void ags_loop_channel_get_property(GObject *gobject,
 void ags_loop_channel_connect(AgsConnectable *connectable);
 void ags_loop_channel_disconnect(AgsConnectable *connectable);
 void ags_loop_channel_finalize(GObject *gobject);
+
+void ags_loop_channel_run_resolve_dependencies(AgsRecall *recall);
 
 void ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 							  AgsLoopChannel *loop_channel);
