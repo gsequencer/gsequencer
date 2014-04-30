@@ -22,6 +22,11 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_portlet.h>
+#include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
 
 #include <ags/widget/ags_led.h>
 
@@ -65,6 +70,9 @@ void ags_drum_connect(AgsConnectable *connectable);
 void ags_drum_disconnect(AgsConnectable *connectable);
 void ags_drum_show(GtkWidget *widget);
 void ags_drum_add_default_recalls(AgsMachine *machine);
+
+void ags_file_read_drum(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_write_drum(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_set_audio_channels(AgsAudio *audio,
 				 guint audio_channels, guint audio_channels_old,

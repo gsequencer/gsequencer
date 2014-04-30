@@ -81,9 +81,6 @@ xmlNode* ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *mach
 void ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine);
 xmlNode* ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine);
 
-void ags_file_read_drum(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_write_drum(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-
 /* AgsPad */
 void ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad);
 xmlNode* ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad);

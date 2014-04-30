@@ -22,6 +22,11 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_portlet.h>
+#include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
