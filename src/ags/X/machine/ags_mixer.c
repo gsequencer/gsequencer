@@ -144,10 +144,6 @@ ags_mixer_init(AgsMixer *mixer)
   AGS_MACHINE(mixer)->audio->flags |= (AGS_AUDIO_ASYNC);
 
   mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  g_object_set(G_OBJECT(mixer->input_pad),
-	       "expand\0", FALSE,
-	       "fill\0", FALSE,
-	       NULL);
   AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->input_pad);
 }

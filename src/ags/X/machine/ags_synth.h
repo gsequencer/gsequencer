@@ -35,13 +35,17 @@
 typedef struct _AgsSynth AgsSynth;
 typedef struct _AgsSynthClass AgsSynthClass;
 
+typedef enum{
+  AGS_SYNTH_AUTO_UPDATE          = 1,
+}AgsSynthFlags;
+
 struct _AgsSynth
 {
   AgsMachine machine;
 
-  GtkHBox *hbox;
+  guint flags;
 
-  GtkOptionMenu *oscillator;
+  GtkVBox *input_pad;
 
   GtkSpinButton *lower; // how many channels until to lowest freq
   GtkSpinButton *loop_start;
@@ -49,8 +53,6 @@ struct _AgsSynth
 
   GtkCheckButton *auto_update;
   GtkButton *update;
-
-  GtkOptionMenu* amplifier[2];
 };
 
 struct _AgsSynthClass

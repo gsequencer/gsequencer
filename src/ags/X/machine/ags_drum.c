@@ -194,19 +194,11 @@ ags_drum_init(AgsDrum *drum)
   gtk_box_pack_start((GtkBox *) drum->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
   drum->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  g_object_set(G_OBJECT(drum->input_pad),
-	       "expand\0", FALSE,
-	       "fill\0", FALSE,
-	       NULL);
   AGS_MACHINE(drum)->input = (GtkContainer *) drum->input_pad;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum->input_pad, FALSE, FALSE, 0);
 
   drum->output_pad = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   AGS_MACHINE(drum)->output = (GtkContainer *) drum->output_pad;
-  g_object_set(G_OBJECT(drum->output_pad),
-	       "expand\0", FALSE,
-	       "fill\0", FALSE,
-	       NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) drum->output_pad, FALSE, FALSE, 0);
 
   drum->selected_pad = NULL;
