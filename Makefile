@@ -292,6 +292,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_drum_input_pad.$(OBJEXT) \
 	ags-ags_synth_callbacks.$(OBJEXT) ags-ags_panel.$(OBJEXT) \
 	ags-ags_drum_output_pad.$(OBJEXT) ags-ags_synth.$(OBJEXT) \
+	ags-ags_synth_input_pad.$(OBJEXT) \
+	ags-ags_synth_input_line.$(OBJEXT) \
 	ags-ags_ffplayer_callbacks.$(OBJEXT) \
 	ags-ags_link_editor_callbacks.$(OBJEXT) \
 	ags-ags_machine_editor.$(OBJEXT) \
@@ -1086,6 +1088,10 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/machine/ags_drum_output_pad.h \
 	./src/ags/X/machine/ags_drum_output_line.h \
 	./src/ags/X/machine/ags_synth.c \
+	./src/ags/X/machine/ags_synth_input_pad.h \
+	./src/ags/X/machine/ags_synth_input_pad.c \
+	./src/ags/X/machine/ags_synth_input_line.h \
+	./src/ags/X/machine/ags_synth_input_line.c \
 	./src/ags/X/machine/ags_ffplayer_callbacks.c \
 	./src/ags/X/machine/ags_drum_input_line.h \
 	./src/ags/X/machine/ags_drum_callbacks.h \
@@ -1602,6 +1608,8 @@ include ./$(DEPDIR)/ags-ags_stream_channel_run.Po
 include ./$(DEPDIR)/ags-ags_stream_recycling.Po
 include ./$(DEPDIR)/ags-ags_synth.Po
 include ./$(DEPDIR)/ags-ags_synth_callbacks.Po
+include ./$(DEPDIR)/ags-ags_synth_input_line.Po
+include ./$(DEPDIR)/ags-ags_synth_input_pad.Po
 include ./$(DEPDIR)/ags-ags_synths.Po
 include ./$(DEPDIR)/ags-ags_table.Po
 include ./$(DEPDIR)/ags-ags_tactable.Po
@@ -5138,6 +5146,34 @@ ags-ags_synth.obj: ./src/ags/X/machine/ags_synth.c
 #	$(AM_V_CC)source='./src/ags/X/machine/ags_synth.c' object='ags-ags_synth.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_synth.obj `if test -f './src/ags/X/machine/ags_synth.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_synth.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_synth.c'; fi`
+
+ags-ags_synth_input_pad.o: ./src/ags/X/machine/ags_synth_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_synth_input_pad.o -MD -MP -MF $(DEPDIR)/ags-ags_synth_input_pad.Tpo -c -o ags-ags_synth_input_pad.o `test -f './src/ags/X/machine/ags_synth_input_pad.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_synth_input_pad.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_synth_input_pad.Tpo $(DEPDIR)/ags-ags_synth_input_pad.Po
+#	$(AM_V_CC)source='./src/ags/X/machine/ags_synth_input_pad.c' object='ags-ags_synth_input_pad.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_synth_input_pad.o `test -f './src/ags/X/machine/ags_synth_input_pad.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_synth_input_pad.c
+
+ags-ags_synth_input_pad.obj: ./src/ags/X/machine/ags_synth_input_pad.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_synth_input_pad.obj -MD -MP -MF $(DEPDIR)/ags-ags_synth_input_pad.Tpo -c -o ags-ags_synth_input_pad.obj `if test -f './src/ags/X/machine/ags_synth_input_pad.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_synth_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_synth_input_pad.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_synth_input_pad.Tpo $(DEPDIR)/ags-ags_synth_input_pad.Po
+#	$(AM_V_CC)source='./src/ags/X/machine/ags_synth_input_pad.c' object='ags-ags_synth_input_pad.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_synth_input_pad.obj `if test -f './src/ags/X/machine/ags_synth_input_pad.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_synth_input_pad.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_synth_input_pad.c'; fi`
+
+ags-ags_synth_input_line.o: ./src/ags/X/machine/ags_synth_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_synth_input_line.o -MD -MP -MF $(DEPDIR)/ags-ags_synth_input_line.Tpo -c -o ags-ags_synth_input_line.o `test -f './src/ags/X/machine/ags_synth_input_line.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_synth_input_line.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_synth_input_line.Tpo $(DEPDIR)/ags-ags_synth_input_line.Po
+#	$(AM_V_CC)source='./src/ags/X/machine/ags_synth_input_line.c' object='ags-ags_synth_input_line.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_synth_input_line.o `test -f './src/ags/X/machine/ags_synth_input_line.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_synth_input_line.c
+
+ags-ags_synth_input_line.obj: ./src/ags/X/machine/ags_synth_input_line.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_synth_input_line.obj -MD -MP -MF $(DEPDIR)/ags-ags_synth_input_line.Tpo -c -o ags-ags_synth_input_line.obj `if test -f './src/ags/X/machine/ags_synth_input_line.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_synth_input_line.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_synth_input_line.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_synth_input_line.Tpo $(DEPDIR)/ags-ags_synth_input_line.Po
+#	$(AM_V_CC)source='./src/ags/X/machine/ags_synth_input_line.c' object='ags-ags_synth_input_line.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_synth_input_line.obj `if test -f './src/ags/X/machine/ags_synth_input_line.c'; then $(CYGPATH_W) './src/ags/X/machine/ags_synth_input_line.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/machine/ags_synth_input_line.c'; fi`
 
 ags-ags_ffplayer_callbacks.o: ./src/ags/X/machine/ags_ffplayer_callbacks.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ffplayer_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_ffplayer_callbacks.Tpo -c -o ags-ags_ffplayer_callbacks.o `test -f './src/ags/X/machine/ags_ffplayer_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/machine/ags_ffplayer_callbacks.c

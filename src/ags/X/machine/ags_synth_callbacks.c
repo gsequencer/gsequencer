@@ -49,22 +49,11 @@ ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth)
 void
 ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth)
 {
-  GList *list;
-
-  list = gtk_container_get_children((GtkContainer *) synth->oscillator->menu);
-
-  if(toggle->active)
-    while(list != NULL){
-      ags_oscillator_connect(AGS_CONNECTABLE(list->data));
-
-      list = list->next;
-    }
-  else
-    while(list != NULL){
-      ags_oscillator_disconnect(AGS_CONNECTABLE(list->data));
-
-      list = list->next;
-    }
+  if(gtk_toggle_button_get_active(toggle)){
+    synth->flags |= AGS_SYNTH_AUTO_UPDATE;
+  }else{
+    synth->flags &= (~AGS_SYNTH_AUTO_UPDATE);
+  }
 }
 
 void

@@ -17,7 +17,6 @@
  */
 
 #include <ags/X/machine/ags_synth_input_line.h>
-#include <ags/X/machine/ags_synth_input_line_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -139,10 +138,6 @@ ags_synth_input_line_connect(AgsConnectable *connectable)
 
   /* AgsSynthInputLine */
   synth = AGS_SYNTH(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(synth_input_line)->pad, AGS_TYPE_SYNTH));
-
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads\0",
-			 G_CALLBACK(ags_synth_input_line_audio_set_pads_callback), synth_input_line);
 
   /* AgsSynthInputLine */
   /* empty */

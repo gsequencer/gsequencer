@@ -17,7 +17,6 @@
  */
 
 #include <ags/X/machine/ags_synth_input_pad.h>
-#include <ags/X/machine/ags_synth_input_pad_callbacks.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -103,8 +102,6 @@ void
 ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad)
 {
   AgsPad *pad;
-
-  synth_input_pad->flags = 0;
 
   pad = (AgsPad *) synth_input_pad;
 }
