@@ -142,7 +142,7 @@ ags_synth_input_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 
 void
 ags_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
-				guint audio_channels, guint audio_channels_old)
+				 guint audio_channels, guint audio_channels_old)
 {
   AGS_PAD_CLASS(ags_synth_input_pad_parent_class)->resize_lines(pad, line_type,
 								audio_channels, audio_channels_old);

@@ -20,19 +20,15 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
+#include <ags/plugin/ags_plugin_stock.h>
+
 #include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/widget/ags_expander_set.h>
-#include <ags/widget/ags_expander.h>
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_volume_channel_run.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_line_callbacks.h>
 #include <ags/X/ags_line_member.h>
 
 #include <ags/X/machine/ags_synth.h>
@@ -41,12 +37,10 @@
 void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
 void ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_input_line_init(AgsSynthInputLine *synth_input_line);
-void ags_synth_input_line_destroy(GtkObject *object);
 void ags_synth_input_line_connect(AgsConnectable *connectable);
 void ags_synth_input_line_disconnect(AgsConnectable *connectable);
 
 void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
-void ags_synth_input_line_group_changed(AgsLine *line);
 
 static gpointer ags_synth_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_synth_input_line_parent_connectable_interface;
@@ -98,8 +92,6 @@ ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line)
   line = AGS_LINE_CLASS(synth_input_line);
 
   line->set_channel = ags_synth_input_line_set_channel;
-  
-  line->group_changed = ags_synth_input_line_group_changed;
 }
 
 void
@@ -116,40 +108,26 @@ ags_synth_input_line_init(AgsSynthInputLine *synth_input_line)
 {
   AgsOscillator *oscillator;
 
+  /* oscillator */
   oscillator = ags_oscillator_new();
   ags_expander_add(AGS_LINE(synth_input_line)->expander,
 		   GTK_WIDGET(oscillator),
 		   0, 0,
 		   1, 1);
-
-  g_message("oscillator\0");
-}
-
-void
-ags_synth_input_line_destroy(GtkObject *object)
-{
 }
 
 void
 ags_synth_input_line_connect(AgsConnectable *connectable)
 {
-  AgsSynth *synth;
   AgsSynthInputLine *synth_input_line;
 
   synth_input_line = AGS_SYNTH_INPUT_LINE(connectable);
 
-
   if((AGS_LINE_CONNECTED & (AGS_LINE(synth_input_line)->flags)) != 0){
     return;
   }
-  
+
   ags_synth_input_line_parent_connectable_interface->connect(connectable);
-
-  /* AgsSynthInputLine */
-  synth = AGS_SYNTH(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(synth_input_line)->pad, AGS_TYPE_SYNTH));
-
-  /* AgsSynthInputLine */
-  /* empty */
 }
 
 void
@@ -169,35 +147,46 @@ ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   synth_input_line = AGS_SYNTH_INPUT_LINE(line);
 
-  g_message("ags_synth_input_line_set_channel - channel: %u\0",
-	    channel->line);
-
   if(line->channel != NULL){
     line->flags &= (~AGS_LINE_MAPPED_RECALL);
   }
 
   if(channel != NULL){
     if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
-      ags_synth_input_line_map_recall(synth_input_line, 0);
-    }else{
-      //TODO:JK: implement me
+      ags_synth_input_line_map_recall(synth_input_line);
     }
   }
 }
 
 void
-ags_synth_input_line_group_changed(AgsLine *line)
+ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line)
 {
   AgsSynth *synth;
+  AgsLine *line;
+  AgsAudio *audio;
+  AgsChannel *source;
+  guint i;
 
-  synth = (AgsSynth *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_SYNTH);
-}
+  line = AGS_LINE(synth_input_line);
+  line->flags |= AGS_LINE_MAPPED_RECALL;
 
-void
-ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line,
-				guint output_pad_start)
-{
-  //TODO:JK: implement me
+  audio = AGS_AUDIO(line->channel->audio);
+
+  synth = AGS_SYNTH(audio->machine);
+
+  source = line->channel;
+
+  /* ags-volume */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-volume\0",
+			    source->audio_channel, source->audio_channel + 1,
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 }
 
 AgsSynthInputLine*
@@ -211,3 +200,4 @@ ags_synth_input_line_new(AgsChannel *channel)
 
   return(synth_input_line);
 }
+
