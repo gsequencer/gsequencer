@@ -101,9 +101,6 @@ ags_synth_input_pad_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad)
 {
-  AgsPad *pad;
-
-  pad = (AgsPad *) synth_input_pad;
 }
 
 void
@@ -111,6 +108,7 @@ ags_synth_input_pad_connect(AgsConnectable *connectable)
 {
   AgsSynthInputPad *synth_input_pad;
 
+  /* AgsSynthInputPad */
   synth_input_pad = AGS_SYNTH_INPUT_PAD(connectable);
 
   if((AGS_PAD_CONNECTED & (AGS_PAD(synth_input_pad)->flags)) != 0){
@@ -118,9 +116,6 @@ ags_synth_input_pad_connect(AgsConnectable *connectable)
   }
 
   ags_synth_input_pad_parent_connectable_interface->connect(connectable);
-
-  /* AgsSynthInputPad */
-  /* empty */
 }
 
 void
@@ -147,7 +142,7 @@ ags_synth_input_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 
 void
 ags_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
-				 guint audio_channels, guint audio_channels_old)
+				guint audio_channels, guint audio_channels_old)
 {
   AGS_PAD_CLASS(ags_synth_input_pad_parent_class)->resize_lines(pad, line_type,
 								audio_channels, audio_channels_old);
@@ -163,6 +158,7 @@ ags_synth_input_pad_new(AgsChannel *channel)
   synth_input_pad = (AgsSynthInputPad *) g_object_new(AGS_TYPE_SYNTH_INPUT_PAD,
 						      "channel\0", channel,
 						      NULL);
-
+  
   return(synth_input_pad);
 }
+

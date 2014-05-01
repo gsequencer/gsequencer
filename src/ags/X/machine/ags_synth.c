@@ -194,7 +194,8 @@ ags_synth_init(AgsSynth *synth)
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) synth))->data, (GtkWidget *) hbox);
 
-  AGS_MACHINE(synth)->input = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  synth->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  AGS_MACHINE(synth)->input = synth->input_pad;
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) AGS_MACHINE(synth)->input,
 		     FALSE,
@@ -301,10 +302,10 @@ ags_synth_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_synth_update_callback), (gpointer) synth);
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(synth->machine.audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_synth_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(synth->machine.audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads\0",
 			 G_CALLBACK(ags_synth_set_pads), NULL);
 }
 
@@ -334,19 +335,49 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
 		   gpointer data)
 {
   AgsSynth *synth;
-  GtkHBox *hbox;
+  AgsChannel *channel;
+  GList *list, *list_next;
+  guint i;
 
-  hbox = AGS_MACHINE(synth)->input;
   synth = (AgsSynth *) audio->machine;
 
   if(type == AGS_TYPE_INPUT){
-    if(pads > pads_old){
+    AgsSynthInputPad *synth_input_pad;
 
+    if(pads_old < pads){
+      /*  */
+      channel = ags_channel_nth(audio->input, pads_old * audio->audio_channels);
+
+      for(i = pads_old; i < pads; i++){
+	synth_input_pad = ags_synth_input_pad_new(channel);
+	gtk_box_pack_start((GtkBox *) synth->input_pad,
+			   (GtkWidget *) synth_input_pad, FALSE, FALSE, 0);
+	ags_pad_resize_lines((AgsPad *) synth_input_pad, AGS_TYPE_SYNTH_INPUT_LINE,
+			     AGS_AUDIO(channel->audio)->audio_channels, 0);
+
+	if(GTK_WIDGET_VISIBLE((GtkWidget *) synth)){
+	  ags_connectable_connect(AGS_CONNECTABLE(synth_input_pad));
+	  gtk_widget_show_all((GtkWidget *) synth_input_pad);
+	}
+
+	channel = channel->next_pad;
+      }
     }else{
+      /* destroy AgsPad's */
+      list = gtk_container_get_children((GtkContainer *) synth->input_pad);
+      list = g_list_nth(list, pads);
+
+      while(list != NULL){
+	list_next = list->next;
+
+	gtk_widget_destroy((GtkWidget *) list->data);
+
+	list = list_next;
+      }
     }
   }else{
     //TODO:JK: implement me
-  }
+  }  
 }
 
 void
@@ -436,15 +467,8 @@ ags_synth_new(GObject *devout)
   GValue value = {0,};
 
   synth = (AgsSynth *) g_object_new(AGS_TYPE_SYNTH,
+				    "devout\0", devout,
 				    NULL);
-
-  if(devout != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
-    g_object_set_property(G_OBJECT(synth->machine.audio),
-			  "devout\0", &value);
-    g_value_unset(&value);
-  }
 
   return(synth);
 }

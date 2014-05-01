@@ -24,7 +24,6 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
-#include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
@@ -37,6 +36,7 @@
 #include <ags/X/ags_line_member.h>
 
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_oscillator.h>
 
 void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
 void ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -114,6 +114,15 @@ ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_synth_input_line_init(AgsSynthInputLine *synth_input_line)
 {
+  AgsOscillator *oscillator;
+
+  oscillator = ags_oscillator_new();
+  ags_expander_add(AGS_LINE(synth_input_line)->expander,
+		   GTK_WIDGET(oscillator),
+		   0, 0,
+		   1, 1);
+
+  g_message("oscillator\0");
 }
 
 void
@@ -188,6 +197,7 @@ void
 ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line,
 				guint output_pad_start)
 {
+  //TODO:JK: implement me
 }
 
 AgsSynthInputLine*
