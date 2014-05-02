@@ -55,7 +55,7 @@ ags_oscillator_get_type(void)
       NULL, /* interface_data */
     };
     
-    ags_type_oscillator = g_type_register_static(GTK_TYPE_MENU_ITEM,
+    ags_type_oscillator = g_type_register_static(GTK_TYPE_FRAME,
 						 "AgsOscillator\0",
 						 &ags_oscillator_info,
 						 0);
@@ -94,11 +94,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   GtkListStore *model;
   GtkTreeIter iter;
 
-  oscillator->frame = (GtkFrame *) gtk_frame_new(NULL);
-  gtk_container_add((GtkContainer *) oscillator, (GtkWidget *) oscillator->frame);
-
   table = (GtkTable *) gtk_table_new(8, 2, FALSE);
-  gtk_container_add((GtkContainer *) oscillator->frame, (GtkWidget *) table);
+  gtk_container_add((GtkContainer *) oscillator, (GtkWidget *) table);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("wave\0"),

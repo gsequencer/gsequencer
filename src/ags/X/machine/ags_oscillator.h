@@ -35,9 +35,7 @@ typedef struct _AgsOscillatorClass AgsOscillatorClass;
 
 struct _AgsOscillator
 {
-  GtkMenuItem item;
-
-  GtkFrame *frame;
+  GtkFrame frame;
 
   GtkComboBox *wave;
   gulong wave_handler;
@@ -60,7 +58,7 @@ struct _AgsOscillator
 
 struct _AgsOscillatorClass
 {
-  GtkMenuItemClass item;
+  GtkFrameClass frame;
 };
 
 GType ags_oscillator_get_type(void);

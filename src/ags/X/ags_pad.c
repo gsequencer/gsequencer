@@ -475,8 +475,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     channel = ags_channel_nth(pad->channel, audio_channels_old);
 
     /* create AgsLine */
-    for(i = audio_channels_old / pad->cols; i < audio_channels / pad->cols; i++){
-      for(j = 0; j < pad->cols; j++){
+    for(i = audio_channels_old; i < audio_channels;){
+      for(j = audio_channels_old % pad->cols; j < pad->cols && i < audio_channels; j++, i++){
 	line = (AgsLine *) g_object_new(line_type,
 					"pad\0", pad,
 					"channel\0", channel,
@@ -484,7 +484,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 	channel->line_widget = (GtkWidget *) line;
 	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
-			     j, i,
+			     j, i / pad->cols,
 			     1, 1);
 	
 	channel = channel->next;
