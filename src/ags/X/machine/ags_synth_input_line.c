@@ -176,17 +176,7 @@ ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line)
 
   source = line->channel;
 
-  /* ags-volume */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-volume\0",
-			    source->audio_channel, source->audio_channel + 1,
-			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  /* empty */
 }
 
 AgsSynthInputLine*

@@ -194,7 +194,7 @@ ags_synth_init(AgsSynth *synth)
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) synth))->data, (GtkWidget *) hbox);
 
-  synth->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  synth->input_pad = (GtkHBox *) gtk_vbox_new(FALSE, 0);
   AGS_MACHINE(synth)->input = synth->input_pad;
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) AGS_MACHINE(synth)->input,
@@ -404,7 +404,7 @@ ags_synth_update(AgsSynth *synth)
 
   /* write input */
   channel = AGS_MACHINE(synth)->audio->input;
-  input_pad = synth->input_pad;
+  input_pad = gtk_container_get_children(synth->input_pad);
 
   while(input_pad != NULL){
     input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
@@ -433,7 +433,7 @@ ags_synth_update(AgsSynth *synth)
 
   /* write output */
   channel = AGS_MACHINE(synth)->audio->output;
-  input_pad = synth->input_pad;
+  input_pad = gtk_container_get_children(synth->input_pad);
 
   while(input_pad != NULL){
     input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
@@ -464,11 +464,13 @@ AgsSynth*
 ags_synth_new(GObject *devout)
 {
   AgsSynth *synth;
-  GValue value = {0,};
 
   synth = (AgsSynth *) g_object_new(AGS_TYPE_SYNTH,
-				    "devout\0", devout,
 				    NULL);
+
+  g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
+	       "devout\0", devout,
+	       NULL);
 
   return(synth);
 }
