@@ -52,7 +52,6 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
-#include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
 /* GtkWidget */
@@ -112,9 +111,6 @@ xmlNode* ags_file_write_drum_input_line(AgsFile *file, xmlNode *parent, AgsLine 
 
 void ags_file_read_drum_output_line(AgsFile *file, xmlNode *node, AgsLine *drum_output_line);
 xmlNode* ags_file_write_drum_output_line(AgsFile *file, xmlNode *parent, AgsLine *drum_output_line);
-
-void ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator *oscillator);
-xmlNode* ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscillator);
 
 /* AgsLineMember */
 void ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_member);

@@ -625,6 +625,11 @@
 	  cols             NMTOKEN    #REQUIRED
 	  >
 
+<!ELEMENT ags-panel-input-pad EMPTY>
+<!ATTLIST ags-panel-input-pad
+	  id               ID         #REQUIRED
+	  >
+
 <!ELEMENT ags-mixer-input-pad EMPTY>
 <!ATTLIST ags-mixer-input-pad
 	  id               ID         #REQUIRED
@@ -645,7 +650,12 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-line (ags-line-member-list, (ags-drum-input-line|ags-drum-output-line))>
+<!ELEMENT ags-synth-input-pad EMPTY>
+<!ATTLIST ags-synth-input-pad
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-line (ags-line-member-list, (ags-panel-input-line|ags-mixer-input-line|ags-drum-input-line|ags-drum-output-line|ags-synth-input-line))>
 <!ATTLIST ags-line
 	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
@@ -660,6 +670,21 @@
 	  cols             NMTOKEN    #REQUIRED
 	  >
 
+<!ELEMENT ags-panel-input-line EMPTY>
+<!ATTLIST ags-panel-input-line
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-mixer-input-line EMPTY>
+<!ATTLIST ags-mixer-input-line
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-mixer-output-line EMPTY>
+<!ATTLIST ags-mixer-output-line
+	  id               ID         #REQUIRED
+	  >
+
 <!ELEMENT ags-drum-input-line EMPTY>
 <!ATTLIST ags-drum-input-line
 	  id               ID         #REQUIRED
@@ -668,6 +693,22 @@
 <!ELEMENT ags-drum-output-line EMPTY>
 <!ATTLIST ags-drum-output-line
 	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-synth-input-line (ags-oscillator)>
+<!ATTLIST ags-synth-input-line
+	  id               ID         #REQUIRED	  
+	  >
+
+<!ELEMENT ags-oscillator EMPTY>
+<!ATTLIST ags-oscillator
+	  id               ID         #REQUIRED
+	  wave             CDATA      #REQUIRED
+	  attack           NMTOKEN    #REQUIRED
+	  frame-count      NMTOKEN    #REQUIRED
+	  frequency        NMTOKEN    #REQUIRED
+	  phase            NMTOKEN    #REQUIRED
+	  volume           NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-line-member-list (ags-line-member*)>
