@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding="utf-8"?>
 <!DOCTYPE book [
-<!ENTITY indexMenuIcon "file:///usr/share/icons/gnome/scalable/actions/system-run-symbolic.svg">
-<!ENTITY cursorIcon "file:///usr/share/icons/gnome/scalable/actions/go-jump-symbolic.svg">
-<!ENTITY notesIcon "file:///usr/share/icons/gnome/scalable/mimetypes/audio-x-generic-symbolic.svg">
-<!ENTITY deleteIcon "file:///usr/share/icons/gnome/scalable/actions/edit-delete-symbolic.svg">
-<!ENTITY selectIcon "file:///usr/share/icons/gnome/scalable/actions/edit-select-symbolic.svg">
-<!ENTITY copyIcon "file:///usr/share/icons/gnome/scalable/actions/edit-copy-symbolic.svg">
-<!ENTITY cutIcon "file:///usr/share/icons/gnome/scalable/actions/edit-cut-symbolic.svg">
-<!ENTITY pasteIcon "file:///usr/share/icons/gnome/scalable/actions/edit-paste-symbolic.svg">
+<!ENTITY indexMenuIcon "/usr/share/icons/gnome/scalable/actions/system-run-symbolic.svg">
+<!ENTITY cursorIcon "/usr/share/icons/gnome/scalable/actions/go-jump-symbolic.svg">
+<!ENTITY notesIcon "/usr/share/icons/gnome/scalable/mimetypes/audio-x-generic-symbolic.svg">
+<!ENTITY deleteIcon "/usr/share/icons/gnome/scalable/actions/edit-delete-symbolic.svg">
+<!ENTITY selectIcon "/usr/share/icons/gnome/scalable/actions/edit-select-symbolic.svg">
+<!ENTITY copyIcon "/usr/share/icons/gnome/scalable/actions/edit-copy-symbolic.svg">
+<!ENTITY cutIcon "/usr/share/icons/gnome/scalable/actions/edit-cut-symbolic.svg">
+<!ENTITY pasteIcon "/usr/share/icons/gnome/scalable/actions/edit-paste-symbolic.svg">
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>Editor</title>
@@ -29,7 +29,7 @@
 
   <sect1>
     <title>Toolbar</title>
-    <imagedata fileref="../images/ags_toolbar.png" />
+    <imagedata fileref="/home/jkraehemann/ags-code/doc/images/ags-toolbar.png" />
     <para>
       In the table below are the various buttons explained you may use for editing.
     </para>

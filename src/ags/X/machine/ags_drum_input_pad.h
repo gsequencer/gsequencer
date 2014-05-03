@@ -45,6 +45,9 @@ struct _AgsDrumInputPad
 
   guint flags;
 
+  gchar *name;
+  gchar *xml_type;
+
   GtkButton *open;
   GtkToggleButton *play;
   GtkToggleButton *edit;

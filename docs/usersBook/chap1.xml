@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding="utf-8"?>
 <!DOCTYPE book [
-<!ENTITY backwardIcon "file:///usr/share/icons/gnome/scalable/actions/media-skip-backward-symbolic.svg">
-<!ENTITY previousIcon "file:///usr/share/icons/gnome/scalable/actions/media-seek-backward-symbolic.svg">
-<!ENTITY playIcon "file:///usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg">
-<!ENTITY stopIcon "file:///usr/share/icons/gnome/scalable/actions/media-playback-stop-symbolic.svg">
-<!ENTITY nextIcon "file:///usr/share/icons/gnome/scalable/actions/media-seek-forward-symbolic.svg">
-<!ENTITY forwardIcon "file:///usr/share/icons/gnome/scalable/actions/media-skip-forward-symbolic.svg">
+<!ENTITY backwardIcon "/usr/share/icons/gnome/scalable/actions/media-skip-backward-symbolic.svg">
+<!ENTITY previousIcon "/usr/share/icons/gnome/scalable/actions/media-seek-backward-symbolic.svg">
+<!ENTITY playIcon "/usr/share/icons/gnome/scalable/actions/media-playback-start-symbolic.svg">
+<!ENTITY stopIcon "/usr/share/icons/gnome/scalable/actions/media-playback-stop-symbolic.svg">
+<!ENTITY nextIcon "/usr/share/icons/gnome/scalable/actions/media-seek-forward-symbolic.svg">
+<!ENTITY forwardIcon "/usr/share/icons/gnome/scalable/actions/media-skip-forward-symbolic.svg">
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>The navigation</title>

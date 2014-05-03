@@ -614,7 +614,7 @@
 	  scope            CDATA      #REQUIRED
 	  >
 
-<!ELEMENT ags-pad (ags-line-list, (ags-mixer-input-pad|ags-mixer-output-pad|ags-drum-input-pad|ags-drum-output-pad))>
+<!ELEMENT ags-pad (ags-line-list, (ags-panel-input-pad|ags-mixer-input-pad|ags-mixer-output-pad|ags-drum-input-pad|ags-drum-output-pad|ags-synth-input-pad))>
 <!ATTLIST ags-pad
 	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
@@ -623,6 +623,9 @@
 	  flags            PCDATA     #REQUIRED
 	  rows             NMTOKEN    #REQUIRED
 	  cols             NMTOKEN    #REQUIRED
+	  group            CDATA      "true"
+	  mute             CDATA      "false"
+	  solo             CDATA      "false"
 	  >
 
 <!ELEMENT ags-panel-input-pad EMPTY>
@@ -668,6 +671,7 @@
 	  bottom-attach    NMTOKEN    #REQUIRED
 	  rows             NMTOKEN    #REQUIRED
 	  cols             NMTOKEN    #REQUIRED
+	  grouped          NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-panel-input-line EMPTY>
@@ -688,6 +692,7 @@
 <!ELEMENT ags-drum-input-line EMPTY>
 <!ATTLIST ags-drum-input-line
 	  id               ID         #REQUIRED
+	  edit             CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-drum-output-line EMPTY>

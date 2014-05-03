@@ -112,8 +112,8 @@ ags_drum_get_type(void)
     };
 
     ags_type_drum = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsDrum\0", &ags_drum_info,
-					    0);
+					   "AgsDrum\0", &ags_drum_info,
+					   0);
     
     g_type_add_interface_static(ags_type_drum,
 				AGS_TYPE_CONNECTABLE,

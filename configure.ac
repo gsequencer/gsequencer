@@ -11,6 +11,14 @@ AC_PROG_CC
 AC_PROG_RANLIB
 LT_INIT
 
+# check for gtk-doc
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
+AC_CONFIG_MACRO_DIR(m4)
+
 #AGS_WITH_XMLRPC_C
 
 # Checks for libraries.

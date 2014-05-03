@@ -55,6 +55,8 @@ struct _AgsPad
 
   guint flags;
 
+  gchar *name;
+
   gchar *version;
   gchar *build_id;
 

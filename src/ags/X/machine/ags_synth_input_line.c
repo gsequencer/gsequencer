@@ -18,7 +18,11 @@
 
 #include <ags/X/machine/ags_synth_input_line.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/util/ags_id_generator.h>
 
 #include <ags/plugin/ags_plugin_stock.h>
 
@@ -41,15 +45,19 @@
 #include <ags/X/machine/ags_synth.h>
 
 void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
+void ags_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_input_line_init(AgsSynthInputLine *synth_input_line);
 void ags_synth_input_line_connect(AgsConnectable *connectable);
 void ags_synth_input_line_disconnect(AgsConnectable *connectable);
+gchar* ags_synth_input_line_get_name(AgsPlugin *plugin);
+void ags_synth_input_line_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_synth_input_line_get_xml_type(AgsPlugin *plugin);
+void ags_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
-
-void ags_file_read_synth_input_line(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_write_synth_input_line(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 static gpointer ags_synth_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_synth_input_line_parent_connectable_interface;
@@ -113,9 +121,23 @@ ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connect
 }
 
 void
+ags_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_synth_input_line_get_name;
+  plugin->set_name = ags_synth_input_line_set_name;
+  plugin->get_xml_type = ags_synth_input_line_get_xml_type;
+  plugin->set_xml_type = ags_synth_input_line_set_xml_type;
+  plugin->read = ags_synth_input_line_read;
+  plugin->write = ags_synth_input_line_write;
+}
+
+void
 ags_synth_input_line_init(AgsSynthInputLine *synth_input_line)
 {
   AgsOscillator *oscillator;
+
+  synth_input_line->name = NULL;
+  synth_input_line->xml_type = "ags-synth-input-line\0";
 
   /* oscillator */
   oscillator = ags_oscillator_new();
@@ -189,8 +211,32 @@ ags_synth_input_line_map_recall(AgsSynthInputLine *synth_input_line)
   /* empty */
 }
 
+gchar*
+ags_synth_input_line_get_name(AgsPlugin *plugin)
+{
+  return(AGS_SYNTH_INPUT_LINE(plugin)->name);
+}
+
 void
-ags_file_read_synth_input_line(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+ags_synth_input_line_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_SYNTH_INPUT_LINE(plugin)->name = name;
+}
+
+gchar*
+ags_synth_input_line_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_SYNTH_INPUT_LINE(plugin)->xml_type);
+}
+
+void
+ags_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_SYNTH_INPUT_LINE(plugin)->xml_type = xml_type;
+}
+
+void
+ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsSynthInputLine *gobject;
   xmlNode *child;
@@ -223,7 +269,7 @@ ags_file_read_synth_input_line(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 }
 
 xmlNode*
-ags_file_write_synth_input_line(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsSynthInputLine *synth_input_line;
   xmlNode *node;

@@ -1,6 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src
 
+
+
 noinst_LIBRARIES = libags.a
 libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/ags_connectable.h ./src/ags-lib/object/ags_serializeable.c ./src/ags-lib/object/ags_serializeable.h ./src/ags-lib/lib/ags_math.c ./src/ags-lib/lib/ags_math.h
 
@@ -27,3 +29,4 @@ libags_a_CFLAGS=$(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS)
 
 test_CFLAGS=${ags_CFLAGS}
 test_LDFLAGS=${ags_LDFLAGS}
+

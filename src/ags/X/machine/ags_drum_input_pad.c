@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -35,17 +37,22 @@
 
 void ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad);
 void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_drum_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_destroy(GtkObject *object);
 void ags_drum_input_pad_connect(AgsConnectable *connectable);
 void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
+gchar* ags_drum_input_pad_get_name(AgsPlugin *plugin);
+void ags_drum_input_pad_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_drum_input_pad_get_xml_type(AgsPlugin *plugin);
+void ags_drum_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+GList* ags_drum_input_pad_get_ports(AgsPlugin *plugin);
+void ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
-
-void ags_file_read_drum_input_pad(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_write_drum_input_pad(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 static gpointer ags_drum_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_pad_parent_connectable_interface;
@@ -74,6 +81,12 @@ ags_drum_input_pad_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_drum_input_pad_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_drum_input_pad = g_type_register_static(AGS_TYPE_PAD,
 						     "AgsDrumInputPad\0", &ags_drum_input_pad_info,
 						     0);
@@ -81,6 +94,10 @@ ags_drum_input_pad_get_type()
     g_type_add_interface_static(ags_type_drum_input_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_drum_input_pad,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_drum_input_pad);
@@ -109,12 +126,26 @@ ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectab
 }
 
 void
+ags_drum_input_pad_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_drum_input_pad_get_name;
+  plugin->set_name = ags_drum_input_pad_set_name;
+  plugin->get_xml_type = ags_drum_input_pad_get_xml_type;
+  plugin->set_xml_type = ags_drum_input_pad_set_xml_type;
+  plugin->read = ags_drum_input_pad_read;
+  plugin->write = ags_drum_input_pad_write;
+}
+
+void
 ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
 {
   AgsPad *pad;
   GtkHBox *hbox;
 
   drum_input_pad->flags = 0;
+
+  drum_input_pad->name = NULL;
+  drum_input_pad->xml_type = "ags-drum-input-pad\0";
 
   pad = (AgsPad *) drum_input_pad;
 
@@ -197,16 +228,42 @@ ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
   /* empty */
 }
 
+gchar*
+ags_drum_input_pad_get_name(AgsPlugin *plugin)
+{
+  return(AGS_DRUM_INPUT_PAD(plugin)->name);
+}
+
 void
-ags_file_read_drum_input_pad(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+ags_drum_input_pad_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_DRUM_INPUT_PAD(plugin)->name = name;
+}
+
+gchar*
+ags_drum_input_pad_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_DRUM_INPUT_PAD(plugin)->xml_type);
+}
+
+void
+ags_drum_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_DRUM_INPUT_PAD(plugin)->xml_type = xml_type;
+}
+
+void
+ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_file_write_drum_input_pad(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 AgsDrumInputPad*

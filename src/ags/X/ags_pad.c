@@ -42,15 +42,10 @@ void ags_pad_get_property(GObject *gobject,
 			  GParamSpec *param_spec);
 void ags_pad_connect(AgsConnectable *connectable);
 void ags_pad_disconnect(AgsConnectable *connectable);
-gchar* ags_pad_get_name(AgsPlugin *plugin);
-void ags_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_pad_get_version(AgsPlugin *plugin);
 void ags_pad_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_pad_get_build_id(AgsPlugin *plugin);
 void ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_pad_get_xml_type(AgsPlugin *plugin);
-void ags_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-GList* ags_pad_get_ports(AgsPlugin *plugin);
 void ags_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_pad_destroy(GtkObject *object);
@@ -182,15 +177,15 @@ ags_pad_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pad_plugin_interface_init(AgsPluginInterface *plugin)
 {
-  plugin->get_name = ags_pad_get_name;
-  plugin->set_name = ags_pad_set_name;
+  plugin->get_name = NULL;
+  plugin->set_name = NULL;
   plugin->get_version = ags_pad_get_version;
   plugin->set_version = ags_pad_set_version;
   plugin->get_build_id = ags_pad_get_build_id;
   plugin->set_build_id = ags_pad_set_build_id;
-  plugin->get_xml_type = ags_pad_get_xml_type;
-  plugin->set_xml_type = ags_pad_set_xml_type;
-  plugin->get_ports = ags_pad_get_ports;
+  plugin->get_xml_type = NULL;
+  plugin->set_xml_type = NULL;
+  plugin->get_ports = NULL;
   plugin->read = ags_pad_read;
   plugin->write = ags_pad_write;
   plugin->set_ports = NULL;
@@ -206,6 +201,8 @@ ags_pad_init(AgsPad *pad)
 		   G_CALLBACK(ags_pad_parent_set_callback), (gpointer) pad);
 
   pad->flags = 0;
+
+  pad->name = NULL;
 
   pad->version = AGS_VERSION;
   pad->build_id = AGS_BUILD_ID;
@@ -324,20 +321,6 @@ ags_pad_disconnect(AgsConnectable *connectable)
 }
 
 gchar*
-ags_pad_get_name(AgsPlugin *plugin)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
-}
-
-void
-ags_pad_set_name(AgsPlugin *plugin, gchar *name)
-{
-  //TODO:JK: implement me
-}
-
-gchar*
 ags_pad_get_version(AgsPlugin *plugin)
 {
   return(AGS_PAD(plugin)->version);
@@ -346,7 +329,11 @@ ags_pad_get_version(AgsPlugin *plugin)
 void
 ags_pad_set_version(AgsPlugin *plugin, gchar *version)
 {
-  //TODO:JK: implement me
+  AgsPad *pad;
+
+  pad = AGS_PAD(plugin);
+
+  pad->version = version;
 }
 
 gchar*
@@ -358,29 +345,11 @@ ags_pad_get_build_id(AgsPlugin *plugin)
 void
 ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
 {
-  //TODO:JK: implement me
-}
+  AgsPad *pad;
 
-gchar*
-ags_pad_get_xml_type(AgsPlugin *plugin)
-{
-  //TODO:JK: implement me
+  pad = AGS_PAD(plugin);
 
-  return(NULL);
-}
-
-void
-ags_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  //TODO:JK: implement me
-}
-
-GList*
-ags_pad_get_ports(AgsPlugin *plugin)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
+  pad->build_id = build_id;
 }
 
 void
@@ -396,7 +365,6 @@ ags_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   return(NULL);
 }
-
 
 void
 ags_pad_destroy(GtkObject *object)

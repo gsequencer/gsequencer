@@ -41,6 +41,9 @@ struct _AgsSynthInputLine
 {
   AgsLine line;
 
+  gchar *name;
+  gchar *xml_type;
+
   AgsOscillator *oscillator;
 };
 
