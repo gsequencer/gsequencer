@@ -25,6 +25,8 @@
 
 #include <ags/X/ags_line.h>
 
+#include <ags/X/machine/ags_oscillator.h>
+
 #define AGS_TYPE_SYNTH_INPUT_LINE                (ags_synth_input_line_get_type())
 #define AGS_SYNTH_INPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_INPUT_LINE, AgsSynthInputLine))
 #define AGS_SYNTH_INPUT_LINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SYNTH_INPUT_LINE, AgsSynthInputLineClass))
@@ -39,7 +41,7 @@ struct _AgsSynthInputLine
 {
   AgsLine line;
 
-  GtkVScale *volume;
+  AgsOscillator *oscillator;
 };
 
 struct _AgsSynthInputLineClass

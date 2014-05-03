@@ -21,6 +21,12 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_drum.h>
@@ -37,6 +43,9 @@ void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
 void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
+
+void ags_file_read_drum_input_pad(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_write_drum_input_pad(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 static gpointer ags_drum_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_pad_parent_connectable_interface;
@@ -186,6 +195,18 @@ ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 							       audio_channels, audio_channels_old);
 
   /* empty */
+}
+
+void
+ags_file_read_drum_input_pad(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_file_write_drum_input_pad(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  //TODO:JK: implement me
 }
 
 AgsDrumInputPad*

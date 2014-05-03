@@ -38,8 +38,6 @@ typedef struct _AgsMixerInputLineClass AgsMixerInputLineClass;
 struct _AgsMixerInputLine
 {
   AgsLine line;
-
-  GtkVScale *volume;
 };
 
 struct _AgsMixerInputLineClass

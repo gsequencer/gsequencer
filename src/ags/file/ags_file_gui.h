@@ -93,24 +93,12 @@ xmlNode* ags_file_write_mixer_input_pad(AgsFile *file, xmlNode *parent, AgsPad *
 void ags_file_read_mixer_output_pad(AgsFile *file, xmlNode *node, AgsPad *mixer_output_pad);
 xmlNode* ags_file_write_mixer_output_pad(AgsFile *file, xmlNode *parent, AgsPad *mixer_output_pad);
 
-void ags_file_read_drum_input_pad(AgsFile *file, xmlNode *node, AgsPad *drum_input_pad);
-xmlNode* ags_file_write_drum_input_pad(AgsFile *file, xmlNode *parent, AgsPad *drum_input_pad);
-
-void ags_file_read_drum_output_pad(AgsFile *file, xmlNode *node, AgsPad *drum_output_pad);
-xmlNode* ags_file_write_drum_output_pad(AgsFile *file, xmlNode *parent, AgsPad *drum_output_pad);
-
 /* AgsLine */
 void ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line);
 xmlNode* ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line);
 
 void ags_file_read_line_list(AgsFile *file, xmlNode *node, GList **line);
 xmlNode* ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line);
-
-void ags_file_read_drum_input_line(AgsFile *file, xmlNode *node, AgsLine *drum_output_line);
-xmlNode* ags_file_write_drum_input_line(AgsFile *file, xmlNode *parent, AgsLine *drum_output_line);
-
-void ags_file_read_drum_output_line(AgsFile *file, xmlNode *node, AgsLine *drum_output_line);
-xmlNode* ags_file_write_drum_output_line(AgsFile *file, xmlNode *parent, AgsLine *drum_output_line);
 
 /* AgsLineMember */
 void ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_member);
