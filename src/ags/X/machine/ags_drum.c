@@ -660,6 +660,9 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   xmlNewProp(node,
 	     "bank-index-1\0",
 	     g_strdup_printf("%d\0", i));
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 void

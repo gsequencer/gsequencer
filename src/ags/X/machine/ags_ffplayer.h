@@ -45,6 +45,9 @@ struct _AgsFFPlayer
   guint mapped_output_pad;
   guint mapped_input_pad;
 
+  gchar *name;
+  gchar *xml_type;
+
   GtkButton *open;
 
   guint control_width;

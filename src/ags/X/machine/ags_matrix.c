@@ -1046,6 +1046,8 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	     "bank-index-0\0",
 	     g_strdup_printf("%d\0", i));
 
+  xmlAddChild(parent,
+	      node);  
 }
 
 AgsMatrix*

@@ -618,7 +618,8 @@
 <!ELEMENT ags-ffplayer EMPTY>
 <!ATTLIST ags-ffplayer
 	  id               ID         #REQUIRED
-	  soundfont        CDATA      #IMPLIED
+	  container        CDATA      #REQUIRED
+	  instrument       CDATA      #IMPLIED
 	  >
 
 <!ELEMENT ags-pad-list (ags-pad*)>

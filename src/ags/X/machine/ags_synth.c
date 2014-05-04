@@ -442,6 +442,9 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   xmlNewProp(node,
 	     "loop-end\0",
 	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->loop_end)));
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 void

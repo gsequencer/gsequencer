@@ -19,12 +19,17 @@
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_playable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
@@ -54,12 +59,19 @@
 
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
 void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_ffplayer_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_init(AgsFFPlayer *ffplayer);
 void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_finalize(GObject *gobject);
 void ags_ffplayer_show(GtkWidget *widget);
 void ags_ffplayer_add_default_recalls(AgsMachine *machine);
+gchar* ags_ffplayer_get_name(AgsPlugin *plugin);
+void ags_ffplayer_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_ffplayer_get_xml_type(AgsPlugin *plugin);
+void ags_ffplayer_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_file_read_ffplayer(AgsFile *file, xmlNode *node, AgsPlugin *ffplayer);
 xmlNode* ags_file_write_ffplayer(AgsFile *file, xmlNode *parent, AgsPlugin *ffplayer);
@@ -104,6 +116,12 @@ ags_ffplayer_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_ffplayer_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_ffplayer = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsFFPlayer\0", &ags_ffplayer_info,
 					    0);
@@ -111,6 +129,10 @@ ags_ffplayer_get_type(void)
     g_type_add_interface_static(ags_type_ffplayer,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_ffplayer,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_ffplayer);
@@ -154,6 +176,17 @@ ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_ffplayer_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_ffplayer_get_name;
+  plugin->set_name = ags_ffplayer_set_name;
+  plugin->get_xml_type = ags_ffplayer_get_xml_type;
+  plugin->set_xml_type = ags_ffplayer_set_xml_type;
+  plugin->read = ags_ffplayer_read;
+  plugin->write = ags_ffplayer_write;
+}
+
+void
 ags_ffplayer_init(AgsFFPlayer *ffplayer)
 {
   AgsAudio *audio;
@@ -181,6 +214,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   ffplayer->mapped_input_pad = 0;
   ffplayer->mapped_output_pad = 0;
+
+  ffplayer->name = NULL;
+  ffplayer->xml_type = "ags-ffplayer\0";
 
   /* create widgets */
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
@@ -309,6 +345,84 @@ void
 ags_ffplayer_add_default_recalls(AgsMachine *machine)
 {
   /* empty */
+}
+
+gchar*
+ags_ffplayer_get_name(AgsPlugin *plugin)
+{
+  return(AGS_FFPLAYER(plugin)->name);
+}
+
+void
+ags_ffplayer_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_FFPLAYER(plugin)->name = name;
+}
+
+gchar*
+ags_ffplayer_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_FFPLAYER(plugin)->xml_type);
+}
+
+void
+ags_ffplayer_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_FFPLAYER(plugin)->xml_type = xml_type;
+}
+
+void
+ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsFFPlayer *gobject;
+  GList *list;
+
+  gobject = AGS_FFPLAYER(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  //TODO:JK: implement me  
+}
+
+xmlNode*
+ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsFFPlayer *ffplayer;
+  xmlNode *node;
+  gchar *id;
+
+  ffplayer = AGS_FFPLAYER(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-ffplayer\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", ffplayer,
+				   NULL));
+
+  xmlNewProp(node,
+	     "instrument\0",
+	     gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->instrument));
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 void
