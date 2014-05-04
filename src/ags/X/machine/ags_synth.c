@@ -23,9 +23,12 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
@@ -71,9 +74,12 @@ void ags_synth_finalize(GObject *gobject);
 void ags_synth_connect(AgsConnectable *connectable);
 void ags_synth_disconnect(AgsConnectable *connectable);
 void ags_synth_show(GtkWidget *widget);
-
-void ags_file_read_synth(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_write_synth(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+gchar* ags_synth_get_name(AgsPlugin *plugin);
+void ags_synth_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_synth_get_xml_type(AgsPlugin *plugin);
+void ags_synth_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_synth_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,
@@ -190,7 +196,10 @@ ags_synth_init(AgsSynth *synth)
 
   /* create widgets */
   synth->flags = 0;
-  
+ 
+  synth->name = NULL;
+  synth->xml_type = "ags-synth\0";
+ 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) synth))->data, (GtkWidget *) hbox);
 
@@ -318,6 +327,102 @@ ags_synth_disconnect(AgsConnectable *connectable)
 
   /* AgsSynth */
   synth = AGS_SYNTH(connectable);
+}
+
+gchar*
+ags_synth_get_name(AgsPlugin *plugin)
+{
+  return(AGS_SYNTH(plugin)->name);
+}
+
+void
+ags_synth_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_SYNTH(plugin)->name = name;
+}
+
+gchar*
+ags_synth_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_SYNTH(plugin)->xml_type);
+}
+
+void
+ags_synth_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_SYNTH(plugin)->xml_type = xml_type;
+}
+
+void
+ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsSynth *gobject;
+  GList *list;
+
+  gobject = AGS_SYNTH(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gtk_spin_button_set_value(gobject->lower,
+			    g_ascii_strtod(xmlGetProp(node,
+						      "lower\0"),
+					   NULL));
+
+  gtk_spin_button_set_value(gobject->loop_start,
+			    g_ascii_strtod(xmlGetProp(node,
+						      "loop-begin\0"),
+					   NULL));
+
+  gtk_spin_button_set_value(gobject->loop_end,
+			    g_ascii_strtod(xmlGetProp(node,
+						      "loop-end\0"),
+					   NULL));
+}
+
+xmlNode*
+ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsSynth *synth;
+  xmlNode *node;
+  gchar *id;
+
+  synth = AGS_SYNTH(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-synth-input-line\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", synth,
+				   NULL));
+
+  xmlNewProp(node,
+	     "lower\0",
+	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->lower)));
+
+  xmlNewProp(node,
+	     "loop-begin\0",
+	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->loop_start)));
+
+  xmlNewProp(node,
+	     "loop-end\0",
+	     g_strdup_printf("%f\0", gtk_spin_button_get_value(synth->loop_end)));
 }
 
 void
