@@ -915,6 +915,9 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
   }else{
     gobject = *pad;
   }
+
+  if(gobject == NULL)
+    return;
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -1377,38 +1380,41 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
   line_member_node = child->children;
 
   while(line_member != NULL){
-    expander_child = ags_expander_child_find(line->expander,
-					     line_member->data);
+    if(AGS_IS_LINE_MEMBER(line_member->data)){
+      expander_child = ags_expander_child_find(line->expander,
+					       line_member->data);
 
-    xmlNewProp(line_member_node,
-	       "left-attach\0",
-	       g_strdup_printf("%d\0", expander_child->x));
+      xmlNewProp(line_member_node,
+		 "left-attach\0",
+		 g_strdup_printf("%d\0", expander_child->x));
 
-    xmlNewProp(line_member_node,
-	       "top-attach\0",
-	       g_strdup_printf("%d\0", expander_child->y));
+      xmlNewProp(line_member_node,
+		 "top-attach\0",
+		 g_strdup_printf("%d\0", expander_child->y));
 
-    xmlNewProp(line_member_node,
-	       "right-attach\0",
-	       g_strdup_printf("%d\0", expander_child->x + expander_child->width));
+      xmlNewProp(line_member_node,
+		 "right-attach\0",
+		 g_strdup_printf("%d\0", expander_child->x + expander_child->width));
 
-    xmlNewProp(line_member_node,
-	       "bottom-attach\0",
-	       g_strdup_printf("%d\0", expander_child->y + expander_child->height));
+      xmlNewProp(line_member_node,
+		 "bottom-attach\0",
+		 g_strdup_printf("%d\0", expander_child->y + expander_child->height));
 
-    gtk_widget_get_size_request(GTK_BIN(expander_child->child)->child,
-				&control_width, &control_height);
+      gtk_widget_get_size_request(GTK_BIN(expander_child->child)->child,
+				  &control_width, &control_height);
 
-    xmlNewProp(line_member_node,
-	       "width\0",
-	       g_strdup_printf("%d\0", control_width));
+      xmlNewProp(line_member_node,
+		 "width\0",
+		 g_strdup_printf("%d\0", control_width));
 
-    xmlNewProp(line_member_node,
-	       "height\0",
-	       g_strdup_printf("%d\0", control_height));
+      xmlNewProp(line_member_node,
+		 "height\0",
+		 g_strdup_printf("%d\0", control_height));
+
+      line_member_node = line_member_node->next;
+    }
 
     line_member = line_member->next;
-    line_member_node = line_member_node->next;
   }
 }
 

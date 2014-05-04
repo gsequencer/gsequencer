@@ -48,8 +48,6 @@ void ags_loop_channel_connect(AgsConnectable *connectable);
 void ags_loop_channel_disconnect(AgsConnectable *connectable);
 void ags_loop_channel_finalize(GObject *gobject);
 
-void ags_loop_channel_run_resolve_dependencies(AgsRecall *recall);
-
 void ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
 							  AgsLoopChannel *loop_channel);
 

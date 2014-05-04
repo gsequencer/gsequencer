@@ -481,23 +481,23 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
   i = 0;
 
   while(valid){
-      gchar *str;
+    gchar *str;
 
-      gtk_tree_model_get (list_store, &iter,
-                          0, &str,
-                          -1);
-      if(!g_strcasecmp(instrument,
-		       str)){
-	g_free (str);
+    gtk_tree_model_get (list_store, &iter,
+			0, &str,
+			-1);
+    if(!g_strcasecmp(instrument,
+		     str)){
+      g_free (str);
 
-	break;
-      }else{
-	g_free (str);
+      break;
+    }else{
+      g_free (str);
 
-	i++;
-	valid = gtk_tree_model_iter_next (list_store, &iter);
-      }
+      i++;
+      valid = gtk_tree_model_iter_next (list_store, &iter);
     }
+  }
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
 			   i);

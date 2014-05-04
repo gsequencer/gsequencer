@@ -260,7 +260,7 @@ ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   AgsDrumInputPad *gobject;
   AgsFileLookup *file_lookup;
 
-  gobject = AGS_DRUM_INPUT_PAD(gobject);
+  gobject = AGS_DRUM_INPUT_PAD(plugin);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,

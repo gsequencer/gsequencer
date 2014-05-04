@@ -658,6 +658,22 @@ ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 					      GObject *recall)
 {
   AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "xpath\0",
+  	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
+}
+
+void
+ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
+					     GObject *recall)
+{
+  AgsFileIdRef *id_ref;
   gchar *xpath;
 
   xpath = (gchar *) xmlGetProp(file_lookup->node,
@@ -670,22 +686,6 @@ ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 		 "count-beats-audio-run\0", id_ref->ref,
 		 NULL);
   }
-}
-
-void
-ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
-					     GObject *recall)
-{
-  AgsFileIdRef *id_ref;
-  gchar *id;
-
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "xpath\0",
-  	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 }
 
 AgsLoopChannelRun*
