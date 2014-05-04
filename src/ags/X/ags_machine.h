@@ -60,15 +60,13 @@ struct _AgsMachine
 
   GObject *ags_main;
 
+  char *name;
+
   gchar *version;
   gchar *build_id;
 
-  gchar *xml_type;
-
   guint flags;
   guint file_input_flags;
-
-  char *name;
 
   AgsAudio *audio;
 

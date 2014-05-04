@@ -177,10 +177,12 @@ ags_task_thread_start(AgsThread *thread)
 
   task_thread = AGS_TASK_THREAD(thread);
 
-  ags_thread_pool_start(task_thread->thread_pool);
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
+    ags_thread_pool_start(task_thread->thread_pool);
 
-  while((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
-    usleep(500000);
+    while((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
+      usleep(500000);
+    }
   }
 
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){

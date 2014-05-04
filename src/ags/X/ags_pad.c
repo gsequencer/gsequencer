@@ -46,8 +46,6 @@ gchar* ags_pad_get_version(AgsPlugin *plugin);
 void ags_pad_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_pad_get_build_id(AgsPlugin *plugin);
 void ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
-void ags_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_pad_destroy(GtkObject *object);
 void ags_pad_show(GtkWidget *widget);
 
@@ -186,8 +184,8 @@ ags_pad_plugin_interface_init(AgsPluginInterface *plugin)
   plugin->get_xml_type = NULL;
   plugin->set_xml_type = NULL;
   plugin->get_ports = NULL;
-  plugin->read = ags_pad_read;
-  plugin->write = ags_pad_write;
+  plugin->read = NULL;
+  plugin->write = NULL;
   plugin->set_ports = NULL;
 }
 
@@ -350,20 +348,6 @@ ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
   pad = AGS_PAD(plugin);
 
   pad->build_id = build_id;
-}
-
-void
-ags_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  //TODO:JK: implement me
-}
-
-xmlNode*
-ags_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
 }
 
 void

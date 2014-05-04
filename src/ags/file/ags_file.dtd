@@ -591,14 +591,20 @@
 <!ELEMENT ags-drum EMPTY>
 <!ATTLIST ags-drum
 	  id               ID         #REQUIRED
+	  tact             NMTOKEN    #REQUIRED
+	  length           NMTOKEN    #REQUIRED
 	  bank-index-0     NMTOKEN    #REQUIRED
 	  bank-index-1     NMTOKEN    #REQUIRED
+	  loop             CDATA      #IMPLIED
 	  >
 
 <!ELEMENT ags-matrix EMPTY>
 <!ATTLIST ags-matrix
 	  id               ID         #REQUIRED
+	  tact             NMTOKEN    #REQUIRED
+	  length           NMTOKEN    #REQUIRED
 	  bank-index       NMTOKEN    #REQUIRED
+	  loop             CDATA      #IMPLIED
 	  >
 
 <!ELEMENT ags-synth EMPTY>

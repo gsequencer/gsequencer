@@ -912,6 +912,8 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     child = child->next;
   }
 
+  AGS_TASK_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread)->thread_pool = gobject->thread_pool;
+
   gtk_widget_show_all(GTK_WIDGET(gobject->window));
 }
 
