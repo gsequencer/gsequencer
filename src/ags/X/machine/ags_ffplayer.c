@@ -407,9 +407,13 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
   AgsFFPlayer *gobject;
+  GtkTreeModel *list_store;
+  GtkTreeIter iter;
   xmlNode *node;
   gchar *filename;
   gchar *instrument;
+  guint i;
+  gboolean valid;
 
   node = lookup->node;
 
@@ -468,11 +472,34 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
     //      AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 0;
   }
 
-  filename = xmlGetProp(node,
+  instrument = xmlGetProp(node,
 			"instrument\0");
 
+  /* Get the first iter in the list */
+  valid = gtk_tree_model_get_iter_first (list_store, &iter);
+  i = 0;
+
+  while(valid){
+      gchar *str;
+
+      gtk_tree_model_get (list_store, &iter,
+                          0, &str,
+                          -1);
+      if(!g_strcasecmp(instrument,
+		       str)){
+	g_free (str);
+
+	break;
+      }else{
+	g_free (str);
+
+	i++;
+	valid = gtk_tree_model_iter_next (list_store, &iter);
+      }
+    }
+
   gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
-			   0);
+			   i);
 }
 
 xmlNode*
