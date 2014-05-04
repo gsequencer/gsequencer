@@ -47,7 +47,6 @@ gchar* ags_drum_input_pad_get_name(AgsPlugin *plugin);
 void ags_drum_input_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_input_pad_get_xml_type(AgsPlugin *plugin);
 void ags_drum_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-GList* ags_drum_input_pad_get_ports(AgsPlugin *plugin);
 void ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_drum_input_pad_resolve_drum(AgsFileLookup *file_lookup,
 				     AgsDrumInputPad *drum_input_pad);
@@ -336,6 +335,9 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
     xmlNewProp(node,
 	       "edit\0",
 	       AGS_FILE_TRUE);
+
+    xmlAddChild(parent,
+		node);  
   }
 
   return(node);

@@ -295,6 +295,9 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   NULL));
 
   ags_file_write_oscillator(file, node, synth_input_line->oscillator);
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 AgsSynthInputLine*

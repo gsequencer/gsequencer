@@ -363,6 +363,9 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
   xmlNewProp(node,
 	     "volume\0",
 	     g_strdup_printf("%f\0", oscillator->volume->adjustment->value));
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 AgsOscillator*
