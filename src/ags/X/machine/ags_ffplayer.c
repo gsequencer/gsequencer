@@ -40,6 +40,9 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_ipatch_sf2_reader.h>
+
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
@@ -71,6 +74,7 @@ void ags_ffplayer_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_ffplayer_get_xml_type(AgsPlugin *plugin);
 void ags_ffplayer_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer);
 xmlNode* ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_file_read_ffplayer(AgsFile *file, xmlNode *node, AgsPlugin *ffplayer);
@@ -375,7 +379,7 @@ void
 ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsFFPlayer *gobject;
-  GList *list;
+  AgsFileLookup *file_lookup;
 
   gobject = AGS_FFPLAYER(plugin);
 
@@ -388,7 +392,87 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
-  //TODO:JK: implement me  
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_ffplayer_resolve_filename), gobject);
+}
+
+void
+ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
+{
+  AgsWindow *window;
+  AgsFFPlayer *gobject;
+  xmlNode *node;
+  gchar *filename;
+  gchar *instrument;
+
+  node = lookup->node;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(ffplayer)));
+
+  filename = xmlGetProp(node,
+			"filename\0");
+
+  if(g_str_has_suffix(filename, ".sf2\0")){
+    AgsIpatch *ipatch;
+    AgsIpatchSF2Reader *sf2_reader;
+    AgsPlayable *playable;
+    gchar **preset;
+    gchar **instrument;
+    gchar **sample;
+    GError *error;
+
+    /* clear preset, instrument and sample*/
+    ags_combo_box_text_remove_all(ffplayer->instrument);
+
+    /* Ipatch related */
+    ffplayer->ipatch =
+      ipatch = g_object_new(AGS_TYPE_IPATCH,
+			    "mode\0", AGS_IPATCH_READ,
+			    "filename\0", filename,
+			    NULL);
+    ipatch->devout = window->devout;
+    ags_ipatch_open(ipatch, filename);
+
+    sf2_reader = ags_ipatch_sf2_reader_new();
+    sf2_reader->ipatch =  ipatch;
+    ipatch->reader = (GObject *) sf2_reader;
+
+    playable = AGS_PLAYABLE(ipatch->reader);
+      
+    ags_playable_open(playable, filename);
+
+    error = NULL;
+    ags_playable_level_select(playable,
+			      0, filename,
+			      &error);
+
+    /* fill ffplayer->instrument */
+    AGS_IPATCH_SF2_READER(ipatch->reader)->nth_level = 1;
+    instrument = ags_playable_sublevel_names(playable);
+      
+    while(*instrument != NULL){
+      gtk_combo_box_text_append_text(ffplayer->instrument,
+				     *instrument);
+
+
+      instrument++;
+    }
+
+    /* reset nth_level */
+    //      AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 0;
+  }
+
+  filename = xmlGetProp(node,
+			"instrument\0");
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
+			   0);
 }
 
 xmlNode*
@@ -416,6 +500,10 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", ffplayer,
 				   NULL));
+
+  xmlNewProp(node,
+	     "filename\0",
+	     ffplayer->ipatch->filename);
 
   xmlNewProp(node,
 	     "instrument\0",
