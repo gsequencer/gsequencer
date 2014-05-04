@@ -19,12 +19,17 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
@@ -64,15 +69,19 @@
 
 void ags_drum_class_init(AgsDrumClass *drum);
 void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_drum_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_init(AgsDrum *drum);
 void ags_drum_finalize(GObject *gobject);
 void ags_drum_connect(AgsConnectable *connectable);
 void ags_drum_disconnect(AgsConnectable *connectable);
 void ags_drum_show(GtkWidget *widget);
 void ags_drum_add_default_recalls(AgsMachine *machine);
-
-void ags_file_read_drum(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_write_drum(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+gchar* ags_drum_get_name(AgsPlugin *plugin);
+void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_drum_get_xml_type(AgsPlugin *plugin);
+void ags_drum_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_set_audio_channels(AgsAudio *audio,
 				 guint audio_channels, guint audio_channels_old,
@@ -111,6 +120,12 @@ ags_drum_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_drum_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_drum = g_type_register_static(AGS_TYPE_MACHINE,
 					   "AgsDrum\0", &ags_drum_info,
 					   0);
@@ -118,6 +133,10 @@ ags_drum_get_type(void)
     g_type_add_interface_static(ags_type_drum,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_drum,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_drum);
@@ -140,8 +159,6 @@ ags_drum_class_init(AgsDrumClass *drum)
   machine = (AgsMachineClass *) drum;
 
   machine->add_default_recalls = ags_drum_add_default_recalls;
-  //  machine->read_file = ags_file_read_drum;
-  //  machine->write_file = ags_file_write_drum;
 }
 
 void
@@ -151,6 +168,17 @@ ags_drum_connectable_interface_init(AgsConnectableInterface *connectable)
 
   connectable->connect = ags_drum_connect;
   connectable->disconnect = ags_drum_disconnect;
+}
+
+void
+ags_drum_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_drum_get_name;
+  plugin->set_name = ags_drum_set_name;
+  plugin->get_xml_type = ags_drum_get_xml_type;
+  plugin->set_xml_type = ags_drum_set_xml_type;
+  plugin->read = ags_drum_read;
+  plugin->write = ags_drum_write;
 }
 
 void
@@ -523,6 +551,112 @@ ags_drum_add_default_recalls(AgsMachine *machine)
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }
+}
+
+gchar*
+ags_drum_get_name(AgsPlugin *plugin)
+{
+  return(AGS_DRUM(plugin)->name);
+}
+
+void
+ags_drum_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_DRUM(plugin)->name = name;
+}
+
+gchar*
+ags_drum_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_DRUM(plugin)->xml_type);
+}
+
+void
+ags_drum_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_DRUM(plugin)->xml_type = xml_type;
+}
+
+void
+ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsDrum *gobject;
+  GList *list;
+  guint64 index;
+
+  gobject = AGS_DRUM(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  index = g_ascii_strtoull(xmlGetProp(node,
+				      "bank-index-0\0"),
+			   NULL,
+			   10);
+
+  if(index != 0){
+    gtk_toggle_button_set_active(gobject->index0[0],
+				 FALSE);
+    gtk_toggle_button_set_active(gobject->index0[index],
+				 TRUE);
+    gobject->selected0 = gobject->index0[index];
+  }
+
+  index = g_ascii_strtoull(xmlGetProp(node,
+				      "bank-index-1\0"),
+			   NULL,
+			   10);
+
+  if(index != 0){
+    gtk_toggle_button_set_active(gobject->index1[0],
+				 FALSE);
+    gtk_toggle_button_set_active(gobject->index1[index],
+				 TRUE);
+    gobject->selected1 = gobject->index1[index];
+  }
+}
+
+xmlNode*
+ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsDrum *drum;
+  xmlNode *node;
+  gchar *id;
+  guint i;
+
+  drum = AGS_DRUM(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-drum\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", drum,
+				   NULL));
+  for(i = 0; drum->selected0 != drum->index0[i]; i++);
+  xmlNewProp(node,
+	     "bank-index-0\0",
+	     g_strdup_printf("%d\0", i));
+
+  for(i = 0; drum->selected1 != drum->index1[i]; i++);
+  xmlNewProp(node,
+	     "bank-index-0\0",
+	     g_strdup_printf("%d\0", i));
 }
 
 void

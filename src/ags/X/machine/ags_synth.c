@@ -69,6 +69,7 @@
 
 void ags_synth_class_init(AgsSynthClass *synth);
 void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_synth_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_init(AgsSynth *synth);
 void ags_synth_finalize(GObject *gobject);
 void ags_synth_connect(AgsConnectable *connectable);
@@ -117,6 +118,12 @@ ags_synth_get_type(void)
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_synth_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_synth = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsSynth\0", &ags_synth_info,
@@ -125,6 +132,10 @@ ags_synth_get_type(void)
     g_type_add_interface_static(ags_type_synth,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_synth,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_synth);
@@ -149,9 +160,6 @@ ags_synth_class_init(AgsSynthClass *synth)
 
   /* AgsMachineClass */
   machine = (AgsMachineClass *) synth;
-
-  //  machine->read_file = ags_file_read_synth;
-  //  machine->write_file = ags_file_write_synth;
 }
 
 void
@@ -163,6 +171,17 @@ ags_synth_connectable_interface_init(AgsConnectableInterface *connectable)
 
   connectable->connect = ags_synth_connect;
   connectable->disconnect = ags_synth_disconnect;
+}
+
+void
+ags_synth_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_synth_get_name;
+  plugin->set_name = ags_synth_set_name;
+  plugin->get_xml_type = ags_synth_get_xml_type;
+  plugin->set_xml_type = ags_synth_set_xml_type;
+  plugin->read = ags_synth_read;
+  plugin->write = ags_synth_write;
 }
 
 void
@@ -398,7 +417,7 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-synth-input-line\0");
+		    "ags-synth\0");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);

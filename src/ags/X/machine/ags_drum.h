@@ -49,6 +49,9 @@ struct _AgsDrum
 
   guint flags;
 
+  gchar *name;
+  gchar *xml_type;
+
   GtkButton *open;
 
   GtkCheckButton *loop_button;
