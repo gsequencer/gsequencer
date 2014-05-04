@@ -19,12 +19,17 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
@@ -68,12 +73,19 @@
 
 void ags_matrix_class_init(AgsMatrixClass *matrix);
 void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_matrix_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_matrix_init(AgsMatrix *matrix);
 void ags_matrix_finalize(GObject *gobject);
 void ags_matrix_connect(AgsConnectable *connectable);
 void ags_matrix_disconnect(AgsConnectable *connectable);
 void ags_matrix_show(GtkWidget *widget);
 void ags_matrix_add_default_recalls(AgsMachine *machine);
+gchar* ags_matrix_get_name(AgsPlugin *plugin);
+void ags_matrix_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_matrix_get_xml_type(AgsPlugin *plugin);
+void ags_matrix_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_file_read_matrix(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_file_write_matrix(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
@@ -118,6 +130,12 @@ ags_matrix_get_type(void)
       NULL, /* interface_data */
     };
     
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_matrix_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_matrix = g_type_register_static(AGS_TYPE_MACHINE,
 					    "AgsMatrix\0", &ags_matrix_info,
 					    0);
@@ -125,6 +143,10 @@ ags_matrix_get_type(void)
     g_type_add_interface_static(ags_type_matrix,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_matrix,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_matrix);
@@ -169,6 +191,17 @@ ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_matrix_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_matrix_get_name;
+  plugin->set_name = ags_matrix_set_name;
+  plugin->get_xml_type = ags_matrix_get_xml_type;
+  plugin->set_xml_type = ags_matrix_set_xml_type;
+  plugin->read = ags_matrix_read;
+  plugin->write = ags_matrix_write;
+}
+
+void
 ags_matrix_init(AgsMatrix *matrix)
 {
   GtkFrame *frame;
@@ -199,6 +232,9 @@ ags_matrix_init(AgsMatrix *matrix)
   /*  */
   AGS_MACHINE(matrix)->flags |= AGS_MACHINE_IS_SEQUENCER;
   matrix->flags = 0;
+
+  matrix->name = NULL;
+  matrix->xml_type = "ags-matrix\0";
 
   matrix->mapped_input_pad = 0;
   matrix->mapped_output_pad = 0;
@@ -919,6 +955,97 @@ ags_matrix_unpaint_gutter_point(AgsMatrix *matrix, guint j, guint i)
 		      TRUE,
 		      j * 12 +1, i * 10 +1,
 		      11, 9);
+}
+
+gchar*
+ags_matrix_get_name(AgsPlugin *plugin)
+{
+  return(AGS_MATRIX(plugin)->name);
+}
+
+void
+ags_matrix_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_MATRIX(plugin)->name = name;
+}
+
+gchar*
+ags_matrix_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_MATRIX(plugin)->xml_type);
+}
+
+void
+ags_matrix_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_MATRIX(plugin)->xml_type = xml_type;
+}
+
+void
+ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsMatrix *gobject;
+  GList *list;
+  guint64 index;
+
+  gobject = AGS_MATRIX(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  index = g_ascii_strtoull(xmlGetProp(node,
+				      "bank-index-0\0"),
+			   NULL,
+			   10);
+
+  if(index != 0){
+    gtk_toggle_button_set_active(gobject->index[0],
+				 FALSE);
+    gtk_toggle_button_set_active(gobject->index[index],
+				 TRUE);
+    gobject->selected = gobject->index[index];
+  }
+}
+
+xmlNode*
+ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsMatrix *matrix;
+  xmlNode *node;
+  gchar *id;
+  guint i;
+
+  matrix = AGS_MATRIX(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-matrix\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", matrix,
+				   NULL));
+
+  for(i = 0; matrix->selected != matrix->index[i]; i++);
+
+  xmlNewProp(node,
+	     "bank-index-0\0",
+	     g_strdup_printf("%d\0", i));
+
 }
 
 AgsMatrix*

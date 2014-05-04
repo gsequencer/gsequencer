@@ -598,7 +598,7 @@
 <!ELEMENT ags-matrix EMPTY>
 <!ATTLIST ags-matrix
 	  id               ID         #REQUIRED
-	  bank-index-0     NMTOKEN    #REQUIRED
+	  bank-index       NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-synth EMPTY>

@@ -648,14 +648,17 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", drum,
 				   NULL));
+
   for(i = 0; drum->selected0 != drum->index0[i]; i++);
+
   xmlNewProp(node,
 	     "bank-index-0\0",
 	     g_strdup_printf("%d\0", i));
 
   for(i = 0; drum->selected1 != drum->index1[i]; i++);
+
   xmlNewProp(node,
-	     "bank-index-0\0",
+	     "bank-index-1\0",
 	     g_strdup_printf("%d\0", i));
 }
 

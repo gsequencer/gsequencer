@@ -41,6 +41,9 @@ struct _AgsMatrix
 
   guint flags;
 
+  gchar *name;
+  gchar *xml_type;
+
   guint mapped_output_pad;
   guint mapped_input_pad;
 

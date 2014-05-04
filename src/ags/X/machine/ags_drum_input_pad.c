@@ -49,6 +49,8 @@ gchar* ags_drum_input_pad_get_xml_type(AgsPlugin *plugin);
 void ags_drum_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 GList* ags_drum_input_pad_get_ports(AgsPlugin *plugin);
 void ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_drum_input_pad_resolve_drum(AgsFileLookup *file_lookup,
+				     AgsDrumInputPad *drum_input_pad);
 xmlNode* ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
@@ -257,6 +259,7 @@ void
 ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsDrumInputPad *gobject;
+  AgsFileLookup *file_lookup;
 
   gobject = AGS_DRUM_INPUT_PAD(gobject);
 
@@ -279,6 +282,27 @@ ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
     gtk_toggle_button_set_active(gobject->edit,
 				 FALSE);
   }
+
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_drum_input_pad_resolve_drum), gobject);
+}
+
+void
+ags_drum_input_pad_resolve_drum(AgsFileLookup *file_lookup,
+				AgsDrumInputPad *drum_input_pad)
+{
+  AgsDrum *drum;
+
+  drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad, AGS_TYPE_DRUM);
+
+  drum->selected_edit_button = (GtkToggleButton *) drum_input_pad->edit;
+  drum->selected_pad = drum_input_pad;
 }
 
 xmlNode*
@@ -316,7 +340,7 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   return(node);
 }
-
+    
 AgsDrumInputPad*
 ags_drum_input_pad_new(AgsChannel *channel)
 {
