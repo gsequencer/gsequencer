@@ -26,6 +26,7 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
@@ -255,15 +256,65 @@ ags_drum_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
+  AgsDrumInputPad *gobject;
+
+  gobject = AGS_DRUM_INPUT_PAD(gobject);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  if(!xmlStrncmp(xmlGetProp(node,
+			    "edit\0"),
+		 AGS_FILE_TRUE,
+		 5)){
+    gtk_toggle_button_set_active(gobject->edit,
+				 TRUE);
+  }else{
+    gtk_toggle_button_set_active(gobject->edit,
+				 FALSE);
+  }
 }
 
 xmlNode*
 ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
-  //TODO:JK: implement me
+  AgsDrumInputPad *drum_input_pad;
+  xmlNode *node;
+  gchar *id;
 
-  return(NULL);
+  drum_input_pad = AGS_DRUM_INPUT_PAD(plugin);
+  node = NULL;
+
+  if(gtk_toggle_button_get_active(drum_input_pad->edit)){
+    id = ags_id_generator_create_uuid();
+  
+    node = xmlNewNode(NULL,
+		      "ags-drum-input-pad\0");
+    xmlNewProp(node,
+	       AGS_FILE_ID_PROP,
+	       id);
+
+    ags_file_add_id_ref(file,
+			g_object_new(AGS_TYPE_FILE_ID_REF,
+				     "main\0", file->ags_main,
+				     "file\0", file,
+				     "node\0", node,
+				     "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				     "reference\0", drum_input_pad,
+				     NULL));
+
+    xmlNewProp(node,
+	       "edit\0",
+	       AGS_FILE_TRUE);
+  }
+
+  return(node);
 }
 
 AgsDrumInputPad*

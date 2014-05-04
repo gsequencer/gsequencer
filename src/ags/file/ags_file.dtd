@@ -646,6 +646,7 @@
 <!ELEMENT ags-drum-input-pad EMPTY>
 <!ATTLIST ags-drum-input-pad
 	  id               ID         #REQUIRED
+	  edit             CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-drum-output-pad EMPTY>
@@ -692,7 +693,6 @@
 <!ELEMENT ags-drum-input-line EMPTY>
 <!ATTLIST ags-drum-input-line
 	  id               ID         #REQUIRED
-	  edit             CDATA      #REQUIRED
 	  >
 
 <!ELEMENT ags-drum-output-line EMPTY>
