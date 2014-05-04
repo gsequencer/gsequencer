@@ -594,8 +594,6 @@ ags_recall_set_property(GObject *gobject,
 	  g_object_set(G_OBJECT(container),
 		       "recall_channel_run\0", recall,
 		       NULL);
-	}else{
-	  return;
 	}
       }
 

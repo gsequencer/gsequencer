@@ -205,16 +205,7 @@ ags_panel_show(GtkWidget *widget)
 void
 ags_panel_add_default_recalls(AgsMachine *machine)
 {
-  /* ags-play */
-  ags_recall_factory_create(machine->audio,
-			    NULL, NULL,
-			    "ags-play-master\0",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT,
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
+  //empty
 }
 
 void

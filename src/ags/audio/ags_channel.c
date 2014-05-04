@@ -430,7 +430,7 @@ ags_channel_finalize(GObject *gobject)
 
   //FIXME:JK: wrong ref count
   if(channel->audio != NULL)
-    g_object_unref(channel->audio);
+    //    g_object_unref(channel->audio);
 
   /* AgsRecycling */
   if(((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0 && AGS_IS_INPUT(channel)) ||
