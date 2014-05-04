@@ -688,7 +688,7 @@ void
 ags_audio_real_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old)
 {
-  AgsChannel *channel, *input, *input_pad_last;
+  AgsChannel *channel, *prev_pad, *input, *input_pad_last;
   AgsRecycling *recycling;
   GObject *parent; // of recycling
   GList *list;
@@ -880,6 +880,16 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 						  NULL);
       channel->next->prev = channel;
       channel = channel->next;
+
+      if(type == AGS_TYPE_OUTPUT){
+	channel->prev_pad = ags_channel_pad_last(ags_channel_nth(audio->output,
+								 audio->audio_channels));
+      }else{
+	channel->prev_pad = ags_channel_pad_last(ags_channel_nth(audio->input,
+								 audio->audio_channels));
+      }
+
+      channel->prev_pad->next_pad = channel;
 
       channel->pad = 0;
       channel->audio_channel = j;
@@ -1382,7 +1392,12 @@ ags_audio_real_set_pads(AgsAudio *audio,
   void ags_audio_set_pads_grow(){
     GList *recycling_current;
 
-    prev_pad = ags_channel_nth(channel, (pads_old - 1) * audio->audio_channels);
+    if(type == AGS_TYPE_OUTPUT){
+      prev_pad = ags_channel_pad_last(audio->output);
+    }else{
+      prev_pad = ags_channel_pad_last(audio->input);
+    }
+
     channel = ags_channel_last(prev_pad);
 
     if(set_sync_link){
@@ -1506,12 +1521,16 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
   }
   void ags_audio_set_pads_shrink(){
-    channel = ags_channel_nth(channel, (pads - 1) * audio->audio_channels);
+    channel = ags_channel_nth(channel, pads * audio->audio_channels);
 
-    for(i = 0; i < audio->audio_channels; i++){
-      channel->next_pad = NULL;
+    if(channel->prev_pad != NULL){
+      channel = channel->prev_pad;
 
-      channel = channel->next;
+      for(i = 0; i < audio->audio_channels; i++){
+	channel->next_pad = NULL;
+
+	channel = channel->next;
+      }
     }
 
     channel->prev->next = NULL;
@@ -1731,7 +1750,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     g_message(" -- - grow in\0");
 
-    if(pads > 1){
+    if(pads >= 1){
       if(pads > audio->input_pads){
 	AgsChannel *prev;
 
@@ -1752,17 +1771,16 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	recycling_iter = recycling_prev;
 
 	ags_audio_set_pads_grow();
-      }else if(pads == 0){
-	ags_audio_set_pads_unlink_zero();
-
-	ags_audio_set_pads_shrink_zero();
-	audio->input = NULL;
-
       }else if(pads < audio->input_pads){
 	ags_audio_set_pads_unlink();
 
 	ags_audio_set_pads_shrink();
       }
+    }else if(pads == 0){
+      ags_audio_set_pads_unlink_zero();
+      
+      ags_audio_set_pads_shrink_zero();
+      audio->input = NULL;  
     }
 
     audio->input_pads = pads;

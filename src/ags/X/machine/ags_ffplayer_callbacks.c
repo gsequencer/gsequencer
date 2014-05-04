@@ -134,7 +134,6 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 	gtk_combo_box_text_append_text(ffplayer->instrument,
 				       *instrument);
 
-
 	instrument++;
       }
 
@@ -182,6 +181,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT,
 		     AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->count);
   
+  g_message("????????? %d\0", AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->count);
+
   channel = AGS_MACHINE(ffplayer)->audio->input;
 
   while(channel != NULL){

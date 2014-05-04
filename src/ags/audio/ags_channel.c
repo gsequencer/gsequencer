@@ -222,7 +222,6 @@ ags_channel_init(AgsChannel *channel)
   channel->file_data = NULL;
 }
 
-
 void
 ags_channel_set_property(GObject *gobject,
 			 guint prop_id,
@@ -429,6 +428,7 @@ ags_channel_finalize(GObject *gobject)
 
   channel = AGS_CHANNEL(gobject);
 
+  //FIXME:JK: wrong ref count
   if(channel->audio != NULL)
     g_object_unref(channel->audio);
 

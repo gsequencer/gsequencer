@@ -215,6 +215,7 @@ ags_machine_init(AgsMachine *machine)
   gtk_container_add((GtkContainer *) machine, (GtkWidget *) frame);
 
   machine->audio = ags_audio_new(NULL);
+  g_object_ref(G_OBJECT(machine->audio));
   machine->audio->machine = (GtkWidget *) machine;
 
   machine->output = NULL;

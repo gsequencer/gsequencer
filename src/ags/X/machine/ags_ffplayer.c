@@ -473,9 +473,10 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
   }
 
   instrument = xmlGetProp(node,
-			"instrument\0");
+			  "instrument\0");
 
   /* Get the first iter in the list */
+  list_store = gtk_combo_box_get_model(ffplayer->instrument);
   valid = gtk_tree_model_get_iter_first (list_store, &iter);
   i = 0;
 

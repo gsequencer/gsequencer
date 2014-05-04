@@ -1504,13 +1504,17 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   gchar *task_type;
   guint width, height;
   static gboolean widget_type_is_registered = FALSE;
-  
+
   if(*line_member == NULL){
     gobject = g_object_new(AGS_TYPE_LINE_MEMBER,
 			   NULL);
     *line_member = gobject;
   }else{
     gobject = *line_member;
+
+    if(!AGS_IS_LINE_MEMBER(gobject)){
+      return;
+    }
   }
 
   ags_file_add_id_ref(file,
@@ -1675,6 +1679,10 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   GtkAdjustment *adjustment;
   xmlNode *node;
   gchar *id;
+  
+  if(!AGS_IS_LINE_MEMBER(line_member)){
+    return;
+  }
 
   id = ags_id_generator_create_uuid();
   
