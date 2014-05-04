@@ -591,21 +591,28 @@
 <!ELEMENT ags-drum EMPTY>
 <!ATTLIST ags-drum
 	  id               ID         #REQUIRED
+	  bank-index-0     NMTOKEN    #REQUIRED
+	  bank-index-1     NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-matrix EMPTY>
 <!ATTLIST ags-matrix
 	  id               ID         #REQUIRED
+	  bank-index-0     NMTOKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-synth EMPTY>
 <!ATTLIST ags-synth
 	  id               ID         #REQUIRED
+	  lower            NMTOKEN    #REQUIRED
+	  loop-begin       NMTOKEN    #REQUIRED
+	  loop-end         NMOTKEN    #REQUIRED
 	  >
 
 <!ELEMENT ags-ffplayer EMPTY>
 <!ATTLIST ags-ffplayer
 	  id               ID         #REQUIRED
+	  soundfont        CDATA      #IMPLIED
 	  >
 
 <!ELEMENT ags-pad-list (ags-pad*)>
