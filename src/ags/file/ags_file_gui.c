@@ -1507,6 +1507,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   xmlNode *child;
   xmlChar *prop, *content;
   gchar *widget_type;
+  gchar *label;
   gchar *task_type;
   guint width, height;
   static gboolean widget_type_is_registered = FALSE;
@@ -1542,6 +1543,13 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   gobject->widget_type = g_type_from_name(widget_type);
   child_widget = (GtkWidget *) g_object_new(g_type_from_name(widget_type),
 					    NULL);
+
+  label = (gchar *) xmlGetProp(node, "label\0");
+
+  if(label != NULL){
+    ags_line_member_set_label(gobject, label);
+  }
+
 
   gtk_container_add(GTK_CONTAINER(gobject),
 		    child_widget);
@@ -1710,6 +1718,18 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   xmlNewProp(node,
 	     "widget-type\0",
 	     g_type_name(line_member->widget_type));
+
+  if(line_member->label != NULL){
+    gchar *label;
+
+    g_object_get(G_OBJECT(line_member),
+		 "label\0", &label,
+		 NULL);
+
+    xmlNewProp(node,
+	       "label\0",
+	       g_strdup(label));
+  }
 
   if(line_member->task_type != G_TYPE_NONE){
     xmlNewProp(node,

@@ -50,6 +50,7 @@ struct _AgsLineMember
   guint flags;
 
   GType widget_type;
+  gchar *label;
 
   gchar *plugin_name;
   gchar *specifier;
@@ -72,6 +73,9 @@ struct _AgsLineMemberClass
 };
 
 GType ags_line_member_get_type(void);
+
+void ags_line_member_set_label(AgsLineMember *line_member,
+			       gchar *label);
 
 void ags_line_member_change_port(AgsLineMember *line_member,
 				 gpointer port_data);

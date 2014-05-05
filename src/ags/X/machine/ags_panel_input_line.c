@@ -130,17 +130,15 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
 
-  line_member = ags_line_member_new();
+  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+					       "widget-type\0", GTK_TYPE_CHECK_BUTTON,
+					       "label\0", "mute\0",
+					       NULL);
   line_member->flags |= AGS_LINE_MEMBER_DEFAULT_TEMPLATE;
-  line_member->widget_type = GTK_TYPE_CHECK_BUTTON;
   ags_expander_add(AGS_LINE(panel_input_line)->expander,
 		   GTK_WIDGET(line_member),
 		   0, 0,
 		   1, 1);
-
-  panel_input_line->mute = (GtkCheckButton *) gtk_check_button_new_with_label("mute\0");
-  gtk_container_add(GTK_CONTAINER(line_member),
-		    GTK_WIDGET(panel_input_line->mute));
 }
 
 void

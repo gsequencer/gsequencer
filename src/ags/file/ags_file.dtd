@@ -740,6 +740,7 @@
 	  id                   ID         #REQUIRED
 	  flags                PCDATA     #REQUIRED
 	  widget-type          CDATA      "AgsDial"
+	  label                CDATA      #IMPLIED
 	  port                 CDATA      #REQUIRED
 	  task-type            CDATA      #REQUIRED
 	  left-attach          NMTOKEN    #REQUIRED

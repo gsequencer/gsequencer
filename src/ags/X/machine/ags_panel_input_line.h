@@ -38,8 +38,6 @@ typedef struct _AgsPanelInputLineClass AgsPanelInputLineClass;
 struct _AgsPanelInputLine
 {
   AgsLine line;
-
-  GtkCheckButton *mute;
 };
 
 struct _AgsPanelInputLineClass
