@@ -163,7 +163,6 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_thread_add_child(gobject,
 			       AGS_AUDIO_LOOP(gobject)->task_thread);
 
-
 	  /* devout thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
 
@@ -254,6 +253,7 @@ ags_file_read_thread_resolve_devout(AgsFileLookup *file_lookup,
 void
 ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
+  thread->flags &= (~AGS_THREAD_RUNNING);
   ags_thread_start(thread);
 }
 
@@ -372,7 +372,7 @@ ags_file_read_thread_list(AgsFile *file, xmlNode *node, GList **thread)
     child = child->next;
   }
 
-  list = g_list_reverse(list);
+  //  list = g_list_reverse(list);
   *thread = list;
 
   ags_file_add_id_ref(file,

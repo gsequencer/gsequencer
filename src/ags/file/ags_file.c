@@ -831,6 +831,7 @@ void
 ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 {
   AgsMain *gobject;
+  GList *list;
   xmlNode *child;
   int argc;
   static const gchar *argv[] = {
@@ -913,6 +914,16 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
   }
 
   AGS_TASK_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread)->thread_pool = gobject->thread_pool;
+  AGS_THREAD_POOL(gobject->thread_pool)->parent = AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread);
+
+  list = AGS_THREAD_POOL(gobject->thread_pool)->returnable_thread;
+
+  while(list != NULL){
+    ags_thread_add_child(AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread),
+			 AGS_THREAD(list->data));
+
+    list = list->next;
+  }
 
   gtk_widget_show_all(GTK_WIDGET(gobject->window));
 }
