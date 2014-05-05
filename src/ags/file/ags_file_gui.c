@@ -1686,10 +1686,6 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   xmlNode *node;
   gchar *id;
   
-  if(!AGS_IS_LINE_MEMBER(line_member)){
-    return;
-  }
-
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
@@ -1895,7 +1891,9 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
   list = line_member;
 
   while(list != NULL){
-    ags_file_write_line_member(file, node, AGS_LINE_MEMBER(list->data));
+    if(AGS_IS_LINE_MEMBER(list->data)){
+      ags_file_write_line_member(file, node, AGS_LINE_MEMBER(list->data));
+    }
 
     list = list->next;
   }

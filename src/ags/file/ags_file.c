@@ -913,6 +913,7 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     child = child->next;
   }
 
+  //TODO:JK: should be resolved
   AGS_TASK_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread)->thread_pool = gobject->thread_pool;
   AGS_THREAD_POOL(gobject->thread_pool)->parent = AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread);
 

@@ -40,6 +40,7 @@
 #include <ags/audio/recall/ags_volume_channel_run.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
 
 #include <ags/X/machine/ags_synth.h>
@@ -55,6 +56,8 @@ void ags_synth_input_line_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_synth_input_line_get_xml_type(AgsPlugin *plugin);
 void ags_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
+				       AgsSynthInputLine *synth_input_line);
 xmlNode* ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
@@ -86,6 +89,12 @@ ags_synth_input_line_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_synth_input_line_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_synth_input_line = g_type_register_static(AGS_TYPE_LINE,
 						       "AgsSynthInputLine\0", &ags_synth_input_line_info,
 						       0);
@@ -93,6 +102,10 @@ ags_synth_input_line_get_type()
     g_type_add_interface_static(ags_type_synth_input_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_synth_input_line,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_synth_input_line);
@@ -239,6 +252,7 @@ void
 ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsSynthInputLine *gobject;
+  AgsFileLookup *file_lookup;
   xmlNode *child;
 
   gobject = AGS_SYNTH_INPUT_LINE(plugin);
@@ -251,6 +265,17 @@ ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
+
+  gobject->oscillator = ags_oscillator_new();
+
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_synth_input_line_resolve_line), gobject);
 
   /* child elements */
   child = node->children;
@@ -266,6 +291,16 @@ ags_synth_input_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
     child = child->next;
   }
+}
+
+void
+ags_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
+				  AgsSynthInputLine *synth_input_line)
+{
+  ags_expander_add(AGS_LINE(synth_input_line)->expander,
+		   GTK_WIDGET(synth_input_line->oscillator),
+		   0, 0,
+		   1, 1);
 }
 
 xmlNode*
@@ -297,7 +332,7 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   ags_file_write_oscillator(file, node, synth_input_line->oscillator);
 
   xmlAddChild(parent,
-	      node);  
+	      node);
 }
 
 AgsSynthInputLine*

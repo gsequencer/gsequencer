@@ -39,6 +39,9 @@ struct _AgsMixer
 {
   AgsMachine machine;
 
+  gchar *name;
+  gchar *xml_type;
+
   GtkHBox *input_pad;
 };
 

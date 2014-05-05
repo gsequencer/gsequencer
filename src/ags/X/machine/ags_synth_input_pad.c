@@ -20,6 +20,15 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/util/ags_id_generator.h>
+
+#include <ags/object/ags_plugin.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_synth.h>
@@ -28,10 +37,17 @@
 
 void ags_synth_input_pad_class_init(AgsSynthInputPadClass *synth_input_pad);
 void ags_synth_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_synth_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad);
 void ags_synth_input_pad_destroy(GtkObject *object);
 void ags_synth_input_pad_connect(AgsConnectable *connectable);
 void ags_synth_input_pad_disconnect(AgsConnectable *connectable);
+gchar* ags_synth_input_pad_get_name(AgsPlugin *plugin);
+void ags_synth_input_pad_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_synth_input_pad_get_xml_type(AgsPlugin *plugin);
+void ags_synth_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_synth_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_synth_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_synth_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
@@ -64,6 +80,12 @@ ags_synth_input_pad_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_synth_input_pad_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_synth_input_pad = g_type_register_static(AGS_TYPE_PAD,
 						      "AgsSynthInputPad\0", &ags_synth_input_pad_info,
 						      0);
@@ -71,6 +93,10 @@ ags_synth_input_pad_get_type()
     g_type_add_interface_static(ags_type_synth_input_pad,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_synth_input_pad,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_synth_input_pad);
@@ -99,8 +125,21 @@ ags_synth_input_pad_connectable_interface_init(AgsConnectableInterface *connecta
 }
 
 void
+ags_synth_input_pad_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_synth_input_pad_get_name;
+  plugin->set_name = ags_synth_input_pad_set_name;
+  plugin->get_xml_type = ags_synth_input_pad_get_xml_type;
+  plugin->set_xml_type = ags_synth_input_pad_set_xml_type;
+  plugin->read = ags_synth_input_pad_read;
+  plugin->write = ags_synth_input_pad_write;
+}
+
+void
 ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad)
 {
+  synth_input_pad->name = NULL;
+  synth_input_pad->xml_type = "ags-synth-input-pad\0";
 }
 
 void
@@ -130,6 +169,81 @@ void
 ags_synth_input_pad_destroy(GtkObject *object)
 {
   /* empty */
+}
+
+gchar*
+ags_synth_input_pad_get_name(AgsPlugin *plugin)
+{
+  return(AGS_SYNTH_INPUT_PAD(plugin)->name);
+}
+
+void
+ags_synth_input_pad_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_SYNTH_INPUT_PAD(plugin)->name = name;
+}
+
+gchar*
+ags_synth_input_pad_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_SYNTH_INPUT_PAD(plugin)->xml_type);
+}
+
+void
+ags_synth_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_SYNTH_INPUT_PAD(plugin)->xml_type = xml_type;
+}
+
+void
+ags_synth_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsSynthInputPad *gobject;
+  AgsFileLookup *file_lookup;
+
+  gobject = AGS_SYNTH_INPUT_PAD(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+}
+
+xmlNode*
+ags_synth_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsSynthInputPad *synth_input_pad;
+  xmlNode *node;
+  gchar *id;
+
+  synth_input_pad = AGS_SYNTH_INPUT_PAD(plugin);
+  node = NULL;
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-synth-input-pad\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", synth_input_pad,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);  
+
+  return(node);
 }
 
 void

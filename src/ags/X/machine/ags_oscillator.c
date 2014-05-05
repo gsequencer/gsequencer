@@ -111,7 +111,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    0, 1, 0, 1);
 
   /* wave */
-  oscillator->wave = (GtkComboBox *) gtk_combo_box_new();
+  oscillator->wave = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) oscillator->wave,
 			    1, 2, 0, 1);

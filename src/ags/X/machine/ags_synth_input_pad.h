@@ -38,6 +38,9 @@ typedef struct _AgsSynthInputPadClass AgsSynthInputPadClass;
 struct _AgsSynthInputPad
 {
   AgsPad pad;
+
+  gchar *name;
+  gchar *xml_type;
 };
 
 struct _AgsSynthInputPadClass
