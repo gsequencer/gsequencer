@@ -576,7 +576,7 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
       }else if(!xmlStrncmp(child->name,
 			   "ags-pad-list\0",
 			   12)){
-	GList *pad;
+	GList *pad, *list;
 
 	pad = NULL;
 
@@ -588,11 +588,37 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 				  AGS_FILE_SCOPE_PROP),
 		       "output\0",
 		       6)){
-	  ags_container_add_all(gobject->output,
-				pad);
+	  if(!GTK_IS_BOX(gobject->output)){
+	    ags_container_add_all(gobject->output,
+				  pad);
+	  }else{
+	    list = pad;
+
+	    while(list != NULL){
+	      gtk_box_pack_start(GTK_BOX(gobject->output),
+				 GTK_WIDGET(list->data),
+				 FALSE, FALSE,
+				 0);
+
+	      list = list->next;
+	    }
+	  }
 	}else{
-	  ags_container_add_all(gobject->input,
-				pad);
+	  if(!GTK_IS_BOX(gobject->input)){
+	    ags_container_add_all(gobject->input,
+				  pad);
+	  }else{
+	    list = pad;
+
+	    while(list != NULL){
+	      gtk_box_pack_start(GTK_BOX(gobject->input),
+				 GTK_WIDGET(list->data),
+				 FALSE, FALSE,
+				 0);
+
+	      list = list->next;
+	    }
+	  }
 	}
 
 	g_list_free(pad);
@@ -1551,8 +1577,6 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   label = (gchar *) xmlGetProp(node, "label\0");
 
   if(label != NULL){
-    g_message("got it!!!\0");
-
     g_object_set(G_OBJECT(gobject),
 		 "widget-label\0", label,
 		 NULL);
