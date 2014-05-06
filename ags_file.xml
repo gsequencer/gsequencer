@@ -1,120 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ags>
-  <ags-main id="0c55585e-d4b0-11e3-82ad-a820662d5db4" flags="0" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07">
-    <ags-thread id="0c555dd6-d4b0-11e3-82ad-a820662d5db4" type="AgsAudioLoop" flags="10003" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
-      <ags-audio-loop id="0c55622c-d4b0-11e3-82ad-a820662d5db4" devout-thread="xpath=//ags-thread[@id='0c556ca4-d4b0-11e3-82ad-a820662d5db4']" gui-thread="xpath=//ags-thread[@id='0c556952-d4b0-11e3-82ad-a820662d5db4']" task-thread="xpath=//ags-thread[@id='0c556600-d4b0-11e3-82ad-a820662d5db4']"/>
+  <ags-main id="5b5352c2-d518-11e3-b1c4-a820662d5db4" flags="0" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07">
+    <ags-thread id="5b55285e-d518-11e3-b1c4-a820662d5db4" type="AgsAudioLoop" flags="10003" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
+      <ags-audio-loop id="5b55dac4-d518-11e3-b1c4-a820662d5db4" devout-thread="xpath=//ags-thread[@id='5b569c2a-d518-11e3-b1c4-a820662d5db4']" gui-thread="xpath=//ags-thread[@id='5b56851e-d518-11e3-b1c4-a820662d5db4']" task-thread="xpath=//ags-thread[@id='5b5653d2-d518-11e3-b1c4-a820662d5db4']"/>
       <ags-thread-list>
-        <ags-thread id="0c556600-d4b0-11e3-82ad-a820662d5db4" type="AgsTaskThread" flags="10003" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
+        <ags-thread id="5b5653d2-d518-11e3-b1c4-a820662d5db4" type="AgsTaskThread" flags="10003" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
           <ags-thread-list/>
         </ags-thread>
-        <ags-thread id="0c556952-d4b0-11e3-82ad-a820662d5db4" type="AgsGuiThread" flags="10003" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
+        <ags-thread id="5b56851e-d518-11e3-b1c4-a820662d5db4" type="AgsGuiThread" flags="10003" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
           <ags-thread-list/>
         </ags-thread>
-        <ags-thread id="0c556ca4-d4b0-11e3-82ad-a820662d5db4" type="AgsDevoutThread" flags="0" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
+        <ags-thread id="5b569c2a-d518-11e3-b1c4-a820662d5db4" type="AgsDevoutThread" flags="0" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
           <ags-thread-list>
-            <ags-thread id="0c556fc4-d4b0-11e3-82ad-a820662d5db4" type="AgsTimestampThread" flags="0" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
+            <ags-thread id="5b56b304-d518-11e3-b1c4-a820662d5db4" type="AgsTimestampThread" flags="0" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
               <ags-thread-list/>
             </ags-thread>
           </ags-thread-list>
         </ags-thread>
       </ags-thread-list>
     </ags-thread>
-    <ags-devout-list id="0c55769a-d4b0-11e3-82ad-a820662d5db4">
-      <ags-devout id="0c557aaa-d4b0-11e3-82ad-a820662d5db4" flags="100" dsp-channels="2" pcm-channels="2" bits="16" buffer-size="256" frequency="44100" bpm="120.000000" delay-counter="0.000000" device="hw:0">
-        <ags-audio-list id="0c557dfc-d4b0-11e3-82ad-a820662d5db4">
-          <ags-audio id="0c5580fe-d4b0-11e3-82ad-a820662d5db4" flags="10" sequence-length="0" audio-channels="2" output-pads="1" input-pads="1" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
+    <ags-devout-list id="5b57148e-d518-11e3-b1c4-a820662d5db4">
+      <ags-devout id="5b574648-d518-11e3-b1c4-a820662d5db4" flags="100" dsp-channels="2" pcm-channels="2" bits="16" buffer-size="256" frequency="44100" bpm="120.000000" delay-counter="99222ll" device="hw:0">
+        <ags-audio-list id="5b579be8-d518-11e3-b1c4-a820662d5db4">
+          <ags-audio id="5b57cd20-d518-11e3-b1c4-a820662d5db4" flags="10" sequence-length="0" audio-channels="2" output-pads="1" input-pads="1" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
             <ags-channel-list>
-              <ags-channel id="0c558482-d4b0-11e3-82ad-a820662d5db4" flags="0" pad="0" audio-channel="0">
-                <ags-recall-list id="0c5587f2-d4b0-11e3-82ad-a820662d5db4" is-play="TRUE"/>
-                <ags-recall-list id="0c558af4-d4b0-11e3-82ad-a820662d5db4" is-play="FALSE"/>
-                <ags-output id="0c558e00-d4b0-11e3-82ad-a820662d5db4"/>
+              <ags-channel id="5b583184-d518-11e3-b1c4-a820662d5db4" flags="0" pad="0" audio-channel="0">
+                <ags-recall-list id="5b588e90-d518-11e3-b1c4-a820662d5db4" is-play="TRUE"/>
+                <ags-recall-list id="5b58c446-d518-11e3-b1c4-a820662d5db4" is-play="FALSE"/>
+                <ags-output id="5b58eaf2-d518-11e3-b1c4-a820662d5db4"/>
               </ags-channel>
-              <ags-channel id="0c559404-d4b0-11e3-82ad-a820662d5db4" flags="0" pad="0" audio-channel="1">
-                <ags-recall-list id="0c55972e-d4b0-11e3-82ad-a820662d5db4" is-play="TRUE"/>
-                <ags-recall-list id="0c559a26-d4b0-11e3-82ad-a820662d5db4" is-play="FALSE"/>
-                <ags-output id="0c559d82-d4b0-11e3-82ad-a820662d5db4"/>
+              <ags-channel id="5b595e88-d518-11e3-b1c4-a820662d5db4" flags="0" pad="0" audio-channel="1">
+                <ags-recall-list id="5b597364-d518-11e3-b1c4-a820662d5db4" is-play="TRUE"/>
+                <ags-recall-list id="5b5983e0-d518-11e3-b1c4-a820662d5db4" is-play="FALSE"/>
+                <ags-output id="5b599312-d518-11e3-b1c4-a820662d5db4"/>
               </ags-channel>
             </ags-channel-list>
             <ags-channel-list>
-              <ags-channel id="0c55a368-d4b0-11e3-82ad-a820662d5db4" flags="0" pad="0" audio-channel="0">
-                <ags-recall-list id="0c55a64c-d4b0-11e3-82ad-a820662d5db4" is-play="TRUE">
-                  <ags-recall id="0c55a91c-d4b0-11e3-82ad-a820662d5db4" type="AgsPlayChannel" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
-                    <ags-recall-channel id="0c55aca0-d4b0-11e3-82ad-a820662d5db4">
-                      <ags-play-channel id="0c55af84-d4b0-11e3-82ad-a820662d5db4"/>
+              <ags-channel id="5b59c094-d518-11e3-b1c4-a820662d5db4" flags="0" pad="0" audio-channel="0">
+                <ags-recall-list id="5b59e0e2-d518-11e3-b1c4-a820662d5db4" is-play="TRUE">
+                  <ags-recall id="5b5a00e0-d518-11e3-b1c4-a820662d5db4" type="AgsPlayChannel" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
+                    <ags-recall-channel id="5b5a7aac-d518-11e3-b1c4-a820662d5db4">
+                      <ags-play-channel id="5b5ac03e-d518-11e3-b1c4-a820662d5db4"/>
                     </ags-recall-channel>
-                    <ags-port-list id="0c55b24a-d4b0-11e3-82ad-a820662d5db4">
-                      <ags-port id="0c55b54c-d4b0-11e3-82ad-a820662d5db4" plugin-name="ags-play" specifier="./muted[0]" control-port="2/2" port-data-is-pointer="0" port-data-type="gboolean" port-data-size="4" port-data-length="1">
-                        <ags-value id="0c55b88a-d4b0-11e3-82ad-a820662d5db4" type="gboolean">0</ags-value>
+                    <ags-port-list id="5b5afe78-d518-11e3-b1c4-a820662d5db4">
+                      <ags-port id="5b5b3226-d518-11e3-b1c4-a820662d5db4" plugin-name="ags-play" specifier="./muted[0]" control-port="2/2" port-data-is-pointer="0" port-data-type="gboolean" port-data-size="4" port-data-length="1">
+                        <ags-value id="5b5b8d16-d518-11e3-b1c4-a820662d5db4" type="gboolean">0</ags-value>
                       </ags-port>
-                      <ags-port id="0c55bb8c-d4b0-11e3-82ad-a820662d5db4" plugin-name="ags-play" specifier="./audio-channel[0]" control-port="1/2" port-data-is-pointer="0" port-data-type="guint64" port-data-size="4" port-data-length="1">
-                        <ags-value id="0c55beb6-d4b0-11e3-82ad-a820662d5db4" type="guint64">0</ags-value>
+                      <ags-port id="5b5c5bec-d518-11e3-b1c4-a820662d5db4" plugin-name="ags-play" specifier="./audio-channel[0]" control-port="1/2" port-data-is-pointer="0" port-data-type="guint64" port-data-size="4" port-data-length="1">
+                        <ags-value id="5b5c8950-d518-11e3-b1c4-a820662d5db4" type="guint64">0</ags-value>
                       </ags-port>
                     </ags-port-list>
                   </ags-recall>
-                  <ags-recall id="0c55c3c0-d4b0-11e3-82ad-a820662d5db4" type="AgsPlayChannelRunMaster" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
-                    <ags-recall-channel-run id="0c55c78a-d4b0-11e3-82ad-a820662d5db4">
-                      <ags-play-channel-run-master id="0c55ca0a-d4b0-11e3-82ad-a820662d5db4"/>
+                  <ags-recall id="5b5cd1d0-d518-11e3-b1c4-a820662d5db4" type="AgsPlayChannelRunMaster" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
+                    <ags-recall-channel-run id="5b5d02b8-d518-11e3-b1c4-a820662d5db4">
+                      <ags-play-channel-run-master id="5b5d317a-d518-11e3-b1c4-a820662d5db4"/>
                     </ags-recall-channel-run>
                   </ags-recall>
                 </ags-recall-list>
-                <ags-recall-list id="0c55ce7e-d4b0-11e3-82ad-a820662d5db4" is-play="FALSE"/>
-                <ags-input id="0c55d0fe-d4b0-11e3-82ad-a820662d5db4"/>
+                <ags-recall-list id="5b5d4ffc-d518-11e3-b1c4-a820662d5db4" is-play="FALSE"/>
+                <ags-input id="5b5d70f4-d518-11e3-b1c4-a820662d5db4"/>
               </ags-channel>
-              <ags-channel id="0c55d5fe-d4b0-11e3-82ad-a820662d5db4" flags="0" pad="0" audio-channel="1">
-                <ags-recall-list id="0c55d8a6-d4b0-11e3-82ad-a820662d5db4" is-play="TRUE">
-                  <ags-recall id="0c55db1c-d4b0-11e3-82ad-a820662d5db4" type="AgsPlayChannel" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
-                    <ags-recall-channel id="0c55de00-d4b0-11e3-82ad-a820662d5db4">
-                      <ags-play-channel id="0c55e094-d4b0-11e3-82ad-a820662d5db4"/>
+              <ags-channel id="5b5dc00e-d518-11e3-b1c4-a820662d5db4" flags="0" pad="0" audio-channel="1">
+                <ags-recall-list id="5b5dd184-d518-11e3-b1c4-a820662d5db4" is-play="TRUE">
+                  <ags-recall id="5b5de05c-d518-11e3-b1c4-a820662d5db4" type="AgsPlayChannel" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
+                    <ags-recall-channel id="5b5df7e0-d518-11e3-b1c4-a820662d5db4">
+                      <ags-play-channel id="5b5e0654-d518-11e3-b1c4-a820662d5db4"/>
                     </ags-recall-channel>
-                    <ags-port-list id="0c55e300-d4b0-11e3-82ad-a820662d5db4">
-                      <ags-port id="0c55e56c-d4b0-11e3-82ad-a820662d5db4" plugin-name="ags-play" specifier="./muted[0]" control-port="2/2" port-data-is-pointer="0" port-data-type="gboolean" port-data-size="4" port-data-length="1">
-                        <ags-value id="0c55e80a-d4b0-11e3-82ad-a820662d5db4" type="gboolean">0</ags-value>
+                    <ags-port-list id="5b5e134c-d518-11e3-b1c4-a820662d5db4">
+                      <ags-port id="5b5e2314-d518-11e3-b1c4-a820662d5db4" plugin-name="ags-play" specifier="./muted[0]" control-port="2/2" port-data-is-pointer="0" port-data-type="gboolean" port-data-size="4" port-data-length="1">
+                        <ags-value id="5b5e3584-d518-11e3-b1c4-a820662d5db4" type="gboolean">0</ags-value>
                       </ags-port>
-                      <ags-port id="0c55ea3a-d4b0-11e3-82ad-a820662d5db4" plugin-name="ags-play" specifier="./audio-channel[0]" control-port="1/2" port-data-is-pointer="0" port-data-type="guint64" port-data-size="4" port-data-length="1">
-                        <ags-value id="0c55ee04-d4b0-11e3-82ad-a820662d5db4" type="guint64">1</ags-value>
+                      <ags-port id="5b5e3c78-d518-11e3-b1c4-a820662d5db4" plugin-name="ags-play" specifier="./audio-channel[0]" control-port="1/2" port-data-is-pointer="0" port-data-type="guint64" port-data-size="4" port-data-length="1">
+                        <ags-value id="5b5e4ed4-d518-11e3-b1c4-a820662d5db4" type="guint64">1</ags-value>
                       </ags-port>
                     </ags-port-list>
                   </ags-recall>
-                  <ags-recall id="0c55f200-d4b0-11e3-82ad-a820662d5db4" type="AgsPlayChannelRunMaster" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
-                    <ags-recall-channel-run id="0c55f4e4-d4b0-11e3-82ad-a820662d5db4">
-                      <ags-play-channel-run-master id="0c55f764-d4b0-11e3-82ad-a820662d5db4"/>
+                  <ags-recall id="5b5e5a14-d518-11e3-b1c4-a820662d5db4" type="AgsPlayChannelRunMaster" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
+                    <ags-recall-channel-run id="5b5e70da-d518-11e3-b1c4-a820662d5db4">
+                      <ags-play-channel-run-master id="5b5e7e9a-d518-11e3-b1c4-a820662d5db4"/>
                     </ags-recall-channel-run>
                   </ags-recall>
                 </ags-recall-list>
-                <ags-recall-list id="0c55fb92-d4b0-11e3-82ad-a820662d5db4" is-play="FALSE"/>
-                <ags-input id="0c55fdea-d4b0-11e3-82ad-a820662d5db4"/>
+                <ags-recall-list id="5b5e8fc0-d518-11e3-b1c4-a820662d5db4" is-play="FALSE"/>
+                <ags-input id="5b5e9e16-d518-11e3-b1c4-a820662d5db4"/>
               </ags-channel>
             </ags-channel-list>
-            <ags-recall-container-list id="0c5602e0-d4b0-11e3-82ad-a820662d5db4">
-              <ags-recall-container id="0c560538-d4b0-11e3-82ad-a820662d5db4">
-                <ags-parameter id="0c5607cc-d4b0-11e3-82ad-a820662d5db4" name="recall-audio recall-channel recall-channel-run">
-                  <ags-value id="0c5609b6-d4b0-11e3-82ad-a820662d5db4" type="GObject" link="xpath=//*[@id='0c562dc4-d4b0-11e3-82ad-a820662d5db4']"/>
-                  <ags-value id="0c560c0e-d4b0-11e3-82ad-a820662d5db4" type="GObject" link="xpath=//*[@id='0c55e094-d4b0-11e3-82ad-a820662d5db4']"/>
-                  <ags-value id="0c560e84-d4b0-11e3-82ad-a820662d5db4" type="GObject" link="xpath=//*[@id='0c55f764-d4b0-11e3-82ad-a820662d5db4']"/>
+            <ags-recall-container-list id="5b5ec4ea-d518-11e3-b1c4-a820662d5db4">
+              <ags-recall-container id="5b5ef6c2-d518-11e3-b1c4-a820662d5db4">
+                <ags-parameter id="5b5f688c-d518-11e3-b1c4-a820662d5db4" name="recall-audio recall-channel recall-channel-run">
+                  <ags-value id="5b5f8538-d518-11e3-b1c4-a820662d5db4" type="GObject" link="xpath=//*[@id='5b60e874-d518-11e3-b1c4-a820662d5db4']"/>
+                  <ags-value id="5b5fbf3a-d518-11e3-b1c4-a820662d5db4" type="GObject" link="xpath=//*[@id='5b5e0654-d518-11e3-b1c4-a820662d5db4']"/>
+                  <ags-value id="5b5fcdcc-d518-11e3-b1c4-a820662d5db4" type="GObject" link="xpath=//*[@id='5b5e7e9a-d518-11e3-b1c4-a820662d5db4']"/>
                 </ags-parameter>
               </ags-recall-container>
-              <ags-recall-container id="0c5610dc-d4b0-11e3-82ad-a820662d5db4">
-                <ags-parameter id="0c5613ac-d4b0-11e3-82ad-a820662d5db4" name="recall-audio recall-channel recall-channel-run">
-                  <ags-value id="0c561596-d4b0-11e3-82ad-a820662d5db4" type="GObject" link="xpath=//*[@id='0c562446-d4b0-11e3-82ad-a820662d5db4']"/>
-                  <ags-value id="0c5617ee-d4b0-11e3-82ad-a820662d5db4" type="GObject" link="xpath=//*[@id='0c55af84-d4b0-11e3-82ad-a820662d5db4']"/>
-                  <ags-value id="0c561a50-d4b0-11e3-82ad-a820662d5db4" type="GObject" link="xpath=//*[@id='0c55ca0a-d4b0-11e3-82ad-a820662d5db4']"/>
+              <ags-recall-container id="5b5fef0a-d518-11e3-b1c4-a820662d5db4">
+                <ags-parameter id="5b60008a-d518-11e3-b1c4-a820662d5db4" name="recall-audio recall-channel recall-channel-run">
+                  <ags-value id="5b6007b0-d518-11e3-b1c4-a820662d5db4" type="GObject" link="xpath=//*[@id='5b60a756-d518-11e3-b1c4-a820662d5db4']"/>
+                  <ags-value id="5b6015c0-d518-11e3-b1c4-a820662d5db4" type="GObject" link="xpath=//*[@id='5b5ac03e-d518-11e3-b1c4-a820662d5db4']"/>
+                  <ags-value id="5b60239e-d518-11e3-b1c4-a820662d5db4" type="GObject" link="xpath=//*[@id='5b5d317a-d518-11e3-b1c4-a820662d5db4']"/>
                 </ags-parameter>
               </ags-recall-container>
             </ags-recall-container-list>
-            <ags-recall-list id="0c561c9e-d4b0-11e3-82ad-a820662d5db4" is-play="TRUE">
-              <ags-recall id="0c561ef6-d4b0-11e3-82ad-a820662d5db4" type="AgsPlayAudio" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
+            <ags-recall-list id="5b603dde-d518-11e3-b1c4-a820662d5db4" is-play="TRUE">
+              <ags-recall id="5b604cca-d518-11e3-b1c4-a820662d5db4" type="AgsPlayAudio" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
                 <ags-recall-audio>
-                  <ags-play-audio id="0c562446-d4b0-11e3-82ad-a820662d5db4"/>
+                  <ags-play-audio id="5b60a756-d518-11e3-b1c4-a820662d5db4"/>
                 </ags-recall-audio>
               </ags-recall>
-              <ags-recall id="0c562888-d4b0-11e3-82ad-a820662d5db4" type="AgsPlayAudio" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
+              <ags-recall id="5b60c29a-d518-11e3-b1c4-a820662d5db4" type="AgsPlayAudio" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="13d" effect="" name="ags-play" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
                 <ags-recall-audio>
-                  <ags-play-audio id="0c562dc4-d4b0-11e3-82ad-a820662d5db4"/>
+                  <ags-play-audio id="5b60e874-d518-11e3-b1c4-a820662d5db4"/>
                 </ags-recall-audio>
               </ags-recall>
             </ags-recall-list>
-            <ags-recall-list id="0c5631de-d4b0-11e3-82ad-a820662d5db4" is-play="FALSE"/>
-            <ags-notation-list id="0c563440-d4b0-11e3-82ad-a820662d5db4"/>
+            <ags-recall-list id="5b61058e-d518-11e3-b1c4-a820662d5db4" is-play="FALSE"/>
+            <ags-notation-list id="5b611f6a-d518-11e3-b1c4-a820662d5db4"/>
           </ags-audio>
         </ags-audio-list>
         <ags-delay-data checksum="ed031fe9dfd2b983df484142b705ac5a">0
@@ -185,22 +185,22 @@
 </ags-attack-data>
       </ags-devout>
     </ags-devout-list>
-    <ags-window id="0c563904-d4b0-11e3-82ad-a820662d5db4" flags="0" name="unnamed" devout="xpath=//ags-devout[@id='0c557aaa-d4b0-11e3-82ad-a820662d5db4']">
-      <ags-menu-bar id="0c563c24-d4b0-11e3-82ad-a820662d5db4"/>
-      <ags-machine-list id="0c563ea4-d4b0-11e3-82ad-a820662d5db4">
-        <ags-machine id="0c564106-d4b0-11e3-82ad-a820662d5db4" type="AgsPanel" version="0.4.0-beta" build-id="0.4.0-beta" flags="20" file-input-flags="0" name="Default 0" audio="xpath=//ags-audio[@id='0c5580fe-d4b0-11e3-82ad-a820662d5db4']">
-          <ags-pad-list id="0c56458e-d4b0-11e3-82ad-a820662d5db4" scope="output"/>
-          <ags-pad-list id="0c564854-d4b0-11e3-82ad-a820662d5db4" scope="input">
-            <ags-pad id="0c564ab6-d4b0-11e3-82ad-a820662d5db4" type="AgsPanelInputPad" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="1">
-              <ags-line-list id="0c564e6c-d4b0-11e3-82ad-a820662d5db4">
-                <ags-line id="0c565100-d4b0-11e3-82ad-a820662d5db4" type="AgsPanelInputLine" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="5" left-attach="0" top-attach="1" right-attach="1" bottom-attach="2">
-                  <ags-line-member-list id="0c5654ca-d4b0-11e3-82ad-a820662d5db4">
-                    <ags-line-member id="0c56575e-d4b0-11e3-82ad-a820662d5db4" flags="3" widget-type="GtkCheckButton" label="@ÐDþ" value="FALSE" left-attach="0" top-attach="0" right-attach="1" bottom-attach="1" width="-1" height="-1" port="xpath=//ags-port[@id='0c5661a4-d4b0-11e3-82ad-a820662d5db4']"/>
+    <ags-window id="5b63b2d4-d518-11e3-b1c4-a820662d5db4" flags="0" name="unnamed" devout="xpath=//ags-devout[@id='5b574648-d518-11e3-b1c4-a820662d5db4']">
+      <ags-menu-bar id="5b63fdd4-d518-11e3-b1c4-a820662d5db4"/>
+      <ags-machine-list id="5b6431dc-d518-11e3-b1c4-a820662d5db4">
+        <ags-machine id="5b646238-d518-11e3-b1c4-a820662d5db4" type="AgsPanel" version="0.4.0-beta" build-id="0.4.0-beta" flags="20" file-input-flags="0" name="Default 0" audio="xpath=//ags-audio[@id='5b57cd20-d518-11e3-b1c4-a820662d5db4']">
+          <ags-pad-list id="5b64f91e-d518-11e3-b1c4-a820662d5db4" scope="output"/>
+          <ags-pad-list id="5b65362c-d518-11e3-b1c4-a820662d5db4" scope="input">
+            <ags-pad id="5b6551e8-d518-11e3-b1c4-a820662d5db4" type="AgsPanelInputPad" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="1">
+              <ags-line-list id="5b65a3dc-d518-11e3-b1c4-a820662d5db4">
+                <ags-line id="5b65d500-d518-11e3-b1c4-a820662d5db4" type="AgsPanelInputLine" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="5" left-attach="0" top-attach="1" right-attach="1" bottom-attach="2">
+                  <ags-line-member-list id="5b662730-d518-11e3-b1c4-a820662d5db4">
+                    <ags-line-member id="5b665d40-d518-11e3-b1c4-a820662d5db4" flags="3" widget-type="GtkCheckButton" label="mute" value="FALSE" left-attach="0" top-attach="0" right-attach="1" bottom-attach="1" width="-1" height="-1" port="xpath=//ags-port[@id='5b67dc74-d518-11e3-b1c4-a820662d5db4']"/>
                   </ags-line-member-list>
                 </ags-line>
-                <ags-line id="0c565d44-d4b0-11e3-82ad-a820662d5db4" type="AgsPanelInputLine" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="5" left-attach="0" top-attach="0" right-attach="1" bottom-attach="1">
-                  <ags-line-member-list id="0c5661a4-d4b0-11e3-82ad-a820662d5db4">
-                    <ags-line-member id="0c56647e-d4b0-11e3-82ad-a820662d5db4" flags="3" widget-type="GtkCheckButton" label="ÀfÚ" value="FALSE" left-attach="0" top-attach="0" right-attach="1" bottom-attach="1" width="-1" height="-1" port="xpath=//ags-port[@id='0c5661a4-d4b0-11e3-82ad-a820662d5db4']"/>
+                <ags-line id="5b67c11c-d518-11e3-b1c4-a820662d5db4" type="AgsPanelInputLine" version="0.4.0-beta" build-id="CEST 04-12-2013 03:07" flags="5" left-attach="0" top-attach="0" right-attach="1" bottom-attach="1">
+                  <ags-line-member-list id="5b67dc74-d518-11e3-b1c4-a820662d5db4">
+                    <ags-line-member id="5b67ef48-d518-11e3-b1c4-a820662d5db4" flags="3" widget-type="GtkCheckButton" label="mute" value="FALSE" left-attach="0" top-attach="0" right-attach="1" bottom-attach="1" width="-1" height="-1" port="xpath=//ags-port[@id='5b67dc74-d518-11e3-b1c4-a820662d5db4']"/>
                   </ags-line-member-list>
                 </ags-line>
               </ags-line-list>
@@ -208,7 +208,7 @@
           </ags-pad-list>
         </ags-machine>
       </ags-machine-list>
-      <ags-editor id="0c566960-d4b0-11e3-82ad-a820662d5db4" version="0.4.0" build-id="0.4.0" flags="0"/>
+      <ags-editor id="5b68622a-d518-11e3-b1c4-a820662d5db4" version="0.4.0" build-id="0.4.0" flags="0"/>
     </ags-window>
   </ags-main>
 </ags>

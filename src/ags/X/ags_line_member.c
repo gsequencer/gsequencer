@@ -59,7 +59,7 @@ enum{
 enum{
   PROP_0,
   PROP_WIDGET_TYPE,
-  PROP_LABEL,
+  PROP_WIDGET_LABEL,
   PROP_PLUGIN_NAME,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
@@ -135,13 +135,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_WIDGET_TYPE,
 				  param_spec);
 
-  param_spec = g_param_spec_string("label\0",
+  param_spec = g_param_spec_string("widget-label\0",
 				   "label to display\0",
 				   "The label to display\0",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_LABEL,
+				  PROP_WIDGET_LABEL,
 				  param_spec);
 
   param_spec = g_param_spec_string("plugin-name\0",
@@ -191,7 +191,7 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->flags = AGS_LINE_MEMBER_RESET_BY_ATOMIC;
 
   line_member->widget_type = AGS_TYPE_DIAL;
-  line_member->label = NULL;
+  line_member->widget_label = NULL;
 
   line_member->plugin_name = NULL;
   line_member->specifier = NULL;
@@ -241,13 +241,13 @@ ags_line_member_set_property(GObject *gobject,
 			
     }
     break;
-  case PROP_LABEL:
+  case PROP_WIDGET_LABEL:
     {
       gchar *label;
 
       label = g_value_get_string(value);
 
-      if(label == line_member->label){
+      if(label == line_member->widget_label){
 	return;
       }
 
@@ -362,9 +362,9 @@ ags_line_member_get_property(GObject *gobject,
       g_value_set_ulong(value, line_member->widget_type);
     }
     break;
-  case PROP_LABEL:
+  case PROP_WIDGET_LABEL:
     {
-      g_value_set_string(value, line_member->label);
+      g_value_set_string(value, line_member->widget_label);
     }
     break;
   case PROP_PLUGIN_NAME:
@@ -467,7 +467,7 @@ ags_line_member_set_label(AgsLineMember *line_member,
   }
 
 
-  line_member->label = label;
+  line_member->widget_label = label;
 }
 
 void

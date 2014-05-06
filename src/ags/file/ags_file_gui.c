@@ -1544,15 +1544,19 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   child_widget = (GtkWidget *) g_object_new(g_type_from_name(widget_type),
 					    NULL);
 
+  gtk_container_add(GTK_CONTAINER(gobject),
+		    child_widget);
+
+  /* label */
   label = (gchar *) xmlGetProp(node, "label\0");
 
   if(label != NULL){
-    ags_line_member_set_label(gobject, label);
+    g_message("got it!!!\0");
+
+    g_object_set(G_OBJECT(gobject),
+		 "widget-label\0", label,
+		 NULL);
   }
-
-
-  gtk_container_add(GTK_CONTAINER(gobject),
-		    child_widget);
 
   /* size */
   width = (guint) g_ascii_strtoull(xmlGetProp(node, "width\0"),
@@ -1717,18 +1721,12 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
   xmlNewProp(node,
 	     "widget-type\0",
-	     g_type_name(line_member->widget_type));
+	     g_strdup_printf("%s\0", g_type_name(line_member->widget_type)));
 
-  if(line_member->label != NULL){
-    gchar *label;
-
-    g_object_get(G_OBJECT(line_member),
-		 "label\0", &label,
-		 NULL);
-
+  if(line_member->widget_label != NULL){
     xmlNewProp(node,
 	       "label\0",
-	       g_strdup(label));
+	       g_strdup_printf("%s\0", line_member->widget_label));
   }
 
   if(line_member->task_type != G_TYPE_NONE){

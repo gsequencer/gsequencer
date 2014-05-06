@@ -348,7 +348,7 @@ ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout)
   /*  */  
   xmlNewProp(node,
 	     "delay-counter\0",
-	     g_strdup_printf("%f\0", devout->delay_counter));
+	     g_strdup_printf("%ull\0", devout->delay_counter));
 
   xmlNewProp(node,
 	     "device\0",

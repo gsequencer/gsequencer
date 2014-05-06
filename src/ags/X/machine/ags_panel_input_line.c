@@ -132,8 +132,12 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type\0", GTK_TYPE_CHECK_BUTTON,
-					       "label\0", "mute\0",
+					       "widget-label\0", g_strdup("mute\0"),
+					       "plugin-name\0", "ags-play\0",
+					       "specifier\0", "mute[0]\0",
+					       "control-port\0", "1/1\0",
 					       NULL);
+
   line_member->flags |= AGS_LINE_MEMBER_DEFAULT_TEMPLATE;
   ags_expander_add(AGS_LINE(panel_input_line)->expander,
 		   GTK_WIDGET(line_member),

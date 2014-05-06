@@ -50,7 +50,7 @@ struct _AgsLineMember
   guint flags;
 
   GType widget_type;
-  gchar *label;
+  gchar *widget_label;
 
   gchar *plugin_name;
   gchar *specifier;
