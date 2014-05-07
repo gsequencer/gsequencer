@@ -387,7 +387,7 @@ ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *devout = list;
 
   ags_file_add_id_ref(file,
@@ -540,7 +540,7 @@ ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *play = list;
 
   ags_file_add_id_ref(file,
@@ -992,7 +992,7 @@ ags_file_read_audio_list(AgsFile *file, xmlNode *node, GList **audio)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *audio = list;
 }
 
@@ -1406,7 +1406,7 @@ ags_file_read_channel_list(AgsFile *file, xmlNode *node, GList **channel)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *channel = list;
 
   ags_file_add_id_ref(file,
@@ -2015,7 +2015,7 @@ ags_file_read_recall_list(AgsFile *file, xmlNode *node, GList **recall)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *recall = list;
 
   ags_file_add_id_ref(file,
@@ -2301,7 +2301,7 @@ ags_file_read_recall_container_list(AgsFile *file, xmlNode *node, GList **recall
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *recall_container = list;
 }
 
@@ -3050,7 +3050,7 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
 
   /* connect resolve */
   iter = list;
@@ -3257,7 +3257,7 @@ ags_file_read_recycling_list(AgsFile *file, xmlNode *node, GList **recycling)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *recycling = list;
 
   ags_file_add_id_ref(file,
@@ -3504,7 +3504,7 @@ ags_file_read_audio_signal_list(AgsFile *file, xmlNode *node, GList **audio_sign
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   *audio_signal = list;
 
   ags_file_add_id_ref(file,
@@ -3740,7 +3740,7 @@ ags_file_read_stream_list(AgsFile *file, xmlNode *node,
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
   ags_file_read_stream_list_sort(&list, index);
   *stream = list;
 
@@ -3949,7 +3949,7 @@ ags_file_read_pattern_list(AgsFile *file, xmlNode *node, GList **pattern)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
 
   *pattern = list;
 
@@ -4377,7 +4377,7 @@ ags_file_read_notation_list(AgsFile *file, xmlNode *node, GList **notation)
     child = child->next;
   }
 
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
 
   *notation = list;
 
@@ -4563,7 +4563,7 @@ ags_file_read_note_list(AgsFile *file, xmlNode *node, GList **note)
     child = child->next;
   }
   
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
 
   *note = list;
 
@@ -4848,7 +4848,7 @@ ags_file_read_task_list(AgsFile *file, xmlNode *node, GList **task)
     child = child->next;
   }
   
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
 
   *task = list;
 
@@ -5021,7 +5021,7 @@ ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp)
     child = child->next;
   }
   
-  //  list = g_list_reverse(list);
+  list = g_list_reverse(list);
 
   *timestamp = list;
 

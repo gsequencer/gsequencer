@@ -955,7 +955,7 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", AGS_MAIN(ags_main)->flags));
+	     g_strdup_printf("%x\0", ((~AGS_MAIN_CONNECTED) & (AGS_MAIN(ags_main)->flags))));
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,

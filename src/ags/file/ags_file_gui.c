@@ -1083,7 +1083,7 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", pad->flags));
+	     g_strdup_printf("%x\0", ((~AGS_PAD_CONNECTED) & (pad->flags))));
 
   xmlAddChild(parent,
 	      node);
@@ -1387,7 +1387,7 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", line->flags));
+	     g_strdup_printf("%x\0", ((~AGS_LINE_CONNECTED)&(line->flags))));
 
   xmlAddChild(parent,
 	      node);
