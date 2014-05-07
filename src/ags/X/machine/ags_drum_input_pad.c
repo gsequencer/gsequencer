@@ -334,7 +334,7 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
     xmlNewProp(node,
 	       "edit\0",
-	       AGS_FILE_TRUE);
+	       g_strdup_printf("%s\0", AGS_FILE_TRUE));
 
     xmlAddChild(parent,
 		node);  

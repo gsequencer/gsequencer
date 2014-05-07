@@ -1721,6 +1721,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   GtkAdjustment *adjustment;
   xmlNode *node;
   gchar *id;
+  gchar *label;
   
   id = ags_id_generator_create_uuid();
   
@@ -1747,10 +1748,17 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	     "widget-type\0",
 	     g_strdup_printf("%s\0", g_type_name(line_member->widget_type)));
 
-  if(line_member->widget_label != NULL){
+  child_widget = gtk_bin_get_child(GTK_BIN(line_member));
+  
+  label = NULL;
+  g_object_get(G_OBJECT(child_widget),
+	       "label\0", &label,
+	       NULL);
+
+  if(label != NULL){
     xmlNewProp(node,
 	       "label\0",
-	       g_strdup_printf("%s\0", line_member->widget_label));
+	       g_strdup_printf("%s\0", label));
   }
 
   if(line_member->task_type != G_TYPE_NONE){
@@ -1759,8 +1767,6 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	       g_strdup_printf("%s\0", g_type_name(line_member->task_type)));
   }
 
-  child_widget = gtk_bin_get_child(GTK_BIN(line_member));
-  
   /*  */
   if(GTK_IS_MISC(child_widget)){
     gfloat xalign, yalign;

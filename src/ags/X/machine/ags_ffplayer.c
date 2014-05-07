@@ -529,13 +529,15 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference\0", ffplayer,
 				   NULL));
 
-  xmlNewProp(node,
-	     "filename\0",
-	     ffplayer->ipatch->filename);
+  if(ffplayer->ipatch != NULL && ffplayer->ipatch->filename != NULL){
+    xmlNewProp(node,
+	       "filename\0",
+	       g_strdup(ffplayer->ipatch->filename));
 
-  xmlNewProp(node,
-	     "instrument\0",
-	     gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->instrument));
+    xmlNewProp(node,
+	       "instrument\0",
+	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->instrument)));
+  }
 
   xmlAddChild(parent,
 	      node);  
