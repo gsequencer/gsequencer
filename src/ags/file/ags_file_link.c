@@ -33,6 +33,7 @@ void ags_file_link_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_URL,
+  PROP_FILE_LINK,
   PROP_TIMESTAMP,
 };
 
@@ -91,6 +92,15 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
 				  PROP_URL,
 				  param_spec);
 
+  param_spec = g_param_spec_string("data\0",
+				   "the data\0",
+				   "The embedded data\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DATA,
+				  param_spec);
+
   param_spec = g_param_spec_object("timestamp\0",
 				   "timestamp\0",
 				   "The timestamp\0",
@@ -105,6 +115,7 @@ void
 ags_file_link_init(AgsFileLink *file_link)
 {
   file_link->url = NULL;
+  file_link->data = NULL;
   file_link->timestamp = NULL;
 }
 
@@ -129,6 +140,18 @@ ags_file_link_set_property(GObject *gobject,
 	g_free(file_link->url);
 
       file_link->url = url;
+    }
+    break;
+  case PROP_DATA:
+    {
+      char *data;
+
+      data = (char *) g_value_get_string(value);
+
+      if(file_link->data != NULL)
+	g_free(file_link->data);
+
+      file_link->data = data;
     }
     break;
   case PROP_TIMESTAMP:
@@ -166,6 +189,10 @@ ags_file_link_get_property(GObject *gobject,
   case PROP_URL:
     {
       g_value_set_string(value, file_link->url);
+    }
+  case PROP_DATA:
+    {
+      g_value_set_string(value, file_link->data);
     }
   case PROP_TIMESTAMP:
     {

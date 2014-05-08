@@ -24,6 +24,14 @@
 
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_input_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec);
+void ags_input_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec);
 void ags_input_init (AgsInput *input);
 void ags_input_finalize (GObject *gobject);
 void ags_input_connect(AgsConnectable *connectable);
@@ -31,6 +39,11 @@ void ags_input_disconnect(AgsConnectable *connectable);
 
 static gpointer ags_input_parent_class = NULL;
 static AgsConnectableInterface *ags_input_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_FILE_LINK,
+};
 
 GType
 ags_input_get_type (void)
@@ -78,8 +91,23 @@ ags_input_class_init(AgsInputClass *input)
   ags_input_parent_class = g_type_class_peek_parent(input);
   
   gobject = (GObjectClass *) input;
+
+  gobject->set_property = ags_input_set_property;
+  gobject->get_property = ags_input_get_property;
+
   gobject->finalize = ags_input_finalize;
   
+  /* properties */
+  param_spec = g_param_spec_object("file-link\0",
+				   "file link assigned to\0",
+				   "The file link to read from\0",
+				   AGS_TYPE_FILE_LINK,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_LINK,
+				  param_spec);
+
+  /*  */
   channel = (AgsChannelClass *) input;
 }
 
@@ -98,6 +126,67 @@ void
 ags_input_init(AgsInput *input)
 {
   input->file_link = NULL;
+}
+
+void
+ags_input_set_property(GObject *gobject,
+		       guint prop_id,
+		       const GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsInput *input;
+
+  input = AGS_INPUT(gobject);
+
+  switch(prop_id){
+  case PROP_FILE_LINK:
+    {
+      AgsFile_Link *file_link;
+
+      file_link = (AgsFile_Link *) g_value_get_object(value);
+
+      if(input->file_link != NULL){
+	g_object_unref(G_OBJECT(input->file_link));
+      }
+
+      if(file_link != NULL){
+	g_object_ref(G_OBJECT(file_link));
+      }
+
+      input->file_link = file_link;
+
+      if(file_link->url != NULL){
+
+      }
+
+      if(file_link->data != NULL){
+      }
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_input_get_property(GObject *gobject,
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsInput *input;
+
+  input = AGS_INPUT(gobject);
+
+  switch(prop_id){
+  case PROP_FILE_LINK:
+    g_value_set_object(value, input->file_link);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
