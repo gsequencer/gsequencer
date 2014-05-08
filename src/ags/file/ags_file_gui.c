@@ -18,6 +18,10 @@
 
 #include <ags/file/ags_file_gui.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+
 #include <ags/main.h>
 
 #include <ags/plugin/ags_plugin_factory.h>
@@ -49,6 +53,12 @@ void ags_file_read_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						 AgsMachine *machine);
 void ags_file_write_machine_resolve_rename_dialog(AgsFileLookup *file_lookup,
 						  AgsMachine *machine);
+
+void ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
+					    AgsPad *pad);
+
+void ags_file_read_line_line_resolve_channel(AgsFileLookup *file_lookup,
+					     AgsLine *line);
 
 void ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
 					    AgsLineMember *line_member);
@@ -964,6 +974,16 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 					    NULL,
 					    16);
 
+  /* channel */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+			       G_CALLBACK(ags_file_read_window_resolve_devout), gobject);
+
   /* child elements */
   child = node->children;
 
@@ -1039,6 +1059,63 @@ ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
     }
 
     child = child->next;
+  }
+}
+
+void
+ags_file_read_line_pad_resolve_channel(AgsFileLookup *file_lookup,
+				       AgsPad *pad)
+{
+  AgsFile *file;
+  AgsMachine *machine;
+  AgsFileIdRef *id_ref;
+  xmlNode *node, *audio_node, *channel_node;
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+  xmlChar *xpath;
+  guint position;
+  guint i;
+
+  file = file_lookup->file;
+
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(pad),
+						   AGS_TYPE_MACHINE);
+
+  node = file_lookup->node;
+
+  /* retrieve position */
+  xpath_context = xmlXPathNewContext(file->doc);
+  xmlXPathSetContextNode(node->parent,
+			 xpath_context);
+  xpath_object = xmlXPathEval("./ags-pad\0",
+			      xpath_context);
+
+  for(i = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++);
+
+  position = i * machine->audio->audio_channels;
+
+  /*  */
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->audio);
+  audio_node = NULL;
+
+  if(id_ref != NULL){
+    audio_node = id_ref->node;
+  }
+
+  /*  */
+  xpath = g_strdup_printf("./ags-audio[@id='%s']/ags-channel[position='%d']\0",
+			  xmlGetProp(audio_node, "id\0"),
+			  position);
+
+  xpath_context = xmlXPathNewContext(file->doc);
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  /*  */
+  if(xpath_object != NULL && xpath_object->nodesetval != NULL){
+    g_object_set(G_OBJECT(pad),
+		 "channel\0", (AgsChannel *) xpath_object->nodesetval->nodeTab[0],
+		 NULL);
   }
 }
 
