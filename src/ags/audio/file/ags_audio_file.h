@@ -60,8 +60,8 @@ struct _AgsAudioFileClass
 GType ags_audio_file_get_type();
 
 gboolean ags_audio_file_open(AgsAudioFile *audio_file);
+gboolean ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data);
 void ags_audio_file_read_audio_signal(AgsAudioFile *audio_file);
-void ags_audio_file_read_audio_signal_from_data(AgsAudioFile *audio_file, gchar *data);
 void ags_audio_file_close(AgsAudioFile *audio_file);
 
 AgsAudioFile* ags_audio_file_new(gchar *name,

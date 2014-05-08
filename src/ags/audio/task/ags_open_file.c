@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/file/ags_file_link.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -203,6 +205,11 @@ ags_open_file_launch(AgsTask *task)
 
 	ags_channel_set_link(iter, NULL,
 			     &error);
+	g_object_set(G_OBJECT(iter),
+		     "file-link", g_object_new(AGS_TYPE_FILE_LINK,
+					       "url\0", current->data,
+					       NULL),
+		     NULL);
 
 	if(error != NULL){
 	  g_warning(error->message);

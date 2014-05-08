@@ -162,7 +162,7 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
 gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
-  g_message("ags_audio_file_open: %s\n\0", audio_file->name);
+  g_message("ags_audio_file_open: %s\0", audio_file->name);
 
   if(g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
     if(g_str_has_suffix(audio_file->name, ".wav\0") ||
@@ -171,12 +171,54 @@ ags_audio_file_open(AgsAudioFile *audio_file)
       GError *error;
       guint loop_start, loop_end;
 
-      g_message("ags_audio_file_open: using libsndfile\n\0");
       audio_file->file = (GObject *) ags_sndfile_new();
 
       if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
 			   audio_file->name)){
 	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
+
+	error = NULL;
+
+	ags_playable_info(AGS_PLAYABLE(audio_file->file),
+			  &(audio_file->channels), &(audio_file->frames),
+			  &loop_start, &loop_end,
+			  &error);
+
+	if(error != NULL){
+	  g_error("%s\0", error->message);
+	}
+
+	return(TRUE);
+      }else{
+	return(FALSE);
+      }
+    }else{
+      g_message("ags_audio_file_open: unknown file type\n\0");
+      return(FALSE);
+    }
+  }
+}
+
+gboolean
+ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
+{
+  g_message("ags_audio_file_open_from_data:\0");
+
+  if(data != NULL){
+    if(g_str_has_suffix(audio_file->name, ".wav\0") ||
+       g_str_has_suffix(audio_file->name, ".ogg\0") ||
+       g_str_has_suffix(audio_file->name, ".flac\0")){
+      GError *error;
+      guint loop_start, loop_end;
+
+      audio_file->file = (GObject *) ags_sndfile_new();
+      AGS_SNDFILE(audio_file->file)->flags = AGS_SNDFILE_VIRTUAL;
+
+      if(ags_playable_open(AGS_PLAYABLE(audio_file->file),
+			   audio_file->name)){
+	AGS_SNDFILE(audio_file->file)->pointer = g_base64_decode(data,
+								 &(AGS_SNDFILE(audio_file->file)->length));
+	AGS_SNDFILE(audio_file->file)->current = AGS_SNDFILE(audio_file->file)->pointer;
 
 	error = NULL;
 
@@ -210,13 +252,6 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 					audio_file->start_channel, audio_file->audio_channels);
 
   audio_file->audio_signal = list;
-}
-
-
-void
-ags_audio_file_read_audio_signal_from_data(AgsAudioFile *audio_file, gchar *data)
-{
-  //TODO:JK: implement me
 }
 
 void

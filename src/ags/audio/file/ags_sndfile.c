@@ -42,9 +42,16 @@ void ags_sndfile_info(AgsPlayable *playable,
 signed short* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
 void ags_sndfile_close(AgsPlayable *playable);
 
+sf_vio_get_filelen ags_sndfile_vio_get_filelen(void *user_data);
+sf_vio_seek ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data);
+sf_vio_read ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
+sf_vio_write ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
+sf_vio_tell ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data);
+
 static gpointer ags_sndfile_parent_class = NULL;
 static AgsConnectableInterface *ags_sndfile_parent_connectable_interface;
 static AgsPlayableInterface *ags_sndfile_parent_playable_interface;
+static SF_VIRTUAL_IO *ags_sndfile_virtual_io = NULL;
 
 GType
 ags_sndfile_get_type()
@@ -103,6 +110,17 @@ ags_sndfile_class_init(AgsSndfileClass *sndfile)
   gobject = (GObjectClass *) sndfile;
 
   gobject->finalize = ags_sndfile_finalize;
+
+  /* sndfile callbacks */
+  if(ags_sndfile_virtual_io == NULL){
+    ags_sndfile_virtual_io = (SF_VIRTUAL_IO *) malloc(sizeof(SF_VIRTUAL_IO));
+
+    ags_sndfile_virtual_io->get_filelen = ags_sndfile_vio_get_filelen;
+    ags_sndfile_virtual_io->seek = ags_sndfile_vio_seek;
+    ags_sndfile_virtual_io->read = ags_sndfile_vio_read;
+    ags_sndfile_virtual_io->write = ags_sndfile_vio_write;
+    ags_sndfile_virtual_io->tell = ags_sndfile_vio_tell;
+  }
 }
 
 void
@@ -137,7 +155,14 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
 void
 ags_sndfile_init(AgsSndfile *sndfile)
 {
+  sndfile->flags = 0;
+
   sndfile->info = NULL;
+  sndfile->file = NULL;
+
+  sndfile->pointer = NULL;
+  sndfile->current = NULL;
+  sndfile->length = 0;
 }
 
 void
@@ -165,7 +190,11 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
 
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
 
-  sndfile->file = (SNDFILE *) sf_open(name, SFM_READ, sndfile->info);
+  if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
+    sndfile->file = (SNDFILE *) sf_open(name, SFM_READ, sndfile->info);
+  }else{
+    sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_READ, sndfile->info, sndfile);
+  }
 
   if(sndfile->file == NULL)
     return(FALSE);
@@ -273,6 +302,53 @@ ags_sndfile_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_sndfile_parent_class)->finalize(gobject);
 
   /* empty */
+}
+
+sf_vio_get_filelen
+ags_sndfile_vio_get_filelen(void *user_data)
+{
+  return(AGS_SNDFILE(user_data)->length);
+}
+
+sf_vio_seek
+ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data)
+{
+  switch(whence){
+  case SEEK_CUR:
+    AGS_SNDFILE(user_data)->current += offset;
+  case SEEK_SET:
+    AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[offset]);
+  case SEEK_END:
+    AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[AGS_SNDFILE(user_data)->length - offset]);
+  }
+
+  return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);
+}
+
+sf_vio_read
+ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data)
+{
+  guchar *retval;
+
+  retval = memcpy(ptr, AGS_SNDFILE(user_data)->current, count * sizeof(guchar));
+
+  return(retval - AGS_SNDFILE(user_data)->pointer);
+}
+
+sf_vio_write
+ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
+{
+  guchar *retval;
+
+  retval = memcpy(AGS_SNDFILE(user_data)->current, ptr, count * sizeof(guchar));
+
+  return(retval - AGS_SNDFILE(user_data)->pointer);
+}
+
+sf_vio_tell
+ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
+{
+  return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);
 }
 
 AgsSndfile*

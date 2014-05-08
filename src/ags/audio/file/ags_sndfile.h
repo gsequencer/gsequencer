@@ -37,6 +37,7 @@ typedef struct _AgsSndfileClass AgsSndfileClass;
 
 typedef enum{
   AGS_SNDFILE_ITER_START    = 1,
+  AGS_SNDFILE_VIRTUAL       = 1 << 1,
 }AgsSndfileFlags;
 
 struct _AgsSndfile
@@ -47,6 +48,10 @@ struct _AgsSndfile
 
   SF_INFO *info;
   SNDFILE *file;
+
+  guchar *pointer;
+  guchar *current;
+  gsize length;
 };
 
 struct _AgsSndfileClass
