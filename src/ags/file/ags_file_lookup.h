@@ -42,7 +42,6 @@ struct _AgsFileLookup
 
   AgsFile *file;
 
-  xmlChar *xpath;
   xmlNode *node;
   gpointer ref;
 };

@@ -38,7 +38,6 @@ enum{
 enum{
   PROP_0,
   PROP_FILE,
-  PROP_XPATH,
   PROP_NODE,
   PROP_REFERENCE,
 };
@@ -133,7 +132,6 @@ ags_file_lookup_init(AgsFileLookup *file_lookup)
 {
   file_lookup->file = NULL;
 
-  file_lookup->xpath = NULL;
   file_lookup->node = NULL;
   file_lookup->ref = NULL;
 }
