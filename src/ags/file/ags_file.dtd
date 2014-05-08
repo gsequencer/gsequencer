@@ -904,7 +904,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-file-link (ags-timestamp)>
+<!ELEMENT ags-file-link (ags-embedded-audio?, ags-timestamp)>
 <!ATTLIST ags-file-link
 	  id               ID         #REQUIRED
 	  type             CDATA      "xpath"

@@ -33,6 +33,7 @@ void ags_file_link_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_URL,
+  PROP_TIMESTAMP,
 };
 
 static gpointer ags_file_link_parent_class = NULL;
@@ -89,12 +90,22 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
   g_object_class_install_property(gobject,
 				  PROP_URL,
 				  param_spec);
+
+  param_spec = g_param_spec_object("timestamp\0",
+				   "timestamp\0",
+				   "The timestamp\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
+				  param_spec);
 }
 
 void
 ags_file_link_init(AgsFileLink *file_link)
 {
   file_link->url = NULL;
+  file_link->timestamp = NULL;
 }
 
 void
@@ -120,6 +131,21 @@ ags_file_link_set_property(GObject *gobject,
       file_link->url = url;
     }
     break;
+  case PROP_TIMESTAMP:
+    {
+      GObject *timestamp;
+
+      timestamp = (GObject *) g_value_get_object(value);
+
+      if(file_link->timestamp != NULL)
+	g_object_unref(file_link->timestamp);
+
+      if(timestamp != NULL)
+	g_object_ref(timestamp);
+
+      file_link->timestamp = timestamp;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -141,6 +167,11 @@ ags_file_link_get_property(GObject *gobject,
     {
       g_value_set_string(value, file_link->url);
     }
+  case PROP_TIMESTAMP:
+    {
+      g_value_set_object(value, file_link->timestamp);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -150,6 +181,13 @@ ags_file_link_get_property(GObject *gobject,
 void
 ags_file_link_finalize(GObject *gobject)
 {
+  AgsFileLink *file_link;
+
+  file_link = AGS_FILE_LINK(gobject);
+
+  if(file_link->timestamp != NULL){
+    g_object_unref(file_link->timestamp);
+  }
 }
 
 AgsFileLink*

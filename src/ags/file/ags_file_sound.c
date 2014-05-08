@@ -1485,7 +1485,7 @@ ags_file_read_input(AgsFile *file, xmlNode *node, AgsChannel *channel)
 		     13)){
 	ags_file_read_file_link(file,
 				child,
-				(AgsFileLink *) &input->file_link);
+				(AgsFileLink *) &(input->file_link));
       }
     }
 

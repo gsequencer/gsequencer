@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_timestamp.h>
+
 #define AGS_TYPE_FILE_LINK                (ags_file_link_get_type())
 #define AGS_FILE_LINK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_LINK, AgsFileLink))
 #define AGS_FILE_LINK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FILE_LINK, AgsFileLink))
@@ -37,6 +39,7 @@ struct _AgsFileLink
   GObject object;
 
   gchar *url;
+  AgsTimestamp *timestamp;
 };
 
 struct _AgsFileLinkClass
