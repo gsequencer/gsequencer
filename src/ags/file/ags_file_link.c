@@ -33,7 +33,7 @@ void ags_file_link_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_URL,
-  PROP_FILE_LINK,
+  PROP_DATA,
   PROP_TIMESTAMP,
 };
 

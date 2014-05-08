@@ -22,6 +22,8 @@
 
 #include <ags/file/ags_file_link.h>
 
+#include <ags/audio/file/ags_audio_file.h>
+
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_input_set_property(GObject *gobject,
@@ -87,6 +89,7 @@ ags_input_class_init(AgsInputClass *input)
 {
   GObjectClass *gobject;
   AgsChannelClass *channel;
+  GParamSpec *param_spec;
 
   ags_input_parent_class = g_type_class_peek_parent(input);
   
@@ -141,9 +144,10 @@ ags_input_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILE_LINK:
     {
-      AgsFile_Link *file_link;
+      AgsAudioFile *audio_file;
+      AgsFileLink *file_link;
 
-      file_link = (AgsFile_Link *) g_value_get_object(value);
+      file_link = (AgsFileLink *) g_value_get_object(value);
 
       if(input->file_link != NULL){
 	g_object_unref(G_OBJECT(input->file_link));
@@ -154,12 +158,14 @@ ags_input_set_property(GObject *gobject,
       }
 
       input->file_link = file_link;
+      audio_file = NULL;
 
       if(file_link->url != NULL){
-
+	//TODO:JK: implement me
       }
 
       if(file_link->data != NULL){
+	//TODO:JK: implement me
       }
     }
     break;

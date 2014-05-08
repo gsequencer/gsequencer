@@ -212,6 +212,13 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   audio_file->audio_signal = list;
 }
 
+
+void
+ags_audio_file_read_audio_signal_from_data(AgsAudioFile *audio_file, gchar *data)
+{
+  //TODO:JK: implement me
+}
+
 void
 ags_audio_file_close(AgsAudioFile *audio_file)
 {
