@@ -18,11 +18,19 @@
 
 #include <ags/file/ags_file_util.h>
 
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+
+#include <ags/audio/ags_audio.h>
+
+#include <ags/audio/file/ags_audio_file.h>
 
 #include <string.h>
 
@@ -30,6 +38,9 @@ void ags_file_util_read_value_resolve(AgsFileLookup *file_lookup,
 				      GValue *value);
 void ags_file_util_write_value_resolve(AgsFileLookup *file_lookup,
 				       GValue *value);
+
+void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
+						 AgsFileLink *file_link);
 
 void
 ags_file_util_read_value(AgsFile *file,
@@ -896,49 +907,415 @@ ags_file_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history)
 }
 
 void
-ags_file_read_embedded_audio(AgsFile *file, xmlNode *node, AgsEmbeddedAudio **embedded_audio)
+ags_file_read_embedded_audio(AgsFile *file, xmlNode *node,
+			     gchar **embedded_audio)
 {
-  //TODO:JK: implement me
+  gchar *data;
+  xmlChar *content;
+
+  if(*embedded_audio == NULL){
+    return;
+  }else{
+    data = *embedded_audio;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", data,
+				   NULL));
+
+  content = node->content;
+
+  *embedded_audio = content;
 }
 
 xmlNode*
-ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *embedded_audio)
+ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, gchar *embedded_audio)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-embedded-audio\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", embedded_audio,
+				   NULL));
+
+  xmlNewProp(node,
+	     "encoding\0",
+	     g_strdup("base64\0"));
+
+  xmlNewProp(node,
+	     "demuxer\0",
+	     g_strdup("raw\0"));
+
+  xmlNodeSetContent(node,
+		    embedded_audio);
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
 ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **embedded_audio)
 {
-  //TODO:JK: implement me
+  gchar *current;
+  GList *list;
+  xmlNode *child;
+  xmlChar *id;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-embedded-audio\0",
+		     11)){
+	current = NULL;
+	ags_file_read_embedded_audio(file, child, &current);
+	list = g_list_prepend(list, current);
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *embedded_audio = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedded_audio)
 {
-  //TODO:JK: implement me
+  gchar *current;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-embedded-audio-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  list = embedded_audio;
+
+  while(list != NULL){
+    ags_file_write_embedded_audio(file, node, (gchar *) list->data);
+
+    list = list->next;
+  }
+
+  return(node);
 }
 
 void
 ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 {
-  //TODO:JK: implement me
+  AgsFileLink *gobject;
+  xmlNode *child;
+
+  if(*file_link == NULL){
+    gobject = g_object_new(AGS_TYPE_FILE_LINK,
+			   NULL);
+    *file_link = gobject;
+  }else{
+    gobject = *file_link;
+  }
+
+  g_object_set(G_OBJECT(gobject),
+	       "main\0", file->ags_main,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+}
+
+void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
+						 AgsFileLink *file_link)
+{
+  AgsFile *file;
+  AgsFileIdRef *id_ref;
+  AgsDevout *devout;
+  AgsChannel *input;
+  AgsAudioFile *audio_file;
+  GList *audio_signal;
+  xmlNode *node, *child;
+  xmlChar *type;
+  xmlChar *xpath;
+  xmlChar *filename;
+  xmlChar *encoding, *demuxer;
+
+  file = file_lookup->file;
+  node = file_lookup->node;
+
+  /*  */
+  xpath = xmlGetProp(node,
+		     "devout\0");
+  
+  /*  */
+  input = NULL;
+  id_ref = ags_file_find_id_ref_by_node(file, node->parent);
+
+  if(id_ref != NULL){
+    input = (AgsChannel *) id_ref->ref;
+  }
+
+  devout = input->devout;
+
+  type = xmlGetProp(node,
+		    "type\0");
+
+  if(!xmlStrncmp(type,
+		 "url\0",
+		 4)){
+    filename = xmlGetProp(node,
+			  "filename\0");
+    audio_file = ags_audio_file_new((gchar *) filename,
+				    devout,
+				    0, AGS_AUDIO(input->audio)->audio_channels);
+
+    ags_audio_file_open(audio_file);
+    ags_audio_file_read_audio_signal(audio_file);
+
+    audio_signal = g_list_nth(audio_file->audio_signal,
+			      input->audio_channel);
+
+    AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+
+    if(input->link != NULL){
+      GError *error;
+
+      error = NULL;
+
+      ags_channel_set_link(input, NULL,
+			   &error);
+      g_object_set(G_OBJECT(input),
+		   "file-link", g_object_new(AGS_TYPE_FILE_LINK,
+					     "url\0", filename,
+					     NULL),
+		   NULL);
+
+      if(error != NULL){
+	g_warning(error->message);
+      }
+    }
+
+    ags_recycling_add_audio_signal(input->first_recycling,
+				   AGS_AUDIO_SIGNAL(audio_signal->data));
+  }else if(!xmlStrncmp(type,
+		       "embedded\0",
+		       9)){
+    xmlXPathContext *xpath_context;
+    xmlXPathObject *xpath_object;
+
+    /*  */
+    xpath_context = xmlXPathNewContext(file->doc);
+    xmlXPathSetContextNode(node,
+			   xpath_context);
+  
+    xpath_object = xmlXPathEval("./ags-embedded-audio\0",
+				xpath_context);
+
+    child = NULL;
+    
+    if(xpath_object->nodesetval != NULL && xpath_object->nodesetval->nodeTab != NULL){
+      child = xpath_object->nodesetval->nodeTab[0];
+    }
+
+    /**/
+    encoding = xmlGetProp(child, "encoding\0");
+    demuxer = xmlGetProp(child, "demuxer\0");
+
+    if(!xmlStrncmp(encoding,
+		   "base64\0",
+		   7)){
+      if(!xmlStrncmp(demuxer,
+		     "raw\0",
+		     4)){
+	gchar *data;
+
+	audio_file = ags_audio_file_new(NULL,
+					devout,
+					0, AGS_AUDIO(input->audio)->audio_channels);
+	data = child->content;
+
+	ags_audio_file_open_from_data(audio_file, data);
+	ags_audio_file_read_audio_signal(audio_file);
+
+	audio_signal = audio_file->audio_signal;
+	ags_recycling_add_audio_signal(input->first_recycling,
+				       AGS_AUDIO_SIGNAL(audio_signal->data));
+      }
+    }
+  }
 }
 
 xmlNode*
 ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-file-link\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", file_link,
+				   NULL));
+
+  xmlNewProp(node,
+	     "type\0",
+	     g_strdup("url\0"));  
+
+  xmlNewProp(node,
+	     "filename\0",
+	     g_strdup(file_link->url));  
+
+  xmlNewProp(node,
+	     "delay\0",
+	     g_strdup_printf("%d\0", 0));
+
+  if((AGS_FILE_WRITE_EMBEDDED_AUDIO & (file->flags)) != 0){
+    //TODO:JK: implement me
+  }
+
+  xmlAddChild(parent,
+	      node);
 }
 
 void
 ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link)
 {
-  //TODO:JK: implement me
+  AgsFileLink *current;
+  GList *list;
+  xmlNode *child;
+  xmlChar *id;
+
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-file-link\0",
+		     11)){
+	current = NULL;
+	ags_file_read_file_link(file, child, &current);
+	list = g_list_prepend(list, current);
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *file_link = list;
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
 }
 
 xmlNode*
 ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link)
 {
-  //TODO:JK: implement me
+  AgsFileLink *current;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-file-link-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  list = file_link;
+
+  while(list != NULL){
+    ags_file_write_file_link(file, node, AGS_FILE_LINK(list->data));
+
+    list = list->next;
+  }
+
+  return(node);
 }

@@ -27,7 +27,6 @@
 #include <ags/thread/ags_history.h>
 
 #include <ags/file/ags_file.h>
-#include <ags/file/ags_embedded_audio.h>
 #include <ags/file/ags_file_link.h>
 
 /* gvalue */
@@ -73,8 +72,8 @@ void ags_file_util_read_history(AgsFile *file, xmlNode *node, AgsHistory **histo
 xmlNode* ags_file_util_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history);
 
 /* embedded audio */
-void ags_file_read_embedded_audio(AgsFile *file, xmlNode *node, AgsEmbeddedAudio **embedded_audio);
-xmlNode* ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, AgsEmbeddedAudio *embedded_audio);
+void ags_file_read_embedded_audio(AgsFile *file, xmlNode *node, gchar **embedded_audio);
+xmlNode* ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, gchar *embedded_audio);
 
 void ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **embedded_audio);
 xmlNode* ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedded_audio);

@@ -118,8 +118,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_file_lookup.$(OBJEXT) ags-ags_file_launch.$(OBJEXT) \
 	ags-ags_file_util.$(OBJEXT) ags-ags_file_thread.$(OBJEXT) \
 	ags-ags_file_sound.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
-	ags-ags_file_link.$(OBJEXT) ags-ags_embedded_audio.$(OBJEXT) \
-	ags-ags_timestamp.$(OBJEXT) \
+	ags-ags_file_link.$(OBJEXT) ags-ags_timestamp.$(OBJEXT) \
 	ags-ags_timestamp_factory.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
 	ags-ags_recall_channel.$(OBJEXT) \
@@ -663,10 +662,7 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_file_sound.h \
 	./src/ags/file/ags_file_sound.c ./src/ags/audio/ags_file_gui.h \
 	./src/ags/file/ags_file_gui.c ./src/ags/file/ags_file_link.h \
-	./src/ags/file/ags_file_link.c \
-	./src/ags/file/ags_embedded_audio.h \
-	./src/ags/file/ags_embedded_audio.c \
-	./src/ags/audio/ags_timestamp.h \
+	./src/ags/file/ags_file_link.c ./src/ags/audio/ags_timestamp.h \
 	./src/ags/audio/ags_timestamp.c \
 	./src/ags/audio/ags_timestamp_factory.h \
 	./src/ags/audio/ags_timestamp_factory.c \
@@ -1441,7 +1437,6 @@ include ./$(DEPDIR)/ags-ags_dynamic_connectable.Po
 include ./$(DEPDIR)/ags-ags_echo.Po
 include ./$(DEPDIR)/ags-ags_editor.Po
 include ./$(DEPDIR)/ags-ags_editor_callbacks.Po
-include ./$(DEPDIR)/ags-ags_embedded_audio.Po
 include ./$(DEPDIR)/ags-ags_expander.Po
 include ./$(DEPDIR)/ags-ags_expander_set.Po
 include ./$(DEPDIR)/ags-ags_ffplayer.Po
@@ -1893,20 +1888,6 @@ ags-ags_file_link.obj: ./src/ags/file/ags_file_link.c
 #	$(AM_V_CC)source='./src/ags/file/ags_file_link.c' object='ags-ags_file_link.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_file_link.obj `if test -f './src/ags/file/ags_file_link.c'; then $(CYGPATH_W) './src/ags/file/ags_file_link.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_file_link.c'; fi`
-
-ags-ags_embedded_audio.o: ./src/ags/file/ags_embedded_audio.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_embedded_audio.o -MD -MP -MF $(DEPDIR)/ags-ags_embedded_audio.Tpo -c -o ags-ags_embedded_audio.o `test -f './src/ags/file/ags_embedded_audio.c' || echo '$(srcdir)/'`./src/ags/file/ags_embedded_audio.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_embedded_audio.Tpo $(DEPDIR)/ags-ags_embedded_audio.Po
-#	$(AM_V_CC)source='./src/ags/file/ags_embedded_audio.c' object='ags-ags_embedded_audio.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_embedded_audio.o `test -f './src/ags/file/ags_embedded_audio.c' || echo '$(srcdir)/'`./src/ags/file/ags_embedded_audio.c
-
-ags-ags_embedded_audio.obj: ./src/ags/file/ags_embedded_audio.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_embedded_audio.obj -MD -MP -MF $(DEPDIR)/ags-ags_embedded_audio.Tpo -c -o ags-ags_embedded_audio.obj `if test -f './src/ags/file/ags_embedded_audio.c'; then $(CYGPATH_W) './src/ags/file/ags_embedded_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_embedded_audio.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_embedded_audio.Tpo $(DEPDIR)/ags-ags_embedded_audio.Po
-#	$(AM_V_CC)source='./src/ags/file/ags_embedded_audio.c' object='ags-ags_embedded_audio.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_embedded_audio.obj `if test -f './src/ags/file/ags_embedded_audio.c'; then $(CYGPATH_W) './src/ags/file/ags_embedded_audio.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/file/ags_embedded_audio.c'; fi`
 
 ags-ags_timestamp.o: ./src/ags/audio/ags_timestamp.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_timestamp.o -MD -MP -MF $(DEPDIR)/ags-ags_timestamp.Tpo -c -o ags-ags_timestamp.o `test -f './src/ags/audio/ags_timestamp.c' || echo '$(srcdir)/'`./src/ags/audio/ags_timestamp.c

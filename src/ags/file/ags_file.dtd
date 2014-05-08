@@ -895,7 +895,7 @@
 	  id               ID         #REQUIRED
 	  encoding         CDATA      "base64"
 	  demuxer          CDATA      "raw"
-	  channels         NMTOKEN    "2"
+	  length           NMTOKEN    #IMPLIED
 	  >
 
 <!-- file link list -->
@@ -907,9 +907,8 @@
 <!ELEMENT ags-file-link (ags-embedded-audio?, ags-timestamp)>
 <!ATTLIST ags-file-link
 	  id               ID         #REQUIRED
-	  type             CDATA      "xpath"
-	  mode             CDATA      "mix"
-	  file             CDATA      #REQUIRED
+	  type             CDATA      "url"
+	  filename         CDATA      #REQUIRED
 	  delay            CDATA      #REQUIRED <!-- start renamed -->
 	  >
 
