@@ -158,15 +158,6 @@ ags_input_set_property(GObject *gobject,
       }
 
       input->file_link = file_link;
-      audio_file = NULL;
-
-      if(file_link->url != NULL){
-	//TODO:JK: implement me
-      }
-
-      if(file_link->data != NULL){
-	//TODO:JK: implement me
-      }
     }
     break;
   default:

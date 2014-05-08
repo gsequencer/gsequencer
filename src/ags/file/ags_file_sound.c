@@ -1523,6 +1523,7 @@ ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *channel)
 	      node);
 
   if(input->file_link != NULL){
+    g_message("got it!!\0");
     ags_file_write_file_link(file,
 			     node,
 			     AGS_FILE_LINK(input->file_link));

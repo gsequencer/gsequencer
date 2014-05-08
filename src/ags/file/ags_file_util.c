@@ -1227,7 +1227,7 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
 
   xmlNewProp(node,
 	     "filename\0",
-	     g_strdup(file_link->url));  
+	     g_strdup_printf("%s\0", file_link->url));  
 
   xmlNewProp(node,
 	     "delay\0",

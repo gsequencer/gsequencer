@@ -205,11 +205,6 @@ ags_open_file_launch(AgsTask *task)
 
 	ags_channel_set_link(iter, NULL,
 			     &error);
-	g_object_set(G_OBJECT(iter),
-		     "file-link", g_object_new(AGS_TYPE_FILE_LINK,
-					       "url\0", current->data,
-					       NULL),
-		     NULL);
 
 	if(error != NULL){
 	  g_warning(error->message);
@@ -218,6 +213,12 @@ ags_open_file_launch(AgsTask *task)
 
       ags_recycling_add_audio_signal(iter->first_recycling,
 				     AGS_AUDIO_SIGNAL(audio_signal->data));
+
+      g_object_set(G_OBJECT(iter),
+		   "file-link", g_object_new(AGS_TYPE_FILE_LINK,
+					     "url\0", g_strdup(current->data),
+					     NULL),
+		   NULL);
 
       audio_signal = audio_signal->next;
       iter = iter->next;

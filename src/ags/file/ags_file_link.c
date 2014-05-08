@@ -136,8 +136,9 @@ ags_file_link_set_property(GObject *gobject,
 
       url = (char *) g_value_get_string(value);
 
-      if(file_link->url != NULL)
+      if(file_link->url != NULL){
 	g_free(file_link->url);
+      }
 
       file_link->url = url;
     }
@@ -148,8 +149,9 @@ ags_file_link_set_property(GObject *gobject,
 
       data = (char *) g_value_get_string(value);
 
-      if(file_link->data != NULL)
+      if(file_link->data != NULL){
 	g_free(file_link->data);
+      }
 
       file_link->data = data;
     }
@@ -160,11 +162,13 @@ ags_file_link_set_property(GObject *gobject,
 
       timestamp = (GObject *) g_value_get_object(value);
 
-      if(file_link->timestamp != NULL)
+      if(file_link->timestamp != NULL){
 	g_object_unref(file_link->timestamp);
+      }
 
-      if(timestamp != NULL)
+      if(timestamp != NULL){
 	g_object_ref(timestamp);
+      }
 
       file_link->timestamp = timestamp;
     }
