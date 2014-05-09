@@ -1203,7 +1203,12 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
 {
   xmlNode *node;
   gchar *id;
+  gchar *filename;
 
+  if(file_link == NULL){
+    return;
+  }
+  
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
@@ -1223,11 +1228,16 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
 
   xmlNewProp(node,
 	     "type\0",
-	     g_strdup("url\0"));  
+	     g_strdup("url\0"));
+
+  filename = NULL;
+  g_object_get(G_OBJECT(file_link),
+	       "filename\0", &filename,
+	       NULL);
 
   xmlNewProp(node,
 	     "filename\0",
-	     g_strdup_printf("%s\0", file_link->url));  
+	     g_strdup_printf("%s\0", ((filename != NULL) ? filename: "(null)\0")));
 
   xmlNewProp(node,
 	     "delay\0",

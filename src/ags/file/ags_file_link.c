@@ -32,7 +32,7 @@ void ags_file_link_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_URL,
+  PROP_FILENAME,
   PROP_DATA,
   PROP_TIMESTAMP,
 };
@@ -83,13 +83,13 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
   gobject->finalize = ags_file_link_finalize;
 
   /* properties */
-  param_spec = g_param_spec_string("url\0",
-				   "the URL\0",
-				   "The URL to locate the file\0",
+  param_spec = g_param_spec_string("filename\0",
+				   "the filename\0",
+				   "The filename to locate the file\0",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_URL,
+				  PROP_FILENAME,
 				  param_spec);
 
   param_spec = g_param_spec_string("data\0",
@@ -114,7 +114,7 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
 void
 ags_file_link_init(AgsFileLink *file_link)
 {
-  file_link->url = NULL;
+  file_link->filename = NULL;
   file_link->data = NULL;
   file_link->timestamp = NULL;
 }
@@ -130,17 +130,17 @@ ags_file_link_set_property(GObject *gobject,
   file_link = AGS_FILE_LINK(gobject);
   
   switch(prop_id){
-  case PROP_URL:
+  case PROP_FILENAME:
     {
-      char *url;
+      char *filename;
 
-      url = (char *) g_value_get_string(value);
+      filename = (char *) g_value_get_string(value);
 
-      if(file_link->url != NULL){
-	g_free(file_link->url);
+      if(file_link->filename != NULL){
+	g_free(file_link->filename);
       }
 
-      file_link->url = url;
+      file_link->filename = filename;
     }
     break;
   case PROP_DATA:
@@ -190,14 +190,16 @@ ags_file_link_get_property(GObject *gobject,
   file_link = AGS_FILE_LINK(gobject);
   
   switch(prop_id){
-  case PROP_URL:
+  case PROP_FILENAME:
     {
-      g_value_set_string(value, file_link->url);
+      g_value_set_string(value, file_link->filename);
     }
+    break;
   case PROP_DATA:
     {
       g_value_set_string(value, file_link->data);
     }
+    break;
   case PROP_TIMESTAMP:
     {
       g_value_set_object(value, file_link->timestamp);

@@ -191,7 +191,9 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
-    sndfile->file = (SNDFILE *) sf_open(name, SFM_READ, sndfile->info);
+    if(name != NULL){
+      sndfile->file = (SNDFILE *) sf_open(name, SFM_READ, sndfile->info);
+    }
   }else{
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_READ, sndfile->info, sndfile);
   }

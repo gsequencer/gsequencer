@@ -38,7 +38,7 @@ struct _AgsFileLink
 {
   GObject object;
 
-  gchar *url;
+  gchar *filename;
   gchar *data;
   AgsTimestamp *timestamp;
 };
