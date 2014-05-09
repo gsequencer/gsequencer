@@ -145,8 +145,10 @@ ags_open_file_launch(AgsTask *task)
   AgsAudio *audio;
   AgsChannel *channel, *iter;
   AgsAudioFile *audio_file;
+  AgsFileLink *file_link;
   GSList *current;
   GList *audio_signal;
+  gchar *current_filename;
   guint i, i_stop;
   GError *error;
 
@@ -187,7 +189,9 @@ ags_open_file_launch(AgsTask *task)
   }
 
   for(i = 0; i < i_stop && current != NULL; i++){
-    audio_file = ags_audio_file_new((gchar *) current->data,
+    current_filename = (gchar *) current->data;
+
+    audio_file = ags_audio_file_new((gchar *) current_filename,
 				    AGS_DEVOUT(audio->devout),
 				    0, open_file->audio->audio_channels);
 
@@ -198,10 +202,11 @@ ags_open_file_launch(AgsTask *task)
     audio_signal = audio_file->audio_signal;
 
     while(iter != channel->next_pad && audio_signal != NULL){
+      file_link = g_object_new(AGS_TYPE_FILE_LINK,
+			       "filename\0", current_filename,
+			       NULL);
       g_object_set(G_OBJECT(iter),
-		   "file-link", g_object_new(AGS_TYPE_FILE_LINK,
-					     "filename\0", g_strdup((gchar *) current->data),
-					     NULL),
+		   "file-link", file_link,
 		   NULL);
 
       AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

@@ -136,11 +136,11 @@ ags_file_link_set_property(GObject *gobject,
 
       filename = (char *) g_value_get_string(value);
 
-      if(file_link->filename != NULL){
-	g_free(file_link->filename);
+      if(filename == file_link->filename){
+	return;
       }
 
-      file_link->filename = filename;
+      file_link->filename = g_strdup(filename);
     }
     break;
   case PROP_DATA:
@@ -149,8 +149,8 @@ ags_file_link_set_property(GObject *gobject,
 
       data = (char *) g_value_get_string(value);
 
-      if(file_link->data != NULL){
-	g_free(file_link->data);
+      if(data == file_link->data){
+	return;
       }
 
       file_link->data = data;
@@ -161,6 +161,10 @@ ags_file_link_set_property(GObject *gobject,
       GObject *timestamp;
 
       timestamp = (GObject *) g_value_get_object(value);
+
+      if(timestamp == file_link->timestamp){
+	return;
+      }
 
       if(file_link->timestamp != NULL){
 	g_object_unref(file_link->timestamp);

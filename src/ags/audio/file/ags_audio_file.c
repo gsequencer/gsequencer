@@ -269,7 +269,7 @@ ags_audio_file_new(gchar *name,
 
   audio_file = (AgsAudioFile *) g_object_new(AGS_TYPE_AUDIO_FILE, NULL);
 
-  audio_file->name = name;
+  audio_file->name = g_strdup(name);
   audio_file->devout = devout;
   audio_file->start_channel = start_channel;
   audio_file->audio_channels = audio_channels;

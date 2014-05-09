@@ -1230,14 +1230,16 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
 	     "type\0",
 	     g_strdup("url\0"));
 
-  filename = NULL;
-  g_object_get(G_OBJECT(file_link),
-	       "filename\0", &filename,
-	       NULL);
-
-  xmlNewProp(node,
-	     "filename\0",
-	     g_strdup_printf("%s\0", ((filename != NULL) ? filename: "(null)\0")));
+  if(file_link->filename != NULL){
+    g_message("XML outputting: %s\0", file_link->filename);
+    xmlNewProp(node,
+	       "filename\0",
+	       g_strdup(file_link->filename));
+  }else{
+    xmlNewProp(node,
+	       "filename\0",
+	       g_strdup("(null)\0"));
+  }
 
   xmlNewProp(node,
 	     "delay\0",

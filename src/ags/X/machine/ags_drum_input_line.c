@@ -21,6 +21,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_plugin.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -55,6 +57,7 @@
 
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_destroy(GtkObject *object);
 void ags_drum_input_line_connect(AgsConnectable *connectable);
@@ -90,6 +93,12 @@ ags_drum_input_line_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_drum_input_line_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_drum_input_line = g_type_register_static(AGS_TYPE_LINE,
 						      "AgsDrumInputLine\0", &ags_drum_input_line_info,
 						      0);
@@ -97,6 +106,10 @@ ags_drum_input_line_get_type()
     g_type_add_interface_static(ags_type_drum_input_line,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_drum_input_line,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return(ags_type_drum_input_line);
@@ -124,6 +137,12 @@ ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connecta
 
   connectable->connect = ags_drum_input_line_connect;
   connectable->disconnect = ags_drum_input_line_disconnect;
+}
+
+void
+ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  /* empty */
 }
 
 void

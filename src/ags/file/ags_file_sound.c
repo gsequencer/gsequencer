@@ -1525,7 +1525,7 @@ ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *channel)
   if(input->file_link != NULL){
     ags_file_write_file_link(file,
 			     node,
-			     AGS_FILE_LINK(input->file_link));
+			     input->file_link);
   }
 
   return(node);
