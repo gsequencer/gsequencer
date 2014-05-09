@@ -172,7 +172,17 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  param_spec);
 
   /* AgsLineMember */
-  line_member->change_port = ags_line_member_change_port;
+  line_member->change_port = ags_line_member_real_change_port;
+
+  line_member_signals[CHANGE_PORT] =
+    g_signal_new("change-port\0",
+		 G_TYPE_FROM_CLASS(line_member),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineMemberClass, change_port),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
 }
 
 void
@@ -411,6 +421,8 @@ ags_line_member_connect(AgsConnectable *connectable)
 
   line_member = AGS_LINE_MEMBER(connectable);
 
+  ags_line_member_find_port(line_member);
+
   control = gtk_bin_get_child(GTK_BIN(line_member));
 
   if(line_member->widget_type == AGS_TYPE_DIAL){
@@ -557,7 +569,114 @@ void
 ags_line_member_change_port(AgsLineMember *line_member,
 			    gpointer port_data)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_LINE_MEMBER(line_member));
+
+  g_object_ref((GObject *) line_member);
+  g_signal_emit(G_OBJECT(line_member),
+		line_member_signals[CHANGE_PORT], 0);
+  g_object_unref((GObject *) line_member);
+}
+
+void
+ags_line_member_find_port(AgsLineMember *line_member)
+{
+  AgsMachine *machine;
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsPort *audio_port, *output_port, *input_port;
+  GList *recall;
+  gchar *specifier;
+
+  auto AgsPort* ags_line_member_find_specifier(GList *recall);
+
+  AgsPort* ags_line_member_find_specifier(GList *recall){
+    GList *port;
+    
+    while(recall != NULL){
+      port = AGS_RECALL(recall->data)->port;
+
+      while(port != NULL){
+	if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+		      specifier)){
+	  return(AGS_PORT(port->data));
+	}
+
+	port = port->next;
+      }
+
+      recall = recall->next;
+    }
+
+    return(NULL);
+  }
+
+
+  if(line_member == NULL){
+    return;
+  }
+
+  specifier = line_member->specifier;
+
+  if(specifier == NULL){
+    return;
+  }
+
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+						   AGS_TYPE_MACHINE);
+  audio = AGS_AUDIO(machine->audio);
+
+  audio_port = NULL;
+  output_port = NULL;
+  input_port = NULL;
+  
+  /* search channels */
+  channel = audio->output;
+
+  recall = channel->play;
+  output_port = ags_line_member_find_specifier(recall);
+
+  if(output_port == NULL){
+    recall = channel->recall;
+    output_port = ags_line_member_find_specifier(recall);
+  }
+
+  if(output_port == NULL){
+    channel = audio->input;
+  
+    recall = channel->play;
+    input_port = ags_line_member_find_specifier(recall);
+  
+    if(input_port == NULL){
+      recall = channel->recall;
+      input_port = ags_line_member_find_specifier(recall);
+    }
+  }
+ 
+ /* search audio */
+  if(output_port == NULL ||
+     input_port == NULL){
+    recall = channel->play;
+    audio_port = ags_line_member_find_specifier(recall);
+
+    if(audio_port == NULL){
+      recall = channel->recall;
+      audio_port = ags_line_member_find_specifier(recall);
+    }
+  }
+
+  if(input_port != NULL){
+    g_object_set(G_OBJECT(line_member),
+		 "port\0", input_port,
+		 NULL);
+  }else if(output_port != NULL){
+    g_object_set(G_OBJECT(line_member),
+		 "port\0", output_port,
+		 NULL);
+  }else if(audio_port != NULL){
+    g_object_set(G_OBJECT(line_member),
+		 "port\0", audio_port,
+		 NULL);
+  }
 }
 
 AgsLineMember*

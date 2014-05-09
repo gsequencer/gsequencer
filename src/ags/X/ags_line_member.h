@@ -80,6 +80,8 @@ void ags_line_member_set_label(AgsLineMember *line_member,
 void ags_line_member_change_port(AgsLineMember *line_member,
 				 gpointer port_data);
 
+void ags_line_member_find_port(AgsLineMember *line_member);
+
 AgsLineMember* ags_line_member_new();
 
 #endif /*__AGS_LINE_MEMBER_H__*/

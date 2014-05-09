@@ -193,6 +193,7 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 {
   AgsDrum *drum;
   AgsDrumInputLine *drum_input_line;
+  GList *line_member;
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
 
@@ -211,7 +212,6 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
 
   /* AgsDrumInputLine */
-  /* empty */
 }
 
 void
