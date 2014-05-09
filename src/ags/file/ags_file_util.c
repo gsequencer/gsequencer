@@ -1054,6 +1054,7 @@ void
 ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 {
   AgsFileLink *gobject;
+  AgsFileLookup *file_lookup;
   xmlNode *child;
 
   if(*file_link == NULL){
@@ -1076,6 +1077,16 @@ ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
+
+  /* parent */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", file_link,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_util_read_file_link_resolve_parent), file_link);
 }
 
 void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
@@ -1167,7 +1178,15 @@ void ags_file_util_read_file_link_resolve_parent(AgsFileLookup *file_lookup,
     child = NULL;
     
     if(xpath_object->nodesetval != NULL && xpath_object->nodesetval->nodeTab != NULL){
-      child = xpath_object->nodesetval->nodeTab[0];
+      guint i;
+
+      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	  break;
+	}
+      }
+
+      child = xpath_object->nodesetval->nodeTab[i];
     }
 
     /**/

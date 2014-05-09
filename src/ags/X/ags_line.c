@@ -29,6 +29,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_line_member.h>
+
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_plugin_interface_init(AgsPluginInterface *plugin);
@@ -377,6 +379,26 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 
   /* set label */
   gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
+}
+
+void
+ags_line_find_port(AgsLine *line)
+{
+  GList *line_member;
+
+  if(line == NULL || line->expander == NULL){
+    return;
+  }
+
+  line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
+
+  while(line_member != NULL){
+    if(AGS_IS_LINE_MEMBER(line_member->data)){
+      ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));
+    }
+
+    line_member = line_member->next;
+  }
 }
 
 void

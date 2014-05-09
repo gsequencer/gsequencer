@@ -1936,6 +1936,10 @@ ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
+  if(line_member->port == NULL){
+    return;
+  }
+
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->port);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);

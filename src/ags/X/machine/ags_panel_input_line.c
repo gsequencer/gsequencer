@@ -134,7 +134,7 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 					       "widget-type\0", GTK_TYPE_CHECK_BUTTON,
 					       "widget-label\0", g_strdup("mute\0"),
 					       "plugin-name\0", "ags-play\0",
-					       "specifier\0", "mute[0]\0",
+					       "specifier\0", "./mute[0]\0",
 					       "control-port\0", "1/1\0",
 					       NULL);
 

@@ -81,6 +81,8 @@ GType ags_line_get_type(void);
 
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
+void ags_line_find_port(AgsLine *line);
+
 void ags_line_group_changed(AgsLine *line);
 
 GList* ags_line_find_next_grouped(GList *line);

@@ -498,6 +498,20 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
   g_object_unref((GObject *) pad);
 }
 
+void
+ags_pad_find_port(AgsPad *pad)
+{
+  GList *line;
+
+  line = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+
+  while(line != NULL){
+    ags_line_find_port(AGS_LINE(line->data));
+
+    line = line->next;
+  }
+}
+
 AgsPad*
 ags_pad_new(AgsChannel *channel)
 {

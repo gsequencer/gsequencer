@@ -260,6 +260,8 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     AGS_TYPE_INPUT, 1);
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_OUTPUT, 1);
+
+  ags_machine_find_port(AGS_MACHINE(panel));
 }
 
 void
@@ -291,6 +293,8 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_OUTPUT, 1);
+
+  ags_machine_find_port(AGS_MACHINE(mixer));
 }
 
 void
@@ -325,6 +329,8 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   /* AgsDrumInputPad */
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
+
+  ags_machine_find_port(AGS_MACHINE(drum));
 }
 
 void
@@ -359,6 +365,8 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   /* AgsMatrixInputPad */
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_OUTPUT, 1);
+
+  ags_machine_find_port(AGS_MACHINE(matrix));
 }
 
 void
@@ -388,6 +396,8 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   synth->machine.audio->audio_channels = 1;
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_INPUT, 2);
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
+
+  ags_machine_find_port(AGS_MACHINE(synth));
 }
 
 void
@@ -418,6 +428,8 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
+
+  ags_machine_find_port(AGS_MACHINE(ffplayer));
 }
 
 

@@ -643,6 +643,28 @@ ags_machine_find_by_name(GList *list, char *name)
   return(NULL);
 }
 
+void
+ags_machine_find_port(AgsMachine *machine)
+{
+  GList *pad;
+  
+  pad = gtk_container_get_children(GTK_CONTAINER(machine->output));
+
+  while(pad != NULL){
+    ags_pad_find_port(AGS_PAD(pad->data));
+
+    pad = pad->next;
+  }
+
+  pad = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+  while(pad != NULL){
+    ags_pad_find_port(AGS_PAD(pad->data));
+
+    pad = pad->next;
+  }
+}
+
 GtkFileChooserDialog*
 ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 {
