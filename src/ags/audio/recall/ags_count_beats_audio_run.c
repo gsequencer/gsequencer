@@ -1082,7 +1082,8 @@ ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, file_lookup->ref);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
+							      AGS_COUNT_BEATS_AUDIO_RUN(file_lookup->ref)->delay_audio_run);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 

@@ -47,17 +47,24 @@ void ags_copy_pattern_audio_run_get_property(GObject *gobject,
 					     guint prop_id,
 					     GValue *value,
 					     GParamSpec *param_spec);
+void ags_copy_pattern_audio_run_finalize(GObject *gobject);
 void ags_copy_pattern_audio_run_connect(AgsConnectable *connectable);
 void ags_copy_pattern_audio_run_disconnect(AgsConnectable *connectable);
 void ags_copy_pattern_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_pattern_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_copy_pattern_audio_run_finalize(GObject *gobject);
+void ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
 						AgsRecallID *recall_id,
 						guint *n_params, GParameter *parameter);
 void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
+
+void ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
+							GObject *recall);
+void ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
+						       GObject *recall);
 
 enum{
   PROP_0,
@@ -319,6 +326,105 @@ ags_copy_pattern_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_con
   ags_copy_pattern_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
+void
+ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *iter;
+
+  /* read parent */
+  ags_copy_pattern_audio_run_parent_plugin_interface->read(file, node, plugin);
+
+  /* read depenendency */
+  iter = node->children;
+
+  while(iter != NULL){
+    if(iter->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(iter->name,
+		     "ags-dependency-list\0",
+		     19)){
+	xmlNode *dependency_node;
+
+	dependency_node = iter->children;
+
+	while(dependency_node != NULL){
+	  if(dependency_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(dependency_node->name,
+			   "ags-dependency\0",
+			   15)){
+	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+							   "file\0", file,
+							   "node\0", dependency_node,
+							   "reference\0", G_OBJECT(plugin),
+							   NULL);
+	      ags_file_add_lookup(file, (GObject *) file_lookup);
+	      g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+			       G_CALLBACK(ags_copy_pattern_audio_run_read_resolve_dependency), G_OBJECT(plugin));
+	    }
+	  }
+	  
+	  dependency_node = dependency_node->next;
+	}
+      }
+    }
+
+    iter = iter->next;
+  }
+}
+
+xmlNode*
+ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsFileLookup *file_lookup;
+  xmlNode *node, *child;
+  xmlNode *dependency_node;
+  GList *list;
+  gchar *id;
+
+  /* write parent */
+  node = ags_copy_pattern_audio_run_parent_plugin_interface->write(file, parent, plugin);
+
+  /* write dependencies */
+  child = xmlNewNode(NULL,
+		     "ags-dependency-list\0");
+
+  xmlNewProp(child,
+	     AGS_FILE_ID_PROP,
+	     ags_id_generator_create_uuid());
+
+  xmlAddChild(node,
+	      child);
+
+  list = AGS_RECALL(plugin)->dependencies;
+
+  while(list != NULL){
+    id = ags_id_generator_create_uuid();
+
+    dependency_node = xmlNewNode(NULL,
+				 "ags-dependency\0");
+
+    xmlNewProp(dependency_node,
+	       AGS_FILE_ID_PROP,
+	       id);
+
+    xmlAddChild(child,
+		dependency_node);
+
+    file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						 "file\0", file,
+						 "node\0", dependency_node,
+						 "reference\0", G_OBJECT(plugin),
+						 NULL);
+    ags_file_add_lookup(file, (GObject *) file_lookup);
+    g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		     G_CALLBACK(ags_copy_pattern_audio_run_write_resolve_dependency), G_OBJECT(plugin));
+
+    list = list->next;
+  }
+
+  return(node);
+}
+
 AgsRecall*
 ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
 				     AgsRecallID *recall_id,
@@ -410,6 +516,42 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   g_object_set(G_OBJECT(recall),
 	       "count-beats-audio-run\0", count_beats_audio_run,
 	       NULL);
+}
+
+void
+ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
+						    GObject *recall)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "xpath\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(AGS_IS_DELAY_AUDIO_RUN(id_ref->ref)){
+    g_object_set(G_OBJECT(recall),
+		 "count-beats-audio-run\0", id_ref->ref,
+		 NULL);
+  }
+}
+
+void
+ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
+						   GObject *recall)
+{
+  AgsFileIdRef *id_ref;
+  gchar *id;
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
+							      AGS_COPY_PATTERN_AUDIO_RUN(file_lookup->ref)->count_beats_audio_run);
+
+  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+  xmlNewProp(file_lookup->node,
+	     "xpath\0",
+  	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 }
 
 AgsCopyPatternAudioRun*
