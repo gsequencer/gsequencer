@@ -1782,6 +1782,7 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref == NULL){
+    g_warning("couldn't find port\0");
     return;
   }
 
@@ -1942,11 +1943,15 @@ ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->port);
 
+  if(id_ref == NULL){
+    return;
+  }
+
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
   xmlNewProp(file_lookup->node,
 	     "port\0",
-	     g_strdup_printf("xpath=//ags-port[@id='%s']\0", id));
+	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 }
 
 void

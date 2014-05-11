@@ -666,7 +666,7 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
   value = 1 << (bit % (sizeof(guint) * 8));
 
 
-  if(value & pattern->pattern[i][j][k])
+  if(value & (pattern->pattern[i][j][k]))
     pattern->pattern[i][j][k] &= (~value);
   else
     pattern->pattern[i][j][k] |= value;

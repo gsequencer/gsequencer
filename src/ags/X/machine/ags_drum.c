@@ -714,6 +714,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
+	  ags_pad_find_port(AGS_PAD(drum_input_pad));
 	  gtk_widget_show_all((GtkWidget *) drum_input_pad);
 	}
       }else{
@@ -766,6 +767,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
+	  ags_pad_find_port(AGS_PAD(drum_output_pad));
 	  gtk_widget_show_all((GtkWidget *) drum_output_pad);
 	}
       }else{
@@ -872,6 +874,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_input_pad));
+	  ags_pad_find_port(AGS_PAD(drum_input_pad));
 	  gtk_widget_show_all((GtkWidget *) drum_input_pad);
 	}
 
@@ -952,6 +955,7 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) drum)){
 	  ags_connectable_connect(AGS_CONNECTABLE(drum_output_pad));
+	  ags_pad_find_port(AGS_PAD(drum_output_pad));
 	  gtk_widget_show_all((GtkWidget *) drum_output_pad);
 	}
 

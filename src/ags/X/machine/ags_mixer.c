@@ -343,6 +343,7 @@ ags_mixer_set_audio_channels(AgsAudio *audio,
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) mixer)){
 	  ags_connectable_connect(AGS_CONNECTABLE(mixer_input_pad));
+	  ags_pad_find_port(AGS_PAD(mixer_input_pad));
 	  gtk_widget_show_all((GtkWidget *) mixer_input_pad);
 	}
       }else{
@@ -410,6 +411,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
 
 	if(GTK_WIDGET_VISIBLE((GtkWidget *) mixer)){
 	  ags_connectable_connect(AGS_CONNECTABLE(mixer_input_pad));
+	  ags_pad_find_port(AGS_PAD(mixer_input_pad));
 	  gtk_widget_show_all((GtkWidget *) mixer_input_pad);
 	}
 
