@@ -79,6 +79,7 @@ void ags_matrix_finalize(GObject *gobject);
 void ags_matrix_connect(AgsConnectable *connectable);
 void ags_matrix_disconnect(AgsConnectable *connectable);
 void ags_matrix_show(GtkWidget *widget);
+void ags_matrix_show_all(GtkWidget *widget);
 void ags_matrix_add_default_recalls(AgsMachine *machine);
 gchar* ags_matrix_get_name(AgsPlugin *plugin);
 void ags_matrix_set_name(AgsPlugin *plugin, gchar *name);
@@ -169,7 +170,8 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
   /* GtkWidget */
   widget = (GtkWidgetClass *) matrix;
 
-  //  widget->show = ags_matrix_show;
+  widget->show = ags_matrix_show;
+  widget->show_all = ags_matrix_show_all;
 
   /* AgsMachine */
   machine = (AgsMachineClass *) matrix;
@@ -510,6 +512,17 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 void
 ags_matrix_show(GtkWidget *widget)
 {
+  GTK_WIDGET_CLASS(ags_matrix_parent_class)->show(widget);
+
+  ags_matrix_draw_matrix(AGS_MATRIX(widget));
+}
+
+void
+ags_matrix_show_all(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_matrix_parent_class)->show_all(widget);
+
+  ags_matrix_draw_matrix(AGS_MATRIX(widget));
 }
 
 void
@@ -918,6 +931,10 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
   int i, j;
 
   channel = ags_channel_nth(matrix->machine.audio->input, (guint) matrix->adjustment->value);
+
+  if(channel == NULL){
+    return;
+  }
 
   for (i = 0; i < 8; i++){
     for (j = 0; j < 32; j++)

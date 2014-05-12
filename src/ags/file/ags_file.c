@@ -735,6 +735,8 @@ ags_file_real_read(AgsFile *file)
 
   /* resolve */
   ags_file_read_resolve(file);
+
+  gtk_widget_show_all(GTK_WIDGET(ags_main->window));
   
   g_message("========== resolved\0");
 
@@ -926,8 +928,6 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 
     list = list->next;
   }
-
-  gtk_widget_show_all(GTK_WIDGET(gobject->window));
 }
 
 void

@@ -75,6 +75,7 @@ void ags_drum_finalize(GObject *gobject);
 void ags_drum_connect(AgsConnectable *connectable);
 void ags_drum_disconnect(AgsConnectable *connectable);
 void ags_drum_show(GtkWidget *widget);
+void ags_drum_show_all(GtkWidget *widget);
 void ags_drum_add_default_recalls(AgsMachine *machine);
 gchar* ags_drum_get_name(AgsPlugin *plugin);
 void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
@@ -146,6 +147,7 @@ void
 ags_drum_class_init(AgsDrumClass *drum)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_drum_parent_class = g_type_class_peek_parent(drum);
@@ -154,6 +156,12 @@ ags_drum_class_init(AgsDrumClass *drum)
   gobject = (GObjectClass *) drum;
 
   gobject->finalize = ags_drum_finalize;
+
+  /* GtkWidget */
+  widget = (GtkWidgetClass *) drum;
+
+  widget->show = ags_drum_show;
+  widget->show_all = ags_drum_show_all;
 
   /*  */
   machine = (AgsMachineClass *) drum;
@@ -472,6 +480,17 @@ ags_drum_disconnect(AgsConnectable *connectable)
 void
 ags_drum_show(GtkWidget *widget)
 {
+  GTK_WIDGET_CLASS(ags_drum_parent_class)->show(widget);
+
+  ags_drum_set_pattern(AGS_DRUM(widget));
+}
+
+void
+ags_drum_show_all(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_drum_parent_class)->show_all(widget);
+
+  ags_drum_set_pattern(AGS_DRUM(widget));
 }
 
 void
