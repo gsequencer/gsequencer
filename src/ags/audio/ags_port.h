@@ -78,6 +78,8 @@ void ags_port_safe_write(AgsPort *port, GValue *value);
 void ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value);
 void ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
 
+GList* ags_port_find_specifier(GList *port, gchar *specifier);
+
 AgsPort* ags_port_new();
 
 #endif /*__AGS_PORT_H__*/

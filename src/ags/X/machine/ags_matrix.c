@@ -594,9 +594,11 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       source = ags_channel_nth(audio->input, pads_old);
 
       while(source != NULL){
-	source->pattern = g_list_alloc();
-	source->pattern->data = (gpointer) ags_pattern_new();
-	ags_pattern_set_dim((AgsPattern *) source->pattern->data, 1, 9, 32);
+	if(source->pattern == NULL){
+	  source->pattern = g_list_alloc();
+	  source->pattern->data = (gpointer) ags_pattern_new();
+	  ags_pattern_set_dim((AgsPattern *) source->pattern->data, 1, 9, 32);
+	}
 	
 	source = source->next;
       }

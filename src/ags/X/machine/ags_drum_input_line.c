@@ -239,9 +239,11 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   }
 
   if(channel != NULL){
-    channel->pattern = g_list_alloc();
-    channel->pattern->data = (gpointer) ags_pattern_new();
-    ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
+    if(channel->pattern == NULL){
+      channel->pattern = g_list_alloc();
+      channel->pattern->data = (gpointer) ags_pattern_new();
+      ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
+    }
 
     if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
       ags_drum_input_line_map_recall(drum_input_line, 0);

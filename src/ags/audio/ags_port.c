@@ -455,6 +455,21 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
   pthread_mutex_unlock(&(port->mutex));
 }
 
+GList*
+ags_port_find_specifier(GList *port, gchar *specifier)
+{
+  while(port != NULL){
+    if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+		  specifier)){
+      return(port);
+    }
+
+    port = port->next;
+  }
+
+  return(NULL);
+}
+
 AgsPort*
 ags_port_new()
 {

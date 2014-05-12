@@ -3020,7 +3020,12 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
   xmlNode *child;
   GList *list, *iter;
 
-  list = NULL;
+  if(*port != NULL){
+    list = *port;
+  }else{
+    list = NULL;
+  }
+
   child = node->children;
 
   while(child != NULL){
@@ -3028,20 +3033,41 @@ ags_file_read_port_list(AgsFile *file, xmlNode *node, GList **port)
       if(!xmlStrncmp(child->name,
 		     "ags-port\0",
 		     9)){
-	current = NULL;
+
+	if(*port != NULL){
+	  GList *list;
+
+	  list = ags_port_find_specifier(*port,
+					 xmlGetProp(child, "specifier\0"));
+
+	  if(list == NULL){
+	    child = child->next;
+
+	    continue;
+	  }else{
+	    current = list->data;
+	  }
+	}else{
+	  current = NULL;
+	}
+
 	ags_file_read_port(file,
 			   child,
 			   &current);
     
-	list = g_list_prepend(list,
-			      current);
+	if(*port == NULL){
+	  list = g_list_prepend(list,
+				current);
+	}
       }
     }
     
     child = child->next;
   }
 
-  list = g_list_reverse(list);
+  if(*port == NULL){
+    list = g_list_reverse(list);
+  }
 
   /* connect resolve */
   iter = list;
