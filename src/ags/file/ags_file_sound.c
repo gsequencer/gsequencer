@@ -2118,6 +2118,7 @@ ags_file_read_recall_container(AgsFile *file, xmlNode *node, AgsRecallContainer 
 	      }
 	    }
 	  }
+
 	  value_node = value_node->next;
 	}
       }

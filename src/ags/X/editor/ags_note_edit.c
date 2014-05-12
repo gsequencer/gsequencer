@@ -258,20 +258,22 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
     note_edit->stop_y = note_edit->nth_y + (note_edit->height - note_edit->y0 - note_edit->y1) / note_edit->control_height;
 
     /* refresh display */
-    ags_meter_paint(editor->meter);
+    if(GTK_WIDGET_VISIBLE(editor)){
+      ags_meter_paint(editor->meter);
 
-    cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
-    cairo_push_group(cr);
+      cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+      cairo_push_group(cr);
 
-    ags_note_edit_draw_segment(note_edit, cr);
-    ags_note_edit_draw_notation(note_edit, cr);
+      ags_note_edit_draw_segment(note_edit, cr);
+      ags_note_edit_draw_notation(note_edit, cr);
 
-    if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
-      ags_note_edit_draw_position(note_edit, cr);
+      if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+	ags_note_edit_draw_position(note_edit, cr);
+      }
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
     }
-
-    cairo_pop_group_to_source(cr);
-    cairo_paint(cr);
   }
 }
 
@@ -366,18 +368,20 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
     }
 
     /* refresh display */
-    cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
-    cairo_push_group(cr);
+    if(GTK_WIDGET_VISIBLE(editor)){
+      cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+      cairo_push_group(cr);
 
-    ags_note_edit_draw_segment(note_edit, cr);
-    ags_note_edit_draw_notation(note_edit, cr);
+      ags_note_edit_draw_segment(note_edit, cr);
+      ags_note_edit_draw_notation(note_edit, cr);
 
-    if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
-      ags_note_edit_draw_position(note_edit, cr);
+      if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
+	ags_note_edit_draw_position(note_edit, cr);
+      }
+
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
     }
-
-    cairo_pop_group_to_source(cr);
-    cairo_paint(cr);
   }
 }
 

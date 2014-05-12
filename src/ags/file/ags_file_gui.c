@@ -35,6 +35,11 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
+
+#include <ags/X/editor/ags_ruler.h>
+
+#define AGS_FILE_READ_EDITOR_PARAMETER_NAME "ags-file-read-editor-parameter-name\0"
 
 void ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
 					 AgsWindow *window);
@@ -67,6 +72,8 @@ void ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
 
 void ags_file_read_editor_resolve_parameter(AgsFileLookup *file_lookup,
 					    AgsEditor *editor);
+void ags_file_read_editor_launch(AgsFileLaunch *file_launch,
+				 AgsEditor *editor);
 
 void
 ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget)
@@ -2182,6 +2189,7 @@ void
 ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 {
   AgsEditor *gobject;
+  AgsFileLaunch *file_launch;
   xmlNode *child;
 
   if(*editor == NULL){
@@ -2226,14 +2234,17 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 			   "ags-parameter\0",
 			   11)){
 	AgsFileLookup *file_lookup;
+	xmlNode *value_node;
+	GList *list;
 	GParameter *parameter;
 	gint n_params;
+	gint i;
 
 	parameter = NULL;
 	n_params = 0;
 
 	ags_file_util_read_parameter(file,
-				     child,
+				     child, NULL,
 				     &parameter, &n_params, NULL);
 
 	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -2241,9 +2252,33 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 						     "node\0", node,
 						     "reference\0", parameter,
 						     NULL);
-	ags_file_add_lookup(file, (GObject *) file_lookup);
-	g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
-			       G_CALLBACK(ags_file_read_editor_resolve_parameter), gobject);
+
+	value_node = child->children;
+	i = 0;
+
+	while(value_node != NULL){
+	  if(value_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(value_node->name,
+			   "ags-value\0",
+			   10)){
+	      list = ags_file_lookup_find_by_node(file->lookup,
+						  value_node);
+
+	      if(list != NULL){
+		file_lookup = AGS_FILE_LOOKUP(list->data);
+		g_object_set_data(G_OBJECT(file_lookup),
+				  AGS_FILE_READ_EDITOR_PARAMETER_NAME,
+				  parameter[i].name);
+		g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+				       G_CALLBACK(ags_file_read_editor_resolve_parameter), gobject);
+	      }
+
+	      i++;
+	    }
+	  }
+
+	  value_node = value_node->next;
+	}
       }else if(!xmlStrncmp(child->name,
 			   "ags-notebook\0",
 			   13)){
@@ -2252,34 +2287,72 @@ ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
 			       &gobject->notebook);
       }
     }
+
+    child = child->next;
   }
+
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_file_read_editor_launch), gobject);
+  ags_file_add_launch(file,
+		      file_launch);
 }
 
 void
 ags_file_read_editor_resolve_parameter(AgsFileLookup *file_lookup,
 				       AgsEditor *editor)
 {
-  GParameter *parameter;
-  GParamSpec **param_spec;
-  guint n_properties;
-  guint i, j;
+  gchar *name;
+  GValue *value;
 
-  parameter = (GParameter *) file_lookup->ref;
+  name = g_object_get_data(G_OBJECT(file_lookup),
+			   AGS_FILE_READ_EDITOR_PARAMETER_NAME);
+  value = file_lookup->ref;
 
-  param_spec = g_object_class_list_properties(G_OBJECT_GET_CLASS(editor),
-					      &n_properties);
+  g_object_set_property(G_OBJECT(editor),
+			name,
+			value);
+}
 
-  for(i = 0, j = 0; i < n_properties; i++){
-    if(g_type_is_a(param_spec[i]->owner_type,
-		   AGS_TYPE_EDITOR)){
-	
-      g_object_set_property(G_OBJECT(editor),
-			    parameter[j].name,
-			    &parameter[j].value);
+void
+ags_file_read_editor_launch(AgsFileLaunch *file_launch,
+			    AgsEditor *editor)
+{
+  AgsMachine *machine;
+  AgsRuler *ruler;
+  guint i;
+  guint tabs;
+  guint pads;
 
-      j++;
-    }
+  machine = (AgsMachine *) g_object_get_data(editor->selected,
+					     (char *) g_type_name(AGS_TYPE_MACHINE));
+
+  /* set tabs */
+  tabs = machine->audio->audio_channels;
+
+  for(i = 0; i < tabs; i++){
+    ruler = ags_ruler_new();
+    ags_notebook_add_tab(editor->notebook);
+
+    if(GTK_WIDGET_VISIBLE(GTK_WIDGET(editor->notebook)))
+      ags_ruler_connect(ruler);
   }
+
+  /* map height */
+  if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
+    pads = machine->audio->input_pads;
+  }else{
+    pads = machine->audio->output_pads;
+  }
+
+  editor->note_edit->map_height = pads * editor->note_edit->control_height;
+
+  gtk_widget_show_all(editor->notebook);
+
+  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+  ags_note_edit_reset_vertically(editor->note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
 }
 
 xmlNode*

@@ -37,6 +37,8 @@ typedef struct _AgsFileLaunchClass AgsFileLaunchClass;
 struct _AgsFileLaunch
 {
   GObject object;
+
+  xmlNode *node;
 };
 
 struct _AgsFileLaunchClass

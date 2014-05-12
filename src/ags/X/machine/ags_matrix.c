@@ -32,6 +32,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -86,6 +87,7 @@ void ags_matrix_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_matrix_get_xml_type(AgsPlugin *plugin);
 void ags_matrix_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix);
 xmlNode* ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_file_read_matrix(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
@@ -1004,6 +1006,7 @@ void
 ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsMatrix *gobject;
+  AgsFileLaunch *file_launch;
   GList *list;
   guint64 index;
 
@@ -1030,6 +1033,60 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				 TRUE);
     gobject->selected = gobject->index[index];
   }
+
+  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
+			     "node\0", node,
+			     NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_matrix_launch_task), gobject);
+}
+
+void
+ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
+{
+  GList *list;
+  gchar *tact;
+  gdouble length;
+  gint history, i;
+
+  /* tact */
+  tact = (gchar *) xmlGetProp(file_launch->node,
+			      "tact\0");
+
+  list = gtk_container_get_children(gtk_option_menu_get_menu(matrix->tact));
+  history = -1;
+  i = 0;
+
+  while(list != NULL){
+    if(!g_strcmp0(gtk_menu_item_get_label(GTK_MENU_ITEM(list->data)),
+		  tact)){
+      history = i;
+      break;
+    }
+
+    list = list->next;
+    i++;
+  }
+
+  if(history != -1){
+    gtk_option_menu_set_history(matrix->tact,
+				history);
+  }
+
+  /* length */
+  length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,
+					       "length\0"),
+				    NULL);
+  gtk_spin_button_set_value(matrix->length_spin,
+			    length);
+
+  /* loop */
+  if(!g_strcmp0(xmlGetProp(file_launch->node,
+			   "loop\0"),
+		AGS_FILE_TRUE)){
+    gtk_toggle_button_set_active(matrix->loop_button,
+				 TRUE);
+  }
 }
 
 xmlNode*
@@ -1037,8 +1094,10 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsMatrix *matrix;
   xmlNode *node;
+  GList *list;
   gchar *id;
   guint i;
+  gint history;
 
   matrix = AGS_MATRIX(plugin);
 
@@ -1059,11 +1118,27 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference\0", matrix,
 				   NULL));
 
+  history = gtk_option_menu_get_history(matrix->tact);
+  list = gtk_container_get_children(gtk_option_menu_get_menu(matrix->tact));
+  list = g_list_nth(list, history);
+
+  xmlNewProp(node,
+	     "tact\0",
+	     g_strdup_printf("%s\0", gtk_menu_item_get_label(GTK_MENU_ITEM(list->data))));
+
+  xmlNewProp(node,
+	     "length\0",
+	     g_strdup_printf("%d\0", (gint) gtk_spin_button_get_value(matrix->length_spin)));
+
   for(i = 0; matrix->selected != matrix->index[i]; i++);
 
   xmlNewProp(node,
 	     "bank-index-0\0",
 	     g_strdup_printf("%d\0", i));
+
+  xmlNewProp(node,
+	     "loop\0",
+	     g_strdup_printf("%s\0", (gtk_toggle_button_get_active(matrix->loop_button) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
 	      node);  

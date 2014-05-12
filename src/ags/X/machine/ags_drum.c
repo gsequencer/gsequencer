@@ -32,6 +32,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
 
 #include <ags/widget/ags_led.h>
 
@@ -82,6 +83,7 @@ void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_get_xml_type(AgsPlugin *plugin);
 void ags_drum_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum);
 xmlNode* ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_set_audio_channels(AgsAudio *audio,
@@ -600,6 +602,7 @@ void
 ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsDrum *gobject;
+  AgsFileLaunch *file_launch;
   GList *list;
   guint64 index;
 
@@ -639,6 +642,60 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				 TRUE);
     gobject->selected1 = gobject->index1[index];
   }
+
+  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
+			     "node\0", node,
+			     NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_drum_launch_task), gobject);
+}
+
+void
+ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
+{
+  GList *list;
+  gchar *tact;
+  gdouble length;
+  gint history, i;
+
+  /* tact */
+  tact = (gchar *) xmlGetProp(file_launch->node,
+			      "tact\0");
+
+  list = gtk_container_get_children(gtk_option_menu_get_menu(drum->tact));
+  history = -1;
+  i = 0;
+
+  while(list != NULL){
+    if(!g_strcmp0(gtk_menu_item_get_label(GTK_MENU_ITEM(list->data)),
+		  tact)){
+      history = i;
+      break;
+    }
+
+    list = list->next;
+    i++;
+  }
+
+  if(history != -1){
+    gtk_option_menu_set_history(drum->tact,
+				history);
+  }
+
+  /* length */
+  length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,
+					       "length\0"),
+				    NULL);
+  gtk_spin_button_set_value(drum->length_spin,
+			    length);
+
+  /* loop */
+  if(!g_strcmp0(xmlGetProp(file_launch->node,
+			   "loop\0"),
+		AGS_FILE_TRUE)){
+    gtk_toggle_button_set_active(drum->loop_button,
+				 TRUE);
+  }
 }
 
 xmlNode*
@@ -646,7 +703,9 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsDrum *drum;
   xmlNode *node;
+  GList *list;
   gchar *id;
+  gint history;
   guint i;
 
   drum = AGS_DRUM(plugin);
@@ -668,6 +727,18 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference\0", drum,
 				   NULL));
 
+  history = gtk_option_menu_get_history(drum->tact);
+  list = gtk_container_get_children(gtk_option_menu_get_menu(drum->tact));
+  list = g_list_nth(list, history);
+
+  xmlNewProp(node,
+	     "tact\0",
+	     g_strdup_printf("%s\0", gtk_menu_item_get_label(GTK_MENU_ITEM(list->data))));
+
+  xmlNewProp(node,
+	     "length\0",
+	     g_strdup_printf("%d\0", (gint) gtk_spin_button_get_value(drum->length_spin)));
+
   for(i = 0; drum->selected0 != drum->index0[i]; i++);
 
   xmlNewProp(node,
@@ -679,6 +750,10 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   xmlNewProp(node,
 	     "bank-index-1\0",
 	     g_strdup_printf("%d\0", i));
+
+  xmlNewProp(node,
+	     "loop\0",
+	     g_strdup_printf("%s\0", (gtk_toggle_button_get_active(drum->loop_button) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
 	      node);  

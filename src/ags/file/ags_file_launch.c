@@ -20,10 +20,23 @@
 
 void ags_file_launch_class_init(AgsFileLaunchClass *file_launch);
 void ags_file_launch_init (AgsFileLaunch *file_launch);
+void ags_file_launch_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+void ags_file_launch_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
 
 enum{
   START,
   LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_NODE,
 };
 
 static gpointer ags_file_launch_parent_class = NULL;
@@ -60,11 +73,24 @@ void
 ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_file_launch_parent_class = g_type_class_peek_parent(file_launch);
 
   /* GObjectClass */
   gobject = (GObjectClass *) file_launch;
+
+  gobject->set_property = ags_file_launch_set_property;
+  gobject->get_property = ags_file_launch_get_property;
+
+  /* properties */
+  param_spec = g_param_spec_pointer("node\0",
+				    "the node\0",
+				    "The node to find the element\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NODE,
+				  param_spec);
 
   /* AgsFileLaunchClass */
   file_launch->start = NULL;
@@ -82,7 +108,55 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 void
 ags_file_launch_init(AgsFileLaunch *file_launch)
 {
-  /* empty */
+  file_launch->node = NULL;
+}
+
+void
+ags_file_launch_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsFileLaunch *file_launch;
+
+  file_launch = AGS_FILE_LAUNCH(gobject);
+  
+  switch(prop_id){
+  case PROP_NODE:
+    {
+      xmlNode *node;
+
+      node = (xmlNode *) g_value_get_pointer(value);
+
+      file_launch->node = node;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_file_launch_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsFileLaunch *file_launch;
+
+  file_launch = AGS_FILE_LAUNCH(gobject);
+  
+  switch(prop_id){
+  case PROP_NODE:
+    {
+      g_value_set_pointer(value, file_launch->node);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
