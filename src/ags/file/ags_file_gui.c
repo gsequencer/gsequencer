@@ -2321,9 +2321,9 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 {
   AgsMachine *machine;
   AgsRuler *ruler;
+  GList *list;
+  guint tabs, pads;
   guint i;
-  guint tabs;
-  guint pads;
 
   machine = (AgsMachine *) g_object_get_data(editor->selected,
 					     (char *) g_type_name(AGS_TYPE_MACHINE));
@@ -2337,6 +2337,15 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 
     if(GTK_WIDGET_VISIBLE(GTK_WIDGET(editor->notebook)))
       ags_ruler_connect(ruler);
+  }
+
+  list = editor->notebook->tabs;
+
+  while(list != NULL){
+    gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				 TRUE);
+
+    list = list->next;
   }
 
   /* map height */

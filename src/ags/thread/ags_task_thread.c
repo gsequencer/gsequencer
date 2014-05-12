@@ -120,7 +120,7 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread = AGS_THREAD(task_thread);
 
-  //  g_atomic_int_or(&thread->flags,
+  //  g_atomic_int_or(&(thread->flags),
   //		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
 
   pthread_mutex_init(&(task_thread->read_mutex), NULL);

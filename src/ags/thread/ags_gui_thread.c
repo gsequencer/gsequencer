@@ -199,7 +199,7 @@ ags_gui_thread_run(AgsThread *thread)
     success = pthread_mutex_trylock(&(thread->suspend_mutex));
 
     if(success){
-      g_atomic_int_set(&thread->critical_region,
+      g_atomic_int_set(&(thread->critical_region),
 		       TRUE);
     }
 

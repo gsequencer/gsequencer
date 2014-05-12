@@ -231,6 +231,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
 	}
       }
+      break;
     case 1:
       {
 	gint i;
@@ -238,16 +239,16 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	i = 0;
 	
 	while((list_notation = g_list_nth(list_notation,
-					  ags_notebook_next_active_tab(editor->notebook,
-								       i))) != NULL){
+					  (i = ags_notebook_next_active_tab(editor->notebook,
+									    i)))) != NULL){
 	  note0 = ags_note_duplicate(note);
 
 	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
 
-	  list_notation = list_notation->next;
 	  i++;
 	}
       }
+      break;
     case 2:
       {
 	while(list_notation != NULL){
@@ -258,6 +259,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	  list_notation = list_notation->next;
 	}
       }
+      break;
     }
 
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
