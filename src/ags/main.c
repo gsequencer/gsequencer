@@ -483,6 +483,9 @@ ags_main_register_recall_type()
 
   ags_buffer_channel_get_type();
   ags_buffer_channel_run_get_type();
+
+  ags_play_notation_audio_get_type();
+  ags_play_notation_audio_run_get_type();
 }
 
 void

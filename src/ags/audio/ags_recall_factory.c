@@ -45,8 +45,8 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_copy_notation_audio.h>
-#include <ags/audio/recall/ags_copy_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_volume_channel_run.h>
 
@@ -120,7 +120,7 @@ GList* ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 					      guint start_audio_channel, guint stop_audio_channel,
 					      guint start_pad, guint stop_pad,
 					      guint create_flags, guint recall_flags);
-GList* ags_recall_factory_create_copy_notation(AgsAudio *audio,
+GList* ags_recall_factory_create_play_notation(AgsAudio *audio,
 					       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					       gchar *plugin_name,
 					       guint start_audio_channel, guint stop_audio_channel,
@@ -1570,15 +1570,15 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 }
 
 GList*
-ags_recall_factory_create_copy_notation(AgsAudio *audio,
+ags_recall_factory_create_play_notation(AgsAudio *audio,
 					AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					gchar *plugin_name,
 					guint start_audio_channel, guint stop_audio_channel,
 					guint start_pad, guint stop_pad,
 					guint create_flags, guint recall_flags)
 {
-  AgsCopyNotationAudio *copy_notation_audio;
-  AgsCopyNotationAudioRun *copy_notation_audio_run;
+  AgsPlayNotationAudio *play_notation_audio;
+  AgsPlayNotationAudioRun *play_notation_audio_run;
   AgsChannel *start, *channel;
   AgsPort *port;
   GList *list;
@@ -1610,30 +1610,30 @@ ags_recall_factory_create_copy_notation(AgsAudio *audio,
 
     ags_audio_add_recall_container(audio, (GObject *) play_container);
 
-    /* AgsCopyNotationAudio */
-    copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
+    /* AgsPlayNotationAudio */
+    play_notation_audio = (AgsPlayNotationAudio *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO,
 								"devout\0", audio->devout,
 								"audio\0", audio,
 								"recall_container\0", play_container,
 								NULL);
-    ags_recall_set_flags(AGS_RECALL(copy_notation_audio), (AGS_RECALL_TEMPLATE |
+    ags_recall_set_flags(AGS_RECALL(play_notation_audio), (AGS_RECALL_TEMPLATE |
 							   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							   AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) copy_notation_audio, TRUE);
+    ags_audio_add_recall(audio, (GObject *) play_notation_audio, TRUE);
 
-    /* AgsCopyNotationAudioRun */
-    copy_notation_audio_run = (AgsCopyNotationAudioRun *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO_RUN,
+    /* AgsPlayNotationAudioRun */
+    play_notation_audio_run = (AgsPlayNotationAudioRun *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO_RUN,
 								       "devout\0", audio->devout,
 								       "recall_container\0", play_container,
-								       // "recall_audio\0", copy_notation_audio,
+								       // "recall_audio\0", play_notation_audio,
 								       //TODO:JK: "delay_audio_run\0"
 								       //TODO:JK: "count_beats_audio_run\0"
-								       "notation\0", audio->notation,
+								       // "notation\0", audio->notation,
 								       NULL);
-    ags_recall_set_flags(AGS_RECALL(copy_notation_audio_run), (AGS_RECALL_TEMPLATE |
+    ags_recall_set_flags(AGS_RECALL(play_notation_audio_run), (AGS_RECALL_TEMPLATE |
 							       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							       AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) copy_notation_audio_run, TRUE);
+    ags_audio_add_recall(audio, (GObject *) play_notation_audio_run, TRUE);
   }
 
   /* recall */
@@ -1644,30 +1644,30 @@ ags_recall_factory_create_copy_notation(AgsAudio *audio,
 
     ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
-    /*  AgsCopyNotationAudio */
-    copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
+    /*  AgsPlayNotationAudio */
+    play_notation_audio = (AgsPlayNotationAudio *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO,
 								"devout\0", audio->devout,
 								"audio\0", audio,
 								"recall_container\0", recall_container,
 								NULL);
-    ags_recall_set_flags(AGS_RECALL(copy_notation_audio), (AGS_RECALL_TEMPLATE |
+    ags_recall_set_flags(AGS_RECALL(play_notation_audio), (AGS_RECALL_TEMPLATE |
 							   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							   AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) copy_notation_audio, FALSE);
+    ags_audio_add_recall(audio, (GObject *) play_notation_audio, FALSE);
 
-    /* AgsCopyNotation */
-    copy_notation_audio_run = (AgsCopyNotationAudioRun *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO_RUN,
+    /* AgsPlayNotation */
+    play_notation_audio_run = (AgsPlayNotationAudioRun *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO_RUN,
 								       "devout\0", audio->devout,
 								       "recall_container\0", recall_container,
-								       // "recall_audio\0", copy_notation_audio,
+								       // "recall_audio\0", play_notation_audio,
 								       //TODO:JK: "delay_audio_run\0"
 								       //TODO:JK: "count_beats_audio_run\0"
-								       "notation\0", audio->notation,
+								       //"notation\0", audio->notation,
 								       NULL);
-    ags_recall_set_flags(AGS_RECALL(copy_notation_audio_run), (AGS_RECALL_TEMPLATE |
+    ags_recall_set_flags(AGS_RECALL(play_notation_audio_run), (AGS_RECALL_TEMPLATE |
 							       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							       AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) copy_notation_audio_run, FALSE);
+    ags_audio_add_recall(audio, (GObject *) play_notation_audio_run, FALSE);
   }
 }
 
@@ -1919,9 +1919,9 @@ ags_recall_factory_create(AgsAudio *audio,
 					   start_pad, stop_pad,
 					   create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
-		    "ags-copy-notation\0",
+		    "ags-play-notation\0",
 		    18)){
-    ags_recall_factory_create_copy_notation(audio,
+    ags_recall_factory_create_play_notation(audio,
 					    play_container, recall_container,
 					    plugin_name,
 					    start_audio_channel, stop_audio_channel,

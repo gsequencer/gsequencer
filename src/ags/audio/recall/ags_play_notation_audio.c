@@ -23,7 +23,7 @@
 #include <ags/object/ags_plugin.h>
 
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);
-void ags_play_notation_plugin_interface_init(AgsPluginInterface *plugin);
+void ags_play_notation_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio);
 void ags_play_notation_audio_set_property(GObject *gobject,
 					  guint prop_id,
@@ -71,11 +71,10 @@ ags_play_notation_audio_get_type()
     };
 
     static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_notation_plugin_interface_init,
+      (GInterfaceInitFunc) ags_play_notation_audio_plugin_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
-    };
-    
+    };    
 
     ags_type_play_notation_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 							  "AgsPlayNotationAudio\0",
@@ -118,7 +117,7 @@ ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audi
 }
 
 void
-ags_play_notation_plugin_interface_init(AgsPluginInterface *plugin)
+ags_play_notation_audio_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_play_notation_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 
@@ -146,7 +145,7 @@ ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
 					       "port-value-size\0", sizeof(gpointer),
 					       "port-value-length\0", 1,
 						    NULL);
-  play_notation_audio->notation->port_value.ags_port_uint = 0;
+  play_notation_audio->notation->port_value.ags_port_pointer = NULL;
 
   port = g_list_prepend(port, play_notation_audio->notation);
 

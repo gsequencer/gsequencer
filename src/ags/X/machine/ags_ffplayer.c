@@ -291,6 +291,89 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 }
 
 void
+ags_ffplayer_add_default_recalls(AgsMachine *machine)
+{
+  AgsAudio *audio;
+
+  AgsDelayAudio *play_delay_audio;
+  AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsPlayNotationAudio *recall_play_notation_audio;
+  AgsPlayNotationAudioRun *recall_play_notation_audio_run;
+
+  GList *list;
+
+  audio = machine->audio;
+
+  /* ags-delay */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-delay\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+
+  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+
+  if(list != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+  }
+  
+  /* ags-count-beats */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-count-beats\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+  
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+
+  if(list != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+
+    /* set dependency */  
+    g_object_set(G_OBJECT(play_count_beats_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+  }
+
+  /* ags-play-notation */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-notation\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(list != NULL){
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_play_notation_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_play_notation_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }
+
+}
+
+void
 ags_ffplayer_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_ffplayer_parent_class)->finalize(gobject);
@@ -343,12 +426,6 @@ void
 ags_ffplayer_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_ffplayer_parent_class)->show(widget);
-}
-
-void
-ags_ffplayer_add_default_recalls(AgsMachine *machine)
-{
-  /* empty */
 }
 
 gchar*
@@ -606,15 +683,16 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 			   &value);
 
 	if(g_value_get_object(&value) == NULL){
-	  notation = audio->notation;
+	  GValue value = {0,};
+
+	  g_value_init(&value, G_TYPE_POINTER);
+	  g_value_set_pointer(&value,
+			      audio->notation);
+
+	  ags_port_safe_write(play_notation->notation,
+			      &value);
 	
-	  while(notation != NULL){
-	    g_object_set(G_OBJECT(play_notation),
-			 "notation\0", notation->data,
-			 NULL);
-	
-	    notation = notation->next;
-	  }
+	  notation = notation->next;
 	}
 
 	list = list->next;

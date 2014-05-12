@@ -358,7 +358,7 @@ ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 	      file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 							   "file\0", file,
 							   "node\0", dependency_node,
-							   "reference\0", G_OBJECT(plugin),
+							   "reference\0", NULL,
 							   NULL);
 	      ags_file_add_lookup(file, (GObject *) file_lookup);
 	      g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
@@ -416,7 +416,7 @@ ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
     file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 						 "file\0", file,
 						 "node\0", dependency_node,
-						 "reference\0", G_OBJECT(plugin),
+						 "reference\0", list->data,
 						 NULL);
     ags_file_add_lookup(file, (GObject *) file_lookup);
     g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
@@ -529,7 +529,7 @@ ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
   gchar *id;
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      AGS_COPY_PATTERN_AUDIO_RUN(file_lookup->ref)->count_beats_audio_run);
+							      file_lookup->ref);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 

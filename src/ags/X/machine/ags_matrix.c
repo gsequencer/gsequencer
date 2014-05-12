@@ -605,6 +605,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 				 AGS_RECALL_FACTORY_REMAP |
 				 AGS_RECALL_FACTORY_RECALL),
 				0);
+
       /* create pattern */
       source = ags_channel_nth(audio->input, pads_old);
 
