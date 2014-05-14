@@ -484,6 +484,7 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   recall_container = AGS_RECALL_CONTAINER(recall->container);
   
   list = ags_recall_find_template(recall_container->recall_audio_run);
+
   if(list != NULL){
     template = AGS_RECALL(list->data);
   }else{

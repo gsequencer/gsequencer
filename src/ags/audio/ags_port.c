@@ -377,9 +377,9 @@ ags_port_safe_read(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       memcpy(data, port->port_value.ags_port_double_ptr, overall_size);
     }else if(port->port_value_type == G_TYPE_POINTER){
-      g_warning("ags_port_safe_read: not supported data type %s\0", g_type_name(port->port_value_type));
+      data = port->port_value.ags_port_pointer;
     }else if(port->port_value_type == G_TYPE_OBJECT){
-      g_warning("ags_port_safe_read: not supported data type %s\0", g_type_name(port->port_value_type));
+      data = port->port_value.ags_port_object;
     }
 
     g_value_set_pointer(value, data);
@@ -420,11 +420,9 @@ ags_port_safe_write(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       memcpy(port->port_value.ags_port_double_ptr, data, overall_size);
     }else if(port->port_value_type == G_TYPE_POINTER){
-      g_atomic_pointer_set(&(port->port_value.ags_port_pointer),
-			   data);
+      port->port_value.ags_port_pointer = data;
     }else if(port->port_value_type == G_TYPE_OBJECT){
-      g_atomic_pointer_set(&(port->port_value.ags_port_object),
-			   data);
+      port->port_value.ags_port_object = data;
     }
   }
 

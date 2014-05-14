@@ -298,8 +298,8 @@ ags_ffplayer_add_default_recalls(AgsMachine *machine)
   AgsDelayAudioRun *play_delay_audio_run;
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsPlayNotationAudio *recall_play_notation_audio;
-  AgsPlayNotationAudioRun *recall_play_notation_audio_run;
+  AgsPlayNotationAudio *recall_notation_audio;
+  AgsPlayNotationAudioRun *recall_notation_audio_run;
 
   GList *list;
 
@@ -359,13 +359,15 @@ ags_ffplayer_add_default_recalls(AgsMachine *machine)
   list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
 
   if(list != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+
     /* set dependency */
-    g_object_set(G_OBJECT(recall_play_notation_audio_run),
+    g_object_set(G_OBJECT(recall_notation_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
 
     /* set dependency */
-    g_object_set(G_OBJECT(recall_play_notation_audio_run),
+    g_object_set(G_OBJECT(recall_notation_audio_run),
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }
@@ -640,6 +642,16 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
   }
 
   if(grow){
+    /* ags-play-notation */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play-notation\0",
+			      audio_channels_old, audio_channels,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_REMAP |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
   }
 }
 
@@ -650,8 +662,6 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 {
   AgsFFPlayer *ffplayer;
   gboolean grow;
-  
-  GValue value = {0,};
 
   ffplayer = AGS_FFPLAYER(audio->machine);
 
@@ -668,31 +678,36 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 
   if(type == AGS_TYPE_INPUT){
     AgsPlayNotationAudio  *play_notation;
-    GList *list, *notation;
+    GList *list;
 
     if(grow){
+      /* ags-play-notation */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play-notation\0",
+				0, audio->audio_channels,
+				pads_old, pads,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_REMAP |
+				 AGS_RECALL_FACTORY_RECALL),
+				0);
+
       /* set notation for AgsPlayNotationAudioRun recall */
       list = audio->recall;
 
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
+  
+	GValue value = {0,};
+
 	play_notation = AGS_PLAY_NOTATION_AUDIO(list->data);
 
-	ags_port_safe_read(play_notation->notation,
-			   &value);
+	g_value_init(&value, G_TYPE_POINTER);
+	g_value_set_pointer(&value,
+			    audio->notation);
 
-	if(g_value_get_object(&value) == NULL){
-	  GValue value = {0,};
-
-	  g_value_init(&value, G_TYPE_POINTER);
-	  g_value_set_pointer(&value,
-			      audio->notation);
-
-	  ags_port_safe_write(play_notation->notation,
-			      &value);
-	
-	  notation = notation->next;
-	}
+	ags_port_safe_write(play_notation->notation,
+			    &value);
 
 	list = list->next;
       }

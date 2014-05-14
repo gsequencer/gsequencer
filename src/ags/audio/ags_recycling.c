@@ -377,17 +377,20 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   audio_signal->recycling = (GObject *) recycling;
 
+  g_message("frame count %d\0", frame_count);
+
   /* resize */
   ags_audio_signal_stream_resize(audio_signal,
-				 delay +
-				 (guint) ceil(((double) attack +
+				 (guint) ceil((
+					       // (double) delay +
+					       // (double) attack +
 					       (double) frame_count) /
 					      (double) devout->buffer_size));
   
   if(template->length == 0)
     return;
 
-  audio_signal->last_frame = frame_count % devout->buffer_size;
+  audio_signal->last_frame = (delay + frame_count + attack) % devout->buffer_size;
 
   /* generic copying */
   stream = audio_signal->stream_beginning;
@@ -399,7 +402,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   template_loop = g_list_nth(template->stream_beginning,
 			     (guint) floor((double)(frame_count - template->loop_start) / devout->buffer_size));
 
-  if(frame_count - template->loop_start - template->loop_end > 0){
+  if((gint64) frame_count - template->loop_start - template->loop_end > 0){
     loop_frames = frame_count - template->loop_start - template->loop_end;
   }else{
     loop_frames = 0;
