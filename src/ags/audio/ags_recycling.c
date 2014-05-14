@@ -499,8 +499,9 @@ ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
   current = start_recycling;
   position = -1;
 
-  while(current != end_region){
+  while(current != NULL && current != end_region){
     position++;
+    g_message("count\0");
 
     if(current == recycling){
       return(position);

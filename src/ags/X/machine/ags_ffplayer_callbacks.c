@@ -191,6 +191,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     ags_ipatch_read_audio_signal(ffplayer->ipatch);
     list = ffplayer->ipatch->audio_signal;
 
+    //TODO:JK: do channel detection
     for(i = 0; i < 2; i++){
       /* create task */
       link_channel = ags_link_channel_new(channel, NULL);
@@ -202,11 +203,10 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
       
       AGS_AUDIO_SIGNAL(list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
       AGS_AUDIO_SIGNAL(list->data)->recycling = (GObject *) channel->first_recycling;
-      audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
       
       // FIXME:JK: create a task
-      channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal, (gpointer) audio_signal_source_old);
-      channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal, list->data);
+      ags_recycling_add_audio_signal(channel->first_recycling,
+				     (AgsAudioSignal *) list->data);
 
       g_object_unref(G_OBJECT(audio_signal_source_old));
 

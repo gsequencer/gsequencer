@@ -165,8 +165,6 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
   machine = (AgsMachineClass *) ffplayer;
 
   machine->add_default_recalls = ags_ffplayer_add_default_recalls;
-  //  machine->read_file = ags_file_read_ffplayer;
-  //  machine->write_file = ags_file_write_ffplayer;
 }
 
 void
@@ -209,6 +207,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_TAKES_FILE |
+		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_HAS_NOTATION | 
 		   AGS_AUDIO_NOTATION_DEFAULT);

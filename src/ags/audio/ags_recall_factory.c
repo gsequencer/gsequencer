@@ -1604,70 +1604,115 @@ ags_recall_factory_create_play_notation(AgsAudio *audio,
 
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
-    if(play_container == NULL){
-      play_container = ags_recall_container_new();
-    }
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+      if(play_container == NULL){
+	play_container = ags_recall_container_new();
+      }
 
-    ags_audio_add_recall_container(audio, (GObject *) play_container);
+      play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_audio_add_recall_container(audio, (GObject *) play_container);
 
-    /* AgsPlayNotationAudio */
-    play_notation_audio = (AgsPlayNotationAudio *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO,
+      /* AgsPlayNotationAudio */
+      play_notation_audio = (AgsPlayNotationAudio *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO,
 								"devout\0", audio->devout,
 								"audio\0", audio,
 								"recall_container\0", play_container,
 								NULL);
-    ags_recall_set_flags(AGS_RECALL(play_notation_audio), (AGS_RECALL_TEMPLATE |
-							   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							   AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) play_notation_audio, TRUE);
+      AGS_RECALL(play_notation_audio)->flags |= (AGS_RECALL_TEMPLATE |
+						(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+						AGS_RECALL_SEQUENCER);
+      ags_audio_add_recall(audio, (GObject *) play_notation_audio, TRUE);
 
-    /* AgsPlayNotationAudioRun */
-    play_notation_audio_run = (AgsPlayNotationAudioRun *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO_RUN,
+      /* AgsPlayNotationAudioRun */
+      play_notation_audio_run = (AgsPlayNotationAudioRun *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO_RUN,
 								       "devout\0", audio->devout,
-								       "recall_container\0", play_container,
 								       // "recall_audio\0", play_notation_audio,
-								       //TODO:JK: "delay_audio_run\0"
-								       //TODO:JK: "count_beats_audio_run\0"
-								       // "notation\0", audio->notation,
+								       "recall_container\0", play_container,
+								       //TODO:JK: add missing dependency "count_beats_audio_run\0"
 								       NULL);
-    ags_recall_set_flags(AGS_RECALL(play_notation_audio_run), (AGS_RECALL_TEMPLATE |
-							       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							       AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) play_notation_audio_run, TRUE);
+      AGS_RECALL(play_notation_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+						    AGS_RECALL_SEQUENCER);
+      ags_audio_add_recall(audio, (GObject *) play_notation_audio_run, TRUE);
+    }else{
+      GList *list;
+
+      if(play_container == NULL){
+	list = ags_recall_find_type(audio->play, AGS_TYPE_PLAY_NOTATION_AUDIO);
+
+	play_notation_audio = AGS_PLAY_NOTATION_AUDIO(list->data);
+
+	play_container = AGS_RECALL_CONTAINER(AGS_RECALL(play_notation_audio)->container);
+
+	list = ags_recall_find_template(play_container->recall_audio_run);
+	play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+      }else{
+	play_notation_audio = AGS_PLAY_NOTATION_AUDIO(play_container->recall_audio);
+
+	list = ags_recall_find_template(play_container->recall_audio_run);
+	play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+      }
+    }
   }
 
   /* recall */
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
-    if(recall_container == NULL){
-      recall_container = ags_recall_container_new();
-    }
+    channel = start;
+ 
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+      if(recall_container == NULL){
+	recall_container = ags_recall_container_new();
+      }
 
-    ags_audio_add_recall_container(audio, (GObject *) recall_container);
+      ags_audio_add_recall_container(audio, (GObject *) recall_container);
 
-    /*  AgsPlayNotationAudio */
-    play_notation_audio = (AgsPlayNotationAudio *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO,
+      /* AgsPlayNotationAudio */
+      play_notation_audio = (AgsPlayNotationAudio *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO,
 								"devout\0", audio->devout,
 								"audio\0", audio,
 								"recall_container\0", recall_container,
 								NULL);
-    ags_recall_set_flags(AGS_RECALL(play_notation_audio), (AGS_RECALL_TEMPLATE |
-							   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							   AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) play_notation_audio, FALSE);
+      AGS_RECALL(play_notation_audio)->flags |= (AGS_RECALL_TEMPLATE |
+						(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+						AGS_RECALL_SEQUENCER);
+      ags_audio_add_recall(audio, (GObject *) play_notation_audio, FALSE);
 
-    /* AgsPlayNotation */
-    play_notation_audio_run = (AgsPlayNotationAudioRun *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO_RUN,
+      /* AgsPlayNotationAudioRun */
+      play_notation_audio_run = (AgsPlayNotationAudioRun *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO_RUN,
 								       "devout\0", audio->devout,
-								       "recall_container\0", recall_container,
 								       // "recall_audio\0", play_notation_audio,
-								       //TODO:JK: "delay_audio_run\0"
-								       //TODO:JK: "count_beats_audio_run\0"
-								       //"notation\0", audio->notation,
+								       "recall_container\0", recall_container,
+								       //TODO:JK: add missing dependency "count_beats_audio_run\0"
 								       NULL);
-    ags_recall_set_flags(AGS_RECALL(play_notation_audio_run), (AGS_RECALL_TEMPLATE |
-							       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							       AGS_RECALL_NOTATION));
-    ags_audio_add_recall(audio, (GObject *) play_notation_audio_run, FALSE);
+      AGS_RECALL(play_notation_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
+						    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+						    AGS_RECALL_SEQUENCER);
+      ags_audio_add_recall(audio, (GObject *) play_notation_audio_run, FALSE);
+    }else{
+      GList *list;
+
+      if(recall_container == NULL){
+	list = ags_recall_template_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO);
+
+	if(list != NULL){
+	  play_notation_audio = AGS_PLAY_NOTATION_AUDIO(list->data);
+	  
+	  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(play_notation_audio)->container);
+
+	  list = ags_recall_find_template(recall_container->recall_audio_run);
+
+	  if(list != NULL){
+	    g_message("debug\0");
+	    play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+	  }
+	}
+      }else{
+	play_notation_audio = AGS_PLAY_NOTATION_AUDIO(recall_container->recall_audio);
+
+	list = ags_recall_find_template(recall_container->recall_audio_run);
+	play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+      }
+    }
   }
 }
 
@@ -1910,7 +1955,7 @@ ags_recall_factory_create(AgsAudio *audio,
 				   start_pad, stop_pad,
 				   create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
-		    "ags-copy-pattern\0",
+		    "ags-copy-notation\0",
 		    17)){
     ags_recall_factory_create_copy_pattern(audio,
 					   play_container, recall_container,
