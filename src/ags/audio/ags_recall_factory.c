@@ -1955,7 +1955,7 @@ ags_recall_factory_create(AgsAudio *audio,
 				   start_pad, stop_pad,
 				   create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
-		    "ags-copy-notation\0",
+		    "ags-copy-pattern\0",
 		    17)){
     ags_recall_factory_create_copy_pattern(audio,
 					   play_container, recall_container,

@@ -246,8 +246,9 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   stream_destination = destination->stream_current;
   //  attack = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->attack;
 
-  if(stream_destination->next == NULL)
+  if(stream_destination->next == NULL){
     ags_audio_signal_add_stream(destination);
+  }
 
   ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
 					 (signed short *) stream_source->data, 1,

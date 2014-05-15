@@ -552,6 +552,14 @@ ags_count_beats_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connect
   count_beats_audio_run->sequencer_count_handler =
     g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "sequencer-count\0",
 		     G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
+
+  count_beats_audio_run->notation_alloc_output_handler =
+    g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "notation-alloc-output\0",
+		     G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback), count_beats_audio_run);
+
+  count_beats_audio_run->notation_count_handler =
+    g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "notation-count\0",
+		     G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
 }
 
 void
@@ -566,6 +574,9 @@ ags_count_beats_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
 
   g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run), count_beats_audio_run->sequencer_alloc_output_handler);
   g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run), count_beats_audio_run->sequencer_count_handler);
+
+  g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run), count_beats_audio_run->notation_alloc_output_handler);
+  g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run), count_beats_audio_run->notation_count_handler);
 }
 
 void
@@ -970,6 +981,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   if(count_beats_audio_run->hide_ref != 0){
     count_beats_audio_run->notation_hide_ref_counter += 1;
   }
+
+  //  g_message("notation %d\0", count_beats_audio_run->notation_counter);
 
   /* 
    * Block counter for sequencer and notation counter

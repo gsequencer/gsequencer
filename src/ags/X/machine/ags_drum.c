@@ -977,19 +977,22 @@ ags_drum_set_pads(AgsAudio *audio, GType type,
 
 
       /* set pattern object on port */
-      channel = ags_channel_pad_nth(audio->input, pads_old);
+      channel = ags_channel_nth(audio->input, pads_old * audio->audio_channels);
       
       for(i = pads_old; i < pads; i++){
 	for(j = 0; j < audio->audio_channels; j++){
 	  list = ags_recall_template_find_type(channel->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
-	  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
 
-	  list = channel->pattern;
-	  pattern = AGS_PATTERN(list->data);
-
-	  copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
+	  if(list != NULL){
+	    copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
+	    
+	    list = channel->pattern;
+	    pattern = AGS_PATTERN(list->data);
 	  
-	  ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
+	    copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
+	  
+	    ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
+	  }
 	  
 	  channel = channel->next;
 	}

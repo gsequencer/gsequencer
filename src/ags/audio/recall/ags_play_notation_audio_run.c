@@ -692,7 +692,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  ags_audio_signal_connect(audio_signal);
 
 	  g_message("adding\n\0");
-
+	  audio_signal->stream_current = audio_signal->stream_beginning;
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
 	  
