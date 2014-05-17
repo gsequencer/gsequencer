@@ -224,7 +224,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT,
 		     count);
   
-  g_message("????????? %d\0", count);
+  g_message("samples count %d\0", count);
 
   channel = AGS_MACHINE(ffplayer)->audio->input;
 

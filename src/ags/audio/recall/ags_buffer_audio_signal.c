@@ -255,11 +255,10 @@ ags_buffer_audio_signal_run_pre(AgsRecall *recall)
 				      (GObject *) recall->recall_id);
   ags_recycling_create_audio_signal_with_frame_count(recycling,
 						     audio_signal,
-						     AGS_DEVOUT_DEFAULT_DELAY,
+						     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE + AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
 						     0, 0);
   ags_audio_signal_connect(audio_signal);
   
-  g_message("adding\n\0");
   audio_signal->stream_current = audio_signal->stream_beginning;
   ags_recycling_add_audio_signal(recycling,
 				 audio_signal);
