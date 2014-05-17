@@ -162,6 +162,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   GList *list;
   guint count;
   int i;
+  gboolean has_more;
   GError *error;
 
   instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
@@ -227,7 +228,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   channel = AGS_MACHINE(ffplayer)->audio->input;
 
-  while(channel != NULL){
+  while(channel != NULL && has_more){
     list = ags_playable_read_audio_signal(playable,
 					  AGS_MACHINE(ffplayer)->audio->devout,
 					  channel->audio_channel, AGS_IPATCH_DEFAULT_CHANNELS);
@@ -256,10 +257,10 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
       /* iterate */	
       channel = channel->next;
-      ags_playable_iter_next(playable);
-
       list = list->next;
     }
+
+    has_more = ags_playable_iter_next(playable);
   }
 }
 
