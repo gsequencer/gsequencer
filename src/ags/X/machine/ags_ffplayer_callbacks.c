@@ -114,11 +114,8 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 			      "filename\0", filename,
 			      NULL);
       ipatch->devout = window->devout;
-      ags_ipatch_open(ipatch, filename);
 
       playable = AGS_PLAYABLE(ipatch);
-      
-      ags_playable_open(playable, filename);
 
       error = NULL;
       ags_playable_level_select(playable,
@@ -126,16 +123,16 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 				&error);
 
       /* select first instrument */
-      ipatch->nth_level = 1;
+      ipatch->nth_level = 2;
       instrument = ags_playable_sublevel_names(playable);
 
       error = NULL;
       ags_playable_level_select(playable,
-				1, *instrument,
+				2, *instrument,
 				&error);
 
       /* fill ffplayer->instrument */
-      while(*instrument != NULL){
+      while(instrument != NULL && *instrument != NULL){
 	gtk_combo_box_text_append_text(ffplayer->instrument,
 				       *instrument);
 
@@ -163,6 +160,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   gchar **sample;
   GList *task;
   GList *list;
+  guint count;
   int i;
   GError *error;
 
@@ -175,7 +173,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   error = NULL;
 
   ags_playable_level_select(playable,
-			    1, instrument_name,
+			    2, instrument_name,
 			    &error);
 
   if(error != NULL){
@@ -185,11 +183,11 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   /* load presets */
   preset = NULL;
 
-  AGS_IPATCH(ffplayer->ipatch)->nth_level = 2;
+  AGS_IPATCH(ffplayer->ipatch)->nth_level = 1;
   preset = ags_playable_sublevel_names(playable);
 
-  ags_playable_level_select(AGS_PLAYABLE(ffplayer->ipatch),
-			    2, *preset,
+  ags_playable_level_select(playable,
+			    1, *preset,
 			    &error);
 
   /* select first sample */
@@ -198,7 +196,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AGS_IPATCH(ffplayer->ipatch)->nth_level = 3;
   sample = ags_playable_sublevel_names(playable);
 
-  ags_playable_level_select(AGS_PLAYABLE(ffplayer->ipatch),
+  error = NULL;
+  ags_playable_level_select(playable,
 			    3, *sample,
 			    &error);
 
@@ -210,18 +209,20 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   ags_audio_set_audio_channels(AGS_MACHINE(ffplayer)->audio,
 			       AGS_IPATCH_DEFAULT_CHANNELS);
 
-  ags_playable_iter_start(AGS_PLAYABLE(ffplayer->ipatch));
+  AGS_IPATCH(ffplayer->ipatch)->nth_level = 3;
+
+  ags_playable_iter_start(playable);
 
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT,
-		     AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->count);
+		     count);
   
-  g_message("????????? %d\0", AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->count);
+  g_message("????????? %d\0", count);
 
   channel = AGS_MACHINE(ffplayer)->audio->input;
 
   while(channel != NULL){
     list = ags_playable_read_audio_signal(playable,
-					  channel->devout,
+					  AGS_MACHINE(ffplayer)->audio->devout,
 					  channel->audio_channel, AGS_IPATCH_DEFAULT_CHANNELS);
 
     for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS && list != NULL; i++){
@@ -243,12 +244,12 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
       
       /* append tasks */
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(channel->devout)->ags_main)->main_loop)->task_thread,
+      ags_task_thread_append_tasks(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(ffplayer)->audio->devout)->ags_main)->main_loop)->task_thread,
 				   task);
 
       /* iterate */	
       channel = channel->next;
-      ags_playable_iter_next(AGS_PLAYABLE(ffplayer->ipatch));
+      ags_playable_iter_next(playable);
 
       list = list->next;
     }

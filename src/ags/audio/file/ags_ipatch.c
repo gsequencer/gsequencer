@@ -302,6 +302,8 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
   IpatchFileIOFuncs *io_funcs;
   GError *error;
 
+  g_message("open %s with libinstpatch.\0", filename);
+
   ipatch = AGS_IPATCH(playable);
 
   ipatch->filename = filename;
@@ -314,16 +316,11 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     g_error("%s\0", error->message);
   }
 
-  ipatch->base = g_object_new(IPATCH_TYPE_BASE,
-  			      "file\0", ipatch->handle->file,
-  			      NULL);
-
-  if(IPATCH_IS_DLS2(ipatch->handle)){
+  if(IPATCH_IS_DLS_FILE(ipatch->handle->file)){
     ipatch->flags |= AGS_IPATCH_DLS2;
 
-    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->file),
-						    IPATCH_TYPE_DLS2_SAMPLE);
-  }else if(IPATCH_IS_SF2(ipatch->handle)){
+    //TODO:JK: implement me
+  }else if(IPATCH_IS_SF2_FILE(ipatch->handle->file)){
     /*  */
     ipatch->flags |= AGS_IPATCH_SF2;
 
@@ -334,21 +331,21 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     AGS_IPATCH_SF2_READER(ipatch->reader)->reader = ipatch_sf2_reader_new(ipatch->handle);
 
     error = NULL;
-    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
-									&error);
+    ipatch->base = 
+      AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
+									  &error);
 
     if(error != NULL){
       g_error("%s\0", error->message);
     }
 
     /* load samples */
-    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->file),
+    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->base),
 						    IPATCH_TYPE_SF2_SAMPLE);
-  }else if(IPATCH_IS_GIG(ipatch->handle)){
+  }else if(IPATCH_IS_GIG_FILE(ipatch->handle->file)){
     ipatch->flags |= AGS_IPATCH_GIG;
 
-    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->file),
-						    IPATCH_TYPE_GIG_SAMPLE);
+    //TODO:JK: implement me
   }
 
   if(error == NULL){
@@ -399,15 +396,14 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
   guint i;
 
   ipatch = AGS_IPATCH(playable);
-
   list = NULL;
+
+  names = (gchar **) malloc(1 * sizeof(gchar*));
+  names[0] = NULL;
 
   if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
-
-    names = (gchar **) malloc(1 * sizeof(gchar*));
-    names[0] = NULL;
-
+    
     sublevel = ipatch->nth_level;
 
     g_message("ags_ipatch_sf2_reader_sublevel_names: %u\n\0", sublevel);
@@ -463,33 +459,42 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
   }
 
   for(i = 0; list != NULL; i++){
-    names = realloc(names, (i + 2) * sizeof(char*));
-
     switch(sublevel){
     case AGS_SF2_PHDR:
       {
-	if(IPATCH_IS_SF2_PRESET(list->data))
-	  names[i] = g_strndup(IPATCH_SF2_PRESET(list->data)->name, 20);
+	if(IPATCH_IS_SF2_PRESET(list->data)){
+	  if(IPATCH_IS_SF2_PRESET(list->data)->bank == ipatch_sf2_reader->bank &&
+	     IPATCH_IS_SF2_PRESET(list->data)->program == ipatch_sf2_reader->program){
+	    names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
+	    names[i] = ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data));
+	  }
+	}
       }
       break;
     case AGS_SF2_IHDR:
       {
-	if(IPATCH_IS_SF2_INST(list->data))
-	  names[i] = g_strndup(IPATCH_SF2_INST(list->data)->name, 20);
+	if(IPATCH_IS_SF2_INST(list->data)){
+	  names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
+	  names[i] = ipatch_sf2_inst_get_name(IPATCH_SF2_INST(list->data));
+	}
       }
       break;
     case AGS_SF2_SHDR:
       {
-	if(IPATCH_IS_SF2_SAMPLE(list->data))
-	  names[i] = g_strndup(IPATCH_SF2_SAMPLE(list->data)->name, 20);
+	if(IPATCH_IS_SF2_SAMPLE(list->data)){
+	  names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
+	  names[i] = ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(list->data));
+	}
       }
       break;
     };
-
+    
     list = list->next;
   }
-
-  names[i] = NULL;
+  
+  if(i > 0){
+    names[i] = NULL;
+  }
 
   return(names);
 }
@@ -629,6 +634,35 @@ ags_ipatch_iter_start(AgsPlayable *playable)
   ipatch = AGS_IPATCH(playable);
 
   ipatch->iter = ipatch->samples->items;
+
+  if(ipatch->nth_level == 3){
+    if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+      AgsIpatchSF2Reader *reader;
+      GList *list;
+
+      reader = AGS_IPATCH_SF2_READER(ipatch->reader);
+      list = ipatch->iter;
+
+      if(reader->selected[3] != NULL){
+	while(list != NULL){
+	  if(!g_strcmp0(ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(list->data)),
+			reader->selected[3])){
+	    break;
+	  }
+
+	  list = list->next;
+	}
+
+	if(list != NULL){
+	  ipatch->iter = list;
+	}
+      }
+    }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }
+  }
 }
 
 gboolean
