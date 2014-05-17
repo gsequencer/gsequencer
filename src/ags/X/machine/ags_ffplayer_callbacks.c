@@ -245,6 +245,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 						  AGS_MACHINE(ffplayer)->audio->devout,
 						  NULL,
 						  0);
+      task = g_list_prepend(task,
+			    add_audio_signal);
 
       /* iterate */	
       channel = channel->next;
@@ -253,9 +255,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
     has_more = ags_playable_iter_next(playable);
   }
-
-  task = g_list_prepend(task,
-			add_audio_signal);
       
   /* append tasks */
   task = g_list_reverse(task);
