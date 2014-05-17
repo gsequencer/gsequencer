@@ -166,9 +166,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 2;
   ags_playable_level_select(AGS_PLAYABLE(ffplayer->ipatch->reader),
-			    0, instrument_name,
+			    1, instrument_name,
 			    &error);
-
   if(error != NULL){
     g_error("%s\0", error->message);
   }

@@ -347,7 +347,7 @@ ags_ffplayer_add_default_recalls(AgsMachine *machine)
 		 NULL);
 
     g_value_init(&value, G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value, FALSE);
+    g_value_set_boolean(&value, TRUE);
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->loop,
 			&value);
   }

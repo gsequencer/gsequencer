@@ -276,8 +276,6 @@ ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 void
 ags_delay_audio_run_connect(AgsConnectable *connectable)
 {
-  AgsDelayAudioRun *delay_audio_run;
-
   ags_delay_audio_run_parent_connectable_interface->connect(connectable);
 }
 

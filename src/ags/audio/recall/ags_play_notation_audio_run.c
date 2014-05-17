@@ -387,16 +387,8 @@ ags_play_notation_audio_run_connect(AgsConnectable *connectable)
 void
 ags_play_notation_audio_run_disconnect(AgsConnectable *connectable)
 {
-  AgsPlayNotationAudioRun *play_notation_audio_run;
-
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->disconnect(connectable);
-
-  play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(connectable);
-
-  if(play_notation_audio_run->delay_audio_run != NULL){
-    g_signal_handler_disconnect(G_OBJECT(play_notation_audio_run->delay_audio_run), play_notation_audio_run->notation_alloc_input_handler);
-  }
 }
 
 void
@@ -419,8 +411,16 @@ ags_play_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
 void
 ags_play_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  AgsPlayNotationAudioRun *play_notation_audio_run;
+
   /* call parent */
   ags_play_notation_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
+
+  play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(dynamic_connectable);
+
+  if(play_notation_audio_run->delay_audio_run != NULL){
+    g_signal_handler_disconnect(G_OBJECT(play_notation_audio_run->delay_audio_run), play_notation_audio_run->notation_alloc_input_handler);
+  }
 }
 
 void

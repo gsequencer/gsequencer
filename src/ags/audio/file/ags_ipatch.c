@@ -50,6 +50,9 @@ void ags_ipatch_info(AgsPlayable *playable,
 signed short* ags_ipatch_read(AgsPlayable *playable, guint channel,
 			      GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
+GList* ags_ipatch_read_audio_signal(AgsPlayable *playable,
+				    AgsDevout *devout,
+				    guint start_channel, guint channels);
 
 static gpointer ags_ipatch_parent_class = NULL;
 static AgsConnectableInterface *ags_ipatch_parent_connectable_interface;
@@ -174,10 +177,12 @@ ags_ipatch_playable_interface_init(AgsPlayableInterface *playable)
 void
 ags_ipatch_init(AgsIpatch *ipatch)
 {
+  ipatch->flags = 0;
+
   ipatch->devout = NULL;
   ipatch->audio_signal= NULL;
 
-  ipatch->file = ipatch_file_new();
+  ipatch->file = NULL;
 
   ipatch->filename = NULL;
   ipatch->mode = AGS_IPATCH_READ;
@@ -185,7 +190,7 @@ ags_ipatch_init(AgsIpatch *ipatch)
   ipatch->handle = NULL;
   ipatch->error = NULL;
 
-  ipatch->container = NULL;
+  ipatch->base = NULL;
   ipatch->reader = NULL;
 }
 
@@ -206,7 +211,7 @@ ags_ipatch_set_property(GObject *gobject,
 
       filename = (gchar *) g_value_get_pointer(value);
 
-      ipatch->filename = filename;
+      ags_playable_open(AGS_PLAYABLE(ipatch), filename);
     }
     break;
   case PROP_MODE:
@@ -287,20 +292,8 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 
   ipatch = AGS_IPATCH(playable);
 
-  /*
-  io_funcs = (IpatchFileIOFuncs *) g_new(IpatchFileIOFuncs, 1);
-  io_funcs->open = ipatch_file_default_open_method;
-  io_funcs->close = ipatch_file_default_close_method;
-  io_funcs->read = ipatch_file_default_read_method;
-  io_funcs->write = ipatch_file_default_write_method;
-  io_funcs->seek = ipatch_file_default_seek_method;
-  io_funcs->getfd = ipatch_file_default_getfd_method;
-  io_funcs->get_size = ipatch_file_default_get_size_method;
+  ipatch->filename = filename;
 
-  ipatch_file_set_iofuncs_static(ipatch->file,
-				 io_funcs);
-
-  */
   error = NULL;
   ipatch->handle = ipatch_file_identify_open(ipatch->filename,
 					     &error);
@@ -309,7 +302,26 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     g_error("%s\0", error->message);
   }
 
-  //  ipatch->container = NULL;
+  ipatch->base = g_object_new(IPATCH_TYPE_BASE,
+  			      "file\0", ipatch->handle->file,
+  			      NULL);
+
+  if(IPATCH_IS_DLS2(ipatch->handle)){
+    ipatch->flags |= AGS_IPATCH_DLS2;
+
+    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->file),
+						    IPATCH_TYPE_DLS2_SAMPLE);
+  }else if(IPATCH_IS_SF2(ipatch->handle)){
+    ipatch->flags |= AGS_IPATCH_SF2;
+
+    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->file),
+						    IPATCH_TYPE_SF2_SAMPLE);
+  }else if(IPATCH_IS_GIG(ipatch->handle)){
+    ipatch->flags |= AGS_IPATCH_GIG;
+
+    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->file),
+						    IPATCH_TYPE_GIG_SAMPLE);
+  }
 
   if(error == NULL){
     return(TRUE);
@@ -406,10 +418,15 @@ ags_ipatch_finalize(GObject *gobject)
  * Reads an AgsAudioSignal from current sample and iterates to the next sample. Prior,
  * you should have called #ags_playable_iter_start.
  */
-void
-ags_ipatch_read_audio_signal(AgsIpatch *ipatch)
+GList*
+ags_ipatch_read_audio_signal(AgsPlayable *playable,
+			     AgsDevout *devout,
+			     guint start_channel, guint channels)
 {
+  AgsIpatch *ipatch;
   GList *list;
+
+  ipatch = AGS_IPATCH(playable);
 
   ags_playable_iter_next(AGS_PLAYABLE(ipatch->reader));
   list = ags_playable_read_audio_signal(AGS_PLAYABLE(ipatch->reader),
@@ -417,43 +434,6 @@ ags_ipatch_read_audio_signal(AgsIpatch *ipatch)
 					0, 2);
 
   ipatch->audio_signal = list;
-}
-
-gboolean
-ags_iofuncs_open(IpatchFileHandle *handle, const char *mode, GError **err)
-{
-}
-
-void
-ags_iofuncs_close(IpatchFileHandle *handle)
-{
-}
-
-GIOStatus
-ags_iofuncs_read(IpatchFileHandle *handle, gpointer buf, guint size,
-		 guint *bytes_read, GError **err)
-{
-}
-
-GIOStatus
-ags_iofuncs_write(IpatchFileHandle *handle, gconstpointer buf, guint size,
-		  GError **err)
-{
-}
-
-GIOStatus
-ags_iofuncs_seek(IpatchFileHandle *handle, int offset, GSeekType type, GError **err)
-{
-}
-
-int
-ags_iofuncs_getfd(IpatchFileHandle *handle)
-{
-}
-
-int
-ags_iofuncs_get_size(IpatchFile *file, GError **err)
-{
 }
 
 AgsIpatch*

@@ -904,7 +904,7 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
       //	g_message("ags_count_beats_audio_run_notation_alloc_output_callback: loop\n\0");
     }else{
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
-	//	g_message("ags_count_beats_audio_run_notation_alloc_output_callback: done\n\0");
+	// g_message("ags_count_beats_audio_run_notation_alloc_output_callback: done\n\0");
 
 	//TODO:JK: verify me
 	ags_count_beats_audio_run_notation_stop(count_beats_audio_run,

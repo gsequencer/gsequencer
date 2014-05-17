@@ -473,7 +473,7 @@ ags_ipatch_sf2_reader_level_select(AgsPlayable *playable,
 	ipatch_list = ipatch_sf2_get_samples(ipatch_sf2_reader->sf2);
 	list = ipatch_list->items;
 	
-	while(list != NULL && strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20) != 0){
+	while(list != NULL && strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20)){
 	  list = list->next;
 	}
 
@@ -552,10 +552,12 @@ ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
 
   if(ipatch_sf2_reader->nth_level == 1){
     ipatch_sf2_reader->iter = ipatch_sf2_preset_get_zones(ipatch_sf2_find_preset(ipatch_sf2_reader->sf2,
-										      ipatch_sf2_reader->selected_sublevel_name,
-										      ipatch_sf2_reader->bank,
-										      ipatch_sf2_reader->program,
-										      NULL))->items;
+										 ipatch_sf2_reader->selected_sublevel_name,
+										 ipatch_sf2_reader->bank,
+										 ipatch_sf2_reader->program,
+										 NULL))->items;
+
+    ipatch_sf2_reader->count = g_list_length(ipatch_sf2_reader->iter);
   }else if(ipatch_sf2_reader->nth_level == 2){
     IpatchSF2Inst *inst;
     IpatchList *zones;
@@ -566,8 +568,6 @@ ags_ipatch_sf2_reader_iter_start(AgsPlayable *playable)
     zones = ipatch_sf2_inst_get_zones(inst);
     ipatch_sf2_reader->iter = zones->items;
   }
-
-  ipatch_sf2_reader->count = g_list_length(ipatch_sf2_reader->iter);
 }
 
 gboolean
