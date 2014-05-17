@@ -51,7 +51,7 @@ struct _AgsTaskThread
   guint pending;
 
   GList *exec;
-  GList *queue;
+  volatile GList *queue;
 
   AgsThreadPool *thread_pool;
 };

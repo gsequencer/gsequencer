@@ -130,7 +130,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   task_thread->pending = 0;
 
   task_thread->exec = NULL;
-  task_thread->queue = NULL;
+  g_atomic_pointer_set(&(task_thread->queue),
+		       NULL);
 
   task_thread->thread_pool = NULL;
 }
@@ -164,7 +165,7 @@ ags_task_thread_finalize(GObject *gobject)
 
   /* free AgsTask lists */
   ags_list_free_and_unref_link(task_thread->exec);
-  ags_list_free_and_unref_link(task_thread->queue);
+  ags_list_free_and_unref_link(g_atomic_pointer_get(&(task_thread->queue)));
 
   /*  */
   G_OBJECT_CLASS(ags_task_thread_parent_class)->finalize(gobject);
@@ -227,8 +228,9 @@ ags_task_thread_run(AgsThread *thread)
 
   g_list_free(task_thread->exec);
   list = 
-    task_thread->exec = task_thread->queue;
-  task_thread->queue = NULL;
+    task_thread->exec = g_atomic_pointer_get(&(task_thread->queue));
+  g_atomic_pointer_set(&(task_thread->queue),
+		       NULL);
 
   prev_pending = task_thread->pending;
   task_thread->pending = g_list_length(list);
@@ -283,7 +285,8 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   /* append to queue */
   task_thread->queued += 1;
 
-  task_thread->queue = g_list_append(task_thread->queue, task);
+  g_atomic_pointer_set(&(task_thread->queue),
+		       g_list_append(g_atomic_pointer_get(&(task_thread->queue)), task));
 
   /*  */
   pthread_mutex_unlock(&(task_thread->read_mutex));
@@ -354,7 +357,8 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   /* append to queue */
   task_thread->queued += g_list_length(list);
 
-  task_thread->queue = g_list_concat(task_thread->queue, list);
+  g_atomic_pointer_set(&(task_thread->queue),
+		       g_list_concat(g_atomic_pointer_get(&(task_thread->queue)), list));
 
   /*  */
   pthread_mutex_unlock(&(task_thread->read_mutex));
