@@ -240,16 +240,29 @@ ags_editor_set_audio_channels_callback(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old,
 				       AgsEditor *editor)
 {
+  GList *tabs;
+  GList *notation;
   guint i;
 
-  for(i = audio_channels_old; i < audio_channels; i++){
-    ags_notebook_insert_tab(editor->notebook,
-			    i);
-  }
+  if(audio_channels_old < audio_channels){
+    tabs = g_list_nth(editor->notebook->tabs,
+		      audio_channels_old);
+    notation = g_list_nth(audio->notation,
+			  audio_channels_old);
 
-  for(i = audio_channels; i < audio_channels_old; i++){
-    ags_notebook_remove_tab(editor->notebook,
-			    i);
+    for(i = audio_channels_old; i < audio_channels; i++){
+      ags_notebook_insert_tab(editor->notebook,
+			      i);
+      AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
+
+      tabs = tabs->next;
+      notation = notation->next;
+    }
+  }else{
+    for(i = audio_channels; i < audio_channels_old; i++){
+      ags_notebook_remove_tab(editor->notebook,
+			      i);
+    }
   }
 }
 

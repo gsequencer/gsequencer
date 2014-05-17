@@ -468,11 +468,11 @@ ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
     editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
 
     /*  */    
-    g_signal_connect(G_OBJECT(machine->audio), "set-audio-channels\0",
-		     G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
+    g_signal_connect_after(G_OBJECT(machine->audio), "set-audio-channels\0",
+			   G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
 
-    g_signal_connect(G_OBJECT(machine->audio), "set-pads\0",
-		     G_CALLBACK(ags_editor_set_pads_callback), editor);
+    g_signal_connect_after(G_OBJECT(machine->audio), "set-pads\0",
+			   G_CALLBACK(ags_editor_set_pads_callback), editor);
   }
 
   g_object_set_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE), machine);
