@@ -65,6 +65,8 @@ struct _AgsEditor
 
   GtkVBox *index_radio;
   GtkRadioButton *selected;
+  gulong set_audio_channels_handler;
+  gulong set_pads_handler;
 
   AgsToolbar *toolbar;
 

@@ -23,6 +23,11 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
 #include <ags/audio/task/ags_scroll_on_play.h>
 
 #include <ags/X/ags_window.h>
@@ -228,4 +233,53 @@ ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor)
 
   //  scroll_on_play = ags_scroll_on_play_new((GtkWidget *) editor);  
   //  ags_task_thread_append_task(task_thread, AGS_TASK(scroll_on_play));
+}
+
+void
+ags_editor_set_audio_channels_callback(AgsAudio *audio,
+				       guint audio_channels, guint audio_channels_old,
+				       AgsEditor *editor)
+{
+  guint i;
+
+  for(i = audio_channels_old; i < audio_channels; i++){
+    ags_notebook_insert_tab(editor->notebook,
+			    i);
+  }
+
+  for(i = audio_channels; i < audio_channels_old; i++){
+    ags_notebook_remove_tab(editor->notebook,
+			    i);
+  }
+}
+
+void
+ags_editor_set_pads_callback(AgsAudio *audio,
+			     GType channel_type,
+			     guint pads, guint pads_old,
+			     AgsEditor *editor)
+{
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+    if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+      return;
+    }
+
+    pads = audio->input_pads;
+  }else{
+    if(!g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+      return;
+    }
+
+    pads = audio->output_pads;
+  }
+
+  editor->note_edit->map_height = pads * editor->note_edit->control_height;
+  
+  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+  ags_note_edit_reset_vertically(editor->note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+  
+  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
 }

@@ -227,6 +227,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   g_message("samples count %d\0", count);
 
   channel = AGS_MACHINE(ffplayer)->audio->input;
+  has_more = TRUE;
 
   while(channel != NULL && has_more){
     list = ags_playable_read_audio_signal(playable,

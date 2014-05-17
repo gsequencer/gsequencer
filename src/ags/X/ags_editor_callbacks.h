@@ -40,4 +40,12 @@ void ags_editor_popup_link_index_callback(GtkWidget *widget, GtkMenu *popup);
 
 void ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor);
 
+void ags_editor_set_audio_channels_callback(AgsAudio *audio,
+					    guint audio_channels, guint audio_channels_old,
+					    AgsEditor *editor);
+void ags_editor_set_pads_callback(AgsAudio *audio,
+				  GType channel_type,
+				  guint pads, guint pads_old,
+				  AgsEditor *editor);
+
 #endif /*__AGS_EDITOR_CALLBACKS_H__*/

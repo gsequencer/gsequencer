@@ -415,12 +415,24 @@ ags_editor_add_index(AgsEditor *editor)
 void
 ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
 {
+  AgsMachine *old_machine;
   GList *tabs, *notation;
 
   /* retrieve some variables */
+  old_machine = g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE));
+
   notation = AGS_AUDIO(machine->audio)->notation;
 
   tabs = editor->notebook->tabs;
+
+  /* disconnect */
+  if(old_machine != NULL){
+    g_signal_handler_disconnect(G_OBJECT(old_machine->audio),
+				editor->set_audio_channels_handler);
+
+    g_signal_handler_disconnect(G_OBJECT(old_machine->audio),
+				editor->set_pads_handler);
+  }
 
   /* set notation on tabs */
   while(tabs != NULL &&
@@ -438,8 +450,6 @@ ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
     guint pads;
 
     gtk_button_set_label(GTK_BUTTON(editor->selected), g_strconcat(G_OBJECT_TYPE_NAME((GObject *) machine), ": \0", machine->name, NULL));
-    g_object_set_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE), machine);
-
 
     if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
       pads = machine->audio->input_pads;
@@ -456,6 +466,13 @@ ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
     editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
     ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
     editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
+
+    /*  */    
+    g_signal_connect(G_OBJECT(machine->audio), "set-audio-channels\0",
+		     G_CALLBACK(ags_editor_set_audio_channels_callback), editor);
+
+    g_signal_connect(G_OBJECT(machine->audio), "set-pads\0",
+		     G_CALLBACK(ags_editor_set_pads_callback), editor);
   }
 
   g_object_set_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE), machine);
