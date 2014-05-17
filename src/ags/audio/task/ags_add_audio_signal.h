@@ -42,6 +42,7 @@ struct _AgsAddAudioSignal
   AgsTask task;
 
   AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
   AgsDevout *devout;
   AgsRecallID *recall_id;
   guint audio_signal_flags;
@@ -55,6 +56,7 @@ struct _AgsAddAudioSignalClass
 GType ags_add_audio_signal_get_type();
 
 AgsAddAudioSignal* ags_add_audio_signal_new(AgsRecycling *recycling,
+					    AgsAudioSignal *audio_signal,
 					    AgsDevout *devout,
 					    AgsRecallID *recall_id,
 					    guint audio_signal_flags);

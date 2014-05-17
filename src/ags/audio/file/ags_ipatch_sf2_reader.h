@@ -48,7 +48,6 @@ struct _AgsIpatchSF2Reader
 
   AgsIpatch *ipatch;
 
-  guint nth_level;
   gchar **selected;
 
   IpatchSF2Reader *reader;
@@ -57,7 +56,6 @@ struct _AgsIpatchSF2Reader
 
   int bank;
   int program;
-  gchar *selected_sublevel_name;
 
   IpatchSF2Zone *zone;
   int count;

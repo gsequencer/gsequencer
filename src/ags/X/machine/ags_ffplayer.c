@@ -509,11 +509,8 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
 
   if(g_str_has_suffix(filename, ".sf2\0")){
     AgsIpatch *ipatch;
-    AgsIpatchSF2Reader *sf2_reader;
     AgsPlayable *playable;
-    gchar **preset;
     gchar **instrument;
-    gchar **sample;
     GError *error;
 
     /* clear preset, instrument and sample*/
@@ -528,11 +525,7 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
     ipatch->devout = window->devout;
     ags_ipatch_open(ipatch, filename);
 
-    sf2_reader = ags_ipatch_sf2_reader_new();
-    sf2_reader->ipatch =  ipatch;
-    ipatch->reader = (GObject *) sf2_reader;
-
-    playable = AGS_PLAYABLE(ipatch->reader);
+    playable = AGS_PLAYABLE(ipatch);
       
     ags_playable_open(playable, filename);
 
@@ -541,20 +534,22 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
 			      0, filename,
 			      &error);
 
-    /* fill ffplayer->instrument */
-    AGS_IPATCH_SF2_READER(ipatch->reader)->nth_level = 1;
+    /* select first instrument */
+    ipatch->nth_level = 1;
     instrument = ags_playable_sublevel_names(playable);
-      
+
+    error = NULL;
+    ags_playable_level_select(playable,
+			      1, *instrument,
+			      &error);
+
+    /* fill ffplayer->instrument */
     while(*instrument != NULL){
       gtk_combo_box_text_append_text(ffplayer->instrument,
 				     *instrument);
 
-
       instrument++;
     }
-
-    /* reset nth_level */
-    //      AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->nth_level = 0;
   }
 
   instrument = xmlGetProp(node,

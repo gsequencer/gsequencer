@@ -339,7 +339,7 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 	       NULL);
 
   /* fill sf2_chooser->preset */
-  playable = AGS_PLAYABLE(ipatch->reader);
+  playable = AGS_PLAYABLE(ipatch);
 
   ags_playable_open(playable, filename);
 
@@ -358,37 +358,34 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
     gtk_combo_box_text_append_text(sf2_chooser->preset,
 				   *preset);
 
-
     preset++;
   }
 
   /* fill sf2_chooser->instrument */
-  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 1;
+  sf2_chooser->ipatch->nth_level = 1;
   instrument = ags_playable_sublevel_names(playable);
 
   while(*instrument != NULL){
     gtk_combo_box_text_append_text(sf2_chooser->instrument,
 				   *instrument);
-
-
+    
     instrument++;
   }
 
 
   /* fill sf2_chooser->sample */
-  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 2;
+  sf2_chooser->ipatch->nth_level = 2;
   sample = ags_playable_sublevel_names(playable);
 
   while(*sample != NULL){
     gtk_combo_box_text_append_text(sf2_chooser->sample,
 				   *sample);
 
-
     sample++;
   }
 
   /* reset nth_level */
-  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 0;
+  sf2_chooser->ipatch->nth_level = 0;
 }
 
 void

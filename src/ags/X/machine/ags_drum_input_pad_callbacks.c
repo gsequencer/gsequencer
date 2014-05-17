@@ -381,6 +381,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
 	while(recycling != channel->last_recycling->next){
 	  add_audio_signal = ags_add_audio_signal_new(recycling,
+						      NULL,
 						      devout,
 						      recall_id[0],
 						      flags);
@@ -419,6 +420,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       
       while(recycling != line->channel->last_recycling->next){
 	add_audio_signal = ags_add_audio_signal_new(recycling,
+						    NULL,
 						    devout,
 						    recall_id[0],
 						    flags);

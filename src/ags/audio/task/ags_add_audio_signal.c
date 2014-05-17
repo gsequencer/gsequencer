@@ -101,6 +101,7 @@ void
 ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal)
 {
   add_audio_signal->recycling = NULL;
+  add_audio_signal->audio_signal = NULL;
   add_audio_signal->devout = NULL;
   add_audio_signal->recall_id = NULL;
   add_audio_signal->audio_signal_flags = 0;
@@ -154,10 +155,15 @@ ags_add_audio_signal_launch(AgsTask *task)
   recall_id = add_audio_signal->recall_id;
 
   /* create audio signal */
-  audio_signal = ags_audio_signal_new((GObject *) devout,
-				      (GObject *) add_audio_signal->recycling,
-				      (GObject *) recall_id);
-  audio_signal->flags = add_audio_signal->audio_signal_flags;
+  if(add_audio_signal->audio_signal == NULL){
+    add_audio_signal->audio_signal = 
+      audio_signal = ags_audio_signal_new((GObject *) devout,
+					  (GObject *) add_audio_signal->recycling,
+					  (GObject *) recall_id);
+    audio_signal->flags = add_audio_signal->audio_signal_flags;
+  }else{
+    audio_signal = add_audio_signal->audio_signal;
+  }
 
   /* delay and attack */
   tic_counter_incr = devout->tic_counter + 1;
@@ -191,6 +197,7 @@ ags_add_audio_signal_launch(AgsTask *task)
 
 AgsAddAudioSignal*
 ags_add_audio_signal_new(AgsRecycling *recycling,
+			 AgsAudioSignal *audio_signal,
 			 AgsDevout *devout,
 			 AgsRecallID *recall_id,
 			 guint audio_signal_flags)
@@ -201,6 +208,7 @@ ags_add_audio_signal_new(AgsRecycling *recycling,
 							NULL);
 
   add_audio_signal->recycling = recycling;
+  add_audio_signal->audio_signal = audio_signal;
   add_audio_signal->devout = devout;
   add_audio_signal->recall_id = recall_id;
   add_audio_signal->audio_signal_flags = audio_signal_flags;

@@ -12,16 +12,16 @@ ags_sf2_chooser_preset_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
   guint nth_level;
 
   /* Ipatch related */
-  playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
+  playable = AGS_PLAYABLE(sf2_chooser->ipatch);
   nth_level = ags_playable_nth_level(playable);
 
-  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 1;
+  sf2_chooser->ipatch->nth_level = 1;
 
   preset = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
   error = NULL;
   ags_playable_level_select(playable,
-			    0, preset,
+			    1, preset,
 			    &error);
 
   if(error != NULL){
@@ -38,16 +38,16 @@ ags_sf2_chooser_instrument_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_ch
   guint nth_level;
 
   /* Ipatch related */
-  playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
+  playable = AGS_PLAYABLE(sf2_chooser->ipatch);
   nth_level = ags_playable_nth_level(playable);
 
-  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 2;
+  sf2_chooser->ipatch->nth_level = 2;
 
   instrument = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
   error = NULL;
   ags_playable_level_select(playable,
-			    0, instrument,
+			    2, instrument,
 			    &error);
 
   if(error != NULL){
@@ -64,16 +64,16 @@ ags_sf2_chooser_sample_changed(GtkComboBox *combo_box, AgsSF2Chooser *sf2_choose
   guint nth_level;
 
   /* Ipatch related */
-  playable = AGS_PLAYABLE(sf2_chooser->ipatch->reader);
+  playable = AGS_PLAYABLE(sf2_chooser->ipatch);
   nth_level = ags_playable_nth_level(playable);
 
-  AGS_IPATCH_SF2_READER(sf2_chooser->ipatch->reader)->nth_level = 3;
+  sf2_chooser->ipatch->nth_level = 3;
 
   sample = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
   error = NULL;
   ags_playable_level_select(playable,
-			    0, sample,
+			    3, sample,
 			    &error);
 
   if(error != NULL){
