@@ -155,10 +155,11 @@ ags_devout_thread_start(AgsThread *thread)
   devout = AGS_DEVOUT(thread->devout);
 
   /*  */
-  if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     pthread_mutex_lock(&(thread->start_mutex));
 
-    thread->flags &= (~AGS_THREAD_INITIAL_RUN);
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_INITIAL_RUN));
     pthread_cond_broadcast(&(thread->start_cond));
 
     pthread_mutex_unlock(&(thread->start_mutex));
@@ -196,7 +197,7 @@ ags_devout_thread_start(AgsThread *thread)
   memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
   memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_devout_thread_parent_class)->start(thread);
   }
 }

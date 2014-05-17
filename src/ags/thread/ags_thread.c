@@ -256,7 +256,8 @@ ags_thread_init(AgsThread *thread)
 
   pthread_mutex_init(&(thread->greedy_mutex), NULL);
   pthread_cond_init(&(thread->greedy_cond), NULL);
-  thread->locked_greedy = 0;
+  g_atomic_int_set(&(thread->locked_greedy),
+		   0);
 
   thread->timelock.tv_sec = 0;
   thread->timelock.tv_nsec = floor(NSEC_PER_SEC /
@@ -1184,8 +1185,8 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
 	 current->parent != parent)){
     pthread_cond_wait(&(current->cond),
 		      &(current->mutex));
-
-    if(!((AGS_THREAD_IDLE & (current->flags)) != 0 ||
+    
+    if(!((AGS_THREAD_IDLE & (g_atomic_int_get(&(current->flags)))) != 0 ||
 	 (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->flags)))) == 0)){
       current = current->parent;
     }
@@ -1226,7 +1227,7 @@ ags_thread_wait_sibling(AgsThread *thread)
     
     pthread_cond_wait(&(current->cond),
 		      &(current->mutex));
-
+    
     if(!((AGS_THREAD_IDLE & (g_atomic_int_get(&(current->flags)))) != 0 ||
 	 (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(current->flags)))) == 0)){
       current = current->next;
@@ -1571,7 +1572,7 @@ ags_thread_loop(void *ptr)
     }
 
     /* lock sibling */
-    if((AGS_THREAD_WAIT_FOR_SIBLING & (thread->flags)) != 0){
+    if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(thread->flags)))) != 0){
       wait_for_sibling = TRUE;
 
       g_atomic_int_or(&(thread->flags),
@@ -1582,7 +1583,7 @@ ags_thread_loop(void *ptr)
     }
 
     /* lock_children */
-    if((AGS_THREAD_WAIT_FOR_CHILDREN & (thread->flags)) != 0){
+    if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(thread->flags)))) != 0){
       wait_for_children = TRUE;
 
       g_atomic_int_or(&(thread->flags),
