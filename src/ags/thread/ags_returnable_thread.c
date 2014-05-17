@@ -196,8 +196,9 @@ ags_returnable_thread_run(AgsThread *thread)
     /* release thread in thread pool */
     pthread_mutex_lock(&(thread_pool->creation_mutex));
 
-    thread_pool->running_thread = g_list_remove(thread_pool->running_thread,
-						thread);
+    g_atomic_pointer_set(&(thread_pool->running_thread),
+			 g_list_remove(g_atomic_pointer_get(&(thread_pool->running_thread)),
+				       thread));
 
     pthread_mutex_unlock(&(thread_pool->creation_mutex));
 

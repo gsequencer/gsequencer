@@ -395,10 +395,7 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 	(250000000 * (1 / 45)),
       };
 
-      pthread_mutex_unlock(&(thread_pool->return_mutex));
-
       nanosleep(&req, NULL);
-      pthread_mutex_lock(&(thread_pool->return_mutex));
 
       goto ags_thread_pool_pull_running_LABEL0;      
     }
