@@ -162,7 +162,7 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
   GList *list;
   guint i;
 
-  g_atomic_int_set(&thread_pool->flags,
+  g_atomic_int_set(&(thread_pool->flags),
 		   0);
 
   g_atomic_int_set(&(thread_pool->max_unused_threads),
@@ -215,7 +215,7 @@ ags_thread_pool_set_property(GObject *gobject,
     break;
   case PROP_MAX_THREADS:
     {
-      g_atomic_int_set(&thread_pool->max_threads,
+      g_atomic_int_set(&(thread_pool->max_threads),
 		       g_value_get_uint(value));
     }
     break;
@@ -407,7 +407,7 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 			&(thread_pool->return_mutex));
     }
 
-    g_atomic_int_dec_and_test(&thread_pool->queued);
+    g_atomic_int_dec_and_test(&(thread_pool->queued));
     ags_thread_pool_pull_running();
   }
 

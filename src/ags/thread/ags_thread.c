@@ -667,7 +667,7 @@ ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
   current = thread->parent;
 
   while(current != parent){
-    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&current->flags))) != 0){
+    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(current->flags)))) != 0){
 
       return(TRUE);
     }
@@ -1180,7 +1180,7 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
     
   while((current != NULL && current != parent) &&
 	(((AGS_THREAD_IDLE & (g_atomic_int_get(&(current->flags)))) != 0 ||
-	  (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&current->flags))) == 0) ||
+	  (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->flags)))) == 0) ||
 	 current->parent != parent)){
     pthread_cond_wait(&(current->cond),
 		      &(current->mutex));
@@ -1701,7 +1701,7 @@ ags_thread_loop(void *ptr)
       while(greedy_locks != NULL){
 	pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
 
-	locked_greedy = g_atomic_int_get(&AGS_THREAD(greedy_locks->data)->locked_greedy);
+	locked_greedy = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->locked_greedy));
 	locked_greedy--;
 
 	g_atomic_int_set(&(AGS_THREAD(greedy_locks->data)->locked_greedy),
@@ -1929,7 +1929,7 @@ ags_thread_real_timelock(AgsThread *thread)
     while(greedy_locks != NULL){
       pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
     
-      locked_greedy = g_atomic_int_get(&AGS_THREAD(greedy_locks->data)->locked_greedy);
+      locked_greedy = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->locked_greedy));
 
       locked_greedy--;
 

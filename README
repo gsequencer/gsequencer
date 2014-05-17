@@ -16,7 +16,6 @@ TODO:
 - update retrieving of AgsDelay in recalls, recalls should duplicate AgsDelays in contrast plays work fine
 - modify ags_audio_set_audio_channels and ags_audio_set_pads so that it updates parent AgsChannel's first_recycling and last_recycling
 - ags_machine_link_editor_callbacks.c replace code in callbacks with ags_machine_link_editor_reset_input and ags_machine_link_editor_reset_output
-- ags_matrix.c shrink the GtkDrawingArea in ags_matrix_set_pads if there are less than eight input pads
 - remove ags_editor_reset and move code to callback functions
 - ags_editor.c implement machine_changed signal
 - ags_audio.c add protection against multiple pads on AgsChannel's with AGS_AUDIO_ASYNC and without AgsAudioSignal on AgsOutput

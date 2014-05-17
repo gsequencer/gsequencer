@@ -934,7 +934,7 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   loop = g_value_get_boolean(&value);
 
   if(count_beats_audio_run->first_run){
-    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
+    //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
 					      run_order);
   }
@@ -943,14 +943,14 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
      count_beats_audio_run->sequencer_counter == 0){
     /* emit sequencer signals */
     if(loop){
-      g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
+      //      g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: loop\n\0");
       
       ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
 					       run_order);
     }else{
       /* emit stop signals */
       if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
-	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: done\n\0");
+	//	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: done\n\0");
 
 	ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 						 run_order);

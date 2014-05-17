@@ -268,7 +268,6 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   gboolean initial_wait;
   int ret;
 
-  g_message("task b\0");
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   task_thread = append->task_thread;
@@ -304,7 +303,7 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   AgsTaskThreadAppend *append;
   AgsThread *thread;
 
-  g_message("task\0");
+  g_message("append task\0");
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
@@ -338,7 +337,6 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   gboolean initial_wait;
   int ret;
 
-  g_message("task a\0");
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   task_thread = append->task_thread;
@@ -372,7 +370,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   AgsTaskThreadAppend *append;
   AgsThread *thread;
 
-  g_message("tasks\0");
+  g_message("append tasks\0");
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 

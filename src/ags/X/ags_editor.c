@@ -419,7 +419,7 @@ ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
   GList *tabs, *notation;
 
   /* retrieve some variables */
-  old_machine = g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE));
+  old_machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE));
 
   notation = AGS_AUDIO(machine->audio)->notation;
 

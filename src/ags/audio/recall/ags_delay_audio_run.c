@@ -379,9 +379,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 			   0:
 			   devout->tic_counter + 1)];
 
-    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
-	      delay_audio_run,
-	      run_order);
+    //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
+    //	      delay_audio_run,
+    //	      run_order);
       
     /* notation speed */
     ags_delay_audio_run_notation_alloc_output(delay_audio_run,
@@ -412,9 +412,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     run_order = delay_audio_run->hide_ref_counter;
 
-    g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]\0",
-	      delay_audio_run,
-	      run_order);
+    //    g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]\0",
+    //	      delay_audio_run,
+    //	      run_order);
 
     /* sequencer speed */
     ags_delay_audio_run_sequencer_alloc_output(delay_audio_run,

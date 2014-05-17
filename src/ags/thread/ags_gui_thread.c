@@ -190,8 +190,8 @@ ags_gui_thread_run(AgsThread *thread)
 
       while(!got_ownership){
 	got_ownership = g_main_context_wait(main_context,
-					    &gui_thread->cond,
-					    &gui_thread->mutex);
+					    &(gui_thread->cond),
+					    &(gui_thread->mutex));
       }
     }
 
