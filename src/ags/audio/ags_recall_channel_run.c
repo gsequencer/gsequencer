@@ -812,11 +812,9 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
     AgsRecallRecycling *recall_recycling;
 
     while(source_recycling != recall_channel->source->last_recycling->next){
+#ifdef AGS_DEBUG
       g_message("ags_recall_channel_run_map_recall_recycling\0");
-
-      if(AGS_RECALL(recall_channel_run)->child_type == AGS_TYPE_COPY_RECYCLING){
-	g_message("debug\0");
-      }
+#endif
 
       do{
 	if(AGS_RECALL(recall_channel_run)->child_type != G_TYPE_NONE){

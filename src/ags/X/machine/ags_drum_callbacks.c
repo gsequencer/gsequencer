@@ -472,7 +472,10 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   }
 
   if((AGS_DRUM_BLOCK_PATTERN & (drum->flags)) != 0){
+#ifdef AGS_DEBUG
     g_message("AgsDrum pattern is blocked\n\0");
+#endif
+
     return;
   }
 

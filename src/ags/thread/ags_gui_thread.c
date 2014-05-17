@@ -167,7 +167,7 @@ ags_gui_thread_start(AgsThread *thread)
   gui_thread->iter = 0.0;
 
   /*  */
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
   }
 }

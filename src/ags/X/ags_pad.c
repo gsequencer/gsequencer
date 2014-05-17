@@ -361,8 +361,6 @@ ags_pad_show(GtkWidget *widget)
 {
   AgsPad *pad;
 
-  fprintf(stdout, "ags_pad_show\n\0");
-
   pad = AGS_PAD(widget);
 }
 

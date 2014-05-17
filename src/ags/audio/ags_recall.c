@@ -796,7 +796,9 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
      (container != NULL && !AGS_IS_RECALL_CONTAINER(container)))
     return(TRUE);
 
+#ifdef AGS_DEBUG
   g_message("===== packing: %s\0", G_OBJECT_TYPE_NAME(recall));
+#endif
 
   return(FALSE);
 }
@@ -986,7 +988,7 @@ ags_recall_finalize(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
-  //  g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
+  g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 
   if(recall->devout != NULL){
     g_object_unref(recall->devout);
@@ -1071,7 +1073,9 @@ ags_recall_resolve_dependencies(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
+#ifdef AGS_DEBUG
   g_message("resolving %s\0", G_OBJECT_TYPE_NAME(recall));
+#endif
   
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
@@ -1191,8 +1195,6 @@ ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list;
 
-  //  g_message("ags_recall_real_run_pre: %s\0", G_OBJECT_TYPE_NAME(recall));
-
   list = recall->children;
 
   while(list != NULL){
@@ -1228,8 +1230,6 @@ ags_recall_real_run_inter(AgsRecall *recall)
 {
   GList *list;
 
-  //  g_message("ags_recall_real_run_inter: %s\0", G_OBJECT_TYPE_NAME(recall));
-
   list = recall->children;
 
   while(list != NULL){
@@ -1264,8 +1264,6 @@ void
 ags_recall_real_run_post(AgsRecall *recall)
 {
   GList *list, *list_next;
-
-  //  g_message("ags_recall_real_run_post: %s\0", G_OBJECT_TYPE_NAME(recall));
 
   list = recall->children;
 
@@ -1881,13 +1879,17 @@ ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_containe
 {
   AgsRecall *recall;
 
+#ifdef AGS_DEBUG
   g_message("ags_recall_find_recycling_container: recycling_container = %llx\n\0", recycling_container);
+#endif
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
     if(recall->recall_id != NULL)
+#ifdef AGS_DEBUG
       g_message("ags_recall_find_recycling_container: recall_id->recycling_contianer = %llx\n\0", (long long unsigned int) recall->recall_id->recycling_container);
+#endif
 
     if(recall->recall_id != NULL &&
        recall->recall_id->recycling_container == recycling_container){

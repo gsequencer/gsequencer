@@ -302,7 +302,9 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
   IpatchFileIOFuncs *io_funcs;
   GError *error;
 
+#ifdef AGS_DEBUG
   g_message("open %s with libinstpatch.\0", filename);
+#endif
 
   ipatch = AGS_IPATCH(playable);
 
@@ -405,8 +407,6 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
     
     sublevel = ipatch->nth_level;
-
-    g_message("ags_ipatch_sf2_reader_sublevel_names: %u\n\0", sublevel);
 
     switch(sublevel){
     case AGS_SF2_FILENAME:
@@ -542,8 +542,10 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
 					      &(ipatch_sf2_reader->bank),
 					      &(ipatch_sf2_reader->program));
-	
+
+#ifdef AGS_DEBUG
 	    g_message("debug: bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+#endif
 	  }
 
 	  list = list->next;
@@ -619,8 +621,6 @@ ags_ipatch_level_up(AgsPlayable *playable, guint levels, GError **error)
 		"Not able to go %u steps higher in soundfont2 file: %s\0",
 		levels, ipatch->filename);
   }
-
-  g_message("debug nth-level: %u\n\0", ipatch->nth_level);
 }
 
 void

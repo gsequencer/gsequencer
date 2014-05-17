@@ -391,7 +391,9 @@ ags_audio_connect(AgsConnectable *connectable)
 
   audio = AGS_AUDIO(connectable);
 
-  g_message("connecting channel\0");
+#ifdef AGS_DEBUG
+  g_message("connecting audio\0");
+#endif
 
   /* connect channels */
   channel = audio->output;
@@ -419,8 +421,6 @@ ags_audio_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_message("connecting container\0");
-
   /* connect recall containers */
   list = audio->container;
 
@@ -429,8 +429,6 @@ ags_audio_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
-
-  g_message("connecting recalls\0");
 
   /* connect recalls */
   list = audio->recall;
@@ -465,8 +463,6 @@ ags_audio_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
-
-  g_message("connecting notation\0");
 
   /* connect notation */
   if(audio->notation != NULL)
@@ -716,7 +712,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	    set_sync_link = FALSE;
 	    input_pad_last = ags_channel_nth(input, audio->input_lines - (audio_channels - audio->audio_channels));
 	  }else{
+#ifdef AGS_DEBUG
 	    g_message("ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
+#endif
 	    set_sync_link = FALSE;
 	    set_async_link = FALSE;
 	  }
@@ -1212,7 +1210,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     i = audio->audio_channels;
 
+#ifdef AGS_DEBUG
     g_message("ags_audio_set_audio_channels_grow_notation\n\0");
+#endif
 
     if(audio->audio_channels == 0){
       audio->notation =
@@ -1621,7 +1621,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
     GList *list;
     guint i;
 
+#ifdef AGS_DEBUG
     g_message("ags_audio_set_pads_alloc_notation\n\0");
+#endif
 
     if(audio->audio_channels > 0){
       audio->notation =
@@ -1745,8 +1747,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
       /*  */
       ags_audio_set_pads_grow_one();
 
-      g_message(" -- - grow out\0");
-
       channel = start;
       audio->output = start;
 
@@ -1828,8 +1828,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }else{
       channel = audio->input;
     }
-
-    g_message(" -- - grow in\0");
 
     if(pads >= 1){
       if(pads > audio->input_pads){
@@ -1993,7 +1991,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   GList *list_recall_start, *list_recall;
   gboolean playback, sequencer, notation;
   
+#ifdef AGS_DEBUG
   g_message("ags_audio_duplicate_recall - audio.lines[%u,%u]\n\0", audio->output_lines, audio->input_lines);
+#endif
 
   if((AGS_RECALL_ID_PLAYBACK & (recall_id->flags)) != 0){
     playback = TRUE;
@@ -2050,7 +2050,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       /* notify run */
       ags_recall_notify_dependency(copy, AGS_RECALL_NOTIFY_RUN, 1);
 
-      g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
+#ifdef AGS_DEBUG
+      g_message("recall duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
+#endif
 
       /* set appropriate flag */
       if(playback){

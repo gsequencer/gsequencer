@@ -162,7 +162,9 @@ ags_audio_file_disconnect(AgsConnectable *connectable)
 gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
 {
+#ifdef AGS_DEBUG
   g_message("ags_audio_file_open: %s\0", audio_file->name);
+#endif
 
   if(g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
     if(g_str_has_suffix(audio_file->name, ".wav\0") ||
@@ -202,7 +204,9 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 gboolean
 ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 {
+#ifdef AGS_DEBUG
   g_message("ags_audio_file_open_from_data:\0");
+#endif
 
   if(data != NULL){
     if(g_str_has_suffix(audio_file->name, ".wav\0") ||

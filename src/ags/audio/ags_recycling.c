@@ -366,8 +366,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint frames_looped_copied, frames_copied;
   gboolean enter_loop;
 
-  g_message("ags_recycling_create_audio_signal_with_frame_count: before\n\0");
-
   /* some init */
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
@@ -464,8 +462,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       }
     }
   }
-
-  g_message("ags_recycling_create_audio_signal_with_frame_count: after\n\0");
 }
 
 AgsRecycling*
@@ -504,7 +500,6 @@ ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
 
   while(current != NULL && current != end_region){
     position++;
-    g_message("count\0");
 
     if(current == recycling){
       return(position);

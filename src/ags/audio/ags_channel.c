@@ -346,6 +346,10 @@ ags_channel_connect(AgsConnectable *connectable)
 
   channel = AGS_CHANNEL(connectable);
 
+#ifdef AGS_DEBUG
+  g_message("connecting channel\0");
+#endif
+
   //  ags_connectable_add_to_registry(connectable);
 
   /* connect recall ids */
@@ -366,8 +370,6 @@ ags_channel_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_message("connecting recall\0");
-
   /* connect recalls */
   list = channel->recall;
 
@@ -385,8 +387,6 @@ ags_channel_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  g_message("connecting recycling\0");
-
   /* connect recycling */
   recycling = channel->first_recycling;
 
@@ -397,8 +397,6 @@ ags_channel_connect(AgsConnectable *connectable)
       recycling = recycling->next;
     }
   }
-
-  g_message("connecting pattern\0");
 
   /* connect pattern and notation */
   list = channel->pattern;
@@ -1172,8 +1170,6 @@ ags_channel_set_recycling(AgsChannel *channel,
 
     return(FALSE);
   }
-
-  g_message("== NULL\0");
 
   /* entry point */
   audio = AGS_AUDIO(channel->audio);
@@ -2157,7 +2153,10 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     
     /* duplicate the recall */
     copy = ags_recall_duplicate(recall, recall_id);
-    g_message("duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
+
+#ifdef AGS_DEBUG
+    g_message("recall duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
+#endif
     
     /* set appropriate flag */
     if(playback){
@@ -2200,7 +2199,13 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
   AgsRecall *recall;
   GList *list_recall;
   
-  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %llu %llu\n\0", stage, AGS_AUDIO(channel->audio)->input_lines, (long long unsigned int) channel->audio_channel, (long long unsigned int) channel->pad);  
+#ifdef AGS_DEBUG
+  g_message("ags_channel_init_recall@%d - audio::IN[%u]; channel: %llu %llu\n\0",
+	    stage,
+	    AGS_AUDIO(channel->audio)->input_lines,
+	    (long long unsigned int) channel->audio_channel,
+	    (long long unsigned int) channel->pad);  
+#endif
 
   if(recall_id->recycling_container->parent == NULL)
     list_recall = channel->play;
@@ -2219,7 +2224,9 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     }
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
-      g_message("  init: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+#ifdef AGS_DEBUG
+      g_message("recall run init: %s\n\0", G_OBJECT_TYPE_NAME(recall));
+#endif
 
       if(stage == 0){
 	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
@@ -3989,7 +3996,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       while((list = ags_recall_find_recycling_container(list, G_OBJECT(recall_id->recycling_container))) != NULL){
 	recall = AGS_RECALL(list->data);
 
-	g_message("reset: invalid\0");
+#ifdef AGS_DEBUG
+	g_message("reset recall id: invalidated\0");
+#endif
 	
 	ags_audio_remove_recall(audio,
 				(GObject *) recall,
@@ -4011,7 +4020,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       playback = ((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0) ? TRUE: FALSE;
 
       if(playback){
-	g_message("reset: play\0");
+#ifdef AGS_DEBUG
+	g_message("recall id reset: play\0");
+#endif
 
 	/* append new recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
@@ -4047,7 +4058,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       sequencer = ((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0) ? TRUE: FALSE;      
 
       if(sequencer){
-	g_message("reset: sequencer\0");
+#ifdef AGS_DEBUG
+	g_message("recall id reset: sequencer\0");
+#endif
 
 	/* append new recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
@@ -4072,7 +4085,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       notation = ((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0) ? TRUE: FALSE;
 
       if(notation){
-	g_message("reset: notation\0");
+#ifdef AGS_DEBUG
+	g_message("recall id reset: notation\0");
+#endif
 
 	/* append new recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
@@ -4129,7 +4144,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       playback = (((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0) ? TRUE: FALSE);
 
       if(playback){
-	g_message("reset: playback\0");
+#ifdef AGS_DEBUG
+	g_message("recall id reset: playback\0");
+#endif
 
 	/* append new recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
@@ -4154,7 +4171,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       sequencer = (((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0) ? TRUE: FALSE);
 
       if(sequencer){
-	g_message("reset: sequencer\0");
+#ifdef AGS_DEBUG
+	g_message("recall id reset: sequencer\0");
+#endif
 
 	/* append new recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
@@ -4179,7 +4198,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       notation = (((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0) ? TRUE: FALSE);
 
       if(notation){
-	g_message("reset: notation\0");
+#ifdef AGS_DEBUG
+	g_message("recall id reset: notation\0");
+#endif
 
 	/* append new recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
@@ -4303,7 +4324,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	if(current->devout_play != NULL){
 	  if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	     AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
-	    g_message("collect: play\0");
+#ifdef AGS_DEBUG
+	    g_message("recall id collect: play\0");
+#endif
 
 	    list = g_list_prepend(list,
 				  (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
@@ -4311,7 +4334,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	  if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	     AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
-	    g_message("collect: sequencer\0");
+#ifdef AGS_DEBUG
+	    g_message("recall id collect: sequencer\0");
+#endif
 
 	    list = g_list_prepend(list,
 				  (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
@@ -4319,7 +4344,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	  if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	     AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
-	    g_message("collect: notation\0");
+#ifdef AGS_DEBUG
+	    g_message("recall id collect: notation\0");
+#endif
 
 	    list = g_list_prepend(list,
 				  (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2]: current->devout_play));
@@ -4339,7 +4366,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       if(current->devout_play != NULL){
 	if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
-	  g_message("collect: play\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: play\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
@@ -4347,7 +4376,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
-	  g_message("collect: sequencer\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: sequencer\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
@@ -4355,7 +4386,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
-	  g_message("collect: notation\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: notation\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2]: current->devout_play));
@@ -4382,7 +4415,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     if(current->devout_play != NULL){
       if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	 AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
-	g_message("collect: play\0");
+#ifdef AGS_DEBUG
+	g_message("recall id collect: play\0");
+#endif
 
 	list = g_list_prepend(list,
 			      (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
@@ -4390,7 +4425,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	 AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
-	g_message("collect: sequencer - a\0");
+#ifdef AGS_DEBUG
+	g_message("recall id collect: sequencer - a\0");
+#endif
 
 	list = g_list_prepend(list,
 			      (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
@@ -4398,7 +4435,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	 AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
-	g_message("collect: notation\0");
+#ifdef AGS_DEBUG
+	g_message("recall id collect: notation\0");
+#endif
 
 	list = g_list_prepend(list,
 			      (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2]: current->devout_play));
@@ -4440,7 +4479,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       if(current->devout_play != NULL){
 	if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
-	  g_message("collect: play\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: play\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
@@ -4448,7 +4489,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
-	  g_message("collect: sequencer\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: sequencer\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
@@ -4456,7 +4499,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
-	  g_message("collect: notation\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: notation\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2]: current->devout_play));
@@ -4476,7 +4521,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       if(current->devout_play != NULL){
 	if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
-	  g_message("collect: play\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: play\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
@@ -4484,7 +4531,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
-	  g_message("collect: sequencer\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: sequencer\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
@@ -4492,7 +4541,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
 	if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
-	  g_message("collect: notation\0");
+#ifdef AGS_DEBUG
+	  g_message("recall id collect: notation\0");
+#endif
 
 	  list = g_list_prepend(list,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2]: current->devout_play));
@@ -5512,8 +5563,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   link_invalid_recall_id_list = ags_channel_recursive_collect_devout_play_up(old_channel_link,
 									     TRUE);
 
-  g_message("collect\0");
-
   /* reset recall ids */
   /* go down */
   ags_channel_recursive_reset_recall_id_down(channel,
@@ -5524,8 +5573,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   ags_channel_tillrecycling_reset_recall_id_up(link,
 					       channel_recall_id_list, channel_devout_play_list,
 					       link_invalid_recall_id_list);
-  
-  g_message("reset\0");
 
   /* update AgsRecyclingContainer */
   list = link_recall_id_list;
@@ -5557,8 +5604,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     list = list->next;
   }
 
-  g_message("updated\0");
-  
   /* unset recall ids */  
   /* go down */
   ags_channel_recursive_unset_recall_id_down(old_link_link,
@@ -5568,8 +5613,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   ags_channel_tillrecycling_unset_recall_id_up(old_channel_link,
 					       channel_invalid_recall_id_list);
   
-  g_message("unset\0");
-
   /* duplicate recalls */
   /* go down */
   ags_channel_recursive_duplicate_recall_down(channel,
@@ -5588,8 +5631,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   ags_channel_tillrecycling_resolve_recall_up(link,
 					      channel_recall_id_list);
 
-  g_message("resolve\0");
-
   /* init recalls */
   for(stage = 0; stage < 3; stage++){
     /* go down */
@@ -5601,8 +5642,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 					     channel_recall_id_list);
 
   }
-
-  g_message("init\0");
 
   /* free the lists */
   g_list_free(channel_devout_play_list);

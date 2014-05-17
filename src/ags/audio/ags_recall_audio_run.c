@@ -312,9 +312,6 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   if(ags_recall_audio_run_parent_packable_interface->pack(packable, container))
     return(TRUE);
 
-  if(AGS_IS_COPY_PATTERN_AUDIO_RUN(packable))
-    g_message("debug: AGS_IS_COPY_PATTERN_AUDIO_RUN(packable)\n\0");
-
   recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
   recall_container = AGS_RECALL_CONTAINER(container);
 

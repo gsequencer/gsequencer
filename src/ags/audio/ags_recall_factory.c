@@ -265,8 +265,6 @@ ags_recall_factory_create_play(AgsAudio *audio,
   AgsPort *port;
   GList *list;
   guint i, j;
-
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
   
   if(audio == NULL){
     return(NULL);
@@ -396,8 +394,6 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -591,8 +587,6 @@ ags_recall_factory_create_copy(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -728,8 +722,6 @@ ags_recall_factory_create_stream(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -865,8 +857,6 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -1003,8 +993,6 @@ ags_recall_factory_create_delay(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -1098,8 +1086,6 @@ ags_recall_factory_create_count_beats(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -1204,8 +1190,6 @@ ags_recall_factory_create_loop(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -1355,8 +1339,6 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -1514,7 +1496,6 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 	  list = ags_recall_find_template(recall_container->recall_audio_run);
 
 	  if(list != NULL){
-	    g_message("debug\0");
 	    copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
 	  }
 	}
@@ -1584,8 +1565,6 @@ ags_recall_factory_create_play_notation(AgsAudio *audio,
   GList *list;
   guint i, j;
 
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
-  
   if(audio == NULL){
     return(NULL);
   }
@@ -1702,7 +1681,6 @@ ags_recall_factory_create_play_notation(AgsAudio *audio,
 	  list = ags_recall_find_template(recall_container->recall_audio_run);
 
 	  if(list != NULL){
-	    g_message("debug\0");
 	    play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
 	  }
 	}
@@ -1730,8 +1708,6 @@ ags_recall_factory_create_volume(AgsAudio *audio,
   AgsPort *port;
   GList *list;
   guint i, j;
-
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
   
   if(audio == NULL){
     return(NULL);
@@ -1881,6 +1857,10 @@ ags_recall_factory_create(AgsAudio *audio,
   GList *list;
 
   list = NULL;
+
+#ifdef AGS_DEBUG
+  g_message("AgsRecallFactory creating: %s\0", plugin_name);
+#endif
 
   if(!strncmp(plugin_name,
 	      "ags-delay\0",

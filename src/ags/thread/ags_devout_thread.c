@@ -178,7 +178,9 @@ ags_devout_thread_start(AgsThread *thread)
       			   devout_thread->error);
       
       devout->flags &= (~AGS_DEVOUT_START_PLAY);
+#ifdef AGS_DEBUG
       g_message("ags_devout_alsa_play\0");
+#endif
     }
   }
 
@@ -237,7 +239,9 @@ ags_devout_thread_stop(AgsThread *thread)
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
 
   if((AGS_DEVOUT_START_PLAY & (devout->flags)) != 0){
+#ifdef AGS_DEBUG
     g_message("ags_devout_thread_stop:  just starting\n\0");
+#endif
     return;
   }
 

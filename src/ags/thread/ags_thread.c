@@ -356,7 +356,9 @@ ags_thread_connect(AgsConnectable *connectable)
 {
   AgsThread *thread, *child;
 
+#ifdef AGS_DEBUG
   g_message("thread connect\0");
+#endif
 
   thread = AGS_THREAD(connectable);
 
@@ -397,7 +399,9 @@ ags_thread_finalize(GObject *gobject)
 void
 ags_thread_resume_handler(int sig)
 {
-  g_message("resume\0");
+#ifdef AGS_DEBUG
+  g_message("thread resume\0");
+#endif
 
   g_atomic_int_and(&(ags_thread_self->flags),
 		   (~AGS_THREAD_SUSPENDED));
@@ -408,7 +412,9 @@ ags_thread_resume_handler(int sig)
 void
 ags_thread_suspend_handler(int sig)
 {
-  //  g_message("-suspend\0");
+#ifdef AGS_DEBUG
+  g_message("thread suspend\0");
+#endif
 
   if(ags_thread_self == NULL)
     return;
@@ -1394,7 +1400,9 @@ ags_thread_real_start(AgsThread *thread)
     return;
   }
 
+#ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
+#endif
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
@@ -1752,8 +1760,9 @@ ags_thread_loop(void *ptr)
     ags_thread_unlock(thread);
   }
 
-  g_message("finish\0");
-  
+#ifdef AGS_DEBUG
+  g_message("thread finished\0");
+#endif  
 
   pthread_exit(NULL);
 }
@@ -1833,9 +1842,13 @@ ags_thread_timelock_loop(void *ptr)
     val = g_atomic_int_get(&(thread->flags));
 
     if((AGS_THREAD_WAIT_0 & val) != 0){
-      //g_message("realtime\0");
+#ifdef AGS_DEBUG
+      g_message("thread in realtime\0");
+#endif
     }else{
-      g_message("======== timelock ========\0");
+#ifdef AGS_DEBUG
+      g_message("thread timelock\0");
+#endif
       ags_thread_timelock(thread);
     }
 

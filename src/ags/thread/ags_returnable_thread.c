@@ -177,7 +177,10 @@ ags_returnable_thread_run(AgsThread *thread)
   thread_pool = returnable_thread->thread_pool;
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    g_message("initial\0");
+#ifdef AGS_DEBUG
+    g_message("returnalbe thread initial\0");
+#endif
+
     //    pthread_kill(thread->thread, AGS_THREAD_SUSPEND_SIG);
   }
 
@@ -185,17 +188,12 @@ ags_returnable_thread_run(AgsThread *thread)
   pthread_mutex_lock(&(returnable_thread->reset_mutex));
 
   if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
-    g_message("0x%x\0", thread);
-
-    g_message("reset:1\0");
 
     ags_returnable_thread_safe_run(returnable_thread);
 
     pthread_mutex_unlock(&(returnable_thread->reset_mutex));
 
     /* release thread in thread pool */
-    g_message("return on suspend\0");
-
     pthread_mutex_lock(&(thread_pool->creation_mutex));
 
     thread_pool->running_thread = g_list_remove(thread_pool->running_thread,
@@ -210,8 +208,6 @@ ags_returnable_thread_run(AgsThread *thread)
     }
 
     pthread_mutex_unlock(&(thread_pool->return_mutex));
-
-    g_message("return on suspend@END\0");
 
     ags_returnable_thread_disconnect(returnable_thread);
     g_atomic_int_and(&(returnable_thread->flags),

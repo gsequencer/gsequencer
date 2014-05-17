@@ -185,7 +185,7 @@ ags_task_thread_start(AgsThread *thread)
     }
   }
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
 }
@@ -247,7 +247,9 @@ ags_task_thread_run(AgsThread *thread)
     for(i = 0; i < task_thread->pending; i++){
       task = AGS_TASK(list->data);
 
-      g_message("ags_devout_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+#ifdef AGS_DEBUG
+      g_message("ags_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
+#endif
 
       ags_task_launch(task);
 
@@ -303,7 +305,9 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   AgsTaskThreadAppend *append;
   AgsThread *thread;
 
+#ifdef AGS_DEBUG
   g_message("append task\0");
+#endif
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
@@ -370,7 +374,9 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   AgsTaskThreadAppend *append;
   AgsThread *thread;
 
+#ifdef AGS_DEBUG
   g_message("append tasks\0");
+#endif
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
