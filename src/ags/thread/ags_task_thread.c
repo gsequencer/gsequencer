@@ -275,7 +275,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   task_thread = append->task_thread;
-  task = AGS_TASK(append->data);
+  task = AGS_TASK(g_atomic_pointer_get(&(append->data)));
 
   free(append);
 
@@ -315,7 +315,8 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
   append->task_thread = task_thread;
-  append->data = task;
+  g_atomic_pointer_set(&(append->data),
+		       task);
 
   thread = ags_thread_pool_pull(task_thread->thread_pool);
   
@@ -347,7 +348,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   task_thread = append->task_thread;
-  list = (GList *) append->data;
+  list = (GList *) g_atomic_pointer_get(&(append->data));
 
   free(append);
 
@@ -385,7 +386,8 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
   append->task_thread = task_thread;
-  append->data = list;
+  g_atomic_pointer_set(&(append->data),
+		       list);
 
   thread = ags_thread_pool_pull(task_thread->thread_pool);
 
@@ -394,20 +396,20 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread)->safe_data),
 		       append);
-
+  
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread),
 					 ags_task_thread_append_tasks_queue);
   g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),
 		  AGS_RETURNABLE_THREAD_IN_USE);
-
+  
   pthread_mutex_unlock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
-
+  
   //  pthread_kill((thread->thread), AGS_THREAD_RESUME_SIG);
 }
-
+ 
 AgsTaskThread*
 ags_task_thread_new(GObject *devout)
-{
+ {
   AgsTaskThread *task_thread;
 
   task_thread = (AgsTaskThread *) g_object_new(AGS_TYPE_TASK_THREAD,

@@ -64,7 +64,7 @@ struct _AgsTaskThreadClass
 struct _AgsTaskThreadAppend
 {
   AgsTaskThread *task_thread;
-  gpointer data;
+  volatile gpointer data;
 };
 
 GType ags_task_thread_get_type();

@@ -225,6 +225,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 		     count);
   
   channel = AGS_MACHINE(ffplayer)->audio->input;
+  task = NULL;
   has_more = TRUE;
 
   while(channel != NULL && has_more){
@@ -233,8 +234,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 					  channel->audio_channel, AGS_IPATCH_DEFAULT_CHANNELS);
 
     for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS && list != NULL; i++){
-      task = NULL;
-
       /* create task */
       link_channel = ags_link_channel_new(channel, NULL);
       task = g_list_prepend(task,
@@ -246,13 +245,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 						  AGS_MACHINE(ffplayer)->audio->devout,
 						  NULL,
 						  0);
-      task = g_list_prepend(task,
-			    add_audio_signal);
-      
-      /* append tasks */
-      task = g_list_reverse(task);
-      ags_task_thread_append_tasks(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(ffplayer)->audio->devout)->ags_main)->main_loop)->task_thread,
-				   task);
 
       /* iterate */	
       channel = channel->next;
@@ -261,6 +253,14 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
     has_more = ags_playable_iter_next(playable);
   }
+
+  task = g_list_prepend(task,
+			add_audio_signal);
+      
+  /* append tasks */
+  task = g_list_reverse(task);
+  ags_task_thread_append_tasks(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(ffplayer)->audio->devout)->ags_main)->main_loop)->task_thread,
+			       task);
 }
 
 gboolean

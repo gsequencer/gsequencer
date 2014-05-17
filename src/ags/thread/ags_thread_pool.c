@@ -361,6 +361,9 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   auto void ags_thread_pool_pull_running();
 
   void ags_thread_pool_pull_running(){
+
+  ags_thread_pool_pull_running_LABEL0:
+  
     list = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 
     while(list != NULL){
@@ -386,9 +389,19 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
     }
 
     //NOTE: shall not return null rather block thread until thread is available
-    //    if(list == NULL){
-    //      returnable_thread = NULL;
-    //    }
+    if(list == NULL){
+      static const struct timespec req = {
+	0,
+	(250000000 * (1 / 45)),
+      };
+
+      pthread_mutex_unlock(&(thread_pool->return_mutex));
+
+      nanosleep(&req, NULL);
+      pthread_mutex_lock(&(thread_pool->return_mutex));
+
+      goto ags_thread_pool_pull_running_LABEL0;      
+    }
 
     g_atomic_int_inc(&(thread_pool->newly_pulled));
 
