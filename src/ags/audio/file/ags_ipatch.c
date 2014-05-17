@@ -463,8 +463,8 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
     case AGS_SF2_PHDR:
       {
 	if(IPATCH_IS_SF2_PRESET(list->data)){
-	  if(IPATCH_IS_SF2_PRESET(list->data)->bank == ipatch_sf2_reader->bank &&
-	     IPATCH_IS_SF2_PRESET(list->data)->program == ipatch_sf2_reader->program){
+	  if(IPATCH_SF2_PRESET(list->data)->bank == ipatch_sf2_reader->bank &&
+	     IPATCH_SF2_PRESET(list->data)->program == ipatch_sf2_reader->program){
 	    names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
 	    names[i] = ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data));
 	  }
@@ -509,7 +509,6 @@ ags_ipatch_level_select(AgsPlayable *playable,
   gboolean success;
 
   ipatch = AGS_IPATCH(playable);
-  success = TRUE;
 
   if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
@@ -588,15 +587,13 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	  }
 
 	  ipatch_sf2_reader->iter = list;
+	}else{
+	  g_set_error(error,
+		      AGS_PLAYABLE_ERROR,
+		      AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
+		      "no level called %s in soundfont2 file: %s\0",
+		      sublevel_name, ipatch_sf2_reader->ipatch->filename);
 	}
-      }
-
-      if(!success){
-	g_set_error(error,
-		    AGS_PLAYABLE_ERROR,
-		    AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL,
-		    "no level called %s in soundfont2 file: %s\0",
-		    sublevel_name, ipatch_sf2_reader->ipatch->filename);
       }
     }
   }
@@ -787,8 +784,6 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   if(this_error != NULL){
     g_error("%s\0", this_error->message);
   }
-
-  *error = this_error;
 
   return(buffer);
 }

@@ -205,6 +205,13 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     g_error("%s\0", error->message);
   }
 
+  count = 0;
+  
+  while(*sample != NULL){
+    sample++;
+    count++;
+  }
+
   /* read all samples */
   ags_audio_set_audio_channels(AGS_MACHINE(ffplayer)->audio,
 			       AGS_IPATCH_DEFAULT_CHANNELS);
