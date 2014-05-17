@@ -180,8 +180,6 @@ ags_returnable_thread_run(AgsThread *thread)
 #ifdef AGS_DEBUG
     g_message("returnalbe thread initial\0");
 #endif
-
-    //    pthread_kill(thread->thread, AGS_THREAD_SUSPEND_SIG);
   }
 
   /* safe run */
@@ -210,17 +208,24 @@ ags_returnable_thread_run(AgsThread *thread)
 
     pthread_mutex_unlock(&(thread_pool->return_mutex));
 
+    pthread_mutex_lock(&(returnable_thread->reset_mutex));
+
     ags_returnable_thread_disconnect(returnable_thread);
     g_atomic_int_and(&(returnable_thread->flags),
 		     (~AGS_RETURNABLE_THREAD_IN_USE));
-    g_atomic_int_and(&(thread->flags),
-		     (~AGS_THREAD_RUNNING));
+    //    g_atomic_int_and(&(thread->flags),
+    //		     (~AGS_THREAD_RUNNING));
+
+    pthread_mutex_unlock(&(returnable_thread->reset_mutex));
 
     ags_thread_remove_child(thread->parent,
 			    thread);
   }else{
     pthread_mutex_unlock(&(returnable_thread->reset_mutex));
   }
+
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_RUNNING));
 }
 
 void
@@ -238,8 +243,6 @@ void
 ags_returnable_thread_resume(AgsThread *thread)
 {
   /* empty */
-  g_atomic_int_and(&(thread->flags),
-		   (~AGS_THREAD_READY));
 }
 
 void

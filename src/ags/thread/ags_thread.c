@@ -412,6 +412,8 @@ ags_thread_resume_handler(int sig)
 void
 ags_thread_suspend_handler(int sig)
 {
+  AgsThread *main_loop;
+
 #ifdef AGS_DEBUG
   g_message("thread suspend\0");
 #endif
@@ -420,6 +422,19 @@ ags_thread_suspend_handler(int sig)
     return;
 
   if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
+
+  main_loop = ags_thread_get_toplevel(ags_thread_self);
+
+  if(ags_thread_self->parent != NULL &&
+     ags_thread_is_tree_ready(main_loop)){
+    guint next_tic, tic;    
+
+    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+    
+    ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+    ags_thread_main_loop_unlock_children(main_loop);
+    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+  }
 
   g_atomic_int_or(&(ags_thread_self->flags),
 		  AGS_THREAD_SUSPENDED);
@@ -771,9 +786,9 @@ ags_thread_is_current_ready(AgsThread *current)
     return(TRUE);
   }
 
-  //  if((AGS_THREAD_READY & (val)) != 0){
-  //    return(TRUE);
-  //  }
+  if((AGS_THREAD_READY & (val)) != 0){
+    return(TRUE);
+  }
 
   return(FALSE);
 }
@@ -1139,8 +1154,8 @@ ags_thread_unlock_children(AgsThread *thread)
       g_atomic_int_and(&(current->flags),
 		       (~AGS_THREAD_WAITING_FOR_PARENT));
 
-      if(!((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
-	   AGS_IS_AUDIO_LOOP(thread))){
+      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0 &&
+	 !AGS_IS_MAIN_LOOP(thread)){
 
 	if((AGS_THREAD_BROADCAST_CHILDREN & (g_atomic_int_get(&(thread->flags)))) == 0){
 	  pthread_cond_signal(&(current->cond));
@@ -1602,8 +1617,8 @@ ags_thread_loop(void *ptr)
     }
 
     /* skip very first sync of AgsAudioLoop */
-    if(!((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
-	 AGS_IS_AUDIO_LOOP(thread))){
+    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0 &&
+       !AGS_IS_MAIN_LOOP(thread)){
 
       /* wait parent */
       if(wait_for_parent){
@@ -1681,19 +1696,6 @@ ags_thread_loop(void *ptr)
 
     pthread_mutex_unlock(&(thread->timelock_mutex));
 
-    /* and now async */
-    //FIXME:JK: workaround, really ugly - there shouldn't be a need for sleep
-    {
-      static const struct timespec req = {
-	0,
-	(250000000 * (1 / 45)),
-      };
-
-      if(!AGS_IS_DEVOUT_THREAD(thread)){
-	nanosleep(&req, NULL);
-      }
-    }
-
     /* run */
     ags_thread_run(thread);
     //    g_printf("%s\n\0", G_OBJECT_TYPE_NAME(thread));
@@ -1750,6 +1752,8 @@ ags_thread_loop(void *ptr)
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
       g_atomic_int_and(&(thread->flags),
 		       (~AGS_THREAD_INITIAL_RUN));
+      g_atomic_int_and(&(thread->flags),
+		       (~AGS_THREAD_WAIT_0));
 
       /* signal AgsAudioLoop */
       if(AGS_IS_TASK_THREAD(thread)){
@@ -1759,6 +1763,14 @@ ags_thread_loop(void *ptr)
 
     ags_thread_unlock(thread);
   }
+
+  ags_thread_lock(main_loop);
+  ags_thread_lock(thread);
+
+  ags_thread_loop_sync(thread);
+
+  ags_thread_unlock(thread);
+
 
 #ifdef AGS_DEBUG
   g_message("thread finished\0");

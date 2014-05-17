@@ -390,13 +390,6 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 
     //NOTE: shall not return null rather block thread until thread is available
     if(list == NULL){
-      static const struct timespec req = {
-	0,
-	(250000000 * (1 / 45)),
-      };
-
-      nanosleep(&req, NULL);
-
       goto ags_thread_pool_pull_running_LABEL0;      
     }
 
@@ -421,14 +414,12 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 
   max_threads = g_atomic_int_get(&(thread_pool->max_threads));
 
-  if((n_threads = g_list_length(g_atomic_pointer_get(&(thread_pool->running_thread)))) < max_threads){
-    pthread_mutex_unlock(&(thread_pool->pull_mutex));
-
+  if((n_threads = g_list_length(g_atomic_pointer_get(&(thread_pool->running_thread)))) <= max_threads){
     ags_thread_pool_pull_running();
   }else{
     g_atomic_int_inc(&(thread_pool->queued));
 
-    while((n_threads = g_list_length(g_atomic_pointer_get(&(thread_pool->running_thread)))) >= max_threads){
+    while((n_threads = g_list_length(g_atomic_pointer_get(&(thread_pool->running_thread)))) > max_threads){
 #ifdef AGS_DEBUG
       g_message("n_threads = g_list_length(thread_pool->running_thread)) >= max_threads\0");
 #endif
