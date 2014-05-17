@@ -275,8 +275,8 @@ ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton 
     AgsChannel *channel;
     guint i, j;
 
-    i = (guint) floor((double) event->y / 10.0);
-    j = (guint) floor((double) event->x / 12.0);
+    i = (guint) floor((double) event->y / (double) AGS_MATRIX_CELL_HEIGHT);
+    j = (guint) floor((double) event->x / (double) AGS_MATRIX_CELL_WIDTH);
 
     channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, i + (guint) matrix->adjustment->value);
 

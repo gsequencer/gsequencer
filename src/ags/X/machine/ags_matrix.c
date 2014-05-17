@@ -69,9 +69,6 @@
 #define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY"
 #define AGS_MATRIX_INPUT_LINE_MAPPED_DATA "AGS_MATRIX_INPUT_LINE_MAPPED_DATA"
 
-#define AGS_MATRIX_CELL_WIDTH   12
-#define AGS_MATRIX_CELL_HEIGHT  10
-
 void ags_matrix_class_init(AgsMatrixClass *matrix);
 void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_plugin_interface_init(AgsPluginInterface *plugin);
@@ -285,7 +282,7 @@ ags_matrix_init(AgsMatrix *matrix)
 		   0, 0);
 
   matrix->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_size_request((GtkWidget *) matrix->drawing_area, 32 * AGS_MATRIX_CELL_WIDTH +1, 8 * AGS_MATRIX_CELL_HEIGHT +1);
+  gtk_widget_set_size_request((GtkWidget *) matrix->drawing_area, 32 * AGS_MATRIX_CELL_WIDTH +1, AGS_MATRIX_OCTAVE * AGS_MATRIX_CELL_HEIGHT +1);
   gtk_widget_set_style((GtkWidget *) matrix->drawing_area, matrix_style);
   gtk_table_attach(table, (GtkWidget *) matrix->drawing_area,
 		   0, 1, 0, 1,
@@ -298,7 +295,7 @@ ags_matrix_init(AgsMatrix *matrix)
                          | GDK_POINTER_MOTION_MASK
                          | GDK_POINTER_MOTION_HINT_MASK);
 
-  matrix->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 77.0, 1.0, 1.0, 8.0);
+  matrix->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 77.0, 1.0, 1.0, (gdouble) AGS_MATRIX_OCTAVE);
 
   vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(matrix->adjustment);
   gtk_widget_set_style((GtkWidget *) vscrollbar, matrix_style);
@@ -549,12 +546,23 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
   GValue value = {0,};
 
-  if(type == AGS_TYPE_INPUT && pads < 8){
-    printf("AgsMatrix minimum input pad count 8\n\0");
-    pads = 8;
+  if(pads == pads_old){
+    return;
   }
-
+  
   matrix = (AgsMatrix *) audio->machine;
+
+  if(type == AGS_TYPE_INPUT){
+    if(pads < AGS_MATRIX_OCTAVE){
+      gtk_widget_set_size_request((GtkWidget *) matrix->drawing_area,
+				  32 * AGS_MATRIX_CELL_WIDTH +1,
+				  pads * AGS_MATRIX_CELL_HEIGHT +1);
+    }else if(pads_old < AGS_MATRIX_OCTAVE){
+      gtk_widget_set_size_request((GtkWidget *) matrix->drawing_area,
+				  32 * AGS_MATRIX_CELL_WIDTH +1,
+				  AGS_MATRIX_OCTAVE * AGS_MATRIX_CELL_HEIGHT +1);
+    }
+  }
 
   if(pads_old == pads)
     return;
@@ -902,6 +910,7 @@ void
 ags_matrix_draw_gutter(AgsMatrix *matrix)
 {
   AgsChannel *channel;
+  guint gutter;
   int i, j;
 
   gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
@@ -912,7 +921,13 @@ ags_matrix_draw_gutter(AgsMatrix *matrix)
 
   channel = ags_channel_nth(matrix->machine.audio->input, (guint) matrix->adjustment->value);
 
-  for (i = 0; i < 8; i++){
+  if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
+    gutter = AGS_MATRIX_OCTAVE;
+  }else{
+    gutter = AGS_MACHINE(matrix)->audio->input_pads;
+  }
+
+  for (i = 0; i < gutter; i++){
     for (j = 0; j < 32; j++){
       gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
                           GTK_WIDGET (matrix->drawing_area)->style->fg_gc[0],
@@ -931,6 +946,7 @@ void
 ags_matrix_draw_matrix(AgsMatrix *matrix)
 {
   AgsChannel *channel;
+  guint gutter;
   int i, j;
 
   channel = ags_channel_nth(matrix->machine.audio->input, (guint) matrix->adjustment->value);
@@ -939,7 +955,13 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
     return;
   }
 
-  for (i = 0; i < 8; i++){
+  if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
+    gutter = AGS_MATRIX_OCTAVE;
+  }else{
+    gutter = AGS_MACHINE(matrix)->audio->input_pads;
+  }
+
+  for (i = 0; i < gutter; i++){
     for (j = 0; j < 32; j++)
       ags_matrix_redraw_gutter_point (matrix, channel, j, i);
 
@@ -965,7 +987,7 @@ ags_matrix_highlight_gutter_point(AgsMatrix *matrix, guint j, guint i)
   gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
 		      GTK_WIDGET (matrix->drawing_area)->style->fg_gc[0],
 		      TRUE,
-		      j * 12 +1, i * 10 +1,
+		      j * AGS_MATRIX_CELL_WIDTH + 1, i * AGS_MATRIX_CELL_HEIGHT + 1,
 		      11, 9);
 }
 
@@ -975,7 +997,7 @@ ags_matrix_unpaint_gutter_point(AgsMatrix *matrix, guint j, guint i)
   gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
 		      GTK_WIDGET (matrix->drawing_area)->style->bg_gc[0],
 		      TRUE,
-		      j * 12 +1, i * 10 +1,
+		      j * AGS_MATRIX_CELL_WIDTH + 1, i * AGS_MATRIX_CELL_HEIGHT +1,
 		      11, 9);
 }
 
