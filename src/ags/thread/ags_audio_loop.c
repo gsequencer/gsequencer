@@ -223,8 +223,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->flags = 0;
 
-  audio_loop->tic = 0;
-  audio_loop->last_sync = 0;
+  g_atomic_int_set(&(audio_loop->tic), 0);
+  g_atomic_int_set(&(audio_loop->last_sync), 0);
 
   audio_loop->frequency = 1.0 / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
 

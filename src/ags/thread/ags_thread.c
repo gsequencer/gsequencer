@@ -840,24 +840,24 @@ ags_thread_children_is_locked(AgsThread *thread)
   auto gboolean ags_thread_children_is_locked_recursive(AgsThread *thread);
 
   gboolean ags_thread_children_is_locked_recursive(AgsThread *thread){
-    AgsThread *current;
+    AgsThread *child;
 
     if(thread == NULL){
       return(FALSE);
     }
 
-    current = thread;
+    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(thread->flags)))) != 0){
+      return(TRUE);
+    }
 
-    while(current != NULL){
-      if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(thread->flags)))) != 0){
+    child = thread->children;
+
+    while(child != NULL){
+      if(ags_thread_children_is_locked_recursive(child)){
 	return(TRUE);
       }
 
-      if(ags_thread_children_is_locked_recursive(current->children)){
-	return(TRUE);
-      }
-
-      current = current->next;
+      child = child->next;
     }
 
     return(FALSE);
@@ -867,27 +867,69 @@ ags_thread_children_is_locked(AgsThread *thread)
     return(FALSE);
   }
 
-  return(ags_thread_children_is_locked_recursive(thread->children));
+  return(ags_thread_children_is_locked_recursive(thread));
 }
 
 gboolean
 ags_thread_is_current_ready(AgsThread *current)
 {
-  gint val;
+  AgsThread *toplevel;
+  guint tic;
+  guint flags;
+  gboolean retval;
 
-  val = g_atomic_int_get(&(current->flags));
+  toplevel = ags_thread_get_toplevel(current);
 
-  if((AGS_THREAD_RUNNING & (val)) == 0){
-    return(TRUE);
+  ags_thread_lock(toplevel);
+
+  flags = g_atomic_int_get(&(current->flags));
+  retval = FALSE;
+
+  if((AGS_THREAD_RUNNING & flags) == 0){
+    retval = TRUE;
   }
 
-  if((AGS_THREAD_WAIT_0 & (val)) != 0){
-    return(TRUE);
+  if((AGS_THREAD_READY & flags) != 0){
+    retval = TRUE;
   }
 
-  if((AGS_THREAD_READY & (val)) != 0){
+  if(retval){
+    ags_thread_unlock(toplevel);
+
     return(TRUE);
   }
+  
+  tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(toplevel));
+
+  if(tic > 2){
+    tic = tic % 3;
+  }
+
+  switch(tic){
+  case 0:
+    {
+      if((AGS_THREAD_WAIT_0 & flags) != 0){
+	retval = TRUE;
+      }
+    }
+    break;
+  case 1:
+    {
+      if((AGS_THREAD_WAIT_1 & flags) != 0){
+	retval = TRUE;
+      }
+    }
+    break;
+  case 2:
+    {
+      if((AGS_THREAD_WAIT_2 & flags) != 0){
+	retval = TRUE;
+      }
+    }
+    break;
+  }
+
+  ags_thread_unlock(toplevel);
 
   return(FALSE);
 }
