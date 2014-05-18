@@ -34,8 +34,10 @@
 
 #define AGS_RX_GATE(ptr) ((AgsRXGate *)(ptr))
 
-#define AGS_RX_GATE_STACK_SIZE 2048
-#define AGS_RX_GATE_COMMAND_BUFFER_SIZE 512
+#define AGS_THREAD_HANGCHECK_STACK_SIZE 2048
+#define AGS_THREAD_HANGCHECK_HISTORY 64
+
+#define AGS_RX_GATE_MESSAGE_BUFFER_SIZE 512
 
 #define AGS_RX_GATE_CMD_R "r"
 #define AGS_RX_GATE_CMD_W "w"
@@ -71,6 +73,7 @@
 typedef struct _AgsThreadHangcheck AgsThreadHangcheck;
 typedef struct _AgsThreadHangcheckClass AgsThreadHangcheckClass;
 typedef struct _AgsRXGate AgsRXGate;
+typedef struct _AgsWatchPoint AgsWatchPoint;
 
 typedef enum{
   AGS_THREAD_HANGCHECK_SERIAL    = 1,
@@ -98,16 +101,12 @@ struct _AgsThreadHangcheck
 
   volatile guint lock;
   volatile guint monitor;
+  volatile AgsRXGate *current;
 
-  volatile guint64 serial_port;
-  volatile guint64 parallel_port;
-  volatile guint64 xor_port;
-  volatile guint64 **complex_map;
-
-  volatile gchar **command_stack;
-  guint nth_entry;
+  gchar *message;
 
   GList *gate;
+  GList *watchpoint;
 };
 
 struct _AgsThreadHangcheckClass
@@ -122,11 +121,7 @@ struct _AgsThreadHangcheckClass
 
 struct _AgsRXGate
 {
-  AgsRXGate *parent;
-  AgsRXGate *next;
-
-  gdouble x;
-  gdouble b;
+  gchar *message;
 
   AgsThread *thread;
 
@@ -135,10 +130,15 @@ struct _AgsRXGate
   volatile guint monitor_parent;
   volatile guint monitor_next;
 
-  volatile gchar **command_stack;
+  guint (*gate_control)(AgsRxGate *rx_gate,
+			gchar *message, guint value);
+};
 
-  guint64 (*gate_control)(AgsRxGate *rx_gate,
-			  gchar *command, guint64 value);
+struct _AgsWatchPoint
+{
+  AgsRXGate *gate;
+
+  gchar *message;
 };
 
 GType ags_thread_hangcheck_get_type();
@@ -147,7 +147,11 @@ AgsRXGate* ags_rx_gate_alloc();
 
 void ags_rx_gate_pop(AgsRXGate *rx_gate);
 void ags_rx_gate_push(AgsRXGate *rx_gate,
-		      gchar *command, guint64 value);
+		      gchar *message, guint value);
+
+AgsRXGate* ags_rx_gate_find(GList *rx_gate, AgsThread *thread);
+
+AgsWatchPoint* ags_watch_point_alloc();
 
 void ags_thread_hangcheck_load(AgsThreadHangcheck *thread_hangcheck,
 			       AgsThread *main_loop);

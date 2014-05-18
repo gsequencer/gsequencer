@@ -103,7 +103,15 @@ ags_thread_hangcheck_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_thread_hangcheck_init(AgsThreadHangcheck *thread_hangcheck)
 {
-  thread_hangcheck->thread = NULL;
+  thread_hangcheck->flags = 0;
+  thread_hangcheck->num_threads = 0;
+
+  g_atomic_int_set(&(thread_hangcheck->lock),
+		   0);
+  g_atomic_int_set(&(thread_hangcheck->monitor),
+		   0);
+  g_atomic_pointer_set(&(thread_hangcheck->current),
+		       NULL);
 }
 
 void
@@ -126,12 +134,6 @@ ags_thread_hangcheck_finalize(GObject *gobject)
   thread_hangcheck = AGS_THREAD_HANGCHECK(gobject);
   
   ags_list_free_and_unref_data(thread_hangcheck->thread);
-}
-
-void
-ags_thread_hangcheck_realloc_stack(AgsThreadHangcheckClass *thread_hangcheck)
-{
-  //TODO:JK: implement me
 }
 
 gboolean
@@ -167,7 +169,7 @@ void
 ags_thread_hangcheck_delegate(AgsThreadHangcheckClass *thread_hangcheck)
 {
   AgsRXGate *rx_gate;
-  gchar *command;
+  gchar *message;
   gchar *control, *whence;
   guint value;
 
@@ -175,13 +177,10 @@ ags_thread_hangcheck_delegate(AgsThreadHangcheckClass *thread_hangcheck)
     return;
   }
 
-  command = thread_hangcheck->command_stack[thread_hangcheck->nth_entry];
-  ags_thread_hangcheck_realloc_stack(thread_hangcheck);
+  message = thread_hangcheck->message;
 
-  sscanf(command, "%s:fx(%x, %s)",
+  sscanf(message, "%s:fx(%x, %s)",
 	 &whence, &value, &control);
-
-  rx_gate = ;
 
   /* idle/quit */
   if(!strncmp(control,
@@ -199,10 +198,18 @@ ags_thread_hangcheck_delegate(AgsThreadHangcheckClass *thread_hangcheck)
   if(!strncmp(control,
 	      AGS_RX_GATE_CTRL_UNSAFE,
 	      6)){
+
+
+    g_atomic_int_or(&(thread_hangcheck->monitor),
+		    AGS_RX_GATE_SYN_X);
+
     //TODO:JK: implement me
   }else if(!strncmp(control,
 	      AGS_RX_GATE_CTRL_SAFE,
 	      6)){
+    g_atomic_int_and(&(thread_hangcheck->monitor),
+		     (~AGS_RX_GATE_SYN_X));
+
     //TODO:JK: implement me
   }else if(!strncmp(control,
 	      AGS_RX_GATE_CTRL_FIRST,
@@ -262,7 +269,8 @@ ags_thread_hangcheck_delegate(AgsThreadHangcheckClass *thread_hangcheck)
       AgsThread *main_loop;
       GList *list;
 
-      main_loop = AGS_THREAD(thread_hangcheck->gate->data);
+      rx_gate = AGS_RX_GATE(thread_hangcheck->gate->data);
+      main_loop = rx_gate->thread;
 
       /* resolve it */
       while(!ags_thread_tree_is_synced(main_loop)){
@@ -313,7 +321,85 @@ ags_thread_hangcheck_watch_abort(AgsThreadHangcheckClass *thread_hangcheck, AgsR
 void
 ags_thread_hangcheck_watch_wait(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
 {
-  //TODO:JK: implement me
+  AgsThread *thread, *bind;
+  gboolean parent_wait, sibling_wait, children_wait;
+  gboolean monitor;
+
+  thread = rx_gate->thread;
+
+  deadlock = FALSE;
+  monitor = TRUE;
+
+  /* check parent */
+  bind = thread->parent;
+  parent_wait = FALSE;
+
+  if(bind != NULL){
+    AgsRXGate *bind_gate;
+
+    if((AGS_THREAD_WAIT_0 & (bind->flags)) != 0 ||
+       (AGS_THREAD_WAIT_1 & (bind->flags)) != 0 ||
+       (AGS_THREAD_WAIT_2 & (bind->flags)) != 0){
+      parent_wait = TRUE;
+    }
+
+    bind_gate = ags_rx_gate_find(thread_hangcheck->gate, bind);
+
+    if(!parent_wait &&
+       ((AGS_RX_SYN_R & (bind_gate->lock)) != 0 ||
+	(AGS_RX_SYN_X & (bind_gate->lock)) != 0)){
+      monitor = FALSE;
+    }
+  }
+
+  /* check sibling */
+  bind = ags_thread_first(thread);
+  sibling_wait = FALSE;
+
+  while(bind != NULL){
+    if(bind == thread){
+      bind = bind->next;
+
+      continue;
+    }
+
+
+    if(bind != NULL){
+      AgsRXGate *bind_gate;
+
+      if(!((AGS_THREAD_WAIT_0 & (bind->flags)) != 0 ||
+	   (AGS_THREAD_WAIT_1 & (bind->flags)) != 0 ||
+	   (AGS_THREAD_WAIT_2 & (bind->flags)) != 0)){
+	break;
+      }
+
+      bind_gate = ags_rx_gate_find(thread_hangcheck->gate, bind);
+
+      if(((AGS_RX_SYN_R & (bind_gate->lock)) != 0 ||
+	  (AGS_RX_SYN_X & (bind_gate->lock)) != 0)){
+	monitor = FALSE;
+      }
+    }
+
+    bind = bind->next;
+  }
+
+  if(bind == NULL){
+    sibling_wait = TRUE;
+  }
+
+  /* check children */
+
+  /* check for deadlock */
+  if(parent_wait &&
+     sibling_wait &&
+     children_wait){
+    if(!monitor){
+      bind = ags_thread_get_toplevel(thread);
+
+      ags_thread_reset_all(bind);
+    }
+  }
 }
 
 void
@@ -344,9 +430,31 @@ ags_rx_gate_pop(AgsRXGate *rx_gate)
 
 void
 ags_rx_gate_push(AgsRXGate *rx_gate,
-		 gchar *command, guint64 value)
+		 gchar *message, guint64 value)
 {
   //TODO:JK: implement me
+}
+
+AgsRXGate*
+ags_rx_gate_find(GList *rx_gate, AgsThread *thread)
+{
+  while(rx_gate != NULL){
+    if(AGS_RX_GATE(rx_gate->data)->thread == thread){
+      return(AGS_RX_GATE(rx_gate->data));
+    }
+
+    rx_gate = rx_gate->next;
+  }
+
+  return(NULL);
+}
+
+AgsWatchPoint*
+ags_watch_point_alloc()
+{
+  //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
