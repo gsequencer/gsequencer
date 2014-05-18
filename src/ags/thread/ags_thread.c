@@ -2087,7 +2087,101 @@ ags_thread_stop(AgsThread *thread)
 void
 ags_thread_hangcheck(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+  gboolean synced[3];
+
+  auto void ags_thread_hangcheck_recursive(AgsThread *thread);
+  auto void ags_thread_hangcheck_unsync_all(AgsThread *thread);
+
+  void ags_thread_hangcheck_recursive(AgsThread *thread){
+    AgsThreadChild *child;
+    guint flags;
+
+    flags = g_atomic_int_get(&(thread->flags));
+
+    if((AGS_THREAD_WAIT_0 & flags) != 0){
+      synced[0] = TRUE;
+    }
+
+    if((AGS_THREAD_WAIT_1 & flags) != 0){
+      synced[1] = TRUE;
+    }
+
+    if((AGS_THREAD_WAIT_2 & flags) != 0){
+      synced[2] = TRUE;
+    }
+
+    /* iterate tree */
+    child = thread->children;
+
+    while(child != NULL){
+      ags_thread_hangcheck_recursive(child);
+
+      child = child->next;
+    }
+  }
+  void ags_thread_hangcheck_unsync_all(AgsThread *thread, gboolean broadcast){
+    AgsThreadChild *child;
+    guint flags;
+
+    ags_thread_lock(toplevel);
+    flags = g_atomic_int_get(&(thread->flags));
+    g_atomic_int_and(&(thread->flags),
+		     (~(AGS_THREAD_WAIT_0 |
+			AGS_THREAD_WAIT_1 |
+			AGS_THREAD_WAIT2)));
+
+    if(AGS_THREAD_WAIT_0 & flags){
+      if(broadcast){
+	pthread_cond_broadcast(&(thread->cond));
+      }else{
+	pthread_cond_signal(&(thread->cond));
+      }
+    }
+
+    if(AGS_THREAD_WAIT_1 & flags){
+      if(broadcast){
+	pthread_cond_broadcast(&(thread->cond));
+      }else{
+	pthread_cond_signal(&(thread->cond));
+      }
+    }
+
+    if(AGS_THREAD_WAIT_2 & flags){
+      if(broadcast){
+	pthread_cond_broadcast(&(thread->cond));
+      }else{
+	pthread_cond_signal(&(thread->cond));
+      }
+    }
+
+    ags_thread_unlock(toplevel);
+
+    /* iterate tree */
+    child = thread->children;
+
+    while(child != NULL){
+      ags_thread_hangcheck_unsync_all(child, broadcast);
+
+      child = child->next;
+    }
+  }
+
+  /* detect memory corruption */
+  synced[0] = FALSE;
+  synced[1] = FALSE;
+  synced[2] = FALSE;
+
+  /* fill synced array */
+  toplevel = ags_thread_get_toplevel(thread);
+  ags_thread_hangcheck_recursive(toplevel);
+  
+  /*  */
+  if(!((synced[0] && !synced[1] && !synced[2]) ||
+       (!synced[0] && synced[1] && !synced[2]) ||
+       (!synced[0] && !synced[1] && synced[2]))){
+    ags_thread_hangcheck_unsync_all(toplevel, FALSE);
+  }
 }
 
 /**
