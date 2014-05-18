@@ -412,8 +412,6 @@ ags_thread_resume_handler(int sig)
 void
 ags_thread_suspend_handler(int sig)
 {
-  AgsThread *main_loop;
-
 #ifdef AGS_DEBUG
   g_message("thread suspend\0");
 #endif
@@ -422,19 +420,6 @@ ags_thread_suspend_handler(int sig)
     return;
 
   if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
-
-  main_loop = ags_thread_get_toplevel(ags_thread_self);
-
-  if(ags_thread_self->parent != NULL &&
-     ags_thread_is_tree_ready(main_loop)){
-    guint next_tic, tic;    
-
-    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-    
-    ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-    ags_thread_main_loop_unlock_children(main_loop);
-    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-  }
 
   g_atomic_int_or(&(ags_thread_self->flags),
 		  AGS_THREAD_SUSPENDED);
@@ -938,6 +923,7 @@ gboolean
 ags_thread_is_tree_ready(AgsThread *thread)
 {
   AgsThread *main_loop;
+  gboolean retval;
 
   auto gboolean ags_thread_is_tree_ready_recursive(AgsThread *current);
 
@@ -970,40 +956,13 @@ ags_thread_is_tree_ready(AgsThread *thread)
 
   main_loop = ags_thread_get_toplevel(thread);
 
-  return(ags_thread_is_tree_ready_recursive(main_loop));
-}
+  ags_thread_lock(main_loop);
 
-void
-ags_thread_main_loop_unlock_children(AgsThread *thread)
-{
-  AgsThread *main_loop;
+  retval = ags_thread_is_tree_ready_recursive(main_loop);
 
-  auto void ags_thread_main_loop_unlock_children_recursive(AgsThread *child);
+  ags_thread_unlock(main_loop);
 
-  void ags_thread_main_loop_unlock_children_recursive(AgsThread *child){
-    if(child == NULL){
-      return;
-    }
-
-    while(child != NULL){
-      g_atomic_int_and(&(child->flags),
-		       (~AGS_THREAD_WAIT_0));
-
-      ags_thread_main_loop_unlock_children_recursive(child->children);
-
-      if((AGS_THREAD_BROADCAST_PARENT & (g_atomic_int_get(&(thread->flags)))) == 0){
-	pthread_cond_signal(&(child->cond));
-      }else{
-	pthread_cond_broadcast(&(child->cond));
-      }
-
-      child = child->next;
-    }
-  }
-
-  main_loop = ags_thread_get_toplevel(thread);
-
-  ags_thread_main_loop_unlock_children_recursive(main_loop);
+  return(retval);
 }
 
 /**
@@ -1605,26 +1564,34 @@ ags_thread_loop(void *ptr)
     guint tic;
 
     if(!ags_thread_is_tree_ready(thread)){
-      g_atomic_int_or(&(thread->flags),
-		      AGS_THREAD_WAIT_0);
+      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      switch(tic){
+      case 0:
+	{
+	  g_atomic_int_or(&(thread->flags),
+			  AGS_THREAD_WAIT_0);
+	}
+	break;
+      case 1:
+	{
+	  g_atomic_int_or(&(thread->flags),
+			  AGS_THREAD_WAIT_1);
+	}
+	break;
+      case 2:
+	{
+	  g_atomic_int_or(&(thread->flags),
+			  AGS_THREAD_WAIT_2);
+	}
+	break;
+      }
 
       ags_thread_unlock(main_loop);
-
-      if(thread != main_loop){
-	if(tic == 0 && current_tic == 2){
-	  return;
-	}else if(tic == 1 && current_tic == 0){
-	  return;
-	}else if(tic == 2 && current_tic == 1){ 
-	  return;
-	}    
-      }
     
       while(!ags_thread_is_current_ready(thread)){
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
-
-	tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
       }
     }else{
       guint next_tic;
@@ -1641,9 +1608,11 @@ ags_thread_loop(void *ptr)
 	next_tic = 2;
       }
 
-      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_main_loop_unlock_children(main_loop);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+      ags_thread_set_sync_all(main_loop, tic);
+
+      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_thread_hangcheck(main_loop);
     }
   }
 
@@ -2074,9 +2043,11 @@ ags_thread_real_timelock(AgsThread *thread)
 	next_tic = 2;
       }
 
-      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_main_loop_unlock_children(main_loop);
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+      ags_thread_set_sync_all(main_loop, tic);
+
+      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_thread_hangcheck(main_loop);
     }
 #if defined(AGS_PTHREAD_SUSPEND) || defined(AGS_LINUX_SIGNALS)
   }else{
@@ -2141,9 +2112,12 @@ ags_thread_real_timelock(AgsThread *thread)
 	next_tic = 2;
       }
 
-      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_main_loop_unlock_children(main_loop);
+
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+      ags_thread_set_sync_all(main_loop, tic);
+
+      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_thread_hangcheck(main_loop);
     }
 
     /* your chance */
