@@ -461,7 +461,60 @@ ags_thread_set_devout(AgsThread *thread, GObject *devout)
 void
 ags_thread_set_sync(AgsThread *thread, guint tic)
 {
-  //TODO:JK: implement me
+  guint flags;
+  gboolean broadcast;
+  gboolean waiting;
+
+  if(thread == NULL){
+    return;
+  }
+
+  broadcast = FALSE;
+  waiting = FALSE;
+
+  if(tic > 2){
+    tic = tic % 3;
+  }
+
+  flags = g_atomic_int_get(&(thread->flags));
+
+  switch(tic){
+  case 0:
+    {
+      if((AGS_THREAD_WAIT_0 & flags) != 0){
+	g_atomic_int_and(&(thread->flags),
+			 (~AGS_THREAD_WAIT_0));
+	waiting = TRUE;
+      }
+    }
+    break;
+  case 1:
+    {
+      if((AGS_THREAD_WAIT_1 & flags) != 0){
+	g_atomic_int_and(&(thread->flags),
+			 (~AGS_THREAD_WAIT_1));
+	waiting = TRUE;
+      }
+    }
+    break;
+  case 2:
+    {
+      if((AGS_THREAD_WAIT_2 & flags) != 0){
+	g_atomic_int_and(&(thread->flags),
+			 (~AGS_THREAD_WAIT_2));
+	waiting = TRUE;
+      }
+    }
+    break;
+  }
+
+  if(waiting){
+    if(broadcast){
+      pthread_cond_broadcast(&(thread->cond));
+    }else{
+      pthread_cond_signal(&(thread->cond));
+    }
+  }
 }
 
 /**
@@ -474,7 +527,26 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
 void
 ags_thread_set_sync_all(AgsThread *thread, guint tic)
 {
-  //TODO:JK: implement me
+  AgsThread *toplevel;
+
+  auto void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
+
+  void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic){
+    AgsThread *child;
+
+    ags_thread_set_sync(thread, tic);
+
+    child = thread->children;
+
+    while(child != NULL){
+      ags_thread_set_sync_all_recursive(child, tic);
+      
+      child = child->next;
+    }
+  }
+
+  toplevel = ags_thread_get_toplevel(thread);
+  ags_thread_set_sync_all_recursive(toplevel, tic);
 }
 
 /**
@@ -2091,10 +2163,10 @@ ags_thread_hangcheck(AgsThread *thread)
   gboolean synced[3];
 
   auto void ags_thread_hangcheck_recursive(AgsThread *thread);
-  auto void ags_thread_hangcheck_unsync_all(AgsThread *thread);
+  auto void ags_thread_hangcheck_unsync_all(AgsThread *thread, gboolean broadcast);
 
   void ags_thread_hangcheck_recursive(AgsThread *thread){
-    AgsThreadChild *child;
+    AgsThread *child;
     guint flags;
 
     flags = g_atomic_int_get(&(thread->flags));
@@ -2121,7 +2193,7 @@ ags_thread_hangcheck(AgsThread *thread)
     }
   }
   void ags_thread_hangcheck_unsync_all(AgsThread *thread, gboolean broadcast){
-    AgsThreadChild *child;
+    AgsThread *child;
     guint flags;
 
     ags_thread_lock(toplevel);
@@ -2129,7 +2201,7 @@ ags_thread_hangcheck(AgsThread *thread)
     g_atomic_int_and(&(thread->flags),
 		     (~(AGS_THREAD_WAIT_0 |
 			AGS_THREAD_WAIT_1 |
-			AGS_THREAD_WAIT2)));
+			AGS_THREAD_WAIT_2)));
 
     if(AGS_THREAD_WAIT_0 & flags){
       if(broadcast){
