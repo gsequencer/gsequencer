@@ -44,7 +44,9 @@ struct _AgsMainLoopInterface
 
 GType ags_main_loop_get_type();
 
+void ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_main_loop_get_tic(AgsMainLoop *main_loop);
+
 void ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_main_loop_get_last_sync(AgsMainLoop *main_loop);
 

@@ -451,6 +451,33 @@ ags_thread_set_devout(AgsThread *thread, GObject *devout)
 }
 
 /**
+ * ags_thread_set_sync:
+ * @thread an #AgsThread
+ * @tic the tic as sync occured.
+ * 
+ * Unsets AGS_THREAD_WAIT_0, AGS_THREAD_WAIT_1 or AGS_THREAD_WAIT_2.
+ * Additionaly the thread is woken up by this function if waiting.
+ */
+void
+ags_thread_set_sync(AgsThread *thread, guint tic)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_thread_set_sync:
+ * @thread an #AgsThread
+ * @tic the tic as sync occured.
+ * 
+ * Calls ags_thread_set_sync() on all threads.
+ */
+void
+ags_thread_set_sync_all(AgsThread *thread, guint tic)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_thread_lock:
  * @thread an #AgsThread
  * 

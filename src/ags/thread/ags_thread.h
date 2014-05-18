@@ -142,6 +142,9 @@ struct _AgsThreadClass
 
 GType ags_thread_get_type();
 
+void ags_thread_set_sync(AgsThread *thread, guint tic);
+void ags_thread_set_sync_all(AgsThread *thread, guint tic);
+
 void ags_thread_lock(AgsThread *thread);
 gboolean ags_thread_trylock(AgsThread *thread);
 void ags_thread_unlock(AgsThread *thread);
