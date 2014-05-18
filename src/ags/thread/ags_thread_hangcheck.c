@@ -18,12 +18,26 @@
 
 #include <ags/thread/ags_thread_hangcheck.h>
 
-void ags_thread_hangcheck_class_init(AgsThreadHangcheckClass *thread);
+void ags_thread_hangcheck_class_init(AgsThreadHangcheckClass *thread_hangcheck);
 void ags_thread_hangcheck_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_thread_hangcheck_init(AgsThreadHangcheck *thread);
+void ags_thread_hangcheck_init(AgsThreadHangcheck *thread_hangcheck);
 void ags_thread_hangcheck_connect(AgsConnectable *connectable);
 void ags_thread_hangcheck_disconnect(AgsConnectable *connectable);
 void ags_thread_hangcheck_finalize(GObject *gobject);
+
+void ags_thread_hangcheck_realloc_stack(AgsThreadHangcheckClass *thread_hangcheck);
+gboolean ags_thread_hangcheck_all_locked(AgsThreadHangcheckClass *thread_hangcheck);
+
+void ags_thread_hangcheck_delegate(AgsThreadHangcheckClass *thread_hangcheck);
+void ags_thread_hangcheck_lock_init(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate);
+void ags_thread_hangcheck_lock_interupt(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate);
+void ags_thread_hangcheck_lock_exit(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate);
+void ags_thread_hangcheck_watch_abort(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate);
+void ags_thread_hangcheck_watch_wait(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate);
+void ags_thread_hangcheck_watch_exit(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate);
+void ags_thread_hangcheck_watch_error(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate);
+
+void ags_thread_hangcheck_quit(AgsThreadHangcheckClass *thread_hangcheck);
 
 static gpointer ags_thread_hangcheck_parent_class = NULL;
 
@@ -65,14 +79,14 @@ ags_thread_hangcheck_get_type()
 }
 
 void
-ags_thread_hangcheck_class_init(AgsThreadHangcheckClass *hangcheck_thread)
+ags_thread_hangcheck_class_init(AgsThreadHangcheckClass *thread_hangcheck)
 {
   GObjectClass *gobject;
 
-  ags_thread_hangcheck_parent_class = g_type_class_peek_parent(hangcheck_thread);
+  ags_thread_hangcheck_parent_class = g_type_class_peek_parent(thread_hangcheck);
 
   /* GObject */
-  gobject = (GObjectClass *) hangcheck_thread;
+  gobject = (GObjectClass *) thread_hangcheck;
 
   gobject->finalize = ags_thread_hangcheck_finalize;
 }
@@ -87,7 +101,7 @@ ags_thread_hangcheck_connectable_interface_init(AgsConnectableInterface *connect
 }
 
 void
-ags_thread_hangcheck_init(AgsThreadHangcheck *hangcheck_thread)
+ags_thread_hangcheck_init(AgsThreadHangcheck *thread_hangcheck)
 {
   thread_hangcheck->thread = NULL;
 }
@@ -114,6 +128,259 @@ ags_thread_hangcheck_finalize(GObject *gobject)
   ags_list_free_and_unref_data(thread_hangcheck->thread);
 }
 
+void
+ags_thread_hangcheck_realloc_stack(AgsThreadHangcheckClass *thread_hangcheck)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_thread_hangcheck_all_locked(AgsThreadHangcheckClass *thread_hangcheck)
+{
+  AgsThread *thread;
+  GList *list;
+  guint val;
+
+  if(thread_hangcheck->gate == NULL){
+    return(FALSE);
+  }
+
+  list = thread_hangcheck->gate;
+
+  while(list != NULL){
+    thread = AGS_RX_GATE(list->data)->thread;
+    val = g_atomic_int_get(&(thread->flags));
+
+    if((AGS_THREAD_WAIT_0 & val) == 0 &&
+       (AGS_THREAD_WAIT_1 & val) == 0 &&
+       (AGS_THREAD_WAIT_2 & val) == 0){
+      return(FALSE);
+    }
+
+    list = list->next;
+  }
+
+  return(TRUE);
+}
+
+void
+ags_thread_hangcheck_delegate(AgsThreadHangcheckClass *thread_hangcheck)
+{
+  AgsRXGate *rx_gate;
+  gchar *command;
+  gchar *control, *whence;
+  guint value;
+
+  if(thread_hangcheck == NULL){
+    return;
+  }
+
+  command = thread_hangcheck->command_stack[thread_hangcheck->nth_entry];
+  ags_thread_hangcheck_realloc_stack(thread_hangcheck);
+
+  sscanf(command, "%s:fx(%x, %s)",
+	 &whence, &value, &control);
+
+  rx_gate = ;
+
+  /* idle/quit */
+  if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_IDLE,
+	      6)){
+    return;
+  }else if(!strncmp(control,
+		    AGS_RX_GATE_CTRL_QUIT,
+		    6)){
+    thread_hangcheck->flags &= (~AGS_THREAD_HANGCHECK_RUNNING);
+    return;
+  }
+
+  /* notify */
+  if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_UNSAFE,
+	      6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_SAFE,
+	      6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_FIRST,
+	      6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_LAST,
+	      6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_SYNCED,
+	      6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_ASYNC,
+	      6)){
+    //TODO:JK: implement me
+  }
+
+  /* lock */
+  if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_INIT,
+	      6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+		    AGS_RX_GATE_CTRL_IRQ,
+		    5)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+		    AGS_RX_GATE_CTRL_EXIT,
+		    6)){
+    //TODO:JK: implement me
+  }
+
+  /* watch */
+  if(!strncmp(control,
+	      AGS_RX_GATE_CTRL_ABORT,
+	      7)){
+    //TODO:JK: implement me    
+  }else if(!strncmp(control,
+		    AGS_RX_GATE_CTRL_WAIT,
+		    6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+		    AGS_RX_GATE_CTRL_EXIT,
+		    6)){
+    //TODO:JK: implement me
+  }else if(!strncmp(control,
+		    AGS_RX_GATE_CTRL_ERROR,
+		    7)){
+    //TODO:JK: implement me
+  }
+
+  /* check deadlock*/
+  if((AGS_THREAD_HANGCHECK_DEADLOCK & (thread_hangcheck->flags)) != 0){
+    if(ags_thread_hangcheck_all_locked(thread_hangcheck)){
+      AgsThread *main_loop;
+      GList *list;
+
+      main_loop = AGS_THREAD(thread_hangcheck->gate->data);
+
+      /* resolve it */
+      while(!ags_thread_tree_is_synced(main_loop)){
+	list = thread_hangcheck->gate;
+
+	while(list != NULL){
+	  thread = AGS_RX_GATE(list->data)->thread;
+
+	  if(!ags_thread_ok(thread)){
+	    ags_thread_correct(thread);
+	  }
+
+	  if(!ags_thread_is_current_synced(thread)){
+	    ags_thread_unlock(thread);
+	  }
+
+	  list = list->next;
+	}
+      }
+    }
+  }
+}
+
+void
+ags_thread_hangcheck_lock_init(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_hangcheck_lock_interupt(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_hangcheck_lock_exit(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_hangcheck_watch_abort(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_hangcheck_watch_wait(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_hangcheck_watch_exit(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_hangcheck_watch_error(AgsThreadHangcheckClass *thread_hangcheck, AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+AgsRXGate*
+ags_rx_gate_alloc()
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_rx_gate_pop(AgsRXGate *rx_gate)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_rx_gate_push(AgsRXGate *rx_gate,
+		 gchar *command, guint64 value)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_thread_hangcheck_load(AgsThreadHangcheck *thread_hangcheck,
+			  AgsThread *main_loop)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_thread_hangcheck_poll(AgsThreadHangcheck *thread_hangcheck,
+			  guint **level,
+			  guint mode)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+gboolean
+ags_thread_hangcheck_run(AgsThreadHangcheck *thread_hangcheck,
+			 guint **level,
+			 guint mode)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+void
+ags_thread_hangcheck_reset_all(AgsThreadHangcheck *thread_hangcheck)
+{
+  //TODO:JK: implement me
+}
 
 AgsThreadHangcheck*
 ags_thread_hangcheck_new()

@@ -32,6 +32,8 @@
 #define AGS_IS_THREAD_HANGCHECK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD_HANGCHECK))
 #define AGS_THREAD_HANGCHECK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD_HANGCHECK, AgsThreadHangcheckClass))
 
+#define AGS_RX_GATE(ptr) ((AgsRXGate *)(ptr))
+
 #define AGS_RX_GATE_STACK_SIZE 2048
 #define AGS_RX_GATE_COMMAND_BUFFER_SIZE 512
 
@@ -42,15 +44,42 @@
 #define AGS_RX_GATE_SYN_W "w+"
 #define AGS_RX_GATE_SYN_X "(null)"
 
+#define AGS_RX_GATE_CTRL_SAFE     "<safe>"
+#define AGS_RX_GATE_CTRL_UNSAFE   "<unsafe>"
+#define AGS_RX_GATE_CTRL_SYNCED   "<synced>"
+#define AGS_RX_GATE_CTRL_ABORT    "<abort>"
+#define AGS_RX_GATE_CTRL_INIT     "<init>"
+#define AGS_RX_GATE_CTRL_FIRST    "<first>"
+#define AGS_RX_GATE_CTRL_LAST     "<last>"
+#define AGS_RX_GATE_CTRL_WAIT     "<wait>"
+#define AGS_RX_GATE_CTRL_ASYNC    "<async>"
+#define AGS_RX_GATE_CTRL_IRQ      "<interupt>"
+#define AGS_RX_GATE_CTRL_LOCK     "<lock>"
+#define AGS_RX_GATE_CTRL_TRYLOCK  "<trylock>"
+#define AGS_RX_GATE_CTRL_EXIT     "<exit>"
+#define AGS_RX_GATE_CTRL_QUIT     "<quit>"
+#define AGS_RX_GATE_CTRL_ERROR    "<error>"
+#define AGS_RX_GATE_CTRL_IDLE     "<idle>"
+
 #define AGS_RX_GATE_0 "super"
 #define AGS_RX_GATE_1 "this"
 #define AGS_RX_GATE_N "next"
+#define AGS_RX_GATE_CTRL "control"
 
 #define AGS_RX_GATE_FX(c,w,x) (g_strdup_printf("%s:fx(%x, %s)", w, x, c))
 
 typedef struct _AgsThreadHangcheck AgsThreadHangcheck;
 typedef struct _AgsThreadHangcheckClass AgsThreadHangcheckClass;
 typedef struct _AgsRXGate AgsRXGate;
+
+typedef enum{
+  AGS_THREAD_HANGCHECK_SERIAL    = 1,
+  AGS_THREAD_HANGCHECK_PARALLEL  = 1 << 1,
+  AGS_THREAD_HANGCHECK_XOR       = 1 << 2,
+  AGS_THREAD_HANGCHECK_DEADLOCK  = 1 << 3,
+  AGS_THREAD_HANGCHECK_DATA_RACE = 1 << 4,
+  AGS_THREAD_HANGCHECK_RUNNING   = 1 << 5,
+}AgsThreadHangcheckFlags;
 
 typedef enum{
   AGS_RX_GATE_MON_R     =  1,
@@ -64,6 +93,20 @@ struct _AgsThreadHangcheck
 {
   GObject object;
 
+  guint flags;
+  guint num_threads;
+
+  volatile guint lock;
+  volatile guint monitor;
+
+  volatile guint64 serial_port;
+  volatile guint64 parallel_port;
+  volatile guint64 xor_port;
+  volatile guint64 **complex_map;
+
+  volatile gchar **command_stack;
+  guint nth_entry;
+
   GList *gate;
 };
 
@@ -71,10 +114,20 @@ struct _AgsThreadHangcheckClass
 {
   GObjectClass object;
 
-  void (*error_event)(AgsThreadHangcheck *hangcheck);
+  void (*error_event)(AgsThreadHangcheck *thread_hangcheck,
+		      GList *gate,
+		      gint *error_code,
+		      gchar **stack);
 };
 
-struct _AgsRXGate {
+struct _AgsRXGate
+{
+  AgsRXGate *parent;
+  AgsRXGate *next;
+
+  gdouble x;
+  gdouble b;
+
   AgsThread *thread;
 
   volatile guint lock;
@@ -84,11 +137,28 @@ struct _AgsRXGate {
 
   volatile gchar **command_stack;
 
-  guint (*gate_control)(AgsRxGate *rx_gate,
-			gchar *command, guint value);
+  guint64 (*gate_control)(AgsRxGate *rx_gate,
+			  gchar *command, guint64 value);
 };
 
 GType ags_thread_hangcheck_get_type();
+
+AgsRXGate* ags_rx_gate_alloc();
+
+void ags_rx_gate_pop(AgsRXGate *rx_gate);
+void ags_rx_gate_push(AgsRXGate *rx_gate,
+		      gchar *command, guint64 value);
+
+void ags_thread_hangcheck_load(AgsThreadHangcheck *thread_hangcheck,
+			       AgsThread *main_loop);
+
+gboolean ags_thread_hangcheck_poll(AgsThreadHangcheck *thread_hangcheck,
+				   guint **level,
+				   guint mode);
+gboolean ags_thread_hangcheck_run(AgsThreadHangcheck *thread_hangcheck,
+				  guint **level,
+				  guint mode);
+void ags_thread_hangcheck_reset_all(AgsThreadHangcheck *thread_hangcheck);
 
 AgsThreadHangcheck* ags_thread_hangcheck_new();
 
