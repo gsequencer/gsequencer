@@ -32,19 +32,60 @@
 #define AGS_IS_THREAD_HANGCHECK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD_HANGCHECK))
 #define AGS_THREAD_HANGCHECK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD_HANGCHECK, AgsThreadHangcheckClass))
 
+#define AGS_RX_GATE_STACK_SIZE 2048
+#define AGS_RX_GATE_COMMAND_BUFFER_SIZE 512
+
+#define AGS_RX_GATE_CMD_R "r"
+#define AGS_RX_GATE_CMD_W "w"
+#define AGS_RX_GATE_CMD_X "x"
+#define AGS_RX_GATE_SYN_R "r+"
+#define AGS_RX_GATE_SYN_W "w+"
+#define AGS_RX_GATE_SYN_X "(null)"
+
+#define AGS_RX_GATE_0 "super"
+#define AGS_RX_GATE_1 "this"
+#define AGS_RX_GATE_N "next"
+
+#define AGS_RX_GATE_FX(c,w,x) (g_strdup_printf("%s:fx(%x, %s)", w, x, c))
+
 typedef struct _AgsThreadHangcheck AgsThreadHangcheck;
 typedef struct _AgsThreadHangcheckClass AgsThreadHangcheckClass;
+typedef struct _AgsRXGate AgsRXGate;
+
+typedef enum{
+  AGS_RX_GATE_MON_R     =  1,
+  AGS_RX_GATE_MON_X     =  1 << 1,
+  AGS_RX_GATE_MON_RX    =  1 << 2,
+  AGS_RX_GATE_SYN_R     =  1 << 3,
+  AGS_RX_GATE_SYN_X     =  1 << 4,
+}AgsRXGateMonitor;
 
 struct _AgsThreadHangcheck
 {
   GObject object;
 
-  GList *thread;
+  GList *gate;
 };
 
 struct _AgsThreadHangcheckClass
 {
   GObjectClass object;
+
+  void (*error_event)(AgsThreadHangcheck *hangcheck);
+};
+
+struct _AgsRXGate {
+  AgsThread *thread;
+
+  volatile guint lock;
+
+  volatile guint monitor_parent;
+  volatile guint monitor_next;
+
+  volatile gchar **command_stack;
+
+  guint (*gate_control)(AgsRxGate *rx_gate,
+			gchar *command, guint value);
 };
 
 GType ags_thread_hangcheck_get_type();
