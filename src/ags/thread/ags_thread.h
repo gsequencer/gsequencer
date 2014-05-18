@@ -192,6 +192,8 @@ void ags_thread_resume(AgsThread *thread);
 void ags_thread_timelock(AgsThread *thread);
 void ags_thread_stop(AgsThread *thread);
 
+void ags_thread_hangcheck(AgsThread *thread);
+
 AgsThread* ags_thread_new(gpointer data);
 
 #endif /*__AGS_THREAD_H__*/

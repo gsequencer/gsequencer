@@ -2052,6 +2052,18 @@ ags_thread_stop(AgsThread *thread)
 }
 
 /**
+ * ags_thread_hangcheck:
+ * @thread the #AgsThread instance
+ *
+ * Performs hangcheck of thread.
+ */
+void
+ags_thread_hangcheck(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_thread_new:
  * @data an #GObject
  *
