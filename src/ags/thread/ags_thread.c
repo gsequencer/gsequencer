@@ -730,8 +730,6 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
     ags_thread_remove_child(child->parent, child);
   }
 
-  ags_thread_lock(main_loop);
-
   /*  */
   if(thread->children == NULL){
     thread->children = child;
@@ -749,8 +747,6 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     ags_thread_start(child);
   }
-
-  ags_thread_unlock(main_loop);
 }
 
 /**
@@ -916,7 +912,7 @@ ags_thread_is_current_ready(AgsThread *current)
 
   ags_thread_unlock(toplevel);
 
-  return(FALSE);
+  return(retval);
 }
 
 gboolean
@@ -1563,9 +1559,9 @@ ags_thread_loop(void *ptr)
   void ags_thread_loop_sync(AgsThread *thread){
     guint tic;
 
-    if(!ags_thread_is_tree_ready(thread)){
-      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
+    if(!ags_thread_is_tree_ready(thread)){
       switch(tic){
       case 0:
 	{
@@ -1588,6 +1584,8 @@ ags_thread_loop(void *ptr)
       }
 
       ags_thread_unlock(main_loop);
+
+      ags_thread_hangcheck(main_loop);
     
       while(!ags_thread_is_current_ready(thread)){
 	pthread_cond_wait(&(thread->cond),
@@ -1595,8 +1593,6 @@ ags_thread_loop(void *ptr)
       }
     }else{
       guint next_tic;
-
-      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
       ags_thread_unlock(main_loop);
 
@@ -1610,9 +1606,7 @@ ags_thread_loop(void *ptr)
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_thread_set_sync_all(main_loop, tic);
-
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_hangcheck(main_loop);
     }
   }
 
@@ -1874,13 +1868,7 @@ ags_thread_loop(void *ptr)
     ags_thread_unlock(thread);
   }
 
-  ags_thread_lock(main_loop);
-  ags_thread_lock(thread);
-
-  ags_thread_loop_sync(thread);
-
-  ags_thread_unlock(thread);
-
+  ags_thread_hangcheck(main_loop);
 
 #ifdef AGS_DEBUG
   g_message("thread finished\0");
@@ -2044,10 +2032,8 @@ ags_thread_real_timelock(AgsThread *thread)
       }
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-      ags_thread_set_sync_all(main_loop, tic);
-
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_hangcheck(main_loop);
+      ags_thread_set_sync_all(main_loop, tic);
     }
 #if defined(AGS_PTHREAD_SUSPEND) || defined(AGS_LINUX_SIGNALS)
   }else{
@@ -2114,10 +2100,8 @@ ags_thread_real_timelock(AgsThread *thread)
 
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-      ags_thread_set_sync_all(main_loop, tic);
-
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_hangcheck(main_loop);
+      ags_thread_set_sync_all(main_loop, tic);
     }
 
     /* your chance */
@@ -2212,7 +2196,6 @@ ags_thread_hangcheck(AgsThread *thread)
     AgsThread *child;
     guint flags;
 
-    ags_thread_lock(toplevel);
     flags = g_atomic_int_get(&(thread->flags));
     g_atomic_int_and(&(thread->flags),
 		     (~(AGS_THREAD_WAIT_0 |
@@ -2243,8 +2226,6 @@ ags_thread_hangcheck(AgsThread *thread)
       }
     }
 
-    ags_thread_unlock(toplevel);
-
     /* iterate tree */
     child = thread->children;
 
@@ -2268,6 +2249,8 @@ ags_thread_hangcheck(AgsThread *thread)
   if(!((synced[0] && !synced[1] && !synced[2]) ||
        (!synced[0] && synced[1] && !synced[2]) ||
        (!synced[0] && !synced[1] && synced[2]))){
+    g_warning("thread tree hung up\0");
+
     ags_thread_hangcheck_unsync_all(toplevel, FALSE);
   }
 }
