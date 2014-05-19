@@ -465,6 +465,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
 	     IPATCH_SF2_PRESET(list->data)->program == ipatch_sf2_reader->program){
 	    names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
 	    names[i] = ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data));
+	    g_message("---- %s\0", names[i]);
 	  }
 	}
       }
