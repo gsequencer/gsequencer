@@ -234,36 +234,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 void
 ags_buffer_audio_signal_run_pre(AgsRecall *recall)
 {
-  AgsDevout *devout;
-  AgsRecycling *recycling;
-  AgsAudioSignal *audio_signal;
-  AgsBufferAudioSignal *buffer_audio_signal;
-  AgsBufferRecycling *buffer_recycling;
-
   /* call parent */
   AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_pre(recall);
-
-  /* initialize some variables */
-  buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
-  buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
-
-  recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
-
-  /* create new audio signal */
-  audio_signal = ags_audio_signal_new((GObject *) devout,
-				      (GObject *) recycling,
-				      (GObject *) recall->recall_id);
-  ags_recycling_create_audio_signal_with_frame_count(recycling,
-						     audio_signal,
-						     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE + AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
-						     0, 0);
-  ags_audio_signal_connect(audio_signal);
-  
-  audio_signal->stream_current = audio_signal->stream_beginning;
-  ags_recycling_add_audio_signal(recycling,
-				 audio_signal);
-
-  AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = audio_signal;
 }
 
 void
@@ -284,6 +256,8 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
   /* initialize some variables */
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
+  buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
+  buffer_channel = AGS_BUFFER_CHANNEL(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(buffer_recycling)->parent)->recall_channel);
 
   devout = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->devout);
   source = AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->source;
@@ -298,12 +272,28 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   destination = AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination;
 
   if(destination == NULL){
-    g_warning("no destination\0");
+    recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
+
+    /* create new audio signal */
+    destination = ags_audio_signal_new((GObject *) devout,
+				       (GObject *) recycling,
+				       (GObject *) recall->recall_id->recycling_container->parent->recall_id);
+    ags_recycling_create_audio_signal_with_frame_count(recycling,
+						       destination,
+						       AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE + AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
+						       0, 0);
+    ags_audio_signal_connect(destination);
+  
+    destination->stream_current = destination->stream_beginning;
+    ags_recycling_add_audio_signal(recycling,
+				   destination);
+
+    AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
+
+    g_message("creating destination\0");
+
     return;
   }
-
-  buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
-  buffer_channel = AGS_BUFFER_CHANNEL(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(buffer_recycling)->parent)->recall_channel);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
   ags_port_safe_read(buffer_channel->muted,
@@ -335,9 +325,9 @@ ags_buffer_audio_signal_duplicate(AgsRecall *recall,
   AgsBufferAudioSignal *buffer;
 
   buffer = (AgsBufferAudioSignal *) AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->duplicate(recall,
-												    recall_id,
-												    n_params, parameter);
-
+												      recall_id,
+												      n_params, parameter);
+  
   return((AgsRecall *) buffer);
 }
 

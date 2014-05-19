@@ -768,6 +768,8 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   buffer = (signed short *) malloc(channels * frames * sizeof(signed short));
   
   if(ipatch->nth_level == 3){
+    sample = IPATCH_SAMPLE(ipatch->iter->data);
+  }else{
     sample = NULL;
 
     if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
@@ -784,8 +786,6 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
     }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
       //TODO:JK: implement me
     }
-  }else{
-    sample = IPATCH_SAMPLE(ipatch->iter->data);
   }
 
   this_error = NULL;
@@ -840,7 +840,6 @@ ags_ipatch_read_audio_signal(AgsPlayable *playable,
 
   ipatch = AGS_IPATCH(playable);
 
-  ags_playable_iter_next(AGS_PLAYABLE(ipatch->reader));
   list = ags_playable_read_audio_signal(AGS_PLAYABLE(ipatch->reader),
 					ipatch->devout,
 					0, 2);

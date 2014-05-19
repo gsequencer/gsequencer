@@ -262,6 +262,9 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     audio_signal = ags_audio_signal_new((GObject *) devout,
 					NULL,
 					NULL);
+    audio_signal->samplerate = devout->frequency;
+    audio_signal->buffer_size = devout->buffer_size;
+
     list = g_list_prepend(list, audio_signal);
 
     ags_connectable_connect(AGS_CONNECTABLE(audio_signal));

@@ -642,8 +642,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   if(list == NULL)
     return;
 
-  g_message("debug 1\0");
-
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     audio_channel = 0; //ags_recycling_container_find(AGS_RECALL(play_notation_audio_run)->recall_id->recycling_container,
       //				 audio->input->first_recycling);
@@ -658,8 +656,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   }
 
   timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
-
-  g_message("debug audio_channel: %d\0", audio_channel);
   
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
@@ -667,8 +663,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   current_position = notation->notes; // start_loop
   
-  g_message("debug 2\0");
-
   while(current_position != NULL){
     note = AGS_NOTE(current_position->data);
     
@@ -687,11 +681,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
-							     AGS_DEVOUT_DEFAULT_DELAY * (note->x[1] - note->x[0]),
+							     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE * (note->x[1] - note->x[0]),
 							     delay, attack);
 	  ags_audio_signal_connect(audio_signal);
 
-	  g_message("adding\n\0");
 	  audio_signal->stream_current = audio_signal->stream_beginning;
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
