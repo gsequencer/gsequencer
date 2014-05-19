@@ -394,6 +394,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
 {
   AgsIpatch *ipatch;
   AgsIpatchSF2Reader *ipatch_sf2_reader;
+  IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
   GList *list;
   gchar **names;
@@ -436,11 +437,19 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       break;
     case AGS_SF2_IHDR:
       {
-	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->preset,
-						    IPATCH_TYPE_SF2_INST);
+	GList *tmp;
 
-	if(ipatch_list != NULL){
-	  list = ipatch_list->items;
+	ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->preset);
+	tmp = ipatch_list->items;
+
+	while(tmp != NULL){
+	  list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
+
+	  tmp = tmp->next;
+	}
+
+	if(list != NULL){
+	  list = g_list_reverse(list);
 	}else{
 	  return(names);
 	}
@@ -448,11 +457,19 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       break;
     case AGS_SF2_SHDR:
       {
-	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->instrument,
-						    IPATCH_TYPE_SF2_SAMPLE);
-      
-	if(ipatch_list != NULL){
-	  list = ipatch_list->items;
+	GList *tmp;
+
+	ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->instrument);
+	tmp = ipatch_list->items;
+	
+	while(tmp != NULL){
+	  list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
+
+	  tmp = tmp->next;
+	}
+
+	if(list != NULL){
+	  list = g_list_reverse(list);
 	}else{
 	  return(names);
 	}
@@ -522,6 +539,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
       ipatch_sf2_reader->selected[0] = NULL;
     }else{
       IpatchList *ipatch_list;
+      IpatchItem *ipatch_item;
       GList *list;
 
       if(nth_level == 0 && !g_strcmp0(ipatch_sf2_reader->ipatch->filename, sublevel_name)){
@@ -540,13 +558,13 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	list = ipatch_list->items;
 	
 	while(list != NULL){
-	  if(!g_strcmp0(IPATCH_SF2_PRESET(list->data)->name, sublevel_name)){
+	  if(!g_strcmp0(ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data)), sublevel_name)){
 	    /* some extra code for bank and program */
-	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
-					      &(ipatch_sf2_reader->bank),
-					      &(ipatch_sf2_reader->program));
+	    //	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
+	    //				      &(ipatch_sf2_reader->bank),
+	    //				      &(ipatch_sf2_reader->program));
 
-	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+	    //	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
 
 	    this_error = NULL;
 	    ipatch_sf2_reader->preset = IPATCH_SF2_PRESET(list->data);
@@ -564,47 +582,49 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	found_first = FALSE;
 
 	if(nth_level == 2){
+	  GList *tmp;
+
 	  ipatch->nth_level = 2;
 	  ipatch_sf2_reader->selected[2] = sublevel_name;
 
 	  /* instrument */
-	  ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->preset,
-						      IPATCH_TYPE_SF2_INST);
-	  list = ipatch_list->items;
-	
-	  while(list != NULL){
+	  ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->preset);
+	  list = NULL;
+	  tmp = ipatch_list->items;
+
+	  while(tmp != NULL){
+	    list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
+
 	    if(!g_strcmp0(IPATCH_SF2_INST(list->data)->name, sublevel_name)){
-	      this_error = NULL;
-	      ipatch_sf2_reader->instrument = ipatch_convert_object_to_type(IPATCH_SF2_INST(list->data),
-									    IPATCH_TYPE_CONTAINER,
-									    &this_error);
-	      break;
+	      ipatch_sf2_reader->instrument = IPATCH_SF2_INST(list->data);
 	    }
 
-	    list = list->next;
+	    tmp = tmp->next;
 	  }
 
-	  ipatch->iter = list;
+	  ipatch->iter = g_list_reverse(list);
 	}else if(ipatch->nth_level == 3){
+	  GList *tmp;
+
 	  ipatch->nth_level = 3;
 	  ipatch_sf2_reader->selected[3] = sublevel_name;
 
 	  /* sample */
-	  ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->instrument,
-						      IPATCH_TYPE_SF2_SAMPLE);
-	  list = ipatch_list->items;
+	  ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->instrument);
+	  list = NULL;
+	  tmp = ipatch_list->items;
 	
-	  while(list != NULL){
+	  while(tmp != NULL){
+	    list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
+
 	    if(!strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20)){
 	      ipatch_sf2_reader->sample = IPATCH_SF2_SAMPLE(list->data);
-
-	      break;
 	    }
 
-	    list = list->next;
+	    tmp = tmp->next;
 	  }
 
-	  ipatch->iter = list;
+	  ipatch->iter = g_list_reverse(list);
 	}else{
 	  g_set_error(error,
 		      AGS_PLAYABLE_ERROR,

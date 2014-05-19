@@ -109,11 +109,11 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
       ags_combo_box_text_remove_all(ffplayer->instrument);
 
       /* Ipatch related */
-      ffplayer->ipatch =
-	ipatch = g_object_new(AGS_TYPE_IPATCH,
-			      "mode\0", AGS_IPATCH_READ,
-			      "filename\0", filename,
-			      NULL);
+      ipatch = g_object_new(AGS_TYPE_IPATCH,
+			    "mode\0", AGS_IPATCH_READ,
+			    "filename\0", filename,
+			    NULL);
+      ffplayer->ipatch = ipatch;
       ipatch->devout = window->devout;
 
       playable = AGS_PLAYABLE(ipatch);
