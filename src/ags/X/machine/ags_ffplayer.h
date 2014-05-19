@@ -57,6 +57,7 @@ struct _AgsFFPlayer
   GtkAdjustment *hadjustment;
 
   AgsIpatch *ipatch;
+  GtkComboBoxText *preset;
   GtkComboBoxText *instrument;
 };
 

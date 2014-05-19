@@ -57,9 +57,11 @@ struct _AgsIpatchSF2Reader
   int bank;
   int program;
 
-  IpatchSF2Zone *zone;
+  IpatchSF2Preset *preset;
+  IpatchSF2Inst *instrument;
+  IpatchSF2Sample *sample;
+
   int count;
-  GList *iter;
 };
 
 struct _AgsIpatchSF2ReaderClass

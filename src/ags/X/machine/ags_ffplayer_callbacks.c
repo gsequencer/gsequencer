@@ -148,6 +148,28 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 }
 
 void
+ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
+{
+  AgsPlayable *playable;
+  gchar *preset_name;
+  GError *error;
+
+  playable = AGS_PLAYABLE(ffplayer->ipatch);
+
+  preset_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(preset));
+
+  /* load presets */
+  error = NULL;
+
+  AGS_IPATCH(ffplayer->ipatch)->nth_level = 1;
+  preset = ags_playable_sublevel_names(playable);
+
+  ags_playable_level_select(playable,
+			    1, preset_name,
+			    &error);
+}
+
+void
 ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer)
 {
   AgsChannel *channel;
@@ -165,10 +187,9 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   gboolean has_more;
   GError *error;
 
-  instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
-
-
   playable = AGS_PLAYABLE(ffplayer->ipatch);
+
+  instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
 
   /* select instrument */
   error = NULL;
@@ -180,16 +201,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   if(error != NULL){
     g_error("%s\0", error->message);
   }
-
-  /* load presets */
-  preset = NULL;
-
-  AGS_IPATCH(ffplayer->ipatch)->nth_level = 1;
-  preset = ags_playable_sublevel_names(playable);
-
-  ags_playable_level_select(playable,
-			    1, *preset,
-			    &error);
 
   /* select first sample */
   sample = NULL;

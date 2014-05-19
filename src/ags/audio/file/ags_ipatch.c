@@ -421,7 +421,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
     case AGS_SF2_PHDR:
       {
 	ipatch_list = ipatch_sf2_get_presets(ipatch_sf2_reader->sf2);
-      
+
 	if(ipatch_list != NULL){
 	  list = ipatch_list->items;
 	}else{
@@ -431,9 +431,8 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       break;
     case AGS_SF2_IHDR:
       {
-	IpatchContainer *container;
-
-	ipatch_list = ipatch_sf2_get_insts(ipatch_sf2_reader->sf2);
+	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->preset,
+						    IPATCH_TYPE_SF2_INST);
       
 	if(ipatch_list != NULL){
 	  list = ipatch_list->items;
@@ -444,9 +443,8 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       break;
     case AGS_SF2_SHDR:
       {
-	IpatchContainer *container;
-      
-	ipatch_list = ipatch_sf2_get_samples(ipatch_sf2_reader->sf2);
+	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->preset,
+						    IPATCH_TYPE_SF2_SAMPLE);
       
 	if(ipatch_list != NULL){
 	  list = ipatch_list->items;
@@ -537,7 +535,9 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	list = ipatch_list->items;
 	
 	while(list != NULL){
-	  if(!strncmp(IPATCH_SF2_PRESET(list->data)->name, sublevel_name, 20)){
+	  if(!strncmp(IPATCH_SF2_PRESET(list->data)->name, sublevel_name, 20)){	    
+	    ipatch_sf2_reader->preset = IPATCH_SF2_PRESET(list->data);
+
 	    /* some extra code for bank and program */
 	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
 					      &(ipatch_sf2_reader->bank),
@@ -546,10 +546,14 @@ ags_ipatch_level_select(AgsPlayable *playable,
 #ifdef AGS_DEBUG
 	    g_message("debug: bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
 #endif
+
+	    break;
 	  }
 
 	  list = list->next;
 	}
+
+	ipatch->iter = list;
       }else{
 	gboolean found_first;
 
@@ -560,35 +564,40 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	  ipatch_sf2_reader->selected[2] = sublevel_name;
 
 	  /* instrument */
-	  ipatch_list = ipatch_sf2_get_insts(ipatch_sf2_reader->sf2);
+	  ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->preset,
+						      IPATCH_TYPE_SF2_INST);
 	  list = ipatch_list->items;
 	
 	  while(list != NULL){
 	    if(!strncmp(IPATCH_SF2_INST(list->data)->name, sublevel_name, 20)){
+	      ipatch_sf2_reader->instrument = IPATCH_SF2_INST(list->data);
 	      break;
 	    }
 
 	    list = list->next;
 	  }
 
-	  ipatch_sf2_reader->iter = list;
+	  ipatch->iter = list;
 	}else if(ipatch->nth_level == 3){
 	  ipatch->nth_level = 3;
 	  ipatch_sf2_reader->selected[3] = sublevel_name;
 
 	  /* sample */
-	  ipatch_list = ipatch_sf2_get_samples(ipatch_sf2_reader->sf2);
+	  ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->instrument,
+						      IPATCH_TYPE_SF2_SAMPLE);
 	  list = ipatch_list->items;
 	
 	  while(list != NULL){
 	    if(!strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20)){
+	      ipatch_sf2_reader->sample = IPATCH_SF2_SAMPLE(list->data);
+
 	      break;
 	    }
 
 	    list = list->next;
 	  }
 
-	  ipatch_sf2_reader->iter = list;
+	  ipatch->iter = list;
 	}else{
 	  g_set_error(error,
 		      AGS_PLAYABLE_ERROR,
@@ -630,32 +639,11 @@ ags_ipatch_iter_start(AgsPlayable *playable)
 
   ipatch = AGS_IPATCH(playable);
 
-  ipatch->iter = ipatch->samples->items;
-
   if(ipatch->nth_level == 3){
     if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
       //TODO:JK: implement me
     }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
-      AgsIpatchSF2Reader *reader;
-      GList *list;
-
-      reader = AGS_IPATCH_SF2_READER(ipatch->reader);
-      list = ipatch->iter;
-
-      if(reader->selected[3] != NULL){
-	while(list != NULL){
-	  if(!g_strcmp0(ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(list->data)),
-			reader->selected[3])){
-	    break;
-	  }
-
-	  list = list->next;
-	}
-
-	if(list != NULL){
-	  ipatch->iter = list;
-	}
-      }
+      //TODO:JK: implement me
     }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
       //TODO:JK: implement me
     }

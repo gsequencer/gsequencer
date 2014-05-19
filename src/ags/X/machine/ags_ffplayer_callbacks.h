@@ -30,6 +30,7 @@ void ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, 
 void ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 						AgsMachine *machine);
+void ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer);
 void ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *ffplayer);
 
 gboolean ags_ffplayer_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsFFPlayer *ffplayer);

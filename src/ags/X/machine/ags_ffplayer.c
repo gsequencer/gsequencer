@@ -234,6 +234,21 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   0, 0);
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label\0", "preset\0",
+				    "xalign\0", 0.0,
+				    NULL);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  ffplayer->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(ffplayer->preset),
+		     TRUE, FALSE,
+		     0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label\0", "instrument\0",
 				    "xalign\0", 0.0,
 				    NULL);
@@ -400,6 +415,9 @@ ags_ffplayer_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);
 
+  g_signal_connect_after((GObject *) ffplayer->preset, "changed\0",
+			 G_CALLBACK(ags_ffplayer_preset_changed_callback), (gpointer) ffplayer);
+
   g_signal_connect_after((GObject *) ffplayer->instrument, "changed\0",
 			 G_CALLBACK(ags_ffplayer_instrument_changed_callback), (gpointer) ffplayer);
 
@@ -496,7 +514,7 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
   GtkTreeIter iter;
   xmlNode *node;
   gchar *filename;
-  gchar *instrument;
+  gchar *preset, *instrument;
   guint i;
   gboolean valid;
 
@@ -510,7 +528,7 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
   if(g_str_has_suffix(filename, ".sf2\0")){
     AgsIpatch *ipatch;
     AgsPlayable *playable;
-    gchar **instrument;
+    gchar **preset, **instrument;
     GError *error;
 
     /* clear preset, instrument and sample*/
@@ -534,13 +552,30 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
 			      0, filename,
 			      &error);
 
+    /* select first preset */
+    ipatch->nth_level = 1;
+    preset = ags_playable_sublevel_names(playable);
+
+    error = NULL;
+    ags_playable_level_select(playable,
+			      1, *preset,
+			      &error);
+
+    /* fill ffplayer->preset */
+    while(*preset != NULL){
+      gtk_combo_box_text_append_text(ffplayer->preset,
+				     *preset);
+
+      preset++;
+    }
+
     /* select first instrument */
     ipatch->nth_level = 1;
     instrument = ags_playable_sublevel_names(playable);
 
     error = NULL;
     ags_playable_level_select(playable,
-			      1, *instrument,
+			      2, *instrument,
 			      &error);
 
     /* fill ffplayer->instrument */
@@ -552,10 +587,40 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
     }
   }
 
-  instrument = xmlGetProp(node,
-			  "instrument\0");
+  /* Get the first iter in the list */
+  preset = xmlGetProp(node,
+		      "preset\0");
+
+  list_store = gtk_combo_box_get_model(ffplayer->preset);
+  valid = gtk_tree_model_get_iter_first (list_store, &iter);
+  i = 0;
+
+  while(valid){
+    gchar *str;
+
+    gtk_tree_model_get (list_store, &iter,
+			0, &str,
+			-1);
+    if(!g_strcasecmp(preset,
+		     str)){
+      g_free (str);
+
+      break;
+    }else{
+      g_free (str);
+
+      i++;
+      valid = gtk_tree_model_iter_next (list_store, &iter);
+    }
+  }
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
+			   i);
 
   /* Get the first iter in the list */
+  preset = xmlGetProp(node,
+		      "instrument\0");
+
   list_store = gtk_combo_box_get_model(ffplayer->instrument);
   valid = gtk_tree_model_get_iter_first (list_store, &iter);
   i = 0;
@@ -613,6 +678,10 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
     xmlNewProp(node,
 	       "filename\0",
 	       g_strdup(ffplayer->ipatch->filename));
+
+    xmlNewProp(node,
+	       "preset\0",
+	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->preset)));
 
     xmlNewProp(node,
 	       "instrument\0",

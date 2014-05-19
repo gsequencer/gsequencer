@@ -618,7 +618,8 @@
 <!ELEMENT ags-ffplayer EMPTY>
 <!ATTLIST ags-ffplayer
 	  id               ID         #REQUIRED
-	  container        CDATA      #REQUIRED
+	  filename         CDATA      #IMPLIED
+	  preset           CDATA      #IMPLIED
 	  instrument       CDATA      #IMPLIED
 	  >
 
