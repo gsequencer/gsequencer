@@ -333,9 +333,10 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     AGS_IPATCH_SF2_READER(ipatch->reader)->reader = ipatch_sf2_reader_new(ipatch->handle);
 
     error = NULL;
-    ipatch->base = 
-      AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
-									  &error);
+    ipatch->base = ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
+					  &error);
+
+    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = ipatch->base;
 
     if(error != NULL){
       g_error("%s\0", error->message);
@@ -420,7 +421,8 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       }
     case AGS_SF2_PHDR:
       {
-	ipatch_list = ipatch_sf2_get_presets(ipatch_sf2_reader->sf2);
+	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->sf2,
+						    IPATCH_TYPE_SF2_PRESET);
 
 	if(ipatch_list != NULL){
 	  list = ipatch_list->items;
@@ -443,7 +445,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       break;
     case AGS_SF2_SHDR:
       {
-	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->preset,
+	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->instrument,
 						    IPATCH_TYPE_SF2_SAMPLE);
       
 	if(ipatch_list != NULL){

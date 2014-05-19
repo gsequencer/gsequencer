@@ -251,8 +251,15 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 
   while((list = ags_recall_template_find_type(list,
 					      AGS_TYPE_PLAY_CHANNEL)) != NULL){
+    GValue audio_channel_value = {0,};
 
-    AGS_PLAY_CHANNEL(list->data)->audio_channel->port_value.ags_port_uint = source->audio_channel;
+    play_channel = AGS_PLAY_CHANNEL(list->data);
+
+    g_value_init(&audio_channel_value, G_TYPE_UINT64);
+    g_value_set_uint64(&audio_channel_value,
+		       source->audio_channel);
+    ags_port_safe_write(play_channel->audio_channel,
+			&audio_channel_value);
 
     list = list->next;
   }

@@ -700,7 +700,7 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
   guint i;
 
   for(i = 0; i < size; i++){
-    destination[0] = (signed short) ((0xffff) & ((int)destination[0] + (int)source[0]));
+    destination[0] = (signed short) (((int)destination[0] + (int)source[0]));
 
     destination += dchannels;
     source += schannels;

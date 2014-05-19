@@ -133,7 +133,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 				&error);
 
       /* fill ffplayer->preset */
-      while(preset != NULL && *preset != NULL){
+      while(preset != NULL && preset[0] != NULL){
 	gtk_combo_box_text_append_text(ffplayer->preset,
 				       *preset);
 

@@ -402,9 +402,9 @@ ags_port_safe_write(AgsPort *port, GValue *value)
     if(port->port_value_type == G_TYPE_BOOLEAN){
       port->port_value.ags_port_boolean = g_value_get_boolean(value);
     }else if(port->port_value_type == G_TYPE_INT64){
-      port->port_value.ags_port_int = g_value_get_int(value);
+      port->port_value.ags_port_int = g_value_get_int64(value);
     }else if(port->port_value_type == G_TYPE_UINT64){
-      port->port_value.ags_port_uint = g_value_get_uint(value);
+      port->port_value.ags_port_uint = g_value_get_uint64(value);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       port->port_value.ags_port_double = g_value_get_double(value);
     }
