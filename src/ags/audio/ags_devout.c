@@ -300,7 +300,6 @@ ags_devout_init(AgsDevout *devout)
 {
   guint default_tact_frames;
   guint default_tic_frames;
-  guint start;
   guint i;
   
   /* flags */
@@ -334,25 +333,27 @@ ags_devout_init(AgsDevout *devout)
   devout->attack = (guint *) malloc((int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT) *
 				   sizeof(guint));
 
-  default_tact_frames = AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
-  default_tic_frames = default_tact_frames * AGS_NOTATION_MINIMUM_NOTE_LENGTH;
+  default_tact_frames = (guint) (AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+  default_tic_frames = (guint) (default_tact_frames * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
-  start = default_tic_frames % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+  memset(devout->delay, 0, (int) (2.0 *  ceil(AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
+  memset(devout->delay, 0, (int) (2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
 
-  //TODO:JK: more work
-  //  memset(devout->delay, AGS_DEVOUT_DEFAULT_DELAY, 2 * (int) ceil(AGS_NOTATION_TICS_PER_BEAT));
-  memset(devout->delay, 0, 2 * (int) ceil(AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint));
-
-  for(i = 0; i < (int) ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
-    //TODO:JK: more work
-    //    devout->attack[i] = (start + i * default_tic_frames) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
-    devout->attack[i] = 0;
+  for(i = 0; i < (int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+    devout->attack[i] = (i * default_tic_frames) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
   }
 
-  memcpy(&(devout->attack[i]), devout->attack, (int) ceil(AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint));
+  for(i = 0; i < (int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+    if(AGS_DEVOUT_DEFAULT_BUFFER_SIZE < default_tic_frames){
+      devout->delay[i] = (i * default_tic_frames) / (i * (AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+    }else{
+      devout->delay[i] = (i * default_tic_frames) / (i * (AGS_DEVOUT_DEFAULT_BUFFER_SIZE / default_tic_frames));
+    }
+  }
 
-  /* delay counter */
+  /*  */
   devout->delay_counter = 0;
+  devout->tic_counter = 0;
 
   /* parent */
   devout->ags_main = NULL;
@@ -928,13 +929,9 @@ ags_devout_alsa_play(AgsDevout *devout,
     //      g_message("ags_devout_play 3\0");
   }
 
-  /*
-    if((AGS_DEVOUT_COUNT & (devout->flags)) != 0)
-    devout->offset++;
-  */
-
   /* determine if attack should be switched */
-  devout->delay_counter += 1;
+  devout->delay_counter += (AGS_DEVOUT_DEFAULT_DELAY *
+			    AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   if(devout->delay_counter >= devout->delay[devout->tic_counter]){
     /* tic */

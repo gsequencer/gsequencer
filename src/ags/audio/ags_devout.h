@@ -19,7 +19,6 @@
 #ifndef __AGS_DEVOUT_H__
 #define __AGS_DEVOUT_H__
 
-#define _GNU_SOURCE
 #include <pthread.h>
 
 #include <glib.h>
@@ -27,7 +26,6 @@
 
 #include <sys/types.h>
 
-#define ALSA_PCM_NEW_HW_PARAMS_API
 #include <alsa/asoundlib.h>
 
 #include <ao/ao.h>
@@ -49,7 +47,7 @@
 #define AGS_DEVOUT_PLAY_DOMAIN(ptr)    ((AgsDevoutPlayDomain *)(ptr))
 #define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
 
-#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100)
+#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
 #define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (256)
 #define AGS_DEVOUT_DEFAULT_BPM (120.0)
 #define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
@@ -132,10 +130,10 @@ struct _AgsDevout
 
   double bpm; // beats per minute
 
-  guint *delay; // delay between tic change
+  gdouble *delay; // count of tics within buffer size
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 
-  guint delay_counter; // next time attack changeing when delay_counter == delay
+  gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter;
 
   union{

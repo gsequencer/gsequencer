@@ -747,6 +747,25 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   }
 }
 
+void
+ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
+			  gdouble position)
+{
+  double x, y;
+  double width, height;
+
+  y = 0.0;
+  x = (position) - (GTK_RANGE(note_edit->hscrollbar)->adjustment->value * note_edit->control_current.control_width);
+
+  height = (double) GTK_WIDGET(note_edit->drawing_area)->allocation.height;
+  width = 3.0;
+
+  /* draw */
+  cairo_set_source_rgba(cr, 0.79, 0.0, 1.0, 0.5);
+  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+  cairo_fill(cr);
+}
+
 AgsNoteEdit*
 ags_note_edit_new()
 {

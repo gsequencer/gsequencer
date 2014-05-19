@@ -137,6 +137,9 @@ ags_scroll_on_play_launch(AgsTask *task)
   AgsWindow *window;
   AgsScrollOnPlay *scroll_on_play;
   AgsEditor *editor;
+  cairo_t *cr;
+  gdouble position;
+  gdouble loop_start, loop_end;
   gdouble tact;
 
   scroll_on_play = AGS_SCROLL_ON_PLAY(task);
@@ -145,9 +148,36 @@ ags_scroll_on_play_launch(AgsTask *task)
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(editor));
 
-  tact = gtk_adjustment_get_value(window->navigation->position_tact->adjustment);
+  loop_start = gtk_spin_button_get_value(window->navigation->loop_left_tact);
+  loop_end = gtk_spin_button_get_value(window->navigation->loop_right_tact);
 
-  gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar), tact * editor->note_edit->control_current.control_width);
+  tact = gtk_spin_button_get_value(window->navigation->position_tact);
+
+  if(tact <= loop_end){
+    position = tact * editor->note_edit->control_current.control_width;
+  }else{
+    position = loop_start * editor->note_edit->control_current.control_width;
+  }
+
+  /* scroll */
+  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
+    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
+			position - (0.125 * editor->note_edit->control_current.control_width));
+  }
+
+  /* draw fader */
+  cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
+  ags_note_edit_draw_scroll(editor->note_edit, cr,
+			    position);
+
+  /* update tact */
+  if(tact + 1.0 < loop_end){
+    gtk_spin_button_set_value(window->navigation->position_tact,
+			      tact + 1.0);
+  }else{
+    gtk_spin_button_set_value(window->navigation->position_tact,
+			      loop_start);
+  }
 }
 
 AgsScrollOnPlay*

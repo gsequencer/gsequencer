@@ -15,11 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-#define __USE_UNIX98
-#include <sys/mman.h>
-
-#include <gtk/gtk.h>
-
 #include <ags/main.h>
 
 #include <ags-lib/object/ags_connectable.h>
@@ -42,6 +37,9 @@
 
 #include <ags/audio/ags_synths.h>
 
+#include <sys/mman.h>
+
+#include <gtk/gtk.h>
 #include <libintl.h>
 #include <stdio.h>
 

@@ -137,6 +137,9 @@ void ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr);
 void ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr);
 void ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr);
 
+void ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
+			       gdouble position);
+
 AgsNoteEdit* ags_note_edit_new();
 
 #endif /*__AGS_NOTE_EDIT_H__*/
