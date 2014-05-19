@@ -322,7 +322,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     ipatch->flags |= AGS_IPATCH_DLS2;
 
     //TODO:JK: implement me
-  }else if(IPATCH_IS_SF2_FILE(ipatch->handle->file)){
+  }else if(g_str_has_suffix(filename, ".sf2\0")){
     /*  */
     ipatch->flags |= AGS_IPATCH_SF2;
 
@@ -461,19 +461,15 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
     case AGS_SF2_PHDR:
       {
 	if(IPATCH_IS_SF2_PRESET(list->data)){
-	  if(IPATCH_SF2_PRESET(list->data)->bank == ipatch_sf2_reader->bank &&
-	     IPATCH_SF2_PRESET(list->data)->program == ipatch_sf2_reader->program){
-	    names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
-	    names[i] = ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data));
-	    g_message("---- %s\0", names[i]);
-	  }
+	  names = (gchar **) realloc(names, (i + 2) * sizeof(char*));
+	  names[i] = ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data));
 	}
       }
       break;
     case AGS_SF2_IHDR:
       {
 	if(IPATCH_IS_SF2_INST(list->data)){
-	  names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
+	  names = (gchar **) realloc(names, (i + 2) * sizeof(char*));
 	  names[i] = ipatch_sf2_inst_get_name(IPATCH_SF2_INST(list->data));
 	}
       }
@@ -481,7 +477,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
     case AGS_SF2_SHDR:
       {
 	if(IPATCH_IS_SF2_SAMPLE(list->data)){
-	  names = (gchar *) realloc(names, (i + 2) * sizeof(char*));
+	  names = (gchar **) realloc(names, (i + 2) * sizeof(char*));
 	  names[i] = ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(list->data));
 	}
       }
@@ -536,7 +532,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	list = ipatch_list->items;
 	
 	while(list != NULL){
-	  if(!strncmp(IPATCH_SF2_PRESET(list->data)->name, sublevel_name, 20)){	    
+	  if(!g_strcmp0(IPATCH_SF2_PRESET(list->data)->name, sublevel_name)){
 	    ipatch_sf2_reader->preset = IPATCH_SF2_PRESET(list->data);
 
 	    /* some extra code for bank and program */
@@ -570,7 +566,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	  list = ipatch_list->items;
 	
 	  while(list != NULL){
-	    if(!strncmp(IPATCH_SF2_INST(list->data)->name, sublevel_name, 20)){
+	    if(!g_strcmp0(IPATCH_SF2_INST(list->data)->name, sublevel_name)){
 	      ipatch_sf2_reader->instrument = IPATCH_SF2_INST(list->data);
 	      break;
 	    }
