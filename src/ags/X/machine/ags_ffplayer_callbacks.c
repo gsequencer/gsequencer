@@ -154,7 +154,7 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   AgsPlayable *playable;
   AgsIpatch *ipatch;
   gchar *preset_name;
-  gchar *instrument;
+  gchar **instrument;
   GError *error;
 
   playable = AGS_PLAYABLE(ffplayer->ipatch);
@@ -176,14 +176,14 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   
   error = NULL;
   ags_playable_level_select(playable,
-			    1, *instrument,
+			    2, *instrument,
 			    &error);
   
   /* fill ffplayer->instrument */
-  while(instrument != NULL && *instrument != NULL){
+  while(instrument != NULL && instrument[0] != NULL){
     gtk_combo_box_text_append_text(ffplayer->instrument,
 				   *instrument);
-    
+
     instrument++;
   }
 

@@ -541,17 +541,15 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	
 	while(list != NULL){
 	  if(!g_strcmp0(IPATCH_SF2_PRESET(list->data)->name, sublevel_name)){
-	    this_error = NULL;
-	    ipatch_sf2_reader->preset = ipatch_convert_object_to_type(IPATCH_SF2_PRESET(list->data),
-								      IPATCH_TYPE_CONTAINER,
-								      &this_error);
-
 	    /* some extra code for bank and program */
 	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
 					      &(ipatch_sf2_reader->bank),
 					      &(ipatch_sf2_reader->program));
 
-	    g_message("debug: bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+
+	    this_error = NULL;
+	    ipatch_sf2_reader->preset = IPATCH_SF2_PRESET(list->data);
 
 	    break;
 	  }
