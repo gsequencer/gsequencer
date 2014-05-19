@@ -570,7 +570,7 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
     }
 
     /* select first instrument */
-    ipatch->nth_level = 1;
+    ipatch->nth_level = 2;
     instrument = ags_playable_sublevel_names(playable);
 
     error = NULL;

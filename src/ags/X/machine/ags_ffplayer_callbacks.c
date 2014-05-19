@@ -164,15 +164,13 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 
   /* load presets */
   error = NULL;
-
-  AGS_IPATCH(ffplayer->ipatch)->nth_level = 1;
-  instrument = ags_playable_sublevel_names(playable);
-
   ags_playable_level_select(playable,
 			    1, preset_name,
 			    &error);
 
   /* select first instrument */
+  ags_combo_box_text_remove_all(ffplayer->instrument);
+
   ipatch->nth_level = 2;
   instrument = ags_playable_sublevel_names(playable);
   
@@ -188,6 +186,9 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
     
     instrument++;
   }
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
+			   0);
 }
 
 void

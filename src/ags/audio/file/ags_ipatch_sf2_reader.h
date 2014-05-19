@@ -57,9 +57,9 @@ struct _AgsIpatchSF2Reader
   int bank;
   int program;
 
-  IpatchSF2Preset *preset;
-  IpatchSF2Inst *instrument;
-  IpatchSF2Sample *sample;
+  IpatchContainer *preset;
+  IpatchContainer *instrument;
+  IpatchContainer *sample;
 
   int count;
 };

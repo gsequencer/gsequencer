@@ -342,7 +342,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 									       &error);
 
     if(error != NULL){
-      g_error("%s\0", error->message);
+      g_warning("%s\0", error->message);
     }
 
     /* load samples */
@@ -438,7 +438,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       {
 	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->preset,
 						    IPATCH_TYPE_SF2_INST);
-      
+
 	if(ipatch_list != NULL){
 	  list = ipatch_list->items;
 	}else{
@@ -508,6 +508,8 @@ ags_ipatch_level_select(AgsPlayable *playable,
   AgsIpatchSF2Reader *ipatch_sf2_reader;
   gboolean success;
 
+  GError *this_error;
+
   ipatch = AGS_IPATCH(playable);
 
   if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
@@ -533,21 +535,23 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	ipatch_sf2_reader->selected[1] = sublevel_name;
 
 	/* preset */
-	ipatch_list = ipatch_sf2_get_presets(ipatch_sf2_reader->sf2);
+	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->sf2,
+						    IPATCH_TYPE_SF2_PRESET);
 	list = ipatch_list->items;
 	
 	while(list != NULL){
 	  if(!g_strcmp0(IPATCH_SF2_PRESET(list->data)->name, sublevel_name)){
-	    ipatch_sf2_reader->preset = IPATCH_SF2_PRESET(list->data);
+	    this_error = NULL;
+	    ipatch_sf2_reader->preset = ipatch_convert_object_to_type(IPATCH_SF2_PRESET(list->data),
+								      IPATCH_TYPE_CONTAINER,
+								      &this_error);
 
 	    /* some extra code for bank and program */
 	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
 					      &(ipatch_sf2_reader->bank),
 					      &(ipatch_sf2_reader->program));
 
-#ifdef AGS_DEBUG
 	    g_message("debug: bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
-#endif
 
 	    break;
 	  }
@@ -572,7 +576,10 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	
 	  while(list != NULL){
 	    if(!g_strcmp0(IPATCH_SF2_INST(list->data)->name, sublevel_name)){
-	      ipatch_sf2_reader->instrument = IPATCH_SF2_INST(list->data);
+	      this_error = NULL;
+	      ipatch_sf2_reader->instrument = ipatch_convert_object_to_type(IPATCH_SF2_INST(list->data),
+									    IPATCH_TYPE_CONTAINER,
+									    &this_error);
 	      break;
 	    }
 
@@ -752,6 +759,7 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 
       reader = AGS_IPATCH_SF2_READER(ipatch->reader);
 
+      this_error = NULL;
       sample = ipatch_sf2_find_sample(reader->sf2,
 				      reader->selected[3],
 				      NULL);
