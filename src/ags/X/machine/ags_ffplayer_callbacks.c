@@ -173,7 +173,7 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 			    &error);
 
   /* select first instrument */
-  ipatch->nth_level = 1;
+  ipatch->nth_level = 2;
   instrument = ags_playable_sublevel_names(playable);
   
   error = NULL;

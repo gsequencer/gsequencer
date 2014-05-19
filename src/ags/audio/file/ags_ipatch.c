@@ -336,7 +336,10 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     ipatch->base = ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
 					  &error);
 
-    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = ipatch->base;
+    error = NULL;
+    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = ipatch_convert_object_to_type(ipatch->handle->file,
+									       IPATCH_TYPE_SF2,
+									       &error);
 
     if(error != NULL){
       g_error("%s\0", error->message);
