@@ -343,9 +343,8 @@ ags_navigation_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
   /* devout */
-  //TODO:JK: uncomment me
-  //  g_signal_connect((GObject *) navigation->devout, "tic\0",
-  //		   G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
+  g_signal_connect((GObject *) navigation->devout, "tic\0",
+  		   G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
@@ -422,6 +421,13 @@ void
 ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact)
 {
+  gchar *timestr;
+
+  gtk_spin_button_set_value(navigation->position_tact,
+			    tact);
+
+  timestr = ags_navigation_tact_to_time_string(tact);
+  gtk_label_set_text(navigation->duration_time, timestr);
 }
 
 void

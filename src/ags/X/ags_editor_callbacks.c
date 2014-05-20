@@ -224,15 +224,49 @@ ags_editor_link_index_response_callback(GtkDialog *dialog, gint response, AgsEdi
 }
 
 void
-ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor)
+ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
+				    AgsEditor *editor)
 {
-  AgsTaskThread *task_thread;
-  AgsScrollOnPlay *scroll_on_play;
+  cairo_t *cr;
+  gdouble loop_start, loop_end;
+  gdouble position;
 
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
+  loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);
 
-  scroll_on_play = ags_scroll_on_play_new((GtkWidget *) editor);  
-  ags_task_thread_append_task(task_thread, AGS_TASK(scroll_on_play));
+  tact = gtk_spin_button_get_value(navigation->position_tact);
+
+  if(!gtk_toggle_button_get_active(navigation->loop) || tact <= loop_end){
+    position = tact * editor->note_edit->control_current.control_width;
+  }else{
+    position = loop_start * editor->note_edit->control_current.control_width;
+  }
+
+  /* scroll */
+  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
+    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
+			position - (0.125 * editor->note_edit->control_current.control_width));
+  }
+
+  /* draw fader */
+  cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
+
+  cairo_push_group(cr);
+
+  ags_note_edit_draw_scroll(editor->note_edit, cr,
+			    position);
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  /* update tact */
+  if(!gtk_toggle_button_get_active(navigation->loop) || tact + 1.0 < loop_end){
+    gtk_spin_button_set_value(navigation->position_tact,
+			      tact + 1.0);
+  }else{
+    gtk_spin_button_set_value(navigation->position_tact,
+			      loop_start);
+  }
 }
 
 void

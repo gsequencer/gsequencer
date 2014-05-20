@@ -25,7 +25,7 @@
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_display_tact.h>
+#include <ags/audio/task/ags_change_tact.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
 
@@ -231,10 +231,12 @@ ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
   AgsTaskThread *task_thread;
-  AgsDisplayTact *display_tact;
+  AgsChangeTact *change_tact;
 
   task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
 
-  display_tact = ags_display_tact_new((GtkWidget *) navigation);
-  ags_task_thread_append_task(task_thread, AGS_TASK(display_tact));
+  change_tact = ags_change_tact_new(navigation,
+				    AGS_NAVIGATION_DEFAULT_TACT_STEP,
+				    TRUE);
+  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
 }

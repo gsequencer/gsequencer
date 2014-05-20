@@ -24,6 +24,8 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
+#include <ags/X/ags_window.h>
+
 #include <math.h>
 #include <cairo.h>
 
@@ -332,10 +334,13 @@ ags_editor_finalize(GObject *gobject)
 void
 ags_editor_connect(AgsConnectable *connectable)
 {
-  GtkHPaned *hpaned;
+  AgsWindow *window;
   AgsEditor *editor;
+  GtkHPaned *hpaned;
 
   editor = AGS_EDITOR(connectable);
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
+
 
   g_signal_connect((GObject *) editor, "destroy\0",
 		   G_CALLBACK(ags_editor_destroy_callback), (gpointer) editor);
@@ -347,8 +352,8 @@ ags_editor_connect(AgsConnectable *connectable)
                     G_CALLBACK (ags_editor_button_press_callback), (gpointer) editor);
 
   /*  */
-  g_signal_connect((GObject *) editor->devout, "tic\0",
-  		   G_CALLBACK(ags_editor_tic_callback), (gpointer) editor);
+  g_signal_connect_after((GObject *) window->navigation, "change-position\0",
+			 G_CALLBACK(ags_editor_change_position_callback), (gpointer) editor);
 
   /*  */
   ags_connectable_connect(AGS_CONNECTABLE(editor->toolbar));

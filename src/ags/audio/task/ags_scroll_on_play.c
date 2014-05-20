@@ -135,8 +135,8 @@ void
 ags_scroll_on_play_launch(AgsTask *task)
 {
   AgsWindow *window;
-  AgsScrollOnPlay *scroll_on_play;
   AgsEditor *editor;
+  AgsScrollOnPlay *scroll_on_play;
   cairo_t *cr;
   gdouble position;
   gdouble loop_start, loop_end;
@@ -166,9 +166,14 @@ ags_scroll_on_play_launch(AgsTask *task)
   }
 
   /* draw fader */
+  cairo_push_group(cr);
+
   cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
   ags_note_edit_draw_scroll(editor->note_edit, cr,
 			    position);
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
 
   /* update tact */
   if(!gtk_toggle_button_get_active(window->navigation->loop) || tact + 1.0 < loop_end){

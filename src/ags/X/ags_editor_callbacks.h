@@ -24,6 +24,7 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_editor.h>
+#include <ags/X/ags_navigation.h>
 
 void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEditor *editor);
 gboolean ags_editor_destroy_callback(GtkObject *object, AgsEditor *editor);
@@ -38,7 +39,8 @@ void ags_editor_popup_add_index_callback(GtkWidget *widget, GtkMenu *popup);
 void ags_editor_popup_remove_index_callback(GtkWidget *widget, GtkMenu *popup);
 void ags_editor_popup_link_index_callback(GtkWidget *widget, GtkMenu *popup);
 
-void ags_editor_tic_callback(AgsDevout *devout, AgsEditor *editor);
+void ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
+					 AgsEditor *editor);
 
 void ags_editor_set_audio_channels_callback(AgsAudio *audio,
 					    guint audio_channels, guint audio_channels_old,
