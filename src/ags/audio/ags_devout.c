@@ -327,27 +327,27 @@ ags_devout_init(AgsDevout *devout)
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
 
   /* delay and attack */
-  devout->delay = (guint *) malloc((int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT) *
-				   sizeof(guint));
+  devout->delay = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+				   sizeof(gdouble));
 
-  devout->attack = (guint *) malloc((int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT) *
+  devout->attack = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
 				   sizeof(guint));
 
   default_tact_frames = (guint) (AGS_DEVOUT_DEFAULT_DELAY * AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
   default_tic_frames = (guint) (default_tact_frames * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
-  memset(devout->delay, 0, (int) (2.0 *  ceil(AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
-  memset(devout->delay, 0, (int) (2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
+  memset(devout->delay, 0, (int) (ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
+  memset(devout->delay, 0, (int) (ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
 
-  for(i = 0; i < (int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+  for(i = 0; i < (int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT); i++){
     devout->attack[i] = (i * default_tic_frames) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
   }
 
-  for(i = 0; i < (int) 2.0 * ceil(AGS_NOTATION_TICS_PER_BEAT); i++){
+  for(i = 0; i < (int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT); i++){
     if(AGS_DEVOUT_DEFAULT_BUFFER_SIZE < default_tic_frames){
-      devout->delay[i] = (i * default_tic_frames) / (i * (AGS_DEVOUT_DEFAULT_BUFFER_SIZE));
+      devout->delay[i] = (default_tic_frames) / (AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
     }else{
-      devout->delay[i] = (i * default_tic_frames) / (i * (AGS_DEVOUT_DEFAULT_BUFFER_SIZE / default_tic_frames));
+      devout->delay[i] = (default_tic_frames) / (AGS_DEVOUT_DEFAULT_BUFFER_SIZE / default_tic_frames);
     }
   }
 

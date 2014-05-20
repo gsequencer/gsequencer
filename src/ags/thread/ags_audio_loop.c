@@ -554,18 +554,6 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
-  /* determine if attack should be switched */
-  devout->delay_counter += 1;
-      
-  if(devout->delay_counter == devout->delay){
-    if((AGS_DEVOUT_ATTACK_FIRST & (devout->flags)) != 0)
-      devout->flags &= (~AGS_DEVOUT_ATTACK_FIRST);
-    else
-      devout->flags |= AGS_DEVOUT_ATTACK_FIRST;
-      
-    devout->delay_counter = 0;
-  }
-
   pthread_mutex_unlock(&(audio_loop->recall_mutex));
 
   pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));

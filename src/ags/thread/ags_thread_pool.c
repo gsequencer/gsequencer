@@ -361,51 +361,41 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   auto void ags_thread_pool_pull_running();
 
   void ags_thread_pool_pull_running(){
+    do{
+      g_atomic_int_inc(&(thread_pool->newly_pulled));
 
-  ags_thread_pool_pull_running_LABEL0:
-  
-    list = g_atomic_pointer_get(&(thread_pool->returnable_thread));
-
-    while(list != NULL){
-      returnable_thread = AGS_RETURNABLE_THREAD(list->data);
-
-      if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
-	pthread_mutex_lock(&(thread_pool->pull_mutex));
-
-	g_atomic_pointer_set(&(thread_pool->returnable_thread),
-			     g_list_remove(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
-					   returnable_thread));
-
-	g_atomic_pointer_set(&(thread_pool->running_thread),
-			     g_list_prepend(g_atomic_pointer_get(&(thread_pool->running_thread)),
-					    returnable_thread));
-
-	pthread_mutex_unlock(&(thread_pool->pull_mutex));
-
-	break;
+      pthread_mutex_lock(&(thread_pool->creation_mutex));
+      
+      if((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(thread_pool->flags)))) != 0){
+	pthread_cond_signal(&(thread_pool->creation_cond));
       }
 
-      list = list->next;
-    }
+      pthread_mutex_unlock(&(thread_pool->creation_mutex));
 
-    //NOTE: shall not return null rather block thread until thread is available
-    if(list == NULL){
-      goto ags_thread_pool_pull_running_LABEL0;      
-    }
+      list = thread_pool->returnable_thread;
 
-    g_atomic_int_inc(&(thread_pool->newly_pulled));
+      while(list != NULL){
+	returnable_thread = AGS_RETURNABLE_THREAD(list->data);
 
-    pthread_mutex_lock(&(thread_pool->creation_mutex));
-      
-    if((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(thread_pool->flags)))) != 0){
-      pthread_cond_signal(&(thread_pool->creation_cond));
-    }
+	if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
+	  pthread_mutex_lock(&(thread_pool->pull_mutex));
 
-    pthread_mutex_unlock(&(thread_pool->creation_mutex));
+	  thread_pool->returnable_thread = g_list_remove(thread_pool->returnable_thread,
+							 returnable_thread);
+
+	  thread_pool->running_thread = g_list_prepend(thread_pool->running_thread,
+						       returnable_thread);
+
+	  pthread_mutex_unlock(&(thread_pool->pull_mutex));
+
+	  break;
+	}
+	
+	list = list->next;
+      }
+    }while(list == NULL);
   }
 
-#ifdef AGS_DEBUG
-  g_message("ags_thread_pool_pull\0");
 #endif
 
   returnable_thread = NULL;
@@ -433,10 +423,6 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   }
 
   pthread_mutex_unlock(&(thread_pool->return_mutex));
-
-#ifdef AGS_DEBUG
-  g_message("ags_thread_pool_pull@END\0");
-#endif
 
   return(AGS_THREAD(returnable_thread));
 }

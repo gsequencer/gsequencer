@@ -290,7 +290,9 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
     AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
 
+#ifdef AGS_DEBUG	
     g_message("creating destination\0");
+#endif
 
     return;
   }

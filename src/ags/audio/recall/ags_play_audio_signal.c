@@ -189,19 +189,7 @@ ags_play_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connecta
 
 void
 ags_play_audio_signal_run_init_pre(AgsRecall *recall)
-{
-  AgsAudioSignal *audio_signal;
-  AgsPlayAudioSignal *play_audio_signal;
-
-  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
-  AGS_RECALL(play_audio_signal)->flags &= (~AGS_RECALL_PERSISTENT);
-
-  audio_signal = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
-
-  g_message("=======================\n\nplaying AgsAudioSignal#%llx on AgsDevout[%d]\n\n=======================\0",
-  	    (long long unsigned int) audio_signal,
-  	    AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->audio_channel);
-  
+{  
   /* call parent */
   AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_init_pre(recall);
 }

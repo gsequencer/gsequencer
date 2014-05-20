@@ -672,9 +672,11 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	
 	/* recycling */
 	recycling = selected_channel->first_recycling;
-	
+
+#ifdef AGS_DEBUG	
 	g_message("playing: %u | %u\n\0", note->x[0], note->y);
-	
+#endif
+
 	while(recycling != selected_channel->last_recycling->next){
 	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
 					      (GObject *) recycling,
