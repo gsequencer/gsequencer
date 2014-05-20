@@ -40,12 +40,21 @@ void ags_navigation_disconnect(AgsConnectable *connectable);
 void ags_navigation_destroy(GtkObject *object);
 void ags_navigation_show(GtkWidget *widget);
 
+void ags_navigation_real_change_position(AgsNavigation *navigation,
+					 gdouble tact);
+
 enum{
   PROP_0,
   PROP_DEVOUT,
 };
 
+enum{
+  CHANGE_POSITION,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_navigation_parent_class = NULL;
+static guint navigation_signals[LAST_SIGNAL];
 
 GType
 ags_navigation_get_type(void)
@@ -109,6 +118,20 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
+
+  /* AgsNavigationClass */
+  navigation->change_position = ags_navigation_real_change_position;
+
+  /* signals */
+  navigation_signals[CHANGE_POSITION] =
+    g_signal_new("change-position\0",
+		 G_TYPE_FROM_CLASS (navigation),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsNavigationClass, change_position),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__DOUBLE,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_DOUBLE);
 }
 
 void
@@ -219,9 +242,6 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
-
-  navigation->raster = (GtkCheckButton *) gtk_check_button_new_with_label("raster\0");
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->raster, FALSE, FALSE, 2);
 }
 
 void
@@ -333,9 +353,6 @@ ags_navigation_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) navigation->loop_right_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_loop_right_tact_callback), (gpointer) navigation);
-
-  g_signal_connect((GObject *) navigation->raster, "clicked\0",
-		   G_CALLBACK(ags_navigation_raster_callback), (gpointer) navigation);
 }
 
 void
@@ -399,6 +416,25 @@ ags_navigation_tact_to_time_string(gdouble tact)
   timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
 
   return(timestr);
+}
+
+void
+ags_navigation_real_change_position(AgsNavigation *navigation,
+				    gdouble tact)
+{
+}
+
+void
+ags_navigation_change_position(AgsNavigation *navigation,
+			       gdouble tact)
+{
+  g_return_if_fail(AGS_IS_NAVIGATION(navigation));
+
+  g_object_ref(G_OBJECT(navigation));
+  g_signal_emit(G_OBJECT(navigation),
+		navigation_signals[CHANGE_POSITION], 0,
+		tact);
+  g_object_unref(G_OBJECT(navigation));
 }
 
 AgsNavigation*

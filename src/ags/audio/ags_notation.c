@@ -601,6 +601,10 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 
   notes = notation->notes;
 
+  if(notes == NULL){
+    return(FALSE);
+  }
+
   /* get entry point */
   while(notes->next != NULL && (note = AGS_NOTE(notes->data))->x[0] < x)
     notes = notes->next;

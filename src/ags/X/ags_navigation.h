@@ -71,11 +71,17 @@ struct _AgsNavigation
 struct _AgsNavigationClass
 {
   GtkVBoxClass vbox;
+
+  void (*change_position)(AgsNavigation *navigation,
+			  gdouble tact);
 };
 
 GType ags_navigation_get_type(void);
 
 gchar* ags_navigation_tact_to_time_string(gdouble tact);
+
+void ags_navigation_change_position(AgsNavigation *navigation,
+				    gdouble tact);
 
 AgsNavigation* ags_navigation_new();
 

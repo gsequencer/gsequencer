@@ -134,8 +134,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_remove_region_from_selection.$(OBJEXT) \
 	ags-ags_cancel_recall.$(OBJEXT) \
 	ags-ags_add_audio_signal.$(OBJEXT) \
-	ags-ags_free_selection.$(OBJEXT) ags-ags_open_file.$(OBJEXT) \
-	ags-ags_open_single_file.$(OBJEXT) \
+	ags-ags_change_tact.$(OBJEXT) ags-ags_free_selection.$(OBJEXT) \
+	ags-ags_open_file.$(OBJEXT) ags-ags_open_single_file.$(OBJEXT) \
 	ags-ags_start_devout.$(OBJEXT) ags-ags_apply_synth.$(OBJEXT) \
 	ags-ags_init_audio.$(OBJEXT) \
 	ags-ags_unref_audio_signal.$(OBJEXT) \
@@ -704,6 +704,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/task/ags_channel_set_recycling.h \
 	./src/ags/audio/task/ags_link_channel.h \
 	./src/ags/audio/task/ags_add_audio_signal.c \
+	./src/ags/audio/task/ags_change_tact.h \
+	./src/ags/audio/task/ags_change_tact.c \
 	./src/ags/audio/task/ags_apply_synth.h \
 	./src/ags/audio/task/ags_add_audio_signal.h \
 	./src/ags/audio/task/ags_add_region_to_selection.h \
@@ -1399,6 +1401,7 @@ include ./$(DEPDIR)/ags-ags_buffer_recycling.Po
 include ./$(DEPDIR)/ags-ags_cancel_audio.Po
 include ./$(DEPDIR)/ags-ags_cancel_channel.Po
 include ./$(DEPDIR)/ags-ags_cancel_recall.Po
+include ./$(DEPDIR)/ags-ags_change_tact.Po
 include ./$(DEPDIR)/ags-ags_channel.Po
 include ./$(DEPDIR)/ags-ags_channel_iter.Po
 include ./$(DEPDIR)/ags-ags_channel_set_recycling.Po
@@ -2196,6 +2199,20 @@ ags-ags_add_audio_signal.obj: ./src/ags/audio/task/ags_add_audio_signal.c
 #	$(AM_V_CC)source='./src/ags/audio/task/ags_add_audio_signal.c' object='ags-ags_add_audio_signal.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_add_audio_signal.obj `if test -f './src/ags/audio/task/ags_add_audio_signal.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_add_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_add_audio_signal.c'; fi`
+
+ags-ags_change_tact.o: ./src/ags/audio/task/ags_change_tact.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_change_tact.o -MD -MP -MF $(DEPDIR)/ags-ags_change_tact.Tpo -c -o ags-ags_change_tact.o `test -f './src/ags/audio/task/ags_change_tact.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_change_tact.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_change_tact.Tpo $(DEPDIR)/ags-ags_change_tact.Po
+#	$(AM_V_CC)source='./src/ags/audio/task/ags_change_tact.c' object='ags-ags_change_tact.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_change_tact.o `test -f './src/ags/audio/task/ags_change_tact.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_change_tact.c
+
+ags-ags_change_tact.obj: ./src/ags/audio/task/ags_change_tact.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_change_tact.obj -MD -MP -MF $(DEPDIR)/ags-ags_change_tact.Tpo -c -o ags-ags_change_tact.obj `if test -f './src/ags/audio/task/ags_change_tact.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_change_tact.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_change_tact.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_change_tact.Tpo $(DEPDIR)/ags-ags_change_tact.Po
+#	$(AM_V_CC)source='./src/ags/audio/task/ags_change_tact.c' object='ags-ags_change_tact.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_change_tact.obj `if test -f './src/ags/audio/task/ags_change_tact.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_change_tact.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_change_tact.c'; fi`
 
 ags-ags_free_selection.o: ./src/ags/audio/task/ags_free_selection.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_free_selection.o -MD -MP -MF $(DEPDIR)/ags-ags_free_selection.Tpo -c -o ags-ags_free_selection.o `test -f './src/ags/audio/task/ags_free_selection.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_free_selection.c

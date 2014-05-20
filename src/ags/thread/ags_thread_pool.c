@@ -396,8 +396,6 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
     }while(list == NULL);
   }
 
-#endif
-
   returnable_thread = NULL;
 
   pthread_mutex_lock(&(thread_pool->return_mutex));
