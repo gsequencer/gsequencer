@@ -204,6 +204,8 @@ ags_navigation_init(AgsNavigation *navigation)
 
 
   navigation->loop = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->loop),
+			       TRUE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop, FALSE, FALSE, 2);
 
   label = (GtkLabel *) gtk_label_new("position\0");
@@ -241,6 +243,8 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
   navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65000.0, 1.0);
+  gtk_spin_button_set_value(navigation->loop_right_tact,
+			    4.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
 }
 

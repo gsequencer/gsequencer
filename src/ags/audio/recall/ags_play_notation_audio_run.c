@@ -642,17 +642,15 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   if(list == NULL)
     return;
 
+  //FIXME:JK: nth_run isn't best joice
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    audio_channel = 0; //ags_recycling_container_find(AGS_RECALL(play_notation_audio_run)->recall_id->recycling_container,
-      //				 audio->input->first_recycling);
-
+    audio_channel = nth_run;
     channel = ags_channel_nth(audio->input,
 			      audio_channel);
   }else{
-    audio_channel = ags_recycling_container_find(AGS_RECALL(play_notation_audio_run)->recall_id->recycling_container,
-						 audio->output->first_recycling);
-
-    channel = audio->output;
+    audio_channel = nth_run;
+    channel = ags_channel_nth(audio->output,
+			      audio_channel);
   }
 
   timestamp_thread = AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
