@@ -138,10 +138,8 @@ ags_change_tact_launch(AgsTask *task)
   change_tact = AGS_CHANGE_TACT(task);
   navigation = change_tact->navigation;
 
-  if((AGS_NAVIGATION_BLOCK_TACT & (navigation->flags)) == 0){
-    ags_navigation_change_position(navigation,
-				   change_tact->new_tact);
-  }
+  ags_navigation_change_position(navigation,
+				 change_tact->new_tact);
 }
 
 AgsChangeTact*

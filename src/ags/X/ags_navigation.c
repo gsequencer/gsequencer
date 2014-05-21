@@ -349,8 +349,8 @@ ags_navigation_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
   /* devout */
-  g_signal_connect((GObject *) navigation->devout, "tic\0",
-  		   G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
+  g_signal_connect_after((GObject *) navigation->devout, "tic\0",
+  			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
@@ -427,19 +427,31 @@ void
 ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact)
 {
+  GMainContext *main_context;
   gchar *timestr;
+  GCond cond;
+  GMutex mutex;
+
+  g_cond_init(&cond);
+  g_mutex_init(&mutex);
+
+  /*  */
+  main_context = g_main_context_default();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &cond,
+					  &mutex);
+    }
+  }
 
   timestr = ags_navigation_tact_to_time_string(tact);
   gtk_label_set_text(navigation->duration_time, timestr);
 
-  if((AGS_NAVIGATION_BLOCK_TACT & (navigation->flags)) == 0){
-    navigation->flags |= AGS_NAVIGATION_BLOCK_TACT;
-
-    //    gtk_spin_button_set_value(navigation->position_tact,
-    //			      tact);
-
-    navigation->flags &= (~AGS_NAVIGATION_BLOCK_TACT);
-  }
+  g_main_context_release(main_context);
 }
 
 void

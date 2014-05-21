@@ -288,11 +288,15 @@ ags_navigation_position_tact_callback(GtkWidget *widget,
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   devout = window->devout;
 
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
+  ags_navigation_change_position(navigation,
+				 gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
 
-  change_tact = ags_change_tact_new(navigation,
-				    gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
-  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
+  //  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
+
+  //  change_tact = ags_change_tact_new(navigation,
+  //				    gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
+
+  //  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
 }
 
 void
