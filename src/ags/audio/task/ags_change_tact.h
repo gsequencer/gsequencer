@@ -40,8 +40,7 @@ struct _AgsChangeTact
   AgsTask task;
 
   AgsNavigation *navigation;
-  gdouble steps;
-  gboolean forward;
+  gdouble new_tact;
 };
 
 struct _AgsChangeTactClass
@@ -52,7 +51,6 @@ struct _AgsChangeTactClass
 GType ags_change_tact_get_type();
 
 AgsChangeTact* ags_change_tact_new(AgsNavigation *navigation,
-				   gdouble steps,
-				   gboolean forward);
+				   gdouble new_tact);
 
 #endif /*__AGS_CHANGE_TACT_H__*/

@@ -101,8 +101,7 @@ void
 ags_change_tact_init(AgsChangeTact *change_tact)
 {
   change_tact->navigation = NULL;
-  change_tact->steps = 1.0;
-  change_tact->forward = TRUE;
+  change_tact->new_tact = 1.0;
 }
 
 void
@@ -137,24 +136,13 @@ ags_change_tact_launch(AgsTask *task)
 
   change_tact = AGS_CHANGE_TACT(task);
 
-  if(change_tact->forward){
-    new_tact = gtk_spin_button_get_value(change_tact->navigation->position_tact) + change_tact->steps;
-  }else{
-    new_tact = gtk_spin_button_get_value(change_tact->navigation->position_tact) - change_tact->steps;
-
-    if(new_tact < 0.0){
-      new_tact = 0.0;
-    }
-  }
-
-  ags_navigation_change_position(change_tact->navigation,
-				 new_tact);
+  gtk_spin_button_set_value(change_tact->navigation->position_tact,
+			    change_tact->new_tact);
 }
 
 AgsChangeTact*
 ags_change_tact_new(AgsNavigation *navigation,
-		    gdouble steps,
-		    gboolean forward)
+		    gdouble new_tact)
 {
   AgsChangeTact *change_tact;
 
@@ -162,8 +150,7 @@ ags_change_tact_new(AgsNavigation *navigation,
 					       NULL);
   
   change_tact->navigation = navigation;
-  change_tact->steps = steps;
-  change_tact->forward = forward;
+  change_tact->new_tact = new_tact;
 
   return(change_tact);
 }
