@@ -23,6 +23,8 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/recall/ags_count_beats_audio.h>
+
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_change_tact.h>
@@ -174,7 +176,7 @@ ags_navigation_play_callback(GtkWidget *widget,
     
       /* create append task */
       append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
-					  machine->audio);
+					  (GObject *) machine->audio);
       
       list = g_list_prepend(list, append_audio);
     }
@@ -247,7 +249,44 @@ void
 ags_navigation_loop_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
-  /* empty */
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsAudio *audio;
+  AgsRecall *recall;
+  GList *machines;
+  GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+  GValue value = {0,};
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean(&value,
+		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+
+  while(machines != NULL){
+    machine = AGS_MACHINE(machines->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+      g_message("found machine to loop!\n\0");
+
+      audio = machine->audio;
+
+      list = audio->play;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+	recall = AGS_RECALL(list->data);
+	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->loop,
+			    &value);
+
+	list = list->next;
+      }
+    }
+
+    machines = machines->next;
+  }
 }
 
 void
@@ -281,14 +320,88 @@ void
 ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 				       AgsNavigation *navigation)
 {
-  /* empty */
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsAudio *audio;
+  AgsRecall *recall;
+  GList *machines;
+  GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+  GValue value = {0,};
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean(&value,
+		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+
+  while(machines != NULL){
+    machine = AGS_MACHINE(machines->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+      g_message("found machine to loop!\n\0");
+
+      audio = machine->audio;
+
+      list = audio->play;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+	recall = AGS_RECALL(list->data);
+	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->notation_loop_start,
+			    &value);
+
+	list = list->next;
+      }
+    }
+
+    machines = machines->next;
+  }
 }
 
 void
 ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 					AgsNavigation *navigation)
 {
-  /* empty */
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsAudio *audio;
+  AgsRecall *recall;
+  GList *machines;
+  GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+  GValue value = {0,};
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean(&value,
+		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+
+  while(machines != NULL){
+    machine = AGS_MACHINE(machines->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+      g_message("found machine to loop!\n\0");
+
+      audio = machine->audio;
+
+      list = audio->play;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+	recall = AGS_RECALL(list->data);
+	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->notation_loop_end,
+			    &value);
+
+	list = list->next;
+      }
+    }
+
+    machines = machines->next;
+  }
 }
 
 void
