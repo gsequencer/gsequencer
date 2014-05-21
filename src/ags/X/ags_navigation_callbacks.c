@@ -106,40 +106,18 @@ void
 ags_navigation_rewind_callback(GtkWidget *widget,
 			       AgsNavigation *navigation)
 {
-  AgsWindow *window;
-  AgsDevout *devout;
-  AgsTaskThread *task_thread;
-  AgsChangeTact *change_tact;
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  devout = window->devout;
-
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
-
-  change_tact = ags_change_tact_new(navigation,
-				    -1.0 * AGS_NAVIGATION_REWIND_STEPS +
-				    gtk_spin_button_get_value(window->navigation->position_tact));
-  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
+  gtk_spin_button_set_value(navigation->position_tact,
+			    -1.0 * AGS_NAVIGATION_REWIND_STEPS +
+			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 
 void
 ags_navigation_prev_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
-  AgsWindow *window;
-  AgsDevout *devout;
-  AgsTaskThread *task_thread;
-  AgsChangeTact *change_tact;
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  devout = window->devout;
-
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
-
-  change_tact = ags_change_tact_new(navigation,
-				    -1.0 * AGS_NAVIGATION_SEEK_STEPS+
-				    gtk_spin_button_get_value(window->navigation->position_tact));
-  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
+  gtk_spin_button_set_value(navigation->position_tact,
+			    -1.0 * AGS_NAVIGATION_SEEK_STEPS +
+			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 
 void
@@ -239,40 +217,19 @@ void
 ags_navigation_next_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
-  AgsWindow *window;
-  AgsDevout *devout;
-  AgsTaskThread *task_thread;
-  AgsChangeTact *change_tact;
-
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  devout = window->devout;
-
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
-
-  change_tact = ags_change_tact_new(navigation,
-				    AGS_NAVIGATION_REWIND_STEPS+
-				    gtk_spin_button_get_value(window->navigation->position_tact));
-  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
+  gtk_spin_button_set_value(navigation->position_tact,
+			    AGS_NAVIGATION_REWIND_STEPS+
+			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 
 void
 ags_navigation_forward_callback(GtkWidget *widget,
 				AgsNavigation *navigation)
 {
-  AgsWindow *window;
-  AgsDevout *devout;
-  AgsTaskThread *task_thread;
-  AgsChangeTact *change_tact;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  devout = window->devout;
-
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
-
-  change_tact = ags_change_tact_new(navigation,
-				    AGS_NAVIGATION_SEEK_STEPS+
-				    gtk_spin_button_get_value(window->navigation->position_tact));
-  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
+  gtk_spin_button_set_value(navigation->position_tact,
+			    AGS_NAVIGATION_SEEK_STEPS +
+			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 
 void
@@ -437,7 +394,11 @@ void
 ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
+  navigation->flags |= AGS_NAVIGATION_BLOCK_TACT;
+
   gtk_spin_button_set_value(navigation->position_tact,
 			    gtk_spin_button_get_value(navigation->position_tact) +
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+
+  navigation->flags &= (~AGS_NAVIGATION_BLOCK_TACT);
 }

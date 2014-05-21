@@ -39,9 +39,15 @@
 typedef struct _AgsNavigation AgsNavigation;
 typedef struct _AgsNavigationClass AgsNavigationClass;
 
+typedef enum{
+  AGS_NAVIGATION_BLOCK_TACT   = 1,
+}AgsNavigationFlags;
+
 struct _AgsNavigation
 {
   GtkVBox vbox;
+
+  guint flags;
 
   AgsDevout *devout;
 

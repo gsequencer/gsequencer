@@ -131,13 +131,17 @@ ags_change_tact_finalize(GObject *gobject)
 void
 ags_change_tact_launch(AgsTask *task)
 {
+  AgsNavigation *navigation;
   AgsChangeTact *change_tact;
   gdouble new_tact;
 
   change_tact = AGS_CHANGE_TACT(task);
+  navigation = change_tact->navigation;
 
-  gtk_spin_button_set_value(change_tact->navigation->position_tact,
-			    change_tact->new_tact);
+  if((AGS_NAVIGATION_BLOCK_TACT & (navigation->flags)) == 0){
+    ags_navigation_change_position(navigation,
+				   change_tact->new_tact);
+  }
 }
 
 AgsChangeTact*

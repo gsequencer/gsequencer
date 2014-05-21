@@ -644,11 +644,11 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   //FIXME:JK: nth_run isn't best joice
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    audio_channel = nth_run;
+    audio_channel = 0;
     channel = ags_channel_nth(audio->input,
 			      audio_channel);
   }else{
-    audio_channel = nth_run;
+    audio_channel = 0;
     channel = ags_channel_nth(audio->output,
 			      audio_channel);
   }

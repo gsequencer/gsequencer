@@ -234,8 +234,6 @@ ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
   loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);
 
-  tact = gtk_spin_button_get_value(navigation->position_tact);
-
   if(!gtk_toggle_button_get_active(navigation->loop) || tact <= loop_end){
     position = tact * editor->note_edit->control_current.control_width;
   }else{
@@ -258,15 +256,6 @@ ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
-
-  /* update tact */
-  if(!gtk_toggle_button_get_active(navigation->loop) || tact + 1.0 < loop_end){
-    gtk_spin_button_set_value(navigation->position_tact,
-			      tact + 1.0);
-  }else{
-    gtk_spin_button_set_value(navigation->position_tact,
-			      loop_start);
-  }
 }
 
 void

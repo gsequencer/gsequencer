@@ -149,6 +149,8 @@ ags_navigation_init(AgsNavigation *navigation)
   GtkHBox *hbox;
   GtkLabel *label;
 
+  navigation->flags = 0;
+
   navigation->devout = NULL;
 
   g_signal_connect_after(G_OBJECT(navigation), "parent-set\0",
@@ -429,6 +431,15 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   timestr = ags_navigation_tact_to_time_string(tact);
   gtk_label_set_text(navigation->duration_time, timestr);
+
+  if((AGS_NAVIGATION_BLOCK_TACT & (navigation->flags)) == 0){
+    navigation->flags |= AGS_NAVIGATION_BLOCK_TACT;
+
+    //    gtk_spin_button_set_value(navigation->position_tact,
+    //			      tact);
+
+    navigation->flags &= (~AGS_NAVIGATION_BLOCK_TACT);
+  }
 }
 
 void
