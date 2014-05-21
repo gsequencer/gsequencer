@@ -148,7 +148,6 @@ ags_navigation_play_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsMachine *machine;
-  AgsDevout *devout;
   AgsInitAudio *init_audio;
   AgsAppendAudio *append_audio;
   AgsStartDevout *start_devout;
@@ -166,8 +165,6 @@ ags_navigation_play_callback(GtkWidget *widget,
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       printf("found machine to play!\n\0");
-
-      devout = AGS_DEVOUT(machine->audio->devout);
 
       /* create init task */
       init_audio = ags_init_audio_new(machine->audio,
@@ -200,9 +197,42 @@ void
 ags_navigation_stop_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
-  //  AGS_DEVOUT_GET_CLASS(navigation->devout)->stop(navigation->devout);
+  AgsWindow *window;
+  AgsMachine *machine;
+  AgsCancelAudio *cancel_audio;
+  GList *machines;
+  GList *list;
 
-  /* empty */
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+  list = NULL;
+
+  while(machines != NULL){
+    machine = AGS_MACHINE(machines->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+      printf("found machine to stop!\n\0");
+    
+      /* create append task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  FALSE, FALSE, TRUE);
+      
+      list = g_list_prepend(list, cancel_audio);
+    }
+
+    machines = machines->next;
+  }
+
+  /* create start task */
+  if(list != NULL){
+    list = g_list_reverse(list);
+
+    /* append AgsStartDevout */
+    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+				 list);
+  }  
 }
 
 void
