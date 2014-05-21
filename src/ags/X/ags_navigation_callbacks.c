@@ -331,9 +331,9 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_boolean(&value,
-		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+		      gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
@@ -375,9 +375,9 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_boolean(&value,
-		      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+		      gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
