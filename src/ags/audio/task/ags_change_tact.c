@@ -18,7 +18,12 @@
 
 #include <ags/audio/task/ags_change_tact.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
+
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_gui_thread.h>
 
 void ags_change_tact_class_init(AgsChangeTactClass *change_tact);
 void ags_change_tact_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -133,13 +138,36 @@ ags_change_tact_launch(AgsTask *task)
 {
   AgsNavigation *navigation;
   AgsChangeTact *change_tact;
+  AgsGuiThread *gui_thread;
+  GMainContext *main_context;
   gdouble new_tact;
 
   change_tact = AGS_CHANGE_TACT(task);
+
   navigation = change_tact->navigation;
+
+  gui_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->gui_thread;
+  main_context = g_main_context_default();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+  }
+
+  gdk_threads_enter();
+  gdk_threads_leave();
 
   ags_navigation_change_position(navigation,
 				 change_tact->new_tact);
+
+  g_main_context_iteration(main_context, FALSE);
+
+  g_main_context_release(main_context);
 }
 
 AgsChangeTact*
