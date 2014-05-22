@@ -406,11 +406,21 @@ void
 ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
+  gdouble tact;
+
   navigation->flags |= AGS_NAVIGATION_BLOCK_TACT;
 
-  gtk_spin_button_set_value(navigation->position_tact,
-			    gtk_spin_button_get_value(navigation->position_tact) +
-			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+  tact = gtk_spin_button_get_value(navigation->position_tact);
+
+  if(!gtk_toggle_button_get_active(navigation->loop) ||
+     tact + AGS_NAVIGATION_DEFAULT_TACT_STEP != gtk_spin_button_get_value(navigation->loop_right_tact)){
+    gtk_spin_button_set_value(navigation->position_tact,
+			      tact +
+			      AGS_NAVIGATION_DEFAULT_TACT_STEP);
+  }else{
+    gtk_spin_button_set_value(navigation->position_tact,
+			      gtk_spin_button_get_value(navigation->loop_left_tact));
+  }
 
   navigation->flags &= (~AGS_NAVIGATION_BLOCK_TACT);
 }
