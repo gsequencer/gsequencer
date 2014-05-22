@@ -150,8 +150,8 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
-      ags_channel_recursive_cancel(channel,
-				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+      ags_channel_tillrecycling_cancel(channel,
+				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
       
       channel = channel->next;
     }
@@ -162,8 +162,8 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
-      ags_channel_recursive_cancel(channel,
-				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+      ags_channel_tillrecycling_cancel(channel,
+				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
       
       channel = channel->next;
     }
@@ -174,8 +174,8 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
-      ags_channel_recursive_cancel(channel,
-				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+      ags_channel_tillrecycling_cancel(channel,
+				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
       
       channel = channel->next;
     }

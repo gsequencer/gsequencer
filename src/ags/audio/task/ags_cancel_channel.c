@@ -139,7 +139,7 @@ ags_cancel_channel_launch(AgsTask *task)
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   /* cancel AgsChannel */
-  ags_channel_recursive_cancel(cancel_channel->channel, cancel_channel->recall_id);
+  ags_channel_tillrecycling_cancel(cancel_channel->channel, cancel_channel->recall_id);
 
   /* set remove flag */
   if(cancel_channel->play != NULL)
