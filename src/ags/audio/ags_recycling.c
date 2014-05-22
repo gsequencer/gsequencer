@@ -437,7 +437,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	}
 
 	for(;
-	    template_stream != NULL && frames_looped_copied < loop_frames && k < devout->buffer_size && template_k < devout->buffer_size && frames_copied < frame_count;
+	    stream != NULL && template_stream != NULL && frames_looped_copied < loop_frames && k < devout->buffer_size && template_k < devout->buffer_size && frames_copied < frame_count;
 	    k++, template_k++, frames_looped_copied++){
 
 	  /* copy audio data from template to new AgsAudioSignal */
