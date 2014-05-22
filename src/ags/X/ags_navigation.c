@@ -429,29 +429,9 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 {
   GMainContext *main_context;
   gchar *timestr;
-  GCond cond;
-  GMutex mutex;
-
-  g_cond_init(&cond);
-  g_mutex_init(&mutex);
-
-  /*  */
-  main_context = g_main_context_default();
-
-  if(!g_main_context_acquire(main_context)){
-    gboolean got_ownership = FALSE;
-
-    while(!got_ownership){
-      got_ownership = g_main_context_wait(main_context,
-					  &cond,
-					  &mutex);
-    }
-  }
 
   timestr = ags_navigation_tact_to_time_string(tact);
   gtk_label_set_text(navigation->duration_time, timestr);
-
-  g_main_context_release(main_context);
 }
 
 void

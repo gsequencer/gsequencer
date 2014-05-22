@@ -22,12 +22,12 @@
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_gui_thread.h>
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_change_tact.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
 
@@ -280,23 +280,31 @@ void
 ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
-  AgsWindow *window;
-  AgsDevout *devout;
-  AgsTaskThread *task_thread;
-  AgsChangeTact *change_tact;
+  AgsGuiThread *gui_thread;
+  GMainContext *main_context;
 
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  devout = window->devout;
+  gui_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->gui_thread;
+  main_context = g_main_context_default();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+  }
+
+  gdk_threads_enter();
+  gdk_threads_leave();
+
+  g_main_context_iteration(main_context, FALSE);
 
   ags_navigation_change_position(navigation,
-				 gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
+				 gtk_spin_button_get_value(widget));
 
-  //  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread);
-
-  //  change_tact = ags_change_tact_new(navigation,
-  //				    gtk_spin_button_get_value(GTK_SPIN_BUTTON(widget)));
-
-  //  ags_task_thread_append_task(task_thread, AGS_TASK(change_tact));
+  g_main_context_release(main_context);
 }
 
 void
