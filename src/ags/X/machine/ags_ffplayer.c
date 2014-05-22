@@ -405,12 +405,15 @@ ags_ffplayer_finalize(GObject *gobject)
 void
 ags_ffplayer_connect(AgsConnectable *connectable)
 {
+  AgsWindow *window;
   AgsFFPlayer *ffplayer;
+  GList *list;
 
   ags_ffplayer_parent_connectable_interface->connect(connectable);
 
   /* AgsFFPlayer */
   ffplayer = AGS_FFPLAYER(connectable);
+  window = gtk_widget_get_toplevel(ffplayer);
 
   g_signal_connect((GObject *) ffplayer->open, "clicked\0",
 		   G_CALLBACK(ags_ffplayer_open_clicked_callback), (gpointer) ffplayer);
@@ -437,6 +440,24 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads\0",
 			 G_CALLBACK(ags_ffplayer_set_pads), NULL);
+  
+  //TODO:JK: magnify it
+  if(!gtk_toggle_button_get_active(window->navigation->loop)){
+    GList *list;
+
+    list = ags_recall_find_type(ffplayer->machine.audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+  
+    if(list != NULL){
+      AgsCountBeatsAudioRun *play_count_beats_audio_run;
+      GValue value = {0,};
+
+      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+      g_value_init(&value, G_TYPE_BOOLEAN);
+      g_value_set_boolean(&value, FALSE);
+      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->loop,
+			  &value);
+    }
+  }
 }
 
 void
