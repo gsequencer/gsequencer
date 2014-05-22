@@ -413,7 +413,7 @@ ags_navigation_tic_callback(AgsDevout *devout,
   tact = gtk_spin_button_get_value(navigation->position_tact);
 
   if(!gtk_toggle_button_get_active(navigation->loop) ||
-     tact + AGS_NAVIGATION_DEFAULT_TACT_STEP != gtk_spin_button_get_value(navigation->loop_right_tact)){
+     tact + AGS_NAVIGATION_DEFAULT_TACT_STEP < gtk_spin_button_get_value(navigation->loop_right_tact)){
     gtk_spin_button_set_value(navigation->position_tact,
 			      tact +
 			      AGS_NAVIGATION_DEFAULT_TACT_STEP);

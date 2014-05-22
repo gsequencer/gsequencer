@@ -343,11 +343,13 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 			     attack +
 			     template->loop_end) %
 			    AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
-  audio_signal->length = template->length;
-  
+
+  ags_audio_signal_stream_resize(audio_signal,
+				 template->length);
+    
   audio_signal->delay = delay;
   audio_signal->attack = attack;
-  
+
   ags_audio_signal_duplicate_stream(audio_signal,
 				    template);
 }
