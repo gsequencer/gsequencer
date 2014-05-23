@@ -647,7 +647,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       }
 
       /* depending on destination */
-      ags_matrix_input_map_recall(matrix, pads_old);
+      ags_matrix_input_map_recall(matrix, pads);
     }else{
       matrix->mapped_input_pad = audio->input_pads;
     }
@@ -724,7 +724,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       }
 
       /* depending on destination */
-      ags_matrix_output_map_recall(matrix, pads_old);
+      ags_matrix_output_map_recall(matrix, pads);
     }else{
       matrix->mapped_output_pad = audio->output_pads;
     }
@@ -745,12 +745,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 
   if(matrix->mapped_input_pad > input_pad_start){
     return;
-  }else{
-    matrix->mapped_input_pad = audio->input_pads;
   }
 
   source = ags_channel_nth(audio->input,
-			   input_pad_start * audio->audio_channels);
+			   matrix->mapped_input_pad * audio->audio_channels);
 
   current = source;
 
@@ -813,6 +811,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 
     current = current->next_pad;
   }
+
+  matrix->mapped_input_pad = input_pad_start;
 }
 
 void
@@ -832,12 +832,10 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 
   if(matrix->mapped_output_pad > output_pad_start){
     return;
-  }else{
-    matrix->mapped_output_pad = audio->output_pads;
   }
-  
+
   source = ags_channel_nth(audio->output,
-			   output_pad_start * audio->audio_channels);
+			   matrix->mapped_output_pad * audio->audio_channels);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
@@ -861,7 +859,7 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 			    NULL, NULL,
 			    "ags-loop\0",
 			    source->audio_channel, source->audio_channel + 1,
-			    output_pad_start, output_pad_start + 1,
+			    matrix->mapped_output_pad, output_pad_start,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_PLAY | 
 			     AGS_RECALL_FACTORY_ADD),
@@ -898,12 +896,14 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 			    NULL, NULL,
 			    "ags-stream\0",
 			    source->audio_channel, source->audio_channel + 1,
-			    output_pad_start, audio->output_pads,
+			    matrix->mapped_output_pad, output_pad_start,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
+
+  matrix->mapped_output_pad = output_pad_start;
 }
 
 void
