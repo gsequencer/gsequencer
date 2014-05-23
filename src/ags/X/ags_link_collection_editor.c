@@ -376,7 +376,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_collection_editor->link,
 				   &iter)){
-    AgsMachine *link_machine;
+    AgsMachine *machine, *link_machine;
     AgsMachineEditor *machine_editor;
     AgsChannel *channel, *link;
     AgsLinkChannel *link_channel;
@@ -388,6 +388,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
     machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_collection_editor),
 								AGS_TYPE_MACHINE_EDITOR));
+    machine = machine_editor->machine;
 
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);
 
@@ -419,7 +420,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
 				  task);
     }else{
       guint first_link;
@@ -443,7 +444,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
 
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
 				  task);
     }
   }

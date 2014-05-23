@@ -708,7 +708,7 @@ ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
   gchar *id;
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file,
-							      file_lookup->ref);
+							      AGS_RECALL_DEPENDENCY(file_lookup->ref)->dependency);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
