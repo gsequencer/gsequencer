@@ -381,6 +381,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     AgsChannel *channel, *link;
     AgsLinkChannel *link_channel;
     GtkTreeModel *model;
+    GList *task;
     guint first_line, count;
     guint i;
     GError *error;
@@ -400,6 +401,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 		       &iter,
 		       1, &link_machine,
 		       -1);
+    
+    task = NULL;
 
     count = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->count);
 
@@ -409,13 +412,15 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       for(i = 0; i < count; i++){
 	/* create task */
 	link_channel = ags_link_channel_new(channel, NULL);
-
-	/* append AgsLinkChannel */
-	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
-				    AGS_TASK(link_channel));
+	task = g_list_prepend(task, link_channel);
 
 	channel = channel->next;
       }
+      
+      /* append AgsLinkChannel */
+      task = g_list_reverse(task);
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
+				  task);
     }else{
       guint first_link;
 
@@ -430,14 +435,16 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       for(i = 0; i < count; i++){
 	/* create task */
 	link_channel = ags_link_channel_new(channel, link);
-
-	/* append AgsLinkChannel */
-	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
-				    AGS_TASK(link_channel));
+	task = g_list_prepend(task, link_channel);
 
 	channel = channel->next;
 	link = link->next;
       }
+
+
+      task = g_list_reverse(task);
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
+				  task);
     }
   }
 }
