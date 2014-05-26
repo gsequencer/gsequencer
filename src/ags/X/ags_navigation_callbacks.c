@@ -432,6 +432,10 @@ ags_navigation_tic_callback(AgsDevout *devout,
 
   g_main_context_iteration(main_context, FALSE);
 
+  if(!gtk_toggle_button_get_active(navigation->scroll)){
+    return;
+  }
+
   navigation->flags |= AGS_NAVIGATION_BLOCK_TACT;
 
   tact = gtk_spin_button_get_value(navigation->position_tact);

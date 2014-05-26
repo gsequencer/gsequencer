@@ -73,6 +73,8 @@ struct _AgsNavigation
 
   GtkSpinButton *loop_left_tact;
   GtkSpinButton *loop_right_tact;
+
+  GtkCheckButton *scroll;
 };
 
 struct _AgsNavigationClass

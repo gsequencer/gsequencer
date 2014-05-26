@@ -590,6 +590,36 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
       preset++;
     }
 
+    /* Get the first iter in the list */
+    preset = xmlGetProp(node,
+			"preset\0");
+
+    list_store = gtk_combo_box_get_model(ffplayer->preset);
+    valid = gtk_tree_model_get_iter_first(list_store, &iter);
+    i = 0;
+
+    while(valid){
+      gchar *str;
+
+      gtk_tree_model_get (list_store, &iter,
+			  0, &str,
+			  -1);
+      if(!g_strcasecmp(preset,
+		       str)){
+	g_free (str);
+
+	break;
+      }else{
+	g_free (str);
+
+	i++;
+	valid = gtk_tree_model_iter_next(list_store, &iter);
+      }
+    }
+
+    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
+			     i);
+
     /* select first instrument */
     ipatch->nth_level = 2;
     instrument = ags_playable_sublevel_names(playable);
@@ -606,67 +636,37 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
 
       instrument++;
     }
-  }
 
-  /* Get the first iter in the list */
-  preset = xmlGetProp(node,
-		      "preset\0");
+    /* Get the first iter in the list */
+    instrument = xmlGetProp(node,
+			    "instrument\0");
 
-  list_store = gtk_combo_box_get_model(ffplayer->preset);
-  valid = gtk_tree_model_get_iter_first (list_store, &iter);
-  i = 0;
+    list_store = gtk_combo_box_get_model(ffplayer->instrument);
+    valid = gtk_tree_model_get_iter_first(list_store, &iter);
+    i = 0;
 
-  while(valid){
-    gchar *str;
+    while(valid){
+      gchar *str;
 
-    gtk_tree_model_get (list_store, &iter,
-			0, &str,
-			-1);
-    if(!g_strcasecmp(preset,
-		     str)){
-      g_free (str);
+      gtk_tree_model_get(list_store, &iter,
+			 0, &str,
+			 -1);
+      if(!g_strcasecmp(instrument,
+		       str)){
+	g_free (str);
 
-      break;
-    }else{
-      g_free (str);
+	break;
+      }else{
+	g_free (str);
 
-      i++;
-      valid = gtk_tree_model_iter_next (list_store, &iter);
+	i++;
+	valid = gtk_tree_model_iter_next(list_store, &iter);
+      }
     }
+
+    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
+			     i);
   }
-
-  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
-			   i);
-
-  /* Get the first iter in the list */
-  preset = xmlGetProp(node,
-		      "instrument\0");
-
-  list_store = gtk_combo_box_get_model(ffplayer->instrument);
-  valid = gtk_tree_model_get_iter_first (list_store, &iter);
-  i = 0;
-
-  while(valid){
-    gchar *str;
-
-    gtk_tree_model_get (list_store, &iter,
-			0, &str,
-			-1);
-    if(!g_strcasecmp(instrument,
-		     str)){
-      g_free (str);
-
-      break;
-    }else{
-      g_free (str);
-
-      i++;
-      valid = gtk_tree_model_iter_next (list_store, &iter);
-    }
-  }
-
-  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
-			   i);
 }
 
 xmlNode*

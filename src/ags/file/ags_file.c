@@ -738,11 +738,11 @@ ags_file_real_read(AgsFile *file)
 
   gtk_widget_show_all(GTK_WIDGET(ags_main->window));
   
-  g_message("========== resolved\0");
+  g_message("XML file resolved\0");
 
   ags_connectable_connect(AGS_CONNECTABLE(ags_main));
 
-  g_message("========== connected\0");
+  g_message("XML file connected\0");
 
   /* start */
   ags_file_read_start(file);
