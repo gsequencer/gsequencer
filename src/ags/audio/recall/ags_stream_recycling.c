@@ -42,12 +42,15 @@ void ags_stream_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connect
 void ags_stream_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_recycling_finalize(GObject *gobject);
 
-void ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child);
+void ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child,
+				      gpointer data);
 AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
-void ags_stream_recycling_remove(AgsRecall *recall);
 
+void ags_stream_recycling_source_add_audio_signal_callback(AgsRecycling *source,
+							   AgsAudioSignal *audio_signal,
+							   AgsStreamRecycling *stream_recycling);
 void ags_stream_recycling_stream_audio_signal_done(AgsRecall *recall, AgsStreamRecycling *stream_recycling);
 
 static gpointer ags_stream_recycling_parent_class = NULL;
@@ -164,9 +167,14 @@ ags_stream_recycling_finalize(GObject *gobject)
 void
 ags_stream_recycling_connect(AgsConnectable *connectable)
 {
+  AgsStreamRecycling *stream_recycling;
+
+  stream_recycling = AGS_STREAM_RECYCLING(connectable);
+
   ags_stream_recycling_parent_connectable_interface->connect(connectable);
 
-  /* empty */
+  g_signal_connect(AGS_RECALL_RECYCLING(stream_recycling)->source, "add_audio_signal\0",
+		   G_CALLBACK(ags_stream_recycling_source_add_audio_signal_callback), stream_recycling);
 }
 
 void
@@ -180,7 +188,12 @@ ags_stream_recycling_disconnect(AgsConnectable *connectable)
 void
 ags_stream_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  AgsStreamRecycling *stream_recycling;
+
   ags_stream_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
+
+  g_signal_connect(G_OBJECT(stream_recycling), "child-added\0",
+		   G_CALLBACK(ags_stream_recycling_child_added), NULL);
 }
 
 void
@@ -190,7 +203,8 @@ ags_stream_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
 }
 
 void
-ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child)
+ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child,
+				 gpointer data)
 {
   g_signal_connect(G_OBJECT(child), "done\0",
 		   G_CALLBACK(ags_stream_recycling_stream_audio_signal_done), recall);
@@ -209,6 +223,14 @@ ags_stream_recycling_duplicate(AgsRecall *recall,
 
 
   return((AgsRecall *) copy);
+}
+
+void
+ags_stream_recycling_source_add_audio_signal_callback(AgsRecycling *source,
+						      AgsAudioSignal *audio_signal,
+						      AgsStreamRecycling *stream_recycling)
+{
+  g_object_ref(audio_signal);
 }
 
 void

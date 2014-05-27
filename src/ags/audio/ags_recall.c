@@ -1087,6 +1087,17 @@ ags_recall_resolve_dependencies(AgsRecall *recall)
 }
 
 void
+ags_recall_child_added(AgsRecall *parent, AgsRecall *child)
+{
+  g_return_if_fail(AGS_IS_RECALL(parent));
+  g_object_ref(G_OBJECT(parent));
+  g_signal_emit(G_OBJECT(parent),
+		recall_signals[CHILD_ADDED], 0,
+		child);
+  g_object_unref(G_OBJECT(parent));
+}
+
+void
 ags_recall_real_run_init_pre(AgsRecall *recall)
 {
   GList *list;
@@ -1719,6 +1730,11 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   }
   
   child->parent = parent;
+
+  if(parent != NULL){
+    ags_recall_child_added(parent,
+			   child);
+  }
 
   ags_connectable_connect(AGS_CONNECTABLE(child));
 

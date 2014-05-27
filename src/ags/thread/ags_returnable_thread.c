@@ -197,7 +197,8 @@ ags_returnable_thread_run(AgsThread *thread)
     g_atomic_pointer_set(&(thread_pool->running_thread),
 			 g_list_remove(g_atomic_pointer_get(&(thread_pool->running_thread)),
 				       thread));
-
+    g_atomic_int_dec_and_test(&(thread_pool->n_threads));
+    
     pthread_mutex_unlock(&(thread_pool->creation_mutex));
 
     pthread_mutex_lock(&(thread_pool->return_mutex));

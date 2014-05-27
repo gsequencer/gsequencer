@@ -688,7 +688,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  audio_signal->stream_current = audio_signal->stream_beginning;
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
-	  
+	  g_object_unref(audio_signal);
+
 	  recycling = recycling->next;
 	}
       }else if(note->x[0] > play_notation_audio_run->count_beats_audio_run->notation_counter){

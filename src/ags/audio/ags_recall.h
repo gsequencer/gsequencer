@@ -151,6 +151,7 @@ GType ags_recall_get_type();
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 
 void ags_recall_resolve_dependencies(AgsRecall *reall);
+void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);
 
 void ags_recall_run_init_pre(AgsRecall *recall);
 void ags_recall_run_init_inter(AgsRecall *recall);
