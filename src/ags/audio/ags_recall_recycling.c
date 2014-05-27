@@ -731,7 +731,7 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 
     if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
       if(recall_recycling->child_source != NULL){
-	g_list_free(recall_recycling->child_source);
+	//	ags_list_free_and_unref_link(recall_recycling->child_source);
       }
     
       recall_recycling->child_source = NULL;
@@ -790,10 +790,8 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
     }
 
     if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
-      ags_list_free_and_unref_link(recall_recycling->child_source);
-
       if(recall_recycling->child_source){
-	g_list_free(recall_recycling->child_source);
+	//	ags_list_free_and_unref_link(recall_recycling->child_source);
       }
 
       recall_recycling->child_source = NULL;

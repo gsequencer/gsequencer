@@ -11985,6 +11985,7 @@ fi
 
 
 #AGS_WITH_XMLRPC_C
+AGS_DEBUG=1
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-ldl':

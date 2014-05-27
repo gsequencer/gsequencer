@@ -25,6 +25,8 @@
 
 #include <ags/object/ags_dynamic_connectable.h>
 
+#include <ags/audio/task/ags_unref_audio_signal.h>
+
 void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signal);
 void ags_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -147,7 +149,14 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 void
 ags_stream_audio_signal_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsTaskThread *task_thread;
+  AgsUnrefAudioSignal *unref_audio_signal;
+
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_RECALL(gobject)->devout)->ags_main)->main_loop)->task_thread;
+
+  unref_audio_signal = ags_unref_audio_signal_new(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
+  ags_task_thread_append_task(task_thread,
+			      unref_audio_signal);
 
   /* call parent */
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->finalize(gobject); 

@@ -42,13 +42,10 @@ void ags_buffer_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connect
 void ags_buffer_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_buffer_recycling_finalize(GObject *gobject);
 
-void ags_buffer_recycling_child_added(AgsRecall *recall, AgsRecall *child);
 AgsRecall* ags_buffer_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 void ags_buffer_recycling_remove(AgsRecall *recall);
-
-void ags_buffer_recycling_buffer_audio_signal_done(AgsRecall *recall, AgsBufferRecycling *buffer_recycling);
 
 static gpointer ags_buffer_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_recycling_parent_connectable_interface;
@@ -188,13 +185,6 @@ ags_buffer_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
   ags_buffer_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
 
-void
-ags_buffer_recycling_child_added(AgsRecall *recall, AgsRecall *child)
-{
-  g_signal_connect(G_OBJECT(child), "done\0",
-		   G_CALLBACK(ags_buffer_recycling_buffer_audio_signal_done), recall);
-}
-
 AgsRecall*
 ags_buffer_recycling_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
@@ -208,18 +198,6 @@ ags_buffer_recycling_duplicate(AgsRecall *recall,
 
 
   return((AgsRecall *) copy);
-}
-
-void
-ags_buffer_recycling_buffer_audio_signal_done(AgsRecall *recall, AgsBufferRecycling *buffer_recycling)
-{
-  AgsRemoveAudioSignal *remove_audio_signal;
-
-  remove_audio_signal = ags_remove_audio_signal_new(AGS_RECALL_RECYCLING(buffer_recycling)->source,
-						    AGS_RECALL_AUDIO_SIGNAL(recall)->source);
-
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(recall->devout)->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(remove_audio_signal));
 }
 
 AgsBufferRecycling*

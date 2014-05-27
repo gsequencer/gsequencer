@@ -20,6 +20,7 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 AC_CONFIG_MACRO_DIR(m4)
 
 #AGS_WITH_XMLRPC_C
+AGS_DEBUG=1
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-ldl':
