@@ -149,14 +149,8 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 void
 ags_stream_audio_signal_finalize(GObject *gobject)
 {
-  AgsTaskThread *task_thread;
-  AgsUnrefAudioSignal *unref_audio_signal;
-
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_RECALL(gobject)->devout)->ags_main)->main_loop)->task_thread;
-
-  unref_audio_signal = ags_unref_audio_signal_new(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
-  ags_task_thread_append_task(task_thread,
-			      unref_audio_signal);
+  ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(AGS_RECALL(gobject)->parent)->source,
+				    AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
 
   /* call parent */
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->finalize(gobject); 

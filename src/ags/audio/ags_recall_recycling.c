@@ -676,11 +676,11 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
       if((recall_audio_signal->source == audio_signal) &&
 	 (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal)->flags)) == 0){
-       	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
-					      NULL);
+	//   	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
+	//				      NULL);
 	
-	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
-				    (AgsTask *) cancel_recall);
+	//	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+	//			    (AgsTask *) cancel_recall);
 
 	break;
       }
@@ -773,11 +773,11 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 
       if(recall_audio_signal->destination == audio_signal &&
 	 (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal)->flags)) == 0){
-	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
-					      NULL);
+	//	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
+	//				      NULL);
 
-	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
-				    (AgsTask *) cancel_recall);
+	//	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+	//			    (AgsTask *) cancel_recall);
       }
 
       list = list->next;

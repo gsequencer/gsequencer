@@ -432,7 +432,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_UINT, G_TYPE_INT);
 
   recall_signals[CHILD_ADDED] =
-    g_signal_new("child_added\0",
+    g_signal_new("child-added\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, child_added),

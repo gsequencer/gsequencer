@@ -231,6 +231,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 				 destination);
 
   AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
+  g_object_unref(destination);
+  
 
 #ifdef AGS_DEBUG	
   g_message("creating destination\0");
