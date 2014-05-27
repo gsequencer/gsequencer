@@ -477,6 +477,7 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
     if(length != 0){
       stream_end = stream->prev;
       stream_end->next = NULL;
+      audio_signal->stream_end = stream_end;
     }else{
       audio_signal->stream_beginning = NULL;
       audio_signal->stream_current = NULL;

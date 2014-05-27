@@ -32,8 +32,6 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
-
-#include <ags/audio/task/ags_unref_audio_signal.h>
  
 void ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signal);
 void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -159,27 +157,18 @@ ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal)
 void
 ags_buffer_audio_signal_finalize(GObject *gobject)
 {
-  AgsDevout *devout;
   AgsBufferAudioSignal *buffer_audio_signal;
   AgsRecallAudioSignal *recall_audio_signal;
-  AgsUnrefAudioSignal *unref_audio_signal;
-  AgsAudioSignal *audio_signal;
 
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(gobject);
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
-  audio_signal = recall_audio_signal->source;
-
-  if(AGS_RECALL(recall_audio_signal)->parent != NULL){
-    ags_recycling_remove_audio_signal(AGS_RECYCLING(AGS_RECALL_RECYCLING(AGS_RECALL(recall_audio_signal)->parent)->source),
-				      recall_audio_signal->source);
+  if(recall_audio_signal->destination != NULL){
+    g_object_unref(G_OBJECT(recall_audio_signal->source));
   }
 
   if(recall_audio_signal->source != NULL){
     g_object_unref(G_OBJECT(recall_audio_signal->source));
-    /* unref audio signal */
-    //    unref_audio_signal = ags_unref_audio_signal_new(audio_signal);
-    //    ags_devout_append_task(AGS_DEVOUT(AGS_RECALL(recall_audio_signal)->devout), (AgsTask *) unref_audio_signal);
   }
 
   /* call parent */
@@ -264,7 +253,10 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   stream_source = source->stream_current;
 
   if(stream_source == NULL){
-    ags_recall_done(recall);
+    if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0){
+      ags_recall_done(recall);
+    }
+
     return;
   }
 
@@ -280,7 +272,7 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 				       (GObject *) recall->recall_id->recycling_container->parent->recall_id);
     ags_recycling_create_audio_signal_with_frame_count(recycling,
 						       destination,
-						       AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE + AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
+						       AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE + 2 * AGS_DEVOUT_DEFAULT_BUFFER_SIZE,
 						       0, 0);
     ags_audio_signal_connect(destination);
   

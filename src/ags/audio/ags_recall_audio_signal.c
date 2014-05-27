@@ -17,6 +17,7 @@
  */
 
 #include <ags/audio/ags_recall_audio_signal.h>
+#include <ags/audio/ags_recall_recycling.h>
 
 #include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
@@ -57,6 +58,7 @@ void ags_recall_audio_signal_run_init_post(AgsRecall *recall);
 void ags_recall_audio_signal_run_pre(AgsRecall *recall);
 void ags_recall_audio_signal_run_inter(AgsRecall *recall);
 void ags_recall_audio_signal_run_post(AgsRecall *recall);
+void ags_recall_audio_signal_done(AgsRecall *recall);
 
 AgsRecall* ags_recall_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
@@ -186,7 +188,9 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_audio_signal;
-  
+
+  recall->done = ags_recall_audio_signal_done;  
+
   recall->duplicate = ags_recall_audio_signal_duplicate;
 }
 
@@ -352,11 +356,13 @@ ags_recall_audio_signal_finalize(GObject *gobject)
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
-  if(recall_audio_signal->destination != NULL)
+  if(recall_audio_signal->destination != NULL){
     g_object_unref(recall_audio_signal->destination);
+  }
 
-  if(recall_audio_signal->source != NULL)
+  if(recall_audio_signal->source != NULL){
     g_object_unref(recall_audio_signal->source);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_audio_signal_parent_class)->finalize(gobject);
@@ -486,17 +492,23 @@ ags_recall_audio_signal_run_post(AgsRecall *recall){
 }
 
 void
+ags_recall_audio_signal_done(AgsRecall *recall)
+{
+  g_object_unref(G_OBJECT(recall));
+}
+
+void
 ags_recall_audio_signal_notify_devout(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
 				      gpointer data)
 {
-  /* emtpy */
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_audio_signal_notify_devout_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
 					    gpointer data)
 {
-  /* emtpy */
+  //TODO:JK: implement me
 }
 
 AgsRecallAudioSignal*

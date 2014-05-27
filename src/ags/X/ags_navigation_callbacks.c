@@ -388,7 +388,7 @@ ags_navigation_tic_callback(AgsDevout *devout,
   AgsTaskThread *task_thread;
 
   change_tact = ags_change_tact_new(navigation);
-  task_thread = AGS_GUI_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->gui_thread)->gui_task_thread;
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
   ags_task_thread_append_task(task_thread,
 			      change_tact);
 }

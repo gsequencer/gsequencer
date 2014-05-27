@@ -407,6 +407,7 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   }else{
     g_atomic_int_inc(&(thread_pool->queued));
 
+    //FIXME:JK: g_list_length is very unsafe
     while((n_threads = g_list_length(g_atomic_pointer_get(&(thread_pool->running_thread)))) > max_threads){
 #ifdef AGS_DEBUG
       g_message("n_threads = g_list_length(thread_pool->running_thread)) >= max_threads\0");

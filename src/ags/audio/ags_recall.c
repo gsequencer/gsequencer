@@ -108,6 +108,9 @@ AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 				     AgsRecallID *recall_id,
 				     guint *n_params, GParameter *parameter);
 
+void ags_recall_child_done(AgsRecall *child,
+			   AgsRecall *parent);
+
 enum{
   RESOLVE_DEPENDENCIES,
   RUN_INIT_PRE,
@@ -1002,8 +1005,8 @@ ags_recall_finalize(GObject *gobject)
     ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
   }
 
-  if(recall->name != NULL)
-    g_free(recall->name);
+  //  if(recall->name != NULL)
+  //    g_free(recall->name);
 
   ags_list_free_and_unref_link(recall->dependencies);
 
@@ -1641,6 +1644,23 @@ ags_recall_get_dependencies(AgsRecall *recall)
 }
 
 /**
+ * ags_recall_remove_child:
+ * @parent an #AgsRecall
+ * @child an #AgsRecall
+ *
+ * An #AgsRecall may have children.
+ */
+void
+ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
+{
+  recall->children = g_list_remove(recall->children,
+				   child);
+
+  g_object_unref(recall);
+  g_object_unref(child);
+}
+
+/**
  * ags_recall_add_child:
  * @parent an #AgsRecall
  * @child an #AgsRecall
@@ -1694,6 +1714,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 		 "devout\0", parent->devout,
 		 "recall_id\0", parent->recall_id,
 		 NULL);
+    g_signal_connect(G_OBJECT(child), "done\0",
+		     G_CALLBACK(ags_recall_child_done), parent);
   }
   
   child->parent = parent;
@@ -2051,6 +2073,14 @@ ags_recall_remove_handler(AgsRecall *recall,
 {
   recall->handlers = g_list_remove(recall->handlers,
 				   recall_handler);
+}
+
+void
+ags_recall_child_done(AgsRecall *child,
+		      AgsRecall *parent)
+{
+  ags_recall_remove_child(parent,
+			  child);
 }
 
 AgsRecall*

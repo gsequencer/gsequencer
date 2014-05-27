@@ -180,6 +180,7 @@ void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *dependenc
 void ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *template);
 GList* ags_recall_get_dependencies(AgsRecall *recall);
 
+void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
 void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
 GList* ags_recall_get_children(AgsRecall *recall);
 
