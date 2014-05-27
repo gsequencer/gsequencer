@@ -30,6 +30,7 @@
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_change_tact.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
@@ -280,18 +281,8 @@ void
 ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
-  AgsTaskThread *task_thread;
-  AgsChangeTact *change_tact;
-  gdouble tact;
-
-  tact = gtk_spin_button_get_value(widget);
-
-  change_tact = ags_change_tact_new(navigation,
-				    tact);
-
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
-  ags_task_thread_append_task(task_thread,
-			      change_tact);
+  ags_navigation_change_position(navigation,
+				 gtk_spin_button_get_value(widget));
 }
 
 void
@@ -393,47 +384,11 @@ void
 ags_navigation_tic_callback(AgsDevout *devout,
 			    AgsNavigation *navigation)
 {
-  AgsGuiThread *gui_thread;
-  GMainContext *main_context;
-  gdouble tact;
+  AgsChangeTact *change_tact;
+  AgsTaskThread *task_thread;
 
-  gui_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->gui_thread;
-  main_context = g_main_context_default();
-
-  if(!g_main_context_acquire(main_context)){
-    gboolean got_ownership = FALSE;
-
-    while(!got_ownership){
-      got_ownership = g_main_context_wait(main_context,
-					  &(gui_thread->cond),
-					  &(gui_thread->mutex));
-    }
-  }
-
-  gdk_threads_enter();
-  gdk_threads_leave();
-
-  g_main_context_iteration(main_context, FALSE);
-
-  if(!gtk_toggle_button_get_active(navigation->scroll)){
-    return;
-  }
-
-  navigation->flags |= AGS_NAVIGATION_BLOCK_TACT;
-
-  tact = gtk_spin_button_get_value(navigation->position_tact);
-
-  if(!gtk_toggle_button_get_active(navigation->loop) ||
-     tact + AGS_NAVIGATION_DEFAULT_TACT_STEP < gtk_spin_button_get_value(navigation->loop_right_tact)){
-    gtk_spin_button_set_value(navigation->position_tact,
-			      tact +
-			      AGS_NAVIGATION_DEFAULT_TACT_STEP);
-  }else{
-    gtk_spin_button_set_value(navigation->position_tact,
-			      gtk_spin_button_get_value(navigation->loop_left_tact));
-  }
-
-  navigation->flags &= (~AGS_NAVIGATION_BLOCK_TACT);
-
-  g_main_context_release(main_context);
+  change_tact = ags_change_tact_new(navigation);
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
+  ags_task_thread_append_task(task_thread,
+			      change_tact);
 }

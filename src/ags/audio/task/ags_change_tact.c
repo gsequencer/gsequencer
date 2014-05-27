@@ -106,7 +106,6 @@ void
 ags_change_tact_init(AgsChangeTact *change_tact)
 {
   change_tact->navigation = NULL;
-  change_tact->new_tact = 1.0;
 }
 
 void
@@ -136,13 +135,53 @@ ags_change_tact_finalize(GObject *gobject)
 void
 ags_change_tact_launch(AgsTask *task)
 {
-  ags_navigation_change_position(AGS_CHANGE_TACT(task)->navigation,
-				 AGS_CHANGE_TACT(task)->new_tact);
+  AgsGuiThread *gui_thread;
+  GMainContext *main_context;
+  gdouble tact;
+
+  gui_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_CHANGE_TACT(task)->navigation->devout->ags_main)->main_loop)->gui_thread;
+  main_context = g_main_context_default();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+  }
+
+  gdk_threads_enter();
+  gdk_threads_leave();
+
+  g_main_context_iteration(main_context, FALSE);
+
+  if(!gtk_toggle_button_get_active(AGS_CHANGE_TACT(task)->navigation->scroll)){
+    return;
+  }
+
+  AGS_CHANGE_TACT(task)->navigation->flags |= AGS_NAVIGATION_BLOCK_TACT;
+
+  tact = gtk_spin_button_get_value(AGS_CHANGE_TACT(task)->navigation->position_tact);
+
+  if(!gtk_toggle_button_get_active(AGS_CHANGE_TACT(task)->navigation->loop) ||
+     tact + AGS_NAVIGATION_DEFAULT_TACT_STEP < gtk_spin_button_get_value(AGS_CHANGE_TACT(task)->navigation->loop_right_tact)){
+    gtk_spin_button_set_value(AGS_CHANGE_TACT(task)->navigation->position_tact,
+			      tact +
+			      AGS_NAVIGATION_DEFAULT_TACT_STEP);
+  }else{
+    gtk_spin_button_set_value(AGS_CHANGE_TACT(task)->navigation->position_tact,
+			      gtk_spin_button_get_value(AGS_CHANGE_TACT(task)->navigation->loop_left_tact));
+  }
+
+  AGS_CHANGE_TACT(task)->navigation->flags &= (~AGS_NAVIGATION_BLOCK_TACT);
+
+  g_main_context_release(main_context);
 }
 
 AgsChangeTact*
-ags_change_tact_new(AgsNavigation *navigation,
-		    gdouble new_tact)
+ags_change_tact_new(AgsNavigation *navigation)
 {
   AgsChangeTact *change_tact;
 
@@ -150,7 +189,6 @@ ags_change_tact_new(AgsNavigation *navigation,
 					       NULL);
   
   change_tact->navigation = navigation;
-  change_tact->new_tact = new_tact;
 
   return(change_tact);
 }
