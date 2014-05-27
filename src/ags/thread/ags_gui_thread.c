@@ -17,6 +17,7 @@
  */
 
 #include <ags/thread/ags_gui_thread.h>
+#include <ags/thread/ags_gui_task_thread.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -130,6 +131,10 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->iter = 0;
   gui_thread->iter_stop = 1;
   gui_thread->iter_stop_is_delay = TRUE;
+
+  gui_thread->gui_task_thread = ags_gui_task_thread_new(NULL);
+  ags_thread_add_child(gui_thread,
+		       gui_thread->gui_task_thread);
 }
 
 void
@@ -169,6 +174,8 @@ ags_gui_thread_start(AgsThread *thread)
   /*  */
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
+
+    ags_thread_start(gui_thread->gui_task_thread);
   }
 }
 

@@ -49,6 +49,8 @@ struct _AgsGuiThread
   guint iter;
   guint iter_stop;
   gboolean iter_stop_is_delay;
+
+  AgsThread *gui_task_thread;
 };
 
 struct _AgsGuiThreadClass

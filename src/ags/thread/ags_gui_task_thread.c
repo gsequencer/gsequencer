@@ -17,6 +17,7 @@
  */
 
 #include <ags/thread/ags_gui_task_thread.h>
+#include <ags/thread/ags_gui_thread.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -33,9 +34,6 @@ void ags_gui_task_thread_finalize(GObject *gobject);
 
 void ags_gui_task_thread_start(AgsThread *thread);
 void ags_gui_task_thread_run(AgsThread *thread);
-
-void ags_gui_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
-void ags_gui_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
 
 static gpointer ags_gui_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_task_thread_parent_connectable_interface;
@@ -150,9 +148,30 @@ ags_gui_task_thread_start(AgsThread *thread)
 void
 ags_gui_task_thread_run(AgsThread *thread)
 {
-  AgsGuiTaskThread *gui_task_thread;
+  AgsGuiThread *gui_thread;
+  GMainContext *main_context;
+
+  gui_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(thread->devout)->ags_main)->main_loop)->gui_thread;
+  main_context = g_main_context_default();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+  }
+
+  gdk_threads_enter();
+  gdk_threads_leave();
+
+  g_main_context_iteration(main_context, FALSE);
 
   AGS_THREAD_CLASS(ags_gui_task_thread_parent_class)->run(thread);
+
+  g_main_context_release(main_context);
 }
  
 AgsGuiTaskThread*
