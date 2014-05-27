@@ -136,7 +136,8 @@ ags_change_tact_finalize(GObject *gobject)
 void
 ags_change_tact_launch(AgsTask *task)
 {
-  //not used
+  ags_navigation_change_position(AGS_CHANGE_TACT(task)->navigation,
+				 AGS_CHANGE_TACT(task)->new_tact);
 }
 
 AgsChangeTact*

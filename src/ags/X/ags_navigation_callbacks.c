@@ -280,35 +280,18 @@ void
 ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
-  AgsGuiThread *gui_thread;
-  GMainContext *main_context;
+  AgsTaskThread *task_thread;
+  AgsChangeTact *change_tact;
+  gdouble tact;
 
-  if((AGS_NAVIGATION_BLOCK_TACT & (navigation->flags)) == 0){
-    gui_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->gui_thread;
-    main_context = g_main_context_default();
+  tact = gtk_spin_button_get_value(widget);
 
-    if(!g_main_context_acquire(main_context)){
-      gboolean got_ownership = FALSE;
+  change_tact = ags_change_tact_new(navigation,
+				    tact);
 
-      while(!got_ownership){
-	got_ownership = g_main_context_wait(main_context,
-					    &(gui_thread->cond),
-					    &(gui_thread->mutex));
-      }
-    }
-
-    gdk_threads_enter();
-    gdk_threads_leave();
-
-    g_main_context_iteration(main_context, FALSE);
-  }
-
-  ags_navigation_change_position(navigation,
-				 gtk_spin_button_get_value(widget));
-
-  if((AGS_NAVIGATION_BLOCK_TACT & (navigation->flags)) == 0){
-    g_main_context_release(main_context);
-  }
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(navigation->devout->ags_main)->main_loop)->task_thread;
+  ags_task_thread_append_task(task_thread,
+			      change_tact);
 }
 
 void

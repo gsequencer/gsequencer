@@ -369,6 +369,8 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 
     /* refresh display */
     if(GTK_WIDGET_VISIBLE(editor)){
+      gdouble position;
+      
       cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
       cairo_push_group(cr);
 
@@ -378,6 +380,12 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
       if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
 	ags_note_edit_draw_position(note_edit, cr);
       }
+
+      //TODO:JK: implement me
+      //      position = gtk_range_get_value(GTK_RANGE(note_edit->hscrollbar));
+      //      position -= floor(position / note_edit->control_current.control_width);
+      //      ags_note_edit_draw_scroll(note_edit, cr,
+      //				position);
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);

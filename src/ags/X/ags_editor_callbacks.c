@@ -245,17 +245,6 @@ ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
     gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
 			position - (0.125 * editor->note_edit->control_current.control_width));
   }
-
-  /* draw fader */
-  cr = gdk_cairo_create(GTK_WIDGET(editor->note_edit->drawing_area)->window);
-
-  cairo_push_group(cr);
-
-  ags_note_edit_draw_scroll(editor->note_edit, cr,
-			    position);
-
-  cairo_pop_group_to_source(cr);
-  cairo_paint(cr);
 }
 
 void
