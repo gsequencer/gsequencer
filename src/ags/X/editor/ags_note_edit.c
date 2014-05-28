@@ -296,7 +296,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
     zoom_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
 
     tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->tact));
-    tact = exp2((double) gtk_option_menu_get_history(editor->toolbar->tact) - 4.0);
+    tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->tact) - 4.0);
 
     if((AGS_NOTE_EDIT_RESET_WIDTH & flags) != 0){
       note_edit->control_unit.control_width = (guint) (((double) note_edit->control_width * zoom_factor * tact));
@@ -423,7 +423,7 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
     i += note_edit->control_height;
   }
 
-  tact = exp2((double) gtk_option_menu_get_history(editor->toolbar->tact) - 4.0);
+  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->tact) - 4.0);
 
   i = note_edit->control_current.x0;
   
