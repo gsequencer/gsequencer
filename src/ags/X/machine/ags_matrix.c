@@ -87,9 +87,6 @@ void ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix);
 xmlNode* ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_file_read_matrix(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_write_matrix(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-
 void ags_matrix_set_audio_channels(AgsAudio *audio,
 				   guint audio_channels, guint audio_channels_old,
 				   gpointer data);
@@ -1144,13 +1141,11 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference\0", matrix,
 				   NULL));
 
-  history = gtk_option_menu_get_history(matrix->tact);
-  list = gtk_container_get_children(gtk_option_menu_get_menu(matrix->tact));
-  list = g_list_nth(list, history);
+  history = gtk_combo_box_get_active(matrix->tact);
 
   xmlNewProp(node,
 	     "tact\0",
-	     g_strdup_printf("%s\0", gtk_menu_item_get_label(GTK_MENU_ITEM(list->data))));
+	     g_strdup_printf("%s\0", gtk_combo_box_get_active_text(matrix->tact)));
 
   xmlNewProp(node,
 	     "length\0",

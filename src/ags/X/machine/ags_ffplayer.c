@@ -32,6 +32,7 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -75,10 +76,8 @@ gchar* ags_ffplayer_get_xml_type(AgsPlugin *plugin);
 void ags_ffplayer_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer);
+void ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer);
 xmlNode* ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-
-void ags_file_read_ffplayer(AgsFile *file, xmlNode *node, AgsPlugin *ffplayer);
-xmlNode* ags_file_write_ffplayer(AgsFile *file, xmlNode *parent, AgsPlugin *ffplayer);
 
 void ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				     guint audio_channels, guint audio_channels_old,
@@ -503,7 +502,7 @@ void
 ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsFFPlayer *gobject;
-  AgsFileLookup *file_lookup;
+  AgsFileLaunch *file_launch;
 
   gobject = AGS_FFPLAYER(plugin);
 
@@ -516,18 +515,59 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", gobject,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_ffplayer_resolve_filename), gobject);
+  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
+			     "node\0", node,
+			     NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_ffplayer_launch_task), gobject);
+}
+
+xmlNode*
+ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsFFPlayer *ffplayer;
+  xmlNode *node;
+  gchar *id;
+
+  ffplayer = AGS_FFPLAYER(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-ffplayer\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", ffplayer,
+				   NULL));
+
+  if(ffplayer->ipatch != NULL && ffplayer->ipatch->filename != NULL){
+    xmlNewProp(node,
+	       "filename\0",
+	       g_strdup(ffplayer->ipatch->filename));
+
+    xmlNewProp(node,
+	       "preset\0",
+	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->preset)));
+
+    xmlNewProp(node,
+	       "instrument\0",
+	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->instrument)));
+  }
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 void
-ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
+ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
   AgsFFPlayer *gobject;
@@ -539,9 +579,8 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
   guint i;
   gboolean valid;
 
-  node = lookup->node;
-
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(ffplayer)));
+  node = file_launch->node;
 
   filename = xmlGetProp(node,
 			"filename\0");
@@ -604,7 +643,7 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
       gtk_tree_model_get (list_store, &iter,
 			  0, &str,
 			  -1);
-      if(!g_strcasecmp(preset,
+      if(!g_strcmp0(preset[i],
 		       str)){
 	g_free (str);
 
@@ -651,7 +690,7 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
       gtk_tree_model_get(list_store, &iter,
 			 0, &str,
 			 -1);
-      if(!g_strcasecmp(instrument,
+      if(!g_strcmp0(instrument[i],
 		       str)){
 	g_free (str);
 
@@ -667,50 +706,6 @@ ags_ffplayer_resolve_filename(AgsFileLookup *lookup, AgsFFPlayer *ffplayer)
     gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
 			     i);
   }
-}
-
-xmlNode*
-ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  AgsFFPlayer *ffplayer;
-  xmlNode *node;
-  gchar *id;
-
-  ffplayer = AGS_FFPLAYER(plugin);
-
-  id = ags_id_generator_create_uuid();
-  
-  node = xmlNewNode(NULL,
-		    "ags-ffplayer\0");
-  xmlNewProp(node,
-	     AGS_FILE_ID_PROP,
-	     id);
-
-  ags_file_add_id_ref(file,
-		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
-				   "file\0", file,
-				   "node\0", node,
-				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", ffplayer,
-				   NULL));
-
-  if(ffplayer->ipatch != NULL && ffplayer->ipatch->filename != NULL){
-    xmlNewProp(node,
-	       "filename\0",
-	       g_strdup(ffplayer->ipatch->filename));
-
-    xmlNewProp(node,
-	       "preset\0",
-	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->preset)));
-
-    xmlNewProp(node,
-	       "instrument\0",
-	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->instrument)));
-  }
-
-  xmlAddChild(parent,
-	      node);  
 }
 
 void

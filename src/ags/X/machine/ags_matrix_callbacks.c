@@ -320,7 +320,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 }
 
 void
-ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
+ags_matrix_tact_callback(GtkWidget *combo_box, AgsMatrix *matrix)
 {
   AgsWindow *window;
   AgsApplyTact *apply_tact;
@@ -328,7 +328,7 @@ ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix)
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
 
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) matrix->tact));
+  tact = exp2(4.0 - (double) gtk_combo_box_get_active((GtkComboBox *) matrix->tact));
 
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
 				  tact);

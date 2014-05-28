@@ -35,8 +35,8 @@ void ags_toolbar_select_callback(GtkToggleButton *toggle_button, AgsToolbar *too
 void ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar);
 void ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar);
 
-void ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
-void ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar);
+void ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar);
+void ags_toolbar_tact_callback(GtkComboBox *combo_box, AgsToolbar *toolbar);
 
 void ags_toolbar_mode_callback(GtkWidget *widget, AgsToolbar *toolbar);
 

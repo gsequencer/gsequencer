@@ -42,7 +42,7 @@ void ags_matrix_adjustment_value_changed_callback(GtkWidget *widget, AgsMatrix *
 
 void ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix);
 void ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix);
-void ags_matrix_tact_callback(GtkWidget *option_menu, AgsMatrix *matrix);
+void ags_matrix_tact_callback(GtkWidget *combo_box, AgsMatrix *matrix);
 void ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix);
 
 void ags_matrix_run_delay_done(AgsRecall *recall, AgsMatrix *matrix);

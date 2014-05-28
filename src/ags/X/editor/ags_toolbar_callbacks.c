@@ -298,7 +298,7 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
+ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 {
   AgsEditor *editor;
   GtkWidget *widget;
@@ -315,7 +315,7 @@ ags_toolbar_zoom_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
 }
 
 void
-ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
+ags_toolbar_tact_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 {
   AgsEditor *editor;
   GtkWidget *widget;
@@ -326,7 +326,7 @@ ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
   widget = (GtkWidget *) editor->note_edit->drawing_area;
 
-  history = gtk_combo_box_get_active(option);
+  history = gtk_combo_box_get_active(combo_box);
 
   tact = exp2((double) history - 4.0);
   tact_old = exp2((double) toolbar->tact_history - 4.0);

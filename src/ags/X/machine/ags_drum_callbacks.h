@@ -40,7 +40,7 @@ void ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum);
 
 void ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum);
 
-void ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum);
+void ags_drum_tact_callback(GtkWidget *combo_box, AgsDrum *drum);
 void ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum);
 
 void ags_drum_index0_callback(GtkWidget *toggle_button, AgsDrum *drum);
