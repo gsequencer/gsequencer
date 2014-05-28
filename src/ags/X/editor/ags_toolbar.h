@@ -48,10 +48,10 @@ struct _AgsToolbar
   GtkButton *paste;
 
   guint zoom_history;
-  GtkOptionMenu *zoom;
+  GtkComboBoxText *zoom;
 
   guint tact_history;
-  GtkOptionMenu *tact;
+  GtkComboBoxText *tact;
 
   GtkOptionMenu *mode;
 };

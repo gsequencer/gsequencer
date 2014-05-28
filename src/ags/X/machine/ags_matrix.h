@@ -65,7 +65,7 @@ struct _AgsMatrix
   GtkAdjustment *adjustment;
 
   GtkSpinButton *length_spin;
-  GtkOptionMenu *tact;
+  GtkComboBox *tact;
   GtkCheckButton *loop_button;
 };
 

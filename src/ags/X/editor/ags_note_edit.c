@@ -293,9 +293,9 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 
     value = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
 
-    zoom_factor = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->zoom));
+    zoom_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
 
-    tact_factor = exp2(8.0 - (double) gtk_option_menu_get_history(editor->toolbar->tact));
+    tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->tact));
     tact = exp2((double) gtk_option_menu_get_history(editor->toolbar->tact) - 4.0);
 
     if((AGS_NOTE_EDIT_RESET_WIDTH & flags) != 0){

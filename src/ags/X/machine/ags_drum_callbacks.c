@@ -320,7 +320,7 @@ ags_drum_tact_callback(GtkWidget *option_menu, AgsDrum *drum)
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
-  tact = exp2(4.0 - (double) gtk_option_menu_get_history((GtkOptionMenu *) drum->tact));
+  tact = exp2(4.0 - (double) gtk_combo_box_get_active((GtkOptionMenu *) drum->tact));
 
   apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 				  tact);

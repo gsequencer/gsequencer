@@ -991,7 +991,9 @@ ags_recall_finalize(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
+#ifdef AGS_DEBUG
   g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
+#endif
 
   if(recall->devout != NULL){
     g_object_unref(recall->devout);

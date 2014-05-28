@@ -336,11 +336,10 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) matrix->length_spin, FALSE, FALSE, 0);
 
-  matrix->tact = (GtkOptionMenu *) gtk_option_menu_new();
+  matrix->tact = ags_tact_combo_box_new();
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tact, FALSE, FALSE, 0);
 
-  gtk_option_menu_set_menu(matrix->tact, (GtkWidget *) ags_tact_menu_new());
-  gtk_option_menu_set_history(matrix->tact, 4);
+  gtk_combo_box_set_active(matrix->tact, 4);
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
@@ -1067,34 +1066,38 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 void
 ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
 {
+  GtkTreeModel *model;
+  GtkTreeIter iter;
   GList *list;
-  gchar *tact;
+  gchar *tact, *tmp_tact;
   gdouble length;
   gint history, i;
+  gboolean valid;
 
   /* tact */
   tact = (gchar *) xmlGetProp(file_launch->node,
 			      "tact\0");
 
-  list = gtk_container_get_children(gtk_option_menu_get_menu(matrix->tact));
+  model = gtk_combo_box_get_model(matrix->tact);
+  valid = gtk_tree_model_get_iter_first(model,
+					&iter);
   history = -1;
-  i = 0;
 
-  while(list != NULL){
-    if(!g_strcmp0(gtk_menu_item_get_label(GTK_MENU_ITEM(list->data)),
-		  tact)){
-      history = i;
+  for(; valid; history++){
+    gtk_tree_model_get(model, &iter,
+		       0, &tmp_tact,
+		       -1);
+
+    if(!g_strcmp0(tact,
+		  tmp_tact)){
       break;
     }
 
-    list = list->next;
-    i++;
+    valid = gtk_tree_model_iter_next(model, &iter);
   }
 
-  if(history != -1){
-    gtk_option_menu_set_history(matrix->tact,
-				history);
-  }
+  gtk_combo_box_set_active_iter(matrix->tact,
+				&iter);
 
   /* length */
   length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,

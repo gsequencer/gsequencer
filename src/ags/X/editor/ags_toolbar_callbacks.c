@@ -326,7 +326,7 @@ ags_toolbar_tact_callback(GtkOptionMenu *option, AgsToolbar *toolbar)
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
   widget = (GtkWidget *) editor->note_edit->drawing_area;
 
-  history = gtk_option_menu_get_history(option);
+  history = gtk_combo_box_get_active(option);
 
   tact = exp2((double) history - 4.0);
   tact_old = exp2((double) toolbar->tact_history - 4.0);

@@ -149,9 +149,8 @@ ags_toolbar_init(AgsToolbar *toolbar)
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
   toolbar->zoom_history = 6;
-  toolbar->zoom = (GtkOptionMenu *) gtk_option_menu_new();
-  gtk_option_menu_set_menu(toolbar->zoom, (GtkWidget *) ags_zoom_menu_new());
-  gtk_option_menu_set_history(toolbar->zoom, 6);
+  toolbar->zoom = ags_zoom_combo_box_new();
+  gtk_combo_box_set_active(toolbar->zoom, 6);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->zoom, NULL , NULL);
 
   /* tact */
@@ -159,9 +158,8 @@ ags_toolbar_init(AgsToolbar *toolbar)
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
   toolbar->tact_history = 4;
-  toolbar->tact = (GtkOptionMenu *) gtk_option_menu_new();
-  gtk_option_menu_set_menu(toolbar->tact, (GtkWidget *) ags_tact_menu_new());
-  gtk_option_menu_set_history(toolbar->tact, 4);
+  toolbar->tact = ags_tact_combo_box_new();
+  gtk_combo_box_set_active(toolbar->tact, 4);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->tact, NULL, NULL);
 
   /* edit modes */

@@ -53,4 +53,7 @@ AgsMenuBar* ags_menu_bar_new();
 GtkMenu* ags_zoom_menu_new();
 GtkMenu* ags_tact_menu_new();
 
+GtkComboBox* ags_zoom_combo_box_new();
+GtkComboBox* ags_tact_combo_box_new();
+
 #endif /*__AGS_MENU_BAR_H__*/

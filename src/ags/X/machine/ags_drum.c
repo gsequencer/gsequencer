@@ -308,15 +308,14 @@ ags_drum_init(AgsDrum *drum)
   gtk_toggle_button_set_active(drum->index0[0], TRUE);
 
   /* tact */
-  drum->tact = (GtkOptionMenu *) gtk_option_menu_new();
+  drum->tact = (GtkOptionMenu *) ags_tact_combo_box_new();
   gtk_table_attach(table0,
 		   (GtkWidget *) drum->tact,
 		   5, 6, 0, 1,
 		   GTK_EXPAND, GTK_EXPAND,
 		   0, 0);
 
-  gtk_option_menu_set_menu(drum->tact, (GtkWidget *) ags_tact_menu_new());
-  gtk_option_menu_set_history(drum->tact, 4);
+  gtk_combo_box_set_active(drum->tact, 4);
 
   /* duration */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -662,7 +661,7 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
   tact = (gchar *) xmlGetProp(file_launch->node,
 			      "tact\0");
 
-  list = gtk_container_get_children(gtk_option_menu_get_menu(drum->tact));
+  list = gtk_container_get_children(gtk_combo_box_get_active(drum->tact));
   history = -1;
   i = 0;
 
@@ -678,8 +677,8 @@ ags_drum_launch_task(AgsFileLaunch *file_launch, AgsDrum *drum)
   }
 
   if(history != -1){
-    gtk_option_menu_set_history(drum->tact,
-				history);
+    gtk_combo_box_set_active(drum->tact,
+			     history);
   }
 
   /* length */
@@ -727,13 +726,11 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference\0", drum,
 				   NULL));
 
-  history = gtk_option_menu_get_history(drum->tact);
-  list = gtk_container_get_children(gtk_option_menu_get_menu(drum->tact));
-  list = g_list_nth(list, history);
+  history = gtk_combo_box_get_active(drum->tact);
 
   xmlNewProp(node,
 	     "tact\0",
-	     g_strdup_printf("%s\0", gtk_menu_item_get_label(GTK_MENU_ITEM(list->data))));
+	     g_strdup_printf("%s\0", gtk_combo_box_text_get_active_text(drum->tact)));
 
   xmlNewProp(node,
 	     "length\0",
