@@ -22,6 +22,7 @@
 #include <glib-object.h>
 #include <libxml/tree.h>
 
+#include <ags/thread/ags_timestamp_thread.h>
 #include <ags/audio/ags_timestamp.h>
 #include <ags/audio/ags_note.h>
 

@@ -622,9 +622,11 @@ ags_loop_channel_run_start_callback(AgsCountBeatsAudioRun *count_beats_audio_run
 				    AgsLoopChannelRun *loop_channel_run)
 {
   
+#ifdef AGS_DEBUG
   g_message("ags_loop_channel_run_start_callback - run_order: %u; %u\n\0",
 	    AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
 	    run_order);
+#endif 
 
   //TODO:JK: optimize tree see deprecated AgsRunOrder
   //  if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){
@@ -637,9 +639,11 @@ ags_loop_channel_run_loop_callback(AgsCountBeatsAudioRun *count_beats_audio_run,
 				   guint run_order,
 				   AgsLoopChannelRun *loop_channel_run)
 {
+#ifdef AGS_DEBUG
   g_message("ags_loop_channel_run_loop_callback - run_order: %u; %u\0",
 	    AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order,
 	    run_order);
+#endif
 
   //TODO:JK: optimize tree see deprecated AgsRunOrder  
   //  if(AGS_RECALL_CHANNEL_RUN(loop_channel_run)->run_order == run_order){

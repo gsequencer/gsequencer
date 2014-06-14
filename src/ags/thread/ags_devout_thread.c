@@ -209,11 +209,18 @@ ags_devout_thread_run(AgsThread *thread)
 {
   AgsDevout *devout;
   AgsDevoutThread *devout_thread;
+  long delay;
   GError *error;
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
   devout = AGS_DEVOUT(thread->devout);
+
+  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
+
+  if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
+    //    time(&(devout_thread->time_val));
+  }
 
   //  g_message("play\0");
 
@@ -223,6 +230,17 @@ ags_devout_thread_run(AgsThread *thread)
   
   if(error != NULL){
     //TODO:JK: implement me
+  }
+
+  if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) != 0){
+    time_t new_time_val;
+    struct timespec sdelay;
+
+    sdelay.tv_sec = 0;
+    sdelay.tv_nsec = delay;
+    nanosleep(&sdelay, NULL);
+
+    //    time(&(devout_thread->time_val));
   }
 }
 

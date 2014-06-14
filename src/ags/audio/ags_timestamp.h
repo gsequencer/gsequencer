@@ -29,8 +29,6 @@
 #define AGS_IS_TIMESTAMP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TIMESTAMP))
 #define AGS_TIMESTAMP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TIMESTAMP, AgsTimestampClass))
 
-#define AGS_MICROSECONDS_PER_SECOND (1000000)
-
 typedef struct _AgsTimestamp AgsTimestamp;
 typedef struct _AgsTimestampClass AgsTimestampClass;
 

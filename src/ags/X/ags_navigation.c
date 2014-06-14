@@ -213,7 +213,7 @@ ags_navigation_init(AgsNavigation *navigation)
   label = (GtkLabel *) gtk_label_new("position\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->position_time = (GtkLabel *) gtk_label_new("00:00.00\0");
+  navigation->position_time = (GtkLabel *) gtk_label_new(g_strdup("00:00.00\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_time, FALSE, FALSE, 2);
 
   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -223,7 +223,10 @@ ags_navigation_init(AgsNavigation *navigation)
   label = (GtkLabel *) gtk_label_new("duration\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->duration_time = (GtkLabel *) gtk_label_new("0000:00.00\0");
+  navigation->duration_time = (GtkLabel *) gtk_label_new(NULL);
+  g_object_set(navigation->duration_time,
+	       "label\0", g_strdup("0000:00.00\0"),
+	       NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
   navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -429,14 +432,53 @@ ags_navigation_tact_to_time_string(gdouble tact)
 }
 
 void
+ags_navigation_update_time_string(double tact,
+				  gchar *time_string)
+{
+  static gdouble delay_min, delay_sec, delay_hsec;
+  static gboolean initialized = FALSE;
+  gchar *timestr;
+  gdouble tact_redux;
+  guint min, sec, hsec;
+
+  if(!initialized){
+    delay_min = AGS_DEVOUT_DEFAULT_BPM;
+    delay_sec = delay_min / 60.0;
+    delay_hsec = delay_sec / 100.0;
+
+    initialized = TRUE;
+  }
+
+  tact_redux = tact;
+
+  min = (guint) floor(tact_redux / delay_min);
+
+  if(min > 0){
+    tact_redux = tact_redux - (min * delay_min);
+  }
+
+  sec = (guint) floor(tact_redux / delay_sec);
+
+  if(sec > 0){
+    tact_redux = tact_redux - (sec * delay_sec);
+  }
+
+  hsec = (guint) floor(tact_redux / delay_hsec);
+
+  sprintf(time_string, "%.4d:%.2d.%.2d\0", min, sec, hsec);
+}
+
+void
 ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact)
 {
-  GMainContext *main_context;
-  gchar *timestr;
+  gchar *timestr, *str;
 
-  timestr = ags_navigation_tact_to_time_string(tact);
-  gtk_label_set_text(navigation->duration_time, timestr);
+  g_object_get(navigation->duration_time,
+	       "label\0", &str,
+	       NULL);
+  //  ags_navigation_update_time_string(tact,
+  //				    str);
 }
 
 void

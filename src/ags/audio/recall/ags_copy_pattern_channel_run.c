@@ -402,9 +402,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   
     devout = AGS_DEVOUT(AGS_RECALL(copy_pattern_channel_run)->devout);
 
-    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
-	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
-	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
+    //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
+    //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
+    //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
 
     /* get source */
     source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;

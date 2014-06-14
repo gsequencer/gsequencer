@@ -47,10 +47,10 @@ struct _AgsTaskThread
   pthread_mutex_t read_mutex;
   pthread_mutex_t launch_mutex;
 
-  guint queued;
-  guint pending;
+  volatile guint queued;
+  volatile guint pending;
 
-  GList *exec;
+  volatile GList *exec;
   volatile GList *queue;
 
   AgsThreadPool *thread_pool;

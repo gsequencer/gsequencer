@@ -303,7 +303,7 @@ ags_devout_init(AgsDevout *devout)
   guint i;
   
   /* flags */
-  devout->flags = AGS_DEVOUT_ALSA;
+  devout->flags = (AGS_DEVOUT_ALSA);
 
   /* quality */
   devout->dsp_channels = 2;
@@ -931,7 +931,7 @@ ags_devout_alsa_play(AgsDevout *devout,
 
   if(devout->delay_counter >= devout->delay[devout->tic_counter]){
     /* tic */
-    ags_devout_tic(devout);
+    //    ags_devout_tic(devout);
 
     devout->tic_counter += 1;
 

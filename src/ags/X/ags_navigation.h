@@ -88,6 +88,8 @@ struct _AgsNavigationClass
 GType ags_navigation_get_type(void);
 
 gchar* ags_navigation_tact_to_time_string(gdouble tact);
+void ags_navigation_update_time_string(double tact,
+				       gchar *time_string);
 
 void ags_navigation_change_position(AgsNavigation *navigation,
 				    gdouble tact);

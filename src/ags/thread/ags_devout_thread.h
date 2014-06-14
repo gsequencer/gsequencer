@@ -38,6 +38,8 @@ struct _AgsDevoutThread
 {
   AgsThread thread;
 
+  time_t time_val;
+
   AgsThread *timestamp_thread;
 
   GError *error;
