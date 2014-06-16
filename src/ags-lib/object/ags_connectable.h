@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libxml/tree.h>
+
 #define AGS_TYPE_CONNECTABLE                    (ags_connectable_get_type())
 #define AGS_CONNECTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONNECTABLE, AgsConnectable))
 #define AGS_CONNECTABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_CONNECTABLE, AgsConnectableInterface))
@@ -39,6 +41,8 @@ struct _AgsConnectableInterface
   void (*add_to_registry)(AgsConnectable *connectable);
   void (*remove_from_registry)(AgsConnectable *connectable);
 
+  xmlNode* (*update)(AgsConnectable *connectable);
+
   gboolean (*is_ready)(AgsConnectable *connectable);
   gboolean (*is_connected)(AgsConnectable *connectable);
 
@@ -52,5 +56,6 @@ void ags_connectable_add_to_registry(AgsConnectable *connectable);
 
 void ags_connectable_connect(AgsConnectable *connectable);
 void ags_connectable_disconnect(AgsConnectable *connectable);
+
 
 #endif /*__AGS_CONNECTABLE_H__*/

@@ -111,6 +111,11 @@ ags_record_thread_init(AgsRecordThread *record_thread)
   thread = AGS_THREAD(record_thread);
 
   record_thread->flags = 0;
+
+  record_thread->registry = NULL;
+
+  record_thread->delay = 128;
+  record_thread->counter = 0;
 }
 
 void
@@ -148,7 +153,35 @@ ags_record_thread_start(AgsThread *thread)
 void
 ags_record_thread_run(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsRecordThread *record_thread;
+
+  record_thread = AGS_RECORD_THREAD(thread);
+  
+  if(record_thread->counter != record_thread->delay){
+    record_thread->counter += 1;
+  }else{
+    record_thread->counter = 0;
+    
+    if((AGS_REGISTRY_DIRTY & (record_thread->registry->flags)) != 0){
+      AgsFile *next_file, *current_file;
+
+      current_file = record_thread->registry->current;
+      next_file = ags_file_new(current_file->filename);
+
+      pthread_mutex_lock(&(record_thread->registry->mutex));
+
+      g_object_unref(record_thread->registry->previous);
+
+      record_thread->registry->previous = current_file;
+      record_thread->registry->current = next_file;
+
+      pthread_mutex_unlock(&(record_thread->registry->mutex));
+
+      ags_file_write(current_file);
+
+      record_thread->registry->flags &= (~AGS_REGISTRY_DIRTY);
+    }
+  }
 }
 
 void
@@ -158,12 +191,13 @@ ags_record_thread_stop(AgsThread *thread)
 }
 
 AgsRecordThread*
-ags_record_thread_new(GObject *devout)
+ags_record_thread_new(GObject *devout, AgsRegistry *registry)
 {
   AgsRecordThread *record_thread;
 
   record_thread = (AgsRecordThread *) g_object_new(AGS_TYPE_RECORD_THREAD,
 						   "devout\0", devout,
+						   "registry\0", registry,
 						   NULL);
   
   return(record_thread);

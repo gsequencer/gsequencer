@@ -38,9 +38,10 @@ struct _AgsRecordThread
 {
   AgsThread thread;
 
-  AgsDevout *devout;
-  
-  AgsRecallContainer *clone;
+  AgsRegistry *registry;
+
+  guint delay;
+  guint counter;
 };
 
 struct _AgsRecordThreadClass

@@ -101,8 +101,13 @@ ags_registry_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_registry_init(AgsRegistry *registry)
 {
+  registry->flags = 0;
+
   pthread_mutex_init(&(registry->mutex),
 		     NULL);
+
+  registry->previous = NULL;
+  registry->current = NULL;
 
 #ifdef AGS_WITH_XMLRPC_C
   registry->registry = NULL;

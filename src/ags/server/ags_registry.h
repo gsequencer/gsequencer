@@ -11,6 +11,8 @@
 #include <xmlrpc_server.h>
 #endif
 
+#include <ags/file/ags_file.h>
+
 #define AGS_TYPE_REGISTRY                (ags_registry_get_type())
 #define AGS_REGISTRY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REGISTRY, AgsRegistry))
 #define AGS_REGISTRY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_REGISTRY, AgsRegistryClass))
@@ -24,11 +26,22 @@ typedef struct _AgsRegistry AgsRegistry;
 typedef struct _AgsRegistryClass AgsRegistryClass;
 typedef struct _AgsRegistryEntry AgsRegistryEntry;
 
+typedef enum{
+  AGS_REGISTRY_XML_DOCUMENT  = 1,
+  AGS_REGISTRY_XML_RPC       = 1 << 1,
+  AGS_REGISTRY_DIRTY         = 1 << 2,
+};
+
 struct _AgsRegistry
 {
   GObject object;
 
+  guint flags;
+
   pthread_mutex_t mutex;
+
+  AgsFile *previous;
+  AgsFile *current;
 
 #ifdef AGS_WITH_XMLRPC_C
   xmlrpc_registry *registry;
