@@ -43,8 +43,8 @@ void* ags_thread_pool_creation_thread(void *ptr);
 
 void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
 
-#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 3
-#define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 12
+#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 12
+#define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 1024
 
 enum{
   PROP_0,

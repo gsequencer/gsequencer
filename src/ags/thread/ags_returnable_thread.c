@@ -126,6 +126,8 @@ ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 {
+  g_atomic_int_or(&(AGS_THREAD(returnable_thread)->flags),
+		  AGS_THREAD_UNREF_ON_EXIT);
   g_atomic_int_set(&(returnable_thread->flags),
 		   0);
   pthread_mutex_init(&(returnable_thread->reset_mutex), NULL);
@@ -153,7 +155,6 @@ void
 ags_returnable_thread_finalize(GObject *gobject)
 {
   /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_returnable_thread_parent_class)->finalize(gobject);
 }
@@ -181,6 +182,8 @@ ags_returnable_thread_run(AgsThread *thread)
 #ifdef AGS_DEBUG
     g_message("returnalbe thread initial\0");
 #endif
+
+    return;
   }
 
   /* safe run */

@@ -79,6 +79,7 @@ typedef enum{
   AGS_THREAD_SUSPENDED               = 1 << 27,
   AGS_THREAD_SINGLE_LOOP             = 1 << 28,
   AGS_THREAD_READY                   = 1 << 29,
+  AGS_THREAD_UNREF_ON_EXIT           = 1 << 30,
 }AgsThreadFlags;
 
 struct _AgsThread

@@ -806,44 +806,147 @@ void
 ags_devout_alsa_init(AgsDevout *devout,
 		     GError **error)
 {
+  static unsigned int period_time = 100000;
+  static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
+
   int rc;
   snd_pcm_t *handle;
-  snd_pcm_hw_params_t *params;
+  snd_pcm_hw_params_t *hwparams;
   unsigned int val;
-  int dir;
   snd_pcm_uframes_t frames;
-  int err;
+  unsigned int rate;
+  unsigned int rrate;
+  unsigned int channels;
+  snd_pcm_uframes_t size;
+  snd_pcm_sframes_t buffer_size;
+  snd_pcm_sframes_t period_size;
+  snd_pcm_sw_params_t *swparams;
+  int period_event = 0;
+  int err, dir;
 
   /* Open PCM device for playback. */
-  handle = NULL;
-
-  if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
-    rc = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0);
-  }else{
-    rc = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
-  }
-
-  if(rc < 0) {
-    g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
+  if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+    printf("Playback open error: %s\n", snd_strerror(err));
     return;
   }
 
+  snd_pcm_hw_params_alloca(&hwparams);
+  snd_pcm_sw_params_alloca(&swparams);
+
+  /* choose all parameters */
+  err = snd_pcm_hw_params_any(handle, hwparams);
+  if (err < 0) {
+    printf("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set hardware resampling */
+  err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 1);
+  if (err < 0) {
+    printf("Resampling setup failed for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set the interleaved read/write format */
+  err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
+  if (err < 0) {
+    printf("Access type not available for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set the sample format */
+  err = snd_pcm_hw_params_set_format(handle, hwparams, format);
+  if (err < 0) {
+    printf("Sample format not available for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set the count of channels */
+  channels = devout->dsp_channels;
+  err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
+  if (err < 0) {
+    printf("Channels count (%i) not available for playbacks: %s\n", channels, snd_strerror(err));
+    return;
+  }
+
+  /* set the stream rate */
+  rate = devout->frequency;
+  rrate = rate;
+  err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
+  if (err < 0) {
+    printf("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
+    return;
+  }
+
+  if (rrate != rate) {
+    printf("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
+    exit(-EINVAL);
+  }
+
+  /* set the buffer size */
+  size = devout->buffer_size;
+  err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
+  if (err < 0) {
+    printf("Unable to set buffer size %i for playback: %s\n", size, snd_strerror(err));
+    return;
+  }
+
+  buffer_size = size;
+
+  /* set the period time */
+  err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
+  if (err < 0) {
+    printf("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
+    return;
+  }
+
+  err = snd_pcm_hw_params_get_period_size(hwparams, &size, &dir);
+  if (err < 0) {
+    printf("Unable to get period size for playback: %s\n", snd_strerror(err));
+    return;
+  }
+  period_size = size;
+
+  /* write the parameters to device */
+  err = snd_pcm_hw_params(handle, hwparams);
+  if (err < 0) {
+    printf("Unable to set hw params for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* get the current swparams */
+  err = snd_pcm_sw_params_current(handle, swparams);
+  if (err < 0) {
+    printf("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* start the transfer when the buffer is almost full: */
+  /* (buffer_size / avail_min) * avail_min */
+  err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
+  if (err < 0) {
+    printf("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* allow the transfer when at least period_size samples can be processed */
+  /* or disable this mechanism when period event is enabled (aka interrupt like style processing) */
+  err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
+  if (err < 0) {
+    printf("Unable to set avail min for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* write the parameters to the playback device */
+  err = snd_pcm_sw_params(handle, swparams);
+  if (err < 0) {
+    printf("Unable to set sw params for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /*  */
   devout->out.alsa.handle = handle;
-
-  rc = snd_pcm_set_params(handle,
-			  SND_PCM_FORMAT_S16_LE,
-			  SND_PCM_ACCESS_RW_INTERLEAVED,
-			  devout->dsp_channels,
-			  devout->frequency,
-			  0,
-			  (unsigned int) floor(1000000.0 / devout->frequency * devout->buffer_size));
-
-  if(rc < 0) {
-    g_message("unable to set hw parameters: %s\0", snd_strerror(rc));
-    return;
-  }
-
-  devout->delay_counter = 0; 
+  devout->delay_counter = 0;
 }
 
 void
@@ -856,12 +959,29 @@ ags_devout_alsa_play(AgsDevout *devout,
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[0],
-					 (snd_pcm_sframes_t) devout->buffer_size);
+					 (snd_pcm_uframes_t) (devout->buffer_size));
 
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
+	snd_pcm_prepare(devout->out.alsa.handle);
+
+#ifdef AGS_DEBUG
 	g_message("underrun occurred\0");
+#endif
+      }else if(devout->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;
+
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(devout->out.alsa.handle);
+	}
       }else if(devout->out.alsa.rc < 0){
 	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
@@ -874,12 +994,29 @@ ags_devout_alsa_play(AgsDevout *devout,
 
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[1],
-					 (snd_pcm_sframes_t) devout->buffer_size);
+					 (snd_pcm_uframes_t) (devout->buffer_size));
      
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
+	snd_pcm_prepare(devout->out.alsa.handle);
+
+#ifdef AGS_DEBUG
 	g_message("underrun occurred\0");
+#endif
+      }else if(devout->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;	
+
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(devout->out.alsa.handle);
+	}
       }else if(devout->out.alsa.rc < 0){
 	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
@@ -892,12 +1029,29 @@ ags_devout_alsa_play(AgsDevout *devout,
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[2],
-					 (snd_pcm_sframes_t) devout->buffer_size);
+					 (snd_pcm_uframes_t) (devout->buffer_size));
 
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
       if(devout->out.alsa.rc == -EPIPE){
 	/* EPIPE means underrun */
+	snd_pcm_prepare(devout->out.alsa.handle);
+
+#ifdef AGS_DEBUG
 	g_message("underrun occurred\0");
+#endif
+      }else if(devout->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;
+
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(devout->out.alsa.handle);
+	}
       }else if(devout->out.alsa.rc < 0){
 	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {
@@ -910,12 +1064,28 @@ ags_devout_alsa_play(AgsDevout *devout,
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[3],
-					 (snd_pcm_sframes_t) devout->buffer_size);
+					 (snd_pcm_uframes_t) (devout->buffer_size));
 
     if((AGS_DEVOUT_NONBLOCKING & (devout->flags)) == 0){
       if(devout->out.alsa.rc == -EPIPE){
-	/* EPIPE means underrun */
+	snd_pcm_prepare(devout->out.alsa.handle);
+
+#ifdef AGS_DEBUG
 	g_message("underrun occurred\0");
+#endif
+      }else if(devout->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;
+
+	while((err = snd_pcm_resume(devout->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(devout->out.alsa.handle);
+	}
       }else if(devout->out.alsa.rc < 0){
 	g_message("error from writei: %s\0", snd_strerror(devout->out.alsa.rc));
       }else if(devout->out.alsa.rc != (int) devout->buffer_size) {

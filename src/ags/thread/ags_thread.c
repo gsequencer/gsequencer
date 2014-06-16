@@ -390,7 +390,9 @@ ags_thread_finalize(GObject *gobject)
   pthread_mutex_destroy(&(thread->start_mutex));
   pthread_cond_destroy(&(thread->start_cond));
 
-  g_object_unref(G_OBJECT(thread->devout));
+  if(thread->devout != NULL){
+    g_object_unref(G_OBJECT(thread->devout));
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
@@ -871,6 +873,10 @@ ags_thread_is_current_ready(AgsThread *current)
   retval = FALSE;
 
   if((AGS_THREAD_RUNNING & flags) == 0){
+    retval = TRUE;
+  }
+
+  if((AGS_THREAD_INITIAL_RUN & flags) != 0){
     retval = TRUE;
   }
 
@@ -1865,6 +1871,10 @@ ags_thread_loop(void *ptr)
 #ifdef AGS_DEBUG
   g_message("thread finished\0");
 #endif  
+
+  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
+    g_object_unref(G_OBJECT(thread));
+  }
 
   pthread_exit(NULL);
 }
