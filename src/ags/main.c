@@ -42,6 +42,8 @@
 #include <gtk/gtk.h>
 #include <libintl.h>
 #include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include <X11/Xlib.h>
 
@@ -56,6 +58,9 @@ void ags_main_finalize(GObject *gobject);
 
 void ags_colors_alloc();
 
+static void ags_signal_cleanup();
+void ags_signal_handler(int signr);
+
 static gpointer ags_main_parent_class = NULL;
 static sigset_t ags_wait_mask;
 
@@ -69,6 +74,8 @@ extern GtkStyle *notebook_style;
 extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
 extern GtkStyle *note_edit_style;
+
+struct sigaction ags_sigact;
 
 GType
 ags_main_get_type()
@@ -558,6 +565,22 @@ ags_main_new()
   return(ags_main);
 }
 
+void
+ags_signal_handler(int signr)
+{
+  if(signr == SIGINT){
+    //TODO:JK: do backup
+    
+    exit(-1);
+  }
+}
+
+static void
+ags_signal_cleanup()
+{
+  sigemptyset(&(ags_sigact.sa_mask));
+}
+
 int
 main(int argc, char **argv)
 {
@@ -571,6 +594,22 @@ main(int argc, char **argv)
   gboolean single_thread = FALSE;
   guint i;
 
+  atexit(ags_signal_cleanup);
+
+  /* Ignore interactive and job-control signals.  */
+  signal(SIGINT, SIG_IGN);
+  signal(SIGQUIT, SIG_IGN);
+  signal(SIGTSTP, SIG_IGN);
+  signal(SIGTTIN, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
+  signal(SIGCHLD, SIG_IGN);
+
+  ags_sigact.sa_handler = ags_signal_handler;
+  sigemptyset(&ags_sigact.sa_mask);
+  ags_sigact.sa_flags = 0;
+  sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
+
+  /**/
   LIBXML_TEST_VERSION;
 
   XInitThreads();
