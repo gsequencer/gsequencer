@@ -36,11 +36,6 @@ typedef struct _AgsExportThreadClass AgsExportThreadClass;
 
 typedef enum{
   AGS_EXPORT_THREAD_LIVE_PERFORMANCE       = 1,
-  AGS_EXPORT_THREAD_AS_WAV                 = 1 << 1,
-  AGS_EXPORT_THREAD_AS_FLAC                = 1 << 2,
-  AGS_EXPORT_THREAD_AS_OGG                 = 1 << 3,
-  AGS_EXPORT_THREAD_AS_MP3                 = 1 << 4,
-  AGS_EXPORT_THREAD_AS_MP4                 = 1 << 5,
 };
 
 struct _AgsExportThread
@@ -49,9 +44,7 @@ struct _AgsExportThread
 
   guint flags;
 
-  AgsDevout *devout;
-  
-  AgsRecallContainer *clone;
+  AgsAudioFile *audio_file;
 };
 
 struct _AgsExportThreadClass
@@ -61,6 +54,6 @@ struct _AgsExportThreadClass
 
 GType ags_export_thread_get_type();
 
-AgsExportThread* ags_export_thread_new(GObject *devout);
+AgsExportThread* ags_export_thread_new(GObject *devout, AgsAudioFile *audio_file);
 
 #endif /*__AGS_EXPORT_THREAD_H__*/

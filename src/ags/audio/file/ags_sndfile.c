@@ -40,6 +40,9 @@ void ags_sndfile_info(AgsPlayable *playable,
 		      guint *loop_start, guint *loop_end,
 		      GError **error);
 signed short* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
+void ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length);
+void ags_sndfile_flush(AgsPlayable *playable);
+void ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence);
 void ags_sndfile_close(AgsPlayable *playable);
 
 sf_vio_get_filelen ags_sndfile_vio_get_filelen(void *user_data);
@@ -148,6 +151,11 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
 
   playable->info = ags_sndfile_info;
   playable->read = ags_sndfile_read;
+
+  playable->write = ags_sndfile_write;
+  playable->flush = ags_sndfile_flush;
+
+  playable->seek = ags_sndfile_seek;
 
   playable->close = ags_sndfile_close;
 }
@@ -284,6 +292,24 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
   free(source);
 
   return(buffer);
+}
+
+void
+ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sndfile_flush(AgsPlayable *playable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence)
+{
+  //TODO:JK: implement me
 }
 
 void

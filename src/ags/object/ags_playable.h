@@ -71,6 +71,16 @@ struct _AgsPlayableInterface
 			guint channel,
 			GError **error);
 
+  /* write sample data */
+  void (*write)(AgsPlayable *playable,
+		signed short *buffer, guint buffer_length);
+  void (*flush)(AgsPlayable *playable);
+
+  /* position */
+  void (*seek)(AgsPlayable *playable,
+	       guint frames, gint whence);
+
+  /* close */
   void (*close)(AgsPlayable *playable);
 };
 
@@ -100,6 +110,13 @@ void ags_playable_info(AgsPlayable *playable,
 signed short* ags_playable_read(AgsPlayable *playable,
 				guint channel,
 				GError **error);
+
+void ags_playable_write(AgsPlayable *playable,
+			signed short *buffer, guint buffer_length);
+void ags_playable_flush(AgsPlayable *playable);
+
+void ags_playable_seek(AgsPlayable *playable,
+		       guint frames, gint whence);
 
 void ags_playable_close(AgsPlayable *playable);
 

@@ -217,6 +217,41 @@ ags_playable_read(AgsPlayable *playable,
 }
 
 void
+ags_playable_write(AgsPlayable *playable,
+		   signed short *buffer, guint buffer_length)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_if_fail(playable_interface->write);
+  playable_interface->write(playable, buffer, buffer_length);
+}
+
+void
+ags_playable_flush(AgsPlayable *playable)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_if_fail(playable_interface->flush);
+  playable_interface->flush(playable);
+}
+
+void
+ags_playable_seek(AgsPlayable *playable,
+		  guint frames, gint whence)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_if_fail(playable_interface->write);
+  playable_interface->seek(playable, frames, whence);
+}
+
+void
 ags_playable_close(AgsPlayable *playable)
 {
   AgsPlayableInterface *playable_interface;

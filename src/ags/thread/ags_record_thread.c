@@ -188,7 +188,7 @@ ags_record_thread_get_property(GObject *gobject,
 			       GValue *value,
 			       GParamSpec *param_spec)
 {
-  AgsRecord_Thread *record_thread;
+  AgsRecordThread *record_thread;
 
   record_thread = AGS_RECORD_THREAD(gobject);
 

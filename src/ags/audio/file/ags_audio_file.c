@@ -247,6 +247,13 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 }
 
 void
+ags_audio_file_close(AgsAudioFile *audio_file)
+{
+  ags_playable_close(AGS_PLAYABLE(audio_file->file));
+}
+
+
+void
 ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 {
   GList *list;
@@ -259,9 +266,24 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 }
 
 void
-ags_audio_file_close(AgsAudioFile *audio_file)
+ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
 {
-  ags_playable_close(AGS_PLAYABLE(audio_file->file));
+  ags_playable_seek(AGS_PLAYABLE(audio_file->file),
+		    frames, whence);
+}
+
+void
+ags_audio_file_write(AgsAudioFile *audio_file,
+		     signed short *buffer, guint buffer_size)
+{
+  ags_playable_write(AGS_PLAYABLE(audio_file->file),
+		     buffer, buffer_size);
+}
+
+void
+ags_audio_file_flush(AgsAudioFile *audio_file)
+{
+  ags_playable_flush(AGS_PLAYABLE(audio_file->file));
 }
 
 AgsAudioFile*

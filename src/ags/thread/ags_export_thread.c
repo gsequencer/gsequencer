@@ -25,6 +25,14 @@
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
 void ags_export_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_thread_init(AgsExportThread *export_thread);
+void ags_export_thread_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_export_thread_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_export_thread_connect(AgsConnectable *connectable);
 void ags_export_thread_disconnect(AgsConnectable *connectable);
 void ags_export_thread_finalize(GObject *gobject);
@@ -32,6 +40,11 @@ void ags_export_thread_finalize(GObject *gobject);
 void ags_export_thread_start(AgsThread *thread);
 void ags_export_thread_run(AgsThread *thread);
 void ags_export_thread_stop(AgsThread *thread);
+
+enum{
+  PROP_0,
+  PROP_AUDIO_FILE,
+};
 
 static gpointer ags_export_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_export_thread_parent_connectable_interface;
@@ -84,7 +97,20 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
   /* GObject */
   gobject = (GObjectClass *) export_thread;
 
+  gobject->get_property = ags_export_thread_get_property;
+  gobject->set_property = ags_export_thread_set_property;
+
   gobject->finalize = ags_export_thread_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("audio-file\0",
+				   "audio file to write\0",
+				   "The audio file to write output.\0",
+				   AGS_TYPE_AUDIO_FILE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_FILE,
+				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) export_thread;
@@ -111,6 +137,69 @@ ags_export_thread_init(AgsExportThread *export_thread)
   thread = AGS_THREAD(export_thread);
 
   export_thread->flags = 0;
+
+  export_thread->audio_file = NULL;
+  export_thread->recall_container = NULL;
+}
+
+void
+ags_export_thread_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsExportThread *export_thread;
+
+  export_thread = AGS_EXPORT_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO_FILE:
+    {
+      AgsAudio_File *audio_file;
+
+      audio_file = g_value_get_object(value);
+
+      if(export_thread->audio_file == audio_file){
+	return;
+      }
+
+      if(export_thread->audio_file != NULL){
+	g_object_unref(export_thread->audio_file);
+      }
+
+      if(audio_file != NULL){
+	g_object_ref(audio_file);
+      }
+
+      export_thread->audio_file = audio_file;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_export_thread_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsExportThread *export_thread;
+
+  export_thread = AGS_EXPORT_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_MAIN:
+    {
+      g_value_set_object(value, export_thread->audio_file);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -148,7 +237,26 @@ ags_export_thread_start(AgsThread *thread)
 void
 ags_export_thread_run(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsExportThread *export_thread;
+  AgsDevout *devout;
+
+  export_thread = AGS_EXPORT_THREAD(thread);
+
+  devout =  thread->devout;
+
+  if((AGS_DEVOUT_BUFFER_0 & (devout->flags)) != 0){
+    ags_audio_file_write(export_thread->audio_file,
+			 devout->buffer[0], devout->buffer_size);
+  }else if((AGS_DEVOUT_BUFFER_1 & (devout->flags)) != 0){
+    ags_audio_file_write(export_thread->audio_file,
+			 devout->buffer[1], devout->buffer_size);
+  }else if((AGS_DEVOUT_BUFFER_2 & (devout->flags)) != 0){
+    ags_audio_file_write(export_thread->audio_file,
+			 devout->buffer[2], devout->buffer_size);
+  }else if((AGS_DEVOUT_BUFFER_3 & (devout->flags)) != 0){
+    ags_audio_file_write(export_thread->audio_file,
+			 devout->buffer[3], devout->buffer_size);
+  }
 }
 
 void
@@ -158,12 +266,13 @@ ags_export_thread_stop(AgsThread *thread)
 }
 
 AgsExportThread*
-ags_export_thread_new(GObject *devout)
+ags_export_thread_new(GObject *devout, AgsAudioFile *audio_file)
 {
   AgsExportThread *export_thread;
 
   export_thread = (AgsExportThread *) g_object_new(AGS_TYPE_EXPORT_THREAD,
 						   "devout\0", devout,
+						   "audio-file\0", audio_file,
 						   NULL);
   
   return(export_thread);
