@@ -24,12 +24,16 @@
 
 #include <ags/thread/ags_thread.h>
 
+#include <ags/server/ags_registry.h>
+
 #define AGS_TYPE_RECORD_THREAD                (ags_record_thread_get_type())
 #define AGS_RECORD_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECORD_THREAD, AgsRecordThread))
 #define AGS_RECORD_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_RECORD_THREAD, AgsRecordThreadClass))
 #define AGS_IS_RECORD_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RECORD_THREAD))
 #define AGS_IS_RECORD_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECORD_THREAD))
 #define AGS_RECORD_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_RECORD_THREAD, AgsRecordThreadClass))
+
+#define AGS_RECORD_THREAD_DEFAULT_DELAY (128)
 
 typedef struct _AgsRecordThread AgsRecordThread;
 typedef struct _AgsRecordThreadClass AgsRecordThreadClass;
@@ -51,6 +55,6 @@ struct _AgsRecordThreadClass
 
 GType ags_record_thread_get_type();
 
-AgsRecordThread* ags_record_thread_new(GObject *devout);
+AgsRecordThread* ags_record_thread_new(GObject *devout, AgsRegistry *registry);
 
 #endif /*__AGS_RECORD_THREAD_H__*/

@@ -25,6 +25,14 @@
 void ags_record_thread_class_init(AgsRecordThreadClass *record_thread);
 void ags_record_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_record_thread_init(AgsRecordThread *record_thread);
+void ags_record_thread_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_record_thread_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_record_thread_connect(AgsConnectable *connectable);
 void ags_record_thread_disconnect(AgsConnectable *connectable);
 void ags_record_thread_finalize(GObject *gobject);
@@ -32,6 +40,11 @@ void ags_record_thread_finalize(GObject *gobject);
 void ags_record_thread_start(AgsThread *thread);
 void ags_record_thread_run(AgsThread *thread);
 void ags_record_thread_stop(AgsThread *thread);
+
+enum{
+  PROP_0,
+  PROP_REGISTRY,
+};
 
 static gpointer ags_record_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_record_thread_parent_connectable_interface;
@@ -84,7 +97,20 @@ ags_record_thread_class_init(AgsRecordThreadClass *record_thread)
   /* GObject */
   gobject = (GObjectClass *) record_thread;
 
+  gobject->get_property = ags_record_thread_get_property;
+  gobject->set_property = ags_record_thread_set_property;
+
   gobject->finalize = ags_record_thread_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("registry\0",
+				   "registry to check against\0",
+				   "The registry to check against serialization.\0",
+				   AGS_TYPE_REGISTRY,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REGISTRY,
+				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) record_thread;
@@ -114,8 +140,68 @@ ags_record_thread_init(AgsRecordThread *record_thread)
 
   record_thread->registry = NULL;
 
-  record_thread->delay = 128;
+  record_thread->delay = AGS_RECORD_THREAD_DEFAULT_DELAY;
   record_thread->counter = 0;
+}
+
+void
+ags_record_thread_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsRecordThread *record_thread;
+
+  record_thread = AGS_RECORD_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_REGISTRY:
+    {
+      AgsRegistry *registry;
+
+      registry = g_value_get_object(value);
+
+      if(record_thread->registry == registry){
+	return;
+      }
+
+      if(record_thread->registry != NULL){
+	g_object_unref(record_thread->registry);
+      }
+
+      if(registry != NULL){
+	g_object_ref(registry);
+      }
+
+      record_thread->registry = registry;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_record_thread_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsRecord_Thread *record_thread;
+
+  record_thread = AGS_RECORD_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_MAIN:
+    {
+      g_value_set_object(value, record_thread->registry);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
