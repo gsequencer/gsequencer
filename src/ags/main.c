@@ -712,11 +712,11 @@ main(int argc, char **argv)
 
       /* AgsAutosaveThread */
       ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
-      g_object_ref(G_OBJECT(ags_main->main_loop));
+      g_object_ref(G_OBJECT(ags_main->autosave_thread));
 
-      ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
+      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
 
-      ags_thread_start(ags_main->main_loop);
+      ags_thread_start(ags_main->autosave_thread);
     }else{
       AgsSingleThread *single_thread;
 
@@ -748,11 +748,11 @@ main(int argc, char **argv)
 
       /* AgsAutosaveThread */
       ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
-      g_object_ref(G_OBJECT(ags_main->main_loop));
+      g_object_ref(G_OBJECT(ags_main->autosave_thread));
 
-      ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
+      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
 
-      ags_thread_start(ags_main->main_loop);
+      ags_thread_start(ags_main->autosave_thread);
     }
 
     //  gdk_threads_leave();

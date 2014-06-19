@@ -24,6 +24,7 @@
 
 void ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread);
 void ags_autosave_thread_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_autosave_thread_main_loop_interface_init(AgsMainLoopInterface *main_loop);
 void ags_autosave_thread_init(AgsAutosaveThread *autosave_thread);
 void ags_autosave_thread_set_property(GObject *gobject,
 				      guint prop_id,
@@ -35,6 +36,10 @@ void ags_autosave_thread_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_autosave_thread_connect(AgsConnectable *connectable);
 void ags_autosave_thread_disconnect(AgsConnectable *connectable);
+void ags_autosave_thread_set_tic(AgsMainLoop *main_loop, guint tic);
+guint ags_autosave_thread_get_tic(AgsMainLoop *main_loop);
+void ags_autosave_thread_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
+guint ags_autosave_thread_get_last_sync(AgsMainLoop *main_loop);
 void ags_autosave_thread_finalize(GObject *gobject);
 
 void ags_autosave_thread_start(AgsThread *thread);
@@ -131,11 +136,23 @@ ags_autosave_thread_connectable_interface_init(AgsConnectableInterface *connecta
 }
 
 void
+ags_autosave_thread_main_loop_interface_init(AgsMainLoopInterface *main_loop)
+{
+  main_loop->set_tic = ags_autosave_thread_set_tic;
+  main_loop->get_tic = ags_autosave_thread_get_tic;
+  main_loop->set_last_sync = ags_autosave_thread_set_last_sync;
+  main_loop->get_last_sync = ags_autosave_thread_get_last_sync;
+}
+
+void
 ags_autosave_thread_init(AgsAutosaveThread *autosave_thread)
 {
   AgsThread *thread;
 
   thread = AGS_THREAD(autosave_thread);
+
+  g_atomic_int_set(&(autosave_thread->tic), 0);
+  g_atomic_int_set(&(autosave_thread->last_sync), 0);
 
   autosave_thread->ags_main = NULL;
 
@@ -220,6 +237,36 @@ ags_autosave_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_autosave_thread_set_tic(AgsMainLoop *main_loop, guint tic)
+{
+  g_atomic_int_set(&(AGS_AUTOSAVE_THREAD(main_loop)->tic),
+		   tic);
+}
+
+guint
+ags_autosave_thread_get_tic(AgsMainLoop *main_loop)
+{
+  return(g_atomic_int_get(&(AGS_AUTOSAVE_THREAD(main_loop)->tic)));
+}
+
+void
+ags_autosave_thread_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
+{
+  g_atomic_int_set(&(AGS_AUTOSAVE_THREAD(main_loop)->last_sync),
+		   last_sync);
+}
+
+guint
+ags_autosave_thread_get_last_sync(AgsMainLoop *main_loop)
+{
+  gint val;
+
+  val = g_atomic_int_get(&(AGS_AUTOSAVE_THREAD(main_loop)->last_sync));
+
+  return(val);
+}
+
+void
 ags_autosave_thread_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_autosave_thread_parent_class)->finalize(gobject);
@@ -238,14 +285,16 @@ ags_autosave_thread_start(AgsThread *thread)
 void
 ags_autosave_thread_run(AgsThread *thread)
 {
+  AgsAutosaveThread *autosave_thread;
+
   static const struct timespec delay = {
     0,
     NSEC_PER_SEC / 2,
   };
 
-  AgsAutosaveThread *autosave_thread;
-
   autosave_thread = AGS_AUTOSAVE_THREAD(thread);
+
+  g_message("save\0");
   
   if(autosave_thread->counter != autosave_thread->delay){
     autosave_thread->counter += 1;
@@ -259,7 +308,8 @@ ags_autosave_thread_run(AgsThread *thread)
 		 "ags-main\0", autosave_thread->ags_main,
 		 "filename\0", g_strdup(AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME),
 		 NULL);
-    ags_file_write(file);
+    g_message(file->filename);
+    ags_file_write_concurrent(file);
     g_object_unref(file);
   }
 

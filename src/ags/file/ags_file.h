@@ -90,6 +90,7 @@ struct _AgsFileClass
   GObjectClass object;
 
   void (*write)(AgsFile *file);
+  void (*write_concurrent)(AgsFile *file);
   void (*write_resolve)(AgsFile *file);
 
   void (*read)(AgsFile *file);
@@ -112,6 +113,7 @@ void ags_file_add_lookup(AgsFile *file, GObject *file_lookup);
 void ags_file_add_launch(AgsFile *file, GObject *file_launch);
 
 void ags_file_write(AgsFile *file);
+void ags_file_write_concurrent(AgsFile *file);
 void ags_file_write_resolve(AgsFile *file);
 
 void ags_file_read(AgsFile *file);
