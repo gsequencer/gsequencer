@@ -91,6 +91,7 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
+  GParamSpec *param_spec;
 
   ags_autosave_thread_parent_class = g_type_class_peek_parent(autosave_thread);
 
@@ -106,7 +107,7 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
   param_spec = g_param_spec_object("ags_main\0",
 				   "ags_main to check against\0",
 				   "The ags_main to check against serialization.\0",
-				   AGS_TYPE_AGS_MAIN,
+				   AGS_TYPE_MAIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AGS_MAIN,
@@ -135,8 +136,6 @@ ags_autosave_thread_init(AgsAutosaveThread *autosave_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(autosave_thread);
-
-  autosave_thread->flags = 0;
 
   autosave_thread->ags_main = NULL;
 
@@ -239,6 +238,11 @@ ags_autosave_thread_start(AgsThread *thread)
 void
 ags_autosave_thread_run(AgsThread *thread)
 {
+  static const struct timespec delay = {
+    0,
+    NSEC_PER_SEC / 2,
+  };
+
   AgsAutosaveThread *autosave_thread;
 
   autosave_thread = AGS_AUTOSAVE_THREAD(thread);
@@ -258,6 +262,8 @@ ags_autosave_thread_run(AgsThread *thread)
     ags_file_write(file);
     g_object_unref(file);
   }
+
+  nanosleep(&delay, NULL);
 }
 
 void

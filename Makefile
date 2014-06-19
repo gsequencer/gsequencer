@@ -307,8 +307,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_thread_pool.$(OBJEXT) \
 	ags-ags_timestamp_thread.$(OBJEXT) \
 	ags-ags_recycling_thread.$(OBJEXT) ags-ags_thread.$(OBJEXT) \
-	ags-ags_audio_loop.$(OBJEXT) ags-ags_gui_thread.$(OBJEXT) \
-	ags-ags_task_thread.$(OBJEXT) \
+	ags-ags_audio_loop.$(OBJEXT) ags-ags_autosave_thread.$(OBJEXT) \
+	ags-ags_gui_thread.$(OBJEXT) ags-ags_task_thread.$(OBJEXT) \
 	ags-ags_gui_task_thread.$(OBJEXT) \
 	ags-ags_devout_thread.$(OBJEXT) \
 	ags-ags_iterator_thread.$(OBJEXT) \
@@ -545,7 +545,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LD = /usr/bin/ld
+LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
 LIBAO_CFLAGS = 
 LIBAO_LIBS = -lao 
@@ -1129,6 +1129,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/thread/ags_thread.c \
 	./src/ags/thread/ags_audio_loop.h \
 	./src/ags/thread/ags_audio_loop.c \
+	./src/ags/thread/ags_autosave_thread.h \
+	./src/ags/thread/ags_autosave_thread.c \
 	./src/ags/thread/ags_gui_thread.h \
 	./src/ags/thread/ags_gui_thread.c \
 	./src/ags/thread/ags_task_thread.h \
@@ -1398,6 +1400,7 @@ include ./$(DEPDIR)/ags-ags_audio_preferences.Po
 include ./$(DEPDIR)/ags-ags_audio_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_audio_set_recycling.Po
 include ./$(DEPDIR)/ags-ags_audio_signal.Po
+include ./$(DEPDIR)/ags-ags_autosave_thread.Po
 include ./$(DEPDIR)/ags-ags_buffer_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_buffer_channel.Po
 include ./$(DEPDIR)/ags-ags_buffer_channel_run.Po
@@ -5410,6 +5413,20 @@ ags-ags_audio_loop.obj: ./src/ags/thread/ags_audio_loop.c
 #	$(AM_V_CC)source='./src/ags/thread/ags_audio_loop.c' object='ags-ags_audio_loop.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_audio_loop.obj `if test -f './src/ags/thread/ags_audio_loop.c'; then $(CYGPATH_W) './src/ags/thread/ags_audio_loop.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_audio_loop.c'; fi`
+
+ags-ags_autosave_thread.o: ./src/ags/thread/ags_autosave_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_autosave_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_autosave_thread.Tpo -c -o ags-ags_autosave_thread.o `test -f './src/ags/thread/ags_autosave_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_autosave_thread.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_autosave_thread.Tpo $(DEPDIR)/ags-ags_autosave_thread.Po
+#	$(AM_V_CC)source='./src/ags/thread/ags_autosave_thread.c' object='ags-ags_autosave_thread.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_autosave_thread.o `test -f './src/ags/thread/ags_autosave_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_autosave_thread.c
+
+ags-ags_autosave_thread.obj: ./src/ags/thread/ags_autosave_thread.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_autosave_thread.obj -MD -MP -MF $(DEPDIR)/ags-ags_autosave_thread.Tpo -c -o ags-ags_autosave_thread.obj `if test -f './src/ags/thread/ags_autosave_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_autosave_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_autosave_thread.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_autosave_thread.Tpo $(DEPDIR)/ags-ags_autosave_thread.Po
+#	$(AM_V_CC)source='./src/ags/thread/ags_autosave_thread.c' object='ags-ags_autosave_thread.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_autosave_thread.obj `if test -f './src/ags/thread/ags_autosave_thread.c'; then $(CYGPATH_W) './src/ags/thread/ags_autosave_thread.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_autosave_thread.c'; fi`
 
 ags-ags_gui_thread.o: ./src/ags/thread/ags_gui_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_gui_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_gui_thread.Tpo -c -o ags-ags_gui_thread.o `test -f './src/ags/thread/ags_gui_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_gui_thread.c

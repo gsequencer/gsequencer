@@ -25,6 +25,7 @@
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_gui_thread.h>
+#include <ags/thread/ags_autosave_thread.h>
 #include <ags/thread/ags_single_thread.h>
 
 #include <ags/audio/ags_channel.h>
@@ -150,6 +151,7 @@ ags_main_init(AgsMain *ags_main)
   ags_colors_alloc();
 
   ags_main->main_loop = NULL;
+  ags_main->autosave_thread = NULL;
   ags_main->thread_pool = ags_thread_pool_new(NULL);
   ags_main->server = NULL;
   ags_main->devout = NULL;
@@ -700,8 +702,16 @@ main(int argc, char **argv)
       /* AgsServer */
       ags_main->server = ags_server_new((GObject *) ags_main);
 
-      /* AgsAgs_MainLoop */
+      /* AgsMainLoop */
       ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
+      g_object_ref(G_OBJECT(ags_main->main_loop));
+
+      ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
+
+      ags_thread_start(ags_main->main_loop);
+
+      /* AgsAutosaveThread */
+      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
       g_object_ref(G_OBJECT(ags_main->main_loop));
 
       ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
@@ -735,6 +745,14 @@ main(int argc, char **argv)
       g_object_ref(G_OBJECT(ags_main->main_loop));
     
       ags_thread_start((AgsThread *) single_thread);
+
+      /* AgsAutosaveThread */
+      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
+      g_object_ref(G_OBJECT(ags_main->main_loop));
+
+      ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
+
+      ags_thread_start(ags_main->main_loop);
     }
 
     //  gdk_threads_leave();

@@ -75,6 +75,7 @@ struct _AgsMain
 #endif
 
   AgsThread *main_loop;
+  AgsThread *autosave_thread;
   AgsThreadPool *thread_pool;
 
   AgsServer *server;

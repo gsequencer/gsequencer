@@ -24,7 +24,7 @@
 
 #include <ags/thread/ags_thread.h>
 
-#include <ags/server/ags_main.h>
+#include <ags/main.h>
 
 #define AGS_TYPE_AUTOSAVE_THREAD                (ags_autosave_thread_get_type())
 #define AGS_AUTOSAVE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOSAVE_THREAD, AgsAutosaveThread))
