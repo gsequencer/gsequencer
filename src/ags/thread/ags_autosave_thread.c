@@ -78,6 +78,12 @@ ags_autosave_thread_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_main_loop_interface_info = {
+      (GInterfaceInitFunc) ags_autosave_thread_main_loop_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_autosave_thread = g_type_register_static(AGS_TYPE_THREAD,
 						      "AgsAutosaveThread\0",
 						      &ags_autosave_thread_info,
@@ -86,6 +92,10 @@ ags_autosave_thread_get_type()
     g_type_add_interface_static(ags_type_autosave_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_autosave_thread,
+				AGS_TYPE_MAIN_LOOP,
+				&ags_main_loop_interface_info);
   }
   
   return (ags_type_autosave_thread);
@@ -150,6 +160,10 @@ ags_autosave_thread_init(AgsAutosaveThread *autosave_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(autosave_thread);
+
+  g_atomic_int_or(&(thread->flags), 
+		  AGS_THREAD_READY);
+
 
   g_atomic_int_set(&(autosave_thread->tic), 0);
   g_atomic_int_set(&(autosave_thread->last_sync), 0);
@@ -277,8 +291,6 @@ ags_autosave_thread_finalize(GObject *gobject)
 void
 ags_autosave_thread_start(AgsThread *thread)
 {
-  //TODO:JK: implement me
-
   AGS_THREAD_CLASS(ags_autosave_thread_parent_class)->start(thread);
 }
 
@@ -288,14 +300,12 @@ ags_autosave_thread_run(AgsThread *thread)
   AgsAutosaveThread *autosave_thread;
 
   static const struct timespec delay = {
+    1,
     0,
-    NSEC_PER_SEC / 2,
   };
 
   autosave_thread = AGS_AUTOSAVE_THREAD(thread);
 
-  g_message("save\0");
-  
   if(autosave_thread->counter != autosave_thread->delay){
     autosave_thread->counter += 1;
   }else{
@@ -303,12 +313,10 @@ ags_autosave_thread_run(AgsThread *thread)
 
     autosave_thread->counter = 0;
     
-    file = ags_file_new();
-    g_object_set(G_OBJECT(file),
-		 "ags-main\0", autosave_thread->ags_main,
-		 "filename\0", g_strdup(AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME),
-		 NULL);
-    g_message(file->filename);
+    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				    "main\0", autosave_thread->ags_main,
+				    "filename\0", g_strdup_printf("~/%s\0", AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME),
+				    NULL);
     ags_file_write_concurrent(file);
     g_object_unref(file);
   }

@@ -623,8 +623,6 @@ ags_file_real_write(AgsFile *file)
   fflush(file_out);
   fclose(file_out);
 
-  g_message(file->filename);
-
   /*free the document */
   xmlFreeDoc(file->doc);
 
@@ -668,6 +666,8 @@ ags_file_real_write_concurrent(AgsFile *file)
   main_loop = AGS_MAIN(file->ags_main)->main_loop;
   gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
   task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
+
+  ags_main = file->ags_main;
 
   file->doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "ags\0");
@@ -730,6 +730,7 @@ ags_file_real_write_concurrent(AgsFile *file)
   ags_thread_unlock(main_loop);
 
   /* child elements */
+  /* thread */
   ags_thread_lock(main_loop);
 
   ags_file_write_thread(file,
@@ -738,6 +739,7 @@ ags_file_real_write_concurrent(AgsFile *file)
 
   ags_thread_unlock(main_loop);
 
+  /* thread pool */
   ags_thread_lock(main_loop);
 
   ags_file_write_thread_pool(file,
@@ -785,8 +787,6 @@ ags_file_real_write_concurrent(AgsFile *file)
   fwrite(buffer, size, sizeof(xmlChar), file_out);
   fflush(file_out);
   fclose(file_out);
-
-  g_message(file->filename);
 
   /*free the document */
   xmlFreeDoc(file->doc);
