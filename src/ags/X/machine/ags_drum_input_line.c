@@ -181,6 +181,10 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 
   gtk_widget_set_size_request(widget,
 			      -1, 100);
+
+  g_object_set(G_OBJECT(line_member),
+	       "port-data\0", (gpointer) &(GTK_RANGE(widget)->adjustment->value),
+	       NULL);
 }
 
 void
@@ -249,6 +253,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
       ags_drum_input_line_map_recall(drum_input_line, 0);
+      ags_line_find_port(line);
     }else{
       //TODO:JK: make it advanced
       /* reset edit button */

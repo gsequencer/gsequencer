@@ -181,6 +181,14 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  param_spec);
 
 
+  param_spec = g_param_spec_pointer("port-data\0",
+				    "port data\0",
+				    "The port data\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_DATA,
+				  param_spec);
+
   /* AgsLineMember */
   line_member->change_port = ags_line_member_real_change_port;
 
@@ -581,7 +589,8 @@ ags_line_member_change_port(AgsLineMember *line_member,
 
   g_object_ref((GObject *) line_member);
   g_signal_emit(G_OBJECT(line_member),
-		line_member_signals[CHANGE_PORT], 0);
+		line_member_signals[CHANGE_PORT], 0,
+		port_data);
   g_object_unref((GObject *) line_member);
 }
 
@@ -634,11 +643,12 @@ ags_line_member_find_port(AgsLineMember *line_member)
     return;
   }
 
-  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
-						   AGS_TYPE_MACHINE);
   line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					     AGS_TYPE_LINE);
-  audio = AGS_AUDIO(machine->audio);
+
+  audio = AGS_AUDIO(line->channel->audio);
+
+  machine = AGS_MACHINE(audio->machine);
 
   audio_port = NULL;
   channel_port = NULL;

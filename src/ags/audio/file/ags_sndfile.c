@@ -297,19 +297,32 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
 void
 ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length)
 {
-  //TODO:JK: implement me
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  sf_write_short(sndfile->file, buffer, buffer_length);
+  sf_seek(sndfile->file, buffer_length, SEEK_CUR);
 }
 
 void
 ags_sndfile_flush(AgsPlayable *playable)
 {
-  //TODO:JK: implement me
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  /* empty */
 }
 
 void
 ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence)
 {
-  //TODO:JK: implement me
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  sf_seek(sndfile->file, frames, whence);
 }
 
 void
@@ -318,7 +331,6 @@ ags_sndfile_close(AgsPlayable *playable)
   AgsSndfile *sndfile;
 
   sndfile = AGS_SNDFILE(playable);
-
 
   sf_close(sndfile->file);
   free(sndfile->info);

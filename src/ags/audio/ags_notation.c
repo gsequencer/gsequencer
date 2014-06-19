@@ -596,7 +596,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 				     guint x, guint y)
 {
   AgsNote *note;
-  GList *notes;
+  GList *notes, *notes_end_region;
   guint x_start;
 
   notes = notation->notes;
@@ -609,10 +609,13 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   while(notes->next != NULL && (note = AGS_NOTE(notes->data))->x[0] < x)
     notes = notes->next;
 
+  notes_end_region = notes;
+
   /* search in y region for appropriate note */
   if(notes != NULL && note->x[0] == x){
     do{
       if(note->y == y){
+	g_message("remove");
 	notation->notes = g_list_delete_link(notation->notes, notes);
 	g_object_unref(note);
 
@@ -623,6 +626,10 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
     }while(notes != NULL &&
 	   (note = AGS_NOTE(notes->data))->x[0] == x &&
 	   note->y <= y);
+
+    notes = notes_end_region->prev;
+  }else{
+    notes = notes_end_region;
   }
 
   /* search backward until x_start */
@@ -636,6 +643,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
     if(note->y == y){
       do{
 	if(note->x[1] > x){
+	  g_message("remove");
 	  notation->notes = g_list_delete_link(notation->notes, notes);
 	  g_object_unref(note);
 	

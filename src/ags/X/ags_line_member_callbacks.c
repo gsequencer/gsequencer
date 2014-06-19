@@ -39,7 +39,7 @@ ags_line_member_vscale_changed_callback(GtkWidget *vscale, AgsLineMember *line_m
 
   adjustment = gtk_range_get_adjustment(GTK_RANGE(vscale));
   ags_line_member_change_port(line_member,
-			      &(adjustment->value));
+			      (gpointer) &(adjustment->value));
 }
 
 void
