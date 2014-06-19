@@ -315,7 +315,7 @@ ags_autosave_thread_run(AgsThread *thread)
     
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "main\0", autosave_thread->ags_main,
-				    "filename\0", g_strdup_printf("~/%s\0", AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME),
+				    "filename\0", g_strdup_printf("./%s\0", AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME),
 				    NULL);
     ags_file_write_concurrent(file);
     g_object_unref(file);
