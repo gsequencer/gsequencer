@@ -34,7 +34,7 @@
 #define AGS_AUTOSAVE_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUTOSAVE_THREAD, AgsAutosaveThreadClass))
 
 #define AGS_AUTOSAVE_THREAD_DEFAULT_DELAY (10)
-#define AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME "autosaved.xml\0"
+#define AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME "ags-autosaved.xml\0"
 
 typedef struct _AgsAutosaveThread AgsAutosaveThread;
 typedef struct _AgsAutosaveThreadClass AgsAutosaveThreadClass;

@@ -344,7 +344,7 @@ ags_devout_init(AgsDevout *devout)
   }
 
   for(i = 0; i < (int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT); i++){
-    devout->delay[i] = (int) floor((default_tic_frames) / (AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE)) % AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
+    //    devout->delay[i] = AGS_DEVOUT_DEFAULT_BUFFER_SIZE / (default_tic_frames) / (AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE);
   }
 
   /*  */

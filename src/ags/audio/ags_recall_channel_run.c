@@ -709,6 +709,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
+  g_message("duplicated: %s\0", G_OBJECT_TYPE_NAME(recall));
+
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
 				 "devout\0", AGS_RECALL(recall_channel_run)->devout,
