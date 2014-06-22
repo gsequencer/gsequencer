@@ -36,7 +36,7 @@
 #define AGS_LINE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE_EDITOR, AgsLineEditorClass))
 
 #define AGS_LINE_EDITOR_DEFAULT_VERSION "0.4.0\0"
-#define AGS_LINE_EDITOR_DEFAULT_BUILD_ID "0.4.0\0"
+#define AGS_LINE_EDITOR_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
 typedef struct _AgsLineEditor AgsLineEditor;
 typedef struct _AgsLineEditorClass AgsLineEditorClass;

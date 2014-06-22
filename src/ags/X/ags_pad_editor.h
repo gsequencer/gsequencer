@@ -33,7 +33,7 @@
 #define AGS_PAD_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_PAD_EDITOR, AgsPadEditorClass))
 
 #define AGS_PAD_EDITOR_DEFAULT_VERSION "0.4.0\0"
-#define AGS_PAD_EDITOR_DEFAULT_BUILD_ID "0.4.0\0"
+#define AGS_PAD_EDITOR_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
 typedef struct _AgsPadEditor AgsPadEditor;
 typedef struct _AgsPadEditorClass AgsPadEditorClass;

@@ -106,6 +106,10 @@ ags_config_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_config_init(AgsConfig *config)
 {
+  config->flags = 0;
+
+  config->hash = g_hash_table_new(g_str_hash, g_str_equal);
+
   //TODO:JK: implement me
 }
 
@@ -170,9 +174,20 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 {
   //TODO:JK: implement me
 }
+void
+ags_config_load_defaults(AgsConfig *config)
+{
+  //TODO:JK: implement me
+}
 
 void
 ags_config_set(AgsConfig *config, gchar *key, GValue value)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_config_get(AgsConfig *config, gchar *key, GValue *value)
 {
   //TODO:JK: implement me
 }

@@ -34,8 +34,8 @@
 #define AGS_IS_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LINE))
 #define AGS_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE, AgsLineClass))
 
-#define AGS_LINE_DEFAULT_VERSION "0.4.0-beta\0"
-#define AGS_LINE_DEFAULT_BUILD_ID "0.4.0-beta\0"
+#define AGS_LINE_DEFAULT_VERSION "0.4.0\0"
+#define AGS_LINE_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;

@@ -29,6 +29,9 @@
 #define AGS_IS_CONFIG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CONFIG))
 #define AGS_CONFIG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONFIG, AgsConfigClass))
 
+#define AGS_CONFIG_DEFAULT_VERSION "0.4.0\0"
+#define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
+
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;
 
@@ -67,7 +70,10 @@ struct _AgsConfigClass
 
 GType ags_config_get_type();
 
-void ags_config_set(AgsConfig *config, gchar *key, GValue value);
+void ags_config_load_defaults(AgsConfig *config);
+
+void ags_config_set(AgsConfig *config, gchar *key, GValue *value);
+void ags_config_get(AgsConfig *config, gchar *key, GValue *value);
 
 AgsConfig* ags_config_new();
 

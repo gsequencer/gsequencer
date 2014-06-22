@@ -46,9 +46,9 @@
 #define AGS_IS_MAIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MAIN))
 #define AGS_MAIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MAIN, AgsMainClass))
 
-#define AGS_VERSION "0.4.0-beta\0"
-#define AGS_BUILD_ID "CEST 04-12-2013 03:07\0"
-#define AGS_EFFECTS_DEFAULT_VERSION "0.4.0-beta\0"
+#define AGS_VERSION "0.4.0\0"
+#define AGS_BUILD_ID "CEST 22-06-2014 03:07\0"
+#define AGS_EFFECTS_DEFAULT_VERSION "0.4.0\0"
 
 #define __AGS_DEBUG__
 #define AGS_PRIORITY (49)
