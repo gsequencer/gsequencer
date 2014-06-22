@@ -106,11 +106,10 @@ ags_config_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_config_init(AgsConfig *config)
 {
-  config->flags = 0;
+  config->version = AGS_CONFIG_DEFAULT_VERSION;
+  config->build_id = AGS_CONFIG_DEFAULT_BUILD_ID;
 
-  config->hash = g_hash_table_new(g_str_hash, g_str_equal);
-
-  //TODO:JK: implement me
+  config->key_file = g_key_file_new();
 }
 
 void
@@ -146,6 +145,7 @@ ags_config_disconnect(AgsConnectable *connectable)
 void
 ags_config_finalize(GObject *gobject)
 {
+
   //TODO:JK: implement me
 
   G_OBJECT_CLASS(ags_config_parent_class)->finalize(gobject);
@@ -154,42 +154,77 @@ ags_config_finalize(GObject *gobject)
 gchar*
 ags_config_get_version(AgsConfig *config)
 {
-  //TODO:JK: implement me
+  return(config->version);
 }
 
 void
 ags_config_set_version(AgsConfig *config, gchar *version)
 {
-  //TODO:JK: implement me
+  config->version = version;
 }
 
 gchar*
 ags_config_get_build_id(AgsConfig *config)
 {
-  //TODO:JK: implement me
+  return(config->build_id);
 }
 
 void
 ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 {
-  //TODO:JK: implement me
+  config->build_id = build_id;
 }
 void
 ags_config_load_defaults(AgsConfig *config)
 {
-  //TODO:JK: implement me
+  config->flags = (AGS_LIB |
+		   AGS_CONFIG_GUI);
+
+  config->ags_flags = AGS_FRONTEND_GTK;
+
+  ags_config_set(config, "thread\0", "model\0", "multi-threaded\0");
+
+  ags_config_set(config, "device\0", "samplerate\0", "44100\0");
+  ags_config_set(config, "device\0", "buffer-size\0", "940\0");
+  ags_config_set(config, "device\0", "pcm-channels\0", "2\0");
+  ags_config_set(config, "device\0", "dsp-channels\0", "2\0");
+  ags_config_set(config, "device\0", "alsa-handle\0", "hw:0,0\0");
 }
 
 void
-ags_config_set(AgsConfig *config, gchar *key, GValue value)
+ags_config_load_file(AgsConfig *config, gchar *filename)
 {
-  //TODO:JK: implement me
+  GError *error;
+
+  error = NULL;
+
+  g_key_file_load_from_file(config->key_file,
+			    filename,
+			    G_KEY_FILE_NONE,
+			    &error);
 }
 
 void
-ags_config_get(AgsConfig *config, gchar *key, GValue *value)
+ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 {
-  //TODO:JK: implement me
+  GError *error;
+
+  error = NULL;
+
+  g_key_file_set_value(config->key_file, group, key, value, &error);
+}
+
+gchar*
+ags_config_get(AgsConfig *config, gchar *group, gchar *key)
+{
+  gchar *str;
+  GError *error;
+
+  error = NULL;
+
+  str = g_key_file_get_value(config->key_file, group, key, &error)
+
+  return(str);
 }
 
 AgsConfig*

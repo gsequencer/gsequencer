@@ -35,32 +35,14 @@
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;
 
-typedef enum{
-  AGS_CONFIG_IN_MEMORY    = 1,
-  AGS_CONFIG_LIB          = 1 << 1,
-  AGS_CONFIG_GUI          = 1 << 2,
-  AGS_CONFIG_SERVER       = 1 << 3,
-}AgsConfigFlags;
-
-typedef enum{
-  AGS_FRONTEND_NONINTERACTIVE  = 1,
-  AGS_FRONTEND_INTERACTIVE     = 1 << 1,
-  AGS_FRONTED_FILE             = 1 << 2,
-  AGS_FRONTEND_GTK             = 1 << 3,
-}AgsFlags;
-
 struct _AgsConfig
 {
   GObject object;
 
-  guint flags;
-
   guint version;
   gchar *build_id;
 
-  guint ags_flags;
-
-  GHashTable *hash;
+  GKeyFile *key_file;
 };
 
 struct _AgsConfigClass
@@ -71,9 +53,10 @@ struct _AgsConfigClass
 GType ags_config_get_type();
 
 void ags_config_load_defaults(AgsConfig *config);
+void ags_config_load_file(AgsConfig *config, gchar *filename);
 
-void ags_config_set(AgsConfig *config, gchar *key, GValue *value);
-void ags_config_get(AgsConfig *config, gchar *key, GValue *value);
+void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+gchar* ags_config_get(AgsConfig *config, gchar *group, gchar *key);
 
 AgsConfig* ags_config_new();
 
