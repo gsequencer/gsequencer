@@ -67,6 +67,8 @@ struct _AgsConfigClass
 
 GType ags_config_get_type();
 
+void ags_config_set(AgsConfig *config, gchar *key, GValue value);
+
 AgsConfig* ags_config_new();
 
 #endif /*__AGS_CONFIG_H__*/
