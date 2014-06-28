@@ -20,9 +20,11 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <pwd.h>
 
 void ags_config_class_init(AgsConfigClass *config_class);
 void ags_config_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -177,11 +179,6 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_load_defaults(AgsConfig *config)
 {
-  config->flags = (AGS_LIB |
-		   AGS_CONFIG_GUI);
-
-  config->ags_flags = AGS_FRONTEND_GTK;
-
   ags_config_set(config, "thread\0", "model\0", "multi-threaded\0");
 
   ags_config_set(config, "device\0", "samplerate\0", "44100\0");
@@ -192,7 +189,7 @@ ags_config_load_defaults(AgsConfig *config)
 }
 
 void
-ags_config_load_file(AgsConfig *config, gchar *filename)
+ags_config_load_from_file(AgsConfig *config, gchar *filename)
 {
   GError *error;
 
@@ -205,13 +202,56 @@ ags_config_load_file(AgsConfig *config, gchar *filename)
 }
 
 void
-ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
+ags_config_save(AgsConfig *config)
 {
+  struct passwd *pw;
+  uid_t uid;
+  gchar *path, *filename;
+  gchar *content;
+  gsize length;
   GError *error;
 
-  error = NULL;
+  uid = getuid();
+  pw = getpwuid(uid);
 
-  g_key_file_set_value(config->key_file, group, key, value, &error);
+  /* open conf dir */
+  path = g_strdup_printf("%s/.gsequencer\0", pw->pw_dir);
+
+  if(!g_mkdir_with_parents(path,
+			   0755)){
+    filename = g_strdup_printf("%s/ags.conf", path);
+
+    /* get content */
+    error = NULL;
+
+    content = g_key_file_to_data(config->key_file,
+				 &length,
+				 &error);
+    
+    if(error != NULL){
+      //TODO:JK: do recovery
+      goto ags_config_save_END;
+    }
+
+    /* write content */
+    error = NULL;
+
+    g_file_set_contents(filename,
+			content,
+			length,
+			&error);
+
+  ags_config_save_END:
+    g_free(filename);
+  }
+
+  g_free(path);
+}
+
+void
+ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
+{
+  g_key_file_set_value(config->key_file, group, key, value);
 }
 
 gchar*
@@ -222,7 +262,7 @@ ags_config_get(AgsConfig *config, gchar *group, gchar *key)
 
   error = NULL;
 
-  str = g_key_file_get_value(config->key_file, group, key, &error)
+  str = g_key_file_get_value(config->key_file, group, key, &error);
 
   return(str);
 }

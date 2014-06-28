@@ -150,6 +150,7 @@ struct _AgsDevout
       char *device;
       int rc;
       snd_pcm_t *handle;
+      snd_async_handler_t *ahandler;
       snd_pcm_hw_params_t *params;
     }alsa;
   }out;

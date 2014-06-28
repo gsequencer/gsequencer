@@ -1551,14 +1551,13 @@ ags_thread_loop(void *ptr)
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   guint current_tic;
-  guint next_tic;
+  guint tic, next_tic;
   guint val, running, locked_greedy;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
 
   void ags_thread_loop_sync(AgsThread *thread){
-    guint tic;
-    guint next_tic;
+    guint tic, next_tic;
 
     tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
@@ -1592,7 +1591,7 @@ ags_thread_loop(void *ptr)
 	break;
       }
 
-      ags_thread_hangcheck(main_loop);
+      //      ags_thread_hangcheck(main_loop);
     
       while(!ags_thread_is_current_ready(thread)){
 	pthread_cond_wait(&(thread->cond),
@@ -1869,7 +1868,8 @@ ags_thread_loop(void *ptr)
     ags_thread_unlock(thread);
   }
 
-  /* returning tree */
+  tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
   if(current_tic = 2){
     next_tic = 0;
   }else if(current_tic = 0){
@@ -1879,13 +1879,11 @@ ags_thread_loop(void *ptr)
   }
 
   if(!ags_thread_is_tree_ready(thread)){
-    ags_thread_hangcheck(main_loop);
-
-    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
+    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
   }else{
-    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
-    ags_thread_set_sync_all(main_loop, current_tic);
+    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+    ags_thread_set_sync_all(main_loop, tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
   }
 

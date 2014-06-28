@@ -574,6 +574,8 @@ ags_signal_handler(int signr)
     //TODO:JK: do backup
     
     exit(-1);
+  }else{
+    sigemptyset(&(ags_sigact.sa_mask));
   }
 }
 

@@ -53,7 +53,9 @@ struct _AgsConfigClass
 GType ags_config_get_type();
 
 void ags_config_load_defaults(AgsConfig *config);
-void ags_config_load_file(AgsConfig *config, gchar *filename);
+void ags_config_load_from_file(AgsConfig *config, gchar *filename);
+
+void ags_config_save(AgsConfig *config);
 
 void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
 gchar* ags_config_get(AgsConfig *config, gchar *group, gchar *key);
