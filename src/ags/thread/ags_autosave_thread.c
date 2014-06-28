@@ -22,6 +22,9 @@
 
 #include <ags/audio/ags_devout.h>
 
+#include <sys/types.h>
+#include <pwd.h>
+
 void ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread);
 void ags_autosave_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_autosave_thread_main_loop_interface_init(AgsMainLoopInterface *main_loop);
@@ -310,12 +313,22 @@ ags_autosave_thread_run(AgsThread *thread)
     autosave_thread->counter += 1;
   }else{
     AgsFile *file;
+    struct passwd *pw;
+    uid_t uid;
+    gchar *filename;
 
     autosave_thread->counter = 0;
     
+    uid = getuid();
+    pw = getpwuid(uid);
+
+    filename = g_strdup_printf("%s/%s\0",
+			       pw->pw_dir,
+			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
+    
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
 				    "main\0", autosave_thread->ags_main,
-				    "filename\0", g_strdup_printf("./%s\0", AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME),
+				    "filename\0", filename,
 				    NULL);
     ags_file_write_concurrent(file);
     g_object_unref(file);

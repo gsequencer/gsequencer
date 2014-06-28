@@ -713,12 +713,14 @@ main(int argc, char **argv)
       ags_thread_start(ags_main->main_loop);
 
       /* AgsAutosaveThread */
-      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
-      g_object_ref(G_OBJECT(ags_main->autosave_thread));
+      //TODO:JK: uncomment me
+      ags_main->autosave_thread = NULL;
+      //      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
+      //      g_object_ref(G_OBJECT(ags_main->autosave_thread));
 
-      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
+      //      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
 
-      ags_thread_start(ags_main->autosave_thread);
+      //      ags_thread_start(ags_main->autosave_thread);
     }else{
       AgsSingleThread *single_thread;
 
@@ -749,12 +751,14 @@ main(int argc, char **argv)
       ags_thread_start((AgsThread *) single_thread);
 
       /* AgsAutosaveThread */
-      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
-      g_object_ref(G_OBJECT(ags_main->autosave_thread));
+      //TODO:JK: uncomment me
+      ags_main->autosave_thread = NULL;
+      //      ags_main->autosave_thread = ags_autosave_thread_new(devout, ags_main);
+      //      g_object_ref(G_OBJECT(ags_main->autosave_thread));
 
-      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
+      //      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
 
-      ags_thread_start(ags_main->autosave_thread);
+      //      ags_thread_start(ags_main->autosave_thread);
     }
 
     //  gdk_threads_leave();

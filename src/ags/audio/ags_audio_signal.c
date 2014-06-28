@@ -325,8 +325,10 @@ ags_audio_signal_finalize(GObject *gobject)
   if(audio_signal->recall_id != NULL)
     g_object_unref(audio_signal->recall_id);
 
-  if(audio_signal->stream_beginning != NULL)
-    ags_list_free_and_free_link(audio_signal->stream_beginning);
+  if(audio_signal->stream_beginning != NULL){
+    g_list_free_full(audio_signal->stream_beginning,
+		     g_free);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);

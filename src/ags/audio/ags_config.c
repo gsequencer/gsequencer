@@ -180,6 +180,8 @@ void
 ags_config_load_defaults(AgsConfig *config)
 {
   ags_config_set(config, "thread\0", "model\0", "multi-threaded\0");
+  ags_config_set(config, "thread\0", "lock-global\0", "ags-thread\0");
+  ags_config_set(config, "thread\0", "lock-parent\0", "ags-recycling-thread\0");
 
   ags_config_set(config, "device\0", "samplerate\0", "44100\0");
   ags_config_set(config, "device\0", "buffer-size\0", "940\0");
