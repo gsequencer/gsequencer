@@ -42,6 +42,9 @@ void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
 
 static gpointer ags_config_parent_class = NULL;
 
+static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
+static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
+
 GType
 ags_config_get_type (void)
 {
@@ -179,15 +182,15 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_load_defaults(AgsConfig *config)
 {
-  ags_config_set(config, "thread\0", "model\0", "multi-threaded\0");
-  ags_config_set(config, "thread\0", "lock-global\0", "ags-thread\0");
-  ags_config_set(config, "thread\0", "lock-parent\0", "ags-recycling-thread\0");
+  ags_config_set(config, ags_config_thread, "model\0", "multi-threaded\0");
+  ags_config_set(config, ags_config_thread, "lock-global\0", "ags-thread\0");
+  ags_config_set(config, ags_config_thread, "lock-parent\0", "ags-recycling-thread\0");
 
-  ags_config_set(config, "device\0", "samplerate\0", "44100\0");
-  ags_config_set(config, "device\0", "buffer-size\0", "940\0");
-  ags_config_set(config, "device\0", "pcm-channels\0", "2\0");
-  ags_config_set(config, "device\0", "dsp-channels\0", "2\0");
-  ags_config_set(config, "device\0", "alsa-handle\0", "hw:0,0\0");
+  ags_config_set(config, ags_config_devout, "samplerate\0", "44100\0");
+  ags_config_set(config, ags_config_devout, "buffer-size\0", "940\0");
+  ags_config_set(config, ags_config_devout, "pcm-channels\0", "2\0");
+  ags_config_set(config, ags_config_devout, "dsp-channels\0", "2\0");
+  ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0,0\0");
 }
 
 void

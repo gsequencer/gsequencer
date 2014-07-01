@@ -32,6 +32,9 @@
 #define AGS_CONFIG_DEFAULT_VERSION "0.4.0\0"
 #define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
 
+#define AGS_CONFIG_THREAD "thread\0"
+#define AGS_CONFIG_DEVOUT "device\0"
+
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;
 

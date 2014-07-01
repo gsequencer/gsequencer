@@ -50,7 +50,6 @@
 #define AGS_BUILD_ID "CEST 22-06-2014 03:07\0"
 #define AGS_EFFECTS_DEFAULT_VERSION "0.4.0\0"
 
-#define __AGS_DEBUG__
 #define AGS_PRIORITY (49)
 
 typedef struct _AgsMain AgsMain;
@@ -84,6 +83,7 @@ struct _AgsMain
 
   AgsWindow *window;
 
+  AgsConfig *config;
   AgsLog *log;
 };
 
@@ -94,7 +94,9 @@ struct _AgsMainClass
 
 GType ags_main_get_type();
 
-void ags_main_add_devout(AgsMain *main,
+void ags_main_load_config(AgsMain *ags_main);
+
+void ags_main_add_devout(AgsMain *ags_main,
 			 AgsDevout *devout);
 
 void ags_main_register_thread_type();
@@ -105,7 +107,7 @@ void ags_main_register_task_type();
 void ags_main_register_widget_type();
 void ags_main_register_machine_type();
 
-void ags_main_quit(AgsMain *main);
+void ags_main_quit(AgsMain *ags_main);
 
 AgsMain* ags_main_new();
 

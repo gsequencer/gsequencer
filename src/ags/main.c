@@ -65,6 +65,9 @@ void ags_signal_handler(int signr);
 static gpointer ags_main_parent_class = NULL;
 static sigset_t ags_wait_mask;
 
+static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
+static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
+
 extern void ags_thread_resume_handler(int sig);
 extern void ags_thread_suspend_handler(int sig);
 
@@ -170,6 +173,8 @@ ags_main_init(AgsMain *ags_main)
 
   sa.sa_handler = ags_thread_suspend_handler;
   sigaction(AGS_THREAD_SUSPEND_SIG, &sa, NULL);
+  
+  ags_main->config = ags_config_new();
 }
 
 void
@@ -445,6 +450,103 @@ ags_colors_alloc()
 }
 
 void
+ags_main_load_config(AgsMain *ags_main)
+{
+  AgsConfig *config;
+  GList *list;
+
+  auto void ags_main_load_config_thread(AgsThread *thread);
+  auto void ags_main_load_config_devout(AgsDevout *devout);
+
+  void ags_main_load_config_thread(AgsThread *thread){
+    gchar *model;
+
+    model = ags_config_get(config,
+			   ags_config_devout,
+			   "model\0");
+
+    if(!strncmp(model,
+		"single-threaded\0",
+		16)){
+      //TODO:JK: implement me
+      
+      )else if(!strncmp(model,
+			"multi-threaded",
+			15)){
+      //TODO:JK: implement me
+      )else if(!strncmp(model,
+			"super-threaded",
+			15)){
+      //TODO:JK: implement me
+    }
+  }
+  void ags_main_load_config_devout(AgsDevout *devout){
+    gchar *alsa_handle;
+    guint samplerate;
+    guint buffer_size;
+    guint pcm_channels, dsp_channels;
+
+    alsa_handle = ags_config_get(config,
+				 ags_config_devout,
+				 "alsa-handle\0");
+
+    dsp_channels = strtoul(ags_config_get(config,
+					  ags_config_devout,
+					  "dsp-channels\0"),
+			   NULL,
+			   10);
+    
+    pcm_channels = strtoul(ags_config_get(config,
+					  ags_config_devout,
+					  "pcm-channels\0"),
+			   NULL,
+			   10);
+
+    samplerate = strtoul(ags_config_get(config,
+					ags_config_devout,
+					"samplerate\0"),
+			 NULL,
+			 10);
+
+    buffer_size = strtoul(ags_config_get(config,
+					 ags_config_devout,
+					 "buffer-size\0"),
+			  NULL,
+			  10);
+    
+    g_object_set(G_OBJECT(devout),
+		 "device\0", alsa_handle,
+		 "dsp-channels\0", dsp_channels,
+		 "pcm-channels\0", pcm_channels,
+		 "frequency\0", samplerate,
+		 "buffer-size\0", buffer_size,
+		 NULL);
+  }
+  
+  if(ags_main == NULL){
+    return;
+  }
+
+  config = ags_main->config;
+
+  if(config == NULL){
+    return;
+  }
+
+  /* thread */
+  ags_main_load_config_thread(ags_main->main_loop);
+
+  /* devout */
+  list = ags_main->devout;
+
+  while(list != NULL){
+    ags_main_load_config_devout(AGS_DEVOUT(list->data));
+
+    list = list->next;
+  }
+}
+
+void
 ags_main_add_devout(AgsMain *ags_main,
 		    AgsDevout *devout)
 {
@@ -621,8 +723,6 @@ main(int argc, char **argv)
   g_thread_init(NULL);
   gdk_threads_init();
 
-  //  gdk_threads_enter();
-
   gtk_init(&argc, &argv);
   ipatch_init();
 
@@ -721,6 +821,8 @@ main(int argc, char **argv)
       //      ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
 
       //      ags_thread_start(ags_main->autosave_thread);
+
+      ags_main_load_config(ags_main);
     }else{
       AgsSingleThread *single_thread;
 
@@ -761,7 +863,7 @@ main(int argc, char **argv)
       //      ags_thread_start(ags_main->autosave_thread);
     }
 
-    //  gdk_threads_leave();
+    ags_main_load_config(ags_main);
 
     if(!single_thread){
       /* join gui thread */
