@@ -60,9 +60,12 @@ struct _AgsAudioLoop
   volatile guint tic;
   volatile guint last_sync;
 
+  GCond cond;
+  GMutex mutex;
+
   gdouble frequency;
 
-  GObject *main;
+  GObject *ags_main;
   
   AgsThread *task_thread;
   AgsThread *gui_thread;
@@ -99,6 +102,6 @@ void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *recall);
 void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall);
 
-AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *main);
+AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *ags_main);
 
 #endif /*__AGS_AUDIO_LOOP_H__*/

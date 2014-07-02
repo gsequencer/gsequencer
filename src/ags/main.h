@@ -36,6 +36,7 @@
 #include <ags/thread/ags_thread.h>
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/server/ags_server.h>
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/X/ags_window.h>
 

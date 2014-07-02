@@ -409,12 +409,38 @@ ags_devout_set_property(GObject *gobject,
     break;
   case PROP_DSP_CHANNELS:
     {
-	//TODO:JK: implement me
+      guint dsp_channels;
+
+      dsp_channels = g_value_get_uint(value);
+
+      if(dsp_channels == devout->dsp_channels){
+	return;
+      }
+
+      devout->dsp_channels = dsp_channels;
     }
     break;
   case PROP_PCM_CHANNELS:
     {
-	//TODO:JK: implement me
+      guint pcm_channels;
+
+      pcm_channels = g_value_get_uint(value);
+
+      if(pcm_channels == devout->pcm_channels){
+	return;
+      }
+
+      devout->pcm_channels = pcm_channels;
+
+      free(devout->buffer[0]);
+      free(devout->buffer[1]);
+      free(devout->buffer[2]);
+      free(devout->buffer[3]);
+
+      devout->buffer[0] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
+      devout->buffer[1] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
+      devout->buffer[2] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
+      devout->buffer[3] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
     }
     break;
   case PROP_BITS:
@@ -424,12 +450,38 @@ ags_devout_set_property(GObject *gobject,
     break;
   case PROP_BUFFER_SIZE:
     {
-	//TODO:JK: implement me
+      guint buffer_size;
+
+      buffer_size = g_value_get_uint(value);
+
+      if(buffer_size == devout->buffer_size){
+	return;
+      }
+
+      devout->buffer_size = buffer_size;
+
+      free(devout->buffer[0]);
+      free(devout->buffer[1]);
+      free(devout->buffer[2]);
+      free(devout->buffer[3]);
+
+      devout->buffer[0] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
+      devout->buffer[1] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
+      devout->buffer[2] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
+      devout->buffer[3] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
     }
     break;
   case PROP_FREQUENCY:
     {
-	//TODO:JK: implement me
+      guint frequency;
+
+      frequency = g_value_get_uint(value);
+
+      if(frequency == devout->frequency){
+	return;
+      }
+
+      devout->frequency = frequency;
     }
     break;
   case PROP_BUFFER:

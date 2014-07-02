@@ -226,9 +226,12 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   g_atomic_int_set(&(audio_loop->tic), 0);
   g_atomic_int_set(&(audio_loop->last_sync), 0);
 
+  g_cond_init(&(audio_loop->cond));
+  g_mutex_init(&(audio_loop->mutex));
+
   audio_loop->frequency = 1.0 / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
 
-  audio_loop->main = NULL;
+  audio_loop->ags_main = NULL;
 
   /* AgsTaskThread */  
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
@@ -513,7 +516,18 @@ ags_audio_loop_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(AGS_THREAD(audio_loop)->devout);
 
+  /* acquire main context */
   main_context = g_main_context_default();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(audio_loop->cond),
+					  &(audio_loop->mutex));
+    }
+  }
 
   pthread_mutex_lock(&(audio_loop->recall_mutex));
 
@@ -543,6 +557,9 @@ ags_audio_loop_run(AgsThread *thread)
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
     }
   }
+
+  /* release main context */
+  g_main_context_release(main_context);
 
   /* decide if we stop */
   if(audio_loop->play_recall_ref == 0 &&
@@ -856,7 +873,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall)
 }
 
 AgsAudioLoop*
-ags_audio_loop_new(GObject *devout, GObject *main)
+ags_audio_loop_new(GObject *devout, GObject *ags_main)
 {
   AgsAudioLoop *audio_loop;
 
@@ -864,9 +881,9 @@ ags_audio_loop_new(GObject *devout, GObject *main)
 					     "devout\0", devout,
 					     NULL);
 
-  if(main != NULL){
-    g_object_ref(G_OBJECT(main));
-    audio_loop->main = main;
+  if(ags_main != NULL){
+    g_object_ref(G_OBJECT(ags_main));
+    audio_loop->ags_main = ags_main;
   }
 
   return(audio_loop);

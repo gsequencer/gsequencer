@@ -1065,7 +1065,7 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 			     child,
 			     (AgsThread **) &(gobject->main_loop));
 	
-	AGS_AUDIO_LOOP(gobject->main_loop)->main = gobject;
+	AGS_AUDIO_LOOP(gobject->main_loop)->ags_main = gobject;
       }else if(!xmlStrncmp("ags-thread-pool\0",
 			   child->name,
 			   16)){

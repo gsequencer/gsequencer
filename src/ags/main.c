@@ -460,24 +460,26 @@ ags_main_load_config(AgsMain *ags_main)
 
   void ags_main_load_config_thread(AgsThread *thread){
     gchar *model;
-
+    
     model = ags_config_get(config,
 			   ags_config_devout,
 			   "model\0");
-
-    if(!strncmp(model,
-		"single-threaded\0",
-		16)){
-      //TODO:JK: implement me
-      
-      )else if(!strncmp(model,
+    
+    if(model != NULL){
+      if(!strncmp(model,
+		  "single-threaded\0",
+		  16)){
+	//TODO:JK: implement me
+	
+      }else if(!strncmp(model,
 			"multi-threaded",
 			15)){
-      //TODO:JK: implement me
-      )else if(!strncmp(model,
+	//TODO:JK: implement me
+      }else if(!strncmp(model,
 			"super-threaded",
 			15)){
-      //TODO:JK: implement me
+	//TODO:JK: implement me
+      }
     }
   }
   void ags_main_load_config_devout(AgsDevout *devout){
@@ -822,6 +824,7 @@ main(int argc, char **argv)
 
       //      ags_thread_start(ags_main->autosave_thread);
 
+      ags_config_load_defaults(ags_main->config);
       ags_main_load_config(ags_main);
     }else{
       AgsSingleThread *single_thread;
@@ -863,6 +866,7 @@ main(int argc, char **argv)
       //      ags_thread_start(ags_main->autosave_thread);
     }
 
+    ags_config_load_defaults(ags_main->config);
     ags_main_load_config(ags_main);
 
     if(!single_thread){
