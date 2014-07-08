@@ -235,8 +235,8 @@ void
 ags_recall_recycling_init(AgsRecallRecycling *recall_recycling)
 {
   recall_recycling->flags = 0;
-  //  recall_recycling->flags = (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
-  //			     AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
+  recall_recycling->flags = (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
+  			     AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 
   recall_recycling->audio_channel = 0;
 
@@ -626,6 +626,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
       recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
      						      audio_signal);
+      g_object_ref(audio_signal);
       g_object_set(G_OBJECT(recall_recycling),
 		   "child_source\0", audio_signal,
 		   NULL);
@@ -725,6 +726,7 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
     g_message(" -- g_object_set -- child_destination@%llx\0", (long long unsigned int) audio_signal);
 #endif
     
+    g_object_ref(audio_signal);
     g_object_set(G_OBJECT(recall_recycling),
 		 "child_destination\0", audio_signal,
 		 NULL);

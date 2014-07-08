@@ -607,6 +607,12 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
     ags_recycling_add_audio_signal(recycling,
 				   audio_signal);
 
+    /*
+     * unref AgsAudioSignal because AgsLoopChannelRun has no need for it
+     * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
+     */
+    //FIXME:JK:
+
 #ifdef AGS_DEBUG
     g_message("+++++++++++++++++++++++++\n\nloop channel created: AgsAudioSignal#%llx[%u]\n\n+++++++++++++++++++++++++\0",
 	      (long long unsigned int) audio_signal, audio_signal->length);

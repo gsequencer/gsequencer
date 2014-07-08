@@ -737,6 +737,8 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
   }
 
   /*  */
+  ags_thread_lock(main_loop);
+
   if(thread->children == NULL){
     thread->children = child;
     child->parent = thread;
@@ -749,6 +751,8 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
     child->prev = sibling;
     child->parent = thread;
   }
+
+  ags_thread_unlock(main_loop);
 
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     ags_thread_start(child);
@@ -1739,8 +1743,6 @@ ags_thread_loop(void *ptr)
 	ags_thread_wait_children(thread);
       }
     }
-
-    ags_thread_unlock(thread);
 
     /* check for greedy to announce */
     if(thread->greedy_locks != NULL){

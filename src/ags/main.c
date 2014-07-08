@@ -824,8 +824,9 @@ main(int argc, char **argv)
 
       //      ags_thread_start(ags_main->autosave_thread);
 
-      ags_config_load_defaults(ags_main->config);
-      ags_main_load_config(ags_main);
+      //TODO:JK: buggy
+      //      ags_config_load_defaults(ags_main->config);
+      //      ags_main_load_config(ags_main);
     }else{
       AgsSingleThread *single_thread;
 
@@ -866,8 +867,9 @@ main(int argc, char **argv)
       //      ags_thread_start(ags_main->autosave_thread);
     }
 
-    ags_config_load_defaults(ags_main->config);
-    ags_main_load_config(ags_main);
+    //TODO:JK: buggy
+    //    ags_config_load_defaults(ags_main->config);
+    //    ags_main_load_config(ags_main);
 
     if(!single_thread){
       /* join gui thread */
