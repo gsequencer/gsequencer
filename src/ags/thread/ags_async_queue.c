@@ -19,9 +19,11 @@
 #include <ags/thread/ags_async_queue.h>
 
 void ags_async_queue_class_init(AgsAsyncQueueClass *async_queue);
-void ags_async_queue_tree_iterator_interface_init(AgsTreeIteratorInterface *tree);
 void ags_async_queue_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_async_queue_init(AgsAsyncQueue *async_queue);
+void ags_async_queue_connect(AgsConnectable *connectable);
+void ags_async_queue_disconnect(AgsConnectable *connectable);
+void ags_async_queue_finalize(GObject *gobject);
 
 static gpointer ags_async_queue_parent_class = NULL;
 
@@ -61,7 +63,31 @@ ags_async_queue_class_init(AgsAsyncQueueClass *async_queue)
 }
 
 void
+ags_async_queue_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_async_queue_init(AgsAsyncQueue *async_queue)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_async_queue_connect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_async_queue_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_async_queue_finalize(GObject *gobject)
 {
   //TODO:JK: implement me
 }
@@ -74,6 +100,12 @@ ags_asnyc_queue_add(AgsAsyncQueue *queue, AgsStackable *stackable)
 
 gboolean
 ags_async_queue_remove(AgsAsyncQueue *queue, AgsStackable *stackable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_async_queue_initerrupt(AgsAsyncQueue *async_queue)
 {
   //TODO:JK: implement me
 }

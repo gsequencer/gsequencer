@@ -1,4 +1,4 @@
-joel@weedlight.ch
+weedlight@gmail.com
 
 You need a realtime kernel in conjunction with ags. The realtime kernel shipped with Ubuntu Studio didn't work but a self compiled worked. See http://rt.wiki.kernel.org/ for more information. 
 

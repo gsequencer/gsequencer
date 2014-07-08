@@ -716,6 +716,7 @@ main(int argc, char **argv)
   sigemptyset(&ags_sigact.sa_mask);
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
+  sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
 
   /**/
   LIBXML_TEST_VERSION;

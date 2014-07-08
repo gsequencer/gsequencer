@@ -32,21 +32,26 @@
 typedef struct _AgsAsyncQueue AgsAsyncQueue;
 typedef struct _AgsAsyncQueueClass AgsAsyncQueueClass;
 
-
 struct _AgsAsyncQueue
 {
   GObject object;
+
+  GQueue *stack;
 };
 
 struct _AgsAsyncQueueClass
 {
   GObjectClass object;
+
+  void (*interrupt)(AgsAsyncQueue *async_queue);
 };
 
 GType ags_async_queue_get_type();
 
-void ags_asnyc_queue_add(AgsAsyncQueue *queue, AgsStackable *stackable);
+void ags_async_queue_add(AgsAsyncQueue *queue, AgsStackable *stackable);
 gboolean ags_async_queue_remove(AgsAsyncQueue *queue, AgsStackable *stackable);
+
+void ags_async_queue_initerrupt(AgsAsyncQueue *async_queue);
 
 AgsAsyncQueue* ags_async_queue_new();
 
