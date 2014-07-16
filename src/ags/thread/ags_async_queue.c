@@ -25,6 +25,9 @@ void ags_async_queue_connect(AgsConnectable *connectable);
 void ags_async_queue_disconnect(AgsConnectable *connectable);
 void ags_async_queue_finalize(GObject *gobject);
 
+void ags_async_queue_run_callback(AgsThread *thread,
+				  AgsAsyncQueue *async_queue);
+
 static gpointer ags_async_queue_parent_class = NULL;
 
 GType
@@ -65,13 +68,17 @@ ags_async_queue_class_init(AgsAsyncQueueClass *async_queue)
 void
 ags_async_queue_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  //TODO:JK: implement me
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_async_queue_connect;
+  connectable->disconnect = ags_async_queue_disconnect;
 }
 
 void
 ags_async_queue_init(AgsAsyncQueue *async_queue)
 {
-  //TODO:JK: implement me
+  async_queue->stack = g_queue_new();
+  async_queue->timer = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
 void
@@ -92,22 +99,88 @@ ags_async_queue_finalize(GObject *gobject)
   //TODO:JK: implement me
 }
 
-void
-ags_asnyc_queue_add(AgsAsyncQueue *queue, AgsStackable *stackable)
+AgsTimer*
+ags_timer_alloc(time_t tv_sec, long tv_nsec)
 {
-  //TODO:JK: implement me
+  AgsTimer *timer;
+
+  timer = (AgsTimer *) malloc(sizeof(AgsTimer));
+  
+  timer->run_delay.tv_sec = tv_sec;
+  timer->run_delay.tv_nsec = tv_nsec;
+  
+  timer->record_history = FALSE;
+  timer->history = NULL;
+
+  return(timer);
+}
+
+void
+ags_asnyc_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
+{
+  AgsTimer *timer;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static time_t tv_sec = 0;
+  static long tv_nsec = 0;
+  static long delay = 4000;
+  static const long max_delay = 800000;
+  static gboolean odd = FALSE;
+
+  pthread_mutex_lock(&mutex);
+  
+  timer = ags_timer_alloc(tv_sec,
+			  tv_nsec);
+
+  if(!odd){
+    tv_nsec += delay;
+
+    if(tv_nsec >= max_delay){
+      tv_nsec = max_delay / 2;
+      odd = TRUE;
+    }
+  }else{
+    tv_nsec -= delay;
+
+    if(2 * delay > tv_nsec - delay){
+      odd = FALSE;
+    }
+  }
+
+  g_queue_push(async_queue->stack,
+	       stackable);
+  g_hash_table_insert(async_queue->timer, stackable, timer);
+
+  pthread_mutex_unlock(&mutex);
 }
 
 gboolean
-ags_async_queue_remove(AgsAsyncQueue *queue, AgsStackable *stackable)
+ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 {
-  //TODO:JK: implement me
+  AgsTimer *timer;
+
+  timer = g_hash_table_lookup(async_queue->timer,
+			      stackable);
+  g_hash_table_remove(async_queue->timer,
+		      stackable);
+  free(timer);
 }
 
 void
 ags_async_queue_initerrupt(AgsAsyncQueue *async_queue)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_async_queue_run_callback(AgsThread *thread,
+			     AgsAsyncQueue *async_queue)
+{
+  AgsTimer *timer;
+
+  timer = g_hash_table_lookup(async_queue->timer,
+			      AGS_STACKABLE(thread));
+
+  nanosleep(&(timer->run_delay), NULL);
 }
 
 /**

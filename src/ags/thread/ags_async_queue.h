@@ -32,11 +32,14 @@
 typedef struct _AgsAsyncQueue AgsAsyncQueue;
 typedef struct _AgsAsyncQueueClass AgsAsyncQueueClass;
 
+typedef struct _AgsTimer AgsTimer;
+
 struct _AgsAsyncQueue
 {
   GObject object;
 
   GQueue *stack;
+  GHashTable *timer;
 };
 
 struct _AgsAsyncQueueClass
@@ -46,10 +49,21 @@ struct _AgsAsyncQueueClass
   void (*interrupt)(AgsAsyncQueue *async_queue);
 };
 
+struct _AgsTimer
+{
+  struct timespec run_delay;
+
+  //NOTE: not supported for now
+  gboolean record_history;
+  gpointer history;
+};
+
 GType ags_async_queue_get_type();
 
-void ags_async_queue_add(AgsAsyncQueue *queue, AgsStackable *stackable);
-gboolean ags_async_queue_remove(AgsAsyncQueue *queue, AgsStackable *stackable);
+AgsTimer* ags_timer_alloc(time_t tv_sec, long tv_nsec);
+
+void ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable);
+gboolean ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stackable);
 
 void ags_async_queue_initerrupt(AgsAsyncQueue *async_queue);
 
