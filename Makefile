@@ -220,7 +220,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_timebar.$(OBJEXT) ags-ags_segment.$(OBJEXT) \
 	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
 	ags-ags_table.$(OBJEXT) ags-ags_led.$(OBJEXT) \
-	ags-ags_portlet.$(OBJEXT) \
+	ags-ags_portlet.$(OBJEXT) ags-ags_stackable.$(OBJEXT) \
 	ags-ags_dynamic_connectable.$(OBJEXT) \
 	ags-ags_countable.$(OBJEXT) ags-ags_main_loop.$(OBJEXT) \
 	ags-ags_applicable.$(OBJEXT) ags-ags_tree_iterator.$(OBJEXT) \
@@ -927,6 +927,7 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/widget/ags_led.h ./src/ags/widget/ags_led.c \
 	./src/ags/object/ags_marshal.h ./src/ags/object/ags_portlet.h \
 	./src/ags/object/ags_portlet.c \
+	./src/ags/object/ags_stackable.c \
 	./src/ags/object/ags_dynamic_connectable.c \
 	./src/ags/object/ags_countable.c \
 	./src/ags/object/ags_main_loop.h \
@@ -949,6 +950,7 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/object/ags_tactable.c \
 	./src/ags/object/ags_packable.c \
 	./src/ags/object/ags_dynamic_connectable.h \
+	./src/ags/object/ags_stackable.h \
 	./src/ags/object/ags_packable.h ./src/ags/X/ags_preferences.c \
 	./src/ags/X/ags_preferences.h \
 	./src/ags/X/ags_preferences_callbacks.c \
@@ -1618,6 +1620,7 @@ include ./$(DEPDIR)/ags-ags_sf2_chooser.Po
 include ./$(DEPDIR)/ags-ags_sf2_chooser_callbacks.Po
 include ./$(DEPDIR)/ags-ags_single_thread.Po
 include ./$(DEPDIR)/ags-ags_sndfile.Po
+include ./$(DEPDIR)/ags-ags_stackable.Po
 include ./$(DEPDIR)/ags-ags_start_devout.Po
 include ./$(DEPDIR)/ags-ags_stream.Po
 include ./$(DEPDIR)/ags-ags_stream_audio_signal.Po
@@ -3834,6 +3837,20 @@ ags-ags_portlet.obj: ./src/ags/object/ags_portlet.c
 #	$(AM_V_CC)source='./src/ags/object/ags_portlet.c' object='ags-ags_portlet.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_portlet.obj `if test -f './src/ags/object/ags_portlet.c'; then $(CYGPATH_W) './src/ags/object/ags_portlet.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_portlet.c'; fi`
+
+ags-ags_stackable.o: ./src/ags/object/ags_stackable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_stackable.o -MD -MP -MF $(DEPDIR)/ags-ags_stackable.Tpo -c -o ags-ags_stackable.o `test -f './src/ags/object/ags_stackable.c' || echo '$(srcdir)/'`./src/ags/object/ags_stackable.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_stackable.Tpo $(DEPDIR)/ags-ags_stackable.Po
+#	$(AM_V_CC)source='./src/ags/object/ags_stackable.c' object='ags-ags_stackable.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_stackable.o `test -f './src/ags/object/ags_stackable.c' || echo '$(srcdir)/'`./src/ags/object/ags_stackable.c
+
+ags-ags_stackable.obj: ./src/ags/object/ags_stackable.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_stackable.obj -MD -MP -MF $(DEPDIR)/ags-ags_stackable.Tpo -c -o ags-ags_stackable.obj `if test -f './src/ags/object/ags_stackable.c'; then $(CYGPATH_W) './src/ags/object/ags_stackable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_stackable.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_stackable.Tpo $(DEPDIR)/ags-ags_stackable.Po
+#	$(AM_V_CC)source='./src/ags/object/ags_stackable.c' object='ags-ags_stackable.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_stackable.obj `if test -f './src/ags/object/ags_stackable.c'; then $(CYGPATH_W) './src/ags/object/ags_stackable.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/object/ags_stackable.c'; fi`
 
 ags-ags_dynamic_connectable.o: ./src/ags/object/ags_dynamic_connectable.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_dynamic_connectable.o -MD -MP -MF $(DEPDIR)/ags-ags_dynamic_connectable.Tpo -c -o ags-ags_dynamic_connectable.o `test -f './src/ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`./src/ags/object/ags_dynamic_connectable.c
