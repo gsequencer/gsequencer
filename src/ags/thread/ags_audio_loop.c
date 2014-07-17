@@ -42,6 +42,8 @@ void ags_audio_loop_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_audio_loop_connect(AgsConnectable *connectable);
 void ags_audio_loop_disconnect(AgsConnectable *connectable);
+void ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue);
+AgsAsyncQueue* ags_audio_loop_get_async_queue(AgsMainLoop *main_loop);
 void ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_audio_loop_get_tic(AgsMainLoop *main_loop);
 void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
@@ -232,6 +234,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->frequency = 1.0 / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
 
   audio_loop->ags_main = NULL;
+
+  /* AgsAsyncQueue */
+  audio_loop->async_queue = ags_async_queue_new();
 
   /* AgsTaskThread */  
   audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
@@ -439,6 +444,18 @@ ags_audio_loop_disconnect(AgsConnectable *connectable)
   ags_audio_loop_parent_connectable_interface->disconnect(connectable);
 
   /* empty */
+}
+
+void
+ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue)
+{
+  AGS_AUDIO_LOOP(main_loop)->async_queue = async_queue;
+}
+
+AgsAsyncQueue*
+ags_audio_loop_get_async_queue(AgsMainLoop *main_loop)
+{
+  return(AGS_AUDIO_LOOP(main_loop)->async_queue);
 }
 
 void

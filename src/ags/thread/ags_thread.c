@@ -24,6 +24,7 @@
 #include <ags/object/ags_stackable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/thread/ags_async_queue.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <ags/audio/ags_devout.h>

@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/object/ags_stackable.h>
+
 #define AGS_TYPE_ASYNC_QUEUE                (ags_async_queue_get_type())
 #define AGS_ASYNC_QUEUE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ASYNC_QUEUE, AgsAsyncQueue))
 #define AGS_ASYNC_QUEUE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_ASYNC_QUEUE, AgsAsyncQueueClass))

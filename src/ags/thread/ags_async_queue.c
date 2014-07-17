@@ -18,6 +18,10 @@
 
 #include <ags/thread/ags_async_queue.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/thread/ags_thread.h>
+
 void ags_async_queue_class_init(AgsAsyncQueueClass *async_queue);
 void ags_async_queue_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_async_queue_init(AgsAsyncQueue *async_queue);
@@ -146,8 +150,8 @@ ags_asnyc_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
     }
   }
 
-  g_queue_push(async_queue->stack,
-	       stackable);
+  g_queue_push_tail(async_queue->stack,
+		    stackable);
   g_hash_table_insert(async_queue->timer, stackable, timer);
 
   pthread_mutex_unlock(&mutex);

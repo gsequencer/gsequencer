@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_thread.h>
+#include <ags/thread/ags_async_queue.h>
 
 #define AGS_TYPE_AUDIO_LOOP                (ags_audio_loop_get_type())
 #define AGS_AUDIO_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_LOOP, AgsAudioLoop))
@@ -66,6 +67,8 @@ struct _AgsAudioLoop
   gdouble frequency;
 
   GObject *ags_main;
+
+  AgsAsyncQueue *async_queue;
   
   AgsThread *task_thread;
   AgsThread *gui_thread;

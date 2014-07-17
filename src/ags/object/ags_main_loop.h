@@ -21,6 +21,8 @@
 
 #include <glib-object.h>
 
+#include <ags/thread/ags_async_queue.h>
+
 #define AGS_TYPE_MAIN_LOOP                    (ags_main_loop_get_type())
 #define AGS_MAIN_LOOP(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MAIN_LOOP, AgsMainLoop))
 #define AGS_MAIN_LOOP_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_MAIN_LOOP, AgsMainLoopInterface))

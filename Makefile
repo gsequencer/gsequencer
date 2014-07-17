@@ -303,7 +303,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_line_callbacks.$(OBJEXT) ags-main.$(OBJEXT) \
 	ags-ags_list.$(OBJEXT) ags-ags_parameter.$(OBJEXT) \
 	ags-ags_combo_box_text.$(OBJEXT) ags-ags_log.$(OBJEXT) \
-	ags-ags_container.$(OBJEXT) \
+	ags-ags_container.$(OBJEXT) ags-ags_async_queue.$(OBJEXT) \
 	ags-ags_returnable_thread.$(OBJEXT) \
 	ags-ags_thread_pool.$(OBJEXT) \
 	ags-ags_timestamp_thread.$(OBJEXT) \
@@ -1121,6 +1121,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/lib/ags_combo_box_text.c ./src/ags/lib/ags_log.c \
 	./src/ags/lib/ags_combo_box_text.h \
 	./src/ags/lib/ags_container.h ./src/ags/lib/ags_container.c \
+	./src/ags/thread/ags_async_queue.h \
+	./src/ags/thread/ags_async_queue.c \
 	./src/ags/thread/ags_returnable_thread.h \
 	./src/ags/thread/ags_returnable_thread.c \
 	./src/ags/thread/ags_thread_pool.h \
@@ -1396,6 +1398,7 @@ include ./$(DEPDIR)/ags-ags_apply_sequencer_length.Po
 include ./$(DEPDIR)/ags-ags_apply_synth.Po
 include ./$(DEPDIR)/ags-ags_apply_tact.Po
 include ./$(DEPDIR)/ags-ags_apply_wavetable.Po
+include ./$(DEPDIR)/ags-ags_async_queue.Po
 include ./$(DEPDIR)/ags-ags_audio.Po
 include ./$(DEPDIR)/ags-ags_audio_file.Po
 include ./$(DEPDIR)/ags-ags_audio_file_xml.Po
@@ -5363,6 +5366,20 @@ ags-ags_container.obj: ./src/ags/lib/ags_container.c
 #	$(AM_V_CC)source='./src/ags/lib/ags_container.c' object='ags-ags_container.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_container.obj `if test -f './src/ags/lib/ags_container.c'; then $(CYGPATH_W) './src/ags/lib/ags_container.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/lib/ags_container.c'; fi`
+
+ags-ags_async_queue.o: ./src/ags/thread/ags_async_queue.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_async_queue.o -MD -MP -MF $(DEPDIR)/ags-ags_async_queue.Tpo -c -o ags-ags_async_queue.o `test -f './src/ags/thread/ags_async_queue.c' || echo '$(srcdir)/'`./src/ags/thread/ags_async_queue.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_async_queue.Tpo $(DEPDIR)/ags-ags_async_queue.Po
+#	$(AM_V_CC)source='./src/ags/thread/ags_async_queue.c' object='ags-ags_async_queue.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_async_queue.o `test -f './src/ags/thread/ags_async_queue.c' || echo '$(srcdir)/'`./src/ags/thread/ags_async_queue.c
+
+ags-ags_async_queue.obj: ./src/ags/thread/ags_async_queue.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_async_queue.obj -MD -MP -MF $(DEPDIR)/ags-ags_async_queue.Tpo -c -o ags-ags_async_queue.obj `if test -f './src/ags/thread/ags_async_queue.c'; then $(CYGPATH_W) './src/ags/thread/ags_async_queue.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_async_queue.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_async_queue.Tpo $(DEPDIR)/ags-ags_async_queue.Po
+#	$(AM_V_CC)source='./src/ags/thread/ags_async_queue.c' object='ags-ags_async_queue.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_async_queue.obj `if test -f './src/ags/thread/ags_async_queue.c'; then $(CYGPATH_W) './src/ags/thread/ags_async_queue.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/thread/ags_async_queue.c'; fi`
 
 ags-ags_returnable_thread.o: ./src/ags/thread/ags_returnable_thread.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_returnable_thread.o -MD -MP -MF $(DEPDIR)/ags-ags_returnable_thread.Tpo -c -o ags-ags_returnable_thread.o `test -f './src/ags/thread/ags_returnable_thread.c' || echo '$(srcdir)/'`./src/ags/thread/ags_returnable_thread.c
