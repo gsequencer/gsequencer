@@ -57,14 +57,16 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
     }
   }
 
+  machine_old = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE)));
+
   if(machine == NULL){
-    i = 0;
-    stop = 1;
-    ags_notebook_change_machine_shrink();
+    if(machine_old != NULL){
+      i = 0;
+      stop = machine_old->audio->audio_channels;
+
+      ags_notebook_change_machine_shrink();
+    }
   }else{
-    machine_old = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE)));
-
-
     if(machine_old == NULL){
       i = 0;
       stop = machine->audio->audio_channels;

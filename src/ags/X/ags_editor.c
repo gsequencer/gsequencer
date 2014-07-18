@@ -348,8 +348,8 @@ ags_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) editor, "show\0",
 		   G_CALLBACK(ags_editor_show_callback), (gpointer) editor);
 
-  g_signal_connect ((GObject *) editor->index_radio, "button_press_event\0",
-                    G_CALLBACK (ags_editor_button_press_callback), (gpointer) editor);
+  g_signal_connect_after((GObject *) editor->index_radio, "clicked\0",
+			 G_CALLBACK (ags_editor_button_press_callback), (gpointer) editor);
 
   /*  */
   g_signal_connect_after((GObject *) window->navigation, "change-position\0",
@@ -426,9 +426,14 @@ ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine)
   /* retrieve some variables */
   old_machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE));
 
-  notation = AGS_AUDIO(machine->audio)->notation;
+  if(machine != NULL){
+    notation = AGS_AUDIO(machine->audio)->notation;
 
-  tabs = editor->notebook->tabs;
+    tabs = editor->notebook->tabs;
+  }else{
+    notation = NULL;
+    tabs = NULL;
+  }
 
   /* disconnect */
   if(old_machine != NULL){

@@ -1581,6 +1581,7 @@ ags_thread_start(AgsThread *thread)
 void*
 ags_thread_loop(void *ptr)
 {
+  AgsAsyncQueue *async_queue;
   AgsThread *thread, *main_loop;
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
@@ -1645,6 +1646,7 @@ ags_thread_loop(void *ptr)
     thread = AGS_THREAD(ptr);
 
   main_loop = ags_thread_get_toplevel(thread);
+  async_queue = ags_main_loop_get_async_queue(main_loop);
 
   /*  */
   pthread_mutex_lock(&(main_loop->mutex));
@@ -1927,6 +1929,12 @@ ags_thread_loop(void *ptr)
     g_object_unref(G_OBJECT(thread));
   }
 
+
+  /* remove of AgsAsyncQueue */  
+  ags_async_queue_remove(async_queue,
+			 AGS_STACKABLE(thread));
+
+  /* exit thread */
   pthread_exit(NULL);
 }
 
