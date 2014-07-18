@@ -480,7 +480,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   broadcast = FALSE;
   waiting = FALSE;
 
-  pthread_mutex_lock(&(thread->mutex));
+  //  pthread_mutex_lock(&(thread->mutex));
 
   if(tic > 2){
     tic = tic % 3;
@@ -526,7 +526,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
     }
   }
 
-  pthread_mutex_unlock(&(thread->mutex));
+  //  pthread_mutex_unlock(&(thread->mutex));
 }
 
 /**
@@ -892,7 +892,7 @@ ags_thread_is_current_ready(AgsThread *current)
 
   toplevel = ags_thread_get_toplevel(current);
 
-  pthread_mutex_lock(&(current->mutex));
+  //  pthread_mutex_lock(&(current->mutex));
 
   flags = g_atomic_int_get(&(current->flags));
   retval = FALSE;
@@ -910,7 +910,7 @@ ags_thread_is_current_ready(AgsThread *current)
   }
 
   if(retval){
-    pthread_mutex_unlock(&(current->mutex));
+    //    pthread_mutex_unlock(&(current->mutex));
 
     return(TRUE);
   }
@@ -945,7 +945,7 @@ ags_thread_is_current_ready(AgsThread *current)
     break;
   }
 
-  pthread_mutex_unlock(&(current->mutex));
+  //  pthread_mutex_unlock(&(current->mutex));
 
   return(retval);
 }
@@ -1629,7 +1629,7 @@ ags_thread_loop(void *ptr)
     
       while(!ags_thread_is_current_ready(thread)){
 	pthread_cond_wait(&(thread->cond),
-			  &(main_loop->mutex));
+			  &(thread->mutex));
       }
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
@@ -1692,11 +1692,11 @@ ags_thread_loop(void *ptr)
 
     /* run in hierarchy */
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
-      pthread_mutex_lock(&(main_loop->mutex));
+      pthread_mutex_lock(&(thread->mutex));
       
       ags_thread_loop_sync(thread);
     
-      pthread_mutex_unlock(&(main_loop->mutex));
+      pthread_mutex_unlock(&(thread->mutex));
     }
 
     /* */
