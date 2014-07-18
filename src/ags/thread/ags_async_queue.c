@@ -154,6 +154,9 @@ ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 		    stackable);
   g_hash_table_insert(async_queue->timer, stackable, timer);
 
+  g_signal_connect(G_OBJECT(stackable), "run\0",
+		   G_CALLBACK(ags_async_queue_run_callback), async_queue);
+
   pthread_mutex_unlock(&mutex);
 }
 
