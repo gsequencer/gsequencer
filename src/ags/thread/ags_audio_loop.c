@@ -210,6 +210,8 @@ ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
+  main_loop->set_async_queue = ags_audio_loop_set_async_queue;
+  main_loop->get_async_queue = ags_audio_loop_get_async_queue;
   main_loop->set_tic = ags_audio_loop_set_tic;
   main_loop->get_tic = ags_audio_loop_get_tic;
   main_loop->set_last_sync = ags_audio_loop_set_last_sync;

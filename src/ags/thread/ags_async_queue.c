@@ -120,7 +120,7 @@ ags_timer_alloc(time_t tv_sec, long tv_nsec)
 }
 
 void
-ags_asnyc_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
+ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 {
   AgsTimer *timer;
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;

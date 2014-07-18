@@ -1529,15 +1529,24 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 void
 ags_thread_real_start(AgsThread *thread)
 {
+  AgsAsyncQueue *async_queue;
+  AgsMainLoop *main_loop;
   guint val;
 
   if(thread == NULL){
     return;
   }
 
+  main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
+  async_queue = ags_main_loop_get_async_queue(main_loop);
+
 #ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
 #endif
+
+  /* add to async queue */
+  ags_async_queue_add(async_queue,
+		      AGS_STACKABLE(thread));
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
