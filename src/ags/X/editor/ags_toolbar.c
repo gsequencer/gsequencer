@@ -40,7 +40,6 @@ void ags_toolbar_connectable_interface_init(AgsConnectableInterface *connectable
 void ags_toolbar_init(AgsToolbar *toolbar);
 void ags_toolbar_connect(AgsConnectable *connectable);
 void ags_toolbar_disconnect(AgsConnectable *connectable);
-void ags_toolbar_destroy(GtkObject *object);
 void ags_toolbar_show(GtkWidget *widget);
 
 GType
@@ -195,9 +194,6 @@ ags_toolbar_connect(AgsConnectable *connectable)
 
   toolbar = AGS_TOOLBAR(connectable);
 
-  g_signal_connect((GObject *) toolbar, "destroy\0",
-		   G_CALLBACK(ags_toolbar_destroy_callback), (gpointer) toolbar);
-
   g_signal_connect((GObject *) toolbar, "show\0",
 		   G_CALLBACK(ags_toolbar_show_callback), (gpointer) toolbar);
 
@@ -240,11 +236,7 @@ ags_toolbar_connect(AgsConnectable *connectable)
 void
 ags_toolbar_disconnect(AgsConnectable *connectable)
 {
-}
-
-void
-ags_toolbar_destroy(GtkObject *object)
-{
+  //TODO:JK: implement me
 }
 
 void

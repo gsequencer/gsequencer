@@ -580,6 +580,17 @@ ags_audio_loop_run(AgsThread *thread)
   /* release main context */
   g_main_context_release(main_context);
 
+  if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) == 0 &&
+     (AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) == 0 &&
+     (AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) == 0){
+    struct timespec delay = {
+      0,
+      NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE,
+    };
+
+    nanosleep(&delay, NULL);
+  }
+
   /* decide if we stop */
   if(audio_loop->play_recall_ref == 0 &&
      audio_loop->play_channel_ref == 0 &&
