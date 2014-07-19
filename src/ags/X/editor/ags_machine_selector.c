@@ -52,9 +52,9 @@ ags_machine_selector_get_type(void)
       NULL, /* interface_data */
     };
 
-    ags_type_machine_selector = g_type_register_static(GTK_TYPE_TABLE,
-						"AgsMachineSelector\0", &ags_machine_selector_info,
-						0);
+    ags_type_machine_selector = g_type_register_static(GTK_TYPE_VBOX,
+						       "AgsMachineSelector\0", &ags_machine_selector_info,
+						       0);
     
     g_type_add_interface_static(ags_type_machine_selector,
 				AGS_TYPE_CONNECTABLE,

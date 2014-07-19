@@ -24,9 +24,6 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
-
 #define AGS_TYPE_MACHINE_SELECTION                (ags_machine_selection_get_type())
 #define AGS_MACHINE_SELECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_SELECTION, AgsMachineSelection))
 #define AGS_MACHINE_SELECTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MACHINE_SELECTION, AgsMachineSelectionClass))
