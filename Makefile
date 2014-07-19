@@ -258,7 +258,10 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_link_editor.$(OBJEXT) \
 	ags-ags_line_member_editor_callbacks.$(OBJEXT) \
 	ags-ags_line_editor.$(OBJEXT) ags-ags_editor.$(OBJEXT) \
-	ags-ags_toolbar.$(OBJEXT) ags-ags_note_edit.$(OBJEXT) \
+	ags-ags_toolbar.$(OBJEXT) ags-ags_machine_selector.$(OBJEXT) \
+	ags-ags_machine_selection.$(OBJEXT) \
+	ags-ags_machine_radio_button.$(OBJEXT) \
+	ags-ags_note_edit.$(OBJEXT) \
 	ags-ags_note_edit_callbacks.$(OBJEXT) \
 	ags-ags_sf2_chooser_callbacks.$(OBJEXT) \
 	ags-ags_inline_player.$(OBJEXT) \
@@ -1011,6 +1014,12 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/ags_line_editor.c ./src/ags/X/ags_editor.c \
 	./src/ags/X/editor/ags_sf2_chooser.h \
 	./src/ags/X/editor/ags_toolbar.c \
+	./src/ags/X/editor/ags_machine_selector.h \
+	./src/ags/X/editor/ags_machine_selector.c \
+	./src/ags/X/editor/ags_machine_selection.h \
+	./src/ags/X/editor/ags_machine_selection.c \
+	./src/ags/X/editor/ags_machine_radio_button.h \
+	./src/ags/X/editor/ags_machine_radio_button.c \
 	./src/ags/X/editor/ags_note_edit.h \
 	./src/ags/X/editor/ags_note_edit.c \
 	./src/ags/X/editor/ags_note_edit_callbacks.h \
@@ -1508,6 +1517,9 @@ include ./$(DEPDIR)/ags-ags_machine.Po
 include ./$(DEPDIR)/ags-ags_machine_callbacks.Po
 include ./$(DEPDIR)/ags-ags_machine_editor.Po
 include ./$(DEPDIR)/ags-ags_machine_editor_callbacks.Po
+include ./$(DEPDIR)/ags-ags_machine_radio_button.Po
+include ./$(DEPDIR)/ags-ags_machine_selection.Po
+include ./$(DEPDIR)/ags-ags_machine_selector.Po
 include ./$(DEPDIR)/ags-ags_main_loop.Po
 include ./$(DEPDIR)/ags-ags_marshal.Po
 include ./$(DEPDIR)/ags-ags_matrix.Po
@@ -4540,6 +4552,48 @@ ags-ags_toolbar.obj: ./src/ags/X/editor/ags_toolbar.c
 #	$(AM_V_CC)source='./src/ags/X/editor/ags_toolbar.c' object='ags-ags_toolbar.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_toolbar.obj `if test -f './src/ags/X/editor/ags_toolbar.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_toolbar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_toolbar.c'; fi`
+
+ags-ags_machine_selector.o: ./src/ags/X/editor/ags_machine_selector.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_machine_selector.o -MD -MP -MF $(DEPDIR)/ags-ags_machine_selector.Tpo -c -o ags-ags_machine_selector.o `test -f './src/ags/X/editor/ags_machine_selector.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_machine_selector.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_machine_selector.Tpo $(DEPDIR)/ags-ags_machine_selector.Po
+#	$(AM_V_CC)source='./src/ags/X/editor/ags_machine_selector.c' object='ags-ags_machine_selector.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_machine_selector.o `test -f './src/ags/X/editor/ags_machine_selector.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_machine_selector.c
+
+ags-ags_machine_selector.obj: ./src/ags/X/editor/ags_machine_selector.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_machine_selector.obj -MD -MP -MF $(DEPDIR)/ags-ags_machine_selector.Tpo -c -o ags-ags_machine_selector.obj `if test -f './src/ags/X/editor/ags_machine_selector.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_machine_selector.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_machine_selector.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_machine_selector.Tpo $(DEPDIR)/ags-ags_machine_selector.Po
+#	$(AM_V_CC)source='./src/ags/X/editor/ags_machine_selector.c' object='ags-ags_machine_selector.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_machine_selector.obj `if test -f './src/ags/X/editor/ags_machine_selector.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_machine_selector.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_machine_selector.c'; fi`
+
+ags-ags_machine_selection.o: ./src/ags/X/editor/ags_machine_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_machine_selection.o -MD -MP -MF $(DEPDIR)/ags-ags_machine_selection.Tpo -c -o ags-ags_machine_selection.o `test -f './src/ags/X/editor/ags_machine_selection.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_machine_selection.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_machine_selection.Tpo $(DEPDIR)/ags-ags_machine_selection.Po
+#	$(AM_V_CC)source='./src/ags/X/editor/ags_machine_selection.c' object='ags-ags_machine_selection.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_machine_selection.o `test -f './src/ags/X/editor/ags_machine_selection.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_machine_selection.c
+
+ags-ags_machine_selection.obj: ./src/ags/X/editor/ags_machine_selection.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_machine_selection.obj -MD -MP -MF $(DEPDIR)/ags-ags_machine_selection.Tpo -c -o ags-ags_machine_selection.obj `if test -f './src/ags/X/editor/ags_machine_selection.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_machine_selection.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_machine_selection.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_machine_selection.Tpo $(DEPDIR)/ags-ags_machine_selection.Po
+#	$(AM_V_CC)source='./src/ags/X/editor/ags_machine_selection.c' object='ags-ags_machine_selection.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_machine_selection.obj `if test -f './src/ags/X/editor/ags_machine_selection.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_machine_selection.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_machine_selection.c'; fi`
+
+ags-ags_machine_radio_button.o: ./src/ags/X/editor/ags_machine_radio_button.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_machine_radio_button.o -MD -MP -MF $(DEPDIR)/ags-ags_machine_radio_button.Tpo -c -o ags-ags_machine_radio_button.o `test -f './src/ags/X/editor/ags_machine_radio_button.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_machine_radio_button.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_machine_radio_button.Tpo $(DEPDIR)/ags-ags_machine_radio_button.Po
+#	$(AM_V_CC)source='./src/ags/X/editor/ags_machine_radio_button.c' object='ags-ags_machine_radio_button.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_machine_radio_button.o `test -f './src/ags/X/editor/ags_machine_radio_button.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_machine_radio_button.c
+
+ags-ags_machine_radio_button.obj: ./src/ags/X/editor/ags_machine_radio_button.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_machine_radio_button.obj -MD -MP -MF $(DEPDIR)/ags-ags_machine_radio_button.Tpo -c -o ags-ags_machine_radio_button.obj `if test -f './src/ags/X/editor/ags_machine_radio_button.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_machine_radio_button.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_machine_radio_button.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_machine_radio_button.Tpo $(DEPDIR)/ags-ags_machine_radio_button.Po
+#	$(AM_V_CC)source='./src/ags/X/editor/ags_machine_radio_button.c' object='ags-ags_machine_radio_button.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_machine_radio_button.obj `if test -f './src/ags/X/editor/ags_machine_radio_button.c'; then $(CYGPATH_W) './src/ags/X/editor/ags_machine_radio_button.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/editor/ags_machine_radio_button.c'; fi`
 
 ags-ags_note_edit.o: ./src/ags/X/editor/ags_note_edit.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_note_edit.o -MD -MP -MF $(DEPDIR)/ags-ags_note_edit.Tpo -c -o ags-ags_note_edit.o `test -f './src/ags/X/editor/ags_note_edit.c' || echo '$(srcdir)/'`./src/ags/X/editor/ags_note_edit.c

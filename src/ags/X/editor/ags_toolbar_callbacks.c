@@ -26,14 +26,6 @@
 
 #include <math.h>
 
-gboolean
-ags_toolbar_destroy_callback(GtkObject *object, AgsToolbar *toolbar)
-{
-  ags_toolbar_destroy(object);
-
-  return(FALSE);
-}
-
 void
 ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar)
 {

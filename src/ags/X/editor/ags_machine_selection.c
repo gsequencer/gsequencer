@@ -25,8 +25,9 @@ void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *c
 void ags_machine_selection_init(AgsMachineSelection *machine_selection);
 void ags_machine_selection_connect(AgsConnectable *connectable);
 void ags_machine_selection_disconnect(AgsConnectable *connectable);
-void ags_machine_selection_destroy(GtkObject *object);
 void ags_machine_selection_show(GtkWidget *widget);
+
+static gpointer ags_machine_selection_parent_class = NULL;
 
 GType
 ags_machine_selection_get_type(void)
@@ -76,6 +77,12 @@ ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection)
 {
+  GObjectClass *gobject;
+
+  ags_machine_selection_parent_class = g_type_class_peek_parent(machine_selection);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) machine_selection;
 }
 
 void

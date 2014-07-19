@@ -23,10 +23,25 @@
 void ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_button);
 void ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button);
+void ags_machine_radio_button_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+void ags_machine_radio_button_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
 void ags_machine_radio_button_connect(AgsConnectable *connectable);
 void ags_machine_radio_button_disconnect(AgsConnectable *connectable);
-void ags_machine_radio_button_destroy(GtkObject *object);
+void ags_machine_radio_button_finalize(GObject *gobject);
 void ags_machine_radio_button_show(GtkWidget *widget);
+
+enum{
+  PROP_0,
+  PROP_MACHINE,
+};
+
+static gpointer ags_machine_radio_button_parent_class = NULL;
 
 GType
 ags_machine_radio_button_get_type(void)
@@ -76,11 +91,91 @@ ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *con
 void
 ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_button)
 {
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  ags_machine_radio_button_parent_class = g_type_class_peek_parent(machine_radio_button);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) machine_radio_button;
+  
+  gobject->set_property = ags_machine_radio_button_set_property;
+  gobject->get_property = ags_machine_radio_button_get_property;
+
+  gobject->finalize = ags_machine_radio_button_finalize;
+
+  /* properties */
+  param_spec = g_param_spec_object("machine\0",
+				   "assigned machine\0",
+				   "The machine it is assigned to\0",
+				   AGS_TYPE_MACHINE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MACHINE,
+				  param_spec);
 }
 
 void
 ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button)
 {
+}
+
+void
+ags_machine_radio_button_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec)
+{
+  AgsMachineRadioButton *machine_radio_button;
+
+  machine_radio_button = AGS_MACHINE_RADIO_BUTTON(gobject);
+
+  switch(prop_id){
+  case PROP_MACHINE:
+    {
+      AgsMachine *machine;
+
+      machine = (AgsAudio *) g_value_get_object(value);
+      
+      if(machine == machine_radio_button->machine){
+	return;
+      }
+
+      if(machine_radio_button->machine != NULL){
+	g_object_unref(machine_radio_button->machine);
+      }
+
+      if(machine != NULL){
+	g_object_ref(machine);
+      }
+
+      machine_radio_button->machine = machine;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_machine_radio_button_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec)
+{
+  AgsMachineRadioButton *machine_radio_button;
+
+  machine_radio_button = AGS_MACHINE_RADIO_BUTTON(gobject);
+
+  switch(prop_id){
+  case PROP_MACHINE:
+    g_value_set_object(value, machine_radio_button->machine);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -90,6 +185,11 @@ ags_machine_radio_button_connect(AgsConnectable *connectable)
 
 void
 ags_machine_radio_button_disconnect(AgsConnectable *connectable)
+{
+}
+
+void
+ags_machine_radio_button_finalize(GObject *gobject)
 {
 }
 
