@@ -118,6 +118,7 @@ ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_bu
 void
 ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button)
 {
+  machine_radio_button->machine = NULL;
 }
 
 void

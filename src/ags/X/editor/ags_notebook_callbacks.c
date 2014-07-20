@@ -57,7 +57,7 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
     }
   }
 
-  machine_old = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE)));
+  machine_old = editor->selected_machine;
 
   if(machine == NULL){
     if(machine_old != NULL){
@@ -83,8 +83,6 @@ ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
       }
     }
   }
-
-  g_object_set_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE), machine);
   
   gtk_widget_show_all((GtkWidget *) notebook);
 }

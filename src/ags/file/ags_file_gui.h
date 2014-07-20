@@ -45,6 +45,7 @@
 #include <ags/X/ags_resize_editor.h>
 
 #include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notebook.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -147,12 +148,9 @@ xmlNode* ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor
 void ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar);
 xmlNode* ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar);
 
-/* GtkVBox */
-void ags_file_read_editor_pane_list(AgsFile *file, xmlNode *node, GList **list);
-xmlNode* ags_file_write_editor_pane_list(AgsFile *file, xmlNode *parent, GList *list);
-
-void ags_file_read_editor_pane(AgsFile *file, xmlNode *node, GtkVBox **editor_pane);
-xmlNode* ags_file_write_editor_pane(AgsFile *file, xmlNode *parent, GtkVBox *editor_pane);
+/* AgsMachineSelector */
+void ags_file_read_machine_selector(AgsFile *file, xmlNode *parent, AgsMachineSelector **machine_selector);
+xmlNode* ags_file_write_machine_selector(AgsFile *file, xmlNode *node, AgsMachineSelector *machine_selector);
 
 /* AgsNotebook */
 void ags_file_read_notebook(AgsFile *file, xmlNode *node, AgsNotebook **notebook);

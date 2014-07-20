@@ -143,8 +143,7 @@ ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
   /* add notation to root node */
   editor = AGS_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR));
 
-  if(editor->selected != NULL &&
-     (machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)))) != NULL){
+  if((machine = editor->selected_machine) != NULL){
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
@@ -246,8 +245,7 @@ ags_toolbar_paste_callback(GtkWidget *widget, AgsToolbar *toolbar)
   /* retrieve AgsEditor */
   editor = AGS_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR));
 
-  if(editor->selected != NULL &&
-     (machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)))) != NULL){
+  if((machine = editor->selected_machine) != NULL){
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     

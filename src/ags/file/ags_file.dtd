@@ -834,7 +834,7 @@
 	  >
 
 <!-- editor -->
-<!ELEMENT ags-editor (ags-parameter, ags-toolbar, ags-notebook)>
+<!ELEMENT ags-editor (ags-toolbar, ags-notebook)>
 <!ATTLIST ags-editor
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
@@ -849,6 +849,11 @@
 	  tic              CDATA      "1/1"
 	  zoom             CDATA      "1:4"
 	  mode             CDATA      "multi-channel"
+	  >
+
+<!ELEMENT ags-machine-selector (ags-parameter)>
+<!ATTLIST ags-machine-selector
+	  id               ID         #REQUIRED
 	  >
 
 <!ELEMENT ags-notebook (ags-notebook-tab-list)>

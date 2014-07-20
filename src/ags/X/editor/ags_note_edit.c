@@ -217,7 +217,7 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected != NULL){
+  if(editor->selected_machine != NULL){
     cairo_t *cr;
     gdouble value;
 
@@ -285,7 +285,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected != NULL){
+  if(editor->selected_machine != NULL){
     cairo_t *cr;
     gdouble value;
     double tact_factor, zoom_factor;
@@ -543,8 +543,8 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected == NULL ||
-     (machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE))) == NULL ||
+  if(editor->selected_machine == NULL ||
+     (machine = editor->selected_machine) == NULL ||
      machine->audio->notation == NULL)
     return;
 

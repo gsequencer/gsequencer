@@ -35,10 +35,10 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected != NULL){
+  if(editor->selected_machine != NULL){
     AgsMachine *machine;
 
-    machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, g_type_name(AGS_TYPE_MACHINE));
+    machine = editor->selected_machine;
 
     if(machine != NULL){
       cairo_t *cr;
@@ -137,9 +137,9 @@ ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected != NULL &&
+  if(editor->selected_machine != NULL &&
      event->button == 1 &&
-     (machine = (AgsMachine *) g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE))) != NULL){
+     (machine = editor->selected_machine) != NULL){
     AgsToolbar *toolbar;
 
     toolbar = editor->toolbar;
@@ -442,13 +442,13 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected != NULL && event->button == 1){
+  if(editor->selected_machine != NULL && event->button == 1){
     cairo_t *cr;
 
     note_edit->control.x1 = (guint) event->x;
     note_edit->control.y1 = (guint) event->y;
 
-    machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
+    machine = editor->selected_machine;
     note = note_edit->control.note;
 
     /* store the events position */
@@ -691,14 +691,14 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected != NULL){
+  if(editor->selected_machine != NULL){
     cairo_t *cr;
 
     prev_x1 = note_edit->control.x1;
     note_edit->control.x1 = (guint) event->x;
     note_edit->control.y1 = (guint) event->y;
 
-    machine = AGS_MACHINE(g_object_get_data((GObject *) editor->selected, (char *) g_type_name(AGS_TYPE_MACHINE)));
+    machine = editor->selected_machine;
     note = note_edit->control.note;
 
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);

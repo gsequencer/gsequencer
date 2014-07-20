@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_machine.h>
+
 #define AGS_TYPE_MACHINE_SELECTOR                (ags_machine_selector_get_type())
 #define AGS_MACHINE_SELECTOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_SELECTOR, AgsMachineSelector))
 #define AGS_MACHINE_SELECTOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MACHINE_SELECTOR, AgsMachineSelectorClass))
@@ -37,14 +39,22 @@ typedef struct _AgsMachineSelectorClass AgsMachineSelectorClass;
 struct _AgsMachineSelector
 {
   GtkVBox vbox;
+
+  GtkMenu *popup;
 };
 
 struct _AgsMachineSelectorClass
 {
   GtkVBoxClass vbox;
+
+  void (*changed)(AgsMachineSelector *machine_selector, AgsMachine *machine);
 };
 
 GType ags_machine_selector_get_type(void);
+
+void ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
+
+GtkMenu* ags_machine_selector_popup_new(AgsMachineSelector *machine_selector);
 
 AgsMachineSelector* ags_machine_selector_new();
 

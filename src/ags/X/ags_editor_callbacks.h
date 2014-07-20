@@ -30,15 +30,6 @@ void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, A
 gboolean ags_editor_destroy_callback(GtkObject *object, AgsEditor *editor);
 void ags_editor_show_callback(GtkWidget *widget, AgsEditor *editor);
 
-gboolean ags_editor_button_press_callback(GtkWidget *hpaned, GdkEventButton *event, AgsEditor *editor);
-void ags_editor_index_callback(GtkRadioButton *radio_button, AgsEditor *editor);
-
-void ags_editor_popup_add_tab_callback(GtkWidget *widget, GtkMenu *popup);
-void ags_editor_popup_remove_tab_callback(GtkWidget *widget, GtkMenu *popup);
-void ags_editor_popup_add_index_callback(GtkWidget *widget, GtkMenu *popup);
-void ags_editor_popup_remove_index_callback(GtkWidget *widget, GtkMenu *popup);
-void ags_editor_popup_link_index_callback(GtkWidget *widget, GtkMenu *popup);
-
 void ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
 					 AgsEditor *editor);
 

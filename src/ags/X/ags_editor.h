@@ -28,12 +28,13 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_note.h>
 
+#include <ags/X/ags_machine.h>
+
 #include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_meter.h>
 #include <ags/X/editor/ags_note_edit.h>
-
-#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_EDITOR                (ags_editor_get_type ())
 #define AGS_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EDITOR, AgsEditor))
@@ -61,10 +62,8 @@ struct _AgsEditor
 
   AgsDevout *devout;
 
-  GtkMenu *popup;
-
-  GtkVBox *index_radio;
-  GtkRadioButton *selected;
+  AgsMachineSelector *machine_selector;
+  AgsMachine *selected_machine;
   gulong set_audio_channels_handler;
   gulong set_pads_handler;
 
@@ -81,15 +80,9 @@ struct _AgsEditor
 struct _AgsEditorClass
 {
   GtkVBoxClass vbox;
-
-  void (*add_index)(AgsEditor *editor);
-  void (*change_machine)(AgsEditor *editor, AgsMachine *machine);
 };
 
 GType ags_editor_get_type(void);
-
-void ags_editor_add_index(AgsEditor *editor);
-void ags_editor_change_machine(AgsEditor *editor, AgsMachine *machine);
 
 AgsEditor* ags_editor_new();
 
