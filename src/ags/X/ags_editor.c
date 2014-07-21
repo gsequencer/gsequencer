@@ -46,10 +46,14 @@ void ags_editor_disconnect(AgsConnectable *connectable);
 void ags_editor_destroy(GtkObject *object);
 void ags_editor_show(GtkWidget *widget);
 
-void ags_editor_real_add_index(AgsEditor *editor);
-void ags_editor_real_change_machine(AgsEditor *editor, AgsMachine *machine);
+void ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
 GtkMenu* ags_editor_popup_new(AgsEditor *editor);
+
+enum{
+  MACHINE_CHANGED,
+  LAST_SIGNAL,
+};
 
 enum{
   PROP_0,
@@ -57,6 +61,7 @@ enum{
 };
 
 static gpointer ags_editor_parent_class = NULL;
+static guint editor_signals[LAST_SIGNAL];
 
 GtkStyle *editor_style;
 
@@ -122,6 +127,19 @@ ags_editor_class_init(AgsEditorClass *editor)
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT,
 				  param_spec);
+
+  /* AgsEditorClass */
+  editor->machine_changed = NULL;
+
+  editor_signals[MACHINE_CHANGED] =
+    g_signal_new("machine-changed\0",
+                 G_TYPE_FROM_CLASS (editor),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsEditorClass, machine_changed),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -261,16 +279,12 @@ ags_editor_connect(AgsConnectable *connectable)
   editor = AGS_EDITOR(connectable);
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
 
-
-  g_signal_connect((GObject *) editor, "destroy\0",
-		   G_CALLBACK(ags_editor_destroy_callback), (gpointer) editor);
-
-  g_signal_connect((GObject *) editor, "show\0",
-		   G_CALLBACK(ags_editor_show_callback), (gpointer) editor);
-
   /*  */
   g_signal_connect_after((GObject *) window->navigation, "change-position\0",
 			 G_CALLBACK(ags_editor_change_position_callback), (gpointer) editor);
+
+  g_signal_connect((GObject *) editor->machine_selector, "changed\0",
+		   G_CALLBACK(ags_editor_machine_changed_callback), (gpointer) editor);
 
   /*  */
   ags_connectable_connect(AGS_CONNECTABLE(editor->toolbar));
@@ -283,26 +297,24 @@ ags_editor_connect(AgsConnectable *connectable)
 void
 ags_editor_disconnect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
 }
 
 void
-ags_editor_destroy(GtkObject *object)
+ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
+  editor->selected_machine = machine;
 }
 
 void
-ags_editor_show(GtkWidget *widget)
+ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
-  GList *list;
-  /*
-  list = gtk_container_get_children((GtkContainer *) widget);
+  g_return_if_fail(AGS_IS_EDITOR(editor));
 
-  while(list != NULL){
-    gtk_widget_show_all((GtkWidget *) list->data);
-
-    list = list->next;
-  }
-  */
+  g_object_ref((GObject *) editor);
+  g_signal_emit((GObject *) editor,
+		editor_signals[MACHINE_CHANGED], 0);
+  g_object_unref((GObject *) editor);
 }
 
 AgsEditor*

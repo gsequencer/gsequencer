@@ -25,13 +25,10 @@
 
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_navigation.h>
+#include <ags/X/ags_machine.h>
 
-void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEditor *editor);
-gboolean ags_editor_destroy_callback(GtkObject *object, AgsEditor *editor);
-void ags_editor_show_callback(GtkWidget *widget, AgsEditor *editor);
-
-void ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
-					 AgsEditor *editor);
+void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
+				    AgsEditor *editor);
 
 void ags_editor_set_audio_channels_callback(AgsAudio *audio,
 					    guint audio_channels, guint audio_channels_old,
@@ -40,5 +37,11 @@ void ags_editor_set_pads_callback(AgsAudio *audio,
 				  GType channel_type,
 				  guint pads, guint pads_old,
 				  AgsEditor *editor);
+
+void ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
+					 AgsEditor *editor);
+
+void ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
+					 AgsEditor *editor);
 
 #endif /*__AGS_EDITOR_CALLBACKS_H__*/

@@ -54,44 +54,6 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
   editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }
 
-gboolean
-ags_editor_destroy_callback(GtkObject *object, AgsEditor *editor)
-{
-  ags_editor_destroy(object);
-
-  return(TRUE);
-}
-
-void
-ags_editor_show_callback(GtkWidget *widget, AgsEditor *editor)
-{
-  ags_editor_show(widget);
-}
-
-void
-ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
-				    AgsEditor *editor)
-{
-  cairo_t *cr;
-  gdouble loop_start, loop_end;
-  gdouble position;
-
-  loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);
-
-  if(!gtk_toggle_button_get_active(navigation->loop) || tact <= loop_end){
-    position = tact * editor->note_edit->control_current.control_width;
-  }else{
-    position = loop_start * editor->note_edit->control_current.control_width;
-  }
-
-  /* scroll */
-  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
-    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
-			position - (0.125 * editor->note_edit->control_current.control_width));
-  }
-}
-
 void
 ags_editor_set_audio_channels_callback(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old,
@@ -153,3 +115,35 @@ ags_editor_set_pads_callback(AgsAudio *audio,
   ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
   editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
 }
+
+void
+ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
+				    AgsEditor *editor)
+{
+  ags_editor_machine_changed(editor, machine);
+}
+
+void
+ags_editor_change_position_callback(AgsNavigation *navigation, gdouble tact,
+				    AgsEditor *editor)
+{
+  cairo_t *cr;
+  gdouble loop_start, loop_end;
+  gdouble position;
+
+  loop_start = gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_end = gtk_spin_button_get_value(navigation->loop_right_tact);
+
+  if(!gtk_toggle_button_get_active(navigation->loop) || tact <= loop_end){
+    position = tact * editor->note_edit->control_current.control_width;
+  }else{
+    position = loop_start * editor->note_edit->control_current.control_width;
+  }
+
+  /* scroll */
+  if(position - (0.125 * editor->note_edit->control_current.control_width) > 0.0){
+    gtk_range_set_value(GTK_RANGE(editor->note_edit->hscrollbar),
+			position - (0.125 * editor->note_edit->control_current.control_width));
+  }
+}
+

@@ -28,8 +28,7 @@ void ags_notebook_connectable_interface_init(AgsConnectableInterface *connectabl
 void ags_notebook_init(AgsNotebook *notebook);
 void ags_notebook_connect(AgsConnectable *connectable);
 void ags_notebook_disconnect(AgsConnectable *connectable);
-void ags_notebook_destroy(GtkObject *object);
-void ags_notebook_show(GtkWidget *widget);
+
 void ags_notebook_paint(AgsNotebook *notebook);
 
 AgsNotebookTab* ags_notebook_tab_alloc();
@@ -113,29 +112,14 @@ ags_notebook_connect(AgsConnectable *connectable)
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
 
-  g_signal_connect((GObject *) notebook, "destroy\0",
-		   G_CALLBACK(ags_notebook_destroy_callback), (gpointer) notebook);
-
-  g_signal_connect((GObject *) notebook, "show\0",
-		   G_CALLBACK(ags_notebook_show_callback), (gpointer) notebook);
-
-  g_signal_connect((GObject *) editor, "change_machine\0",
-		   G_CALLBACK(ags_notebook_change_machine_callback), notebook);
+  g_signal_connect((GObject *) editor, "machine-changed\0",
+		   G_CALLBACK(ags_notebook_machine_changed_callback), notebook);
 }
 
 void
 ags_notebook_disconnect(AgsConnectable *connectable)
 {
-}
-
-void
-ags_notebook_destroy(GtkObject *object)
-{
-}
-
-void
-ags_notebook_show(GtkWidget *widget)
-{
+  //TODO:JK: implement me
 }
 
 AgsNotebookTab*

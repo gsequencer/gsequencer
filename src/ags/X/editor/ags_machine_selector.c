@@ -139,11 +139,13 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 void
 ags_machine_selector_connect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_machine_selector_disconnect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
 }
 
 void

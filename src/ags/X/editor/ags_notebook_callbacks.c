@@ -20,21 +20,9 @@
 
 #include <ags/X/editor/ags_ruler.h>
 
-gboolean
-ags_notebook_destroy_callback(GtkObject *object, AgsNotebook *notebook)
-{
-  return(TRUE);
-}
-
 void
-ags_notebook_show_callback(GtkWidget *widget, AgsNotebook *notebook)
-{
-}
-
-
-void
-ags_notebook_change_machine_callback(AgsEditor *editor, AgsMachine *machine,
-				     AgsNotebook *notebook)
+ags_notebook_machine_changed_callback(AgsEditor *editor, AgsMachine *machine,
+				      AgsNotebook *notebook)
 {
   AgsMachine *machine_old;
   guint i, stop;

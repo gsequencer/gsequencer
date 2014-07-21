@@ -34,7 +34,6 @@ void ags_machine_radio_button_get_property(GObject *gobject,
 void ags_machine_radio_button_connect(AgsConnectable *connectable);
 void ags_machine_radio_button_disconnect(AgsConnectable *connectable);
 void ags_machine_radio_button_finalize(GObject *gobject);
-void ags_machine_radio_button_show(GtkWidget *widget);
 
 enum{
   PROP_0,
@@ -182,16 +181,25 @@ ags_machine_radio_button_get_property(GObject *gobject,
 void
 ags_machine_radio_button_connect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_machine_radio_button_disconnect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_machine_radio_button_finalize(GObject *gobject)
 {
+  AgsMachineRadioButton *machine_radio_button;
+
+  machine_radio_button = AGS_MACHINE_RADIO_BUTTON(gobject);
+
+  if(machine_radio_button->machine != NULL){
+    g_object_unref(G_OBJECT(machine_radio_button->machine));
+  }
 }
 
 AgsMachineRadioButton*
