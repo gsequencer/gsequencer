@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_window.h>
+
 #define AGS_TYPE_MACHINE_SELECTION                (ags_machine_selection_get_type())
 #define AGS_MACHINE_SELECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MACHINE_SELECTION, AgsMachineSelection))
 #define AGS_MACHINE_SELECTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MACHINE_SELECTION, AgsMachineSelectionClass))
@@ -37,6 +39,9 @@ typedef struct _AgsMachineSelectionClass AgsMachineSelectionClass;
 struct _AgsMachineSelection
 {
   GtkDialog dialog;
+
+  AgsWindow *window;
+  GList *machine;
 };
 
 struct _AgsMachineSelectionClass
@@ -46,6 +51,8 @@ struct _AgsMachineSelectionClass
 
 GType ags_machine_selection_get_type(void);
 
-AgsMachineSelection* ags_machine_selection_new();
+AgsMachine* ags_machine_selection_run(AgsMachineSelection *machine_selection);
+
+AgsMachineSelection* ags_machine_selection_new(AgsWindow *window);
 
 #endif /*__AGS_MACHINE_SELECTION_H__*/

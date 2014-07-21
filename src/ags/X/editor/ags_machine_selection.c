@@ -25,7 +25,6 @@ void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *c
 void ags_machine_selection_init(AgsMachineSelection *machine_selection);
 void ags_machine_selection_connect(AgsConnectable *connectable);
 void ags_machine_selection_disconnect(AgsConnectable *connectable);
-void ags_machine_selection_show(GtkWidget *widget);
 
 static gpointer ags_machine_selection_parent_class = NULL;
 
@@ -88,25 +87,98 @@ ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection)
 void
 ags_machine_selection_init(AgsMachineSelection *machine_selection)
 {
+  g_object_set(G_OBJECT(machine_selection),
+	       "title\0", g_strdup("select machines\0"),
+	       NULL);
+
+  gtk_dialog_add_buttons(GTK_DIALOG(machine_selection),
+			 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+			 GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+			 NULL);
 }
 
 void
 ags_machine_selection_connect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_machine_selection_disconnect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
+}
+
+AgsMachine*
+ags_machine_selection_run(AgsMachineSelection *machine_selection)
+{
+  AgsMachine *machine;
+  GtkVBox *vbox;
+  GtkContainer *content_area;
+  GtkRadioButton *group;
+  GList *list, *index;
+  gint response;
+
+  machine_selection->machine =
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
+  machine = NULL;
+
+  content_area = gtk_dialog_get_content_area(GTK_DIALOG(machine_selection));
+
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add(content_area,
+		    vbox);
+
+  group = NULL;
+
+  while(list != NULL){
+    GtkRadioButton *radio_button;
+
+    radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
+										  g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
+    gtk_box_pack_start(GTK_BOX(vbox),
+		       GTK_WIDGET(radio_button),
+		       FALSE, FALSE,
+		       0);
+
+    if(group == NULL){
+      group = radio_button;
+    }
+
+    list = list->next;
+  }
+
+  response = gtk_dialog_run(GTK_DIALOG(machine_selection));
+
+  if(response == GTK_RESPONSE_ACCEPT){
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
+    index = gtk_container_get_children(content_area);
+
+    while(index != NULL){
+      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
+	machine = AGS_MACHINE(list->data);
+	
+	break;
+      }
+
+      index = index->next;
+      list = list->next;
+    }
+  }
+
+  gtk_widget_destroy(machine_selection);
+
+  return(machine);
 }
 
 AgsMachineSelection*
-ags_machine_selection_new()
+ags_machine_selection_new(AgsWindow *window)
 {
   AgsMachineSelection *machine_selection;
 
   machine_selection = (AgsMachineSelection *) g_object_new(AGS_TYPE_MACHINE_SELECTION,
-					   NULL);
+							   NULL);
+  machine_selection->window = window;
 
   return(machine_selection);
 }

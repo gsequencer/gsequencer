@@ -1,5 +1,6 @@
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
 
+#include <ags/X/editor/ags_machine_selection.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
 
 void
@@ -65,5 +66,12 @@ ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachin
 void
 ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  //TODO:JK: implement me
+  AgsMachineSelection *machine_selection;
+  AgsMachine *machine;
+
+  machine_selection = (AgsMachineSelection *) ags_machine_selection_new(gtk_widget_get_toplevel(machine_selector));
+  machine = ags_machine_selection_run(machine_selection);
+  g_object_set(G_OBJECT(machine_selection),
+	       "machine\0", machine,
+	       NULL);
 }
