@@ -148,11 +148,13 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
     list = list->next;
   }
 
+  gtk_widget_show_all(vbox);
+
   response = gtk_dialog_run(GTK_DIALOG(machine_selection));
 
   if(response == GTK_RESPONSE_ACCEPT){
     list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
-    index = gtk_container_get_children(content_area);
+    index = gtk_container_get_children(vbox);
 
     while(index != NULL){
       if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){

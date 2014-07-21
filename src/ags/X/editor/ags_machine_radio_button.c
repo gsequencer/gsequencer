@@ -135,7 +135,7 @@ ags_machine_radio_button_set_property(GObject *gobject,
     {
       AgsMachine *machine;
 
-      machine = (AgsAudio *) g_value_get_object(value);
+      machine = (AgsMachine *) g_value_get_object(value);
       
       if(machine == machine_radio_button->machine){
 	return;
@@ -146,6 +146,10 @@ ags_machine_radio_button_set_property(GObject *gobject,
       }
 
       if(machine != NULL){
+	g_object_set(gobject,
+		     "label\0", g_strdup_printf("%s: %s\0", G_OBJECT_TYPE_NAME(machine), machine->name),
+		     NULL);
+
 	g_object_ref(machine);
       }
 
