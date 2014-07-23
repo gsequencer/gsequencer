@@ -46,6 +46,8 @@ void ags_editor_disconnect(AgsConnectable *connectable);
 void ags_editor_destroy(GtkObject *object);
 void ags_editor_show(GtkWidget *widget);
 
+void ags_editor_real_audio_channels_changed(AgsEditor *editor, guint audio_channels);
+void ags_editor_real_pads_changed(AgsEditor *editor, guint pads);
 void ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
 GtkMenu* ags_editor_popup_new(AgsEditor *editor);
@@ -129,7 +131,7 @@ ags_editor_class_init(AgsEditorClass *editor)
 				  param_spec);
 
   /* AgsEditorClass */
-  editor->machine_changed = NULL;
+  editor->machine_changed = ags_editor_real_machine_changed;
 
   editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed\0",
@@ -303,7 +305,20 @@ ags_editor_disconnect(AgsConnectable *connectable)
 void
 ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
+  guint pads;
+
+  g_message("debug machine\0");
+
   editor->selected_machine = machine;
+
+  if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
+    pads = machine->audio->input_pads;
+  }else{
+    pads = machine->audio->output_pads;
+  }
+
+  ags_note_edit_set_map_height(editor->note_edit,
+			       pads * editor->note_edit->control_height);
 }
 
 void
@@ -313,7 +328,8 @@ ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine)
 
   g_object_ref((GObject *) editor);
   g_signal_emit((GObject *) editor,
-		editor_signals[MACHINE_CHANGED], 0);
+		editor_signals[MACHINE_CHANGED], 0,
+		machine);
   g_object_unref((GObject *) editor);
 }
 

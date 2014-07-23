@@ -105,15 +105,8 @@ ags_editor_set_pads_callback(AgsAudio *audio,
     pads = audio->output_pads;
   }
 
-  editor->note_edit->map_height = pads * editor->note_edit->control_height;
-  
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-  ags_note_edit_reset_vertically(editor->note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
-  
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
+  ags_note_edit_set_map_height(editor->note_edit,
+			       pads * editor->note_edit->control_height);
 }
 
 void

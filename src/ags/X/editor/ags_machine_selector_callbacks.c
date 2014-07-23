@@ -37,6 +37,8 @@ ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSe
 		     GTK_WIDGET(machine_radio_button),
 		     FALSE, FALSE,
 		     0);
+  g_signal_connect_after(G_OBJECT(machine_radio_button), "clicked\0",
+			 G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
   gtk_widget_show_all(machine_radio_button);
 }
 
@@ -91,4 +93,12 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   g_object_set(G_OBJECT(machine_radio_button),
 	       "machine\0", machine,
 	       NULL);
+
+  ags_machine_selector_changed(machine_selector, machine);
+}
+
+void
+ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *machine_selector)
+{
+  ags_machine_selector_changed(machine_selector, AGS_MACHINE_RADIO_BUTTON(radio_button)->machine);
 }

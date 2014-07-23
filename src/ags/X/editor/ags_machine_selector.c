@@ -151,7 +151,7 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
 void
 ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine)
 {
-  g_return_if_fail(AGS_IS_MACHINE(machine_selector));
+  g_return_if_fail(AGS_IS_MACHINE_SELECTOR(machine_selector));
 
   g_object_ref((GObject *) machine_selector);
   g_signal_emit((GObject *) machine_selector,

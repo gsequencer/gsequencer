@@ -67,8 +67,8 @@ ags_toolbar_get_type(void)
     };
 
     ags_type_toolbar = g_type_register_static(GTK_TYPE_TOOLBAR,
-					    "AgsToolbar\0", &ags_toolbar_info,
-					    0);
+					      "AgsToolbar\0", &ags_toolbar_info,
+					      0);
     
     g_type_add_interface_static(ags_type_toolbar,
 				AGS_TYPE_CONNECTABLE,

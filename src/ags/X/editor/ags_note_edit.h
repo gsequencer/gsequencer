@@ -130,6 +130,8 @@ struct _AgsNoteEditClass
 
 GType ags_note_edit_get_type(void);
 
+void ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height);
+
 void ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags);
 void ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags);
 

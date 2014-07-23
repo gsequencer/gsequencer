@@ -30,8 +30,7 @@ void ags_note_edit_connectable_interface_init(AgsConnectableInterface *connectab
 void ags_note_edit_init(AgsNoteEdit *note_edit);
 void ags_note_edit_connect(AgsConnectable *connectable);
 void ags_note_edit_disconnect(AgsConnectable *connectable);
-void ags_note_edit_destroy(GtkObject *object);
-void ags_note_edit_show(GtkWidget *widget);
+
 void ags_note_edit_paint(AgsNoteEdit *note_edit);
 
 GtkStyle *note_edit_style;
@@ -111,7 +110,7 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   note_edit->width = 0;
   note_edit->height = 0;
   note_edit->map_width = AGS_NOTE_EDIT_MAX_CONTROLS * 64;
-  note_edit->map_height = 0;
+  note_edit->map_height = 78;
 
   note_edit->control_height = 10;
   note_edit->control_margin_y = 2;
@@ -170,44 +169,48 @@ ags_note_edit_connect(AgsConnectable *connectable)
 
   note_edit = AGS_NOTE_EDIT(connectable);
 
-  g_signal_connect_after ((GObject *) note_edit->drawing_area, "expose_event\0",
-			  G_CALLBACK (ags_note_edit_drawing_area_expose_event), (gpointer) note_edit);
+  g_signal_connect_after((GObject *) note_edit->drawing_area, "expose_event\0",
+			 G_CALLBACK (ags_note_edit_drawing_area_expose_event), (gpointer) note_edit);
 
-  g_signal_connect_after ((GObject *) note_edit->drawing_area, "configure_event\0",
-			  G_CALLBACK (ags_note_edit_drawing_area_configure_event), (gpointer) note_edit);
+  g_signal_connect_after((GObject *) note_edit->drawing_area, "configure_event\0",
+			 G_CALLBACK (ags_note_edit_drawing_area_configure_event), (gpointer) note_edit);
 
-  g_signal_connect ((GObject *) note_edit->drawing_area, "button_press_event\0",
-                    G_CALLBACK (ags_note_edit_drawing_area_button_press_event), (gpointer) note_edit);
+  g_signal_connect((GObject *) note_edit->drawing_area, "button_press_event\0",
+		   G_CALLBACK (ags_note_edit_drawing_area_button_press_event), (gpointer) note_edit);
 
-  g_signal_connect ((GObject *) note_edit->drawing_area, "button_release_event\0",
-                    G_CALLBACK (ags_note_edit_drawing_area_button_release_event), (gpointer) note_edit);
+  g_signal_connect((GObject *) note_edit->drawing_area, "button_release_event\0",
+		   G_CALLBACK (ags_note_edit_drawing_area_button_release_event), (gpointer) note_edit);
 
-  g_signal_connect ((GObject *) note_edit->drawing_area, "motion_notify_event\0",
- 		    G_CALLBACK (ags_note_edit_drawing_area_motion_notify_event), (gpointer) note_edit);
+  g_signal_connect((GObject *) note_edit->drawing_area, "motion_notify_event\0",
+		   G_CALLBACK (ags_note_edit_drawing_area_motion_notify_event), (gpointer) note_edit);
 
-  g_signal_connect_after ((GObject *) note_edit->vscrollbar, "value-changed\0",
-			  G_CALLBACK (ags_note_edit_vscrollbar_value_changed), (gpointer) note_edit);
+  g_signal_connect_after((GObject *) note_edit->vscrollbar, "value-changed\0",
+			 G_CALLBACK (ags_note_edit_vscrollbar_value_changed), (gpointer) note_edit);
 
-  g_signal_connect_after ((GObject *) note_edit->hscrollbar, "value-changed\0",
-			  G_CALLBACK (ags_note_edit_hscrollbar_value_changed), (gpointer) note_edit);
+  g_signal_connect_after((GObject *) note_edit->hscrollbar, "value-changed\0",
+			 G_CALLBACK (ags_note_edit_hscrollbar_value_changed), (gpointer) note_edit);
 
 }
 
 void
 ags_note_edit_disconnect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
 }
 
 void
-ags_note_edit_destroy(GtkObject *object)
+ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height)
 {
+  note_edit->map_height = map_height;
+  
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
+  ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
+  
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
 }
-
-void
-ags_note_edit_show(GtkWidget *widget)
-{
-}
-
 
 void
 ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
