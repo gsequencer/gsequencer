@@ -246,7 +246,7 @@ ags_single_thread_run(AgsThread *thread)
     current.tv_sec = 0;
     current.tv_nsec = play_idle.tv_nsec - (play_exceeded.tv_nsec - play_start.tv_nsec);
 
-    nanosleep(&current, NULL);
+    //    nanosleep(&current, NULL);
   }
 }
 

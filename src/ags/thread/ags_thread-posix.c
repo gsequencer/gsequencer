@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/thread/ags_thread.h>
+#include <ags/thread/ags_thread-posix.h>
 
 #include <ags-lib/object/ags_connectable.h>
 

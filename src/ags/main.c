@@ -697,7 +697,7 @@ main(int argc, char **argv)
   AgsWindow *window;
   AgsGuiThread *gui_thread;
   gchar *filename;
-  //  struct sched_param param;
+  struct sched_param param;
   const char *error;
   gboolean single_thread = FALSE;
   guint i;
@@ -770,13 +770,13 @@ main(int argc, char **argv)
 
 
     /* Declare ourself as a real time task */
-    //    param.sched_priority = AGS_PRIORITY;
+    param.sched_priority = AGS_PRIORITY;
 
-    //    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    //      perror("sched_setscheduler failed\0");
-    //    }
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
 
-    //    mlockall(MCL_CURRENT | MCL_FUTURE);
+    mlockall(MCL_CURRENT | MCL_FUTURE);
 
     if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
 #ifdef AGS_WITH_XMLRPC_C
