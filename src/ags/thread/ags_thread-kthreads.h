@@ -36,6 +36,7 @@
 
 #define MSEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+#define AGS_THREAD_STACKSIZE (8192)
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
 
@@ -81,7 +82,6 @@ typedef enum{
   AGS_THREAD_READY                   = 1 << 29,
   AGS_THREAD_UNREF_ON_EXIT           = 1 << 30,
 }AgsThreadFlags;
-
 
 struct _AgsThread
 {
