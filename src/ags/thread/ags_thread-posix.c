@@ -840,11 +840,11 @@ ags_thread_sibling_is_locked(AgsThread *thread)
 
 
 /**
- * ags_thread_sibling_is_locked:
+ * ags_thread_children_is_locked:
  * @thread an #AgsThread
  * Returns: TRUE if locked otherwise FALSE
  *
- * Check the AGS_THREAD_LOCKED flag within sibling.
+ * Check the AGS_THREAD_LOCKED flag within children.
  */
 gboolean
 ags_thread_children_is_locked(AgsThread *thread)

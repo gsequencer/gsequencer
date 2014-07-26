@@ -36,7 +36,7 @@
 
 #define MSEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
-#define AGS_THREAD_STACKSIZE (8192)
+#define AGS_THREAD_STACKSIZE (16384)
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
 
@@ -87,7 +87,15 @@ struct _AgsThread
 {
   GObject object;
 
+  atomic_t flags;
 
+  atomic_t barrier;
+  atomic_t barrier_count;
+
+  atomic_t dyntic;
+
+  struct timespec timed_suspend;
+  gint goodness;
 };
 
 struct _AgsThreadClass

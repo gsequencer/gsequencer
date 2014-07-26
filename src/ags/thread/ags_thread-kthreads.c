@@ -63,6 +63,12 @@ enum{
   LAST_SIGNAL,
 };
 
+#define CSIGNAL         0x000000ff      /* signal mask to be sent at exit */
+#define CLONE_VM        0x00000100      /* set if VM shared between processes */
+#define CLONE_FS        0x00000200      /* set if fs info shared between processes */
+#define CLONE_FILES     0x00000400      /* set if open files shared between processes */
+#define CLONE_SIGHAND   0x00000800      /* set if signal handlers shared */
+
 static gpointer ags_thread_parent_class = NULL;
 static guint thread_signals[LAST_SIGNAL];
 
@@ -373,6 +379,7 @@ ags_thread_suspend_handler(int sig)
 void
 ags_thread_set_sync(AgsThread *thread, guint tic)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -385,6 +392,26 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
 void
 ags_thread_set_sync_all(AgsThread *thread, guint tic)
 {
+  AgsThread *toplevel;
+
+  auto void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic);
+
+  void ags_thread_set_sync_all_recursive(AgsThread *thread, guint tic){
+    AgsThread *child;
+
+    ags_thread_set_sync(thread, tic);
+
+    child = thread->children;
+
+    while(child != NULL){
+      ags_thread_set_sync_all_recursive(child, tic);
+      
+      child = child->next;
+    }
+  }
+
+  toplevel = ags_thread_get_toplevel(thread);
+  ags_thread_set_sync_all_recursive(toplevel, tic);
 }
 
 /**
@@ -396,11 +423,13 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 void
 ags_thread_lock(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 gboolean
 ags_thread_trylock(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -412,6 +441,7 @@ ags_thread_trylock(AgsThread *thread)
 void
 ags_thread_unlock(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -424,6 +454,15 @@ ags_thread_unlock(AgsThread *thread)
 AgsThread*
 ags_thread_first(AgsThread *thread)
 {
+  if(thread == NULL){
+    return(NULL);
+  }
+
+  while(thread->prev != NULL){
+    thread = thread->prev;
+  }
+
+  return(thread);
 }
 
 /**
@@ -436,16 +475,27 @@ ags_thread_first(AgsThread *thread)
 AgsThread*
 ags_thread_last(AgsThread *thread)
 {
+  if(thread == NULL){
+    return(NULL);
+  }
+
+  while(thread->next != NULL){
+    thread = thread->next;
+  }
+
+  return(thread);
 }
 
 void
 ags_thread_remove_child(AgsThread *thread, AgsThread *child)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -459,6 +509,24 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
 gboolean
 ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
 {
+  AgsThread *current;
+
+  if(thread == NULL){
+    return(FALSE);
+  }
+
+  current = thread->parent;
+
+  while(current != parent){
+    if((AGS_THREAD_LOCKED & (atomic_read(&(current->flags)))) != 0){
+
+      return(TRUE);
+    }
+
+    current = current->parent;
+  }
+
+  return(FALSE);
 }
 
 /**
@@ -471,11 +539,26 @@ ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
 gboolean
 ags_thread_sibling_is_locked(AgsThread *thread)
 {
+  if(thread == NULL){
+    return(FALSE);
+  }
+
+  thread = ags_thread_first(thread);
+
+  while(thread->next != NULL){
+    if((AGS_THREAD_LOCKED & (atomic_read(&(thread->flags)))) != 0){
+      return(TRUE);
+    }
+
+    thread = thread->next;
+  }
+
+  return(FALSE);
+
 }
 
-
 /**
- * ags_thread_sibling_is_locked:
+ * ags_thread_children_is_locked:
  * @thread an #AgsThread
  * Returns: TRUE if locked otherwise FALSE
  *
@@ -484,16 +567,49 @@ ags_thread_sibling_is_locked(AgsThread *thread)
 gboolean
 ags_thread_children_is_locked(AgsThread *thread)
 {
+  auto gboolean ags_thread_children_is_locked_recursive(AgsThread *thread);
+
+  gboolean ags_thread_children_is_locked_recursive(AgsThread *thread){
+    AgsThread *child;
+
+    if(thread == NULL){
+      return(FALSE);
+    }
+
+    if((AGS_THREAD_LOCKED & (atomic_read(&(thread->flags)))) != 0){
+      return(TRUE);
+    }
+
+    child = thread->children;
+
+    while(child != NULL){
+      if(ags_thread_children_is_locked_recursive(child)){
+	return(TRUE);
+      }
+
+      child = child->next;
+    }
+
+    return(FALSE);
+  }
+
+  if(thread == NULL){
+    return(FALSE);
+  }
+
+  return(ags_thread_children_is_locked_recursive(thread));
 }
 
 gboolean
 ags_thread_is_current_ready(AgsThread *current)
 {
+  //TODO:JK: implement me
 }
 
 gboolean
 ags_thread_is_tree_ready(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -506,6 +622,19 @@ ags_thread_is_tree_ready(AgsThread *thread)
 AgsThread*
 ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
 {
+  AgsThread *current;
+
+  current = thread->parent;
+
+  while(current != parent){
+    if((AGS_THREAD_WAITING_FOR_CHILDREN & (atomic_read(&(current->flags)))) != 0){
+      return(current);
+    }
+
+    current = current->parent;
+  }
+
+  return(NULL);
 }
 
 /**
@@ -517,6 +646,25 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
 AgsThread*
 ags_thread_next_sibling_locked(AgsThread *thread)
 {
+  AgsThread *current;
+
+  current = ags_thread_first(thread);
+
+  while(current != NULL){
+    if(current == thread){
+      current = current->next;
+      
+      continue;
+    }
+
+    if((AGS_THREAD_WAITING_FOR_SIBLING & (atomic_read(&(thread->flags)))) != 0){
+      return(current);
+    }
+
+    current = current->next;
+  }
+
+  return(NULL);
 }
 
 /**
@@ -528,6 +676,27 @@ ags_thread_next_sibling_locked(AgsThread *thread)
 AgsThread*
 ags_thread_next_children_locked(AgsThread *thread)
 {
+  auto AgsThread* ags_thread_next_children_locked_recursive(AgsThread *thread);
+
+  AgsThread* ags_thread_next_children_locked_recursive(AgsThread *child){
+    AgsThread *current;
+
+    current = ags_thread_last(child);
+
+    while(current != NULL){
+      ags_thread_next_children_locked_recursive(current->children);
+
+      if((AGS_THREAD_WAITING_FOR_PARENT & (atomic_read(&(current->flags)))) != 0){
+	return(current);
+      }
+
+      current = current->prev;
+    }
+
+    return(NULL);
+  }
+
+  return(ags_thread_next_children_locked(thread->children));
 }
 
 /**
@@ -540,6 +709,7 @@ ags_thread_next_children_locked(AgsThread *thread)
 void
 ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -551,6 +721,7 @@ ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
 void
 ags_thread_lock_sibling(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -562,11 +733,15 @@ ags_thread_lock_sibling(AgsThread *thread)
 void
 ags_thread_lock_children(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_thread_lock_all(AgsThread *thread)
 {
+  ags_thread_lock_parent(thread, NULL);
+  ags_thread_lock_sibling(thread);
+  ags_thread_lock_children(thread);
 }
 
 /**
@@ -579,6 +754,7 @@ ags_thread_lock_all(AgsThread *thread)
 void
 ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -590,6 +766,7 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
 void
 ags_thread_unlock_sibling(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -601,11 +778,15 @@ ags_thread_unlock_sibling(AgsThread *thread)
 void
 ags_thread_unlock_children(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_thread_unlock_all(AgsThread *thread)
 {
+  ags_thread_unlock_parent(thread, NULL);
+  ags_thread_unlock_sibling(thread);
+  ags_thread_unlock_children(thread);
 }
 
 /**
@@ -618,6 +799,7 @@ ags_thread_unlock_all(AgsThread *thread)
 void
 ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -629,6 +811,7 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
 void
 ags_thread_wait_sibling(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -640,6 +823,7 @@ ags_thread_wait_sibling(AgsThread *thread)
 void
 ags_thread_wait_children(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -653,6 +837,7 @@ void
 ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
 			 gboolean broadcast)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -665,6 +850,7 @@ ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
 void
 ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
 {
+  //TODO:JK: implement me
 }
 
 /**
@@ -677,6 +863,7 @@ ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
 void
 ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -684,8 +871,6 @@ ags_thread_real_start(AgsThread *thread)
 {
   long retval;
   void **newstack;
-
-  //NOTE: refering to - http://www.tldp.org/FAQ/Threads-FAQ/clone.c */
 
   /*
    * allocate new stack for subthread
@@ -700,49 +885,12 @@ ags_thread_real_start(AgsThread *thread)
    * argument on the stack.
    */
   newstack = (void **) (AGS_THREAD_STACKSIZE + (char *) newstack);
-  *--newstack = data;
+  *--newstack = (void *) thread;
 
-  /*
-   * Do clone() system call. We need to do the low-level stuff
-   * entirely in assembly as we're returning with a different
-   * stack in the child process and we couldn't otherwise guarantee
-   * that the program doesn't use the old stack incorrectly.
-   *
-   * Parameters to clone() system call:
-   *%eax - __NR_clone, clone system call number
-   *%ebx - clone_flags, bitmap of cloned data
-   *%ecx - new stack pointer for cloned child
-   *
-   * In this example %ebx is CLONE_VM | CLONE_FS | CLONE_FILES |
-   * CLONE_SIGHAND which shares as much as possible between parent
-   * and child. (We or in the signal to be sent on child termination
-   * into clone_flags: SIGCHLD makes the cloned process work like
-   * a "normal" unix child process)
-   *
-   * The clone() system call returns (in %eax) the pid of the newly
-   * cloned process to the parent, and 0 to the cloned process. If
-   * an error occurs, the return value will be the negative errno.
-   *
-   * In the child process, we will do a "jsr" to the requested function
-   * and then do a "exit()" system call which will terminate the child.
-   */
-  __asm__ __volatile__(
-		       "int $0x80\n\t"/* Linux/i386 system call */
-		       "testl %0,%0\n\t"/* check return value */
-		       "jne 1f\n\t"/* jump if parent */
-		       "call *%3\n\t"/* start subthread function */
-		       "movl %2,%0\n\t"
-		       "int $0x80\n"/* exit system call: exit subthread */
-		       "1:\t"
-		       :"=a" (retval)
-		       :"0" (__NR_clone),"i" (__NR_exit),
-			"r" (ags_thread_loop),
-			"b" (CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD),
-			"c" (newstack));
-
-  if(retval < 0){
-    errno = -retval;
-  }
+  /* clone new thread */
+  clone(ags_thread_loop, newstack,
+	CLONE_SIGHAND | CLONE_FS | CLONE_VM | CLONE_FILES | CLONE_THREAD,
+	NULL);
 }
 
 /**
@@ -765,6 +913,107 @@ ags_thread_start(AgsThread *thread)
 void*
 ags_thread_loop(void *ptr)
 {
+  AgsThread *thread;
+  unsigned int flags;
+
+  auto void ags_thread_loop_do_barrier(AgsThread *thread);
+  auto void ags_thread_loop_do_cond(AgsThread *thread);
+
+  void ags_thread_loop_do_barrier(AgsThread *thread){
+    unsigned int flags;
+    int barrier, barrier_count;
+
+    ags_thread_lock(thread);
+
+    flags = (unsigned int) atomic_read(&(thread->flags));
+    barrier = atomic_read(&(thread->barrier));
+
+    if((AGS_THREAD_RUNNING & flags) != 0){
+      if(barrier == barrier_count){
+	ags_thread_unlock_all(thread);
+      }else{
+	ags_thread_lock(thread);
+      }
+    }else{
+      if(barrier == barrier_count){
+	ags_thread_unlock_all(thread);
+      }
+    }
+
+    ags_thread_unlock(thread);
+  }
+  void ags_thread_loop_do_cond(AgsThread *thread){
+    unsigned int flags;
+
+    ags_thread_lock(thread);
+
+    flags = (unsigned int) atomic_read(&(thread->flags));
+
+    if((AGS_THREAD_RUNNING & flags) != 0){
+      if(ags_thread_is_tree_ready(thread)){
+	ags_thread_set_sync_all(thread);
+      }else{
+	while(!ags_thread_is_current_ready(thread)){
+	  ags_thread_suspend(thread);
+	}
+      }
+    }else{
+      if(ags_thread_is_tree_ready(thread)){
+	ags_thread_set_sync_all(thread);
+      }
+    }
+
+    ags_thread_unlock(thread);
+  }
+
+  ags_thread_self =
+    thread = AGS_THREAD(ptr);
+
+  flags = (unsigned int) atomic_read(&(thread->flags));
+  atomic_set(&(thread->flags),
+	     (AGS_THREAD_INITIAL_RUN & flags));
+
+  while((AGS_THREAD_RUNNING & flags) != 0){
+    /* do barrier */
+    ags_thread_loop_do_barrier(thread);
+
+    /* do cond */
+    ags_thread_loop_do_cond(thread);
+
+    /* run */
+    if((AGS_THREAD_SKIPPED_BY_TIMELOCK & flags) == 0 ||
+       ((AGS_THREAD_SKIP_NON_GREEDY & flags) != 0 &&
+	(AGS_THREAD_TIMELOCK_RUN & flags) == 0)){
+      ags_thread_run(thread);
+    }
+
+    /* lock parent */
+    if((AGS_THREAD_WAIT_FOR_PARENT & flags) != 0){
+      ags_thread_lock_parent(thread);
+    }
+
+    /* lock sibling */
+    if((AGS_THREAD_WAIT_FOR_SIBLING & flags) != 0){
+      ags_thread_lock_sibling(thread);
+    }
+
+    /* lock children */
+    if((AGS_THREAD_WAIT_FOR_CHILDREN & flags) != 0){
+      ags_thread_lock_children(thread);
+    }
+
+    /* read flags */
+    flags = (unsigned int) atomic_read(&(thread->flags));
+  }
+
+  /* do barrier */
+  ags_thread_loop_do_barrier(thread);
+
+  /* do cond */
+  ags_thread_loop_do_cond(thread);
+
+
+  return(NULL);
 }
 
 /**
@@ -810,11 +1059,61 @@ ags_thread_resume(AgsThread *thread)
 void*
 ags_thread_timelock_loop(void *ptr)
 {
+  AgsThread *thread;
+  unsigned int flags;
+  int dyntic;
+
+  thread = AGS_THREAD(ptr);
+
+  while((AGS_THREAD_RUNNING & (atomic_read(&(thread->flags)))) != 0){
+    nanosleep(&(thread->timed_suspend), NULL);
+
+    flags = (unsigned int) atomic_read(&(thread->flags));
+
+    if(!((AGS_THREAD_WAIT_O & flags) ||
+	 (AGS_THREAD_WAIT_1 & flags) ||
+	 (AGS_THREAD_WAIT_2 & flags))){
+      dyntic = atomic_read(&(thread->dyntic));
+
+      if(dyntic < 0){
+	dyntic += 1;
+	dyntic *= -1;
+      }
+
+      atomic_set(&(thread->dyntic),
+		 dyntic);
+
+      switch(dyntic){
+      case 0:
+      case 1:
+	{
+	  dyntic += 1;
+	}
+	break;
+      case 2:
+	{
+	  dyntic = 0;
+	}
+	break;
+      }
+
+      atomic_int_set(&(thread->flags),
+		     (AGS_THREAD_READY | flags));
+      ags_thread_suspend(thread);
+
+      dyntic *= -1;
+      dyntic -= 1;
+
+      atomic_set(&(thread->dyntic),
+		 dyntic);
+    }
+  }
 }
 
 void
 ags_thread_real_timelock(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -831,6 +1130,8 @@ ags_thread_timelock(AgsThread *thread)
 void
 ags_thread_real_stop(AgsThread *thread)
 {
+  atomic_set(&(thread->flags),
+	     (atomic_read(&(thread->flags)) & (~AGS_THREAD_RUNNING)));
 }
 
 /**
@@ -859,6 +1160,7 @@ ags_thread_stop(AgsThread *thread)
 void
 ags_thread_hangcheck(AgsThread *thread)
 {
+  //TODO:JK: implement me
 }
 
 /**
