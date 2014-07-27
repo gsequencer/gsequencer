@@ -34,10 +34,13 @@
 typedef struct _AgsAsyncQueue AgsAsyncQueue;
 typedef struct _AgsAsyncQueueClass AgsAsyncQueueClass;
 typedef struct _AgsTimer AgsTimer;
+typedef struct _AgsContext AgsContext;
 
 typedef enum{
-  AGS_ASYNC_QUEUE_INTERRUPT_OWN     = 1,
-  AGS_ASYNC_QUEUE_INTERRUPT_OTHER   = 1 << 1,
+  AGS_ASYNC_QUEUE_LINUX_THREADS     = 1,
+  AGS_ASYNC_QUEUE_POSIX_THREADS     = 1 << 1,
+  AGS_ASYNC_QUEUE_INTERRUPT_OWN     = 1 << 2,
+  AGS_ASYNC_QUEUE_INTERRUPT_OTHER   = 1 << 3,
 }AgsAsyncQueueFlags;
 
 struct _AgsAsyncQueue
@@ -48,6 +51,13 @@ struct _AgsAsyncQueue
 
   GQueue *stack;
   GHashTable *timer;
+
+  union{
+    atomic_t monitor;
+    pthread_mutex mutex;
+  }lock;
+
+  GList *context;
 };
 
 struct _AgsAsyncQueueClass
@@ -55,6 +65,11 @@ struct _AgsAsyncQueueClass
   GObjectClass object;
 
   void (*interrupt)(AgsAsyncQueue *async_queue);
+  
+  void (*push_context)(AgsAsyncQueue *async_queue,
+		       AgsContext *context);
+  void (*pop_context)(AgsAsyncQueue *async_queue,
+		      AgsContext *context);
 };
 
 struct _AgsTimer
@@ -66,9 +81,16 @@ struct _AgsTimer
   gpointer history;
 };
 
+struct _AgsContext
+{
+  GQueue *stack;
+  GHashTable *timer;
+};
+
 GType ags_async_queue_get_type();
 
 AgsTimer* ags_timer_alloc(time_t tv_sec, long tv_nsec);
+AgsContext* ags_context_alloc(GQueue *stack, GHashTable *timer);
 
 void ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable);
 gboolean ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stackable);
@@ -76,6 +98,11 @@ gboolean ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stacka
 void ags_async_queue_idle(AgsAsyncQueue *async_queue);
 
 void ags_async_queue_initerrupt(AgsAsyncQueue *async_queue);
+
+void ags_async_queue_push_context(AgsAsyncQueue *async_queue,
+				  AgsContext *context);
+void ags_async_queue_pop_context(AgsAsyncQueue *async_queue,
+				 AgsContext *context);
 
 AgsAsyncQueue* ags_async_queue_new();
 

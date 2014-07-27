@@ -29,10 +29,24 @@ void ags_async_queue_connect(AgsConnectable *connectable);
 void ags_async_queue_disconnect(AgsConnectable *connectable);
 void ags_async_queue_finalize(GObject *gobject);
 
+void ags_async_queue_real_initerrupt(AgsAsyncQueue *async_queue);
+void ags_async_queue_real_push_context(AgsAsyncQueue *async_queue,
+				       AgsContext *context);
+void ags_async_queue_real_pop_context(AgsAsyncQueue *async_queue,
+				      AgsContext *context);
+
 void ags_async_queue_run_callback(AgsThread *thread,
 				  AgsAsyncQueue *async_queue);
 
+enum{
+  INTERRUPT,
+  PUSH_CONTEXT,
+  POP_CONTEXT,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_async_queue_parent_class = NULL;
+static guint async_queue_signals[LAST_SIGNAL];
 
 GType
 ags_async_queue_get_type()
@@ -65,8 +79,44 @@ void
 ags_async_queue_class_init(AgsAsyncQueueClass *async_queue)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_async_queue_parent_class = g_type_class_peek_parent(async_queue);
+
+  /* AgsAsyncQueue */
+  async_queue->interrupt = ags_async_queue_real_interrupt;
+  async_queue->push_context = ags_async_queue_real_push_context;
+  async_queue->pop_context = ags_async_queue_real_pop_context;
+
+  /* signals */
+  async_queue_signals[INTERRUPT] =
+    g_signal_new("interrupt\0",
+		 G_TYPE_FROM_CLASS(async_queue),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAsync_QueueClass, interrupt),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  async_queue_signals[PUSH_CONTEXT] =
+    g_signal_new("push_context\0",
+		 G_TYPE_FROM_CLASS(async_queue),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAsync_QueueClass, push_context),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POITNER);
+
+  async_queue_signals[POP_CONTEXT] =
+    g_signal_new("pop_context\0",
+		 G_TYPE_FROM_CLASS(async_queue),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAsync_QueueClass, pop_context),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POITNER);
 }
 
 void
@@ -117,6 +167,19 @@ ags_timer_alloc(time_t tv_sec, long tv_nsec)
   timer->history = NULL;
 
   return(timer);
+}
+
+AgsContext*
+ags_context_alloc(GQueue *stack, GHashTable *timer)
+{
+  AgsContext *context;
+
+  context = (AgsContext *) malloc(sizeof(AgsContext));
+
+  context->stack = stack;
+  context->timer = timer;
+
+  return(context);
 }
 
 void
@@ -179,12 +242,6 @@ ags_async_queue_idle(AgsAsyncQueue *async_queue)
 }
 
 void
-ags_async_queue_initerrupt(AgsAsyncQueue *async_queue)
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_async_queue_run_callback(AgsThread *thread,
 			     AgsAsyncQueue *async_queue)
 {
@@ -194,6 +251,63 @@ ags_async_queue_run_callback(AgsThread *thread,
 			      AGS_STACKABLE(thread));
 
   nanosleep(&(timer->run_delay), NULL);
+}
+
+void
+ags_async_queue_real_initerrupt(AgsAsyncQueue *async_queue)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_async_queue_initerrupt(AgsAsyncQueue *async_queue)
+{
+  g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
+
+  g_object_ref(G_OBJECT(async_queue));
+  g_signal_emit(G_OBJECT(async_queue),
+		async_queue_signals[REAL_INTERRUPT], 0);
+  g_object_unref(G_OBJECT(async_queue));
+}
+
+void
+ags_async_queue_real_push_context(AgsAsyncQueue *async_queue,
+				  AgsContext *context)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_async_queue_push_context(AgsAsyncQueue *async_queue,
+			     AgsContext *context)
+{
+  g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
+
+  g_object_ref(G_OBJECT(async_queue));
+  g_signal_emit(G_OBJECT(async_queue),
+		async_queue_signals[PUSH_CONTEXT], 0,
+		context);
+  g_object_unref(G_OBJECT(async_queue));
+}
+
+void
+ags_async_queue_real_pop_context(AgsAsyncQueue *async_queue,
+				 AgsContext *context)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_async_queue_pop_context(AgsAsyncQueue *async_queue,
+			    AgsContext *context)
+{
+  g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
+
+  g_object_ref(G_OBJECT(async_queue));
+  g_signal_emit(G_OBJECT(async_queue),
+		async_queue_signals[POP_CONTEXT], 0,
+		context);
+  g_object_unref(G_OBJECT(async_queue));
 }
 
 /**

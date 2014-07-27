@@ -66,12 +66,6 @@ enum{
   LAST_SIGNAL,
 };
 
-#define CSIGNAL         0x000000ff      /* signal mask to be sent at exit */
-#define CLONE_VM        0x00000100      /* set if VM shared between processes */
-#define CLONE_FS        0x00000200      /* set if fs info shared between processes */
-#define CLONE_FILES     0x00000400      /* set if open files shared between processes */
-#define CLONE_SIGHAND   0x00000800      /* set if signal handlers shared */
-
 static gpointer ags_thread_parent_class = NULL;
 static guint thread_signals[LAST_SIGNAL];
 
