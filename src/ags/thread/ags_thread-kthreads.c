@@ -18,6 +18,9 @@
 
 #include <ags/thread/ags_thread-kthreads.h>
 
+#include <linux/futex.h>
+#include <sys/time.h>
+
 void ags_thread_class_init(AgsThreadClass *thread);
 void ags_thread_tree_iterator_interface_init(AgsTreeIteratorInterface *tree);
 void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -371,15 +374,42 @@ ags_thread_suspend_handler(int sig)
 /**
  * ags_thread_set_sync:
  * @thread an #AgsThread
- * @tic the tic as sync occured.
+ * @dyntic the dyntic as sync occured.
  * 
  * Unsets AGS_THREAD_WAIT_0, AGS_THREAD_WAIT_1 or AGS_THREAD_WAIT_2.
  * Additionaly the thread is woken up by this function if waiting.
  */
 void
-ags_thread_set_sync(AgsThread *thread, guint tic)
+ags_thread_set_sync(AgsThread *thread, guint dyntic)
 {
-  //TODO:JK: implement me
+  unsigned int flags;
+
+  if(thread == NULL){
+    return;
+  }
+
+  flags = (unsigned int) atomic_read(&(thread->flags));
+
+  switch(dyntic){
+  case 0:
+    {
+      atomic_set(&(thread->flags),
+		 ((~AGS_THREAD_WAIT_0) & flags));
+    }
+    break;
+  case 1:
+    {
+      atomic_set(&(thread->flags),
+		 ((~AGS_THREAD_WAIT_1) & flags));
+    }
+    break;
+  case 2:
+    {
+      atomic_set(&(thread->flags),
+		 ((~AGS_THREAD_WAIT_2) & flags));
+    }
+    break;
+  }
 }
 
 /**
@@ -423,7 +453,33 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
 void
 ags_thread_lock(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  unsigned int flags;
+
+  main_loop = ags_thread_get_toplevle(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  flags = (unsigned int) atomic_read(&(thread->flags));
+
+  while(((AGS_THREAD_LOCKED & flags) != 0 &&
+	 thread != g_queue_peek_head(async_queue->stack))){
+    ags_async_queue_idle(async_queue);
+  }
+
+  atomic_inc(&(thread->lock_count));
+
+  if(thread == g_queue_peek_head(async_queue->stack) &&
+     (AGS_THREAD_LOCKED & flags) != 0){
+    return;
+  }
+  
+  atomic_set(&(thread->flags),
+	     (AGS_THREAD_LOCKED | flags));
+  
+  futex(&(thread->monitor), FUTEX_WAIT, 1,
+	NULL,
+	NULL, 0);
 }
 
 gboolean
@@ -441,7 +497,27 @@ ags_thread_trylock(AgsThread *thread)
 void
 ags_thread_unlock(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  unsigned int flags;
+
+  main_loop = ags_thread_get_toplevle(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  flags = (unsigned int) atomic_read(&(thread->flags));
+
+  if((AGS_THREAD_LOCKED & flags) == 0 ||
+     thread != g_queue_peek_head(async_queue->stack)){
+    return;
+  }
+
+  if(atomic_dec_and_test(&(thread->lock_count)) == 0){
+    thread->flags = ((~AGS_THREAD_LOCKED) & flags);    
+
+    futex(&(thread->monitor), FUTEX_WAKE, 0,
+	  NULL,
+	  NULL, 0);
+  }
 }
 
 /**
@@ -927,12 +1003,24 @@ ags_thread_loop(void *ptr)
 
     flags = (unsigned int) atomic_read(&(thread->flags));
     barrier = atomic_read(&(thread->barrier));
+    barrier_count = atomic_read(&(thread->barrier_count));
+
+    if(barrier == 0){
+      ags_thread_unlock(thread);
+
+      return;
+    }
+
+    atomic_set(&(thread->barrier),
+	       barrier++);
 
     if((AGS_THREAD_RUNNING & flags) != 0){
       if(barrier == barrier_count){
 	ags_thread_unlock_all(thread);
       }else{
-	ags_thread_lock(thread);
+	while(barrier != barrier_count){
+	  ags_thread_suspend(thread);
+	}
       }
     }else{
       if(barrier == barrier_count){

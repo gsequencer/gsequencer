@@ -67,6 +67,8 @@ AgsTimer* ags_timer_alloc(time_t tv_sec, long tv_nsec);
 void ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable);
 gboolean ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stackable);
 
+void ags_async_queue_idle(AgsAsyncQueue *async_queue);
+
 void ags_async_queue_initerrupt(AgsAsyncQueue *async_queue);
 
 AgsAsyncQueue* ags_async_queue_new();

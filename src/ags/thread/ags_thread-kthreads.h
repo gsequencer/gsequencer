@@ -89,6 +89,9 @@ struct _AgsThread
 
   atomic_t flags;
 
+  atomic_t monitor;
+  atomic_t lock_count;
+
   atomic_t barrier;
   atomic_t barrier_count;
 

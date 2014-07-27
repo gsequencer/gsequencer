@@ -173,6 +173,12 @@ ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 }
 
 void
+ags_async_queue_idle(AgsAsyncQueue *async_queue)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_async_queue_initerrupt(AgsAsyncQueue *async_queue)
 {
   //TODO:JK: implement me
