@@ -99,6 +99,10 @@ struct _AgsThread
 
   struct timespec timed_suspend;
   gint goodness;
+
+  AgsThread *children;
+  AgsThread *next;
+  AgsThread *prev;
 };
 
 struct _AgsThreadClass

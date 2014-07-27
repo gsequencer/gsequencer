@@ -476,6 +476,8 @@ ags_thread_lock(AgsThread *thread)
   
   atomic_set(&(thread->flags),
 	     (AGS_THREAD_LOCKED | flags));
+  atomic_set(&(thread->monitor),
+	     1);
   
   futex(&(thread->monitor), FUTEX_WAIT, 1,
 	NULL,
@@ -512,7 +514,10 @@ ags_thread_unlock(AgsThread *thread)
   }
 
   if(atomic_dec_and_test(&(thread->lock_count)) == 0){
-    thread->flags = ((~AGS_THREAD_LOCKED) & flags);    
+    atomic_set(&(thread->flags),
+	       ((~AGS_THREAD_LOCKED) & flags));
+    atomic_set(&(thread->monitor),
+	       0);
 
     futex(&(thread->monitor), FUTEX_WAKE, 0,
 	  NULL,
@@ -565,13 +570,41 @@ ags_thread_last(AgsThread *thread)
 void
 ags_thread_remove_child(AgsThread *thread, AgsThread *child)
 {
-  //TODO:JK: implement me
+  if(thread == NULL ||
+     child == NULL ||
+     child->parent != thread){
+    return;
+  }
+  
+  if(child->prev != NULL){
+    child->prev->next = child->next;
+  }else{
+    thread->children = child->next;
+  }
+
+  if(child->next != NULL){
+    child->next->prev = child->prev;
+  }
 }
 
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
 {
-  //TODO:JK: implement me
+  if(thread == NULL ||
+     child == NULL){
+    return;
+  }
+
+  if(thread->children == NULL){
+    thread->children = child;
+  }else{
+    AgsThread *last_sibling;
+
+    last_sibling = ags_thread_last(thread->children);
+
+    last_sibling->next = child;
+    child->prev = last_sibling;
+  }
 }
 
 /**
