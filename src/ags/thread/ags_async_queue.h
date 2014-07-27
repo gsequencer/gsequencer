@@ -33,12 +33,18 @@
 
 typedef struct _AgsAsyncQueue AgsAsyncQueue;
 typedef struct _AgsAsyncQueueClass AgsAsyncQueueClass;
-
 typedef struct _AgsTimer AgsTimer;
+
+typedef enum{
+  AGS_ASYNC_QUEUE_INTERRUPT_OWN     = 1,
+  AGS_ASYNC_QUEUE_INTERRUPT_OTHER   = 1 << 1,
+}AgsAsyncQueueFlags;
 
 struct _AgsAsyncQueue
 {
   GObject object;
+
+  guint flags;
 
   GQueue *stack;
   GHashTable *timer;

@@ -457,7 +457,7 @@ ags_thread_lock(AgsThread *thread)
   AgsThread *audio_loop;
   unsigned int flags;
 
-  main_loop = ags_thread_get_toplevle(thread);
+  audio_loop = ags_thread_get_toplevle(thread);
   async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
 
   flags = (unsigned int) atomic_read(&(thread->flags));
@@ -503,7 +503,7 @@ ags_thread_unlock(AgsThread *thread)
   AgsThread *audio_loop;
   unsigned int flags;
 
-  main_loop = ags_thread_get_toplevle(thread);
+  audio_loop = ags_thread_get_toplevel(thread);
   async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
 
   flags = (unsigned int) atomic_read(&(thread->flags));
@@ -712,13 +712,53 @@ ags_thread_children_is_locked(AgsThread *thread)
 gboolean
 ags_thread_is_current_ready(AgsThread *current)
 {
-  //TODO:JK: implement me
+  unsigned int flags;
+
+  flags = (unsigned int) atomic_read(&(thread->flags));
+
+  if((AGS_THREAD_READY & flags) != 0 ||
+     ((thread->dyntic == 0 && (AGS_THREAD_WAIT_0 & flags) != 0) ||
+      (thread->dyntic == 1 && (AGS_THREAD_WAIT_1 & flags) != 0) ||
+      (thread->dyntic == 2 && (AGS_THREAD_WAIT_2 & flags) != 0))){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 gboolean
 ags_thread_is_tree_ready(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsThread *audio_loop;
+  gboolean retval;
+
+  auto gboolean ags_thread_is_tree_ready_recursive(AgsThread *current);
+
+  gboolean ags_thread_is_tree_ready_recursive(AgsThread *current){
+    AgsThread *children;
+
+    children = current->children;
+
+    if(!ags_thread_is_current_ready(current)){
+      return(FALSE);
+    }
+
+    while(children != NULL){
+      if(!ags_thread_is_tree_ready_recursive(children)){
+	return(FALSE);
+      }
+
+      children = children->next;
+    }
+
+    return(TRUE);
+  }
+
+  audio_loop = ags_thread_get_toplevel(thread);
+
+  retval = ags_thread_is_tree_ready_recursive(audio_loop);
+
+  return(retval);
 }
 
 /**
@@ -818,7 +858,23 @@ ags_thread_next_children_locked(AgsThread *thread)
 void
 ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
 {
-  //TODO:JK: implement me
+  AgsThread *current;
+
+  if(thread == NULL){
+    return;
+  }
+
+  ags_thread_lock(thread);
+
+  current = thread->parent;
+
+  while(current != parent){
+    ags_thread_lock(current);
+    atomic_or(AGS_THREAD_WAITING_FOR_CHILDREN,
+	      &(current->flags));
+
+    current = current->parent;
+  }
 }
 
 /**
@@ -830,7 +886,29 @@ ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
 void
 ags_thread_lock_sibling(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsThread *current;
+
+  if(thread == NULL){
+    return;
+  }
+
+  ags_thread_lock(thread);
+
+  current = ags_thread_first(thread);
+
+  while(current != NULL){
+    if(current == thread){
+      current = current->next;
+    
+      continue;
+    }
+
+    ags_thread_lock(current);
+    atomic_or(AGS_THREAD_WAITING_FOR_SIBLING,
+	      &(current->flags));
+
+    current = current->next;
+  }
 }
 
 /**
@@ -842,7 +920,27 @@ ags_thread_lock_sibling(AgsThread *thread)
 void
 ags_thread_lock_children(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  auto void ags_thread_lock_children_recursive(AgsThread *child);
+  
+  void ags_thread_lock_children_recursive(AgsThread *child){
+    AgsThread *current;
+
+    current = ags_thread_last(child);
+
+    while(current != NULL){
+      ags_thread_lock_children_recursive(current->children);
+
+      ags_thread_lock(current);
+      atomic_or(AGS_THREAD_WAITING_FOR_PARENT,
+		&(current->flags));
+      
+      current = current->prev;
+    }
+  }
+
+  ags_thread_lock(thread);
+  
+  ags_thread_lock_children_recursive(thread->children);
 }
 
 void
@@ -863,7 +961,33 @@ ags_thread_lock_all(AgsThread *thread)
 void
 ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  AgsThread *current;
+
+  if(thread == NULL){
+    return;
+  }
+
+  audio_loop = ags_thread_get_toplevle(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  current = thread->parent;
+
+  while(current != parent){
+    atomic_and((~AGS_THREAD_WAITING_FOR_CHILDREN),
+	       &(current->flags));
+
+    if((AGS_THREAD_BROADCAST_PARENT & (atomic_read(&(thread->flags)))) == 0){
+      //TODO:JK: implement me
+    }else{
+      //TODO:JK: implement me
+    }
+
+    ags_thread_unlock(current);
+
+    current = current->parent;
+  }
 }
 
 /**
@@ -875,7 +999,34 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
 void
 ags_thread_unlock_sibling(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsThread *current;
+
+  if(thread == NULL){
+    return;
+  }
+
+  current = ags_thread_first(thread);
+
+  while(current != NULL){
+    if(current == thread){
+      current = current->next;
+    
+      continue;
+    }
+
+    atomic_and((~AGS_THREAD_WAITING_FOR_SIBLING),
+	       &(current->flags));
+
+    if((AGS_THREAD_BROADCAST_PARENT & (atomic_read(&(thread->flags)))) == 0){
+      //TODO:JK: implement me
+    }else{
+      //TODO:JK: implement me
+    }
+
+    ags_thread_unlock(current);
+
+    current = current->next;
+  }
 }
 
 /**
@@ -887,7 +1038,36 @@ ags_thread_unlock_sibling(AgsThread *thread)
 void
 ags_thread_unlock_children(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  auto void ags_thread_unlock_children_recursive(AgsThread *child);
+  
+  void ags_thread_unlock_children_recursive(AgsThread *child){
+    AgsThread *current;
+
+    if(child == NULL){
+      return;
+    }
+
+    current = ags_thread_last(child);
+
+    while(current != NULL){
+      ags_thread_unlock_children_recursive(current->children);
+
+      atomic_and((~AGS_THREAD_WAITING_FOR_PARENT),
+		 &(current->flags));
+
+      if((AGS_THREAD_BROADCAST_PARENT & (atomic_read(&(thread->flags)))) == 0){
+	//TODO:JK: implement me
+      }else{
+	//TODO:JK: implement me
+      }
+
+      ags_thread_unlock(current);
+
+      current = current->prev;
+    }
+  }
+  
+  ags_thread_unlock_children_recursive(thread->children);
 }
 
 void
