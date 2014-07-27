@@ -457,7 +457,7 @@ ags_thread_lock(AgsThread *thread)
   AgsThread *audio_loop;
   unsigned int flags;
 
-  audio_loop = ags_thread_get_toplevle(thread);
+  audio_loop = ags_thread_get_toplevel(thread);
   async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
 
   flags = (unsigned int) atomic_read(&(thread->flags));
@@ -961,28 +961,17 @@ ags_thread_lock_all(AgsThread *thread)
 void
 ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
 {
-  AgsAsyncQueue *async_queue;
-  AgsThread *audio_loop;
   AgsThread *current;
 
   if(thread == NULL){
     return;
   }
 
-  audio_loop = ags_thread_get_toplevle(thread);
-  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
-
   current = thread->parent;
 
   while(current != parent){
     atomic_and((~AGS_THREAD_WAITING_FOR_CHILDREN),
 	       &(current->flags));
-
-    if((AGS_THREAD_BROADCAST_PARENT & (atomic_read(&(thread->flags)))) == 0){
-      //TODO:JK: implement me
-    }else{
-      //TODO:JK: implement me
-    }
 
     ags_thread_unlock(current);
 
@@ -1017,12 +1006,6 @@ ags_thread_unlock_sibling(AgsThread *thread)
     atomic_and((~AGS_THREAD_WAITING_FOR_SIBLING),
 	       &(current->flags));
 
-    if((AGS_THREAD_BROADCAST_PARENT & (atomic_read(&(thread->flags)))) == 0){
-      //TODO:JK: implement me
-    }else{
-      //TODO:JK: implement me
-    }
-
     ags_thread_unlock(current);
 
     current = current->next;
@@ -1055,12 +1038,6 @@ ags_thread_unlock_children(AgsThread *thread)
       atomic_and((~AGS_THREAD_WAITING_FOR_PARENT),
 		 &(current->flags));
 
-      if((AGS_THREAD_BROADCAST_PARENT & (atomic_read(&(thread->flags)))) == 0){
-	//TODO:JK: implement me
-      }else{
-	//TODO:JK: implement me
-      }
-
       ags_thread_unlock(current);
 
       current = current->prev;
@@ -1088,7 +1065,29 @@ ags_thread_unlock_all(AgsThread *thread)
 void
 ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  AgsThread *current;
+
+  if(thread == NULL || thread == parent){
+    return;
+  }
+
+  audio_loop = ags_thread_get_toplevel(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  ags_thread_lock_parent(thread);
+
+  /* wait parent */
+  current = thread->parent;
+    
+  while(current != NULL){
+    ags_async_queue_idle(async_queue);
+
+    current = current->parent;
+  }
+
+  ags_thread_unlock_parent(thread);
 }
 
 /**
@@ -1100,7 +1099,33 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
 void
 ags_thread_wait_sibling(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  AgsThread *current;
+
+  if(thread == NULL){
+    return;
+  }
+
+  audio_loop = ags_thread_get_toplevel(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  ags_thread_lock_sibling(thread);
+
+  /* wait sibling */
+  current = ags_thread_first(thread);
+  
+  while(current != NULL){
+    if(current == thread){
+      current = current->next;
+      
+      continue;
+    }
+
+    ags_async_queue_idle(async_queue);
+
+    current = current->next;
+  }
 }
 
 /**
@@ -1112,7 +1137,38 @@ ags_thread_wait_sibling(AgsThread *thread)
 void
 ags_thread_wait_children(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+
+  auto void ags_thread_wait_children_recursive(AgsThread *child);
+  
+  void ags_thread_wait_children_recursive(AgsThread *child){
+    gboolean initial_run;
+
+    if(child == NULL){
+      return;
+    }
+
+    while(child != NULL){
+      ags_thread_wait_children_recursive(child->children);
+    
+      child = child->next;
+    }
+
+    ags_async_queue_idle(async_queue);
+  }
+
+  if(thread == NULL){
+    return;
+  }
+
+  audio_loop = ags_thread_get_toplevel(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  ags_thread_lock_children(thread);
+
+  /* wait children */
+  ags_thread_wait_children_recursive(thread->children);
 }
 
 /**
@@ -1126,7 +1182,37 @@ void
 ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
 			 gboolean broadcast)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  AgsThread *current;
+  guint flags;
+
+  if(thread == NULL){
+    return;
+  }
+
+  audio_loop = ags_thread_get_toplevel(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  current = thread->parent;
+
+  while(current != parent){
+    if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(current->flags)))) != 0){
+      flags = async_queue->flags;
+
+      if(!broadcast){
+	async_queue->flags |= AGS_ASYNC_QUEUE_INTERRUPT_OTHER;
+	ags_async_queue_interrupt(async_queue);
+      }else{
+	async_queue->flags |= AGS_ASYNC_QUEUE_INTERRUPT_OWN;
+	ags_async_queue_interrupt(async_queue);
+      }
+
+      async_queue->flags = flags;
+    }
+
+    current = current->parent;
+  }
 }
 
 /**
@@ -1139,7 +1225,35 @@ ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
 void
 ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  AgsThread *current;
+  guint flags;
+
+  if(thread == NULL){
+    return;
+  }
+
+  audio_loop = ags_thread_get_toplevel(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  current = ags_thread_first(thread);
+
+  while(current != NULL){
+    if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(current->flags)))) != 0){
+      flags = async_queue->flags;
+      
+      if(!broadcast){
+	async_queue->flags |= AGS_ASYNC_QUEUE_INTERRUPT_OTHER;
+	ags_async_queue_interrupt(async_queue);
+      }else{
+	async_queue->flags |= AGS_ASYNC_QUEUE_INTERRUPT_OWN;
+	ags_async_queue_interrupt(async_queue);
+      }
+
+      async_queue->flags = flags;
+    }
+  }
 }
 
 /**
@@ -1152,7 +1266,47 @@ ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
 void
 ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
 {
-  //TODO:JK: implement me
+  AgsAsyncQueue *async_queue;
+  AgsThread *audio_loop;
+  AgsThread *current;
+  guint flags;
+
+  auto void ags_thread_signal_children_recursive(AgsThread *thread, gboolean broadcast);
+
+  void ags_thread_signal_children_recursive(AgsThread *thread, gboolean broadcast){
+    AgsThread *current;
+
+    if(thread == NULL){
+      return;
+    }
+
+    current = thread;
+
+    while(current != NULL){
+      if((AGS_THREAD_WAIT_FOR_PARENT & (g_atomic_int_get(&(current->flags)))) != 0){
+	flags = async_queue->flags;
+      
+	if(!broadcast){
+	  async_queue->flags |= AGS_ASYNC_QUEUE_INTERRUPT_OTHER;
+	  ags_async_queue_interrupt(async_queue);
+	}else{
+	  async_queue->flags |= AGS_ASYNC_QUEUE_INTERRUPT_OWN;
+	  ags_async_queue_interrupt(async_queue);
+	}
+
+	async_queue->flags = flags;
+      }
+    }
+  }
+  
+  if(thread == NULL){
+    return;
+  }
+
+  audio_loop = ags_thread_get_toplevel(thread);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+
+  ags_thread_signal_children(thread->children, broadcast);
 }
 
 void
