@@ -39,6 +39,7 @@ typedef struct _AgsContext AgsContext;
 typedef enum{
   AGS_ASYNC_QUEUE_LINUX_THREADS     = 1,
   AGS_ASYNC_QUEUE_POSIX_THREADS     = 1 << 1,
+  AGS_ASYNC_QUEUE_WORKER_RUNNING    = 1 << 2,
   AGS_ASYNC_QUEUE_INTERRUPT_OWN     = 1 << 2,
   AGS_ASYNC_QUEUE_INTERRUPT_OTHER   = 1 << 3,
 }AgsAsyncQueueFlags;
@@ -92,6 +93,9 @@ GType ags_async_queue_get_type();
 AgsTimer* ags_timer_alloc(time_t tv_sec, long tv_nsec);
 AgsContext* ags_context_alloc(GQueue *stack, GHashTable *timer);
 
+AgsContext* ags_async_queue_find_context(AgsAsyncQueue *async_queue,
+					 AgsStackable *stackable);
+
 void ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable);
 gboolean ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stackable);
 
@@ -103,6 +107,8 @@ void ags_async_queue_push_context(AgsAsyncQueue *async_queue,
 				  AgsContext *context);
 void ags_async_queue_pop_context(AgsAsyncQueue *async_queue,
 				 AgsContext *context);
+
+void* ags_async_queue_worker(void *ptr);
 
 AgsAsyncQueue* ags_async_queue_new();
 

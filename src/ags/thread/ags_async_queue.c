@@ -182,6 +182,13 @@ ags_context_alloc(GQueue *stack, GHashTable *timer)
   return(context);
 }
 
+AgsContext*
+ags_async_queue_find_context(AgsAsyncQueue *async_queue,
+			     AgsStackable *stackable)
+{
+  //TODO:JK: implement me
+}
+
 void
 ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 {
@@ -274,7 +281,8 @@ void
 ags_async_queue_real_push_context(AgsAsyncQueue *async_queue,
 				  AgsContext *context)
 {
-  //TODO:JK: implement me
+  async_queue->stack = context->stack;
+  async_queue->timer = context->timer;
 }
 
 void
@@ -294,7 +302,8 @@ void
 ags_async_queue_real_pop_context(AgsAsyncQueue *async_queue,
 				 AgsContext *context)
 {
-  //TODO:JK: implement me
+  async_queue->stack = NULL;
+  async_queue->timer = NULL;
 }
 
 void
@@ -308,6 +317,18 @@ ags_async_queue_pop_context(AgsAsyncQueue *async_queue,
 		async_queue_signals[POP_CONTEXT], 0,
 		context);
   g_object_unref(G_OBJECT(async_queue));
+}
+
+void*
+ags_async_queue_worker(void *ptr)
+{
+  AgsAsyncQueue *async_queue;
+
+  while((AGS_ASYNC_WORKER_RUNNING & (async_queue->flags)) != 0){
+    //TODO:JK: implement me  
+  }
+
+  return(NULL);
 }
 
 /**
