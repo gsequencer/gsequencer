@@ -193,15 +193,23 @@ void
 ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 {
   AgsTimer *timer;
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   static time_t tv_sec = 0;
   static long tv_nsec = 0;
   static long delay = 4000;
   static const long max_delay = 800000;
   static gboolean odd = FALSE;
 
-  pthread_mutex_lock(&mutex);
-  
+  if((AGS_ASYNC_QUEUE_LINUX_THREADS & (async_queue->flags)) != 0){
+    while(atomic_read(&(async_queue->lock.monitor)) == 1){
+      ags_async_queue_idle(async_queue);
+    }
+
+    atomic_set(&(&(async_queue->lock.monitor),
+	       1);
+  }else if((AGS_ASYNC_QUEUE_POSIX_THREADS & (async_queue->flags)) != 0){
+    pthread_mutex_lock(&(async_queue->lock.mutex));
+  }
+
   timer = ags_timer_alloc(tv_sec,
 			  tv_nsec);
 
@@ -227,7 +235,12 @@ ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
   g_signal_connect(G_OBJECT(stackable), "run\0",
 		   G_CALLBACK(ags_async_queue_run_callback), async_queue);
 
-  pthread_mutex_unlock(&mutex);
+  if((AGS_ASYNC_QUEUE_LINUX_THREADS & (async_queue->flags)) != 0){
+    atomic_set(&(&(async_queue->lock.monitor),
+	       0);
+  }else if((AGS_ASYNC_QUEUE_POSIX_THREADS & (async_queue->flags)) != 0){
+    pthread_mutex_unlock(&(async_queue->lock.mutex));
+  }
 }
 
 gboolean
