@@ -28,7 +28,12 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
-#include <ags/thread/ags_thread.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+
 #include <ags/thread/ags_audio_loop.h>
 
 void ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread);

@@ -20,7 +20,13 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
-#include <ags/thread/ags_thread.h>
+#include <ags/audio/ags_devout.h>
+
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 
 void ags_async_queue_class_init(AgsAsyncQueueClass *async_queue);
 void ags_async_queue_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -29,7 +35,7 @@ void ags_async_queue_connect(AgsConnectable *connectable);
 void ags_async_queue_disconnect(AgsConnectable *connectable);
 void ags_async_queue_finalize(GObject *gobject);
 
-void ags_async_queue_real_initerrupt(AgsAsyncQueue *async_queue);
+void ags_async_queue_real_interrupt(AgsAsyncQueue *async_queue);
 void ags_async_queue_real_push_context(AgsAsyncQueue *async_queue,
 				       AgsContext *context);
 void ags_async_queue_real_pop_context(AgsAsyncQueue *async_queue,
@@ -93,7 +99,7 @@ ags_async_queue_class_init(AgsAsyncQueueClass *async_queue)
     g_signal_new("interrupt\0",
 		 G_TYPE_FROM_CLASS(async_queue),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsAsync_QueueClass, interrupt),
+		 G_STRUCT_OFFSET(AgsAsyncQueueClass, interrupt),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -102,21 +108,21 @@ ags_async_queue_class_init(AgsAsyncQueueClass *async_queue)
     g_signal_new("push_context\0",
 		 G_TYPE_FROM_CLASS(async_queue),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsAsync_QueueClass, push_context),
+		 G_STRUCT_OFFSET(AgsAsyncQueueClass, push_context),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
-		 G_TYPE_POITNER);
+		 G_TYPE_POINTER);
 
   async_queue_signals[POP_CONTEXT] =
     g_signal_new("pop_context\0",
 		 G_TYPE_FROM_CLASS(async_queue),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsAsync_QueueClass, pop_context),
+		 G_STRUCT_OFFSET(AgsAsyncQueueClass, pop_context),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
-		 G_TYPE_POITNER);
+		 G_TYPE_POINTER);
 }
 
 void
@@ -140,16 +146,16 @@ ags_async_queue_init(AgsAsyncQueue *async_queue)
   //TODO:JK: fix aproximation
   async_queue->interval = async_queue->output_sum * NSEC_PER_SEC / async_queue->systemrate / 2;
 
-  sev.sigev_notify = AGS_ASYNC_QUEUE_SIGNAL_HIGH;
-  sev.sigev_signo = SIG;
-  sev.sigev_value.sival_ptr = &timerid;
+  sev.sigev_notify = SIGEV_SIGNAL;
+  sev.sigev_signo = AGS_ASYNC_QUEUE_SIGNAL_HIGH;
+  sev.sigev_value.sival_ptr = &(async_queue->timerid);
 
   timer_create(AGS_ASYNC_QUEUE_CLOCK_ID, &sev, &(async_queue->timerid));
 
   async_queue->stack = g_queue_new();
   async_queue->timer = g_hash_table_new(g_str_hash, g_str_equal);
 
-  pthread_mutex(&(async_queue->mutex), NULL);
+  pthread_mutex_init(&(async_queue->lock.mutex), NULL);
 
   async_queue->context = NULL;
 }
@@ -225,12 +231,13 @@ ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
   static gboolean odd = FALSE;
 
   if((AGS_ASYNC_QUEUE_LINUX_THREADS & (async_queue->flags)) != 0){
-    while(atomic_read(&(async_queue->lock.monitor)) == 1){
-      ags_async_queue_idle(async_queue);
-    }
+    //TODO:JK: uncomment me
+    //    while(atomic_read(&(async_queue->lock.monitor)) == 1){
+    //      ags_async_queue_idle(async_queue);
+    //    }
 
-    atomic_set(&(async_queue->lock.monitor),
-	       1);
+    //    atomic_set(&(async_queue->lock.monitor),
+    //	       1);
   }else if((AGS_ASYNC_QUEUE_POSIX_THREADS & (async_queue->flags)) != 0){
     pthread_mutex_lock(&(async_queue->lock.mutex));
   }
@@ -261,8 +268,9 @@ ags_async_queue_add(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 		   G_CALLBACK(ags_async_queue_run_callback), async_queue);
 
   if((AGS_ASYNC_QUEUE_LINUX_THREADS & (async_queue->flags)) != 0){
-    atomic_set(&(async_queue->lock.monitor),
-	       0);
+    //TODO:JK: uncomment me
+    //    atomic_set(&(async_queue->lock.monitor),
+    //	       0);
   }else if((AGS_ASYNC_QUEUE_POSIX_THREADS & (async_queue->flags)) != 0){
     pthread_mutex_unlock(&(async_queue->lock.mutex));
   }
@@ -311,19 +319,19 @@ ags_async_queue_run_callback(AgsThread *thread,
 }
 
 void
-ags_async_queue_real_initerrupt(AgsAsyncQueue *async_queue)
+ags_async_queue_real_interrupt(AgsAsyncQueue *async_queue)
 {
-  //TODO:JK: implement me
+  pthread_yield();
 }
 
 void
-ags_async_queue_initerrupt(AgsAsyncQueue *async_queue)
+ags_async_queue_interrupt(AgsAsyncQueue *async_queue)
 {
   g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
 
   g_object_ref(G_OBJECT(async_queue));
   g_signal_emit(G_OBJECT(async_queue),
-		async_queue_signals[REAL_INTERRUPT], 0);
+		async_queue_signals[INTERRUPT], 0);
   g_object_unref(G_OBJECT(async_queue));
 }
 
@@ -388,7 +396,7 @@ ags_async_queue_worker(void *ptr)
       async_queue->flags |= (AGS_ASYNC_QUEUE_STOP_BIT_0);
     }
 
-    nanosleep(delay, NULL);
+    nanosleep(&delay, NULL);
   }
 
   return(NULL);

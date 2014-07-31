@@ -19,6 +19,14 @@
 #ifndef __AGS_ASYNC_QUEUE_H__
 #define __AGS_ASYNC_QUEUE_H__
 
+#include <signal.h>
+#include <time.h>
+
+#include <linux/futex.h>
+#include <sys/time.h>
+
+#include <pthread.h>
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -68,8 +76,8 @@ struct _AgsAsyncQueue
   GHashTable *timer;
 
   union{
-    atomic_t monitor;
-    pthread_mutex mutex;
+    //    atomic_t monitor;
+    pthread_mutex_t mutex;
   }lock;
 
   GList *context;

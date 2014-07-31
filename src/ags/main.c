@@ -682,7 +682,7 @@ ags_signal_handler(int signr)
     sigemptyset(&(ags_sigact.sa_mask));
 
     if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
-      phtread_yield();
+      pthread_yield();
     }
   }
 }

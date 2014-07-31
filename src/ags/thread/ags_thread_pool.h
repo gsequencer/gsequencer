@@ -24,7 +24,11 @@
 
 #include <ags/object/ags_main_loop.h>
 
-#include <ags/thread/ags_thread.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 
 #define AGS_TYPE_THREAD_POOL                (ags_thread_pool_get_type())
 #define AGS_THREAD_POOL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD_POOL, AgsThreadPool))
