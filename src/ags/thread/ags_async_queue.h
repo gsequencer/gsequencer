@@ -33,6 +33,10 @@
 
 #define AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE (250)
 
+#define AGS_ASYNC_QUEUE_CLOCK_ID CLOCK_REALTIME
+#define AGS_ASYNC_QUEUE_SIGNAL_HIGH SIGRTMAX
+#define AGS_ASYNC_QUEUE_SIGNAL_LOW SIGRTMIN
+
 typedef struct _AgsAsyncQueue AgsAsyncQueue;
 typedef struct _AgsAsyncQueueClass AgsAsyncQueueClass;
 typedef struct _AgsTimer AgsTimer;
