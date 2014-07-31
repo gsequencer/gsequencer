@@ -62,6 +62,8 @@ struct _AgsAsyncQueue
   guint systemrate;
   guint interval;
 
+  timer_t timerid;
+
   GQueue *stack;
   GHashTable *timer;
 

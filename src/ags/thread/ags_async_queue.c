@@ -131,10 +131,27 @@ ags_async_queue_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_async_queue_init(AgsAsyncQueue *async_queue)
 {
+  struct sigevent sev;
+
+  async_queue->flags = AGS_ASYNC_QUEUE_POSIX_THREADS;
+
   async_queue->output_sum = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
   async_queue->systemrate = NSEC_PER_SEC / AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE;
+  //TODO:JK: fix aproximation
+  async_queue->interval = async_queue->output_sum * NSEC_PER_SEC / async_queue->systemrate / 2;
+
+  sev.sigev_notify = AGS_ASYNC_QUEUE_SIGNAL_HIGH;
+  sev.sigev_signo = SIG;
+  sev.sigev_value.sival_ptr = &timerid;
+
+  timer_create(AGS_ASYNC_QUEUE_CLOCK_ID, &sev, &(async_queue->timerid));
+
   async_queue->stack = g_queue_new();
   async_queue->timer = g_hash_table_new(g_str_hash, g_str_equal);
+
+  pthread_mutex(&(async_queue->mutex), NULL);
+
+  async_queue->context = NULL;
 }
 
 void
@@ -266,12 +283,9 @@ ags_async_queue_remove(AgsAsyncQueue *async_queue, AgsStackable *stackable)
 void
 ags_async_queue_idle(AgsAsyncQueue *async_queue)
 {
-
   /* software interrupt - caused by exceeding multiplexing by time */
-  if(){
-    //TODO:JK: implement me
-    ags_async_queue_interrupt(async_queue);
-  }
+  ags_async_queue_interrupt(async_queue);
+  pthread_yield();
 }
 
 void
@@ -286,7 +300,8 @@ ags_async_queue_run_callback(AgsThread *thread,
   timer = g_hash_table_lookup(async_queue->timer,
 			      AGS_STACKABLE(thread));
 
-  nanosleep(&(timer->run_delay), NULL);
+  //  nanosleep(&(timer->run_delay), NULL);
+  ags_async_queue_interrupt(async_queue);
 
   while((interrupt_first &&
 	 (AGS_ASYNC_QUEUE_STOP_BIT_0 & (async_queue->flags)) != 0) ||
