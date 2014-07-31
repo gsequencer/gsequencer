@@ -31,6 +31,8 @@
 #define AGS_IS_ASYNC_QUEUE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_ASYNC_QUEUE))
 #define AGS_ASYNC_QUEUE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_ASYNC_QUEUE, AgsAsyncQueueClass))
 
+#define AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE (250)
+
 typedef struct _AgsAsyncQueue AgsAsyncQueue;
 typedef struct _AgsAsyncQueueClass AgsAsyncQueueClass;
 typedef struct _AgsTimer AgsTimer;
@@ -42,6 +44,8 @@ typedef enum{
   AGS_ASYNC_QUEUE_WORKER_RUNNING    = 1 << 2,
   AGS_ASYNC_QUEUE_INTERRUPT_OWN     = 1 << 2,
   AGS_ASYNC_QUEUE_INTERRUPT_OTHER   = 1 << 3,
+  AGS_ASYNC_QUEUE_STOP_BIT_0        = 1 << 4,
+  AGS_ASYNC_QUEUE_STOP_BIT_1        = 1 << 5,
 }AgsAsyncQueueFlags;
 
 struct _AgsAsyncQueue
@@ -49,6 +53,10 @@ struct _AgsAsyncQueue
   GObject object;
 
   guint flags;
+
+  guint output_sum;
+  guint systemrate;
+  guint interval;
 
   GQueue *stack;
   GHashTable *timer;
@@ -92,6 +100,8 @@ GType ags_async_queue_get_type();
 
 AgsTimer* ags_timer_alloc(time_t tv_sec, long tv_nsec);
 AgsContext* ags_context_alloc(GQueue *stack, GHashTable *timer);
+
+guint ags_async_queue_next_interval(AgsAsyncQueue *async_queue);
 
 AgsContext* ags_async_queue_find_context(AgsAsyncQueue *async_queue,
 					 AgsStackable *stackable);
