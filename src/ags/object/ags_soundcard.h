@@ -45,6 +45,12 @@ struct _AgsSoundcardInterface
 		   guint *buffer_size_min, guint *buffer_size_max,
 		   GError **error);
 
+  void (*play_init)(AgsSoundcard *soundcard,
+		    GError **error);
+  void (*play)(AgsSoundcard *soundcard,
+	       GError **error);
+  void (*stop)(AgsSoundcard *soundcard);
+
   void (*tic)(AgsSoundcard *soundcard);
   void (*offset_changed)(AgsSoundcard *soundcard, guint note_offset);
 };
