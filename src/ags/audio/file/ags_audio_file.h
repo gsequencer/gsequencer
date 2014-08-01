@@ -22,7 +22,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#ifndef AGS_USE_AO
 #include <ags/audio/ags_devout.h>
+#else
+#include <ags/audio/ags_libao.h>
+#endif
+
 
 #define AGS_TYPE_AUDIO_FILE                (ags_audio_file_get_type())
 #define AGS_AUDIO_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_FILE, AgsAudioFile))

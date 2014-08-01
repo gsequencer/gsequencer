@@ -77,8 +77,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-unknown-linux-gnu
-host_triplet = x86_64-unknown-linux-gnu
+build_triplet = x86_64-apple-darwin13.3.0
+host_triplet = x86_64-apple-darwin13.3.0
 bin_PROGRAMS = ags$(EXEEXT) agsclient$(EXEEXT) test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -162,7 +162,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_remove_audio_signal.$(OBJEXT) \
 	ags-ags_notation.$(OBJEXT) ags-ags_recall_id.$(OBJEXT) \
 	ags-ags_recall_channel_run.$(OBJEXT) ags-ags_note.$(OBJEXT) \
-	ags-ags_recycling_container.$(OBJEXT) ags-ags_devout.$(OBJEXT) \
+	ags-ags_recycling_container.$(OBJEXT) ags-ags_libao.$(OBJEXT) \
 	ags-ags_garbage_collector.$(OBJEXT) \
 	ags-ags_recycling.$(OBJEXT) \
 	ags-ags_recall_dependency.$(OBJEXT) \
@@ -506,16 +506,16 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/joel/ags-code/missing aclocal-1.14
+ACLOCAL = ${SHELL} /Users/joelkraehemann/ags-code/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /home/joel/ags-code/missing autoconf
-AUTOHEADER = ${SHELL} /home/joel/ags-code/missing autoheader
-AUTOMAKE = ${SHELL} /home/joel/ags-code/missing automake-1.14
+AUTOCONF = ${SHELL} /Users/joelkraehemann/ags-code/missing autoconf
+AUTOHEADER = ${SHELL} /Users/joelkraehemann/ags-code/missing autoheader
+AUTOMAKE = ${SHELL} /Users/joelkraehemann/ags-code/missing automake-1.14
 AWK = gawk
-CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/X11/include 
-CAIRO_LIBS = -lcairo 
+CAIRO_CFLAGS = -I/opt/local/include/cairo -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include -I/opt/local/include/pixman-1 -I/opt/local/include -I/opt/local/include/freetype2 -I/opt/local/include -I/opt/local/include/freetype2 -I/opt/local/include/libpng16 -I/opt/local/include 
+CAIRO_LIBS = -L/opt/local/lib -lcairo 
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
@@ -525,82 +525,81 @@ CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
-DSYMUTIL = 
+DSYMUTIL = dsymutil
 DUMPBIN = 
-ECHO_C = 
-ECHO_N = -n
+ECHO_C = \c
+ECHO_N = 
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 EXEEXT = 
-FGREP = /bin/grep -F
-GDKPIXBUF_CFLAGS = -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
-GDKPIXBUF_LIBS = -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 
-GOBJECT_CFLAGS = -pthread -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
-GOBJECT_LIBS = -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0 
-GREP = /bin/grep
-GTKDOC_CHECK = /usr/bin/gtkdoc-check
-GTKDOC_DEPS_CFLAGS = 
-GTKDOC_DEPS_LIBS = 
-GTKDOC_MKPDF = /usr/bin/gtkdoc-mkpdf
-GTKDOC_REBASE = /usr/bin/gtkdoc-rebase
-GTK_CFLAGS = -pthread -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng16 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/X11/include 
-GTK_LIBS = -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype 
+FGREP = /usr/bin/grep -F
+GDKPIXBUF_CFLAGS = -D_REENTRANT -I/opt/local/include/gdk-pixbuf-2.0 -I/opt/local/include/libpng16 -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include 
+GDKPIXBUF_LIBS = -L/opt/local/lib -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lintl 
+GOBJECT_CFLAGS = -D_REENTRANT -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include 
+GOBJECT_LIBS = -L/opt/local/lib -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lglib-2.0 -lintl 
+GREP = /usr/bin/grep
+GTKDOC_CHECK = gtkdoc-check.test
+GTKDOC_CHECK_PATH = /opt/local/bin/gtkdoc-check
+GTKDOC_DEPS_CFLAGS = -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include 
+GTKDOC_DEPS_LIBS = -L/opt/local/lib -lgobject-2.0 -lglib-2.0 -lintl 
+GTKDOC_MKPDF = /opt/local/bin/gtkdoc-mkpdf
+GTKDOC_REBASE = /opt/local/bin/gtkdoc-rebase
+GTK_CFLAGS = -D_REENTRANT -I/opt/local/include/gtk-2.0 -I/opt/local/lib/gtk-2.0/include -I/opt/local/include/pango-1.0 -I/opt/local/include/gio-unix-2.0/ -I/opt/local/include -I/opt/local/include/cairo -I/opt/local/include/atk-1.0 -I/opt/local/include/cairo -I/opt/local/include/pixman-1 -I/opt/local/include/libpng16 -I/opt/local/include -I/opt/local/include/gdk-pixbuf-2.0 -I/opt/local/include/libpng16 -I/opt/local/include/pango-1.0 -I/opt/local/include/harfbuzz -I/opt/local/include/pango-1.0 -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include -I/opt/local/include/freetype2 -I/opt/local/include -I/opt/local/include/freetype2 
+GTK_LIBS = -L/opt/local/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -lgio-2.0 -lXrender -lXinerama -lXi -lXrandr -lXcursor -lXcomposite -lXdamage -lXfixes -lX11 -lXext -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lm -lgobject-2.0 -lglib-2.0 -lintl -lfontconfig -lfreetype 
 HTML_DIR = ${datadir}/gtk-doc/html
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LD = /usr/bin/ld -m elf_x86_64
+LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
 LDFLAGS = 
-LIBAO_CFLAGS = 
-LIBAO_LIBS = -lao 
-LIBASOUND2_CFLAGS = -I/usr/include/alsa 
-LIBASOUND2_LIBS = -lasound 
-LIBINSTPATCH_CFLAGS = -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include 
-LIBINSTPATCH_LIBS = -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -laudiofile 
+LIBAO_CFLAGS = -I/opt/local/include 
+LIBAO_LIBS = -L/opt/local/lib -lao 
+LIBINSTPATCH_CFLAGS = -I/usr/local/include/libinstpatch-1.0 -I/opt/local/include/glib-2.0 -I/opt/local/lib/glib-2.0/include -I/opt/local/include 
+LIBINSTPATCH_LIBS = -L/usr/local/lib -L/opt/local/lib -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lintl -laudiofile 
 LIBOBJS = 
-LIBS = -lrt -lm -lfreetype -lfontconfig -ldl 
+LIBS = -lm -ldl 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIBXML2_CFLAGS = -I/usr/include/libxml2 
-LIBXML2_LIBS = -lxml2 
-LIPO = 
+LIBXML2_CFLAGS = -I/opt/local/include/libxml2 
+LIBXML2_LIBS = -L/opt/local/lib -lxml2 
+LIPO = lipo
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/joel/ags-code/missing makeinfo
+MAKEINFO = ${SHELL} /Users/joelkraehemann/ags-code/missing makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = /bin/mkdir -p
-NM = /usr/bin/nm -B
-NMEDIT = 
-OBJDUMP = objdump
+MKDIR_P = ./install-sh -c -d
+NM = /opt/local/bin/nm
+NMEDIT = nmedit
+OBJDUMP = false
 OBJEXT = o
-OTOOL = 
-OTOOL64 = 
+OTOOL = otool
+OTOOL64 = :
 PACKAGE = ags
-PACKAGE_BUGREPORT = joel@weedlight.ch
+PACKAGE_BUGREPORT = weedlight@gmail.com
 PACKAGE_NAME = ags
-PACKAGE_STRING = ags 0.3.16-SNAPSHOT
+PACKAGE_STRING = ags 0.4.0-beta
 PACKAGE_TARNAME = ags
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.3.16-SNAPSHOT
+PACKAGE_VERSION = 0.4.0-beta
 PATH_SEPARATOR = :
-PKG_CONFIG = /usr/bin/pkg-config
+PKG_CONFIG = /opt/local/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig
+PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/local/lib/pkgconfig
 RANLIB = ranlib
-SED = /bin/sed
+SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
-SNDFILE_CFLAGS = 
-SNDFILE_LIBS = -lsndfile 
+SNDFILE_CFLAGS = -I/opt/local/include 
+SNDFILE_LIBS = -L/opt/local/lib -lsndfile 
 STRIP = strip
-UUID_CFLAGS = -I/usr/include/uuid 
-UUID_LIBS = -luuid 
+UUID_CFLAGS = -I/usr/local/include/uuid 
+UUID_LIBS = -L/usr/local/lib -luuid 
 VERSION = 0.3.99-SNAPSHOT
-abs_builddir = /home/joel/ags-code
-abs_srcdir = /home/joel/ags-code
-abs_top_builddir = /home/joel/ags-code
-abs_top_srcdir = /home/joel/ags-code
+abs_builddir = /Users/joelkraehemann/ags-code
+abs_srcdir = /Users/joelkraehemann/ags-code
+abs_top_builddir = /Users/joelkraehemann/ags-code
+abs_top_srcdir = /Users/joelkraehemann/ags-code
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_DUMPBIN = 
@@ -610,26 +609,26 @@ am__quote =
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-unknown-linux-gnu
+build = x86_64-apple-darwin13.3.0
 build_alias = 
 build_cpu = x86_64
-build_os = linux-gnu
-build_vendor = unknown
+build_os = darwin13.3.0
+build_vendor = apple
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-unknown-linux-gnu
+host = x86_64-apple-darwin13.3.0
 host_alias = 
 host_cpu = x86_64
-host_os = linux-gnu
-host_vendor = unknown
+host_os = darwin13.3.0
+host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/joel/ags-code/install-sh
+install_sh = ${SHELL} /Users/joelkraehemann/ags-code/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -785,8 +784,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_recall_channel.h \
 	./src/ags/audio/ags_audio_signal.h \
 	./src/ags/audio/ags_recall_audio_signal.h \
-	./src/ags/audio/ags_devout.c ./src/ags/audio/ags_note.h \
-	./src/ags/audio/ags_recall_audio.h \
+	./src/ags/audio/ags_libao.h ./src/ags/audio/ags_libao.c \
+	./src/ags/audio/ags_note.h ./src/ags/audio/ags_recall_audio.h \
 	./src/ags/audio/ags_synths.h ./src/ags/audio/ags_audio.h \
 	./src/ags/audio/ags_garbage_collector.h \
 	./src/ags/audio/ags_pattern.h \
@@ -912,8 +911,7 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/recall/ags_copy_pattern_channel_run.h \
 	./src/ags/audio/recall/ags_play_channel_run.h \
 	./src/ags/audio/recall/ags_stream_channel_run.h \
-	./src/ags/audio/ags_output.h ./src/ags/audio/ags_devout.h \
-	./src/ags/audio/ags_channel.c \
+	./src/ags/audio/ags_output.h ./src/ags/audio/ags_channel.c \
 	./src/ags/audio/ags_recall_audio.c \
 	./src/ags/widget/ags_expander.h \
 	./src/ags/widget/ags_expander.c \
@@ -1451,7 +1449,6 @@ include ./$(DEPDIR)/ags-ags_count_beats_audio_run.Po
 include ./$(DEPDIR)/ags-ags_countable.Po
 include ./$(DEPDIR)/ags-ags_delay_audio.Po
 include ./$(DEPDIR)/ags-ags_delay_audio_run.Po
-include ./$(DEPDIR)/ags-ags_devout.Po
 include ./$(DEPDIR)/ags-ags_devout_thread.Po
 include ./$(DEPDIR)/ags-ags_dial.Po
 include ./$(DEPDIR)/ags-ags_display_tact.Po
@@ -1499,6 +1496,7 @@ include ./$(DEPDIR)/ags-ags_ipatch.Po
 include ./$(DEPDIR)/ags-ags_ipatch_sf2_reader.Po
 include ./$(DEPDIR)/ags-ags_iterator_thread.Po
 include ./$(DEPDIR)/ags-ags_led.Po
+include ./$(DEPDIR)/ags-ags_libao.Po
 include ./$(DEPDIR)/ags-ags_line.Po
 include ./$(DEPDIR)/ags-ags_line_callbacks.Po
 include ./$(DEPDIR)/ags-ags_line_editor.Po
@@ -2753,19 +2751,19 @@ ags-ags_recycling_container.obj: ./src/ags/audio/ags_recycling_container.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recycling_container.obj `if test -f './src/ags/audio/ags_recycling_container.c'; then $(CYGPATH_W) './src/ags/audio/ags_recycling_container.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recycling_container.c'; fi`
 
-ags-ags_devout.o: ./src/ags/audio/ags_devout.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_devout.o -MD -MP -MF $(DEPDIR)/ags-ags_devout.Tpo -c -o ags-ags_devout.o `test -f './src/ags/audio/ags_devout.c' || echo '$(srcdir)/'`./src/ags/audio/ags_devout.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_devout.Tpo $(DEPDIR)/ags-ags_devout.Po
-#	$(AM_V_CC)source='./src/ags/audio/ags_devout.c' object='ags-ags_devout.o' libtool=no \
+ags-ags_libao.o: ./src/ags/audio/ags_libao.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_libao.o -MD -MP -MF $(DEPDIR)/ags-ags_libao.Tpo -c -o ags-ags_libao.o `test -f './src/ags/audio/ags_libao.c' || echo '$(srcdir)/'`./src/ags/audio/ags_libao.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_libao.Tpo $(DEPDIR)/ags-ags_libao.Po
+#	$(AM_V_CC)source='./src/ags/audio/ags_libao.c' object='ags-ags_libao.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_devout.o `test -f './src/ags/audio/ags_devout.c' || echo '$(srcdir)/'`./src/ags/audio/ags_devout.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_libao.o `test -f './src/ags/audio/ags_libao.c' || echo '$(srcdir)/'`./src/ags/audio/ags_libao.c
 
-ags-ags_devout.obj: ./src/ags/audio/ags_devout.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_devout.obj -MD -MP -MF $(DEPDIR)/ags-ags_devout.Tpo -c -o ags-ags_devout.obj `if test -f './src/ags/audio/ags_devout.c'; then $(CYGPATH_W) './src/ags/audio/ags_devout.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_devout.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_devout.Tpo $(DEPDIR)/ags-ags_devout.Po
-#	$(AM_V_CC)source='./src/ags/audio/ags_devout.c' object='ags-ags_devout.obj' libtool=no \
+ags-ags_libao.obj: ./src/ags/audio/ags_libao.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_libao.obj -MD -MP -MF $(DEPDIR)/ags-ags_libao.Tpo -c -o ags-ags_libao.obj `if test -f './src/ags/audio/ags_libao.c'; then $(CYGPATH_W) './src/ags/audio/ags_libao.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_libao.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/ags-ags_libao.Tpo $(DEPDIR)/ags-ags_libao.Po
+#	$(AM_V_CC)source='./src/ags/audio/ags_libao.c' object='ags-ags_libao.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_devout.obj `if test -f './src/ags/audio/ags_devout.c'; then $(CYGPATH_W) './src/ags/audio/ags_devout.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_devout.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_libao.obj `if test -f './src/ags/audio/ags_libao.c'; then $(CYGPATH_W) './src/ags/audio/ags_libao.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_libao.c'; fi`
 
 ags-ags_garbage_collector.o: ./src/ags/audio/ags_garbage_collector.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_garbage_collector.o -MD -MP -MF $(DEPDIR)/ags-ags_garbage_collector.Tpo -c -o ags-ags_garbage_collector.o `test -f './src/ags/audio/ags_garbage_collector.c' || echo '$(srcdir)/'`./src/ags/audio/ags_garbage_collector.c

@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.69])
-AC_INIT([ags],[0.3.16-SNAPSHOT],[joel@weedlight.ch])
+AC_INIT([ags],[0.4.0-beta],[weedlight@gmail.com])
 AM_INIT_AUTOMAKE([ags], [0.3.99-SNAPSHOT])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])
@@ -39,10 +39,6 @@ AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_WITH_PTHREAD], [1], ["
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
-
-PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
-AC_SUBST(LIBASOUND2_CFLAGS)
-AC_SUBST(LIBASOUND2_LIBS)
 
 PKG_CHECK_MODULES([LIBAO], [ao >= 1.1.0])
 AC_SUBST(LIBAO_CFLAGS)
