@@ -62,12 +62,6 @@ void ags_devout_alsa_play(AgsDevout *devout,
 			  GError **error);
 void ags_devout_alsa_free(AgsDevout *devout);
 
-void ags_devout_ao_init(AgsDevout *devout,
-			  GError **error);
-void ags_devout_ao_play(AgsDevout *devout,
-			  GError **error);
-void ags_devout_ao_free(AgsDevout *devout);
-
 enum{
   PROP_0,
   PROP_MAIN,
@@ -263,9 +257,9 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  param_spec);
 
   /* AgsDevoutClass */
-  devout->play_init = ags_devout_ao_init;
-  devout->play = ags_devout_ao_play;
-  devout->stop = ags_devout_ao_free;
+  devout->play_init = ags_devout_alsa_init;
+  devout->play = ags_devout_alsa_play;
+  devout->stop = ags_devout_alsa_free;
 
   devout->tic = NULL;
   devout->note_offset_changed = NULL;
@@ -1170,6 +1164,14 @@ ags_devout_alsa_play(AgsDevout *devout,
 
   snd_pcm_prepare(devout->out.alsa.handle);
 }
+
+void
+ags_devout_alsa_free(AgsDevout *devout)
+{
+  snd_pcm_drain(devout->out.alsa.handle);
+  snd_pcm_close(devout->out.alsa.handle);
+  devout->out.alsa.handle = NULL;
+} 
 
 AgsDevout*
 ags_devout_new(GObject *ags_main)

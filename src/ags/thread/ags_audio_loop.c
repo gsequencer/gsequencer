@@ -585,7 +585,14 @@ ags_audio_loop_run(AgsThread *thread)
      (AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) == 0){
     struct timespec delay = {
       0,
-      NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE,
+      NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE / 2,
+    };
+
+    nanosleep(&delay, NULL);
+  }else{
+    struct timespec delay = {
+      0,
+      (1.0 / 45.0) * NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE,
     };
 
     nanosleep(&delay, NULL);

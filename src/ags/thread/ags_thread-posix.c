@@ -1545,8 +1545,8 @@ ags_thread_real_start(AgsThread *thread)
 #endif
 
   /* add to async queue */
-  ags_async_queue_add(async_queue,
-		      AGS_STACKABLE(thread));
+  //  ags_async_queue_add(async_queue,
+		      //		      AGS_STACKABLE(thread));
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
@@ -1629,6 +1629,7 @@ ags_thread_loop(void *ptr)
       //      ags_thread_hangcheck(main_loop);
     
       while(!ags_thread_is_current_ready(thread)){
+	pthread_yield();
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
@@ -1639,6 +1640,7 @@ ags_thread_loop(void *ptr)
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_thread_set_sync_all(main_loop, tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      pthread_yield();
     }
   }
 
@@ -1931,8 +1933,8 @@ ags_thread_loop(void *ptr)
 
 
   /* remove of AgsAsyncQueue */  
-  ags_async_queue_remove(async_queue,
-			 AGS_STACKABLE(thread));
+  //  ags_async_queue_remove(async_queue,
+  //			 AGS_STACKABLE(thread));
 
   /* exit thread */
   pthread_exit(NULL);
