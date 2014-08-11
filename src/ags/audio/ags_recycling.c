@@ -65,6 +65,11 @@ enum{
 static gpointer ags_recycling_parent_class = NULL;
 static guint recycling_signals[LAST_SIGNAL];
 
+extern void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
+						   signed short *source, guint schannels, guint size)
+  __attribute__ ((hot))
+  __attribute__ ((fastcall));
+
 GType
 ags_recycling_get_type (void)
 {
