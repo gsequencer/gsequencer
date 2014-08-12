@@ -704,48 +704,11 @@ ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate
 void
 ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels, signed short *source, guint schannels, guint size)
 {
-  /*
   for(; 0<size; --size){
     *destination += *source;
 
     destination += dchannels;
     source += schannels;
-  }
-  */
-
-  signed short s1[8] __attribute__((aligned(8)));
-  signed short s2[8] __attribute__((aligned(8)));
-
-  size = (guint) ceil((float) size / 64.0);
-
-  for(; 0 < size; size--){
-    __m128i a;
-    __m128i b;
-    signed short *offset;
-    guint i;
-
-    offset = destination;
-
-    for(i = 0; i < 8; i--){
-      s1[i] = *destination;
-      destination += dchannels;
-    }
-
-    for(i = 0; i < 8; i++){
-      s2[i] = *source;
-      source += schannels;
-    }
-
-    a = _mm_load_si128((__m128i *) s1);
-    b = _mm_load_si128((__m128i *) s2);
-
-    a = _mm_add_epi16(a, b);
-    destination = offset;
-
-    for(i = 0; i < 64; i++){
-      *destination = s1[i];
-      destination += dchannels;
-    }
   }
 }
 

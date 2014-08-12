@@ -129,7 +129,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   
   gui_thread->frequency = 1.0 / (double) AGS_GUI_THREAD_DEFAULT_JIFFIE;
   gui_thread->iter = 0;
-  gui_thread->iter_stop = 1;
+  gui_thread->iter_stop = 2;
   gui_thread->iter_stop_is_delay = TRUE;
 
   gui_thread->gui_task_thread = NULL;
@@ -261,6 +261,13 @@ ags_gui_thread_run(AgsThread *thread)
       ags_gui_thread_do_gtk_iteration();
       gui_thread->iter = 0;
     }else{
+      struct timespec delay = {
+	0,
+	NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE,
+      };
+
+      nanosleep(&delay, NULL);
+
       //      gdk_threads_enter();
       //      gdk_threads_leave();
     }

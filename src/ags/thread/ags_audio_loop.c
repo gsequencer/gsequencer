@@ -535,19 +535,6 @@ ags_audio_loop_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(AGS_THREAD(audio_loop)->devout);
 
-  /* acquire main context */
-  main_context = g_main_context_default();
-
-  if(!g_main_context_acquire(main_context)){
-    gboolean got_ownership = FALSE;
-
-    while(!got_ownership){
-      got_ownership = g_main_context_wait(main_context,
-					  &(audio_loop->cond),
-					  &(audio_loop->mutex));
-    }
-  }
-
   pthread_mutex_lock(&(audio_loop->recall_mutex));
 
   /* play recall */
@@ -577,19 +564,16 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
-  /* release main context */
-  g_main_context_release(main_context);
-
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) == 0 &&
      (AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) == 0 &&
      (AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) == 0){
     
     struct timespec delay = {
       0,
-      NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE * 2,
+      NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE,
     };
 
-    nanosleep(&delay, NULL);
+    //    nanosleep(&delay, NULL);
   }else{
     /*
     struct timespec delay = {

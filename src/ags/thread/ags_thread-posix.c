@@ -452,6 +452,41 @@ ags_thread_suspend_handler(int sig)
   do sigsuspend(&(ags_thread_self->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0);
 }
 
+AgsAccountingTable*
+ags_accounting_table_alloc(AgsThread *thread)
+{
+  AgsAccountingTable *accounting_table;
+
+  accounting_table = (AgsAccountingTable *) malloc(sizeof(AgsAccountingTable));
+
+  accounting_table->thread = thread;
+
+  return(accounting_table);
+}
+
+void
+ags_accounting_table_set_sanity(GList *table,
+				AgsThread *thread, gdouble sanity)
+{
+  if(table == NULL){
+    return;
+  }
+
+  table = g_list_first(table);
+
+  while(table != NULL){
+    if(AGS_ACCOUNTING_TABLE(table->data)->thread == thread){
+      break;
+    }
+
+    table = table->next;
+  }
+
+  if(table != NULL){
+    AGS_ACCOUNTING_TABLE(table->data)->sanity == sanity;
+  }
+}
+
 void
 ags_thread_set_devout(AgsThread *thread, GObject *devout)
 {

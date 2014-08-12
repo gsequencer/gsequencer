@@ -92,6 +92,8 @@ struct _AgsAudioLoop
 
   guint play_notation_ref;
   GList *play_notation;
+
+  GList *tree_sanity;
 };
 
 struct _AgsAudioLoopClass
