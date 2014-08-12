@@ -261,8 +261,8 @@ ags_gui_thread_run(AgsThread *thread)
       ags_gui_thread_do_gtk_iteration();
       gui_thread->iter = 0;
     }else{
-      gdk_threads_enter();
-      gdk_threads_leave();
+      //      gdk_threads_enter();
+      //      gdk_threads_leave();
     }
 
   }else{

@@ -422,7 +422,7 @@ CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-li
 CAIRO_LIBS = -lcairo  
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O3 -Wall
+CFLAGS = -O3 -Wall -msse2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
