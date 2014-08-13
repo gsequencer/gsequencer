@@ -1737,17 +1737,6 @@ ags_thread_loop(void *ptr)
       if(delay % counter != 0){
 	/* run in hierarchy */
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
-	  struct timespec delay = {
-	    0,
-	    1.5 * NSEC_PER_SEC / thread->freq,
-	  };
-
-	  pthread_yield();
-
-	  if(thread->parent != NULL){
-	    nanosleep(&(delay), NULL);
-	  }
-
 	  pthread_mutex_lock(&(thread->mutex));
       
 	  ags_thread_loop_sync(thread);
@@ -1767,6 +1756,8 @@ ags_thread_loop(void *ptr)
 	    }
 	  }
 	}
+	
+	pthread_yield();
 
 	continue;
       }else{
@@ -1784,17 +1775,6 @@ ags_thread_loop(void *ptr)
 
 	/* run in hierarchy */
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
-	  struct timespec delay = {
-	    0,
-	    1.5 * NSEC_PER_SEC / thread->freq,
-	  };
-
-	  pthread_yield();
-
-	  if(thread->parent != NULL){
-	    nanosleep(&(delay), NULL);
-	  }
-
 	  pthread_mutex_lock(&(thread->mutex));
       
 	  ags_thread_loop_sync(thread);
@@ -1815,11 +1795,14 @@ ags_thread_loop(void *ptr)
 	  }
 	}
 
+	pthread_yield();
+
 	continue;
       }else{
 	counter = 1;
       }
     }
+
 
     for(; 0<counter; counter--){
       /* barrier */
@@ -2062,6 +2045,8 @@ ags_thread_loop(void *ptr)
 
       ags_thread_unlock(thread);
     }
+
+    pthread_yield();
   }
 
   tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));

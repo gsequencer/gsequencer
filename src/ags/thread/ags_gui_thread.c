@@ -247,6 +247,13 @@ ags_gui_thread_run(AgsThread *thread)
   main_context = g_main_context_default();
 
   ags_gui_thread_do_gtk_iteration();
+
+  struct timespec delay = {
+    0,
+    (250000000 * (1 / 45)),
+  };
+
+  nanosleep(&(delay), NULL);
 }
 
 void
