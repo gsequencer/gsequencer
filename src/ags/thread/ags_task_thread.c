@@ -125,6 +125,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   //  g_atomic_int_or(&(thread->flags),
   //		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
 
+  thread->freq = AGS_TASK_THREAD_DEFAULT_JIFFIE;
+
   pthread_mutex_init(&(task_thread->read_mutex), NULL);
   pthread_mutex_init(&(task_thread->launch_mutex), NULL);
 

@@ -303,7 +303,7 @@ ags_async_queue_run_callback(AgsThread *thread,
   gboolean interrupt_first;
   struct timespec delay = {
     0,
-    async_queue->output_sum * NSEC_PER_SEC / async_queue->systemrate / 2,
+    NSEC_PER_SEC / thread->freq / 2,
   };
 
   interrupt_first = ((AGS_ASYNC_QUEUE_STOP_BIT_0 & (async_queue->flags)) != 0) ? TRUE: FALSE;
@@ -313,7 +313,8 @@ ags_async_queue_run_callback(AgsThread *thread,
 
   //  nanosleep(&(timer->run_delay), NULL);
   //  ags_async_queue_interrupt(async_queue);
-  //  nanosleep(&(delay), NULL);
+
+  nanosleep(&(delay), NULL);
 
   while((interrupt_first &&
 	 (AGS_ASYNC_QUEUE_STOP_BIT_0 & (async_queue->flags)) != 0) ||

@@ -1612,8 +1612,8 @@ ags_thread_real_start(AgsThread *thread)
 #endif
 
   /* add to async queue */
-  //  ags_async_queue_add(async_queue,
-		      //		      AGS_STACKABLE(thread));
+  ags_async_queue_add(async_queue,
+		      AGS_STACKABLE(thread));
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
@@ -1697,7 +1697,6 @@ ags_thread_loop(void *ptr)
       //      ags_thread_hangcheck(main_loop);
     
       while(!ags_thread_is_current_ready(thread)){
-	pthread_yield();
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
@@ -1708,7 +1707,6 @@ ags_thread_loop(void *ptr)
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_thread_set_sync_all(main_loop, tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      pthread_yield();
     }
   }
 
@@ -1739,16 +1737,42 @@ ags_thread_loop(void *ptr)
       if(delay % counter != 0){
 	/* run in hierarchy */
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	  struct timespec delay = {
+	    0,
+	    NSEC_PER_SEC / thread->freq,
+	  };
+
+	  pthread_yield();
+
+	  nanosleep(&(delay), NULL);
+
 	  pthread_mutex_lock(&(thread->mutex));
       
 	  ags_thread_loop_sync(thread);
     
 	  pthread_mutex_unlock(&(thread->mutex));
+	}else{
+	  /* unset initial run */
+	  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	    g_atomic_int_and(&(thread->flags),
+			     (~AGS_THREAD_INITIAL_RUN));
+	    g_atomic_int_and(&(thread->flags),
+			     (~AGS_THREAD_WAIT_0));
+	    
+	    /* signal AgsAudioLoop */
+	    if(AGS_IS_TASK_THREAD(thread)){
+	      pthread_cond_signal(&(thread->start_cond));
+	    }
+	  }
 	}
 
 	continue;
       }else{
-	counter = 1;
+	if(thread->freq >= AGS_THREAD_MAX_PRECISION / 2){
+	  counter = (guint) sqrt(exp(thread->freq * log(2.0)) + exp(AGS_THREAD_MAX_PRECISION * log(2.0)));
+	}else{
+	  counter = 1;
+	}
       }
     }else{
       delay = AGS_THREAD_MAX_PRECISION * (1.0 / thread->freq);
@@ -1758,11 +1782,33 @@ ags_thread_loop(void *ptr)
 
 	/* run in hierarchy */
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	  struct timespec delay = {
+	    0,
+	    NSEC_PER_SEC / thread->freq,
+	  };
+
+	  pthread_yield();
+
+	  nanosleep(&(delay), NULL);
+
 	  pthread_mutex_lock(&(thread->mutex));
       
 	  ags_thread_loop_sync(thread);
     
 	  pthread_mutex_unlock(&(thread->mutex));
+	}else{
+	  /* unset initial run */
+	  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	    g_atomic_int_and(&(thread->flags),
+			     (~AGS_THREAD_INITIAL_RUN));
+	    g_atomic_int_and(&(thread->flags),
+			     (~AGS_THREAD_WAIT_0));
+
+	    /* signal AgsAudioLoop */
+	    if(AGS_IS_TASK_THREAD(thread)){
+	      pthread_cond_signal(&(thread->start_cond));
+	    }
+	  }
 	}
 
 	continue;
@@ -1995,16 +2041,18 @@ ags_thread_loop(void *ptr)
 	ags_thread_unlock_children(thread);
       }
 
-      /* unset initial run */
-      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-	g_atomic_int_and(&(thread->flags),
-			 (~AGS_THREAD_INITIAL_RUN));
-	g_atomic_int_and(&(thread->flags),
-			 (~AGS_THREAD_WAIT_0));
+      if(thread->freq >= 1.0){
+	/* unset initial run */
+	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	  g_atomic_int_and(&(thread->flags),
+			   (~AGS_THREAD_INITIAL_RUN));
+	  g_atomic_int_and(&(thread->flags),
+			   (~AGS_THREAD_WAIT_0));
 
-	/* signal AgsAudioLoop */
-	if(AGS_IS_TASK_THREAD(thread)){
-	  pthread_cond_signal(&(thread->start_cond));
+	  /* signal AgsAudioLoop */
+	  if(AGS_IS_TASK_THREAD(thread)){
+	    pthread_cond_signal(&(thread->start_cond));
+	  }
 	}
       }
 
@@ -2041,8 +2089,8 @@ ags_thread_loop(void *ptr)
 
 
   /* remove of AgsAsyncQueue */  
-  //  ags_async_queue_remove(async_queue,
-  //			 AGS_STACKABLE(thread));
+  ags_async_queue_remove(async_queue,
+			 AGS_STACKABLE(thread));
 
   /* exit thread */
   pthread_exit(NULL);
