@@ -1744,7 +1744,9 @@ ags_thread_loop(void *ptr)
 
 	  pthread_yield();
 
-	  nanosleep(&(delay), NULL);
+	  if(thread->parent != NULL){
+	    nanosleep(&(delay), NULL);
+	  }
 
 	  pthread_mutex_lock(&(thread->mutex));
       
@@ -1789,7 +1791,9 @@ ags_thread_loop(void *ptr)
 
 	  pthread_yield();
 
-	  nanosleep(&(delay), NULL);
+	  if(thread->parent != NULL){
+	    nanosleep(&(delay), NULL);
+	  }
 
 	  pthread_mutex_lock(&(thread->mutex));
       
