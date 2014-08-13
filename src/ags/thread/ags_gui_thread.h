@@ -46,13 +46,8 @@ struct _AgsGuiThread
 {
   AgsThread thread;
 
-  GCond cond;
   GMutex mutex;
-
-  gdouble frequency;
-  guint iter;
-  guint iter_stop;
-  gboolean iter_stop_is_delay;
+  GCond cond;
 
   AgsThread *gui_task_thread;
 };

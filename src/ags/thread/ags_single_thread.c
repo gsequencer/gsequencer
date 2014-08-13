@@ -125,7 +125,6 @@ ags_single_thread_init(AgsSingleThread *single_thread)
 
   single_thread->gui_thread = AGS_GUI_THREAD(audio_loop->gui_thread);
   AGS_THREAD(single_thread->gui_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
-  single_thread->gui_thread->frequency = 1.0 / (double) AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE;
 }
 
 void

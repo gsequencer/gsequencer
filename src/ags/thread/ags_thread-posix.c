@@ -65,6 +65,7 @@ void ags_thread_real_stop(AgsThread *thread);
 enum{
   PROP_0,
   PROP_DEVOUT,
+  PROP_FREQUENCY,
 };
 
 enum{
@@ -165,6 +166,17 @@ ags_thread_class_init(AgsThreadClass *thread)
 				  PROP_DEVOUT,
 				  param_spec);
 
+  param_spec = g_param_spec_double("frequency\0",
+				   "JIFFIE\0",
+				   "JIFFIE\0",
+				   0.01,
+				   1000.0,
+				   1000.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FREQUENCY,
+				  param_spec);
+
   /* AgsThread */
   thread->start = ags_thread_real_start;
   thread->run = NULL;
@@ -259,6 +271,8 @@ ags_thread_init(AgsThread *thread)
 
   pthread_attr_init(&(thread->thread_attr));
 
+  thread->freq = AGS_THREAD_DEFAULT_JIFFIE;
+
   pthread_mutexattr_init(&(thread->mutexattr));
   pthread_mutexattr_settype(&(thread->mutexattr), PTHREAD_MUTEX_RECURSIVE);
 
@@ -337,6 +351,19 @@ ags_thread_set_property(GObject *gobject,
       }
     }
     break;
+  case PROP_FREQUENCY:
+    {
+      gdouble freq;
+
+      freq = g_value_get_double(value);
+
+      if(freq == thread->freq){
+	return;
+      }
+
+      thread->freq = freq;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -357,6 +384,11 @@ ags_thread_get_property(GObject *gobject,
   case PROP_DEVOUT:
     {
       g_value_set_object(value, G_OBJECT(thread->devout));
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+      g_value_set_double(value, thread->freq);
     }
     break;
   default:
@@ -1623,6 +1655,7 @@ ags_thread_loop(void *ptr)
   guint current_tic;
   guint tic, next_tic;
   guint val, running, locked_greedy;
+  guint counter, delay;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
 
@@ -1699,244 +1732,284 @@ ags_thread_loop(void *ptr)
   running = g_atomic_int_get(&(thread->flags));
 
   while((AGS_THREAD_RUNNING & running) != 0){
+    if(thread->freq >= 1.0){
+      counter = thread->freq;
+      delay = AGS_THREAD_MAX_PRECISION * thread->freq;
 
-    /* barrier */
-    if((AGS_THREAD_WAITING_FOR_BARRIER & (g_atomic_int_get(&(thread->flags)))) != 0){
-      int wait_count;
-
-      if(thread->first_barrier){
-	/* retrieve wait count */
-	ags_thread_lock(thread);
-
-	wait_count = thread->wait_count[0];
-
-	ags_thread_unlock(thread);
-
-	/* init and wait */
-	pthread_barrier_init(&(thread->barrier[0]), NULL, wait_count);
-	pthread_barrier_wait(&(thread->barrier[0]));
-      }else{
-	/* retrieve wait count */
-	ags_thread_lock(thread);
-
-	wait_count = thread->wait_count[1];
-
-	ags_thread_unlock(thread);
-
-	/* init and wait */
-	pthread_barrier_init(&(thread->barrier[1]), NULL, wait_count);
-	pthread_barrier_wait(&(thread->barrier[1]));
-      }
-    }
-
-    /* run in hierarchy */
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
-      pthread_mutex_lock(&(thread->mutex));
+      if(delay % counter != 0){
+	/* run in hierarchy */
+	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	  pthread_mutex_lock(&(thread->mutex));
       
-      ags_thread_loop_sync(thread);
+	  ags_thread_loop_sync(thread);
     
-      pthread_mutex_unlock(&(thread->mutex));
-    }
+	  pthread_mutex_unlock(&(thread->mutex));
+	}
 
-    /* */
-    switch(current_tic){
-    case 2:
-      {
-	current_tic = 0;
-	break;
+	continue;
+      }else{
+	counter = 1;
       }
-    case 1:
-      {
-	current_tic = 2;
-	break;
-      }
-    case 0:
-      {
-	current_tic = 1;
-	break;
-      }
-    }
-
-    /* set idle flag */
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_IDLE);
-
-    if((AGS_THREAD_WAIT_FOR_PARENT & (g_atomic_int_get(&(thread->flags)))) != 0){
-      wait_for_parent = TRUE;
-
-      g_atomic_int_or(&(thread->flags),
-		      AGS_THREAD_WAITING_FOR_PARENT);
-      ags_thread_lock_parent(thread, NULL);
     }else{
-      wait_for_parent = FALSE;
-    }
+      delay = AGS_THREAD_MAX_PRECISION * (1.0 / thread->freq);
 
-    /* lock sibling */
-    if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(thread->flags)))) != 0){
-      wait_for_sibling = TRUE;
+      if(delay > 0){
+	delay--;
 
-      g_atomic_int_or(&(thread->flags),
-		      AGS_THREAD_WAITING_FOR_SIBLING);
-      ags_thread_lock_sibling(thread);
-    }else{
-      wait_for_sibling = FALSE;
-    }
-
-    /* lock_children */
-    if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(thread->flags)))) != 0){
-      wait_for_children = TRUE;
-
-      g_atomic_int_or(&(thread->flags),
-		      AGS_THREAD_WAITING_FOR_CHILDREN);
-      ags_thread_lock_children(thread);
-    }else{
-      wait_for_children = FALSE;
-    }
-
-    /* skip very first sync of AgsAudioLoop */
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0 &&
-       !AGS_IS_MAIN_LOOP(thread)){
-
-      /* wait parent */
-      if(wait_for_parent){
-	ags_thread_wait_parent(thread, NULL);
-      }
-
-      /* wait sibling */
-      if(wait_for_sibling){
-	ags_thread_wait_sibling(thread);
-      }
-
-      /* wait children */
-      if(wait_for_children){
-	ags_thread_wait_children(thread);
-      }
-    }
-
-    /* check for greedy to announce */
-    if(thread->greedy_locks != NULL){
-      GList *greedy_locks;
-
-      greedy_locks = thread->greedy_locks;
+	/* run in hierarchy */
+	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	  pthread_mutex_lock(&(thread->mutex));
       
-      while(greedy_locks != NULL){
-	pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+	  ags_thread_loop_sync(thread);
+    
+	  pthread_mutex_unlock(&(thread->mutex));
+	}
 
-	locked_greedy = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->locked_greedy));
-	locked_greedy++;
-
-	g_atomic_int_set(&(AGS_THREAD(greedy_locks->data)->locked_greedy),
-			 locked_greedy);
-
-	pthread_mutex_unlock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
-
-	greedy_locks = greedy_locks->next;
+	continue;
+      }else{
+	counter = 1;
       }
     }
 
-    /* greedy work around */
-    pthread_mutex_lock(&(thread->greedy_mutex));
+    for(; 0<counter; counter--){
+      /* barrier */
+      if((AGS_THREAD_WAITING_FOR_BARRIER & (g_atomic_int_get(&(thread->flags)))) != 0){
+	int wait_count;
 
-    locked_greedy = g_atomic_int_get(&(thread->locked_greedy));
+	if(thread->first_barrier){
+	  /* retrieve wait count */
+	  ags_thread_lock(thread);
 
-    if(locked_greedy != 0){
-      while(locked_greedy != 0){
-	pthread_cond_wait(&(thread->greedy_cond),
-			  &(thread->greedy_mutex));
+	  wait_count = thread->wait_count[0];
+
+	  ags_thread_unlock(thread);
+
+	  /* init and wait */
+	  pthread_barrier_init(&(thread->barrier[0]), NULL, wait_count);
+	  pthread_barrier_wait(&(thread->barrier[0]));
+	}else{
+	  /* retrieve wait count */
+	  ags_thread_lock(thread);
+
+	  wait_count = thread->wait_count[1];
+
+	  ags_thread_unlock(thread);
+
+	  /* init and wait */
+	  pthread_barrier_init(&(thread->barrier[1]), NULL, wait_count);
+	  pthread_barrier_wait(&(thread->barrier[1]));
+	}
+      }
+
+      /* run in hierarchy */
+      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	pthread_mutex_lock(&(thread->mutex));
+      
+	ags_thread_loop_sync(thread);
+    
+	pthread_mutex_unlock(&(thread->mutex));
+      }
+
+      /* */
+      switch(current_tic){
+      case 2:
+	{
+	  current_tic = 0;
+	  break;
+	}
+      case 1:
+	{
+	  current_tic = 2;
+	  break;
+	}
+      case 0:
+	{
+	  current_tic = 1;
+	  break;
+	}
+      }
+
+      /* set idle flag */
+      g_atomic_int_or(&(thread->flags),
+		      AGS_THREAD_IDLE);
+
+      if((AGS_THREAD_WAIT_FOR_PARENT & (g_atomic_int_get(&(thread->flags)))) != 0){
+	wait_for_parent = TRUE;
+
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_WAITING_FOR_PARENT);
+	ags_thread_lock_parent(thread, NULL);
+      }else{
+	wait_for_parent = FALSE;
+      }
+
+      /* lock sibling */
+      if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(thread->flags)))) != 0){
+	wait_for_sibling = TRUE;
+
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_WAITING_FOR_SIBLING);
+	ags_thread_lock_sibling(thread);
+      }else{
+	wait_for_sibling = FALSE;
+      }
+
+      /* lock_children */
+      if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	wait_for_children = TRUE;
+
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_WAITING_FOR_CHILDREN);
+	ags_thread_lock_children(thread);
+      }else{
+	wait_for_children = FALSE;
+      }
+
+      /* skip very first sync of AgsAudioLoop */
+      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0 &&
+	 !AGS_IS_MAIN_LOOP(thread)){
+
+	/* wait parent */
+	if(wait_for_parent){
+	  ags_thread_wait_parent(thread, NULL);
+	}
+
+	/* wait sibling */
+	if(wait_for_sibling){
+	  ags_thread_wait_sibling(thread);
+	}
+
+	/* wait children */
+	if(wait_for_children){
+	  ags_thread_wait_children(thread);
+	}
+      }
+
+      /* check for greedy to announce */
+      if(thread->greedy_locks != NULL){
+	GList *greedy_locks;
+
+	greedy_locks = thread->greedy_locks;
+      
+	while(greedy_locks != NULL){
+	  pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+
+	  locked_greedy = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->locked_greedy));
+	  locked_greedy++;
+
+	  g_atomic_int_set(&(AGS_THREAD(greedy_locks->data)->locked_greedy),
+			   locked_greedy);
+
+	  pthread_mutex_unlock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+
+	  greedy_locks = greedy_locks->next;
+	}
+      }
+
+      /* greedy work around */
+      pthread_mutex_lock(&(thread->greedy_mutex));
+
+      locked_greedy = g_atomic_int_get(&(thread->locked_greedy));
+
+      if(locked_greedy != 0){
+	while(locked_greedy != 0){
+	  pthread_cond_wait(&(thread->greedy_cond),
+			    &(thread->greedy_mutex));
 	
-	locked_greedy = g_atomic_int_get(&(thread->locked_greedy));
+	  locked_greedy = g_atomic_int_get(&(thread->locked_greedy));
+	}
       }
-    }
 
-    pthread_mutex_unlock(&(thread->greedy_mutex));
+      pthread_mutex_unlock(&(thread->greedy_mutex));
 
 
-    /* */
-    pthread_mutex_lock(&(thread->timelock_mutex));
+      /* */
+      pthread_mutex_lock(&(thread->timelock_mutex));
 
-    val = g_atomic_int_get(&(thread->flags));
+      val = g_atomic_int_get(&(thread->flags));
 
-    if((AGS_THREAD_TIMELOCK_RUN & val) != 0){
-      guint locked;
+      if((AGS_THREAD_TIMELOCK_RUN & val) != 0){
+	guint locked;
 
-      locked = g_atomic_int_get(&(thread->flags));
+	locked = g_atomic_int_get(&(thread->flags));
 				
-      g_atomic_int_and(&(thread->flags),
-		       (~AGS_THREAD_TIMELOCK_WAIT));
+	g_atomic_int_and(&(thread->flags),
+			 (~AGS_THREAD_TIMELOCK_WAIT));
 
-      if((AGS_THREAD_TIMELOCK_WAIT & locked) != 0){	
-       	pthread_cond_signal(&(thread->timelock_cond));
+	if((AGS_THREAD_TIMELOCK_WAIT & locked) != 0){	
+	  pthread_cond_signal(&(thread->timelock_cond));
+	}
       }
-    }
 
-    pthread_mutex_unlock(&(thread->timelock_mutex));
+      pthread_mutex_unlock(&(thread->timelock_mutex));
 
-    /* run */
-    ags_thread_run(thread);
-    //    g_printf("%s\n\0", G_OBJECT_TYPE_NAME(thread));
+      /* run */
+      ags_thread_run(thread);
+      //    g_printf("%s\n\0", G_OBJECT_TYPE_NAME(thread));
 
-    /*  */
-    running = g_atomic_int_get(&(thread->flags));
+      /*  */
+      running = g_atomic_int_get(&(thread->flags));
 
-    /* check for greedy to release */
-    if(thread->greedy_locks != NULL){
-      GList *greedy_locks;
+      /* check for greedy to release */
+      if(thread->greedy_locks != NULL){
+	GList *greedy_locks;
 
-      greedy_locks = thread->greedy_locks;
+	greedy_locks = thread->greedy_locks;
       
-      while(greedy_locks != NULL){
-	pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+	while(greedy_locks != NULL){
+	  pthread_mutex_lock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
 
-	locked_greedy = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->locked_greedy));
-	locked_greedy--;
+	  locked_greedy = g_atomic_int_get(&(AGS_THREAD(greedy_locks->data)->locked_greedy));
+	  locked_greedy--;
 
-	g_atomic_int_set(&(AGS_THREAD(greedy_locks->data)->locked_greedy),
-			 locked_greedy);
+	  g_atomic_int_set(&(AGS_THREAD(greedy_locks->data)->locked_greedy),
+			   locked_greedy);
 
-	pthread_cond_signal(&(AGS_THREAD(greedy_locks->data)->greedy_cond));
+	  pthread_cond_signal(&(AGS_THREAD(greedy_locks->data)->greedy_cond));
 
-	pthread_mutex_unlock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
+	  pthread_mutex_unlock(&(AGS_THREAD(greedy_locks->data)->greedy_mutex));
 
-	greedy_locks = greedy_locks->next;
+	  greedy_locks = greedy_locks->next;
+	}
       }
-    }
 
-    /**/
-    ags_thread_lock(thread);
+      /**/
+      ags_thread_lock(thread);
 
-    /* unset idle flag */
-    g_atomic_int_and(&(thread->flags),
-		     (~AGS_THREAD_IDLE));
-
-    /* unlock parent */
-    if(wait_for_parent){
-      ags_thread_unlock_parent(thread, NULL);
-    }
-
-    /* unlock sibling */
-    if(wait_for_sibling){
-      ags_thread_unlock_sibling(thread);
-    }
-
-    /* unlock children */
-    if(wait_for_children){
-      ags_thread_unlock_children(thread);
-    }
-
-    /* unset initial run */
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      /* unset idle flag */
       g_atomic_int_and(&(thread->flags),
-		       (~AGS_THREAD_INITIAL_RUN));
-      g_atomic_int_and(&(thread->flags),
-		       (~AGS_THREAD_WAIT_0));
+		       (~AGS_THREAD_IDLE));
 
-      /* signal AgsAudioLoop */
-      if(AGS_IS_TASK_THREAD(thread)){
-	pthread_cond_signal(&(thread->start_cond));
+      /* unlock parent */
+      if(wait_for_parent){
+	ags_thread_unlock_parent(thread, NULL);
       }
-    }
 
-    ags_thread_unlock(thread);
+      /* unlock sibling */
+      if(wait_for_sibling){
+	ags_thread_unlock_sibling(thread);
+      }
+
+      /* unlock children */
+      if(wait_for_children){
+	ags_thread_unlock_children(thread);
+      }
+
+      /* unset initial run */
+      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	g_atomic_int_and(&(thread->flags),
+			 (~AGS_THREAD_INITIAL_RUN));
+	g_atomic_int_and(&(thread->flags),
+			 (~AGS_THREAD_WAIT_0));
+
+	/* signal AgsAudioLoop */
+	if(AGS_IS_TASK_THREAD(thread)){
+	  pthread_cond_signal(&(thread->start_cond));
+	}
+      }
+
+      ags_thread_unlock(thread);
+    }
   }
 
   tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));

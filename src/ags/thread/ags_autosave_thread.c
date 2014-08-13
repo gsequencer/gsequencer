@@ -167,13 +167,13 @@ ags_autosave_thread_init(AgsAutosaveThread *autosave_thread)
   g_atomic_int_or(&(thread->flags), 
 		  AGS_THREAD_READY);
 
+  thread->freq = AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE;
+
 
   g_atomic_int_set(&(autosave_thread->tic), 0);
   g_atomic_int_set(&(autosave_thread->last_sync), 0);
 
   autosave_thread->ags_main = NULL;
-
-  autosave_thread->delay = AGS_AUTOSAVE_THREAD_DEFAULT_DELAY;
   autosave_thread->counter = 0;
 }
 
