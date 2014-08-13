@@ -37,6 +37,8 @@
 #define AGS_IS_RECYCLING_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECYCLING_THREAD))
 #define AGS_RECYCLING_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_RECYCLING_THREAD, AgsRecyclingThreadClass))
 
+#define AGS_RECYCLING_THREAD_DEFAULT_JIFFIE (100)
+
 typedef struct _AgsRecyclingThread AgsRecyclingThread;
 typedef struct _AgsRecyclingThreadClass AgsRecyclingThreadClass;
 
