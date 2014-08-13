@@ -1739,7 +1739,7 @@ ags_thread_loop(void *ptr)
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
 	  struct timespec delay = {
 	    0,
-	    NSEC_PER_SEC / thread->freq,
+	    1.5 * NSEC_PER_SEC / thread->freq,
 	  };
 
 	  pthread_yield();
@@ -1769,7 +1769,7 @@ ags_thread_loop(void *ptr)
 	continue;
       }else{
 	if(thread->freq >= AGS_THREAD_MAX_PRECISION / 2){
-	  counter = (guint) sqrt(exp(thread->freq * log(2.0)) + exp(AGS_THREAD_MAX_PRECISION * log(2.0)));
+	  counter = ((guint) AGS_THREAD_MAX_PRECISION) % ((guint) thread->freq - (AGS_THREAD_MAX_PRECISION / 2));
 	}else{
 	  counter = 1;
 	}
@@ -1784,7 +1784,7 @@ ags_thread_loop(void *ptr)
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
 	  struct timespec delay = {
 	    0,
-	    NSEC_PER_SEC / thread->freq,
+	    1.5 * NSEC_PER_SEC / thread->freq,
 	  };
 
 	  pthread_yield();

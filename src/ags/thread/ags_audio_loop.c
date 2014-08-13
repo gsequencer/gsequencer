@@ -561,13 +561,14 @@ ags_audio_loop_run(AgsThread *thread)
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) == 0 &&
      (AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) == 0 &&
      (AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) == 0){
-    
+    /*
     struct timespec delay = {
       0,
       1.0 / 45.0 * NSEC_PER_SEC / AGS_GUI_THREAD_DEFAULT_JIFFIE,
     };
 
     nanosleep(&delay, NULL);
+    */
   }else{
     /*
     struct timespec delay = {

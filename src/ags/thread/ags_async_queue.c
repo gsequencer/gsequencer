@@ -314,7 +314,7 @@ ags_async_queue_run_callback(AgsThread *thread,
   //  nanosleep(&(timer->run_delay), NULL);
   //  ags_async_queue_interrupt(async_queue);
 
-  nanosleep(&(delay), NULL);
+  //  nanosleep(&(delay), NULL);
 
   while((interrupt_first &&
 	 (AGS_ASYNC_QUEUE_STOP_BIT_0 & (async_queue->flags)) != 0) ||
