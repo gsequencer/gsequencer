@@ -1769,7 +1769,7 @@ ags_thread_loop(void *ptr)
 	  }
 	}
 
-	pthread_yield();
+	//	pthread_yield();
 
 	continue;
       }else{
@@ -1801,7 +1801,7 @@ ags_thread_loop(void *ptr)
 	  }
 	}
 
-	pthread_yield();
+	//	pthread_yield();
 
 	continue;
       }else{
@@ -2049,9 +2049,9 @@ ags_thread_loop(void *ptr)
       }
 
       ags_thread_unlock(thread);
-    }
 
-    pthread_yield();
+      //      pthread_yield();
+    }
   }
 
   tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));

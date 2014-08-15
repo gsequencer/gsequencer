@@ -48,6 +48,8 @@
 
 #include <X11/Xlib.h>
 
+#include <gdk/gdk.h>
+
 #include "config.h"
 
 void ags_main_class_init(AgsMainClass *ags_main);
@@ -783,6 +785,8 @@ main(int argc, char **argv)
     mlockall(MCL_CURRENT | MCL_FUTURE);
 
     if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
+      //      GdkFrameClock *frame_clock;
+
 #ifdef AGS_WITH_XMLRPC_C
       AbyssInit(&error);
 
@@ -814,9 +818,14 @@ main(int argc, char **argv)
       /* AgsMainLoop */
       ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
       g_object_ref(G_OBJECT(ags_main->main_loop));
-
       ags_connectable_connect(AGS_CONNECTABLE(ags_main->main_loop));
 
+      /* set appropriate freq of GUI thread*/
+      //TODO:JK: uncomment me
+      //      frame_clock = gdk_window_get_frame_clock(GTK_WIDGET(window)->window);
+      //      AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->freq = MSEC_PER_SEC / gdk_frame_clock_get_frame_time(frame_clock);
+
+      /* start thread tree */
       ags_thread_start(ags_main->main_loop);
 
       /* AgsAutosaveThread */
@@ -858,7 +867,8 @@ main(int argc, char **argv)
       /* AgsMainLoop */
       ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
       g_object_ref(G_OBJECT(ags_main->main_loop));
-    
+
+      /* start thread tree */
       ags_thread_start((AgsThread *) single_thread);
 
       /* AgsAutosaveThread */
