@@ -40,8 +40,8 @@
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
-#define AGS_THREAD_DEFAULT_JIFFIE (1000)
-#define AGS_THREAD_MAX_PRECISION (1000)
+#define AGS_THREAD_DEFAULT_JIFFIE (250)
+#define AGS_THREAD_MAX_PRECISION (250)
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;

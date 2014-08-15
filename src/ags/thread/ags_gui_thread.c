@@ -238,7 +238,6 @@ ags_gui_thread_run(AgsThread *thread)
     g_main_context_release(main_context);
   }
 
-  /* entry point */
   gui_thread = AGS_GUI_THREAD(thread);
   audio_loop = AGS_AUDIO_LOOP(thread->parent);
   task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
@@ -247,13 +246,6 @@ ags_gui_thread_run(AgsThread *thread)
   main_context = g_main_context_default();
 
   ags_gui_thread_do_gtk_iteration();
-
-  struct timespec delay = {
-    0,
-    (250000000 * (1 / 45)),
-  };
-
-  nanosleep(&(delay), NULL);
 }
 
 void

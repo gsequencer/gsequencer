@@ -1656,6 +1656,7 @@ ags_thread_loop(void *ptr)
   guint tic, next_tic;
   guint val, running, locked_greedy;
   guint counter, delay;
+  guint i, i_stop;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
 
@@ -1729,19 +1730,30 @@ ags_thread_loop(void *ptr)
 
   running = g_atomic_int_get(&(thread->flags));
 
-  while((AGS_THREAD_RUNNING & running) != 0){
-    if(thread->freq >= 1.0){
-      counter = thread->freq;
-      delay = AGS_THREAD_MAX_PRECISION * thread->freq;
+  if(thread->freq >= 1.0){
+    delay = AGS_THREAD_MAX_PRECISION / thread->freq;
 
-      if(delay % counter != 0){
+    i_stop = thread->freq / delay;
+  }else{
+    delay = 1 / thread->freq * AGS_THREAD_MAX_PRECISION;
+
+    i_stop = 1;
+  }
+
+  while((AGS_THREAD_RUNNING & running) != 0){
+    if(delay >= 1.0){
+      counter++;
+
+      if(counter < delay){
+	counter++;
+
 	/* run in hierarchy */
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
 	  pthread_mutex_lock(&(thread->mutex));
-      
+
 	  ags_thread_loop_sync(thread);
-    
-	  pthread_mutex_unlock(&(thread->mutex));
+
+	  pthread_mutex_unlock(&(thread->mutex)); 
 	}else{
 	  /* unset initial run */
 	  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -1749,37 +1761,31 @@ ags_thread_loop(void *ptr)
 			     (~AGS_THREAD_INITIAL_RUN));
 	    g_atomic_int_and(&(thread->flags),
 			     (~AGS_THREAD_WAIT_0));
-	    
+
 	    /* signal AgsAudioLoop */
 	    if(AGS_IS_TASK_THREAD(thread)){
 	      pthread_cond_signal(&(thread->start_cond));
-	    }
+	    } 
 	  }
 	}
-	
+
 	pthread_yield();
 
 	continue;
       }else{
-	if(thread->freq >= AGS_THREAD_MAX_PRECISION / 2){
-	  counter = ((guint) AGS_THREAD_MAX_PRECISION) % ((guint) thread->freq - (AGS_THREAD_MAX_PRECISION / 2));
-	}else{
-	  counter = 1;
-	}
+	counter = 0;
       }
     }else{
-      delay = AGS_THREAD_MAX_PRECISION * (1.0 / thread->freq);
-
-      if(delay > 0){
-	delay--;
+      if(counter < delay){
+	counter++;
 
 	/* run in hierarchy */
 	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
 	  pthread_mutex_lock(&(thread->mutex));
-      
+
 	  ags_thread_loop_sync(thread);
-    
-	  pthread_mutex_unlock(&(thread->mutex));
+
+	  pthread_mutex_unlock(&(thread->mutex)); 
 	}else{
 	  /* unset initial run */
 	  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -1791,7 +1797,7 @@ ags_thread_loop(void *ptr)
 	    /* signal AgsAudioLoop */
 	    if(AGS_IS_TASK_THREAD(thread)){
 	      pthread_cond_signal(&(thread->start_cond));
-	    }
+	    } 
 	  }
 	}
 
@@ -1799,12 +1805,11 @@ ags_thread_loop(void *ptr)
 
 	continue;
       }else{
-	counter = 1;
+	counter = 0;
       }
     }
 
-
-    for(; 0<counter; counter--){
+    for(i = 0; i < i_stop; i++){
       /* barrier */
       if((AGS_THREAD_WAITING_FOR_BARRIER & (g_atomic_int_get(&(thread->flags)))) != 0){
 	int wait_count;
