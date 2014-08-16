@@ -51,6 +51,9 @@ struct _AgsTaskThread
 
   guint flags;
 
+  GMutex mutex;
+  GCond cond;
+
   pthread_mutex_t read_mutex;
   pthread_mutex_t launch_mutex;
 

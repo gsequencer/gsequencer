@@ -25,6 +25,8 @@
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/thread/ags_async_queue.h>
+#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_gui_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -1612,8 +1614,8 @@ ags_thread_real_start(AgsThread *thread)
 #endif
 
   /* add to async queue */
-  ags_async_queue_add(async_queue,
-		      AGS_STACKABLE(thread));
+  //  ags_async_queue_add(async_queue,
+  //		      AGS_STACKABLE(thread));
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
@@ -1733,12 +1735,14 @@ ags_thread_loop(void *ptr)
   if(thread->freq >= 1.0){
     delay = AGS_THREAD_MAX_PRECISION / thread->freq;
 
-    i_stop = thread->freq / delay;
+    i_stop = 1;
   }else{
     delay = 1 / thread->freq * AGS_THREAD_MAX_PRECISION;
 
     i_stop = 1;
   }
+
+  counter = 0;
 
   while((AGS_THREAD_RUNNING & running) != 0){
     if(delay >= 1.0){
@@ -2083,8 +2087,8 @@ ags_thread_loop(void *ptr)
 
 
   /* remove of AgsAsyncQueue */  
-  ags_async_queue_remove(async_queue,
-			 AGS_STACKABLE(thread));
+  //  ags_async_queue_remove(async_queue,
+  //			 AGS_STACKABLE(thread));
 
   /* exit thread */
   pthread_exit(NULL);

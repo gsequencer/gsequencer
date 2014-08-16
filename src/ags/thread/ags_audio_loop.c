@@ -517,7 +517,6 @@ ags_audio_loop_run(AgsThread *thread)
 {
   GMutex mutex;
   GCond cond;
-  GMainContext *main_context;
   AgsAudioLoop *audio_loop;
   AgsDevout *devout;
   guint val;
@@ -561,6 +560,8 @@ ags_audio_loop_run(AgsThread *thread)
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) == 0 &&
      (AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) == 0 &&
      (AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) == 0){
+    AgsAsyncQueue *async_queue;
+
     struct timespec delay = {
       0,
       NSEC_PER_SEC / AGS_AUDIO_LOOP_DEFAULT_JIFFIE,
