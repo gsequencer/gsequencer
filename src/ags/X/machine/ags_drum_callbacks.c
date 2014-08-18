@@ -44,7 +44,6 @@
 #include <ags/audio/task/ags_toggle_led.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
-#include <ags/audio/task/recall/ags_apply_tact.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -309,24 +308,6 @@ ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum
   //  drum->block_run = TRUE;
   //  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
   gtk_toggle_button_set_active(drum->run, FALSE);
-}
-
-void
-ags_drum_tact_callback(GtkWidget *combo_box, AgsDrum *drum)
-{
-  AgsWindow *window;
-  AgsApplyTact *apply_tact;
-  gdouble tact;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
-
-  tact = exp2(4.0 - (double) gtk_combo_box_get_active(drum->tact));
-
-  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(drum)->audio),
-				  tact);
-
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(apply_tact));
 }
 
 void

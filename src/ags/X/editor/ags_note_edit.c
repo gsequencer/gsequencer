@@ -291,21 +291,19 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
   if(editor->selected_machine != NULL){
     cairo_t *cr;
     gdouble value;
-    double tact_factor, zoom_factor;
-    double tact;
+    double zoom_factor;
+    double zoom;
 
     value = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
 
     zoom_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
-
-    tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->tact));
-    tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->tact) - 4.0);
+    zoom = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
 
     if((AGS_NOTE_EDIT_RESET_WIDTH & flags) != 0){
-      note_edit->control_unit.control_width = (guint) (((double) note_edit->control_width * zoom_factor * tact));
+      note_edit->control_unit.control_width = (guint) (((double) note_edit->control_width * zoom));
 
-      note_edit->control_current.control_count = (guint) ((double) note_edit->control_unit.control_count * tact);
-      note_edit->control_current.control_width = (note_edit->control_width * zoom_factor * tact_factor * tact);
+      note_edit->control_current.control_count = (guint) ((double) note_edit->control_unit.control_count * zoom);
+      note_edit->control_current.control_width = (note_edit->control_width * zoom_factor * zoom);
 
       note_edit->map_width = (guint) ((double) note_edit->control_current.control_count * (double) note_edit->control_current.control_width);
     }
@@ -401,7 +399,7 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
 {
   AgsEditor *editor;
   GtkWidget *widget;
-  double tact;
+  double zoom;
   guint i, j;
   guint j_set;
 
@@ -426,13 +424,13 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
     i += note_edit->control_height;
   }
 
-  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->tact) - 4.0);
+  zoom = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
 
   i = note_edit->control_current.x0;
   
   if(i < note_edit->width &&
-     tact > 1.0 ){
-    j_set = note_edit->control_current.nth_x % ((guint) tact);
+     zoom > 1.0 ){
+    j_set = note_edit->control_current.nth_x % ((guint) zoom);
     cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
 
     if(j_set != 0){
@@ -452,7 +450,7 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
     
     cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
     
-    for(j = 1; i < note_edit->width && j < tact; j++){
+    for(j = 1; i < note_edit->width && j < zoom; j++){
     ags_note_edit_draw_segment0:
       cairo_move_to(cr, (double) i, 0.0);
       cairo_line_to(cr, (double) i, (double) note_edit->height);

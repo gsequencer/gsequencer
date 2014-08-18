@@ -333,11 +333,6 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) matrix->length_spin, FALSE, FALSE, 0);
 
-  matrix->tact = ags_tact_combo_box_new();
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->tact, FALSE, FALSE, 0);
-
-  gtk_combo_box_set_active(matrix->tact, 4);
-
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
 }
@@ -476,9 +471,6 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
-
-  g_signal_connect((GObject *) matrix->tact, "changed\0",
-		   G_CALLBACK(ags_matrix_tact_callback), (gpointer) matrix);
 
   g_signal_connect((GObject *) matrix->loop_button, "clicked\0",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
@@ -1065,35 +1057,9 @@ ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
   GtkTreeModel *model;
   GtkTreeIter iter;
   GList *list;
-  gchar *tact, *tmp_tact;
   gdouble length;
   gint history, i;
   gboolean valid;
-
-  /* tact */
-  tact = (gchar *) xmlGetProp(file_launch->node,
-			      "tact\0");
-
-  model = gtk_combo_box_get_model(matrix->tact);
-  valid = gtk_tree_model_get_iter_first(model,
-					&iter);
-  history = -1;
-
-  for(; valid; history++){
-    gtk_tree_model_get(model, &iter,
-		       0, &tmp_tact,
-		       -1);
-
-    if(!g_strcmp0(tact,
-		  tmp_tact)){
-      break;
-    }
-
-    valid = gtk_tree_model_iter_next(model, &iter);
-  }
-
-  gtk_combo_box_set_active_iter(matrix->tact,
-				&iter);
 
   /* length */
   length = (gdouble) g_ascii_strtod(xmlGetProp(file_launch->node,
@@ -1139,12 +1105,6 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", matrix,
 				   NULL));
-
-  history = gtk_combo_box_get_active(matrix->tact);
-
-  xmlNewProp(node,
-	     "tact\0",
-	     g_strdup_printf("%s\0", gtk_combo_box_get_active_text(matrix->tact)));
 
   xmlNewProp(node,
 	     "length\0",

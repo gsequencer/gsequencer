@@ -525,9 +525,6 @@ ags_audio_loop_run(AgsThread *thread)
 
   devout = AGS_DEVOUT(AGS_THREAD(audio_loop)->devout);
 
-  g_cond_init(&(cond));
-  g_mutex_init(&(mutex));
-
   pthread_mutex_lock(&(audio_loop->recall_mutex));
 
   /* play recall */

@@ -150,7 +150,7 @@ ags_async_queue_init(AgsAsyncQueue *async_queue)
   sev.sigev_signo = AGS_ASYNC_QUEUE_SIGNAL_HIGH;
   sev.sigev_value.sival_ptr = &(async_queue->timerid);
 
-  timer_create(AGS_ASYNC_QUEUE_CLOCK_ID, &sev, &(async_queue->timerid));
+  //  timer_create(AGS_ASYNC_QUEUE_CLOCK_ID, &sev, &(async_queue->timerid));
 
   async_queue->stack = g_queue_new();
   async_queue->timer = g_hash_table_new(g_str_hash, g_str_equal);

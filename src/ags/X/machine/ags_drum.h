@@ -56,7 +56,6 @@ struct _AgsDrum
 
   GtkCheckButton *loop_button;
   GtkSpinButton *length_spin;
-  GtkComboBox *tact;
 
   GtkToggleButton *run;
 

@@ -37,7 +37,6 @@
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
-#include <ags/audio/task/recall/ags_apply_tact.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -317,24 +316,6 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(apply_sequencer_length));
-}
-
-void
-ags_matrix_tact_callback(GtkWidget *combo_box, AgsMatrix *matrix)
-{
-  AgsWindow *window;
-  AgsApplyTact *apply_tact;
-  gdouble tact;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
-
-  tact = exp2(4.0 - (double) gtk_combo_box_get_active((GtkComboBox *) matrix->tact));
-
-  apply_tact = ags_apply_tact_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
-				  tact);
-
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(apply_tact));
 }
 
 void

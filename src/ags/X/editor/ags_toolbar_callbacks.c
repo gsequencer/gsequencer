@@ -298,30 +298,12 @@ ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
 
-  editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
-				   AGS_NOTE_EDIT_RESET_WIDTH);
-  editor->note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
-}
-
-void
-ags_toolbar_tact_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
-{
-  AgsEditor *editor;
-  GtkWidget *widget;
-  GtkAdjustment *adjustment;
-  double tact, tact_old;
-  guint history;
-
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) toolbar, AGS_TYPE_EDITOR);
-  widget = (GtkWidget *) editor->note_edit->drawing_area;
-
   history = gtk_combo_box_get_active(combo_box);
 
-  tact = exp2((double) history - 4.0);
-  tact_old = exp2((double) toolbar->tact_history - 4.0);
+  zoom = exp2((double) history - 4.0);
+  zoom_old = exp2((double) toolbar->zoom_history - 4.0);
 
-  toolbar->tact_history = history;
+  toolbar->zoom_history = history;
 
   editor->note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
   ags_note_edit_reset_horizontally(editor->note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |

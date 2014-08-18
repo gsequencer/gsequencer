@@ -573,6 +573,8 @@ ags_machine_show(GtkWidget *widget)
   AgsWindow *window;
   GtkFrame *frame;
 
+  GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
+
   machine = (AgsMachine *) widget;
 
   GTK_WIDGET_CLASS(ags_machine_parent_class)->show(widget);
