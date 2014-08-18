@@ -97,7 +97,7 @@ ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton
 {
   AgsMachine *machine;
   AgsEditor *editor;
-  double zoom;
+  double tact, zoom;
 
   auto void ags_note_edit_drawing_area_button_press_event_set_control();
 
@@ -129,7 +129,7 @@ ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton
 
     note = note_edit->control.note;
     note->flags = AGS_NOTE_GUI;
-    note->x[0] = (note_x * zoom) + (note_offset_x0 * zoom);
+    note->x[0] = (note_x * tact) + (note_offset_x0 * tact);
     note->x[1] = (guint) note->x[0] + 1;
     note->y = note_y + note_offset_y0;
   }
@@ -163,7 +163,7 @@ ags_note_edit_drawing_area_button_press_event (GtkWidget *widget, GdkEventButton
 
     if((AGS_NOTE_EDIT_ADDING_NOTE & (note_edit->flags)) != 0 ||
        (AGS_NOTE_EDIT_POSITION_CURSOR & (note_edit->flags)) != 0){
-      zoom = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
       
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
@@ -188,7 +188,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
   AgsMachine *machine;
   AgsEditor *editor;
   AgsNote *note, *note0;
-  double zoom;
+  double tact;
   
   auto void ags_note_edit_drawing_area_button_release_event_set_control();
   auto void ags_note_edit_drawing_area_button_release_event_draw_control(cairo_t *cr);
@@ -214,7 +214,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       note_x = 0;
     }
 
-    note->x[1] = (note_x * zoom) + (note_offset_x1 * zoom);
+    note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
     history = gtk_option_menu_get_history(editor->toolbar->mode);
@@ -393,8 +393,8 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     }
 
     /* convert to region */
-    x0 = (guint) (floor((double) x0 / (double) (note_edit->control_current.control_width)) * zoom);
-    x1 = (guint) (ceil((double) x1 / (double) (note_edit->control_current.control_width)) * zoom);
+    x0 = (guint) (floor((double) x0 / (double) (note_edit->control_current.control_width)) * tact);
+    x1 = (guint) (ceil((double) x1 / (double) (note_edit->control_current.control_width)) * tact);
 
     /* get real size and offset */
     y0 = note_edit->control.y0_offset + note_edit->control.y0;
@@ -455,7 +455,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    zoom = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -531,7 +531,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
   AgsEditor *editor;
   AgsNote *note, *note0;
   double value[2];
-  double zoom;
+  double tact;
   guint note_x1;
   guint prev_x1;
   void ags_note_edit_drawing_area_motion_notify_event_set_control(){
@@ -551,7 +551,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
       note_x = 0;
     }
 
-    note_x1 = (note_x * zoom) + (note_offset_x1 * zoom);
+    note_x1 = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
 
@@ -704,7 +704,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    zoom = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
