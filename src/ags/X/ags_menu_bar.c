@@ -308,7 +308,6 @@ ags_zoom_menu_new()
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
 
-
   item = (GtkMenuItem *) gtk_menu_item_new();
   label = (GtkLabel *) gtk_label_new(g_strdup("1:1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
@@ -347,6 +346,8 @@ ags_tact_menu_new()
 
   menu = (GtkMenu *) gtk_menu_new();
 
+  //TODO:JK: uncomment me if tact implemented
+  /*
   item = (GtkMenuItem *) gtk_menu_item_new();
   label = (GtkLabel *) gtk_label_new(g_strdup("16/1\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
@@ -393,6 +394,7 @@ ags_tact_menu_new()
   label = (GtkLabel *) gtk_label_new(g_strdup("1/16\0"));
   gtk_container_add((GtkContainer *) item, (GtkWidget *) label);
   gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
+  */
 
   return(menu);
 }
