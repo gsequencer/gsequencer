@@ -147,9 +147,9 @@ ags_toolbar_init(AgsToolbar *toolbar)
   label = (GtkLabel *) gtk_label_new("zoom\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
-  toolbar->zoom_history = 6;
+  toolbar->zoom_history = 4;
   toolbar->zoom = ags_zoom_combo_box_new();
-  gtk_combo_box_set_active(toolbar->zoom, 6);
+  gtk_combo_box_set_active(toolbar->zoom, 4);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->zoom, NULL , NULL);
 
   /* edit modes */

@@ -296,7 +296,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 
     value = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
 
-    zoom_factor = 1.0;
+    zoom_factor = 0.25;
 
     tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
     tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
