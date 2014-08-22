@@ -321,7 +321,7 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 						 "port-value-length", 1,
 						 NULL);
 
-  delay_audio->sequencer_duration->port_value.ags_port_double = ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY + 1.0);
+  delay_audio->sequencer_duration->port_value.ags_port_double = ceil(16.0 * AGS_DEVOUT_DEFAULT_DELAY);
 
   port = g_list_prepend(port, delay_audio->sequencer_duration);
 

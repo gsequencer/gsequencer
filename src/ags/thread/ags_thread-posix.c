@@ -1659,6 +1659,7 @@ ags_thread_loop(void *ptr)
   guint val, running, locked_greedy;
   guint counter, delay;
   guint i, i_stop;
+  struct timespec time_prev, time_now;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
 
@@ -1744,6 +1745,8 @@ ags_thread_loop(void *ptr)
 
   counter = 0;
 
+  clock_gettime(CLOCK_MONOTONIC, time_prev);
+
   while((AGS_THREAD_RUNNING & running) != 0){
     if(delay >= 1.0){
       counter++;
@@ -1777,6 +1780,31 @@ ags_thread_loop(void *ptr)
 
 	continue;
       }else{
+	if(thread->parent == NULL){
+	  long time_spent;
+
+	  clock_gettime(CLOCK_MONOTONIC, time_now);
+
+	  if(time_now.tv_sec > time_prev.tv_sec){
+	    time_spent = NSEC_PER_SEC - time_prev.tv_nsec + time_now.tv_nsec;
+	  }else{
+	    time_spent = time_now.tv_nsec + time_prev.tv_nsec;
+	  }
+
+	  if(time_spent < NSEC_PER_SEC){
+	    struct timespec timed_sleep = {
+	      0,
+	      0,
+	    };
+
+	    timed_sleep.tv_nsec = NSEC_PER_SEC - time_spent;
+
+	    nanosleep(timed_sleep, NULL);
+	  }
+
+	  clock_gettime(CLOCK_MONOTONIC, time_prev);
+	}
+
 	counter = 0;
       }
     }else{
