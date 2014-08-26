@@ -381,7 +381,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     }
   }
 
-  if(delay_audio_run->notation_counter == 0){
+  if(delay_audio_run->notation_counter == 0 &&
+     delay_audio_run->hide_ref_counter == 0){
     AgsDevout *devout;
     guint run_order;
     guint delay, attack;
@@ -415,7 +416,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 				       delay, attack);
   }
 
-  if(delay_audio_run->sequencer_counter == 0){
+  if(delay_audio_run->sequencer_counter == 0 &&
+     delay_audio_run->hide_ref_counter == 0){
     AgsDevout *devout;
     guint run_order;
     guint delay, attack;

@@ -1738,7 +1738,7 @@ ags_thread_loop(void *ptr)
 
     i_stop = 1;
   }else{
-    delay = 1 / thread->freq * AGS_THREAD_MAX_PRECISION;
+    delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION;
 
     i_stop = 1;
   }
@@ -1772,7 +1772,7 @@ ags_thread_loop(void *ptr)
 	    /* signal AgsAudioLoop */
 	    if(AGS_IS_TASK_THREAD(thread)){
 	      pthread_cond_signal(&(thread->start_cond));
-	    } 
+	    }
 	  }
 	}
 
@@ -1865,8 +1865,6 @@ ags_thread_loop(void *ptr)
 
 	  clock_gettime(CLOCK_MONOTONIC, &time_prev);
 	}
-
-	counter = 0;
       }
     }
 

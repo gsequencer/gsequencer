@@ -112,6 +112,8 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
 
   thread = AGS_THREAD(devout_thread);
 
+  thread->freq = AGS_DEVOUT_THREAD_DEFAULT_JIFFIE;
+
   devout_thread->timestamp_thread = ags_timestamp_thread_new();
   ags_thread_add_child(thread, devout_thread->timestamp_thread);
 
