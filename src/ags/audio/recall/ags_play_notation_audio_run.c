@@ -671,9 +671,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	/* recycling */
 	recycling = selected_channel->first_recycling;
 
-#ifdef AGS_DEBUG	
+	//#ifdef AGS_DEBUG	
 	g_message("playing: %u | %u\n\0", note->x[0], note->y);
-#endif
+	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){
 	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
@@ -681,7 +681,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 	  ags_recycling_create_audio_signal_with_frame_count(recycling,
 							     audio_signal,
-							     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE * (note->x[1] - note->x[0]),
+							     AGS_DEVOUT_DEFAULT_SAMPLERATE / AGS_DEVOUT_DEFAULT_JIFFIE * (note->x[1] - note->x[0]),
 							     delay, attack);
 	  ags_audio_signal_connect(audio_signal);
 

@@ -188,7 +188,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    (GtkWidget *) gtk_label_new("volume\0"),
 			    4, 5, 1, 2);
   oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
-  oscillator->volume->adjustment->value = 0.8;
+  oscillator->volume->adjustment->value = 0.2;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->volume, 5, 6, 1, 2);
 }
 

@@ -566,7 +566,7 @@ ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
     i_old++;
   }
   
-  memset(((signed short *) current->data), 0, (buffer_size - i_current) * sizeof(int));
+  memset(((signed short *) current->data), 0, (buffer_size - i_current) * sizeof(signed short));
   
   /*  */
   audio_signal->length = counter;
