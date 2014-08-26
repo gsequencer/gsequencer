@@ -26,8 +26,6 @@
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 
@@ -169,8 +167,8 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 					channel->first_recycling,
 					NULL);
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-    ags_audio_signal_stream_resize(audio_signal,
-				   stop);
+    //    ags_audio_signal_stream_resize(audio_signal,
+    //				   stop);
     ags_recycling_add_audio_signal(channel->first_recycling,
 				   audio_signal);
 
@@ -193,8 +191,6 @@ ags_drum_output_line_add_default_recall(AgsDrumOutputLine *drum_output_line)
   AgsChannel *output;
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-  AgsLoopChannel *recall_loop_channel;
-  AgsLoopChannelRun *recall_loop_channel_run;
 
   GList *list;
 
@@ -223,43 +219,6 @@ ags_drum_output_line_add_default_recall(AgsDrumOutputLine *drum_output_line)
     recall_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
   }else{
     recall_count_beats_audio_run = NULL;
-  }
-
-  /* ags-loop */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-loop\0",
-			    output->audio_channel, output->audio_channel + 1,
-			    output->pad, output->pad + 1,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_PLAY | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL);
-
-  if(list != NULL){
-    recall_loop_channel = AGS_LOOP_CHANNEL(list->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_loop_channel),
-		 "delay-audio\0", recall_delay_audio,
-		 NULL);
-  }else{
-    recall_loop_channel = NULL;
-  }
-
-  list = ags_recall_find_type(output->play, AGS_TYPE_LOOP_CHANNEL_RUN);
-
-  if(list != NULL){
-    recall_loop_channel_run = AGS_LOOP_CHANNEL_RUN(list->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_loop_channel_run),
-		 "count-beats-audio-run\0", recall_count_beats_audio_run,
-		 NULL);
-  }else{
-    recall_loop_channel_run = NULL;
   }
 
   /* ags-stream */

@@ -45,6 +45,8 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/audio/recall/ags_buffer_channel.h>
+#include <ags/audio/recall/ags_buffer_channel_run.h>
 
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>
@@ -292,8 +294,8 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;
-  AgsCopyChannel *copy_channel;
-  AgsCopyChannelRun *copy_channel_run;
+  AgsBufferChannel *buffer_channel;
+  AgsBufferChannelRun *buffer_channel_run;
 
   GList *list;
   guint i;
@@ -326,10 +328,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  /* ags-copy */
+  /* ags-buffer */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-			    "ags-copy\0",
+			    "ags-buffer\0",
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
@@ -345,10 +347,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
     /* recall */
     list = current->recall;
 
-    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
-      copy_channel = AGS_COPY_CHANNEL(list->data);
+    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
+      buffer_channel = AGS_BUFFER_CHANNEL(list->data);
 
-      g_object_set(G_OBJECT(copy_channel),
+      g_object_set(G_OBJECT(buffer_channel),
 		   "destination\0", destination,
 		   NULL);
 
@@ -357,10 +359,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 
     list = current->recall;
     
-    while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
-      copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
+    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
+      buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
 
-      g_object_set(G_OBJECT(copy_channel_run),
+      g_object_set(G_OBJECT(buffer_channel_run),
 		   "destination\0", destination,
 		   NULL);
 

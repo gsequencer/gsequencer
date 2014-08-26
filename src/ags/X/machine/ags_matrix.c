@@ -49,8 +49,6 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_loop_channel.h>
 #include <ags/audio/recall/ags_loop_channel_run.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
@@ -59,6 +57,8 @@
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_buffer_channel.h>
+#include <ags/audio/recall/ags_buffer_channel_run.h>
 
 #include <ags/widget/ags_led.h>
 
@@ -662,8 +662,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 					    source->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	ags_audio_signal_stream_resize(audio_signal,
-				       stop);
+	//	ags_audio_signal_stream_resize(audio_signal,
+	//			       stop);
 	ags_recycling_add_audio_signal(source->first_recycling,
 				       audio_signal);
 
@@ -724,8 +724,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 {
   AgsAudio *audio;
   AgsChannel *source, *current, *destination;
-  AgsCopyChannel *copy_channel;
-  AgsCopyChannelRun *copy_channel_run;
+  AgsBufferChannel *buffer_channel;
+  AgsBufferChannelRun *buffer_channel_run;
 
   GList *list;
 
@@ -741,17 +741,16 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-copy */
+    /* ags-buffer */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
-			      "ags-copy\0",
+			      "ags-buffer\0",
 			      current->audio_channel, current->audio_channel + 1, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
-
 
     destination = ags_channel_nth(audio->output,
 				  current->audio_channel);
@@ -760,10 +759,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
       /* recall */
       list = current->recall;
 
-      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL)) != NULL){
-	copy_channel = AGS_COPY_CHANNEL(list->data);
+      while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
+	buffer_channel = AGS_BUFFER_CHANNEL(list->data);
 
-	g_object_set(G_OBJECT(copy_channel),
+	g_object_set(G_OBJECT(buffer_channel),
 		     "destination\0", destination,
 		     NULL);
 
@@ -772,10 +771,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 
       list = current->recall;
     
-      while((list = ags_recall_find_type(list, AGS_TYPE_COPY_CHANNEL_RUN)) != NULL){
-	copy_channel_run = AGS_COPY_CHANNEL_RUN(list->data);
+      while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
+	buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
 
-	g_object_set(G_OBJECT(copy_channel_run),
+	g_object_set(G_OBJECT(buffer_channel_run),
 		     "destination\0", destination,
 		     NULL);
 

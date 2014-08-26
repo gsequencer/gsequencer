@@ -849,7 +849,6 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
-
     destination = ags_channel_nth(audio->output,
 				  current->audio_channel);
 
