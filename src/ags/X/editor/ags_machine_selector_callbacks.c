@@ -93,8 +93,6 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   g_object_set(G_OBJECT(machine_radio_button),
 	       "machine\0", machine,
 	       NULL);
-
-  ags_machine_selector_changed(machine_selector, machine);
 }
 
 void

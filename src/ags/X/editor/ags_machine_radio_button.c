@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/X/editor/ags_machine_selector.h>
+
 void ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_button);
 void ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button);
@@ -134,6 +136,7 @@ ags_machine_radio_button_set_property(GObject *gobject,
   case PROP_MACHINE:
     {
       AgsMachine *machine;
+      AgsMachineSelector *machine_selector;
 
       machine = (AgsMachine *) g_value_get_object(value);
       
@@ -154,6 +157,11 @@ ags_machine_radio_button_set_property(GObject *gobject,
       }
 
       machine_radio_button->machine = machine;
+      
+      machine_selector = (AgsMachineSelector *) gtk_widget_get_ancestor(machine_radio_button,
+									AGS_TYPE_MACHINE_SELECTOR);
+      ags_machine_selector_changed(machine_selector,
+				   machine);
     }
     break;
   default:

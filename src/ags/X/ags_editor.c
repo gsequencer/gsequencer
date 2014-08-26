@@ -307,9 +307,11 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
   guint pads;
 
-  g_message("debug machine\0");
-
   editor->selected_machine = machine;
+
+  if(machine == NULL){
+    return;
+  }
 
   if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
     pads = machine->audio->input_pads;

@@ -232,10 +232,15 @@ ags_notebook_remove_tab(AgsNotebook *notebook,
 {
   AgsNotebookTab *tab;
   gint length;
+
+  if(notebook->tabs == NULL){
+    return;
+  }
   
   length = g_list_length(notebook->tabs);
+
   tab = g_list_nth_data(notebook->tabs,
-			length - nth);
+			length - nth - 1);
 
   notebook->tabs = g_list_remove(notebook->tabs,
 				 tab);
