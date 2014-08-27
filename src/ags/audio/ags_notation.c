@@ -213,7 +213,7 @@ ags_notation_init(AgsNotation *notation)
   notation->key = g_strdup("violine\0");
   notation->base_frequency = 440.0;
 
-  notation->tact = AGS_DEVOUT_DEFAULT_TACT;
+  notation->tact = AGS_NOTATION_MINIMUM_NOTE_LENGTH;
   notation->bpm = 120.0;
 
   notation->maximum_note_length = AGS_NOTATION_MAXIMUM_NOTE_LENGTH;
@@ -612,7 +612,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   notes_end_region = notes;
 
   /* search in y region for appropriate note */
-  if(notes != NULL && note->x[0] == x){
+  if(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
     do{
       if(note->y == y){
 	g_message("remove");

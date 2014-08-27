@@ -477,8 +477,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   g_object_get(navigation->duration_time,
 	       "label\0", &str,
 	       NULL);
-  //  ags_navigation_update_time_string(tact,
-  //				    str);
+  ags_navigation_update_time_string(tact,
+  				    str);
 }
 
 void
