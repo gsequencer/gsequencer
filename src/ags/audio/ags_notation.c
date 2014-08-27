@@ -596,8 +596,8 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 				     guint x, guint y)
 {
   AgsNote *note;
-  GList *notes, *notes_end_region;
-  guint x_start;
+  GList *notes, *notes_end_region, *reverse_start;
+  guint x_start, i;
 
   notes = notation->notes;
 
@@ -633,32 +633,38 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   }
 
   /* search backward until x_start */
-  if(x < notation->maximum_note_length){
-    x_start = 0;
-  }else{
-    x_start = x - notation->maximum_note_length;
-  }
+  reverse_start = notes;
 
-  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x_start){
-    if(note->y == y){
-      do{
-	if(note->x[1] > x){
-	  g_message("remove");
-	  notation->notes = g_list_delete_link(notation->notes, notes);
-	  g_object_unref(note);
-	
-	  return(TRUE);
-	}
+  for(i = 0; i < notation->maximum_note_length / notation->tact; i++){
+    notes = reverse_start;
 
-	notes = notes->prev;
-      }while(notes != NULL &&
-	     (note = AGS_NOTE(notes->data))->x[0] >= x_start &&
-	     note->y == y);
-
-      continue;
+    if(x < notation->maximum_note_length){
+      x_start = 0;
+    }else{
+      x_start = x - notation->maximum_note_length;
     }
 
-    notes = notes->prev;
+    while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x_start){
+      if(note->y == y){
+	do{
+	  if(note->x[0] < x && note->x[1] == x + i){
+	    g_message("remove");
+	    notation->notes = g_list_delete_link(notation->notes, notes);
+	    g_object_unref(note);
+	
+	    return(TRUE);
+	  }
+
+	  notes = notes->prev;
+	}while(notes != NULL &&
+	       (note = AGS_NOTE(notes->data))->x[0] >= x_start &&
+	       note->y == y);
+
+	continue;
+      }
+
+      notes = notes->prev;
+    }
   }
 
   return(FALSE);

@@ -171,6 +171,7 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 
   tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
 										     index));
+  gtk_toggle_button_set_active(tab->toggle, TRUE);
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),
 		     FALSE, FALSE,

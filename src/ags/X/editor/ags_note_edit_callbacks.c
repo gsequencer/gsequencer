@@ -329,7 +329,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     gint history;
     gint selected_channel;
 
-    x = note_edit->control.x0_offset + note_edit->control.x0;
+    x = note_edit->control.x0_offset + note_edit->control.x0 - 1;
     y = note_edit->control.y0_offset + note_edit->control.y0;
 
     x = (guint) ceil((double) x / (double) (note_edit->control_unit.control_width));
