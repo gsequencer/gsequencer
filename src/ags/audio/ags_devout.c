@@ -1142,10 +1142,10 @@ ags_devout_alsa_play(AgsDevout *devout,
   }
 
   /* determine if attack should be switched */
-  devout->delay_counter += (AGS_DEVOUT_DEFAULT_DELAY *
-			    AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+  devout->delay_counter += 1; //AGS_DEVOUT_DEFAULT_JIFFIE
 
-  if(devout->delay_counter >= devout->delay[devout->tic_counter]){
+  ///TODO:JK: fix me
+  if(devout->delay_counter >= AGS_DEVOUT_DEFAULT_DELAY){ //devout->delay[devout->tic_counter]
     /* tic */
     //    ags_devout_tic(devout);
 

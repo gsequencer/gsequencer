@@ -449,7 +449,7 @@ ags_navigation_update_time_string(double tact,
     initialized = TRUE;
   }
 
-  tact_redux = tact;
+  tact_redux = 1.0 / 16.0;
 
   min = (guint) floor(tact_redux / delay_min);
 
@@ -479,6 +479,10 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 	       NULL);
   ags_navigation_update_time_string(tact,
   				    str);
+  g_object_set(navigation->duration_time,
+	       "label\0", str,
+	       NULL);
+  gtk_widget_show_all(navigation->duration_time);
 }
 
 void
