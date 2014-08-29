@@ -342,13 +342,9 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     AgsAppendChannel *append_channel;
     AgsAddAudioSignal *add_audio_signal;
     AgsRecycling *recycling;
-    AgsRecallID *recall_id[3];
+    AgsRecallID *recall_id;
     gboolean play_all;
     guint flags;
-
-    recall_id[0] = NULL;
-    recall_id[1] = NULL;
-    recall_id[2] = NULL;
 
     play_all = AGS_PAD(drum_input_pad)->group->active;
 
@@ -358,7 +354,6 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
     /* init channel for playback */
     init_channel = ags_init_channel_new(channel, play_all,
-					recall_id,
 					TRUE, FALSE, FALSE);
     tasks = g_list_prepend(tasks, init_channel);
 
@@ -369,7 +364,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 
       while(channel != next_pad){
 	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_PAD;
-	AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id[0];
+	recall_id = AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0];
 
 	/* append channel for playback */
 	append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
@@ -383,7 +378,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	  add_audio_signal = ags_add_audio_signal_new(recycling,
 						      NULL,
 						      devout,
-						      recall_id[0],
+						      recall_id,
 						      flags);
 	  tasks = g_list_prepend(tasks, add_audio_signal);
 
@@ -402,11 +397,10 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       line = AGS_LINE(ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set)))->data);
 
       AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_PAD);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id[0];
+      recall_id = AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0];
 
       /* init channel for playback */
       init_channel = ags_init_channel_new(line->channel, TRUE,
-					  recall_id,
 					  TRUE, FALSE, FALSE);
       tasks = g_list_prepend(tasks, init_channel);
       
@@ -422,7 +416,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	add_audio_signal = ags_add_audio_signal_new(recycling,
 						    NULL,
 						    devout,
-						    recall_id[0],
+						    recall_id,
 						    flags);
 	tasks = g_list_prepend(tasks, add_audio_signal);
 	

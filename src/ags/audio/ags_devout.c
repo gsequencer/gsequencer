@@ -1147,7 +1147,7 @@ ags_devout_alsa_play(AgsDevout *devout,
   ///TODO:JK: fix me
   if(devout->delay_counter >= AGS_DEVOUT_DEFAULT_DELAY){ //devout->delay[devout->tic_counter]
     /* tic */
-    //    ags_devout_tic(devout);
+    ags_devout_tic(devout);
 
     devout->tic_counter += 1;
 

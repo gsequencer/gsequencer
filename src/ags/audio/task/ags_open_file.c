@@ -166,6 +166,7 @@ ags_open_file_launch(AgsTask *task)
     i_stop = audio->input_pads;
   }
 
+  /*  */
   if(open_file->create_channels){
     i_stop = g_slist_length(open_file->filenames);
 
