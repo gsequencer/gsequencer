@@ -745,10 +745,10 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 								 recall_id->recycling_container);
 
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
-							       default_recall_id->recycling_container->parent);
+							       default_recall_id->recycling_container);
 
       output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
-								audio_recall_id->recycling_container);
+								audio_recall_id->recycling_container->parent);
     }else{
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 							       recall_id->recycling_container);

@@ -2268,8 +2268,8 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
  */
 AgsRecallID*
 ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-				gboolean arrange_recall_id,
-				gboolean duplicate_templates, gboolean playback, gboolean sequencer, gboolean notation,
+				gboolean arrange_recall_id, gboolean duplicate_templates,
+				gboolean playback, gboolean sequencer, gboolean notation,
 				gboolean resolve_dependencies,
 				AgsRecallID *recall_id)
 {

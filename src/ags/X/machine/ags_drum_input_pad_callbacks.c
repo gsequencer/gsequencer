@@ -390,7 +390,6 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       }
 
       tasks = g_list_reverse(tasks);
-      ags_task_thread_append_tasks(task_thread, tasks);
     }else{
       AgsLine *line;
 
@@ -426,7 +425,6 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       drum_input_pad->pad_play_ref++;
 
       tasks = g_list_reverse(tasks);
-      ags_task_thread_append_tasks(task_thread, tasks);
     }
 
     /* create start task */
@@ -435,6 +433,9 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     /* append AgsStartDevout */
     ags_task_thread_append_task(task_thread,
 				AGS_TASK(start_devout));
+
+    /* perform playback */
+    ags_task_thread_append_tasks(task_thread, tasks);
   }else{
     AgsCancelChannel *cancel_channel;
 
