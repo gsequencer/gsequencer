@@ -144,8 +144,6 @@ void
 ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal)
 {
   AGS_RECALL(play_audio_signal)->child_type = G_TYPE_NONE;
-
-  g_message("hi\0");
 }
 
 void
@@ -216,8 +214,6 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   devout = AGS_DEVOUT(AGS_RECALL(play_audio_signal)->devout);
   source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
-
-  g_message("got it!\0");
 
   if(devout == NULL){
     g_warning("no devout\0");

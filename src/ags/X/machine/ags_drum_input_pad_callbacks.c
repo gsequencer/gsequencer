@@ -340,7 +340,6 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     AgsStartDevout *start_devout;
     AgsInitChannel *init_channel;
     AgsAppendChannel *append_channel;
-    AgsAddAudioSignal *add_audio_signal;
     AgsRecycling *recycling;
     gboolean play_all;
     guint flags;

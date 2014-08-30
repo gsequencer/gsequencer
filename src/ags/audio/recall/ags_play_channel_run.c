@@ -58,7 +58,7 @@ void ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connect
 void ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_play_channel_run_finalize(GObject *gobject);
 
-void ags_play_channel_run_run_init_pre(AgsRecall *recall);
+void ags_play_channel_run_run_pre(AgsRecall *recall);
 void ags_play_channel_run_done(AgsRecall *recall);
 void ags_play_channel_run_remove(AgsRecall *recall);
 void ags_play_channel_run_cancel(AgsRecall *recall);
@@ -169,7 +169,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_channel_run;
 
-  recall->run_init_pre = ags_play_channel_run_run_init_pre;
+  recall->run_pre = ags_play_channel_run_run_pre;
   recall->done = ags_play_channel_run_done;
   recall->cancel = ags_play_channel_run_cancel;
   recall->resolve_dependencies = ags_play_channel_run_resolve_dependencies;
@@ -350,6 +350,8 @@ ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   /* AgsPlayChannelRun */
   play_channel_run = AGS_PLAY_CHANNEL_RUN(dynamic_connectable);
 
+  play_channel_run->flags |= AGS_PLAY_CHANNEL_RUN_INITIAL_RUN;
+
   /* stream_channel_run */
   gobject = G_OBJECT(play_channel_run->stream_channel_run);
     
@@ -369,7 +371,7 @@ ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
   play_channel_run = AGS_PLAY_CHANNEL_RUN(dynamic_connectable);
 
   /* AgsPlayChannel */
-  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(play_channel_run)->recall_channel);
+  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run)->container)->recall_channel);
 
   /* stream_channel_run */
   if(play_channel_run->stream_channel_run != NULL &&
@@ -384,11 +386,66 @@ ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
 }
 
 void
-ags_play_channel_run_run_init_pre(AgsRecall *recall)
+ags_play_channel_run_run_pre(AgsRecall *recall)
 {
-  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_init_pre(recall);
+  AgsChannel *source;
+  AgsDevout *devout;
+  AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
+  guint delay, attack;
+  guint tic_counter_incr;
 
-  /* empty */
+  if((AGS_PLAY_CHANNEL_RUN_INITIAL_RUN & (recall->flags)) == 0){
+    return;
+  }
+
+  recall->flags &= (~AGS_PLAY_CHANNEL_RUN_INITIAL_RUN);
+
+  devout = AGS_DEVOUT(recall->devout);
+
+  //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
+  //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
+  //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
+
+  /* get source */
+  source = AGS_RECALL_CHANNEL_RUN(recall)->source;
+
+  /* create new audio signals */
+  recycling = source->first_recycling;
+
+  tic_counter_incr = devout->tic_counter + 1;
+    
+  attack = devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			   0:
+			   tic_counter_incr)];
+  delay = devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			 0:
+			 tic_counter_incr)];
+
+  if(recycling != NULL){
+    while(recycling != source->last_recycling->next){    
+      audio_signal = ags_audio_signal_new((GObject *) recall->devout,
+					  (GObject *) recycling,
+					  (GObject *) recall->recall_id);
+      ags_recycling_create_audio_signal_with_defaults(recycling,
+						      audio_signal,
+						      delay, attack);
+      audio_signal->stream_current = audio_signal->stream_beginning;
+      ags_audio_signal_connect(audio_signal);
+	
+      /*
+       * emit add_audio_signal on AgsRecycling
+       */
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+
+      /*  */
+      recycling = recycling->next;
+    }
+  }
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_pre(recall);
 }
 
 void

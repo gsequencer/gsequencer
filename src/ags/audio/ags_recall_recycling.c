@@ -38,6 +38,8 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#include <ags/audio/recall/ags_stream_recycling.h>
+
 #include <ags/audio/task/ags_cancel_recall.h>
 
 void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);

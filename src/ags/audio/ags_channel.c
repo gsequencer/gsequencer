@@ -1456,11 +1456,12 @@ ags_channel_play(AgsChannel *channel,
   AgsRecall *recall;
   GList *list, *list_next;
   
-  if(recall_id->recycling_container->parent != NULL)
+  if(recall_id->recycling_container->parent != NULL){
     list = channel->recall;
-  else
+  }else{
     list = channel->play;
-  
+  }
+
   while(list != NULL){
     list_next = list->next;
 

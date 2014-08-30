@@ -41,6 +41,7 @@ typedef struct _AgsPlayChannelRunClass AgsPlayChannelRunClass;
 
 typedef enum{
   AGS_PLAY_CHANNEL_RUN_TERMINATING        = 1,
+  AGS_PLAY_CHANNEL_RUN_INITIAL_RUN        = 1 << 1,
 }AgsPlayChannelRunFlags;
 
 struct _AgsPlayChannelRun
