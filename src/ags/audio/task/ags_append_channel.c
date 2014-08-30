@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/main.h>
+
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_channel_init(AgsAppendChannel *append_channel);
@@ -101,7 +103,7 @@ void
 ags_append_channel_init(AgsAppendChannel *append_channel)
 {
   append_channel->audio_loop = NULL;
-  append_channel->devout_play = NULL;
+  append_channel->channel = NULL;
 }
 
 void
@@ -131,6 +133,7 @@ ags_append_channel_finalize(GObject *gobject)
 void
 ags_append_channel_launch(AgsTask *task)
 {
+  AgsServer *server;
   AgsAppendChannel *append_channel;
   AgsAudioLoop *audio_loop;
 
@@ -139,15 +142,20 @@ ags_append_channel_launch(AgsTask *task)
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
 
   /* append to AgsDevout */
-  append_channel->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  audio_loop->play_channel = g_list_append(audio_loop->play_channel,
-					   append_channel->devout_play);
-  audio_loop->play_channel_ref += 1;
+  ags_audio_loop_add_channel(audio_loop,
+			     append_channel->channel);
+
+  /* add to server registry */
+  server = AGS_MAIN(audio_loop->ags_main)->server;
+
+  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_channel->channel));
+  }
 }
 
 AgsAppendChannel*
 ags_append_channel_new(GObject *audio_loop,
-		       AgsDevoutPlay *devout_play)
+		       GObject *channel)
 {
   AgsAppendChannel *append_channel;
 
@@ -155,7 +163,7 @@ ags_append_channel_new(GObject *audio_loop,
 						     NULL);
 
   append_channel->audio_loop = audio_loop;
-  append_channel->devout_play = devout_play;
+  append_channel->channel = channel;
 
   return(append_channel);
 }

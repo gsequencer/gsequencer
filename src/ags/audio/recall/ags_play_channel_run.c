@@ -209,7 +209,7 @@ ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
   AGS_RECALL(play_channel_run)->xml_type = "ags-play-channel-run\0";
   AGS_RECALL(play_channel_run)->port = NULL;
 
-  AGS_RECALL(play_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
+  AGS_RECALL(play_channel_run)->flags |= (AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(play_channel_run)->child_type = AGS_TYPE_PLAY_RECYCLING;
 
   play_channel_run->flags = 0;

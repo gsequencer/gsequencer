@@ -2154,9 +2154,9 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* duplicate the recall */
     copy = ags_recall_duplicate(recall, recall_id);
 
-#ifdef AGS_DEBUG
+    //#ifdef AGS_DEBUG
     g_message("recall duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
-#endif
+    //#endif
     
     /* set appropriate flag */
     if(playback){

@@ -310,14 +310,15 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   source = line->channel;
 
   /* ags-play */
-  //  ags_recall_factory_create(audio,
-  //			    NULL,NULL, 
-  //			    "ags-play\0",
-  //			    source->audio_channel, source->audio_channel + 1, 
-  //			    source->pad, source->pad + 1,
-  //			    (AGS_RECALL_FACTORY_INPUT |
-  //			     AGS_RECALL_FACTORY_ADD),
-  //			    0);
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+  			    "ags-play\0",
+  			    source->audio_channel, source->audio_channel + 1, 
+  			    source->pad, source->pad + 1,
+  			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+  			     AGS_RECALL_FACTORY_ADD),
+  			    0);
 
   /* ags-volume */
   ags_recall_factory_create(audio,
@@ -338,7 +339,6 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			    source->audio_channel, source->audio_channel + 1, 
 			    source->pad, source->pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);

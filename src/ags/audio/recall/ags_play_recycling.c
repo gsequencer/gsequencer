@@ -41,6 +41,8 @@ void ags_play_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectab
 void ags_play_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_play_recycling_finalize(GObject *gobject);
 
+void ags_play_recycling_run_init_pre(AgsRecall *recall);
+void ags_play_recycling_run_pre(AgsRecall *recall);
 void ags_play_recycling_done(AgsRecall *recall);
 void ags_play_recycling_cancel(AgsRecall *recall);
 AgsRecall* ags_play_recycling_duplicate(AgsRecall *recall,
@@ -114,6 +116,8 @@ ags_play_recycling_class_init(AgsPlayRecyclingClass *play_recycling)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_recycling;
 
+  recall->run_init_pre = ags_play_recycling_run_init_pre;
+  recall->run_pre = ags_play_recycling_run_pre;
   recall->done = ags_play_recycling_done;
   recall->cancel = ags_play_recycling_cancel;
   recall->duplicate = ags_play_recycling_duplicate;
@@ -219,6 +223,61 @@ ags_play_recycling_duplicate(AgsRecall *recall,
 											   recall_id,
 											   n_params, parameter);
  return((AgsRecall *) copy);
+}
+
+void
+ags_play_recycling_run_init_pre(AgsRecall *recall)
+{
+  /* call parent */
+  AGS_RECALL_CLASS(ags_play_recycling_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_play_recycling_run_pre(AgsRecall *recall)
+{
+  AgsRecallRecycling *recall_recycling;
+  AgsDevout *devout;
+  AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
+  guint delay, attack;
+  guint tic_counter_incr;
+
+  g_message("de-bug\0");
+
+  if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
+
+    recall_recycling = AGS_RECALL_RECYCLING(recall);
+
+    devout = recall->devout;
+    recycling = recall_recycling->source;
+
+    tic_counter_incr = devout->tic_counter + 1;
+    
+    attack = devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			     0:
+			     tic_counter_incr)];
+    delay = devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+			   0:
+			   tic_counter_incr)];
+
+    audio_signal = ags_audio_signal_new((GObject *) devout,
+					(GObject *) recycling,
+					(GObject *) recall->recall_id);
+    ags_recycling_create_audio_signal_with_defaults(recycling,
+						    audio_signal,
+						    delay, attack);
+    audio_signal->stream_current = audio_signal->stream_beginning;
+    ags_audio_signal_connect(audio_signal);
+	
+    /*
+     * emit add_audio_signal on AgsRecycling
+     */
+    ags_recycling_add_audio_signal(recycling,
+				   audio_signal);
+  }
+
+  /* call parent */
+  AGS_RECALL_CLASS(ags_play_recycling_parent_class)->run_pre(recall);
 }
 
 AgsPlayRecycling*

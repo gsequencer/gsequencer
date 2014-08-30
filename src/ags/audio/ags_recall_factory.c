@@ -317,7 +317,7 @@ ags_recall_factory_create_play(AgsAudio *audio,
 	play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
 							      "devout\0", audio->devout,
 							      "source\0", channel,
-							      // "recall_channel\0", play_channel,
+							      "recall_channel\0", play_channel,
 							      "recall_container\0", play_container,
 							      NULL);
 	ags_recall_set_flags(AGS_RECALL(play_channel_run), (AGS_RECALL_TEMPLATE |
@@ -325,7 +325,13 @@ ags_recall_factory_create_play(AgsAudio *audio,
 							    AGS_RECALL_PLAYBACK));
 	ags_channel_add_recall(channel, (GObject *) play_channel_run, TRUE);
 	ags_connectable_connect(AGS_CONNECTABLE(play_channel_run));
+
+	/* iterate */
+	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -373,7 +379,13 @@ ags_recall_factory_create_play(AgsAudio *audio,
 							    AGS_RECALL_PLAYBACK));
 	ags_channel_add_recall(channel, (GObject *) play_channel_run, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(play_channel_run));
+
+	/* iterate */
+	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }
@@ -486,6 +498,9 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -568,6 +583,9 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }
@@ -651,6 +669,9 @@ ags_recall_factory_create_copy(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -703,6 +724,9 @@ ags_recall_factory_create_copy(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }
@@ -786,6 +810,9 @@ ags_recall_factory_create_stream(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -838,6 +865,9 @@ ags_recall_factory_create_stream(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }
@@ -922,6 +952,9 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -975,6 +1008,9 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }
@@ -1260,6 +1296,9 @@ ags_recall_factory_create_loop(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -1318,6 +1357,9 @@ ags_recall_factory_create_loop(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }
@@ -1446,6 +1488,9 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -1546,6 +1591,9 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }
@@ -1774,6 +1822,9 @@ ags_recall_factory_create_volume(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 
@@ -1827,6 +1878,9 @@ ags_recall_factory_create_volume(AgsAudio *audio,
 	/* iterate */
 	channel = channel->next;
       }
+
+      channel = ags_channel_nth(channel,
+				audio->audio_channels - stop_audio_channel);
     }
   }
 }

@@ -217,7 +217,6 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
   AgsDevoutThread *devout_thread;
-  AgsRecallID *recall_id;
 
   devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
 
