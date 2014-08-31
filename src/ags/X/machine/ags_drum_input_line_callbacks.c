@@ -110,25 +110,18 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
 
   g_message("ags_drum_input_line_play_channel_run_done\0");
 
-  channel = AGS_LINE(drum_input_line)->channel;
-
-  devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
-
-  channel = ags_channel_nth(AGS_AUDIO(channel->audio)->input, channel->line - channel->audio_channel);
+  channel = AGS_PAD(AGS_LINE(drum_input_line)->pad)->channel;
   next_pad = channel->next_pad;
 
   all_done = TRUE;
 
   while(channel != next_pad){
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] != devout_play->recall_id[0]){
-      channel = channel->next;
-      continue;
-    }
-
     current_recall = channel->play;
+    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
     
-    if(!ags_recall_is_done(current_recall,
-			   devout_play->recall_id[0])){
+    if(devout_play->recall_id[0] != NULL &&
+       !ags_recall_is_done(current_recall,
+			   devout_play->recall_id[0]->recycling_container)){
       all_done = FALSE;
       break;
     }

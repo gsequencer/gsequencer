@@ -17,6 +17,7 @@
  */
 
 #include <ags/X/machine/ags_drum_input_pad_callbacks.h>
+#include <ags/X/machine/ags_drum_input_line_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 
 #include <ags/main.h>
@@ -40,6 +41,7 @@
 #include <ags/audio/task/ags_open_single_file.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 
+#include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 
@@ -50,6 +52,8 @@
 void ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad *pad);
 void ags_drum_input_pad_open_play_done(AgsRecall *recall, AgsDrumInputPad *drum_input_pad);
 void ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *pad);
+
+void ags_drum_input_pad_init_channel_launch_callback(AgsTask *task, AgsDrumInputPad *drum_input_pad);
 
 #define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName\0"
 #define AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON "AgsDrumInputPadOpenSpinButton\0"
@@ -353,6 +357,8 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     /* init channel for playback */
     init_channel = ags_init_channel_new(channel, play_all,
 					TRUE, FALSE, FALSE);
+    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+			   G_CALLBACK(ags_drum_input_pad_init_channel_launch_callback), drum_input_pad);
     tasks = g_list_prepend(tasks, init_channel);
 
     if(play_all){
@@ -366,7 +372,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 						channel);
 	tasks = g_list_prepend(tasks, append_channel);
 
-	drum_input_pad->pad_play_ref++;
+	//	drum_input_pad->pad_play_ref++;
 	channel = channel->next;
       }
     }else{
@@ -379,7 +385,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 					      line->channel);
       tasks = g_list_prepend(tasks, append_channel);
 
-      drum_input_pad->pad_play_ref++;
+      //      drum_input_pad->pad_play_ref++;
     }
 
     /* create start task */
@@ -394,6 +400,11 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     AgsCancelChannel *cancel_channel;
 
     channel = AGS_PAD(drum_input_pad)->channel;
+
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL ||
+       (AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->flags)) != 0){
+      return;
+    }
 
     if((AGS_DEVOUT_PLAY_PAD & (AGS_DEVOUT_PLAY(channel->devout_play)->flags)) != 0){
       AgsChannel *next_pad;
@@ -438,6 +449,35 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
 	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
       }
     }
+  }
+}
+
+void
+ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
+						AgsDrumInputPad *drum_input_pad)
+{
+  AgsChannel *channel, *next_pad;
+  GList *recall, *list;
+
+  list = gtk_container_get_children(AGS_PAD(drum_input_pad)->expander_set);
+  
+  channel = AGS_PAD(drum_input_pad)->channel;
+  next_pad = channel->next_pad;
+
+  while(channel != next_pad){
+    recall = ags_recall_find_provider_with_recycling_container(channel->play,
+							       channel,
+							       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container);
+    recall = ags_recall_find_type(recall,
+				  AGS_TYPE_PLAY_CHANNEL_RUN);
+
+    if(recall != NULL){
+      g_signal_connect_after(G_OBJECT(recall->data), "done\0",
+			     G_CALLBACK(ags_drum_input_line_play_channel_run_done), list->data);
+    }
+    
+    channel = channel->next;
+    list = list->next;
   }
 }
 

@@ -181,6 +181,7 @@ ags_init_channel_launch(AgsTask *task)
 							TRUE, FALSE, FALSE,
 							resolve_dependencies,
 							NULL);
+	    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
 	  }
 	  
 	  if(init_channel->devout_play_domain->sequencer){
@@ -191,6 +192,7 @@ ags_init_channel_launch(AgsTask *task)
 							FALSE, TRUE, FALSE,
 							resolve_dependencies,
 							NULL);
+	    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
 	  }
 	  
 	  if(init_channel->devout_play_domain->notation){
@@ -201,6 +203,7 @@ ags_init_channel_launch(AgsTask *task)
 							FALSE, FALSE, TRUE,
 							resolve_dependencies,
 							NULL);
+	    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
 	  }
 
 	  list_start = g_list_append(list_start,
@@ -246,33 +249,36 @@ ags_init_channel_launch(AgsTask *task)
 								   channel->devout_play);
 
     if(init_channel->devout_play_domain->playback){
-      ags_channel_recursive_play_init(init_channel->channel, -1,
-				      TRUE, TRUE,
-				      TRUE, FALSE, FALSE,
-				      TRUE,
-				      NULL);
+      recall_id = ags_channel_recursive_play_init(init_channel->channel, -1,
+						  TRUE, TRUE,
+						  TRUE, FALSE, FALSE,
+						  TRUE,
+						  NULL);
     
       AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
+      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
     }
 
     if(init_channel->devout_play_domain->sequencer){
-      ags_channel_recursive_play_init(init_channel->channel, -1,
-				      TRUE, TRUE,
-				      FALSE, TRUE, FALSE,
-				      TRUE,
-				      NULL);
+      recall_id = ags_channel_recursive_play_init(init_channel->channel, -1,
+						  TRUE, TRUE,
+						  FALSE, TRUE, FALSE,
+						  TRUE,
+						  NULL);
     
       AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
     }
 
     if(init_channel->devout_play_domain->notation){
-      ags_channel_recursive_play_init(init_channel->channel, -1,
-				      TRUE, TRUE,
-				      FALSE, FALSE, TRUE,
-				      TRUE,
-				      NULL);
+      recall_id = ags_channel_recursive_play_init(init_channel->channel, -1,
+						  TRUE, TRUE,
+						  FALSE, FALSE, TRUE,
+						  TRUE,
+						  NULL);
     
       AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
+      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
     }
   }
 }

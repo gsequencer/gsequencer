@@ -35,6 +35,10 @@
 
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_recycling.h>
+#include <ags/audio/recall/ags_play_audio_signal.h>
+#include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_recycling.h>
+#include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -59,6 +63,7 @@ void ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
 void ags_play_channel_run_finalize(GObject *gobject);
 
 void ags_play_channel_run_run_pre(AgsRecall *recall);
+void ags_play_channel_run_run_post(AgsRecall *recall);
 void ags_play_channel_run_done(AgsRecall *recall);
 void ags_play_channel_run_remove(AgsRecall *recall);
 void ags_play_channel_run_cancel(AgsRecall *recall);
@@ -67,8 +72,8 @@ AgsRecall* ags_play_channel_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
-void ags_play_channel_run_stream_channel_done_callback(AgsRecall *recall,
-						       AgsPlayChannelRun *play_channel_run);
+void ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
+							    AgsPlayChannelRun *play_channel_run);
 
 enum{
   PROP_0,
@@ -157,7 +162,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   gobject->finalize = ags_play_channel_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("stream_channel_run\0",
+  param_spec = g_param_spec_object("stream-channel-run\0",
 				   "assigned AgsStreamChannelRun\0",
 				   "the assigned AgsStreamChannelRun\0",
 				   AGS_TYPE_STREAM_CHANNEL_RUN,
@@ -170,6 +175,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   recall = (AgsRecallClass *) play_channel_run;
 
   recall->run_pre = ags_play_channel_run_run_pre;
+  recall->run_post = ags_play_channel_run_run_post;
   recall->done = ags_play_channel_run_done;
   recall->cancel = ags_play_channel_run_cancel;
   recall->resolve_dependencies = ags_play_channel_run_resolve_dependencies;
@@ -249,11 +255,6 @@ ags_play_channel_run_set_property(GObject *gobject,
 	if(is_template){
 	  ags_recall_remove_dependency(AGS_RECALL(play_channel_run),
 				       (AgsRecall *) play_channel_run->stream_channel_run);
-	}else{
-	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
-	    g_signal_handler_disconnect(G_OBJECT(play_channel_run),
-					play_channel_run->done_handler);
-	  }
 	}
 
 	g_object_unref(G_OBJECT(play_channel_run->stream_channel_run));
@@ -265,12 +266,6 @@ ags_play_channel_run_set_property(GObject *gobject,
 	if(is_template){
 	  ags_recall_add_dependency(AGS_RECALL(play_channel_run),
 				    ags_recall_dependency_new((GObject *) stream_channel_run));
-	}else{
-	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
-	    play_channel_run->done_handler =
-	      g_signal_connect(G_OBJECT(stream_channel_run), "done\0",
-			       G_CALLBACK(ags_play_channel_run_stream_channel_done_callback), play_channel_run);
-	  }
 	}
       }
 
@@ -341,46 +336,13 @@ ags_play_channel_run_disconnect(AgsConnectable *connectable)
 void
 ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  AgsPlayChannel *play_channel;
-  AgsPlayChannelRun *play_channel_run;
-  GObject *gobject;
-
+  /* call parent */
   ags_play_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* AgsPlayChannelRun */
-  play_channel_run = AGS_PLAY_CHANNEL_RUN(dynamic_connectable);
-
-  play_channel_run->flags |= AGS_PLAY_CHANNEL_RUN_INITIAL_RUN;
-
-  /* stream_channel_run */
-  gobject = G_OBJECT(play_channel_run->stream_channel_run);
-    
-  play_channel_run->done_handler =
-    g_signal_connect(gobject, "done\0",
-		     G_CALLBACK(ags_play_channel_run_stream_channel_done_callback), play_channel_run);
 }
 
 void
 ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
-  AgsPlayChannel *play_channel;
-  AgsPlayChannelRun *play_channel_run;
-  GObject *gobject;
-
-  /* AgsPlayChannelRun */
-  play_channel_run = AGS_PLAY_CHANNEL_RUN(dynamic_connectable);
-
-  /* AgsPlayChannel */
-  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run)->container)->recall_channel);
-
-  /* stream_channel_run */
-  if(play_channel_run->stream_channel_run != NULL &&
-     (AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_channel_run)->flags)) != 0){
-    gobject = G_OBJECT(play_channel_run->stream_channel_run);
-
-    g_signal_handler_disconnect(gobject, play_channel_run->done_handler);
-  }
-
   /* call parent */
   ags_play_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
@@ -398,8 +360,6 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
   if((AGS_PLAY_CHANNEL_RUN_INITIAL_RUN & (recall->flags)) == 0){
     return;
   }
-
-  recall->flags &= (~AGS_PLAY_CHANNEL_RUN_INITIAL_RUN);
 
   devout = AGS_DEVOUT(recall->devout);
 
@@ -446,6 +406,44 @@ ags_play_channel_run_run_pre(AgsRecall *recall)
 
   /* call parent */
   AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_pre(recall);
+}
+
+void
+ags_play_channel_run_run_post(AgsRecall *recall)
+{
+  AgsStreamChannelRun *stream_channel_run;
+  AgsChannel *source;
+  GList *list;
+  GList *recall_recycling_list, *recall_audio_signal_list;
+
+  if((AGS_PLAY_CHANNEL_RUN_INITIAL_RUN & (recall->flags)) == 0){
+    return;
+  }
+
+  recall->flags &= (~AGS_PLAY_CHANNEL_RUN_INITIAL_RUN);
+
+  source = AGS_RECALL_CHANNEL_RUN(recall)->source;
+
+  list = ags_recall_find_type_with_recycling_container(source->play,
+						       AGS_TYPE_STREAM_CHANNEL_RUN,
+						       recall->recall_id->recycling_container);
+  stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
+  
+  recall_recycling_list = AGS_RECALL(stream_channel_run)->children;
+  
+  while(recall_recycling_list != NULL){
+    recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
+
+    while(recall_audio_signal_list != NULL){
+      g_signal_connect_after(G_OBJECT(recall_audio_signal_list->data), "done\0",
+			     G_CALLBACK(ags_play_channel_run_stream_audio_signal_done_callback), recall);
+
+
+      recall_audio_signal_list = recall_audio_signal_list->next;
+    }
+
+    recall_recycling_list = recall_recycling_list->next;
+  }
 }
 
 void
@@ -519,10 +517,66 @@ ags_play_channel_run_duplicate(AgsRecall *recall,
 }
 
 void
-ags_play_channel_run_stream_channel_done_callback(AgsRecall *recall,
-						  AgsPlayChannelRun *play_channel_run)
+ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
+						       AgsPlayChannelRun *play_channel_run)
 {
-  //  play_channel_run->flags |= AGS_PLAY_CHANNEL_RUN_TERMINATING;
+  AgsAudioLoop *audio_loop;
+  AgsChannel *source;
+  AgsRecall *current_recall;
+  GList *list, *list_next;
+  GList *recall_recycling_list, *recall_recycling_list_next;
+
+  source = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
+
+  list = ags_recall_find_provider_with_recycling_container(source->play,
+							   source,
+							   recall->recall_id->recycling_container);
+
+  while(list != NULL){
+    list_next = list->next;
+
+    current_recall = AGS_RECALL(list->data);
+    
+    if((AGS_RECALL_TEMPLATE & (current_recall->flags)) != 0 ||
+       current_recall == play_channel_run){
+      list = list_next;
+      continue;
+    }
+
+    recall_recycling_list = AGS_RECALL(list->data)->children;
+
+    while(recall_recycling_list != NULL){
+      recall_recycling_list_next = recall_recycling_list->next;
+      current_recall = AGS_RECALL(recall_recycling_list->data);
+
+      if((AGS_RECALL_PERSISTENT & (current_recall->flags)) != 0 ||
+	 (AGS_RECALL_PERSISTENT_PLAYBACK & (current_recall->flags)) != 0){
+	ags_recall_stop_persistent(current_recall);
+      }else{
+	ags_recall_done(current_recall);
+      }
+
+      recall_recycling_list = recall_recycling_list_next;
+    }
+
+    current_recall = AGS_RECALL(list->data);
+
+    if((AGS_RECALL_PERSISTENT & (current_recall->flags)) != 0 ||
+       (AGS_RECALL_PERSISTENT_PLAYBACK & (current_recall->flags)) != 0){
+      ags_recall_stop_persistent(current_recall);
+    }else{
+      ags_recall_done(current_recall);
+    }
+
+    list = list_next;
+  }
+
+  AGS_DEVOUT_PLAY(source->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
+  ags_recall_done(play_channel_run);
+
+  audio_loop = AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(source->audio)->devout)->ags_main)->main_loop;
+  ags_audio_loop_remove_channel(audio_loop,
+				source);
 }
 
 AgsPlayChannelRun*
@@ -531,7 +585,7 @@ ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)
   AgsPlayChannelRun *play_channel_run;
 
   play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
-							"stream_channel_run\0", stream_channel_run,
+							"stream-channel-run\0", stream_channel_run,
 							NULL);
   
   return(play_channel_run);

@@ -474,7 +474,13 @@ ags_channel_finalize(GObject *gobject)
 AgsRecall*
 ags_channel_find_recall(AgsChannel *channel, char *effect, char *name)
 {
+  AgsRecall *recall;
+  GList *list;
+
+  //TODO:JK: implement me
   /* */
+
+  return(NULL);
 }
 
 /**

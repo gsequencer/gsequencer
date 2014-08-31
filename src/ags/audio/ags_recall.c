@@ -1337,7 +1337,10 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
 void
 ags_recall_stop_persistent(AgsRecall *recall)
 {
-  recall->flags |= AGS_RECALL_PERSISTENT;
+  recall->flags &= (~(AGS_RECALL_PERSISTENT |
+		      AGS_RECALL_PERSISTENT_PLAYBACK |
+		      AGS_RECALL_PERSISTENT_SEQUENCER |
+		      AGS_RECALL_PERSISTENT_NOTATION));
 
   ags_recall_done(recall);
 }
@@ -1465,12 +1468,24 @@ ags_recall_is_done(GList *recalls, GObject *recycling_container)
 {
   AgsRecall *recall;
 
+  if(recalls == NULL ||
+     !AGS_IS_RECYCLING_CONTAINER(recycling_container)){
+    return(FALSE);
+  }
+
   while(recalls != NULL){
     recall = AGS_RECALL(recalls->data);
 
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0)
-      if(recall->recall_id != NULL && recall->recall_id->recycling_container != recycling_container && (AGS_RECALL_DONE & (recall->flags)) == 0)
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0 &&
+       !AGS_IS_RECALL_AUDIO(recall) &&
+       !AGS_IS_RECALL_CHANNEL(recall) &&
+       recall->recall_id != NULL &&
+       recall->recall_id->recycling_container == recycling_container){
+      if((AGS_RECALL_DONE & (recall->flags)) == 0){
+	g_message("%s\0", G_OBJECT_TYPE_NAME(recall));
 	return(FALSE);
+      }
+    }
 
     recalls = recalls->next;
   }

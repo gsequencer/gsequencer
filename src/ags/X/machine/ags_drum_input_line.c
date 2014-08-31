@@ -294,8 +294,10 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;
+  AgsPlayChannelRun *play_channel_run;
   AgsBufferChannel *buffer_channel;
   AgsBufferChannelRun *buffer_channel_run;
+  AgsStreamChannelRun *stream_channel_run;
 
   GList *list;
   guint i;
@@ -387,6 +389,17 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
+
+  /* set up dependencies */
+  list = ags_recall_find_type(source->play, AGS_TYPE_PLAY_CHANNEL_RUN);
+  play_channel_run = AGS_PLAY_CHANNEL_RUN(list->data);
+
+  list = ags_recall_find_type(source->play, AGS_TYPE_STREAM_CHANNEL_RUN);
+  stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
+
+  g_object_set(G_OBJECT(play_channel_run),
+	       "stream-channel-run\0", stream_channel_run,
+	       NULL);
 }
 
 AgsDrumInputLine*
