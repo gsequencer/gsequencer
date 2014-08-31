@@ -468,6 +468,8 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
     recall = ags_recall_find_provider_with_recycling_container(channel->play,
 							       channel,
 							       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container);
+
+    //TODO:JK: fix memory leak
     recall = ags_recall_find_type(recall,
 				  AGS_TYPE_PLAY_CHANNEL_RUN);
 

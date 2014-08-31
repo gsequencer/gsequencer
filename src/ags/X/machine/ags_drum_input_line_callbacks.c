@@ -132,7 +132,6 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
   if(all_done){
     AgsDrumInputPad *drum_input_pad;
 
-    g_message("ags_drum_input_line_play_channel_run_done\0");
     drum_input_pad = AGS_DRUM_INPUT_PAD(AGS_LINE(drum_input_line)->pad);
 
     gtk_toggle_button_set_active(drum_input_pad->play, FALSE);

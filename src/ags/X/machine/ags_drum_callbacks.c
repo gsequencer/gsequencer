@@ -71,6 +71,8 @@
 extern const char *AGS_DRUM_INDEX;
 
 void ags_drum_start_devout_failure(AgsTask *task, GError *error);
+void ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum);
+void ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum);
 
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
@@ -237,6 +239,9 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
     /* create init task */
     init_audio = ags_init_audio_new(AGS_MACHINE(drum)->audio,
 				    FALSE, TRUE, FALSE);
+    g_signal_connect_after(init_audio, "launch\0",
+			   G_CALLBACK(ags_drum_init_audio_launch_callback), drum);
+
     tasks = g_list_prepend(tasks,
 			   init_audio);
 
@@ -273,6 +278,61 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
       ags_task_thread_append_task(task_thread,
 				  AGS_TASK(cancel_audio));
     }
+  }
+}
+
+void
+ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum)
+{
+  AgsAudio *audio;
+  GList *devout_play;
+  GList *recall;
+
+  audio = AGS_MACHINE(drum)->audio;
+
+  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+
+  while(devout_play != NULL){
+    //TODO:JK: fix memory leak
+    recall = ags_recall_find_provider_with_recycling_container(audio->play,
+							       audio,
+							       AGS_DEVOUT_PLAY(devout_play->data)->recall_id[0]->recycling_container);
+    recall = ags_recall_find_type(recall,
+				  AGS_TYPE_PLAY_CHANNEL_RUN);
+    
+    if(recall != NULL){
+      g_signal_connect_after(G_OBJECT(recall->data), "done\0",
+			     G_CALLBACK(ags_drum_count_beats_audio_run_done), drum);
+    }
+
+    devout_play = devout_play->next;
+  }
+}
+
+void
+ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum)
+{
+  AgsAudio *audio;
+  GList *devout_play;
+  gboolean all_done;
+
+  audio = AGS_MACHINE(drum)->audio;
+  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+
+  channel = audio->output;
+  all_done = TRUE;
+
+  while(devout_play != NULL){
+    if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(devout_play->data)->flags)) == 0){
+      all_done = FALSE;
+      break;
+    }
+
+    devout_play = devout_play->next;
+  }
+
+  if(all_done){
+    gtk_toggle_button_set_active(drum->play, FALSE);
   }
 }
 

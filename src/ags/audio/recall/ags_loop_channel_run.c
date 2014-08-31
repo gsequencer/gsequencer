@@ -712,12 +712,7 @@ ags_loop_channel_run_new(AgsChannel *channel,
 							NULL);
 
   if(is_template){
-    GList *list;
-
     AGS_RECALL(loop_channel_run)->flags = AGS_RECALL_TEMPLATE;
-
-    list = NULL;
-    //    list = g_list_prepend(list, ags_recall_dependency_new(G_OBJECT(count_beats_audio_run)));
   }
 
   return(loop_channel_run);

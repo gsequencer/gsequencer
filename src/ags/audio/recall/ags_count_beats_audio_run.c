@@ -893,25 +893,20 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 
   loop = g_value_get_boolean(&value);
 
-  if(count_beats_audio_run->notation_counter == 0){
-    /* emit notation signals */
+  if(count_beats_audio_run->first_run){
+    //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_notation_start(count_beats_audio_run,
 					     run_order);
+  }
+
+  if(!count_beats_audio_run->first_run &&
+     count_beats_audio_run->notation_counter == 0){
+    /* emit notation signals */
     if(loop){
+      //	g_message("ags_count_beats_audio_run_notation_alloc_output_callback: loop\n\0");
+
       ags_count_beats_audio_run_notation_loop(count_beats_audio_run,
 					      run_order);
-
-      //	g_message("ags_count_beats_audio_run_notation_alloc_output_callback: loop\n\0");
-    }else{
-      if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
-	// g_message("ags_count_beats_audio_run_notation_alloc_output_callback: done\n\0");
-
-	//TODO:JK: verify me
-	ags_count_beats_audio_run_notation_stop(count_beats_audio_run,
-						run_order);
-	
-	ags_recall_done(AGS_RECALL(count_beats_audio_run));
-      }
     }
   }
 }
@@ -947,16 +942,28 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
       
       ags_count_beats_audio_run_sequencer_loop(count_beats_audio_run,
 					       run_order);
-    }else{
-      /* emit stop signals */
-      if((AGS_RECALL_PERSISTENT & (AGS_RECALL(count_beats_audio_run)->flags)) == 0){
-	//	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: done\n\0");
+    }else{      
+      AgsAudio *audio;
+      GList *devout_play;
 
-	ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
-						 run_order);
-	
-	ags_recall_done(AGS_RECALL(count_beats_audio_run));
+      audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
+      devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+
+      /* emit stop signals */
+      //	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: done\n\0");
+
+      ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
+					       run_order);
+
+      while(devout_play != NULL){
+	if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] == count_beats_audio_run->recall_id){
+	  AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_DONE;
+	}
+
+	devout_play = devout_play->next;
       }
+
+      ags_recall_done(AGS_RECALL(count_beats_audio_run));
     }
   }
 }
