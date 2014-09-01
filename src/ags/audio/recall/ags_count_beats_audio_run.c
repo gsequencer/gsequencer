@@ -950,13 +950,11 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
       devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
 
       /* emit stop signals */
-      //	g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: done\n\0");
-
       ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 					       run_order);
 
       while(devout_play != NULL){
-	if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] == count_beats_audio_run->recall_id){
+	if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] == AGS_RECALL(count_beats_audio_run)->recall_id){
 	  AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_DONE;
 	}
 

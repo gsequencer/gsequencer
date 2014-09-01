@@ -54,6 +54,7 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 #include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
 
 #include <ags/audio/file/ags_audio_file.h>
@@ -313,6 +314,7 @@ void
 ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum)
 {
   AgsAudio *audio;
+  AgsChannel *channel;
   GList *devout_play;
   gboolean all_done;
 
@@ -323,7 +325,8 @@ ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum)
   all_done = TRUE;
 
   while(devout_play != NULL){
-    if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(devout_play->data)->flags)) == 0){
+    if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(devout_play->data)->flags)) == 0 ||
+       AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] == NULL){
       all_done = FALSE;
       break;
     }
@@ -332,7 +335,7 @@ ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum)
   }
 
   if(all_done){
-    gtk_toggle_button_set_active(drum->play, FALSE);
+    gtk_toggle_button_set_active(drum->run, FALSE);
   }
 }
 
