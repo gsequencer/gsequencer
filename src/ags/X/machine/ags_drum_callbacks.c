@@ -314,14 +314,12 @@ void
 ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum)
 {
   AgsAudio *audio;
-  AgsChannel *channel;
   GList *devout_play;
   gboolean all_done;
 
   audio = AGS_MACHINE(drum)->audio;
   devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
 
-  channel = audio->output;
   all_done = TRUE;
 
   while(devout_play != NULL){

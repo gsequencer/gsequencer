@@ -954,7 +954,8 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 					       run_order);
 
       while(devout_play != NULL){
-	if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] == AGS_RECALL(count_beats_audio_run)->recall_id){
+	if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1]->recycling_container == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container){
+	  g_message("do\0");
 	  AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_DONE;
 	}
 
