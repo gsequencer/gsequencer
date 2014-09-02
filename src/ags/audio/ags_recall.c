@@ -1393,7 +1393,12 @@ ags_recall_real_cancel(AgsRecall *recall)
     list = list->next;
   }
 
-  ags_recall_done(AGS_RECALL(recall));
+  if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
+     (AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0){
+    ags_recall_stop_persistent(recall);
+  }else{
+    ags_recall_done(recall);
+  }
 }
 
 /**
@@ -1440,7 +1445,7 @@ ags_recall_real_remove(AgsRecall *recall)
 }
 
 /**
- * ags_recall_cancel:
+ * ags_recall_remove:
  * @recall an #AgsRecall
  *
  * The #AgsRecall will be removed immediately.

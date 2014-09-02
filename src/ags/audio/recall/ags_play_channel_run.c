@@ -520,63 +520,18 @@ void
 ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 						       AgsPlayChannelRun *play_channel_run)
 {
-  AgsAudioLoop *audio_loop;
   AgsChannel *source;
-  AgsRecall *current_recall;
-  GList *list, *list_next;
-  GList *recall_recycling_list, *recall_recycling_list_next;
 
   source = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
 
-  list = ags_recall_find_provider_with_recycling_container(source->play,
-							   source,
-							   recall->recall_id->recycling_container);
+  g_object_ref(play_channel_run);
 
-  while(list != NULL){
-    list_next = list->next;
+  ags_channel_tillrecycling_cancel(source,
+				   recall->recall_id);
 
-    current_recall = AGS_RECALL(list->data);
-    
-    if((AGS_RECALL_TEMPLATE & (current_recall->flags)) != 0 ||
-       current_recall == play_channel_run){
-      list = list_next;
-      continue;
-    }
-
-    recall_recycling_list = AGS_RECALL(list->data)->children;
-
-    while(recall_recycling_list != NULL){
-      recall_recycling_list_next = recall_recycling_list->next;
-      current_recall = AGS_RECALL(recall_recycling_list->data);
-
-      if((AGS_RECALL_PERSISTENT & (current_recall->flags)) != 0 ||
-	 (AGS_RECALL_PERSISTENT_PLAYBACK & (current_recall->flags)) != 0){
-	ags_recall_stop_persistent(current_recall);
-      }else{
-	ags_recall_done(current_recall);
-      }
-
-      recall_recycling_list = recall_recycling_list_next;
-    }
-
-    current_recall = AGS_RECALL(list->data);
-
-    if((AGS_RECALL_PERSISTENT & (current_recall->flags)) != 0 ||
-       (AGS_RECALL_PERSISTENT_PLAYBACK & (current_recall->flags)) != 0){
-      ags_recall_stop_persistent(current_recall);
-    }else{
-      ags_recall_done(current_recall);
-    }
-
-    list = list_next;
-  }
-
-  AGS_DEVOUT_PLAY(source->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
   ags_recall_done(play_channel_run);
 
-  audio_loop = AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(source->audio)->devout)->ags_main)->main_loop;
-  ags_audio_loop_remove_channel(audio_loop,
-				source);
+  g_object_unref(play_channel_run);
 }
 
 AgsPlayChannelRun*

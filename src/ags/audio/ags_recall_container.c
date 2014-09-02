@@ -391,30 +391,68 @@ ags_recall_container_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_container_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_recall_container_get_recall_audio:
+ * @container the #AgsRecallContainer
+ * Returns: the #AgsRecallAudio
+ *
+ * Retrieve recall audio of container.
+ */
 AgsRecall*
 ags_recall_container_get_recall_audio(AgsRecallContainer *container)
 {
   return(container->recall_audio);
 }
 
+/**
+ * ags_recall_container_get_recall_audio_run:
+ * @container the #AgsRecallContainer
+ * Returns: the #AgsRecallAudioRun as list
+ *
+ * Retrieve recall audio run of container.
+ */
 GList*
 ags_recall_container_get_recall_audio_run(AgsRecallContainer *container)
 {
   return(container->recall_audio_run);
 }
 
+/**
+ * ags_recall_container_get_recall_channel:
+ * @container the #AgsRecallContainer
+ * Returns: the #AgsRecallChannel
+ *
+ * Retrieve the recall channel of container.
+ */
 GList*
 ags_recall_container_get_recall_channel(AgsRecallContainer *container)
 {
   return(container->recall_channel);
 }
 
+/**
+ * ags_recall_container_get_recall_channel_run:
+ * @container the #AgsRecallContainer
+ * Returns: the #AgsRecall
+ *
+ * Retrieve the recall channel run of container.
+ */
 GList*
 ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
 {
   return(container->recall_channel_run);
 }
 
+/**
+ * ags_recall_container_find:
+ * @recall_container the #AgsRecallContainer
+ * @type recall type
+ * @find_flags search mask
+ * @recall_id an #AgsRecallID
+ * Returns: the matching recalls
+ *
+ * Finds #AgsRecall for appropriate search criteria.
+ */
 GList*
 ags_recall_container_find(GList *recall_container,
 			  GType type,
