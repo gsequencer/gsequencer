@@ -860,7 +860,11 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
-  //TODO:JK: implement me
+  audio_loop->play_audio = g_list_remove(audio_loop->play_audio,
+					 AGS_AUDIO(audio)->devout_play_domain);
+  audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
+
+  g_object_unref(audio);
 }
 
 void
@@ -876,12 +880,11 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
-  AGS_DEVOUT_PLAY(AGS_CHANNEL(channel)->devout_play)->recall_id[0] = NULL;
-  AGS_DEVOUT_PLAY(AGS_CHANNEL(channel)->devout_play)->flags = 0;
-
   audio_loop->play_channel = g_list_remove(audio_loop->play_channel,
 					   AGS_CHANNEL(channel)->devout_play);
   audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
+
+  g_object_unref(channel);
 }
 
 void

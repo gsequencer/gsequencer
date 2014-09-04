@@ -1384,6 +1384,10 @@ ags_recall_real_cancel(AgsRecall *recall)
 {
   GList *list;
 
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    return;
+  }
+
   /* call cancel for children */
   list = recall->children;
 

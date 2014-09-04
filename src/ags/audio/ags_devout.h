@@ -196,7 +196,7 @@ struct _AgsDevoutPlay
   GObject *source;
   guint audio_channel;
 
-  AgsRecallID *recall_id[3];
+  AgsRecallID **recall_id;
 };
 
 GType ags_devout_get_type();

@@ -23,6 +23,8 @@
 
 #include <ags/main.h>
 
+#include <ags/widget/ags_led.h>
+
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -73,7 +75,7 @@ extern const char *AGS_DRUM_INDEX;
 
 void ags_drum_start_devout_failure(AgsTask *task, GError *error);
 void ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum);
-void ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum);
+void ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum);
 
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
@@ -287,44 +289,27 @@ ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum)
 {
   AgsAudio *audio;
   GList *devout_play;
-  GList *recall;
+  GList *recall, *tmp;
 
   audio = AGS_MACHINE(drum)->audio;
-
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
-
-  while(devout_play != NULL){
-    //TODO:JK: fix memory leak
-    recall = ags_recall_find_provider_with_recycling_container(audio->play,
-							       audio,
-							       AGS_DEVOUT_PLAY(devout_play->data)->recall_id[0]->recycling_container);
-    recall = ags_recall_find_type(recall,
-				  AGS_TYPE_PLAY_CHANNEL_RUN);
-    
-    if(recall != NULL){
-      g_signal_connect_after(G_OBJECT(recall->data), "done\0",
-			     G_CALLBACK(ags_drum_count_beats_audio_run_done), drum);
-    }
-
-    devout_play = devout_play->next;
-  }
+  g_signal_connect_after(audio, "done\0",
+			 G_CALLBACK(ags_drum_audio_done_callback), drum);
 }
 
 void
-ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum)
+ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum)
 {
-  AgsAudio *audio;
   GList *devout_play;
   gboolean all_done;
 
-  audio = AGS_MACHINE(drum)->audio;
+  g_message("=====done");
+
   devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
 
   all_done = TRUE;
 
   while(devout_play != NULL){
-    if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(devout_play->data)->flags)) == 0 ||
-       AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] == NULL){
+    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
       all_done = FALSE;
       break;
     }
@@ -334,6 +319,8 @@ ags_drum_count_beats_audio_run_done(AgsRecall *recall, AgsDrum *drum)
 
   if(all_done){
     gtk_toggle_button_set_active(drum->run, FALSE);
+    ags_led_unset_active(AGS_LED(g_list_nth(gtk_container_get_children(GTK_CONTAINER(drum->led)),
+					    gtk_spin_button_get_value(drum->length_spin))->data));
   }
 }
 

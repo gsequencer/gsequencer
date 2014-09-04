@@ -100,7 +100,7 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 }
 
 void
-ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *drum_input_line)
+ags_drum_input_line_channel_done_callback(AgsChannel *source, AgsDrumInputLine *drum_input_line)
 {
   AgsChannel *channel;
   AgsDevoutPlay *devout_play;
@@ -119,9 +119,7 @@ ags_drum_input_line_play_channel_run_done(AgsRecall *recall, AgsDrumInputLine *d
     current_recall = channel->play;
     devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
     
-    if(devout_play->recall_id[0] != NULL &&
-       !ags_recall_is_done(current_recall,
-			   devout_play->recall_id[0]->recycling_container)){
+    if(devout_play->recall_id[0] != NULL){
       all_done = FALSE;
       break;
     }

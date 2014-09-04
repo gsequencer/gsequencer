@@ -45,7 +45,7 @@ void ags_drum_input_line_recall_volume_cancel(AgsRecall *recall,
 					      AgsDrumInputLine *drum_input_line);
 
 /* AgsRecall - play */
-void ags_drum_input_line_play_channel_run_done(AgsRecall *recall,
+void ags_drum_input_line_channel_done_callback(AgsChannel *channel,
 					       AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_play_channel_run_cancel(AgsRecall *recall,
 						 AgsDrumInputLine *drum_input_line);

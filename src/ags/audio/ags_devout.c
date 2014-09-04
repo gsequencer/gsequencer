@@ -658,6 +658,8 @@ ags_devout_play_alloc()
   play->source = NULL;
   play->audio_channel = 0;
 
+  play->recall_id = (AgsDevoutPlay **) malloc(3 * sizeof(AgsDevoutPlay *));
+
   play->recall_id[0] = NULL;
   play->recall_id[1] = NULL;
   play->recall_id[2] = NULL;

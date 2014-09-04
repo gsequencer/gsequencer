@@ -62,6 +62,7 @@ static void ags_channel_finalize(GObject *gobject);
 
 enum{
   RECYCLING_CHANGED,
+  DONE,
   LAST_SIGNAL,
 };
 
@@ -147,6 +148,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 
   /* AgsChannelClass */
   channel->recycling_changed = NULL;
+  channel->done = NULL;
 
   /* signals */
   channel_signals[RECYCLING_CHANGED] =
@@ -161,6 +163,15 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT);
+
+  channel_signals[DONE] =
+    g_signal_new("done\0",
+		 G_TYPE_FROM_CLASS (channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsChannelClass, done),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -1386,6 +1397,17 @@ ags_channel_recycling_changed(AgsChannel *channel,
 }
 
 void
+ags_channel_done(AgsChannel *channel)
+{
+  g_return_if_fail(AGS_IS_CHANNEL(channel));
+
+  g_object_ref(G_OBJECT(channel));
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[DONE], 0);
+  g_object_unref(G_OBJECT(channel));
+}
+
+void
 ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 				     guint length)
 {
@@ -2185,6 +2207,11 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 
     /* notify run */
     ags_recall_notify_dependency(recall, AGS_RECALL_NOTIFY_RUN, 1);
+
+    /*  */
+    ags_recall_run_init_pre(copy);
+    ags_recall_run_init_inter(copy);
+    ags_recall_run_init_post(copy);
 
     /* iterate */    
     list_recall = list_recall->next;

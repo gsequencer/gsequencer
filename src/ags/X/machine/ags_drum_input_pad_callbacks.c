@@ -457,7 +457,7 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
 						AgsDrumInputPad *drum_input_pad)
 {
   AgsChannel *channel, *next_pad;
-  GList *recall, *list;
+  GList *recall, *tmp, *list;
 
   list = gtk_container_get_children(AGS_PAD(drum_input_pad)->expander_set);
   
@@ -469,14 +469,17 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
 							       channel,
 							       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container);
 
-    //TODO:JK: fix memory leak
+    tmp = recall;
     recall = ags_recall_find_type(recall,
 				  AGS_TYPE_PLAY_CHANNEL_RUN);
-
+    //    g_list_free(tmp);
+    
     if(recall != NULL){
-      g_signal_connect_after(G_OBJECT(recall->data), "done\0",
-			     G_CALLBACK(ags_drum_input_line_play_channel_run_done), list->data);
+      g_signal_connect_after(channel, "done\0",
+			     G_CALLBACK(ags_drum_input_line_channel_done_callback), list->data);
     }
+
+    //    g_list_free(recall);
     
     channel = channel->next;
     list = list->next;

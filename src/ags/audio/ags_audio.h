@@ -94,6 +94,8 @@ struct _AgsAudioClass
   void (*set_pads)(AgsAudio *audio,
 		   GType type,
 		   guint pads, guint pads_old);
+
+  void (*done)(AgsAudio *audio);
 };
 
 GType ags_audio_get_type();
@@ -103,6 +105,8 @@ void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
+
+void ags_audio_done(AgsAudio *audio);
 
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
