@@ -150,10 +150,9 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     
 	  /* task thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
+	  xpath_context->node = child;
 	  //	  xmlXPathSetContextNode(child,
 	  //			 xpath_context);
-	  xpath_context = child;
-
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsTaskThread']\0"),
 					      xpath_context);
 	    //xmlXPathNodeEval(child,
@@ -168,7 +167,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
 	  /* devout thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
-
+	  xpath_context->node = child;
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsDevoutThread']\0"),
 					      xpath_context);
 
@@ -180,6 +179,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
 	  /* timestamp thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
+	  xpath_context->node = child;
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsDevoutThread']/ags-thread-list/ags-thread[@type='AgsTimestampThread']\0"),
 					      xpath_context);
 
@@ -191,7 +191,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
 	  /* gui thread */
 	  xpath_context = xmlXPathNewContext(file->doc);
-
+	  xpath_context->node = child;
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsGuiThread']\0"),
 					      xpath_context);
 

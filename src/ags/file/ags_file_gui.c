@@ -2286,6 +2286,10 @@ ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 
   machine = editor->selected_machine;
 
+  if(machine == NULL){
+    return;
+  }
+
   /* set tabs */
   tabs = machine->audio->audio_channels;
 
