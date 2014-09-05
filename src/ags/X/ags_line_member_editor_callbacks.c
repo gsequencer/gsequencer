@@ -19,29 +19,79 @@
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
 void ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
-							     guint response,
+							     gint response,
 							     AgsLineMemberEditor *line_member_editor);
 
 void
-ags_line_member_editor_add(GtkWidget *button,
-			   AgsLineMemberEditor *line_member_editor)
+ags_line_member_editor_add_callback(GtkWidget *button,
+				    AgsLineMemberEditor *line_member_editor)
 {
   g_signal_connect(G_OBJECT(line_member_editor->ladspa_browser), "response\0",
 		   G_CALLBACK(ags_line_member_editor_ladspa_browser_response_callback), line_member_editor);
-  gtk_widget_show(line_member_editor->ladspa_browser);
+  gtk_widget_show_all(line_member_editor->ladspa_browser);
 }
 
 void
 ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
-							guint response,
+							gint response,
 							AgsLineMemberEditor *line_member_editor)
 {
-  //TODO:JK: implement me
+  switch(response){
+  case GTK_RESPONSE_ACCEPT:
+    {
+      GtkHBox *hbox;
+      GtkCheckButton *check_button;
+      GtkLabel *label;
+      gchar *filename, *effect;
+
+      filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
+      effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
+
+      hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+      gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
+			 GTK_WIDGET(hbox),
+			 FALSE, FALSE,
+			 0);
+      
+      check_button = (GtkCheckButton *) gtk_check_button_new();
+      gtk_box_pack_start(GTK_BOX(hbox),
+			 GTK_WIDGET(check_button),
+			 FALSE, FALSE,
+			 0);
+
+      label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s: %s\0",
+							 filename,
+							 effect));
+      gtk_box_pack_start(GTK_BOX(hbox),
+			 GTK_WIDGET(label),
+			 FALSE, FALSE,
+			 0);
+      //TODO:JK: implement me
+    }
+    break;
+  }
+
+  gtk_widget_hide(dialog);
 }
 
 void
-ags_line_member_editor_remove(GtkWidget *button,
-			      AgsLineMemberEditor *line_member_editor)
+ags_line_member_editor_remove_callback(GtkWidget *button,
+				       AgsLineMemberEditor *line_member_editor)
 {
-  //TODO:JK: implement me
+  GList *line_member;
+  GList *children;
+
+  line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
+
+  while(line_member != NULL){
+    children = gtk_container_get_children(GTK_CONTAINER(children->data));
+
+    if(gtk_toggle_button_active(GTK_TOGGLE_BUTTON(children->data))){
+      //TODO:JK: implement me
+
+      gtk_widget_destroy(GTK_WIDGET(line_member->data));
+    }
+
+    line_member = line_member->next;
+  }
 }

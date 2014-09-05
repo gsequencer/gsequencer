@@ -201,6 +201,7 @@ ags_line_editor_connect(AgsConnectable *connectable)
   		   G_CALLBACK(ags_line_editor_show_callback), (gpointer) line_editor);
 
   ags_connectable_connect(AGS_CONNECTABLE(line_editor->link_editor));
+  ags_connectable_connect(AGS_CONNECTABLE(line_editor->member_editor));
 }
 
 void
@@ -256,6 +257,7 @@ ags_line_editor_show(GtkWidget *widget)
   AgsLineEditor *line_editor = (AgsLineEditor *) widget;
 
   gtk_widget_show((GtkWidget *) line_editor->link_editor);
+  gtk_widget_show((GtkWidget *) line_editor->member_editor);
 }
 
 void
@@ -268,6 +270,7 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
     link_editor = line_editor->link_editor;
     line_editor->link_editor = NULL;
     gtk_widget_destroy(GTK_WIDGET(line_editor->link_editor));
+    gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));
   }
 
   line_editor->channel = channel;

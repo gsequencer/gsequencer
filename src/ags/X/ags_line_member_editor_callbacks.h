@@ -26,9 +26,9 @@
 
 #include <ags/X/ags_line_member_editor.h>
 
-void ags_line_member_editor_add(GtkWidget *button,
-				AgsLineMemberEditor *line_member_editor);
-void ags_line_member_editor_remove(GtkWidget *button,
-				   AgsLineMemberEditor *line_member_editor);
+void ags_line_member_editor_add_callback(GtkWidget *button,
+					 AgsLineMemberEditor *line_member_editor);
+void ags_line_member_editor_remove_callback(GtkWidget *button,
+					    AgsLineMemberEditor *line_member_editor);
 
 #endif /*__AGS_LINE_MEMBER_EDITOR_CALLBACKS_H__*/
