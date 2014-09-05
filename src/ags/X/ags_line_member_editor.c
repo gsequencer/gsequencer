@@ -129,7 +129,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->ladspa_browser = ags_ladspa_browser_new();
+  line_member_editor->ladspa_browser = ags_ladspa_browser_new(line_member_editor);
 }
 
 void

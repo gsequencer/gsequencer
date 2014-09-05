@@ -33,4 +33,7 @@ void ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 void ags_ladspa_browser_preview_close_callback(GtkWidget *preview,
 					       AgsLadspaBrowser *ladspa_browser);
 
+int ags_ladspa_browser_ok_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser);
+int ags_ladspa_browser_cancel_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser);
+
 #endif /*__AGS_LADSPA_BROWSER_CALLBACKS_H__*/

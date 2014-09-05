@@ -66,12 +66,10 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			 GTK_WIDGET(label),
 			 FALSE, FALSE,
 			 0);
-      //TODO:JK: implement me
+      gtk_widget_show_all((GtkWidget *) hbox);
     }
     break;
   }
-
-  gtk_widget_hide(dialog);
 }
 
 void
@@ -84,7 +82,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
 
   while(line_member != NULL){
-    children = gtk_container_get_children(GTK_CONTAINER(children->data));
+    children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
       //TODO:JK: implement me
