@@ -36,12 +36,12 @@ typedef struct _AgsRecallLadspaClass AgsRecallLadspaClass;
 
 struct _AgsRecallLadspa
 {
-  GObject object;
+  AgsRecall recall;
 };
 
 struct _AgsRecallLadspaClass
 {
-  GObjectClass object;
+  AgsRecallClass recall;
 };
 
 GType ags_recall_ladspa_get_type();

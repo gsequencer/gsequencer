@@ -86,6 +86,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_timestamp.$(OBJEXT) \
 	ags-ags_timestamp_factory.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
+	ags-ags_recall_ladspa.$(OBJEXT) \
 	ags-ags_recall_channel.$(OBJEXT) \
 	ags-ags_recall_audio_run.$(OBJEXT) ags-ags_pattern.$(OBJEXT) \
 	ags-ags_channel_iter.$(OBJEXT) \
@@ -219,6 +220,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_property_editor_callbacks.$(OBJEXT) \
 	ags-ags_window.$(OBJEXT) \
 	ags-ags_property_listing_editor.$(OBJEXT) \
+	ags-ags_ladspa_browser.$(OBJEXT) \
+	ags-ags_ladspa_browser_callbacks.$(OBJEXT) \
 	ags-ags_link_editor.$(OBJEXT) \
 	ags-ags_line_member_editor_callbacks.$(OBJEXT) \
 	ags-ags_line_editor.$(OBJEXT) ags-ags_editor.$(OBJEXT) \
@@ -554,6 +557,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_recall_factory.c \
 	./src/ags/audio/ags_recall_dependency.h \
 	./src/ags/audio/ags_input.h \
+	./src/ags/audio/ags_recall_ladspa.h \
+	./src/ags/audio/ags_recall_ladspa.c \
 	./src/ags/audio/ags_recall_channel.c \
 	./src/ags/audio/ags_channel.h \
 	./src/ags/audio/ags_recall_audio_run.c \
@@ -879,6 +884,10 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/ags_editor.h ./src/ags/X/ags_line_member.h \
 	./src/ags/X/ags_line_member_editor.h \
 	./src/ags/X/ags_pad_editor.h ./src/ags/X/ags_line_editor.h \
+	./src/ags/X/ags_ladspa_browser.h \
+	./src/ags/X/ags_ladspa_browser.c \
+	./src/ags/X/ags_ladspa_browser_callbacks.h \
+	./src/ags/X/ags_ladspa_browser_callbacks.c \
 	./src/ags/X/ags_link_editor.c \
 	./src/ags/X/ags_line_member_editor_callbacks.c \
 	./src/ags/X/ags_property_collection_editor_callbacks.h \
@@ -1357,6 +1366,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ipatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ipatch_sf2_reader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_iterator_thread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ladspa_browser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_ladspa_browser_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_led.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_line.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_line_callbacks.Po@am__quote@
@@ -1466,6 +1477,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_dependency.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_factory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_id.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_ladspa.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recycling_container.Po@am__quote@
@@ -1862,6 +1874,20 @@ ags-ags_recall_factory.obj: ./src/ags/audio/ags_recall_factory.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_factory.c' object='ags-ags_recall_factory.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_factory.obj `if test -f './src/ags/audio/ags_recall_factory.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_factory.c'; fi`
+
+ags-ags_recall_ladspa.o: ./src/ags/audio/ags_recall_ladspa.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_ladspa.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_ladspa.Tpo -c -o ags-ags_recall_ladspa.o `test -f './src/ags/audio/ags_recall_ladspa.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_ladspa.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_ladspa.Tpo $(DEPDIR)/ags-ags_recall_ladspa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_ladspa.c' object='ags-ags_recall_ladspa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_ladspa.o `test -f './src/ags/audio/ags_recall_ladspa.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_ladspa.c
+
+ags-ags_recall_ladspa.obj: ./src/ags/audio/ags_recall_ladspa.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_ladspa.obj -MD -MP -MF $(DEPDIR)/ags-ags_recall_ladspa.Tpo -c -o ags-ags_recall_ladspa.obj `if test -f './src/ags/audio/ags_recall_ladspa.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_ladspa.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_ladspa.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_ladspa.Tpo $(DEPDIR)/ags-ags_recall_ladspa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_ladspa.c' object='ags-ags_recall_ladspa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_ladspa.obj `if test -f './src/ags/audio/ags_recall_ladspa.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_ladspa.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_ladspa.c'; fi`
 
 ags-ags_recall_channel.o: ./src/ags/audio/ags_recall_channel.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_channel.Tpo -c -o ags-ags_recall_channel.o `test -f './src/ags/audio/ags_recall_channel.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_channel.c
@@ -4340,6 +4366,34 @@ ags-ags_property_listing_editor.obj: ./src/ags/X/ags_property_listing_editor.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_property_listing_editor.c' object='ags-ags_property_listing_editor.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_property_listing_editor.obj `if test -f './src/ags/X/ags_property_listing_editor.c'; then $(CYGPATH_W) './src/ags/X/ags_property_listing_editor.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_property_listing_editor.c'; fi`
+
+ags-ags_ladspa_browser.o: ./src/ags/X/ags_ladspa_browser.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_browser.o -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_browser.Tpo -c -o ags-ags_ladspa_browser.o `test -f './src/ags/X/ags_ladspa_browser.c' || echo '$(srcdir)/'`./src/ags/X/ags_ladspa_browser.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ladspa_browser.Tpo $(DEPDIR)/ags-ags_ladspa_browser.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_ladspa_browser.c' object='ags-ags_ladspa_browser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_browser.o `test -f './src/ags/X/ags_ladspa_browser.c' || echo '$(srcdir)/'`./src/ags/X/ags_ladspa_browser.c
+
+ags-ags_ladspa_browser.obj: ./src/ags/X/ags_ladspa_browser.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_browser.obj -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_browser.Tpo -c -o ags-ags_ladspa_browser.obj `if test -f './src/ags/X/ags_ladspa_browser.c'; then $(CYGPATH_W) './src/ags/X/ags_ladspa_browser.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_ladspa_browser.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ladspa_browser.Tpo $(DEPDIR)/ags-ags_ladspa_browser.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_ladspa_browser.c' object='ags-ags_ladspa_browser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_browser.obj `if test -f './src/ags/X/ags_ladspa_browser.c'; then $(CYGPATH_W) './src/ags/X/ags_ladspa_browser.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_ladspa_browser.c'; fi`
+
+ags-ags_ladspa_browser_callbacks.o: ./src/ags/X/ags_ladspa_browser_callbacks.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_browser_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_browser_callbacks.Tpo -c -o ags-ags_ladspa_browser_callbacks.o `test -f './src/ags/X/ags_ladspa_browser_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_ladspa_browser_callbacks.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ladspa_browser_callbacks.Tpo $(DEPDIR)/ags-ags_ladspa_browser_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_ladspa_browser_callbacks.c' object='ags-ags_ladspa_browser_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_browser_callbacks.o `test -f './src/ags/X/ags_ladspa_browser_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_ladspa_browser_callbacks.c
+
+ags-ags_ladspa_browser_callbacks.obj: ./src/ags/X/ags_ladspa_browser_callbacks.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_browser_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_browser_callbacks.Tpo -c -o ags-ags_ladspa_browser_callbacks.obj `if test -f './src/ags/X/ags_ladspa_browser_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_ladspa_browser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_ladspa_browser_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_ladspa_browser_callbacks.Tpo $(DEPDIR)/ags-ags_ladspa_browser_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/X/ags_ladspa_browser_callbacks.c' object='ags-ags_ladspa_browser_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_browser_callbacks.obj `if test -f './src/ags/X/ags_ladspa_browser_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_ladspa_browser_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_ladspa_browser_callbacks.c'; fi`
 
 ags-ags_link_editor.o: ./src/ags/X/ags_link_editor.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_link_editor.o -MD -MP -MF $(DEPDIR)/ags-ags_link_editor.Tpo -c -o ags-ags_link_editor.o `test -f './src/ags/X/ags_link_editor.c' || echo '$(srcdir)/'`./src/ags/X/ags_link_editor.c

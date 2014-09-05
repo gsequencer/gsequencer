@@ -110,37 +110,57 @@ ags_ladspa_browser_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 {
-  GtkCellRenderer *cell_renderer;
+  GtkVBox *vbox;
+  GtkComboBoxText *combo_box;
+  GtkLabel *label;
 
-  g_signal_connect_after((GObject *) ladspa_browser, "parent_set\0",
-			 G_CALLBACK(ags_ladspa_browser_parent_set_callback), (gpointer) ladspa_browser);
-
-  ladspa_browser->flags = 0;
-
-  /* linking machine */
-  ladspa_browser->combo = (GtkComboBox *) gtk_combo_box_new();
-  gtk_box_pack_start(GTK_BOX(ladspa_browser),
-		     GTK_WIDGET(ladspa_browser->combo),
-		     FALSE, FALSE, 0);
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add((GtkContainer *) gtk_dialog_get_content_area(ladspa_browser),
+		    GTK_WIDGET(vbox));
   
-  cell_renderer = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(ladspa_browser->combo),
-			     cell_renderer,
-			     FALSE); 
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(ladspa_browser->combo),
-				 cell_renderer,
-				 "text\0", 0,
-				 NULL);
+  /* plugin */
+  ladspa_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(ladspa_browser->plugin),
+		     FALSE, FALSE,
+		     0);
 
-  /* link with line */
-  ladspa_browser->spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
-  gtk_box_pack_start(GTK_BOX(ladspa_browser),
-		     GTK_WIDGET(ladspa_browser->spin_button),
-		     FALSE, FALSE, 0);
+  label = (GtkLabel *) gtk_label_new("filename: \0");
+  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
 
-  ladspa_browser->audio_file = NULL;
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
+		     GTK_WIDGET(combo_box),
+		     FALSE, FALSE,
+		     0);
 
-  ladspa_browser->file_chooser = NULL;
+  label = (GtkLabel *) gtk_label_new("effect: \0");
+  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
+		     GTK_WIDGET(combo_box),
+		     FALSE, FALSE,
+		     0);
+
+  /* description */
+  ladspa_browser->description = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(ladspa_browser->description),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new("NULL\0");
+  gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
 }
 
 void
@@ -177,6 +197,58 @@ void
 ags_ladspa_browser_reset(AgsApplicable *applicable)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_ladspa_browser_set_plugin_filename(AgsLadspaBrowser *ladspa_browser,
+				       gchar *filename)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_ladspa_browser_set_plugin_effect(AgsLadspaBrowser *ladspa_browser,
+				     gchar *effect)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
+{
+  //TODO:JK: implement me
+}
+
+
+void
+ags_ladspa_browser_set_description(AgsLadspaBrowser *ladspa_browser,
+				   gchar *description)
+{
+  //TODO:JK: implement me
+}
+
+gchar*
+ags_ladspa_browser_get_description(AgsLadspaBrowser *ladspa_browser)
+{
+  //TODO:JK: implement me
+}
+
+GtkWidget*
+ags_ladspa_browser_preview_new()
+{
+  GtkWidget *preview;
+
+  preview = NULL;
+
+  //TODO:JK: implement me
+
+  return(preview);
 }
 
 AgsLadspaBrowser*

@@ -18,6 +18,10 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/object/ags_plugin.h>
+
 void ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa_class);
 void ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin);
@@ -25,9 +29,10 @@ void ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa);
 void ags_recall_ladspa_connect(AgsConnectable *connectable);
 void ags_recall_ladspa_disconnect(AgsConnectable *connectable);
 void ags_recall_ladspa_set_ports(AgsPlugin *plugin);
+void ags_recall_ladspa_finalize(GObject *gobject);
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
-static guint recall_ladspa_signals[LAST_SIGNAL];
+static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
 
 GType
 ags_recall_ladspa_get_type (void)
@@ -59,7 +64,7 @@ ags_recall_ladspa_get_type (void)
       NULL, /* interface_data */
     };
 
-    ags_type_recall_ladspa = g_type_register_static(G_TYPE_OBJECT,
+    ags_type_recall_ladspa = g_type_register_static(AGS_TYPE_RECALL,
 						    "AgsRecallLadspa\0",
 						    &ags_recall_ladspa_info,
 						    0);
@@ -126,6 +131,11 @@ void
 ags_recall_ladspa_set_ports(AgsPlugin *plugin)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_recall_ladspa_finalize(GObject *gobject)
+{
 }
 
 AgsRecallLadspa*
