@@ -37,5 +37,6 @@ void
 ags_ladspa_browser_preview_close_callback(GtkWidget *preview,
 					  AgsLadspaBrowser *ladspa_browser)
 {
-  //TODO:JK: implement me
+  ladspa_browser->preview = NULL;
+  gtk_widget_destroy(preview);
 }

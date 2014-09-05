@@ -108,6 +108,8 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 
   line_member_editor->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
   line_member_editor->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+
+  line_member_editor->ladspa_browser = ags_ladspa_browser_new();
 }
 
 void

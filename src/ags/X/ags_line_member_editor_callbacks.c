@@ -18,3 +18,30 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
+void ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
+							     guint response,
+							     AgsLineMemberEditor *line_member_editor);
+
+void
+ags_line_member_editor_add(GtkWidget *button,
+			   AgsLineMemberEditor *line_member_editor)
+{
+  g_signal_connect(G_OBJECT(line_member_editor->ladspa_browser), "response\0",
+		   G_CALLBACK(ags_line_member_editor_ladspa_browser_response_callback), line_member_editor);
+  gtk_widget_show(line_member_editor->ladspa_browser);
+}
+
+void
+ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
+							guint response,
+							AgsLineMemberEditor *line_member_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_line_member_editor_remove(GtkWidget *button,
+			      AgsLineMemberEditor *line_member_editor)
+{
+  //TODO:JK: implement me
+}

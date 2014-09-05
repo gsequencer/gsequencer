@@ -114,6 +114,9 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   GtkComboBoxText *combo_box;
   GtkLabel *label;
 
+  static const gchar *default_path = "/usr/lib/ladspa\0";
+  gchar *path, *filename;
+
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) gtk_dialog_get_content_area(ladspa_browser),
 		    GTK_WIDGET(vbox));
@@ -136,6 +139,19 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
 		     0);
+
+  path = default_path;
+
+  //TODO:JK: read environment variable
+
+  while((filename = g_dir_read_name(path)) != NULL){
+    if(g_str_has_suffix(filename,
+			".so\0")){
+      gtk_combo_box_text_append_text(combo_box,
+				     filename);
+    }
+  }
+
 
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
