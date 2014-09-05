@@ -36,7 +36,7 @@ void ags_recall_ladspa_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_recall_ladspa_connect(AgsConnectable *connectable);
 void ags_recall_ladspa_disconnect(AgsConnectable *connectable);
-void ags_recall_ladspa_set_ports(AgsPlugin *plugin);
+void ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port);
 void ags_recall_ladspa_finalize(GObject *gobject);
 
 enum{
@@ -262,8 +262,12 @@ ags_recall_ladspa_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_recall_ladspa_set_ports(AgsPlugin *plugin)
+ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 {
+  AgsRecallLadspa *recall_ladspa;
+
+  recall_ladspa = AGS_RECALL_LADSPA(plugin);
+
   //TODO:JK: implement me
 }
 

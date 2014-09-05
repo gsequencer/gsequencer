@@ -18,7 +18,12 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_recall_ladspa.h>
+
+#include <ags/audio/task/ags_add_recall.h>
 
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
@@ -35,14 +40,20 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
+      AgsAudioLoop *audio_loop;
+      AgsTaskThread *task_thread;
+      AgsAddRecall *add_recall;
       GtkHBox *hbox;
       GtkCheckButton *check_button;
       GtkLabel *label;
       AgsRecallLadspa *recall_ladspa;
       gchar *filename, *effect;
+      guint index;
 
       filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
       effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
+
+      index = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_container_get_children(GTK_CONTAINER(line_member_editor->ladspa_browser->plugin))->next->next->next->data));
 
       hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
@@ -66,6 +77,10 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       gtk_widget_show_all((GtkWidget *) hbox);
 
       /* ladspa recall */
+      recall_ladspa = ags_recall_ladspa_new(filename,
+					    effect,
+					    index);
+
       //TODO:JK: implement me
     }
     break;

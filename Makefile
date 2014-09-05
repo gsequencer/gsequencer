@@ -96,7 +96,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_set_samplerate.$(OBJEXT) ags-ags_save_file.$(OBJEXT) \
 	ags-ags_init_channel.$(OBJEXT) ags-ags_append_recall.$(OBJEXT) \
 	ags-ags_set_devout_play_flags.$(OBJEXT) \
-	ags-ags_link_channel.$(OBJEXT) ags-ags_toggle_led.$(OBJEXT) \
+	ags-ags_link_channel.$(OBJEXT) ags-ags_add_recall.$(OBJEXT) \
+	ags-ags_toggle_led.$(OBJEXT) \
 	ags-ags_remove_region_from_selection.$(OBJEXT) \
 	ags-ags_cancel_recall.$(OBJEXT) \
 	ags-ags_add_audio_signal.$(OBJEXT) \
@@ -580,6 +581,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/task/ags_set_devout_play_flags.c \
 	./src/ags/audio/task/ags_link_channel.c \
 	./src/ags/audio/task/ags_add_audio.h \
+	./src/ags/audio/task/ags_add_recall.h \
+	./src/ags/audio/task/ags_add_recall.c \
 	./src/ags/audio/task/ags_remove_recall.h \
 	./src/ags/audio/task/ags_toggle_pattern_bit.h \
 	./src/ags/audio/task/ags_toggle_led.h \
@@ -1269,6 +1272,7 @@ include ./$(DEPDIR)/ags-ags_add_audio.Po
 include ./$(DEPDIR)/ags-ags_add_audio_signal.Po
 include ./$(DEPDIR)/ags-ags_add_note.Po
 include ./$(DEPDIR)/ags-ags_add_point_to_selection.Po
+include ./$(DEPDIR)/ags-ags_add_recall.Po
 include ./$(DEPDIR)/ags-ags_add_region_to_selection.Po
 include ./$(DEPDIR)/ags-ags_amplifier.Po
 include ./$(DEPDIR)/ags-ags_append_audio.Po
@@ -2070,6 +2074,20 @@ ags-ags_link_channel.obj: ./src/ags/audio/task/ags_link_channel.c
 #	source='./src/ags/audio/task/ags_link_channel.c' object='ags-ags_link_channel.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_link_channel.obj `if test -f './src/ags/audio/task/ags_link_channel.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_link_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_link_channel.c'; fi`
+
+ags-ags_add_recall.o: ./src/ags/audio/task/ags_add_recall.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_add_recall.o -MD -MP -MF $(DEPDIR)/ags-ags_add_recall.Tpo -c -o ags-ags_add_recall.o `test -f './src/ags/audio/task/ags_add_recall.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_add_recall.c
+	$(am__mv) $(DEPDIR)/ags-ags_add_recall.Tpo $(DEPDIR)/ags-ags_add_recall.Po
+#	source='./src/ags/audio/task/ags_add_recall.c' object='ags-ags_add_recall.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_add_recall.o `test -f './src/ags/audio/task/ags_add_recall.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_add_recall.c
+
+ags-ags_add_recall.obj: ./src/ags/audio/task/ags_add_recall.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_add_recall.obj -MD -MP -MF $(DEPDIR)/ags-ags_add_recall.Tpo -c -o ags-ags_add_recall.obj `if test -f './src/ags/audio/task/ags_add_recall.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_add_recall.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_add_recall.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_add_recall.Tpo $(DEPDIR)/ags-ags_add_recall.Po
+#	source='./src/ags/audio/task/ags_add_recall.c' object='ags-ags_add_recall.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_add_recall.obj `if test -f './src/ags/audio/task/ags_add_recall.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_add_recall.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_add_recall.c'; fi`
 
 ags-ags_toggle_led.o: ./src/ags/audio/task/ags_toggle_led.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_toggle_led.o -MD -MP -MF $(DEPDIR)/ags-ags_toggle_led.Tpo -c -o ags-ags_toggle_led.o `test -f './src/ags/audio/task/ags_toggle_led.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_toggle_led.c
