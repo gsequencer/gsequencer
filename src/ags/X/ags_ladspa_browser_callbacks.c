@@ -70,7 +70,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
       for(index = 0; (plugin_descriptor = ladspa_descriptor(index)) != NULL; index++){
 	gtk_combo_box_text_append_text(effect,
-				       g_strdup_printf("%s:%lu\0 ", plugin_descriptor->Name, plugin_descriptor->UniqueID));
+				       g_strdup_printf("%s:%lu\0", plugin_descriptor->Name, plugin_descriptor->UniqueID));
       }
     }
     
@@ -78,16 +78,17 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   }
 
   gtk_combo_box_set_active(effect,
-			   0);
+  			   0);
 }
 
 void
 ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					  AgsLadspaBrowser *ladspa_browser)
 {
+  GtkTable *table;
   GtkComboBoxText *filename, *effect;
   GtkLabel *label;
-  GList *list;
+  GList *list, *children;
   gchar *path;
   gchar *str, *tmp;
   guint port_count;
@@ -96,6 +97,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  long index;
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
@@ -111,86 +114,113 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   plugin_so = dlopen(path,
 		     RTLD_NOW);
 
-  if(plugin_so){
+  index = gtk_combo_box_get_active(effect);
+
+  if(plugin_so &&
+     index != -1){
     dlerror();
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      long index;
-
-      index = gtk_combo_box_get_active(effect);
       plugin_descriptor = ladspa_descriptor(index);
-    }
    
 
-    /* update ui */
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       g_strconcat("Label: \0",
-				   plugin_descriptor->Label,
-				   NULL));
+      /* update ui */
+      label = GTK_LABEL(list->data);
+      gtk_label_set_text(label,
+			 g_strconcat("Label: \0",
+				     plugin_descriptor->Label,
+				     NULL));
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       g_strconcat("Maker: \0",
-				   plugin_descriptor->Maker,
-				   NULL));
+      list = list->next;
+      label = GTK_LABEL(list->data);
+      gtk_label_set_text(label,
+			 g_strconcat("Maker: \0",
+				     plugin_descriptor->Maker,
+				     NULL));
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
-    gtk_label_set_text(label,
-		       g_strconcat("Copyright: \0",
-				   plugin_descriptor->Copyright,
-				   NULL));
+      list = list->next;
+      label = GTK_LABEL(list->data);
+      gtk_label_set_text(label,
+			 g_strconcat("Copyright: \0",
+				     plugin_descriptor->Copyright,
+				     NULL));
 
-    port_count = plugin_descriptor->PortCount;
+      port_count = plugin_descriptor->PortCount;
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
+      list = list->next;
+      label = GTK_LABEL(list->data);
 
-    str = g_strconcat("Ports: \0",
-		      plugin_descriptor->PortNames[0],
-		      NULL);
+      str = g_strdup("Ports: \0");
+      gtk_label_set_text(label,
+			 str);
 
-    for(i = 1; i < port_count; i++){
-      tmp = str;
-      str = g_strconcat(str,
-			", \0",
-			plugin_descriptor->PortNames[i],
-			NULL);
+      list = list->next;
+      table = GTK_TABLE(list->data);
+    
+      children = gtk_container_get_children(GTK_CONTAINER(table));
+    
+      while(children != NULL){
+	gtk_widget_destroy(GTK_WIDGET(children->data));
 
-      if(tmp != NULL){
-	g_free(tmp);
+	children = children->next;
       }
-    }
 
-    gtk_label_set_text(label,
-		       str);
+      for(i = 0; i < port_count; i++){
+	str = g_strdup(plugin_descriptor->PortNames[i]);
+
+	label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+					  "xalign\0", 0.0,
+					  "label\0", str,
+					  NULL);
+	gtk_table_attach_defaults(table,
+				  GTK_WIDGET(label),
+				  0, 1,
+				  i, i + 1);
+
+	gtk_table_attach_defaults(table,
+				  GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
+				  1, 2,
+				  i, i + 1);
+      }
+
+      gtk_widget_show_all(table);
+    }
 
     //TODO:JK: implement me 
     dlclose(plugin_so);
   }else{
     /* update ui */
-    label = GTK_COMBO_BOX(list->data);
+    label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
 		       "Label: \0");
 
     list = list->next;
-    label = GTK_COMBO_BOX(list->data);
+    label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
 		       "Maker: \0");
 
     list = list->next;
-    label = GTK_COMBO_BOX(list->data);
+    label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
 		       "Copyright: \0");
 
     list = list->next;
-    label = GTK_COMBO_BOX(list->data);
+    label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
 		       "Ports: \0");
+
+    list = list->next;
+    table = GTK_TABLE(list->data);
+    
+    children = gtk_container_get_children(GTK_CONTAINER(table));
+    
+    while(children != NULL){
+      gtk_widget_destroy(GTK_WIDGET(children->data));
+
+      children = children->next;
+    }
   }
 }
 
@@ -205,8 +235,6 @@ ags_ladspa_browser_preview_close_callback(GtkWidget *preview,
 int
 ags_ladspa_browser_ok_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser)
 {
-  gtk_dialog_response(GTK_DIALOG(ladspa_browser),
-		      GTK_RESPONSE_ACCEPT);
   gtk_widget_hide((GtkWidget *) ladspa_browser);
 
   return(0);
@@ -215,8 +243,6 @@ ags_ladspa_browser_ok_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_brows
 int
 ags_ladspa_browser_cancel_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser)
 {
-  gtk_dialog_response(GTK_DIALOG(ladspa_browser),
-		      GTK_RESPONSE_REJECT);
   gtk_widget_hide((GtkWidget *) ladspa_browser);
 
   return(0);

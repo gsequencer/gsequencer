@@ -111,9 +111,11 @@ void
 ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 {
   GtkVBox *vbox;
+  GtkTable *table;
   GtkComboBoxText *combo_box;
   GtkLabel *label;
   GDir *dir;
+  GList *list;
 
   static const gchar *default_path = "/usr/lib/ladspa\0";
   gchar *filename;
@@ -219,19 +221,23 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
+  
+  table = gtk_table_new(256, 2,
+			FALSE);
+  gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
+		     GTK_WIDGET(table),
+		     FALSE, FALSE,
+		     0);
 
   /* action area */
-  ladspa_browser->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) ladspa_browser->dialog.action_area,
-		     (GtkWidget *) ladspa_browser->ok,
-		     FALSE, FALSE,
-		     0);
+  gtk_dialog_add_buttons(ladspa_browser,
+			 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+			 GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+			 NULL);
 
-  ladspa_browser->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) ladspa_browser->dialog.action_area,
-		     (GtkWidget *) ladspa_browser->cancel,
-		     FALSE, FALSE,
-		     0);
+  list = gtk_container_get_children(gtk_dialog_get_action_area(ladspa_browser));
+  ladspa_browser->ok = GTK_BUTTON(list->data);
+  ladspa_browser->cancel = GTK_BUTTON(list->next->data);
 }
 
 void
@@ -245,13 +251,12 @@ ags_ladspa_browser_connect(AgsConnectable *connectable)
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
   list = list->next;
 
-  g_signal_connect(G_OBJECT(list->data), "changed\0",
-		   G_CALLBACK(ags_ladspa_browser_plugin_filename_callback), ladspa_browser);
+  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+			 G_CALLBACK(ags_ladspa_browser_plugin_filename_callback), ladspa_browser);
 
   list = list->next->next;
-
-  g_signal_connect(G_OBJECT(list->data), "changed\0",
-		   G_CALLBACK(ags_ladspa_browser_plugin_effect_callback), ladspa_browser);
+  g_signal_connect_after(G_OBJECT(list->data), "changed\0",
+			 G_CALLBACK(ags_ladspa_browser_plugin_effect_callback), ladspa_browser);
 
   /* AgsLadspaBrowser buttons */
   g_signal_connect((GObject *) ladspa_browser->ok, "clicked\0",
@@ -327,6 +332,29 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
 
   return(gtk_combo_box_text_get_active_text(effect));
+}
+
+GtkWidget*
+ags_ladspa_browser_combo_box_controls_new()
+{
+  GtkComboBoxText *combo_box;
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(combo_box,
+				 "toggle button\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "combo box text\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "spin button\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "dial\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "vertical scale\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "horizontal scale\0");
+
+  return(combo_box);
 }
 
 GtkWidget*

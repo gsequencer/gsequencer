@@ -18,16 +18,10 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-void ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
-							     gint response,
-							     AgsLineMemberEditor *line_member_editor);
-
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
-  g_signal_connect(G_OBJECT(line_member_editor->ladspa_browser), "response\0",
-		   G_CALLBACK(ags_line_member_editor_ladspa_browser_response_callback), line_member_editor);
   gtk_widget_show_all(line_member_editor->ladspa_browser);
 }
 
@@ -78,6 +72,11 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 {
   GList *line_member;
   GList *children;
+
+  if(button == NULL ||
+     line_member_editor == NULL){
+    return;
+  }
 
   line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
 

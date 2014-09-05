@@ -146,6 +146,9 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_line_member_editor_remove_callback), line_member_editor);
 
   ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->ladspa_browser));
+
+  g_signal_connect(G_OBJECT(line_member_editor->ladspa_browser), "response\0",
+		   G_CALLBACK(ags_line_member_editor_ladspa_browser_response_callback), line_member_editor);
 }
 
 void
