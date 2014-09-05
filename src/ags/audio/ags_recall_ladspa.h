@@ -37,6 +37,10 @@ typedef struct _AgsRecallLadspaClass AgsRecallLadspaClass;
 struct _AgsRecallLadspa
 {
   AgsRecall recall;
+
+  gchar *filename;
+  gchar *effect;
+  guint index;
 };
 
 struct _AgsRecallLadspaClass
@@ -46,6 +50,8 @@ struct _AgsRecallLadspaClass
 
 GType ags_recall_ladspa_get_type();
 
-AgsRecallLadspa* ags_recall_ladspa_new();
+AgsRecallLadspa* ags_recall_ladspa_new(gchar *filename,
+				       gchar *effect,
+				       guint index);
 
 #endif /*__AGS_RECALL_LADSPA_H__*/

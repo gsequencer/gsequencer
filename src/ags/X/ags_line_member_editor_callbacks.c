@@ -18,6 +18,8 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
+#include <ags/audio/ags_recall_ladspa.h>
+
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
@@ -36,6 +38,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       GtkHBox *hbox;
       GtkCheckButton *check_button;
       GtkLabel *label;
+      AgsRecallLadspa *recall_ladspa;
       gchar *filename, *effect;
 
       filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
@@ -61,6 +64,9 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			 FALSE, FALSE,
 			 0);
       gtk_widget_show_all((GtkWidget *) hbox);
+
+      /* ladspa recall */
+      //TODO:JK: implement me
     }
     break;
   }
