@@ -116,7 +116,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   GDir *dir;
 
   static const gchar *default_path = "/usr/lib/ladspa\0";
-  gchar *path, *filename;
+  gchar *filename;
 
   GError *error;
 
@@ -143,12 +143,12 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  path = g_strdup(default_path);
+  ladspa_browser->path = g_strdup(default_path);
 
   //TODO:JK: read environment variable
 
   error = NULL;
-  dir = g_dir_open(path,
+  dir = g_dir_open(ladspa_browser->path,
 		   0,
 		   &error);
 
@@ -193,8 +193,20 @@ void
 ags_ladspa_browser_connect(AgsConnectable *connectable)
 {
   AgsLadspaBrowser *ladspa_browser;
+  GList *list;
 
   ladspa_browser = AGS_LADSPA_BROWSER(connectable);
+
+  list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
+  list = list->next;
+
+  g_signal_connect(G_OBJECT(list->data), "changed\0",
+		   G_CALLBACK(ags_ladspa_browser_plugin_filename_callback), ladspa_browser);
+
+  list = list->next->next;
+
+  g_signal_connect(G_OBJECT(list->data), "changed\0",
+		   G_CALLBACK(ags_ladspa_browser_plugin_effect_callback), ladspa_browser);
 }
 
 void

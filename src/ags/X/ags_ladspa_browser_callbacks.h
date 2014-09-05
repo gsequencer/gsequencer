@@ -25,10 +25,10 @@
 
 #include <ags/X/ags_ladspa_browser.h>
 
-void ags_ladspa_browser_plugin_filename_changed(GtkComboBoxText *combo_box,
-						AgsLadspaBrowser *ladspa_browser);
-void ags_ladspa_browser_plugin_effect_changed(GtkComboBoxText *combo_box,
-					      AgsLadspaBrowser *ladspa_browser);
+void ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
+						 AgsLadspaBrowser *ladspa_browser);
+void ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
+					       AgsLadspaBrowser *ladspa_browser);
 
 void ags_ladspa_browser_preview_close_callback(GtkWidget *preview,
 					       AgsLadspaBrowser *ladspa_browser);

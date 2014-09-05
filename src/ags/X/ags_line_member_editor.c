@@ -144,6 +144,8 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(line_member_editor->remove), "clicked\0",
 		   G_CALLBACK(ags_line_member_editor_remove_callback), line_member_editor);
+
+  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->ladspa_browser));
 }
 
 void

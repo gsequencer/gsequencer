@@ -37,6 +37,8 @@ struct _AgsLadspaBrowser
 {
   GtkDialog dialog;
 
+  gchar *path;
+
   GtkHBox *plugin;
   GtkVBox *description;
 

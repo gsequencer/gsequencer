@@ -86,7 +86,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   while(line_member != NULL){
     children = gtk_container_get_children(GTK_CONTAINER(children->data));
 
-    if(gtk_toggle_button_active(GTK_TOGGLE_BUTTON(children->data))){
+    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
       //TODO:JK: implement me
 
       gtk_widget_destroy(GTK_WIDGET(line_member->data));
