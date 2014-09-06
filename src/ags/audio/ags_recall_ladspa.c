@@ -22,6 +22,16 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_port.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 void ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa_class);
 void ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin);
@@ -163,6 +173,9 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
   recall_ladspa->filename = NULL;
   recall_ladspa->effect = NULL;
   recall_ladspa->index = 0;
+
+  recall_ladspa->input = NULL;
+  recall_ladspa->output = NULL;
 }
 
 void
@@ -265,10 +278,53 @@ void
 ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 {
   AgsRecallLadspa *recall_ladspa;
+  AgsPort *current;
+  guint port_count;
+  guint i;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_PortRangeHintDescriptor hint_descriptor;
+  LADSPA_Data lower_bound, upper_bound;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
+  plugin_so = dlopen(recall_ladspa->filename,
+		     RTLD_NOW);
 
-  //TODO:JK: implement me
+  if(plugin_so){
+    dlerror();
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+
+    if(dlerror() == NULL && ladspa_descriptor){
+      plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+
+      port_count = plugin_descriptor->PortCount;
+
+      for(i = 0; i < port_count; i++){
+	plugin_descriptor->PortNames[i];
+	
+	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
+	  //TODO:JK: implement me
+	}else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	  //TODO:JK: implement me
+	}else if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	  hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
+
+	  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
+	  upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+
+	  //TODO:JK: implement me
+	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
+	  //TODO:JK: implement me
+	}
+      }
+    }
+
+    dlclose(plugin_so);
+  }
 }
 
 void
@@ -278,6 +334,36 @@ ags_recall_ladspa_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
+}
+
+float*
+ags_recall_ladspa_short_to_float(signed short *buffer)
+{
+  float *new_buffer;
+  guint i;
+
+  new_buffer = (float *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(float));
+
+  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
+    new_buffer[i] = buffer[i] / G_MAXINT16;
+  }
+
+  return(new_buffer);
+}
+
+signed short*
+ags_recall_ladspa_float_to_short(float *buffer)
+{
+  signed short *new_buffer;
+  guint i;
+
+  new_buffer = (signed short *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(signed short));
+
+  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
+    new_buffer[i] = buffer[i] * G_MAXINT16;
+  }
+
+  return(new_buffer);
 }
 
 AgsRecallLadspa*

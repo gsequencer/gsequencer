@@ -16,11 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_RECALL_H__
+#ifndef __AGS_RECALL_LADSPA_H__
 #define __AGS_RECALL_LADSPA_H__
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <ladspa.h>
 
 #include <ags/audio/ags_recall.h>
 
@@ -41,6 +43,9 @@ struct _AgsRecallLadspa
   gchar *filename;
   gchar *effect;
   guint index;
+
+  LADSPA_Data *input;
+  LADSPA_Data *output;
 };
 
 struct _AgsRecallLadspaClass
@@ -49,6 +54,9 @@ struct _AgsRecallLadspaClass
 };
 
 GType ags_recall_ladspa_get_type();
+
+float* ags_recall_ladspa_short_to_float(signed short *buffer);
+signed short* ags_recall_ladspa_float_to_short(float *buffer);
 
 AgsRecallLadspa* ags_recall_ladspa_new(gchar *filename,
 				       gchar *effect,

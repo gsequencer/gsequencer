@@ -20,6 +20,9 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+
 #include <math.h>
 
 void ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall);
@@ -102,7 +105,9 @@ ags_remove_recall_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_remove_recall_init(AgsRemoveRecall *remove_recall)
 {
+  remove_recall->context = NULL;
   remove_recall->recall = NULL;
+  remove_recall->is_play = FALSE;
 }
 
 void
@@ -136,19 +141,35 @@ ags_remove_recall_launch(AgsTask *task)
 
   remove_recall = AGS_REMOVE_RECALL(task);
 
-  ags_recall_remove(remove_recall->recall);
+  if(AGS_IS_AUDIO(remove_recall->context)){
+    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
+			    remove_recall->recall,
+			    remove_recall->is_play);
+  }else if(AGS_IS_CHANNEL(remove_recall->context)){
+    ags_channel_remove_recall(AGS_CHANNEL(remove_recall->context),
+			      remove_recall->recall,
+			      remove_recall->is_play);
+  }else if(AGS_IS_RECALL(remove_recall->context)){
+    ags_recall_remove_child(AGS_RECALL(remove_recall->context),
+			    remove_recall->recall);
+  }else{
+    ags_recall_remove(remove_recall->recall);
+  }
 }
 
 AgsRemoveRecall*
-ags_remove_recall_new(AgsRecall *recall)
+ags_remove_recall_new(GObject *context,
+		      AgsRecall *recall,
+		      gboolean is_play)
 {
   AgsRemoveRecall *remove_recall;
 
   remove_recall = (AgsRemoveRecall *) g_object_new(AGS_TYPE_REMOVE_RECALL,
-						   NULL);
-  
+						   NULL);  
 
+  remove_recall->context = context;
   remove_recall->recall = recall;
+  remove_recall->is_play = is_play;
 
   return(remove_recall);
 }
