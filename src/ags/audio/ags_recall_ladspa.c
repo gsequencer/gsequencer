@@ -89,7 +89,7 @@ ags_recall_ladspa_get_type (void)
       NULL, /* interface_data */
     };
 
-    ags_type_recall_ladspa = g_type_register_static(AGS_TYPE_RECALL,
+    ags_type_recall_ladspa = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						    "AgsRecallLadspa\0",
 						    &ags_recall_ladspa_info,
 						    0);
@@ -124,8 +124,8 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 
   /* properties */
   param_spec =  g_param_spec_string("filename\0",
-				    "the dll's file\0",
-				    "The filename as string of dll\0",
+				    "the object file\0",
+				    "The filename as string of object file\0",
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -174,8 +174,7 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
   recall_ladspa->effect = NULL;
   recall_ladspa->index = 0;
 
-  recall_ladspa->input = NULL;
-  recall_ladspa->output = NULL;
+  recall_ladspa->plugin_descriptor = NULL;
 }
 
 void
@@ -301,37 +300,66 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   plugin_so = dlopen(path,
 		     RTLD_NOW);
 
+  port = NULL;
+  
   if(plugin_so){
     dlerror();
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+      recall_ladspa->plugin_descriptor = 
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
 
       port_count = plugin_descriptor->PortCount;
+      port_descriptor = plugin_descriptor->PortDescriptors;
 
       for(i = 0; i < port_count; i++){
-	plugin_descriptor->PortNames[i];
-	
 	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	  //TODO:JK: implement me
 	}else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	  //TODO:JK: implement me
 	}else if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	  gchar *plugin_name;
+	  gchar *specifier;
+
 	  hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
 
-	  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
-	  upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+	  plugin_name = g_strdup_printf("ladspa-%s\0", plugin_descriptor->UniqueID);
+	  specifier = g_strdelimit(g_strdup(plugin_descriptor->PortNames[i]),
+				   NULL,
+				   '-');
 
-	  //TODO:JK: implement me
+	  current = g_object_new(AGS_TYPE_PORT,
+				 "plugin-name\0", plugin_name,
+				 "specifier\0", g_strdup_printf("./%s\0", specifier),
+				 "control-port\0", g_strdup_printf("%d/%d\0",
+								   i,
+								   port_count),
+				 "port-value-is-pointer\0", FALSE,
+				 "port-value-type\0", G_TYPE_DOUBLE,
+				 NULL);
+
+
+	    //	  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
+	    //	  upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+
+	  plugin_descriptor->connect_port(plugin_descriptor,
+					  i,
+					  &(current->port_value.ags_port_double));
+
+	  port = g_list_prepend(port,
+				current);
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  //TODO:JK: implement me
 	}
       }
+
+      AGS_RECALL(recall_ladspa)->port = port;
     }
 
-    dlclose(plugin_so);
+    //TODO:JK: check for object leak
+    //    dlclose(plugin_so);
   }
 }
 
@@ -344,44 +372,46 @@ ags_recall_ladspa_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
 }
 
-float*
-ags_recall_ladspa_short_to_float(signed short *buffer)
+void
+ags_recall_ladspa_short_to_float(signed short *buffer,
+				 float *destination)
 {
   float *new_buffer;
   guint i;
 
-  new_buffer = (float *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(float));
+  new_buffer = destination;
 
   for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
-    new_buffer[i] = buffer[i] / G_MAXINT16;
+    new_buffer[i] += buffer[i] / (G_MAXFLOAT / G_MAXINT16);
   }
-
-  return(new_buffer);
 }
 
-signed short*
-ags_recall_ladspa_float_to_short(float *buffer)
+void
+ags_recall_ladspa_float_to_short(float *buffer,
+				 signed short *destination)
 {
   signed short *new_buffer;
   guint i;
 
-  new_buffer = (signed short *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(signed short));
+  new_buffer = destination;
 
   for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
-    new_buffer[i] = buffer[i] * G_MAXINT16;
+    new_buffer[i] += buffer[i] * (G_MAXFLOAT / G_MAXINT16);
   }
 
   return(new_buffer);
 }
 
 AgsRecallLadspa*
-ags_recall_ladspa_new(gchar *filename,
+ags_recall_ladspa_new(AgsChannel *source,
+		      gchar *filename,
 		      gchar *effect,
 		      guint index)
 {
   AgsRecallLadspa *recall_ladspa;
 
   recall_ladspa = (AgsRecallLadspa *) g_object_new(AGS_TYPE_RECALL_LADSPA,
+						   "source\0", source,
 						   "filename\0", filename,
 						   "effect\0", effect,
 						   "index\0", index,

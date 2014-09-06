@@ -87,6 +87,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_timestamp_factory.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
 	ags-ags_recall_ladspa.$(OBJEXT) \
+	ags-ags_recall_ladspa_run.$(OBJEXT) \
 	ags-ags_recall_channel.$(OBJEXT) \
 	ags-ags_recall_audio_run.$(OBJEXT) ags-ags_pattern.$(OBJEXT) \
 	ags-ags_channel_iter.$(OBJEXT) \
@@ -560,6 +561,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_input.h \
 	./src/ags/audio/ags_recall_ladspa.h \
 	./src/ags/audio/ags_recall_ladspa.c \
+	./src/ags/audio/ags_recall_ladspa_run.h \
+	./src/ags/audio/ags_recall_ladspa_run.c \
 	./src/ags/audio/ags_recall_channel.c \
 	./src/ags/audio/ags_channel.h \
 	./src/ags/audio/ags_recall_audio_run.c \
@@ -1482,6 +1485,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_factory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_id.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_ladspa.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_ladspa_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recycling_container.Po@am__quote@
@@ -1892,6 +1896,20 @@ ags-ags_recall_ladspa.obj: ./src/ags/audio/ags_recall_ladspa.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_ladspa.c' object='ags-ags_recall_ladspa.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_ladspa.obj `if test -f './src/ags/audio/ags_recall_ladspa.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_ladspa.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_ladspa.c'; fi`
+
+ags-ags_recall_ladspa_run.o: ./src/ags/audio/ags_recall_ladspa_run.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_ladspa_run.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_ladspa_run.Tpo -c -o ags-ags_recall_ladspa_run.o `test -f './src/ags/audio/ags_recall_ladspa_run.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_ladspa_run.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_ladspa_run.Tpo $(DEPDIR)/ags-ags_recall_ladspa_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_ladspa_run.c' object='ags-ags_recall_ladspa_run.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_ladspa_run.o `test -f './src/ags/audio/ags_recall_ladspa_run.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_ladspa_run.c
+
+ags-ags_recall_ladspa_run.obj: ./src/ags/audio/ags_recall_ladspa_run.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_ladspa_run.obj -MD -MP -MF $(DEPDIR)/ags-ags_recall_ladspa_run.Tpo -c -o ags-ags_recall_ladspa_run.obj `if test -f './src/ags/audio/ags_recall_ladspa_run.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_ladspa_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_ladspa_run.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_ladspa_run.Tpo $(DEPDIR)/ags-ags_recall_ladspa_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_ladspa_run.c' object='ags-ags_recall_ladspa_run.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_ladspa_run.obj `if test -f './src/ags/audio/ags_recall_ladspa_run.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_ladspa_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_ladspa_run.c'; fi`
 
 ags-ags_recall_channel.o: ./src/ags/audio/ags_recall_channel.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_channel.Tpo -c -o ags-ags_recall_channel.o `test -f './src/ags/audio/ags_recall_channel.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_channel.c

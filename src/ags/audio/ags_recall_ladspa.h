@@ -25,6 +25,8 @@
 #include <ladspa.h>
 
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_RECALL_LADSPA                (ags_recall_ladspa_get_type())
 #define AGS_RECALL_LADSPA(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_LADSPA, AgsRecallLadspa))
@@ -38,27 +40,29 @@ typedef struct _AgsRecallLadspaClass AgsRecallLadspaClass;
 
 struct _AgsRecallLadspa
 {
-  AgsRecall recall;
+  AgsRecallChannelRun recall_channel_run;
 
   gchar *filename;
   gchar *effect;
   guint index;
 
-  LADSPA_Data *input;
-  LADSPA_Data *output;
+  LADSPA_Descriptor *plugin_descriptor;
 };
 
 struct _AgsRecallLadspaClass
 {
-  AgsRecallClass recall;
+  AgsRecallChannelRunClass recall_channel_run;
 };
 
 GType ags_recall_ladspa_get_type();
 
-float* ags_recall_ladspa_short_to_float(signed short *buffer);
-signed short* ags_recall_ladspa_float_to_short(float *buffer);
+void ags_recall_ladspa_short_to_float(signed short *buffer,
+				      float *destination);
+void ags_recall_ladspa_float_to_short(float *buffer,
+				      signed short *destination);
 
-AgsRecallLadspa* ags_recall_ladspa_new(gchar *filename,
+AgsRecallLadspa* ags_recall_ladspa_new(AgsChannel *source,
+				       gchar *filename,
 				       gchar *effect,
 				       guint index);
 

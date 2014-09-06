@@ -98,7 +98,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       gtk_widget_show_all((GtkWidget *) hbox);
 
       /* ladspa play */
-      recall_ladspa = ags_recall_ladspa_new(filename,
+      recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
+					    filename,
 					    effect,
 					    index);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -114,7 +115,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			    add_recall);
 
       /* ladspa recall */
-      recall_ladspa = ags_recall_ladspa_new(filename,
+      recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
+					    filename,
 					    effect,
 					    index);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
