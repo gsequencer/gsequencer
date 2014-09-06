@@ -97,10 +97,11 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			 0);
       gtk_widget_show_all((GtkWidget *) hbox);
 
-      /* ladspa recall */
+      /* ladspa play */
       recall_ladspa = ags_recall_ladspa_new(filename,
 					    effect,
 					    index);
+      AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       ags_plugin_set_ports(AGS_PLUGIN(recall_ladspa),
 			   NULL);
 
@@ -112,12 +113,21 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       list = g_list_prepend(list,
 			    add_recall);
 
+      /* ladspa recall */
+      recall_ladspa = ags_recall_ladspa_new(filename,
+					    effect,
+					    index);
+      AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
+      ags_plugin_set_ports(AGS_PLUGIN(recall_ladspa),
+			   NULL);
+
       add_recall = ags_add_recall_new(line_editor->channel,
 				      recall_ladspa,
 				      FALSE);
       list = g_list_prepend(list,
 			    add_recall);
 
+      /* launch task */
       ags_task_thread_append_tasks(task_thread,
 				   list);
     }

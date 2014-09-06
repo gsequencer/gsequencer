@@ -244,6 +244,10 @@ ags_line_editor_reset(AgsApplicable *applicable)
   if(line_editor->link_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->link_editor));
   }
+
+  if(line_editor->member_editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(line_editor->member_editor));
+  }
 }
 
 void

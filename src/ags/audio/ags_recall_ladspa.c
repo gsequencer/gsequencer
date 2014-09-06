@@ -199,7 +199,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
 	return;
       }
 
-      recall_ladspa->filename = filename;
+      recall_ladspa->filename = g_strdup(filename);
     }
     break;
   case PROP_EFFECT:
@@ -212,7 +212,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
 	return;
       }
 
-      recall_ladspa->effect = effect;
+      recall_ladspa->effect = g_strdup(effect);
     }
     break;
   case PROP_INDEX:
@@ -277,8 +277,11 @@ ags_recall_ladspa_disconnect(AgsConnectable *connectable)
 void
 ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 {
+  static const gchar *default_path = "/usr/lib/ladspa\0";
+
   AgsRecallLadspa *recall_ladspa;
   AgsPort *current;
+  gchar *path;
   guint port_count;
   guint i;
 
@@ -290,7 +293,12 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   LADSPA_Data lower_bound, upper_bound;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
-  plugin_so = dlopen(recall_ladspa->filename,
+
+  path = g_strdup_printf("%s/%s\0",
+			 default_path,
+			 recall_ladspa->filename);
+
+  plugin_so = dlopen(path,
 		     RTLD_NOW);
 
   if(plugin_so){
