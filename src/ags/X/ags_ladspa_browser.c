@@ -342,10 +342,6 @@ ags_ladspa_browser_combo_box_controls_new()
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
-				 "toggle button\0");
-  gtk_combo_box_text_append_text(combo_box,
-				 "combo box text\0");
-  gtk_combo_box_text_append_text(combo_box,
 				 "spin button\0");
   gtk_combo_box_text_append_text(combo_box,
 				 "dial\0");
@@ -353,6 +349,9 @@ ags_ladspa_browser_combo_box_controls_new()
 				 "vertical scale\0");
   gtk_combo_box_text_append_text(combo_box,
 				 "horizontal scale\0");
+
+  gtk_combo_box_set_active(combo_box,
+			   1);
 
   return(combo_box);
 }

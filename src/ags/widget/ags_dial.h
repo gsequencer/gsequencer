@@ -69,12 +69,6 @@ struct _AgsDial
 
   GtkAdjustment *adjustment;
 
-  pthread_t idle_thread;
-  pthread_attr_t idle_thread_attr;
-  pthread_mutex_t idle_mutex;
-  pthread_mutexattr_t idle_mutex_attr;
-  pthread_cond_t idle_cond;
-
   gdouble gravity_x;
   gdouble gravity_y;
   gdouble current_x;
