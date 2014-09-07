@@ -33,6 +33,7 @@ void ags_dial_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_dial_show(GtkWidget *widget);
 
+void ags_dial_map(GtkWidget *widget);
 void ags_dial_realize(GtkWidget *widget);
 void ags_dial_size_request(GtkWidget *widget,
 			   GtkRequisition   *requisition);
@@ -101,6 +102,7 @@ ags_dial_class_init(AgsDialClass *dial)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) dial;
 
+  widget->map = ags_dial_map;
   widget->realize = ags_dial_realize;
   widget->expose_event = ags_dial_expose;
   widget->size_request = ags_dial_size_request;
@@ -124,13 +126,13 @@ ags_dial_class_init(AgsDialClass *dial)
 void
 ags_dial_init(AgsDial *dial)
 {
-  gtk_widget_set_has_window(dial,
-  			    TRUE);
   g_object_set(G_OBJECT(dial),
   	       "app-paintable\0", TRUE,
   	       NULL);
 
   dial->flags = 0; //AGS_DIAL_WITH_BUTTONS;
+
+  dial->adjustment = NULL;
 
   dial->radius = 8;
   dial->scale_precision = 8;
@@ -149,6 +151,10 @@ ags_dial_init(AgsDial *dial)
   dial->gravity_y = 0.0;
   dial->current_x = 0.0;
   dial->current_y = 0.0;
+
+  gtk_widget_set_size_request(dial,
+			      2 * dial->radius + 2 * dial->outline_strength + dial->button_width,
+			      2 * dial->radius + 2 * dial->outline_strength);
 }
 
 void
@@ -209,6 +215,16 @@ ags_dial_get_property(GObject *gobject,
 }
 
 void
+ags_dial_map(GtkWidget *widget)
+{
+  if (gtk_widget_get_realized (widget) && !gtk_widget_get_mapped (widget)) {
+    GTK_WIDGET_CLASS (ags_dial_parent_class)->map (widget);
+    
+    gdk_window_show(widget->window);
+  }
+}
+
+void
 ags_dial_realize(GtkWidget *widget)
 {
   AgsDial *dial;
@@ -219,6 +235,8 @@ ags_dial_realize(GtkWidget *widget)
 
   g_return_if_fail (widget != NULL);
   g_return_if_fail (AGS_IS_DIAL (widget));
+
+  gtk_widget_set_realized (widget, TRUE);
 
   dial = AGS_DIAL(widget);
 
@@ -254,14 +272,7 @@ ags_dial_realize(GtkWidget *widget)
     cairo_destroy(cr);
   }
 
-  //    gtk_widget_set_size_request(widget,
-  //				2 * dial->radius + 2 * dial->outline_strength + buttons_width,
-  //				2 * dial->radius + 2 * dial->outline_strength);
-
-
   /*  */
-  gtk_widget_set_realized (widget, TRUE);
-
   attributes.window_type = GDK_WINDOW_CHILD;
   
   attributes.x = widget->allocation.x;
@@ -293,9 +304,6 @@ ags_dial_realize(GtkWidget *widget)
 
   widget->style = gtk_style_attach (widget->style, widget->window);
   gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
-
-  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-  dial = AGS_DIAL (widget);
 }
 
 void
@@ -551,7 +559,6 @@ void
 ags_dial_draw(AgsDial *dial)
 {
   GtkWidget *widget;
-  GdkWindow *window;
   cairo_t *cr;
   cairo_text_extents_t te_up, te_down;
   gdouble button_width, button_height, margin_left, margin_right;

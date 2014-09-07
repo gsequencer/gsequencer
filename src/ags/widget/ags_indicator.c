@@ -20,7 +20,26 @@
 
 void ags_indicator_class_init(AgsIndicatorClass *indicator);
 void ags_indicator_init(AgsIndicator *indicator);
+void ags_indicator_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_indicator_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
 void ags_indicator_show(GtkWidget *widget);
+
+void ags_indicator_realize(GtkWidget *widget);
+void ags_indicator_size_request(GtkWidget *widget,
+				GtkRequisition   *requisition);
+void ags_indicator_size_allocate(GtkWidget *widget,
+				 GtkAllocation *allocation);
+
+enum{
+  PROP_0,
+  PROP_ADJUSTMENT,
+};
 
 static gpointer ags_indicator_parent_class = NULL;
 
@@ -53,17 +72,183 @@ ags_indicator_get_type(void)
 void
 ags_indicator_class_init(AgsIndicatorClass *indicator)
 {
+  GObjectClass *gobject;
   GtkWidgetClass *widget;
+  GParamSpec *param_spec;
 
   ags_indicator_parent_class = g_type_class_peek_parent(indicator);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) indicator;
+
+  gobject->set_property = ags_indicator_set_property;
+  gobject->get_property = ags_indicator_get_property;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) indicator;
+
+  widget->realize = ags_indicator_realize;
+  widget->size_request = ags_indicator_size_request;
+  widget->size_allocate = ags_indicator_size_allocate;
+  widget->show = ags_indicator_show;
+
+  /* properties */
+  param_spec = g_param_spec_object("adjustment\0",
+				   "assigned adjustment\0",
+				   "The adjustment it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ADJUSTMENT,
+				  param_spec);
 }
 
 void
 ags_indicator_init(AgsIndicator *indicator)
 {
+  gtk_widget_set_has_window(indicator,
+  			    TRUE);
   g_object_set(G_OBJECT(indicator),
 	       "app-paintable\0", TRUE,
 	       NULL);
+
+  indicator->adjustment = NULL;
+}
+
+void
+ags_indicator_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsIndicator *indicator;
+
+  indicator = AGS_INDICATOR(gobject);
+
+  switch(prop_id){
+  case PROP_ADJUSTMENT:
+    {
+      GtkAdjustment *adjustment;
+
+      adjustment = (GtkAdjustment *) g_value_get_object(value);
+
+      if(indicator->adjustment == adjustment)
+	return;
+
+      if(indicator->adjustment != NULL){
+	g_object_unref(G_OBJECT(indicator->adjustment));
+      }
+
+      if(adjustment != NULL){
+	g_object_ref(G_OBJECT(adjustment));
+      }
+
+      indicator->adjustment = (GObject *) adjustment;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_indicator_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec)
+{
+  AgsIndicator *indicator;
+
+  indicator = AGS_INDICATOR(gobject);
+
+  switch(prop_id){
+  case PROP_ADJUSTMENT:
+    g_value_set_object(value, indicator->adjustment);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_indicator_realize(GtkWidget *widget)
+{
+  AgsIndicator *indicator;
+  GdkWindowAttr attributes;
+  gint attributes_mask;
+  gint buttons_width;
+  gint border_left, border_top;
+
+  g_return_if_fail (widget != NULL);
+  g_return_if_fail (AGS_IS_INDICATOR (widget));
+
+  indicator = AGS_INDICATOR(widget);
+
+  /*  */
+  gtk_widget_set_realized (widget, TRUE);
+
+  attributes.window_type = GDK_WINDOW_CHILD;
+  
+  attributes.x = widget->allocation.x;
+  attributes.y = widget->allocation.y;
+  attributes.width = widget->allocation.width;
+  attributes.height = widget->allocation.height;
+
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+
+  attributes.window_type = GDK_WINDOW_CHILD;
+
+  attributes.wclass = GDK_INPUT_OUTPUT;
+  attributes.visual = gtk_widget_get_visual (widget);
+  attributes.colormap = gtk_widget_get_colormap (widget);
+  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.event_mask |= (GDK_EXPOSURE_MASK |
+                            GDK_BUTTON_PRESS_MASK |
+                            GDK_BUTTON_RELEASE_MASK |
+                            GDK_BUTTON1_MOTION_MASK |
+                            GDK_BUTTON3_MOTION_MASK |
+                            GDK_POINTER_MOTION_HINT_MASK |
+                            GDK_POINTER_MOTION_MASK |
+                            GDK_ENTER_NOTIFY_MASK |
+                            GDK_LEAVE_NOTIFY_MASK);
+
+  widget->window = gdk_window_new (gtk_widget_get_parent_window (widget),
+				   &attributes, attributes_mask);
+  gdk_window_set_user_data (widget->window, indicator);
+
+  widget->style = gtk_style_attach (widget->style, widget->window);
+  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+
+  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+  indicator = AGS_INDICATOR (widget);
+}
+
+void
+ags_indicator_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->show(widget);
+}
+
+void
+ags_indicator_size_request(GtkWidget *widget,
+			   GtkRequisition *requisition)
+{
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->size_request(widget, requisition);
+
+  /* implement me */
+  //TODO:JK:
+}
+
+void
+ags_indicator_size_allocate(GtkWidget *widget,
+			    GtkAllocation *allocation)
+{
+  GTK_WIDGET_CLASS(ags_indicator_parent_class)->size_allocate(widget, allocation);
+
+  /* implement me */
+  //TODO:JK:
 }
 
 AgsIndicator*
