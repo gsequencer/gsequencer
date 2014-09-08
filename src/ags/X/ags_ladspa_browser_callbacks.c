@@ -124,7 +124,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
     if(dlerror() == NULL && ladspa_descriptor){
       plugin_descriptor = ladspa_descriptor(index);
-   
+
+      port_descriptor = plugin_descriptor->PortDescriptors;   
 
       /* update ui */
       label = GTK_LABEL(list->data);
@@ -168,6 +169,11 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
       }
 
       for(i = 0; i < port_count; i++){
+	if(!(LADSPA_IS_PORT_INPUT(port_descriptor[i]) && 
+	     LADSPA_IS_PORT_CONTROL(port_descriptor[i]))){
+	  continue;
+	}
+
 	str = g_strdup(plugin_descriptor->PortNames[i]);
 
 	label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,

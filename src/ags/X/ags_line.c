@@ -226,6 +226,10 @@ ags_line_init(AgsLine *line)
 		     0);
 
   line->expander = ags_expander_new(1, 1);
+  gtk_table_set_row_spacings(line->expander->table,
+			     2);
+  gtk_table_set_col_spacings(line->expander->table,
+			     2);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->expander),
 		     TRUE, TRUE,
@@ -321,7 +325,9 @@ ags_line_connect(AgsConnectable *connectable)
   list = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
   
   while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    }
 
     list = list->next;
   }

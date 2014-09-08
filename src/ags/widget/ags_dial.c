@@ -102,7 +102,7 @@ ags_dial_class_init(AgsDialClass *dial)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) dial;
 
-  widget->map = ags_dial_map;
+  //  widget->map = ags_dial_map;
   widget->realize = ags_dial_realize;
   widget->expose_event = ags_dial_expose;
   widget->size_request = ags_dial_size_request;
@@ -218,9 +218,10 @@ void
 ags_dial_map(GtkWidget *widget)
 {
   if (gtk_widget_get_realized (widget) && !gtk_widget_get_mapped (widget)) {
-    GTK_WIDGET_CLASS (ags_dial_parent_class)->map (widget);
+    GTK_WIDGET_CLASS (ags_dial_parent_class)->map(widget);
     
     gdk_window_show(widget->window);
+    ags_dial_draw(widget);
   }
 }
 
@@ -236,9 +237,9 @@ ags_dial_realize(GtkWidget *widget)
   g_return_if_fail (widget != NULL);
   g_return_if_fail (AGS_IS_DIAL (widget));
 
-  gtk_widget_set_realized (widget, TRUE);
-
   dial = AGS_DIAL(widget);
+
+  gtk_widget_set_realized (widget, TRUE);
 
   /* calculate some display dependend fields */
   buttons_width = 0;
@@ -304,12 +305,16 @@ ags_dial_realize(GtkWidget *widget)
 
   widget->style = gtk_style_attach (widget->style, widget->window);
   gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+
+  gtk_widget_queue_resize (widget);
 }
 
 void
 ags_dial_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_dial_parent_class)->show(widget);
+
+  //  ags_dial_draw(widget);
 }
 
 void
@@ -336,8 +341,6 @@ gboolean
 ags_dial_expose(GtkWidget *widget,
 		GdkEventExpose *event)
 {
-  //  GTK_WIDGET_CLASS(ags_dial_parent_class)->expose_event(widget, event);
-
   ags_dial_draw(AGS_DIAL(widget));
 
   return(FALSE);

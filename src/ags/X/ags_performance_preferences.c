@@ -151,4 +151,3 @@ ags_performance_preferences_new()
   
   return(performance_preferences);
 }
-

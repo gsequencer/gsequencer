@@ -281,6 +281,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   AgsRecallLadspa *recall_ladspa;
   AgsPort *current;
   gchar *path;
+  gchar *plugin_name;
   guint port_count;
   guint i;
 
@@ -292,6 +293,91 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   LADSPA_Data lower_bound, upper_bound;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
+
+  path = g_strdup_printf("%s/%s\0",
+			 default_path,
+			 recall_ladspa->filename);
+
+  plugin_so = dlopen(path,
+		     RTLD_NOW);
+  
+  if(plugin_so){
+    dlerror();
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+
+    if(dlerror() == NULL && ladspa_descriptor){
+      recall_ladspa->plugin_descriptor = 
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+
+      port_count = plugin_descriptor->PortCount;
+      port_descriptor = plugin_descriptor->PortDescriptors;
+
+      while(port != NULL){
+	for(i = 0; i < port_count; i++){
+	  plugin_name = g_strdup_printf("ladspa-%s\0", plugin_descriptor->UniqueID);
+
+	  if(!g_strcmp0(plugin_name,
+			AGS_PORT(port->data)->plugin_name)){
+	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
+	      //TODO:JK: implement me
+	    }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	      //TODO:JK: implement me
+	    }else if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	      current = AGS_PORT(port->data);
+
+	      plugin_descriptor->connect_port(plugin_descriptor,
+					      i,
+					      &(current->port_value.ags_port_double));
+	    }else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
+	      //TODO:JK: implement me
+	    }
+
+	    g_free(plugin_name);
+
+	    break;
+	  }
+
+	  g_free(plugin_name);
+	}
+
+	port = port->next;
+      }
+    }
+
+    //TODO:JK: check for object leak
+    //    dlclose(plugin_so);
+  }
+
+  AGS_RECALL(recall_ladspa)->port = port;
+}
+
+void
+ags_recall_ladspa_finalize(GObject *gobject)
+{
+  //TODO:JK: implement me
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
+}
+
+GList*
+ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
+{
+  static const gchar *default_path = "/usr/lib/ladspa\0";
+
+  AgsPort *current;
+  GList *port;
+  gchar *path;
+  guint port_count;
+  guint i;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_PortRangeHintDescriptor hint_descriptor;
+  LADSPA_Data lower_bound, upper_bound;
 
   path = g_strdup_printf("%s/%s\0",
 			 default_path,
@@ -315,17 +401,14 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
       port_descriptor = plugin_descriptor->PortDescriptors;
 
       for(i = 0; i < port_count; i++){
-	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
-	  //TODO:JK: implement me
-	}else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	  //TODO:JK: implement me
-	}else if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) && 
+	   LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
 	  gchar *plugin_name;
 	  gchar *specifier;
 
 	  hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
 
-	  plugin_name = g_strdup_printf("ladspa-%s\0", plugin_descriptor->UniqueID);
+	  plugin_name = g_strdup_printf("ladspa-%lu\0", plugin_descriptor->UniqueID);
 	  specifier = g_strdelimit(g_strdup(plugin_descriptor->PortNames[i]),
 				   NULL,
 				   '-');
@@ -348,6 +431,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 					  i,
 					  &(current->port_value.ags_port_double));
 
+	  g_message("prepend");
 	  port = g_list_prepend(port,
 				current);
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
@@ -361,15 +445,8 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
     //TODO:JK: check for object leak
     //    dlclose(plugin_so);
   }
-}
 
-void
-ags_recall_ladspa_finalize(GObject *gobject)
-{
-  //TODO:JK: implement me
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
+  return(AGS_RECALL(recall_ladspa)->port);
 }
 
 void

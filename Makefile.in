@@ -184,6 +184,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_recall_audio.$(OBJEXT) ags-ags_expander.$(OBJEXT) \
 	ags-ags_expander_set.$(OBJEXT) ags-ags_dial.$(OBJEXT) \
 	ags-ags_menu.$(OBJEXT) ags-ags_htimebar.$(OBJEXT) \
+	ags-ags_indicator.$(OBJEXT) ags-ags_vindicator.$(OBJEXT) \
 	ags-ags_timebar.$(OBJEXT) ags-ags_segment.$(OBJEXT) \
 	ags-ags_menu_item.$(OBJEXT) ags-ags_option_menu.$(OBJEXT) \
 	ags-ags_table.$(OBJEXT) ags-ags_led.$(OBJEXT) \
@@ -808,6 +809,10 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/widget/ags_menu_item.h \
 	./src/ags/widget/ags_option_menu.h \
 	./src/ags/widget/ags_htimebar.c ./src/ags/widget/ags_segment.h \
+	./src/ags/widget/ags_indicator.h \
+	./src/ags/widget/ags_indicator.c \
+	./src/ags/widget/ags_vindicator.h \
+	./src/ags/widget/ags_vindicator.c \
 	./src/ags/widget/ags_timebar.c ./src/ags/widget/ags_dial.h \
 	./src/ags/widget/ags_segment.c \
 	./src/ags/widget/ags_menu_item.c \
@@ -1368,6 +1373,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_gui_thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_htimebar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_id_generator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_indicator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_init_audio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_init_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_inline_player.Po@am__quote@
@@ -1551,6 +1557,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_toolbar_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_tree_iterator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_unref_audio_signal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_vindicator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_volume_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_volume_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_volume_channel_run.Po@am__quote@
@@ -3691,6 +3698,34 @@ ags-ags_htimebar.obj: ./src/ags/widget/ags_htimebar.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/widget/ags_htimebar.c' object='ags-ags_htimebar.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_htimebar.obj `if test -f './src/ags/widget/ags_htimebar.c'; then $(CYGPATH_W) './src/ags/widget/ags_htimebar.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_htimebar.c'; fi`
+
+ags-ags_indicator.o: ./src/ags/widget/ags_indicator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_indicator.o -MD -MP -MF $(DEPDIR)/ags-ags_indicator.Tpo -c -o ags-ags_indicator.o `test -f './src/ags/widget/ags_indicator.c' || echo '$(srcdir)/'`./src/ags/widget/ags_indicator.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_indicator.Tpo $(DEPDIR)/ags-ags_indicator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/widget/ags_indicator.c' object='ags-ags_indicator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_indicator.o `test -f './src/ags/widget/ags_indicator.c' || echo '$(srcdir)/'`./src/ags/widget/ags_indicator.c
+
+ags-ags_indicator.obj: ./src/ags/widget/ags_indicator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_indicator.obj -MD -MP -MF $(DEPDIR)/ags-ags_indicator.Tpo -c -o ags-ags_indicator.obj `if test -f './src/ags/widget/ags_indicator.c'; then $(CYGPATH_W) './src/ags/widget/ags_indicator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_indicator.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_indicator.Tpo $(DEPDIR)/ags-ags_indicator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/widget/ags_indicator.c' object='ags-ags_indicator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_indicator.obj `if test -f './src/ags/widget/ags_indicator.c'; then $(CYGPATH_W) './src/ags/widget/ags_indicator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_indicator.c'; fi`
+
+ags-ags_vindicator.o: ./src/ags/widget/ags_vindicator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_vindicator.o -MD -MP -MF $(DEPDIR)/ags-ags_vindicator.Tpo -c -o ags-ags_vindicator.o `test -f './src/ags/widget/ags_vindicator.c' || echo '$(srcdir)/'`./src/ags/widget/ags_vindicator.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_vindicator.Tpo $(DEPDIR)/ags-ags_vindicator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/widget/ags_vindicator.c' object='ags-ags_vindicator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_vindicator.o `test -f './src/ags/widget/ags_vindicator.c' || echo '$(srcdir)/'`./src/ags/widget/ags_vindicator.c
+
+ags-ags_vindicator.obj: ./src/ags/widget/ags_vindicator.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_vindicator.obj -MD -MP -MF $(DEPDIR)/ags-ags_vindicator.Tpo -c -o ags-ags_vindicator.obj `if test -f './src/ags/widget/ags_vindicator.c'; then $(CYGPATH_W) './src/ags/widget/ags_vindicator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_vindicator.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_vindicator.Tpo $(DEPDIR)/ags-ags_vindicator.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/widget/ags_vindicator.c' object='ags-ags_vindicator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_vindicator.obj `if test -f './src/ags/widget/ags_vindicator.c'; then $(CYGPATH_W) './src/ags/widget/ags_vindicator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/widget/ags_vindicator.c'; fi`
 
 ags-ags_timebar.o: ./src/ags/widget/ags_timebar.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_timebar.o -MD -MP -MF $(DEPDIR)/ags-ags_timebar.Tpo -c -o ags-ags_timebar.o `test -f './src/ags/widget/ags_timebar.c' || echo '$(srcdir)/'`./src/ags/widget/ags_timebar.c

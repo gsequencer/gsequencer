@@ -213,12 +213,20 @@ ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_line_member_init(AgsLineMember *line_member)
 {
+  GtkWidget *control;
+
   g_signal_connect_after((GObject *) line_member, "parent_set\0",
 			 G_CALLBACK(ags_line_member_parent_set_callback), (gpointer) line_member);
 
   line_member->flags = AGS_LINE_MEMBER_RESET_BY_ATOMIC;
 
   line_member->widget_type = AGS_TYPE_DIAL;
+  control = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
+				       "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
+				       NULL);
+  gtk_container_add(GTK_CONTAINER(line_member),
+		    control);
+
   line_member->widget_label = NULL;
 
   line_member->plugin_name = NULL;
@@ -292,7 +300,7 @@ ags_line_member_set_property(GObject *gobject,
 	return;
       }
 
-      line_member->plugin_name = plugin_name;
+      line_member->plugin_name = g_strdup(plugin_name);
     }
     break;
   case PROP_SPECIFIER:
@@ -318,7 +326,7 @@ ags_line_member_set_property(GObject *gobject,
 	return;
       }
 
-      line_member->control_port = control_port;
+      line_member->control_port = g_strdup(control_port);
     }
     break;
   case PROP_PORT:

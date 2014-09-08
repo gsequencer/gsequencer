@@ -50,6 +50,7 @@
 
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_expander.h>
+#include <ags/widget/ags_vindicator.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
@@ -150,11 +151,18 @@ ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
-  AgsLineMember *line_member;
   GtkWidget *widget;
+  AgsLineMember *line_member;
+  AgsVIndicator *vindicator;
 
   g_signal_connect_after((GObject *) drum_input_line, "parent_set\0",
 			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
+
+  vindicator = ags_vindicator_new();
+  ags_expander_add(AGS_LINE(drum_input_line)->expander,
+		   GTK_WIDGET(vindicator),
+		   0, 0,
+		   1, 1);
 
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type\0", GTK_TYPE_VSCALE,
@@ -164,7 +172,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 					       NULL);
   ags_expander_add(AGS_LINE(drum_input_line)->expander,
 		   GTK_WIDGET(line_member),
-		   0, 0,
+		   1, 0,
 		   1, 1);
 
   widget = gtk_bin_get_child(GTK_BIN(line_member));
