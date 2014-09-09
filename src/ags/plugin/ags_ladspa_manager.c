@@ -20,17 +20,20 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
+
 void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
 void ags_ladspa_manager_init (AgsLadspaManager *ladspa_manager);
 void ags_ladspa_manager_finalize(GObject *gobject);
-
-void ags_ladspa_manager_real_add(AgsLadspaManager *ladspa_manager,
-				 GType ladspa_type, gchar *ladspa_name,
-				 gchar *version, gchar *build_id,
-				 gchar *xml_type,
-				 GParameter *control, guint control_count);
-AgsLadspa* ags_ladspa_manager_real_create(AgsLadspaManager *ladspa_manager,
-					  gchar *ladspa_name, gchar *version, gchar *build_id);
 
 enum{
   ADD,
@@ -42,6 +45,7 @@ static gpointer ags_ladspa_manager_parent_class = NULL;
 static guint ladspa_manager_signals[LAST_SIGNAL];
 
 static AgsLadspaManager *ags_ladspa_manager = NULL;
+static const gchar *ags_ladspa_default_path = "/usr/lib/ladspa\0";
 
 GType
 ags_ladspa_manager_get_type (void)
@@ -81,58 +85,164 @@ ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager)
   gobject = (GObjectClass *) ladspa_manager;
 
   gobject->finalize = ags_ladspa_manager_finalize;
-
-  /*  */
-  ladspa_manager->add = ags_ladspa_manager_real_add;
-  ladspa_manager->create = ags_ladspa_manager_real_create;
-
-  ladspa_manager_signals[ADD] =
-    g_signal_new("add\0",
-		 G_TYPE_FROM_CLASS (ladspa_manager),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsLadspaManagerClass, add),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER,
-		 G_TYPE_OBJECT, 7,
-		 G_TYPE_ULONG,
-		 G_TYPE_STRING,
-		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-		 G_TYPE_UINT, G_TYPE_POINTER);
-
-  ladspa_manager_signals[CREATE] =
-    g_signal_new("create\0",
-		 G_TYPE_FROM_CLASS (ladspa_manager),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsLadspaManagerClass, create),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING,
-		 G_TYPE_OBJECT, 3,
-		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 void
 ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
 {
-  ladspa_manager->ladspa = NULL;
+  ladspa_manager->ladspa_plugin = NULL;
 }
 
 void
 ags_ladspa_manager_finalize(GObject *gobject)
 {
-  //TODO:JK: implement me
+  AgsLadspaManager *ladspa_manager;
+  GList *ladspa_plugin;
+
+  ladspa_manager = AGS_LADSPA_MANAGER(gobject);
+
+  ladspa_plugin = ladspa_manager->ladspa_plugin;
+
+  g_list_free_full(ladspa_plugin,
+		   ags_ladspa_plugin_free);
+}
+
+AgsLadspaPlugin*
+ags_ladspa_plugin_alloc()
+{
+  AgsLadspaPlugin *ladspa_plugin;
+
+  ladspa_plugin = (AgsLadspaPlugin *) malloc(sizeof(AgsLadspaPlugin));
+
+  ladspa_plugin->flags = 0;
+  ladspa_plugin->filename = NULL;
+  ladspa_plugin->plugin_so = NULL;
+
+  return(ladspa_plugin);
 }
 
 void
-ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
-			     gchar *filename)
+ags_ladspa_plugin_free(AgsLadspaPlugin *ladspa_plugin)
 {
-  //TODO:JK: implement me
+  if(ladspa_plugin->plugin_so != NULL){
+    dlclose(ladspa_plugin->plugin_so);
+  }
+
+  free(ladspa_plugin->filename);
+  free(ladspa_plugin);
+}
+
+gchar**
+ags_ladspa_manager_get_filenames()
+{
+  AgsLadspaManager *ladspa_manager;
+  GList *ladspa_plugin;
+  gchar **filenames;
+  guint length;
+  guint i;
+
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  length = g_list_length(ladspa_manager->ladspa_plugin);
+
+  ladspa_plugin = ladspa_manager->ladspa_plugin;
+  filenames = (gchar **) malloc((length + 1) * sizeof(gchar *));
+
+  for(i = 0; i < length + 1; i++){
+    filenames[i] = AGS_LADSPA_PLUGIN(ladspa_plugin->data)->filename;
+    ladspa_plugin = ladspa_plugin->next;
+  }
+
+  filenames[i] = NULL;
+
+  return(filenames);
+}
+
+AgsLadspaPlugin*
+ags_ladspa_manager_find_ladspa_plugin(gchar *filename)
+{
+  AgsLadspaManager *ladspa_manager;
+  AgsLadspaPlugin *ladspa_plugin;
+  GList *list;
+
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  list = ladspa_manager->ladspa_plugin;
+
+  while(list != NULL){
+    ladspa_plugin = AGS_LADSPA_PLUGIN(list->data);
+    if(!g_strcmp0(ladspa_plugin->filename,
+		  filename)){
+      return(ladspa_plugin);
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
 }
 
 void
-ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
+ags_ladspa_manager_load_file(gchar *filename)
 {
-  //TODO:JK: implement me
+  AgsLadspaManager *ladspa_manager;
+  AgsLadspaPlugin *ladspa_plugin;
+  gchar *path;
+
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  pthread_mutex_lock(&(mutex));
+
+  path = g_strdup_printf("%s/%s\0",
+			 ags_ladspa_default_path,
+			 filename);
+
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+
+  if(ladspa_plugin == NULL){
+    ladspa_plugin = ags_ladspa_plugin_alloc();
+    ladspa_plugin->filename = filename;
+    ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
+						   ladspa_plugin);
+
+    ladspa_plugin->plugin_so = dlopen(path,
+				      RTLD_NOW);
+
+    if(ladspa_plugin->plugin_so){
+      dlerror();
+    }
+  }
+
+  pthread_mutex_unlock(&(mutex));
+
+  free(path);
+}
+
+void
+ags_ladspa_manager_load_default_directory()
+{
+  AgsLadspaManager *ladspa_manager;
+  AgsLadspaPlugin *ladspa_plugin;
+  GDir *dir;
+  gchar *filename;
+  GError *error;
+
+  error = NULL;
+  dir = g_dir_open(ags_ladspa_default_path,
+		   0,
+		   &error);
+
+  if(error != NULL){
+    g_warning(error->message);
+  }
+
+  while((filename = g_dir_read_name(dir)) != NULL){
+    if(g_str_has_suffix(filename,
+			".so\0")){
+      ags_ladspa_manager_load_file(filename);
+    }
+  }
 }
 
 AgsLadspaManager*
@@ -144,6 +254,7 @@ ags_ladspa_manager_get_instance()
 
   if(ags_ladspa_manager == NULL){
     ags_ladspa_manager = ags_ladspa_manager_new();
+    ags_ladspa_manager_load_default_directory();
   }
 
   pthread_mutex_unlock(&(mutex));

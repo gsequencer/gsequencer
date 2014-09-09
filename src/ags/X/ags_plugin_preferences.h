@@ -19,6 +19,8 @@
 #ifndef __AGS_PLUGIN_PREFERENCES_H__
 #define __AGS_PLUGIN_PREFERENCES_H__
 
+#include <glib.h>
+#include <glib-object.h>
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_PLUGIN_PREFERENCES                (ags_plugin_preferences_get_type())
@@ -30,13 +32,13 @@
 
 typedef struct _AgsPluginPreferences AgsPluginPreferences;
 typedef struct _AgsPluginPreferencesClass AgsPluginPreferencesClass;
+typedef struct _AgsLadspaPluginPreferences AgsLadspaPluginPreferences;
 
 struct _AgsPluginPreferences
 {
   GtkVBox vbox;
 
-  GtkEntry *ladspa_path;
-  GtkCellView *plugin_file;
+  AgsLadspaPluginPreferences *ladspa_plugin_preferencens;
 };
 
 struct _AgsPluginPreferencesClass
@@ -44,7 +46,15 @@ struct _AgsPluginPreferencesClass
   GtkVBoxClass vbox;
 };
 
+struct _AgsLadspaPluginPreferences
+{
+  GtkEntry *ladspa_path;
+  GtkCellView *plugin_file;
+};
+
 GType ags_plugin_preferences_get_type(void);
+
+AgsLadspaPluginPreferences* ags_ladspa_plugin_preferences_alloc();
 
 AgsPluginPreferences* ags_plugin_preferences_new();
 

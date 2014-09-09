@@ -18,6 +18,8 @@
 
 #include <ags/X/ags_ladspa_browser_callbacks.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/lib/ags_combo_box_text.h>
 
 #include <ags/object/ags_applicable.h>
@@ -36,6 +38,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					    AgsLadspaBrowser *ladspa_browser)
 {
   GtkComboBoxText *filename, *effect;
+  AgsLadspaPlugin *ladspa_plugin;
   GList *list;
   gchar *path;
 
@@ -49,16 +52,13 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   effect = GTK_COMBO_BOX(list->next->next->next->data);
 
   ags_combo_box_text_remove_all(effect);
-  
-  path = g_strdup_printf("%s/%s\0",
-			 ladspa_browser->path,
-			 gtk_combo_box_text_get_active_text(filename));
 
-  plugin_so = dlopen(path,
-		     RTLD_NOW);
+  ags_ladspa_manager_load_file(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  
+  plugin_so = ladspa_plugin->plugin_so;
 
   if(plugin_so){
-    dlerror();
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
@@ -73,8 +73,6 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 				       g_strdup_printf("%s:%lu\0", plugin_descriptor->Name, plugin_descriptor->UniqueID));
       }
     }
-    
-    dlclose(plugin_so);
   }
 
   gtk_combo_box_set_active(effect,
@@ -88,6 +86,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   GtkTable *table;
   GtkComboBoxText *filename, *effect;
   GtkLabel *label;
+  AgsLadspaPlugin *ladspa_plugin;
   GList *list, *children;
   gchar *path;
   gchar *str, *tmp;
@@ -107,18 +106,15 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->description));
 
-  path = g_strdup_printf("%s/%s\0",
-			 ladspa_browser->path,
-			 gtk_combo_box_text_get_active_text(filename));
-
-  plugin_so = dlopen(path,
-		     RTLD_NOW);
+  ags_ladspa_manager_load_file(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  
+  plugin_so = ladspa_plugin->plugin_so;
 
   index = gtk_combo_box_get_active(effect);
 
   if(plugin_so &&
      index != -1){
-    dlerror();
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 

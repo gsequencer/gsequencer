@@ -23,6 +23,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -114,13 +116,9 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   GtkTable *table;
   GtkComboBoxText *combo_box;
   GtkLabel *label;
-  GDir *dir;
   GList *list;
 
-  static const gchar *default_path = "/usr/lib/ladspa\0";
-  gchar *filename;
-
-  GError *error;
+  gchar **filenames, **filenames_start;
 
   ladspa_browser->parent = NULL;
 
@@ -147,25 +145,20 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  ladspa_browser->path = g_strdup(default_path);
+  ladspa_browser->path = NULL;
 
-  //TODO:JK: read environment variable
+  ags_ladspa_manager_load_default_directory();
+  filenames =
+    filenames_start = ags_ladspa_manager_get_filenames();
 
-  error = NULL;
-  dir = g_dir_open(ladspa_browser->path,
-		   0,
-		   &error);
+  while(*filenames != NULL){
+    gtk_combo_box_text_append_text(combo_box,
+				   *filenames);
 
-  //TODO:JK: perform error detection
-
-  while((filename = g_dir_read_name(dir)) != NULL){
-    if(g_str_has_suffix(filename,
-			".so\0")){
-      gtk_combo_box_text_append_text(combo_box,
-				     filename);
-    }
+    filenames++;
   }
 
+  free(filenames_start);
 
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),

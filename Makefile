@@ -78,12 +78,12 @@ libags_a_OBJECTS = $(am_libags_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
-	ags-ags_file.$(OBJEXT) ags-ags_file_id_ref.$(OBJEXT) \
-	ags-ags_file_lookup.$(OBJEXT) ags-ags_file_launch.$(OBJEXT) \
-	ags-ags_file_util.$(OBJEXT) ags-ags_file_thread.$(OBJEXT) \
-	ags-ags_file_sound.$(OBJEXT) ags-ags_file_gui.$(OBJEXT) \
-	ags-ags_file_link.$(OBJEXT) ags-ags_config.$(OBJEXT) \
-	ags-ags_timestamp.$(OBJEXT) \
+	ags-ags_ladspa_manager.$(OBJEXT) ags-ags_file.$(OBJEXT) \
+	ags-ags_file_id_ref.$(OBJEXT) ags-ags_file_lookup.$(OBJEXT) \
+	ags-ags_file_launch.$(OBJEXT) ags-ags_file_util.$(OBJEXT) \
+	ags-ags_file_thread.$(OBJEXT) ags-ags_file_sound.$(OBJEXT) \
+	ags-ags_file_gui.$(OBJEXT) ags-ags_file_link.$(OBJEXT) \
+	ags-ags_config.$(OBJEXT) ags-ags_timestamp.$(OBJEXT) \
 	ags-ags_timestamp_factory.$(OBJEXT) ags-ags_task.$(OBJEXT) \
 	ags-ags_port.$(OBJEXT) ags-ags_recall_factory.$(OBJEXT) \
 	ags-ags_recall_ladspa.$(OBJEXT) \
@@ -200,6 +200,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_preferences_callbacks.$(OBJEXT) \
 	ags-ags_audio_preferences.$(OBJEXT) \
 	ags-ags_audio_preferences_callbacks.$(OBJEXT) \
+	ags-ags_plugin_preferences.$(OBJEXT) \
+	ags-ags_plugin_preferences_callbacks.$(OBJEXT) \
 	ags-ags_server_preferences.$(OBJEXT) \
 	ags-ags_server_preferences_callbacks.$(OBJEXT) \
 	ags-ags_performance_preferences.$(OBJEXT) \
@@ -535,6 +537,8 @@ libags_a_SOURCES = ./src/ags-lib/object/ags_connectable.c ./src/ags-lib/object/a
 ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/plugin/ags_plugin_stock.h \
 	./src/ags/plugin/ags_plugin_factory.c \
+	./src/ags/plugin/ags_ladspa_manager.h \
+	./src/ags/plugin/ags_ladspa_manager.c \
 	./src/ags/audio/ags_file.h ./src/ags/file/ags_file.c \
 	./src/ags/audio/ags_file_stock.h \
 	./src/ags/file/ags_file_id_ref.h \
@@ -854,6 +858,10 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/X/ags_audio_preferences.h \
 	./src/ags/X/ags_audio_preferences_callbacks.c \
 	./src/ags/X/ags_audio_preferences_callbacks.h \
+	./src/ags/X/ags_plugin_preferences.c \
+	./src/ags/X/ags_plugin_preferences.h \
+	./src/ags/X/ags_plugin_preferences_callbacks.c \
+	./src/ags/X/ags_plugin_preferences_callbacks.h \
 	./src/ags/X/ags_server_preferences.c \
 	./src/ags/X/ags_server_preferences.h \
 	./src/ags/X/ags_server_preferences_callbacks.c \
@@ -1384,6 +1392,7 @@ include ./$(DEPDIR)/ags-ags_ipatch_sf2_reader.Po
 include ./$(DEPDIR)/ags-ags_iterator_thread.Po
 include ./$(DEPDIR)/ags-ags_ladspa_browser.Po
 include ./$(DEPDIR)/ags-ags_ladspa_browser_callbacks.Po
+include ./$(DEPDIR)/ags-ags_ladspa_manager.Po
 include ./$(DEPDIR)/ags-ags_led.Po
 include ./$(DEPDIR)/ags-ags_line.Po
 include ./$(DEPDIR)/ags-ags_line_callbacks.Po
@@ -1474,6 +1483,8 @@ include ./$(DEPDIR)/ags-ags_play_recycling.Po
 include ./$(DEPDIR)/ags-ags_playable.Po
 include ./$(DEPDIR)/ags-ags_plugin.Po
 include ./$(DEPDIR)/ags-ags_plugin_factory.Po
+include ./$(DEPDIR)/ags-ags_plugin_preferences.Po
+include ./$(DEPDIR)/ags-ags_plugin_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_port.Po
 include ./$(DEPDIR)/ags-ags_portlet.Po
 include ./$(DEPDIR)/ags-ags_preferences.Po
@@ -1682,6 +1693,20 @@ ags-ags_plugin_factory.obj: ./src/ags/plugin/ags_plugin_factory.c
 #	source='./src/ags/plugin/ags_plugin_factory.c' object='ags-ags_plugin_factory.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_plugin_factory.obj `if test -f './src/ags/plugin/ags_plugin_factory.c'; then $(CYGPATH_W) './src/ags/plugin/ags_plugin_factory.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/plugin/ags_plugin_factory.c'; fi`
+
+ags-ags_ladspa_manager.o: ./src/ags/plugin/ags_ladspa_manager.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_manager.o -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_manager.Tpo -c -o ags-ags_ladspa_manager.o `test -f './src/ags/plugin/ags_ladspa_manager.c' || echo '$(srcdir)/'`./src/ags/plugin/ags_ladspa_manager.c
+	$(am__mv) $(DEPDIR)/ags-ags_ladspa_manager.Tpo $(DEPDIR)/ags-ags_ladspa_manager.Po
+#	source='./src/ags/plugin/ags_ladspa_manager.c' object='ags-ags_ladspa_manager.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_manager.o `test -f './src/ags/plugin/ags_ladspa_manager.c' || echo '$(srcdir)/'`./src/ags/plugin/ags_ladspa_manager.c
+
+ags-ags_ladspa_manager.obj: ./src/ags/plugin/ags_ladspa_manager.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_ladspa_manager.obj -MD -MP -MF $(DEPDIR)/ags-ags_ladspa_manager.Tpo -c -o ags-ags_ladspa_manager.obj `if test -f './src/ags/plugin/ags_ladspa_manager.c'; then $(CYGPATH_W) './src/ags/plugin/ags_ladspa_manager.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/plugin/ags_ladspa_manager.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_ladspa_manager.Tpo $(DEPDIR)/ags-ags_ladspa_manager.Po
+#	source='./src/ags/plugin/ags_ladspa_manager.c' object='ags-ags_ladspa_manager.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_ladspa_manager.obj `if test -f './src/ags/plugin/ags_ladspa_manager.c'; then $(CYGPATH_W) './src/ags/plugin/ags_ladspa_manager.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/plugin/ags_ladspa_manager.c'; fi`
 
 ags-ags_file.o: ./src/ags/file/ags_file.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_file.o -MD -MP -MF $(DEPDIR)/ags-ags_file.Tpo -c -o ags-ags_file.o `test -f './src/ags/file/ags_file.c' || echo '$(srcdir)/'`./src/ags/file/ags_file.c
@@ -4090,6 +4115,34 @@ ags-ags_audio_preferences_callbacks.obj: ./src/ags/X/ags_audio_preferences_callb
 #	source='./src/ags/X/ags_audio_preferences_callbacks.c' object='ags-ags_audio_preferences_callbacks.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_audio_preferences_callbacks.obj `if test -f './src/ags/X/ags_audio_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_audio_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_audio_preferences_callbacks.c'; fi`
+
+ags-ags_plugin_preferences.o: ./src/ags/X/ags_plugin_preferences.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_plugin_preferences.o -MD -MP -MF $(DEPDIR)/ags-ags_plugin_preferences.Tpo -c -o ags-ags_plugin_preferences.o `test -f './src/ags/X/ags_plugin_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_plugin_preferences.c
+	$(am__mv) $(DEPDIR)/ags-ags_plugin_preferences.Tpo $(DEPDIR)/ags-ags_plugin_preferences.Po
+#	source='./src/ags/X/ags_plugin_preferences.c' object='ags-ags_plugin_preferences.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_plugin_preferences.o `test -f './src/ags/X/ags_plugin_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_plugin_preferences.c
+
+ags-ags_plugin_preferences.obj: ./src/ags/X/ags_plugin_preferences.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_plugin_preferences.obj -MD -MP -MF $(DEPDIR)/ags-ags_plugin_preferences.Tpo -c -o ags-ags_plugin_preferences.obj `if test -f './src/ags/X/ags_plugin_preferences.c'; then $(CYGPATH_W) './src/ags/X/ags_plugin_preferences.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_plugin_preferences.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_plugin_preferences.Tpo $(DEPDIR)/ags-ags_plugin_preferences.Po
+#	source='./src/ags/X/ags_plugin_preferences.c' object='ags-ags_plugin_preferences.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_plugin_preferences.obj `if test -f './src/ags/X/ags_plugin_preferences.c'; then $(CYGPATH_W) './src/ags/X/ags_plugin_preferences.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_plugin_preferences.c'; fi`
+
+ags-ags_plugin_preferences_callbacks.o: ./src/ags/X/ags_plugin_preferences_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_plugin_preferences_callbacks.o -MD -MP -MF $(DEPDIR)/ags-ags_plugin_preferences_callbacks.Tpo -c -o ags-ags_plugin_preferences_callbacks.o `test -f './src/ags/X/ags_plugin_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_plugin_preferences_callbacks.c
+	$(am__mv) $(DEPDIR)/ags-ags_plugin_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_plugin_preferences_callbacks.Po
+#	source='./src/ags/X/ags_plugin_preferences_callbacks.c' object='ags-ags_plugin_preferences_callbacks.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_plugin_preferences_callbacks.o `test -f './src/ags/X/ags_plugin_preferences_callbacks.c' || echo '$(srcdir)/'`./src/ags/X/ags_plugin_preferences_callbacks.c
+
+ags-ags_plugin_preferences_callbacks.obj: ./src/ags/X/ags_plugin_preferences_callbacks.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_plugin_preferences_callbacks.obj -MD -MP -MF $(DEPDIR)/ags-ags_plugin_preferences_callbacks.Tpo -c -o ags-ags_plugin_preferences_callbacks.obj `if test -f './src/ags/X/ags_plugin_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_plugin_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_plugin_preferences_callbacks.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_plugin_preferences_callbacks.Tpo $(DEPDIR)/ags-ags_plugin_preferences_callbacks.Po
+#	source='./src/ags/X/ags_plugin_preferences_callbacks.c' object='ags-ags_plugin_preferences_callbacks.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_plugin_preferences_callbacks.obj `if test -f './src/ags/X/ags_plugin_preferences_callbacks.c'; then $(CYGPATH_W) './src/ags/X/ags_plugin_preferences_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/X/ags_plugin_preferences_callbacks.c'; fi`
 
 ags-ags_server_preferences.o: ./src/ags/X/ags_server_preferences.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_server_preferences.o -MD -MP -MF $(DEPDIR)/ags-ags_server_preferences.Tpo -c -o ags-ags_server_preferences.o `test -f './src/ags/X/ags_server_preferences.c' || echo '$(srcdir)/'`./src/ags/X/ags_server_preferences.c

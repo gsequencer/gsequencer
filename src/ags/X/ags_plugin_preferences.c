@@ -137,6 +137,49 @@ ags_plugin_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_plugin_preferences_parent_class)->show(widget);
 }
 
+AgsLadspaPluginPreferences*
+ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
+{
+  AgsLadspaPluginPreferences *ladspa_plugin_preferences;
+  GtkListStore *list_store;
+  GtkTreePath *path;
+  GtkTreeIter iter;
+  gchar **filenames, **filenames_start;
+    
+  static const gchar *default_ladspa_path = "/usr/lib/ladspa\0";
+
+  ladspa_plugin_preferences = (AgsLadspaPluginPreferences *) malloc(sizeof(AgsLadspaPluginPreferences));
+
+  if(ladspa_path == NULL){
+    ladspa_plugin_preferences->ladspa_path = default_ladspa_path;
+  }else{
+    ladspa_plugin_preferences->ladspa_path = ladspa_path;
+  }
+
+  ladspa_plugin_preferences->plugin_file = gtk_cell_view_new();
+
+  list_store = gtk_list_store_new(1,
+				  G_TYPE_STRING);
+  filenames =
+    filenames_start = ags_ladspa_manager_get_filenames();
+  
+  while(*filenames != NULL){
+    // Add a new row to the model
+    gtk_list_store_append (list_store, &iter);
+    gtk_list_store_set(list_store, &iter,
+		       0, *filenames,
+		       -1);
+    
+    filenames++;
+  }
+
+  free(filenames_start);
+  gtk_cell_view_set_model(ladspa_plugin_preferences->plugin_file,
+			  list_store);
+
+  return(ladspa_plugin_preferences);
+}
+
 AgsPluginPreferences*
 ags_plugin_preferences_new()
 {

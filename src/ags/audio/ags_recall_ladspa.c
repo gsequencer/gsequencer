@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_devout.h>
@@ -276,8 +278,7 @@ ags_recall_ladspa_disconnect(AgsConnectable *connectable)
 void
 ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 {
-  static const gchar *default_path = "/usr/lib/ladspa\0";
-
+  AgsLadspaPlugin *ladspa_plugin;
   AgsRecallLadspa *recall_ladspa;
   AgsPort *current;
   gchar *path;
@@ -294,15 +295,12 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
 
-  path = g_strdup_printf("%s/%s\0",
-			 default_path,
-			 recall_ladspa->filename);
-
-  plugin_so = dlopen(path,
-		     RTLD_NOW);
+  ags_ladspa_manager_load_file(recall_ladspa->filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
   
+  plugin_so = ladspa_plugin->plugin_so;
+
   if(plugin_so){
-    dlerror();
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
@@ -344,9 +342,6 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	port = port->next;
       }
     }
-
-    //TODO:JK: check for object leak
-    //    dlclose(plugin_so);
   }
 
   AGS_RECALL(recall_ladspa)->port = port;
@@ -364,8 +359,7 @@ ags_recall_ladspa_finalize(GObject *gobject)
 GList*
 ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 {
-  static const gchar *default_path = "/usr/lib/ladspa\0";
-
+  AgsLadspaPlugin *ladspa_plugin;
   AgsPort *current;
   GList *port;
   gchar *path;
@@ -379,17 +373,13 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   LADSPA_PortRangeHintDescriptor hint_descriptor;
   LADSPA_Data lower_bound, upper_bound;
 
-  path = g_strdup_printf("%s/%s\0",
-			 default_path,
-			 recall_ladspa->filename);
-
-  plugin_so = dlopen(path,
-		     RTLD_NOW);
-
+  ags_ladspa_manager_load_file(recall_ladspa->filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
   port = NULL;
   
+  plugin_so = ladspa_plugin->plugin_so;
+
   if(plugin_so){
-    dlerror();
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
