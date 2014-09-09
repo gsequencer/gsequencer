@@ -257,6 +257,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 				       lower_bound);
 	      gtk_adjustment_set_upper(adjustment,
 				       upper_bound);
+	      gtk_adjustment_set_value(adjustment,
+				       lower_bound);
 
 	      add_line_member = ags_add_line_member_new(line,
 							line_member,

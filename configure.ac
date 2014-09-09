@@ -36,6 +36,8 @@ AC_CHECK_LIB([rt], [main])
 
 AC_CHECK_LIB([pthread], [pthread_suspend], AC_DEFINE([AGS_WITH_PTHREAD], [1], ["great!"]), AC_DEFINE([AGS_LINUX_SIGNALS], [1], ["YOUR CHANCE"]))
 
+AC_ARG_ENABLE(sse, [AC_HELP_STRING([--enable-sse],[enable SSE optimizations])], enable_sse=$enableval, enable_sse=yes)
+
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
