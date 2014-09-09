@@ -147,7 +147,7 @@ ags_ladspa_manager_get_filenames()
   ladspa_plugin = ladspa_manager->ladspa_plugin;
   filenames = (gchar **) malloc((length + 1) * sizeof(gchar *));
 
-  for(i = 0; i < length + 1; i++){
+  for(i = 0; i < length; i++){
     filenames[i] = AGS_LADSPA_PLUGIN(ladspa_plugin->data)->filename;
     ladspa_plugin = ladspa_plugin->next;
   }
@@ -199,6 +199,7 @@ ags_ladspa_manager_load_file(gchar *filename)
 			 filename);
 
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  g_message("loading: %s\0", filename);
 
   if(ladspa_plugin == NULL){
     ladspa_plugin = ags_ladspa_plugin_alloc();
@@ -216,7 +217,7 @@ ags_ladspa_manager_load_file(gchar *filename)
 
   pthread_mutex_unlock(&(mutex));
 
-  free(path);
+  g_free(path);
 }
 
 void
@@ -227,6 +228,8 @@ ags_ladspa_manager_load_default_directory()
   GDir *dir;
   gchar *filename;
   GError *error;
+
+  ladspa_manager = ags_ladspa_manager_get_instance();
 
   error = NULL;
   dir = g_dir_open(ags_ladspa_default_path,
@@ -248,16 +251,19 @@ ags_ladspa_manager_load_default_directory()
 AgsLadspaManager*
 ags_ladspa_manager_get_instance()
 {
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   pthread_mutex_lock(&(mutex));
 
   if(ags_ladspa_manager == NULL){
     ags_ladspa_manager = ags_ladspa_manager_new();
-    ags_ladspa_manager_load_default_directory();
-  }
 
-  pthread_mutex_unlock(&(mutex));
+    pthread_mutex_unlock(&(mutex));
+
+    ags_ladspa_manager_load_default_directory();
+  }else{
+    pthread_mutex_unlock(&(mutex));
+  }
 
   return(ags_ladspa_manager);
 }

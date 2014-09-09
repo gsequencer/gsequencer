@@ -53,8 +53,8 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   ags_combo_box_text_remove_all(effect);
 
-  ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));
   
   plugin_so = ladspa_plugin->plugin_so;
 
@@ -88,7 +88,6 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   GtkLabel *label;
   AgsLadspaPlugin *ladspa_plugin;
   GList *list, *children;
-  gchar *path;
   gchar *str, *tmp;
   guint port_count;
   guint i;
@@ -106,8 +105,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->description));
 
-  ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));
   
   plugin_so = ladspa_plugin->plugin_so;
 
@@ -189,9 +188,6 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
       gtk_widget_show_all(table);
     }
-
-    //TODO:JK: implement me 
-    dlclose(plugin_so);
   }else{
     /* update ui */
     label = GTK_LABEL(list->data);
