@@ -55,10 +55,12 @@ struct _AgsPort
     gboolean ags_port_boolean;
     gint ags_port_int;
     guint ags_port_uint;
+    gfloat ags_port_float;
     gdouble ags_port_double;
     gboolean *ags_port_boolean_ptr;
     gint *ags_port_int_ptr;
     guint *ags_port_uint_ptr;
+    gfloat *ags_port_float_ptr;
     gdouble *ags_port_double_ptr;
     gpointer ags_port_pointer;
     GObject *ags_port_object;

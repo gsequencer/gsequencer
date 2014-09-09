@@ -363,8 +363,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   AgsPort *current;
   GList *port;
   gchar *path;
-  guint port_count;
-  guint i;
+  unsigned long port_count;
+  unsigned long i;
 
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
@@ -410,13 +410,14 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 								     i,
 								     port_count),
 				   "port-value-is-pointer\0", FALSE,
-				   "port-value-type\0", G_TYPE_DOUBLE,
+				   "port-value-type\0", G_TYPE_FLOAT,
 				   NULL);
+	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
 
 	    g_message("%d/%d\0", i, port_count);
 	    plugin_descriptor->connect_port(plugin_descriptor,
 					    i,
-					    &(current->port_value.ags_port_double));
+					    &(current->port_value.ags_port_float));
 
 	    port = g_list_prepend(port,
 				  current);
