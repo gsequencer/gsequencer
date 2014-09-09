@@ -485,6 +485,12 @@ ags_line_member_finalize(GObject *gobject)
   /* empty */
 }
 
+GtkWidget*
+ags_line_member_get_widget(AgsLineMember *line_member)
+{
+  return(gtk_bin_get_child(line_member));
+}
+
 void
 ags_line_member_set_label(AgsLineMember *line_member,
 			  gchar *label)

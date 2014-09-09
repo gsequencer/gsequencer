@@ -90,6 +90,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   GList *list, *children;
   gchar *str, *tmp;
   guint port_count;
+  guint y;
   guint i;
 
   void *plugin_so;
@@ -112,8 +113,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   index = gtk_combo_box_get_active(effect);
 
-  if(plugin_so &&
-     index != -1){
+  if(index != -1 &&
+     plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
@@ -163,9 +164,10 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	children = children->next;
       }
 
-      for(i = 0; i < port_count; i++){
-	if(!(LADSPA_IS_PORT_INPUT(port_descriptor[i]) && 
-	     LADSPA_IS_PORT_CONTROL(port_descriptor[i]))){
+      for(i = 0, y = 0; i < port_count; i++){
+	if(!(LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
+	     (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+	      LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
 	  continue;
 	}
 
@@ -178,12 +180,14 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	gtk_table_attach_defaults(table,
 				  GTK_WIDGET(label),
 				  0, 1,
-				  i, i + 1);
+				  y, y + 1);
 
 	gtk_table_attach_defaults(table,
 				  GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
 				  1, 2,
-				  i, i + 1);
+				  y, y + 1);
+
+	y++;
       }
 
       gtk_widget_show_all(table);

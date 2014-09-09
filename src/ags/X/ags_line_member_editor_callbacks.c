@@ -20,6 +20,8 @@
 
 #include <ags/main.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/object/ags_plugin.h>
 
 #include <ags/widget/ags_dial.h>
@@ -43,6 +45,15 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
 
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
@@ -71,12 +82,23 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       AgsAddRecall *add_recall;
       AgsAddLineMember *add_line_member;
       AgsRecallLadspa *recall_ladspa;
+      GtkAdjustment *adjustment;
+      AgsLadspaPlugin *ladspa_plugin;
+      GList *plugin;
       GList *task;
       GList *port;
       GList *list;
       gchar *filename, *effect;
-      guint index;
+      gdouble step;
+      long index;
       guint x, y;
+
+      void *plugin_so;
+      LADSPA_Descriptor_Function ladspa_descriptor;
+      LADSPA_Descriptor *plugin_descriptor;
+      LADSPA_PortDescriptor *port_descriptor;
+      LADSPA_Data lower_bound, upper_bound;
+      long i;
 
       machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
 								    AGS_TYPE_MACHINE_EDITOR);
@@ -109,7 +131,13 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
       effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
 
-      index = gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_container_get_children(GTK_CONTAINER(line_member_editor->ladspa_browser->plugin))->next->next->next->data));
+      plugin = gtk_container_get_children(GTK_CONTAINER(line_member_editor->ladspa_browser->plugin));
+      index = gtk_combo_box_get_active(GTK_COMBO_BOX(plugin->next->next->next->data));
+
+      ags_ladspa_manager_load_file(filename);
+      ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  
+      plugin_so = ladspa_plugin->plugin_so;
 
       hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
@@ -135,11 +163,16 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       if(line != NULL){
 	x = 0;
 	y = 0;
+	i = 0;
 
-	list = g_list_last(line->expander->children);
+	list = line->expander->children;
 
-	if(list != NULL){
-	  y = AGS_EXPANDER_CHILD(list->data)->y + 1;
+	while(list != NULL){
+	  if(y <= AGS_EXPANDER_CHILD(list->data)->y){
+	    y = AGS_EXPANDER_CHILD(list->data)->y + 1;
+	  }
+
+	  list = list->next;
 	}
       }
 
@@ -175,35 +208,76 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			    add_recall);
 
       if(line != NULL){
-	while(port != NULL){
-	  if(x == 2){
-	    x = 0;
-	    y++;
+	if(index != -1 &&
+	   plugin_so){
+	  g_message("index: %d\0", index);
+	  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+								 "ladspa_descriptor\0");
+
+	  if(dlerror() == NULL && ladspa_descriptor){
+	    plugin_descriptor = ladspa_descriptor(index);
+
+	    port_descriptor = plugin_descriptor->PortDescriptors;   
+
+	    while(port != NULL){
+	      if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
+		i++;
+		continue;
+	      }
+
+	      if(x == 2){
+		x = 0;
+		y++;
+	      }
+
+	      line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+							   "widget-type\0", AGS_TYPE_DIAL,
+							   "plugin-name\0", AGS_PORT(port->data)->plugin_name,
+							   "specifier\0", AGS_PORT(port->data)->specifier,
+							   "control-port\0", AGS_PORT(port->data)->control_port,
+							   NULL);
+
+	      lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
+	      upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+	      g_object_get(ags_line_member_get_widget(line_member),
+			   "adjustment", &adjustment,
+			   NULL);
+
+	      if(upper_bound >= 0.0 && lower_bound >= 0.0){
+		step = (upper_bound - lower_bound) / 8.0;
+	      }else if(upper_bound < 0.0 && lower_bound < 0.0){
+		step = -1.0 * (upper_bound + lower_bound) / 8.0;
+	      }else{
+		step = (upper_bound - lower_bound) / 8.0;
+	      }
+
+	      gtk_adjustment_set_step_increment(adjustment,
+						step);
+	      gtk_adjustment_set_lower(adjustment,
+				       lower_bound);
+	      gtk_adjustment_set_upper(adjustment,
+				       upper_bound);
+
+	      add_line_member = ags_add_line_member_new(line,
+							line_member,
+							x, y,
+							1, 1);
+	      task = g_list_prepend(task,
+				    add_line_member);
+	  
+	      x++;
+	      i++;
+	      port = port->next;
+	    }
 	  }
 
-	  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						       "widget-type\0", AGS_TYPE_DIAL,
-						       "plugin-name\0", AGS_PORT(port->data)->plugin_name,
-						       "specifier\0", AGS_PORT(port->data)->specifier,
-						       "control-port\0", AGS_PORT(port->data)->control_port,
-						       NULL);
-	  add_line_member = ags_add_line_member_new(line,
-						    line_member,
-						    x, y,
-						    1, 1);
-	  task = g_list_prepend(task,
-				add_line_member);
-	  
-	  x++;
-	  port = port->next;
+	  task = g_list_reverse(task);
+
+	  /* launch tasks */
+	  ags_task_thread_append_tasks(task_thread,
+				       task);
 	}
       }
-
-      task = g_list_reverse(task);
-
-      /* launch tasks */
-      ags_task_thread_append_tasks(task_thread,
-				   task);
     }
     break;
   }

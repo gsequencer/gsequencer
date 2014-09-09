@@ -74,6 +74,7 @@ struct _AgsLineMemberClass
 
 GType ags_line_member_get_type(void);
 
+GtkWidget* ags_line_member_get_widget(AgsLineMember *line_member);
 void ags_line_member_set_label(AgsLineMember *line_member,
 			       gchar *label);
 

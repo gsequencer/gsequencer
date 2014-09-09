@@ -47,6 +47,8 @@ struct _AgsRecallLadspa
   guint index;
 
   LADSPA_Descriptor *plugin_descriptor;
+  guint input_port;
+  guint output_port;
 };
 
 struct _AgsRecallLadspaClass

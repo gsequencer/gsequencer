@@ -570,6 +570,7 @@ ags_dial_draw(AgsDial *dial)
   gdouble scale_area, scale_width, scale_inverted_width;
   gdouble starter_angle;
   gdouble translated_value;
+  gdouble range;
   guint scale_precision;
   guint i;
 
@@ -694,7 +695,16 @@ ags_dial_draw(AgsDial *dial)
   }
 
   /* draw value */
-  translated_value = (gdouble) scale_precision / dial->adjustment->upper * dial->adjustment->value;
+
+  if(dial->adjustment->upper >= 0.0 && dial->adjustment->lower >= 0.0){
+    range = (dial->adjustment->upper - dial->adjustment->lower);
+  }else if(dial->adjustment->upper < 0.0 && dial->adjustment->lower < 0.0){
+    range = -1.0 * (dial->adjustment->upper + dial->adjustment->lower);
+  }else{
+    range = (dial->adjustment->upper - dial->adjustment->lower);
+  }
+
+  translated_value = (gdouble) scale_precision / 8.0 * dial->adjustment->value;
 
   //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);
