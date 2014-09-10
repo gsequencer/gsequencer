@@ -201,7 +201,7 @@ ags_recall_recycling_dummy_duplicate(AgsRecall *recall,
   copy = (AgsRecallRecyclingDummy *) AGS_RECALL_CLASS(ags_recall_recycling_dummy_parent_class)->duplicate(recall,
 													  recall_id,
 													  n_params, parameter);
-
+  AGS_RECALL(copy)->child_type = recall->child_type;
 
   return((AgsRecall *) copy);
 }

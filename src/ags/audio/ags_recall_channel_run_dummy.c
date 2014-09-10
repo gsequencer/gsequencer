@@ -178,6 +178,9 @@ ags_recall_channel_run_dummy_finalize(GObject *gobject)
 void
 ags_recall_channel_run_dummy_connect(AgsConnectable *connectable)
 {
+  AgsRecallChannelRun *recall_channel_run;
+  GObject *gobject;
+
   /* call parent */
   ags_recall_channel_run_dummy_parent_connectable_interface->connect(connectable);
 
@@ -219,17 +222,29 @@ ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
 				       guint *n_params, GParameter *parameter)
 {
   AgsRecallChannelRunDummy *recall_channel_run_dummy, *copy;
-
+  GList *recycling_dummy;
+  
   recall_channel_run_dummy = (AgsRecallChannelRunDummy *) recall;  
   copy = (AgsRecallChannelRunDummy *) AGS_RECALL_CLASS(ags_recall_channel_run_dummy_parent_class)->duplicate(recall,
 													     recall_id,
 													     n_params, parameter);
+  AGS_RECALL(copy)->child_type = recall->child_type;
+  AGS_RECALL(copy)->recycling_dummy_child_type = recall->recycling_dummy_child_type;
+
+  recycling_dummy = copy->children;
+
+  while(recycling_dummy != NULL){
+    AGS_RECALL(recycling_dummy->data)->child_type = recycling_dummy_child_type;
+
+    recycling_dummy = recycling_dummy->next;
+  }
 
   return((AgsRecall *) copy);
 }
 
 AgsRecallChannelRunDummy*
-ags_recall_channel_run_dummy_new(GType child_type)
+ags_recall_channel_run_dummy_new(GType child_type,
+				 GType recycling_dummy_child_type)
 {
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
 
@@ -237,6 +252,7 @@ ags_recall_channel_run_dummy_new(GType child_type)
 								       NULL);
 
   AGS_RECALL(recall_channel_run_dummy)->child_type = child_type;
+  AGS_RECALL(recall_channel_run_dummy)->recycling_dummy_child_type = recycling_dummy_child_type;
 
   return(recall_channel_run_dummy);
 }

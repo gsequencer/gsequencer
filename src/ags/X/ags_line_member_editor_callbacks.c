@@ -81,6 +81,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       GtkLabel *label;
       AgsAddRecall *add_recall;
       AgsAddLineMember *add_line_member;
+      AgsRecallContainer *recall_container;
+      AgsRecallChannelRunDummy *recall_channel_run_dummy;
       AgsRecallLadspa *recall_ladspa;
       GtkAdjustment *adjustment;
       AgsLadspaPlugin *ladspa_plugin;

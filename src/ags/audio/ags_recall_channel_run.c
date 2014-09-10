@@ -538,7 +538,6 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
   recall_channel_run->source_recycling_changed_handler =
     g_signal_connect(gobject, "recycling_changed\0",
 		     G_CALLBACK(ags_recall_channel_run_source_recycling_changed_callback), recall_channel_run);
-
 }
 
 void
