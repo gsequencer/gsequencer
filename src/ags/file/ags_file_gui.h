@@ -46,6 +46,7 @@
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_notebook.h>
 
 #include <ags/X/machine/ags_panel.h>
