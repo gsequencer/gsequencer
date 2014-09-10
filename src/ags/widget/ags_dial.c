@@ -704,7 +704,7 @@ ags_dial_draw(AgsDial *dial)
     range = (dial->adjustment->upper - dial->adjustment->lower);
   }
 
-  translated_value = (gdouble) scale_precision / 8.0 * dial->adjustment->value;
+  translated_value = (gdouble) scale_precision / AGS_DIAL_DEFAULT_PRECISION * dial->adjustment->value;
 
   //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);

@@ -178,6 +178,8 @@ ags_recall_ladspa_run_run_pre(AgsRecall *recall)
 
   ags_recall_ladspa_short_to_float(audio_signal->stream_current->data,
 				   recall_ladspa_run->input);
+
+  /* connect audio port */
 }
 
 void

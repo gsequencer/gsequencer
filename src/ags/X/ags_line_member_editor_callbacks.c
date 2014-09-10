@@ -210,7 +210,6 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       if(line != NULL){
 	if(index != -1 &&
 	   plugin_so){
-	  g_message("index: %d\0", index);
 	  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 								 "ladspa_descriptor\0");
 
@@ -244,11 +243,11 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			   NULL);
 
 	      if(upper_bound >= 0.0 && lower_bound >= 0.0){
-		step = (upper_bound - lower_bound) / 8.0;
+		step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	      }else if(upper_bound < 0.0 && lower_bound < 0.0){
-		step = -1.0 * (upper_bound + lower_bound) / 8.0;
+		step = -1.0 * (upper_bound + lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	      }else{
-		step = (upper_bound - lower_bound) / 8.0;
+		step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	      }
 
 	      gtk_adjustment_set_step_increment(adjustment,

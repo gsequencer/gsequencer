@@ -42,8 +42,6 @@ void ags_stream_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connect
 void ags_stream_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_recycling_finalize(GObject *gobject);
 
-void ags_stream_recycling_child_added(AgsRecall *recall, AgsRecall *child,
-				      gpointer data);
 AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);

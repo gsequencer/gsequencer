@@ -91,7 +91,7 @@ ags_recall_ladspa_get_type (void)
       NULL, /* interface_data */
     };
 
-    ags_type_recall_ladspa = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
+    ags_type_recall_ladspa = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						    "AgsRecallLadspa\0",
 						    &ags_recall_ladspa_info,
 						    0);

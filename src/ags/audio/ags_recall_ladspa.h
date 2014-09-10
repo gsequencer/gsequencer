@@ -40,7 +40,7 @@ typedef struct _AgsRecallLadspaClass AgsRecallLadspaClass;
 
 struct _AgsRecallLadspa
 {
-  AgsRecallChannelRun recall_channel_run;
+  AgsRecallChannel recall_channel;
 
   gchar *filename;
   gchar *effect;
@@ -53,7 +53,7 @@ struct _AgsRecallLadspa
 
 struct _AgsRecallLadspaClass
 {
-  AgsRecallChannelRunClass recall_channel_run;
+  AgsRecallChannelClass recall_channel;
 };
 
 GType ags_recall_ladspa_get_type();
