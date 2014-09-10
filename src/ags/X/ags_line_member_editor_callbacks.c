@@ -32,7 +32,10 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_channel_run_dummy.h>
 #include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_ladspa_run.h>
 #include <ags/audio/ags_port.h>
 
 #include <ags/audio/task/ags_add_recall.h>

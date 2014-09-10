@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/recall/ags_recall_channel_run_dummy.h>
-#include <ags/audio/recall/ags_recall_recycling.h>
+#include <ags/audio/ags_recall_channel_run_dummy.h>
+#include <ags/audio/ags_recall_recycling_dummy.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -164,6 +164,8 @@ ags_recall_channel_run_dummy_init(AgsRecallChannelRunDummy *recall_channel_run_d
 
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(recall_channel_run_dummy)->child_type = G_TYPE_NONE;
+
+  recall_channel_run_dummy = G_TYPE_NONE;
 }
 
 void
@@ -229,12 +231,12 @@ ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
 													     recall_id,
 													     n_params, parameter);
   AGS_RECALL(copy)->child_type = recall->child_type;
-  AGS_RECALL(copy)->recycling_dummy_child_type = recall->recycling_dummy_child_type;
+  copy->recycling_dummy_child_type = recall_channel_run_dummy->recycling_dummy_child_type;
 
-  recycling_dummy = copy->children;
+  recycling_dummy = AGS_RECALL(copy)->children;
 
   while(recycling_dummy != NULL){
-    AGS_RECALL(recycling_dummy->data)->child_type = recycling_dummy_child_type;
+    AGS_RECALL(recycling_dummy->data)->child_type = recall_channel_run_dummy->recycling_dummy_child_type;
 
     recycling_dummy = recycling_dummy->next;
   }
@@ -252,7 +254,7 @@ ags_recall_channel_run_dummy_new(GType child_type,
 								       NULL);
 
   AGS_RECALL(recall_channel_run_dummy)->child_type = child_type;
-  AGS_RECALL(recall_channel_run_dummy)->recycling_dummy_child_type = recycling_dummy_child_type;
+  recall_channel_run_dummy->recycling_dummy_child_type = recycling_dummy_child_type;
 
   return(recall_channel_run_dummy);
 }

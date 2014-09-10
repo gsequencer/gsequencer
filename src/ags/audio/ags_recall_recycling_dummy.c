@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags/audio/recall/ags_recall_recycling_dummy.h>
-#include <ags/audio/recall/ags_recall_audio_signal.h>
+#include <ags/audio/ags_recall_recycling_dummy.h>
+#include <ags/audio/ags_recall_audio_signal.h>
 
 #include <ags/main.h>
 
@@ -214,7 +214,7 @@ ags_recall_recycling_dummy_new(AgsRecycling *recycling, GType child_type)
   recall_recycling_dummy = (AgsRecallRecyclingDummy *) g_object_new(AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								    "source\0", recycling,
 								    NULL);
-  recall_recycling_dummy->child_type = child_type;
+  AGS_RECALL(recall_recycling_dummy)->child_type = child_type;
 
   return(recall_recycling_dummy);
 }

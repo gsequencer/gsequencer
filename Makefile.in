@@ -89,6 +89,8 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_recall_ladspa.$(OBJEXT) \
 	ags-ags_recall_ladspa_run.$(OBJEXT) \
 	ags-ags_recall_channel.$(OBJEXT) \
+	ags-ags_recall_channel_run_dummy.$(OBJEXT) \
+	ags-ags_recall_recycling_dummy.$(OBJEXT) \
 	ags-ags_recall_audio_run.$(OBJEXT) ags-ags_pattern.$(OBJEXT) \
 	ags-ags_channel_iter.$(OBJEXT) \
 	ags-ags_set_output_device.$(OBJEXT) \
@@ -569,6 +571,10 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_recall_ladspa_run.h \
 	./src/ags/audio/ags_recall_ladspa_run.c \
 	./src/ags/audio/ags_recall_channel.c \
+	./src/ags/audio/ags_recall_channel_run_dummy.h \
+	./src/ags/audio/ags_recall_channel_run_dummy.c \
+	./src/ags/audio/ags_recall_recycling_dummy.h \
+	./src/ags/audio/ags_recall_recycling_dummy.c \
 	./src/ags/audio/ags_channel.h \
 	./src/ags/audio/ags_recall_audio_run.c \
 	./src/ags/audio/ags_pattern.c ./src/ags/audio/ags_recall.h \
@@ -1500,6 +1506,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_channel_run.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_channel_run_dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_dependency.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_factory.Po@am__quote@
@@ -1507,6 +1514,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_ladspa.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_ladspa_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_recycling.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recall_recycling_dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recycling_container.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags-ags_recycling_thread.Po@am__quote@
@@ -1959,6 +1967,34 @@ ags-ags_recall_channel.obj: ./src/ags/audio/ags_recall_channel.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_channel.c' object='ags-ags_recall_channel.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_channel.obj `if test -f './src/ags/audio/ags_recall_channel.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_channel.c'; fi`
+
+ags-ags_recall_channel_run_dummy.o: ./src/ags/audio/ags_recall_channel_run_dummy.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_channel_run_dummy.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_channel_run_dummy.Tpo -c -o ags-ags_recall_channel_run_dummy.o `test -f './src/ags/audio/ags_recall_channel_run_dummy.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_channel_run_dummy.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_channel_run_dummy.Tpo $(DEPDIR)/ags-ags_recall_channel_run_dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_channel_run_dummy.c' object='ags-ags_recall_channel_run_dummy.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_channel_run_dummy.o `test -f './src/ags/audio/ags_recall_channel_run_dummy.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_channel_run_dummy.c
+
+ags-ags_recall_channel_run_dummy.obj: ./src/ags/audio/ags_recall_channel_run_dummy.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_channel_run_dummy.obj -MD -MP -MF $(DEPDIR)/ags-ags_recall_channel_run_dummy.Tpo -c -o ags-ags_recall_channel_run_dummy.obj `if test -f './src/ags/audio/ags_recall_channel_run_dummy.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_channel_run_dummy.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_channel_run_dummy.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_channel_run_dummy.Tpo $(DEPDIR)/ags-ags_recall_channel_run_dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_channel_run_dummy.c' object='ags-ags_recall_channel_run_dummy.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_channel_run_dummy.obj `if test -f './src/ags/audio/ags_recall_channel_run_dummy.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_channel_run_dummy.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_channel_run_dummy.c'; fi`
+
+ags-ags_recall_recycling_dummy.o: ./src/ags/audio/ags_recall_recycling_dummy.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_recycling_dummy.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_recycling_dummy.Tpo -c -o ags-ags_recall_recycling_dummy.o `test -f './src/ags/audio/ags_recall_recycling_dummy.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_recycling_dummy.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_recycling_dummy.Tpo $(DEPDIR)/ags-ags_recall_recycling_dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_recycling_dummy.c' object='ags-ags_recall_recycling_dummy.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_recycling_dummy.o `test -f './src/ags/audio/ags_recall_recycling_dummy.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_recycling_dummy.c
+
+ags-ags_recall_recycling_dummy.obj: ./src/ags/audio/ags_recall_recycling_dummy.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_recycling_dummy.obj -MD -MP -MF $(DEPDIR)/ags-ags_recall_recycling_dummy.Tpo -c -o ags-ags_recall_recycling_dummy.obj `if test -f './src/ags/audio/ags_recall_recycling_dummy.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_recycling_dummy.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_recycling_dummy.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/ags-ags_recall_recycling_dummy.Tpo $(DEPDIR)/ags-ags_recall_recycling_dummy.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='./src/ags/audio/ags_recall_recycling_dummy.c' object='ags-ags_recall_recycling_dummy.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_recall_recycling_dummy.obj `if test -f './src/ags/audio/ags_recall_recycling_dummy.c'; then $(CYGPATH_W) './src/ags/audio/ags_recall_recycling_dummy.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/ags_recall_recycling_dummy.c'; fi`
 
 ags-ags_recall_audio_run.o: ./src/ags/audio/ags_recall_audio_run.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_recall_audio_run.o -MD -MP -MF $(DEPDIR)/ags-ags_recall_audio_run.Tpo -c -o ags-ags_recall_audio_run.o `test -f './src/ags/audio/ags_recall_audio_run.c' || echo '$(srcdir)/'`./src/ags/audio/ags_recall_audio_run.c

@@ -140,11 +140,11 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 	preset++;
       }
     }
+
+    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
+			     0);
   }
 
-  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
-			   0);
-  
   gtk_widget_destroy(widget);
 }
 
