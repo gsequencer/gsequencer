@@ -140,10 +140,22 @@ ags_add_recall_launch(AgsTask *task)
   add_recall = AGS_ADD_RECALL(task);
 
   if(AGS_IS_AUDIO(add_recall->context)){
+    if(g_list_find(AGS_AUDIO(add_recall->context)->container,
+		   add_recall->recall->recall_container) == NULL){
+      ags_audio_add_recall_container(AGS_AUDIO(add_recall->context),
+				     add_recall->recall->recall_container);
+    }
+
     ags_audio_add_recall(AGS_AUDIO(add_recall->context),
 			 add_recall->recall,
 			 add_recall->is_play);
   }else if(AGS_IS_CHANNEL(add_recall->context)){
+    if(g_list_find(AGS_CHANNEL(add_recall->context)->container,
+		   add_recall->recall->recall_container) == NULL){
+      ags_channel_add_recall_container(AGS_CHANNEL(add_recall->context),
+				       add_recall->recall->recall_container);
+    }
+
     ags_channel_add_recall(AGS_CHANNEL(add_recall->context),
 			   add_recall->recall,
 			   add_recall->is_play);
@@ -151,6 +163,8 @@ ags_add_recall_launch(AgsTask *task)
     ags_recall_add_child(AGS_RECALL(add_recall->context),
 			 add_recall->recall);
   }
+
+  ags_connectable_connect(AGS_CONNECTABLE(add_recall->recall));
 }
 
 AgsAddRecall*

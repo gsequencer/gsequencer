@@ -185,12 +185,24 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       task = NULL;
 
       /* ladspa play */
+      recall_container = ags_recall_container_new();
+
       recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
 					    filename,
 					    effect,
 					    index);
+      g_object_set(G_OBJECT(recall_ladspa),
+		   "recall-container\0", recall_container,
+		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       port = ags_recall_ladspa_load_ports(recall_ladspa);
+
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "recall-container\0", recall_container,
+		   NULL);
 
       add_recall = ags_add_recall_new(line_editor->channel,
 				      recall_ladspa,
@@ -199,12 +211,24 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 			    add_recall);
 
       /* ladspa recall */
+      recall_container = ags_recall_container_new();
+
       recall_ladspa = ags_recall_ladspa_new(line_editor->channel,
 					    filename,
 					    effect,
 					    index);
+      g_object_set(G_OBJECT(recall_ladspa),
+		   "recall-container\0", recall_container,
+		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       port = ags_recall_ladspa_load_ports(recall_ladspa);
+
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "recall-container\0", recall_container,
+		   NULL);
 
       add_recall = ags_add_recall_new(line_editor->channel,
 				      recall_ladspa,

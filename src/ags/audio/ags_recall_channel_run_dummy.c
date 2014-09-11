@@ -245,12 +245,14 @@ ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
 }
 
 AgsRecallChannelRunDummy*
-ags_recall_channel_run_dummy_new(GType child_type,
+ags_recall_channel_run_dummy_new(AgsChannel *source,
+				 GType child_type,
 				 GType recycling_dummy_child_type)
 {
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
 
   recall_channel_run_dummy = (AgsRecallChannelRunDummy *) g_object_new(AGS_TYPE_RECALL_CHANNEL_RUN_DUMMY,
+								       "source\0", source,
 								       NULL);
 
   AGS_RECALL(recall_channel_run_dummy)->child_type = child_type;

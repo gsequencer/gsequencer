@@ -50,7 +50,8 @@ struct _AgsRecallChannelRunDummyClass
 
 GType ags_recall_channel_run_dummy_get_type();
 
-AgsRecallChannelRunDummy* ags_recall_channel_run_dummy_new(GType child_type,
+AgsRecallChannelRunDummy* ags_recall_channel_run_dummy_new(AgsChannel *source,
+							   GType child_type,
 							   GType recycling_dummy_child_type);
 
 #endif /*__AGS_RECALL_CHANNEL_RUN_DUMMY_H__*/
