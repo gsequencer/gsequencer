@@ -2751,12 +2751,112 @@ ags_file_write_notebook_tab(AgsFile *file, xmlNode *parent, AgsNotebookTab *note
 void
 ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigation)
 {
-  //TODO:JK: implement me
+  AgsNavigation *gobject;
+  xmlNode *child;
+  xmlChar *str;
+
+  if(*navigation == NULL){
+    gobject = g_object_new(AGS_TYPE_NAVIGATION,
+			   NULL);
+
+    *navigation = gobject;
+  }else{
+    gobject = *navigation;
+  }
+
+  str = xmlGetProp(node,
+		   "expanded\0");
+
+  if(!xmlStrncmp(str,
+		 AGS_FILE_TRUE,
+		 5)){
+    gtk_toggle_button_set_active(gobject->expander,
+				 TRUE);
+  }
+
+  str = xmlGetProp(node,
+		   "bpm\0");
+  gtk_spin_button_set_value(gobject->bpm,
+			    g_strtod(str,
+				     NULL));
+
+  str = xmlGetProp(node,
+		   "loop\0");
+
+  if(!xmlStrncmp(str,
+		 AGS_FILE_TRUE,
+		 5)){
+    gtk_toggle_button_set_active(gobject->loop,
+				 TRUE);
+  }
+
+  str = xmlGetProp(node,
+		   "position\0");
+  gtk_spin_button_set_value(gobject->position_tact,
+			    g_strtod(str,
+				     NULL));
+
+  str = xmlGetProp(node,
+		   "loop-left\0");
+  gtk_spin_button_set_value(gobject->loop_left_tact,
+			    g_strtod(str,
+				     NULL));
+
+  str = xmlGetProp(node,
+		   "loop-right\0");
+  gtk_spin_button_set_value(gobject->loop_right_tact,
+			    g_strtod(str,
+				     NULL));
 }
 
 xmlNode*
 ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigation)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-navigation\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", navigation,
+				   NULL));
+
+  xmlNewProp(node,
+	     "expanded\0",
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(navigation->expander)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+  
+  xmlNewProp(node,
+	     "bpm\0",
+	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->bpm)));
+  
+  xmlNewProp(node,
+	     "loop\0",
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(navigation->loop)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+ 
+  xmlNewProp(node,
+	     "position\0",
+	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->position_tact)));
+
+  xmlNewProp(node,
+	     "loop-left\0",
+	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->loop_left_tact)));
+
+  xmlNewProp(node,
+	     "loop-right\0",
+	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->loop_right_tact)));
+
+  xmlAddChild(parent,
+	      node);  
 }
 

@@ -844,7 +844,7 @@
 	  id               ID         #REQUIRED
 	  edit-mode        CDATA      "edit"
 	  zoom             CDATA      "1:4"
-	  mode             CDATA      "multi-channel"
+	  mode             CDATA      "single-channel"
 	  >
 
 <!ELEMENT ags-machine-selector (ags-parameter)>
@@ -875,14 +875,9 @@
 	  expanded         CDATA      "FALSE"
 	  bpm              NMTOKEN    120.0
 	  loop             CDATA      "FALSE"
-	  position-min     NMTOKEN    "0.0"
-	  position-sec     NMTOKEN    "0.0"
-	  duration-min     NMTOKEN    "0.0"
-	  duration-sec     NMTOKEN    "0.0"
-	  loop-left-min    NMTOKEN    "0.0"
-	  loop-left-sec    NMTOKEN    "0.0"
-	  loop-right-min   NMTOKEN    "0.0"
-	  loop-right-sec   NMTOKEN    "0.0"
+	  position         NMTOKEN    "0.0"
+	  loop-left        NMTOKEN    "0.0"
+	  loop-right       NMTOKEN    "0.0"
 	  raster           CDATA      "TRUE"
 	  >
 
