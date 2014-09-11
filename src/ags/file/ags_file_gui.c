@@ -2333,13 +2333,8 @@ xmlNode*
 ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
 {
   AgsFileIdRef *id_ref;
-  AgsMachine *machine;
-  GParameter *parameter;
   xmlNode *node;
-  GList *list;
-  guint n_properties, n_params;
   gchar *id;
-  gint i;
 
   id = ags_id_generator_create_uuid();
   
@@ -2382,13 +2377,141 @@ ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
 void
 ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 {
-  //TODO:JK: implement me
+  AgsToolbar *gobject;
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  xmlNode *child;
+  gchar *value;
+  gchar *str;
+
+  if(*toolbar == NULL){
+    gobject = (AgsToolbar *) g_object_new(AGS_TYPE_TOOLBAR,
+					 NULL);
+    *toolbar = gobject;
+  }else{
+    gobject = *toolbar;
+  }
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  str = xmlGetProp(node,
+		   "edit-mode\0");
+
+  if(!g_strcmp0("position\0",
+		str)){
+    gtk_button_clicked(gobject->position);
+  }else if(!g_strcmp0("edit\0",
+		      str)){
+    gtk_button_clicked(gobject->edit);
+  }else if(!g_strcmp0("clear\0",
+		      str)){
+    gtk_button_clicked(gobject->clear);
+  }else if(!g_strcmp0("select\0",
+		      str)){
+    gtk_button_clicked(gobject->select);
+  }
+
+  /* zoom */
+  str = xmlGetProp(node,
+		   "zoom\0");
+
+  model = gtk_combo_box_get_model(gobject->zoom);
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      if(!g_strcmp0(str,
+		    value)){
+	break;
+      }
+    }while(!gtk_tree_model_iter_next(model,
+				     &iter));
+
+    gtk_combo_box_set_active_iter(gobject->zoom,
+				  &iter);
+  }
+
+  /* mode */
+  str = xmlGetProp(node,
+		   "mode\0");
+  
+  model = gtk_combo_box_get_model(gobject->mode);
+  
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    do{
+      if(!g_strcmp0(str,
+		    value)){
+	break;
+      }
+    }while(!gtk_tree_model_iter_next(model,
+				     &iter));
+
+    gtk_combo_box_set_active_iter(gobject->mode,
+				  &iter);
+  }
 }
 
 xmlNode*
 ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *id_ref;
+  xmlNode *node;
+  GList *list;
+  guint n_properties, n_params;
+  gchar *id;
+  gint i;
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-toolbar\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", toolbar,
+				   NULL));
+
+  if(toolbar->selected_edit_mode == toolbar->position){
+    xmlNewProp(node,
+	       "edit-mode\0",
+	       g_strdup("position\0"));
+  }else if(toolbar->selected_edit_mode == toolbar->edit){
+    xmlNewProp(node,
+	       "edit-mode\0",
+	       g_strdup("edit\0"));
+  }else if(toolbar->selected_edit_mode == toolbar->clear){
+    xmlNewProp(node,
+	       "edit-mode\0",
+	       g_strdup("clear\0"));
+  }else if(toolbar->selected_edit_mode == toolbar->select){
+    xmlNewProp(node,
+	       "edit-mode\0",
+	       g_strdup("select\0"));
+  }
+
+  xmlNewProp(node,
+	     "zoom\0",
+	     g_strdup_printf("%s\0", gtk_combo_box_text_get_active_text(toolbar->zoom)));
+
+  xmlNewProp(node,
+	     "mode\0",
+	     g_strdup_printf("%s\0", gtk_combo_box_text_get_active_text(toolbar->mode)));
+
+  xmlAddChild(parent,
+	      node);  
 }
 
 void

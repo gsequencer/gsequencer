@@ -1,6 +1,6 @@
-<!ENTITY ags-default-version "0.4.0">
-<!ENTITY ags-effects-default-version "0.4.0">
-<!ENTITY ags-clipboard-default-version "0.4.0">
+<!ENTITY ags-default-version "0.4.2">
+<!ENTITY ags-effects-default-version "0.4.2">
+<!ENTITY ags-clipboard-default-version "0.4.2">
 <!ENTITY ags-led "AgsLed">
 <!ENTITY ags-vindicator "AgsVIndicator">
 <!ENTITY ags-hindicator "AgsHIndicator">
@@ -388,7 +388,6 @@
 	  audio-channel    NMTOKEN    #REQUIRED
 	  key              CDATA      "violine"
 	  base-frequency   NMTOKEN    440.0
-	  tact             NMTOKEN    0.25
 	  bpm              NMTOKEN    120.0
 	  max-note-length  NMTOKEN    16.0
 	  loop-start       NMTOKEN    #IMPLIED
@@ -591,7 +590,6 @@
 <!ELEMENT ags-drum EMPTY>
 <!ATTLIST ags-drum
 	  id               ID         #REQUIRED
-	  tact             NMTOKEN    #REQUIRED
 	  length           NMTOKEN    #REQUIRED
 	  bank-index-0     NMTOKEN    #REQUIRED
 	  bank-index-1     NMTOKEN    #REQUIRED
@@ -601,7 +599,6 @@
 <!ELEMENT ags-matrix EMPTY>
 <!ATTLIST ags-matrix
 	  id               ID         #REQUIRED
-	  tact             NMTOKEN    #REQUIRED
 	  length           NMTOKEN    #REQUIRED
 	  bank-index       NMTOKEN    #REQUIRED
 	  loop             CDATA      #IMPLIED
@@ -846,7 +843,6 @@
 <!ATTLIST ags-toolbar
 	  id               ID         #REQUIRED
 	  edit-mode        CDATA      "edit"
-	  tic              CDATA      "1/1"
 	  zoom             CDATA      "1:4"
 	  mode             CDATA      "multi-channel"
 	  >
