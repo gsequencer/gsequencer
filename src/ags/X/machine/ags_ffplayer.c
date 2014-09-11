@@ -503,7 +503,7 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsFFPlayer *gobject;
   AgsFileLaunch *file_launch;
-
+  
   gobject = AGS_FFPLAYER(plugin);
 
   ags_file_add_id_ref(file,
@@ -520,6 +520,8 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			     NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_ffplayer_launch_task), gobject);
+  ags_file_add_launch(file,
+		      file_launch);
 }
 
 xmlNode*
@@ -576,8 +578,6 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
   xmlNode *node;
   gchar *filename;
   gchar *preset, *instrument;
-  guint i;
-  gboolean valid;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(ffplayer)));
   node = file_launch->node;
@@ -608,10 +608,15 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     ags_playable_open(playable, filename);
 
     error = NULL;
+    ipatch->nth_level = 0;
     ags_playable_level_select(playable,
 			      0, filename,
 			      &error);
 
+    if(error != NULL){
+      g_warning(error->message);
+    }
+    
     /* select first preset */
     ipatch->nth_level = 1;
     preset = ags_playable_sublevel_names(playable);
@@ -621,6 +626,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			      1, *preset,
 			      &error);
 
+    if(error != NULL){
+      g_warning(error->message);
+    }
+    
     /* fill ffplayer->preset */
     while(*preset != NULL){
       gtk_combo_box_text_append_text(ffplayer->preset,
@@ -634,31 +643,24 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			"preset\0");
 
     list_store = gtk_combo_box_get_model(ffplayer->preset);
-    valid = gtk_tree_model_get_iter_first(list_store, &iter);
-    i = 0;
 
-    while(valid){
-      gchar *str;
-
-      gtk_tree_model_get (list_store, &iter,
-			  0, &str,
-			  -1);
-      if(!g_strcmp0(preset[i],
-		       str)){
-	g_free (str);
-
-	break;
-      }else{
-	g_free (str);
-
-	i++;
-	valid = gtk_tree_model_iter_next(list_store, &iter);
-      }
+    if(gtk_tree_model_get_iter_first(list_store, &iter)){
+      do{
+	gchar *str;
+	
+	gtk_tree_model_get(list_store, &iter,
+			   0, &str,
+			   -1);
+	if(!g_strcmp0(preset,
+		      str)){
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(list_store, &iter));
+      
+      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(ffplayer->preset),
+				    &iter);
     }
-
-    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
-			     i);
-
+  
     /* select first instrument */
     ipatch->nth_level = 2;
     instrument = ags_playable_sublevel_names(playable);
@@ -668,6 +670,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			      2, *instrument,
 			      &error);
 
+    if(error != NULL){
+      g_warning(error->message);
+    }
+    
     /* fill ffplayer->instrument */
     while(*instrument != NULL){
       gtk_combo_box_text_append_text(ffplayer->instrument,
@@ -681,30 +687,24 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			    "instrument\0");
 
     list_store = gtk_combo_box_get_model(ffplayer->instrument);
-    valid = gtk_tree_model_get_iter_first(list_store, &iter);
-    i = 0;
 
-    while(valid){
-      gchar *str;
+    if(gtk_tree_model_get_iter_first(list_store, &iter)){
+      do{
+	gchar *str;
 
-      gtk_tree_model_get(list_store, &iter,
-			 0, &str,
-			 -1);
-      if(!g_strcmp0(instrument[i],
-		       str)){
-	g_free (str);
+	gtk_tree_model_get(list_store, &iter,
+			   0, &str,
+			   -1);
 
-	break;
-      }else{
-	g_free (str);
+	if(!g_strcmp0(instrument,
+		      str)){
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(list_store, &iter));
 
-	i++;
-	valid = gtk_tree_model_iter_next(list_store, &iter);
-      }
+      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(ffplayer->instrument),
+				    &iter);
     }
-
-    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
-			     i);
   }
 }
 

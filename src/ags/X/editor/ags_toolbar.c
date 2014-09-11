@@ -158,14 +158,14 @@ ags_toolbar_init(AgsToolbar *toolbar)
 
   //TODO:JK: uncomment me
   toolbar->mode = (GtkComboBoxText *) gtk_combo_box_text_new();
-  //  gtk_combo_box_text_append_text(toolbar->mode,
-  //				 AGS_TOOLBAR_MODE_SINGLE_CHANNEL);
   gtk_combo_box_text_append_text(toolbar->mode,
-				 AGS_TOOLBAR_MODE_MULTI_CHANNEL);
+				 AGS_TOOLBAR_MODE_SINGLE_CHANNEL);
+  //  gtk_combo_box_text_append_text(toolbar->mode,
+  //				 AGS_TOOLBAR_MODE_MULTI_CHANNEL);
   //  gtk_combo_box_text_append_text(toolbar->mode,
   //				 AGS_TOOLBAR_MODE_ALL_CHANNELS);
   gtk_combo_box_set_active(toolbar->mode,
-			   1);
+			   0);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->mode, NULL, NULL);
 }
 

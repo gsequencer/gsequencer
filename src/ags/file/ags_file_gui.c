@@ -2426,12 +2426,16 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
       if(!g_strcmp0(str,
 		    value)){
 	break;
       }
-    }while(!gtk_tree_model_iter_next(model,
-				     &iter));
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
 
     gtk_combo_box_set_active_iter(gobject->zoom,
 				  &iter);
@@ -2445,12 +2449,16 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
   
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
       if(!g_strcmp0(str,
 		    value)){
 	break;
       }
-    }while(!gtk_tree_model_iter_next(model,
-				     &iter));
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
 
     gtk_combo_box_set_active_iter(gobject->mode,
 				  &iter);
@@ -2583,19 +2591,35 @@ void
 ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
 						 AgsMachineSelector *machine_selector)
 {
+  AgsEditor *editor;
   GObject *gobject;
   GValue *value;
 
   value = file_lookup->ref;
 
   if(G_VALUE_HOLDS(value, G_TYPE_OBJECT)){
+    AgsMachineRadioButton *machine_radio_button;
+
     gobject = g_value_get_object(value);
 
     if(gobject == NULL){
       return;
     }
 
-    g_object_set(machine_selector,
+    editor = gtk_widget_get_ancestor(machine_selector,
+				     AGS_TYPE_EDITOR);
+
+    if(editor->selected_machine == NULL){
+      editor->selected_machine = gobject;
+    }
+
+    machine_radio_button = g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
+					NULL);
+    gtk_box_pack_start(GTK_BOX(machine_selector),
+		       machine_radio_button,
+		       FALSE, FALSE,
+		       0);
+    g_object_set(machine_radio_button,
 		 "machine\0", gobject,
 		 NULL);
   }
