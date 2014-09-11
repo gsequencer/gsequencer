@@ -156,7 +156,7 @@ ags_recall_channel_run_dummy_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_channel_run_dummy_init(AgsRecallChannelRunDummy *recall_channel_run_dummy)
 {
-  AGS_RECALL(recall_channel_run_dummy)->name = "ags-recall\0";
+  AGS_RECALL(recall_channel_run_dummy)->name = NULL;
   AGS_RECALL(recall_channel_run_dummy)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(recall_channel_run_dummy)->build_id = AGS_BUILD_ID;
   AGS_RECALL(recall_channel_run_dummy)->xml_type = "ags-recall-channel-run-dummy\0";

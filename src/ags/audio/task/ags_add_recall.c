@@ -141,9 +141,9 @@ ags_add_recall_launch(AgsTask *task)
 
   if(AGS_IS_AUDIO(add_recall->context)){
     if(g_list_find(AGS_AUDIO(add_recall->context)->container,
-		   add_recall->recall->recall_container) == NULL){
+		   add_recall->recall->container) == NULL){
       ags_audio_add_recall_container(AGS_AUDIO(add_recall->context),
-				     add_recall->recall->recall_container);
+				     add_recall->recall->container);
     }
 
     ags_audio_add_recall(AGS_AUDIO(add_recall->context),
@@ -151,9 +151,9 @@ ags_add_recall_launch(AgsTask *task)
 			 add_recall->is_play);
   }else if(AGS_IS_CHANNEL(add_recall->context)){
     if(g_list_find(AGS_CHANNEL(add_recall->context)->container,
-		   add_recall->recall->recall_container) == NULL){
+		   add_recall->recall->container) == NULL){
       ags_channel_add_recall_container(AGS_CHANNEL(add_recall->context),
-				       add_recall->recall->recall_container);
+				       add_recall->recall->container);
     }
 
     ags_channel_add_recall(AGS_CHANNEL(add_recall->context),

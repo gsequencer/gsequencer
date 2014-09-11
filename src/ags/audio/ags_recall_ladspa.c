@@ -18,6 +18,8 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
@@ -172,6 +174,12 @@ ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 {
+  AGS_RECALL(recall_ladspa)->name = "ags-ladspa\0";
+  AGS_RECALL(recall_ladspa)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(recall_ladspa)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa\0";
+  AGS_RECALL(recall_ladspa)->port = NULL;
+
   recall_ladspa->filename = NULL;
   recall_ladspa->effect = NULL;
   recall_ladspa->index = 0;
@@ -254,7 +262,7 @@ ags_recall_ladspa_get_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      g_value_set_string(value, recall_ladspa->index);
+      g_value_set_uint(value, recall_ladspa->index);
     }
     break;
   default:
@@ -317,25 +325,46 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 
 	  if(!g_strcmp0(plugin_name,
 			AGS_PORT(port->data)->plugin_name)){
-	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
-	      //TODO:JK: implement me
-	    }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	      //TODO:JK: implement me
-	    }else if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	      current = AGS_PORT(port->data);
+	    if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	      if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+		 LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+		gchar *plugin_name;
+		gchar *specifier;
 
-	      plugin_descriptor->connect_port(plugin_descriptor,
-					      i,
-					      &(current->port_value.ags_port_double));
+		current = AGS_PORT(port->data);
+
+		hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
+
+		plugin_name = g_strdup_printf("ladspa-%lu\0", plugin_descriptor->UniqueID);
+		specifier = g_strdelimit(g_strdup(plugin_descriptor->PortNames[i]),
+					 NULL,
+					 '-');
+
+		current = g_object_new(AGS_TYPE_PORT,
+				       "plugin-name\0", plugin_name,
+				       "specifier\0", g_strdup_printf("./%s\0", specifier),
+				       "control-port\0", g_strdup_printf("%d/%d\0",
+									 i,
+									 port_count),
+				       "port-value-is-pointer\0", FALSE,
+				       "port-value-type\0", G_TYPE_FLOAT,
+				       NULL);
+		current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
+
+		g_message("connecting port: %d/%d\0", i, port_count);
+		plugin_descriptor->connect_port(plugin_descriptor,
+						i,
+						&(current->port_value.ags_port_float));
+	      }
 	    }else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
-	      //TODO:JK: implement me
+	      if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
+		recall_ladspa->input_port = i;
+	      }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+		recall_ladspa->output_port = i;
+	      }
 	    }
 
-	    g_free(plugin_name);
-
 	    break;
-	  }else{
-	    g_free(plugin_name);
 	  }
 	}
 
@@ -414,7 +443,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 				   NULL);
 	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
 
-	    g_message("%d/%d\0", i, port_count);
+	    g_message("connecting port: %d/%d\0", i, port_count);
 	    plugin_descriptor->connect_port(plugin_descriptor,
 					    i,
 					    &(current->port_value.ags_port_float));

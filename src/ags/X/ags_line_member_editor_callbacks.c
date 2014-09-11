@@ -34,6 +34,7 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_channel_run_dummy.h>
+#include <ags/audio/ags_recall_recycling_dummy.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
 #include <ags/audio/ags_port.h>
@@ -236,6 +237,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       task = g_list_prepend(task,
 			    add_recall);
 
+      /* add controls of ports and apply range  */
       if(line != NULL){
 	if(index != -1 &&
 	   plugin_so){
