@@ -162,9 +162,12 @@ ags_recall_ladspa_run_finalize(GObject *gobject)
 void
 ags_recall_ladspa_run_run_pre(AgsRecall *recall)
 {
+  AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
   guint i;
+
+  LADSPA_PortDescriptor *port_descriptor;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_pre(recall);
@@ -179,7 +182,19 @@ ags_recall_ladspa_run_run_pre(AgsRecall *recall)
   ags_recall_ladspa_short_to_float(audio_signal->stream_current->data,
 				   recall_ladspa_run->input);
 
+  /* can't be done in ags_recall_ladspa_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
+  recall_ladspa = AGS_RECALL_LADSPA(recall->parent->parent);
+
+  port_descriptor = recall_ladspa->plugin_descriptor->PortDescriptors;
+
+  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa->plugin_descriptor,
+						 recall_ladspa->input_port,
+						 recall_ladspa_run->input);
+
+  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa->plugin_descriptor,
+						 recall_ladspa->output_port,
+						 recall_ladspa_run->output);
 }
 
 void

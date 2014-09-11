@@ -877,7 +877,7 @@
 	  loop             CDATA      "FALSE"
 	  position         NMTOKEN    "0.0"
 	  loop-left        NMTOKEN    "0.0"
-	  loop-right       NMTOKEN    "0.0"
+	  loop-right       NMTOKEN    "4.0"
 	  raster           CDATA      "TRUE"
 	  >
 
