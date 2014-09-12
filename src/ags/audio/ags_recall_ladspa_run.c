@@ -45,7 +45,6 @@ void ags_recall_ladspa_run_finalize(GObject *gobject);
 
 void ags_recall_ladspa_run_run_pre(AgsRecall *recall);
 void ags_recall_ladspa_run_run_inter(AgsRecall *recall);
-void ags_recall_ladspa_run_run_post(AgsRecall *recall);
 
 static gpointer ags_recall_ladspa_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_run_parent_connectable_interface;
@@ -116,7 +115,6 @@ ags_recall_ladspa_run_class_init(AgsRecallLadspaRunClass *recall_ladspa_run)
 
   recall->run_pre = ags_recall_ladspa_run_run_pre;
   recall->run_inter = ags_recall_ladspa_run_run_inter;
-  recall->run_post = ags_recall_ladspa_run_run_post;
 }
 
 
@@ -204,6 +202,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 {
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
+  AgsAudioSignal *audio_signal;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter(recall);
@@ -214,21 +213,9 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
   recall_ladspa->plugin_descriptor->run(recall_ladspa->plugin_descriptor,
 					AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
-}
 
-void
-ags_recall_ladspa_run_run_post(AgsRecall *recall)
-{
-  AgsRecallLadspaRun *recall_ladspa_run;
-  AgsAudioSignal *audio_signal;
-
-  /* call parent */
-  AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_post(recall);
-
-  /* copy processed data */
-  recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
-  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_ladspa_run);
-
+  /* copy data */
+  memset(audio_signal->stream_current->data, 0, AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(LADSPA_Data));
   ags_recall_ladspa_float_to_short(recall_ladspa_run->output,
 				   audio_signal->stream_current->data);
 }

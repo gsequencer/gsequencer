@@ -134,17 +134,26 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(machine_editor->machine)->audio->devout)->ags_main)->main_loop;
       task_thread = (AgsTaskThread *) audio_loop->task_thread;
 
+      /* retrieve plugin */
       filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
       effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
+
+      if(ags_recall_ladpsa_find(line->channel->recall,
+				filename, effect) != NULL){
+	/* return if duplicated */
+	return;
+      }
 
       plugin = gtk_container_get_children(GTK_CONTAINER(line_member_editor->ladspa_browser->plugin));
       index = gtk_combo_box_get_active(GTK_COMBO_BOX(plugin->next->next->next->data));
 
+      /* load plugin */
       ags_ladspa_manager_load_file(filename);
       ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
-  
+
       plugin_so = ladspa_plugin->plugin_so;
 
+      /* create entry */
       hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
       gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
 			 GTK_WIDGET(hbox),
@@ -365,6 +374,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
       task = NULL;
 
+      /*  */
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    g_list_nth(play_ladspa,
 						       index)->data,
@@ -373,12 +383,28 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 			    remove_recall);
 
       remove_recall = ags_remove_recall_new(line_editor->channel,
+					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(play_ladspa,
+														index)->data)->container)->recall_channel_run,
+					    TRUE);
+      task = g_list_prepend(task,
+			    remove_recall);
+
+      /*  */
+      remove_recall = ags_remove_recall_new(line_editor->channel,
 					    g_list_nth(recall_ladspa,
 						       index)->data,
 					    FALSE);
       task = g_list_prepend(task,
 			    remove_recall);
 
+      remove_recall = ags_remove_recall_new(line_editor->channel,
+					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(recall_ladspa,
+														index)->data)->container)->recall_channel_run,
+					    FALSE);
+      task = g_list_prepend(task,
+			    remove_recall);
+
+      /*  */
       gtk_widget_destroy(GTK_WIDGET(line_member->data));
 
       found = TRUE;

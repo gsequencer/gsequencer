@@ -497,6 +497,26 @@ ags_recall_ladspa_float_to_short(float *buffer,
   return(new_buffer);
 }
 
+GList*
+ags_recall_ladpsa_find(GList *recall,
+		       gchar *filename, gchar *effect)
+{
+  while(recall != NULL){
+    if(AGS_IS_RECALL_LADSPA(recall->data)){
+      if(!g_strcmp0(AGS_RECALL_LADSPA(recall->data)->filename,
+		    filename) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(recall->data)->effect,
+		    effect)){
+	return(recall);
+      }
+    }
+
+    recall = recall->next;
+  }
+
+  return(NULL);
+}
+
 AgsRecallLadspa*
 ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *filename,

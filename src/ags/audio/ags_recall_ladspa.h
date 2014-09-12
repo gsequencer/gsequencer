@@ -65,6 +65,9 @@ void ags_recall_ladspa_short_to_float(signed short *buffer,
 void ags_recall_ladspa_float_to_short(float *buffer,
 				      signed short *destination);
 
+GList* ags_recall_ladpsa_find(GList *recall,
+			      gchar *filename, gchar *effect);
+
 AgsRecallLadspa* ags_recall_ladspa_new(AgsChannel *source,
 				       gchar *filename,
 				       gchar *effect,
