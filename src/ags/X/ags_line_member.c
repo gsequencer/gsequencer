@@ -66,6 +66,9 @@ enum{
   PROP_PORT,
   PROP_PORT_DATA,
   PROP_PORT_DATA_LENGTH,
+  PROP_RECALL_PORT,
+  PROP_RECALL_PORT_DATA,
+  PROP_RECALL_PORT_DATA_LENGTH,
   PROP_TASK_TYPE,
 };
 
@@ -180,10 +183,26 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_PORT,
 				  param_spec);
 
-
   param_spec = g_param_spec_pointer("port-data\0",
 				    "port data\0",
 				    "The port data\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_DATA,
+				  param_spec);
+
+  param_spec = g_param_spec_object("recall-port\0",
+				   "recall port to apply\0",
+				   "The recall port to apply\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
+				  param_spec);
+
+  param_spec = g_param_spec_pointer("recall-port-data\0",
+				    "recall port data\0",
+				    "The recall port data\0",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_DATA,
@@ -218,7 +237,8 @@ ags_line_member_init(AgsLineMember *line_member)
   g_signal_connect_after((GObject *) line_member, "parent_set\0",
 			 G_CALLBACK(ags_line_member_parent_set_callback), (gpointer) line_member);
 
-  line_member->flags = AGS_LINE_MEMBER_RESET_BY_ATOMIC;
+  line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
+			AGS_LINE_MEMBER_APPLY_RECALL);
 
   line_member->widget_type = AGS_TYPE_DIAL;
   control = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
@@ -237,6 +257,10 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->port = NULL;
   line_member->port_data = NULL;
   line_member->active = FALSE;
+
+  line_member->recall_port = NULL;
+  line_member->recall_port_data = NULL;
+  line_member->recall_active = FALSE;
 
   line_member->task_type = G_TYPE_NONE;
 }
@@ -362,6 +386,40 @@ ags_line_member_set_property(GObject *gobject,
       }
 
       line_member->port_data = port_data;
+    }
+    break;
+  case PROP_RECALL_PORT:
+    {
+      AgsPort *port;
+
+      port = g_value_get_object(value);
+      
+      if(port == line_member->recall_port){
+	return;
+      }
+      
+      if(line_member->recall_port != NULL){
+	g_object_unref(line_member->recall_port);
+      }
+
+      if(port != NULL){
+	g_object_ref(port);
+      }
+
+      line_member->recall_port = port;
+    }
+    break;
+  case PROP_RECALL_PORT_DATA:
+    {
+      gpointer port_data;
+
+      port_data = g_value_get_pointer(value);
+
+      if(port_data == line_member->recall_port_data){
+	return;
+      }
+
+      line_member->recall_port_data = port_data;
     }
     break;
   case PROP_TASK_TYPE:
@@ -506,6 +564,8 @@ ags_line_member_set_label(AgsLineMember *line_member,
 		 "label\0", label,
 		 NULL);
   }else{
+    GtkLabel *label;
+
     //TODO:JK: implement me
   }
 
@@ -575,6 +635,11 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
     ags_port_safe_write(line_member->port,
 			&value);
+
+    if((AGS_LINE_MEMBER_APPLY_RECALL & (line_member->flags)) != 0){
+      ags_port_safe_write(line_member->recall_port,
+			  &value);
+    }
   }
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
@@ -617,6 +682,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
   AgsAudio *audio;
   AgsChannel *channel;
   AgsPort *audio_port, *channel_port;
+  AgsPort *recall_audio_port, *recall_channel_port;
   GList *recall;
   gchar *specifier;
 
@@ -668,35 +734,42 @@ ags_line_member_find_port(AgsLineMember *line_member)
   audio_port = NULL;
   channel_port = NULL;
   
+  recall_audio_port = NULL;
+  recall_channel_port = NULL;
+  
   /* search channels */
   channel = line->channel;
 
   recall = channel->play;
   channel_port = ags_line_member_find_specifier(recall);
 
-  if(channel_port == NULL){
-    recall = channel->recall;
-    channel_port = ags_line_member_find_specifier(recall);
-  }
+  recall = channel->recall;
+  recall_channel_port = ags_line_member_find_specifier(recall);
  
   /* search audio */
   if(channel_port == NULL){
     recall = audio->play;
     audio_port = ags_line_member_find_specifier(recall);
 
-    if(audio_port == NULL){
-      recall = audio->recall;
-      audio_port = ags_line_member_find_specifier(recall);
-    }
+    recall = audio->recall;
+    recall_audio_port = ags_line_member_find_specifier(recall);
   }
 
   if(channel_port != NULL){
     g_object_set(G_OBJECT(line_member),
 		 "port\0", channel_port,
 		 NULL);
+
+    g_object_set(G_OBJECT(line_member),
+		 "recall-port\0", recall_channel_port,
+		 NULL);
   }else if(audio_port != NULL){
     g_object_set(G_OBJECT(line_member),
 		 "port\0", audio_port,
+		 NULL);
+
+    g_object_set(G_OBJECT(line_member),
+		 "recall-port\0", recall_audio_port,
 		 NULL);
   }
 }
