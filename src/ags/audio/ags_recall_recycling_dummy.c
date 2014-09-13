@@ -80,7 +80,7 @@ ags_recall_recycling_dummy_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_recall_recycling_dummy = g_type_register_static(AGS_TYPE_RECALL_RECYCLING_DUMMY,
+    ags_type_recall_recycling_dummy = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 							     "AgsRecallRecyclingDummy\0",
 							     &ags_recall_recycling_dummy_info,
 							     0);

@@ -287,6 +287,7 @@ ags_line_member_set_property(GObject *gobject,
 	return;
       }
 
+      line_member->widget_label = g_strdup(label);
       ags_line_member_set_label(line_member, label);
     }
     break;

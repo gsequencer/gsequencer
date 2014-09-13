@@ -89,7 +89,7 @@ ags_recall_channel_run_dummy_get_type()
       NULL, /* interface_data */
     };    
 
-    ags_type_recall_channel_run_dummy = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN_DUMMY,
+    ags_type_recall_channel_run_dummy = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							       "AgsRecallChannelRunDummy\0",
 							       &ags_recall_channel_run_dummy_info,
 							       0);

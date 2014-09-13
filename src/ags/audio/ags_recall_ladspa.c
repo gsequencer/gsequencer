@@ -62,6 +62,7 @@ enum{
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
+static AgsPluginInterface* ags_recall_ladspa_parent_plugin_interface;
 
 GType
 ags_recall_ladspa_get_type (void)
@@ -161,6 +162,8 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 void
 ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  ags_recall_ladspa_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
   connectable->connect = ags_recall_ladspa_connect;
   connectable->disconnect = ags_recall_ladspa_disconnect;
 }
@@ -168,6 +171,8 @@ ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin)
 {
+  ags_recall_ladspa_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
   plugin->set_ports = ags_recall_ladspa_set_ports;
 }
 

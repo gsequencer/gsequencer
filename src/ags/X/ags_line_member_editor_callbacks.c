@@ -205,7 +205,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
-      port = ags_recall_ladspa_load_ports(recall_ladspa);
+      ags_recall_ladspa_load_ports(recall_ladspa);
 
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(line_editor->channel,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
@@ -259,66 +259,67 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	    port_descriptor = plugin_descriptor->PortDescriptors;   
 
 	    while(port != NULL){
-	      if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
-		i++;
-		continue;
-	      }
+	      if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
+		   (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+		    LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
+		if(x == 2){
+		  x = 0;
+		  y++;
+		}
 
-	      if(x == 2){
-		x = 0;
-		y++;
-	      }
+		line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+							     "widget-type\0", AGS_TYPE_DIAL,
+							     "widget-label\0", plugin_descriptor->PortNames[i],
+							     "plugin-name\0", AGS_PORT(port->data)->plugin_name,
+							     "specifier\0", AGS_PORT(port->data)->specifier,
+							     "control-port\0", AGS_PORT(port->data)->control_port,
+							     NULL);
 
-	      line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-							   "widget-type\0", AGS_TYPE_DIAL,
-							   "plugin-name\0", AGS_PORT(port->data)->plugin_name,
-							   "specifier\0", AGS_PORT(port->data)->specifier,
-							   "control-port\0", AGS_PORT(port->data)->control_port,
-							   NULL);
+		lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
+		upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+		g_object_get(ags_line_member_get_widget(line_member),
+			     "adjustment", &adjustment,
+			     NULL);
 
-	      lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
-	      upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
-	      g_object_get(ags_line_member_get_widget(line_member),
-			   "adjustment", &adjustment,
-			   NULL);
+		if(upper_bound >= 0.0 && lower_bound >= 0.0){
+		  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		}else if(upper_bound < 0.0 && lower_bound < 0.0){
+		  step = -1.0 * (upper_bound + lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		}else{
+		  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+		}
 
-	      if(upper_bound >= 0.0 && lower_bound >= 0.0){
-		step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	      }else if(upper_bound < 0.0 && lower_bound < 0.0){
-		step = -1.0 * (upper_bound + lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	      }else{
-		step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	      }
+		gtk_adjustment_set_step_increment(adjustment,
+						  step);
+		gtk_adjustment_set_lower(adjustment,
+					 lower_bound);
+		gtk_adjustment_set_upper(adjustment,
+					 upper_bound);
+		gtk_adjustment_set_value(adjustment,
+					 lower_bound);
 
-	      gtk_adjustment_set_step_increment(adjustment,
-						step);
-	      gtk_adjustment_set_lower(adjustment,
-				       lower_bound);
-	      gtk_adjustment_set_upper(adjustment,
-				       upper_bound);
-	      gtk_adjustment_set_value(adjustment,
-				       lower_bound);
-
-	      add_line_member = ags_add_line_member_new(line,
-							line_member,
-							x, y,
-							1, 1);
-	      task = g_list_prepend(task,
-				    add_line_member);
+		add_line_member = ags_add_line_member_new(line,
+							  line_member,
+							  x, y,
+							  1, 1);
+		task = g_list_prepend(task,
+				      add_line_member);
 	  
-	      x++;
+		x++;
+	      }
+
 	      i++;
 	      port = port->next;
 	    }
 	  }
-
-	  task = g_list_reverse(task);
-
-	  /* launch tasks */
-	  ags_task_thread_append_tasks(task_thread,
-				       task);
 	}
       }
+
+      task = g_list_reverse(task);
+      
+      /* launch tasks */
+      ags_task_thread_append_tasks(task_thread,
+				   task);
     }
     break;
   }
@@ -330,15 +331,18 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 {
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
+  AgsLine *line;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
   AgsRemoveRecall *remove_recall;
+  GList *control;
   GList *line_member;
   GList *children;
   GList *play_ladspa, *recall_ladspa;
+  GList *port;
   GList *task;
+  GList *list;
   guint index;
-  gboolean found;
 
   if(button == NULL ||
      line_member_editor == NULL){
@@ -361,13 +365,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   recall_ladspa = ags_recall_template_find_type(line_editor->channel->recall,
 						AGS_TYPE_RECALL_LADSPA);
 
-  found = FALSE;
-
   for(index = 0; line_member != NULL; index++){
-    if(found){
-      index -= 1;
-      found = FALSE;
-    }
 
     children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
@@ -384,10 +382,13 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(play_ladspa,
-														index)->data)->container)->recall_channel_run,
+														index)->data)->container)->recall_channel_run),
 					    TRUE);
       task = g_list_prepend(task,
 			    remove_recall);
+
+      port = AGS_RECALL(g_list_nth(play_ladspa,
+				   index)->data)->port;
 
       /*  */
       remove_recall = ags_remove_recall_new(line_editor->channel,
@@ -399,15 +400,54 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(recall_ladspa,
-														index)->data)->container)->recall_channel_run,
+														index)->data)->container)->recall_channel_run),
 					    FALSE);
       task = g_list_prepend(task,
 			    remove_recall);
 
       /*  */
+      line = NULL;
+
+      if(AGS_IS_OUTPUT(line_editor->channel)){
+	list = gtk_container_get_children(machine_editor->machine->output);
+      }else{
+	list = gtk_container_get_children(machine_editor->machine->input);
+      }
+
+      list = g_list_nth(list,
+			line_editor->channel->pad);
+
+      if(list != NULL){
+	list = g_list_nth(gtk_container_get_children(AGS_PAD(list->data)->expander_set),
+			  AGS_AUDIO(line_editor->channel->audio)->audio_channels - line_editor->channel->audio_channel - 1);
+
+	if(list != NULL){
+	  line = AGS_LINE(list->data);
+	}
+      }
+
+      /* destroy line member editor entry */
       gtk_widget_destroy(GTK_WIDGET(line_member->data));
 
-      found = TRUE;
+      /* destroy controls */
+      if(line != NULL){
+	while(port != NULL){
+	  control = gtk_container_get_children(line->expander->table);
+	    
+	    while(control != NULL){
+	      if(AGS_IS_LINE_MEMBER(control->data) &&
+		 AGS_LINE_MEMBER(control->data)->port == port->data){
+		ags_expander_remove(line->expander,
+				    control->data);
+		break;
+	      }
+	      
+	      control = control->next;
+	    }
+	  
+	  port = port->next;
+	}
+      }
     }
 
     line_member = line_member->next;
