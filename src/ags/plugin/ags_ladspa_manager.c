@@ -44,7 +44,7 @@ enum{
 static gpointer ags_ladspa_manager_parent_class = NULL;
 static guint ladspa_manager_signals[LAST_SIGNAL];
 
-static AgsLadspaManager *ags_ladspa_manager = NULL;
+AgsLadspaManager *ags_ladspa_manager = NULL;
 static const gchar *ags_ladspa_default_path = "/usr/lib/ladspa\0";
 
 GType
@@ -203,7 +203,7 @@ ags_ladspa_manager_load_file(gchar *filename)
 
   if(ladspa_plugin == NULL){
     ladspa_plugin = ags_ladspa_plugin_alloc();
-    ladspa_plugin->filename = filename;
+    ladspa_plugin->filename = g_strdup(filename);
     ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
 						   ladspa_plugin);
 

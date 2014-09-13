@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/file/ags_file.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -80,6 +82,8 @@ extern GtkStyle *notebook_style;
 extern GtkStyle *ruler_style;
 extern GtkStyle *meter_style;
 extern GtkStyle *note_edit_style;
+
+extern AgsLadspaManager *ags_ladspa_manager;
 
 struct sigaction ags_sigact;
 
@@ -896,6 +900,11 @@ main(int argc, char **argv)
 		   NULL);
 #endif
     }
+  }
+
+  /* free managers */
+  if(ags_ladspa_manager != NULL){
+    g_object_unref(ags_ladspa_manager_get_instance());
   }
 
   return(0);

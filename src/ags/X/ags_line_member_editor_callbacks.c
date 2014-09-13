@@ -306,10 +306,10 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 				      add_line_member);
 	  
 		x++;
+		port = port->next;
 	      }
 
 	      i++;
-	      port = port->next;
 	    }
 	  }
 	}
