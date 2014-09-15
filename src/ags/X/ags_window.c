@@ -319,6 +319,8 @@ ags_window_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(window->editor));
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
+
+  ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }
 
 void
@@ -336,6 +338,7 @@ ags_window_finalize(GObject *gobject)
   window = (AgsWindow *) gobject;
 
   g_object_unref(G_OBJECT(window->devout));
+  g_object_unref(G_OBJECT(window->export_window));
 
   free(window->name);
 

@@ -185,6 +185,11 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_export_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
+  AgsWindow *window;
+
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
+
+  gtk_widget_show_all(window->export_window);
 }
 
 void

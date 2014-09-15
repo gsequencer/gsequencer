@@ -23,6 +23,8 @@
 
 #include <ags/main.h>
 
+#include <ags/audio/ags_notation.h>
+
 #include <stdlib.h>
 
 void ags_export_window_class_init(AgsExportWindowClass *export_window);
@@ -142,7 +144,149 @@ ags_export_window_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_export_window_init(AgsExportWindow *export_window)
 {
+  GtkVBox *vbox;
+  GtkHBox *hbox;
+  GtkTable *table;
+  GtkLabel *label;
+
   export_window->flags = 0;
+
+  g_object_set(export_window,
+	       "title\0", "export to audio data\0",
+	       NULL);
+
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE,
+				  0);
+  gtk_container_add(GTK_CONTAINER(export_window),
+		    GTK_WIDGET(vbox));
+
+  export_window->live_export = gtk_check_button_new_with_label("live export\0");
+  gtk_toggle_button_set_active(export_window->live_export,
+			       TRUE);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(export_window->live_export),
+		     FALSE, FALSE,
+		     0);
+
+  table = (GtkTable *) gtk_table_new(4, 2,
+				     FALSE);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(table),
+		     FALSE, FALSE,
+		     0);
+
+  /*  */
+  label = (GtkLabel *) gtk_label_new("mode\0");
+  g_object_set(G_OBJECT(label),
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);
+
+  export_window->mode = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_combo_box_text_append_text(export_window->mode,
+				 "tact\0");
+  //TODO:JK: uncomment me
+  //  gtk_combo_box_text_append_text(export_window->mode,
+  //				 "time\0");
+  gtk_combo_box_set_active(export_window->mode,
+			   0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(export_window->mode),
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /*  */
+  label = (GtkLabel *) gtk_label_new("tact");
+  g_object_set(G_OBJECT(label),
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);
+
+  export_window->tact = gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
+  gtk_spin_button_set_digits(export_window->tact,
+			     2);
+  gtk_table_attach(table,
+		   GTK_WIDGET(export_window->tact),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  label = (GtkLabel *) gtk_label_new("time");
+  g_object_set(G_OBJECT(label),
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(hbox),
+		   1, 2,
+		   2, 3,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);
+
+  export_window->duration = gtk_label_new(ags_navigation_tact_to_time_string(0.0));
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(export_window->duration),
+		     FALSE, FALSE,
+		     0);
+
+  /*  */
+  label = (GtkLabel *) gtk_label_new("output format\0");
+  g_object_set(G_OBJECT(label),
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   3, 4,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);
+
+  export_window->output_format = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_combo_box_text_append_text(export_window->output_format,
+				 "WAV\0");
+  gtk_combo_box_set_active(export_window->output_format,
+			   0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(export_window->output_format),
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(hbox),
+		     TRUE, TRUE,
+		     0);
+
+  export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label("export\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(export_window->export),
+		     FALSE, FALSE,
+		     0);
+
 }
 
 void
@@ -226,6 +370,11 @@ ags_export_window_connect(AgsConnectable *connectable)
   AgsExportWindow *export_window;
 
   export_window = AGS_EXPORT_WINDOW(connectable);
+
+  g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed\0",
+			 G_CALLBACK(ags_export_window_tact_callback), export_window);
+  g_signal_connect(G_OBJECT(export_window->export), "clicked\0",
+		   G_CALLBACK(ags_export_window_export_callback), export_window);
 }
 
 void
@@ -258,11 +407,11 @@ ags_export_window_show(GtkWidget *widget)
 gboolean
 ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 {
-  gtk_widget_destroy(widget);
+  gtk_widget_hide(widget);
 
-  GTK_WIDGET_CLASS(ags_export_window_parent_class)->delete_event(widget, event);
+  //  GTK_WIDGET_CLASS(ags_export_window_parent_class)->delete_event(widget, event);
 
-  return(FALSE);
+  return(TRUE);
 }
 
 AgsExportWindow*

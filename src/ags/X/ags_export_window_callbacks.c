@@ -17,3 +17,19 @@
  */
 
 #include <ags/X/ags_export_window_callbacks.h>
+
+void
+ags_export_window_tact_callback(GtkWidget *spin_button,
+				AgsExportWindow *export_window)
+{
+  gtk_label_set_text(export_window->duration,
+		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact)));
+}
+
+void
+ags_export_window_export_callback(GtkWidget *toggle_button,
+				  AgsExportWindow *export_window)
+{
+  //TODO:JK: implement me
+}
+

@@ -47,6 +47,15 @@ struct _AgsExportWindow
 
   GObject *ags_main;
   AgsDevout *devout;
+
+  GtkCheckButton *live_export;
+
+  GtkComboBoxText *mode;
+  GtkSpinButton *tact;
+  GtkLabel *duration;
+  GtkComboBoxText *output_format;
+
+  GtkToggleButton *export;
 };
 
 struct _AgsExportWindowClass
