@@ -78,6 +78,7 @@ struct _AgsAudioLoop
   AgsThread *task_thread;
   AgsThread *gui_thread;
   AgsThread *devout_thread;
+  AgsThread *export_thread;
 
   pthread_mutex_t recall_mutex;
 

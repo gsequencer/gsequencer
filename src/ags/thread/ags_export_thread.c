@@ -91,6 +91,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
+  GParamSpec *param_spec;
 
   ags_export_thread_parent_class = g_type_class_peek_parent(export_thread);
 
@@ -139,7 +140,6 @@ ags_export_thread_init(AgsExportThread *export_thread)
   export_thread->flags = 0;
 
   export_thread->audio_file = NULL;
-  export_thread->recall_container = NULL;
 }
 
 void
@@ -155,7 +155,7 @@ ags_export_thread_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO_FILE:
     {
-      AgsAudio_File *audio_file;
+      AgsAudioFile *audio_file;
 
       audio_file = g_value_get_object(value);
 
@@ -191,7 +191,7 @@ ags_export_thread_get_property(GObject *gobject,
   export_thread = AGS_EXPORT_THREAD(gobject);
 
   switch(prop_id){
-  case PROP_MAIN:
+  case PROP_AUDIO_FILE:
     {
       g_value_set_object(value, export_thread->audio_file);
     }
@@ -244,16 +244,16 @@ ags_export_thread_run(AgsThread *thread)
 
   devout =  thread->devout;
 
-  if((AGS_DEVOUT_BUFFER_0 & (devout->flags)) != 0){
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
 			 devout->buffer[0], devout->buffer_size);
-  }else if((AGS_DEVOUT_BUFFER_1 & (devout->flags)) != 0){
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
 			 devout->buffer[1], devout->buffer_size);
-  }else if((AGS_DEVOUT_BUFFER_2 & (devout->flags)) != 0){
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
 			 devout->buffer[2], devout->buffer_size);
-  }else if((AGS_DEVOUT_BUFFER_3 & (devout->flags)) != 0){
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
 			 devout->buffer[3], devout->buffer_size);
   }

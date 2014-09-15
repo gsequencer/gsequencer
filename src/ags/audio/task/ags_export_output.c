@@ -22,6 +22,12 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_export_thread.h>
+
+#include <ags/audio/ags_devout.h>
+
+#include <ags/audio/file/ags_audio_file.h>
+
 void ags_export_output_class_init(AgsExportOutputClass *export_output);
 void ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_output_init(AgsExportOutput *export_output);
@@ -102,7 +108,10 @@ ags_export_output_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_export_output_init(AgsExportOutput *export_output)
 {
-  export_output->flags = 0;
+  export_output->export_thread = NULL;
+  export_output->devout = NULL;
+  export_output->filename = NULL;
+  export_output->live_performance = TRUE;
 }
 
 void
@@ -133,21 +142,39 @@ void
 ags_export_output_launch(AgsTask *task)
 {
   AgsExportOutput *export_output;
-
+  AgsExportThread *export_thread;
+  AgsDevout *devout;
+  AgsAudioFile *audio_file;
+  gchar *filename;
+  
   export_output = AGS_EXPORT_OUTPUT(task);
+  devout = export_output->devout;
+  export_thread = export_output->export_thread;
+  filename = export_output->filename;
 
-  audio_loop = AGS_AUDIO_LOOP(export_output->audio_loop);
-
-  /* to implement me */
+  audio_file = ags_audio_file_new(filename,
+				  devout,
+				  0, devout->dsp_channels);
+  g_object_set(G_OBJECT(export_thread),
+	       "audio-file\0", audio_file,
+	       NULL);
 }
 
 AgsExportOutput*
-ags_export_output_new(gboolean live_performance)
+ags_export_output_new(AgsExportThread *export_thread,
+		      AgsDevout *devout,
+		      gchar *filename,
+		      gboolean live_performance)
 {
   AgsExportOutput *export_output;
 
   export_output = (AgsExportOutput *) g_object_new(AGS_TYPE_EXPORT_OUTPUT,
 						   NULL);
+
+  export_output->export_thread = export_thread;
+  export_output->devout = devout;
+  export_output->filename = filename;
+  export_output->live_performance = live_performance;
 
   return(export_output);
 }

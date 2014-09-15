@@ -22,7 +22,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_thread.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+
+#include <ags/audio/file/ags_audio_file.h>
 
 #define AGS_TYPE_EXPORT_THREAD                (ags_export_thread_get_type())
 #define AGS_EXPORT_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_THREAD, AgsExportThread))

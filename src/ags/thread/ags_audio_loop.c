@@ -21,6 +21,7 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/thread/ags_export_thread.h>
 #include <ags/thread/ags_gui_thread.h>
 
 #include <ags/audio/ags_devout.h>
@@ -62,6 +63,7 @@ enum{
   PROP_TASK_THREAD,
   PROP_GUI_THREAD,
   PROP_DEVOUT_THREAD,
+  PROP_EXPORT_THREAD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
   PROP_PLAY_AUDIO,
@@ -151,6 +153,15 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVOUT_THREAD,
+				  param_spec);
+
+  param_spec = g_param_spec_object("export-thread\0",
+				   "export thread to run\0",
+				   "The export thread to run\0",
+				   AGS_TYPE_EXPORT_THREAD,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EXPORT_THREAD,
 				  param_spec);
 
   param_spec = g_param_spec_object("gui-thread\0",
@@ -253,6 +264,10 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->devout_thread = (AgsThread *) ags_devout_thread_new(NULL);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->devout_thread);
 
+  /* AgsExportThread */
+  audio_loop->export_thread = (AgsThread *) ags_export_thread_new(NULL, NULL);
+  ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->export_thread);
+
   /* recall mutex */
   pthread_mutex_init(&(audio_loop->recall_mutex), NULL);
 
@@ -332,6 +347,23 @@ ags_audio_loop_set_property(GObject *gobject,
       audio_loop->devout_thread = thread;
     }
     break;
+  case PROP_EXPORT_THREAD:
+    {
+      AgsThread *thread;
+
+      thread = (AgsThread *) g_value_get_object(value);
+
+      if(audio_loop->export_thread != NULL){
+	g_object_unref(G_OBJECT(audio_loop->export_thread));
+      }
+
+      if(thread != NULL){
+	g_object_ref(G_OBJECT(thread));
+      }
+
+      audio_loop->export_thread = thread;
+    }
+    break;
   case PROP_PLAY_RECALL:
     {
       AgsRecall *recall;
@@ -398,6 +430,11 @@ ags_audio_loop_get_property(GObject *gobject,
   case PROP_DEVOUT_THREAD:
     {
       g_value_set_object(value, audio_loop->devout_thread);
+    }
+    break;
+  case PROP_EXPORT_THREAD:
+    {
+      g_value_set_object(value, audio_loop->export_thread);
     }
     break;
   case PROP_PLAY_RECALL:
@@ -583,6 +620,10 @@ ags_audio_loop_run(AgsThread *thread)
      audio_loop->play_notation_ref == 0){
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_loop->devout_thread)->flags)))) != 0){
       ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
+
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_loop->export_thread)->flags)))) != 0){
+	ags_thread_stop(AGS_THREAD(audio_loop->export_thread));
+      }
     }
   }
 

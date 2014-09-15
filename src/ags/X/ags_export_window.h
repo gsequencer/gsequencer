@@ -50,6 +50,8 @@ struct _AgsExportWindow
 
   GtkCheckButton *live_export;
 
+  GtkEntry *filename;
+
   GtkComboBoxText *mode;
   GtkSpinButton *tact;
   GtkLabel *duration;

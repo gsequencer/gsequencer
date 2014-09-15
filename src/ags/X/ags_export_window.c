@@ -168,6 +168,12 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
+  export_window->filename = gtk_entry_new();
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(export_window->filename),
+		     FALSE, FALSE,
+		     0);
+
   table = (GtkTable *) gtk_table_new(4, 2,
 				     FALSE);
   gtk_box_pack_start(GTK_BOX(vbox),
