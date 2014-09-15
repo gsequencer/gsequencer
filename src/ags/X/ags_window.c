@@ -197,6 +197,7 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
+  window->export_window = ags_export_window_new();
   window->preferences = NULL;
 
   window->machine_counter = ags_window_standard_machine_counter();
@@ -236,6 +237,10 @@ ags_window_set_property(GObject *gobject,
       g_object_set(G_OBJECT(window->navigation),
 		   "devout\0", devout,
 		   NULL);
+
+      g_object_set(G_OBJECT(window->export_window),
+		   "devout\0", devout,
+		   NULL);
     }
     break;
   case PROP_MAIN:
@@ -256,6 +261,10 @@ ags_window_set_property(GObject *gobject,
       }
 
       window->ags_main = ags_main;
+
+      g_object_set(G_OBJECT(window->export_window),
+		   "ags-main\0", ags_main,
+		   NULL);
     }
     break;
   default:
@@ -277,6 +286,9 @@ ags_window_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_DEVOUT:
     g_value_set_object(value, window->devout);
+    break;
+  case PROP_MAIN:
+    g_value_set_object(value, window->ags_main);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

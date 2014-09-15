@@ -34,6 +34,7 @@
 #include <ags/audio/task/ags_add_audio.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_export_window.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
@@ -179,6 +180,11 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);
+}
+
+void
+ags_menu_bar_export_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
 }
 
 void

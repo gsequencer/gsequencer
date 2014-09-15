@@ -111,6 +111,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("export\0"));
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
+
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
+			(GtkWidget*) gtk_separator_menu_item_new());
+
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
@@ -200,6 +206,10 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_save_as_callback), menu_bar);
+  list1 = list1->next->next;
+
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_export_callback), menu_bar);
   list1 = list1->next->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",

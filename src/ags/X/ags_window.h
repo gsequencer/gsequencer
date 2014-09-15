@@ -29,6 +29,7 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_navigation.h>
+#include <ags/X/ags_export_window.h>
 #include <ags/X/ags_preferences.h>
 
 #define AGS_TYPE_WINDOW                (ags_window_get_type())
@@ -74,6 +75,7 @@ struct _AgsWindow
   AgsEditor *editor;
   AgsNavigation *navigation;
 
+  AgsExportWindow *export_window;
   AgsPreferences *preferences;
 };
 
