@@ -320,9 +320,9 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
-      if(AGS_AUDIO_SIGNAL(audio_signal)->stream_current != NULL){
+      if(AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
 	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
-						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal)->stream_current->data, 1,
+						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
 						      AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
       }
 

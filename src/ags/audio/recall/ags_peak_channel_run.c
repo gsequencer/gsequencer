@@ -226,18 +226,18 @@ ags_peak_channel_run_run_post(AgsRecall *recall)
     list = ags_recall_find_type(source->play,
 				AGS_TYPE_PEAK_CHANNEL_RUN);
 
-    if(g_list_last(list) == recall){
+    //    if(g_list_last(list) == recall){
       ags_peak_channel_retrieve_peak(recall_channel,
 				     TRUE);
-    }
+      //    }
   }else{
     list = ags_recall_find_type(source->recall,
 				AGS_TYPE_PEAK_CHANNEL_RUN);
 
-    if(g_list_last(list) == recall){
+    //    if(g_list_last(list) == recall){
       ags_peak_channel_retrieve_peak(recall_channel,
 				     FALSE);
-    }
+      //    }
   }
 }
 

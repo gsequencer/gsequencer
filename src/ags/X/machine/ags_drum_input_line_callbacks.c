@@ -126,7 +126,7 @@ ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
 			 &value);
       gtk_adjustment_set_value(adjustment,
 			       g_value_get_double(&value));
-      ags_vindicator_draw(child);
+      gtk_widget_queue_draw(child);
 
       break;
     }
