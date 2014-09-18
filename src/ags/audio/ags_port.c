@@ -402,6 +402,10 @@ ags_port_safe_write(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
+  if(port == NULL){
+    return;
+  }
+
   overall_size = port->port_value_length * port->port_value_size;
 
   pthread_mutex_lock(&(port->mutex));

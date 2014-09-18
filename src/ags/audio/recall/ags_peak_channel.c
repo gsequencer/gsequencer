@@ -320,7 +320,7 @@ ags_peak_channel_run_post(AgsRecall *recall)
 
     while(audio_signal != NULL){
       if(AGS_AUDIO_SIGNAL(audio_signal)->recall_id != NULL &&
-	 AGS_AUDIO_SIGNAL(audio_signal)->recall_id->recycling_container == recall->recall_id->recycling_container
+	 AGS_RECALL_ID(AGS_AUDIO_SIGNAL(audio_signal)->recall_id)->recycling_container == AGS_RECALL_ID(recall->recall_id)->recycling_container
 ){
 	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
 						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal)->stream_current->data, 1,

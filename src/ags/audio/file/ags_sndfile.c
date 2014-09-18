@@ -200,10 +200,10 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
-      sndfile->file = (SNDFILE *) sf_open(name, SFM_RDWR, sndfile->info);
+      sndfile->file = (SNDFILE *) sf_open(name, SFM_READ, sndfile->info);
     }
   }else{
-    sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
+    sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_READ, sndfile->info, sndfile);
   }
 
   if(sndfile->file == NULL)

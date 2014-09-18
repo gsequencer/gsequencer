@@ -151,19 +151,40 @@ ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 {
-  GtkWidget *widget;
   AgsLineMember *line_member;
-  AgsVIndicator *vindicator;
+  GtkWidget *widget;
+  GtkAdjustment *adjustment;
 
   g_signal_connect_after((GObject *) drum_input_line, "parent_set\0",
 			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
 
-  vindicator = ags_vindicator_new();
+  /* volume indicator */
+  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+					       "widget-type\0", AGS_TYPE_VINDICATOR,
+					       "plugin-name\0", "ags-peak\0",
+					       "specifier\0", "./peak[0]\0",
+					       "control-port\0", "1/1\0",
+					       NULL);
   ags_expander_add(AGS_LINE(drum_input_line)->expander,
-		   GTK_WIDGET(vindicator),
+		   GTK_WIDGET(line_member),
 		   0, 0,
 		   1, 1);
+  widget = gtk_bin_get_child(GTK_BIN(line_member));
 
+  adjustment = gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+  g_object_set(widget,
+	       "adjustment\0", adjustment,
+	       NULL);
+
+  gtk_widget_set_size_request(widget,
+			      -1, 100);
+  gtk_widget_queue_draw(widget);
+
+  g_object_set(G_OBJECT(line_member),
+	       "port-data\0", (gpointer) &(adjustment->value),
+	       NULL);
+
+  /* volume control */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type\0", GTK_TYPE_VSCALE,
 					       "plugin-name\0", "ags-volume\0",
@@ -329,6 +350,18 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			     AGS_RECALL_FACTORY_PLAY |
   			     AGS_RECALL_FACTORY_ADD),
   			    0);
+
+  /* ags-peak */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-peak\0",
+			    source->audio_channel, source->audio_channel + 1, 
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
   /* ags-volume */
   ags_recall_factory_create(audio,

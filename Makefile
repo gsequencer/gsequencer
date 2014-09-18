@@ -145,6 +145,7 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_recall_container.$(OBJEXT) \
 	ags-ags_delay_audio_run.$(OBJEXT) \
 	ags-ags_volume_channel_run.$(OBJEXT) \
+	ags-ags_peak_channel.$(OBJEXT) \
 	ags-ags_copy_notation_audio_run.$(OBJEXT) \
 	ags-ags_play_audio.$(OBJEXT) \
 	ags-ags_play_channel_run_master.$(OBJEXT) \
@@ -719,6 +720,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/ags_effect.h \
 	./src/ags/audio/recall/ags_delay_audio_run.c \
 	./src/ags/audio/recall/ags_volume_channel_run.c \
+	./src/ags/audio/recall/ags_peak_channel.h \
+	./src/ags/audio/recall/ags_peak_channel.c \
 	./src/ags/audio/recall/ags_copy_notation_audio_run.c \
 	./src/ags/audio/recall/ags_play_audio.h \
 	./src/ags/audio/recall/ags_play_audio.c \
@@ -1486,6 +1489,7 @@ include ./$(DEPDIR)/ags-ags_panel_input_line.Po
 include ./$(DEPDIR)/ags-ags_panel_input_pad.Po
 include ./$(DEPDIR)/ags-ags_parameter.Po
 include ./$(DEPDIR)/ags-ags_pattern.Po
+include ./$(DEPDIR)/ags-ags_peak_channel.Po
 include ./$(DEPDIR)/ags-ags_performance_preferences.Po
 include ./$(DEPDIR)/ags-ags_performance_preferences_callbacks.Po
 include ./$(DEPDIR)/ags-ags_persistable.Po
@@ -3059,6 +3063,20 @@ ags-ags_volume_channel_run.obj: ./src/ags/audio/recall/ags_volume_channel_run.c
 #	source='./src/ags/audio/recall/ags_volume_channel_run.c' object='ags-ags_volume_channel_run.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_volume_channel_run.obj `if test -f './src/ags/audio/recall/ags_volume_channel_run.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_volume_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_volume_channel_run.c'; fi`
+
+ags-ags_peak_channel.o: ./src/ags/audio/recall/ags_peak_channel.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_peak_channel.o -MD -MP -MF $(DEPDIR)/ags-ags_peak_channel.Tpo -c -o ags-ags_peak_channel.o `test -f './src/ags/audio/recall/ags_peak_channel.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_peak_channel.c
+	$(am__mv) $(DEPDIR)/ags-ags_peak_channel.Tpo $(DEPDIR)/ags-ags_peak_channel.Po
+#	source='./src/ags/audio/recall/ags_peak_channel.c' object='ags-ags_peak_channel.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_peak_channel.o `test -f './src/ags/audio/recall/ags_peak_channel.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_peak_channel.c
+
+ags-ags_peak_channel.obj: ./src/ags/audio/recall/ags_peak_channel.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_peak_channel.obj -MD -MP -MF $(DEPDIR)/ags-ags_peak_channel.Tpo -c -o ags-ags_peak_channel.obj `if test -f './src/ags/audio/recall/ags_peak_channel.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_peak_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_peak_channel.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_peak_channel.Tpo $(DEPDIR)/ags-ags_peak_channel.Po
+#	source='./src/ags/audio/recall/ags_peak_channel.c' object='ags-ags_peak_channel.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_peak_channel.obj `if test -f './src/ags/audio/recall/ags_peak_channel.c'; then $(CYGPATH_W) './src/ags/audio/recall/ags_peak_channel.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/recall/ags_peak_channel.c'; fi`
 
 ags-ags_copy_notation_audio_run.o: ./src/ags/audio/recall/ags_copy_notation_audio_run.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_copy_notation_audio_run.o -MD -MP -MF $(DEPDIR)/ags-ags_copy_notation_audio_run.Tpo -c -o ags-ags_copy_notation_audio_run.o `test -f './src/ags/audio/recall/ags_copy_notation_audio_run.c' || echo '$(srcdir)/'`./src/ags/audio/recall/ags_copy_notation_audio_run.c
