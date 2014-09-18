@@ -712,6 +712,52 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
   }
 }
 
+/**
+ * ags_audio_signal_copy_buffer_to_buffer:
+ * @destination
+ * @dchannels
+ * @source
+ * @schannels
+ * @size
+ *
+ * Copy a buffer to an other buffer.
+ */
+void
+ags_audio_signal_copy_buffer_to_double_buffer(double *destination, guint dchannels,
+					      signed short *source, guint schannels,
+					      guint size)
+{
+  for(; 0<size; --size){
+    *destination += *source;
+
+    destination += dchannels;
+    source += schannels;
+  }
+}
+
+/**
+ * ags_audio_signal_copy_buffer_to_buffer:
+ * @destination
+ * @dchannels
+ * @source
+ * @schannels
+ * @size
+ *
+ * Copy a buffer to an other buffer.
+ */
+void
+ags_audio_signal_copy_double_buffer_to_buffer(signed short *destination, guint dchannels,
+					      double *source, guint schannels,
+					      guint size)
+{
+  for(; 0<size; --size){
+    *destination += *source;
+
+    destination += dchannels;
+    source += schannels;
+  }
+}
+
 void
 ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				  AgsAudioSignal *template)

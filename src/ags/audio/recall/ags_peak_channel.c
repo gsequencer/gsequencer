@@ -297,12 +297,58 @@ ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port)
 void
 ags_peak_channel_run_post(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsPeakChannel *peak_channel;
+  AgsChannel *source;
+  AgsRecycling *recycling;
+  GList *audio_signal;
+  double *buffer;
+  double current_value;
+  static const double scale_precision = 10.0;
+  guint i;
+  GValue value = {0,};
+
+  peak_channel = AGS_PEAK_CHANNEL(recall);
+
+  source = AGS_RECALL_CHANNEL(peak_channel)->source;
+  recycling = source->first_recycling;
+
+  buffer = (double *) malloc(AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(double));
+  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++) buffer[i] = 0.0;
+
+  while(recycling != source->last_recycling->next){
+    audio_signal = recycling->audio_signal;
+
+    while(audio_signal != NULL){
+      if(AGS_AUDIO_SIGNAL(audio_signal)->recall_id != NULL &&
+	 AGS_AUDIO_SIGNAL(audio_signal)->recall_id->recycling_container == recall->recall_id->recycling_container
+){
+	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
+						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal)->stream_current->data, 1,
+						      AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+      }
+
+      audio_signal = audio_signal->next;
+    }
+
+    recycling = recycling->next;
+  }
+
+  current_value = 0.0;
+
+  for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
+    current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
+  }
+
+  //TODO:JK: verify me
+  current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 440.0));
+
+  g_value_init(&value, G_TYPE_DOUBLE);
+  g_value_set_double(&value,
+		     current_value);
 }
 
 AgsPeakChannel*
-ags_peak_channel_new(AgsChannel *destination,
-		     AgsChannel *source)
+ags_peak_channel_new(AgsChannel *source)
 {
   AgsPeakChannel *peak_channel;
 
