@@ -35,7 +35,10 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/widget/ags_vindicator.h>
+
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_line_member.h>
 
 void
 ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrumInputLine *drum_input_line)
@@ -100,6 +103,39 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 }
 
 void
+ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
+					   AgsDrumInputLine *drum_input_line)
+{
+  GList *list;
+
+  list = gtk_container_get_children(AGS_LINE(drum_input_line)->expander->table);
+
+  while(list != NULL){
+    if(AGS_IS_LINE_MEMBER(list->data) &&
+       AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
+      GtkWidget *child;
+      GtkAdjustment *adjustment;
+      GValue value = {0,};
+
+      child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
+      g_object_get(child,
+		   "adjustment\0", &adjustment,
+		   NULL);
+      g_value_init(&value, G_TYPE_DOUBLE);
+      ags_port_safe_read(AGS_LINE_MEMBER(list->data)->port,
+			 &value);
+      gtk_adjustment_set_value(adjustment,
+			       g_value_get_double(&value));
+      ags_vindicator_draw(child);
+
+      break;
+    }
+    
+    list = list->next;
+  }
+}
+
+void
 ags_drum_input_line_channel_done_callback(AgsChannel *source, AgsDrumInputLine *drum_input_line)
 {
   AgsChannel *channel;
@@ -108,7 +144,7 @@ ags_drum_input_line_channel_done_callback(AgsChannel *source, AgsDrumInputLine *
   GList *current_recall;
   gboolean all_done;
 
-  g_message("ags_drum_input_line_play_channel_run_done\0");
+  g_message("ags_drum_input_line_channel_done\0");
 
   channel = AGS_PAD(AGS_LINE(drum_input_line)->pad)->channel;
   next_pad = channel->next_pad;

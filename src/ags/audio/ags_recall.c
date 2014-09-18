@@ -319,9 +319,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_pre),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[RUN_INIT_INTER] =
     g_signal_new("run_init_inter\0",
@@ -329,9 +328,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_inter),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[RUN_INIT_POST] =
     g_signal_new("run_init_post\0",
@@ -339,9 +337,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_post),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[RUN_PRE] =
     g_signal_new("run_pre\0",
@@ -349,9 +346,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_pre),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[RUN_INTER] =
     g_signal_new("run_inter\0",
@@ -359,9 +355,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_inter),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[RUN_POST] =
     g_signal_new("run_post\0",
@@ -369,9 +364,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_post),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[STOP_PERSISTENT] =
     g_signal_new("stop_persistent\0",
@@ -397,9 +391,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, cancel),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   recall_signals[REMOVE] =
     g_signal_new("remove\0",

@@ -30,6 +30,7 @@ void ags_indicator_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_indicator_show(GtkWidget *widget);
 
+void ags_indicator_map(GtkWidget *widget);
 void ags_indicator_realize(GtkWidget *widget);
 void ags_indicator_size_request(GtkWidget *widget,
 				GtkRequisition   *requisition);
@@ -106,8 +107,6 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
 void
 ags_indicator_init(AgsIndicator *indicator)
 {
-  gtk_widget_set_has_window(indicator,
-  			    TRUE);
   g_object_set(G_OBJECT(indicator),
 	       "app-paintable\0", TRUE,
 	       NULL);
@@ -173,6 +172,17 @@ ags_indicator_get_property(GObject *gobject,
 }
 
 void
+ags_indicator_map(GtkWidget *widget)
+{
+  if (gtk_widget_get_realized (widget) && !gtk_widget_get_mapped (widget)) {
+    GTK_WIDGET_CLASS (ags_indicator_parent_class)->map(widget);
+    
+    gdk_window_show(widget->window);
+    //    ags_indicator_draw(widget);
+  }
+}
+
+void
 ags_indicator_realize(GtkWidget *widget)
 {
   AgsIndicator *indicator;
@@ -186,9 +196,9 @@ ags_indicator_realize(GtkWidget *widget)
 
   indicator = AGS_INDICATOR(widget);
 
-  /*  */
   gtk_widget_set_realized (widget, TRUE);
 
+  /*  */
   attributes.window_type = GDK_WINDOW_CHILD;
   
   attributes.x = widget->allocation.x;
@@ -221,8 +231,7 @@ ags_indicator_realize(GtkWidget *widget)
   widget->style = gtk_style_attach (widget->style, widget->window);
   gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
 
-  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-  indicator = AGS_INDICATOR (widget);
+  gtk_widget_queue_resize (widget);
 }
 
 void

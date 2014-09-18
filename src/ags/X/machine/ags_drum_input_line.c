@@ -33,6 +33,8 @@
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_peak_channel.h>
+#include <ags/audio/recall/ags_peak_channel_run.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_volume_channel_run.h>
 #include <ags/audio/recall/ags_play_channel.h>
@@ -177,7 +179,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 	       NULL);
 
   gtk_widget_set_size_request(widget,
-			      -1, 100);
+			      16, 100);
   gtk_widget_queue_draw(widget);
 
   g_object_set(G_OBJECT(line_member),
@@ -228,6 +230,9 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 {
   AgsDrum *drum;
   AgsDrumInputLine *drum_input_line;
+  AgsPeakChannelRun *play_peak_channel_run;
+  AgsRecallHandler *recall_handler;
+  GList *list;
   GList *line_member;
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
@@ -238,9 +243,25 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   }
   
   ags_drum_input_line_parent_connectable_interface->connect(connectable);
-
+  
   /* AgsDrumInputLine */
   drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(drum_input_line)->pad, AGS_TYPE_DRUM));
+
+  /* recalls */
+  list = ags_recall_template_find_type(AGS_LINE(drum_input_line)->channel->recall, AGS_TYPE_PEAK_CHANNEL_RUN);
+
+  if(list != NULL){
+    play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_drum_input_line_peak_run_post_callback);
+    recall_handler->data = (gpointer) drum_input_line;
+
+    //TODO:JK: uncomment me
+    ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
+  }
 
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",

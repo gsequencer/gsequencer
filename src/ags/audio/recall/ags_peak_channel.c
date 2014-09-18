@@ -42,8 +42,6 @@ void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
 
-void ags_peak_channel_run_post(AgsRecall *recall);
-
 enum{
   PROP_0,
   PROP_PEAK,
@@ -144,8 +142,6 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) peak_channel;
-
-  recall->run_post = ags_peak_channel_run_post;
 
   /* properties */
   param_spec = g_param_spec_object("peak\0",
@@ -295,19 +291,24 @@ ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
-ags_peak_channel_run_post(AgsRecall *recall)
+ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
+			       gboolean is_play)
 {
-  AgsPeakChannel *peak_channel;
+  AgsRecall *recall;
   AgsChannel *source;
   AgsRecycling *recycling;
   GList *audio_signal;
   double *buffer;
-  double current_value;
+  double current_value, prev_value;
   static const double scale_precision = 10.0;
   guint i;
   GValue value = {0,};
 
-  peak_channel = AGS_PEAK_CHANNEL(recall);
+  if(peak_channel == NULL){
+    return;
+  }
+
+  recall = (AgsRecall *) peak_channel;
 
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
@@ -319,9 +320,7 @@ ags_peak_channel_run_post(AgsRecall *recall)
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
-      if(AGS_AUDIO_SIGNAL(audio_signal)->recall_id != NULL &&
-	 AGS_RECALL_ID(AGS_AUDIO_SIGNAL(audio_signal)->recall_id)->recycling_container == AGS_RECALL_ID(recall->recall_id)->recycling_container
-){
+      if(AGS_AUDIO_SIGNAL(audio_signal)->stream_current != NULL){
 	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
 						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal)->stream_current->data, 1,
 						      AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
@@ -343,8 +342,22 @@ ags_peak_channel_run_post(AgsRecall *recall)
   current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 440.0));
 
   g_value_init(&value, G_TYPE_DOUBLE);
+
+  /*  */
+  if(is_play){
+    ags_port_safe_read(peak_channel->peak,
+		       &value);
+
+    prev_value = g_value_get_double(&value);
+  }else{
+    prev_value = 0.0;
+  }
+
   g_value_set_double(&value,
-		     current_value);
+		     current_value + prev_value);
+
+  ags_port_safe_write(peak_channel->peak,
+		      &value);
 }
 
 AgsPeakChannel*

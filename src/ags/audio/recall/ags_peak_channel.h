@@ -49,6 +49,9 @@ struct _AgsPeakChannelClass
 
 GType ags_peak_channel_get_type();
 
+void ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
+				    gboolean is_play);
+
 AgsPeakChannel* ags_peak_channel_new(AgsChannel *source);
 
 #endif /*__AGS_PEAK_CHANNEL_H__*/

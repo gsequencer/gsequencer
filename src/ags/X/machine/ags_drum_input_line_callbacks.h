@@ -35,6 +35,9 @@ void ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 						 AgsDrumInputLine *drum_input_line);
 
 /* AgsRecall - recall */
+void ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
+						AgsDrumInputLine *drum_input_line);
+
 void ags_drum_input_line_copy_pattern_done(AgsRecall *recall,
 					   AgsDrumInputLine *drum_input_line);
 void ags_drum_input_line_copy_pattern_cancel(AgsRecall *recall,

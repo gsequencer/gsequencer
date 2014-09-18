@@ -111,7 +111,13 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   widget = GTK_WIDGET(indicator);
   adjustment = AGS_INDICATOR(indicator)->adjustment;
 
+  //  g_message("draw %f\0", adjustment->value);
+
   cr = gdk_cairo_create(widget->window);
+
+  if(cr == NULL){
+    return;
+  }
 
   width = 16;
   height = 100;
@@ -122,7 +128,8 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   padding = 3;
 
   for(i = 0; i < height / (segment_height + padding); i++){
-    if((1 / adjustment->value * i < (height / (segment_height + padding)))){
+    if(adjustment->value > 0.0 &&
+       (1 / adjustment->value * i < (height / (segment_height + padding)))){
       /* active */
       cairo_set_source_rgba(cr, 0.9, 0.7, 0.2, 1.0);
     }else{
@@ -141,6 +148,8 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 		    segment_width, segment_height);
     cairo_stroke(cr);
   }
+
+  cairo_destroy(cr);
 }
 
 AgsVIndicator*

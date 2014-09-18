@@ -52,6 +52,7 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_peak_channel.h>
+#include <ags/audio/recall/ags_peak_channel_run.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_volume_channel_run.h>
 
@@ -1768,6 +1769,7 @@ ags_recall_factory_create_peak(AgsAudio *audio,
 			       guint create_flags, guint recall_flags)
 {
   AgsPeakChannel *peak_channel;
+  AgsPeakChannelRun *peak_channel_run;
   AgsChannel *start, *channel;
   AgsPort *port;
   GList *list;
@@ -1804,6 +1806,21 @@ ags_recall_factory_create_peak(AgsAudio *audio,
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
 	ags_channel_add_recall_container(channel, (GObject *) play_container);
+
+	/* AgsPeakChannel */
+	peak_channel = (AgsPeakChannel *) g_object_new(AGS_TYPE_PEAK_CHANNEL,
+						       "devout\0", audio->devout,
+						       "source\0", channel,
+						       "recall_container\0", play_container,
+						       NULL);
+							      
+	ags_recall_set_flags(AGS_RECALL(peak_channel), (AGS_RECALL_TEMPLATE |
+							(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+							AGS_RECALL_PLAYBACK |
+							AGS_RECALL_SEQUENCER |
+							AGS_RECALL_NOTATION));
+	ags_channel_add_recall(channel, (GObject *) peak_channel, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(peak_channel));
 
 	/* AgsPeakChannel */
 	peak_channel = (AgsPeakChannel *) g_object_new(AGS_TYPE_PEAK_CHANNEL,
@@ -1860,6 +1877,21 @@ ags_recall_factory_create_peak(AgsAudio *audio,
 							AGS_RECALL_NOTATION));
 	ags_channel_add_recall(channel, (GObject *) peak_channel, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(peak_channel));
+
+	/* AgsPeakChannelRun */
+	peak_channel_run = (AgsPeakChannelRun *) g_object_new(AGS_TYPE_PEAK_CHANNEL_RUN,
+							      "devout\0", audio->devout,
+							      // "recall_channel\0", peak_channel,
+							      "source\0", channel,
+							      "recall_container\0", recall_container,
+							      NULL);
+	ags_recall_set_flags(AGS_RECALL(peak_channel_run), (AGS_RECALL_TEMPLATE |
+							    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
+							    AGS_RECALL_PLAYBACK |
+							    AGS_RECALL_SEQUENCER |
+							    AGS_RECALL_NOTATION));
+	ags_channel_add_recall(channel, (GObject *) peak_channel_run, FALSE);
+	ags_connectable_connect(AGS_CONNECTABLE(peak_channel_run));
 
 	/* iterate */
 	channel = channel->next;
@@ -2285,6 +2317,15 @@ ags_recall_factory_create(AgsAudio *audio,
 					    start_audio_channel, stop_audio_channel,
 					    start_pad, stop_pad,
 					    create_flags, recall_flags);
+  }else if(!strncmp(plugin_name,
+		    "ags-peak\0",
+		    9)){
+    ags_recall_factory_create_peak(audio,
+				   play_container, recall_container,
+				   plugin_name,
+				   start_audio_channel, stop_audio_channel,
+				   start_pad, stop_pad,
+				   create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-volume\0",
 		    11)){
