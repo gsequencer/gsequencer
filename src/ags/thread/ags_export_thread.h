@@ -53,6 +53,9 @@ struct _AgsExportThread
   guint flags;
 
   AgsAudioFile *audio_file;
+  gdouble tact_end;
+
+  guint counter;
 };
 
 struct _AgsExportThreadClass

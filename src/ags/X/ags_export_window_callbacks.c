@@ -30,6 +30,29 @@
 #include <ags/audio/task/ags_export_output.h>
 
 void
+ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
+					       AgsExportWindow *export_window)
+{
+  GtkFileChooserDialog *file_chooser;
+
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...\0",
+								      GTK_WINDOW(export_window),
+								      GTK_FILE_CHOOSER_ACTION_SAVE,
+								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+								      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+								      NULL);
+  if(gtk_dialog_run(GTK_DIALOG(file_chooser)) == GTK_RESPONSE_ACCEPT){
+    char *filename;
+
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
+    gtk_entry_set_text(export_window->filename,
+		       filename);
+  }
+  
+  gtk_widget_destroy(file_chooser);
+}
+
+void
 ags_export_window_tact_callback(GtkWidget *spin_button,
 				AgsExportWindow *export_window)
 {
@@ -58,7 +81,14 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop);
   export_thread = audio_loop->export_thread;
+
   filename = gtk_entry_get_text(export_window->filename);
+
+  if(filename == NULL ||
+     strlen(filename) == 0){
+    return;
+  }
+
   live_performance = gtk_toggle_button_get_active(export_window->live_export);
 
   machines = gtk_container_get_children(GTK_CONTAINER(window->machines));

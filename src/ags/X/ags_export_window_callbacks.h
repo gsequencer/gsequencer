@@ -24,8 +24,12 @@
 
 #include <ags/X/ags_export_window.h>
 
+void ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
+						    AgsExportWindow *export_window);
+
 void ags_export_window_tact_callback(GtkWidget *spin_button,
 				     AgsExportWindow *export_window);
+
 void ags_export_window_export_callback(GtkWidget *toggle_button,
 				       AgsExportWindow *export_window);
 

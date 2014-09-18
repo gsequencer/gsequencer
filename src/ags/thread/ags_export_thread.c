@@ -262,7 +262,11 @@ ags_export_thread_run(AgsThread *thread)
 void
 ags_export_thread_stop(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsExportThread *export_thread;
+
+  export_thread = AGS_EXPORT_THREAD(thread);
+
+  ags_audio_file_close(export_thread->audio_file);
 }
 
 AgsExportThread*

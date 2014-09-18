@@ -465,9 +465,9 @@ ags_window_new(GObject *ags_main)
 {
   AgsWindow *window;
 
-  window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW, NULL);
-
-  window->ags_main = ags_main;
+  window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
+				      "ags-main", ags_main,
+				      NULL);
 
   return(window);
 }

@@ -168,17 +168,46 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     FALSE, FALSE,
 		     0);
 
-  export_window->filename = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(vbox),
-		     GTK_WIDGET(export_window->filename),
-		     FALSE, FALSE,
-		     0);
-
-  table = (GtkTable *) gtk_table_new(4, 2,
+  table = (GtkTable *) gtk_table_new(5, 2,
 				     FALSE);
   gtk_box_pack_start(GTK_BOX(vbox),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
+		     0);
+
+  /*  */
+  label = (GtkLabel *) gtk_label_new("file\0");
+  g_object_set(G_OBJECT(label),
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(hbox),
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  export_window->filename = gtk_entry_new();
+  gtk_entry_set_text(export_window->filename,
+		     "out.wav\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(export_window->filename),
+		     TRUE, TRUE,
+		     0);
+
+  export_window->file_chooser_button = gtk_button_new_with_label("open\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(export_window->file_chooser_button),
+		     TRUE, TRUE,
 		     0);
 
   /*  */
@@ -189,7 +218,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   0, 1,
+		   1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
@@ -204,7 +233,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(export_window->mode),
 		   1, 2,
-		   0, 1,
+		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -216,7 +245,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
@@ -226,7 +255,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(export_window->tact),
 		   1, 2,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -237,7 +266,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   2, 3,
+		   3, 4,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
@@ -246,7 +275,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
 		   1, 2,
-		   2, 3,
+		   3, 4,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
@@ -264,7 +293,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   3, 4,
+		   4, 5,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
@@ -276,7 +305,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_table_attach(table,
 		   GTK_WIDGET(export_window->output_format),
 		   1, 2,
-		   3, 4,
+		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -284,7 +313,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 				  0);
   gtk_box_pack_start(GTK_BOX(vbox),
 		     GTK_WIDGET(hbox),
-		     TRUE, TRUE,
+		     FALSE, FALSE,
 		     0);
 
   export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label("export\0");
@@ -377,8 +406,12 @@ ags_export_window_connect(AgsConnectable *connectable)
 
   export_window = AGS_EXPORT_WINDOW(connectable);
 
+  g_signal_connect_after(G_OBJECT(export_window->file_chooser_button), "clicked\0",
+			 G_CALLBACK(ags_export_window_file_chooser_button_callback), export_window);
+
   g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed\0",
 			 G_CALLBACK(ags_export_window_tact_callback), export_window);
+
   g_signal_connect(G_OBJECT(export_window->export), "clicked\0",
 		   G_CALLBACK(ags_export_window_export_callback), export_window);
 }
