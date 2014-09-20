@@ -217,7 +217,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note->x[1] = (note_x * tact) + (note_offset_x1 * tact);
 
     list_notation = machine->audio->notation;
-    history = gtk_option_menu_get_history(editor->toolbar->mode);
+    history = gtk_combo_box_get_active(editor->toolbar->mode);
 
     switch(history){
     case 0:
@@ -340,7 +340,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     /* select notes */
     list_notation = machine->audio->notation;
 
-    history = gtk_option_menu_get_history(editor->toolbar->mode);
+    history = gtk_combo_box_get_active(editor->toolbar->mode);
 
     if(history == 0){
       if(editor->notebook->tabs != NULL){
@@ -415,7 +415,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     /* select notes */
     list_notation = machine->audio->notation;
 
-    if(gtk_option_menu_get_history(editor->toolbar->mode) == 0){
+    if(gtk_combo_box_get_active(editor->toolbar->mode) == 0){
       if(editor->notebook->tabs != NULL){
 	list_notation = g_list_nth(list_notation,
 				   ags_notebook_next_active_tab(editor->notebook,
