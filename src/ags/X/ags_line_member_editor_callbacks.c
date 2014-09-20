@@ -130,6 +130,10 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	  line = AGS_LINE(list->data);
 	}
       }
+
+      if(line == NULL){
+	return;
+      }
       
       audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(machine_editor->machine)->audio->devout)->ags_main)->main_loop;
       task_thread = (AgsTaskThread *) audio_loop->task_thread;
@@ -387,9 +391,6 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
       task = g_list_prepend(task,
 			    remove_recall);
 
-      port = AGS_RECALL(g_list_nth(play_ladspa,
-				   index)->data)->port;
-
       /*  */
       remove_recall = ags_remove_recall_new(line_editor->channel,
 					    g_list_nth(recall_ladspa,
@@ -431,6 +432,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
       /* destroy controls */
       if(line != NULL){
+	port = AGS_RECALL(g_list_nth(recall_ladspa,
+				     index)->data)->port;
+
 	while(port != NULL){
 	  control = gtk_container_get_children(line->expander->table);
 	    
