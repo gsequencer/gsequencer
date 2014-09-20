@@ -127,6 +127,8 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 
   padding = 3;
 
+  cairo_push_group(cr);
+
   for(i = 0; i < height / (segment_height + padding); i++){
     if(adjustment->value > 0.0 &&
        (1 / adjustment->value * i < (height / (segment_height + padding)))){
@@ -148,6 +150,9 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 		    segment_width, segment_height);
     cairo_stroke(cr);
   }
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
 
   cairo_destroy(cr);
 }
