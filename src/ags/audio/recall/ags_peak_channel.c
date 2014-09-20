@@ -353,6 +353,10 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
     prev_value = 0.0;
   }
 
+  if(current_value < 0.0){
+    current_value *= -1.0;
+  }
+
   g_value_set_double(&value,
 		     current_value + prev_value);
 
