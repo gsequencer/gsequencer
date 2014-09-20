@@ -542,7 +542,7 @@ ags_audio_loop_start(AgsThread *thread)
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
-    
+
     /*  */
     ags_thread_start(audio_loop->task_thread);
     ags_thread_start(audio_loop->gui_thread);
@@ -629,12 +629,12 @@ ags_audio_loop_run(AgsThread *thread)
 
   pthread_mutex_unlock(&(audio_loop->recall_mutex));
 
+  /* wait for task thread */
   pthread_mutex_lock(&(audio_loop->task_thread->start_mutex));
 
   val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
 
   if((AGS_THREAD_INITIAL_RUN & val) != 0){
-
     while((AGS_THREAD_INITIAL_RUN & val) != 0){
       pthread_cond_wait(&(audio_loop->task_thread->start_cond),
 			&(audio_loop->task_thread->start_mutex));
@@ -642,8 +642,24 @@ ags_audio_loop_run(AgsThread *thread)
       val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
     }
   }
-  
+
   pthread_mutex_unlock(&(audio_loop->task_thread->start_mutex));
+  
+  /* wait for gui thread */
+  pthread_mutex_lock(&(audio_loop->gui_thread->start_mutex));
+
+  val = g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->flags));
+
+  if((AGS_THREAD_INITIAL_RUN & val) != 0){
+    while((AGS_THREAD_INITIAL_RUN & val) != 0){
+      pthread_cond_wait(&(audio_loop->gui_thread->start_cond),
+			&(audio_loop->gui_thread->start_mutex));
+
+      val = g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->flags));
+    }
+  }
+
+  pthread_mutex_unlock(&(audio_loop->gui_thread->start_mutex));
 }
 
 /**

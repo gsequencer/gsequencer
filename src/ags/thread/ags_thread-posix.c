@@ -1764,15 +1764,15 @@ ags_thread_loop(void *ptr)
 	}else{
 	  /* unset initial run */
 	  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	    /* signal AgsAudioLoop */
+	    pthread_mutex_lock(&(thread->mutex));
+
 	    g_atomic_int_and(&(thread->flags),
 			     (~AGS_THREAD_INITIAL_RUN));
-	    g_atomic_int_and(&(thread->flags),
-			     (~AGS_THREAD_WAIT_0));
 
-	    /* signal AgsAudioLoop */
-	    if(AGS_IS_TASK_THREAD(thread)){
-	      pthread_cond_signal(&(thread->start_cond));
-	    }
+	    pthread_cond_signal(&(thread->start_cond));
+
+	    pthread_mutex_unlock(&(thread->mutex));
 	  }
 	}
 
