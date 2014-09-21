@@ -508,6 +508,7 @@ ags_line_member_connect(AgsConnectable *connectable)
 
   control = gtk_bin_get_child(GTK_BIN(line_member));
 
+  /* widget callback */
   if(line_member->widget_type == AGS_TYPE_DIAL){
     g_signal_connect(GTK_WIDGET(control), "value-changed\0",
 		     G_CALLBACK(ags_line_member_dial_changed_callback), line_member);
@@ -529,6 +530,19 @@ ags_line_member_connect(AgsConnectable *connectable)
   }else if(line_member->widget_type == GTK_TYPE_BUTTON){
     g_signal_connect(GTK_WIDGET(control), "clicked\0",
 		     G_CALLBACK(ags_line_member_button_clicked_callback), line_member);
+  }
+
+  /* port callback */
+  if((AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE & (line_member->flags)) != 0 &&
+     line_member->port != NULL){
+    g_signal_connect_after(line_member->port, "safe-write\0",
+			   G_CALLBACK(ags_line_member_port_safe_write_callback), line_member);
+  }
+
+  if((AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE & (line_member->flags)) != 0 &&
+     line_member->recall_port != NULL){
+    g_signal_connect_after(line_member->recall_port, "safe-write\0",
+			   G_CALLBACK(ags_line_member_port_safe_write_callback), line_member);
   }
 }
 

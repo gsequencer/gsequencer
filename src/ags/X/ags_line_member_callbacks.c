@@ -29,7 +29,13 @@ ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 void
 ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_member)
 {
-  //TODO:JK: implement me
+  GtkAdjustment *adjustment;
+
+  g_object_get(dial,
+	       "adjustment\0", &adjustment,
+	       NULL);
+  ags_line_member_change_port(line_member,
+			      (gpointer) &(adjustment->value));
 }
 
 void

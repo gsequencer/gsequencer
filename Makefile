@@ -100,7 +100,9 @@ am_ags_OBJECTS = ags-ags_plugin_factory.$(OBJEXT) \
 	ags-ags_init_channel.$(OBJEXT) ags-ags_append_recall.$(OBJEXT) \
 	ags-ags_set_devout_play_flags.$(OBJEXT) \
 	ags-ags_link_channel.$(OBJEXT) ags-ags_add_recall.$(OBJEXT) \
-	ags-ags_add_line_member.$(OBJEXT) ags-ags_toggle_led.$(OBJEXT) \
+	ags-ags_add_line_member.$(OBJEXT) \
+	ags-ags_change_indicator.$(OBJEXT) \
+	ags-ags_toggle_led.$(OBJEXT) \
 	ags-ags_remove_region_from_selection.$(OBJEXT) \
 	ags-ags_cancel_recall.$(OBJEXT) \
 	ags-ags_add_audio_signal.$(OBJEXT) \
@@ -605,6 +607,8 @@ ags_SOURCES = ./src/ags/plugin/ags_plugin_factory.h \
 	./src/ags/audio/task/ags_add_line_member.c \
 	./src/ags/audio/task/ags_remove_recall.h \
 	./src/ags/audio/task/ags_toggle_pattern_bit.h \
+	./src/ags/audio/task/ags_change_indicator.h \
+	./src/ags/audio/task/ags_change_indicator.c \
 	./src/ags/audio/task/ags_toggle_led.h \
 	./src/ags/audio/task/ags_toggle_led.c \
 	./src/ags/audio/task/ags_cancel_channel.h \
@@ -1342,6 +1346,7 @@ include ./$(DEPDIR)/ags-ags_buffer_recycling.Po
 include ./$(DEPDIR)/ags-ags_cancel_audio.Po
 include ./$(DEPDIR)/ags-ags_cancel_channel.Po
 include ./$(DEPDIR)/ags-ags_cancel_recall.Po
+include ./$(DEPDIR)/ags-ags_change_indicator.Po
 include ./$(DEPDIR)/ags-ags_change_tact.Po
 include ./$(DEPDIR)/ags-ags_channel.Po
 include ./$(DEPDIR)/ags-ags_channel_iter.Po
@@ -2213,6 +2218,20 @@ ags-ags_add_line_member.obj: ./src/ags/audio/task/ags_add_line_member.c
 #	source='./src/ags/audio/task/ags_add_line_member.c' object='ags-ags_add_line_member.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_add_line_member.obj `if test -f './src/ags/audio/task/ags_add_line_member.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_add_line_member.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_add_line_member.c'; fi`
+
+ags-ags_change_indicator.o: ./src/ags/audio/task/ags_change_indicator.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_change_indicator.o -MD -MP -MF $(DEPDIR)/ags-ags_change_indicator.Tpo -c -o ags-ags_change_indicator.o `test -f './src/ags/audio/task/ags_change_indicator.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_change_indicator.c
+	$(am__mv) $(DEPDIR)/ags-ags_change_indicator.Tpo $(DEPDIR)/ags-ags_change_indicator.Po
+#	source='./src/ags/audio/task/ags_change_indicator.c' object='ags-ags_change_indicator.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_change_indicator.o `test -f './src/ags/audio/task/ags_change_indicator.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_change_indicator.c
+
+ags-ags_change_indicator.obj: ./src/ags/audio/task/ags_change_indicator.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_change_indicator.obj -MD -MP -MF $(DEPDIR)/ags-ags_change_indicator.Tpo -c -o ags-ags_change_indicator.obj `if test -f './src/ags/audio/task/ags_change_indicator.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_change_indicator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_change_indicator.c'; fi`
+	$(am__mv) $(DEPDIR)/ags-ags_change_indicator.Tpo $(DEPDIR)/ags-ags_change_indicator.Po
+#	source='./src/ags/audio/task/ags_change_indicator.c' object='ags-ags_change_indicator.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -c -o ags-ags_change_indicator.obj `if test -f './src/ags/audio/task/ags_change_indicator.c'; then $(CYGPATH_W) './src/ags/audio/task/ags_change_indicator.c'; else $(CYGPATH_W) '$(srcdir)/./src/ags/audio/task/ags_change_indicator.c'; fi`
 
 ags-ags_toggle_led.o: ./src/ags/audio/task/ags_toggle_led.c
 	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_CFLAGS) $(CFLAGS) -MT ags-ags_toggle_led.o -MD -MP -MF $(DEPDIR)/ags-ags_toggle_led.Tpo -c -o ags-ags_toggle_led.o `test -f './src/ags/audio/task/ags_toggle_led.c' || echo '$(srcdir)/'`./src/ags/audio/task/ags_toggle_led.c

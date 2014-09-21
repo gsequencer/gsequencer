@@ -167,6 +167,8 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 					       "specifier\0", "./peak[0]\0",
 					       "control-port\0", "1/1\0",
 					       NULL);
+  line_member->flags |= (AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE |
+			 AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE);
   ags_expander_add(AGS_LINE(drum_input_line)->expander,
 		   GTK_WIDGET(line_member),
 		   0, 0,
@@ -182,9 +184,10 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 			      16, 100);
   gtk_widget_queue_draw(widget);
 
-  g_object_set(G_OBJECT(line_member),
-	       "port-data\0", (gpointer) &(adjustment->value),
-	       NULL);
+  //TODO:JK: fix me
+  //  g_object_set(G_OBJECT(line_member),
+  //	       "port-data\0", (gpointer) &(adjustment->value),
+  //	       NULL);
 
   /* volume control */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,

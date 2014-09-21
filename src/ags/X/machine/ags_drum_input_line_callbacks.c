@@ -19,6 +19,8 @@
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 
+#include <ags/main.h>
+
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
@@ -34,6 +36,8 @@
 #include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+
+#include <ags/audio/task/ags_change_indicator.h>
 
 #include <ags/widget/ags_vindicator.h>
 
@@ -106,7 +110,14 @@ void
 ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
 					   AgsDrumInputLine *drum_input_line)
 {
+  AgsTaskThread *task_thread;
+  AgsChangeIndicator *change_indicator;
+  AgsDrum *drum;
   GList *list;
+
+  drum = (AgsDrum *) gtk_widget_get_ancestor(drum_input_line,
+					     AGS_TYPE_DRUM);
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->ags_main)->main_loop)->task_thread;
 
   list = gtk_container_get_children(AGS_LINE(drum_input_line)->expander->table);
 
@@ -114,19 +125,19 @@ ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
     if(AGS_IS_LINE_MEMBER(list->data) &&
        AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
       GtkWidget *child;
-      GtkAdjustment *adjustment;
       GValue value = {0,};
 
       child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
-      g_object_get(child,
-		   "adjustment\0", &adjustment,
-		   NULL);
+
       g_value_init(&value, G_TYPE_DOUBLE);
       ags_port_safe_read(AGS_LINE_MEMBER(list->data)->port,
 			 &value);
-      gtk_adjustment_set_value(adjustment,
-			       g_value_get_double(&value));
-      gtk_widget_queue_draw(child);
+
+      change_indicator = ags_change_indicator_new(child,
+						  g_value_get_double(&value));
+
+      ags_task_thread_append_task(task_thread,
+				  change_indicator);
 
       break;
     }
