@@ -42,6 +42,7 @@
 #define AGS_FILE_CHAR_PROP "gchar\0"
 #define AGS_FILE_INT64_PROP "gint64\0"
 #define AGS_FILE_UINT64_PROP "guint64\0"
+#define AGS_FILE_FLOAT_PROP "gfloat\0"
 #define AGS_FILE_DOUBLE_PROP "gdouble\0"
 
 #define AGS_FILE_POINTER_PROP "gpointer\0"
@@ -51,6 +52,7 @@
 #define AGS_FILE_CHAR_POINTER_PROP "gchar-pointer\0"
 #define AGS_FILE_INT64_POINTER_PROP "gint64-pointer\0"
 #define AGS_FILE_UINT64_POINTER_PROP "guint64-pointer\0"
+#define AGS_FILE_FLOAT_POINTER_PROP "gfloat-pointer\0"
 #define AGS_FILE_DOUBLE_POINTER_PROP "gdouble-pointer\0"
 
 #define AGS_FILE_ID_PROP "id\0"

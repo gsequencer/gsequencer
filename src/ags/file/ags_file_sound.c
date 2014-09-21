@@ -2963,6 +2963,15 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
 		   G_TYPE_POINTER);
       g_value_set_pointer(a,
 			  ptr);
+    }else if(port->port_value_type == G_TYPE_FLOAT){
+      gfloat *ptr;
+      
+      ptr = (gfloat *) port->port_value.ags_port_float_ptr;
+      
+      g_value_init(a,
+		   G_TYPE_POINTER);
+      g_value_set_pointer(a,
+			  ptr);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       gdouble *ptr;
 
@@ -2994,6 +3003,11 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
 		   G_TYPE_INT64);
       g_value_set_int64(a,
 			 port->port_value.ags_port_int);
+    }else if(port->port_value_type == G_TYPE_FLOAT){
+      g_value_init(a,
+		   G_TYPE_FLOAT);
+      g_value_set_float(a,
+			port->port_value.ags_port_float);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       g_value_init(a,
 		   G_TYPE_DOUBLE);

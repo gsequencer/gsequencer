@@ -26,6 +26,10 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
 
@@ -52,6 +56,9 @@ void ags_recall_ladspa_connect(AgsConnectable *connectable);
 void ags_recall_ladspa_disconnect(AgsConnectable *connectable);
 void ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port);
 void ags_recall_ladspa_finalize(GObject *gobject);
+
+void ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 enum{
   PROP_0,
@@ -173,6 +180,8 @@ ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_recall_ladspa_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 
+  plugin->read = ags_recall_ladspa_read;
+  plugin->write = ags_recall_ladspa_write;
   plugin->set_ports = ags_recall_ladspa_set_ports;
 }
 
@@ -388,6 +397,81 @@ ags_recall_ladspa_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
+}
+
+void
+ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsRecallLadspa *gobject;
+  gchar *filename, *effect;
+  unsigned long index;
+
+  gobject = AGS_RECALL_LADSPA(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  filename = xmlGetProp(node,
+			"filename\0");
+  filename = xmlGetProp(node,
+			"effect\0");
+  index = g_ascii_strtoull(xmlGetProp(node,
+				      "index\0"),
+			   NULL,
+			   10);
+
+  g_object_set(gobject,
+	       "filename\0", filename,
+	       "effect\0", effect,
+	       "index\0", index,
+	       NULL);
+}
+
+xmlNode*
+ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsRecallLadspa *recall_ladspa;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+  guint i;
+
+  recall_ladspa = AGS_RECALL_LADSPA(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-recall-ladspa\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", recall_ladspa,
+				   NULL));
+
+  xmlNewProp(node,
+	     "filename\0",
+	     g_strdup(recall_ladspa->filename));
+
+  xmlNewProp(node,
+	     "effect\0",
+	     g_strdup(recall_ladspa->effect));
+
+  xmlNewProp(node,
+	     "index\0",
+	     g_strdup_printf("%d\0", recall_ladspa->index));
 }
 
 GList*

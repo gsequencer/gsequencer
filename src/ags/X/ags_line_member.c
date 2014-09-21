@@ -296,6 +296,7 @@ ags_line_member_set_property(GObject *gobject,
       line_member->widget_type = widget_type;
       new_child = (GtkWidget *) g_object_new(widget_type,
 					     NULL);
+
       gtk_container_add(GTK_CONTAINER(line_member),
 			new_child);
 			

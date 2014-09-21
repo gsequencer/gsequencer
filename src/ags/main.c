@@ -587,6 +587,11 @@ ags_main_register_recall_type()
   ags_volume_channel_get_type();
   ags_volume_channel_run_get_type();
 
+  ags_peak_channel_get_type();
+  ags_peak_channel_run_get_type();
+
+  ags_recall_ladspa_get_type();
+
   ags_delay_audio_get_type();
   ags_delay_audio_run_get_type();
 

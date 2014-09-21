@@ -206,6 +206,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 					    effect,
 					    index);
       g_object_set(G_OBJECT(recall_ladspa),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -215,6 +216,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
 		   "recall-container\0", recall_container,
 		   NULL);
 
@@ -232,6 +234,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 					    effect,
 					    index);
       g_object_set(G_OBJECT(recall_ladspa),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -241,6 +244,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
 		   "recall-container\0", recall_container,
 		   NULL);
 

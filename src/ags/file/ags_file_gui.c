@@ -1655,12 +1655,10 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
   }
 
   widget_type = (gchar *) xmlGetProp(node, "widget-type\0");
-  gobject->widget_type = g_type_from_name(widget_type);
-  child_widget = (GtkWidget *) g_object_new(g_type_from_name(widget_type),
-					    NULL);
-
-  gtk_container_add(GTK_CONTAINER(gobject),
-		    child_widget);
+  g_object_set(gobject,
+	       "widget_type\0", g_type_from_name(widget_type),
+	       NULL);
+  child_widget = (GtkWidget *) gtk_bin_get_child(gobject);
 
   /* label */
   label = (gchar *) xmlGetProp(node, "label\0");
@@ -1716,7 +1714,10 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 				   TRUE);
     }
   }else if(AGS_IS_DIAL(child_widget)){
-    adjustment = AGS_DIAL(child_widget)->adjustment;
+    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+    g_object_set(child_widget,
+		 "adjustment\0", adjustment,
+		 NULL);
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
 
@@ -1726,6 +1727,11 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
       gtk_range_set_inverted(GTK_RANGE(child_widget),
 			     TRUE);
     }
+  }else if(AGS_IS_INDICATOR(child_widget)){
+    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+    g_object_set(child_widget,
+		 "adjustment\0", adjustment,
+		 NULL);
   }
 
   //TODO:JK: implement more types
@@ -1902,6 +1908,8 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	       g_strdup_printf("%s\0", (gtk_range_get_inverted(GTK_RANGE(child_widget)) ?
 					AGS_FILE_TRUE :
 					AGS_FILE_FALSE)));
+  }else if(AGS_IS_INDICATOR(child_widget)){
+    adjustment = AGS_INDICATOR(child_widget)->adjustment;
   }
 
   if(adjustment != NULL){

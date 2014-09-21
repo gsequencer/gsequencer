@@ -118,6 +118,20 @@ ags_file_util_read_value(AgsFile *file,
     if(xpath != NULL)
       *xpath = NULL;
   }else if(!xmlStrncmp(type_str,
+		       AGS_FILE_FLOAT_PROP,
+		       6)){
+    g_value_init(&a, G_TYPE_FLOAT);
+    g_value_init(value, G_TYPE_FLOAT);
+    g_value_set_float(&a, g_ascii_strtod(content, NULL));
+
+    if(value != NULL)
+      g_value_copy(&a, value);
+    else
+      g_value_unset(&a);
+
+    if(xpath != NULL)
+      *xpath = NULL;
+  }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_DOUBLE_PROP,
 		       7)){
     g_value_init(&a, G_TYPE_DOUBLE);
@@ -251,6 +265,45 @@ ags_file_util_read_value(AgsFile *file,
       }
 
       arr[i] = g_ascii_strtoll(*str_iter, NULL, 10);
+
+      str_iter++;
+      i++;
+    }
+    
+    g_value_set_pointer(&a, (gpointer) arr);
+    g_free(str_arr);
+
+    if(value != NULL)
+      g_value_copy(&a, value);
+    else
+      g_value_unset(&a);
+    
+    if(xpath != NULL)
+      *xpath = NULL;
+  }else if(!xmlStrncmp(type_str,
+		       AGS_FILE_FLOAT_POINTER_PROP,
+		       14)){
+    gchar **str_arr, **str_iter;
+    gfloat *arr;
+    guint i;
+
+    str_arr = g_strsplit(content, " \0", -1);
+
+    g_value_init(&a, G_TYPE_POINTER);
+    g_value_init(value, G_TYPE_POINTER);
+
+    arr = NULL;
+    str_iter = str_arr;
+    i = 0;
+
+    while(*str_iter != NULL){
+      if(arr == NULL){
+	arr = (gfloat *) malloc(sizeof(gfloat));
+      }else{
+	arr = (gfloat *) realloc(arr, (i + 1) * sizeof(gfloat));
+      }
+
+      arr[i] = g_ascii_strtod(*str_iter, NULL);
 
       str_iter++;
       i++;
@@ -442,6 +495,12 @@ ags_file_util_write_value(AgsFile *file,
       type_str = AGS_FILE_UINT64_PROP;
     }
     break;
+  case G_TYPE_FLOAT:
+    {
+      content = BAD_CAST g_strdup_printf("%f\0", g_value_get_float(value));
+      type_str = AGS_FILE_FLOAT_PROP;
+    }
+    break;
   case G_TYPE_DOUBLE:
     {
       content = BAD_CAST g_strdup_printf("%f\0", g_value_get_double(value));
@@ -498,6 +557,24 @@ ags_file_util_write_value(AgsFile *file,
 	}
 
 	type_str = AGS_FILE_UINT64_POINTER_PROP;
+      }else if(pointer_type == G_TYPE_FLOAT){
+	gfloat *arr;
+
+	arr = (gfloat *) g_value_get_pointer(value);
+
+	for(i = 0; i < array_length; i++){
+	  if(i == 0){
+	    content = g_strdup_printf("%f\0", arr[i]);
+	  }else{
+	    str = content;
+
+	    content = g_strdup_printf("%s %f\0", str, arr[i]);
+
+	    g_free(str);
+	  }
+	}
+
+	type_str = AGS_FILE_DOUBLE_POINTER_PROP;
       }else if(pointer_type == G_TYPE_DOUBLE){
 	gdouble *arr;
 
