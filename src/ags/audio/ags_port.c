@@ -20,6 +20,8 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/object/ags_marshal.h>
+
 void ags_port_class_init(AgsPortClass *port_class);
 void ags_port_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_port_init(AgsPort *port);
@@ -34,6 +36,19 @@ void ags_port_get_property(GObject *gobject,
 void ags_port_connect(AgsConnectable *connectable);
 void ags_port_disconnect(AgsConnectable *connectable);
 
+void ags_port_real_safe_read(AgsPort *port, GValue *value);
+void ags_port_real_safe_write(AgsPort *port, GValue *value);
+void ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value);
+void ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
+
+enum{
+  SAFE_READ,
+  SAFE_WRITE,
+  SAFE_GET_PROPERTY,
+  SAFE_SET_PROPERTY,
+  LAST_SIGNAL,
+};
+
 enum{
   PROP_0,
   PROP_PLUGIN_NAME,
@@ -47,6 +62,7 @@ enum{
 };
 
 static gpointer ags_port_parent_class = NULL;
+static guint port_signals[LAST_SIGNAL];
 
 #include <stdlib.h>
 #include <string.h>
@@ -101,6 +117,53 @@ ags_port_class_init(AgsPortClass *port)
 
   gobject->set_property = ags_port_set_property;
   gobject->get_property = ags_port_get_property;
+
+  /* AgsPortClass */
+  port->safe_read = ags_port_real_safe_read;
+  port->safe_write = ags_port_real_safe_write;
+
+  port->safe_get_property = ags_port_real_safe_get_property;
+  port->safe_set_property = ags_port_real_safe_set_property;
+
+  port_signals[SAFE_READ] =
+    g_signal_new("safe-read\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_read),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
+
+  port_signals[SAFE_WRITE] =
+    g_signal_new("safe-write\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_write),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
+
+  port_signals[SAFE_GET_PROPERTY] =
+    g_signal_new("safe-get-property\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_get_property),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_POINTER,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_STRING, G_TYPE_POINTER);
+
+  port_signals[SAFE_SET_PROPERTY] =
+    g_signal_new("safe-set-property\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_set_property),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_POINTER,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_STRING, G_TYPE_POINTER);
 
   /* properties */
   param_spec = g_param_spec_string("plugin-name\0",
@@ -346,7 +409,7 @@ ags_port_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_port_safe_read(AgsPort *port, GValue *value)
+ags_port_real_safe_read(AgsPort *port, GValue *value)
 {
   guint overall_size;
   gpointer data;
@@ -397,7 +460,18 @@ ags_port_safe_read(AgsPort *port, GValue *value)
 }
 
 void
-ags_port_safe_write(AgsPort *port, GValue *value)
+ags_port_safe_read(AgsPort *port, GValue *value)
+{
+  g_return_if_fail(AGS_IS_PORT(port));
+  g_object_ref(G_OBJECT(port));
+  g_signal_emit(G_OBJECT(port),
+		port_signals[SAFE_READ], 0,
+		value);
+  g_object_unref(G_OBJECT(port));
+}
+
+void
+ags_port_real_safe_write(AgsPort *port, GValue *value)
 {
   guint overall_size;
   gpointer data;
@@ -442,7 +516,18 @@ ags_port_safe_write(AgsPort *port, GValue *value)
 }
 
 void
-ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
+ags_port_safe_write(AgsPort *port, GValue *value)
+{
+  g_return_if_fail(AGS_IS_PORT(port));
+  g_object_ref(G_OBJECT(port));
+  g_signal_emit(G_OBJECT(port),
+		port_signals[SAFE_WRITE], 0,
+		value);
+  g_object_unref(G_OBJECT(port));
+}
+
+void
+ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
   pthread_mutex_lock(&(port->mutex));
 
@@ -454,7 +539,18 @@ ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 }
 
 void
-ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
+ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
+{
+  g_return_if_fail(AGS_IS_PORT(port));
+  g_object_ref(G_OBJECT(port));
+  g_signal_emit(G_OBJECT(port),
+		port_signals[SAFE_GET_PROPERTY], 0,
+		property_name, value);
+  g_object_unref(G_OBJECT(port));
+}
+
+void
+ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 {
   pthread_mutex_lock(&(port->mutex));
 
@@ -463,6 +559,17 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 			value);
 
   pthread_mutex_unlock(&(port->mutex));
+}
+
+void
+ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
+{
+  g_return_if_fail(AGS_IS_PORT(port));
+  g_object_ref(G_OBJECT(port));
+  g_signal_emit(G_OBJECT(port),
+		port_signals[SAFE_SET_PROPERTY], 0,
+		property_name, value);
+  g_object_unref(G_OBJECT(port));
 }
 
 GList*

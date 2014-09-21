@@ -43,6 +43,9 @@ typedef enum{
   AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
   AGS_LINE_MEMBER_RESET_BY_TASK         = 1 << 2,
   AGS_LINE_MEMBER_APPLY_RECALL          = 1 << 3,
+  AGS_LINE_MEMBER_CALLBACK_WRITE        = 1 << 4,
+  AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 << 5,
+  AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 << 6,
 }AgsLineMemberFlags;
 
 struct _AgsLineMember

@@ -84,4 +84,9 @@ ags_line_member_button_clicked_callback(GtkWidget *button, AgsLineMember *line_m
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
 }
-
+void
+ags_line_member_port_safe_write_callback(AgsPort *port, GValue *value,
+					 AgsLineMember *line_member)
+{
+  //TODO:JK: implement me
+}

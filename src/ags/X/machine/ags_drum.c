@@ -777,11 +777,11 @@ ags_drum_set_audio_channels(AgsAudio *audio,
       }
     }
 
-    /* set pattern object on port */
     for(i = 0; i < audio->input_pads; i++){
       channel = ags_channel_nth(audio->input, audio_channels_old);
 
       for(j = audio_channels_old; j < audio_channels; j++){
+	/* set pattern object on port */
 	list = ags_recall_template_find_type(channel->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
 	copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
 
@@ -792,6 +792,9 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 
 	ags_portlet_set_port(AGS_PORTLET(pattern), copy_pattern_channel->pattern);
 	
+	/* connect ags_port_double to volume meter AgsLineMember */
+
+
 	channel = channel->next;
       }
     }

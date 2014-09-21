@@ -103,6 +103,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   GtkWidget *widget;
   GtkAdjustment *adjustment;
   cairo_t *cr;
+  gdouble value;
   guint width, height;
   guint segment_width, segment_height;
   guint padding;

@@ -36,4 +36,7 @@ void ags_line_member_check_button_clicked_callback(GtkWidget *check_button, AgsL
 void ags_line_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLineMember *line_member);
 void ags_line_member_button_clicked_callback(GtkWidget *button, AgsLineMember *line_member);
 
+void ags_line_member_port_safe_write_callback(AgsPort *port, GValue *value,
+					      AgsLineMember *line_member);
+
 #endif /*__AGS_LINE_MEMBER_CALLBACKS_H__*/

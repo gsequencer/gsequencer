@@ -70,6 +70,12 @@ struct _AgsPort
 struct _AgsPortClass
 {
   GObjectClass object;
+
+  void (*safe_read)(AgsPort *port, GValue *value);
+  void (*safe_write)(AgsPort *port, GValue *value);
+
+  void (*safe_get_property)(AgsPort *port, gchar *property_name, GValue *value);
+  void (*safe_set_property)(AgsPort *port, gchar *property_name, GValue *value);
 };
 
 GType ags_port_get_type();
