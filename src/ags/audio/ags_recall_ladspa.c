@@ -419,8 +419,8 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   filename = xmlGetProp(node,
 			"filename\0");
-  filename = xmlGetProp(node,
-			"effect\0");
+  effect = xmlGetProp(node,
+		      "effect\0");
   index = g_ascii_strtoull(xmlGetProp(node,
 				      "index\0"),
 			   NULL,
@@ -472,6 +472,9 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   xmlNewProp(node,
 	     "index\0",
 	     g_strdup_printf("%d\0", recall_ladspa->index));
+
+  xmlAddChild(parent,
+	      node);
 }
 
 GList*

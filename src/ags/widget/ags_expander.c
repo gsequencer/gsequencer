@@ -431,10 +431,8 @@ ags_expander_insert_child(AgsExpander *expander,
 		   child->child,
 		   child->x, child->x + child->width,
 		   child->y, child->y + child->height,
-		   GTK_FILL |
-		   GTK_EXPAND,
-		   GTK_FILL |
-		   GTK_EXPAND,
+		   0,
+		   0,
 		   0, 0);
 
   expander->children = g_list_insert(expander->children,

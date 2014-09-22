@@ -1985,7 +1985,7 @@ ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
   gchar *id;
 
   /* play port */
-  if(line_member->port == NULL){
+  if(line_member->port != NULL){
     id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->port);
 
     if(id_ref != NULL){
@@ -1998,7 +1998,7 @@ ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
   }
   
   /* recall port */
-  if(line_member->recall_port == NULL){
+  if(line_member->recall_port != NULL){
     id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->recall_port);
 
     if(id_ref != NULL){

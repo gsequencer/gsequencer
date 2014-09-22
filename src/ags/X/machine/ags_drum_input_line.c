@@ -218,9 +218,9 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   gtk_widget_set_size_request(widget,
 			      -1, 100);
 
-  g_object_set(G_OBJECT(line_member),
-	       "port-data\0", (gpointer) &(GTK_RANGE(widget)->adjustment->value),
-	       NULL);
+  //  g_object_set(G_OBJECT(line_member),
+  //	       "port-data\0", (gpointer) &(GTK_RANGE(widget)->adjustment->value),
+  //	       NULL);
 }
 
 void
