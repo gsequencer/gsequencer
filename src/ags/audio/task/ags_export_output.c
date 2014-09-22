@@ -157,7 +157,7 @@ ags_export_output_launch(AgsTask *task)
 				  devout,
 				  0, devout->dsp_channels);
 
-  audio_file->samplerate = devout->samplerate;
+  audio_file->samplerate = devout->frequency;
   audio_file->channels = devout->dsp_channels;
   audio_file->format = devout->bits;
 

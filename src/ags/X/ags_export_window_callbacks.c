@@ -28,6 +28,10 @@
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_export_output.h>
+#include <ags/audio/task/ags_cancel_audio.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_navigation.h>
 
 void ags_export_window_export_launch_callback(AgsTask *task,
 					      AgsExportWindow *export_window);
@@ -76,7 +80,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   window = AGS_MAIN(export_window->ags_main)->window;
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop);
   
-  if(gtk_toggle_button_is_active(toggle_button)){
+  if(gtk_toggle_button_get_active(toggle_button)){
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
     AgsStartDevout *start_devout;
