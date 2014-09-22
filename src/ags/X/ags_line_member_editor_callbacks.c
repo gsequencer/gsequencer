@@ -270,6 +270,9 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	      if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 		   (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 		    LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
+		AgsDial *dial;
+		GtkAdjustment *adjustment;
+
 		if(x == 2){
 		  x = 0;
 		  y++;
@@ -282,11 +285,17 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 							     "specifier\0", AGS_PORT(port->data)->specifier,
 							     "control-port\0", AGS_PORT(port->data)->control_port,
 							     NULL);
-
+		dial = ags_line_member_get_widget(line_member);
+		gtk_widget_set_size_request(dial,
+					    2 * dial->radius + 2 * dial->outline_strength + dial->button_width,
+					    2 * dial->radius + 2 * dial->outline_strength);
+		
 		lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
 		upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
-		g_object_get(ags_line_member_get_widget(line_member),
-			     "adjustment", &adjustment,
+
+		adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+		g_object_set(dial,
+			     "adjustment", adjustment,
 			     NULL);
 
 		if(upper_bound >= 0.0 && lower_bound >= 0.0){

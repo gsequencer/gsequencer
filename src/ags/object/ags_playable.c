@@ -58,6 +58,26 @@ ags_playable_base_init(AgsPlayableInterface *interface)
 }
 
 gboolean
+ags_playable_rw_open(AgsPlayable *playable, gchar *name,
+		     gboolean create,
+		     guint samplerate, guint channels,
+		     guint format)
+{
+  AgsPlayableInterface *playable_interface;
+  gboolean ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), FALSE);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->open, FALSE);
+  ret_val = playable_interface->rw_open(playable, name,
+					create,
+					samplerate, channels,
+					format);
+
+  return(ret_val);
+}
+
+gboolean
 ags_playable_open(AgsPlayable *playable, gchar *name)
 {
   AgsPlayableInterface *playable_interface;

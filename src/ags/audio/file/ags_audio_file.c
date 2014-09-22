@@ -110,8 +110,11 @@ ags_audio_file_init(AgsAudioFile *audio_file)
   audio_file->devout = NULL;
 
   audio_file->name = NULL;
+
+  audio_file->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
   audio_file->frames = 0;
-  audio_file->channels = 0;
+  audio_file->channels = 2;
+  audio_file->format = AGS_DEVOUT_DEFAULT_FORMAT;
 
   audio_file->start_channel = 0;
   audio_file->audio_channels = 0;
@@ -198,6 +201,50 @@ ags_audio_file_open(AgsAudioFile *audio_file)
       g_message("ags_audio_file_open: unknown file type\n\0");
       return(FALSE);
     }
+  }
+}
+
+gboolean
+ags_audio_file_rw_open(AgsAudioFile *audio_file,
+		       gboolean create)
+{
+#ifdef AGS_DEBUG
+  g_message("ags_audio_file_rw_open: %s\0", audio_file->name);
+#endif
+
+  if(!create &&
+     !g_file_test(audio_file->name, G_FILE_TEST_EXISTS)){
+    return(FALSE);
+  }
+
+  if(g_str_has_suffix(audio_file->name, ".wav\0") ||
+     g_str_has_suffix(audio_file->name, ".ogg\0") ||
+     g_str_has_suffix(audio_file->name, ".flac\0")){
+    GError *error;
+    guint loop_start, loop_end;
+
+    audio_file->file = (GObject *) ags_sndfile_new();
+
+    if(ags_playable_rw_open(AGS_PLAYABLE(audio_file->file),
+			    audio_file->name,
+			    create,
+			    audio_file->samplerate, audio_file->channels,
+			    audio_file->format)){
+      //FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
+
+      error = NULL;
+
+      if(error != NULL){
+	g_error("%s\0", error->message);
+      }
+
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
+  }else{
+    g_message("ags_audio_file_open: unknown file type\n\0");
+    return(FALSE);
   }
 }
 

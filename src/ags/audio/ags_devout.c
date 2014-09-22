@@ -192,7 +192,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				 "The precision to use for a frame\0",
 				 1,
 				 64,
-				 16,
+				 AGS_DEVOUT_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BITS,
@@ -302,7 +302,7 @@ ags_devout_init(AgsDevout *devout)
   /* quality */
   devout->dsp_channels = 2;
   devout->pcm_channels = 2;
-  devout->bits = 16;
+  devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
   devout->buffer_size = AGS_DEVOUT_DEFAULT_BUFFER_SIZE;
   devout->frequency = AGS_DEVOUT_DEFAULT_SAMPLERATE;
 

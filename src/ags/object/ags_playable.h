@@ -45,6 +45,10 @@ struct _AgsPlayableInterface
   GTypeInterface interface;
 
   gboolean (*open)(AgsPlayable *playable, gchar *name);
+  gboolean (*rw_open)(AgsPlayable *playable, gchar *name,
+		      gboolean create,
+		      guint samplerate, guint channels,
+		      guint format);
 
   /* these functions are especially for soundfonts */
   guint (*level_count)(AgsPlayable *playable);
@@ -89,6 +93,10 @@ GType ags_playable_get_type();
 GQuark ags_playable_error_quark();
 
 gboolean ags_playable_open(AgsPlayable *playable, gchar *name);
+gboolean ags_playable_rw_open(AgsPlayable *playable, gchar *name,
+			      gboolean create,
+			      guint samplerate, guint channels,
+			      guint format);
 
 guint ags_playable_level_count(AgsPlayable *playable);
 guint ags_playable_nth_level(AgsPlayable *playable);

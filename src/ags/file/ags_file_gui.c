@@ -1361,6 +1361,10 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 	gtk_widget_destroy(GTK_WIDGET(gobject->expander));
 
 	gobject->expander = ags_expander_new(1, 1);
+	gtk_table_set_row_spacings(gobject->expander->table,
+				   2);
+	gtk_table_set_col_spacings(gobject->expander->table,
+				   2);
 	gtk_box_pack_start(GTK_BOX(gobject),
 			   GTK_WIDGET(gobject->expander),
 			   TRUE, TRUE,
@@ -1656,7 +1660,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 
   widget_type = (gchar *) xmlGetProp(node, "widget-type\0");
   g_object_set(gobject,
-	       "widget_type\0", g_type_from_name(widget_type),
+	       "widget-type\0", g_type_from_name(widget_type),
 	       NULL);
   child_widget = (GtkWidget *) gtk_bin_get_child(gobject);
 
@@ -1714,10 +1718,16 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 				   TRUE);
     }
   }else if(AGS_IS_DIAL(child_widget)){
+    AgsDial *dial;
+    
+    dial = child_widget;
     adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
     g_object_set(child_widget,
 		 "adjustment\0", adjustment,
 		 NULL);
+    gtk_widget_set_size_request(dial,
+				2 * dial->radius + 2 * dial->outline_strength + dial->button_width,
+				2 * dial->radius + 2 * dial->outline_strength);
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
 
@@ -1728,7 +1738,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 			     TRUE);
     }
   }else if(AGS_IS_INDICATOR(child_widget)){
-    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+    adjustment = gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
     g_object_set(child_widget,
 		 "adjustment\0", adjustment,
 		 NULL);
@@ -1741,6 +1751,11 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
     gdouble step, page;
     gdouble value;
 
+    step = (gdouble) g_ascii_strtod(xmlGetProp(node, "step\0"),
+				    NULL);
+    gtk_adjustment_set_step_increment(adjustment,
+				      step);
+    
     lower = (gdouble) g_ascii_strtod(xmlGetProp(node, "lower\0"),
 				     NULL);
     gtk_adjustment_set_lower(adjustment,
@@ -1751,15 +1766,10 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
     gtk_adjustment_set_upper(adjustment,
 			     upper);
     
-    step = (gdouble) g_ascii_strtod(xmlGetProp(node, "step\0"),
-				    NULL);
-    gtk_adjustment_set_step_increment(adjustment,
-				      step);
-    
-    page = (gdouble) g_ascii_strtod(xmlGetProp(node, "page\0"),
-				    NULL);
-    gtk_adjustment_set_page_size(adjustment,
-				 page);
+    //    page = (gdouble) g_ascii_strtod(xmlGetProp(node, "page\0"),
+    //				    NULL);
+    //    gtk_adjustment_set_page_size(adjustment,
+    //				 page);
     
     value = (gdouble) g_ascii_strtod(xmlGetProp(node, "value\0"),
 				     NULL);
@@ -1900,6 +1910,9 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 					AGS_FILE_FALSE)));
   }else if(AGS_IS_DIAL(child_widget)){
     adjustment = AGS_DIAL(child_widget)->adjustment;
+
+    //TODO:JK: improve dial widget work-around
+    
   }else if(GTK_IS_RANGE(child_widget)){
     adjustment = GTK_RANGE(child_widget)->adjustment;
 
@@ -1919,21 +1932,21 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
     xmlNewProp(node,
 	       "upper\0",
-	       g_strdup_printf("%f\0", adjustment->upper));
+	       g_strdup_printf("%.8f\0", adjustment->upper));
     xmlNewProp(node,
 	       "lower\0",
-	       g_strdup_printf("%f\0", adjustment->lower));
+	       g_strdup_printf("%.8f\0", adjustment->lower));
     
     xmlNewProp(node,
 	       "page\0",
-	       g_strdup_printf("%f\0", adjustment->page_size));
+	       g_strdup_printf("%.8f\0", adjustment->page_size));
     xmlNewProp(node,
 	       "step\0",
-	       g_strdup_printf("%f\0", adjustment->step_increment));
+	       g_strdup_printf("%.8f\0", adjustment->step_increment));
     
     xmlNewProp(node,
 	       "value\0",
-	       g_strdup_printf("%f\0", adjustment->value));
+	       g_strdup_printf("%.8f\0", adjustment->value));
   }
 
   /* port */
@@ -2846,7 +2859,7 @@ ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigat
   
   xmlNewProp(node,
 	     "bpm\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->bpm)));
+	     g_strdup_printf("%.f\0", gtk_spin_button_get_value(navigation->bpm)));
   
   xmlNewProp(node,
 	     "loop\0",
@@ -2854,15 +2867,15 @@ ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigat
  
   xmlNewProp(node,
 	     "position\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->position_tact)));
+	     g_strdup_printf("%.3f\0", gtk_spin_button_get_value(navigation->position_tact)));
 
   xmlNewProp(node,
 	     "loop-left\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->loop_left_tact)));
+	     g_strdup_printf("%.3f\0", gtk_spin_button_get_value(navigation->loop_left_tact)));
 
   xmlNewProp(node,
 	     "loop-right\0",
-	     g_strdup_printf("%f\0", gtk_spin_button_get_value(navigation->loop_right_tact)));
+	     g_strdup_printf("%.3f\0", gtk_spin_button_get_value(navigation->loop_right_tact)));
 
   xmlAddChild(parent,
 	      node);  

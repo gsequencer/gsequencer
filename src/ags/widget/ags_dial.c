@@ -151,10 +151,6 @@ ags_dial_init(AgsDial *dial)
   dial->gravity_y = 0.0;
   dial->current_x = 0.0;
   dial->current_y = 0.0;
-
-  gtk_widget_set_size_request(dial,
-			      2 * dial->radius + 2 * dial->outline_strength + dial->button_width,
-			      2 * dial->radius + 2 * dial->outline_strength);
 }
 
 void
@@ -525,9 +521,6 @@ ags_dial_motion_notify(GtkWidget *widget,
 
   dial = AGS_DIAL(widget);
 
-  if((AGS_DIAL_IDLE & (dial->flags)) != 0)
-    return(TRUE);
-
   if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
     if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
       dial->current_x = event->x;
@@ -704,7 +697,11 @@ ags_dial_draw(AgsDial *dial)
     range = (dial->adjustment->upper - dial->adjustment->lower);
   }
 
-  translated_value = (gdouble) scale_precision * dial->adjustment->value / range;
+  if(dial->adjustment->lower < 0.0){
+    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
+  }else{
+    translated_value = (gdouble) scale_precision * (dial->adjustment->value + dial->adjustment->lower) / range;
+  }
 
   //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);

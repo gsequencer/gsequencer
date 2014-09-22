@@ -31,6 +31,10 @@ void ags_sndfile_connect(AgsConnectable *connectable);
 void ags_sndfile_disconnect(AgsConnectable *connectable);
 
 gboolean ags_sndfile_open(AgsPlayable *playable, gchar *name);
+gboolean ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
+			     gboolean create,
+			     guint samplerate, guint channels,
+			     guint format);
 guint ags_sndfile_level_count(AgsPlayable *playable);
 gchar** ags_sndfile_sublevel_names(AgsPlayable *playable);
 void ags_sndfile_iter_start(AgsPlayable *playable);
@@ -141,6 +145,7 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
   ags_sndfile_parent_playable_interface = g_type_interface_peek_parent(playable);
 
   playable->open = ags_sndfile_open;
+  playable->rw_open = ags_sndfile_rw_open;
 
   playable->level_count = ags_sndfile_level_count;
   playable->sublevel_names = ags_sndfile_sublevel_names;
@@ -204,6 +209,36 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
     }
   }else{
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_READ, sndfile->info, sndfile);
+  }
+
+  if(sndfile->file == NULL)
+    return(FALSE);
+  else
+    return(TRUE);
+}
+
+gboolean
+ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
+		    gboolean create,
+		    guint samplerate, guint channels,
+		    guint format)
+{
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
+
+  sndfile->info->samplerate = samplerate;
+  sndfile->info->channels = channels;
+  sndfile->info->format = format;
+
+  if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
+    if(name != NULL){
+      sndfile->file = (SNDFILE *) sf_open(name, SFM_RDWR, sndfile->info);
+    }
+  }else{
+    sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
   }
 
   if(sndfile->file == NULL)
