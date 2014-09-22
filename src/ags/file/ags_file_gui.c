@@ -1804,6 +1804,7 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *xpath;
 
+  /* play port */
   xpath = (gchar *) xmlGetProp(file_lookup->node,
 			       "port\0");
 
@@ -1811,12 +1812,25 @@ ags_file_read_line_member_resolve_port(AgsFileLookup *file_lookup,
 
   if(id_ref == NULL){
     g_warning("couldn't find port\0");
-    return;
+  }else{
+    g_object_set(G_OBJECT(line_member),
+		 "port\0", (AgsPort *) id_ref->ref,
+		 NULL);
   }
 
-  g_object_set(G_OBJECT(line_member),
-	       "port\0", (AgsPort *) id_ref->ref,
-	       NULL);
+  /* recall port */
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "recall-port\0");
+
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref == NULL){
+    g_warning("couldn't find port\0");
+  }else{
+    g_object_set(G_OBJECT(line_member),
+		 "recall-port\0", (AgsPort *) id_ref->ref,
+		 NULL);
+  }
 }
 
 xmlNode*
@@ -1970,21 +1984,31 @@ ags_file_write_line_member_resolve_port(AgsFileLookup *file_lookup,
   AgsFileIdRef *id_ref;
   gchar *id;
 
+  /* play port */
   if(line_member->port == NULL){
-    return;
+    id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->port);
+
+    if(id_ref != NULL){
+      id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
+
+      xmlNewProp(file_lookup->node,
+		 "port\0",
+		 g_strdup_printf("xpath=//*[@id='%s']\0", id));
+    }
   }
+  
+  /* recall port */
+  if(line_member->recall_port == NULL){
+    id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->recall_port);
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, line_member->port);
+    if(id_ref != NULL){
+      id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
-  if(id_ref == NULL){
-    return;
+      xmlNewProp(file_lookup->node,
+		 "recall-port\0",
+		 g_strdup_printf("xpath=//*[@id='%s']\0", id));
+    }
   }
-
-  id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
-
-  xmlNewProp(file_lookup->node,
-	     "port\0",
-	     g_strdup_printf("xpath=//*[@id='%s']\0", id));
 }
 
 void

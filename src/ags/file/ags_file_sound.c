@@ -1740,9 +1740,21 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
       }else if(!xmlStrncmp(child->name,
 			   "ags-port-list\0",
 			   14)){
+	AgsFileLookup *file_lookup;
+
 	ags_file_read_port_list(file,
 				child,
 				&(gobject->port));
+
+	/* resolve port */
+	file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+						     "file\0", file,
+						     "node\0", node,
+						     "reference\0", gobject,
+						     NULL);
+	ags_file_add_lookup(file, (GObject *) file_lookup);
+	g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+			 G_CALLBACK(ags_file_read_recall_port_list_resolved), gobject);
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
