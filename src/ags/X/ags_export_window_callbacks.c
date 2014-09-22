@@ -29,6 +29,11 @@
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_export_output.h>
 
+void ags_export_window_export_launch_callback(AgsTask *task,
+					      AgsExportWindow *export_window);
+void ags_export_window_cancel_launch_callback(AgsTask *task,
+					      AgsExportWindow *export_window);
+
 void
 ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
 					       AgsExportWindow *export_window)
@@ -64,72 +69,134 @@ void
 ags_export_window_export_callback(GtkWidget *toggle_button,
 				  AgsExportWindow *export_window)
 {
+  AgsAudioLoop *audio_loop;
   AgsWindow *window;
   AgsMachine *machine;
-  AgsInitAudio *init_audio;
-  AgsAppendAudio *append_audio;
-  AgsStartDevout *start_devout;
-  AgsExportOutput *export_output;
-  AgsAudioLoop *audio_loop;
-  AgsExportThread *export_thread;
-  GList *machines;
-  GList *list;
-  gchar *filename;
-  gboolean live_performance;
 
   window = AGS_MAIN(export_window->ags_main)->window;
-
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop);
-  export_thread = audio_loop->export_thread;
+  
+  if(gtk_toggle_button_is_active(toggle_button)){
+    AgsInitAudio *init_audio;
+    AgsAppendAudio *append_audio;
+    AgsStartDevout *start_devout;
+    AgsExportOutput *export_output;
+    AgsExportThread *export_thread;
+    GList *machines;
+    GList *list;
+    gchar *filename;
+    gboolean live_performance;
 
-  filename = gtk_entry_get_text(export_window->filename);
+    export_thread = audio_loop->export_thread;
 
-  if(filename == NULL ||
-     strlen(filename) == 0){
-    return;
-  }
+    filename = gtk_entry_get_text(export_window->filename);
 
-  live_performance = gtk_toggle_button_get_active(export_window->live_export);
-
-  machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
-
-  list = NULL;
-
-  while(machines != NULL){
-    machine = AGS_MACHINE(machines->data);
-
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
-       (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-      printf("found machine to play!\n\0");
-
-      /* create init task */
-      init_audio = ags_init_audio_new(machine->audio,
-				      FALSE, TRUE, TRUE);
-      list = g_list_prepend(list, init_audio);
-    
-      /* create append task */
-      append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
-					  (GObject *) machine->audio);
-      
-      list = g_list_prepend(list, append_audio);
+    if(filename == NULL ||
+       strlen(filename) == 0){
+      return;
     }
 
-    machines = machines->next;
+    live_performance = gtk_toggle_button_get_active(export_window->live_export);
+
+    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+    list = NULL;
+
+    while(machines != NULL){
+      machine = AGS_MACHINE(machines->data);
+
+      if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
+	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+	printf("found machine to play!\n\0");
+
+	/* create init task */
+	init_audio = ags_init_audio_new(machine->audio,
+					FALSE, TRUE, TRUE);
+	list = g_list_prepend(list, init_audio);
+    
+	/* create append task */
+	append_audio = ags_append_audio_new(audio_loop,
+					    (GObject *) machine->audio);
+      
+	list = g_list_prepend(list, append_audio);
+      }
+
+      machines = machines->next;
+    }
+
+    /* create start task */
+    if(list != NULL){
+      start_devout = ags_start_devout_new(window->devout);
+      export_output = ags_export_output_new(export_thread,
+					    window->devout,
+					    filename,
+					    live_performance);
+      g_signal_connect(export_output, "launch\0",
+		       G_CALLBACK(ags_export_window_export_launch_callback), export_window);
+      list = g_list_prepend(list, start_devout);
+      list = g_list_reverse(list);
+
+      /* append AgsStartDevout */
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(audio_loop->task_thread),
+				   list);
+    }
+  }else{
+    AgsCancelAudio *cancel_audio;
+    GList *machines;
+    GList *list;
+
+    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+
+    list = NULL;
+
+    while(machines != NULL){
+      machine = AGS_MACHINE(machines->data);
+
+      if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+	printf("found machine to stop!\n\0");
+    
+	/* create append task */
+	cancel_audio = ags_cancel_audio_new(machine->audio,
+					    FALSE, FALSE, TRUE);
+      
+	list = g_list_prepend(list, cancel_audio);
+      }
+
+      machines = machines->next;
+    }
+
+    /* create start task */
+    if(list != NULL){
+      g_signal_connect(list->data, "launch\0",
+		       G_CALLBACK(ags_export_window_cancel_launch_callback), export_window);      
+      list = g_list_reverse(list);
+
+      /* append AgsStartDevout */
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+				   list);
+    }  
   }
-
-  /* create start task */
-  if(list != NULL){
-    start_devout = ags_start_devout_new(window->devout);
-    export_output = ags_export_output_new(export_thread,
-					  window->devout,
-					  filename,
-					  live_performance);
-    list = g_list_prepend(list, start_devout);
-    list = g_list_reverse(list);
-
-    /* append AgsStartDevout */
-    ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-				 list);
-  }  
 }
 
+void
+ags_export_window_export_launch_callback(AgsTask *task,
+					 AgsExportWindow *export_window)
+{
+  AgsWindow *window;
+
+  window = AGS_MAIN(export_window->ags_main)->window;
+  ags_navigation_set_seeking_sensitive(window->navigation,
+				       FALSE);
+}
+
+void
+ags_export_window_cancel_launch_callback(AgsTask *task,
+					 AgsExportWindow *export_window)
+{
+  AgsWindow *window;
+
+  window = AGS_MAIN(export_window->ags_main)->window;
+  ags_navigation_set_seeking_sensitive(window->navigation,
+				       TRUE);
+}

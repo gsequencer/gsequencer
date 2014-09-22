@@ -91,6 +91,9 @@ gchar* ags_navigation_tact_to_time_string(gdouble tact);
 void ags_navigation_update_time_string(double tact,
 				       gchar *time_string);
 
+void ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
+					  gboolean enabled);
+
 void ags_navigation_change_position(AgsNavigation *navigation,
 				    gdouble tact);
 

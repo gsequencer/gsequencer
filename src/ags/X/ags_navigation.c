@@ -470,6 +470,24 @@ ags_navigation_update_time_string(double tact,
 }
 
 void
+ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
+				     gboolean enabled)
+{
+  gtk_widget_set_sensitive(navigation->rewind,
+			   enabled);
+  gtk_widget_set_sensitive(navigation->previous,
+			   enabled);
+  gtk_widget_set_sensitive(navigation->play,
+			   enabled);
+  gtk_widget_set_sensitive(navigation->stop,
+			   enabled);
+  gtk_widget_set_sensitive(navigation->next,
+			   enabled);
+  gtk_widget_set_sensitive(navigation->forward,
+			   enabled);
+}
+
+void
 ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact)
 {

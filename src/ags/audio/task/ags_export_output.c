@@ -152,12 +152,23 @@ ags_export_output_launch(AgsTask *task)
   export_thread = export_output->export_thread;
   filename = export_output->filename;
 
+  /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
 				  devout,
 				  0, devout->dsp_channels);
+
+  audio_file->samplerate = devout->samplerate;
+  audio_file->channels = devout->dsp_channels;
+  audio_file->format = devout->bits;
+
+  ags_audio_file_rw_open(audio_file,
+			 TRUE);
+
+  /* start export thread */
   g_object_set(G_OBJECT(export_thread),
 	       "audio-file\0", audio_file,
 	       NULL);
+  ags_thread_start(export_thread);
 }
 
 AgsExportOutput*
