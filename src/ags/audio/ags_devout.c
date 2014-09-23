@@ -942,6 +942,8 @@ ags_devout_alsa_init(AgsDevout *devout,
   buffer_size = size;
 
   /* set the period time */
+  period_time = MSEC_PER_SEC / AGS_DEVOUT_DEFAULT_SAMPLERATE;
+  dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
     printf("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));

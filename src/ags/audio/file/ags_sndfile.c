@@ -202,6 +202,7 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
   sndfile = AGS_SNDFILE(playable);
 
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
+  sndfile->info->format = 0;
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
