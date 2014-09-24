@@ -521,8 +521,6 @@ ags_drum_add_default_recalls(AgsMachine *machine)
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
     AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-
-    g_list_free(list);
   }
   
   /* ags-count-beats */
@@ -545,8 +543,6 @@ ags_drum_add_default_recalls(AgsMachine *machine)
     g_object_set(G_OBJECT(play_count_beats_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
-
-    g_list_free(list);
   }
 
   /* ags-copy-pattern */
@@ -569,8 +565,6 @@ ags_drum_add_default_recalls(AgsMachine *machine)
     g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
-    
-    g_list_free(list);
   }
 }
 
