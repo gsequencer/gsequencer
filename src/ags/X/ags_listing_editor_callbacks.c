@@ -56,9 +56,10 @@ ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
 				    audio, nth_channel,
 				    TRUE);
   }else{
-    GList *list, *list_next;
+    GList *list, *list_next, *list_start;
 
-    list = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+    list_start = 
+      list = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
     list = g_list_nth(list, pads);
     
     while(list != NULL){
@@ -68,5 +69,7 @@ ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
 
       list = list_next;
     }
+
+    g_list_free(list_start);
   }
 }

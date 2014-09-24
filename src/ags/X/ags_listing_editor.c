@@ -127,7 +127,7 @@ ags_listing_editor_connect(AgsConnectable *connectable)
 {
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
-  GList *pad_editor;
+  GList *pad_editor, *pad_editor_start;
 
   ags_listing_editor_parent_connectable_interface->connect(connectable);
 
@@ -148,13 +148,16 @@ ags_listing_editor_connect(AgsConnectable *connectable)
   }
 
   /* AgsPadEditor */
-  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(pad_editor->data));
 
     pad_editor = pad_editor->next;
   }
+  
+  g_list_free(pad_editor_start);
 }
 
 void
@@ -167,17 +170,20 @@ void
 ags_listing_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
   AgsListingEditor *listing_editor;
-  GList *pad_editor;
+  GList *pad_editor, *pad_editor_start;
 
   listing_editor = AGS_LISTING_EDITOR(applicable);
 
-  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_applicable_set_update(AGS_APPLICABLE(pad_editor->data), update);
 
     pad_editor = pad_editor->next;
   }
+
+  g_list_free(pad_editor_start);
 }
 
 void
@@ -185,37 +191,43 @@ ags_listing_editor_apply(AgsApplicable *applicable)
 {
 
   AgsListingEditor *listing_editor;
-  GList *pad_editor;
+  GList *pad_editor, *pad_editor_start;
 
   listing_editor = AGS_LISTING_EDITOR(applicable);
 
   if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(listing_editor)->flags)) == 0)
     return;
 
-  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_applicable_apply(AGS_APPLICABLE(pad_editor->data));
 
     pad_editor = pad_editor->next;
   }
+  
+  g_list_free(pad_editor_start);
 }
 
 void
 ags_listing_editor_reset(AgsApplicable *applicable)
 {
   AgsListingEditor *listing_editor;
-  GList *pad_editor;
+  GList *pad_editor, *pad_editor_start;
 
   listing_editor = AGS_LISTING_EDITOR(applicable);
 
-  pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
+  pad_editor_start = 
+    pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));
 
   while(pad_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(pad_editor->data));
 
     pad_editor = pad_editor->next;
   }
+
+  g_list_free(pad_editor_start);
 }
 
 void

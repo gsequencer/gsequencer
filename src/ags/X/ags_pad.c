@@ -273,7 +273,7 @@ void
 ags_pad_connect(AgsConnectable *connectable)
 {
   AgsPad *pad;
-  GList *line_list;
+  GList *line_list, *line_list_start;
 
   /* AgsPad */
   pad = AGS_PAD(connectable);
@@ -303,13 +303,16 @@ ags_pad_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_pad_solo_clicked_callback), (gpointer) pad);
 
   /* AgsLine */
-  line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+  line_list_start =  
+    line_list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
   while(line_list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
 
     line_list = line_list->next;
   }
+
+  g_list_free(line_list_start);
 }
 
 void
@@ -368,7 +371,7 @@ void
 ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 {
   AgsChannel *current;
-  GList *line;
+  GList *line, *line_start;
 
   if(pad->channel == channel){
     return;
@@ -384,7 +387,8 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
   pad->channel = channel;
 
-  line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
+  line_start = 
+    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
   current = pad->channel;
   
   while(line != NULL){
@@ -395,6 +399,8 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
     current = current->next;
     line = line->next;
   }
+
+  g_list_free(line_start);
 }
 
 void
@@ -443,9 +449,11 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 
     /* check if we should show and connect the AgsLine */
     if(machine != NULL && GTK_WIDGET_VISIBLE((GtkWidget *) machine)){
-      GList *list;
+      GList *list, *list_start;
 
-      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(pad->expander_set)),
+      list_start = 
+	list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+      list = g_list_nth(list,
 			audio_channels_old);
 
       /* show and connect AgsLine */
@@ -457,6 +465,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 
 	list = list->next;
       }
+
+      g_list_free(list_start);
     }
   }else if(audio_channels < audio_channels_old){
     GList *list, *list_start;
@@ -478,6 +488,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 
       list = list->next;
     }
+
+    g_list_free(list_start);
   }
 }
 
@@ -499,15 +511,18 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 void
 ags_pad_find_port(AgsPad *pad)
 {
-  GList *line;
+  GList *line, *line_start;
 
-  line = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+  line_start = 
+    line = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
   while(line != NULL){
     ags_line_find_port(AGS_LINE(line->data));
 
     line = line->next;
   }
+
+  g_list_free(line_start);
 }
 
 AgsPad*

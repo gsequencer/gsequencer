@@ -378,11 +378,13 @@ ags_navigation_disconnect(AgsConnectable *connectable)
 void
 ags_navigation_finalize(GObject *gobject)
 {
+  /* empty */
 }
 
 void
 ags_navigation_destroy(GtkObject *object)
 {
+  /* empty */
 }
 
 void
@@ -390,7 +392,8 @@ ags_navigation_show(GtkWidget *widget)
 {
   GList *list;
 
-  list = gtk_container_get_children((GtkContainer *) widget);
+  /* empty */
+  //  list = gtk_container_get_children((GtkContainer *) widget);
   //  GTK_WIDGET_UNSET_FLAGS((GtkWidget *) list->next->data, GTK_NO_SHOW_ALL);
 }
 

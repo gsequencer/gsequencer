@@ -310,7 +310,7 @@ void
 ags_line_connect(AgsConnectable *connectable)
 {
   AgsLine *line;
-  GList *list;
+  GList *list, *list_start;
 
   line = AGS_LINE(connectable);
 
@@ -322,7 +322,8 @@ ags_line_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
 
   /* connect line members */
-  list = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
   
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
@@ -331,6 +332,8 @@ ags_line_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  g_list_free(list_start);
   
   /*  */
   line->flags |= AGS_LINE_CONNECTED;
@@ -390,13 +393,14 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 void
 ags_line_find_port(AgsLine *line)
 {
-  GList *line_member;
+  GList *line_member, *line_member_start;
 
   if(line == NULL || line->expander == NULL){
     return;
   }
 
-  line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
+  line_member_start = 
+    line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
 
   while(line_member != NULL){
     if(AGS_IS_LINE_MEMBER(line_member->data)){
@@ -405,6 +409,8 @@ ags_line_find_port(AgsLine *line)
 
     line_member = line_member->next;
   }
+
+  g_list_free(line_member_start);
 }
 
 void
