@@ -226,7 +226,7 @@ ags_drum_init(AgsDrum *drum)
   
   /* create widgets */
   drum->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) drum))->data, (GtkWidget *) drum->vbox);
+  gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) drum), (GtkWidget *) drum->vbox);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) drum->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
@@ -343,7 +343,7 @@ ags_drum_init(AgsDrum *drum)
     gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) toggle_button, FALSE, FALSE, 0);
   }
 
-  /* page */
+  /* page / offset */
   drum->offset = (GtkVBox*) gtk_vbox_new(FALSE, 0);
   gtk_table_attach_defaults(table0, (GtkWidget *) drum->offset, 15, 16, 0, 3);
 
@@ -376,7 +376,7 @@ ags_drum_connect(AgsConnectable *connectable)
   AgsDrum *drum;
   AgsDelayAudioRun *play_delay_audio_run;
   AgsRecallHandler *recall_handler;
-  GList *list;
+  GList *list, *list_start;
   int i;
 
   ags_drum_parent_connectable_interface->connect(connectable);
@@ -424,7 +424,9 @@ ags_drum_connect(AgsConnectable *connectable)
 		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
 
-  list = gtk_container_get_children((GtkContainer *) drum->pattern);
+  /* connect pattern */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) drum->pattern);
 
   while(list != NULL){
     g_signal_connect(G_OBJECT(list->data), "clicked\0",
@@ -433,7 +435,11 @@ ags_drum_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  list = gtk_container_get_children((GtkContainer *) drum->offset);
+  g_list_free(list_start);
+
+  /* connect pattern offset range */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) drum->offset);
 
   while(list != NULL){
     g_signal_connect(G_OBJECT(list->data), "clicked\0",
@@ -441,6 +447,8 @@ ags_drum_connect(AgsConnectable *connectable)
 		   
     list = list->next;
   }
+
+  g_list_free(list_start);
 
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_audio_channels\0",
@@ -513,6 +521,8 @@ ags_drum_add_default_recalls(AgsMachine *machine)
   if(list != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
     AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+
+    g_list_free(list);
   }
   
   /* ags-count-beats */
@@ -535,6 +545,8 @@ ags_drum_add_default_recalls(AgsMachine *machine)
     g_object_set(G_OBJECT(play_count_beats_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
+
+    g_list_free(list);
   }
 
   /* ags-copy-pattern */
@@ -557,6 +569,8 @@ ags_drum_add_default_recalls(AgsMachine *machine)
     g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
+    
+    g_list_free(list);
   }
 }
 
@@ -717,7 +731,8 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			    gpointer data)
 {
   AgsDrum *drum;
-  GList *list_output_pad, *list_input_pad;
+  GList *list_output_pad, *list_output_pad_start;
+  GList *list_input_pad, *list_input_pad_start;
   guint i, j;
 
   drum = (AgsDrum *) audio->machine;
@@ -728,8 +743,8 @@ ags_drum_set_audio_channels(AgsAudio *audio,
     AgsChannel *channel;
     AgsCopyPatternChannel *copy_pattern_channel;
     AgsPattern *pattern;
-    GList *list_pad;
-    GList *list;
+    GList *list_pad, *list_pad_start;
+    GList *list, *list_start;
     guint i, j;
 
     /* ags-copy-pattern */
@@ -776,6 +791,8 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 	list_input_pad = list_input_pad->next;
       }
     }
+
+    g_list_free(list_input_pad_start);
 
     for(i = 0; i < audio->input_pads; i++){
       channel = ags_channel_nth(audio->input, audio_channels_old);
@@ -831,16 +848,22 @@ ags_drum_set_audio_channels(AgsAudio *audio,
       if(audio_channels_old != 0)
 	list_output_pad = list_output_pad->next;
     }
+
+    g_list_free(list_output_pad_start);
   }else if(audio_channels < audio_channels_old){
-    GList *list_output_pad_next, *list_input_pad_next;
+    GList *list_output_pad_next, *list_output_pad_next_start;
+    GList *list_input_pad_next, *list_input_pad_next_start;
 
     /* ags-copy-pattern */
     //TODO:JK: implement me
     //    ags_recall_factory_remove(audio,
     //			      );
 
-    list_output_pad = gtk_container_get_children((GtkContainer *) drum->output_pad);
-    list_input_pad = gtk_container_get_children((GtkContainer *) drum->input_pad);
+    list_output_pad_start = 
+      list_output_pad = gtk_container_get_children((GtkContainer *) drum->output_pad);
+
+    list_input_pad_start = 
+      list_input_pad = gtk_container_get_children((GtkContainer *) drum->input_pad);
 
     if(audio_channels == 0){
       /* AgsInput */
@@ -877,6 +900,9 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 	list_output_pad = list_output_pad->next;
       }
     }
+
+    g_list_free(list_output_pad_start);
+    g_list_free(list_input_pad_start);
   }
 }
 
