@@ -93,7 +93,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       GList *plugin;
       GList *task;
       GList *port;
-      GList *list;
+      GList *list, *list_start;
       gchar *filename, *effect;
       gdouble step;
       long index;
@@ -114,9 +114,11 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       line = NULL;
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
-	list = gtk_container_get_children(machine_editor->machine->output);
+	list_start = 
+	  list = gtk_container_get_children(machine_editor->machine->output);
       }else{
-	list = gtk_container_get_children(machine_editor->machine->input);
+	list_start = 
+	  list = gtk_container_get_children(machine_editor->machine->input);
       }
 
       list = g_list_nth(list,
@@ -129,7 +131,10 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	if(list != NULL){
 	  line = AGS_LINE(list->data);
 	}
+
       }
+
+      g_list_free(list_start);
 
       if(line == NULL){
 	return;
@@ -144,12 +149,16 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       if(ags_recall_ladpsa_find(line->channel->recall,
 				filename, effect) != NULL){
+
+	g_list_free(list_start);
 	/* return if duplicated */
 	return;
       }
 
       plugin = gtk_container_get_children(GTK_CONTAINER(line_member_editor->ladspa_browser->plugin));
       index = gtk_combo_box_get_active(GTK_COMBO_BOX(plugin->next->next->next->data));
+
+      g_list_free(plugin);
 
       /* load plugin */
       ags_ladspa_manager_load_file(filename);
@@ -332,6 +341,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	}
       }
 
+      g_list_free(list_start);
       task = g_list_reverse(task);
       
       /* launch tasks */

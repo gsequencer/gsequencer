@@ -63,12 +63,13 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsLine *line;
   GtkContainer *container;
-  GList *list;
+  GList *list, *list_start;
 
   if(gtk_toggle_button_get_active(pad->group)){
     container = (GtkContainer *) pad->expander_set;
 
-    list = gtk_container_get_children(container);
+    list_start = 
+      list = gtk_container_get_children(container);
     
     while(list != NULL){
       line = AGS_LINE(list->data);
@@ -79,10 +80,13 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
       list = list->next;
     }
+
+    g_list_free(list_start);
   }else{
     container = (GtkContainer *) pad->expander_set;
 
-    list = gtk_container_get_children(container);
+    list_start = 
+      list = gtk_container_get_children(container);
     
     while(list != NULL){
       line = AGS_LINE(list->data);
@@ -94,6 +98,7 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
       list = list->next;
     }
 
+    g_list_free(list_start);
     gtk_toggle_button_set_active(pad->group, TRUE);
   }
 
@@ -108,7 +113,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   AgsTaskThread *task_thread;
   AgsChannel *current;
   AgsSetMuted *set_muted;
-  GList *list, *tasks;
+  GList *list, *list_start, *tasks;
 
   task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(pad->channel->audio)->devout)->ags_main)->main_loop)->task_thread);
 
@@ -132,10 +137,13 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
     if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
       container = (GtkContainer *) (AGS_IS_OUTPUT(pad->channel) ? machine->output: machine->input);
-      list = gtk_container_get_children(container);
+      list_start = 
+	list = gtk_container_get_children(container);
 
       while(!gtk_toggle_button_get_active(AGS_PAD(list->data)->solo))
 	list = list->next;
+
+      g_list_free(list_start);
 
       gtk_toggle_button_set_active(AGS_PAD(list->data)->solo, FALSE);
 
@@ -163,7 +171,7 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
   GtkContainer *container;
-  GList *list;
+  GList *list, *list_start;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
 
@@ -173,7 +181,8 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
     if(gtk_toggle_button_get_active(pad->mute))
       gtk_toggle_button_set_active(pad->mute, FALSE);
 
-    list = gtk_container_get_children(container);
+    list_start = 
+      list = gtk_container_get_children(container);
 
     while(list != NULL){
       if(list->data == pad){
@@ -186,6 +195,7 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
       list = list->next;
     }
 
+    g_list_free(list_start);
     machine->flags |= (AGS_MACHINE_SOLO);
   }else
     machine->flags &= ~(AGS_MACHINE_SOLO);

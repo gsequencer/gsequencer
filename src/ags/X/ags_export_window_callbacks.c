@@ -76,10 +76,13 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsAudioLoop *audio_loop;
   AgsWindow *window;
   AgsMachine *machine;
+  GList *machines_start;
 
   window = AGS_MAIN(export_window->ags_main)->window;
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop);
   
+  machines_start = NULL;
+
   if(gtk_toggle_button_get_active(toggle_button)){
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
@@ -102,7 +105,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     live_performance = gtk_toggle_button_get_active(export_window->live_export);
 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+    machines_start = 
+      machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
     list = NULL;
 
@@ -149,7 +153,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     GList *machines;
     GList *list;
 
-    machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
+    machines_start = 
+      machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
     list = NULL;
 
@@ -181,6 +186,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 				   list);
     }  
   }
+
+  g_list_free(machines_start);
 }
 
 void

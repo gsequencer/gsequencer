@@ -166,14 +166,15 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
 {
   AgsPropertyCollectionEditor *property_collection_editor;
   GtkWidget *child;
-  GList *list;
+  GList *list, *list_start;
 
   property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
 
   if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(property_collection_editor)->flags)) == 0)
     return;
 
-  list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));
 
   while(list != NULL){
     child = GTK_WIDGET(g_object_get_data(G_OBJECT(list->data), "AgsChild\0"));
@@ -181,6 +182,8 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 void
