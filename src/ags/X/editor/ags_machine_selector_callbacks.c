@@ -19,9 +19,10 @@ void
 ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
   AgsMachineRadioButton *machine_radio_button, *group;
-  GList *list;
+  GList *list, *list_start;
 
-  list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
   list = list->next;
 
   if(list == NULL){
@@ -29,6 +30,8 @@ ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSe
   }else{
     group = AGS_MACHINE_RADIO_BUTTON(list->data);
   }
+
+  g_list_free(list_start);
 
   machine_radio_button = (AgsMachineRadioButton *) g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
 								"group\0", group,
@@ -46,9 +49,10 @@ void
 ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
   AgsMachineRadioButton *machine_radio_button;
-  GList *list;
+  GList *list, *list_start;
 
-  list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
   list = list->next;
   
   while(list != NULL){
@@ -65,6 +69,8 @@ ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachin
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 void
@@ -73,9 +79,10 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   AgsMachine *machine;
   AgsMachineSelection *machine_selection;
   AgsMachineRadioButton *machine_radio_button;
-  GList *list;
+  GList *list, *list_start;
 
-  list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
   list = list->next;
   
   while(list != NULL){
@@ -87,6 +94,8 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 
   machine_selection = (AgsMachineSelection *) ags_machine_selection_new(gtk_widget_get_toplevel(machine_selector));
   machine = ags_machine_selection_run(machine_selection);

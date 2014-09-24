@@ -231,17 +231,19 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
   list = gtk_container_get_children(gtk_dialog_get_action_area(ladspa_browser));
   ladspa_browser->ok = GTK_BUTTON(list->data);
   ladspa_browser->cancel = GTK_BUTTON(list->next->data);
+  g_list_free(list);
 }
 
 void
 ags_ladspa_browser_connect(AgsConnectable *connectable)
 {
   AgsLadspaBrowser *ladspa_browser;
-  GList *list;
+  GList *list, *list_start;
 
   ladspa_browser = AGS_LADSPA_BROWSER(connectable);
 
-  list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
   list = list->next;
 
   g_signal_connect_after(G_OBJECT(list->data), "changed\0",
@@ -250,6 +252,8 @@ ags_ladspa_browser_connect(AgsConnectable *connectable)
   list = list->next->next;
   g_signal_connect_after(G_OBJECT(list->data), "changed\0",
 			 G_CALLBACK(ags_ladspa_browser_plugin_effect_callback), ladspa_browser);
+
+  g_list_free(list_start);
 
   /* AgsLadspaBrowser buttons */
   g_signal_connect((GObject *) ladspa_browser->ok, "clicked\0",
@@ -298,6 +302,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
   filename = GTK_COMBO_BOX(list->next->data);
+  g_list_free(list);
 
   gtk_combo_box_set_active(filename,
 			   0);
@@ -311,6 +316,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
   filename = GTK_COMBO_BOX_TEXT(list->next->data);
+  g_list_free(list);
 
   return(gtk_combo_box_text_get_active_text(filename));
 }
@@ -323,6 +329,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
   effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
+  g_list_free(list);
 
   return(gtk_combo_box_text_get_active_text(effect));
 }

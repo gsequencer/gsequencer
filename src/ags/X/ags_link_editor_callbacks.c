@@ -315,14 +315,17 @@ void
 ags_link_editor_file_chooser_play_done(AgsRecall *recall, AgsLinkEditor *link_editor)
 {
   GtkToggleButton *toggle_button;
+  GList *list;
 
   recall->flags |= AGS_RECALL_REMOVE;
 
-  toggle_button = (GtkToggleButton *) gtk_container_get_children((GtkContainer *) GTK_DIALOG(link_editor->file_chooser)->action_area)->data;
+  list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(link_editor->file_chooser)->action_area);
+  toggle_button = (GtkToggleButton *) list->data;
 
   link_editor->flags |= AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE;
   gtk_toggle_button_set_active(toggle_button, FALSE);
 
+  g_list_free(list);
 }
 
 void

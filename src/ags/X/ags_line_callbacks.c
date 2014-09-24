@@ -59,13 +59,14 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
   AgsPad *pad;
   AgsLine *current;
   GtkContainer *container;
-  GList *list;
+  GList *list, *list_start;
 
   pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_PAD);
 
   container = (GtkContainer *) pad->expander_set;
 
-  list = gtk_container_get_children(container);
+  list_start =
+    list = gtk_container_get_children(container);
 
   if(gtk_toggle_button_get_active(line->group)){
     ags_line_group_changed(line);
@@ -74,6 +75,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
       current = AGS_LINE(list->data);
 
       if(!gtk_toggle_button_get_active(current->group)){
+	g_list_free(list_start);
 	return(0);
       }
 
@@ -92,6 +94,7 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
 	if(gtk_toggle_button_get_active(current->group)){
 	  ags_line_group_changed(line);
+	  g_list_free(list_start);
 	  return(0);
 	}
 
@@ -101,6 +104,8 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 
     gtk_toggle_button_set_active(line->group, TRUE);
   }
+
+  g_list_free(list_start);
 
   return(0);
 }

@@ -735,7 +735,7 @@ ags_machine_popup_new(AgsMachine *machine)
 {
   GtkMenu *popup;
   GtkMenuItem *item;
-  GList *list;
+  GList *list, *list_start;
 
   popup = (GtkMenu *) gtk_menu_new();
 
@@ -760,7 +760,8 @@ ags_machine_popup_new(AgsMachine *machine)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("properties\0"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
-  list = gtk_container_get_children((GtkContainer *) popup);
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) popup);
 
   g_signal_connect((GObject*) list->data, "activate\0",
 		   G_CALLBACK(ags_machine_popup_move_up_activate_callback), (gpointer) machine);
@@ -789,6 +790,7 @@ ags_machine_popup_new(AgsMachine *machine)
   g_signal_connect((GObject*) list->data, "activate\0",
 		   G_CALLBACK(ags_machine_popup_properties_activate_callback), (gpointer) machine);
 
+  g_list_free(list_start);
   gtk_widget_show_all((GtkWidget*) popup);
 
   return(popup);

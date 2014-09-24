@@ -200,7 +200,7 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 {
   AgsPadEditor *pad_editor;
   AgsAudio *audio;
-  GList *line_editor;
+  GList *line_editor, *line_editor_start;
 
   pad_editor = AGS_PAD_EDITOR(connectable);
 
@@ -217,13 +217,16 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
 
   /* AgsLineEditor */
-  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor_start = 
+    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_line_editor_connect(AGS_CONNECTABLE(line_editor->data));
 
     line_editor = line_editor->next;
   }
+
+  g_list_free(line_editor_start);
 }
 
 void
@@ -236,51 +239,60 @@ void
 ags_pad_editor_set_update(AgsApplicable *applicable, gboolean update)
 {
   AgsPadEditor *pad_editor;
-  GList *line_editor;
+  GList *line_editor, *line_editor_start;
 
   pad_editor = AGS_PAD_EDITOR(applicable);
 
-  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor_start = 
+    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_applicable_set_update(AGS_APPLICABLE(line_editor->data), update);
 
     line_editor = line_editor->next;
   }
+
+  g_list_free(line_editor_start);
 }
 
 void
 ags_pad_editor_apply(AgsApplicable *applicable)
 {
   AgsPadEditor *pad_editor;
-  GList *line_editor;
+  GList *line_editor, *line_editor_start;
 
   pad_editor = AGS_PAD_EDITOR(applicable);
 
-  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor_start = 
+    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_applicable_apply(AGS_APPLICABLE(line_editor->data));
 
     line_editor = line_editor->next;
   }
+
+  g_list_free(line_editor_start);
 }
 
 void
 ags_pad_editor_reset(AgsApplicable *applicable)
 {
   AgsPadEditor *pad_editor;
-  GList *line_editor;
+  GList *line_editor, *line_editor_start;
 
   pad_editor = AGS_PAD_EDITOR(applicable);
 
-  line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+  line_editor_start = 
+    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
 
   while(line_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->data));
 
     line_editor = line_editor->next;
   }
+
+  g_list_free(line_editor_start);
 }
 
 void

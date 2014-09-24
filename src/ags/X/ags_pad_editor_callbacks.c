@@ -70,9 +70,10 @@ ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
       channel = channel->next;
     }
   }else{
-    GList *list, *list_next;
+    GList *list, *list_next, *list_start;
 
-    list = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+    list_start = 
+      list = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
     list = g_list_nth(list, audio_channels);
 
     while(list != NULL){
@@ -82,5 +83,7 @@ ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
 
       list = list_next;
     }
+
+    g_list_free(list_start);
   }
 }

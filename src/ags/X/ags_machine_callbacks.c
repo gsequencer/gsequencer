@@ -210,8 +210,6 @@ ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine 
 			   filenames,
 			   GTK_TOGGLE_BUTTON(overwrite)->active,
 			   GTK_TOGGLE_BUTTON(create)->active);
-
-    g_slist_free(filenames);
   }
 
   gtk_widget_destroy(GTK_WIDGET(file_chooser));
@@ -345,11 +343,11 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 	}
       }
     }
-
+    
+    //TODO:JK: fix GSList filenames memory leak
     ags_machine_open_files(machine,
 			   filenames,
 			   overwrite->toggle_button.active,
 			   create->toggle_button.active);
-    g_slist_free(filenames);
   }
 }

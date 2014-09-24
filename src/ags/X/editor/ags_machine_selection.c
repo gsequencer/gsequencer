@@ -116,7 +116,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   GtkVBox *vbox;
   GtkContainer *content_area;
   GtkRadioButton *group;
-  GList *list, *index;
+  GList *list, *list_start, *index, *index_start;
   gint response;
 
   machine_selection->machine =
@@ -153,8 +153,10 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   response = gtk_dialog_run(GTK_DIALOG(machine_selection));
 
   if(response == GTK_RESPONSE_ACCEPT){
-    list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
-    index = gtk_container_get_children(vbox);
+    list_start = 
+      list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
+    index_start = 
+      index = gtk_container_get_children(vbox);
 
     while(index != NULL){
       if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
@@ -166,6 +168,9 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
       index = index->next;
       list = list->next;
     }
+
+    g_list_free(list_start);
+    g_list_free(index_start);
   }
 
   gtk_widget_destroy(machine_selection);

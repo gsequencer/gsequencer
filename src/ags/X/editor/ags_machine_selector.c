@@ -176,7 +176,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 {
   GtkMenu *popup;
   GtkMenuItem *item;
-  GList *list;
+  GList *list, *list_start;
 
   popup = (GtkMenu *) gtk_menu_new();
   g_object_set_data((GObject *) popup, g_type_name(AGS_TYPE_MACHINE_SELECTOR), machine_selector);
@@ -196,7 +196,8 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
-  list = gtk_container_get_children((GtkContainer *) popup);
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) popup);
 
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_add_tab_callback), (gpointer) machine_selector);
@@ -217,6 +218,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_link_index_callback), (gpointer) machine_selector);
 
+  g_list_free(list_start);
   gtk_widget_show_all((GtkWidget *) popup);
 
   return(popup);
