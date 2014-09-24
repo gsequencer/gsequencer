@@ -176,9 +176,14 @@ ags_matrix_audio_done_callback(AgsAudio *audio, AgsMatrix *matrix)
   }
 
   if(all_done){
-    ags_led_unset_active(AGS_LED(g_list_nth(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
-					    matrix->active_led)->data));
+    GList *list;
+
+    list = gtk_container_get_children(GTK_CONTAINER(matrix->led));
+
+    ags_led_unset_active(AGS_LED(g_list_nth(list, matrix->active_led)->data));
     gtk_toggle_button_set_active(matrix->run, FALSE);
+
+    g_list_free(list);
   }
 }
 
@@ -231,6 +236,7 @@ ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth
     active_led_old = (gdouble) matrix->active_led - 1.0;
   }
 
+  //FIXME:JK: memory leak of GList
   toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
 				  (guint) active_led_new,
 				  (guint) active_led_old);

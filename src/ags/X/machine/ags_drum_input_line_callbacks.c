@@ -113,13 +113,14 @@ ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
   AgsTaskThread *task_thread;
   AgsChangeIndicator *change_indicator;
   AgsDrum *drum;
-  GList *list;
+  GList *list, *list_start;
 
   drum = (AgsDrum *) gtk_widget_get_ancestor(drum_input_line,
 					     AGS_TYPE_DRUM);
   task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->ags_main)->main_loop)->task_thread;
 
-  list = gtk_container_get_children(AGS_LINE(drum_input_line)->expander->table);
+  list_start = 
+    list = gtk_container_get_children(AGS_LINE(drum_input_line)->expander->table);
 
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data) &&
@@ -144,6 +145,8 @@ ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
     
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 void

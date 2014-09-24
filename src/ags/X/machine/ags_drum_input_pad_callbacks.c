@@ -247,11 +247,15 @@ ags_drum_input_pad_open_play_done(AgsRecall *recall, AgsDrumInputPad *drum_input
 
   if(drum_input_pad->pad_open_play_ref == 0){
     GtkToggleButton *toggle_button;
+    GList *list;
 
-    toggle_button = (GtkToggleButton *) gtk_container_get_children((GtkContainer *) GTK_DIALOG(drum_input_pad->file_chooser)->action_area)->data;
+    list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(drum_input_pad->file_chooser)->action_area);
+    toggle_button = (GtkToggleButton *) list->data;
 
     drum_input_pad->flags |= AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE;
     gtk_toggle_button_set_active(toggle_button, FALSE);
+
+    g_list_free(list);
   }
 }
 
@@ -293,13 +297,17 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 						  0, AGS_AUDIO(AGS_MACHINE(drum)->audio)->audio_channels);
     }else{
       AgsLine *line;
+      GList *list;
       
-      line = AGS_LINE(ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set)))->data);
+      list = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set));
+      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
       open_single_file = ags_open_single_file_new(line->channel,
 						  AGS_DEVOUT(AGS_AUDIO(AGS_MACHINE(drum)->audio)->devout),
 						  name0,
 						  (guint) spin_button->adjustment->value, 1);
+
+      g_list_free(list);
     }
 
     ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(AGS_MACHINE(drum)->audio)->devout)->ags_main)->main_loop)->task_thread),
@@ -377,14 +385,17 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       }
     }else{
       AgsLine *line;
+      GList *list;
 
-      line = AGS_LINE(ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set)))->data);
+      list = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set));
+      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
       /* append channel for playback */
       append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
 					      line->channel);
       tasks = g_list_prepend(tasks, append_channel);
 
+      g_list_free(list);
       //      drum_input_pad->pad_play_ref++;
     }
 
@@ -432,9 +443,14 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       }
     }else{
       AgsLine *line;
+      GList *list;
 
-      line = AGS_LINE(ags_line_find_next_grouped(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set)))->data);
+      list = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum_input_pad)->expander_set));
+      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
+      g_list_free(list);
+
+      /*  */
       channel = line->channel;
 
       if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(channel->devout_play)->flags)) == 0){
@@ -457,9 +473,11 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
 						AgsDrumInputPad *drum_input_pad)
 {
   AgsChannel *channel, *next_pad;
-  GList *recall, *tmp, *list;
+  GList *recall, *tmp;
+  GList *list, *list_start;
 
-  list = gtk_container_get_children(AGS_PAD(drum_input_pad)->expander_set);
+  list_start = 
+    list = gtk_container_get_children(AGS_PAD(drum_input_pad)->expander_set);
   
   channel = AGS_PAD(drum_input_pad)->channel;
   next_pad = channel->next_pad;
@@ -472,6 +490,7 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
     tmp = recall;
     recall = ags_recall_find_type(recall,
 				  AGS_TYPE_PLAY_CHANNEL_RUN);
+    //TODO:JK: fix me
     //    g_list_free(tmp);
     
     if(recall != NULL){
@@ -479,11 +498,14 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
 			     G_CALLBACK(ags_drum_input_line_channel_done_callback), list->data);
     }
 
+    //TODO:JK: fix me
     //    g_list_free(recall);
     
     channel = channel->next;
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 void

@@ -222,7 +222,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   /* create widgets */
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
-  gtk_container_add((GtkContainer *) (gtk_container_get_children((GtkContainer *) ffplayer))->data, (GtkWidget *) table);
+  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)), (GtkWidget *) table);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,

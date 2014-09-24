@@ -317,13 +317,18 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
       if(line->channel->line == 0){
 	AgsDrum *drum;
 	GtkToggleButton *selected_edit_button;
+	GList *list;
 
 	drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
 						   AGS_TYPE_DRUM);
 
-	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	list = gtk_container_get_children((GtkContainer *) drum->input_pad);
+
+	drum->selected_pad = AGS_DRUM_INPUT_PAD(list->data);
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+
+	g_list_free(list);
       }
     }
   }

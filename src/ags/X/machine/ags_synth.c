@@ -220,7 +220,7 @@ ags_synth_init(AgsSynth *synth)
   synth->xml_type = "ags-synth\0";
  
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) synth))->data, (GtkWidget *) hbox);
+  gtk_container_add((GtkContainer*) (gtk_bin_get_child((GtkBin *) synth)), (GtkWidget *) hbox);
 
   synth->input_pad = (GtkHBox *) gtk_vbox_new(FALSE, 0);
   AGS_MACHINE(synth)->input = synth->input_pad;
@@ -463,7 +463,7 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
 {
   AgsSynth *synth;
   AgsChannel *channel;
-  GList *list, *list_next;
+  GList *list, *list_next, *list_start;
   guint i;
 
   synth = (AgsSynth *) audio->machine;
@@ -491,7 +491,8 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
       }
     }else{
       /* destroy AgsPad's */
-      list = gtk_container_get_children((GtkContainer *) synth->input_pad);
+      list_start = 
+	list = gtk_container_get_children((GtkContainer *) synth->input_pad);
       list = g_list_nth(list, pads);
 
       while(list != NULL){
@@ -501,6 +502,8 @@ ags_synth_set_pads(AgsAudio *audio, GType type,
 
 	list = list_next;
       }
+
+      g_list_free(list_start);
     }
   }else{
     //TODO:JK: implement me
@@ -514,8 +517,8 @@ ags_synth_update(AgsSynth *synth)
   AgsDevout *devout;
   AgsChannel *channel;
   AgsApplySynth *apply_synth;
-  GList *input_pad;
-  GList *input_line;
+  GList *input_pad, *input_pad_start;
+  GList *input_line, *input_line_start;
   guint wave;
   guint attack, frame_count;
   guint frequency, phase, start;
@@ -531,7 +534,8 @@ ags_synth_update(AgsSynth *synth)
 
   /* write input */
   channel = AGS_MACHINE(synth)->audio->input;
-  input_pad = gtk_container_get_children(synth->input_pad);
+  input_pad_start = 
+    input_pad = gtk_container_get_children(synth->input_pad);
 
   while(input_pad != NULL){
     input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
@@ -557,10 +561,13 @@ ags_synth_update(AgsSynth *synth)
     channel = channel->next;
     input_pad = input_pad->next;
   }
+  
+  g_list_free(input_pad_start);
 
   /* write output */
   channel = AGS_MACHINE(synth)->audio->output;
-  input_pad = gtk_container_get_children(synth->input_pad);
+  input_pad_start = 
+    input_pad = gtk_container_get_children(synth->input_pad);
 
   while(input_pad != NULL){
     input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
@@ -585,6 +592,8 @@ ags_synth_update(AgsSynth *synth)
 
     input_pad = input_pad->next;
   }
+  
+  g_list_free(input_pad_start);
 }
 
 AgsSynth*

@@ -104,7 +104,7 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsToggleLed *toggle_led;
-  GList *list;
+  GList *list, *tmp;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
   GValue value = {0,};
@@ -143,7 +143,8 @@ ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
     active_led_old = (guint) (drum->active_led - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
   }
 
-  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->led)),
+  tmp = gtk_container_get_children(GTK_CONTAINER(drum->led));
+  toggle_led = ags_toggle_led_new(tmp,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
@@ -314,9 +315,14 @@ ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum)
   }
 
   if(all_done){
-    ags_led_unset_active(AGS_LED(g_list_nth(gtk_container_get_children(GTK_CONTAINER(drum->led)),
+    GList *list;
+    
+    list = gtk_container_get_children(GTK_CONTAINER(drum->led));
+    ags_led_unset_active(AGS_LED(g_list_nth(list,
 					    drum->active_led)->data));
     gtk_toggle_button_set_active(drum->run, FALSE);
+
+    g_list_free(list);
   }
 }
 
@@ -487,7 +493,8 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   AgsLine *selected_line;
   AgsPattern *pattern;
   AgsTogglePatternBit *toggle_pattern_bit;
-  GList *list, *line;
+  GList *list, *list_start;
+  GList *line, *line_start;
   GList *tasks;
   guint i, index0, index1, offset;
 
@@ -503,29 +510,40 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
     return;
   }
 
-  list = gtk_container_get_children((GtkContainer *) drum->pattern);
+  /* calculate offset */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) drum->pattern);
 
   for(i = 0; i < 16 && toggle_button != list->data; i++)
     list = list->next;
 
   offset = i;
+  g_list_free(list_start);
 
+  /* calculate index 0 */
   for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
 
   index0 = i;
 
+  /* calculate index 1 */
   for(i = 0; i < 12 && drum->selected1 != drum->index1[i]; i++);
   
   index1 = i;
 
-  list = gtk_container_get_children((GtkContainer *) drum->offset);
+  /* calculate offset / page */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) drum->offset);
 
   for(i = 0; i < 4 && ! GTK_TOGGLE_BUTTON(list->data)->active; i++)
     list = list->next;
 
   offset += (i * 16);
 
-  line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set));
+  g_list_free(list_start);
+
+  /**/
+  line_start = 
+    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set));
   tasks = NULL;
 
   while((line = ags_line_find_next_grouped(line)) != NULL){
@@ -541,6 +559,8 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     line = line->next;
   }
+
+  g_list_free(line_start);
 
   /* append AgsTogglePatternBit */
   ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->ags_main)->main_loop)->task_thread),

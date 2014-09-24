@@ -238,7 +238,7 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->mapped_output_pad = 0;
 
   /* create widgets */
-  frame = (GtkFrame *) (gtk_container_get_children((GtkContainer *) matrix))->data;
+  frame = (GtkFrame *) (gtk_bin_get_child((GtkBin *) matrix));
 
   matrix->table = (GtkTable *) gtk_table_new(4, 4, FALSE);
   gtk_container_add((GtkContainer *) frame, (GtkWidget *) matrix->table);
