@@ -1748,6 +1748,8 @@ ags_thread_loop(void *ptr)
   clock_gettime(CLOCK_MONOTONIC, &time_prev);
 
   while((AGS_THREAD_RUNNING & running) != 0){
+    running = g_atomic_int_get(&(thread->flags));
+
     if(delay >= 1.0){
       counter++;
 
@@ -1868,7 +1870,7 @@ ags_thread_loop(void *ptr)
       }
     }
 
-    for(i = 0; i < i_stop; i++){
+    for(i = 0; i < i_stop && (AGS_THREAD_RUNNING & running) != 0; i++){
       /* barrier */
       if((AGS_THREAD_WAITING_FOR_BARRIER & (g_atomic_int_get(&(thread->flags)))) != 0){
 	int wait_count;
@@ -2123,30 +2125,38 @@ ags_thread_loop(void *ptr)
     next_tic = 2;
   }
 
-  if(!ags_thread_is_tree_ready(thread)){
-    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-    ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-  }else{
+  pthread_mutex_lock(&(main_loop->mutex));
+
+  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
+    ags_thread_remove_child(thread->parent,
+    			    thread);
+  }
+
+  if(ags_thread_is_tree_ready(main_loop) &&
+     tic == ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop))){
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
     ags_thread_set_sync_all(main_loop, tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
   }
 
+  pthread_mutex_unlock(&(main_loop->mutex)); 
+
 #ifdef AGS_DEBUG
   g_message("thread finished\0");
 #endif  
-
-  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
-    g_object_unref(G_OBJECT(thread));
-  }
 
 
   /* remove of AgsAsyncQueue */  
   //  ags_async_queue_remove(async_queue,
   //			 AGS_STACKABLE(thread));
 
+  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
+    pthread_detach(pthread_self());
+  }
+
   /* exit thread */
-  pthread_exit(NULL);
+  //  pthread_exit(NULL);
+  //  return(NULL);
 }
 
 /**

@@ -74,9 +74,9 @@ ags_task_thread_get_type()
     };
 
     ags_type_task_thread = g_type_register_static(AGS_TYPE_THREAD,
-						    "AgsTaskThread\0",
-						    &ags_task_thread_info,
-						    0);
+						  "AgsTaskThread\0",
+						  &ags_task_thread_info,
+						  0);
     
     g_type_add_interface_static(ags_type_task_thread,
 				AGS_TYPE_CONNECTABLE,
@@ -314,7 +314,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   g_atomic_pointer_set(&(task_thread->queue),
 		       g_list_append(tmplist, task));
 
-  /*  */
+  /* unlock */
   pthread_mutex_unlock(&(task_thread->read_mutex));
 
   /*  */
@@ -355,6 +355,7 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread),
 					 ags_task_thread_append_task_queue);
+
   g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),
 		  AGS_RETURNABLE_THREAD_IN_USE);
     

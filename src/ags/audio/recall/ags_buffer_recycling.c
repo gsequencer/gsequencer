@@ -146,6 +146,9 @@ ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling)
   AGS_RECALL(buffer_recycling)->port = NULL;
 
   AGS_RECALL(buffer_recycling)->child_type = AGS_TYPE_BUFFER_AUDIO_SIGNAL;
+
+  AGS_RECALL_RECYCLING(buffer_recycling)->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
+						    AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE);
 }
 
 void

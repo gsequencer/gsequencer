@@ -299,7 +299,7 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
   stream_destination = destination->stream_current;
 
-  if(stream_destination->next == NULL){
+  if(stream_destination->next){
     ags_audio_signal_add_stream(destination);
   }
 

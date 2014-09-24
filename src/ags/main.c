@@ -47,6 +47,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
+#include <sys/resource.h>
+#include <mcheck.h>
 
 #include <X11/Xlib.h>
 
@@ -711,13 +713,32 @@ main(int argc, char **argv)
   AgsDevout *devout;
   AgsWindow *window;
   AgsGuiThread *gui_thread;
-  gchar *filename;
   struct sched_param param;
-  const char *error;
+  struct rlimit rl;
+  gchar *filename;
+  int result;
   gboolean single_thread = FALSE;
   guint i;
 
+  const char *error;
+  const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
+
+  mtrace();
   atexit(ags_signal_cleanup);
+
+  result = getrlimit(RLIMIT_STACK, &rl);
+
+  /* set stack size 64M */
+  if(result == 0){
+    if(rl.rlim_cur < kStackSize){
+      rl.rlim_cur = kStackSize;
+      result = setrlimit(RLIMIT_STACK, &rl);
+
+      if(result != 0){
+	//TODO:JK
+      }
+    }
+  }
 
   /* Ignore interactive and job-control signals.  */
   signal(SIGINT, SIG_IGN);
@@ -787,11 +808,11 @@ main(int argc, char **argv)
     /* Declare ourself as a real time task */
     param.sched_priority = AGS_PRIORITY;
 
-    //    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    //      perror("sched_setscheduler failed\0");
-    //    }
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
 
-    //    mlockall(MCL_CURRENT | MCL_FUTURE);
+    mlockall(MCL_CURRENT | MCL_FUTURE);
 
     if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
       //      GdkFrameClock *frame_clock;
@@ -837,6 +858,10 @@ main(int argc, char **argv)
       /* start thread tree */
       ags_thread_start(ags_main->main_loop);
 
+      /* complete thread pool */
+      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
+      ags_thread_pool_start(ags_main->thread_pool);
+
       /* AgsAutosaveThread */
       //TODO:JK: uncomment me
       ags_main->autosave_thread = NULL;
@@ -877,6 +902,10 @@ main(int argc, char **argv)
       ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
       g_object_ref(G_OBJECT(ags_main->main_loop));
 
+      /* complete thread pool */
+      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
+      ags_thread_pool_start(ags_main->thread_pool);
+
       /* start thread tree */
       ags_thread_start((AgsThread *) single_thread);
 
@@ -911,6 +940,8 @@ main(int argc, char **argv)
   if(ags_ladspa_manager != NULL){
     g_object_unref(ags_ladspa_manager_get_instance());
   }
+
+  muntrace();
 
   return(0);
 }

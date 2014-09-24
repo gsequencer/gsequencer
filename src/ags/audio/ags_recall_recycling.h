@@ -39,9 +39,10 @@ typedef struct _AgsRecallRecycling AgsRecallRecycling;
 typedef struct _AgsRecallRecyclingClass AgsRecallRecyclingClass;
 
 typedef enum{
-  AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR      = 1,
-  AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION  = 1 << 1,
-  AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE       = 1 << 2,
+  AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR                = 1,
+  AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION            = 1 << 1,
+  AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE                 = 1 << 2,
+  AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE = 1 << 3,
 }AgsRecallRecyclingFlags;
 
 struct _AgsRecallRecycling

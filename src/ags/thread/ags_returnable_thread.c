@@ -161,7 +161,8 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 void
 ags_returnable_thread_finalize(GObject *gobject)
 {
-  /* empty */
+  pthread_mutex_destroy(&(AGS_RETURNABLE_THREAD(gobject)->reset_mutex));
+
   /* call parent */
   G_OBJECT_CLASS(ags_returnable_thread_parent_class)->finalize(gobject);
 }
@@ -203,10 +204,7 @@ ags_returnable_thread_run(AgsThread *thread)
     pthread_mutex_unlock(&(returnable_thread->reset_mutex));
 
     /* release thread in thread pool */
-    pthread_mutex_lock(&(thread_pool->creation_mutex));
-
-    g_atomic_int_or(&(AGS_THREAD(returnable_thread)->flags),
-		    AGS_THREAD_RUNNING);
+    pthread_mutex_lock(&(thread_pool->pull_mutex));
 
     tmplist = g_atomic_pointer_get(&(thread_pool->running_thread));
     g_atomic_pointer_set(&(thread_pool->running_thread),
@@ -217,16 +215,16 @@ ags_returnable_thread_run(AgsThread *thread)
     g_atomic_int_and(&(returnable_thread->flags),
 		     (~AGS_RETURNABLE_THREAD_IN_USE));
     
-    pthread_mutex_unlock(&(thread_pool->creation_mutex));
+    pthread_mutex_unlock(&(thread_pool->pull_mutex));
 
     pthread_mutex_lock(&(thread_pool->return_mutex));
 
     g_atomic_int_dec_and_test(&(thread_pool->n_threads));
-    ags_thread_remove_child(thread->parent,
-			    thread);
+    //    ags_thread_remove_child(thread->parent,
+    //			    thread);
 
     g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
-		     (~AGS_THREAD_RUNNING));
+    		     (~AGS_THREAD_RUNNING));
 
     if(g_atomic_int_get(&(thread_pool->queued)) > 0){
       pthread_cond_signal(&(thread_pool->return_cond));

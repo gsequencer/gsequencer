@@ -1535,7 +1535,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 }
 
 /**
- * ags_recall_real_duplicate:
+ * ags_recall_duplicate:
  * @recall an #AgsRecall
  * @recall_id an #AgsRecallID
  * @n_params the count of #parameter entries
