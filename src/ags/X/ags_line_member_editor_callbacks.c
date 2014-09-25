@@ -93,6 +93,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       GList *plugin;
       GList *task;
       GList *port;
+      GList *pad, *pad_start;
       GList *list, *list_start;
       gchar *filename, *effect;
       gdouble step;
@@ -114,27 +115,30 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       line = NULL;
 
       if(AGS_IS_OUTPUT(line_editor->channel)){
-	list_start = 
-	  list = gtk_container_get_children(machine_editor->machine->output);
+	pad_start = 
+	  pad = gtk_container_get_children(machine_editor->machine->output);
       }else{
-	list_start = 
-	  list = gtk_container_get_children(machine_editor->machine->input);
+	pad_start = 
+	  pad = gtk_container_get_children(machine_editor->machine->input);
       }
 
-      list = g_list_nth(list,
-			line_editor->channel->pad);
+      pad = g_list_nth(pad,
+		       line_editor->channel->pad);
 
-      if(list != NULL){
-	list = g_list_nth(gtk_container_get_children(AGS_PAD(list->data)->expander_set),
+      if(pad != NULL){
+	list_start =
+	  list = gtk_container_get_children(AGS_PAD(pad->data)->expander_set);
+
+	list = g_list_nth(list,
 			  AGS_AUDIO(line_editor->channel->audio)->audio_channels - line_editor->channel->audio_channel - 1);
 
 	if(list != NULL){
 	  line = AGS_LINE(list->data);
+	  g_list_free(list_start);
 	}
-
       }
 
-      g_list_free(list_start);
+      g_list_free(pad_start);
 
       if(line == NULL){
 	return;
@@ -149,8 +153,6 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       if(ags_recall_ladpsa_find(line->channel->recall,
 				filename, effect) != NULL){
-
-	g_list_free(list_start);
 	/* return if duplicated */
 	return;
       }
@@ -341,7 +343,6 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	}
       }
 
-      g_list_free(list_start);
       task = g_list_reverse(task);
       
       /* launch tasks */

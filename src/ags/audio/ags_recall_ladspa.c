@@ -306,7 +306,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   gchar *path;
   gchar *plugin_name;
   guint port_count;
-  guint i;
+  unsigned long i;
 
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
@@ -368,7 +368,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 		g_message("connecting port: %d/%d\0", i, port_count);
 		plugin_descriptor->connect_port(plugin_descriptor,
 						i,
-						&(current->port_value.ags_port_float));
+						(float *) &(current->port_value.ags_port_float));
 	      }
 	    }else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	      if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
@@ -585,8 +585,6 @@ ags_recall_ladspa_float_to_short(float *buffer,
   for(i = 0; i < AGS_DEVOUT_DEFAULT_BUFFER_SIZE; i++){
     new_buffer[i] += buffer[i] * (G_MAXFLOAT / G_MAXINT16);
   }
-
-  return(new_buffer);
 }
 
 GList*
