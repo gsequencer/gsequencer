@@ -43,6 +43,7 @@ struct _AgsExportOutput
   AgsExportThread *export_thread;
   AgsDevout *devout;
   gchar *filename;
+  guint frames;
   gboolean live_performance;
 };
 
@@ -56,6 +57,7 @@ GType ags_export_output_get_type();
 AgsExportOutput* ags_export_output_new(AgsExportThread *export_thread,
 				       AgsDevout *devout,
 				       gchar *filename,
+				       guint frames,
 				       gboolean live_performance);
 
 #endif /*__AGS_EXPORT_OUTPUT_H__*/

@@ -136,6 +136,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
   AgsThread *thread;
 
   thread = AGS_THREAD(export_thread);
+  thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;
 
   export_thread->flags = 0;
 
@@ -244,16 +245,16 @@ ags_export_thread_run(AgsThread *thread)
 
   devout =  thread->devout;
 
-  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+  if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
 			 devout->buffer[0], devout->buffer_size);
-  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    ags_audio_file_write(export_thread->audio_file,
-			 devout->buffer[1], devout->buffer_size);
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
-			 devout->buffer[2], devout->buffer_size);
+			 devout->buffer[1], devout->buffer_size);
   }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    ags_audio_file_write(export_thread->audio_file,
+			 devout->buffer[2], devout->buffer_size);
+  }else if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
 			 devout->buffer[3], devout->buffer_size);
   }
@@ -266,6 +267,9 @@ ags_export_thread_stop(AgsThread *thread)
 
   export_thread = AGS_EXPORT_THREAD(thread);
 
+  AGS_THREAD_CLASS(ags_export_thread_parent_class)->stop(thread);
+
+  ags_audio_file_flush(export_thread->audio_file);
   ags_audio_file_close(export_thread->audio_file);
 }
 

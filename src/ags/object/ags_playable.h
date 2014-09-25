@@ -48,6 +48,7 @@ struct _AgsPlayableInterface
   gboolean (*rw_open)(AgsPlayable *playable, gchar *name,
 		      gboolean create,
 		      guint samplerate, guint channels,
+		      guint frames,
 		      guint format);
 
   /* these functions are especially for soundfonts */
@@ -96,6 +97,7 @@ gboolean ags_playable_open(AgsPlayable *playable, gchar *name);
 gboolean ags_playable_rw_open(AgsPlayable *playable, gchar *name,
 			      gboolean create,
 			      guint samplerate, guint channels,
+			      guint frames,
 			      guint format);
 
 guint ags_playable_level_count(AgsPlayable *playable);

@@ -24,6 +24,8 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_export_thread.h>
 
+#include <ags/audio/ags_devout.h>
+
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
 #include <ags/audio/task/ags_start_devout.h>
@@ -134,14 +136,22 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     /* create start task */
     if(list != NULL){
+      guint frames;
+
       start_devout = ags_start_devout_new(window->devout);
+      list = g_list_prepend(list, start_devout);
+      
+      frames = gtk_spin_button_get_value(export_window->tact) * AGS_DEVOUT_DEFAULT_DELAY;
+
       export_output = ags_export_output_new(export_thread,
 					    window->devout,
 					    filename,
+					    frames,
 					    live_performance);
       g_signal_connect(export_output, "launch\0",
 		       G_CALLBACK(ags_export_window_export_launch_callback), export_window);
-      list = g_list_prepend(list, start_devout);
+      list = g_list_prepend(list, export_output);
+
       list = g_list_reverse(list);
 
       /* append AgsStartDevout */
@@ -167,7 +177,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     
 	/* create append task */
 	cancel_audio = ags_cancel_audio_new(machine->audio,
-					    FALSE, FALSE, TRUE);
+					    FALSE, TRUE, TRUE);
       
 	list = g_list_prepend(list, cancel_audio);
       }

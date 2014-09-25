@@ -114,7 +114,7 @@ ags_audio_file_init(AgsAudioFile *audio_file)
   audio_file->samplerate = AGS_DEVOUT_DEFAULT_SAMPLERATE;
   audio_file->frames = 0;
   audio_file->channels = 2;
-  audio_file->format = AGS_DEVOUT_DEFAULT_FORMAT;
+  audio_file->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
   audio_file->start_channel = 0;
   audio_file->audio_channels = 0;
@@ -229,9 +229,8 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 			    audio_file->name,
 			    create,
 			    audio_file->samplerate, audio_file->channels,
+			    audio_file->frames,
 			    audio_file->format)){
-      //FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
-
       error = NULL;
 
       if(error != NULL){

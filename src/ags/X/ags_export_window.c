@@ -412,8 +412,8 @@ ags_export_window_connect(AgsConnectable *connectable)
   g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed\0",
 			 G_CALLBACK(ags_export_window_tact_callback), export_window);
 
-  g_signal_connect(G_OBJECT(export_window->export), "clicked\0",
-		   G_CALLBACK(ags_export_window_export_callback), export_window);
+  g_signal_connect_after(G_OBJECT(export_window->export), "clicked\0",
+			 G_CALLBACK(ags_export_window_export_callback), export_window);
 }
 
 void

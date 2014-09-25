@@ -34,6 +34,7 @@ gboolean ags_sndfile_open(AgsPlayable *playable, gchar *name);
 gboolean ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
 			     gboolean create,
 			     guint samplerate, guint channels,
+			     guint frames,
 			     guint format);
 guint ags_sndfile_level_count(AgsPlayable *playable);
 gchar** ags_sndfile_sublevel_names(AgsPlayable *playable);
@@ -222,10 +223,12 @@ gboolean
 ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
 		    gboolean create,
 		    guint samplerate, guint channels,
+		    guint frames,
 		    guint format)
 {
   AgsSndfile *sndfile;
-
+  sf_count_t multi_frames;
+  
   sndfile = AGS_SNDFILE(playable);
 
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
@@ -233,6 +236,9 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
   sndfile->info->samplerate = samplerate;
   sndfile->info->channels = channels;
   sndfile->info->format = format;
+  sndfile->info->frames = 0;
+
+  g_message("export to: %s\0", name);
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
@@ -241,6 +247,13 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
   }else{
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
   }
+
+  multi_frames = sndfile->info->frames;
+  sf_command(sndfile->file, SFC_FILE_TRUNCATE, &(multi_frames), sizeof(multi_frames));
+  sf_command (sndfile, SFC_SET_SCALE_INT_FLOAT_WRITE, NULL, SF_TRUE);
+  sf_seek(sndfile->file, 0, SEEK_SET);
+
+  sndfile->info->frames = multi_frames;
 
   if(sndfile->file == NULL)
     return(FALSE);
@@ -334,11 +347,16 @@ void
 ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length)
 {
   AgsSndfile *sndfile;
+  sf_count_t multi_frames, retval;
 
   sndfile = AGS_SNDFILE(playable);
 
-  sf_write_short(sndfile->file, buffer, buffer_length);
-  sf_seek(sndfile->file, buffer_length, SEEK_CUR);
+  multi_frames = buffer_length;
+  retval = sf_write_short(sndfile->file, buffer, multi_frames);
+
+  if(retval > multi_frames){
+    sf_seek(sndfile->file, -1 * (multi_frames - retval), SEEK_CUR);
+  }
 }
 
 void
@@ -348,7 +366,7 @@ ags_sndfile_flush(AgsPlayable *playable)
 
   sndfile = AGS_SNDFILE(playable);
 
-  /* empty */
+  sf_write_sync(sndfile->file);
 }
 
 void

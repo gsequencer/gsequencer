@@ -111,6 +111,7 @@ ags_export_output_init(AgsExportOutput *export_output)
   export_output->export_thread = NULL;
   export_output->devout = NULL;
   export_output->filename = NULL;
+  export_output->frames = 0;
   export_output->live_performance = TRUE;
 }
 
@@ -159,10 +160,12 @@ ags_export_output_launch(AgsTask *task)
 
   audio_file->samplerate = devout->frequency;
   audio_file->channels = devout->dsp_channels;
-  audio_file->format = devout->bits;
+  //  audio_file->format = devout->bits;
+  audio_file->frames = export_output->frames;
 
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
+
 
   /* start export thread */
   g_object_set(G_OBJECT(export_thread),
@@ -175,6 +178,7 @@ AgsExportOutput*
 ags_export_output_new(AgsExportThread *export_thread,
 		      AgsDevout *devout,
 		      gchar *filename,
+		      guint frames,
 		      gboolean live_performance)
 {
   AgsExportOutput *export_output;
@@ -185,6 +189,7 @@ ags_export_output_new(AgsExportThread *export_thread,
   export_output->export_thread = export_thread;
   export_output->devout = devout;
   export_output->filename = filename;
+  export_output->frames = frames;
   export_output->live_performance = live_performance;
 
   return(export_output);

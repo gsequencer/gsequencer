@@ -204,7 +204,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
     
       /* create append task */
       cancel_audio = ags_cancel_audio_new(machine->audio,
-					  FALSE, FALSE, TRUE);
+					  FALSE, TRUE, TRUE);
       
       list = g_list_prepend(list, cancel_audio);
     }

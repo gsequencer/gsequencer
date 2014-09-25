@@ -305,7 +305,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   AgsPort *current;
   gchar *path;
   gchar *plugin_name;
-  guint port_count;
+  unsigned long port_count;
   unsigned long i;
 
   void *plugin_so;
