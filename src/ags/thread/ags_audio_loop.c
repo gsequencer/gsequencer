@@ -804,6 +804,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
 	audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
 	audio_loop->play_channel = g_list_remove(audio_loop->play_channel, (gpointer) play);
+
+	play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
       }
 
       list_play = list_next_play;
@@ -848,55 +850,70 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
     list_play_domain = audio_loop->play_audio;
 
     while(list_play_domain != NULL){
+      gboolean remove_domain;
+
       list_next_play_domain = list_play_domain->next;
 
       play_domain = (AgsDevoutPlayDomain *) list_play_domain->data;
       audio = AGS_AUDIO(play_domain->domain);
 
       output = audio->output;
+      remove_domain = TRUE;
 
       while(output != NULL){
 	play = AGS_DEVOUT_PLAY(output->devout_play);
 
-	if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
-	  /* not super threaded */
-	  if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->recall_id[0], stage);
-	  }
+	if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) == 0){
+	  remove_domain = FALSE;
 
-	  if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->recall_id[1], stage);
-	  }
+	  if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
+	    /* not super threaded */
+	    if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
+	      ags_channel_recursive_play(output, play->recall_id[0], stage);
+	    }
 
-	  if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
-	    ags_channel_recursive_play(output, play->recall_id[2], stage);
-	  }
+	    if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
+	      ags_channel_recursive_play(output, play->recall_id[1], stage);
+	    }
 
-	}else{
-	  /* super threaded */
-	  if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
-	    play->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[0]->tic_cond));
-	  }
+	    if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
+	      ags_channel_recursive_play(output, play->recall_id[2], stage);
+	    }
 
-	  if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
-	    play->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[1]->tic_cond));
-	  }
+	  }else{
+	    /* super threaded */
+	    if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
+	      play->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
+	      pthread_cond_signal(&(play->iterator_thread[0]->tic_cond));
+	    }
 
-	  if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
-	    play->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(&(play->iterator_thread[2]->tic_cond));
-	  }
+	    if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
+	      play->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
+	      pthread_cond_signal(&(play->iterator_thread[1]->tic_cond));
+	    }
 
+	    if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
+	      play->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
+	      pthread_cond_signal(&(play->iterator_thread[2]->tic_cond));
+	    }
+	  }
 	}
 
 	output = output->next;
       }
 
-      if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) != 0){
+      if(remove_domain){
 	audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
-	audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play);
+	audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play_domain);
+
+	output = audio->output;
+	
+	while(output != NULL){
+	  play = AGS_DEVOUT_PLAY(output->devout_play);	  
+	  play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
+
+	  output = output->next;
+	}
       }
 
       list_play_domain = list_next_play_domain;
