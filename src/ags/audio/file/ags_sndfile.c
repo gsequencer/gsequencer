@@ -352,10 +352,10 @@ ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_leng
   sndfile = AGS_SNDFILE(playable);
 
   multi_frames = buffer_length;
-  retval = sf_write_short(sndfile->file, buffer, multi_frames);
+  retval = sf_writef_short(sndfile->file, buffer, multi_frames);
 
   if(retval > multi_frames){
-    sf_seek(sndfile->file, -1 * (multi_frames - retval), SEEK_CUR);
+    sf_seek(sndfile->file, (multi_frames - retval), SEEK_CUR);
   }
 }
 

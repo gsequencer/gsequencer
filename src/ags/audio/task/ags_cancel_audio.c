@@ -150,6 +150,12 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
+      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
+	channel = channel->next;
+	
+	continue;
+      }
+
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
 
@@ -165,6 +171,12 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
+      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == NULL){
+	channel = channel->next;
+	
+	continue;
+      }
+
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
 
@@ -180,6 +192,12 @@ ags_cancel_audio_launch(AgsTask *task)
     channel = audio->output;
 
     while(channel != NULL){
+      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == NULL){
+	channel = channel->next;
+	
+	continue;
+      }
+
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
       /* set remove flag */
