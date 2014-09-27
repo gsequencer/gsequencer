@@ -238,7 +238,15 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
   sndfile->info->format = format;
   sndfile->info->frames = 0;
 
-  g_message("export to: %s\0", name);
+  g_message("export to: %s\n  samplerate: %d\n  channels: %d\n  format: %x\0",
+	    name,
+	    samplerate,
+	    channels,
+	    format);
+
+  if(!sf_format_check(sndfile->info)){
+    g_warning("invalid format");
+  }
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
@@ -248,12 +256,12 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
   }
 
-  multi_frames = sndfile->info->frames;
-  sf_command(sndfile->file, SFC_FILE_TRUNCATE, &(multi_frames), sizeof(multi_frames));
-  sf_command (sndfile, SFC_SET_SCALE_INT_FLOAT_WRITE, NULL, SF_TRUE);
+  multi_frames = frames * sndfile->info->channels;
+  //  sf_command(sndfile->file, SFC_FILE_TRUNCATE, &(multi_frames), sizeof(multi_frames));
+  //  sf_command (sndfile, SFC_SET_SCALE_INT_FLOAT_WRITE, NULL, SF_TRUE);
   sf_seek(sndfile->file, 0, SEEK_SET);
 
-  sndfile->info->frames = multi_frames;
+  //  sndfile->info->frames = multi_frames;
 
   if(sndfile->file == NULL)
     return(FALSE);
@@ -352,10 +360,11 @@ ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_leng
   sndfile = AGS_SNDFILE(playable);
 
   multi_frames = buffer_length;
-  retval = sf_writef_short(sndfile->file, buffer, multi_frames);
+  retval = sf_write_short(sndfile->file, (short *) buffer, multi_frames);
 
   if(retval > multi_frames){
-    sf_seek(sndfile->file, (multi_frames - retval), SEEK_CUR);
+    g_warning("retval > multi_frames");
+    //    sf_seek(sndfile->file, (multi_frames - retval), SEEK_CUR);
   }
 }
 

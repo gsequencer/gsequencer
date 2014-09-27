@@ -223,16 +223,6 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /*  */
-  if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
-    pthread_mutex_lock(&(thread->start_mutex));
-
-    thread->flags &= (~AGS_THREAD_INITIAL_RUN);
-    pthread_cond_broadcast(&(thread->start_cond));
-
-    pthread_mutex_unlock(&(thread->start_mutex));
-  }
-
-  /*  */
   pthread_mutex_lock(&(task_thread->read_mutex));
 
   g_atomic_pointer_set(&(task_thread->exec),

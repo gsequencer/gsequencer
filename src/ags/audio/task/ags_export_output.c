@@ -147,6 +147,7 @@ ags_export_output_launch(AgsTask *task)
   AgsDevout *devout;
   AgsAudioFile *audio_file;
   gchar *filename;
+  guint val;
   
   export_output = AGS_EXPORT_OUTPUT(task);
   devout = export_output->devout;
@@ -158,7 +159,7 @@ ags_export_output_launch(AgsTask *task)
 				  devout,
 				  0, devout->dsp_channels);
 
-  audio_file->samplerate = devout->frequency;
+  audio_file->samplerate = (int) devout->frequency;
   audio_file->channels = devout->dsp_channels;
   //  audio_file->format = devout->bits;
   audio_file->frames = export_output->frames;
@@ -167,11 +168,34 @@ ags_export_output_launch(AgsTask *task)
 			 TRUE);
 
 
+  g_message("export output");
+
   /* start export thread */
   g_object_set(G_OBJECT(export_thread),
+	       "devout\0", devout,
 	       "audio-file\0", audio_file,
 	       NULL);
   ags_thread_start(export_thread);
+
+  if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(export_thread)->flags)) == 0){
+    pthread_mutex_lock(&(AGS_THREAD(export_thread)->start_mutex));
+
+    val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
+
+    if((AGS_THREAD_INITIAL_RUN & val) != 0){
+      while((AGS_THREAD_INITIAL_RUN & val) != 0){
+	pthread_cond_wait(&(AGS_THREAD(export_thread)->start_cond),
+			  &(AGS_THREAD(export_thread)->start_mutex));
+
+	val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
+      }
+    }
+    
+    pthread_mutex_unlock(&(AGS_THREAD(export_thread)->start_mutex));
+  }else{
+    g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
+		    AGS_THREAD_RUNNING);
+  }
 }
 
 AgsExportOutput*

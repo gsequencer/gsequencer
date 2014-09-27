@@ -231,6 +231,7 @@ void
 ags_export_thread_start(AgsThread *thread)
 {
   //TODO:JK: implement me
+  g_message("export start");
 
   AGS_THREAD_CLASS(ags_export_thread_parent_class)->start(thread);
 }
@@ -245,18 +246,20 @@ ags_export_thread_run(AgsThread *thread)
 
   devout =  thread->devout;
 
+  //  g_message("%x", devout->flags);
+
   if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
-			 devout->buffer[0], devout->buffer_size);
+			 (devout->buffer[0]), devout->buffer_size);
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
-			 devout->buffer[1], devout->buffer_size);
+			 (devout->buffer[1]), devout->buffer_size);
   }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
-			 devout->buffer[2], devout->buffer_size);
+			 (devout->buffer[2]), devout->buffer_size);
   }else if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     ags_audio_file_write(export_thread->audio_file,
-			 devout->buffer[3], devout->buffer_size);
+			 (devout->buffer[3]), devout->buffer_size);
   }
 }
 

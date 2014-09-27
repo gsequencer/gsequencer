@@ -141,7 +141,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       start_devout = ags_start_devout_new(window->devout);
       list = g_list_prepend(list, start_devout);
       
-      frames = gtk_spin_button_get_value(export_window->tact) * AGS_DEVOUT_DEFAULT_DELAY;
+      frames = (gtk_spin_button_get_value(export_window->tact) + 1) * AGS_DEVOUT_DEFAULT_DELAY;
 
       export_output = ags_export_output_new(export_thread,
 					    window->devout,

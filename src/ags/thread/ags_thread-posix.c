@@ -627,7 +627,12 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
   }
 
   toplevel = ags_thread_get_toplevel(thread);
+
+  ags_thread_lock(toplevel);
+
   ags_thread_set_sync_all_recursive(toplevel, tic);
+
+  ags_thread_unlock(toplevel);
 }
 
 /**
@@ -1025,14 +1030,79 @@ ags_thread_is_tree_ready(AgsThread *thread)
   AgsThread *main_loop;
   gboolean retval;
 
+  auto gboolean ags_thread_is_tree_ready_current_tic(AgsThread *current);
   auto gboolean ags_thread_is_tree_ready_recursive(AgsThread *current);
 
+  gboolean ags_thread_is_tree_ready_current_tic(AgsThread *current){
+    AgsThread *toplevel;
+    guint tic;
+    guint flags;
+    gboolean retval;
+
+    toplevel = ags_thread_get_toplevel(current);
+
+    //  pthread_mutex_lock(&(current->mutex));
+
+    flags = g_atomic_int_get(&(current->flags));
+    retval = FALSE;
+
+    if((AGS_THREAD_RUNNING & flags) == 0){
+      retval = TRUE;
+    }
+
+    if((AGS_THREAD_INITIAL_RUN & flags) != 0){
+      retval = TRUE;
+    }
+
+    if((AGS_THREAD_READY & flags) != 0){
+      retval = TRUE;
+    }
+
+    if(retval){
+      //    pthread_mutex_unlock(&(current->mutex));
+
+      return(TRUE);
+    }
+  
+    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(toplevel));
+
+    if(tic > 2){
+      tic = tic % 3;
+    }
+
+    switch(tic){
+    case 0:
+      {
+	if((AGS_THREAD_WAIT_0 & flags) != 0){
+	  retval = TRUE;
+	}
+      }
+      break;
+    case 1:
+      {
+	if((AGS_THREAD_WAIT_1 & flags) != 0){
+	  retval = TRUE;
+	}
+      }
+      break;
+    case 2:
+      {
+	if((AGS_THREAD_WAIT_2 & flags) != 0){
+	  retval = TRUE;
+	}
+      }
+      break;
+    }
+
+    //  pthread_mutex_unlock(&(current->mutex));
+    return(retval);
+  }
   gboolean ags_thread_is_tree_ready_recursive(AgsThread *current){
     AgsThread *children;
 
     children = current->children;
 
-    if(!ags_thread_is_current_ready(current)){
+    if(!ags_thread_is_tree_ready_current_tic(current)){
       return(FALSE);
     }
 
@@ -1666,6 +1736,8 @@ ags_thread_loop(void *ptr)
   void ags_thread_loop_sync(AgsThread *thread){
     guint tic, next_tic;
 
+    pthread_mutex_lock(&(main_loop->mutex));
+
     tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
     if(current_tic = 2){
@@ -1676,28 +1748,29 @@ ags_thread_loop(void *ptr)
       next_tic = 2;
     }
 
-    if(!ags_thread_is_tree_ready(thread)){
-      switch(tic){
-      case 0:
-	{
-	  g_atomic_int_or(&(thread->flags),
-			  AGS_THREAD_WAIT_0);
-	}
-	break;
-      case 1:
-	{
-	  g_atomic_int_or(&(thread->flags),
-			  AGS_THREAD_WAIT_1);
-	}
-	break;
-      case 2:
-	{
-	  g_atomic_int_or(&(thread->flags),
-			  AGS_THREAD_WAIT_2);
-	}
-	break;
+    switch(tic){
+    case 0:
+      {
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_WAIT_0);
       }
+      break;
+    case 1:
+      {
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_WAIT_1);
+      }
+      break;
+    case 2:
+      {
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_WAIT_2);
+      }
+      break;
+    }
 
+    if(!ags_thread_is_tree_ready(thread)){
+      pthread_mutex_unlock(&(main_loop->mutex));
       //      ags_thread_hangcheck(main_loop);
     
       while(!ags_thread_is_current_ready(thread)){
@@ -1709,8 +1782,10 @@ ags_thread_loop(void *ptr)
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-      ags_thread_set_sync_all(main_loop, tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+      ags_thread_set_sync_all(main_loop, tic);
+
+      pthread_mutex_unlock(&(main_loop->mutex));
     }
   }
 
@@ -1734,11 +1809,11 @@ ags_thread_loop(void *ptr)
   running = g_atomic_int_get(&(thread->flags));
 
   if(thread->freq >= 1.0){
-    delay = AGS_THREAD_MAX_PRECISION / thread->freq;
+    delay = AGS_THREAD_MAX_PRECISION / thread->freq - 1.0;
 
     i_stop = 1;
   }else{
-    delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION;
+    delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION - 1.0;
 
     i_stop = 1;
   }
@@ -1756,26 +1831,24 @@ ags_thread_loop(void *ptr)
       if(counter < delay){
 	counter++;
 
-	/* run in hierarchy */
-	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	  /* unset initial run */
+	  /* signal AgsAudioLoop */
+	  pthread_mutex_lock(&(thread->mutex));
+
+	  g_atomic_int_and(&(thread->flags),
+			   (~AGS_THREAD_INITIAL_RUN));
+
+	  pthread_cond_signal(&(thread->start_cond));
+
+	  pthread_mutex_unlock(&(thread->mutex));
+	}else{
+	  /* run in hierarchy */
 	  pthread_mutex_lock(&(thread->mutex));
 
 	  ags_thread_loop_sync(thread);
 
 	  pthread_mutex_unlock(&(thread->mutex)); 
-	}else{
-	  /* unset initial run */
-	  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-	    /* signal AgsAudioLoop */
-	    pthread_mutex_lock(&(thread->mutex));
-
-	    g_atomic_int_and(&(thread->flags),
-			     (~AGS_THREAD_INITIAL_RUN));
-
-	    pthread_cond_signal(&(thread->start_cond));
-
-	    pthread_mutex_unlock(&(thread->mutex));
-	  }
 	}
 
 	//	pthread_yield();
@@ -1815,26 +1888,24 @@ ags_thread_loop(void *ptr)
       if(counter < delay){
 	counter++;
 
-	/* run in hierarchy */
-	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	  /* unset initial run */
+	  g_atomic_int_and(&(thread->flags),
+			   (~AGS_THREAD_INITIAL_RUN));
+	  g_atomic_int_and(&(thread->flags),
+			   (~AGS_THREAD_WAIT_0));
+
+	  /* signal AgsAudioLoop */
+	  if(AGS_IS_TASK_THREAD(thread)){
+	    pthread_cond_signal(&(thread->start_cond));
+	  } 
+	}else{
+	  /* run in hierarchy */
 	  pthread_mutex_lock(&(thread->mutex));
 
 	  ags_thread_loop_sync(thread);
 
 	  pthread_mutex_unlock(&(thread->mutex)); 
-	}else{
-	  /* unset initial run */
-	  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-	    g_atomic_int_and(&(thread->flags),
-			     (~AGS_THREAD_INITIAL_RUN));
-	    g_atomic_int_and(&(thread->flags),
-			     (~AGS_THREAD_WAIT_0));
-
-	    /* signal AgsAudioLoop */
-	    if(AGS_IS_TASK_THREAD(thread)){
-	      pthread_cond_signal(&(thread->start_cond));
-	    } 
-	  }
 	}
 
 	//	pthread_yield();
@@ -1867,10 +1938,14 @@ ags_thread_loop(void *ptr)
 
 	  clock_gettime(CLOCK_MONOTONIC, &time_prev);
 	}
+
+	counter = 0;
       }
     }
 
     for(i = 0; i < i_stop && (AGS_THREAD_RUNNING & running) != 0; i++){
+      running = g_atomic_int_get(&(thread->flags));
+
       /* barrier */
       if((AGS_THREAD_WAITING_FOR_BARRIER & (g_atomic_int_get(&(thread->flags)))) != 0){
 	int wait_count;
@@ -1900,12 +1975,12 @@ ags_thread_loop(void *ptr)
 	}
       }
 
-      /* run in hierarchy */
       if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	/* run in hierarchy */
 	pthread_mutex_lock(&(thread->mutex));
-      
+	
 	ags_thread_loop_sync(thread);
-    
+	
 	pthread_mutex_unlock(&(thread->mutex));
       }
 

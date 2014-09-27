@@ -35,7 +35,7 @@
 #define AGS_IS_DEVOUT_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT_THREAD))
 #define AGS_DEVOUT_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT_THREAD, AgsDevoutThreadClass))
 
-#define AGS_DEVOUT_THREAD_DEFAULT_JIFFIE (48)
+#define AGS_DEVOUT_THREAD_DEFAULT_JIFFIE (48.0)
 
 typedef struct _AgsDevoutThread AgsDevoutThread;
 typedef struct _AgsDevoutThreadClass AgsDevoutThreadClass;
