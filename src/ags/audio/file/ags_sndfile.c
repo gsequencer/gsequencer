@@ -261,7 +261,7 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
   multi_frames = frames * sndfile->info->channels;
   //  sf_command(sndfile->file, SFC_FILE_TRUNCATE, &(multi_frames), sizeof(multi_frames));
   //  sf_command (sndfile, SFC_SET_SCALE_INT_FLOAT_WRITE, NULL, SF_TRUE);
-  sf_seek(sndfile->file, 0, SEEK_SET);
+  //  sf_seek(sndfile->file, 0, SEEK_SET);
 
   //  sndfile->info->frames = multi_frames;
 

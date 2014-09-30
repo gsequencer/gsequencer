@@ -957,10 +957,10 @@ ags_thread_children_is_locked(AgsThread *thread)
 }
 
 gboolean
-ags_thread_is_current_ready(AgsThread *current)
+ags_thread_is_current_ready(AgsThread *current,
+			    guint tic)
 {
   AgsThread *toplevel;
-  guint tic;
   guint flags;
   gboolean retval;
 
@@ -988,8 +988,6 @@ ags_thread_is_current_ready(AgsThread *current)
 
     return(TRUE);
   }
-  
-  tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(toplevel));
 
   if(tic > 2){
     tic = tic % 3;
@@ -998,21 +996,21 @@ ags_thread_is_current_ready(AgsThread *current)
   switch(tic){
   case 0:
     {
-      if((AGS_THREAD_WAIT_0 & flags) != 0){
+      if((AGS_THREAD_WAIT_0 & flags) == 0){
 	retval = TRUE;
       }
     }
     break;
   case 1:
     {
-      if((AGS_THREAD_WAIT_1 & flags) != 0){
+      if((AGS_THREAD_WAIT_1 & flags) == 0){
 	retval = TRUE;
       }
     }
     break;
   case 2:
     {
-      if((AGS_THREAD_WAIT_2 & flags) != 0){
+      if((AGS_THREAD_WAIT_2 & flags) == 0){
 	retval = TRUE;
       }
     }
@@ -1025,7 +1023,8 @@ ags_thread_is_current_ready(AgsThread *current)
 }
 
 gboolean
-ags_thread_is_tree_ready(AgsThread *thread)
+ags_thread_is_tree_ready(AgsThread *thread,
+			 guint tic)
 {
   AgsThread *main_loop;
   gboolean retval;
@@ -1035,7 +1034,6 @@ ags_thread_is_tree_ready(AgsThread *thread)
 
   gboolean ags_thread_is_tree_ready_current_tic(AgsThread *current){
     AgsThread *toplevel;
-    guint tic;
     guint flags;
     gboolean retval;
 
@@ -1063,8 +1061,6 @@ ags_thread_is_tree_ready(AgsThread *thread)
 
       return(TRUE);
     }
-  
-    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(toplevel));
 
     if(tic > 2){
       tic = tic % 3;
@@ -1724,8 +1720,8 @@ ags_thread_loop(void *ptr)
   AgsThread *thread, *main_loop;
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
-  guint current_tic;
-  guint tic, next_tic;
+  guint current_tic, next_tic;
+  guint tic;
   guint val, running, locked_greedy;
   guint counter, delay;
   guint i, i_stop;
@@ -1734,12 +1730,6 @@ ags_thread_loop(void *ptr)
   auto void ags_thread_loop_sync(AgsThread *thread);
 
   void ags_thread_loop_sync(AgsThread *thread){
-    guint tic, next_tic;
-
-    pthread_mutex_lock(&(main_loop->mutex));
-
-    tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
     if(current_tic = 2){
       next_tic = 0;
     }else if(current_tic = 0){
@@ -1748,7 +1738,17 @@ ags_thread_loop(void *ptr)
       next_tic = 2;
     }
 
-    switch(tic){
+    if(next_tic = 2){
+      tic = 0;
+    }else if(next_tic = 0){
+      tic = 1;
+    }else if(next_tic = 1){
+      tic = 2;
+    }
+
+    pthread_mutex_lock(&(main_loop->mutex));
+
+    switch(current_tic){
     case 0:
       {
 	g_atomic_int_or(&(thread->flags),
@@ -1769,24 +1769,29 @@ ags_thread_loop(void *ptr)
       break;
     }
 
-    if(!ags_thread_is_tree_ready(thread)){
+    if(!ags_thread_is_tree_ready(thread,
+				 current_tic)){
       pthread_mutex_unlock(&(main_loop->mutex));
       //      ags_thread_hangcheck(main_loop);
     
-      while(!ags_thread_is_current_ready(thread)){
+      while(!ags_thread_is_current_ready(thread,
+					 current_tic)){
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
       }
 
-      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
+      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
-      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-      ags_thread_set_sync_all(main_loop, tic);
+      ags_thread_set_sync_all(main_loop, current_tic);
 
       pthread_mutex_unlock(&(main_loop->mutex));
+
+      ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
+      ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }
+
+    current_tic = next_tic;
   }
 
   ags_thread_self =
@@ -1796,24 +1801,20 @@ ags_thread_loop(void *ptr)
   async_queue = ags_main_loop_get_async_queue(main_loop);
 
   /*  */
-  pthread_mutex_lock(&(main_loop->mutex));
-
   current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_RUNNING |
 		   AGS_THREAD_INITIAL_RUN));
   
-  pthread_mutex_unlock(&(main_loop->mutex));
-
   running = g_atomic_int_get(&(thread->flags));
 
   if(thread->freq >= 1.0){
-    delay = AGS_THREAD_MAX_PRECISION / thread->freq - 1.0;
+    delay =  AGS_THREAD_MAX_PRECISION / thread->freq;
 
     i_stop = 1;
   }else{
-    delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION - 1.0;
+    delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION;
 
     i_stop = 1;
   }
@@ -2190,14 +2191,20 @@ ags_thread_loop(void *ptr)
     pthread_yield();
   }
 
-  tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
   if(current_tic = 2){
     next_tic = 0;
   }else if(current_tic = 0){
     next_tic = 1;
   }else if(current_tic = 1){
     next_tic = 2;
+  }
+
+  if(next_tic = 2){
+    tic = 0;
+  }else if(next_tic = 0){
+    tic = 1;
+  }else if(next_tic = 1){
+    tic = 2;
   }
 
   pthread_mutex_lock(&(main_loop->mutex));
@@ -2207,14 +2214,18 @@ ags_thread_loop(void *ptr)
     			    thread);
   }
 
-  if(ags_thread_is_tree_ready(main_loop) &&
-     tic == ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop))){
-    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
-    ags_thread_set_sync_all(main_loop, tic);
+  if(ags_thread_is_tree_ready(main_loop,
+			      current_tic) &&
+     current_tic == ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop))){
+    ags_thread_set_sync_all(main_loop, current_tic);
+    pthread_mutex_unlock(&(main_loop->mutex));
+
+    ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+  }else{
+    pthread_mutex_unlock(&(main_loop->mutex));
   }
 
-  pthread_mutex_unlock(&(main_loop->mutex)); 
 
 #ifdef AGS_DEBUG
   g_message("thread finished\0");
@@ -2331,8 +2342,19 @@ ags_thread_real_timelock(AgsThread *thread)
   AgsThread *main_loop;
   GList *greedy_locks;
   guint locked_greedy, val;
-
+  guint tic, next_tic;
+      
   pthread_mutex_lock(&(thread->greedy_mutex));
+
+  tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+  if(tic = 2){
+    next_tic = 0;
+  }else if(tic = 0){
+    next_tic = 1;
+  }else if(tic = 1){
+    next_tic = 2;
+  }
 
 #if defined(AGS_PTHREAD_SUSPEND) || defined(AGS_LINUX_SIGNALS)
   val = g_atomic_int_get(&(thread->flags));
@@ -2360,34 +2382,17 @@ ags_thread_real_timelock(AgsThread *thread)
 
     ags_thread_unlock(main_loop);
 
-    ags_thread_lock(main_loop);
-
-    if(!ags_thread_is_tree_ready(thread)){
+    if(!ags_thread_is_tree_ready(thread,
+				 next_tic)){
       g_atomic_int_or(&(thread->flags),
 		      AGS_THREAD_WAIT_0);
 
-      ags_thread_unlock(main_loop);
-
-      while(!ags_thread_is_current_ready(thread)){
+      while(!ags_thread_is_current_ready(thread,
+					 next_tic)){
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->greedy_mutex));
       }
     }else{
-      guint tic, next_tic;
-
-      /* you have the tic that's why you don't have to cheat */
-      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-      ags_thread_unlock(main_loop);
-
-      if(tic = 2){
-	next_tic = 0;
-      }else if(tic = 0){
-	next_tic = 1;
-      }else if(tic = 1){
-	next_tic = 2;
-      }
-
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
       ags_thread_set_sync_all(main_loop, tic);
@@ -2427,35 +2432,17 @@ ags_thread_real_timelock(AgsThread *thread)
     /* skip syncing for greedy */
     main_loop = ags_thread_get_toplevel(thread);
 
-    ags_thread_lock(main_loop);
-
-    if(!ags_thread_is_tree_ready(thread)){
+    if(!ags_thread_is_tree_ready(thread,
+				 next_tic)){
       g_atomic_int_or(&(thread->flags),
 		      AGS_THREAD_WAIT_0);
 
-      ags_thread_unlock(main_loop);
-    
-      while(!ags_thread_is_current_ready(thread)){
+      while(!ags_thread_is_current_ready(thread,
+					 next_tic)){
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->greedy_mutex));
       }
     }else{
-      guint tic, next_tic;
-
-      /* you have the tic that's why you don't have to skip */
-      tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-      ags_thread_unlock(main_loop);
-
-      if(tic = 2){
-	next_tic = 0;
-      }else if(tic = 0){
-	next_tic = 1;
-      }else if(tic = 1){
-	next_tic = 2;
-      }
-
-
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
       ags_thread_set_sync_all(main_loop, tic);
