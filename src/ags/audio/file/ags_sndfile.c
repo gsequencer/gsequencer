@@ -233,10 +233,12 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
 
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
 
-  sndfile->info->samplerate = samplerate;
-  sndfile->info->channels = channels;
-  sndfile->info->format = format;
+  sndfile->info->samplerate = (int) samplerate;
+  sndfile->info->channels = (int) channels;
+  sndfile->info->format = (int) format;
   sndfile->info->frames = 0;
+  sndfile->info->seekable = 0;
+  sndfile->info->sections = 0;
 
   g_message("export to: %s\n  samplerate: %d\n  channels: %d\n  format: %x\0",
 	    name,
@@ -356,27 +358,12 @@ ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_leng
 {
   AgsSndfile *sndfile;
   sf_count_t multi_frames, retval;
-  unsigned char *interleaved_buffer;
-  double scale = 1.0 / G_MAXINT16 * G_MAXINT32;
-  guint i, j;
-  guint channel, offset;
-  guint mask = 0xff;
 
   sndfile = AGS_SNDFILE(playable);
 
-  multi_frames = buffer_length * (1.0 / (sndfile->info->channels * (AGS_DEVOUT_DEFAULT_FORMAT / 8)));
-  interleaved_buffer = (unsigned char *) malloc(multi_frames * (AGS_DEVOUT_DEFAULT_FORMAT / 8) * sizeof(unsigned char));
+  multi_frames = buffer_length * sndfile->info->channels;
 
-  for(i = 0; i < multi_frames; i++){
-    for(j = 0; j < AGS_DEVOUT_DEFAULT_FORMAT / 8; j++){
-      channel = i % sndfile->info->channels;
-      offset = i * sndfile->info->channels;
-      interleaved_buffer[i * (AGS_DEVOUT_DEFAULT_FORMAT / 8) + j] = ((mask << (j * 8)) & (buffer[i + channel + offset])) >> (j * 8);
-
-    }
-  }
-
-  retval = sf_write_raw(sndfile->file, interleaved_buffer, multi_frames);
+  retval = sf_write_short(sndfile->file, buffer, multi_frames);
 
   if(retval > multi_frames){
     g_warning("retval > multi_frames");

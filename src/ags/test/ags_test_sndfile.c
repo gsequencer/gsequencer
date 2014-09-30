@@ -29,9 +29,20 @@ main(int argc, char **argv)
   sf_seek(file, 0, SEEK_SET);
   sf_read_short(file, input, info->frames * info->channels);
 
+  multi_frames = info->frames * info->channels;
+
   sf_close(file);
+  free(info);
 
   /* write buffer */
+  info = (SF_INFO *) malloc(sizeof(SF_INFO));
+  info->seekable = 0;
+  info->sections = 0;
+  info->frames = 0;
+  info->channels = 2;
+  info->samplerate = 44100;
+  info->format = (SF_FORMAT_WAV | SF_FORMAT_PCM_16);
+
   file = (SNDFILE *) sf_open("test.wav\0", SFM_WRITE, info);
   g_message("open %s\n  format: %x\0", "test.wav\0", info->format);
 
@@ -39,15 +50,10 @@ main(int argc, char **argv)
 				   info->frames *
 				   sizeof(long int));
   
-  multi_frames = info->frames * info->channels;
-  info->seekable = 0;
-  info->sections = 0;
-  info->frames = 0;
-
   for(i = 0; i < multi_frames; i++)
     output[i] = input[i];
 
-  retval = sf_write_raw(file, output, multi_frames * sizeof(short));
+  retval = sf_write_raw(file, output, multi_frames);
 
   if(retval > multi_frames){
     g_warning("retval > multi_frames");

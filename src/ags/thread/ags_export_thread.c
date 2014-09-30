@@ -241,17 +241,14 @@ ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
   AgsDevout *devout;
-  signed short *buffer, *devout_buffer;
+  signed short *devout_buffer;
   guint buffer_length;
-  guint i, channel;
-  double scale = 1.0;
-  signed short frame;
 
   export_thread = AGS_EXPORT_THREAD(thread);
 
   devout =  thread->devout;
 
-  //  g_message("%x", devout->flags);
+  g_message("%x\0", devout->flags);
 
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     devout_buffer = devout->buffer[0];
@@ -267,8 +264,6 @@ ags_export_thread_run(AgsThread *thread)
 
   ags_audio_file_write(export_thread->audio_file,
 		       devout_buffer, (guint) buffer_length);
-
-  free(buffer);
 }
 
 void

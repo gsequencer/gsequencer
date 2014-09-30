@@ -161,8 +161,6 @@ ags_export_output_launch(AgsTask *task)
 
   audio_file->samplerate = (int) devout->frequency;
   audio_file->channels = devout->dsp_channels;
-  //  audio_file->format = devout->bits;
-  audio_file->frames = export_output->frames;
 
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
