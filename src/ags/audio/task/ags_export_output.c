@@ -186,7 +186,7 @@ ags_export_output_launch(AgsTask *task)
       while((AGS_THREAD_INITIAL_RUN & val) != 0){
 	pthread_cond_wait(&(AGS_THREAD(export_thread)->start_cond),
 			  &(AGS_THREAD(export_thread)->start_mutex));
-
+	
 	val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
       }
     }

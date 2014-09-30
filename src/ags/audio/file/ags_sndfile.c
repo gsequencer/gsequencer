@@ -356,11 +356,27 @@ ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_leng
 {
   AgsSndfile *sndfile;
   sf_count_t multi_frames, retval;
+  unsigned char *interleaved_buffer;
+  double scale = 1.0 / G_MAXINT16 * G_MAXINT32;
+  guint i, j;
+  guint channel, offset;
+  guint mask = 0xff;
 
   sndfile = AGS_SNDFILE(playable);
 
-  multi_frames = buffer_length;
-  retval = sf_write_short(sndfile->file, (short *) buffer, multi_frames);
+  multi_frames = buffer_length * (1.0 / (sndfile->info->channels * (AGS_DEVOUT_DEFAULT_FORMAT / 8)));
+  interleaved_buffer = (unsigned char *) malloc(multi_frames * (AGS_DEVOUT_DEFAULT_FORMAT / 8) * sizeof(unsigned char));
+
+  for(i = 0; i < multi_frames; i++){
+    for(j = 0; j < AGS_DEVOUT_DEFAULT_FORMAT / 8; j++){
+      channel = i % sndfile->info->channels;
+      offset = i * sndfile->info->channels;
+      interleaved_buffer[i * (AGS_DEVOUT_DEFAULT_FORMAT / 8) + j] = ((mask << (j * 8)) & (buffer[i + channel + offset])) >> (j * 8);
+
+    }
+  }
+
+  retval = sf_write_raw(sndfile->file, interleaved_buffer, multi_frames);
 
   if(retval > multi_frames){
     g_warning("retval > multi_frames");

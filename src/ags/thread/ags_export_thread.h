@@ -37,7 +37,8 @@
 #define AGS_IS_EXPORT_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_EXPORT_THREAD))
 #define AGS_EXPORT_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_EXPORT_THREAD, AgsExportThreadClass))
 
-#define AGS_EXPORT_THREAD_DEFAULT_JIFFIE (48) // same as devout thread
+#define AGS_EXPORT_THREAD_DEFAULT_JIFFIE (48.0) // same as devout thread
+#define AGS_EXPORT_THREAD_BUFFER_TIME (1.0 / (AGS_DEVOUT_DEFAULT_FORMAT / 8))
 
 typedef struct _AgsExportThread AgsExportThread;
 typedef struct _AgsExportThreadClass AgsExportThreadClass;

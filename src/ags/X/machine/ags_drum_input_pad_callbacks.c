@@ -483,6 +483,15 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
   next_pad = channel->next_pad;
 
   while(channel != next_pad){
+    if(AGS_DEVOUT_PLAY(channel->devout_play) == NULL ||
+       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
+      channel = channel->next;
+      list = list->next;
+
+      continue;
+    }
+
+
     recall = ags_recall_find_provider_with_recycling_container(channel->play,
 							       channel,
 							       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container);

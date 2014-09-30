@@ -241,6 +241,11 @@ ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
   AgsDevout *devout;
+  signed short *buffer, *devout_buffer;
+  guint buffer_length;
+  guint i, channel;
+  double scale = 1.0;
+  signed short frame;
 
   export_thread = AGS_EXPORT_THREAD(thread);
 
@@ -248,19 +253,22 @@ ags_export_thread_run(AgsThread *thread)
 
   //  g_message("%x", devout->flags);
 
-  if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    ags_audio_file_write(export_thread->audio_file,
-			 (devout->buffer[0]), devout->buffer_size);
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    devout_buffer = devout->buffer[0];
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    devout_buffer = devout->buffer[1];
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    ags_audio_file_write(export_thread->audio_file,
-			 (devout->buffer[1]), devout->buffer_size);
+    devout_buffer = devout->buffer[2];
   }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
-    ags_audio_file_write(export_thread->audio_file,
-			 (devout->buffer[2]), devout->buffer_size);
-  }else if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    ags_audio_file_write(export_thread->audio_file,
-			 (devout->buffer[3]), devout->buffer_size);
+    devout_buffer = devout->buffer[3];
   }
+ 
+  buffer_length = devout->buffer_size;
+
+  ags_audio_file_write(export_thread->audio_file,
+		       devout_buffer, (guint) buffer_length);
+
+  free(buffer);
 }
 
 void
