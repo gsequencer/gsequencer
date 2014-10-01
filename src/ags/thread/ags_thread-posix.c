@@ -549,8 +549,6 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   broadcast = FALSE;
   waiting = FALSE;
 
-  //  pthread_mutex_lock(&(thread->mutex));
-
   if(tic > 2){
     tic = tic % 3;
   }
@@ -588,14 +586,16 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   }
 
   if(waiting){
+    pthread_mutex_lock(&(thread->mutex));
+
     if(broadcast){
       pthread_cond_broadcast(&(thread->cond));
     }else{
       pthread_cond_signal(&(thread->cond));
     }
-  }
 
-  //  pthread_mutex_unlock(&(thread->mutex));
+    pthread_mutex_unlock(&(thread->mutex));
+  }
 }
 
 /**
@@ -1771,20 +1771,22 @@ ags_thread_loop(void *ptr)
 
     if(!ags_thread_is_tree_ready(thread,
 				 current_tic)){
-      pthread_mutex_unlock(&(main_loop->mutex));
       //      ags_thread_hangcheck(main_loop);
     
       while(!ags_thread_is_current_ready(thread,
 					 current_tic)){
+	pthread_mutex_unlock(&(main_loop->mutex));
 	pthread_cond_wait(&(thread->cond),
 			  &(thread->mutex));
+	pthread_mutex_lock(&(main_loop->mutex));
       }
+
+      pthread_mutex_unlock(&(main_loop->mutex));
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
       ags_thread_set_sync_all(main_loop, current_tic);
-
       pthread_mutex_unlock(&(main_loop->mutex));
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
