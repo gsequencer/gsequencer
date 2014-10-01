@@ -11,7 +11,7 @@ main(int argc, char **argv)
   SF_INFO *info;
   SNDFILE *file;
   signed short *input;
-  short *output;
+  signed short *output;
   sf_count_t multi_frames, retval;
   guint i;
 
@@ -48,12 +48,12 @@ main(int argc, char **argv)
 
   output = (signed short *) malloc((size_t) info->channels *
 				   info->frames *
-				   sizeof(long int));
+				   sizeof(signed short));
   
   for(i = 0; i < multi_frames; i++)
     output[i] = input[i];
 
-  retval = sf_write_raw(file, output, multi_frames);
+  retval = sf_write_short(file, output, multi_frames);
 
   if(retval > multi_frames){
     g_warning("retval > multi_frames");

@@ -161,7 +161,7 @@ ags_cancel_audio_launch(AgsTask *task)
 
       /* set remove flag */
       AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
-      
+
       channel = channel->next;
     }
   }

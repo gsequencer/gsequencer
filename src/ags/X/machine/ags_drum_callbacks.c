@@ -242,7 +242,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     /* create init task */
     init_audio = ags_init_audio_new(AGS_MACHINE(drum)->audio,
-				    FALSE, TRUE, FALSE);
+				    FALSE, TRUE, TRUE);
     g_signal_connect_after(init_audio, "launch\0",
 			   G_CALLBACK(ags_drum_init_audio_launch_callback), drum);
 
@@ -276,7 +276,7 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
       /* create cancel task */
       cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio,
-					  FALSE, TRUE, FALSE);
+					  FALSE, TRUE, TRUE);
 
       /* append AgsCancelAudio */
       ags_task_thread_append_task(task_thread,

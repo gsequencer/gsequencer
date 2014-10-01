@@ -2430,7 +2430,6 @@ ags_audio_recursive_play_init(AgsAudio *audio,
 						    resolve_dependencies,
 						    NULL);
 	
-	
 	list_start = g_list_append(list_start,
 				   recall_id);
       }else{

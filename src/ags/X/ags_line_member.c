@@ -197,7 +197,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_PORT,
+				  PROP_RECALL_PORT,
 				  param_spec);
 
   param_spec = g_param_spec_pointer("recall-port-data\0",
@@ -205,7 +205,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				    "The recall port data\0",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_PORT_DATA,
+				  PROP_RECALL_PORT_DATA,
 				  param_spec);
 
   /* AgsLineMember */
@@ -488,6 +488,16 @@ ags_line_member_get_property(GObject *gobject,
       g_value_set_pointer(value, line_member->port_data);
     }
     break;
+  case PROP_RECALL_PORT:
+    {
+      g_value_set_object(value, line_member->port);
+    }
+    break;
+  case PROP_RECALL_PORT_DATA:
+    {
+      g_value_set_pointer(value, line_member->port_data);
+    }
+    break;
   case PROP_TASK_TYPE:
     {
       g_value_set_ulong(value, line_member->task_type);
@@ -709,13 +719,14 @@ ags_line_member_find_port(AgsLineMember *line_member)
     while(recall != NULL){
       port = AGS_RECALL(recall->data)->port;
 
-#ifdef AGS_DEBUG
+      //#ifdef AGS_DEBUG
       g_message("search port in %s\0", G_OBJECT_TYPE_NAME(recall->data));
-#endif
+      //#endif
 
       while(port != NULL){
 	if(!g_strcasecmp(AGS_PORT(port->data)->specifier,
 			 specifier)){
+	  g_message("found %x", port->data);
 	  return(AGS_PORT(port->data));
 	}
 

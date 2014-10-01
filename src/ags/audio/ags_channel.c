@@ -2285,8 +2285,8 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
  * ags_channel_recursive_play_init:
  * @channel the #AgsChannel to prepare
  * @stage valid values for @stage are: -1 for running all three stages, or the stages 0 through 2 to run
- * just the specified stage. With stage is meant the #AgsRecall::run_init_pre, #AgsRecall::run_init_inter
- * and #AgsRecall::run_init_post stages.
+ * just the specified stage. With stage is meant the #AgsRecall run_init_pre, #AgsRecall run_init_inter
+ * and #AgsRecall run_init_post stages.
  * @arrange_recall_id %TRUE if new #AgsRecallID objects should be created
  * @duplicate_templates %TRUE if the #AgsRecall templates should be duplicated
  * @playback %TRUE if the purpose is a simple playback of the tree, this option is used to omit the
