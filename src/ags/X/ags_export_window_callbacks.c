@@ -136,17 +136,17 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     /* create start task */
     if(list != NULL){
-      guint frames;
+      guint tic;
 
       start_devout = ags_start_devout_new(window->devout);
       list = g_list_prepend(list, start_devout);
       
-      frames = (gtk_spin_button_get_value(export_window->tact) + 1) * AGS_DEVOUT_DEFAULT_DELAY;
+      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * AGS_DEVOUT_DEFAULT_DELAY;
 
       export_output = ags_export_output_new(export_thread,
 					    window->devout,
 					    filename,
-					    frames,
+					    tic,
 					    live_performance);
       g_signal_connect(export_output, "launch\0",
 		       G_CALLBACK(ags_export_window_export_launch_callback), export_window);

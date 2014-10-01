@@ -111,7 +111,7 @@ ags_export_output_init(AgsExportOutput *export_output)
   export_output->export_thread = NULL;
   export_output->devout = NULL;
   export_output->filename = NULL;
-  export_output->frames = 0;
+  export_output->tic = 0;
   export_output->live_performance = TRUE;
 }
 
@@ -147,12 +147,14 @@ ags_export_output_launch(AgsTask *task)
   AgsDevout *devout;
   AgsAudioFile *audio_file;
   gchar *filename;
+  guint tic;
   guint val;
   
   export_output = AGS_EXPORT_OUTPUT(task);
   devout = export_output->devout;
   export_thread = export_output->export_thread;
   filename = export_output->filename;
+  tic = export_output->tic;
 
   /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
@@ -165,10 +167,10 @@ ags_export_output_launch(AgsTask *task)
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
 
-
   g_message("export output");
 
   /* start export thread */
+  export_thread->tic = tic;
   g_object_set(G_OBJECT(export_thread),
 	       "devout\0", devout,
 	       "audio-file\0", audio_file,
@@ -200,7 +202,7 @@ AgsExportOutput*
 ags_export_output_new(AgsExportThread *export_thread,
 		      AgsDevout *devout,
 		      gchar *filename,
-		      guint frames,
+		      guint tic,
 		      gboolean live_performance)
 {
   AgsExportOutput *export_output;
@@ -211,7 +213,7 @@ ags_export_output_new(AgsExportThread *export_thread,
   export_output->export_thread = export_thread;
   export_output->devout = devout;
   export_output->filename = filename;
-  export_output->frames = frames;
+  export_output->tic = tic;
   export_output->live_performance = live_performance;
 
   return(export_output);

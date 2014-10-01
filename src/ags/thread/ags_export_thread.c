@@ -140,6 +140,8 @@ ags_export_thread_init(AgsExportThread *export_thread)
 
   export_thread->flags = 0;
 
+  export_thread->tic = 0;
+  export_thread->counter = 0;
   export_thread->audio_file = NULL;
 }
 
@@ -245,6 +247,13 @@ ags_export_thread_run(AgsThread *thread)
   guint buffer_length;
 
   export_thread = AGS_EXPORT_THREAD(thread);
+
+  if(export_thread->counter == export_thread->tic){
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_RUNNING));
+  }else{
+    export_thread->counter += 1;
+  }
 
   devout =  thread->devout;
 
