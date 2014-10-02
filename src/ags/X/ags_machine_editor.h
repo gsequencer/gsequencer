@@ -35,8 +35,8 @@
 #define AGS_IS_MACHINE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MACHINE_EDITOR))
 #define AGS_MACHINE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE_EDITOR, AgsMachineEditorClass))
 
-#define AGS_MACHINE_EDITOR_DEFAULT_VERSION "0.4.0\0"
-#define AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID "0.4.0\0"
+#define AGS_MACHINE_EDITOR_DEFAULT_VERSION "0.4.2\0"
+#define AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 
 typedef struct _AgsMachineEditor AgsMachineEditor;
 typedef struct _AgsMachineEditorClass AgsMachineEditorClass;

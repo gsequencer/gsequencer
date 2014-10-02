@@ -36,6 +36,10 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/audio/task/ags_init_audio.h>
+#include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_open_file.h>
 
 #include <ags/X/ags_window.h>
@@ -664,6 +668,58 @@ ags_machine_find_port(AgsMachine *machine)
     ags_pad_find_port(AGS_PAD(pad->data));
 
     pad = pad->next;
+  }
+}
+
+void
+ags_machine_set_run(AgsMachine *machine,
+		    gboolean run)
+{
+  AgsWindow *window;
+  AgsThread *task_thread;
+
+  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread;
+
+  if(run){
+    AgsInitAudio *init_audio;
+    AgsAppendAudio *append_audio;
+    AgsStartDevout *start_devout;
+    GList *list;
+
+    list = NULL;
+
+    /* create init task */
+    init_audio = ags_init_audio_new(machine->audio,
+				    FALSE, TRUE, TRUE);
+    list = g_list_prepend(list, init_audio);
+    
+    /* create append task */
+    append_audio = ags_append_audio_new(G_OBJECT(AGS_MAIN(window->ags_main)->main_loop),
+					(GObject *) machine->audio);
+      
+    list = g_list_prepend(list, append_audio);
+
+    /* create start task */
+    if(list != NULL){
+      start_devout = ags_start_devout_new(window->devout);
+      list = g_list_prepend(list, start_devout);
+      list = g_list_reverse(list);
+
+      /* append AgsStartDevout */
+      ags_task_thread_append_tasks(task_thread,
+				   list);
+    }
+  }else{
+    AgsCancelAudio *cancel_audio;
+
+    /* create append task */
+    cancel_audio = ags_cancel_audio_new(machine->audio,
+					FALSE, TRUE, TRUE);
+    
+    /* append AgsCancelAudio */
+    ags_task_thread_append_task(task_thread,
+				cancel_audio);
   }
 }
 

@@ -249,8 +249,7 @@ ags_export_thread_run(AgsThread *thread)
   export_thread = AGS_EXPORT_THREAD(thread);
 
   if(export_thread->counter == export_thread->tic){
-    g_atomic_int_and(&(thread->flags),
-		     (~AGS_THREAD_RUNNING));
+    ags_thread_stop(thread);
   }else{
     export_thread->counter += 1;
   }

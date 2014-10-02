@@ -36,8 +36,8 @@
 #define AGS_IS_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PAD))
 #define AGS_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PAD, AgsPadClass))
 
-#define AGS_PAD_DEFAULT_VERSION "0.4.0\0"
-#define AGS_PAD_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
+#define AGS_PAD_DEFAULT_VERSION "0.4.2\0"
+#define AGS_PAD_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 
 typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;

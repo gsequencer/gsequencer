@@ -186,7 +186,6 @@ ags_devout_thread_start(AgsThread *thread)
     }
   }
 
-
   if(devout_thread->error != NULL){
     AgsAudioLoop *audio_loop;
 
@@ -225,11 +224,12 @@ ags_devout_thread_run(AgsThread *thread)
   }
 
   //  g_message("play\0");
+  if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){
+    error = NULL;
+    ags_devout_alsa_play(devout,
+			 &error);
+  }
 
-  error = NULL;
-  ags_devout_alsa_play(devout,
-  		       &error);
-  
   if(error != NULL){
     //TODO:JK: implement me
   }

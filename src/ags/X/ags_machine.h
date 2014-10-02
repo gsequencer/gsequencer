@@ -32,8 +32,8 @@
 #define AGS_IS_MACHINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MACHINE))
 #define AGS_MACHINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE, AgsMachineClass))
 
-#define AGS_MACHINE_DEFAULT_VERSION "0.4.0\0"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 22-06-2014 03:07\0"
+#define AGS_MACHINE_DEFAULT_VERSION "0.4.2\0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
@@ -45,7 +45,7 @@ typedef enum{
   AGS_MACHINE_IS_SYNTHESIZER    = 1 <<  3,
   AGS_MACHINE_TAKES_FILE_INPUT  = 1 <<  4,
   AGS_MACHINE_MAPPED_RECALL     = 1 <<  5,
-  AGS_MACHINE_PREMAPPED_RECALL  = 1 <<  5,
+  AGS_MACHINE_PREMAPPED_RECALL  = 1 <<  6,
 }AgsMachineFlags;
 
 typedef enum{
@@ -101,6 +101,9 @@ GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
 
 void ags_machine_find_port(AgsMachine *machine);
+
+void ags_machine_set_run(AgsMachine *machine,
+			 gboolean run);
 
 GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
 
