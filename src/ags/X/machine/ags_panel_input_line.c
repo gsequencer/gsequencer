@@ -254,9 +254,9 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
 
     play_channel = AGS_PLAY_CHANNEL(list->data);
 
-    g_value_init(&audio_channel_value, G_TYPE_UINT64);
-    g_value_set_uint64(&audio_channel_value,
-		       source->audio_channel);
+    g_value_init(&audio_channel_value, G_TYPE_UINT);
+    g_value_set_uint(&audio_channel_value,
+		     source->audio_channel);
     ags_port_safe_write(play_channel->audio_channel,
 			&audio_channel_value);
 

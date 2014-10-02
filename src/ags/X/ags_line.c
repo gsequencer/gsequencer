@@ -402,8 +402,6 @@ ags_line_find_port(AgsLine *line)
   line_member_start = 
     line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
 
-  g_message("find");
-
   while(line_member != NULL){
     if(AGS_IS_LINE_MEMBER(line_member->data)){
       ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));

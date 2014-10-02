@@ -257,8 +257,6 @@ ags_export_thread_run(AgsThread *thread)
 
   devout =  thread->devout;
 
-  g_message("%x\0", devout->flags);
-
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     devout_buffer = devout->buffer[0];
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){

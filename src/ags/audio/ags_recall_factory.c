@@ -321,13 +321,11 @@ ags_recall_factory_create_play(AgsAudio *audio,
 						       "devout\0", audio->devout,
 						       "source\0", channel,
 						       "recall_container\0", play_container,
-						       //TODO:JK: set default
-						       // "audio_channel\0", j,
 						       NULL);
 	ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
 							(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							AGS_RECALL_PLAYBACK));
-	play_channel->audio_channel->port_value.ags_port_uint = j;
+	play_channel->audio_channel->port_value.ags_port_uint = start_audio_channel + j;
 	ags_channel_add_recall(channel, (GObject *) play_channel, TRUE);
 	ags_connectable_connect(AGS_CONNECTABLE(play_channel));
 
@@ -375,13 +373,11 @@ ags_recall_factory_create_play(AgsAudio *audio,
 						       "devout\0", AGS_DEVOUT(audio->devout),
 						       "source\0", channel,
 						       "recall_container\0", recall_container,
-						       //TODO:JK: set default
-						       // "audio_channel\0", j,
 						       NULL);
 	ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
 							(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							AGS_RECALL_PLAYBACK));
-	play_channel->audio_channel->port_value.ags_port_uint = j;
+	play_channel->audio_channel->port_value.ags_port_uint = start_audio_channel + j;
 	ags_channel_add_recall(channel, (GObject *) play_channel, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(play_channel));
 
@@ -389,7 +385,7 @@ ags_recall_factory_create_play(AgsAudio *audio,
 	play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
 							      "devout\0", audio->devout,
 							      "source\0", channel,
-							      // "recall_channel\0", play_channel,
+							      "recall_channel\0", play_channel,
 							      "recall_container\0", recall_container,
 							      NULL);
 	ags_recall_set_flags(AGS_RECALL(play_channel_run), (AGS_RECALL_TEMPLATE |
@@ -571,15 +567,13 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 						       "devout\0", AGS_DEVOUT(audio->devout),
 						       "source\0", channel,
 						       "recall_container\0", recall_container,
-						       //TODO:JK: set default
-						       // "audio_channel\0", j,
 						       NULL);
 	ags_recall_set_flags(AGS_RECALL(play_channel), (AGS_RECALL_TEMPLATE |
 							(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
 							AGS_RECALL_PLAYBACK |
 							AGS_RECALL_SEQUENCER |
 							AGS_RECALL_NOTATION));
-	play_channel->audio_channel->port_value.ags_port_uint = j;
+	play_channel->audio_channel->port_value.ags_port_uint = start_audio_channel + j;
 	ags_channel_add_recall(channel, (GObject *) play_channel, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(play_channel));
 	
@@ -2224,7 +2218,7 @@ ags_recall_factory_create(AgsAudio *audio,
   list = NULL;
 
 #ifdef AGS_DEBUG
-  g_message("AgsRecallFactory creating: %s\0", plugin_name);
+  g_message("AgsRecallFactory creating: %s[%d,%d]\0", plugin_name, stop_pad, stop_audio_channel);
 #endif
 
   if(!strncmp(plugin_name,

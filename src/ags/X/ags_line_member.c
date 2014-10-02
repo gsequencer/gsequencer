@@ -719,14 +719,13 @@ ags_line_member_find_port(AgsLineMember *line_member)
     while(recall != NULL){
       port = AGS_RECALL(recall->data)->port;
 
-      //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
       g_message("search port in %s\0", G_OBJECT_TYPE_NAME(recall->data));
-      //#endif
+#endif
 
       while(port != NULL){
 	if(!g_strcasecmp(AGS_PORT(port->data)->specifier,
 			 specifier)){
-	  g_message("found %x", port->data);
 	  return(AGS_PORT(port->data));
 	}
 

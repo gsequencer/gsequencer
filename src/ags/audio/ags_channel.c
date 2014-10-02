@@ -1460,6 +1460,10 @@ ags_channel_resolve_recall(AgsChannel *channel,
   AgsRecall *recall;
   GList *list_recall;
 
+#ifdef AGS_DEBUG
+  g_message("resolve channel %d\0", channel->line);
+#endif
+
   /* get the appropriate lists */
   if(recall_id->recycling_container->parent == NULL){
     list_recall = channel->play;
@@ -1469,7 +1473,7 @@ ags_channel_resolve_recall(AgsChannel *channel,
   
   while((list_recall = ags_recall_find_recycling_container(list_recall, G_OBJECT(recall_id->recycling_container))) != NULL){
     recall = AGS_RECALL(list_recall->data);
-
+    
     ags_recall_resolve_dependencies(recall);
 
     list_recall = list_recall->next;
@@ -1483,6 +1487,10 @@ ags_channel_play(AgsChannel *channel,
 {
   AgsRecall *recall;
   GList *list, *list_next;
+
+#ifdef AGS_DEBUG
+  g_message("play channel %x:%d\0", channel, channel->line);
+#endif
   
   if(recall_id->recycling_container->parent != NULL){
     list = channel->recall;
@@ -1968,10 +1976,19 @@ ags_channel_recursive_play(AgsChannel *channel,
     }
 
     audio = AGS_AUDIO(output->audio);
+
+    if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+      //      if(ags_recall_id_get_run_stage(output_recall_id, stage)){
+      input = ags_channel_nth(audio->input,
+			      output->audio_channel);
+    }else{
+      input = ags_channel_nth(audio->input,
+			      output->line);
+    }
     
     /* input_recall_id - check if there is a new recycling */
     child_position = ags_recycling_container_find_child(output_recall_id->recycling_container,
-							audio->input->first_recycling);
+							input->first_recycling);
       
     if(child_position == -1){
       default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
@@ -1993,9 +2010,6 @@ ags_channel_recursive_play(AgsChannel *channel,
     /* call input */
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
       //      if(ags_recall_id_get_run_stage(output_recall_id, stage)){
-      input = ags_channel_nth(audio->input,
-			      output->audio_channel);
-      
       //TODO:JK: optimize tree see deprecated AgsRunOrder
       /* block sync|async for this run */
 	//	ags_channel_recall_id_set(output, output_recall_id, TRUE,
@@ -2024,9 +2038,6 @@ ags_channel_recursive_play(AgsChannel *channel,
 		     output_recall_id,
 		     stage);
     }else{
-      input = ags_channel_nth(audio->input,
-			    output->line);
-		  
       ags_channel_recursive_play_input_sync(input,
 					    default_recall_id);
 
@@ -2145,6 +2156,10 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   GList *list_recall;
   gboolean playback, sequencer, notation;
 
+#ifdef AGS_DEBUG
+  g_message("duplicate channel %d\0", channel->line);
+#endif
+
   audio = AGS_AUDIO(channel->audio);
 
   if((AGS_RECALL_ID_PLAYBACK & (recall_id->flags)) != 0){
@@ -2183,9 +2198,9 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     /* duplicate the recall */
     copy = ags_recall_duplicate(recall, recall_id);
 
-    //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
     g_message("recall duplicated: %s\n\0", G_OBJECT_TYPE_NAME(copy));
-    //#endif
+#endif
     
     /* set appropriate flag */
     if(playback){

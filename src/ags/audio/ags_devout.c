@@ -677,6 +677,21 @@ ags_devout_play_free(AgsDevoutPlay *play)
   free(play->iterator_thread);
 }
 
+AgsDevoutPlay*
+ags_devout_play_find_source(GList *devout_play,
+			    GObject *source)
+{
+  while(devout_play != NULL){
+    if(AGS_DEVOUT_PLAY(devout_play->data)->source == source){
+      return(devout_play->data);
+    }
+
+    devout_play = devout_play->next;
+  }
+
+  return(NULL);
+}
+
 void
 ags_devout_list_cards(GList **card_id, GList **card_name)
 {

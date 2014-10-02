@@ -26,10 +26,12 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run_master.h>
 
 #include <stdlib.h>
 
@@ -200,6 +202,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *source;
+  AgsPlayChannelRunMaster *play_channel_run;
   AgsPlayChannel *play_channel;
   AgsPlayAudioSignal *play_audio_signal;
   GList *stream;
@@ -243,7 +246,9 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  play_channel = AGS_PLAY_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+  play_channel_run = AGS_PLAY_CHANNEL_RUN_MASTER(recall->parent->parent);
+  play_channel = ags_recall_find_provider(AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run)->container)->recall_channel,
+					  AGS_RECALL_CHANNEL_RUN(play_channel_run)->source)->data;
 
   g_value_init(&muted_value, G_TYPE_BOOLEAN);
   ags_port_safe_read(play_channel->muted,

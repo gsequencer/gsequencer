@@ -865,7 +865,13 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       remove_domain = TRUE;
 
       while(output != NULL){
-	play = AGS_DEVOUT_PLAY(output->devout_play);
+	play = ags_devout_play_find_source(play_domain->devout_play,
+					   output);
+
+	if(play == NULL){
+	  output = output->next;
+	  continue;
+	}
 
 	if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) == 0){
 	  remove_domain = FALSE;
@@ -907,20 +913,22 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       }
 
       if(remove_domain){
+	AgsChannel *channel;
+
 	audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
 	audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play_domain);
 
-	output = audio->output;
+	channel = audio->output;
 	
-	while(output != NULL){
-	  play = AGS_DEVOUT_PLAY(output->devout_play);	  
+	while(channel != NULL){
+	  play = AGS_DEVOUT_PLAY(channel->devout_play);	  
 	  play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE));
 	  //TODO:JK: verify g_object_unref() missing
-	  play->recall_id[0] = NULL;
-	  play->recall_id[1] = NULL;
-	  play->recall_id[2] = NULL;
+	  //	  play->recall_id[0] = NULL;
+	  //	  play->recall_id[1] = NULL;
+	  //	  play->recall_id[2] = NULL;
 
-	  output = output->next;
+	  channel = channel->next;
 	}
       }
 

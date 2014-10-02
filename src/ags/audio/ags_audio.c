@@ -1302,12 +1302,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 			      pads - audio->output_pads);
 
     for(i = 0; i < audio_channels - audio->audio_channels; i++){
-      AgsDevoutPlay *devout_play;
-
-      devout_play = ags_devout_play_alloc();
-      devout_play->source = current;
       devout_play_domain->devout_play = g_list_append(devout_play_domain->devout_play,
-						      devout_play);
+						      current->devout_play);
 
       current = current->next;
     }
@@ -1336,8 +1332,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       devout_play = g_list_last(devout_play_domain->devout_play);
       devout_play_domain->devout_play = g_list_remove(devout_play_domain->devout_play,
 						      devout_play);
-
-      free(devout_play);
     }
   }
 
@@ -1787,7 +1781,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
     if(pads_old == 0){
       AgsDevoutPlayDomain *devout_play_domain;
       AgsChannel *current;
-      AgsDevoutPlay *devout_play;
 
       /* alloc notation */
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
@@ -1807,10 +1800,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
       current = start;
 
       for(i = 0; i < audio->audio_channels; i++){
-	devout_play = ags_devout_play_alloc();
-	devout_play->source = current;
 	devout_play_domain->devout_play = g_list_append(devout_play_domain->devout_play,
-							devout_play);
+							current->devout_play);
 	
 	current = current->next;
       }
@@ -1856,8 +1847,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	devout_play = g_list_last(devout_play_domain->devout_play);
 	devout_play_domain->devout_play = g_list_remove(devout_play_domain->devout_play,
 							devout_play);
-
-	free(devout_play);
       }
 
     }

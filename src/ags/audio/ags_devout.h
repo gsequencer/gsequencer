@@ -209,6 +209,8 @@ void ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain);
 
 AgsDevoutPlay* ags_devout_play_alloc();
 void ags_devout_play_free(AgsDevoutPlay *devout_play);
+AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
+					   GObject *source);
 
 void ags_devout_list_cards(GList **card_id, GList **card_name);
 void ags_devout_pcm_info(char *card_id,
