@@ -194,6 +194,8 @@ ags_play_audio_signal_run_init_pre(AgsRecall *recall)
 {  
   /* call parent */
   AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_init_pre(recall);
+
+  /* empty */
 }
 
 void
@@ -202,7 +204,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsDevout *devout;
   AgsRecycling *recycling;
   AgsAudioSignal *source;
-  AgsPlayChannelRunMaster *play_channel_run;
+  AgsRecallChannelRun *play_channel_run;
   AgsPlayChannel *play_channel;
   AgsPlayAudioSignal *play_audio_signal;
   GList *stream;
@@ -246,7 +248,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  play_channel_run = AGS_PLAY_CHANNEL_RUN_MASTER(recall->parent->parent);
+  play_channel_run = AGS_RECALL_CHANNEL_RUN(recall->parent->parent);
   play_channel = ags_recall_find_provider(AGS_RECALL_CONTAINER(AGS_RECALL(play_channel_run)->container)->recall_channel,
 					  AGS_RECALL_CHANNEL_RUN(play_channel_run)->source)->data;
 

@@ -43,7 +43,9 @@ struct _AgsInitChannel
   AgsChannel *channel;
   gboolean play_pad;
 
-  AgsDevoutPlayDomain *devout_play_domain;
+  gboolean playback;
+  gboolean sequencer;
+  gboolean notation;
 };
 
 struct _AgsInitChannelClass

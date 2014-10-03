@@ -352,7 +352,6 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     AgsStartDevout *start_devout;
     AgsInitChannel *init_channel;
     AgsAppendChannel *append_channel;
-    AgsRecycling *recycling;
     gboolean play_all;
     guint flags;
 
@@ -473,6 +472,8 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
 						AgsDrumInputPad *drum_input_pad)
 {
   AgsChannel *channel, *next_pad;
+  AgsRecycling *recycling;
+  AgsAddAudioSignal *add_audio_signal;
   GList *recall, *tmp;
   GList *list, *list_start;
 
@@ -491,7 +492,7 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
       continue;
     }
 
-
+    /* connect done */
     recall = ags_recall_find_provider_with_recycling_container(channel->play,
 							       channel,
 							       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container);
@@ -505,11 +506,24 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
     if(recall != NULL){
       g_signal_connect_after(channel, "done\0",
 			     G_CALLBACK(ags_drum_input_line_channel_done_callback), list->data);
+
+      /* add audio signal */
+      recycling = channel->first_recycling;
+
+      while(recycling != channel->last_recycling->next){
+	add_audio_signal = ags_add_audio_signal_new(recycling,
+						    NULL,
+						    AGS_AUDIO(channel->audio)->devout,
+						    AGS_RECALL(recall->data)->recall_id,
+						    0);
+
+	recycling = recycling->next;
+      }    
     }
 
     //TODO:JK: fix me
     //    g_list_free(recall);
-    
+
     channel = channel->next;
     list = list->next;
   }

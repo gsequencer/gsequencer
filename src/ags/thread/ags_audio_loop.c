@@ -807,9 +807,6 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 
 	play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE));
 	//TODO:JK: verify g_object_unref() missing
-	play->recall_id[0] = NULL;
-	play->recall_id[1] = NULL;
-	play->recall_id[2] = NULL;
       }
 
       list_play = list_next_play;

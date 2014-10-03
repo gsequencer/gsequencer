@@ -433,6 +433,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 
   AGS_PLAY_CHANNEL_RUN(recall)->flags &= (~AGS_PLAY_CHANNEL_RUN_INITIAL_RUN);
 
+  /* connect done */
   source = AGS_RECALL_CHANNEL_RUN(recall)->source;
   found = FALSE;
 

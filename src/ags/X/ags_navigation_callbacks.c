@@ -26,10 +26,6 @@
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
-#include <ags/audio/task/ags_init_audio.h>
-#include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_cancel_audio.h>
-#include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_change_tact.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>

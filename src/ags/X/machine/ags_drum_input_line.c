@@ -354,6 +354,7 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;
+  AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   AgsBufferChannel *buffer_channel;
   AgsBufferChannelRun *buffer_channel_run;
@@ -381,6 +382,22 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			     AGS_RECALL_FACTORY_PLAY |
   			     AGS_RECALL_FACTORY_ADD),
   			    0);
+
+  list = source->play;
+
+  while((list = ags_recall_find_type(list, AGS_TYPE_PLAY_CHANNEL)) != NULL){
+    GValue audio_channel_value = {0,};
+
+    play_channel = AGS_PLAY_CHANNEL(list->data);    
+
+    g_value_init(&audio_channel_value, G_TYPE_UINT);
+    g_value_set_uint(&audio_channel_value,
+		     source->audio_channel);
+    ags_port_safe_write(play_channel->audio_channel,
+			&audio_channel_value);
+
+    list = list->next;
+  }
 
   /* ags-peak */
   ags_recall_factory_create(audio,
