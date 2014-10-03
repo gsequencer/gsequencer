@@ -231,57 +231,15 @@ ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
   devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
-    AgsInitAudio *init_audio;
-    AgsAppendAudio *append_audio;
-    AgsStartDevout *start_devout;
-    GList *tasks;
-
     printf("drum: on\n\0");
-
-    tasks = NULL;
-
-    /* create init task */
-    init_audio = ags_init_audio_new(AGS_MACHINE(drum)->audio,
-				    FALSE, TRUE, TRUE);
-    g_signal_connect_after(init_audio, "launch\0",
-			   G_CALLBACK(ags_drum_init_audio_launch_callback), drum);
-
-    tasks = g_list_prepend(tasks,
-			   init_audio);
-
-    /* create append task */
-    append_audio = ags_append_audio_new(G_OBJECT(audio_loop),
-					G_OBJECT(AGS_MACHINE(drum)->audio));
-
-    tasks = g_list_prepend(tasks,
-			   append_audio);
-
-    /* create start task */
-    start_devout = ags_start_devout_new(devout);
-
-    tasks = g_list_prepend(tasks,
-			   start_devout);
-
-    /* append tasks */
-    tasks = g_list_reverse(tasks);
     
-    ags_task_thread_append_tasks(task_thread,
-				 tasks);
+    ags_machine_set_run(drum,
+			TRUE);
   }else{
     printf("drum: off\n\0");
 
-    /* abort code */
-    if(ags_audio_is_playing(AGS_MACHINE(drum)->audio)){
-      AgsCancelAudio *cancel_audio;
-
-      /* create cancel task */
-      cancel_audio = ags_cancel_audio_new(AGS_MACHINE(drum)->audio,
-					  FALSE, TRUE, TRUE);
-
-      /* append AgsCancelAudio */
-      ags_task_thread_append_task(task_thread,
-				  AGS_TASK(cancel_audio));
-    }
+    ags_machine_set_run(drum,
+			FALSE);
   }
 }
 
