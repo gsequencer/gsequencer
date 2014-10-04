@@ -493,6 +493,11 @@ ags_machine_connect(AgsConnectable *connectable)
     ags_machine_add_default_recalls(machine);
   }
 
+  if(machine->play != NULL){
+    g_signal_connect(G_OBJECT(machine->play), "clicked\0",
+		     G_CALLBACK(ags_machine_play_callback), (gpointer) machine);
+  }
+
   /* GtkWidget */
   g_signal_connect(G_OBJECT (machine), "button_press_event\0",
 		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
@@ -694,6 +699,8 @@ ags_machine_set_run(AgsMachine *machine,
     /* create init task */
     init_audio = ags_init_audio_new(machine->audio,
 				    FALSE, TRUE, TRUE);
+    g_signal_connect(G_OBJECT(init_audio), "launch\0",
+		     G_CALLBACK(ags_machine_init_run_callback), machine);
     list = g_list_prepend(list, init_audio);
     
     /* create append task */
@@ -705,10 +712,13 @@ ags_machine_set_run(AgsMachine *machine,
     /* create start task */
     if(list != NULL){
       start_devout = ags_start_devout_new(window->devout);
+      g_signal_connect(G_OBJECT(start_devout), "failure\0",
+		       G_CALLBACK(ags_machine_start_failure_callback), machine);
       list = g_list_prepend(list, start_devout);
-      list = g_list_reverse(list);
 
       /* append AgsStartDevout */
+      list = g_list_reverse(list);
+
       ags_task_thread_append_tasks(task_thread,
 				   list);
     }

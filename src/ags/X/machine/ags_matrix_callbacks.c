@@ -52,8 +52,6 @@
 
 void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				     AgsMatrix *matrix);
-void ags_matrix_init_audio_launch_callback(AgsTask *task, AgsMatrix *matrix);
-void ags_matrix_audio_done_callback(AgsAudio *audio, AgsMatrix *matrix);
 
 extern const char *AGS_MATRIX_INDEX;
 
@@ -240,62 +238,11 @@ ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 }
 
 void
-ags_matrix_play_callback(GtkWidget *toggle_button, AgsMatrix *matrix)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_matrix_init_audio_launch_callback(AgsTask *task, AgsMatrix *matrix)
-{
-  AgsAudio *audio;
-
-  /* connect done */
-  audio = AGS_MACHINE(matrix)->audio;
-  g_signal_connect_after(audio, "done\0",
-			 G_CALLBACK(ags_matrix_audio_done_callback), matrix);
-}
-
-void
-ags_matrix_audio_done_callback(AgsAudio *audio, AgsMatrix *matrix)
-{
-  GList *devout_play;
-  gboolean all_done;
-
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
-
-  /* check unset */
-  all_done = TRUE;
-
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
-      all_done = FALSE;
-      break;
-    }
-
-    devout_play = devout_play->next;
-  }
-
-  if(all_done){
-    GList *list;
-
-    /* unset led */
-    list = gtk_container_get_children(GTK_CONTAINER(matrix->led));
-
-    ags_led_unset_active(AGS_LED(g_list_nth(list, matrix->active_led)->data));
-    gtk_toggle_button_set_active(matrix->run, FALSE);
-
-    g_list_free(list);
-  }
-}
-
-void
-ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-				    guint delay, guint attack,
-				    AgsMatrix *matrix)
+ags_matrix_tact_callback(AgsAudio *audio,
+			 AgsRecallID *recall_id,
+			 AgsMatrix *matrix)
 {
   AgsWindow *window;
-  AgsAudio *audio;
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsToggleLed *toggle_led;
@@ -305,8 +252,6 @@ ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth
   GValue value = {0,};
   
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
-
-  audio = AGS_MACHINE(matrix)->audio;
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,
@@ -318,7 +263,7 @@ ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth
 
   list = ags_recall_find_type_with_recycling_container(audio->play,
 						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) AGS_RECALL(delay_audio_run)->recall_id->recycling_container);
+						       (GObject *) recall_id->recycling_container);
   
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
@@ -345,4 +290,12 @@ ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth
 
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(toggle_led));
+}
+
+void
+ags_matrix_done_callback(AgsAudio *audio,
+			 AgsRecallID *recall_id,
+			 AgsMatrix *matrix)
+{
+  //TODO:JK: implement me  
 }

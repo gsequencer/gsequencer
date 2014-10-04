@@ -29,6 +29,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/audio/recall/ags_peak_channel_run.h>
+
 #include <ags/X/ags_line_member.h>
 
 void ags_line_class_init(AgsLineClass *line);
@@ -309,7 +311,11 @@ ags_line_get_property(GObject *gobject,
 void
 ags_line_connect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
   AgsLine *line;
+  AgsPeakChannelRun *play_peak_channel_run;
+  AgsRecallHandler *recall_handler;
+  GList *line_member;
   GList *list, *list_start;
 
   line = AGS_LINE(connectable);

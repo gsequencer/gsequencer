@@ -23,10 +23,12 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/audio/ags_task.h>
 
 int ags_machine_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMachine *machine);
 int ags_machine_destroy_callback(GtkObject *object, AgsMachine *machine);
 
+/* controls */
 int ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine);
 
 int ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machine);
@@ -40,6 +42,14 @@ int ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine
 void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
 
 void ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine);
-void ags_machine_play_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsMachine *machine);
+
+/* audio */
+void ags_machine_init_run_callback(AgsAudio *audio, AgsMachine *machine);
+void ags_machine_tact_callback(AgsAudio *audio, AgsMachine *machine);
+void ags_machine_done_callback(AgsAudio *audio, AgsMachine *machine);
+
+/* task */
+void ags_machine_start_failure_callback(AgsTask *task, GError *error,
+					AgsMachine *machine);
 
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

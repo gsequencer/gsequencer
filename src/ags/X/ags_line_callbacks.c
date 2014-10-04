@@ -18,14 +18,25 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
+#include <ags/main.h>
+
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel.h>
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
+#include <ags/audio/task/ags_change_indicator.h>
+
+#include <ags/widget/ags_vindicator.h>
+
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
+#include <ags/X/ags_line_member.h>
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)

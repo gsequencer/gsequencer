@@ -437,26 +437,7 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   matrix = AGS_MATRIX(connectable);
 
-  /* recalls */
-  list = ags_recall_template_find_type(AGS_AUDIO(AGS_MACHINE(matrix)->audio)->play, AGS_TYPE_DELAY_AUDIO_RUN);
-
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-
-    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-    recall_handler->signal_name = "sequencer-count\0";
-    recall_handler->callback = G_CALLBACK(ags_matrix_sequencer_count_callback);
-    recall_handler->data = (gpointer) matrix;
-
-    //TODO:JK: uncomment me
-    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
-  }
-
   /* AgsMatrix */
-  g_signal_connect(G_OBJECT(matrix->run), "clicked\0",
-		   G_CALLBACK(ags_matrix_run_callback), (gpointer) matrix);
-
   for(i  = 0; i < 9; i++){
     g_signal_connect (G_OBJECT (matrix->index[i]), "clicked\0",
 		      G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
@@ -478,11 +459,17 @@ ags_matrix_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(matrix->machine.audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_matrix_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(matrix->machine.audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "set_pads\0",
 			 G_CALLBACK(ags_matrix_set_pads), NULL);
+
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "tact\0",
+			 G_CALLBACK(ags_matrix_tact_callback), matrix);
+
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "done\0",
+			 G_CALLBACK(ags_matrix_done_callback), matrix);
 }
 
 void
@@ -907,7 +894,7 @@ ags_matrix_draw_gutter(AgsMatrix *matrix)
                       0, 0,
                       288, 80);
 
-  channel = ags_channel_nth(matrix->machine.audio->input, (guint) matrix->adjustment->value);
+  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, (guint) matrix->adjustment->value);
 
   if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
     gutter = AGS_MATRIX_OCTAVE;
@@ -937,7 +924,7 @@ ags_matrix_draw_matrix(AgsMatrix *matrix)
   guint gutter;
   int i, j;
 
-  channel = ags_channel_nth(matrix->machine.audio->input, (guint) matrix->adjustment->value);
+  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, (guint) matrix->adjustment->value);
 
   if(channel == NULL){
     return;
@@ -1137,7 +1124,7 @@ ags_matrix_new(GObject *devout)
   if(devout != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, devout);
-    g_object_set_property(G_OBJECT(matrix->machine.audio),
+    g_object_set_property(G_OBJECT(AGS_MACHINE(matrix)->audio),
 			  "devout\0", &value);
     g_value_unset(&value);
   }

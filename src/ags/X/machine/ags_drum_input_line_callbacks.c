@@ -105,3 +105,10 @@ ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
     }
   }
 }
+
+void
+ags_drum_input_line_channel_done_callback(AgsChannel *channel,
+					  AgsDrumInputLine *drum_input_line)
+{
+  //TODO:JK: implement me
+}

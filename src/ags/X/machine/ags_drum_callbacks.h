@@ -29,6 +29,7 @@
 
 void ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum);
 
+/* controls */
 void ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum);
 
 void ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum);
@@ -42,10 +43,12 @@ void ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum);
 
 void ags_drum_offset_callback(GtkWidget *widget, AgsDrum *drum);
 
-void ags_drum_play_callback(GtkWidget *toggle_button, AgsDrum *drum);
-void ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-				       guint nth_run,
-				       guint delay, guint attack,
-				       AgsDrum *drum);
+/* audio */
+void ags_drum_tact_callback(AgsAudio *audio,
+			    AgsRecallID *recall_id,
+			    AgsDrum *drum);
+void ags_drum_done_callback(AgsAudio *audio,
+			    AgsRecallID *recall_id,
+			    AgsDrum *drum);
 
 #endif /*__AGS_DRUM_CALLBACKS_H__*/

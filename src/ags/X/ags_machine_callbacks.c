@@ -27,6 +27,7 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>
@@ -37,10 +38,6 @@
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
-
-void ags_machine_start_devout_failure(AgsTask *task, GError *error);
-void ags_machine_init_audio_launch_callback(AgsTask *task, AgsMachine *machine);
-void ags_machine_audio_done_callback(AgsAudio *audio, AgsMachine *machine);
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -370,8 +367,11 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
     printf("machine: on\n\0");
 
     machine->flags |= AGS_MACHINE_BLOCK_PLAY;
+
     ags_machine_set_run(machine,
 			TRUE);
+
+    machine->flags &= (~AGS_MACHINE_BLOCK_PLAY);
   }else{
     if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
       return;
@@ -380,13 +380,45 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
     printf("machine: off\n\0");
 
     machine->flags |= AGS_MACHINE_BLOCK_STOP;
+
     ags_machine_set_run(machine,
 			FALSE);
+
+    machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
   }
 }
 
 void
-ags_machine_start_devout_failure(AgsTask *task, GError *error)
+ags_machine_init_run_callback(AgsAudio *audio, AgsMachine *machine)
+{
+  /* connect done */
+  g_signal_connect_after(audio, "done\0",
+			 G_CALLBACK(ags_machine_done_callback), machine);
+}
+
+void
+ags_machine_tact_callback(AgsAudio *audio, AgsMachine *machine)
+{
+  /* empty */
+}
+
+void
+ags_machine_done_callback(AgsAudio *audio, AgsMachine *machine)
+{
+  if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
+    return;
+  }
+
+  machine->flags |= AGS_MACHINE_BLOCK_STOP;
+
+  gtk_toggle_button_set_active(machine->play, FALSE);
+
+  machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
+}
+
+void
+ags_machine_start_failure_callback(AgsTask *task, GError *error,
+				   AgsMachine *machine)
 {
   AgsWindow *window;
   GtkMessageDialog *dialog;
@@ -403,16 +435,3 @@ ags_machine_start_devout_failure(AgsTask *task, GError *error)
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(GTK_WIDGET(dialog));
 }
-
-void
-ags_machine_init_audio_launch_callback(AgsTask *task, AgsMachine *machine)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_machine_audio_done_callback(AgsAudio *audio, AgsMachine *machine)
-{
-  //TODO:JK: implement me
-}
-

@@ -383,34 +383,14 @@ ags_drum_connect(AgsConnectable *connectable)
   ags_drum_parent_connectable_interface->connect(connectable);
 
   drum = AGS_DRUM(connectable);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
 
-  /* recalls */
-  list = ags_recall_template_find_type(AGS_AUDIO(AGS_MACHINE(drum)->audio)->play, AGS_TYPE_DELAY_AUDIO_RUN);
-
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-
-    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-    recall_handler->signal_name = "sequencer-count\0";
-    recall_handler->callback = G_CALLBACK(ags_drum_sequencer_count_callback);
-    recall_handler->data = (gpointer) drum;
-
-    //TODO:JK: uncomment me
-    ags_recall_add_handler(AGS_RECALL(play_delay_audio_run), recall_handler);
-  }
-  
   /* AgsDrum */
   g_signal_connect((GObject *) drum->open, "clicked\0",
 		   G_CALLBACK(ags_drum_open_callback), (gpointer) drum);
 
   g_signal_connect((GObject *) drum->loop_button, "clicked\0",
 		   G_CALLBACK(ags_drum_loop_button_callback), (gpointer) drum);
-
-  g_signal_connect((GObject *) drum->run, "clicked\0",
-		   G_CALLBACK(ags_drum_run_callback), (gpointer) drum);
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) drum);
 
   g_signal_connect_after((GObject *) drum->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum);
@@ -457,6 +437,12 @@ ags_drum_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(drum->machine.audio), "set_pads\0",
 			 G_CALLBACK(ags_drum_set_pads), NULL);
+
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "tact\0",
+			 G_CALLBACK(ags_drum_set_pads), drum);
+
+  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "done\0",
+			 G_CALLBACK(ags_drum_set_pads), drum);
 }
 
 void

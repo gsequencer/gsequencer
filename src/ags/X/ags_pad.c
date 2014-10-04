@@ -212,15 +212,17 @@ ags_pad_init(AgsPad *pad)
   hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
-  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("G\0"));
+  pad->group = (GtkToggleButton *) gtk_toggle_button_new_with_label("G\0");
   gtk_toggle_button_set_active(pad->group, TRUE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->group, FALSE, FALSE, 0);
 
-  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("M\0"));
+  pad->mute = (GtkToggleButton *) gtk_toggle_button_new_with_label("M\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->mute, FALSE, FALSE, 0);
 
-  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("S\0"));
+  pad->solo = (GtkToggleButton *) gtk_toggle_button_new_with_label("S\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) pad->solo, FALSE, FALSE, 0);
+
+  pad->play = NULL;
 }
 
 void

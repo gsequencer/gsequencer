@@ -29,6 +29,7 @@
 
 void ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix);
 
+/* controls */
 void ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix);
 gboolean ags_matrix_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsMatrix *matrix);
 gboolean ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsMatrix *matrix);
@@ -38,9 +39,12 @@ void ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix);
 void ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix);
 void ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix);
 
-void ags_matrix_play_callback(GtkWidget *toggle_button, AgsMatrix *matrix);
-void ags_matrix_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-					 guint delay, guint attack,
-					 AgsMatrix *matrix);
+/* audio */
+void ags_matrix_tact_callback(AgsAudio *audio,
+			      AgsRecallID *recall_id,
+			      AgsMatrix *matrix);
+void ags_matrix_done_callback(AgsAudio *audio,
+			      AgsRecallID *recall_id,
+			      AgsMatrix *matrix);
 
 #endif /*__AGS_MATRIX_CALLBACKS_H__*/

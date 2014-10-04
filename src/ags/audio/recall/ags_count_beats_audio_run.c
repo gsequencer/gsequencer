@@ -1033,6 +1033,9 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
     count_beats_audio_run->sequencer_hide_ref_counter += 1;
   }
 
+  ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+		 AGS_RECALL(count_beats_audio_run)->recall_id);
+
   /* 
    * Block counter for sequencer and notation counter
    */
@@ -1227,8 +1230,6 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   GList *devout_play;
   gboolean all_done;
 
-  g_message("stop");
-
   audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop);
 
@@ -1298,7 +1299,8 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   }
 
   if(all_done){
-    ags_audio_done(audio);
+    ags_audio_done(audio,
+		   AGS_RECALL(count_beats_audio_run)->recall_id);
     ags_audio_loop_remove_audio(audio_loop,
 				audio);
   }

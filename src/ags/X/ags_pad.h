@@ -68,6 +68,8 @@ struct _AgsPad
   GtkToggleButton *group;
   GtkToggleButton *mute;
   GtkToggleButton *solo;
+
+  GtkToggleButton *play;
 };
 
 struct _AgsPadClass

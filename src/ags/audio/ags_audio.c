@@ -71,6 +71,8 @@ enum{
   SET_AUDIO_CHANNELS,
   SET_PADS,
   SET_LINES,
+  INIT_RUN,
+  TACT,
   DONE,
   LAST_SIGNAL,
 };
@@ -149,6 +151,9 @@ ags_audio_class_init(AgsAudioClass *audio)
   /* AgsAudioClass */
   audio->set_audio_channels = ags_audio_real_set_audio_channels;
   audio->set_pads = ags_audio_real_set_pads;
+
+  audio->init_run = NULL;
+  audio->tact = NULL;
   audio->done = NULL;
 
   /* signals */
@@ -173,14 +178,34 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT, G_TYPE_UINT);
 
+  audio_signals[INIT_RUN] = 
+    g_signal_new("init-run\0",
+		 G_TYPE_FROM_CLASS(audio),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioClass, init_run),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_OBJECT__VOID,
+		 G_TYPE_OBJECT, 0);
+
+  audio_signals[TACT] = 
+    g_signal_new("tact\0",
+		 G_TYPE_FROM_CLASS(audio),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioClass, tact),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
   audio_signals[DONE] = 
     g_signal_new("done\0",
 		 G_TYPE_FROM_CLASS(audio),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, done),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -1965,8 +1990,35 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   g_object_unref((GObject *) audio);
 }
 
+AgsRecallID*
+ags_audio_init_run(AgsAudio *audio)
+{
+  AgsRecallID *recall_id;
+
+  g_return_if_fail(AGS_IS_AUDIO(audio));
+
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[INIT_RUN], 0,
+		&recall_id);
+  g_object_unref((GObject *) audio);
+
+  return(recall_id);
+}
+
 void
-ags_audio_done(AgsAudio *audio)
+ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
+{
+  g_return_if_fail(AGS_IS_AUDIO(audio));
+
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[TACT], 0);
+  g_object_unref((GObject *) audio);
+}
+
+void
+ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio));
 

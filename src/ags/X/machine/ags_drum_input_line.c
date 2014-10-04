@@ -233,13 +233,8 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
 {
   AgsDrum *drum;
   AgsDrumInputLine *drum_input_line;
-  AgsPeakChannelRun *play_peak_channel_run;
-  AgsRecallHandler *recall_handler;
-  GList *list;
-  GList *line_member;
 
   drum_input_line = AGS_DRUM_INPUT_LINE(connectable);
-
 
   if((AGS_LINE_CONNECTED & (AGS_LINE(drum_input_line)->flags)) != 0){
     return;
@@ -247,7 +242,7 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   
   ags_drum_input_line_parent_connectable_interface->connect(connectable);
   
-  /* AgsDrumInputLine */
+  /* AgsDrum */
   drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(drum_input_line)->pad,
 					  AGS_TYPE_DRUM));
 
