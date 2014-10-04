@@ -47,6 +47,8 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/X/ags_line_callbacks.h>
+
 #include <math.h>
 
 void ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad *pad);
@@ -505,7 +507,7 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
     
     if(recall != NULL){
       g_signal_connect_after(channel, "done\0",
-			     G_CALLBACK(ags_drum_input_line_channel_done_callback), list->data);
+			     G_CALLBACK(ags_line_channel_done_callback), list->data);
 
       /* add audio signal */
       recycling = channel->first_recycling;

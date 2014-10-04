@@ -229,56 +229,8 @@ ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
 
     pad = AGS_PAD(AGS_LINE(line)->pad);
 
-    gtk_toggle_button_set_active(pad->play, FALSE);
+    if(pad->play != NULL){
+      gtk_toggle_button_set_active(pad->play, FALSE);
+    }
   }
-}
-
-void
-ags_line_play_channel_run_cancel(AgsRecall *recall, AgsLine *line)
-{
-  /* empty */
-}
-
-void
-ags_line_play_volume_done(AgsRecall *recall, AgsLine *line)
-{
-  /* empty */
-}
-
-void
-ags_line_play_volume_cancel(AgsRecall *recall, AgsLine *line)
-{
-  /* empty */
-}
-
-void
-ags_line_copy_pattern_done(AgsRecall *recall, AgsLine *line)
-{
-  AgsCopyPatternChannelRun *copy_pattern_channel_run;
-
-  fprintf(stdout, "ags_line_copy_pattern_done\n\0");
-
-  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
-  /*
-    g_list_free(copy_pattern->destination);
-    copy_pattern->destination = NULL;
-  */
-}
-
-void
-ags_line_copy_pattern_cancel(AgsRecall *recall, AgsLine *line)
-{
-  /* empty */
-}
-
-void
-ags_line_recall_volume_done(AgsRecall *recall, AgsLine *line)
-{
-  /* empty */
-}
-
-void
-ags_line_recall_volume_cancel(AgsRecall *recall, AgsLine *line)
-{
-  /* empty */
 }

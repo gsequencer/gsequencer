@@ -806,6 +806,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	audio_loop->play_channel = g_list_remove(audio_loop->play_channel, (gpointer) play);
 
 	play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE));
+	play->recall_id[0] = NULL;
 	//TODO:JK: verify g_object_unref() missing
       }
 
@@ -921,9 +922,9 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	  play = AGS_DEVOUT_PLAY(channel->devout_play);	  
 	  play->flags &= (~(AGS_DEVOUT_PLAY_REMOVE));
 	  //TODO:JK: verify g_object_unref() missing
-	  //	  play->recall_id[0] = NULL;
-	  //	  play->recall_id[1] = NULL;
-	  //	  play->recall_id[2] = NULL;
+	  //play->recall_id[0] = NULL;
+	  play->recall_id[1] = NULL;
+	  play->recall_id[2] = NULL;
 
 	  channel = channel->next;
 	}

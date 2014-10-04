@@ -2013,7 +2013,8 @@ ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
 
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
-		audio_signals[TACT], 0);
+		audio_signals[TACT], 0,
+		recall_id);
   g_object_unref((GObject *) audio);
 }
 
@@ -2024,7 +2025,8 @@ ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
 
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
-		audio_signals[DONE], 0);
+		audio_signals[DONE], 0,
+		recall_id);
   g_object_unref((GObject *) audio);
 }
 

@@ -1243,9 +1243,9 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
       recall_id = AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1];
 
       if(recall_id != NULL &&
+	 count_beats_audio_run != NULL &&
 	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container == recall_id->recycling_container){
 	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
-	AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] = NULL;
 	AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
 	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~(AGS_DEVOUT_PLAY_SEQUENCER |
 							   AGS_DEVOUT_PLAY_DONE));
@@ -1257,9 +1257,9 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
       recall_id = AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2];
 
       if(recall_id != NULL &&
+	 count_beats_audio_run != NULL &&
 	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container == recall_id->recycling_container){
 	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
-	AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] = NULL;
 	AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
 	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~(AGS_DEVOUT_PLAY_NOTATION |
 							   AGS_DEVOUT_PLAY_DONE));
@@ -1274,6 +1274,8 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   }
 
   ags_recall_done(count_beats_audio_run);
+  ags_audio_done(audio,
+		 AGS_RECALL(count_beats_audio_run)->recall_id);
 
   g_object_unref(count_beats_audio_run);
 
@@ -1299,8 +1301,6 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   }
 
   if(all_done){
-    ags_audio_done(audio,
-		   AGS_RECALL(count_beats_audio_run)->recall_id);
     ags_audio_loop_remove_audio(audio_loop,
 				audio);
   }

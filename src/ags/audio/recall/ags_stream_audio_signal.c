@@ -207,8 +207,6 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
 
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
-    g_message(".-.\0");
-
     AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current = AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->next;
   }else{
     ags_recall_done(recall);

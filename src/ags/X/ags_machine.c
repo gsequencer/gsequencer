@@ -523,6 +523,13 @@ ags_machine_connect(AgsConnectable *connectable)
       pad_list = pad_list->next;
     }
   }
+
+  /* AgsAudio */
+  g_signal_connect_after(machine->audio, "tact\0",
+			 G_CALLBACK(ags_machine_tact_callback), machine);
+
+  g_signal_connect_after(machine->audio, "done\0",
+			 G_CALLBACK(ags_machine_done_callback), machine);
 }
 
 void
@@ -699,8 +706,6 @@ ags_machine_set_run(AgsMachine *machine,
     /* create init task */
     init_audio = ags_init_audio_new(machine->audio,
 				    FALSE, TRUE, TRUE);
-    g_signal_connect(G_OBJECT(init_audio), "launch\0",
-		     G_CALLBACK(ags_machine_init_run_callback), machine);
     list = g_list_prepend(list, init_audio);
     
     /* create append task */

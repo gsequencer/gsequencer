@@ -389,22 +389,20 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
 }
 
 void
-ags_machine_init_run_callback(AgsAudio *audio, AgsMachine *machine)
-{
-  /* connect done */
-  g_signal_connect_after(audio, "done\0",
-			 G_CALLBACK(ags_machine_done_callback), machine);
-}
-
-void
-ags_machine_tact_callback(AgsAudio *audio, AgsMachine *machine)
+ags_machine_tact_callback(AgsAudio *audio,
+			  AgsRecallID *recall_id,
+			  AgsMachine *machine)
 {
   /* empty */
 }
 
 void
-ags_machine_done_callback(AgsAudio *audio, AgsMachine *machine)
+ags_machine_done_callback(AgsAudio *audio,
+			  AgsRecallID *recall_id,
+			  AgsMachine *machine)
 {
+  AgsChannel *channel;
+
   if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
     return;
   }
@@ -412,6 +410,31 @@ ags_machine_done_callback(AgsAudio *audio, AgsMachine *machine)
   machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
   gtk_toggle_button_set_active(machine->play, FALSE);
+
+  /* cancel playback */
+  channel = audio->output;
+  
+  while(channel != NULL){
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == recall_id){
+      ags_channel_tillrecycling_cancel(channel,
+				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+    }
+
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == recall_id){
+      ags_channel_tillrecycling_cancel(channel,
+				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+    }
+
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == recall_id){
+      ags_channel_tillrecycling_cancel(channel,
+				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+    }
+    
+    /* set remove flag */
+    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
+    
+    channel = channel->next;
+  }
 
   machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
 }

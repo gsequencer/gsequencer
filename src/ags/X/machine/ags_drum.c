@@ -439,10 +439,10 @@ ags_drum_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_drum_set_pads), NULL);
 
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "tact\0",
-			 G_CALLBACK(ags_drum_set_pads), drum);
+			 G_CALLBACK(ags_drum_tact_callback), drum);
 
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "done\0",
-			 G_CALLBACK(ags_drum_set_pads), drum);
+			 G_CALLBACK(ags_drum_done_callback), drum);
 }
 
 void
