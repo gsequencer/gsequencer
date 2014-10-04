@@ -35,4 +35,27 @@ int ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
 void ags_line_volume_callback(GtkRange *range,
 			      AgsLine *line);
 
+/* AgsRecall - recall */
+void ags_line_peak_run_post_callback(AgsRecall *peak_channel,
+				     AgsLine *line);
+
+void ags_line_copy_pattern_done(AgsRecall *recall,
+				AgsLine *line);
+void ags_line_copy_pattern_cancel(AgsRecall *recall,
+				  AgsLine *line);
+void ags_line_recall_volume_done(AgsRecall *recall,
+				 AgsLine *line);
+void ags_line_recall_volume_cancel(AgsRecall *recall,
+				   AgsLine *line);
+
+/* AgsRecall - play */
+void ags_line_channel_done_callback(AgsChannel *channel,
+				    AgsLine *line);
+void ags_line_play_channel_run_cancel(AgsRecall *recall,
+				      AgsLine *line);
+void ags_line_play_volume_done(AgsRecall *recall,
+			       AgsLine *line);
+void ags_line_play_volume_cancel(AgsRecall *recall,
+				 AgsLine *line);
+
 #endif /*__AGS_LINE_CALLBACKS_H__*/

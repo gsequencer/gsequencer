@@ -266,12 +266,13 @@ ags_drum_init(AgsDrum *drum)
   table0 = (GtkTable *) gtk_table_new(16, 4, FALSE);
   gtk_container_add((GtkContainer*) frame, (GtkWidget *) table0);
 
-  drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
+  drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->loop_button,
 			    0, 1, 2, 3);
 
-  drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("run\0"));
+  AGS_MACHINE(drum)->play = 
+    drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label("run\0");
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->run,
 			    1, 2, 2, 3);
@@ -314,7 +315,7 @@ ags_drum_init(AgsDrum *drum)
 		   6, 7, 0, 1,
 		   GTK_EXPAND, GTK_EXPAND,
 		   0, 0);
-  gtk_box_pack_start((GtkBox*) hbox, gtk_label_new(g_strdup("length\0")), FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox*) hbox, gtk_label_new("length\0"), FALSE, FALSE, 0);
   drum->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 64.0, 1.0);
   drum->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) drum->length_spin, FALSE, FALSE, 0);
@@ -347,19 +348,19 @@ ags_drum_init(AgsDrum *drum)
   drum->offset = (GtkVBox*) gtk_vbox_new(FALSE, 0);
   gtk_table_attach_defaults(table0, (GtkWidget *) drum->offset, 15, 16, 0, 3);
 
-  radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup("1-16\0"));
+  radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, "1-16\0");
   gtk_box_pack_start((GtkBox*) drum->offset, (GtkWidget *) radio_button, FALSE, FALSE, 0);
 
   gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("17-32\0")),
+		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, "17-32\0"),
 		     FALSE, FALSE, 0);
 
   gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("33-48\0")),
+		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, "33-48\0"),
 		     FALSE, FALSE, 0);
 
   gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup("49-64\0")),
+		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, "49-64\0"),
 		     FALSE, FALSE, 0);
 }
 

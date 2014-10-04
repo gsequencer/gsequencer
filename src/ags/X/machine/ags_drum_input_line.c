@@ -251,28 +251,9 @@ ags_drum_input_line_connect(AgsConnectable *connectable)
   drum = AGS_DRUM(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(drum_input_line)->pad,
 					  AGS_TYPE_DRUM));
 
-  /* recalls */
-  list = ags_recall_template_find_type(AGS_LINE(drum_input_line)->channel->recall,
-				       AGS_TYPE_PEAK_CHANNEL_RUN);
-
-  if(list != NULL){
-    play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
-
-    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-    recall_handler->signal_name = "run-post\0";
-    recall_handler->callback = G_CALLBACK(ags_drum_input_line_peak_run_post_callback);
-    recall_handler->data = (gpointer) drum_input_line;
-
-    //TODO:JK: uncomment me
-    ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
-  }
-
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "set_pads\0",
 			 G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), drum_input_line);
-
-  /* AgsDrumInputLine */
 }
 
 void

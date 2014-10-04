@@ -46,6 +46,8 @@ typedef enum{
   AGS_MACHINE_TAKES_FILE_INPUT  = 1 <<  4,
   AGS_MACHINE_MAPPED_RECALL     = 1 <<  5,
   AGS_MACHINE_PREMAPPED_RECALL  = 1 <<  6,
+  AGS_MACHINE_BLOCK_PLAY        = 1 <<  7,
+  AGS_MACHINE_BLOCK_STOP        = 1 <<  8,
 }AgsMachineFlags;
 
 typedef enum{
@@ -69,6 +71,8 @@ struct _AgsMachine
   guint file_input_flags;
 
   AgsAudio *audio;
+
+  GtkToggleButton *play;
 
   GType output_pad_type;
   GType output_line_type;

@@ -39,4 +39,7 @@ int ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine
 
 void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
 
+void ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine);
+void ags_machine_play_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsMachine *machine);
+
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

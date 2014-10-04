@@ -222,6 +222,8 @@ ags_machine_init(AgsMachine *machine)
   g_object_ref(G_OBJECT(machine->audio));
   machine->audio->machine = (GtkWidget *) machine;
 
+  machine->play = NULL;
+
   machine->output = NULL;
   machine->input = NULL;
 

@@ -141,3 +141,133 @@ ags_line_volume_callback(GtkRange *range,
     list = list->next;
   }
 }
+
+void
+ags_line_peak_run_post_callback(AgsRecall *peak_channel,
+				AgsLine *line)
+{
+  AgsTaskThread *task_thread;
+  AgsChangeIndicator *change_indicator;
+  AgsMachine *machine;
+  GList *list, *list_start;
+
+  machine = (AgsMachine *) gtk_widget_get_ancestor(line,
+						   AGS_TYPE_MACHINE);
+  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread;
+
+  list_start = 
+    list = gtk_container_get_children(AGS_LINE(line)->expander->table);
+
+  while(list != NULL){
+    if(AGS_IS_LINE_MEMBER(list->data) &&
+       AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
+      GtkWidget *child;
+      GValue value = {0,};
+
+      child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
+
+      g_value_init(&value, G_TYPE_DOUBLE);
+      ags_port_safe_read(AGS_LINE_MEMBER(list->data)->port,
+			 &value);
+
+      change_indicator = ags_change_indicator_new(child,
+						  g_value_get_double(&value));
+
+      ags_task_thread_append_task(task_thread,
+				  change_indicator);
+
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
+ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
+{
+  AgsChannel *channel;
+  AgsDevoutPlay *devout_play;
+  AgsChannel *next_pad;
+  GList *current_recall;
+  gboolean all_done;
+
+  g_message("ags_line_channel_done\0");
+
+  channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
+  next_pad = channel->next_pad;
+
+  all_done = TRUE;
+
+  while(channel != next_pad){
+    current_recall = channel->play;
+    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+    
+    if(devout_play->recall_id[0] != NULL){
+      all_done = FALSE;
+      break;
+    }
+    
+    channel = channel->next;
+  }
+
+  if(all_done){
+    AgsPad *pad;
+
+    pad = AGS_PAD(AGS_LINE(line)->pad);
+
+    gtk_toggle_button_set_active(pad->play, FALSE);
+  }
+}
+
+void
+ags_line_play_channel_run_cancel(AgsRecall *recall, AgsLine *line)
+{
+  /* empty */
+}
+
+void
+ags_line_play_volume_done(AgsRecall *recall, AgsLine *line)
+{
+  /* empty */
+}
+
+void
+ags_line_play_volume_cancel(AgsRecall *recall, AgsLine *line)
+{
+  /* empty */
+}
+
+void
+ags_line_copy_pattern_done(AgsRecall *recall, AgsLine *line)
+{
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+
+  fprintf(stdout, "ags_line_copy_pattern_done\n\0");
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
+  /*
+    g_list_free(copy_pattern->destination);
+    copy_pattern->destination = NULL;
+  */
+}
+
+void
+ags_line_copy_pattern_cancel(AgsRecall *recall, AgsLine *line)
+{
+  /* empty */
+}
+
+void
+ags_line_recall_volume_done(AgsRecall *recall, AgsLine *line)
+{
+  /* empty */
+}
+
+void
+ags_line_recall_volume_cancel(AgsRecall *recall, AgsLine *line)
+{
+  /* empty */
+}

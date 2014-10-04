@@ -243,7 +243,8 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->table = (GtkTable *) gtk_table_new(4, 4, FALSE);
   gtk_container_add((GtkContainer *) frame, (GtkWidget *) matrix->table);
 
-  matrix->run = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup("run\0"));
+  AGS_MACHINE(matrix)->play = 
+    matrix->run = (GtkToggleButton *) gtk_toggle_button_new_with_label("run\0");
   gtk_table_attach(matrix->table, (GtkWidget *) matrix->run,
 		   0, 1, 0, 1,
 		   GTK_FILL, GTK_FILL,
@@ -258,6 +259,7 @@ ags_matrix_init(AgsMatrix *matrix)
 
   for(i = 0; i < 3; i++){
     for(j = 0; j < 3; j++){
+      //TODO:JK: verify leak of string
       matrix->index[i * 3 + j] =
 	button = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%d\0", i * 3 + j +1));
       g_object_set_data((GObject *) button, AGS_MATRIX_INDEX, GUINT_TO_POINTER(i * 3 + j));
@@ -327,13 +329,13 @@ ags_matrix_init(AgsMatrix *matrix)
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
 
-  gtk_box_pack_start((GtkBox *) hbox, gtk_label_new(g_strdup("length\0")), FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox, gtk_label_new("length\0"), FALSE, FALSE, 0);
 
   matrix->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 32.0, 1.0);
   matrix->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) matrix->length_spin, FALSE, FALSE, 0);
 
-  matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(g_strdup("loop\0"));
+  matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
 }
 

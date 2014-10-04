@@ -318,6 +318,11 @@ ags_line_connect(AgsConnectable *connectable)
     return;
   }
 
+  /* AgsMachine */
+  machine = AGS_MACHINE(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(line)->pad,
+						AGS_TYPE_MACHINE));
+
+  /* connect group button */
   g_signal_connect_after((GObject *) line->group, "clicked\0",
 			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
 
@@ -334,8 +339,24 @@ ags_line_connect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
+
+  /* recalls */
+  list = ags_recall_template_find_type(AGS_LINE(line)->channel->recall,
+				       AGS_TYPE_PEAK_CHANNEL_RUN);
+
+  if(list != NULL){
+    play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
+  }
   
-  /*  */
+  /* set connected flag */
   line->flags |= AGS_LINE_CONNECTED;
 }
 

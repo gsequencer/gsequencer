@@ -37,11 +37,6 @@
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/task/ags_init_audio.h>
-#include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_cancel_audio.h>
-#include <ags/audio/task/ags_link_channel.h>
-#include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 #include <ags/audio/task/ags_toggle_led.h>
 
@@ -73,7 +68,6 @@
 
 extern const char *AGS_DRUM_INDEX;
 
-void ags_drum_start_devout_failure(AgsTask *task, GError *error);
 void ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum);
 void ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum);
 
@@ -91,65 +85,6 @@ ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *
 					    ags_window_find_machine_counter(window, AGS_TYPE_DRUM)->counter);
   ags_window_increment_machine_counter(window,
 				       AGS_TYPE_DRUM);
-}
-
-void
-ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
-				  guint nth_run,
-				  guint delay, guint attack,
-				  AgsDrum *drum)
-{
-  AgsWindow *window;
-  AgsAudio *audio;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsToggleLed *toggle_led;
-  GList *list, *tmp;
-  guint counter, active_led;
-  gdouble active_led_old, active_led_new;
-  GValue value = {0,};
-  
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
-
-  audio = AGS_MACHINE(drum)->audio;
-
-  /* get some recalls */
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-  
-  if(list != NULL){
-    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-  }
-
-  list = ags_recall_find_type_with_recycling_container(audio->play,
-						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) AGS_RECALL(delay_audio_run)->recall_id->recycling_container);
-  
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  }
-
-  /* set optical feedback */
-  active_led_new = (guint) play_count_beats_audio_run->sequencer_counter % AGS_DRUM_PATTERN_CONTROLS;
-  drum->active_led = (guint) active_led_new;
-
-  if(play_count_beats_audio_run->sequencer_counter == 0){
-    g_value_init(&value, G_TYPE_DOUBLE);
-    ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
-		       &value);
-
-    active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
-  }else{
-    active_led_old = (guint) (drum->active_led - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
-  }
-
-  tmp = gtk_container_get_children(GTK_CONTAINER(drum->led));
-  toggle_led = ags_toggle_led_new(tmp,
-				  (guint) active_led_new,
-				  (guint) active_led_old);
-
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
-			      AGS_TASK(toggle_led));
 }
 
 void
@@ -217,104 +152,62 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 }
 
 void
-ags_drum_run_callback(GtkWidget *toggle_button, AgsDrum *drum)
-{
-  AgsDevout *devout;
-  AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
-  AgsDevoutThread *devout_thread;
-
-  devout = AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout);
-
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
-  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
-  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
-
-  if(GTK_TOGGLE_BUTTON(toggle_button)->active){
-    printf("drum: on\n\0");
-    
-    ags_machine_set_run(drum,
-			TRUE);
-  }else{
-    printf("drum: off\n\0");
-
-    ags_machine_set_run(drum,
-			FALSE);
-  }
-}
-
-void
-ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum)
-{
-  AgsAudio *audio;
-
-  audio = AGS_MACHINE(drum)->audio;
-  g_signal_connect_after(audio, "done\0",
-			 G_CALLBACK(ags_drum_audio_done_callback), drum);
-}
-
-void
-ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum)
-{
-  GList *devout_play;
-  gboolean all_done;
-
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
-
-  all_done = TRUE;
-
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
-      all_done = FALSE;
-      break;
-    }
-
-    devout_play = devout_play->next;
-  }
-
-  if(all_done){
-    GList *list;
-    
-    list = gtk_container_get_children(GTK_CONTAINER(drum->led));
-    ags_led_unset_active(AGS_LED(g_list_nth(list,
-					    drum->active_led)->data));
-    gtk_toggle_button_set_active(drum->run, FALSE);
-
-    g_list_free(list);
-  }
-}
-
-void
-ags_drum_start_devout_failure(AgsTask *task, GError *error)
+ags_drum_sequencer_count_callback(AgsDelayAudioRun *delay_audio_run,
+				  guint nth_run,
+				  guint delay, guint attack,
+				  AgsDrum *drum)
 {
   AgsWindow *window;
-  GtkMessageDialog *dialog;
-  AgsAudioLoop *audio_loop;
-
-  /* show error message */
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
+  AgsAudio *audio;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsToggleLed *toggle_led;
+  GList *list, *tmp;
+  guint counter, active_led;
+  gdouble active_led_old, active_led_new;
+  GValue value = {0,};
   
-  dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						       GTK_DIALOG_MODAL,
-						       GTK_MESSAGE_ERROR,
-						       GTK_BUTTONS_CLOSE,
-						       error->message);
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy(GTK_WIDGET(dialog));
-}
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
 
-void
-ags_drum_run_delay_done(AgsRecall *recall, AgsRecallID *recall_id, AgsDrum *drum)
-{ 
-  //  AgsDelay *delay;
+  audio = AGS_MACHINE(drum)->audio;
 
-  fprintf(stdout, "ags_drum_run_delay_done\n\0");
+  /* get some recalls */
+  list = ags_recall_find_type(audio->play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO);
+  
+  if(list != NULL){
+    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+  }
 
-  //  delay = AGS_DELAY(recall);
-  //  drum = AGS_DRUM(AGS_AUDIO(delay->recall.parent)->machine);
-  //  drum->block_run = TRUE;
-  //  AGS_DEVOUT_PLAY(AGS_MACHINE(drum)->audio->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
-  gtk_toggle_button_set_active(drum->run, FALSE);
+  list = ags_recall_find_type_with_recycling_container(audio->play,
+						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+						       (GObject *) AGS_RECALL(delay_audio_run)->recall_id->recycling_container);
+  
+  if(list != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  }
+
+  /* set optical feedback */
+  active_led_new = (guint) play_count_beats_audio_run->sequencer_counter % AGS_DRUM_PATTERN_CONTROLS;
+  drum->active_led = (guint) active_led_new;
+
+  if(play_count_beats_audio_run->sequencer_counter == 0){
+    g_value_init(&value, G_TYPE_DOUBLE);
+    ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
+		       &value);
+
+    active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+  }else{
+    active_led_old = (guint) (drum->active_led - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+  }
+
+  tmp = gtk_container_get_children(GTK_CONTAINER(drum->led));
+  toggle_led = ags_toggle_led_new(tmp,
+				  (guint) active_led_new,
+				  (guint) active_led_old);
+
+  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+			      AGS_TASK(toggle_led));
 }
 
 void
@@ -529,4 +422,54 @@ void
 ags_drum_offset_callback(GtkWidget *widget, AgsDrum *drum)
 {
   ags_drum_set_pattern(drum);
+}
+
+void
+ags_drum_play_callback(GtkWidget *toggle_button, AgsDrum *drum)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_drum_init_audio_launch_callback(AgsTask *task, AgsDrum *drum)
+{
+  AgsAudio *audio;
+
+  /* connect done */
+  audio = AGS_MACHINE(drum)->audio;
+  g_signal_connect_after(audio, "done\0",
+			 G_CALLBACK(ags_drum_audio_done_callback), drum);
+}
+
+void
+ags_drum_audio_done_callback(AgsAudio *audio, AgsDrum *drum)
+{
+  GList *devout_play;
+  gboolean all_done;
+
+  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+
+  /* check unset */
+  all_done = TRUE;
+
+  while(devout_play != NULL){
+    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
+      all_done = FALSE;
+      break;
+    }
+
+    devout_play = devout_play->next;
+  }
+
+  if(all_done){
+    GList *list;
+
+    /* unset led */
+    list = gtk_container_get_children(GTK_CONTAINER(drum->led));
+    ags_led_unset_active(AGS_LED(g_list_nth(list,
+					    drum->active_led)->data));
+    gtk_toggle_button_set_active(drum->run, FALSE);
+
+    g_list_free(list);
+  }
 }

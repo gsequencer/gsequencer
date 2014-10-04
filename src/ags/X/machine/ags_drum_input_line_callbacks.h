@@ -34,27 +34,4 @@ void ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
 						 guint pads, guint pads_old,
 						 AgsDrumInputLine *drum_input_line);
 
-/* AgsRecall - recall */
-void ags_drum_input_line_peak_run_post_callback(AgsRecall *peak_channel,
-						AgsDrumInputLine *drum_input_line);
-
-void ags_drum_input_line_copy_pattern_done(AgsRecall *recall,
-					   AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_copy_pattern_cancel(AgsRecall *recall,
-					     AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_recall_volume_done(AgsRecall *recall,
-					    AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_recall_volume_cancel(AgsRecall *recall,
-					      AgsDrumInputLine *drum_input_line);
-
-/* AgsRecall - play */
-void ags_drum_input_line_channel_done_callback(AgsChannel *channel,
-					       AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_play_channel_run_cancel(AgsRecall *recall,
-						 AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_play_volume_done(AgsRecall *recall,
-					  AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_play_volume_cancel(AgsRecall *recall,
-					    AgsDrumInputLine *drum_input_line);
-
 #endif /*__AGS_DRUM_INPUT_LINE_CALLBACKS_H__*/

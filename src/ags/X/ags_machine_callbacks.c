@@ -38,6 +38,9 @@ int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response,
 
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
 
+void ags_machine_start_devout_failure(AgsTask *task, GError *error);
+void ags_machine_init_audio_launch_callback(AgsTask *task, AgsMachine *machine);
+void ags_machine_audio_done_callback(AgsAudio *audio, AgsMachine *machine);
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -351,3 +354,65 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 			   create->toggle_button.active);
   }
 }
+
+void
+ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
+{
+  if(machine == NULL){
+    return;
+  }
+
+  if(GTK_TOGGLE_BUTTON(toggle_button)->active){
+    if((AGS_MACHINE_BLOCK_PLAY & (machine->flags)) != 0){
+      return;
+    }
+
+    printf("machine: on\n\0");
+
+    machine->flags |= AGS_MACHINE_BLOCK_PLAY;
+    ags_machine_set_run(machine,
+			TRUE);
+  }else{
+    if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
+      return;
+    }
+
+    printf("machine: off\n\0");
+
+    machine->flags |= AGS_MACHINE_BLOCK_STOP;
+    ags_machine_set_run(machine,
+			FALSE);
+  }
+}
+
+void
+ags_machine_start_devout_failure(AgsTask *task, GError *error)
+{
+  AgsWindow *window;
+  GtkMessageDialog *dialog;
+  AgsAudioLoop *audio_loop;
+
+  /* show error message */
+  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
+  
+  dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
+						       GTK_DIALOG_MODAL,
+						       GTK_MESSAGE_ERROR,
+						       GTK_BUTTONS_CLOSE,
+						       error->message);
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+void
+ags_machine_init_audio_launch_callback(AgsTask *task, AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_machine_audio_done_callback(AgsAudio *audio, AgsMachine *machine)
+{
+  //TODO:JK: implement me
+}
+
