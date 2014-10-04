@@ -76,6 +76,7 @@ void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 						 guint notify_mode,
 						 gint count);
 void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
+void ags_count_beats_audio_run_done(AgsRecall *recall);
 
 void ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay_audio_run,
 							      guint run_order, guint delay, guint attack,
@@ -294,6 +295,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   recall->duplicate = ags_count_beats_audio_run_duplicate;
   recall->notify_dependency = ags_count_beats_audio_run_notify_dependency;
   recall->run_init_pre = ags_count_beats_audio_run_run_init_pre;
+  recall->done = ags_count_beats_audio_run_done;
 
   /* AgsCountBeatsAudioRunClass */
   count_beats_audio_run->notation_start = NULL;
@@ -807,6 +809,21 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 }
 
 void
+ags_count_beats_audio_run_done(AgsRecall *recall)
+{
+  AgsCountBeatsAudio *count_beats_audio;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
+
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
+
+  ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+		 AGS_RECALL(count_beats_audio_run)->recall_id);
+}
+
+void
 ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audio_run,
 					 guint run_order)
 {
@@ -893,7 +910,7 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   gboolean loop;
   GValue value = {0,};  
 
-  count_beats_audio = AGS_COUNT_BEATS_AUDIO(count_beats_audio_run->recall_audio_run.recall_audio);
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
   ags_port_safe_read(count_beats_audio->loop, &value);
@@ -1274,8 +1291,6 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   }
 
   ags_recall_done(count_beats_audio_run);
-  ags_audio_done(audio,
-		 AGS_RECALL(count_beats_audio_run)->recall_id);
 
   g_object_unref(count_beats_audio_run);
 
