@@ -497,7 +497,8 @@ ags_menu_bar_about_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 			"program-name\0", "ags\0",
 			"authors\0", authors,
 			"license\0", license,
-			"version\0", "0.3.99-SNAPSHOT\0",
+			"version\0", AGS_VERSION,
+			"website\0", "http://ags.sf.net\0",
 			"title\0", "Advanced Gtk+ Sequencer\0",
 			"logo\0", logo,
 			NULL);
