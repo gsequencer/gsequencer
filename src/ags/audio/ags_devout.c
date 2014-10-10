@@ -1338,7 +1338,7 @@ ags_devout_alsa_free(AgsDevout *devout)
 /**
  * ags_devout_new:
  *
- * Creates a #AgsDevout, refering to @ags_main.
+ * Creates an #AgsDevout, refering to @ags_main.
  *
  * Returns: a new #AgsDevout
  */

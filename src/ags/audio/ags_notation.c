@@ -520,7 +520,7 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
  *
  * Retrieve appropriate notation for timestamp.
  *
- * Returns: Next match
+ * Returns: Next match.
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,

@@ -41,6 +41,14 @@ void ags_port_real_safe_write(AgsPort *port, GValue *value);
 void ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value);
 void ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
 
+/**
+ * SECTION:agsport
+ * @Short_description: Perform thread-safe operations
+ * @Title: AgsPort
+ *
+ * #AgsPort provides a thread-safe way to access or change values or properties.
+ */
+
 enum{
   SAFE_READ,
   SAFE_WRITE,
@@ -118,54 +126,14 @@ ags_port_class_init(AgsPortClass *port)
   gobject->set_property = ags_port_set_property;
   gobject->get_property = ags_port_get_property;
 
-  /* AgsPortClass */
-  port->safe_read = ags_port_real_safe_read;
-  port->safe_write = ags_port_real_safe_write;
-
-  port->safe_get_property = ags_port_real_safe_get_property;
-  port->safe_set_property = ags_port_real_safe_set_property;
-
-  port_signals[SAFE_READ] =
-    g_signal_new("safe-read\0",
-		 G_TYPE_FROM_CLASS (port),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsPortClass, safe_read),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__POINTER,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_POINTER);
-
-  port_signals[SAFE_WRITE] =
-    g_signal_new("safe-write\0",
-		 G_TYPE_FROM_CLASS (port),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsPortClass, safe_write),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__POINTER,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_POINTER);
-
-  port_signals[SAFE_GET_PROPERTY] =
-    g_signal_new("safe-get-property\0",
-		 G_TYPE_FROM_CLASS (port),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsPortClass, safe_get_property),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_POINTER,
-		 G_TYPE_NONE, 2,
-		 G_TYPE_STRING, G_TYPE_POINTER);
-
-  port_signals[SAFE_SET_PROPERTY] =
-    g_signal_new("safe-set-property\0",
-		 G_TYPE_FROM_CLASS (port),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsPortClass, safe_set_property),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_POINTER,
-		 G_TYPE_NONE, 2,
-		 G_TYPE_STRING, G_TYPE_POINTER);
-
   /* properties */
+  /**
+   * AgsPort:plugin-name:
+   *
+   * The assigned plugin.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_string("plugin-name\0",
 				   "plugin-name of port\0",
 				   "The plugin-name this port belongs to\0",
@@ -175,6 +143,13 @@ ags_port_class_init(AgsPortClass *port)
 				  PROP_PLUGIN_NAME,
 				  param_spec);
 
+  /**
+   * AgsPort:specifier:
+   *
+   * The assigned plugin identifier.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_string("specifier\0",
 				   "specifier of port\0",
 				   "The specifier this port is identified by\0",
@@ -184,6 +159,13 @@ ags_port_class_init(AgsPortClass *port)
 				  PROP_SPECIFIER,
 				  param_spec);
 
+  /**
+   * AgsPort:control-port:
+   *
+   * The assigned plugin control port.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_string("control-port\0",
 				   "control-port of port\0",
 				   "The control-port this port is numbered\0",
@@ -193,6 +175,13 @@ ags_port_class_init(AgsPortClass *port)
 				  PROP_CONTROL_PORT,
 				  param_spec);
 
+  /**
+   * AgsPort:port-value-is-pointer:
+   *
+   * Specify port data as pointer.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_boolean("port-value-is-pointer\0",
 				    "port-value-is-pointer indicates if value is a pointer\0",
 				    "The port-value-is-pointer indicates if value is a pointer\0",
@@ -202,6 +191,13 @@ ags_port_class_init(AgsPortClass *port)
 				  PROP_PORT_VALUE_IS_POINTER,
 				  param_spec);
 
+  /**
+   * AgsPort:port-value-type:
+   *
+   * The port's data type.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_gtype("port-value-type\0",
 				  "port-value-type tells you the type of the values\0",
 				  "The port-value-type tells you the type of the values\0",
@@ -211,6 +207,13 @@ ags_port_class_init(AgsPortClass *port)
 				  PROP_PORT_VALUE_TYPE,
 				  param_spec);
 
+  /**
+   * AgsPort:port-value-size:
+   *
+   * The port's data type size.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_uint("port-value-size\0",
 				 "port-value-size is the size of a single entry\0",
 				 "The port-value-size is the size of a single entry\0",
@@ -221,6 +224,13 @@ ags_port_class_init(AgsPortClass *port)
 				  PROP_PORT_VALUE_SIZE,
 				  param_spec);
 
+  /**
+   * AgsPort:port-value-length:
+   *
+   * The port's data array length.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_uint("port-value-length\0",
 				 "port-value-length is the array size\0",
 				 "The port-value-length is the array size\0",
@@ -230,6 +240,70 @@ ags_port_class_init(AgsPortClass *port)
   g_object_class_install_property(gobject,
 				  PROP_PORT_VALUE_LENGTH,
 				  param_spec);
+
+  /* AgsPortClass */
+  port->safe_read = ags_port_real_safe_read;
+  port->safe_write = ags_port_real_safe_write;
+
+  port->safe_get_property = ags_port_real_safe_get_property;
+  port->safe_set_property = ags_port_real_safe_set_property;
+
+  /* signals */
+  /**
+   * AgsPort::safe-read:
+   * @port the object providing safe read
+   */
+  port_signals[SAFE_READ] =
+    g_signal_new("safe-read\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_read),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
+
+  /**
+   * AgsPort::safe-write:
+   * @port the object providing safe write
+   */
+  port_signals[SAFE_WRITE] =
+    g_signal_new("safe-write\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_write),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
+
+  /**
+   * AgsPort::safe-get-property:
+   * @port the object providing safe get property
+   */
+  port_signals[SAFE_GET_PROPERTY] =
+    g_signal_new("safe-get-property\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_get_property),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_POINTER,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_STRING, G_TYPE_POINTER);
+
+  /**
+   * AgsPort::safe-get-property:
+   * @port the object providing safe set property
+   */
+  port_signals[SAFE_SET_PROPERTY] =
+    g_signal_new("safe-set-property\0",
+		 G_TYPE_FROM_CLASS (port),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsPortClass, safe_set_property),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_POINTER,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_STRING, G_TYPE_POINTER);
 }
 
 void
@@ -459,6 +533,13 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   pthread_mutex_unlock(&(port->mutex));
 }
 
+/**
+ * ags_port_safe_read:
+ * @port an #AgsPort
+ * @value the #GValue to store result
+ *
+ * Perform safe read.
+ */
 void
 ags_port_safe_read(AgsPort *port, GValue *value)
 {
@@ -515,6 +596,13 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
   pthread_mutex_unlock(&(port->mutex));
 }
 
+/**
+ * ags_port_safe_read:
+ * @port an #AgsPort
+ * @value the #GValue containing data
+ *
+ * Perform safe write.
+ */
 void
 ags_port_safe_write(AgsPort *port, GValue *value)
 {
@@ -538,6 +626,14 @@ ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
   pthread_mutex_unlock(&(port->mutex));
 }
 
+/**
+ * ags_port_safe_get_property:
+ * @port an #AgsPort
+ * @property_name the property's name
+ * @value the #GValue to store the result
+ *
+ * Perform safe get property.
+ */
 void
 ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
@@ -561,6 +657,14 @@ ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
   pthread_mutex_unlock(&(port->mutex));
 }
 
+/**
+ * ags_port_safe_set_property:
+ * @port an #AgsPort
+ * @property_name the property's name
+ * @value the #GValue containing data
+ *
+ * Perform safe set property.
+ */
 void
 ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 {
@@ -572,6 +676,15 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
   g_object_unref(G_OBJECT(port));
 }
 
+/**
+ * ags_port_find_specifier:
+ * @port a #GList containing #AgsPort
+ * @specifier the recall specifier to match
+ *
+ * Retrieve port by specifier.
+ *
+ * Returns: Next match.
+ */
 GList*
 ags_port_find_specifier(GList *port, gchar *specifier)
 {
@@ -587,6 +700,13 @@ ags_port_find_specifier(GList *port, gchar *specifier)
   return(NULL);
 }
 
+/**
+ * ags_port_new:
+ *
+ * Creates an #AgsPort.
+ *
+ * Returns: a new #AgsPort
+ */
 AgsPort*
 ags_port_new()
 {

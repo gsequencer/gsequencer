@@ -54,6 +54,14 @@ GList* ags_pattern_list_safe_properties(AgsPortlet *portlet);
 void ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
+/**
+ * SECTION:agspattern
+ * @Short_description: Pattern representing tones
+ * @Title: AgsPattern
+ *
+ * #AgsPattern represents an audio pattern of tones.
+ */
+
 enum{
   PROP_0,
   PROP_PORT,
@@ -138,6 +146,13 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   gobject->finalize = ags_pattern_finalize;
 
   /* properties */
+  /**
+   * AgsPattern:port:
+   *
+   * The pattern's port.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("port\0",
 				   "port of pattern\0",
 				   "The port of pattern\0",
@@ -147,6 +162,13 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 				  PROP_PORT,
 				  param_spec);
 
+  /**
+   * AgsPattern:first-index:
+   *
+   * Selected bank 0.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_uint("first-index\0",
 				 "the first index\0",
 				 "The first index to select pattern\0",
@@ -157,6 +179,13 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 				  PROP_OFFSET,
 				  param_spec);
 
+  /**
+   * AgsPattern:second-index:
+   *
+   * Selected bank 1.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_uint("second-index\0",
 				 "the second index\0",
 				 "The second index to select pattern\0",
@@ -167,6 +196,13 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 				  PROP_OFFSET,
 				  param_spec);
 
+  /**
+   * AgsPattern:offset:
+   *
+   * Position of pattern.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_uint("offset\0",
 				 "the offset\0",
 				 "The offset within the pattern\0",
@@ -177,6 +213,13 @@ ags_pattern_class_init(AgsPatternClass *pattern)
 				  PROP_OFFSET,
 				  param_spec);
 
+  /**
+   * AgsPattern:current-bit:
+   *
+   * Offset of current position.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_boolean("current-bit\0",
 				    "current bit for offset\0",
 				    "The current bit for offset\0",
@@ -489,6 +532,15 @@ ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
 			property_name, value);
 }
 
+/**
+ * ags_pattern_find_by_timestamp:
+ * @pattern a #GList containing #AgsPattern
+ * @timestamp the matching timestamp
+ *
+ * Retrieve appropriate pattern for timestamp.
+ *
+ * Returns: the matching pattern.
+ */
 AgsPattern*
 ags_pattern_get_by_timestamp(GList *list, GObject *timestamp)
 {
@@ -505,6 +557,15 @@ ags_pattern_get_by_timestamp(GList *list, GObject *timestamp)
   return((AgsPattern *) list->data);
 }
 
+/**
+ * ags_pattern_set_dim:
+ * @pattern an #AgsPattern
+ * @dim0 bank 0 size
+ * @dim1 bank 1 size
+ * @length amount of beats
+ *
+ * Reallocates the pattern's dimensions.
+ */
 void 
 ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 {
@@ -642,6 +703,17 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   }
 }
 
+/**
+ * ags_pattern_get_bit:
+ * @pattern an #AgsPattern
+ * @i bank index 0
+ * @j bank index 1
+ * @bit the tic to check
+ *
+ * Check for tic to be played.
+ *
+ * Returns: %TRUE if tone is enabled.
+ */
 gboolean
 ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 {
@@ -657,6 +729,15 @@ ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
     return(FALSE);
 }
 
+/**
+ * ags_pattern_toggle_bit:
+ * @pattern an #AgsPattern
+ * @i bank index 0
+ * @j bank index 1
+ * @bit the tic to toggle
+ *
+ * Toggle tone.
+ */
 void
 ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 {
@@ -672,6 +753,13 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
     pattern->pattern[i][j][k] |= value;
 }
 
+/**
+ * ags_pattern_new:
+ *
+ * Creates an #AgsPattern
+ *
+ * Returns: a new #AgsPattern
+ */
 AgsPattern*
 ags_pattern_new()
 {

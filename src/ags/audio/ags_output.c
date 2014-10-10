@@ -245,7 +245,7 @@ ags_output_find_last_input_recycling(AgsOutput *output)
 /**
  * ags_output_new:
  *
- * Creates a #AgsOutput, linking tree to @audio.
+ * Creates an #AgsOutput, linking tree to @audio.
  *
  * Returns: a new #AgsOutput
  */
