@@ -44,6 +44,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/**
+ * SECTION:agsaudio
+ * @Short_description: A container of channels organizing them as input or output
+ * @Title: AgsAudio
+ *
+ * #AgsAudio organizes #AgsChannel objects either as input or output and
+ * is responsible of their alignment. The class can contain #AgsRecall objects
+ * in order to perform computation on all channels or in audio context.
+ * Therefor exists #AgsRecyclingContainer acting as tree context.
+ *
+ * At least one #AgsRecallID is assigned to it and has one more if
+ * %AGS_AUDIO_OUTPUT_HAS_RECYCLING is set as flag.
+ *
+ * If %AGS_AUDIO_HAS_NOTATION is set as flag one #AgsNotation is allocated per audio
+ * channel.
+ */
+
 void ags_audio_class_init(AgsAudioClass *audio_class);
 void ags_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_init(AgsAudio *audio);
@@ -139,6 +156,13 @@ ags_audio_class_init(AgsAudioClass *audio)
   gobject->finalize = ags_audio_finalize;
 
   /* properties */
+  /**
+   * AgsAudio:devout:
+   *
+   * The assigned #AgsDevout acting as default sink.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("devout\0",
 				   "assigned devout\0",
 				   "The devout it is assigned with\0",
@@ -157,8 +181,14 @@ ags_audio_class_init(AgsAudioClass *audio)
   audio->done = NULL;
 
   /* signals */
+  /**
+   * AgsAudio::set-audio-channels:
+   * @audio the object to adjust the channels.
+   * @audio_channels_new new audio channel count
+   * @audio_channels_old old audio channel count
+   */
   audio_signals[SET_AUDIO_CHANNELS] = 
-    g_signal_new("set_audio_channels\0",
+    g_signal_new("set-audio-channels\0",
 		 G_TYPE_FROM_CLASS(audio),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_audio_channels),
@@ -167,8 +197,15 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_UINT);
 
+  /**
+   * AgsAudio::set-pads:
+   * @audio the object to adjust pads.
+   * @type either #AGS_TYPE_INPUT or #AGS_TYPE_OUTPUT
+   * @pads_new new pad count
+   * @pads_old old pad count
+   */
   audio_signals[SET_PADS] = 
-    g_signal_new("set_pads\0",
+    g_signal_new("set-pads\0",
 		 G_TYPE_FROM_CLASS(audio),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_pads),
@@ -178,6 +215,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT, G_TYPE_UINT);
 
+  /**
+   * AgsAudio::init-run:
+   * @audio the object to init run.
+   * Returns: the current #AgsRecallID
+   */
   audio_signals[INIT_RUN] = 
     g_signal_new("init-run\0",
 		 G_TYPE_FROM_CLASS(audio),
@@ -187,6 +229,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 g_cclosure_user_marshal_OBJECT__VOID,
 		 G_TYPE_OBJECT, 0);
 
+  /**
+   * AgsAudio::tact:
+   * @audio the object playing.
+   * @recall_id the appropriate #AgsRecallID
+   */
   audio_signals[TACT] = 
     g_signal_new("tact\0",
 		 G_TYPE_FROM_CLASS(audio),
@@ -197,6 +244,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
+  /**
+   * AgsAudio::done:
+   * @audio the object done playing.
+   * @recall_id the appropriate #AgsRecallID
+   */
   audio_signals[DONE] = 
     g_signal_new("done\0",
 		 G_TYPE_FROM_CLASS(audio),
@@ -1990,6 +2042,14 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   g_object_unref((GObject *) audio);
 }
 
+/**
+ * ags_audio_init_run:
+ * @audio an #AgsAudio
+ *
+ * Is emitted as audio is initialized.
+ *
+ * Returns: the current #AgsRecallID
+ */
 AgsRecallID*
 ags_audio_init_run(AgsAudio *audio)
 {
@@ -2006,6 +2066,13 @@ ags_audio_init_run(AgsAudio *audio)
   return(recall_id);
 }
 
+/**
+ * ags_audio_init_run:
+ * @audio an #AgsAudio
+ * @recall_id the current #AgsRecallID
+ *
+ * Is emitted as audio is played.
+ */
 void
 ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
 {
@@ -2018,6 +2085,13 @@ ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
   g_object_unref((GObject *) audio);
 }
 
+/**
+ * ags_audio_init_run:
+ * @audio an #AgsAudio
+ * @recall_id the current #AgsRecallID
+ *
+ * Is emitted as playing audio is done.
+ */
 void
 ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
 {
@@ -2030,8 +2104,12 @@ ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
   g_object_unref((GObject *) audio);
 }
 
-/*
- * AgsAudioSignal related
+/**
+ * ags_audio_set_sequence_length:
+ * @audio an #AgsAudio
+ * @sequence_length the sequence length
+ *
+ * Sets sequence length.
  */
 void
 ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
@@ -2039,6 +2117,13 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
   audio->sequence_length = sequence_length;
 }
 
+/**
+ * ags_audio_add_recall_id:
+ * @audio an #AgsAudio
+ * @recall_id the #AgsRecallID
+ *
+ * Adds a recall id.
+ */
 void
 ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
 {
@@ -2049,6 +2134,13 @@ ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
   audio->recall_id = g_list_prepend(audio->recall_id, recall_id);
 }
 
+/**
+ * ags_audio_remove_recall_id:
+ * @audio an #AgsAudio
+ * @recall_id the #AgsRecallID
+ *
+ * Removes a recall id.
+ */
 void
 ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 {
@@ -2060,6 +2152,13 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
   g_object_unref(recall_id);
 }
 
+/**
+ * ags_audio_add_recall_container:
+ * @audio an #AgsAudio
+ * @recall_container the #AgsRecallContainer
+ *
+ * Adds a recall container.
+ */
 void
 ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
 {
@@ -2071,8 +2170,15 @@ ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
   audio->container = g_list_prepend(audio->container, recall_container);
 }
 
+/**
+ * ags_audio_remove_recall_container:
+ * @audio an #AgsAudio
+ * @recall_container the #AgsRecallContainer
+ *
+ * Removes a recall container.
+ */
 void
-ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container, gboolean play)
+ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
 {
   /*
    * TODO:JK: thread synchronisation
@@ -2082,6 +2188,14 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container, gb
   g_object_unref(recall_container);
 }
 
+/**
+ * ags_audio_add_recall:
+ * @audio an #AgsAudio
+ * @recall_container the #AgsRecall
+ * @play %TRUE if simple playback.
+ *
+ * Adds a recall.
+ */
 void
 ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
 {
@@ -2098,6 +2212,14 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
   }
 }
 
+/**
+ * ags_audio_remove_recall:
+ * @audio an #AgsAudio
+ * @recall_container the #AgsRecall
+ * @play %TRUE if simple playback.
+ *
+ * Removes a recall.
+ */
 void
 ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
 {
@@ -2332,9 +2454,10 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 /**
  * ags_audio_is_playing:
  * @audio the #AgsAudio
- * Returns: TRUE if it's playing otherwise FALSE
  *
  * Determine if #AgsAudio is playing.
+ *
+ * Returns: TRUE if it's playing otherwise FALSE
  */
 gboolean
 ags_audio_is_playing(AgsAudio *audio)
@@ -2434,9 +2557,10 @@ ags_audio_play(AgsAudio *audio,
  * @playback if doing playback
  * @sequencer if doing sequencer
  * @notation if doing notation
- * Returns: a list containing all #AgsRecallID
  *
  * Initializes #AgsAudio in order to do playback, sequencer or notation.
+ *
+ * Returns: a list containing all #AgsRecallID
  */
 GList*
 ags_audio_recursive_play_init(AgsAudio *audio,
@@ -2725,6 +2849,13 @@ ags_audio_open_files(AgsAudio *audio,
   }
 }
 
+/**
+ * ags_audio_new:
+ *
+ * Creates a #AgsAudio, with defaults of @devout.
+ *
+ * Returns: a new #AgsAudio
+ */
 AgsAudio*
 ags_audio_new(AgsDevout *devout)
 {
