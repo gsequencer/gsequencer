@@ -330,8 +330,11 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current, *destination;
+  AgsRecallHandler *recall_handler;
+
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
+  AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
   AgsBufferChannel *buffer_channel;
   AgsBufferChannelRun *buffer_channel_run;
   AgsStreamChannelRun *stream_channel_run;
@@ -386,6 +389,38 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
+
+  /* play - connect run_post */
+  list = ags_recall_template_find_type(source->play,
+				       AGS_TYPE_PEAK_CHANNEL_RUN);
+
+  if(list != NULL){
+    play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
+  }
+
+  /* recall - connect run_post */
+  list = ags_recall_template_find_type(source->recall,
+				       AGS_TYPE_PEAK_CHANNEL_RUN);
+
+  if(list != NULL){
+    recall_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);
+  }
 
   /* ags-volume */
   ags_recall_factory_create(audio,

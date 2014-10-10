@@ -25,6 +25,8 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_recycling_container.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
@@ -173,16 +175,26 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
     if(AGS_IS_LINE_MEMBER(list->data) &&
        AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
       GtkWidget *child;
+      AgsPort *port;
+      gdouble peak;
       GValue value = {0,};
 
       child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
 
+      if(AGS_RECYCLING_CONTAINER(peak_channel->recall_id->recycling_container)->parent == NULL){
+	port = AGS_LINE_MEMBER(list->data)->port;
+      }else{
+	port = AGS_LINE_MEMBER(list->data)->recall_port;
+      }
+
       g_value_init(&value, G_TYPE_DOUBLE);
-      ags_port_safe_read(AGS_LINE_MEMBER(list->data)->port,
+      ags_port_safe_read(port,
 			 &value);
 
+      peak = g_value_get_double(&value);
+
       change_indicator = ags_change_indicator_new(child,
-						  g_value_get_double(&value));
+						  peak);
 
       ags_task_thread_append_task(task_thread,
 				  change_indicator);

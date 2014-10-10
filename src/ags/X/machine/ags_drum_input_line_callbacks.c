@@ -37,10 +37,6 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/audio/task/ags_change_indicator.h>
-
-#include <ags/widget/ags_vindicator.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_member.h>
 

@@ -750,8 +750,8 @@ ags_recall_connect(AgsConnectable *connectable)
 
   while(list != NULL){
     recall_handler = AGS_RECALL_HANDLER(list->data);
-    recall_handler->handler = g_signal_connect(G_OBJECT(recall), recall_handler->signal_name,
-					       G_CALLBACK(recall_handler->callback), recall_handler->data);
+    recall_handler->handler = g_signal_connect_after(G_OBJECT(recall), recall_handler->signal_name,
+						     G_CALLBACK(recall_handler->callback), recall_handler->data);
 
     list = list->next;
   }
