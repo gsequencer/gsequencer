@@ -177,6 +177,17 @@ struct _AgsDevoutClass
   void (*note_offset_changed)(AgsDevout *devout, guint note_offset);
 };
 
+/**
+ * AgsDevoutPlayDomain:
+ * @domain: the source
+ * @playback: if %TRUE playback is on
+ * @sequencer: if %TRUE sequencer is on
+ * @notation: if %TRUE notation is on
+ * @devout_play: a #GList of #AgsDevoutPlay-struct
+ *
+ * A #AgsDevoutPlayDomain-struct represents the entire possible play/recall
+ * context.
+ */
 struct _AgsDevoutPlayDomain
 {
   GObject *domain;
@@ -188,6 +199,17 @@ struct _AgsDevoutPlayDomain
   GList *devout_play;
 };
 
+/**
+ * AgsDevoutPlay:
+ * @flags: the internal state
+ * @iterator_thread: Super-threaded related #AgsThread. Index 0 playback, 1 sequencer and 2 notation.
+ * @source: either #AgsChannel or #AgsRecall
+ * @audio_channel: destination audio channel
+ * @recall_id: array pointing to appropriate #AgsRecallID. Index 0 playback, 1 sequencer and 2 notation.
+ *
+ * A #AgsDevoutPlay-struct represents the play/recall in #AgsChannel or #AgsRecall
+ * scope to do output to device.
+ */
 struct _AgsDevoutPlay
 {
   guint flags;

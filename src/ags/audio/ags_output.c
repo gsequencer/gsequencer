@@ -30,6 +30,14 @@ void ags_output_finalize(GObject *gobject);
 void ags_output_connect(AgsConnectable *connectable);
 void ags_output_disconnect(AgsConnectable *connectable);
 
+/**
+ * SECTION:agsoutput
+ * @Short_description: Output of #AgsAudio
+ * @Title: AgsOutput
+ *
+ * #AgsOutput represents an output channel of #AgsAudio.
+ */
+
 static gpointer ags_output_parent_class = NULL;
 static AgsConnectableInterface *ags_output_parent_connectable_interface;
 
@@ -118,6 +126,15 @@ ags_output_disconnect(AgsConnectable *connectable)
   ags_output_parent_connectable_interface->disconnect(connectable);
 }
 
+/**
+ * ags_output_map_audio_signal:
+ * @output an #AgsOutput
+ * @recall_id the assigned #AgsRecallID
+ *
+ * Maps audio signal and assigning it to recall id.
+ *
+ * Returns: a new #GList containing #AgsAudioSignal
+ */
 GList*
 ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
 {
@@ -156,6 +173,15 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
   return(list_destination);
 }
 
+
+/**
+ * ags_output_find_first_input_recycling:
+ * @output an #AgsOutput
+ *
+ * Retrieve first input recycling.
+ *
+ * Returns: the first #AgsRecycling of #AgsAudio
+ */
 AgsRecycling*
 ags_output_find_first_input_recycling(AgsOutput *output)
 {
@@ -182,6 +208,14 @@ ags_output_find_first_input_recycling(AgsOutput *output)
   }
 }
 
+/**
+ * ags_output_find_last_input_recycling:
+ * @output an #AgsOutput
+ *
+ * Retrieve last input recycling.
+ *
+ * Returns: the last #AgsRecycling of #AgsAudio
+ */
 AgsRecycling*
 ags_output_find_last_input_recycling(AgsOutput *output)
 {
@@ -208,6 +242,13 @@ ags_output_find_last_input_recycling(AgsOutput *output)
   }
 }
 
+/**
+ * ags_output_new:
+ *
+ * Creates a #AgsOutput, linking tree to @audio.
+ *
+ * Returns: a new #AgsOutput
+ */
 AgsOutput*
 ags_output_new(GObject *audio)
 {
