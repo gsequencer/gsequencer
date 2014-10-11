@@ -81,9 +81,11 @@ void ags_recall_recycling_duplicate_list(GList *list,
 					 GList **target);
 
 /**
- * SECTION:ags_recall_ladspa_recycling
- * @Short_description: recycling context of recall
- * @Title: AgsRecallRecycling
+ * SECTION:ags_recall_recycling
+ * @short_description: recycling context of recall
+ * @title: AgsRecallRecycling
+ * @section_id:
+ * @include: ags/audio/ags_recall_recycling.h
  *
  * #AgsRecallRecycling acts as recycling recall.
  */
@@ -852,6 +854,8 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
  * Creates a #AgsRecallRecycling
  *
  * Returns: a new #AgsRecallRecycling
+ * 
+ * Since: 0.4
  */
 AgsRecallRecycling*
 ags_recall_recycling_new()

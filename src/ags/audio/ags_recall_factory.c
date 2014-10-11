@@ -152,9 +152,11 @@ GList* ags_recall_factory_create_ladspa(AgsAudio *audio,
 					guint create_flags, guint recall_flags);
 
 /**
- * SECTION:agsrecallfactory
- * @Short_description: Factory pattern
- * @Title: AgsRecallFactory
+ * SECTION:ags_recall_factory
+ * @short_description: Factory pattern
+ * @title: AgsRecallFactory
+ * @section_id:
+ * @include: ags/audio/ags_recall_factory.h
  *
  * #AgsRecallFactory instantiates and sets up recalls.
  */
@@ -2214,6 +2216,8 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
  * Instantiate #AgsRecall by this factory.
  *
  * Returns: The available AgsPort objects of the plugin to modify.
+ * 
+ * Since: 0.4
  */
 GList*
 ags_recall_factory_create(AgsAudio *audio,
@@ -2367,6 +2371,8 @@ ags_recall_factory_remove(AgsAudio *audio,
  * Creates a #AgsRecallFactory
  *
  * Returns: a new #AgsRecallFactory
+ * 
+ * Since: 0.4
  */
 AgsRecallFactory*
 ags_recall_factory_new()

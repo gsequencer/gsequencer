@@ -37,8 +37,10 @@ void ags_recall_dependency_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recall_dependency
- * @Short_description: Object specifing dependency
- * @Title: AgsRecallDependency
+ * @short_description: Object specifing dependency
+ * @title: AgsRecallDependency
+ * @section_id:
+ * @include ags/audio/ags_recall_dependency.h
  *
  * #AgsRecallDependency specifies dependencies on other recalls. Dependencies
  * are resolved during initialization.
@@ -133,6 +135,8 @@ ags_recall_dependency_finalize(GObject *gobject)
  * Retrieve dependency.
  *
  * Returns: Next match.
+ * 
+ * Since: 0.4.0
  */
 GList*
 ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency)
@@ -160,6 +164,8 @@ ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *depen
  * Retrieve dependency by provider.
  *
  * Returns: Next match.
+ * 
+ * Since: 0.4.0
  */
 GList*
 ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
@@ -193,6 +199,8 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
  * Resolve dependency.
  *
  * Returns: the #AgsRecall dependency.
+ * 
+ * Since: 0.4.0
  */
 GObject*
 ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id)
@@ -247,6 +255,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
  * Creates a #AgsRecallDependency
  *
  * Returns: a new #AgsRecallDependency
+ * 
+ * Since: 0.4.0
  */
 AgsRecallDependency*
 ags_recall_dependency_new(GObject *dependency)

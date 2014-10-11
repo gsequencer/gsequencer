@@ -40,8 +40,10 @@ void ags_recall_id_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recall_id
- * @Short_description: The object specifies run context.
- * @Title: AgsRecallID
+ * @short_description: The object specifies run context.
+ * @title: AgsRecallID
+ * @section_id:
+ * @include: ags/audio/ags_recall_id.h
  *
  * #AgsRecallID acts as dynamic context identifier.
  */
@@ -264,6 +266,8 @@ ags_recall_id_finalize(GObject *gobject)
  * function is intended to handle AGS_AUDIO_ASYNC correctly.
  *
  * Returns: %TRUE if the stage isn't run yet otherwise %FALSE
+ * 
+ * Since: 0.3
  */
 gboolean
 ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
@@ -294,6 +298,8 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
  * @stage: the run stage the networked channels are in
  *
  * Marks the run stage to be passed for audio channel.
+ * 
+ * Since: 0.3
  */
 void
 ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
@@ -315,6 +321,8 @@ ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
  * @stage: the run stage the networked channels are in
  *
  * Unmarks the run stage to be passed for audio channel.
+ * 
+ * Since: 0.3
  */
 void
 ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
@@ -336,6 +344,8 @@ ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
  * Adds an #AgsRecallID with given properties to the passed #GList.
  *
  * Returns: the newly allocated #GList which is the new start of the #GList, too.
+ * 
+ * Since: 0.4
  */
 GList*
 ags_recall_id_add(GList *recall_id_list,
@@ -357,6 +367,8 @@ ags_recall_id_add(GList *recall_id_list,
  * Retrieve recall id by recycling container.
  *
  * Returns: Matching recall id.
+ * 
+ * Since: 0.4
  */
 AgsRecallID*
 ags_recall_id_find_recycling_container(GList *recall_id_list,
@@ -385,6 +397,8 @@ ags_recall_id_find_recycling_container(GList *recall_id_list,
  * Retrieve recall id by recycling container.
  *
  * Returns: Matching recall id.
+ * 
+ * Since: 0.4
  */
 AgsRecallID*
 ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
@@ -412,6 +426,8 @@ ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
  * Creates a #AgsRecallID, assigned to @recycling
  *
  * Returns: a new #AgsRecallID
+ * 
+ * Since: 0.3
  */
 AgsRecallID*
 ags_recall_id_new(AgsRecycling *recycling)

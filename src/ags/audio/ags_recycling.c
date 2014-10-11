@@ -53,8 +53,10 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 /**
  * SECTION:ags_recycling
- * @Short_description: A container of audio signals
- * @Title: AgsRecycling
+ * @short_description: A container of audio signals
+ * @title: AgsRecycling
+ * @section_id:
+ * @include: ags/audio/ags_recycling.h
  *
  * #AgsRecycling forms the nested tree of AgsChannel. Ever channel
  * having own audio signal contains therefor an #AgsRecycling
@@ -156,6 +158,8 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    * AgsRecycling::add-audio-signal
    * @recycling: an #AgsRecycling
    * @audio_signal: the #AgsAudioSignal to add
+   *
+   * The ::add-audio-signal signal is emited as adding #AgsAudioSignal
    */
   recycling_signals[ADD_AUDIO_SIGNAL] =
     g_signal_new("add-audio-signal\0",
@@ -168,9 +172,11 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 		 G_TYPE_OBJECT);
 
   /**
-   * AgsRecycling::set-audio-channels:
+   * AgsRecycling::remove-audio-signal:
    * @recycling: an #AgsRecycling
    * @audio_signal: the #AgsAudioSignal to remove
+   *
+   * The ::remove-audio-signal signal is emited as removing #AgsAudioSignal
    */
   recycling_signals[REMOVE_AUDIO_SIGNAL] =
     g_signal_new("remove-audio-signal\0",
@@ -304,6 +310,8 @@ ags_recycling_set_devout(AgsRecycling *recycling, GObject *devout)
  * @audio_signal: the #AgsAudioSignal to add
  *
  * Add #AgsAudioSignal to recycling.
+ *
+ * Since: 0.3
  */
 void
 ags_recycling_add_audio_signal(AgsRecycling *recycling,
@@ -334,6 +342,8 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
  * @audio_signal: the #AgsAudioSignal to remove
  *
  * Remove #AgsAudioSignal of recycling.
+ *
+ * Since: 0.3
  */
 void
 ags_recycling_remove_audio_signal(AgsRecycling *recycling,
@@ -364,6 +374,8 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
  * @attack: 
  *
  * Create audio signal with defaults.
+ *
+ * Since: 0.4
  */
 void
 ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
@@ -417,6 +429,8 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
  * @attack: 
  *
  * Create audio signal with frame count.
+ *
+ * Since: 0.4
  */
 void
 ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
@@ -534,6 +548,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
  * Retrieve next recycling with different channel.
  *
  * Returns: Matching recycling.
+ *
+ * Since: 0.4
  */
 AgsRecycling*
 ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
@@ -563,6 +579,8 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
  * Retrieve position of recycling.
  *
  * Returns: position within boundary.
+ *
+ * Since: 0.4
  */
 gint
 ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
@@ -598,6 +616,8 @@ ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
  * Creates a #AgsRecycling, with defaults of @devout.
  *
  * Returns: a new #AgsRecycling
+ *
+ * Since: 0.3
  */
 AgsRecycling*
 ags_recycling_new(GObject *devout)

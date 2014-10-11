@@ -62,8 +62,10 @@ xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
 
 /**
  * SECTION:ags_recall_ladspa
- * @Short_description: The object interfacing with LADSPA
- * @Title: AgsRecallLadspa
+ * @short_description: The object interfacing with LADSPA
+ * @title: AgsRecallLadspa
+ * @section_id:
+ * @include: ags/audio/ags_recall_ladspa.h
  *
  * #AgsRecallLadspa provides LADSPA support.
  */
@@ -513,6 +515,8 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  * Set up LADSPA ports.
  *
  * Returns: a #GList containing #AgsPort.
+ * 
+ * Since: 0.4
  */
 GList*
 ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
@@ -602,6 +606,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
  * @destination: destination
  *
  * Convert data type.
+ * 
+ * Since: 0.4
  */
 void
 ags_recall_ladspa_short_to_float(signed short *buffer,
@@ -623,6 +629,8 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
  * @destination: destination
  *
  * Convert data type.
+ * 
+ * Since: 0.4
  */
 void
 ags_recall_ladspa_float_to_short(float *buffer,
@@ -647,6 +655,8 @@ ags_recall_ladspa_float_to_short(float *buffer,
  * Retrieve LADSPA recall.
  *
  * Returns: Next match.
+ * 
+ * Since: 0.4
  */
 GList*
 ags_recall_ladpsa_find(GList *recall,
@@ -678,6 +688,8 @@ ags_recall_ladpsa_find(GList *recall,
  * Creates a #AgsRecallLadspa
  *
  * Returns: a new #AgsRecallLadspa
+ * 
+ * Since: 0.4
  */
 AgsRecallLadspa*
 ags_recall_ladspa_new(AgsChannel *source,

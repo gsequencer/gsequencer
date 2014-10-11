@@ -24,6 +24,16 @@ void ags_timestamp_factory_class_init(AgsTimestampFactoryClass *timestamp_factor
 void ags_timestamp_factory_init (AgsTimestampFactory *timestamp_factory);
 void ags_timestamp_factory_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_timestamp_factory
+ * @short_description: Factory pattern
+ * @title: AgsTimestampFactory
+ * @section_id:
+ * @include: ags/audio/ags_timestamp_factory.h
+ *
+ * #AgsTimestampFactory pattern.
+ */
+
 AgsTimestamp* ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
 						AgsTimestamp *predecor);
 enum{
@@ -146,6 +156,15 @@ ags_timestamp_factory_get_instance()
   return(ags_timestamp_factory);
 }
 
+/**
+ * ags_timestamp_factory_new:
+ * 
+ * Creates an #AgsTimestampFactory
+ *
+ * Returns: a new #AgsTimestampFactory
+ *
+ * Since: 0.4
+ */
 AgsTimestampFactory*
 ags_timestamp_factory_new()
 {

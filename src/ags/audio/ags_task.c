@@ -29,8 +29,10 @@ void ags_task_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_task
- * @Short_description: Perform operations in a thread safe context.
- * @Title: AgsTask
+ * @short_description: Perform operations in a thread safe context.
+ * @title: AgsTask
+ * @section_id: 
+ * @include: ags/audio/ags_task.h
  *
  * #AgsTask object acts an interceptor in a thread safe context.
  */
@@ -101,6 +103,8 @@ ags_task_class_init(AgsTaskClass *task)
   /**
    * AgsTask::launch:
    * @task: the object to launch.
+   *
+   * The ::launch signal is emited in a thread safe context
    */
   task_signals[LAUNCH] =
     g_signal_new("launch\0",
@@ -115,6 +119,8 @@ ags_task_class_init(AgsTaskClass *task)
    * AgsTask::failure:
    * @task: the object failed to do its work.
    * @error: the error
+   *
+   * The ::failure signal is emited if ::launch fails
    */
   task_signals[FAILURE] =
     g_signal_new("failure\0",
@@ -179,6 +185,8 @@ ags_task_finalize(GObject *gobject)
  * @task: an #AgsTask
  *
  * Intercept task.
+ *
+ * Since: 0.4
  */
 void
 ags_task_launch(AgsTask *task)
@@ -197,6 +205,8 @@ ags_task_launch(AgsTask *task)
  * @error: is %NULL on success
  *
  * Signals failure of task.
+ *
+ * Since: 0.4
  */
 void
 ags_task_failure(AgsTask *task, GError *error)
@@ -216,6 +226,8 @@ ags_task_failure(AgsTask *task, GError *error)
  * Creates a #AgsTask
  *
  * Returns: a new #AgsTask
+ *
+ * Since: 0.4
  */
 AgsTask*
 ags_task_new()

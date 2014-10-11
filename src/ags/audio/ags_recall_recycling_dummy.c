@@ -47,9 +47,11 @@ AgsRecall* ags_recall_recycling_dummy_duplicate(AgsRecall *recall,
 						guint *n_params, GParameter *parameter);
 
 /**
- * SECTION:agsrecallrecyclingdummy
- * @Short_description: recycling dummy dynamic context of recall
- * @Title: AgsRecallRecyclingDummy
+ * SECTION:ags_recall_recycling_dummy
+ * @short_description: recycling dummy dynamic context of recall
+ * @title: AgsRecallRecyclingDummy
+ * @section_id:
+ * @include: ags/audio/ags_recall_recycling_dummy.h
  *
  * #AgsRecallRecyclingDummy acts as recycling dummy dynamic recall.
  */
@@ -222,6 +224,8 @@ ags_recall_recycling_dummy_duplicate(AgsRecall *recall,
  * Creates an #AgsRecallRecyclingDummy.
  *
  * Returns: a new #AgsRecallRecyclingDummy.
+ *
+ * Since: 0.4
  */
 AgsRecallRecyclingDummy*
 ags_recall_recycling_dummy_new(AgsRecycling *recycling, GType child_type)

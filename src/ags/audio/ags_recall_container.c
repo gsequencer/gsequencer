@@ -106,7 +106,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 
   /* properties */
   /**
-   * AgsPort:recall-audio-type:
+   * RecallContainer:recall-audio-type:
    *
    * The associated recall type within audio context.
    * 
@@ -122,7 +122,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsPort:recall-audio:
+   * RecallContainer:recall-audio:
    *
    * The associated recall within audio context.
    * 
@@ -138,7 +138,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsPort:recall-audio-run-type:
+   * RecallContainer:recall-audio-run-type:
    *
    * The associated recall type within dynamic audio context.
    * 
@@ -154,7 +154,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsPort:recall-audio-run:
+   * RecallContainer:recall-audio-run:
    *
    * The associated recall within dynamic audio context.
    * 
@@ -170,7 +170,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsPort:recall-channel-type:
+   * RecallContainer:recall-channel-type:
    *
    * The associated recall type within channel context.
    * 
@@ -186,7 +186,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsPort:recall-channel:
+   * RecallContainer:recall-channel:
    *
    * The associated recall within channel context.
    * 
@@ -202,7 +202,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsPort:recall-channel-run-type:
+   * RecallContainer:recall-channel-run-type:
    *
    * The associated recall type within dynamic channel context.
    * 
@@ -218,7 +218,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsPort:recall-audio-run:
+   * RecallContainer:recall-audio-run:
    *
    * The associated recall within dynamic channel context.
    * 

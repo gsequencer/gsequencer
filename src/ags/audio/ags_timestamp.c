@@ -22,6 +22,16 @@ void ags_timestamp_class_init(AgsTimestampClass *timestamp);
 void ags_timestamp_init (AgsTimestamp *timestamp);
 void ags_timestamp_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_timestamp
+ * @short_description: Timestamp unix and alike
+ * @title: AgsTimestamp
+ * @section_id:
+ * @include: ags/audio/ags_timestamp.h
+ *
+ * #AgsTimestamp measure of time.
+ */
+
 static gpointer ags_timestamp_parent_class = NULL;
 
 GType
@@ -87,6 +97,8 @@ ags_timestamp_finalize(GObject *gobject)
  * Creates an #AgsTimestamp
  *
  * Returns: a new #AgsTimestamp
+ *
+ * Since: 0.4
  */
 AgsTimestamp*
 ags_timestamp_new()
