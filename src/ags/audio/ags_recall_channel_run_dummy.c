@@ -49,9 +49,11 @@ AgsRecall* ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
 						  guint *n_params, GParameter *parameter);
 
 /**
- * SECTION:agsrecallchannelrundummy
- * @Short_description: channel dummy dynamic context of recall
- * @Title: AgsRecallChannelRunDummy
+ * SECTION:ags_recall_channel_run_dummy
+ * @short_description: channel dummy dynamic context of recall
+ * @title: AgsRecallChannelRunDummy
+ * @section_id:
+ * @include: ags/audio/ags_recall_channel_run_dummy.h
  *
  * #AgsRecallChannelRunDummy acts as channel dummy dynamic recall.
  */
@@ -254,13 +256,15 @@ ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_channel_run_dummy_new:
- * @source the source #AgsChannel
- * @child_type child type
- * @recycling_dummy_child_type recycling child type
+ * @source: the source #AgsChannel
+ * @child_type: child type
+ * @recycling_dummy_child_type: recycling child type
  *
  * Creates an #AgsRecallChannelRunDummy.
  *
  * Returns: a new #AgsRecallChannelRunDummy.
+ *
+ * Since: 0.4
  */
 AgsRecallChannelRunDummy*
 ags_recall_channel_run_dummy_new(AgsChannel *source,

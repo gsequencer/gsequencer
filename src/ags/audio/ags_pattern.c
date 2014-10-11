@@ -55,9 +55,11 @@ void ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GV
 void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
 /**
- * SECTION:agspattern
- * @Short_description: Pattern representing tones
- * @Title: AgsPattern
+ * SECTION:ags_pattern
+ * @short_description: Pattern representing tones
+ * @title: AgsPattern
+ * @section_id:
+ * @include: ags/audio/ags_pattern.h
  *
  * #AgsPattern represents an audio pattern of tones.
  */
@@ -534,12 +536,14 @@ ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
 
 /**
  * ags_pattern_find_by_timestamp:
- * @pattern a #GList containing #AgsPattern
- * @timestamp the matching timestamp
+ * @pattern: a #GList containing #AgsPattern
+ * @timestamp: the matching timestamp
  *
  * Retrieve appropriate pattern for timestamp.
  *
  * Returns: the matching pattern.
+ *
+ * Since: 0.4
  */
 AgsPattern*
 ags_pattern_get_by_timestamp(GList *list, GObject *timestamp)
@@ -559,12 +563,14 @@ ags_pattern_get_by_timestamp(GList *list, GObject *timestamp)
 
 /**
  * ags_pattern_set_dim:
- * @pattern an #AgsPattern
- * @dim0 bank 0 size
- * @dim1 bank 1 size
- * @length amount of beats
+ * @pattern: an #AgsPattern
+ * @dim0: bank 0 size
+ * @dim1: bank 1 size
+ * @length: amount of beats
  *
  * Reallocates the pattern's dimensions.
+ *
+ * Since: 0.3
  */
 void 
 ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
@@ -705,14 +711,16 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 
 /**
  * ags_pattern_get_bit:
- * @pattern an #AgsPattern
- * @i bank index 0
- * @j bank index 1
- * @bit the tic to check
+ * @pattern: an #AgsPattern
+ * @i: bank index 0
+ * @j: bank index 1
+ * @bit: the tic to check
  *
  * Check for tic to be played.
  *
  * Returns: %TRUE if tone is enabled.
+ *
+ * Since: 0.3
  */
 gboolean
 ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
@@ -731,12 +739,14 @@ ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 
 /**
  * ags_pattern_toggle_bit:
- * @pattern an #AgsPattern
- * @i bank index 0
- * @j bank index 1
- * @bit the tic to toggle
+ * @pattern: an #AgsPattern
+ * @i: bank index 0
+ * @j: bank index 1
+ * @bit: the tic to toggle
  *
  * Toggle tone.
+ *
+ * Since: 0.3
  */
 void
 ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
@@ -759,6 +769,8 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
  * Creates an #AgsPattern
  *
  * Returns: a new #AgsPattern
+ *
+ * Since: 0.3
  */
 AgsPattern*
 ags_pattern_new()

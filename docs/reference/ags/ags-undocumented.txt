@@ -1,7 +1,7 @@
-13% symbol docs coverage.
-368 symbols documented.
-820 symbols incomplete.
-2496 not documented.
+6% symbol docs coverage.
+176 symbols documented.
+340 symbols incomplete.
+2634 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -39,9 +39,6 @@ AGS_EDITOR_DEFAULT
 AGS_EDITOR_DEFAULT_BUILD_ID
 AGS_EDITOR_DEFAULT_VERSION
 AGS_EFFECTS_DEFAULT_VERSION
-AGS_EFFECT_COPY_BUFFER
-AGS_EFFECT_COPY_STREAM
-AGS_EFFECT_DOWN_MIX
 AGS_EXPANDER_CHILD
 AGS_EXPANDER_SET_CHILD
 AGS_EXPORT_THREAD_BUFFER_TIME
@@ -99,17 +96,6 @@ AGS_IPATCH_DEFAULT_CHANNELS
 AGS_IPATCH_READ
 AGS_IPATCH_WRITE
 AGS_LADSPA_PLUGIN
-AGS_LIBAO_DEFAULT_BPM
-AGS_LIBAO_DEFAULT_BUFFER_SIZE
-AGS_LIBAO_DEFAULT_DELAY
-AGS_LIBAO_DEFAULT_JIFFIE
-AGS_LIBAO_DEFAULT_SAMPLERATE
-AGS_LIBAO_DEFAULT_TACT
-AGS_LIBAO_DEFAULT_TACTRATE
-AGS_LIBAO_DEFAULT_TACT_JIFFIE
-AGS_LIBAO_ERROR
-AGS_LIBAO_PLAY
-AGS_LIBAO_PLAY_DOMAIN
 AGS_LINE_DEFAULT_BUILD_ID
 AGS_LINE_DEFAULT_VERSION
 AGS_LINE_EDITOR_DEFAULT_BUILD_ID
@@ -147,11 +133,9 @@ AGS_PRIORITY
 AGS_RECALL_DEFAULT_BUILD_ID
 AGS_RECALL_DEFAULT_VERSION
 AGS_RECALL_HANDLER
-AGS_RECORD_THREAD_DEFAULT_DELAY
 AGS_RECYCLING_THREAD_DEFAULT_JIFFIE
 AGS_REGISTRY_DEFAULT_ID_LENGTH
 AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE
-AGS_SEGMENT_FLAGS (<items>)
 AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE
 AGS_TASK_THREAD_DEFAULT_JIFFIE
 AGS_THREAD_DEFAULT_ATTACK
@@ -171,93 +155,92 @@ AGS_TOOLBAR_MODE_SINGLE_CHANNEL
 AGS_VERSION
 ALSA_PCM_NEW_HW_PARAMS_API
 AgsAccountingTable (<items>)
-AgsAddAudio (<items>)
+AgsAddAudio
 AgsAddAudioClass (<items>)
-AgsAddAudioSignal (<items>)
+AgsAddAudioSignal
 AgsAddAudioSignalClass (<items>)
-AgsAddLineMember (<items>)
+AgsAddLineMember
 AgsAddLineMemberClass (<items>)
-AgsAddNote (<items>)
+AgsAddNote
 AgsAddNoteClass (<items>)
-AgsAddPointToSelection (<items>)
+AgsAddPointToSelection
 AgsAddPointToSelectionClass (<items>)
-AgsAddRecall (<items>)
+AgsAddRecall
 AgsAddRecallClass (<items>)
-AgsAddRegionToSelection (<items>)
+AgsAddRegionToSelection
 AgsAddRegionToSelectionClass (<items>)
-AgsAppendAudio (<items>)
+AgsAppendAudio
 AgsAppendAudioClass (<items>)
-AgsAppendAudioThreaded (<items>)
-AgsAppendAudioThreadedClass (<items>)
-AgsAppendChannel (<items>)
+AgsAppendChannel
 AgsAppendChannelClass (<items>)
-AgsAppendRecall (<items>)
+AgsAppendRecall
 AgsAppendRecallClass (<items>)
 AgsApplicable
 AgsApplicableInterface (<items>)
-AgsApplyBpm (<items>)
+AgsApplyBpm
 AgsApplyBpmClass (<items>)
-AgsApplySequencerLength (<items>)
+AgsApplySequencerLength
 AgsApplySequencerLengthClass (<items>)
-AgsApplySynth (<items>)
+AgsApplySynth
 AgsApplySynthClass (<items>)
 AgsApplySynthWave (<items>)
-AgsApplyTact (<items>)
+AgsApplyTact
 AgsApplyTactClass (<items>)
-AgsApplyWavetable (<items>)
+AgsApplyWavetable
 AgsApplyWavetableClass (<items>)
-AgsAsyncQueue (<items>)
+AgsAsyncQueue
+AgsAsyncQueue::interrupt
+AgsAsyncQueue::pop-context
+AgsAsyncQueue::push-context
 AgsAsyncQueueClass (<items>)
 AgsAsyncQueueFlags (<items>)
 AgsAttack
 AgsAttackFlags (<items>)
-AgsAudio (<items>)
+AgsAudio
 AgsAudio::done
 AgsAudio::init-run
 AgsAudio::set-audio-channels
 AgsAudio::set-pads
 AgsAudio::tact
 AgsAudioClass (<items>)
-AgsAudioFile (<items>)
+AgsAudioFile
 AgsAudioFileClass (<items>)
-AgsAudioFileXml (<items>)
+AgsAudioFileXml
 AgsAudioFileXmlClass (<items>)
 AgsAudioFlags (<items>)
-AgsAudioLoop (<items>)
+AgsAudioLoop
 AgsAudioLoopClass (<items>)
 AgsAudioLoopFlags (<items>)
-AgsAudioPreferences (<items>)
+AgsAudioPreferences
 AgsAudioPreferencesClass (<items>)
-AgsAudioSetRecycling (<items>)
+AgsAudioSetRecycling
 AgsAudioSetRecyclingClass (<items>)
-AgsAudioSignal (<items>)
+AgsAudioSignal
 AgsAudioSignal::morph-samplerate
 AgsAudioSignal::realloc-buffer-size
 AgsAudioSignalClass (<items>)
 AgsAudioSignalFlags (<items>)
-AgsAutosaveThread (<items>)
+AgsAutosaveThread
 AgsAutosaveThreadClass (<items>)
-AgsBufferAudioSignal (<items>)
+AgsBufferAudioSignal
 AgsBufferAudioSignalClass (<items>)
-AgsBufferChannel (<items>)
+AgsBufferChannel
 AgsBufferChannelClass (<items>)
-AgsBufferChannelRun (<items>)
+AgsBufferChannelRun
 AgsBufferChannelRunClass (<items>)
-AgsBufferRecycling (<items>)
+AgsBufferRecycling
 AgsBufferRecyclingClass (<items>)
-AgsCancelAudio (<items>)
+AgsCancelAudio
 AgsCancelAudioClass (<items>)
-AgsCancelChannel (<items>)
+AgsCancelChannel
 AgsCancelChannelClass (<items>)
-AgsCancelRecall (<items>)
+AgsCancelRecall
 AgsCancelRecallClass (<items>)
-AgsCartesian (<items>)
-AgsCartesianClass (<items>)
-AgsChangeIndicator (<items>)
+AgsChangeIndicator
 AgsChangeIndicatorClass (<items>)
-AgsChangeTact (<items>)
+AgsChangeTact
 AgsChangeTactClass (<items>)
-AgsChannel (<items>)
+AgsChannel
 AgsChannel::done
 AgsChannel::recycling-changed
 AgsChannelClass (<items>)
@@ -266,355 +249,367 @@ AgsChannelFlags (<items>)
 AgsChannelIter (<items>)
 AgsChannelIterFlags (<items>)
 AgsChannelRecallIDMode (<items>)
-AgsChannelSetRecycling (<items>)
+AgsChannelSetRecycling
 AgsChannelSetRecyclingClass (<items>)
-AgsCloneChannel (<items>)
-AgsCloneChannelClass (<items>)
-AgsCloneChannelRun (<items>)
-AgsCloneChannelRunClass (<items>)
-AgsConfig (<items>)
+AgsConfig
 AgsConfigClass (<items>)
 AgsContext (<items>)
-AgsCopyAudioSignal (<items>)
+AgsCopyAudioSignal
 AgsCopyAudioSignalClass (<items>)
-AgsCopyChannel (<items>)
+AgsCopyChannel
 AgsCopyChannelClass (<items>)
-AgsCopyChannelRun (<items>)
+AgsCopyChannelRun
 AgsCopyChannelRunClass (<items>)
 AgsCopyChannelRunFlags (<items>)
-AgsCopyNotationAudio (<items>)
+AgsCopyNotationAudio
 AgsCopyNotationAudioClass (<items>)
 AgsCopyNotationAudioFlags (<items>)
-AgsCopyNotationAudioRun (<items>)
+AgsCopyNotationAudioRun
 AgsCopyNotationAudioRunClass (<items>)
-AgsCopyPatternAudio (<items>)
+AgsCopyPatternAudio
 AgsCopyPatternAudioClass (<items>)
-AgsCopyPatternAudioRun (<items>)
+AgsCopyPatternAudioRun
 AgsCopyPatternAudioRunClass (<items>)
-AgsCopyPatternChannel (<items>)
+AgsCopyPatternChannel
 AgsCopyPatternChannelClass (<items>)
-AgsCopyPatternChannelRun (<items>)
+AgsCopyPatternChannelRun
 AgsCopyPatternChannelRunClass (<items>)
-AgsCopyRecycling (<items>)
+AgsCopyRecycling
 AgsCopyRecyclingClass (<items>)
-AgsCountBeatsAudio (<items>)
+AgsCountBeatsAudio
 AgsCountBeatsAudioClass (<items>)
-AgsCountBeatsAudioRun (<items>)
+AgsCountBeatsAudioRun
+AgsCountBeatsAudioRun::notation-loop
+AgsCountBeatsAudioRun::notation-start
+AgsCountBeatsAudioRun::notation-stop
+AgsCountBeatsAudioRun::sequencer-loop
+AgsCountBeatsAudioRun::sequencer-start
+AgsCountBeatsAudioRun::sequencer-stop
 AgsCountBeatsAudioRunClass (<items>)
 AgsCountable
 AgsCountableInterface (<items>)
-AgsDelayAudio (<items>)
+AgsDelayAudio
+AgsDelayAudio::notation-duration-changed
+AgsDelayAudio::sequencer-duration-changed
 AgsDelayAudioClass (<items>)
-AgsDelayAudioRun (<items>)
+AgsDelayAudioRun
+AgsDelayAudioRun::notation-alloc-input
+AgsDelayAudioRun::notation-alloc-output
+AgsDelayAudioRun::notation-count
+AgsDelayAudioRun::sequencer-alloc-input
+AgsDelayAudioRun::sequencer-alloc-output
+AgsDelayAudioRun::sequencer-count
 AgsDelayAudioRunClass (<items>)
-AgsDevout (<items>)
+AgsDevout
 AgsDevout::tic
 AgsDevoutClass (<items>)
 AgsDevoutError (<items>)
 AgsDevoutFlags (<items>)
+AgsDevoutPlay (<items>)
+AgsDevoutPlayDomain (<items>)
 AgsDevoutPlayFlags (<items>)
 AgsDevoutResolutionMode (<items>)
-AgsDevoutThread (<items>)
+AgsDevoutThread
 AgsDevoutThreadClass (<items>)
-AgsDial (<items>)
+AgsDial
 AgsDialClass (<items>)
 AgsDialFlags (<items>)
-AgsDisplayTact (<items>)
+AgsDisplayTact
 AgsDisplayTactClass (<items>)
-AgsDrum (<items>)
+AgsDrum
 AgsDrumClass (<items>)
 AgsDrumFlags (<items>)
-AgsDrumInputLine (<items>)
+AgsDrumInputLine
 AgsDrumInputLineClass (<items>)
-AgsDrumInputPad (<items>)
+AgsDrumInputPad
 AgsDrumInputPadClass (<items>)
 AgsDrumInputPadFlags (<items>)
-AgsDrumOutputLine (<items>)
+AgsDrumOutputLine
 AgsDrumOutputLineClass (<items>)
-AgsDrumOutputPad (<items>)
+AgsDrumOutputPad
 AgsDrumOutputPadClass (<items>)
 AgsDrumOutputPadFlags (<items>)
 AgsDynamicConnectable
 AgsDynamicConnectableInterface (<items>)
-AgsEditor (<items>)
+AgsEditor
+AgsEditor::machine-changed
 AgsEditorClass (<items>)
-AgsEffect
-AgsEffectInterface (<items>)
-AgsExpander (<items>)
+AgsExpander
 AgsExpanderChild (<items>)
 AgsExpanderClass (<items>)
 AgsExpanderFlags (<items>)
-AgsExpanderSet (<items>)
+AgsExpanderSet
 AgsExpanderSetChild (<items>)
 AgsExpanderSetClass (<items>)
 AgsExpanderSetFlags (<items>)
-AgsExportOutput (<items>)
+AgsExportOutput
 AgsExportOutputClass (<items>)
-AgsExportThread (<items>)
+AgsExportThread
 AgsExportThreadClass (<items>)
-AgsExportWindow (<items>)
+AgsExportWindow
 AgsExportWindowClass (<items>)
 AgsExportWindowFlags (<items>)
-AgsFFPlayer (<items>)
+AgsFFPlayer
 AgsFFPlayerClass (<items>)
-AgsFile (<items>)
+AgsFile
+AgsFile::read
+AgsFile::read-resolve
+AgsFile::read-start
+AgsFile::write
+AgsFile::write-concurrent
+AgsFile::write-resolve
 AgsFileClass (<items>)
 AgsFileFlags (<items>)
-AgsFileIdRef (<items>)
+AgsFileIdRef
+AgsFileIdRef::resolved
 AgsFileIdRefClass (<items>)
-AgsFileLaunch (<items>)
+AgsFileLaunch
+AgsFileLaunch::start
 AgsFileLaunchClass (<items>)
-AgsFileLink (<items>)
+AgsFileLink
 AgsFileLinkClass (<items>)
-AgsFileLookup (<items>)
+AgsFileLookup
+AgsFileLookup::resolve
 AgsFileLookupClass (<items>)
-AgsFileRead (<items>)
-AgsFileReadClass (<items>)
 AgsFileResolve
-AgsFileSelection (<items>)
+AgsFileSelection
+AgsFileSelection::add-entry
+AgsFileSelection::completed
+AgsFileSelection::remove-entry
 AgsFileSelectionClass (<items>)
 AgsFileSelectionEntry (<items>)
 AgsFileSelectionFlags (<items>)
-AgsFileValueFactory (<items>)
-AgsFileValueFactoryClass (<items>)
-AgsFileWrite (<items>)
-AgsFileWriteClass (<items>)
-AgsFreeSelection (<items>)
+AgsFreeSelection
 AgsFreeSelectionClass (<items>)
-AgsGarbageCollector (<items>)
+AgsGarbageCollector
 AgsGarbageCollectorClass (<items>)
 AgsGarbageCollectorFlags (<items>)
-AgsGenericPreferences (<items>)
-AgsGenericPreferencesClass (<items>)
-AgsGuiTaskThread (<items>)
+AgsGuiTaskThread
 AgsGuiTaskThreadClass (<items>)
-AgsGuiThread (<items>)
+AgsGuiThread
 AgsGuiThreadClass (<items>)
-AgsHIndicator (<items>)
-AgsHIndicatorClass (<items>)
 AgsHTimebar (<items>)
 AgsHTimebarClass (<items>)
-AgsHistory (<items>)
-AgsHistoryAppend
-AgsHistoryClass (<items>)
-AgsIndicator (<items>)
+AgsIndicator
 AgsIndicatorClass (<items>)
-AgsInitAudio (<items>)
+AgsInitAudio
 AgsInitAudioClass (<items>)
-AgsInitChannel (<items>)
+AgsInitChannel
 AgsInitChannelClass (<items>)
-AgsInlinePlayer (<items>)
+AgsInlinePlayer
 AgsInlinePlayerClass (<items>)
-AgsInput (<items>)
+AgsInput
 AgsInputClass (<items>)
-AgsIpatch (<items>)
+AgsIpatch
 AgsIpatchClass (<items>)
 AgsIpatchFlags (<items>)
-AgsIpatchSF2Reader (<items>)
+AgsIpatchSF2Reader
 AgsIpatchSF2ReaderClass (<items>)
-AgsIteratorThread (<items>)
+AgsIteratorThread
+AgsIteratorThread::children-ready
 AgsIteratorThreadClass (<items>)
 AgsIteratorThreadFlags (<items>)
-AgsLadspaBrowser (<items>)
+AgsLadspaBrowser
 AgsLadspaBrowserClass (<items>)
-AgsLadspaManager (<items>)
+AgsLadspaManager
 AgsLadspaManagerClass (<items>)
 AgsLadspaPlugin (<items>)
 AgsLadspaPluginFlags (<items>)
 AgsLadspaPluginPreferences (<items>)
-AgsLed (<items>)
+AgsLed
 AgsLedClass (<items>)
 AgsLedFlags (<items>)
-AgsLibao (<items>)
-AgsLibaoClass (<items>)
-AgsLibaoError (<items>)
-AgsLibaoFlags (<items>)
-AgsLibaoPlay (<items>)
-AgsLibaoPlayDomain (<items>)
-AgsLibaoPlayFlags (<items>)
-AgsLibaoResolutionMode (<items>)
-AgsLine (<items>)
+AgsLine
+AgsLine::group-changed
+AgsLine::set-channel
 AgsLineClass (<items>)
-AgsLineEditor (<items>)
+AgsLineEditor
 AgsLineEditorClass (<items>)
 AgsLineFlags (<items>)
-AgsLineMember (<items>)
+AgsLineMember
+AgsLineMember::change-port
 AgsLineMemberClass (<items>)
-AgsLineMemberEditor (<items>)
+AgsLineMemberEditor
 AgsLineMemberEditorClass (<items>)
 AgsLineMemberFlags (<items>)
-AgsLinkChannel (<items>)
+AgsLinkChannel
 AgsLinkChannelClass (<items>)
-AgsLinkCollectionEditor (<items>)
+AgsLinkCollectionEditor
 AgsLinkCollectionEditorClass (<items>)
-AgsLinkEditor (<items>)
+AgsLinkEditor
 AgsLinkEditorClass (<items>)
 AgsLinkEditorFlags (<items>)
-AgsListingEditor (<items>)
+AgsListingEditor
 AgsListingEditorClass (<items>)
 AgsLog (<items>)
 AgsLogClass (<items>)
 AgsLogFlags (<items>)
 AgsLogFormatedMessage (<items>)
 AgsLogMessage (<items>)
-AgsLoopChannel (<items>)
+AgsLoopChannel
 AgsLoopChannelClass (<items>)
-AgsLoopChannelRun (<items>)
+AgsLoopChannelRun
 AgsLoopChannelRunClass (<items>)
-AgsMachine (<items>)
+AgsMachine
+AgsMachine::add-default-recalls
 AgsMachineClass (<items>)
 AgsMachineCounter (<items>)
-AgsMachineEditor (<items>)
+AgsMachineEditor
+AgsMachineEditor::set-machine
 AgsMachineEditorClass (<items>)
 AgsMachineEditorFlags (<items>)
 AgsMachineFileInputFlags (<items>)
 AgsMachineFlags (<items>)
-AgsMachineRadioButton (<items>)
+AgsMachineRadioButton
 AgsMachineRadioButtonClass (<items>)
-AgsMachineSelection (<items>)
+AgsMachineSelection
 AgsMachineSelectionClass (<items>)
-AgsMachineSelector (<items>)
+AgsMachineSelector
+AgsMachineSelector::changed
 AgsMachineSelectorClass (<items>)
-AgsMain (<items>)
+AgsMain
 AgsMainClass (<items>)
 AgsMainFlags (<items>)
 AgsMainLoop
 AgsMainLoopInterface (<items>)
-AgsMatrix (<items>)
+AgsMatrix
 AgsMatrixClass (<items>)
-AgsMenu (<items>)
-AgsMenuBar (<items>)
+AgsMenu
+AgsMenuBar
 AgsMenuBarClass (<items>)
 AgsMenuClass (<items>)
-AgsMenuItem (<items>)
+AgsMenuItem
 AgsMenuItemClass (<items>)
-AgsMeter (<items>)
+AgsMeter
 AgsMeterClass (<items>)
-AgsMixer (<items>)
+AgsMixer
 AgsMixerClass (<items>)
-AgsMixerInputLine (<items>)
+AgsMixerInputLine
 AgsMixerInputLineClass (<items>)
-AgsMixerInputPad (<items>)
+AgsMixerInputPad
 AgsMixerInputPadClass (<items>)
 AgsMutable
 AgsMutableInterface (<items>)
-AgsMuteAudio (<items>)
+AgsMuteAudio
 AgsMuteAudioClass (<items>)
-AgsMuteAudioSignal (<items>)
+AgsMuteAudioSignal
 AgsMuteAudioSignalClass (<items>)
-AgsMuteChannel (<items>)
+AgsMuteChannel
 AgsMuteChannelClass (<items>)
-AgsMuteChannelRun (<items>)
+AgsMuteChannelRun
 AgsMuteChannelRunClass (<items>)
-AgsMuteRecycling (<items>)
+AgsMuteRecycling
 AgsMuteRecyclingClass (<items>)
-AgsNavigation (<items>)
+AgsNavigation
+AgsNavigation::change-position
 AgsNavigationClass (<items>)
 AgsNavigationFlags (<items>)
-AgsNotation (<items>)
+AgsNotation
 AgsNotationClass (<items>)
 AgsNotationFlags (<items>)
-AgsNote (<items>)
+AgsNote
 AgsNoteClass (<items>)
-AgsNoteEdit (<items>)
+AgsNoteEdit
 AgsNoteEditClass (<items>)
 AgsNoteEditFlags (<items>)
 AgsNoteEditResetFlags (<items>)
 AgsNoteFlags (<items>)
-AgsNotebook (<items>)
+AgsNotebook
 AgsNotebookClass (<items>)
 AgsNotebookTab (<items>)
 AgsNotebookTabFlags (<items>)
-AgsOpenFile (<items>)
+AgsOpenFile
 AgsOpenFileClass (<items>)
-AgsOpenSingleFile (<items>)
+AgsOpenSingleFile
 AgsOpenSingleFileClass (<items>)
-AgsOptionMenu (<items>)
+AgsOptionMenu
 AgsOptionMenuClass (<items>)
-AgsOscillator (<items>)
+AgsOscillator
 AgsOscillatorClass (<items>)
-AgsOutput (<items>)
+AgsOutput
 AgsOutputClass (<items>)
 AgsPackable
 AgsPackableInterface (<items>)
-AgsPad (<items>)
+AgsPad
+AgsPad::resize-lines
+AgsPad::set-channel
 AgsPadClass (<items>)
-AgsPadEditor (<items>)
+AgsPadEditor
 AgsPadEditorClass (<items>)
 AgsPadFlags (<items>)
-AgsPanel (<items>)
+AgsPanel
 AgsPanelClass (<items>)
-AgsPanelInputLine (<items>)
+AgsPanelInputLine
 AgsPanelInputLineClass (<items>)
-AgsPanelInputPad (<items>)
+AgsPanelInputPad
 AgsPanelInputPadClass (<items>)
-AgsPattern (<items>)
+AgsPattern
 AgsPatternClass (<items>)
-AgsPeakChannel (<items>)
+AgsPeakChannel
 AgsPeakChannelClass (<items>)
-AgsPeakChannelRun (<items>)
+AgsPeakChannelRun
 AgsPeakChannelRunClass (<items>)
-AgsPerformancePreferences (<items>)
+AgsPerformancePreferences
 AgsPerformancePreferencesClass (<items>)
 AgsPersistable
 AgsPersistableInterface (<items>)
-AgsPlayAudio (<items>)
+AgsPlayAudio
 AgsPlayAudioClass (<items>)
-AgsPlayAudioFile (<items>)
+AgsPlayAudioFile
 AgsPlayAudioFileClass (<items>)
-AgsPlayAudioSignal (<items>)
+AgsPlayAudioSignal
 AgsPlayAudioSignalClass (<items>)
-AgsPlayChannel (<items>)
+AgsPlayChannel
 AgsPlayChannelClass (<items>)
-AgsPlayChannelRun (<items>)
+AgsPlayChannelRun
 AgsPlayChannelRunClass (<items>)
 AgsPlayChannelRunFlags (<items>)
-AgsPlayChannelRunMaster (<items>)
+AgsPlayChannelRunMaster
 AgsPlayChannelRunMasterClass (<items>)
 AgsPlayChannelRunMasterFlags (<items>)
 AgsPlayChannelRunMasterStreamer (<items>)
-AgsPlayNotationAudio (<items>)
+AgsPlayNotationAudio
 AgsPlayNotationAudioClass (<items>)
-AgsPlayNotationAudioRun (<items>)
+AgsPlayNotationAudioRun
 AgsPlayNotationAudioRunClass (<items>)
 AgsPlayNotationAudioRunFlags (<items>)
-AgsPlayNote (<items>)
+AgsPlayNote
 AgsPlayNoteClass (<items>)
-AgsPlayPattern (<items>)
+AgsPlayPattern
 AgsPlayPatternClass (<items>)
-AgsPlayRecycling (<items>)
+AgsPlayRecycling
 AgsPlayRecyclingClass (<items>)
 AgsPlayable
 AgsPlayableError (<items>)
 AgsPlayableInterface (<items>)
 AgsPlugin
-AgsPluginFactory (<items>)
+AgsPluginFactory
+AgsPluginFactory::add
+AgsPluginFactory::create
 AgsPluginFactoryClass (<items>)
 AgsPluginInterface (<items>)
 AgsPluginMetadata (<items>)
-AgsPluginPreferences (<items>)
+AgsPluginPreferences
 AgsPluginPreferencesClass (<items>)
-AgsPort (<items>)
+AgsPort
 AgsPort::safe-get-property
 AgsPort::safe-read
+AgsPort::safe-set-property
 AgsPort::safe-write
 AgsPortClass (<items>)
-AgsPortableThread (<items>)
-AgsPortableThreadClass (<items>)
-AgsPortableThreadFlags (<items>)
 AgsPortlet
 AgsPortletInterface (<items>)
-AgsPreferences (<items>)
+AgsPreferences
 AgsPreferencesClass (<items>)
 AgsPreferencesFlags (<items>)
-AgsPropertyCollectionEditor (<items>)
+AgsPropertyCollectionEditor
 AgsPropertyCollectionEditorClass (<items>)
-AgsPropertyEditor (<items>)
+AgsPropertyEditor
 AgsPropertyEditorClass (<items>)
 AgsPropertyEditorFlags (<items>)
-AgsPropertyListingEditor (<items>)
+AgsPropertyListingEditor
 AgsPropertyListingEditorClass (<items>)
-AgsRecall (<items>)
+AgsRecall
 AgsRecall::cancel
 AgsRecall::child-added
 AgsRecall::done
@@ -629,192 +624,201 @@ AgsRecall::run-inter
 AgsRecall::run-post
 AgsRecall::run-pre
 AgsRecall::stop-persistent
-AgsRecallAudio (<items>)
+AgsRecallAudio
 AgsRecallAudioClass (<items>)
-AgsRecallAudioRun (<items>)
+AgsRecallAudioRun
 AgsRecallAudioRunClass (<items>)
-AgsRecallAudioSignal (<items>)
+AgsRecallAudioSignal
 AgsRecallAudioSignalClass (<items>)
 AgsRecallAudioSignalFlags (<items>)
-AgsRecallChannel (<items>)
+AgsRecallChannel
 AgsRecallChannelClass (<items>)
-AgsRecallChannelRun (<items>)
+AgsRecallChannelRun
+AgsRecallChannelRun::run-order-changed
 AgsRecallChannelRunClass (<items>)
-AgsRecallChannelRunDummy (<items>)
+AgsRecallChannelRunDummy
 AgsRecallChannelRunDummyClass (<items>)
 AgsRecallClass (<items>)
-AgsRecallContainer (<items>)
+AgsRecallContainer
 AgsRecallContainerClass (<items>)
 AgsRecallContainerFindFlags (<items>)
 AgsRecallContainerFlags (<items>)
-AgsRecallDependency (<items>)
+AgsRecallDependency
 AgsRecallDependencyClass (<items>)
-AgsRecallFactory (<items>)
+AgsRecallFactory
 AgsRecallFactoryClass (<items>)
 AgsRecallFactoryCreateFlags (<items>)
 AgsRecallFlags (<items>)
-AgsRecallHandler (signal_name, callback, data, handler)
-AgsRecallID (<items>)
+AgsRecallHandler (<items>)
+AgsRecallID
 AgsRecallIDClass (<items>)
 AgsRecallIDFlags (<items>)
-AgsRecallLadspa (<items>)
+AgsRecallLadspa
 AgsRecallLadspaClass (<items>)
-AgsRecallLadspaRun (<items>)
+AgsRecallLadspaRun
 AgsRecallLadspaRunClass (<items>)
 AgsRecallNotifyDependencyMode (<items>)
-AgsRecallRecycling (<items>)
+AgsRecallRecycling
 AgsRecallRecyclingClass (<items>)
-AgsRecallRecyclingDummy (<items>)
+AgsRecallRecyclingDummy
 AgsRecallRecyclingDummyClass (<items>)
 AgsRecallRecyclingFlags (<items>)
-AgsRecordThread (<items>)
-AgsRecordThreadClass (<items>)
-AgsRecycling (<items>)
+AgsRecycling
 AgsRecycling::add-audio-signal
-AgsRecycling::set-audio-channels
+AgsRecycling::remove-audio-signal
 AgsRecyclingClass (<items>)
-AgsRecyclingContainer (<items>)
+AgsRecyclingContainer
 AgsRecyclingContainerClass (<items>)
 AgsRecyclingFlags (<items>)
-AgsRecyclingThread (<items>)
+AgsRecyclingThread
+AgsRecyclingThread::play-audio
+AgsRecyclingThread::play-channel
 AgsRecyclingThreadClass (<items>)
 AgsRecyclingThreadFlags (<items>)
-AgsRegistry (<items>)
+AgsRegistry
 AgsRegistryClass (<items>)
 AgsRegistryEntry (<items>)
-AgsRemoteTask (<items>)
+AgsRemoteTask
 AgsRemoteTaskClass (<items>)
-AgsRemoveAudio (<items>)
+AgsRemoveAudio
 AgsRemoveAudioClass (<items>)
-AgsRemoveAudioSignal (<items>)
+AgsRemoveAudioSignal
 AgsRemoveAudioSignalClass (<items>)
-AgsRemoveNote (<items>)
+AgsRemoveNote
 AgsRemoveNoteClass (<items>)
-AgsRemovePointFromSelection (<items>)
+AgsRemovePointFromSelection
 AgsRemovePointFromSelectionClass (<items>)
-AgsRemoveRecall (<items>)
+AgsRemoveRecall
 AgsRemoveRecallClass (<items>)
-AgsRemoveRegionFromSelection (<items>)
+AgsRemoveRegionFromSelection
 AgsRemoveRegionFromSelectionClass (<items>)
 AgsResizeEditor (<items>)
 AgsResizeEditorClass (<items>)
-AgsReturnableThread (<items>)
+AgsReturnableThread
+AgsReturnableThread::safe-run
 AgsReturnableThreadCallback
 AgsReturnableThreadClass (<items>)
 AgsReturnableThreadFlags (<items>)
-AgsRuler (<items>)
+AgsRuler
 AgsRulerClass (<items>)
 AgsRunnable
 AgsRunnableInterface (<items>)
-AgsSF2Chooser (<items>)
+AgsSF2Chooser
 AgsSF2ChooserClass (<items>)
 AgsSF2Levels (<items>)
-AgsSaveFile (<items>)
+AgsSaveFile
 AgsSaveFileClass (<items>)
-AgsScrollOnPlay (<items>)
+AgsScrollOnPlay
 AgsScrollOnPlayClass (<items>)
 AgsSeekable
 AgsSeekableInterface (<items>)
-AgsSegment (<items>)
-AgsSegmentClass (<items>)
-AgsSegmentFields (<items>)
-AgsServer (<items>)
+AgsServer
+AgsServer::start
 AgsServerClass (<items>)
 AgsServerFlags (<items>)
-AgsServerPreferences (<items>)
+AgsServerPreferences
 AgsServerPreferencesClass (<items>)
-AgsSetAudioChannels (<items>)
+AgsSetAudioChannels
 AgsSetAudioChannelsClass (<items>)
-AgsSetBufferSize (<items>)
+AgsSetBufferSize
 AgsSetBufferSizeClass (<items>)
-AgsSetDevoutPlayFlags (<items>)
+AgsSetDevoutPlayFlags
 AgsSetDevoutPlayFlagsClass (<items>)
-AgsSetMuted (<items>)
+AgsSetMuted
 AgsSetMutedClass (<items>)
-AgsSetOutputDevice (<items>)
+AgsSetOutputDevice
 AgsSetOutputDeviceClass (<items>)
-AgsSetSamplerate (<items>)
+AgsSetSamplerate
 AgsSetSamplerateClass (<items>)
-AgsSingleThread (<items>)
+AgsSingleThread
 AgsSingleThreadClass (<items>)
-AgsSndfile (<items>)
+AgsSndfile
 AgsSndfileClass (<items>)
 AgsSndfileFlags (<items>)
-AgsSoundcard
-AgsSoundcardInterface (<items>)
 AgsStackable
 AgsStackableInterface (<items>)
-AgsStartDevout (<items>)
+AgsStartDevout
 AgsStartDevoutClass (<items>)
-AgsStream (<items>)
-AgsStreamAudioSignal (<items>)
+AgsStream
+AgsStreamAudioSignal
 AgsStreamAudioSignalClass (<items>)
-AgsStreamChannel (<items>)
+AgsStreamChannel
 AgsStreamChannelClass (<items>)
-AgsStreamChannelRun (<items>)
+AgsStreamChannelRun
 AgsStreamChannelRunClass (<items>)
 AgsStreamClass (<items>)
-AgsStreamRecycling (<items>)
+AgsStreamRecycling
 AgsStreamRecyclingClass (<items>)
-AgsSynth (<items>)
+AgsSynth
 AgsSynthClass (<items>)
 AgsSynthFlags (<items>)
-AgsSynthInputLine (<items>)
+AgsSynthInputLine
 AgsSynthInputLineClass (<items>)
-AgsSynthInputPad (<items>)
+AgsSynthInputPad
 AgsSynthInputPadClass (<items>)
-AgsTable (<items>)
+AgsTable
 AgsTableClass (<items>)
 AgsTactable
+AgsTactable::change-bpm
+AgsTactable::change-notation-duration
+AgsTactable::change-sequencer-duration
+AgsTactable::change-tact
 AgsTactableInterface (<items>)
-AgsTask (<items>)
+AgsTask
 AgsTask::failure
 AgsTask::launch
 AgsTaskClass (<items>)
 AgsTaskFlags (<items>)
-AgsTaskThread (<items>)
+AgsTaskThread
 AgsTaskThreadAppend (<items>)
 AgsTaskThreadClass (<items>)
-AgsThread (<items>)
+AgsThread
+AgsThread::resume
+AgsThread::run
+AgsThread::start
+AgsThread::stop
+AgsThread::suspend
+AgsThread::timelock
 AgsThreadClass (<items>)
 AgsThreadFlags (<items>)
-AgsThreadPool (<items>)
+AgsThreadPool
+AgsThreadPool::start
 AgsThreadPoolClass (<items>)
 AgsThreadPoolFlags (<items>)
 AgsTimebar (<items>)
 AgsTimebarClass (<items>)
 AgsTimer (<items>)
-AgsTimestamp (<items>)
+AgsTimestamp
 AgsTimestampClass (<items>)
-AgsTimestampFactory (<items>)
+AgsTimestampFactory
+AgsTimestampFactory::create
 AgsTimestampFactoryClass (<items>)
 AgsTimestampFactoryFlags (<items>)
 AgsTimestampFlags (<items>)
-AgsTimestampThread (<items>)
+AgsTimestampThread
 AgsTimestampThreadClass (<items>)
-AgsToggleLed (<items>)
+AgsToggleLed
 AgsToggleLedClass (<items>)
-AgsTogglePatternBit (<items>)
+AgsTogglePatternBit
+AgsTogglePatternBit::refresh-gui
 AgsTogglePatternBitClass (<items>)
-AgsToolbar (<items>)
+AgsToolbar
 AgsToolbarClass (<items>)
 AgsTreeIterator
 AgsTreeIteratorInterface (<items>)
-AgsUnrefAudioSignal (<items>)
+AgsUnrefAudioSignal
 AgsUnrefAudioSignalClass (<items>)
-AgsVIndicator (<items>)
+AgsVIndicator
 AgsVIndicatorClass (<items>)
-AgsVolumeAudioSignal (<items>)
+AgsVolumeAudioSignal
 AgsVolumeAudioSignalClass (<items>)
-AgsVolumeChannel (<items>)
+AgsVolumeChannel
 AgsVolumeChannelClass (<items>)
-AgsVolumeChannelRun (<items>)
+AgsVolumeChannelRun
 AgsVolumeChannelRunClass (<items>)
-AgsVolumeRecycling (<items>)
+AgsVolumeRecycling
 AgsVolumeRecyclingClass (<items>)
-AgsWaveform (<items>)
-AgsWaveformClass (<items>)
-AgsWindow (<items>)
+AgsWindow
 AgsWindowClass (<items>)
 AgsWindowFlags (<items>)
 MSEC_PER_SEC
@@ -830,7 +834,6 @@ ags_add_recall_new
 ags_add_region_to_selection_new
 ags_amplifier
 ags_append_audio_new
-ags_append_audio_threaded_new
 ags_append_channel_new
 ags_append_recall_new
 ags_applicable_apply
@@ -851,12 +854,12 @@ ags_async_queue_pop_context
 ags_async_queue_push_context
 ags_async_queue_remove
 ags_async_queue_worker
-ags_audio_add_recall (audio, recall, play)
-ags_audio_add_recall_container (audio, recall_container)
-ags_audio_add_recall_id (audio, recall_id)
-ags_audio_cancel (audio, recall_id)
+ags_audio_add_recall
+ags_audio_add_recall_container
+ags_audio_add_recall_id
+ags_audio_cancel
 ags_audio_done
-ags_audio_duplicate_recall (audio, recall_id)
+ags_audio_duplicate_recall
 ags_audio_file_close
 ags_audio_file_flush
 ags_audio_file_new
@@ -867,9 +870,9 @@ ags_audio_file_rw_open
 ags_audio_file_seek
 ags_audio_file_write
 ags_audio_file_xml_new
-ags_audio_init_recall (audio, stage, recall_id)
-ags_audio_init_run (audio, Returns)
-ags_audio_is_playing (audio)
+ags_audio_init_recall
+ags_audio_init_run
+ags_audio_is_playing
 ags_audio_loop_add_audio
 ags_audio_loop_add_channel
 ags_audio_loop_add_recall
@@ -877,41 +880,42 @@ ags_audio_loop_new
 ags_audio_loop_remove_audio
 ags_audio_loop_remove_channel
 ags_audio_loop_remove_recall
-ags_audio_open_files (audio, filenames, overwrite_channels, create_channels)
-ags_audio_play (audio, recall_id, stage)
+ags_audio_new
+ags_audio_open_files
+ags_audio_play
 ags_audio_preferences_audio_channels_changed
 ags_audio_preferences_buffer_size_changed
 ags_audio_preferences_card_changed_callback
 ags_audio_preferences_new
 ags_audio_preferences_samplerate_changed
 ags_audio_recall_change_state
-ags_audio_recursive_play_init (audio, playback, sequencer, notation)
-ags_audio_remove_recall (audio, recall, play)
-ags_audio_remove_recall_container (audio, recall_container)
-ags_audio_remove_recall_id (audio, recall_id)
-ags_audio_resolve_recall (audio, recall_id)
-ags_audio_set_audio_channels (audio, audio_channels)
-ags_audio_set_devout (audio, devout)
-ags_audio_set_flags (audio, flags)
-ags_audio_set_pads (audio, type, pads)
+ags_audio_recursive_play_init
+ags_audio_remove_recall
+ags_audio_remove_recall_container
+ags_audio_remove_recall_id
+ags_audio_resolve_recall
+ags_audio_set_audio_channels
+ags_audio_set_devout
+ags_audio_set_flags
+ags_audio_set_pads
 ags_audio_set_recycling_new
-ags_audio_set_sequence_length (audio, sequence_length)
-ags_audio_signal_add_stream (audio_signal)
-ags_audio_signal_copy_buffer_to_buffer (destination, dchannels, source, schannels)
+ags_audio_set_sequence_length
+ags_audio_signal_add_stream
+ags_audio_signal_copy_buffer_to_buffer
 ags_audio_signal_copy_buffer_to_double_buffer
 ags_audio_signal_copy_double_buffer_to_buffer
-ags_audio_signal_duplicate_stream (audio_signal, template)
-ags_audio_signal_get_by_recall_id (audio_signal, recall_id)
-ags_audio_signal_get_length_till_current (audio_signal)
-ags_audio_signal_get_stream_current (audio_signal, recall_id)
-ags_audio_signal_get_template (audio_signal)
-ags_audio_signal_morph_samplerate (audio_signal, samplerate, k_morph)
-ags_audio_signal_new (devout, recycling, recall_id)
+ags_audio_signal_duplicate_stream
+ags_audio_signal_get_by_recall_id
+ags_audio_signal_get_length_till_current
+ags_audio_signal_get_stream_current
+ags_audio_signal_get_template
+ags_audio_signal_morph_samplerate
+ags_audio_signal_new
 ags_audio_signal_new_with_length
-ags_audio_signal_realloc_buffer_size (audio_signal, buffer_size)
+ags_audio_signal_realloc_buffer_size
 ags_audio_signal_scale
-ags_audio_signal_stream_resize (audio_signal, length)
-ags_audio_signal_stream_safe_resize (audio_signal, length)
+ags_audio_signal_stream_resize
+ags_audio_signal_stream_safe_resize
 ags_audio_signal_tile
 ags_audio_tact
 ags_audio_unset_flags
@@ -923,49 +927,46 @@ ags_buffer_recycling_new
 ags_cancel_audio_new
 ags_cancel_channel_new
 ags_cancel_recall_new
-ags_cartesian_new
 ags_change_indicator_new
 ags_change_tact_new
-ags_channel_add_recall (channel, recall, play)
-ags_channel_add_recall_container (channel, recall_container)
-ags_channel_add_recall_id (channel, recall_id)
-ags_channel_cancel (channel, recall_id)
+ags_channel_add_recall
+ags_channel_add_recall_container
+ags_channel_add_recall_id
+ags_channel_cancel
 ags_channel_done
-ags_channel_duplicate_recall (channel, recall_id)
+ags_channel_duplicate_recall
 ags_channel_error_quark
 ags_channel_find_recall
-ags_channel_first (channel)
-ags_channel_first_with_recycling (channel)
-ags_channel_init_recall (channel, stage, recall_id)
+ags_channel_first
+ags_channel_first_with_recycling
+ags_channel_init_recall
 ags_channel_iter_alloc
 ags_channel_iter_free
 ags_channel_iter_next
 ags_channel_iter_prev
-ags_channel_last (channel)
-ags_channel_last_with_recycling (channel)
-ags_channel_new (audio)
-ags_channel_nth (channel, nth)
-ags_channel_pad_first (channel)
-ags_channel_pad_last (channel)
-ags_channel_pad_nth (channel, nth)
-ags_channel_play (channel, recall_id, stage)
+ags_channel_last
+ags_channel_last_with_recycling
+ags_channel_new
+ags_channel_nth
+ags_channel_pad_first
+ags_channel_pad_last
+ags_channel_pad_nth
+ags_channel_play
 ags_channel_recall_id_set
-ags_channel_recursive_play (channel, recall_id, stage)
-ags_channel_recursive_play_init (channel, stage, arrange_recall_id, duplicate_templates, playback, sequencer, notation, resolve_dependencies, recall_id, Returns)
-ags_channel_recursive_play_threaded (channel, recall_id, stage)
-ags_channel_recursive_reset_recall_ids (channel, link, old_channel_link, old_link_link)
-ags_channel_recycling_changed (channel)
-ags_channel_remove_recall (channel, recall, play)
-ags_channel_remove_recall_id (channel, recall_id)
-ags_channel_resolve_recall (channel, recall_id)
-ags_channel_safe_resize_audio_signal (channel, size)
-ags_channel_set_devout (channel, devout)
-ags_channel_set_link (channel, link, error)
-ags_channel_set_recycling (channel, first_recycling, last_recycling, update, destroy_old)
+ags_channel_recursive_play
+ags_channel_recursive_play_init
+ags_channel_recursive_play_threaded
+ags_channel_recursive_reset_recall_ids
+ags_channel_recycling_changed
+ags_channel_remove_recall
+ags_channel_remove_recall_id
+ags_channel_resolve_recall
+ags_channel_safe_resize_audio_signal
+ags_channel_set_devout
+ags_channel_set_link
+ags_channel_set_recycling
 ags_channel_set_recycling_new
-ags_channel_tillrecycling_cancel (channel, recall_id)
-ags_clone_channel_new
-ags_clone_channel_run_new
+ags_channel_tillrecycling_cancel
 ags_combo_box_text_remove_all
 ags_config_get
 ags_config_load_defaults
@@ -1008,15 +1009,17 @@ ags_delay_audio_run_sequencer_alloc_output
 ags_delay_audio_run_sequencer_count
 ags_delay_audio_sequencer_duration_changed
 ags_devout_error_quark
-ags_devout_list_cards (card_id, card_name)
-ags_devout_new (ags_main)
+ags_devout_list_cards
+ags_devout_new
 ags_devout_note_offset_changed
-ags_devout_pcm_info (card_id, channels_min, channels_max, rate_min, rate_max, buffer_size_min, buffer_size_max, error)
-ags_devout_play_domain_free (devout_play_domain)
-ags_devout_play_find_source (devout_play, source)
-ags_devout_play_free (devout_play)
+ags_devout_pcm_info
+ags_devout_play_alloc
+ags_devout_play_domain_alloc
+ags_devout_play_domain_free
+ags_devout_play_find_source
+ags_devout_play_free
 ags_devout_thread_new
-ags_devout_tic (devout)
+ags_devout_tic
 ags_dial_new
 ags_display_tact_new
 ags_drum_done_callback
@@ -1139,7 +1142,6 @@ ags_file_read_menu_bar
 ags_file_read_mixer_input_pad
 ags_file_read_mixer_output_pad
 ags_file_read_navigation
-ags_file_read_new
 ags_file_read_notation
 ags_file_read_notation_list
 ags_file_read_note
@@ -1193,7 +1195,7 @@ ags_file_selection_entry_alloc
 ags_file_selection_new
 ags_file_selection_remove_callback
 ags_file_selection_remove_entry
-ags_file_selection_set_entry (file_selection, entry)
+ags_file_selection_set_entry
 ags_file_str2md5
 ags_file_util_read_dependency
 ags_file_util_read_history
@@ -1205,7 +1207,6 @@ ags_file_util_write_history
 ags_file_util_write_object
 ags_file_util_write_parameter
 ags_file_util_write_value
-ags_file_value_factory_new
 ags_file_write
 ags_file_write_audio
 ags_file_write_audio_list
@@ -1247,7 +1248,6 @@ ags_file_write_menu_bar
 ags_file_write_mixer_input_pad
 ags_file_write_mixer_output_pad
 ags_file_write_navigation
-ags_file_write_new
 ags_file_write_notation
 ags_file_write_notation_list
 ags_file_write_note
@@ -1298,18 +1298,15 @@ ags_garbage_collector_add
 ags_garbage_collector_new
 ags_garbage_collector_remove
 ags_garbage_collector_run
-ags_generic_preferences_new
 ags_gui_task_thread_new
 ags_gui_thread_new
-ags_hindicator_new
-ags_history_new
 ags_htimebar_new
 ags_id_generator_create_uuid
 ags_indicator_new
 ags_init_audio_new
 ags_init_channel_new
 ags_inline_player_new
-ags_input_new (audio)
+ags_input_new
 ags_ipatch_new
 ags_ipatch_sf2_reader_new
 ags_iterator_thread_children_ready
@@ -1336,16 +1333,6 @@ ags_ladspa_plugin_preferences_alloc
 ags_led_new
 ags_led_set_active
 ags_led_unset_active
-ags_libao_error_quark
-ags_libao_list_cards
-ags_libao_new
-ags_libao_note_offset_changed
-ags_libao_pcm_info
-ags_libao_play_alloc
-ags_libao_play_domain_alloc
-ags_libao_play_domain_free
-ags_libao_play_free
-ags_libao_tic
 ags_line_channel_done_callback
 ags_line_copy_pattern_cancel
 ags_line_copy_pattern_done
@@ -1562,24 +1549,24 @@ ags_navigation_stop_callback
 ags_navigation_tact_to_time_string
 ags_navigation_tic_callback
 ags_navigation_update_time_string
-ags_notation_add_note (notation, note, use_selection_list)
-ags_notation_add_point_to_selection (notation, x, y, replace_current_selection)
-ags_notation_add_region_to_selection (notation, x0, y0, x1, y1, replace_current_selection)
-ags_notation_copy_selection (notation)
-ags_notation_cut_selection (notation)
-ags_notation_find_near_timestamp (notation, audio_channel, timestamp)
-ags_notation_find_point (notation, x, y, use_selection_list)
-ags_notation_find_region (notation, x0, y0, x1, y1, use_selection_list)
-ags_notation_free_selection (notation)
+ags_notation_add_note
+ags_notation_add_point_to_selection
+ags_notation_add_region_to_selection
+ags_notation_copy_selection
+ags_notation_cut_selection
+ags_notation_find_near_timestamp
+ags_notation_find_point
+ags_notation_find_region
+ags_notation_free_selection
 ags_notation_get_current
-ags_notation_get_selection (notation)
-ags_notation_insert_from_clipboard (notation, content, reset_x_offset, x_offset, reset_y_offset, y_offset)
-ags_notation_is_note_selected (notation, note)
-ags_notation_new (audio_channel)
-ags_notation_remove_note_at_position (notation, x, y)
+ags_notation_get_selection
+ags_notation_insert_from_clipboard
+ags_notation_is_note_selected
+ags_notation_new
+ags_notation_remove_note_at_position
 ags_notation_remove_point_from_selection
-ags_notation_remove_region_from_selection (notation, x0, y0, x1, y1)
-ags_note_duplicate (note)
+ags_notation_remove_region_from_selection
+ags_note_duplicate
 ags_note_edit_draw_notation
 ags_note_edit_draw_position
 ags_note_edit_draw_scroll
@@ -1595,6 +1582,7 @@ ags_note_edit_reset_horizontally
 ags_note_edit_reset_vertically
 ags_note_edit_set_map_height
 ags_note_edit_vscrollbar_value_changed
+ags_note_new
 ags_notebook_add_child
 ags_notebook_add_tab
 ags_notebook_insert_tab
@@ -1614,9 +1602,9 @@ ags_oscillator_new
 ags_oscillator_phase_callback
 ags_oscillator_volume_callback
 ags_oscillator_wave_callback
-ags_output_find_first_input_recycling (output)
-ags_output_find_last_input_recycling (output)
-ags_output_new (audio)
+ags_output_find_first_input_recycling
+ags_output_find_last_input_recycling
+ags_output_new
 ags_packable_pack
 ags_packable_unpack
 ags_pad_destroy_callback
@@ -1642,10 +1630,11 @@ ags_panel_input_pad_new
 ags_panel_new
 ags_panel_parent_set_callback
 ags_parameter_grow
-ags_pattern_get_bit (pattern, i, j, bit)
+ags_pattern_get_bit
 ags_pattern_get_by_timestamp
-ags_pattern_set_dim (pattern, dim0, dim1, lenght)
-ags_pattern_toggle_bit (pattern, i, j, bit)
+ags_pattern_new
+ags_pattern_set_dim
+ags_pattern_toggle_bit
 ags_peak_channel_new
 ags_peak_channel_retrieve_peak
 ags_peak_channel_run_new
@@ -1705,49 +1694,12 @@ ags_plugin_set_ports
 ags_plugin_set_version
 ags_plugin_set_xml_type
 ags_plugin_write
-ags_port_find_specifier (port, specifier)
-ags_port_safe_get_property (port, property_name, value)
-ags_port_safe_read (port, value)
-ags_port_safe_set_property (port, property_name, value)
+ags_port_find_specifier
+ags_port_new
+ags_port_safe_get_property
+ags_port_safe_read
+ags_port_safe_set_property
 ags_port_safe_write
-ags_portable_thread_add_child
-ags_portable_thread_children_is_locked
-ags_portable_thread_first (thread, Returns)
-ags_portable_thread_get_toplevel (thread, Returns)
-ags_portable_thread_is_current_ready
-ags_portable_thread_is_current_synced
-ags_portable_thread_is_tree_ready
-ags_portable_thread_is_tree_synced
-ags_portable_thread_last (thread, Returns)
-ags_portable_thread_lock (thread)
-ags_portable_thread_lock_all
-ags_portable_thread_lock_children (thread)
-ags_portable_thread_lock_parent (thread, parent)
-ags_portable_thread_lock_sibling (thread)
-ags_portable_thread_main_loop_unlock_children
-ags_portable_thread_new (data, Returns)
-ags_portable_thread_next_children_locked (thread, Returns)
-ags_portable_thread_next_parent_locked (thread, parent, Returns)
-ags_portable_thread_next_sibling_locked (thread, Returns)
-ags_portable_thread_parental_is_locked (thread, parent, Returns)
-ags_portable_thread_remove_child
-ags_portable_thread_run (thread)
-ags_portable_thread_sibling_is_locked (thread, Returns)
-ags_portable_thread_signal_children (thread, broadcast)
-ags_portable_thread_signal_parent (thread, parent, broadcast)
-ags_portable_thread_signal_sibling (thread, broadcast)
-ags_portable_thread_start (thread)
-ags_portable_thread_stop (thread)
-ags_portable_thread_timelock
-ags_portable_thread_trylock
-ags_portable_thread_unlock (thread)
-ags_portable_thread_unlock_all
-ags_portable_thread_unlock_children (thread)
-ags_portable_thread_unlock_parent (thread, parent)
-ags_portable_thread_unlock_sibling (thread)
-ags_portable_thread_wait_children (thread)
-ags_portable_thread_wait_parent (thread, parent)
-ags_portable_thread_wait_sibling (thread)
 ags_portlet_get_port
 ags_portlet_list_safe_properties
 ags_portlet_safe_get_property
@@ -1761,97 +1713,104 @@ ags_property_collection_editor_remove_collection_callback
 ags_property_editor_enable_callback
 ags_property_editor_new
 ags_property_listing_editor_new
-ags_recall_add_child (recall, child)
-ags_recall_add_dependency (recall, dependency)
+ags_recall_add_child
+ags_recall_add_dependency
 ags_recall_add_handler
-ags_recall_audio_new (audio)
-ags_recall_audio_signal_new (destination, source, devout)
-ags_recall_cancel (recall)
-ags_recall_channel_find_channel (recall_channel, channel)
-ags_recall_channel_run_dummy_new (source, child_type, recycling_dummy_child_type)
+ags_recall_audio_new
+ags_recall_audio_run_new
+ags_recall_audio_signal_new
+ags_recall_cancel
+ags_recall_channel_find_channel
+ags_recall_channel_new
+ags_recall_channel_run_dummy_new
 ags_recall_channel_run_get_run_order
 ags_recall_channel_run_new
 ags_recall_channel_run_run_order_changed
 ags_recall_child_added
-ags_recall_container_find (recall_container, type, find_flags, recall_id, Returns)
-ags_recall_container_get_recall_audio (container, Returns)
-ags_recall_container_get_recall_audio_run (container, Returns)
-ags_recall_container_get_recall_channel (container, Returns)
-ags_recall_container_get_recall_channel_run (container, Returns)
+ags_recall_container_find
+ags_recall_container_get_recall_audio
+ags_recall_container_get_recall_audio_run
+ags_recall_container_get_recall_channel
+ags_recall_container_get_recall_channel_run
 ags_recall_container_new
-ags_recall_dependency_find_dependency (recall_dependencies, dependency)
-ags_recall_dependency_find_dependency_by_provider (recall_dependencies, provider)
-ags_recall_dependency_new (dependency)
-ags_recall_dependency_resolve (recall_dependency, recall_id)
-ags_recall_done (recall)
-ags_recall_duplicate (recall, recall_id, Returns)
-ags_recall_factory_create (audio, play_container, recall_container, plugin_name, start_audio_channel, stop_audio_channel, start_pad, stop_pad, create_flags, recall_flags, Returns)
+ags_recall_dependency_find_dependency
+ags_recall_dependency_find_dependency_by_provider
+ags_recall_dependency_new
+ags_recall_dependency_resolve
+ags_recall_done
+ags_recall_duplicate
+ags_recall_factory_create
 ags_recall_factory_get_instance
+ags_recall_factory_new
 ags_recall_factory_remove
-ags_recall_find_by_effect (list, recall_id, effect, Returns)
+ags_recall_find_by_effect
 ags_recall_find_provider
 ags_recall_find_provider_with_recycling_container
-ags_recall_find_recycling_container (recall, recycling_container, Returns)
-ags_recall_find_template (recall, Returns)
-ags_recall_find_type (recall, type, Returns)
-ags_recall_find_type_with_recycling_container (recall, type, recycling_container, Returns)
+ags_recall_find_recycling_container
+ags_recall_find_template
+ags_recall_find_type
+ags_recall_find_type_with_recycling_container
 ags_recall_get_children
 ags_recall_get_dependencies
 ags_recall_handler_alloc
-ags_recall_id_add (recall_id_list, recall_id)
-ags_recall_id_find_parent_recycling_container (recall_id_list, parent_recycling_container)
-ags_recall_id_find_recycling_container (recall_id_list, recycling_container)
-ags_recall_id_get_run_stage (id, stage)
-ags_recall_id_new (recycling)
-ags_recall_id_set_run_stage (recall_id, stage)
-ags_recall_id_unset_run_stage (recall_id, stage)
-ags_recall_is_done (recalls, recycling_container, Returns)
-ags_recall_ladpsa_find (recall, filename, effect)
-ags_recall_ladspa_float_to_short (buffer, destination)
-ags_recall_ladspa_load_ports (recall_ladspa)
+ags_recall_id_add
+ags_recall_id_find_parent_recycling_container
+ags_recall_id_find_recycling_container
+ags_recall_id_get_run_stage
+ags_recall_id_new
+ags_recall_id_set_run_stage
+ags_recall_id_unset_run_stage
+ags_recall_is_done
+ags_recall_ladpsa_find
+ags_recall_ladspa_float_to_short
+ags_recall_ladspa_load_ports
 ags_recall_ladspa_new
-ags_recall_ladspa_run_new (audio_signal)
-ags_recall_ladspa_short_to_float (buffer, destination)
-ags_recall_notify_dependency (recall, dependency, count)
-ags_recall_recycling_dummy_new (recycling, child_type)
+ags_recall_ladspa_run_new
+ags_recall_ladspa_short_to_float
+ags_recall_new
+ags_recall_notify_dependency
+ags_recall_recycling_dummy_new
 ags_recall_recycling_get_child_source
-ags_recall_remove (recall)
-ags_recall_remove_child (recall, child)
-ags_recall_remove_dependency (recall, template)
+ags_recall_recycling_new
+ags_recall_remove
+ags_recall_remove_child
+ags_recall_remove_dependency
 ags_recall_remove_handler
-ags_recall_resolve_dependencies (reall)
+ags_recall_resolve_dependencies
 ags_recall_run_init
-ags_recall_run_init_inter (recall)
-ags_recall_run_init_post (recall)
-ags_recall_run_init_pre (recall)
+ags_recall_run_init_inter
+ags_recall_run_init_post
+ags_recall_run_init_pre
 ags_recall_run_inter
 ags_recall_run_post
 ags_recall_run_pre
 ags_recall_set_devout_recursive
 ags_recall_set_effect
-ags_recall_set_flags (recall, flags)
-ags_recall_set_recall_id (recall, recall_id)
-ags_recall_stop_persistent (recall)
+ags_recall_set_flags
+ags_recall_set_recall_id
+ags_recall_stop_persistent
 ags_recall_template_find_provider
 ags_recall_template_find_type
-ags_record_thread_new
-ags_recycling_container_add (recycling_container, recycling)
-ags_recycling_container_add_child (parent, child)
-ags_recycling_container_find (recycling_container, recycling)
-ags_recycling_container_find_child (recycling_container, recycling)
-ags_recycling_container_find_parent (recycling_container, recycling)
-ags_recycling_container_get_child_recall_id (recycling_container)
-ags_recycling_container_get_toplevel (recycling_container)
+ags_recycling_add_audio_signal
+ags_recycling_container_add
+ags_recycling_container_add_child
+ags_recycling_container_find
+ags_recycling_container_find_child
+ags_recycling_container_find_parent
+ags_recycling_container_get_child_recall_id
+ags_recycling_container_get_toplevel
 ags_recycling_container_insert
-ags_recycling_container_new (length)
+ags_recycling_container_new
 ags_recycling_container_remove
-ags_recycling_container_remove_child (parent, child)
+ags_recycling_container_remove_child
 ags_recycling_container_replace
-ags_recycling_container_reset_recycling (recycling_container, old_first_recycling, old_last_recycling, new_first_recycling, new_last_recycling)
-ags_recycling_create_audio_signal_with_defaults (recycling, audio_signal, delay, attack)
-ags_recycling_create_audio_signal_with_frame_count (recycling, audio_signal, frame_count, delay, attack)
-ags_recycling_new (devout)
-ags_recycling_position (start_recycling)
+ags_recycling_container_reset_recycling
+ags_recycling_create_audio_signal_with_defaults
+ags_recycling_create_audio_signal_with_frame_count
+ags_recycling_find_next_channel
+ags_recycling_new
+ags_recycling_position
+ags_recycling_remove_audio_signal
 ags_recycling_set_devout
 ags_recycling_thread_iterate_callback
 ags_recycling_thread_new
@@ -1884,10 +1843,6 @@ ags_runnable_stop
 ags_save_file_new
 ags_scroll_on_play_new
 ags_seekable_seek
-ags_segment_draw_string
-ags_segment_field_off
-ags_segment_field_on
-ags_segment_new
 ags_server_create_object
 ags_server_lookup
 ags_server_new
@@ -1909,15 +1864,11 @@ ags_sf2_chooser_remove_all_from_combo
 ags_sf2_chooser_sample_changed
 ags_single_thread_new
 ags_sndfile_new
-ags_soundcard_list_cards
-ags_soundcard_offset_changed
-ags_soundcard_pcm_info
-ags_soundcard_tic (soundcard)
 ags_stackable_pop
 ags_stackable_push
 ags_start_devout_new
 ags_stream
-ags_stream_alloc (buffer_size)
+ags_stream_alloc
 ags_stream_audio_signal_new
 ags_stream_channel_new
 ags_stream_channel_run_new
@@ -1942,54 +1893,55 @@ ags_tactable_change_bpm
 ags_tactable_change_notation_duration
 ags_tactable_change_sequencer_duration
 ags_tactable_change_tact
-ags_task_failure (task, error)
-ags_task_launch (task)
-ags_task_thread_append_task (task_thread, task)
-ags_task_thread_append_tasks (task_thread, list)
+ags_task_failure
+ags_task_launch
+ags_task_new
+ags_task_thread_append_task
+ags_task_thread_append_tasks
 ags_task_thread_new
 ags_thread_add_child
-ags_thread_children_is_locked (thread, Returns, thread, Returns)
-ags_thread_first (thread, Returns, thread, Returns)
-ags_thread_get_toplevel (thread, Returns, thread, Returns)
-ags_thread_hangcheck (thread, thread)
+ags_thread_children_is_locked
+ags_thread_first
+ags_thread_get_toplevel
+ags_thread_hangcheck
 ags_thread_is_current_ready
 ags_thread_is_tree_ready
-ags_thread_last (thread, Returns, thread, Returns)
-ags_thread_lock (thread, thread)
+ags_thread_last
+ags_thread_lock
 ags_thread_lock_all
-ags_thread_lock_children (thread, thread)
-ags_thread_lock_parent (thread, parent, thread, parent)
-ags_thread_lock_sibling (thread, thread)
-ags_thread_new (data, Returns, data, Returns)
-ags_thread_next_children_locked (thread, Returns, thread, Returns)
-ags_thread_next_parent_locked (thread, parent, Returns, thread, parent, Returns)
-ags_thread_next_sibling_locked (thread, Returns, thread, Returns)
-ags_thread_parental_is_locked (thread, parent, Returns, thread, parent, Returns)
+ags_thread_lock_children
+ags_thread_lock_parent
+ags_thread_lock_sibling
+ags_thread_new
+ags_thread_next_children_locked
+ags_thread_next_parent_locked
+ags_thread_next_sibling_locked
+ags_thread_parental_is_locked
 ags_thread_pool_new
 ags_thread_pool_pull
 ags_thread_pool_start
 ags_thread_remove_child
 ags_thread_resume
-ags_thread_run (thread, thread)
-ags_thread_set_sync (thread, tic, thread, tic)
+ags_thread_run
+ags_thread_set_sync
 ags_thread_set_sync_all
-ags_thread_sibling_is_locked (thread, Returns, thread, Returns)
-ags_thread_signal_children (thread, broadcast, thread, broadcast)
-ags_thread_signal_parent (thread, parent, broadcast, thread, parent, broadcast)
-ags_thread_signal_sibling (thread, broadcast, thread, broadcast)
-ags_thread_start (thread, thread)
-ags_thread_stop (thread, thread)
+ags_thread_sibling_is_locked
+ags_thread_signal_children
+ags_thread_signal_parent
+ags_thread_signal_sibling
+ags_thread_start
+ags_thread_stop
 ags_thread_suspend
 ags_thread_timelock
 ags_thread_trylock
-ags_thread_unlock (thread, thread)
+ags_thread_unlock
 ags_thread_unlock_all
-ags_thread_unlock_children (thread, thread)
-ags_thread_unlock_parent (thread, parent, thread, parent)
-ags_thread_unlock_sibling (thread, thread)
-ags_thread_wait_children (thread, thread)
-ags_thread_wait_parent (thread, parent, thread, parent)
-ags_thread_wait_sibling (thread, thread)
+ags_thread_unlock_children
+ags_thread_unlock_parent
+ags_thread_unlock_sibling
+ags_thread_wait_children
+ags_thread_wait_parent
+ags_thread_wait_sibling
 ags_timebar_new
 ags_timer_alloc
 ags_timestamp_factory_create
@@ -2023,7 +1975,6 @@ ags_volume_audio_signal_new
 ags_volume_channel_new
 ags_volume_channel_run_new
 ags_volume_recycling_new
-ags_waveform_new
 ags_window_decrement_machine_counter
 ags_window_delete_event_callback
 ags_window_find_machine_counter
@@ -2098,8 +2049,6 @@ ags_amplifier:Long_Description
 ags_amplifier:Short_Description
 ags_append_audio:Long_Description
 ags_append_audio:Short_Description
-ags_append_audio_threaded:Long_Description
-ags_append_audio_threaded:Short_Description
 ags_append_channel:Long_Description
 ags_append_channel:Short_Description
 ags_append_recall:Long_Description
@@ -2150,8 +2099,6 @@ ags_cancel_channel:Long_Description
 ags_cancel_channel:Short_Description
 ags_cancel_recall:Long_Description
 ags_cancel_recall:Short_Description
-ags_cartesian:Long_Description
-ags_cartesian:Short_Description
 ags_change_indicator:Long_Description
 ags_change_indicator:Short_Description
 ags_change_tact:Long_Description
@@ -2162,10 +2109,6 @@ ags_channel_iter:Long_Description
 ags_channel_iter:Short_Description
 ags_channel_set_recycling:Long_Description
 ags_channel_set_recycling:Short_Description
-ags_clone_channel:Long_Description
-ags_clone_channel:Short_Description
-ags_clone_channel_run:Long_Description
-ags_clone_channel_run:Short_Description
 ags_combo_box_text:Long_Description
 ags_combo_box_text:Short_Description
 ags_config:Long_Description
@@ -2240,8 +2183,6 @@ ags_editor:Long_Description
 ags_editor:Short_Description
 ags_editor_callbacks:Long_Description
 ags_editor_callbacks:Short_Description
-ags_effect:Long_Description
-ags_effect:Short_Description
 ags_expander:Long_Description
 ags_expander:Short_Description
 ags_expander_set:Long_Description
@@ -2270,8 +2211,6 @@ ags_file_link:Long_Description
 ags_file_link:Short_Description
 ags_file_lookup:Long_Description
 ags_file_lookup:Short_Description
-ags_file_read:Long_Description
-ags_file_read:Short_Description
 ags_file_selection:Long_Description
 ags_file_selection:Short_Description
 ags_file_selection_callbacks:Long_Description
@@ -2284,24 +2223,14 @@ ags_file_thread:Long_Description
 ags_file_thread:Short_Description
 ags_file_util:Long_Description
 ags_file_util:Short_Description
-ags_file_value_factory:Long_Description
-ags_file_value_factory:Short_Description
-ags_file_write:Long_Description
-ags_file_write:Short_Description
 ags_free_selection:Long_Description
 ags_free_selection:Short_Description
 ags_garbage_collector:Long_Description
 ags_garbage_collector:Short_Description
-ags_generic_preferences:Long_Description
-ags_generic_preferences:Short_Description
 ags_gui_task_thread:Long_Description
 ags_gui_task_thread:Short_Description
 ags_gui_thread:Long_Description
 ags_gui_thread:Short_Description
-ags_hindicator:Long_Description
-ags_hindicator:Short_Description
-ags_history:Long_Description
-ags_history:Short_Description
 ags_htimebar:Long_Description
 ags_htimebar:Short_Description
 ags_id_generator:Long_Description
@@ -2332,8 +2261,6 @@ ags_ladspa_manager:Long_Description
 ags_ladspa_manager:Short_Description
 ags_led:Long_Description
 ags_led:Short_Description
-ags_libao:Long_Description
-ags_libao:Short_Description
 ags_line:Long_Description
 ags_line:Short_Description
 ags_line_callbacks:Long_Description
@@ -2524,8 +2451,6 @@ ags_plugin_stock:Long_Description
 ags_plugin_stock:Short_Description
 ags_port:Long_Description
 ags_port:Short_Description
-ags_portable_thread:Long_Description
-ags_portable_thread:Short_Description
 ags_portlet:Long_Description
 ags_portlet:Short_Description
 ags_preferences:Long_Description
@@ -2572,8 +2497,6 @@ ags_recall_recycling:Long_Description
 ags_recall_recycling:Short_Description
 ags_recall_recycling_dummy:Long_Description
 ags_recall_recycling_dummy:Short_Description
-ags_record_thread:Long_Description
-ags_record_thread:Short_Description
 ags_recycling:Long_Description
 ags_recycling:Short_Description
 ags_recycling_container:Long_Description
@@ -2614,8 +2537,6 @@ ags_scroll_on_play:Long_Description
 ags_scroll_on_play:Short_Description
 ags_seekable:Long_Description
 ags_seekable:Short_Description
-ags_segment:Long_Description
-ags_segment:Short_Description
 ags_server:Long_Description
 ags_server:Short_Description
 ags_server_preferences:Long_Description
@@ -2642,8 +2563,6 @@ ags_single_thread:Long_Description
 ags_single_thread:Short_Description
 ags_sndfile:Long_Description
 ags_sndfile:Short_Description
-ags_soundcard:Long_Description
-ags_soundcard:Short_Description
 ags_stackable:Long_Description
 ags_stackable:Short_Description
 ags_start_devout:Long_Description
@@ -2714,8 +2633,6 @@ ags_volume_channel_run:Long_Description
 ags_volume_channel_run:Short_Description
 ags_volume_recycling:Long_Description
 ags_volume_recycling:Short_Description
-ags_waveform:Long_Description
-ags_waveform:Short_Description
 ags_window:Long_Description
 ags_window:Short_Description
 ags_window_callbacks:Long_Description

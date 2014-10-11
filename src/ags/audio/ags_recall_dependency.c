@@ -36,7 +36,7 @@ void ags_recall_dependency_disconnect(AgsConnectable *connectable);
 void ags_recall_dependency_finalize(GObject *gobject);
 
 /**
- * SECTION:agsrecalldependency
+ * SECTION:ags_recall_dependency
  * @Short_description: Object specifing dependency
  * @Title: AgsRecallDependency
  *
@@ -127,8 +127,8 @@ ags_recall_dependency_finalize(GObject *gobject)
 
 /**
  * ags_recall_dependency_find_dependency:
- * @recall_dependencies a #GList containing  #AgsRecallDependency
- * @dependency the #AgsRecall depending on
+ * @recall_dependencies: a #GList containing  #AgsRecallDependency
+ * @dependency: the #AgsRecall depending on
  *
  * Retrieve dependency.
  *
@@ -154,8 +154,8 @@ ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *depen
 
 /**
  * ags_recall_dependency_find_dependency_by_provider:
- * @recall_dependencies a #GList containing  #AgsRecallDependency
- * @provider the object providing recall, like #AgsAudio or #AgsChannel
+ * @recall_dependencies: a #GList containing  #AgsRecallDependency
+ * @provider: the object providing recall, like #AgsAudio or #AgsChannel
  *
  * Retrieve dependency by provider.
  *
@@ -187,8 +187,8 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
 
 /**
  * ags_recall_dependency_resolve:
- * @recall_dependeny an #AgsRecallDependency
- * @recall_id the #AgsRecallID refering to
+ * @recall_dependeny: an #AgsRecallDependency
+ * @recall_id: the #AgsRecallID refering to
  *
  * Resolve dependency.
  *
@@ -242,7 +242,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 
 /**
  * ags_recall_dependency_new:
- * @dependency the #AgsRecall depending on
+ * @dependency: the #AgsRecall depending on
  *
  * Creates a #AgsRecallDependency
  *

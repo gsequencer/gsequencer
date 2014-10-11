@@ -45,9 +45,11 @@
 #include <stdio.h>
 
 /**
- * SECTION:agsaudio
- * @Short_description: A container of channels organizing them as input or output
- * @Title: AgsAudio
+ * SECTION:ags_audio
+ * @short_description: A container of channels organizing them as input or output
+ * @title: AgsAudio
+ * @section_id:
+ * @include: ags/audio/ags_audio.h
  *
  * #AgsAudio organizes #AgsChannel objects either as input or output and
  * is responsible of their alignment. The class can contain #AgsRecall objects
@@ -183,9 +185,12 @@ ags_audio_class_init(AgsAudioClass *audio)
   /* signals */
   /**
    * AgsAudio::set-audio-channels:
-   * @audio the object to adjust the channels.
-   * @audio_channels_new new audio channel count
-   * @audio_channels_old old audio channel count
+   * @audio: the object to adjust the channels.
+   * @audio_channels_new: new audio channel count
+   * @audio_channels_old: old audio channel count
+   *
+   * The ::set-audio-channels signal notifies about changes in channel
+   * alignment.
    */
   audio_signals[SET_AUDIO_CHANNELS] = 
     g_signal_new("set-audio-channels\0",
@@ -199,10 +204,13 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /**
    * AgsAudio::set-pads:
-   * @audio the object to adjust pads.
-   * @type either #AGS_TYPE_INPUT or #AGS_TYPE_OUTPUT
-   * @pads_new new pad count
-   * @pads_old old pad count
+   * @audio: the object to adjust pads.
+   * @type: either #AGS_TYPE_INPUT or #AGS_TYPE_OUTPUT
+   * @pads_new: new pad count
+   * @pads_old: old pad count
+   *
+   * The ::set-pads signal notifies about changes in channel
+   * alignment.
    */
   audio_signals[SET_PADS] = 
     g_signal_new("set-pads\0",
@@ -217,7 +225,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /**
    * AgsAudio::init-run:
-   * @audio the object to init run.
+   * @audio: the object to init run.
+   *
+   * The ::init-run signal is invoked during dynamic initialization of recalls
+   * of @audio.
+   *
    * Returns: the current #AgsRecallID
    */
   audio_signals[INIT_RUN] = 
@@ -231,8 +243,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /**
    * AgsAudio::tact:
-   * @audio the object playing.
-   * @recall_id the appropriate #AgsRecallID
+   * @audio: the object playing.
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::tact signal is invoked during playback of recalls
+   * of @audio.
    */
   audio_signals[TACT] = 
     g_signal_new("tact\0",
@@ -246,8 +261,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /**
    * AgsAudio::done:
-   * @audio the object done playing.
-   * @recall_id the appropriate #AgsRecallID
+   * @audio: the object done playing.
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::done signal is invoked while terminating playback
+   * of @audio.
    */
   audio_signals[DONE] = 
     g_signal_new("done\0",
@@ -565,10 +583,12 @@ ags_audio_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_audio_set_flags:
- * @audio an AgsAudio
- * @flags see enum AgsAudioFlags
+ * @audio: an AgsAudio
+ * @flags: see enum AgsAudioFlags
  *
  * Enable a feature of AgsAudio.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_set_flags(AgsAudio *audio, guint flags)
@@ -677,10 +697,12 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 
 /**
  * ags_audio_set_flags:
- * @audio an AgsAudio
- * @flags see enum AgsAudioFlags
+ * @audio: an AgsAudio
+ * @flags: see enum AgsAudioFlags
  *
  * Disable a feature of AgsAudio.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_unset_flags(AgsAudio *audio, guint flags)
@@ -1419,10 +1441,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
 /**
  * ags_audio_set_audio_channels:
- * @audio the #AgsAudio
- * @audio_channels new audio channels
+ * @audio: the #AgsAudio
+ * @audio_channels: new audio channels
  *
  * Resize audio channels AgsInput will be allocated first.
+ *
+ * Since: 0.3
  */
 void
 ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
@@ -2021,11 +2045,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 /**
  * ags_audio_set_pads:
- * @audio an #AgsAudio
- * @type AGS_TYPE_INPUT or AGS_TYPE_OUTPUT
- * @pads new pad count
+ * @audio: an #AgsAudio
+ * @type: AGS_TYPE_INPUT or AGS_TYPE_OUTPUT
+ * @pads: new pad count
  *
  * Sets pad count for the apropriate @type
+ *
+ * Since: 0.3
  */
 void
 ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
@@ -2044,11 +2070,13 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
 
 /**
  * ags_audio_init_run:
- * @audio an #AgsAudio
+ * @audio: an #AgsAudio
  *
  * Is emitted as audio is initialized.
  *
  * Returns: the current #AgsRecallID
+ *
+ * Since: 0.4
  */
 AgsRecallID*
 ags_audio_init_run(AgsAudio *audio)
@@ -2068,10 +2096,12 @@ ags_audio_init_run(AgsAudio *audio)
 
 /**
  * ags_audio_init_run:
- * @audio an #AgsAudio
- * @recall_id the current #AgsRecallID
+ * @audio: an #AgsAudio
+ * @recall_id: the current #AgsRecallID
  *
  * Is emitted as audio is played.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
@@ -2087,10 +2117,12 @@ ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
 
 /**
  * ags_audio_init_run:
- * @audio an #AgsAudio
- * @recall_id the current #AgsRecallID
+ * @audio: an #AgsAudio
+ * @recall_id: the current #AgsRecallID
  *
  * Is emitted as playing audio is done.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
@@ -2106,10 +2138,12 @@ ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
 
 /**
  * ags_audio_set_sequence_length:
- * @audio an #AgsAudio
- * @sequence_length the sequence length
+ * @audio: an #AgsAudio
+ * @sequence_length: the sequence length
  *
  * Sets sequence length.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
@@ -2119,10 +2153,12 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 
 /**
  * ags_audio_add_recall_id:
- * @audio an #AgsAudio
- * @recall_id the #AgsRecallID
+ * @audio: an #AgsAudio
+ * @recall_id: the #AgsRecallID
  *
  * Adds a recall id.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
@@ -2136,10 +2172,12 @@ ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
 
 /**
  * ags_audio_remove_recall_id:
- * @audio an #AgsAudio
- * @recall_id the #AgsRecallID
+ * @audio: an #AgsAudio
+ * @recall_id: the #AgsRecallID
  *
  * Removes a recall id.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
@@ -2154,10 +2192,12 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 
 /**
  * ags_audio_add_recall_container:
- * @audio an #AgsAudio
- * @recall_container the #AgsRecallContainer
+ * @audio: an #AgsAudio
+ * @recall_container: the #AgsRecallContainer
  *
  * Adds a recall container.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
@@ -2172,10 +2212,12 @@ ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
 
 /**
  * ags_audio_remove_recall_container:
- * @audio an #AgsAudio
- * @recall_container the #AgsRecallContainer
+ * @audio: an #AgsAudio
+ * @recall_container: the #AgsRecallContainer
  *
  * Removes a recall container.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
@@ -2190,11 +2232,13 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
 
 /**
  * ags_audio_add_recall:
- * @audio an #AgsAudio
- * @recall_container the #AgsRecall
- * @play %TRUE if simple playback.
+ * @audio: an #AgsAudio
+ * @recall_container: the #AgsRecall
+ * @play: %TRUE if simple playback.
  *
  * Adds a recall.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
@@ -2214,11 +2258,13 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
 
 /**
  * ags_audio_remove_recall:
- * @audio an #AgsAudio
- * @recall_container the #AgsRecall
- * @play %TRUE if simple playback.
+ * @audio: an #AgsAudio
+ * @recall_container: the #AgsRecall
+ * @play: %TRUE if simple playback.
  *
  * Removes a recall.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
@@ -2238,18 +2284,12 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
 
 /**
  * ags_audio_duplicate_recall:
- * @audio an #AgsAudio
- * @playback duplicate for playback
- * @sequencer duplicate for sequencer
- * @notation duplicate for notation
- * @first_recycling the first #AgsRecycling the #AgsRecall\s belongs to
- * @last_recycling the last #AgsRecycling the #AgsRecall\s belongs to
- * @recall_id an #AgsRecallID
- * @audio_signal_level how many #AgsRecycling\s has been passed until @first_recycling and @last_recycling
- * were reached.
- * @called_by_output
+ * @audio: an #AgsAudio
+ * @recall_id: an #AgsRecallID
  * 
  * Duplicate all #AgsRecall templates of this #AgsAudio.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
@@ -2348,10 +2388,12 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 
 /**
  * ags_audio_resolve_recall:
- * @audio the #AgsAudio
- * @recall_id the #AgsRecallID to use
+ * @audio: the #AgsAudio
+ * @recall_id: the #AgsRecallID to use
  *
  * Performs resolving of recalls.
+ *
+ * Since: 0.4
  */
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id)
@@ -2383,11 +2425,13 @@ void ags_audio_resolve_recall(AgsAudio *audio,
 
 /**
  * ags_audio_init_recall:
- * @audio the #AgsAudio
- * @stage stage benning at 0 up to 2, or just -1
- * @recall_id the #AgsRecallID to use or #NULL
+ * @audio: the #AgsAudio
+ * @stage: stage benning at 0 up to 2, or just -1
+ * @recall_id: the #AgsRecallID to use or #NULL
  *
  * Initializes the recalls of @audio
+ *
+ * Since: 0.4
  */
 void
 ags_audio_init_recall(AgsAudio *audio, gint stage,
@@ -2453,11 +2497,13 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 
 /**
  * ags_audio_is_playing:
- * @audio the #AgsAudio
+ * @audio: the #AgsAudio
  *
  * Determine if #AgsAudio is playing.
  *
  * Returns: TRUE if it's playing otherwise FALSE
+ *
+ * Since: 0.4
  */
 gboolean
 ags_audio_is_playing(AgsAudio *audio)
@@ -2485,11 +2531,13 @@ ags_audio_is_playing(AgsAudio *audio)
 
 /**
  * ags_audio_play:
- * @audio the #AgsAudio
- * @recall_id the #AgsRecallID to apply to
- * @stage valid range is from 0 up to 2
+ * @audio: the #AgsAudio
+ * @recall_id: the #AgsRecallID to apply to
+ * @stage: valid range is from 0 up to 2
  *
  * Performs on single play call of appropriate stage.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_play(AgsAudio *audio,
@@ -2553,14 +2601,16 @@ ags_audio_play(AgsAudio *audio,
 
 /**
  * ags_audio_recursive_play_init:
- * @audio the #AgsAudio object
- * @playback if doing playback
- * @sequencer if doing sequencer
- * @notation if doing notation
+ * @audio: the #AgsAudio object
+ * @playback: if doing playback
+ * @sequencer: if doing sequencer
+ * @notation: if doing notation
  *
  * Initializes #AgsAudio in order to do playback, sequencer or notation.
  *
  * Returns: a list containing all #AgsRecallID
+ *
+ * Since: 0.4
  */
 GList*
 ags_audio_recursive_play_init(AgsAudio *audio,
@@ -2618,10 +2668,12 @@ ags_audio_recursive_play_init(AgsAudio *audio,
 
 /**
  * ags_audio_cancel:
- * @audio the #AgsAudio
- * @recall_id the #AgsRecallID to apply to
+ * @audio: the #AgsAudio
+ * @recall_id: the #AgsRecallID to apply to
  *
  * Cancel processing audio data.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_cancel(AgsAudio *audio,
@@ -2656,10 +2708,12 @@ ags_audio_cancel(AgsAudio *audio,
 
 /**
  * ags_audio_set_devout:
- * @audio the #AgsAudio
- * @devout an #AgsDevout
+ * @audio: the #AgsAudio
+ * @devout: an #AgsDevout
  *
  * Sets a devout object on audio.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_set_devout(AgsAudio *audio, GObject *devout)
@@ -2725,12 +2779,14 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 
 /**
  * ags_audio_open_files:
- * @audio the #AgsAudio
- * @filenames the files to open
- * @overwrite_channels if existing channels should be assigned
- * @create_channels if new channels should be created as not fitting if combined with @overwrite_channels
+ * @audio: the #AgsAudio
+ * @filenames: the files to open
+ * @overwrite_channels: if existing channels should be assigned
+ * @create_channels: if new channels should be created as not fitting if combined with @overwrite_channels
  *
  * Open some files.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_open_files(AgsAudio *audio,
@@ -2851,10 +2907,13 @@ ags_audio_open_files(AgsAudio *audio,
 
 /**
  * ags_audio_new:
+ * @devout: an #AgsDevout
  *
- * Creates a #AgsAudio, with defaults of @devout.
+ * Creates an #AgsAudio, with defaults of @devout.
  *
  * Returns: a new #AgsAudio
+ *
+ * Since: 0.3
  */
 AgsAudio*
 ags_audio_new(AgsDevout *devout)

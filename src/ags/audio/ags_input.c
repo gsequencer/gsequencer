@@ -40,9 +40,11 @@ void ags_input_connect(AgsConnectable *connectable);
 void ags_input_disconnect(AgsConnectable *connectable);
 
 /**
- * SECTION:agsinput
- * @Short_description: Input of #AgsAudio
- * @Title: AgsInput
+ * SECTION:ags_input
+ * @short_description: Input of #AgsAudio
+ * @title: AgsInput
+ * @section_id:
+ * @include: ags/audio/ags_input.h
  *
  * #AgsInput represents an input channel of #AgsAudio.
  */
@@ -229,10 +231,13 @@ ags_input_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_input_new:
+ * @audio: the #AgsAudio
  *
  * Creates a #AgsInput, linking tree to @audio.
  *
  * Returns: a new #AgsInput
+ *
+ * Since: 0.3
  */
 AgsInput*
 ags_input_new(GObject *audio)

@@ -42,9 +42,11 @@ void ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue
 void ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
 
 /**
- * SECTION:agsport
- * @Short_description: Perform thread-safe operations
- * @Title: AgsPort
+ * SECTION:ags_port
+ * @short_description: Perform thread-safe operations
+ * @title: AgsPort
+ * @section_id:
+ * @include: ags/audio/ags_port.h
  *
  * #AgsPort provides a thread-safe way to access or change values or properties.
  */
@@ -251,7 +253,9 @@ ags_port_class_init(AgsPortClass *port)
   /* signals */
   /**
    * AgsPort::safe-read:
-   * @port the object providing safe read
+   * @port: the object providing safe read
+   *
+   * The ::safe-read signal is emited while doing safe read operation.
    */
   port_signals[SAFE_READ] =
     g_signal_new("safe-read\0",
@@ -265,7 +269,9 @@ ags_port_class_init(AgsPortClass *port)
 
   /**
    * AgsPort::safe-write:
-   * @port the object providing safe write
+   * @port: the object providing safe write
+   *
+   * The ::safe-write signal is emited while doing safe write operation.
    */
   port_signals[SAFE_WRITE] =
     g_signal_new("safe-write\0",
@@ -279,7 +285,9 @@ ags_port_class_init(AgsPortClass *port)
 
   /**
    * AgsPort::safe-get-property:
-   * @port the object providing safe get property
+   * @port: the object providing safe get property
+   *
+   * The ::safe-get-property signal is emited while safe get property.
    */
   port_signals[SAFE_GET_PROPERTY] =
     g_signal_new("safe-get-property\0",
@@ -292,8 +300,10 @@ ags_port_class_init(AgsPortClass *port)
 		 G_TYPE_STRING, G_TYPE_POINTER);
 
   /**
-   * AgsPort::safe-get-property:
-   * @port the object providing safe set property
+   * AgsPort::safe-set-property:
+   * @port: the object providing safe set property
+   *
+   * The ::safe-set-property signal is emited while safe set property.
    */
   port_signals[SAFE_SET_PROPERTY] =
     g_signal_new("safe-set-property\0",
@@ -535,10 +545,12 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
 
 /**
  * ags_port_safe_read:
- * @port an #AgsPort
- * @value the #GValue to store result
+ * @port: an #AgsPort
+ * @value: the #GValue to store result
  *
  * Perform safe read.
+ *
+ * Since: 0.4
  */
 void
 ags_port_safe_read(AgsPort *port, GValue *value)
@@ -598,10 +610,12 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
 
 /**
  * ags_port_safe_read:
- * @port an #AgsPort
- * @value the #GValue containing data
+ * @port: an #AgsPort
+ * @value: the #GValue containing data
  *
  * Perform safe write.
+ *
+ * Since: 0.4
  */
 void
 ags_port_safe_write(AgsPort *port, GValue *value)
@@ -628,11 +642,13 @@ ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
 
 /**
  * ags_port_safe_get_property:
- * @port an #AgsPort
- * @property_name the property's name
- * @value the #GValue to store the result
+ * @port: an #AgsPort
+ * @property_name: the property's name
+ * @value: the #GValue to store the result
  *
  * Perform safe get property.
+ *
+ * Since: 0.4
  */
 void
 ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
@@ -659,11 +675,13 @@ ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
 
 /**
  * ags_port_safe_set_property:
- * @port an #AgsPort
- * @property_name the property's name
- * @value the #GValue containing data
+ * @port: an #AgsPort
+ * @property_name: the property's name
+ * @value: the #GValue containing data
  *
  * Perform safe set property.
+ *
+ * Since: 0.4
  */
 void
 ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
@@ -678,12 +696,14 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 
 /**
  * ags_port_find_specifier:
- * @port a #GList containing #AgsPort
- * @specifier the recall specifier to match
+ * @port: a #GList containing #AgsPort
+ * @specifier: the recall specifier to match
  *
  * Retrieve port by specifier.
  *
  * Returns: Next match.
+ *
+ * Since: 0.4
  */
 GList*
 ags_port_find_specifier(GList *port, gchar *specifier)
@@ -706,6 +726,8 @@ ags_port_find_specifier(GList *port, gchar *specifier)
  * Creates an #AgsPort.
  *
  * Returns: a new #AgsPort.
+ *
+ * Since: 0.4
  */
 AgsPort*
 ags_port_new()

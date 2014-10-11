@@ -70,7 +70,7 @@ void ags_recall_audio_signal_notify_devout_after(AgsRecallAudioSignal *recall_au
 						 gpointer data);
 
 /**
- * SECTION:agsrecallaudiosignal
+ * SECTION:ags_recall_audio_signal
  * @Short_description: audio signal context of recall
  * @Title: AgsRecallAudioSignal
  *
@@ -542,9 +542,9 @@ ags_recall_audio_signal_notify_devout_after(AgsRecallAudioSignal *recall_audio_s
 
 /**
  * ags_recall_audio_signal_new:
- * @destination destination #AgsAudioSignal
- * @source source #AgsAudioSignal
- * @devout default sink #AgsDevout
+ * @destination: destination #AgsAudioSignal
+ * @source: source #AgsAudioSignal
+ * @devout: default sink #AgsDevout
  *
  * Creates an #AgsRecallAudioSignal.
  *

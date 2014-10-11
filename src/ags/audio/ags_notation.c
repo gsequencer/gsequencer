@@ -63,9 +63,11 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						     gboolean from_y_offset, guint y_offset);
 
 /**
- * SECTION:agsnotation
- * @Short_description: Notation class supporting selection and clipboard.
- * @Title: AgsNotation
+ * SECTION:ags_notation
+ * @short_description: Notation class supporting selection and clipboard.
+ * @title: AgsNotation
+ * @section_id:
+ * @include: ags/audio/ags_notation.h
  *
  * #AgsNotation acts as a container of #AgsNote.
  */
@@ -514,13 +516,15 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
 
 /**
  * ags_notation_find_near_timestamp:
- * @notation a #GList containing #AgsNotation
- * @audio_channel the matching audio channel
- * @timestamp the matching timestamp
+ * @notation: a #GList containing #AgsNotation
+ * @audio_channel: the matching audio channel
+ * @timestamp: the matching timestamp
  *
  * Retrieve appropriate notation for timestamp.
  *
  * Returns: Next match.
+ *
+ * Since: 0.4
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
@@ -559,11 +563,13 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 
 /**
  * ags_notation_add_note:
- * @notation an #AgsNotation
- * @note the #AgsNote to add
- * @use_selection_list if %TRUE add to selection, else to default notation
+ * @notation: an #AgsNotation
+ * @note: the #AgsNote to add
+ * @use_selection_list: if %TRUE add to selection, else to default notation
  *
  * Adds a note to notation.
+ *
+ * Since: 0.4
  */
 void
 ags_notation_add_note(AgsNotation *notation,
@@ -640,13 +646,15 @@ ags_notation_add_note(AgsNotation *notation,
 
 /**
  * ags_notation_remove_note_at_position:
- * @notation an #AgsNotation
- * @x offset
- * @y note
+ * @notation: an #AgsNotation
+ * @x: offset
+ * @y: note
  *
  * Removes one #AgsNote of notation.
  *
  * Returns: %TRUE if successfully removed note.
+ *
+ * Since: 0.4
  */
 gboolean
 ags_notation_remove_note_at_position(AgsNotation *notation,
@@ -729,11 +737,13 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 
 /**
  * ags_notation_get_selection:
- * @notation the #AgsNotation
+ * @notation: the #AgsNotation
  *
  * Retrieve selection.
  *
  * Returns: the selection.
+ *
+ * Since: 0.4
  */
 GList*
 ags_notation_get_selection(AgsNotation *notation)
@@ -743,12 +753,14 @@ ags_notation_get_selection(AgsNotation *notation)
 
 /**
  * ags_notation_is_note_selected:
- * @notation the #AgsNotation
- * @note the #AgsNote to check for
+ * @notation: the #AgsNotation
+ * @note: the #AgsNote to check for
  *
  * Check selection for note.
  *
  * Returns: %TRUE if selected
+ *
+ * Since: 0.4
  */
 gboolean
 ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
@@ -769,14 +781,16 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
 
 /**
  * ags_notation_find_point:
- * @notation an #AgsNotation
- * @x offset
- * @y note
- * @use_selection_list if %TRUE selection is searched
+ * @notation: an #AgsNotation
+ * @x: offset
+ * @y: note
+ * @use_selection_list: if %TRUE selection is searched
  *
  * Find note by offset and tone.
  *
  * Returns: the matching note.
+ *
+ * Since: 0.4
  */ 
 AgsNote*
 ags_notation_find_point(AgsNotation *notation,
@@ -823,16 +837,18 @@ ags_notation_find_point(AgsNotation *notation,
 
 /**
  * ags_notation_find_region:
- * @notation an #AgsNotation
- * @x0 start offset
- * @y0 start tone
- * @x1 end offset
- * @y1 end tone
- * @use_selection_list if %TRUE selection is searched
+ * @notation: an #AgsNotation
+ * @x0: start offset
+ * @y0: start tone
+ * @x1: end offset
+ * @y1: end tone
+ * @use_selection:_list if %TRUE selection is searched
  *
  * Find notes by offset and tone region.
  *
  * Returns: the matching notes as #GList.
+ *
+ * Since: 0.4
  */
 GList*
 ags_notation_find_region(AgsNotation *notation,
@@ -871,9 +887,11 @@ ags_notation_find_region(AgsNotation *notation,
 
 /**
  * ags_notation_free_selection:
- * @notation an #AgsNotation
+ * @notation: an #AgsNotation
  *
  * Clear selection.
+ *
+ * Since: 0.4
  */
 void
 ags_notation_free_selection(AgsNotation *notation)
@@ -898,12 +916,14 @@ ags_notation_free_selection(AgsNotation *notation)
 
 /**
  * ags_notation_add_point_to_selection:
- * @notation an #AgsNotation
- * @x offset
- * @y tone
- * @replace_current_selection if %TRUE selection is replaced
+ * @notation: an #AgsNotation
+ * @x: offset
+ * @y: tone
+ * @replace_current_selection: if %TRUE selection is replaced
  *
  * Select notes at position.
+ *
+ * Since: 0.4
  */ 
 void
 ags_notation_add_point_to_selection(AgsNotation *notation,
@@ -944,11 +964,13 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 
 /**
  * ags_notation_remove_point_to_selection:
- * @notation an #AgsNotation
- * @x offset
- * @y tone
+ * @notation: an #AgsNotation
+ * @x: offset
+ * @y: tone
  *
  * Remove notes at position of selection.
+ *
+ * Since: 0.4
  */ 
 void
 ags_notation_remove_point_from_selection(AgsNotation *notation,
@@ -972,14 +994,16 @@ ags_notation_remove_point_from_selection(AgsNotation *notation,
 
 /**
  * ags_notation_add_region_to_selection:
- * @notation an #AgsNotation
- * @x0 start offset
- * @y0 start tone
- * @x1 end offset
- * @y1 end tone
- * @replace_current_selection if %TRUE selection is replaced
+ * @notation: an #AgsNotation
+ * @x0: start offset
+ * @y0: start tone
+ * @x1: end offset
+ * @y1: end tone
+ * @replace_current_selection: if %TRUE selection is replaced
  *
  * Select notes within region.
+ *
+ * Since: 0.4
  */
 void
 ags_notation_add_region_to_selection(AgsNotation *notation,
@@ -1030,13 +1054,15 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
 
 /**
  * ags_notation_remove_region_from_selection:
- * @notation an #AgsNotation
- * @x0 start offset
- * @y0 start tone
- * @x1 end offset
- * @y1 end tone
+ * @notation: an #AgsNotation
+ * @x0: start offset
+ * @y0: start tone
+ * @x1: end offset
+ * @y1: end tone
  *
  * Remove notes within region of selection.
+ *
+ * Since: 0.4
  */ 
 void
 ags_notation_remove_region_from_selection(AgsNotation *notation,
@@ -1066,11 +1092,13 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
 
 /**
  * ags_notation_copy_selection:
- * @notation an #AgsNotation
+ * @notation: an #AgsNotation
  *
  * Copy selection to clipboard.
  *
  * Returns: the selection as XML.
+ *
+ * Since: 0.4
  */
 xmlNodePtr
 ags_notation_copy_selection(AgsNotation *notation)
@@ -1123,11 +1151,13 @@ ags_notation_copy_selection(AgsNotation *notation)
 
 /**
  * ags_notation_cut_selection:
- * @notation an #AgsNotation
+ * @notation: an #AgsNotation
  *
  * Cut selection to clipboard.
  *
  * Returns: the selection as XML.
+ *
+ * Since: 0.4
  */
 xmlNodePtr
 ags_notation_cut_selection(AgsNotation *notation)
@@ -1173,18 +1203,20 @@ ags_notation_cut_selection(AgsNotation *notation)
 
 /**
  * ags_notation_insert_native_piano_from_clipboard:
- * @notation an #AgsNotation
- * @notation_node the clipboard XML data
- * @version clipboard version
- * @base_frequency lowest frequency of notation
- * @x_boundary region start offset
- * @y_boundary region start tone
- * @reset_x_offset if %TRUE @x_offset used as cursor
- * @x_offset region start cursor offset
- * @reset_y_offset if %TRUE @y_offset used as cursor
- * @y_offset region start cursor tone
+ * @notation: an #AgsNotation
+ * @notation_node: the clipboard XML data
+ * @version: clipboard version
+ * @base_frequency: lowest frequency of notation
+ * @x_boundary: region start offset
+ * @y_boundary: region start tone
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @reset_y_offset: if %TRUE @y_offset used as cursor
+ * @y_offset: region start cursor tone
  *
  * Paste previously copied notes. 
+ *
+ * Since: 0.4
  */
 void
 ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
@@ -1384,14 +1416,16 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 /**
  * ags_notation_insert_from_clipboard:
- * @notation an #AgsNotation
- * @notation_node the clipboard XML data
- * @reset_x_offset if %TRUE @x_offset used as cursor
- * @x_offset region start cursor offset
- * @reset_y_offset if %TRUE @y_offset used as cursor
- * @y_offset region start cursor tone
+ * @notation: an #AgsNotation
+ * @notation_node: the clipboard XML data
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @reset_y_offset: if %TRUE @y_offset used as cursor
+ * @y_offset: region start cursor tone
  *
  * Paste previously copied notes. 
+ *
+ * Since: 0.4
  */
 void
 ags_notation_insert_from_clipboard(AgsNotation *notation,
@@ -1449,10 +1483,13 @@ ags_notation_get_current(AgsNotation *notation)
 
 /**
  * ags_notation_new:
+ * @audio_channel: the audio channel to be used
  *
  * Creates a #AgsNotation, assigned to @audio_channel.
  *
  * Returns: a new #AgsNotation
+ *
+ * Since: 0.4
  */
 AgsNotation*
 ags_notation_new(guint audio_channel)

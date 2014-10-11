@@ -44,9 +44,11 @@
 #include <stdio.h>
 
 /**
- * SECTION:agschannel
- * @Short_description: Acts as entry point to the audio tree.
- * @Title: AgsChannel
+ * SECTION:ags_channel
+ * @short_description: Acts as entry point to the audio tree.
+ * @title: AgsChannel
+ * @section_id:
+ * @include: ags/audio/ags_channel.h
  *
  * #AgsChannel is the entry point to the entire audio tree and its nested
  * recycling tree.
@@ -188,6 +190,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * @old_end_changed_region: modified link recyclig end
    * @new_start_changed_region: replacing link recycling start
    * @new_end_changed_region: replacing link recycling end
+   *
+   * The ::recycling-changed signal is invoked to notify modified recycling tree.
    */
   channel_signals[RECYCLING_CHANGED] =
     g_signal_new("recycling-changed\0",
@@ -203,8 +207,10 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_OBJECT, G_TYPE_OBJECT);
   /**
    * AgsChannel::done:
-   * @channel the object done playing.
-   * @recall_id the appropriate #AgsRecallID
+   * @channel: the object done playing.
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::done signal is invoked during termination of playback.
    */
   channel_signals[DONE] =
     g_signal_new("done\0",
@@ -539,11 +545,13 @@ ags_channel_find_recall(AgsChannel *channel, char *effect, char *name)
 
 /**
  * ags_channel_first:
- * @channel an #AgsChannel
+ * @channel: an #AgsChannel
  *
  * Iterates until the first #AgsChannel was found.
  *
  * Returns: the first #AgsChannel
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_first(AgsChannel *channel)
@@ -558,11 +566,13 @@ ags_channel_first(AgsChannel *channel)
 
 /**
  * ags_channel_last:
- * @channel an #AgsChannel
+ * @channel: an #AgsChannel
  *
  * Iterates until the last #AgsChannel was found.
  *
  * Returns: the last #AgsChannel
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_last(AgsChannel *channel)
@@ -577,12 +587,14 @@ ags_channel_last(AgsChannel *channel)
 
 /**
  * ags_channel_nth:
- * @channel an #AgsChannel
- * @nth the count to iterate
+ * @channel: an #AgsChannel
+ * @nth: the count to iterate
  *
  * Iterates @nth times forward.
  *
  * Returns: the nth #AgsChannel
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_nth(AgsChannel *channel, guint nth)
@@ -601,11 +613,13 @@ ags_channel_nth(AgsChannel *channel, guint nth)
 
 /**
  * ags_channel_pad_first:
- * @channel an #AgsChannel
+ * @channel: an #AgsChannel
  *
  * Iterates until the first pad has been reached.
  *
  * Returns: the first #AgsChannel with the same audio_channel as @channel
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_pad_first(AgsChannel *channel)
@@ -618,11 +632,13 @@ ags_channel_pad_first(AgsChannel *channel)
 
 /**
  * ags_channel_pad_last:
- * @channel an #AgsChannel
+ * @channel: an #AgsChannel
  *
  * Iterates until the last pad has been reached.
  *
  * Returns: the last #AgsChannel with the same audio_channel as @channel
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_pad_last(AgsChannel *channel)
@@ -635,12 +651,14 @@ ags_channel_pad_last(AgsChannel *channel)
 
 /**
  * ags_channel_pad_nth:
- * @channel an #AgsChannel
- * @nth the count of pads to step
+ * @channel: an #AgsChannel
+ * @nth: the count of pads to step
  *
  * Iterates nth times.
  *
  * Returns: the nth pad
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_pad_nth(AgsChannel *channel, guint nth)
@@ -658,11 +676,13 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
 
 /**
  * ags_channel_first_with_recycling:
- * @channel an #AgsChannel
+ * @channel: an #AgsChannel
  *
  * Iterates over pads forwards as long as there is no #AgsRecycling on the #AgsChannel.
  *
  * Returns: the first channel with an #AgsRecycling
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_first_with_recycling(AgsChannel *channel)
@@ -681,11 +701,13 @@ ags_channel_first_with_recycling(AgsChannel *channel)
 
 /**
  * ags_channel_last_with_recycling:
- * @channel an #AgsChannel
+ * @channel: an #AgsChannel
  *
  * Iterates over pads backwards as long as there is no #AgsRecycling on the #AgsChannel.
  *
- * Returns: the last channel with an #AgsChannel.
+ * Returns: the last channel with an #AgsRecycling
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_last_with_recycling(AgsChannel *channel)
@@ -704,10 +726,12 @@ ags_channel_last_with_recycling(AgsChannel *channel)
 
 /**
  * ags_channel_set_devout:
- * @channel an #AgsChannel
- * @devout an #AgsDevout
+ * @channel: an #AgsChannel
+ * @devout: an #AgsDevout
  *
  * Sets devout.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_set_devout(AgsChannel *channel, GObject *devout)
@@ -768,10 +792,12 @@ ags_channel_set_devout(AgsChannel *channel, GObject *devout)
 
 /**
  * ags_channel_add_recall_id:
- * @channel an #AgsChannel
- * @recall_id the #AgsRecallID
+ * @channel: an #AgsChannel
+ * @recall_id: the #AgsRecallID
  *
  * Adds a recall id.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
@@ -788,10 +814,12 @@ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
 
 /**
  * ags_channel_remove_recall_id:
- * @channel an #AgsChannel
- * @recall_id the #AgsRecallID
+ * @channel: an #AgsChannel
+ * @recall_id: the #AgsRecallID
  *
  * Removes a recall id.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
@@ -807,10 +835,12 @@ ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
 
 /**
  * ags_channel_add_recall_container:
- * @channel an #AgsChannel
- * @recall_container the #AgsRecallContainer
+ * @channel: an #AgsChannel
+ * @recall_container: the #AgsRecallContainer
  *
  * Adds a recall container.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
@@ -826,11 +856,13 @@ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
 
 /**
  * ags_channel_remove_recall:
- * @channel an #AgsChannel
- * @recall_container the #AgsRecall
- * @play %TRUE if simple playback.
+ * @channel: an #AgsChannel
+ * @recall_container: the #AgsRecall
+ * @play: %TRUE if simple playback.
  *
  * Removes a recall.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
@@ -850,11 +882,13 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
 
 /**
  * ags_channel_add_recall:
- * @channel an #AgsChannel
- * @recall_container the #AgsRecall
- * @play %TRUE if simple playback.
+ * @channel: an #AgsChannel
+ * @recall_container: the #AgsRecall
+ * @play: %TRUE if simple playback.
  *
  * Adds a recall.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
@@ -873,11 +907,13 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
 
 /**
  * ags_channel_set_link:
- * @channel an #AgsChannel to link
- * @link an other #AgsChannel to link with
- * @error you may retrieve a AGS_CHANNEL_ERROR_LOOP_IN_LINK error
+ * @channel: an #AgsChannel to link
+ * @link: an other #AgsChannel to link with
+ * @error: you may retrieve a AGS_CHANNEL_ERROR_LOOP_IN_LINK error
  *
  * Change the linking of #AgsChannel objects.
+ *
+ * Since: 0.3
  */
 void
 ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
@@ -1051,13 +1087,15 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
 /**
  * ags_channel_set_recycling:
- * @channel the channel to reset
- * @first_recycling the recycling to set for channel->first_recycling
- * @last_recycling the recycling to set for channel->last_recycling
- * @update reset allthough the AgsRecyclings are still the same
- * @destroy_old destroy old AgsRecyclings
+ * @channel: the channel to reset
+ * @first_recycling: the recycling to set for channel->first_recycling
+ * @last_recycling: the recycling to set for channel->last_recycling
+ * @update: reset allthough the AgsRecyclings are still the same
+ * @destroy_old: destroy old AgsRecyclings
  *
  * Called by ags_channel_set_link() to handle outdated #AgsRecycling references.
+ *
+ * Since: 0.3
  */
 void
 ags_channel_set_recycling(AgsChannel *channel,
@@ -1471,7 +1509,7 @@ ags_channel_set_recycling(AgsChannel *channel,
 
 /**
  * ags_channel_recycling_changed:
- * @channel the object recycling changed
+ * @channel: the object recycling changed
  * @old_start_region: first recycling
  * @old_end_region: last recycling
  * @new_start_region: new first recycling
@@ -1482,6 +1520,8 @@ ags_channel_set_recycling(AgsChannel *channel,
  * @new_end_changed_region: replacing link recycling end
  *
  * Modify recycling.
+ *
+ * Since: 0.3
  */
 void
 ags_channel_recycling_changed(AgsChannel *channel,
@@ -1504,10 +1544,12 @@ ags_channel_recycling_changed(AgsChannel *channel,
 
 /**
  * ags_channel_init_run:
- * @channel an #AgsChannel
- * @recall_id the current #AgsRecallID
+ * @channel: an #AgsChannel
+ * @recall_id: the current #AgsRecallID
  *
  * Is emitted as playing channel is done.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_done(AgsChannel *channel,
@@ -1524,10 +1566,12 @@ ags_channel_done(AgsChannel *channel,
 
 /**
  * ags_channel_safe_resize_audio_signal:
- * @channel an #AgsChannel
- * @length new frame count length
+ * @channel: an #AgsChannel
+ * @length: new frame count length
  *
  * Resize audio data.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_safe_resize_audio_signal(AgsChannel *channel,
@@ -1577,10 +1621,12 @@ ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 
 /**
  * ags_channel_resolve_recall:
- * @channel an #AgsChannel
- * @recall_id appropriate #AgsRecallID
+ * @channel: an #AgsChannel
+ * @recall_id: appropriate #AgsRecallID
  * 
  * Resolve step of initialization.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_resolve_recall(AgsChannel *channel,
@@ -1611,11 +1657,13 @@ ags_channel_resolve_recall(AgsChannel *channel,
 
 /**
  * ags_channel_play:
- * @channel an #AgsChannel
- * @recall_id appropriate #AgsRecallID
- * @stage run_pre, run_inter or run_post
+ * @channel: an #AgsChannel
+ * @recall_id: appropriate #AgsRecallID
+ * @stage: run_pre, run_inter or run_post
  * 
  * Play one single run of @stage step.
+ *
+ * Since: 0.3
  */
 void
 ags_channel_play(AgsChannel *channel,
@@ -1663,11 +1711,13 @@ ags_channel_play(AgsChannel *channel,
 
 /**
  * ags_channel_recursive_play_threaded:
- * @channel an #AgsChannel
- * @recall_id appropriate #AgsRecallID
- * @stage run_pre, run_inter or run_post
+ * @channel: an #AgsChannel
+ * @recall_id: appropriate #AgsRecallID
+ * @stage: run_pre, run_inter or run_post
  *
  * Super-threaded version of play one single run of @stage step.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_recursive_play_threaded(AgsChannel *channel,
@@ -2000,11 +2050,13 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 
 /**
  * ags_channel_recursive_play:
- * @channel an #AgsChannel
- * @recall_id appropriate #AgsRecallID
- * @stage run_pre, run_inter or run_post
+ * @channel: an #AgsChannel
+ * @recall_id: appropriate #AgsRecallID
+ * @stage: run_pre, run_inter or run_post
  *
  * Call recursively ags_channel_play() and ags_audio_play()
+ *
+ * Since: 0.3
  */
 void
 ags_channel_recursive_play(AgsChannel *channel,
@@ -2275,14 +2327,16 @@ ags_channel_recursive_play(AgsChannel *channel,
 
 /**
  * ags_channel_duplicate_recall:
- * @channel an #AgsChannel that contains the #AgsRecall templates
- * @playback if a #AgsRecall that is dedicated to a playback should be duplicated
- * @sequencer if a #AgsRecall that is dedicated to a sequencer should be duplicated
- * @notation if a #AgsRecall that is dedicated to a notation should be duplicated
- * @recall_id the #AgsRecallID the newly allocated #AgsRecall objects belongs to
+ * @channel: an #AgsChannel that contains the #AgsRecall templates
+ * @playback: if a #AgsRecall that is dedicated to a playback should be duplicated
+ * @sequencer: if a #AgsRecall that is dedicated to a sequencer should be duplicated
+ * @notation: if a #AgsRecall that is dedicated to a notation should be duplicated
+ * @recall_id: the #AgsRecallID the newly allocated #AgsRecall objects belongs to
  *
  * Duplicate #AgsRecall templates for use with ags_channel_recursive_play(),
  * but ags_channel_recursive_play_init() may call this function for you.
+ *
+ * Since: 0.3
  */
 void
 ags_channel_duplicate_recall(AgsChannel *channel,
@@ -2372,11 +2426,13 @@ ags_channel_duplicate_recall(AgsChannel *channel,
 
 /**
  * ags_channel_init_recall:
- * @channel an #AgsChannel that contains the recalls
- * @recall_id the #AgsRecallId this recall belongs to
+ * @channel: an #AgsChannel that contains the recalls
+ * @recall_id: the #AgsRecallId this recall belongs to
  *
  * Prepare #AgsRecall objects to become runnning, ags_channel_recursive_play_init()
  * may call this function for you.
+ *
+ * Since: 0.3
  */
 void
 ags_channel_init_recall(AgsChannel *channel, gint stage,
@@ -2435,22 +2491,24 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
 
 /**
  * ags_channel_recursive_play_init:
- * @channel the #AgsChannel to prepare
- * @stage valid values for @stage are: -1 for running all three stages, or the stages 0 through 2 to run
+ * @channel: the #AgsChannel to prepare
+ * @stage: valid values for @stage are: -1 for running all three stages, or the stages 0 through 2 to run
  * just the specified stage. With stage is meant the #AgsRecall run_init_pre, #AgsRecall run_init_inter
  * and #AgsRecall run_init_post stages.
- * @arrange_recall_id %TRUE if new #AgsRecallID objects should be created
- * @duplicate_templates %TRUE if the #AgsRecall templates should be duplicated
- * @playback %TRUE if the purpose is a simple playback of the tree, this option is used to omit the
+ * @arrange_recall_id: %TRUE if new #AgsRecallID objects should be created
+ * @duplicate_templates: %TRUE if the #AgsRecall templates should be duplicated
+ * @playback: %TRUE if the purpose is a simple playback of the tree, this option is used to omit the
  * duplication of #AgsRecall templates which haven't set %AGS_RECALL_PLAYBACK flag
- * @sequencer %TRUE if the purpose is playing the tree for a sequencer, this option is used to omit the
+ * @sequencer: %TRUE if the purpose is playing the tree for a sequencer, this option is used to omit the
  * duplication of #AgsRecall templates which haven't set the %AGS_RECALL_SEQUENCER flag
- * @notation %TRUE if the purpose is playing the tree for a notation, this option is used to omit the
+ * @notation: %TRUE if the purpose is playing the tree for a notation, this option is used to omit the
  * duplication of #AgsRecall templates which haven't set the %AGS_RECALL_NOTATION flag
- * @resolve_dependencies %TRUE if the
- * @recall_id the initial recall id or %NULL
+ * @resolve_dependencies: %TRUE if the
+ * @recall_id: the initial recall id or %NULL
  *
  * Make the tree ready for a new #AgsDevoutPlay.
+ *
+ * Since: 0.3
  */
 AgsRecallID*
 ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
@@ -3747,10 +3805,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   
 /**
  * ags_channel_cancel:
- * @channel an #AgsChannel
- * @recall_id and #AgsRecallID
+ * @channel: an #AgsChannel
+ * @recall_id: and #AgsRecallID
  *
  * Calls for every matching @recall_id ags_recall_cancel()
+ *
+ * Since: 0.3
  */
 void
 ags_channel_cancel(AgsChannel *channel,
@@ -3788,11 +3848,13 @@ ags_channel_cancel(AgsChannel *channel,
 
 /**
  * ags_channel_tillrecycling_cancel:
- * @channel an #AgsChannel
- * @recall_id an #AgsRecallID
+ * @channel: an #AgsChannel
+ * @recall_id: an #AgsRecallID
  *
  * Traverses the tree down and up and calls ags_channel_cancel() for corresponding
  * @recall_id.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_tillrecycling_cancel(AgsChannel *channel,
@@ -4015,10 +4077,10 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
 
 /**
  * ags_channel_recursive_reset_recall_ids:
- * @channel an #AgsChannel that was linked with @link
- * @link an #AgsChannel that was linked with @channel
- * @old_channel_link the old link of @channel
- * @old_link_link the old link of @link
+ * @channel: an #AgsChannel that was linked with @link
+ * @link: an #AgsChannel that was linked with @channel
+ * @old_channel_link: the old link of @channel
+ * @old_link_link: the old link of @link
  *
  * Called by ags_channel_set_link() to handle running #AgsAudio objects correctly.
  * This function destroys #AgsRecall objects which were uneeded because they became
@@ -4028,6 +4090,8 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
  * By the clean up the invalid #AgsRecall objects will be removed.
  * Once the clean up has done ags_channel_recursive_play_init() will be called for every
  * playing instance that was found.
+ *
+ * Since: 0.4
  */
 void
 ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
@@ -5883,10 +5947,13 @@ ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *default_recall_id, gb
 
 /**
  * ags_channel_new:
+ * @audio: the #AgsAudio
  *
  * Creates a #AgsChannel, linking tree to @audio.
  *
  * Returns: a new #AgsChannel
+ *
+ * Since: 0.3
  */
 AgsChannel*
 ags_channel_new(GObject *audio)

@@ -56,7 +56,7 @@ AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 /**
- * SECTION:agsrecallaudiorun
+ * SECTION:ags_recall_audio_run
  * @Short_description: audio context of dynamic recall
  * @Title: AgsRecallAudioRun
  *

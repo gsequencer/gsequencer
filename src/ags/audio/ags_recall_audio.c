@@ -46,9 +46,11 @@ AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
 				      guint *n_params, GParameter *parameter);
 
 /**
- * SECTION:agsrecallaudio
- * @Short_description: audio context of recall
- * @Title: AgsRecallAudio
+ * SECTION:ags_recall_audio
+ * @short_description: audio context of recall
+ * @title: AgsRecallAudio
+ * @section_id:
+ * @include: ags/audio/ags_recall_audio.h
  *
  * #AgsRecallAudio acts as audio recall.
  */
@@ -358,6 +360,8 @@ ags_recall_audio_duplicate(AgsRecall *recall,
  * Creates an #AgsRecallAudio.
  *
  * Returns: a new #AgsRecallAudio.
+ *
+ * Since: 0.4
  */
 AgsRecallAudio*
 ags_recall_audio_new(AgsAudio *audio)

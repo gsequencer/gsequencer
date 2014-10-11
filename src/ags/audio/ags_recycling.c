@@ -52,7 +52,7 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 					    AgsAudioSignal *audio_signal);
 
 /**
- * SECTION:agsrecycling
+ * SECTION:ags_recycling
  * @Short_description: A container of audio signals
  * @Title: AgsRecycling
  *
@@ -154,8 +154,8 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 
   /**
    * AgsRecycling::add-audio-signal
-   * @recycling an #AgsRecycling
-   * @audio_signal the #AgsAudioSignal to add
+   * @recycling: an #AgsRecycling
+   * @audio_signal: the #AgsAudioSignal to add
    */
   recycling_signals[ADD_AUDIO_SIGNAL] =
     g_signal_new("add-audio-signal\0",
@@ -169,8 +169,8 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 
   /**
    * AgsRecycling::set-audio-channels:
-   * @recycling an #AgsRecycling
-   * @audio_signal the #AgsAudioSignal to remove
+   * @recycling: an #AgsRecycling
+   * @audio_signal: the #AgsAudioSignal to remove
    */
   recycling_signals[REMOVE_AUDIO_SIGNAL] =
     g_signal_new("remove-audio-signal\0",
@@ -358,10 +358,10 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 /**
  * ags_recycling_create_audio_signal_with_defaults:
- * @recycling an #AgsRecycling
- * @audio_signal the #AgsAudioSignal to apply defaults 
- * @delay 
- * @attack 
+ * @recycling: an #AgsRecycling
+ * @audio_signal: the #AgsAudioSignal to apply defaults 
+ * @delay: 
+ * @attack: 
  *
  * Create audio signal with defaults.
  */
@@ -410,11 +410,11 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 
 /**
  * ags_recycling_create_audio_signal_with_frame_count:
- * @recycling an #AgsRecycling
- * @audio_signal the #AgsAudioSignal to apply defaults 
- * @frame_count the audio data size
- * @delay 
- * @attack 
+ * @recycling: an #AgsRecycling
+ * @audio_signal: the #AgsAudioSignal to apply defaults 
+ * @frame_count: the audio data size
+ * @delay:
+ * @attack: 
  *
  * Create audio signal with frame count.
  */
@@ -593,6 +593,7 @@ ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
 
 /**
  * ags_recycling_new:
+ * @devout: the #AgsDevout
  *
  * Creates a #AgsRecycling, with defaults of @devout.
  *

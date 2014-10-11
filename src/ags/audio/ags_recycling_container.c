@@ -35,7 +35,7 @@ void ags_recycling_container_get_property(GObject *gobject,
 void ags_recycling_container_finalize(GObject *gobject);
 
 /**
- * SECTION:agsrecyclingcontainer
+ * SECTION:ags_recycling_container
  * @Short_description: A container of recycling acting as dynamic context.
  * @Title: AgsRecyclingContainer
  *
@@ -285,8 +285,8 @@ ags_recycling_container_replace(AgsRecyclingContainer *recycling_container,
 
 /**
  * ags_recycling_container_add:
- * @recycling_container the #AgsRecyclingContainer
- * @recycling the #AgsRecycling to add
+ * @recycling_container: the #AgsRecyclingContainer
+ * @recycling: the #AgsRecycling to add
  *
  * Adds a recycling to a container.
  *
@@ -314,8 +314,8 @@ ags_recycling_container_add(AgsRecyclingContainer *recycling_container,
 
 /**
  * ags_recycling_container_add:
- * @recycling_container the #AgsRecyclingContainer
- * @recycling the #AgsRecycling to remove
+ * @recycling_container: the #AgsRecyclingContainer
+ * @recycling: the #AgsRecycling to remove
  *
  * Removes a recycling to a container.
  *
@@ -346,9 +346,9 @@ ags_recycling_container_remove(AgsRecyclingContainer *recycling_container,
 
 /**
  * ags_recycling_container_add:
- * @recycling_container the #AgsRecyclingContainer
- * @recycling the #AgsRecycling to insert
- * @position the index to insert at
+ * @recycling_container: the #AgsRecyclingContainer
+ * @recycling: the #AgsRecycling to insert
+ * @position: the index to insert at
  *
  * Removes a recycling to a container.
  *
@@ -378,7 +378,7 @@ ags_recycling_container_insert(AgsRecyclingContainer *recycling_container,
 
 /**
  * ags_recycling_container_get_toplevel:
- * @recycling_container the #AgsRecyclingContainer
+ * @recycling_container: the #AgsRecyclingContainer
  *
  * Iterates the tree up to highest level.
  *
@@ -400,8 +400,8 @@ ags_recycling_container_get_toplevel(AgsRecyclingContainer *recycling_container)
 
 /**
  * ags_recycling_container_find:
- * @recycling_container the #AgsRecyclingContainer
- * @recycling the #AgsRecycling to look up
+ * @recycling_container: the #AgsRecyclingContainer
+ * @recycling: the #AgsRecycling to look up
  * 
  * Find position of recycling within array.
  *
@@ -424,8 +424,8 @@ ags_recycling_container_find(AgsRecyclingContainer *recycling_container,
 
 /**
  * ags_recycling_container_find_child:
- * @recycling_container the #AgsRecyclingContainer
- * @recycling the #AgsRecycling to look up
+ * @recycling_container: the #AgsRecyclingContainer
+ * @recycling: the #AgsRecycling to look up
  * 
  * Find position of recycling within arrays.
  *
@@ -454,8 +454,8 @@ ags_recycling_container_find_child(AgsRecyclingContainer *recycling_container,
 
 /**
  * ags_recycling_container_find_parent:
- * @recycling_container the #AgsRecyclingContainer
- * @recycling the #AgsRecycling to look up
+ * @recycling_container: the #AgsRecyclingContainer
+ * @recycling: the #AgsRecycling to look up
  * 
  * Find position of recycling within array.
  *
@@ -478,8 +478,8 @@ ags_recycling_container_find_parent(AgsRecyclingContainer *recycling_container,
 
 /**
  * ags_recycling_container_add_child:
- * @parent the parental #AgsRecyclingContainer
- * @child the child
+ * @parent: the parental #AgsRecyclingContainer
+ * @child: the child
  *
  * Adds a recycling container as child.
  */
@@ -501,8 +501,8 @@ ags_recycling_container_add_child(AgsRecyclingContainer *parent,
 
 /**
  * ags_recycling_container_remove_child:
- * @parent the #AgsRecyclingContainer
- * @child the child to remove
+ * @parent: the #AgsRecyclingContainer
+ * @child: the child to remove
  *
  * Removes a recycling container of its parent.
  */
@@ -524,7 +524,7 @@ ags_recycling_container_remove_child(AgsRecyclingContainer *parent,
 
 /**
  * ags_recycling_container_get_child_recall_id:
- * @recycling_container the #AgsRecyclingContainer
+ * @recycling_container: the #AgsRecyclingContainer
  * 
  * Retrieve all child recall ids.
  *
@@ -555,11 +555,11 @@ ags_recycling_container_get_child_recall_id(AgsRecyclingContainer *recycling_con
 
 /**
  * ags_recycling_container_reset_recycling:
- * @recycling_container the #AgsRecyclingContainer
- * @old_first_recycling the first recycling to replace
- * @old_last_recycling the last recycling to replace
- * @new_first_recycling the first recycling to insert
- * @new_last_recycling the last recycling to insert
+ * @recycling_container: the #AgsRecyclingContainer
+ * @old_first_recycling: the first recycling to replace
+ * @old_last_recycling: the last recycling to replace
+ * @new_first_recycling: the first recycling to insert
+ * @new_last_recycling: the last recycling to insert
  *
  * Modify recycling of container.
  */
@@ -619,6 +619,7 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
 
 /**
  * ags_recycling_container_new:
+ * @length: array dimension of context
  *
  * Creates a #AgsRecyclingContainer, boundaries are specified by @length
  *

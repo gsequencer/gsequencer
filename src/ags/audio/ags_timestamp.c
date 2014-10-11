@@ -81,6 +81,13 @@ ags_timestamp_finalize(GObject *gobject)
   /* empty */
 }
 
+/**
+ * ags_timestamp_new:
+ *
+ * Creates an #AgsTimestamp
+ *
+ * Returns: a new #AgsTimestamp
+ */
 AgsTimestamp*
 ags_timestamp_new()
 {

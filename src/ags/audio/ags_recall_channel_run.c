@@ -95,6 +95,16 @@ void ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *c
 void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
 						   guint run_order);
 
+/**
+ * SECTION:ags_recall_channel_run
+ * @short_description: dynamic channel context of recall
+ * @title: AgsRecallChannelRun
+ * @section_id:
+ * @include: ags/audio/ags_recall_channel_run.h
+ *
+ * #AgsRecallChannelRun acts as channel recall run.
+ */
+
 enum{
   RUN_ORDER_CHANGED,
   LAST_SIGNAL,
@@ -191,7 +201,14 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   gobject->finalize = ags_recall_channel_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("audio_channel\0",
+  /**
+   * AgsRecallChannelRun:audio-channel:
+   *
+   * The audio channel to output.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("audio-channel\0",
 				 "assigned audio channel\0",
 				 "The audio channel this recall is assigned to\0",
 				 0, 65535,
@@ -202,7 +219,14 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 				  param_spec);
 
 
-  param_spec = g_param_spec_object("recall_audio_run\0",
+  /**
+   * AgsRecallChannelRun:recall-audio-run:
+   *
+   * The audio run opposite of this recall.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("recall-audio-run\0",
 				   "AgsRecallAudioRun of this recall\0",
 				   "The AgsRecallAudioRun which this recall needs\0",
 				   AGS_TYPE_RECALL_AUDIO_RUN,
@@ -211,7 +235,14 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 				  PROP_RECALL_AUDIO_RUN,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recall_channel\0",
+  /**
+   * AgsRecallChannelRun:recall-channel:
+   *
+   * The channel context of this recall.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("recall-channel\0",
 				   "AsgRecallChannel of this recall\0",
 				   "The AgsRecallChannel which this recall needs\0",
 				   AGS_TYPE_RECALL_CHANNEL,
@@ -220,6 +251,13 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 				  PROP_RECALL_CHANNEL,
 				  param_spec);
 
+  /**
+   * AgsRecallChannelRun:destination:
+   *
+   * The channel to do output to.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("destination\0",
 				   "destination of output\0",
 				   "The destination AgsChannel where it will output to\0",
@@ -229,6 +267,13 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 				  PROP_DESTINATION,
 				  param_spec);
 
+  /**
+   * AgsRecallChannelRun:source:
+   *
+   * The channel to do input from.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("source\0",
 				   "source of input\0",
 				   "The source AgsChannel where it will take the input from\0",
@@ -247,8 +292,16 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
 
   /* signals */
+  /**
+   * AgsRecallChannelRun::run-order-changed:
+   * @recall_channel_run: the object run order changed
+   * @run_order: nth run of parent recycling. 
+   *
+   * The ::run-order-changed signal is invoked as changing link of destination
+   * during playback.
+   */
   recall_channel_run_signals[RUN_ORDER_CHANGED] =
-    g_signal_new("run_order_changed\0",
+    g_signal_new("run-order-changed\0",
 		 G_TYPE_FROM_CLASS (recall_channel_run),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, run_order_changed),
@@ -1014,6 +1067,15 @@ ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channe
   recall_channel_run->run_order = run_order;
 }
 
+/**
+ * ags_recall_channel_run_run_order_changed:
+ * @recall_channel_run: an #AgsRecallChannelRun
+ * @run_order: the run order
+ *
+ * Modify run order.
+ *
+ * Since: 0.4
+ */
 void
 ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
 					 guint run_order)
@@ -1027,6 +1089,15 @@ ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run
   g_object_unref(G_OBJECT(recall_channel_run));
 }
 
+/**
+ * ags_recall_channel_run_new:
+ *
+ * Creates an #AgsRecallChannelRun
+ *
+ * Returns: a new #AgsRecallChannelRun
+ *
+ * Since: 0.4
+ */
 AgsRecallChannelRun*
 ags_recall_channel_run_new()
 {

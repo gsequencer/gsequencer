@@ -112,7 +112,7 @@ void ags_recall_child_done(AgsRecall *child,
 			   AgsRecall *parent);
 
 /**
- * SECTION:agsrecall
+ * SECTION:ags_recall
  * @Short_description: The recall base class
  * @Title: AgsRecall
  *
@@ -356,7 +356,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   /* signals */
   /**
    * AgsRecall::resolve-dependencies:
-   * @recall the object to resolve
+   * @recall: the object to resolve
    */
   recall_signals[RESOLVE_DEPENDENCIES] =
     g_signal_new("resolve-dependencies\0",
@@ -369,7 +369,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-init-pre:
-   * @recall the object to initialize
+   * @recall: the object to initialize
    */
   recall_signals[RUN_INIT_PRE] =
     g_signal_new("run-init-pre\0",
@@ -382,7 +382,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-init-inter:
-   * @recall the object to initialize
+   * @recall: the object to initialize
    */
   recall_signals[RUN_INIT_INTER] =
     g_signal_new("run-init-inter\0",
@@ -395,7 +395,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-init-post:
-   * @recall the object to initialize
+   * @recall: the object to initialize
    */
   recall_signals[RUN_INIT_POST] =
     g_signal_new("run-init-post\0",
@@ -408,7 +408,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-pre:
-   * @recall the object to play 
+   * @recall: the object to play 
    */
   recall_signals[RUN_PRE] =
     g_signal_new("run-pre\0",
@@ -421,7 +421,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-inter:
-   * @recall the object to play
+   * @recall: the object to play
    */
   recall_signals[RUN_INTER] =
     g_signal_new("run-inter\0",
@@ -434,7 +434,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::run-post:
-   * @recall the object to play
+   * @recall: the object to play
    */
   recall_signals[RUN_POST] =
     g_signal_new("run-post\0",
@@ -447,7 +447,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::stop-persistent:
-   * @recall the object stop playback
+   * @recall: the object stop playback
    */
   recall_signals[STOP_PERSISTENT] =
     g_signal_new("stop_persistent\0",
@@ -460,7 +460,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::done:
-   * @recall the object to finish playback
+   * @recall: the object to finish playback
    */
   recall_signals[DONE] =
     g_signal_new("done\0",
@@ -473,7 +473,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::cancel:
-   * @recall the object to cancel playback
+   * @recall: the object to cancel playback
    */
   recall_signals[CANCEL] =
     g_signal_new("cancel\0",
@@ -486,7 +486,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::remove:
-   * @recall the object to remove of audio loop
+   * @recall: the object to remove of audio loop
    */
   recall_signals[REMOVE] =
     g_signal_new("remove\0",
@@ -499,10 +499,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::duplicate:
-   * @recall the object to duplicate
-   * @recall_id the assigned #AgsRecallID
-   * @n_params pointer to array length
-   * @parameter parameter array
+   * @recall: the object to duplicate
+   * @recall_id: the assigned #AgsRecallID
+   * @n_params: pointer to array length
+   * @parameter: parameter array
    */
   recall_signals[DUPLICATE] =
     g_signal_new("duplicate\0",
@@ -517,9 +517,9 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::notify-dependency:
-   * @recall the object to notify
-   * @dependency the kind of dependency
-   * @count the reference count
+   * @recall: the object to notify
+   * @dependency: the kind of dependency
+   * @count: the reference count
    */
   recall_signals[NOTIFY_DEPENDENCY] =
     g_signal_new("notify-dependency\0",
@@ -533,8 +533,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /**
    * AgsRecall::child-added:
-   * @recall the object to add the child
-   * @child the #AgsRecall to add
+   * @recall: the object to add the child
+   * @child: the #AgsRecall to add
    */
   recall_signals[CHILD_ADDED] =
     g_signal_new("child-added\0",
@@ -1133,8 +1133,8 @@ ags_recall_finalize(GObject *gobject)
 
 /**
  * ags_recall_set_flags:
- * @recall an #AgsRecall
- * @flags the flags mask
+ * @recall: an #AgsRecall
+ * @flags: the flags mask
  *
  * Set flags recursivly.
  */
@@ -1173,7 +1173,7 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
 
 /**
  * ags_recall_resolve_dependencies:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * A signal indicating that the inheriting object should resolve
  * it's dependencies.
@@ -1224,7 +1224,7 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 
 /**
  * ags_recall_run_init_pre:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * Prepare for run, this is the pre stage within the preparation.
  */
@@ -1259,7 +1259,7 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 
 /**
  * ags_recall_run_init_pre:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * Prepare for run, this is the inter stage within the preparation.
  */
@@ -1296,7 +1296,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 
 /**
  * ags_recall_run_init_pre:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * Prepare for run, this is the post stage within the preparation.
  */
@@ -1331,7 +1331,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
 /**
  * ags_recall_run_init_pre:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * This is the pre stage within a run.
  */
@@ -1366,7 +1366,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
 /**
  * ags_recall_run_init_inter:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * This is the inter stage within a run.
  */
@@ -1407,7 +1407,7 @@ ags_recall_real_run_post(AgsRecall *recall)
 
 /**
  * ags_recall_run_init_post:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * This is the post stage within a run.
  */
@@ -1435,7 +1435,7 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
 
 /**
  * ags_recall_stop_persistent:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * Unsets the %AGS_RECALL_PERSISTENT flag set and invokes ags_recall_done().
  */
@@ -1460,7 +1460,7 @@ ags_recall_real_done(AgsRecall *recall)
 
 /**
  * ags_recall_done:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * The #AgsRecall doesn't want to run anymore, it has been done its
  * work.
@@ -1512,7 +1512,7 @@ ags_recall_real_cancel(AgsRecall *recall)
 
 /**
  * ags_recall_cancel:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * The #AgsRecall doesn't want to run anymore, it aborts further execution.
  */
@@ -1555,7 +1555,7 @@ ags_recall_real_remove(AgsRecall *recall)
 
 /**
  * ags_recall_remove:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
  *
  * The #AgsRecall will be removed immediately.
  */
@@ -1572,8 +1572,8 @@ ags_recall_remove(AgsRecall *recall)
 
 /**
  * ags_recall_is_done:
- * @recall an #AgsRecall
- * @recycling_container an #AgsRecyclingContainer
+ * @recall: an #AgsRecall
+ * @recycling_container: an #AgsRecyclingContainer
  *
  * Check if recall is over.
  */
@@ -1648,13 +1648,13 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_duplicate:
- * @recall an #AgsRecall
- * @recall_id an #AgsRecallID
- * @n_params the count of #parameter entries
- * @parameter the properties to be passed for instantiating the #AgsRecall
+ * @recall: an #AgsRecall
+ * @recall_id: an #AgsRecallID
+ * @n_params: the count of #parameter entries
+ * @parameter: the properties to be passed for instantiating the #AgsRecall
  *
  * Should duplicate an #AgsRecall, so it can pass the runs. Mainly used for
- * creating duplicates from templates, see #AGS_RECALL_TEMPLATE.
+ * creating duplicates from templates, see %AGS_RECALL_TEMPLATE.
  */
 AgsRecall*
 ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_params, GParameter *parameter */
@@ -1680,8 +1680,8 @@ ags_recall_duplicate(AgsRecall *recall, AgsRecallID *recall_id) /*, guint n_para
 
 /**
  * ags_recall_set_recall_id:
- * @recall an #AgsRecall
- * @recall_id the #AgsRecallID to set
+ * @recall: an #AgsRecall
+ * @recall_id: the #AgsRecallID to set
  *
  * Sets the recall id recursively.
  */
@@ -1707,9 +1707,9 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
 
 /**
  * ags_recall_notify_dependency:
- * @recall an #AgsRecall
- * @flags see AgsRecallNotifyDependencyMode
- * @count how many dependencies
+ * @recall: an #AgsRecall
+ * @flags: see AgsRecallNotifyDependencyMode
+ * @count: how many dependencies
  *
  * Notifies a recall that an other depends on it.
  */
@@ -1727,8 +1727,8 @@ ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count)
 
 /**
  * ags_recall_add_dependency:
- * @recall an #AgsRecall
- * @recall_dependency an #AgsRecallDependency
+ * @recall: an #AgsRecall
+ * @recall_dependency: an #AgsRecallDependency
  *
  * Associate a new dependency for this recall.
  */
@@ -1748,8 +1748,8 @@ ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_depende
 
 /**
  * ags_recall_remove_dependency:
- * @recall an #AgsRecall
- * @dependency an #AgsRecall
+ * @recall: an #AgsRecall
+ * @dependency: an #AgsRecall
  *
  * Remove a prior associated dependency.
  */
@@ -1775,7 +1775,10 @@ ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency)
 
 /**
  * ags_recall_get_dependencies:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
+ *
+ * Retrieve dependencies.
+ *
  * Returns: a GList with all dependencies.
  */
 //FIXME:JK: duplicate the list
@@ -1787,8 +1790,8 @@ ags_recall_get_dependencies(AgsRecall *recall)
 
 /**
  * ags_recall_remove_child:
- * @parent an #AgsRecall
- * @child an #AgsRecall
+ * @parent: an #AgsRecall
+ * @child: an #AgsRecall
  *
  * An #AgsRecall may have children.
  */
@@ -1804,8 +1807,8 @@ ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
 
 /**
  * ags_recall_add_child:
- * @parent an #AgsRecall
- * @child an #AgsRecall
+ * @parent: an #AgsRecall
+ * @child: an #AgsRecall
  *
  * An #AgsRecall may have children.
  */
@@ -1884,7 +1887,10 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 
 /**
  * ags_recall_get_children:
- * @recall an #AgsRecall
+ * @recall: an #AgsRecall
+ *
+ * Retrieve children.
+ *
  * Returns: a GList with all children.
  */
 //FIXME:JK: duplicate the list
@@ -1896,13 +1902,14 @@ ags_recall_get_children(AgsRecall *recall)
 
 /**
  * ags_recall_find_by_effect:
- * @list a #GList with recalls
- * @recall_id an #AgsRecallId
- * @effect the effect name
- * Returns: a GList, or #NULL if not found
+ * @list: a #GList with recalls
+ * @recall_id: an #AgsRecallId
+ * @effect: the effect name
  *
  * Finds next matching effect name. Intended to be used as
  * iteration function.
+ *
+ * Returns: a GList, or #NULL if not found
  */
 GList*
 ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
@@ -1928,12 +1935,13 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
 
 /**
  * ags_recall_find_type:
- * @recall_i a #GList containing recalls
- * @type a #GType
- * Returns: a #GList containing recalls, or #NULL if not found
+ * @recall_i: a #GList containing recalls
+ * @type: a #GType
  * 
  * Finds next matching recall for type. Intended to be used as
  * iteration function.
+ *
+ * Returns: a #GList containing recalls, or #NULL if not found
  */
 GList*
 ags_recall_find_type(GList *recall_i, GType type)
@@ -1955,10 +1963,11 @@ ags_recall_find_type(GList *recall_i, GType type)
 /**
  * ags_recall_find_template:
  * @recall_i a #GList containing recalls
- * Returns: a #GList containing recalls, or #NULL if not found
  *
  * Finds next template, see #AGS_RECALL_TEMPLATE flag. Intended to be used as
  * iteration function.
+ *
+ * Returns: a #GList containing recalls, or #NULL if not found
  */
 GList*
 ags_recall_find_template(GList *recall_i)
@@ -1979,12 +1988,13 @@ ags_recall_find_template(GList *recall_i)
 
 /**
  * ags_recall_find_template_with_type:
- * @recall_i a #GList containing recalls
- * @type a #GType
- * Returns: a #GList containing recalls, or #NULL if not found
+ * @recall_i: a #GList containing recalls
+ * @type: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
+ *
+ * Returns: a #GList containing recalls, or #NULL if not found
  */
 GList*
 ags_recall_template_find_type(GList *recall_i, GType type)
@@ -2006,13 +2016,14 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 
 /**
  * ags_recall_find_type_with_recycling_container:
- * @recall_i a #GList containing recalls
- * @type a #GType
- * @recycling_container an #AgsRecyclingContainer
- * Returns: a #GList containing recalls, or #NULL if not found
+ * @recall_i: a #GList containing recalls
+ * @type: a #GType
+ * @recycling_container: an #AgsRecyclingContainer
  * 
  * Finds next matching recall for type which has @recycling_container, see #AgsRecallId for further
  * details about #AgsRecyclingContainer. Intended to be used as iteration function.
+ *
+ * Returns: a #GList containing recalls, or #NULL if not found
  */
 GList*
 ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObject *recycling_container)
@@ -2035,13 +2046,14 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
 
 /**
  * ags_recall_find_recycling_container:
- * @recall_i a #GList containing recalls
- * @type a #GType
- * @recycling_container an #AgsRecyclingContainer
- * Returns: a #GList containing recalls, or #NULL if not found
+ * @recall_i: a #GList containing recalls
+ * @type: a #GType
+ * @recycling_container: an #AgsRecyclingContainer
  * 
  * Finds next matching recall which has @recycling_container, see #AgsRecallId for further
  * details about #AgsRecyclingContainer. Intended to be used as iteration function.
+ *
+ * Returns: a #GList containing recalls, or #NULL if not found
  */
 GList*
 ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_container)
@@ -2073,13 +2085,14 @@ ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_containe
 
 /**
  * ags_recall_find_type:
- * @recall_i a #GList containing recalls
- * @provider a #GObject
- * Returns: a #GList containing recalls, or #NULL if not found
+ * @recall_i: a #GList containing recalls
+ * @provider: a #GObject
  * 
  * Finds next matching recall for type which has @provider. The @provider may be either an #AgsChannel
  * or an #AgsAudio object. This function tries to find the corresponding #AgsRecallChannel and #AgsRecallAudio
  * objects of a #AgsRecall to find. If these recalls contains the @provider, the function will return.
+ *
+ * Returns: a #GList containing recalls, or #NULL if not found
  */
 GList*
 ags_recall_find_provider(GList *recall_i, GObject *provider)
@@ -2152,12 +2165,13 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
 
 /**
  * ags_recall_find_type:
- * @recall_i a #GList containing recalls
- * @provider a #GObject
- * @recycling_container an #AgsRecyclingContainer
- * Returns: a #GList containing recalls, or #NULL if not found
+ * @recall_i: a #GList containing recalls
+ * @provider: a #GObject
+ * @recycling_container: an #AgsRecyclingContainer
  * 
  * Like ags_recall_find_provider() but given additionally @recycling_container as search parameter.
+ *
+ * Returns: a #GList containing recalls, or #NULL if not found
  */
 GList*
 ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *provider, GObject *recycling_container)

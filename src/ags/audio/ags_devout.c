@@ -36,9 +36,11 @@
 #include <ags/audio/ags_notation.h>
 
 /**
- * SECTION:agsdevout
- * @Short_description: Outputting to soundcard
- * @Title: AgsDevout
+ * SECTION:ags_devout
+ * @short_description: Outputting to soundcard
+ * @title: AgsDevout
+ * @section_id:
+ * @include: ags/audio/ags_devout.h
  *
  * #AgsDevout represents a soundcard and supports output.
  */
@@ -335,7 +337,9 @@ ags_devout_class_init(AgsDevoutClass *devout)
   /* signals */
   /**
    * AgsDevout::tic:
-   * @devout the object tics
+   * @devout: the object tics
+   *
+   * The ::tic signal is emited during playback after buffer time interval.
    */
   devout_signals[TIC] =
     g_signal_new("tic\0",
@@ -688,6 +692,8 @@ ags_devout_disconnect(AgsConnectable *connectable)
  * Allocs an #AgsDevoutPlayDomain.
  *
  * Returns: the devout play domain
+ *
+ * Since: 0.4
  */
 AgsDevoutPlayDomain*
 ags_devout_play_domain_alloc()
@@ -709,9 +715,11 @@ ags_devout_play_domain_alloc()
 
 /**
  * ags_devout_play_domain_free:
- * @devout_play_domain the devout play domain
+ * @devout_play_domain: the devout play domain
  *
  * Frees an #AgsDevoutPlayDomain.
+ *
+ * Since: 0.4
  */
 void
 ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain)
@@ -728,6 +736,8 @@ ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain)
  * Allocs an #AgsDevoutPlay.
  *
  * Returns: the devout play
+ *
+ * Since: 0.4
  */
 AgsDevoutPlay*
 ags_devout_play_alloc()
@@ -758,9 +768,11 @@ ags_devout_play_alloc()
 
 /**
  * ags_devout_play_free:
- * @devout_play the devout play
+ * @devout_play: the devout play
  *
  * Frees an #AgsDevoutPlay.
+ *
+ * Since: 0.4
  */
 void
 ags_devout_play_free(AgsDevoutPlay *play)
@@ -774,11 +786,13 @@ ags_devout_play_free(AgsDevoutPlay *play)
 
 /**
  * ags_devout_play_find_source:
- * @devout_play a #GList containing #AgsDevoutPlay-struct
+ * @devout_play: a #GList containing #AgsDevoutPlay-struct
  * 
  * Find source
  *
  * Returns: the matching devout play
+ *
+ * Since: 0.4
  */
 AgsDevoutPlay*
 ags_devout_play_find_source(GList *devout_play,
@@ -797,10 +811,12 @@ ags_devout_play_find_source(GList *devout_play,
 
 /**
  * ags_devout_list_cards:
- * @card_id alsa identifier
- * @card_name card name
+ * @card_id: alsa identifier
+ * @card_name: card name
  *
  * List available soundcards.
+ *
+ * Since: 0.4
  */
 void
 ags_devout_list_cards(GList **card_id, GList **card_name)
@@ -855,16 +871,18 @@ ags_devout_list_cards(GList **card_id, GList **card_name)
 
 /**
  * ags_devout_pcm_info:
- * @card_id alsa identifier
- * @channels_min minimum channels supported
- * @channels_max maximum channels supported
- * @rate_min minimum samplerate supported
- * @rate_max maximum samplerate supported
- * @buffer_size_min minimum buffer size supported
+ * @card_id: alsa identifier
+ * @channels_min: minimum channels supported
+ * @channels_max: maximum channels supported
+ * @rate_min: minimum samplerate supported
+ * @rate_max: maximum samplerate supported
+ * @buffer_size_min: minimum buffer size supported
  * @buffer_size_max maximum buffer size supported
- * @error on success %NULL
+ * @error: on success %NULL
  *
- * List available soundcards.
+ * List soundcard settings.
+ *
+ * Since: 0.4
  */
 void
 ags_devout_pcm_info(char *card_id,
@@ -934,10 +952,12 @@ ags_devout_pcm_info(char *card_id,
 
 /**
  * ags_devout_add_audio:
- * @devout an #AgsDevout
- * @audio the #AgsAudio to add
+ * @devout: an #AgsDevout
+ * @audio: the #AgsAudio to add
  *
  * Add audio to devout.
+ *
+ * Since: 0.4
  */
 void
 ags_devout_add_audio(AgsDevout *devout, GObject *audio)
@@ -949,10 +969,12 @@ ags_devout_add_audio(AgsDevout *devout, GObject *audio)
 
 /**
  * ags_devout_remove_audio:
- * @devout an #AgsDevout
- * @audio the #AgsAudio to remove
+ * @devout: an #AgsDevout
+ * @audio: the #AgsAudio to remove
  *
  * Remove audio of devout.
+ *
+ * Since: 0.4
  */
 void
 ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
@@ -964,9 +986,11 @@ ags_devout_remove_audio(AgsDevout *devout, GObject *audio)
 
 /**
  * ags_devout_tic:
- * @devout an #AgsDevout
+ * @devout: an #AgsDevout
  *
  * The tic of devout.
+ *
+ * Since: 0.4
  */
 void
 ags_devout_tic(AgsDevout *devout)
@@ -986,9 +1010,11 @@ ags_devout_tic(AgsDevout *devout)
 
 /**
  * ags_devout_switch_buffer_flag:
- * @devout an #AgsDevout
+ * @devout: an #AgsDevout
  *
  * The buffer flag indicates the currently played buffer.
+ *
+ * Since: 0.3
  */
 void
 ags_devout_switch_buffer_flag(AgsDevout *devout)
@@ -1337,10 +1363,13 @@ ags_devout_alsa_free(AgsDevout *devout)
 
 /**
  * ags_devout_new:
+ * @ags_main: the #AgsMain
  *
  * Creates an #AgsDevout, refering to @ags_main.
  *
  * Returns: a new #AgsDevout
+ *
+ * Since: 0.3
  */
 AgsDevout*
 ags_devout_new(GObject *ags_main)
@@ -1350,6 +1379,7 @@ ags_devout_new(GObject *ags_main)
   devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT, NULL);
   
   if(ags_main != NULL){
+    //TODO:JK: use set_property
     g_object_ref(G_OBJECT(ags_main));
     devout->ags_main = ags_main;
   }

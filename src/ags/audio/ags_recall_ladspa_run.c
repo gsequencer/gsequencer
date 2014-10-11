@@ -47,7 +47,7 @@ void ags_recall_ladspa_run_run_pre(AgsRecall *recall);
 void ags_recall_ladspa_run_run_inter(AgsRecall *recall);
 
 /**
- * SECTION:agsrecallladsparun
+ * SECTION:ags_recall_ladspa_run
  * @Short_description: The object interfacing with LADSPA
  * @Title: AgsRecallLadspaRun
  *
@@ -231,7 +231,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
 /**
  * ags_recall_ladspa_run_new:
- * @audio_signal the source
+ * @audio_signal: the source
  *
  * Creates a #AgsRecallLadspaRun
  *

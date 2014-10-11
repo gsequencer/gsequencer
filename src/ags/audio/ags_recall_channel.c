@@ -49,9 +49,11 @@ AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 					guint *n_params, GParameter *parameter);
 
 /**
- * SECTION:agsrecallchannel
- * @Short_description: channel context of recall
- * @Title: AgsRecallChannel
+ * SECTION:ags_recall_channel
+ * @short_description: channel context of recall
+ * @title: AgsRecallChannel
+ * @section_id:
+ * @include: ags/audio/ags_recall_channel.h
  *
  * #AgsRecallChannel acts as channel recall.
  */
@@ -412,12 +414,14 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_channel_find_channel:
- * @recall_channel a #GList containing #AgsRecallChannel
- * @source the #AgsChannel to find
+ * @recall_channel: a #GList containing #AgsRecallChannel
+ * @source: the #AgsChannel to find
  *
  * Retrieve next recall assigned to channel.
  *
  * Returns: Next match.
+ *
+ * Since: 0.4
  */
 GList*
 ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
@@ -442,6 +446,8 @@ ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
  * Creates an #AgsRecallChannel.
  *
  * Returns: a new #AgsRecallChannel.
+ *
+ * Since: 0.4
  */
 AgsRecallChannel*
 ags_recall_channel_new()

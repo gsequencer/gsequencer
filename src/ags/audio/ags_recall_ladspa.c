@@ -61,7 +61,7 @@ void ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
- * SECTION:agsrecallladspa
+ * SECTION:ags_recall_ladspa
  * @Short_description: The object interfacing with LADSPA
  * @Title: AgsRecallLadspa
  *
@@ -598,8 +598,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 
 /**
  * ags_recall_ladspa_short_to_float:
- * @buffer source
- * @destination destination
+ * @buffer: source
+ * @destination: destination
  *
  * Convert data type.
  */
@@ -619,8 +619,8 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
 
 /**
  * ags_recall_ladspa_float_to_short:
- * @buffer source
- * @destination destination
+ * @buffer: source
+ * @destination: destination
  *
  * Convert data type.
  */
@@ -640,9 +640,9 @@ ags_recall_ladspa_float_to_short(float *buffer,
 
 /**
  * ags_recall_ladpsa_find:
- * @recall a #GList containing #AgsRecall
- * @filename plugin filename
- * @effect effect's name
+ * @recall: a #GList containing #AgsRecall
+ * @filename: plugin filename
+ * @effect: effect's name
  *
  * Retrieve LADSPA recall.
  *
@@ -670,10 +670,10 @@ ags_recall_ladpsa_find(GList *recall,
 
 /**
  * ags_recall_id_new:
- * @source the source
- * @filename the LADSPA plugin filename
- * @effect effect's name
- * @index effect's index
+ * @source: the source
+ * @filename: the LADSPA plugin filename
+ * @effect: effect's name
+ * @index: effect's index
  *
  * Creates a #AgsRecallLadspa
  *

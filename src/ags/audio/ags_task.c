@@ -28,7 +28,7 @@ void ags_task_disconnect(AgsConnectable *connectable);
 void ags_task_finalize(GObject *gobject);
 
 /**
- * SECTION:agstask
+ * SECTION:ags_task
  * @Short_description: Perform operations in a thread safe context.
  * @Title: AgsTask
  *
@@ -100,7 +100,7 @@ ags_task_class_init(AgsTaskClass *task)
   /* signals */
   /**
    * AgsTask::launch:
-   * @task the object to launch.
+   * @task: the object to launch.
    */
   task_signals[LAUNCH] =
     g_signal_new("launch\0",
@@ -113,8 +113,8 @@ ags_task_class_init(AgsTaskClass *task)
 
   /**
    * AgsTask::failure:
-   * @task the object failed to do its work.
-   * @error the error
+   * @task: the object failed to do its work.
+   * @error: the error
    */
   task_signals[FAILURE] =
     g_signal_new("failure\0",
@@ -176,7 +176,7 @@ ags_task_finalize(GObject *gobject)
 
 /**
  * ags_task_launch:
- * @task an #AgsTask
+ * @task: an #AgsTask
  *
  * Intercept task.
  */
@@ -193,8 +193,8 @@ ags_task_launch(AgsTask *task)
 
 /**
  * ags_task_failure:
- * @task an #AgsTask
- * @error is %NULL on success
+ * @task: an #AgsTask
+ * @error: is %NULL on success
  *
  * Signals failure of task.
  */

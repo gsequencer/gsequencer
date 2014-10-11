@@ -39,7 +39,7 @@ void ags_recall_id_disconnect(AgsConnectable *connectable);
 void ags_recall_id_finalize(GObject *gobject);
 
 /**
- * SECTION:agsrecallid
+ * SECTION:ags_recall_id
  * @Short_description: The object specifies run context.
  * @Title: AgsRecallID
  *
@@ -257,8 +257,8 @@ ags_recall_id_finalize(GObject *gobject)
 
 /**
  * ags_recall_id_get_run_stage:
- * @id the #AgsRecallID to check
- * @stage the current run stage to check against
+ * @id: the #AgsRecallID to check
+ * @stage: the current run stage to check against
  *
  * Check if a run stage already has been passed for current run. This
  * function is intended to handle AGS_AUDIO_ASYNC correctly.
@@ -290,8 +290,8 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
 
 /**
  * ags_recall_id_set_run_stage:
- * @recall_id the #AgsRecallID which has been passed
- * @stage the run stage the networked channels are in
+ * @recall_id: the #AgsRecallID which has been passed
+ * @stage: the run stage the networked channels are in
  *
  * Marks the run stage to be passed for audio channel.
  */
@@ -311,8 +311,8 @@ ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
 
 /**
  * ags_recall_id_unset_run_stage:
- * @recall_id the #AgsRecallID which has been passed
- * @stage the run stage the networked channels are in
+ * @recall_id: the #AgsRecallID which has been passed
+ * @stage: the run stage the networked channels are in
  *
  * Unmarks the run stage to be passed for audio channel.
  */
@@ -330,8 +330,8 @@ ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
 
 /**
  * ags_recall_id_add:
- * @recall_id_list the #GList the new #AgsRecallID should be added
- * @recall_id the #AgsRecallID to add
+ * @recall_id_list: the #GList the new #AgsRecallID should be added
+ * @recall_id: the #AgsRecallID to add
  *
  * Adds an #AgsRecallID with given properties to the passed #GList.
  *
@@ -351,8 +351,8 @@ ags_recall_id_add(GList *recall_id_list,
 
 /**
  * ags_recall_id_find_recycling_container:
- * @recall_id_list a #GList containing #AgsRecallID
- * @recycling_container the #AgsRecyclingContainer to match
+ * @recall_id_list: a #GList containing #AgsRecallID
+ * @recycling_container: the #AgsRecyclingContainer to match
  *
  * Retrieve recall id by recycling container.
  *
@@ -379,8 +379,8 @@ ags_recall_id_find_recycling_container(GList *recall_id_list,
 
 /**
  * ags_recall_id_find_parent_recycling_container:
- * @recall_id_list a #GList containing #AgsRecallID
- * @recycling_container the #AgsRecyclingContainer to match
+ * @recall_id_list: a #GList containing #AgsRecallID
+ * @recycling_container: the #AgsRecyclingContainer to match
  *
  * Retrieve recall id by recycling container.
  *
@@ -407,6 +407,7 @@ ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
 
 /**
  * ags_recall_id_new:
+ * @recycling:
  *
  * Creates a #AgsRecallID, assigned to @recycling
  *

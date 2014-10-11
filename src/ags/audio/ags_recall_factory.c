@@ -2201,18 +2201,19 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
 
 /**
  * ags_recall_factory_create:
- * @audio an #AgsAudio that should keep the recalls
- * @recall_container an #AgsRecallContainer to indetify what recall to use
- * @plugin_name the plugin identifier to instantiate 
- * @start_audio_channel the first audio channel to apply
- * @stop_audio_channel the last audio channel to apply
- * @start_pad the first pad to apply
- * @stop_pad the last pad to apply
- * @create_flags modify the behaviour of this function
- * @recall_flags flags to be set for #AgsRecall
- * Returns: The available AgsPort objects of the plugin to modify.
+ * @audio: an #AgsAudio that should keep the recalls
+ * @recall_container: an #AgsRecallContainer to indetify what recall to use
+ * @plugin_name: the plugin identifier to instantiate 
+ * @start_audio_channel: the first audio channel to apply
+ * @stop_audio_channel: the last audio channel to apply
+ * @start_pad: the first pad to apply
+ * @stop_pad: the last pad to apply
+ * @create_flags: modify the behaviour of this function
+ * @recall_flags: flags to be set for #AgsRecall
  *
  * Instantiate #AgsRecall by this factory.
+ *
+ * Returns: The available AgsPort objects of the plugin to modify.
  */
 GList*
 ags_recall_factory_create(AgsAudio *audio,
@@ -2361,7 +2362,7 @@ ags_recall_factory_remove(AgsAudio *audio,
 
 /**
  * ags_recall_factory_new:
- * @factory the #AgsRecall depending on
+ * @factory: the #AgsRecall depending on
  *
  * Creates a #AgsRecallFactory
  *

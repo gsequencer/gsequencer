@@ -30,9 +30,11 @@
 #include <string.h>
 
 /**
- * SECTION:agsaudiosignal
- * @Short_description: Contains the audio data and its alignment
- * @Title: AgsAudioSignal
+ * SECTION:ags_audio_signal
+ * @short_description: Contains the audio data and its alignment
+ * @title: AgsAudioSignal
+ * @section_id:
+ * @include: ags/audio/ags_audio_signal.h
  *
  * #AgsAudioSignal organizes audio data within a #GList whereby data
  * pointing to the buffer.
@@ -181,8 +183,10 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   /* signals */
   /**
    * AgsAudioSignal::realloc-buffer-size:
-   * @audio_signal the object to realloc buffer size
-   * @buffer_size new buffer size
+   * @audio_signal: the object to realloc buffer size
+   * @buffer_size: new buffer size
+   *
+   * The ::reallloc-buffer-size signal is invoked to notify modified buffer size.
    */
   audio_signal_signals[REALLOC_BUFFER_SIZE] =
     g_signal_new("realloc-buffer-size\0",
@@ -196,8 +200,10 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 
   /**
    * AgsAudioSignal::morph-samplerate:
-   * @audio_signal the object to morph samplerate
-   * @samplerate new samplerate
+   * @audio_signal: the object to morph samplerate
+   * @samplerate: new samplerate
+   *
+   * The ::morph-samplerate signal is invoked to notify modified samplerate.
    */
   audio_signal_signals[MORPH_SAMPLERATE] =
     g_signal_new("morph-samplerate\0",
@@ -391,11 +397,13 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_stream_alloc:
- * @buffer_size the buffer size
+ * @buffer_size: the buffer size
  *
  * Allocs an audio buffer.
  *
  * Returns: the audio data array
+ *
+ * Since: 0.3
  */
 signed short*
 ags_stream_alloc(guint buffer_size)
@@ -410,11 +418,13 @@ ags_stream_alloc(guint buffer_size)
 
 /**
  * ags_audio_signal_get_length_till_current:
- * @audio_signal an #AgsAudioSignal
+ * @audio_signal: an #AgsAudioSignal
  *
  * Counts the buffers from stream_beginning upto stream_current.
  *
  * Returns: the counted length.
+ *
+ * Since: 0.4
  */
 guint
 ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal)
@@ -445,9 +455,11 @@ ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal)
 
 /**
  * ags_audio_signal_add_stream:
- * @audio_signal an #AgsAudioSignal
+ * @audio_signal: an #AgsAudioSignal
  *
  * Adds a buffer at the end of the stream.
+ *
+ * Since: 0.3
  */
 void
 ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
@@ -476,11 +488,13 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 
 /**
  * ags_audio_signal_stream_resize:
- * @audio_signal an #AgsAudioSignal to resize.
- * @length a guint as the new length.
+ * @audio_signal: an #AgsAudioSignal to resize.
+ * @length: a guint as the new length.
  *
  * Resizes an #AgsAudioSignal's stream but be carefull with shrinking.
  * This function may crash the application.
+ *
+ * Since: 0.3
  */
 void
 ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
@@ -553,11 +567,13 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
 
 /**
  * ags_audio_signal_stream_safe_resize:
- * @audio_signal an #AgsAudioSignal
- * @length a guint
+ * @audio_signal: an #AgsAudioSignal
+ * @length: a guint
  *
  * Resizes an #AgsAudioSignal's stream but doesn't shrink more than the
  * current stream position.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length)
@@ -628,10 +644,12 @@ ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
 
 /**
  * ags_audio_signal_realloc_buffer_size:
- * @audio_signal an #AgsAudioSignal
- * @buffer_size the buffer size
+ * @audio_signal: an #AgsAudioSignal
+ * @buffer_size: the buffer size
  *
  * Realloc the stream to the new buffer size. 
+ *
+ * Since: 0.4
  */
 void
 ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
@@ -725,11 +743,13 @@ ags_audio_signal_real_morph_samplerate(AgsAudioSignal *audio_signal, guint sampl
 
 /**
  * ags_audio_signal_morph_samplerate:
- * @audio_signal an #AgsAudioSignal
- * @samplerate the new samplerate
- * @k_morph reserved for future usage
+ * @audio_signal: an #AgsAudioSignal
+ * @samplerate: the new samplerate
+ * @k_morph: reserved for future usage
  *
  * Morph audio quality to new samplerate.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate, double k_morph)
@@ -744,13 +764,15 @@ ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate
 
 /**
  * ags_audio_signal_copy_buffer_to_buffer:
- * @destination destination buffer
- * @dchannels destination audio channels
- * @source source buffer
- * @schannels source audio channels
- * @size frame count to copy
+ * @destination: destination buffer
+ * @dchannels: destination audio channels
+ * @source: source buffer
+ * @schannels: source audio channels
+ * @size: frame count to copy
  *
  * Copy a buffer to an other buffer.
+ *
+ * Since: 0.3
  */
 void
 ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels, signed short *source, guint schannels, guint size)
@@ -765,13 +787,15 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
 
 /**
  * ags_audio_signal_copy_buffer_to_buffer:
- * @destination destination buffer
- * @dchannels destination audio channels
- * @source source buffer
- * @schannels source audio channels
- * @size frame count to copy
+ * @destination: destination buffer
+ * @dchannels: destination audio channels
+ * @source: source buffer
+ * @schannels: source audio channels
+ * @size: frame count to copy
  *
  * Copy a buffer to an other buffer.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_signal_copy_buffer_to_double_buffer(double *destination, guint dchannels,
@@ -788,13 +812,15 @@ ags_audio_signal_copy_buffer_to_double_buffer(double *destination, guint dchanne
 
 /**
  * ags_audio_signal_copy_buffer_to_buffer:
- * @destination destination buffer
- * @dchannels destination audio channels
- * @source source buffer
- * @schannels source audio channels
- * @size frame count to copy
+ * @destination: destination buffer
+ * @dchannels: destination audio channels
+ * @source: source buffer
+ * @schannels: source audio channels
+ * @size: frame count to copy
  *
  * Copy a buffer to an other buffer.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_signal_copy_double_buffer_to_buffer(signed short *destination, guint dchannels,
@@ -811,10 +837,12 @@ ags_audio_signal_copy_double_buffer_to_buffer(signed short *destination, guint d
 
 /**
  * ags_audio_signal_duplicate_stream:
- * @audio_signal destination #AgsAudioSignal
- * @template source #AgsAudioSignal
+ * @audio_signal: destination #AgsAudioSignal
+ * @template: source #AgsAudioSignal
  * 
  * Copy stream of one audio signal to another
+ *
+ * Since: 0.3
  */
 void
 ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
@@ -891,11 +919,13 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
 /**
  * ags_audio_signal_get_template:
- * @audio_signal a #GList containing #AgsAudioSignal
+ * @audio_signal: a #GList containing #AgsAudioSignal
  *
  * Retrieve the template audio signal.
  *
  * Returns: the template #AgsAudioSignal
+ *
+ * Since: 0.3
  */
 AgsAudioSignal*
 ags_audio_signal_get_template(GList *audio_signal)
@@ -916,12 +946,14 @@ ags_audio_signal_get_template(GList *audio_signal)
 
 /**
  * ags_audio_signal_get_stream_current:
- * @audio_signal a #GList containing #AgsAudioSignal
- * @recall_id the matching #AgsRecallID
+ * @audio_signal: a #GList containing #AgsAudioSignal
+ * @recall_id: the matching #AgsRecallID
  * 
  * Retrieve next current stream of #AgsAudioSignal list.
  *
  * Returns: next #GList matching #AgsRecallID
+ *
+ * Since: 0.4
  */
 GList*
 ags_audio_signal_get_stream_current(GList *list_audio_signal,
@@ -951,12 +983,14 @@ ags_audio_signal_get_stream_current(GList *list_audio_signal,
 
 /**
  * ags_audio_signal_get_by_recall_id:
- * @audio_signal a #GList containing #AgsAudioSignal
- * @recall_id matching #AgsRecallID
+ * @audio_signal: a #GList containing #AgsAudioSignal
+ * @recall_id: matching #AgsRecallID
  *
  * Retrieve next audio signal refering to @recall_id
  *
  * Returns: matching #AgsAudioSignal
+ *
+ * Since: 0.3
  */
 GList*
 ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
@@ -986,11 +1020,13 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
 
 /**
  * ags_audio_signal_morph_samplerate:
- * @audio_signal an #AgsAudioSignal
- * @template the source #AgsAudioSignal
- * @length new frame count
+ * @audio_signal: an #AgsAudioSignal
+ * @template: the source #AgsAudioSignal
+ * @length: new frame count
  *
  * Tile audio signal data.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_signal_tile(AgsAudioSignal *audio_signal,
@@ -1143,11 +1179,13 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 
 /**
  * ags_audio_signal_morph_samplerate:
- * @audio_signal an #AgsAudioSignal
- * @template the source #AgsAudioSignal
- * @length new frame count
+ * @audio_signal: an #AgsAudioSignal
+ * @template: the source #AgsAudioSignal
+ * @length: new frame count
  *
  * Scale audio signal data.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_signal_scale(AgsAudioSignal *audio_signal,
@@ -1728,11 +1766,16 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 
 /**
  * ags_audio_signal_new:
+ * @devout: the assigned #AgsDevout
+ * @recycling: the #AgsRecycling
+ * @recall_id: the #AgsRecallID, it can be NULL if %AGS_AUDIO_SIGNAL_TEMPLATE is set
  *
  * Creates a #AgsAudioSignal, with defaults of @devout, linking @recycling tree
  * and refering to @recall_id.
  *
  * Returns: a new #AgsAudioSignal
+ *
+ * Since: 0.3
  */
 AgsAudioSignal*
 ags_audio_signal_new(GObject *devout,
@@ -1752,6 +1795,10 @@ ags_audio_signal_new(GObject *devout,
 
 /**
  * ags_audio_signal_new:
+ * @devout: the assigned #AgsDevout
+ * @recycling: the #AgsRecycling
+ * @recall_id: the #AgsRecallID, it can be NULL if %AGS_AUDIO_SIGNAL_TEMPLATE is set
+ * @length: audio data frame count
  *
  * Creates a #AgsAudioSignal, with defaults of @devout, linking @recycling tree
  * and refering to @recall_id.

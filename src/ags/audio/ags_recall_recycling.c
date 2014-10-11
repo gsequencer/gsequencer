@@ -81,7 +81,7 @@ void ags_recall_recycling_duplicate_list(GList *list,
 					 GList **target);
 
 /**
- * SECTION:agsrecallladsparecycling
+ * SECTION:ags_recall_ladspa_recycling
  * @Short_description: recycling context of recall
  * @Title: AgsRecallRecycling
  *

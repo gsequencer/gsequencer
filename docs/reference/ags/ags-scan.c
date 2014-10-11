@@ -12,6 +12,7 @@ extern GType ags_add_point_to_selection_get_type (void);
 extern GType ags_add_recall_get_type (void);
 extern GType ags_add_region_to_selection_get_type (void);
 extern GType ags_append_audio_get_type (void);
+extern GType ags_append_audio_threaded_get_type (void);
 extern GType ags_append_channel_get_type (void);
 extern GType ags_append_recall_get_type (void);
 extern GType ags_applicable_get_type (void);
@@ -36,6 +37,7 @@ extern GType ags_buffer_recycling_get_type (void);
 extern GType ags_cancel_audio_get_type (void);
 extern GType ags_cancel_channel_get_type (void);
 extern GType ags_cancel_recall_get_type (void);
+extern GType ags_cartesian_get_type (void);
 extern GType ags_change_indicator_get_type (void);
 extern GType ags_change_tact_get_type (void);
 extern GType ags_channel_get_type (void);
@@ -69,6 +71,7 @@ extern GType ags_drum_output_line_get_type (void);
 extern GType ags_drum_output_pad_get_type (void);
 extern GType ags_dynamic_connectable_get_type (void);
 extern GType ags_editor_get_type (void);
+extern GType ags_effect_get_type (void);
 extern GType ags_expander_get_type (void);
 extern GType ags_expander_set_get_type (void);
 extern GType ags_export_output_get_type (void);
@@ -80,11 +83,17 @@ extern GType ags_file_id_ref_get_type (void);
 extern GType ags_file_launch_get_type (void);
 extern GType ags_file_link_get_type (void);
 extern GType ags_file_lookup_get_type (void);
+extern GType ags_file_read_get_type (void);
 extern GType ags_file_selection_get_type (void);
+extern GType ags_file_value_factory_get_type (void);
+extern GType ags_file_write_get_type (void);
 extern GType ags_free_selection_get_type (void);
 extern GType ags_garbage_collector_get_type (void);
+extern GType ags_generic_preferences_get_type (void);
 extern GType ags_gui_task_thread_get_type (void);
 extern GType ags_gui_thread_get_type (void);
+extern GType ags_hindicator_get_type (void);
+extern GType ags_history_get_type (void);
 extern GType ags_indicator_get_type (void);
 extern GType ags_init_audio_get_type (void);
 extern GType ags_init_channel_get_type (void);
@@ -96,6 +105,7 @@ extern GType ags_iterator_thread_get_type (void);
 extern GType ags_ladspa_browser_get_type (void);
 extern GType ags_ladspa_manager_get_type (void);
 extern GType ags_led_get_type (void);
+extern GType ags_libao_get_type (void);
 extern GType ags_line_editor_get_type (void);
 extern GType ags_line_get_type (void);
 extern GType ags_line_member_editor_get_type (void);
@@ -164,6 +174,7 @@ extern GType ags_plugin_factory_get_type (void);
 extern GType ags_plugin_get_type (void);
 extern GType ags_plugin_preferences_get_type (void);
 extern GType ags_port_get_type (void);
+extern GType ags_portable_thread_get_type (void);
 extern GType ags_portlet_get_type (void);
 extern GType ags_preferences_get_type (void);
 extern GType ags_property_collection_editor_get_type (void);
@@ -184,6 +195,7 @@ extern GType ags_recall_ladspa_get_type (void);
 extern GType ags_recall_ladspa_run_get_type (void);
 extern GType ags_recall_recycling_dummy_get_type (void);
 extern GType ags_recall_recycling_get_type (void);
+extern GType ags_record_thread_get_type (void);
 extern GType ags_recycling_container_get_type (void);
 extern GType ags_recycling_get_type (void);
 extern GType ags_recycling_thread_get_type (void);
@@ -201,6 +213,7 @@ extern GType ags_runnable_get_type (void);
 extern GType ags_save_file_get_type (void);
 extern GType ags_scroll_on_play_get_type (void);
 extern GType ags_seekable_get_type (void);
+extern GType ags_segment_get_type (void);
 extern GType ags_server_get_type (void);
 extern GType ags_server_preferences_get_type (void);
 extern GType ags_set_audio_channels_get_type (void);
@@ -212,6 +225,7 @@ extern GType ags_set_samplerate_get_type (void);
 extern GType ags_sf2_chooser_get_type (void);
 extern GType ags_single_thread_get_type (void);
 extern GType ags_sndfile_get_type (void);
+extern GType ags_soundcard_get_type (void);
 extern GType ags_stackable_get_type (void);
 extern GType ags_start_devout_get_type (void);
 extern GType ags_stream_audio_signal_get_type (void);
@@ -242,12 +256,13 @@ extern GType ags_volume_audio_signal_get_type (void);
 extern GType ags_volume_channel_get_type (void);
 extern GType ags_volume_channel_run_get_type (void);
 extern GType ags_volume_recycling_get_type (void);
+extern GType ags_waveform_get_type (void);
 extern GType ags_window_get_type (void);
 
 #ifdef GTK_IS_WIDGET_CLASS
 #include <gtk/gtk.h>
 #endif
-GType object_types[240];
+GType object_types[255];
 
 static GType *
 get_object_types (void)
@@ -262,6 +277,7 @@ get_object_types (void)
     object_types[i++] = ags_add_recall_get_type ();
     object_types[i++] = ags_add_region_to_selection_get_type ();
     object_types[i++] = ags_append_audio_get_type ();
+    object_types[i++] = ags_append_audio_threaded_get_type ();
     object_types[i++] = ags_append_channel_get_type ();
     object_types[i++] = ags_append_recall_get_type ();
     object_types[i++] = ags_applicable_get_type ();
@@ -286,6 +302,7 @@ get_object_types (void)
     object_types[i++] = ags_cancel_audio_get_type ();
     object_types[i++] = ags_cancel_channel_get_type ();
     object_types[i++] = ags_cancel_recall_get_type ();
+    object_types[i++] = ags_cartesian_get_type ();
     object_types[i++] = ags_change_indicator_get_type ();
     object_types[i++] = ags_change_tact_get_type ();
     object_types[i++] = ags_channel_get_type ();
@@ -319,6 +336,7 @@ get_object_types (void)
     object_types[i++] = ags_drum_output_pad_get_type ();
     object_types[i++] = ags_dynamic_connectable_get_type ();
     object_types[i++] = ags_editor_get_type ();
+    object_types[i++] = ags_effect_get_type ();
     object_types[i++] = ags_expander_get_type ();
     object_types[i++] = ags_expander_set_get_type ();
     object_types[i++] = ags_export_output_get_type ();
@@ -330,11 +348,17 @@ get_object_types (void)
     object_types[i++] = ags_file_launch_get_type ();
     object_types[i++] = ags_file_link_get_type ();
     object_types[i++] = ags_file_lookup_get_type ();
+    object_types[i++] = ags_file_read_get_type ();
     object_types[i++] = ags_file_selection_get_type ();
+    object_types[i++] = ags_file_value_factory_get_type ();
+    object_types[i++] = ags_file_write_get_type ();
     object_types[i++] = ags_free_selection_get_type ();
     object_types[i++] = ags_garbage_collector_get_type ();
+    object_types[i++] = ags_generic_preferences_get_type ();
     object_types[i++] = ags_gui_task_thread_get_type ();
     object_types[i++] = ags_gui_thread_get_type ();
+    object_types[i++] = ags_hindicator_get_type ();
+    object_types[i++] = ags_history_get_type ();
     object_types[i++] = ags_indicator_get_type ();
     object_types[i++] = ags_init_audio_get_type ();
     object_types[i++] = ags_init_channel_get_type ();
@@ -346,6 +370,7 @@ get_object_types (void)
     object_types[i++] = ags_ladspa_browser_get_type ();
     object_types[i++] = ags_ladspa_manager_get_type ();
     object_types[i++] = ags_led_get_type ();
+    object_types[i++] = ags_libao_get_type ();
     object_types[i++] = ags_line_editor_get_type ();
     object_types[i++] = ags_line_get_type ();
     object_types[i++] = ags_line_member_editor_get_type ();
@@ -414,6 +439,7 @@ get_object_types (void)
     object_types[i++] = ags_plugin_get_type ();
     object_types[i++] = ags_plugin_preferences_get_type ();
     object_types[i++] = ags_port_get_type ();
+    object_types[i++] = ags_portable_thread_get_type ();
     object_types[i++] = ags_portlet_get_type ();
     object_types[i++] = ags_preferences_get_type ();
     object_types[i++] = ags_property_collection_editor_get_type ();
@@ -434,6 +460,7 @@ get_object_types (void)
     object_types[i++] = ags_recall_ladspa_run_get_type ();
     object_types[i++] = ags_recall_recycling_dummy_get_type ();
     object_types[i++] = ags_recall_recycling_get_type ();
+    object_types[i++] = ags_record_thread_get_type ();
     object_types[i++] = ags_recycling_container_get_type ();
     object_types[i++] = ags_recycling_get_type ();
     object_types[i++] = ags_recycling_thread_get_type ();
@@ -451,6 +478,7 @@ get_object_types (void)
     object_types[i++] = ags_save_file_get_type ();
     object_types[i++] = ags_scroll_on_play_get_type ();
     object_types[i++] = ags_seekable_get_type ();
+    object_types[i++] = ags_segment_get_type ();
     object_types[i++] = ags_server_get_type ();
     object_types[i++] = ags_server_preferences_get_type ();
     object_types[i++] = ags_set_audio_channels_get_type ();
@@ -462,6 +490,7 @@ get_object_types (void)
     object_types[i++] = ags_sf2_chooser_get_type ();
     object_types[i++] = ags_single_thread_get_type ();
     object_types[i++] = ags_sndfile_get_type ();
+    object_types[i++] = ags_soundcard_get_type ();
     object_types[i++] = ags_stackable_get_type ();
     object_types[i++] = ags_start_devout_get_type ();
     object_types[i++] = ags_stream_audio_signal_get_type ();
@@ -492,6 +521,7 @@ get_object_types (void)
     object_types[i++] = ags_volume_channel_get_type ();
     object_types[i++] = ags_volume_channel_run_get_type ();
     object_types[i++] = ags_volume_recycling_get_type ();
+    object_types[i++] = ags_waveform_get_type ();
     object_types[i++] = ags_window_get_type ();
     object_types[i] = 0;
 
@@ -851,7 +881,7 @@ output_object_hierarchy (void)
   FILE *fp;
   gint i,j;
   GType root, type;
-  GType root_types[240] = { G_TYPE_INVALID, };
+  GType root_types[255] = { G_TYPE_INVALID, };
 
   fp = fopen (hierarchy_filename, "w");
   if (fp == NULL)
