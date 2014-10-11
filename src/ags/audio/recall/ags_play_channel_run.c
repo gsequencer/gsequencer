@@ -559,7 +559,8 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   AGS_DEVOUT_PLAY(source->devout_play)->flags &= (~(AGS_DEVOUT_PLAY_PLAYBACK |
 						    AGS_DEVOUT_PLAY_DONE));
 
-  ags_channel_done(source);
+  ags_channel_done(source,
+		   AGS_RECALL(play_channel_run)->recall_id);
 
   ags_audio_loop_remove_channel(audio_loop,
 				source);
