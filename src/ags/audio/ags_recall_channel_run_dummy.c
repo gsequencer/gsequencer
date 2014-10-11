@@ -48,6 +48,14 @@ AgsRecall* ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
 						  AgsRecallID *recall_id,
 						  guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:agsrecallchannelrundummy
+ * @Short_description: channel dummy dynamic context of recall
+ * @Title: AgsRecallChannelRunDummy
+ *
+ * #AgsRecallChannelRunDummy acts as channel dummy dynamic recall.
+ */
+
 static gpointer ags_recall_channel_run_dummy_parent_class = NULL;
 static AgsConnectableInterface *ags_recall_channel_run_dummy_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_recall_channel_run_dummy_parent_dynamic_connectable_interface;
@@ -244,6 +252,16 @@ ags_recall_channel_run_dummy_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_recall_channel_run_dummy_new:
+ * @source the source #AgsChannel
+ * @child_type child type
+ * @recycling_dummy_child_type recycling child type
+ *
+ * Creates an #AgsRecallChannelRunDummy.
+ *
+ * Returns: a new #AgsRecallChannelRunDummy.
+ */
 AgsRecallChannelRunDummy*
 ags_recall_channel_run_dummy_new(AgsChannel *source,
 				 GType child_type,

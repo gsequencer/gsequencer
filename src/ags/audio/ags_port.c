@@ -705,7 +705,7 @@ ags_port_find_specifier(GList *port, gchar *specifier)
  *
  * Creates an #AgsPort.
  *
- * Returns: a new #AgsPort
+ * Returns: a new #AgsPort.
  */
 AgsPort*
 ags_port_new()

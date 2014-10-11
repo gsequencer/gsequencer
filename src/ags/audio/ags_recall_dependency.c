@@ -35,6 +35,15 @@ void ags_recall_dependency_connect(AgsConnectable *connectable);
 void ags_recall_dependency_disconnect(AgsConnectable *connectable);
 void ags_recall_dependency_finalize(GObject *gobject);
 
+/**
+ * SECTION:agsrecalldependency
+ * @Short_description: Object specifing dependency
+ * @Title: AgsRecallDependency
+ *
+ * #AgsRecallDependency specifies dependencies on other recalls. Dependencies
+ * are resolved during initialization.
+ */
+
 static gpointer ags_recall_dependency_parent_class = NULL;
 
 GType
@@ -116,6 +125,15 @@ ags_recall_dependency_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_dependency_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_recall_dependency_find_dependency:
+ * @recall_dependencies a #GList containing  #AgsRecallDependency
+ * @dependency the #AgsRecall depending on
+ *
+ * Retrieve dependency.
+ *
+ * Returns: Next match.
+ */
 GList*
 ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency)
 {
@@ -134,6 +152,15 @@ ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *depen
   return(NULL);
 }
 
+/**
+ * ags_recall_dependency_find_dependency_by_provider:
+ * @recall_dependencies a #GList containing  #AgsRecallDependency
+ * @provider the object providing recall, like #AgsAudio or #AgsChannel
+ *
+ * Retrieve dependency by provider.
+ *
+ * Returns: Next match.
+ */
 GList*
 ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
 						  GObject *provider)
@@ -158,6 +185,15 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
   return(NULL);
 }
 
+/**
+ * ags_recall_dependency_resolve:
+ * @recall_dependeny an #AgsRecallDependency
+ * @recall_id the #AgsRecallID refering to
+ *
+ * Resolve dependency.
+ *
+ * Returns: the #AgsRecall dependency.
+ */
 GObject*
 ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id)
 {
@@ -204,6 +240,14 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
   return(NULL);
 }
 
+/**
+ * ags_recall_dependency_new:
+ * @dependency the #AgsRecall depending on
+ *
+ * Creates a #AgsRecallDependency
+ *
+ * Returns: a new #AgsRecallDependency
+ */
 AgsRecallDependency*
 ags_recall_dependency_new(GObject *dependency)
 {

@@ -111,6 +111,14 @@ AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 void ags_recall_child_done(AgsRecall *child,
 			   AgsRecall *parent);
 
+/**
+ * SECTION:agsrecall
+ * @Short_description: The recall base class
+ * @Title: AgsRecall
+ *
+ * #AgsRecall acts as effect processor.
+ */
+
 enum{
   RESOLVE_DEPENDENCIES,
   RUN_INIT_PRE,
@@ -226,6 +234,13 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
+  /**
+   * AgsRecall:devout:
+   *
+   * The assigned devout.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("devout\0",
 				   "devout of recall\0",
 				   "The devout which this recall is packed into\0",
@@ -235,7 +250,14 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_DEVOUT,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recall_container\0",
+  /**
+   * AgsRecall:recall-container:
+   *
+   * The recall container packed into.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("recall-container\0",
 				   "container of recall\0",
 				   "The container which this recall is packed into\0",
 				   AGS_TYPE_RECALL_CONTAINER,
@@ -244,6 +266,13 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_CONTAINER,
 				  param_spec);
 
+  /**
+   * AgsRecall:dependency:
+   *
+   * The recall depending on.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("dependency\0",
 				   "dependency of recall\0",
 				   "The dependency that can be added\0",
@@ -253,7 +282,14 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_DEPENDENCY,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recall_id\0",
+  /**
+   * AgsRecall:recall-id:
+   *
+   * The recall id running in.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("recall-id\0",
 				   "run id of recall\0",
 				   "The recall id of the recall\0",
 				   AGS_TYPE_RECALL_ID,
@@ -262,6 +298,13 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_RECALL_ID,
 				  param_spec);
   
+  /**
+   * AgsRecall:audio-channel:
+   *
+   * The parent recall.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("parent\0",
 				   "parent recall of this recall\0",
 				   "The recall should be the parent instance of this recall\0",
@@ -271,6 +314,13 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_PARENT,
 				  param_spec);
   
+  /**
+   * AgsRecall:audio-channel:
+   *
+   * The child recall.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("child\0",
 				   "child of recall\0",
 				   "The child that can be added\0",
@@ -304,8 +354,12 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->child_added = NULL;
 
   /* signals */
+  /**
+   * AgsRecall::resolve-dependencies:
+   * @recall the object to resolve
+   */
   recall_signals[RESOLVE_DEPENDENCIES] =
-    g_signal_new("resolve_dependencies\0",
+    g_signal_new("resolve-dependencies\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, resolve_dependencies),
@@ -313,8 +367,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::run-init-pre:
+   * @recall the object to initialize
+   */
   recall_signals[RUN_INIT_PRE] =
-    g_signal_new("run_init_pre\0",
+    g_signal_new("run-init-pre\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_pre),
@@ -322,8 +380,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::run-init-inter:
+   * @recall the object to initialize
+   */
   recall_signals[RUN_INIT_INTER] =
-    g_signal_new("run_init_inter\0",
+    g_signal_new("run-init-inter\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_inter),
@@ -331,8 +393,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::run-init-post:
+   * @recall the object to initialize
+   */
   recall_signals[RUN_INIT_POST] =
-    g_signal_new("run_init_post\0",
+    g_signal_new("run-init-post\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_post),
@@ -340,8 +406,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::run-pre:
+   * @recall the object to play 
+   */
   recall_signals[RUN_PRE] =
-    g_signal_new("run_pre\0",
+    g_signal_new("run-pre\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_pre),
@@ -349,8 +419,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::run-inter:
+   * @recall the object to play
+   */
   recall_signals[RUN_INTER] =
-    g_signal_new("run_inter\0",
+    g_signal_new("run-inter\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_inter),
@@ -358,8 +432,12 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::run-post:
+   * @recall the object to play
+   */
   recall_signals[RUN_POST] =
-    g_signal_new("run_post\0",
+    g_signal_new("run-post\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_post),
@@ -367,6 +445,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::stop-persistent:
+   * @recall the object stop playback
+   */
   recall_signals[STOP_PERSISTENT] =
     g_signal_new("stop_persistent\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -376,6 +458,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::done:
+   * @recall the object to finish playback
+   */
   recall_signals[DONE] =
     g_signal_new("done\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -385,6 +471,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::cancel:
+   * @recall the object to cancel playback
+   */
   recall_signals[CANCEL] =
     g_signal_new("cancel\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -394,6 +484,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::remove:
+   * @recall the object to remove of audio loop
+   */
   recall_signals[REMOVE] =
     g_signal_new("remove\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -403,6 +497,13 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsRecall::duplicate:
+   * @recall the object to duplicate
+   * @recall_id the assigned #AgsRecallID
+   * @n_params pointer to array length
+   * @parameter parameter array
+   */
   recall_signals[DUPLICATE] =
     g_signal_new("duplicate\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -414,8 +515,14 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER, G_TYPE_POINTER);
 
+  /**
+   * AgsRecall::notify-dependency:
+   * @recall the object to notify
+   * @dependency the kind of dependency
+   * @count the reference count
+   */
   recall_signals[NOTIFY_DEPENDENCY] =
-    g_signal_new("notify_dependency\0",
+    g_signal_new("notify-dependency\0",
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, notify_dependency),
@@ -424,6 +531,11 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_INT);
 
+  /**
+   * AgsRecall::child-added:
+   * @recall the object to add the child
+   * @child the #AgsRecall to add
+   */
   recall_signals[CHILD_ADDED] =
     g_signal_new("child-added\0",
 		 G_TYPE_FROM_CLASS (recall),
@@ -2118,6 +2230,13 @@ ags_recall_child_done(AgsRecall *child,
 			  child);
 }
 
+/**
+ * ags_recall_new:
+ *
+ * Creates an #AgsRecall.
+ *
+ * Returns: a new #AgsRecall.
+ */
 AgsRecall*
 ags_recall_new()
 {

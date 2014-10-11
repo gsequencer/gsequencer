@@ -69,6 +69,14 @@ void ags_recall_audio_signal_notify_devout(AgsRecallAudioSignal *recall_audio_si
 void ags_recall_audio_signal_notify_devout_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
 						 gpointer data);
 
+/**
+ * SECTION:agsrecallaudiosignal
+ * @Short_description: audio signal context of recall
+ * @Title: AgsRecallAudioSignal
+ *
+ * #AgsRecallAudioSignal acts as audio signal recall.
+ */
+
 enum{
   PROP_0,
   PROP_AUDIO_CHANNEL,
@@ -156,7 +164,14 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
   recall->run_post = ags_recall_audio_signal_run_post;
 
   /* properties */
-  param_spec = g_param_spec_uint("audio_channel\0",
+  /**
+   * AgsRecallAudioSignal:audio-channel:
+   *
+   * The audio channel to write use.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("audio-channel\0",
 				 "output to audio channel\0",
 				 "The audio channel to which it should write\0",
 				 0,
@@ -167,6 +182,13 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
+  /**
+   * AgsRecallAudioSignal:destination:
+   *
+   * The destination audio signal
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("destination\0",
 				   "destination of output\0",
 				   "The destination where this recall will write the audio signal to\0",
@@ -176,6 +198,13 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
 				  PROP_DESTINATION,
 				  param_spec);
 
+  /**
+   * AgsRecallAudioSignal:source:
+   *
+   * The source audio signal
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("source\0",
 				   "source of input\0",
 				   "The source where this recall will take the audio signal from\0",
@@ -511,6 +540,16 @@ ags_recall_audio_signal_notify_devout_after(AgsRecallAudioSignal *recall_audio_s
   //TODO:JK: implement me
 }
 
+/**
+ * ags_recall_audio_signal_new:
+ * @destination destination #AgsAudioSignal
+ * @source source #AgsAudioSignal
+ * @devout default sink #AgsDevout
+ *
+ * Creates an #AgsRecallAudioSignal.
+ *
+ * Returns: a new #AgsRecallAudioSignal.
+ */
 AgsRecallAudioSignal*
 ags_recall_audio_signal_new(AgsAudioSignal *destination,
 			    AgsAudioSignal *source,

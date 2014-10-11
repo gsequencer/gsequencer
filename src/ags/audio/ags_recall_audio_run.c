@@ -55,6 +55,13 @@ void ags_recall_audio_run_finalize(GObject *gobject);
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
+/**
+ * SECTION:agsrecallaudiorun
+ * @Short_description: audio context of dynamic recall
+ * @Title: AgsRecallAudioRun
+ *
+ * #AgsRecallAudioRun acts as dynamic audio recall.
+ */
 
 enum{
   LAST_SIGNAL,
@@ -146,7 +153,14 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   gobject->finalize = ags_recall_audio_run_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("recall_audio\0",
+  /**
+   * AgsRecallAudioRun:recall-audio:
+   *
+   * The recall audio belonging to.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("recall-audio\0",
 				   "AgsRecallAudio of this recall\0",
 				   "The AgsRecallAudio which this recall needs\0",
 				   AGS_TYPE_RECALL_AUDIO,
@@ -442,6 +456,13 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_recall_audio_run_new:
+ *
+ * Creates an #AgsRecallAudioRun.
+ *
+ * Returns: a new #AgsRecallAudioRun.
+ */
 AgsRecallAudioRun*
 ags_recall_audio_run_new()
 {

@@ -48,6 +48,14 @@ AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
 					guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:agsrecallchannel
+ * @Short_description: channel context of recall
+ * @Title: AgsRecallChannel
+ *
+ * #AgsRecallChannel acts as channel recall.
+ */
+
 enum{
   PROP_0,
   PROP_DESTINATION,
@@ -123,6 +131,13 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
   gobject->finalize = ags_recall_channel_finalize;
 
   /* properties */
+  /**
+   * AgsRecallChannel:destination:
+   *
+   * The assigned destination channel.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("destination\0",
 				   "assigned destination channel\0",
 				   "The destination channel object it is assigned to\0",
@@ -132,6 +147,13 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
 				   PROP_DESTINATION,
 				   param_spec);
 
+  /**
+   * AgsRecallChannel:source:
+   *
+   * The assigned source channel.
+   * 
+   * Since: 0.4.0
+   */
    param_spec = g_param_spec_object("source\0",
 				    "assigned source channel\0",
 				    "The source channel object it is assigned to\0",
@@ -388,6 +410,15 @@ ags_recall_channel_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_recall_channel_find_channel:
+ * @recall_channel a #GList containing #AgsRecallChannel
+ * @source the #AgsChannel to find
+ *
+ * Retrieve next recall assigned to channel.
+ *
+ * Returns: Next match.
+ */
 GList*
 ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
 {
@@ -405,6 +436,13 @@ ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
   return(NULL);
 }
 
+/**
+ * ags_recall_channel_new:
+ *
+ * Creates an #AgsRecallChannel.
+ *
+ * Returns: a new #AgsRecallChannel.
+ */
 AgsRecallChannel*
 ags_recall_channel_new()
 {
