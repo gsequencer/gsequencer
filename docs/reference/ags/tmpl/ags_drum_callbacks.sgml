@@ -1,0 +1,117 @@
+<!-- ##### SECTION Title ##### -->
+ags_drum_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_drum_done_callback ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_index0_callback ##### -->
+<para>
+
+</para>
+
+@toggle_button: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_index1_callback ##### -->
+<para>
+
+</para>
+
+@toggle_button: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_length_spin_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_loop_button_callback ##### -->
+<para>
+
+</para>
+
+@button: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_offset_callback ##### -->
+<para>
+
+</para>
+
+@widget: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_open_callback ##### -->
+<para>
+
+</para>
+
+@toggle_button: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_pad_callback ##### -->
+<para>
+
+</para>
+
+@toggle_button: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_parent_set_callback ##### -->
+<para>
+
+</para>
+
+@widget: 
+@old_parent: 
+@drum: 
+
+
+<!-- ##### FUNCTION ags_drum_tact_callback ##### -->
+<para>
+
+</para>
+
+@audio: 
+@recall_id: 
+@drum: 
+
+

@@ -1,0 +1,102 @@
+<!-- ##### SECTION Title ##### -->
+AgsReturnableThread
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsReturnableThread ##### -->
+<para>
+
+</para>
+
+@thread: 
+@flags: 
+@thread_pool: 
+@reset_mutex: 
+@safe_data: 
+@handler: 
+
+<!-- ##### USER_FUNCTION AgsReturnableThreadCallback ##### -->
+<para>
+
+</para>
+
+@returnable_thread: 
+@data: 
+
+
+<!-- ##### STRUCT AgsReturnableThreadClass ##### -->
+<para>
+
+</para>
+
+@thread: 
+@safe_run: 
+
+<!-- ##### ENUM AgsReturnableThreadFlags ##### -->
+<para>
+
+</para>
+
+@AGS_RETURNABLE_THREAD_IN_USE: 
+@AGS_RETURNABLE_THREAD_RESET: 
+
+<!-- ##### FUNCTION ags_returnable_thread_connect_safe_run ##### -->
+<para>
+
+</para>
+
+@returnable_thread: 
+@callback: 
+
+
+<!-- ##### FUNCTION ags_returnable_thread_disconnect_safe_run ##### -->
+<para>
+
+</para>
+
+@returnable_thread: 
+
+
+<!-- ##### FUNCTION ags_returnable_thread_new ##### -->
+<para>
+
+</para>
+
+@thread_pool: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_returnable_thread_safe_run ##### -->
+<para>
+
+</para>
+
+@returnable_thread: 
+
+

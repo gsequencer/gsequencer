@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsSF2Chooser">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsSF2Chooser.top_of_page">AgsSF2Chooser</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsSF2Chooser</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsSF2Chooser.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsSF2Chooser">AgsSF2Chooser</link>;
+struct              <link linkend="AgsSF2ChooserClass">AgsSF2ChooserClass</link>;
+<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-sf2-chooser-completed">ags_sf2_chooser_completed</link>           (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>);
+<link linkend="AgsSF2Chooser"><returnvalue>AgsSF2Chooser</returnvalue></link> *     <link linkend="ags-sf2-chooser-new">ags_sf2_chooser_new</link>                 ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-sf2-chooser-open">ags_sf2_chooser_open</link>                (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-sf2-chooser-remove-all-from-combo">ags_sf2_chooser_remove_all_from_combo</link>
+                                                        (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsSF2Chooser.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsSF2Chooser.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsSF2Chooser" role="struct">
+<title>struct AgsSF2Chooser</title>
+<indexterm zone="AgsSF2Chooser"><primary>AgsSF2Chooser</primary></indexterm>
+<programlisting>struct AgsSF2Chooser {
+  GtkVBox vbox;
+
+  AgsIpatch *ipatch;
+
+  GtkComboBoxText *preset;
+  GtkComboBoxText *instrument;
+  GtkComboBoxText *sample;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsSF2ChooserClass" role="struct">
+<title>struct AgsSF2ChooserClass</title>
+<indexterm zone="AgsSF2ChooserClass"><primary>AgsSF2ChooserClass</primary></indexterm>
+<programlisting>struct AgsSF2ChooserClass {
+  GtkVBoxClass vbox;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-sf2-chooser-completed" role="function">
+<title>ags_sf2_chooser_completed ()</title>
+<indexterm zone="ags-sf2-chooser-completed"><primary>ags_sf2_chooser_completed</primary></indexterm>
+<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_sf2_chooser_completed           (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-sf2-chooser-new" role="function">
+<title>ags_sf2_chooser_new ()</title>
+<indexterm zone="ags-sf2-chooser-new"><primary>ags_sf2_chooser_new</primary></indexterm>
+<programlisting><link linkend="AgsSF2Chooser"><returnvalue>AgsSF2Chooser</returnvalue></link> *     ags_sf2_chooser_new                 ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-sf2-chooser-open" role="function">
+<title>ags_sf2_chooser_open ()</title>
+<indexterm zone="ags-sf2-chooser-open"><primary>ags_sf2_chooser_open</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_sf2_chooser_open                (<parameter><link linkend="AgsSF2Chooser"><type>AgsSF2Chooser</type></link> *sf2_chooser</parameter>,
+                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-sf2-chooser-remove-all-from-combo" role="function">
+<title>ags_sf2_chooser_remove_all_from_combo ()</title>
+<indexterm zone="ags-sf2-chooser-remove-all-from-combo"><primary>ags_sf2_chooser_remove_all_from_combo</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_sf2_chooser_remove_all_from_combo
+                                                        (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsCopyRecycling">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsCopyRecycling.top_of_page">AgsCopyRecycling</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsCopyRecycling</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsCopyRecycling.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsCopyRecycling">AgsCopyRecycling</link>;
+struct              <link linkend="AgsCopyRecyclingClass">AgsCopyRecyclingClass</link>;
+<link linkend="AgsCopyRecycling"><returnvalue>AgsCopyRecycling</returnvalue></link> *  <link linkend="ags-copy-recycling-new">ags_copy_recycling_new</link>              (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *source</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsCopyRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsCopyRecycling.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsCopyRecycling" role="struct">
+<title>struct AgsCopyRecycling</title>
+<indexterm zone="AgsCopyRecycling"><primary>AgsCopyRecycling</primary></indexterm>
+<programlisting>struct AgsCopyRecycling {
+  AgsRecallRecycling recall_recycling;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsCopyRecyclingClass" role="struct">
+<title>struct AgsCopyRecyclingClass</title>
+<indexterm zone="AgsCopyRecyclingClass"><primary>AgsCopyRecyclingClass</primary></indexterm>
+<programlisting>struct AgsCopyRecyclingClass {
+  AgsRecallRecyclingClass recall_recycling;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-copy-recycling-new" role="function">
+<title>ags_copy_recycling_new ()</title>
+<indexterm zone="ags-copy-recycling-new"><primary>ags_copy_recycling_new</primary></indexterm>
+<programlisting><link linkend="AgsCopyRecycling"><returnvalue>AgsCopyRecycling</returnvalue></link> *  ags_copy_recycling_new              (<parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *destination</parameter>,
+                                                         <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *source</parameter>,
+                                                         <parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

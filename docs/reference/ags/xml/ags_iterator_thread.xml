@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsIteratorThread">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsIteratorThread.top_of_page">AgsIteratorThread</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsIteratorThread</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsIteratorThread.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsIteratorThread">AgsIteratorThread</link>;
+struct              <link linkend="AgsIteratorThreadClass">AgsIteratorThreadClass</link>;
+enum                <link linkend="AgsIteratorThreadFlags">AgsIteratorThreadFlags</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-iterator-thread-children-ready">ags_iterator_thread_children_ready</link>  (<parameter><link linkend="AgsIteratorThread"><type>AgsIteratorThread</type></link> *iterator_thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *current</parameter>);
+<link linkend="AgsIteratorThread"><returnvalue>AgsIteratorThread</returnvalue></link> * <link linkend="ags-iterator-thread-new">ags_iterator_thread_new</link>             ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsIteratorThread.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsIteratorThread.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsIteratorThread" role="struct">
+<title>struct AgsIteratorThread</title>
+<indexterm zone="AgsIteratorThread"><primary>AgsIteratorThread</primary></indexterm>
+<programlisting>struct AgsIteratorThread {
+  AgsThread thread;
+
+  guint flags;
+
+  pthread_mutex_t tic_mutex;
+  pthread_cond_t tic_cond;
+
+  AgsThread *recycling_thread;
+
+  AgsChannel *channel;
+  AgsRecallID *recall_id;
+  gint stage;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsIteratorThreadClass" role="struct">
+<title>struct AgsIteratorThreadClass</title>
+<indexterm zone="AgsIteratorThreadClass"><primary>AgsIteratorThreadClass</primary></indexterm>
+<programlisting>struct AgsIteratorThreadClass {
+  AgsThreadClass thread;
+  
+  void (*children_ready)(AgsIteratorThread *iterator_thread,
+			 AgsThread *current);
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsIteratorThreadFlags" role="enum">
+<title>enum AgsIteratorThreadFlags</title>
+<indexterm zone="AgsIteratorThreadFlags"><primary>AgsIteratorThreadFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_ITERATOR_THREAD_DONE      = 1,
+  AGS_ITERATOR_THREAD_WAIT      = 1 &lt;&lt; 1,
+} AgsIteratorThreadFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-iterator-thread-children-ready" role="function">
+<title>ags_iterator_thread_children_ready ()</title>
+<indexterm zone="ags-iterator-thread-children-ready"><primary>ags_iterator_thread_children_ready</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_iterator_thread_children_ready  (<parameter><link linkend="AgsIteratorThread"><type>AgsIteratorThread</type></link> *iterator_thread</parameter>,
+                                                         <parameter><link linkend="AgsThread"><type>AgsThread</type></link> *current</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-iterator-thread-new" role="function">
+<title>ags_iterator_thread_new ()</title>
+<indexterm zone="ags-iterator-thread-new"><primary>ags_iterator_thread_new</primary></indexterm>
+<programlisting><link linkend="AgsIteratorThread"><returnvalue>AgsIteratorThread</returnvalue></link> * ags_iterator_thread_new             ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

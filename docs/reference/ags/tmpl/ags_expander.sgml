@@ -1,0 +1,121 @@
+<!-- ##### SECTION Title ##### -->
+AgsExpander
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_EXPANDER_CHILD ##### -->
+<para>
+
+</para>
+
+@ptr: 
+
+
+<!-- ##### STRUCT AgsExpander ##### -->
+<para>
+
+</para>
+
+@expander: 
+@flags: 
+@table: 
+@children: 
+
+<!-- ##### STRUCT AgsExpanderChild ##### -->
+<para>
+
+</para>
+
+@child: 
+@x: 
+@y: 
+@width: 
+@height: 
+
+<!-- ##### STRUCT AgsExpanderClass ##### -->
+<para>
+
+</para>
+
+@expander: 
+
+<!-- ##### ENUM AgsExpanderFlags ##### -->
+<para>
+
+</para>
+
+@AGS_EXPANDER_DRAW_BORDER: 
+
+<!-- ##### FUNCTION ags_expander_add ##### -->
+<para>
+
+</para>
+
+@expander: 
+@widget: 
+@x: 
+@y: 
+@width: 
+@height: 
+
+
+<!-- ##### FUNCTION ags_expander_child_alloc ##### -->
+<para>
+
+</para>
+
+@x: 
+@y: 
+@width: 
+@height: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_expander_child_find ##### -->
+<para>
+
+</para>
+
+@expander: 
+@child: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_expander_new ##### -->
+<para>
+
+</para>
+
+@width: 
+@height: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_expander_remove ##### -->
+<para>
+
+</para>
+
+@expander: 
+@widget: 
+
+

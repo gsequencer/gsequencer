@@ -1,0 +1,48 @@
+<!-- ##### SECTION Title ##### -->
+AgsLoopChannel
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsLoopChannel ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+@delay_audio: 
+@sequencer_duration_changed_handler: 
+
+<!-- ##### STRUCT AgsLoopChannelClass ##### -->
+<para>
+
+</para>
+
+@recall_channel: 
+
+<!-- ##### FUNCTION ags_loop_channel_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLed">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLed.top_of_page">AgsLed</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLed</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLed.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLed">AgsLed</link>;
+struct              <link linkend="AgsLedClass">AgsLedClass</link>;
+enum                <link linkend="AgsLedFlags">AgsLedFlags</link>;
+<link linkend="AgsLed"><returnvalue>AgsLed</returnvalue></link> *            <link linkend="ags-led-new">ags_led_new</link>                         ();
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-led-set-active">ags_led_set_active</link>                  (<parameter><link linkend="AgsLed"><type>AgsLed</type></link> *led</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-led-unset-active">ags_led_unset_active</link>                (<parameter><link linkend="AgsLed"><type>AgsLed</type></link> *led</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLed.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLed.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLed" role="struct">
+<title>struct AgsLed</title>
+<indexterm zone="AgsLed"><primary>AgsLed</primary></indexterm>
+<programlisting>struct AgsLed {
+  GtkBin bin;
+
+  guint flags;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLedClass" role="struct">
+<title>struct AgsLedClass</title>
+<indexterm zone="AgsLedClass"><primary>AgsLedClass</primary></indexterm>
+<programlisting>struct AgsLedClass {
+  GtkBinClass bin;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLedFlags" role="enum">
+<title>enum AgsLedFlags</title>
+<indexterm zone="AgsLedFlags"><primary>AgsLedFlags</primary></indexterm>
+<programlisting>typedef enum {
+  AGS_LED_ACTIVE        = 1,
+} AgsLedFlags;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-led-new" role="function">
+<title>ags_led_new ()</title>
+<indexterm zone="ags-led-new"><primary>ags_led_new</primary></indexterm>
+<programlisting><link linkend="AgsLed"><returnvalue>AgsLed</returnvalue></link> *            ags_led_new                         ();</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-led-set-active" role="function">
+<title>ags_led_set_active ()</title>
+<indexterm zone="ags-led-set-active"><primary>ags_led_set_active</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_led_set_active                  (<parameter><link linkend="AgsLed"><type>AgsLed</type></link> *led</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-led-unset-active" role="function">
+<title>ags_led_unset_active ()</title>
+<indexterm zone="ags-led-unset-active"><primary>ags_led_unset_active</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_led_unset_active                (<parameter><link linkend="AgsLed"><type>AgsLed</type></link> *led</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

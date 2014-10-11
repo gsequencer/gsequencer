@@ -1,0 +1,78 @@
+<!-- ##### SECTION Title ##### -->
+ags_oscillator_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_oscillator_attack_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@oscillator: 
+
+
+<!-- ##### FUNCTION ags_oscillator_frame_count_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@oscillator: 
+
+
+<!-- ##### FUNCTION ags_oscillator_frequency_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@oscillator: 
+
+
+<!-- ##### FUNCTION ags_oscillator_phase_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@oscillator: 
+
+
+<!-- ##### FUNCTION ags_oscillator_volume_callback ##### -->
+<para>
+
+</para>
+
+@spin_button: 
+@oscillator: 
+
+
+<!-- ##### FUNCTION ags_oscillator_wave_callback ##### -->
+<para>
+
+</para>
+
+@combo: 
+@oscillator: 
+
+

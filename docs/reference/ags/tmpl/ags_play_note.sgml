@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+AgsPlayNote
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsPlayNote ##### -->
+<para>
+
+</para>
+
+@recall: 
+@devout: 
+@channel: 
+@note: 
+
+<!-- ##### STRUCT AgsPlayNoteClass ##### -->
+<para>
+
+</para>
+
+@recall: 
+
+<!-- ##### FUNCTION ags_play_note_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+ags_line_editor_callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION ags_line_editor_destroy_callback ##### -->
+<para>
+
+</para>
+
+@object: 
+@line_editor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_line_editor_parent_set_callback ##### -->
+<para>
+
+</para>
+
+@widget: 
+@old_parent: 
+@line_editor: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_line_editor_show_callback ##### -->
+<para>
+
+</para>
+
+@widget: 
+@line_editor: 
+@Returns: 
+
+

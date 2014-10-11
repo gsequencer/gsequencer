@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsAudioPreferences">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAudioPreferences.top_of_page">AgsAudioPreferences</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAudioPreferences</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsAudioPreferences.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsAudioPreferences">AgsAudioPreferences</link>;
+struct              <link linkend="AgsAudioPreferencesClass">AgsAudioPreferencesClass</link>;
+<link linkend="AgsAudioPreferences"><returnvalue>AgsAudioPreferences</returnvalue></link> * <link linkend="ags-audio-preferences-new">ags_audio_preferences_new</link>         ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsAudioPreferences.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsAudioPreferences.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsAudioPreferences" role="struct">
+<title>struct AgsAudioPreferences</title>
+<indexterm zone="AgsAudioPreferences"><primary>AgsAudioPreferences</primary></indexterm>
+<programlisting>struct AgsAudioPreferences {
+  GtkVBox vbox;
+
+  GtkComboBox *card;
+  GtkSpinButton *audio_channels;
+  GtkSpinButton *samplerate;
+  GtkSpinButton *buffer_size;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsAudioPreferencesClass" role="struct">
+<title>struct AgsAudioPreferencesClass</title>
+<indexterm zone="AgsAudioPreferencesClass"><primary>AgsAudioPreferencesClass</primary></indexterm>
+<programlisting>struct AgsAudioPreferencesClass {
+  GtkVBoxClass vbox;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-audio-preferences-new" role="function">
+<title>ags_audio_preferences_new ()</title>
+<indexterm zone="ags-audio-preferences-new"><primary>ags_audio_preferences_new</primary></indexterm>
+<programlisting><link linkend="AgsAudioPreferences"><returnvalue>AgsAudioPreferences</returnvalue></link> * ags_audio_preferences_new         ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

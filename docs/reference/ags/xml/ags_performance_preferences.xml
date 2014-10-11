@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsPerformancePreferences">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsPerformancePreferences.top_of_page">AgsPerformancePreferences</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsPerformancePreferences</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsPerformancePreferences.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsPerformancePreferences">AgsPerformancePreferences</link>;
+struct              <link linkend="AgsPerformancePreferencesClass">AgsPerformancePreferencesClass</link>;
+<link linkend="AgsPerformancePreferences"><returnvalue>AgsPerformancePreferences</returnvalue></link> * <link linkend="ags-performance-preferences-new">ags_performance_preferences_new</link>
+                                                        ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsPerformancePreferences.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsPerformancePreferences.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsPerformancePreferences" role="struct">
+<title>struct AgsPerformancePreferences</title>
+<indexterm zone="AgsPerformancePreferences"><primary>AgsPerformancePreferences</primary></indexterm>
+<programlisting>struct AgsPerformancePreferences {
+  GtkVBox vbox;
+
+  GtkCheckButton *super_threaded;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsPerformancePreferencesClass" role="struct">
+<title>struct AgsPerformancePreferencesClass</title>
+<indexterm zone="AgsPerformancePreferencesClass"><primary>AgsPerformancePreferencesClass</primary></indexterm>
+<programlisting>struct AgsPerformancePreferencesClass {
+  GtkVBoxClass vbox;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-performance-preferences-new" role="function">
+<title>ags_performance_preferences_new ()</title>
+<indexterm zone="ags-performance-preferences-new"><primary>ags_performance_preferences_new</primary></indexterm>
+<programlisting><link linkend="AgsPerformancePreferences"><returnvalue>AgsPerformancePreferences</returnvalue></link> * ags_performance_preferences_new
+                                                        ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+AgsOpenSingleFile
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsOpenSingleFile ##### -->
+<para>
+
+</para>
+
+@task: 
+@channel: 
+@devout: 
+@filename: 
+@start_channel: 
+@audio_channels: 
+
+<!-- ##### STRUCT AgsOpenSingleFileClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_open_single_file_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@devout: 
+@filename: 
+@start_channel: 
+@audio_channels: 
+@Returns: 
+
+

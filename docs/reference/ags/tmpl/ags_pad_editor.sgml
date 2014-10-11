@@ -1,0 +1,75 @@
+<!-- ##### SECTION Title ##### -->
+AgsPadEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO AGS_PAD_EDITOR_DEFAULT_BUILD_ID ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO AGS_PAD_EDITOR_DEFAULT_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT AgsPadEditor ##### -->
+<para>
+
+</para>
+
+@vbox: 
+@version: 
+@build_id: 
+@pad: 
+@line_editor_expander: 
+@line_editor: 
+
+<!-- ##### STRUCT AgsPadEditorClass ##### -->
+<para>
+
+</para>
+
+@vbox: 
+
+<!-- ##### FUNCTION ags_pad_editor_new ##### -->
+<para>
+
+</para>
+
+@channel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_pad_editor_set_channel ##### -->
+<para>
+
+</para>
+
+@pad_editor: 
+@channel: 
+
+

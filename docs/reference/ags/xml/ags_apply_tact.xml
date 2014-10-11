@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsApplyTact">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsApplyTact.top_of_page">AgsApplyTact</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsApplyTact</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsApplyTact.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsApplyTact">AgsApplyTact</link>;
+struct              <link linkend="AgsApplyTactClass">AgsApplyTactClass</link>;
+<link linkend="AgsApplyTact"><returnvalue>AgsApplyTact</returnvalue></link> *      <link linkend="ags-apply-tact-new">ags_apply_tact_new</link>                  (<parameter><link linkend="GObject"><type>GObject</type></link> *gobject</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsApplyTact.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsApplyTact.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsApplyTact" role="struct">
+<title>struct AgsApplyTact</title>
+<indexterm zone="AgsApplyTact"><primary>AgsApplyTact</primary></indexterm>
+<programlisting>struct AgsApplyTact {
+  AgsTask task;
+
+  GObject *gobject;
+
+  gdouble tact;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsApplyTactClass" role="struct">
+<title>struct AgsApplyTactClass</title>
+<indexterm zone="AgsApplyTactClass"><primary>AgsApplyTactClass</primary></indexterm>
+<programlisting>struct AgsApplyTactClass {
+  AgsTaskClass task;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-apply-tact-new" role="function">
+<title>ags_apply_tact_new ()</title>
+<indexterm zone="ags-apply-tact-new"><primary>ags_apply_tact_new</primary></indexterm>
+<programlisting><link linkend="AgsApplyTact"><returnvalue>AgsApplyTact</returnvalue></link> *      ags_apply_tact_new                  (<parameter><link linkend="GObject"><type>GObject</type></link> *gobject</parameter>,
+                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> tact</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

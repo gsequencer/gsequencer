@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+AgsCancelRecall
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsCancelRecall ##### -->
+<para>
+
+</para>
+
+@task: 
+@recall: 
+@play: 
+
+<!-- ##### STRUCT AgsCancelRecallClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_cancel_recall_new ##### -->
+<para>
+
+</para>
+
+@recall: 
+@play: 
+@Returns: 
+
+

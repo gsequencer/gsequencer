@@ -1,0 +1,67 @@
+<!-- ##### SECTION Title ##### -->
+AgsFFPlayer
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsFFPlayer ##### -->
+<para>
+
+</para>
+
+@machine: 
+@mapped_output_pad: 
+@mapped_input_pad: 
+@name: 
+@xml_type: 
+@open: 
+@control_width: 
+@control_height: 
+@drawing_area: 
+@hadjustment: 
+@ipatch: 
+@preset: 
+@instrument: 
+
+<!-- ##### STRUCT AgsFFPlayerClass ##### -->
+<para>
+
+</para>
+
+@machine: 
+
+<!-- ##### FUNCTION ags_ffplayer_new ##### -->
+<para>
+
+</para>
+
+@devout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION ags_ffplayer_paint ##### -->
+<para>
+
+</para>
+
+@ffplayer: 
+
+

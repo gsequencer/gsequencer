@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsSynthInputLine">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsSynthInputLine.top_of_page">AgsSynthInputLine</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsSynthInputLine</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsSynthInputLine.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsSynthInputLine">AgsSynthInputLine</link>;
+struct              <link linkend="AgsSynthInputLineClass">AgsSynthInputLineClass</link>;
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-synth-input-line-map-recall">ags_synth_input_line_map_recall</link>     (<parameter><link linkend="AgsSynthInputLine"><type>AgsSynthInputLine</type></link> *synth_input_line</parameter>);
+<link linkend="AgsSynthInputLine"><returnvalue>AgsSynthInputLine</returnvalue></link> * <link linkend="ags-synth-input-line-new">ags_synth_input_line_new</link>            (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsSynthInputLine.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsSynthInputLine.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsSynthInputLine" role="struct">
+<title>struct AgsSynthInputLine</title>
+<indexterm zone="AgsSynthInputLine"><primary>AgsSynthInputLine</primary></indexterm>
+<programlisting>struct AgsSynthInputLine {
+  AgsLine line;
+
+  gchar *name;
+  gchar *xml_type;
+
+  AgsOscillator *oscillator;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsSynthInputLineClass" role="struct">
+<title>struct AgsSynthInputLineClass</title>
+<indexterm zone="AgsSynthInputLineClass"><primary>AgsSynthInputLineClass</primary></indexterm>
+<programlisting>struct AgsSynthInputLineClass {
+  AgsLineClass line;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-synth-input-line-map-recall" role="function">
+<title>ags_synth_input_line_map_recall ()</title>
+<indexterm zone="ags-synth-input-line-map-recall"><primary>ags_synth_input_line_map_recall</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_synth_input_line_map_recall     (<parameter><link linkend="AgsSynthInputLine"><type>AgsSynthInputLine</type></link> *synth_input_line</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-synth-input-line-new" role="function">
+<title>ags_synth_input_line_new ()</title>
+<indexterm zone="ags-synth-input-line-new"><primary>ags_synth_input_line_new</primary></indexterm>
+<programlisting><link linkend="AgsSynthInputLine"><returnvalue>AgsSynthInputLine</returnvalue></link> * ags_synth_input_line_new            (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

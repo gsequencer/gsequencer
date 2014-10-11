@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-AgsLineMemberEditor">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsLineMemberEditor.top_of_page">AgsLineMemberEditor</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLineMemberEditor</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-AgsLineMemberEditor.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>struct              <link linkend="AgsLineMemberEditor">AgsLineMemberEditor</link>;
+struct              <link linkend="AgsLineMemberEditorClass">AgsLineMemberEditorClass</link>;
+<link linkend="AgsLineMemberEditor"><returnvalue>AgsLineMemberEditor</returnvalue></link> * <link linkend="ags-line-member-editor-new">ags_line_member_editor_new</link>        ();
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-AgsLineMemberEditor.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-AgsLineMemberEditor.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="AgsLineMemberEditor" role="struct">
+<title>struct AgsLineMemberEditor</title>
+<indexterm zone="AgsLineMemberEditor"><primary>AgsLineMemberEditor</primary></indexterm>
+<programlisting>struct AgsLineMemberEditor {
+  GtkVBox vbox;
+
+  GtkVBox *line_member;
+
+  GtkButton *add;
+  GtkMenu *popup;
+
+  GtkButton *remove;
+
+  AgsLadspaBrowser *ladspa_browser;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="AgsLineMemberEditorClass" role="struct">
+<title>struct AgsLineMemberEditorClass</title>
+<indexterm zone="AgsLineMemberEditorClass"><primary>AgsLineMemberEditorClass</primary></indexterm>
+<programlisting>struct AgsLineMemberEditorClass {
+  GtkVBoxClass vbox;
+};
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-line-member-editor-new" role="function">
+<title>ags_line_member_editor_new ()</title>
+<indexterm zone="ags-line-member-editor-new"><primary>ags_line_member_editor_new</primary></indexterm>
+<programlisting><link linkend="AgsLineMemberEditor"><returnvalue>AgsLineMemberEditor</returnvalue></link> * ags_line_member_editor_new        ();</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

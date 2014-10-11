@@ -1,0 +1,48 @@
+<!-- ##### SECTION Title ##### -->
+AgsSaveFile
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsSaveFile ##### -->
+<para>
+
+</para>
+
+@task: 
+@file: 
+
+<!-- ##### STRUCT AgsSaveFileClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_save_file_new ##### -->
+<para>
+
+</para>
+
+@file: 
+@Returns: 
+
+

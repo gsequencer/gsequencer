@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-drum-input-line-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-drum-input-line-callbacks.top_of_page">ags_drum_input_line_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_drum_input_line_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-drum-input-line-callbacks.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-drum-input-line-audio-set-pads-callback">ags_drum_input_line_audio_set_pads_callback</link>
+                                                        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> pads_old</parameter>,
+                                                         <parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-drum-input-line-channel-done-callback">ags_drum_input_line_channel_done_callback</link>
+                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>);
+<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-drum-input-line-parent-set-callback">ags_drum_input_line_parent_set_callback</link>
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-drum-input-line-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-drum-input-line-callbacks.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-drum-input-line-audio-set-pads-callback" role="function">
+<title>ags_drum_input_line_audio_set_pads_callback ()</title>
+<indexterm zone="ags-drum-input-line-audio-set-pads-callback"><primary>ags_drum_input_line_audio_set_pads_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_drum_input_line_audio_set_pads_callback
+                                                        (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>,
+                                                         <parameter><link linkend="guint"><type>guint</type></link> pads_old</parameter>,
+                                                         <parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-input-line-channel-done-callback" role="function">
+<title>ags_drum_input_line_channel_done_callback ()</title>
+<indexterm zone="ags-drum-input-line-channel-done-callback"><primary>ags_drum_input_line_channel_done_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_drum_input_line_channel_done_callback
+                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                                                         <parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>);</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ags-drum-input-line-parent-set-callback" role="function">
+<title>ags_drum_input_line_parent_set_callback ()</title>
+<indexterm zone="ags-drum-input-line-parent-set-callback"><primary>ags_drum_input_line_parent_set_callback</primary></indexterm>
+<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_drum_input_line_parent_set_callback
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="AgsDrumInputLine"><type>AgsDrumInputLine</type></link> *drum_input_line</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-drum-output-line-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-drum-output-line-callbacks.top_of_page">ags_drum_output_line_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_drum_output_line_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="ags-ags-drum-output-line-callbacks.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis><link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-drum-output-line-parent-set-callback">ags_drum_output_line_parent_set_callback</link>
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
+</synopsis>
+</refsynopsisdiv>
+
+<refsect1 id="ags-ags-drum-output-line-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+<refsect1 id="ags-ags-drum-output-line-callbacks.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ags-drum-output-line-parent-set-callback" role="function">
+<title>ags_drum_output_line_parent_set_callback ()</title>
+<indexterm zone="ags-drum-output-line-parent-set-callback"><primary>ags_drum_output_line_parent_set_callback</primary></indexterm>
+<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_drum_output_line_parent_set_callback
+                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+</refentry>

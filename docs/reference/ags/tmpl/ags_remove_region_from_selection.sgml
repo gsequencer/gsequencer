@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+AgsRemoveRegionFromSelection
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT AgsRemoveRegionFromSelection ##### -->
+<para>
+
+</para>
+
+@task: 
+@notation: 
+@x0: 
+@y0: 
+@x1: 
+@y1: 
+
+<!-- ##### STRUCT AgsRemoveRegionFromSelectionClass ##### -->
+<para>
+
+</para>
+
+@task: 
+
+<!-- ##### FUNCTION ags_remove_region_from_selection_new ##### -->
+<para>
+
+</para>
+
+@notation: 
+@x0: 
+@y0: 
+@x1: 
+@y1: 
+@Returns: 
+
+
