@@ -38,6 +38,14 @@ void ags_recall_id_connect(AgsConnectable *connectable);
 void ags_recall_id_disconnect(AgsConnectable *connectable);
 void ags_recall_id_finalize(GObject *gobject);
 
+/**
+ * SECTION:agsrecallid
+ * @Short_description: The object specifies run context.
+ * @Title: AgsRecallID
+ *
+ * #AgsRecallID acts as dynamic context identifier.
+ */
+
 enum{
   PROP_0,
   PROP_RECYCLING,
@@ -100,6 +108,13 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
   gobject->finalize = ags_recall_id_finalize;
 
   /* properties */
+  /**
+   * AgsRecallID:recycling:
+   *
+   * The assigned #AgsRecycling.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("recycling\0",
 				   "assigned recycling\0",
 				   "The recycling it is assigned with\0",
@@ -109,7 +124,14 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 				  PROP_RECYCLING,
 				  param_spec);
 
-  param_spec = g_param_spec_object("recycling_container\0",
+  /**
+   * AgsRecallID:recycling-container:
+   *
+   * The dynamic run context belonging to.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("recycling-container\0",
 				   "assigned recycling container\0",
 				   "The recycling container it is assigned with\0",
 				   G_TYPE_OBJECT,
@@ -237,10 +259,11 @@ ags_recall_id_finalize(GObject *gobject)
  * ags_recall_id_get_run_stage:
  * @id the #AgsRecallID to check
  * @stage the current run stage to check against
- * Returns: TRUE if the stage isn't run yet otherwise FALSE
  *
  * Check if a run stage already has been passed for current run. This
  * function is intended to handle AGS_AUDIO_ASYNC correctly.
+ *
+ * Returns: %TRUE if the stage isn't run yet otherwise %FALSE
  */
 gboolean
 ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
@@ -307,11 +330,12 @@ ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
 
 /**
  * ags_recall_id_add:
- * @recall_id_list the #GList the new #AgsRecall should be added
+ * @recall_id_list the #GList the new #AgsRecallID should be added
  * @recall_id the #AgsRecallID to add
- * Returns: the newly allocated #GList which is the new start of the #GList, too.
  *
  * Adds an #AgsRecallID with given properties to the passed #GList.
+ *
+ * Returns: the newly allocated #GList which is the new start of the #GList, too.
  */
 GList*
 ags_recall_id_add(GList *recall_id_list,
@@ -325,6 +349,15 @@ ags_recall_id_add(GList *recall_id_list,
   return(list);
 }
 
+/**
+ * ags_recall_id_find_recycling_container:
+ * @recall_id_list a #GList containing #AgsRecallID
+ * @recycling_container the #AgsRecyclingContainer to match
+ *
+ * Retrieve recall id by recycling container.
+ *
+ * Returns: Matching recall id.
+ */
 AgsRecallID*
 ags_recall_id_find_recycling_container(GList *recall_id_list,
 				       AgsRecyclingContainer *recycling_container)
@@ -344,6 +377,15 @@ ags_recall_id_find_recycling_container(GList *recall_id_list,
   return(NULL);
 }
 
+/**
+ * ags_recall_id_find_parent_recycling_container:
+ * @recall_id_list a #GList containing #AgsRecallID
+ * @recycling_container the #AgsRecyclingContainer to match
+ *
+ * Retrieve recall id by recycling container.
+ *
+ * Returns: Matching recall id.
+ */
 AgsRecallID*
 ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
 					      AgsRecyclingContainer *parent_recycling_container)
@@ -363,6 +405,13 @@ ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
   return(NULL);
 }
 
+/**
+ * ags_recall_id_new:
+ *
+ * Creates a #AgsRecallID, assigned to @recycling
+ *
+ * Returns: a new #AgsRecallID
+ */
 AgsRecallID*
 ags_recall_id_new(AgsRecycling *recycling)
 {

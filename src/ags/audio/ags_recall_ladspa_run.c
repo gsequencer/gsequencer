@@ -46,6 +46,14 @@ void ags_recall_ladspa_run_finalize(GObject *gobject);
 void ags_recall_ladspa_run_run_pre(AgsRecall *recall);
 void ags_recall_ladspa_run_run_inter(AgsRecall *recall);
 
+/**
+ * SECTION:agsrecallladsparun
+ * @Short_description: The object interfacing with LADSPA
+ * @Title: AgsRecallLadspaRun
+ *
+ * #AgsRecallLadspaRun provides LADSPA support.
+ */
+
 static gpointer ags_recall_ladspa_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_run_parent_connectable_interface;
 
@@ -220,6 +228,15 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 				   audio_signal->stream_current->data);
 }
 
+
+/**
+ * ags_recall_ladspa_run_new:
+ * @audio_signal the source
+ *
+ * Creates a #AgsRecallLadspaRun
+ *
+ * Returns: a new #AgsRecallLadspaRun
+ */
 AgsRecallLadspaRun*
 ags_recall_ladspa_run_new(AgsAudioSignal *audio_signal)
 {

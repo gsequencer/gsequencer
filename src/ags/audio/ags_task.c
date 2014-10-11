@@ -27,6 +27,14 @@ void ags_task_connect(AgsConnectable *connectable);
 void ags_task_disconnect(AgsConnectable *connectable);
 void ags_task_finalize(GObject *gobject);
 
+/**
+ * SECTION:agstask
+ * @Short_description: Perform operations in a thread safe context.
+ * @Title: AgsTask
+ *
+ * #AgsTask object acts an interceptor in a thread safe context.
+ */
+
 enum{
   LAUNCH,
   FAILURE,
@@ -90,6 +98,10 @@ ags_task_class_init(AgsTaskClass *task)
   task->failure = NULL;
 
   /* signals */
+  /**
+   * AgsTask::launch:
+   * @task the object to launch.
+   */
   task_signals[LAUNCH] =
     g_signal_new("launch\0",
 		 G_TYPE_FROM_CLASS (task),
@@ -99,6 +111,11 @@ ags_task_class_init(AgsTaskClass *task)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsTask::failure:
+   * @task the object failed to do its work.
+   * @error the error
+   */
   task_signals[FAILURE] =
     g_signal_new("failure\0",
 		 G_TYPE_FROM_CLASS (task),
@@ -157,6 +174,12 @@ ags_task_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_task_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_task_launch:
+ * @task an #AgsTask
+ *
+ * Intercept task.
+ */
 void
 ags_task_launch(AgsTask *task)
 {
@@ -168,6 +191,13 @@ ags_task_launch(AgsTask *task)
   g_object_unref(G_OBJECT(task));
 }
 
+/**
+ * ags_task_failure:
+ * @task an #AgsTask
+ * @error is %NULL on success
+ *
+ * Signals failure of task.
+ */
 void
 ags_task_failure(AgsTask *task, GError *error)
 {
@@ -180,6 +210,13 @@ ags_task_failure(AgsTask *task, GError *error)
   g_object_unref(G_OBJECT(task));
 }
 
+/**
+ * ags_task_new:
+ *
+ * Creates a #AgsTask
+ *
+ * Returns: a new #AgsTask
+ */
 AgsTask*
 ags_task_new()
 {

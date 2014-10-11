@@ -151,6 +151,14 @@ GList* ags_recall_factory_create_ladspa(AgsAudio *audio,
 					guint start_pad, guint stop_pad,
 					guint create_flags, guint recall_flags);
 
+/**
+ * SECTION:agsrecallfactory
+ * @Short_description: Factory pattern
+ * @Title: AgsRecallFactory
+ *
+ * #AgsRecallFactory instantiates and sets up recalls.
+ */
+
 static gpointer ags_recall_factory_parent_class = NULL;
 
 GType
@@ -2351,6 +2359,14 @@ ags_recall_factory_remove(AgsAudio *audio,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_recall_factory_new:
+ * @factory the #AgsRecall depending on
+ *
+ * Creates a #AgsRecallFactory
+ *
+ * Returns: a new #AgsRecallFactory
+ */
 AgsRecallFactory*
 ags_recall_factory_new()
 {

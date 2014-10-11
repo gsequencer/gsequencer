@@ -46,6 +46,14 @@ AgsRecall* ags_recall_recycling_dummy_duplicate(AgsRecall *recall,
 						AgsRecallID *recall_id,
 						guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:agsrecallrecyclingdummy
+ * @Short_description: recycling dummy dynamic context of recall
+ * @Title: AgsRecallRecyclingDummy
+ *
+ * #AgsRecallRecyclingDummy acts as recycling dummy dynamic recall.
+ */
+
 static gpointer ags_recall_recycling_dummy_parent_class = NULL;
 static AgsConnectableInterface *ags_recall_recycling_dummy_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_recall_recycling_dummy_parent_dynamic_connectable_interface;
@@ -206,6 +214,15 @@ ags_recall_recycling_dummy_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_recall_recycling_dummy_new:
+ * @source the source #AgsRecycling
+ * @child_type child type
+ *
+ * Creates an #AgsRecallRecyclingDummy.
+ *
+ * Returns: a new #AgsRecallRecyclingDummy.
+ */
 AgsRecallRecyclingDummy*
 ags_recall_recycling_dummy_new(AgsRecycling *recycling, GType child_type)
 {

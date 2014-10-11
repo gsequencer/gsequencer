@@ -60,6 +60,14 @@ void ags_recall_ladspa_finalize(GObject *gobject);
 void ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
+/**
+ * SECTION:agsrecallladspa
+ * @Short_description: The object interfacing with LADSPA
+ * @Title: AgsRecallLadspa
+ *
+ * #AgsRecallLadspa provides LADSPA support.
+ */
+
 enum{
   PROP_0,
   PROP_FILENAME,
@@ -135,6 +143,13 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
   gobject->finalize = ags_recall_ladspa_finalize;
 
   /* properties */
+  /**
+   * AgsRecallLadspa:filename:
+   *
+   * The plugins filename.
+   * 
+   * Since: 0.4.2
+   */
   param_spec =  g_param_spec_string("filename\0",
 				    "the object file\0",
 				    "The filename as string of object file\0",
@@ -144,6 +159,13 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 				  PROP_FILENAME,
 				  param_spec);
 
+  /**
+   * AgsRecallLadspa:recycling:
+   *
+   * The effect's name.
+   * 
+   * Since: 0.4.2
+   */
   param_spec =  g_param_spec_string("effect\0",
 				    "the effect\0",
 				    "The effect's string representation\0",
@@ -153,6 +175,13 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 				  PROP_EFFECT,
 				  param_spec);
 
+  /**
+   * AgsRecallLadspa:recycling:
+   *
+   * The effect's index.
+   * 
+   * Since: 0.4.2
+   */
   param_spec =  g_param_spec_uint("index\0",
 				  "index of effect\0",
 				  "The numerical index of effect\0",
@@ -477,6 +506,14 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 }
 
+/**
+ * ags_recall_ladspa_load_ports:
+ * @recall_ladspa an #AgsRecallLadspa
+ *
+ * Set up LADSPA ports.
+ *
+ * Returns: a #GList containing #AgsPort.
+ */
 GList*
 ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 {
@@ -559,6 +596,13 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   return(AGS_RECALL(recall_ladspa)->port);
 }
 
+/**
+ * ags_recall_ladspa_short_to_float:
+ * @buffer source
+ * @destination destination
+ *
+ * Convert data type.
+ */
 void
 ags_recall_ladspa_short_to_float(signed short *buffer,
 				 float *destination)
@@ -573,6 +617,13 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
   }
 }
 
+/**
+ * ags_recall_ladspa_float_to_short:
+ * @buffer source
+ * @destination destination
+ *
+ * Convert data type.
+ */
 void
 ags_recall_ladspa_float_to_short(float *buffer,
 				 signed short *destination)
@@ -587,6 +638,16 @@ ags_recall_ladspa_float_to_short(float *buffer,
   }
 }
 
+/**
+ * ags_recall_ladpsa_find:
+ * @recall a #GList containing #AgsRecall
+ * @filename plugin filename
+ * @effect effect's name
+ *
+ * Retrieve LADSPA recall.
+ *
+ * Returns: Next match.
+ */
 GList*
 ags_recall_ladpsa_find(GList *recall,
 		       gchar *filename, gchar *effect)
@@ -607,6 +668,17 @@ ags_recall_ladpsa_find(GList *recall,
   return(NULL);
 }
 
+/**
+ * ags_recall_id_new:
+ * @source the source
+ * @filename the LADSPA plugin filename
+ * @effect effect's name
+ * @index effect's index
+ *
+ * Creates a #AgsRecallLadspa
+ *
+ * Returns: a new #AgsRecallLadspa
+ */
 AgsRecallLadspa*
 ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *filename,

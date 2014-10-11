@@ -80,6 +80,14 @@ void ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling 
 void ags_recall_recycling_duplicate_list(GList *list,
 					 GList **target);
 
+/**
+ * SECTION:agsrecallladsparecycling
+ * @Short_description: recycling context of recall
+ * @Title: AgsRecallRecycling
+ *
+ * #AgsRecallRecycling acts as recycling recall.
+ */
+
 enum{
   PROP_0,
   PROP_AUDIO_CHANNEL,
@@ -158,8 +166,15 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
   gobject->finalize = ags_recall_recycling_finalize;
 
   /* properties */
-  param_spec = g_param_spec_uint("audio_channel\0",
-				 "assigned audio Channel\0",
+  /**
+   * AgsRecallRecycling:audio-channel:
+   *
+   * The assigned destination recycling.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("audio-channel\0",
+				 "assigned audio channel\0",
 				 "The audio channel this recall does output to\0",
 				 0,
 				 65536,
@@ -169,6 +184,13 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
+  /**
+   * AgsRecallRecycling:destination:
+   *
+   * The assigned destination recycling.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("destination\0",
 				   "AgsRecycling destination of this recall\0",
 				   "The AgsRecycling destination of this recall\0",
@@ -178,6 +200,13 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
 				  PROP_DESTINATION,
 				  param_spec);
 
+  /**
+   * AgsRecallRecycling:destination:
+   *
+   * The assigned source recycling.
+   * 
+   * Since: 0.4.0
+   */
   param_spec = g_param_spec_object("source\0",
 				   "AgsRecycling source of this recall\0",
 				   "The AgsRecycling source of this recall\0",
@@ -187,18 +216,32 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
 				  PROP_SOURCE,
 				  param_spec);
 
-  param_spec = g_param_spec_object("child_destination\0",
+  /**
+   * AgsRecallRecycling:child-destination:
+   *
+   * The assigned destination audio signal.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("child-destination\0",
 				   "AgsAudioSignal of this recall\0",
-				   "The AgsRecallChannel which this recall needs\0",
+				   "The destination AgsAudioSignal child recall needs\0",
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD_DESTINATION,
 				  param_spec);
 
-  param_spec = g_param_spec_object("child_source\0",
+  /**
+   * AgsRecallRecycling:child-source:
+   *
+   * The assigned source audio signal.
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("child-source\0",
 				   "AgsAudioSignal of this recall\0",
-				   "The AgsRecallChannel which this recall needs\0",
+				   "The source AgsAudioSignal child recall needs\0",
 				   AGS_TYPE_AUDIO_SIGNAL,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -803,6 +846,13 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
   }
 }
 
+/**
+ * ags_recall_recycling_new:
+ *
+ * Creates a #AgsRecallRecycling
+ *
+ * Returns: a new #AgsRecallRecycling
+ */
 AgsRecallRecycling*
 ags_recall_recycling_new()
 {
