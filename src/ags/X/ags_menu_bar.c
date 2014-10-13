@@ -37,6 +37,16 @@ void ags_menu_bar_disconnect(AgsConnectable *connectable);
 void ags_menu_bar_destroy(GtkObject *object);
 void ags_menu_bar_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_menu_bar
+ * @short_description: the menu bar.
+ * @title: AgsMenuBar
+ * @section_id:
+ * @include: ags/X/ags_menu_bar.h
+ *
+ * #AgsMenuBar is a composite widget to be used as application's menu bar.
+ */
+
 GType
 ags_menu_bar_get_type(void)
 {
@@ -280,11 +290,13 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 void
 ags_menu_bar_disconnect(AgsConnectable *connectable)
 {
+  /* empty */
 }
 
 void
 ags_menu_bar_destroy(GtkObject *object)
 {
+  /* empty */
 }
 
 void
@@ -293,6 +305,15 @@ ags_menu_bar_show(GtkWidget *widget)
   gtk_widget_show_all(widget);
 }
 
+/**
+ * ags_menu_bar_new:
+ *
+ * Creates an #AgsMenuBar
+ *
+ * Returns: a new #AgsMenuBar
+ *
+ * Since: 0.3
+ */
 AgsMenuBar*
 ags_menu_bar_new()
 {
@@ -423,6 +444,15 @@ ags_tact_menu_new()
   return(menu);
 }
 
+/**
+ * ags_zoom_combo_box_new:
+ *
+ * Creates an #GtkComboBox to select zoom.
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.4
+ */
 GtkComboBox*
 ags_zoom_combo_box_new()
 {
@@ -452,6 +482,15 @@ ags_zoom_combo_box_new()
   return(combo_box);
 }
 
+/**
+ * ags_zoom_combo_box_new:
+ *
+ * Creates an #GtkComboBox to select tact
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.4
+ */
 GtkComboBox*
 ags_tact_combo_box_new()
 {

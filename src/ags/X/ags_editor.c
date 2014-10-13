@@ -50,7 +50,16 @@ void ags_editor_real_audio_channels_changed(AgsEditor *editor, guint audio_chann
 void ags_editor_real_pads_changed(AgsEditor *editor, guint pads);
 void ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
-GtkMenu* ags_editor_popup_new(AgsEditor *editor);
+/**
+ * SECTION:ags_editor
+ * @short_description: A composite widget to edit notes
+ * @title: AgsEditor
+ * @section_id:
+ * @include: ags/X/ags_editor.h
+ *
+ * #AgsEditor is a composite widget to edit notes. You may select machines
+ * or change editor tool to do notation.
+ */
 
 enum{
   MACHINE_CHANGED,
@@ -121,6 +130,13 @@ ags_editor_class_init(AgsEditorClass *editor)
   gobject->finalize = ags_editor_finalize;
 
   /* properties */
+  /**
+   * AgsEditor:devout:
+   *
+   * The assigned #AgsDevout acting as default sink.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("devout\0",
 				   "assigned devout\0",
 				   "The devout it is assigned with\0",
@@ -133,6 +149,14 @@ ags_editor_class_init(AgsEditorClass *editor)
   /* AgsEditorClass */
   editor->machine_changed = ags_editor_real_machine_changed;
 
+  /* signals */
+  /**
+   * AgsEditor::machine-changed:
+   * @editor: the object to change machine.
+   * @machine: the #AgsMachine to set
+   *
+   * The ::machine-changed signal notifies about changed machine.
+   */
   editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed\0",
                  G_TYPE_FROM_CLASS (editor),
@@ -323,6 +347,15 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 			       pads * editor->note_edit->control_height);
 }
 
+/**
+ * ags_editor_machine_changed:
+ * @editor: an #AgsEditor
+ * @machine: the new #AgsMachine
+ *
+ * Is emitted as machine changed of editor.
+ *
+ * Since: 0.4
+ */
 void
 ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
@@ -335,6 +368,15 @@ ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine)
   g_object_unref((GObject *) editor);
 }
 
+/**
+ * ags_editor_new:
+ *
+ * Creates an #AgsEditor
+ *
+ * Returns: a new #AgsEditor
+ *
+ * Since: 0.3
+ */
 AgsEditor*
 ags_editor_new()
 {

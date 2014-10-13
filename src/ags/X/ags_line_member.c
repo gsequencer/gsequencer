@@ -51,6 +51,18 @@ void ags_line_member_finalize(GObject *gobject);
 void ags_line_member_real_change_port(AgsLineMember *line_member,
 				      gpointer port_data);
 
+/**
+ * SECTION:ags_line_member
+ * @short_description: Modify assigned recall's port
+ * @title: AgsLineMember
+ * @section_id:
+ * @include: ags/X/ags_line_member.h
+ *
+ * #AgsLineMember is a composite widget to modify ports of recalls. A line member
+ * controls only one specific port of a recall but distinguishes between simple/complex
+ * recall. It is generally packed into a #AgsLine.
+ */
+
 enum{
   CHANGE_PORT,
   LAST_SIGNAL,
@@ -128,6 +140,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
   gobject->finalize = ags_line_member_finalize;
 
   /* properties */
+  /**
+   * AgsLineMember:widget-type:
+   *
+   * The widget type to instantiate and use as control.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_ulong("widget-type\0",
 				  "widget type of line member\0",
 				  "The widget type this line member packs\0",
@@ -138,6 +157,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_WIDGET_TYPE,
 				  param_spec);
 
+  /**
+   * AgsLineMember:widget-label:
+   *
+   * The widget's label to use.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_string("widget-label\0",
 				   "label to display\0",
 				   "The label to display\0",
@@ -147,6 +173,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_WIDGET_LABEL,
 				  param_spec);
 
+  /**
+   * AgsLineMember:plugin-name:
+   *
+   * The plugin name of the recall to use.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_string("plugin-name\0",
 				   "plugin name to control\0",
 				   "The plugin's name to control\0",
@@ -156,6 +189,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_PLUGIN_NAME,
 				  param_spec);
 
+  /**
+   * AgsLineMember:specifier:
+   *
+   * The plugin specifier of the recall to apply.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_string("specifier\0",
 				   "port specifier\0",
 				   "The specifier of the port\0",
@@ -165,6 +205,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_SPECIFIER,
 				  param_spec);
 
+  /**
+   * AgsLineMember:control-port:
+   *
+   * The control port of the recall.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_string("control-port\0",
 				   "control port index\0",
 				   "The index of the port to control\0",
@@ -174,6 +221,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_CONTROL_PORT,
 				  param_spec);
 
+  /**
+   * AgsLineMember:apply:
+   *
+   * The matching simple port of plugin name and specifier.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("port\0",
 				   "port to apply\0",
 				   "The port to apply\0",
@@ -183,6 +237,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_PORT,
 				  param_spec);
 
+  /**
+   * AgsLineMember:port-data:
+   *
+   * The port data to apply.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_pointer("port-data\0",
 				    "port data\0",
 				    "The port data\0",
@@ -191,6 +252,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_PORT_DATA,
 				  param_spec);
 
+  /**
+   * AgsLineMember:recall-port:
+   *
+   * The matching complex port of plugin name and specifier.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("recall-port\0",
 				   "recall port to apply\0",
 				   "The recall port to apply\0",
@@ -200,6 +268,13 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_RECALL_PORT,
 				  param_spec);
 
+  /**
+   * AgsLineMember:recall-port-data:
+   *
+   * The complex port data to apply.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_pointer("recall-port-data\0",
 				    "recall port data\0",
 				    "The recall port data\0",
@@ -211,6 +286,14 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
   /* AgsLineMember */
   line_member->change_port = ags_line_member_real_change_port;
 
+  /* signals */
+  /**
+   * AgsLineMember::change-port:
+   * @line_member: the #AgsLineMember
+   * @port_data: the port's data
+   *
+   * The ::change-port signal notifies modified port.
+   */
   line_member_signals[CHANGE_PORT] =
     g_signal_new("change-port\0",
 		 G_TYPE_FROM_CLASS(line_member),
@@ -575,6 +658,13 @@ ags_line_member_get_widget(AgsLineMember *line_member)
   return(gtk_bin_get_child(line_member));
 }
 
+/**
+ * ags_line_member_set_label:
+ * @line_member: an #AgsLineMember
+ * @label: the label of the control
+ *
+ * Modify the label of the line member.
+ */
 void
 ags_line_member_set_label(AgsLineMember *line_member,
 			  gchar *label)
@@ -686,6 +776,15 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   }
 }
 
+/**
+ * ags_line_change_port:
+ * @line_member: an #AgsLineMember
+ * @port_data: the port's value
+ *
+ * Is emitted as port's value is modified.
+ *
+ * Since: 0.4
+ */
 void
 ags_line_member_change_port(AgsLineMember *line_member,
 			    gpointer port_data)
@@ -699,6 +798,14 @@ ags_line_member_change_port(AgsLineMember *line_member,
   g_object_unref((GObject *) line_member);
 }
 
+/**
+ * ags_line_member_find_port:
+ * @line_member: an #AgsLineMember
+ *
+ * Lookup ports of assigned recall.
+ *
+ * Since: 0.4
+ */
 void
 ags_line_member_find_port(AgsLineMember *line_member)
 {
@@ -799,6 +906,15 @@ ags_line_member_find_port(AgsLineMember *line_member)
   }
 }
 
+/**
+ * ags_line_member_new:
+ *
+ * Creates an #AgsLineMember
+ *
+ * Returns: a new #AgsLineMember
+ *
+ * Since: 0.4
+ */
 AgsLineMember*
 ags_line_member_new()
 {

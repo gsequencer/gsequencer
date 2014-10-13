@@ -57,10 +57,23 @@ void ags_link_collection_editor_reset(AgsApplicable *applicable);
 void ags_link_collection_editor_destroy(GtkObject *object);
 void ags_link_collection_editor_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_link_collection_editor
+ * @short_description: Edit links in bulk mode.
+ * @title: AgsLinkCollectionEditor
+ * @section_id:
+ * @include: ags/X/ags_link_collection_editor.h
+ *
+ * #AgsLinkCollectionEditor is a composite widget to modify links in bulk mode. A link collection
+ * editor should be packed by a #AgsMachineEditor.
+ */
+
 enum{
   PROP_0,
   PROP_CHANNEL_TYPE,
 };
+
+static gpointer ags_link_collection_editor_parent_class = NULL;
 
 GType
 ags_link_collection_editor_get_type(void)
@@ -115,12 +128,23 @@ ags_link_collection_editor_class_init(AgsLinkCollectionEditorClass *link_collect
   GObjectClass *gobject;
   GParamSpec *param_spec;
 
+  ags_link_collection_editor_parent_class = g_type_class_peek_parent(link_collection_editor);
+
+  /* GObjectClass */
   gobject = (GObjectClass *) link_collection_editor;
 
   gobject->set_property = ags_link_collection_editor_set_property;
   gobject->get_property = ags_link_collection_editor_get_property;
 
-  param_spec = g_param_spec_gtype("channel type\0",
+  /* properties */
+  /**
+   * AgsLinkCollectionEditor:channel-type:
+   *
+   * The channel type to apply to. Either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT.
+   * 
+   * Since: 0.3
+   */
+  param_spec = g_param_spec_gtype("channel-type\0",
 				   "assigned channel type\0",
 				   "The channel type which this channel link collection editor is assigned with\0",
 				   G_TYPE_NONE,
@@ -474,6 +498,14 @@ ags_link_collection_editor_show(GtkWidget *widget)
   AgsLinkCollectionEditor *link_collection_editor = (AgsLinkCollectionEditor *) widget;
 }
 
+/**
+ * ags_link_collection_editor_check:
+ * @link_collection_editor: the #AgsLinkCollectionEditor
+ *
+ * Checks for possible channels to link. And modifies its ranges.
+ * 
+ * Since: 0.3
+ */
 void
 ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor)
 {
@@ -545,6 +577,16 @@ ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor
   }
 }
 
+/**
+ * ags_link_collection_editor_new:
+ * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
+ *
+ * Creates an #AgsLinkCollectionEditor
+ *
+ * Returns: a new #AgsLinkCollectionEditor
+ *
+ * Since: 0.3
+ */
 AgsLinkCollectionEditor*
 ags_link_collection_editor_new(GType channel_type)
 {

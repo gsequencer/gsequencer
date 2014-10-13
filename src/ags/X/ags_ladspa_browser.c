@@ -40,6 +40,17 @@ void ags_ladspa_browser_set_update(AgsApplicable *applicable, gboolean update);
 void ags_ladspa_browser_apply(AgsApplicable *applicable);
 void ags_ladspa_browser_reset(AgsApplicable *applicable);
 
+/**
+ * SECTION:ags_ladspa_browser
+ * @short_description: A composite to select ladspa effect.
+ * @title: AgsLadspaBrowser
+ * @section_id:
+ * @include: ags/X/ags_ladspa_browser.h
+ *
+ * #AgsLadspaBrowser is a composite widget to select ladspa plugin and the desired
+ * effect.
+ */
+
 GType
 ags_ladspa_browser_get_type(void)
 {
@@ -308,6 +319,15 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
 			   0);
 }
 
+/**
+ * ags_ladspa_browser_get_plugin_filename:
+ *
+ * Retrieve selected ladspa plugin filename.
+ *
+ * Returns: the active ladspa filename
+ *
+ * Since: 0.4
+ */
 gchar*
 ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 {
@@ -321,6 +341,15 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
   return(gtk_combo_box_text_get_active_text(filename));
 }
 
+/**
+ * ags_ladspa_browser_get_plugin_effect:
+ *
+ * Retrieve selected ladspa effect.
+ *
+ * Returns: the active ladspa effect
+ *
+ * Since: 0.4
+ */
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 {
@@ -334,6 +363,15 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   return(gtk_combo_box_text_get_active_text(effect));
 }
 
+/**
+ * ags_ladspa_browser_combo_box_controls_new:
+ *
+ * Creates a #GtkComboBox containing suitable widgets as controls.
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.4
+ */
 GtkWidget*
 ags_ladspa_browser_combo_box_controls_new()
 {
@@ -368,6 +406,15 @@ ags_ladspa_browser_preview_new()
   return(preview);
 }
 
+/**
+ * ags_ladspa_browser_new:
+ *
+ * Creates an #AgsLadspaBrowser
+ *
+ * Returns: a new #AgsLadspaBrowser
+ *
+ * Since: 0.4
+ */
 AgsLadspaBrowser*
 ags_ladspa_browser_new(GtkWidget *parent)
 {

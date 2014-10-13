@@ -51,6 +51,16 @@ gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 static GList* ags_window_standard_machine_counter();
 
+/**
+ * SECTION:ags_window
+ * @short_description: The window object.
+ * @title: AgsWindow
+ * @section_id:
+ * @include: ags/X/ags_window.h
+ *
+ * #AgsWindow is a composite toplevel widget.
+ */
+
 enum{
   PROP_0,
   PROP_DEVOUT,
@@ -370,6 +380,12 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
   return(FALSE);
 }
 
+/**
+ * @window: the #AgsWindow
+ * @machine_type: the machine type
+ *
+ * Keep track of count of machines. Well known machines.
+ */
 static GList*
 ags_window_standard_machine_counter()
 {
@@ -399,6 +415,12 @@ ags_window_standard_machine_counter()
   return(machine_counter);
 }
 
+/**
+ * @window: the #AgsWindow
+ * @machine_type: the machine type
+ *
+ * Keep track of count of machines. Lookup window's counter.
+ */
 AgsMachineCounter*
 ags_window_find_machine_counter(AgsWindow *window,
 				GType machine_type)
@@ -418,6 +440,12 @@ ags_window_find_machine_counter(AgsWindow *window,
   return(NULL);
 }
 
+/**
+ * @window: the #AgsWindow
+ * @machine_type: the machine type
+ *
+ * Keep track of count of machines. Increment window's counter.
+ */
 void
 ags_window_increment_machine_counter(AgsWindow *window,
 				     GType machine_type)
@@ -432,6 +460,12 @@ ags_window_increment_machine_counter(AgsWindow *window,
   }
 }
 
+/**
+ * @window: the #AgsWindow
+ * @machine_type: the machine type
+ *
+ * Keep track of count of machines. Decrement window's counter.
+ */
 void
 ags_window_decrement_machine_counter(AgsWindow *window,
 				     GType machine_type)
@@ -446,6 +480,14 @@ ags_window_decrement_machine_counter(AgsWindow *window,
   }
 }
 
+/**
+ * @version: the machine's version
+ * @build_id: the machine's build id
+ * @machine_type: the machine type
+ * @initial_value: initialize counter
+ *
+ * Keep track of count of machines.
+ */
 AgsMachineCounter*
 ags_machine_counter_alloc(gchar *version, gchar *build_id,
 			  GType machine_type, guint initial_value)
@@ -463,6 +505,16 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
   return(machine_counter);
 }
 
+/**
+ * ags_window_new:
+ * @ags_main: the application object.
+ *
+ * Creates an #AgsWindow
+ *
+ * Returns: a new #AgsWindow
+ *
+ * Since: 0.3
+ */
 AgsWindow*
 ags_window_new(GObject *ags_main)
 {

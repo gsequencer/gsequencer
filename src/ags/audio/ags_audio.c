@@ -163,7 +163,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsDevout acting as default sink.
    * 
-   * Since: 0.4.0
+   * Since: 0.4
    */
   param_spec = g_param_spec_object("devout\0",
 				   "assigned devout\0",
@@ -2095,7 +2095,7 @@ ags_audio_init_run(AgsAudio *audio)
 }
 
 /**
- * ags_audio_init_run:
+ * ags_audio_tact:
  * @audio: an #AgsAudio
  * @recall_id: the current #AgsRecallID
  *
@@ -2116,7 +2116,7 @@ ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
 }
 
 /**
- * ags_audio_init_run:
+ * ags_audio_done:
  * @audio: an #AgsAudio
  * @recall_id: the current #AgsRecallID
  *

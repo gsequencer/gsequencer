@@ -49,6 +49,19 @@ void ags_link_editor_reset(AgsApplicable *applicable);
 void ags_link_editor_destroy(GtkObject *object);
 void ags_link_editor_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_link_editor
+ * @short_description: Edit links.
+ * @title: AgsLinkEditor
+ * @section_id:
+ * @include: ags/X/ags_link_editor.h
+ *
+ * #AgsLinkEditor is a composite widget to modify links. A link editor 
+ * should be packed by a #AgsLineEditor.
+ */
+
+static gpointer ags_link_editor_parent_class = NULL;
+
 GType
 ags_link_editor_get_type(void)
 {
@@ -98,7 +111,7 @@ ags_link_editor_get_type(void)
 void
 ags_link_editor_class_init(AgsLinkEditorClass *link_editor)
 {
-  /* empty */
+  ags_link_editor_parent_class = g_type_class_peek_parent(link_editor);
 }
 
 void
@@ -317,6 +330,15 @@ ags_link_editor_show(GtkWidget *widget)
   /* empty */
 }
 
+/**
+ * ags_link_editor_new:
+ *
+ * Creates an #AgsLinkEditor
+ *
+ * Returns: a new #AgsLinkEditor
+ *
+ * Since: 0.3
+ */
 AgsLinkEditor*
 ags_link_editor_new()
 {

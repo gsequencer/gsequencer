@@ -40,6 +40,17 @@ void ags_listing_editor_reset(AgsApplicable *applicable);
 void ags_listing_editor_destroy(GtkObject *object);
 void ags_listing_editor_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_listing_editor
+ * @short_description: pack pad editors.
+ * @title: AgsListingEditor
+ * @section_id:
+ * @include: ags/X/ags_listing_editor.h
+ *
+ * #AgsListingEditor is a composite widget to pack #AgsPadEditor.
+ */
+
+static gpointer ags_listing_editor_parent_class = NULL;
 static AgsConnectableInterface* ags_listing_editor_parent_connectable_interface;
 
 GType
@@ -242,10 +253,20 @@ ags_listing_editor_show(GtkWidget *widget)
   /* empty */
 }
 
+/**
+ * ags_listing_editor_add_children:
+ * @audio: the #AgsAudio to use
+ * @nth_channel: nth channel to start creation until end
+ * @connect: if %TRUE widget is connected and shown
+ *
+ * Creates new pad editors or destroys them.
+ *
+ * Since: 0.3
+ */
 void
 ags_listing_editor_add_children(AgsListingEditor *listing_editor,
-					AgsAudio *audio, guint nth_channel,
-					gboolean connect)
+				AgsAudio *audio, guint nth_channel,
+				gboolean connect)
 {
   AgsPadEditor *pad_editor;
   GtkVBox *vbox;
@@ -290,6 +311,16 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
   }
 }
 
+/**
+ * ags_listing_editor_new:
+ * @channel_type: the channel type to represent
+ *
+ * Creates an #AgsListingEditor
+ *
+ * Returns: a new #AgsListingEditor
+ *
+ * Since: 0.3
+ */
 AgsListingEditor*
 ags_listing_editor_new(GType channel_type)
 {

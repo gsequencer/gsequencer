@@ -35,6 +35,16 @@ void ags_preferences_reset(AgsApplicable *applicable);
 static void ags_preferences_finalize(GObject *gobject);
 void ags_preferences_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_preferences
+ * @short_description: A dialog to do preferences
+ * @title: AgsPluginPreferences
+ * @section_id: 
+ * @include: ags/X/ags_plugin_preferences.h
+ *
+ * #AgsDialogPreferences enables you to make preferences.
+ */
+
 static gpointer ags_preferences_parent_class = NULL;
 
 GType
@@ -235,6 +245,15 @@ ags_preferences_show(GtkWidget *widget)
 {
 }
 
+/**
+ * ags_preferences_new:
+ *
+ * Creates an #AgsPreferences
+ *
+ * Returns: a new #AgsPreferences
+ *
+ * Since: 0.4
+ */
 AgsPreferences*
 ags_preferences_new()
 {

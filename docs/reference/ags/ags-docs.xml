@@ -68,7 +68,7 @@
   </part>
   
   <part id="thread">
-    <title>Thread - Multi-Threaded tree</title>
+    <title>Thread - Multi-threaded tree</title>
 
     <xi:include href="xml/ags_audio_loop.xml"/>
     <xi:include href="xml/ags_autosave_thread.xml"/>
@@ -87,16 +87,15 @@
   </part>
 
   <part id="audio">
-    <title>Audio - The audio processing tree</title>
+    <title>The audio layer</title>
     
     <chapter id="process-tree">
-      <title>audio processing tree</title>
+      <title>Audio - audio processing tree</title>
 
       <xi:include href="xml/ags_audio.xml"/>
       <xi:include href="xml/ags_audio_signal.xml"/>
       <xi:include href="xml/ags_channel.xml"/>
       <xi:include href="xml/ags_config.xml"/>
-      <xi:include href="xml/ags_container.xml"/>
       <xi:include href="xml/ags_devout.xml"/>
       <xi:include href="xml/ags_input.xml"/>
       <xi:include href="xml/ags_notation.xml"/>
@@ -139,7 +138,6 @@
     <chapter id="recall">
       <title>Recalls - Effect processors</title>
 
-      <xi:include href="xml/ags_audio_file.xml"/>
       <xi:include href="xml/ags_buffer_audio_signal.xml"/>
       <xi:include href="xml/ags_buffer_channel.xml"/>
       <xi:include href="xml/ags_buffer_channel_run.xml"/>
@@ -244,10 +242,10 @@
   </part>
 
   <part>
-    <title>GUI - Graphical user interface</title>
+    <title>Graphical user interface</title>
 
     <chapter id="composite-widgets">
-      <title>Composite widgets</title>
+      <title>GUI - Composite widgets</title>
 
       <xi:include href="xml/ags_audio_preferences.xml"/>
       <xi:include href="xml/ags_audio_preferences_callbacks.xml"/>

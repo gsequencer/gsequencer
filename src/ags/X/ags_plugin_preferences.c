@@ -35,6 +35,16 @@ void ags_plugin_preferences_show(GtkWidget *widget);
 void ags_plugin_preferences_reset(AgsPluginPreferences *plugin_preferences);
 void* ags_plugin_preferences_refresh(void *ptr);
 
+/**
+ * SECTION:ags_plugin_preferences
+ * @short_description: A composite widget to do plugin related preferences
+ * @title: AgsPluginPreferences
+ * @section_id: 
+ * @include: ags/X/ags_plugin_preferences.h
+ *
+ * #AgsPluginPreferences enables you to make plugin related preferences.
+ */
+
 static gpointer ags_plugin_preferences_parent_class = NULL;
 
 GType
@@ -180,6 +190,15 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
   return(ladspa_plugin_preferences);
 }
 
+/**
+ * ags_plugin_preferences_new:
+ *
+ * Creates an #AgsPluginPreferences
+ *
+ * Returns: a new #AgsPluginPreferences
+ *
+ * Since: 0.4
+ */
 AgsPluginPreferences*
 ags_plugin_preferences_new()
 {

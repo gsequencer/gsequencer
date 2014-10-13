@@ -53,6 +53,17 @@ void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			       guint audio_channels, guint audio_channels_old);
 
+/**
+ * SECTION:ags_pad
+ * @short_description: A composite widget to visualize a bunch of #AgsChannel
+ * @title: AgsPad
+ * @section_id:
+ * @include: ags/X/ags_pad.h
+ *
+ * #AgsPad is a composite widget to visualize a bunch of #AgsChannel. It should be
+ * packed by an #AgsMachine.
+ */
+
 enum{
   SET_CHANNEL,
   RESIZE_LINES,
@@ -127,8 +138,15 @@ ags_pad_class_init(AgsPadClass *pad)
   gobject->set_property = ags_pad_set_property;
   gobject->get_property = ags_pad_get_property;
 
+  /* properties */
   //TODO:JK: add finalize
-
+  /**
+   * AgsLine:channel:
+   *
+   * The start of a bunch of #AgsChannel to visualize.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
 				   "The channel it is assigned with\0",
@@ -142,6 +160,14 @@ ags_pad_class_init(AgsPadClass *pad)
   pad->set_channel = ags_pad_real_set_channel;
   pad->resize_lines = ags_pad_real_resize_lines;
 
+  /* signals */
+  /**
+   * AgsLine::set-channel:
+   * @line: the #AgsLine to modify
+   * @channel: the #AgsChannel to set
+   *
+   * The ::set-channel signal notifies about changed channel.
+   */
   pad_signals[SET_CHANNEL] =
     g_signal_new("set_channel\0",
 		 G_TYPE_FROM_CLASS(pad),
@@ -152,6 +178,14 @@ ags_pad_class_init(AgsPadClass *pad)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
+  /**
+   * AgsLine::resize-lines:
+   * @line: the #AgsLine to resize
+   * @line_type: the channel type
+   * @audio_channels: count of lines
+   * @audio_channels_old: old count of lines
+   * The ::resize-lines is emitted as count of lines pack is modified.
+   */
   pad_signals[RESIZE_LINES] =
     g_signal_new("resize_lines\0",
 		 G_TYPE_FROM_CLASS(pad),
@@ -405,6 +439,15 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
   g_list_free(line_start);
 }
 
+/**
+ * ags_pad_set_channel:
+ * @pad: an #AgsPad
+ * @channel: the #AgsChannel to set
+ *
+ * Is emitted as channel gets modified.
+ *
+ * Since: 0.3
+ */
 void
 ags_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 {
@@ -495,6 +538,17 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   }
 }
 
+/**
+ * ags_pad_resize_lines:
+ * @pad: the #AgsPad to resize
+ * @line_type: channel type, either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
+ * @audio_channels: count of lines
+ * @audio_channels_old: old count of lines
+ *
+ * Resize the count of #AgsLine packe by #AgsPad.
+ *
+ * Since: 0.3
+ */
 void ags_pad_resize_lines(AgsPad *pad, GType line_type,
 			  guint audio_channels, guint audio_channels_old)
 {
@@ -510,6 +564,15 @@ void ags_pad_resize_lines(AgsPad *pad, GType line_type,
   g_object_unref((GObject *) pad);
 }
 
+
+/**
+ * ags_pad_find_port:
+ * @pad: an #AgsPad
+ *
+ * Lookup ports of assigned recalls.
+ *
+ * Since: 0.4
+ */
 void
 ags_pad_find_port(AgsPad *pad)
 {
@@ -527,6 +590,17 @@ ags_pad_find_port(AgsPad *pad)
   g_list_free(line_start);
 }
 
+/**
+ * ags_pad_new:
+ * @pad: the parent pad
+ * @channel: the bunch of channel to visualize
+ *
+ * Creates an #AgsPad
+ *
+ * Returns: a new #AgsPad
+ *
+ * Since: 0.3
+ */
 AgsPad*
 ags_pad_new(AgsChannel *channel)
 {

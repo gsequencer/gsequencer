@@ -42,6 +42,17 @@ void ags_line_editor_reset(AgsApplicable *applicable);
 void ags_line_editor_destroy(GtkObject *object);
 void ags_line_editor_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_line_editor
+ * @short_description: A composite widget to edit #AgsChannel
+ * @title: AgsLineEditor
+ * @section_id:
+ * @include: ags/X/ags_line_editor.h
+ *
+ * #AgsLineEditor is a composite widget to edit #AgsChannel. It should be
+ * packed by an #AgsPadEditor.
+ */
+
 enum{
   PROP_0,
   PROP_CHANNEL,
@@ -104,6 +115,13 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
   gobject->set_property = ags_line_editor_set_property;
   gobject->get_property = ags_line_editor_get_property;
 
+  /**
+   * AgsLineEditor:channel:
+   *
+   * The assigned #AgsChannel to edit.
+   * 
+   * Since: 0.3
+   */
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
 				   "The channel which this pad editor is assigned with\0",
@@ -264,6 +282,15 @@ ags_line_editor_show(GtkWidget *widget)
   gtk_widget_show((GtkWidget *) line_editor->member_editor);
 }
 
+/**
+ * ags_line_editor_set_channel:
+ * @line_editor: an #AgsLineEditor
+ * @channel: the new #AgsChannel
+ *
+ * Is emitted as channel gets modified.
+ *
+ * Since: 0.3
+ */
 void
 ags_line_editor_set_channel(AgsLineEditor *line_editor,
 			    AgsChannel *channel)
@@ -296,6 +323,16 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
   }
 }
 
+/**
+ * ags_line_editor_new:
+ * @channel: the channel to edit
+ *
+ * Creates an #AgsLineEditor
+ *
+ * Returns: a new #AgsLineEditor
+ *
+ * Since: 0.3
+ */
 AgsLineEditor*
 ags_line_editor_new(AgsChannel *channel)
 {

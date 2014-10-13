@@ -40,6 +40,17 @@ void ags_resize_editor_reset(AgsApplicable *applicable);
 void ags_resize_editor_destroy(GtkObject *object);
 void ags_resize_editor_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_resize_editor
+ * @short_description: Resize audio channels or pads. 
+ * @title: AgsResizeEditor
+ * @section_id:
+ * @include: ags/X/ags_resize_editor.h
+ *
+ * #AgsResizeEditor is a composite widget to resize. A resize editor 
+ * should be packed by a #AgsMachineEditor.
+ */
+
 AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
 
 GType
@@ -297,6 +308,15 @@ ags_resize_editor_show(GtkWidget *widget)
   AgsResizeEditor *resize_editor = (AgsResizeEditor *) widget;
 }
 
+/**
+ * ags_resize_editor_new:
+ *
+ * Creates an #AgsResizeEditor
+ *
+ * Returns: a new #AgsResizeEditor
+ *
+ * Since: 0.3
+ */
 AgsResizeEditor*
 ags_resize_editor_new()
 {

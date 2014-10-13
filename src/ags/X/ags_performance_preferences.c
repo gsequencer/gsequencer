@@ -35,6 +35,16 @@ void ags_performance_preferences_show(GtkWidget *widget);
 void ags_performance_preferences_reset(AgsPerformancePreferences *performance_preferences);
 void* ags_performance_preferences_refresh(void *ptr);
 
+/**
+ * SECTION:ags_performance_preferences
+ * @short_description: A composite widget to do performance related preferences
+ * @title: AgsPerformancePreferences
+ * @section_id: 
+ * @include: ags/X/ags_performance_preferences.h
+ *
+ * #AgsPerformancePreferences enables you to make performance related preferences.
+ */
+
 static gpointer ags_performance_preferences_parent_class = NULL;
 
 GType
@@ -141,6 +151,15 @@ ags_performance_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_performance_preferences_parent_class)->show(widget);
 }
 
+/**
+ * ags_performance_preferences_new:
+ *
+ * Creates an #AgsPerformancePreferences
+ *
+ * Returns: a new #AgsPerformancePreferences
+ *
+ * Since: 0.4
+ */
 AgsPerformancePreferences*
 ags_performance_preferences_new()
 {

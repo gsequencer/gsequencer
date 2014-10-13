@@ -68,6 +68,16 @@ void ags_machine_show(GtkWidget *widget);
 
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 
+/**
+ * SECTION:ags_machine
+ * @short_description: visualize audio object.
+ * @title: AgsMachine
+ * @section_id:
+ * @include: ags/X/ags_machine.h
+ *
+ * #AgsMachine is a composite widget to act as base class to visualize #AgsAudio.
+ */
+
 #define AGS_DEFAULT_MACHINE "ags-default-machine\0"
 
 enum{
@@ -147,6 +157,13 @@ ags_machine_class_init(AgsMachineClass *machine)
   gobject->finalize = ags_machine_finalize;
 
   /* properties */
+  /**
+   * AgsMachine:audio:
+   *
+   * The assigned #AgsAudio to visualize.
+   * 
+   * Since: 0.3
+   */
   param_spec = g_param_spec_object("audio\0",
 				   "assigned audio\0",
 				   "The audio it is assigned to\0",
@@ -164,6 +181,13 @@ ags_machine_class_init(AgsMachineClass *machine)
   /* AgsMachineClass */
   machine->add_default_recalls = NULL;
 
+  /* signals */
+  /**
+   * AgsMachine::add-default-recalls:
+   * @machine: the #AgsMachine
+   *
+   * The ::add-default-recalls should be used to add the machine's default recalls.
+   */
   machine_signals[ADD_DEFAULT_RECALLS] =
     g_signal_new("add-default-recalls\0",
                  G_TYPE_FROM_CLASS (machine),
@@ -603,6 +627,12 @@ ags_machine_show(GtkWidget *widget)
   gtk_widget_show_all((GtkWidget *) frame);
 }
 
+/**
+ * ags_machine_add_default_recalls:
+ * @machine: the #AgsMachine to add its default recalls.
+ *
+ * You may want the @machine to add its default recalls.
+ */
 void
 ags_machine_add_default_recalls(AgsMachine *machine)
 {
@@ -614,6 +644,17 @@ ags_machine_add_default_recalls(AgsMachine *machine)
   g_object_unref((GObject *) machine);
 }
 
+/**
+ * ags_machine_get_possible_links:
+ * @list: a #GList of #AgsMachine
+ *
+ * Find links suitable for @machine.
+ *
+ * Returns: a #GtkListStore containing one column with a string representing
+ * machines by its type and name.
+ *
+ * Since: 0.4
+ */
 GtkListStore*
 ags_machine_get_possible_links(AgsMachine *machine)
 {
@@ -650,6 +691,15 @@ ags_machine_get_possible_links(AgsMachine *machine)
   return(model);
 }
 
+/**
+ * ags_machine_find_by_name:
+ * @list: a #GList of #AgsMachine
+ * @name: the name of machine
+ *
+ * Find the specified by @name machine.
+ *
+ * Since: 0.3
+ */
 AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
 {
@@ -663,6 +713,14 @@ ags_machine_find_by_name(GList *list, char *name)
   return(NULL);
 }
 
+/**
+ * ags_machine_find_port:
+ * @machine
+ *
+ * Lookup ports of associated recalls.
+ *
+ * Since: 0.4
+ */
 void
 ags_machine_find_port(AgsMachine *machine)
 {
@@ -685,6 +743,15 @@ ags_machine_find_port(AgsMachine *machine)
   }
 }
 
+/**
+ * ags_machine_set_run:
+ * @machine: the #AgsMachine
+ * @run: if %TRUE playback is started, otherwise stopped
+ *
+ * Start/stop playback of @machine.
+ *
+ * Since: 0.4
+ */
 void
 ags_machine_set_run(AgsMachine *machine,
 		    gboolean run)
@@ -740,6 +807,15 @@ ags_machine_set_run(AgsMachine *machine,
   }
 }
 
+/**
+ * ags_machine_file_chooser_dialog_new:
+ * @machine the #AgsMachine
+ *
+ * Creates a new machine file chooser dialog in order to
+ * open audio files.
+ *
+ * Since: 0.4
+ */
 GtkFileChooserDialog*
 ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 {
@@ -767,6 +843,17 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
   return(file_chooser);
 }
 
+/**
+ * ags_machine_open_files:
+ * @machine the #AgsMachine
+ * @filenames: the filenames
+ * @overwrite_channels: reset channels
+ * @create_channels: instantiate new channels
+ *
+ * Opens audio files and modifies or creates new channels if wished.
+ *
+ * Since: 0.4
+ */
 void
 ags_machine_open_files(AgsMachine *machine,
 		       GSList *filenames,
@@ -785,6 +872,16 @@ ags_machine_open_files(AgsMachine *machine,
 
 }
 
+/**
+ * ags_machine_new:
+ * @devout: the assigned devout.
+ *
+ * Creates an #AgsMachine
+ *
+ * Returns: a new #AgsMachine
+ *
+ * Since: 0.3
+ */
 AgsMachine*
 ags_machine_new(GObject *devout)
 {
@@ -803,6 +900,16 @@ ags_machine_new(GObject *devout)
   return(machine);
 }
 
+/**
+ * ags_machine_popup_new:
+ * @machine: the assigned machine.
+ *
+ * Creates GtkMenu to use as @machine's popup context menu.
+ *
+ * Returns: a new #GtkMenu containing basic actions.
+ *
+ * Since: 0.3
+ */
 GtkMenu*
 ags_machine_popup_new(AgsMachine *machine)
 {

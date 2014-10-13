@@ -54,6 +54,18 @@ void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 
+/**
+ * SECTION:ags_line
+ * @short_description: A composite widget to visualize #AgsChannel
+ * @title: AgsLine
+ * @section_id:
+ * @include: ags/X/ags_line.h
+ *
+ * #AgsLine is a composite widget to visualize #AgsChannel. It should be
+ * packed by an #AgsPad. It may contain #AgsLineMember to modify ports of
+ * #AgsRecall.
+ */
+
 enum{
   SET_CHANNEL,
   GROUP_CHANGED,
@@ -130,6 +142,13 @@ ags_line_class_init(AgsLineClass *line)
   gobject->get_property = ags_line_get_property;
 
   /* properties */
+  /**
+   * AgsLine:pad:
+   *
+   * The assigned #AgsPad.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("pad\0",
 				   "parent pad\0",
 				   "The pad which is its parent\0",
@@ -139,6 +158,13 @@ ags_line_class_init(AgsLineClass *line)
 				  PROP_PAD,
 				  param_spec);
 
+  /**
+   * AgsLine:channel:
+   *
+   * The assigned #AgsChannel to visualize.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
 				   "The channel it is assigned with\0",
@@ -153,6 +179,14 @@ ags_line_class_init(AgsLineClass *line)
 
   line->group_changed = NULL;
 
+  /* signals */
+  /**
+   * AgsLine::set-channel:
+   * @line: the #AgsLine to modify
+   * @channel: the #AgsChannel to set
+   *
+   * The ::set-channel signal notifies about changed channel.
+   */
   line_signals[SET_CHANNEL] =
     g_signal_new("set_channel\0",
 		 G_TYPE_FROM_CLASS(line),
@@ -163,6 +197,13 @@ ags_line_class_init(AgsLineClass *line)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
+  /**
+   * AgsLine::group-changed:
+   * @line: the object group changed
+   *
+   * The ::group-changed signal notifies about changed grouping. This
+   * normally happens as toggling group button in #AgsPad or #AgsLine.
+   */
   line_signals[GROUP_CHANGED] =
     g_signal_new("group_changed\0",
 		 G_TYPE_FROM_CLASS(line),
@@ -398,6 +439,54 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
 }
 
+/**
+ * ags_line_set_channel:
+ * @line: an #AgsLine
+ * @channel: the #AgsChannel to set
+ *
+ * Is emitted as channel gets modified.
+ *
+ * Since: 0.3
+ */
+void
+ags_line_set_channel(AgsLine *line, AgsChannel *channel)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[SET_CHANNEL], 0,
+		channel);
+  g_object_unref((GObject *) line);
+}
+
+/**
+ * ags_line_group_changed:
+ * @line: an #AgsLine
+ *
+ * Is emitted as group is changed.
+ *
+ * Since: 0.4
+ */
+void
+ags_line_group_changed(AgsLine *line)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[GROUP_CHANGED], 0);
+  g_object_unref((GObject *) line);
+}
+
+/**
+ * ags_line_find_port:
+ * @line: an #AgsLine
+ *
+ * Lookup ports of associated recalls.
+ *
+ * Since: 0.4
+ */
 void
 ags_line_find_port(AgsLine *line)
 {
@@ -421,29 +510,14 @@ ags_line_find_port(AgsLine *line)
   g_list_free(line_member_start);
 }
 
-void
-ags_line_set_channel(AgsLine *line, AgsChannel *channel)
-{
-  g_return_if_fail(AGS_IS_LINE(line));
-
-  g_object_ref((GObject *) line);
-  g_signal_emit(G_OBJECT(line),
-		line_signals[SET_CHANNEL], 0,
-		channel);
-  g_object_unref((GObject *) line);
-}
-
-void
-ags_line_group_changed(AgsLine *line)
-{
-  g_return_if_fail(AGS_IS_LINE(line));
-
-  g_object_ref((GObject *) line);
-  g_signal_emit(G_OBJECT(line),
-		line_signals[GROUP_CHANGED], 0);
-  g_object_unref((GObject *) line);
-}
-
+/**
+ * ags_line_find_next_grouped:
+ * @line: an #AgsLine
+ *
+ * Retrieve next grouped line.
+ *
+ * Since: 0.4
+ */
 GList*
 ags_line_find_next_grouped(GList *line)
 {
@@ -454,6 +528,17 @@ ags_line_find_next_grouped(GList *line)
   return(line);
 }
 
+/**
+ * ags_line_new:
+ * @pad: the parent pad
+ * @channel: the channel to visualize
+ *
+ * Creates an #AgsLine
+ *
+ * Returns: a new #AgsLine
+ *
+ * Since: 0.3
+ */
 AgsLine*
 ags_line_new(GtkWidget *pad, AgsChannel *channel)
 {

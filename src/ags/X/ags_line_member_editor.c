@@ -39,6 +39,18 @@ void ags_line_member_editor_apply(AgsApplicable *applicable);
 void ags_line_member_editor_reset(AgsApplicable *applicable);
 void ags_line_member_editor_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_line_member_editor
+ * @short_description: Edit line member's aspects.
+ * @title: AgsLineMemberEditor
+ * @section_id:
+ * @include: ags/X/ags_line_member_editor.h
+ *
+ * #AgsLineMemberEditor is a composite widget to modify line member. A line member
+ * editor should be packed by a #AgsLineEditor. You may add/remove plugins with this
+ * editor.
+ */
+
 GType
 ags_line_member_editor_get_type(void)
 {
@@ -236,6 +248,15 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   }
 }
 
+/**
+ * ags_line_member_editor_new:
+ *
+ * Creates an #AgsLineMemberEditor
+ *
+ * Returns: a new #AgsLineMemberEditor
+ *
+ * Since: 0.4
+ */
 AgsLineMemberEditor*
 ags_line_member_editor_new()
 {

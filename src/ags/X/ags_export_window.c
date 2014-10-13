@@ -44,6 +44,17 @@ void ags_export_window_disconnect(AgsConnectable *connectable);
 void ags_export_window_show(GtkWidget *widget);
 gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
+/**
+ * SECTION:ags_export_window
+ * @short_description: The export dialog
+ * @title: AgsExportWindow
+ * @section_id:
+ * @include: ags/X/ags_export_window.h
+ *
+ * #AgsExportWindow lets you export to audio files. Currently only
+ * WAV supported.
+ */
+
 enum{
   PROP_0,
   PROP_DEVOUT,
@@ -106,6 +117,13 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
   gobject->finalize = ags_export_window_finalize;
 
   /* properties */
+  /**
+   * AgsExportWindow:devout:
+   *
+   * The assigned #AgsDevout acting as default sink.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("devout\0",
 				   "assigned devout\0",
 				   "The devout it is assigned with\0",
@@ -115,8 +133,15 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 				  PROP_DEVOUT,
 				  param_spec);
 
+  /**
+   * AgsExportWindow:ags-main:
+   *
+   * The assigned #AgsMain to give control of application.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("ags-main\0",
-				   "assigned ags_main\0",
+				   "assigned ags main\0",
 				   "The AgsMain it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);

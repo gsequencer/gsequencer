@@ -40,6 +40,17 @@ void ags_audio_preferences_reset(AgsApplicable *applicable);
 static void ags_audio_preferences_finalize(GObject *gobject);
 void ags_audio_preferences_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_audio_preferences
+ * @short_description: A composite widget to do audio related preferences
+ * @title: AgsAudioPreferences
+ * @section_id: 
+ * @include: ags/X/ags_audio_preferences.h
+ *
+ * #AgsAudioPreferences enables you to make preferences of soundcard, audio channels,
+ * samplerate and buffer size.
+ */
+
 static gpointer ags_audio_preferences_parent_class = NULL;
 
 GType
@@ -382,6 +393,15 @@ ags_audio_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_audio_preferences_parent_class)->show(widget);
 }
 
+/**
+ * ags_audio_preferences_new:
+ *
+ * Creates an #AgsAudioPreferences
+ *
+ * Returns: a new #AgsAudioPreferences
+ *
+ * Since: 0.4
+ */
 AgsAudioPreferences*
 ags_audio_preferences_new()
 {

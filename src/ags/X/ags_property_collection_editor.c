@@ -36,6 +36,17 @@ void ags_property_collection_editor_reset(AgsApplicable *applicable);
 void ags_property_collection_editor_destroy(GtkObject *object);
 void ags_property_collection_editor_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_property_collection_editor
+ * @short_description: Edit propertys in bulk mode.
+ * @title: AgsPropertyCollectionEditor
+ * @section_id:
+ * @include: ags/X/ags_property_collection_editor.h
+ *
+ * #AgsPropertyCollectionEditor is a composite widget to modify propertys in bulk mode. A property collection
+ * editor should be packed by a #AgsMachineEditor.
+ */
+
 AgsConnectableInterface *ags_property_collection_editor_parent_connectable_interface;
 
 GType
@@ -208,6 +219,16 @@ ags_property_collection_editor_show(GtkWidget *widget)
   /* empty */
 }
 
+/**
+ * ags_property_collection_editor_new:
+ * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
+ *
+ * Creates an #AgsPropertyCollectionEditor
+ *
+ * Returns: a new #AgsPropertyCollectionEditor
+ *
+ * Since: 0.3
+ */
 AgsPropertyCollectionEditor*
 ags_property_collection_editor_new(GType child_type,
 				   guint child_parameter_count,

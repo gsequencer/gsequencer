@@ -34,6 +34,16 @@ void ags_server_preferences_disconnect(AgsConnectable *connectable);
 static void ags_server_preferences_finalize(GObject *gobject);
 void ags_server_preferences_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_server_preferences
+ * @short_description: A composite widget to do server related preferences
+ * @title: AgsServerPreferences
+ * @section_id: 
+ * @include: ags/X/ags_server_preferences.h
+ *
+ * #AgsServerPreferences enables you to make server related preferences.
+ */
+
 static gpointer ags_server_preferences_parent_class = NULL;
 
 GType
@@ -232,6 +242,15 @@ ags_server_preferences_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_server_preferences_parent_class)->show(widget);
 }
 
+/**
+ * ags_server_preferences_new:
+ *
+ * Creates an #AgsServerPreferences
+ *
+ * Returns: a new #AgsServerPreferences
+ *
+ * Since: 0.4
+ */
 AgsServerPreferences*
 ags_server_preferences_new()
 {

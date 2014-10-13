@@ -50,6 +50,16 @@ void ags_machine_editor_show(GtkWidget *widget);
 void ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor,
 					 AgsMachine *machine);
 
+/**
+ * SECTION:ags_machine_editor
+ * @short_description: pack pad editors.
+ * @title: AgsMachineEditor
+ * @section_id:
+ * @include: ags/X/ags_machine_editor.h
+ *
+ * #AgsMachineEditor is a composite widget to edit all aspects of #AgsAudio.
+ * It consists of multiple child editors.
+ */
 
 enum{
   SET_MACHINE,
@@ -115,11 +125,20 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
   GObjectClass *gobject;
   GParamSpec *param_spec;
 
+  /* GObjectClass */
   gobject = (GObjectClass *) machine_editor;
 
   gobject->set_property = ags_machine_editor_set_property;
   gobject->get_property = ags_machine_editor_get_property;
 
+  /* properties */
+  /**
+   * AgsMachine:machine:
+   *
+   * The #AgsMachine to edit.
+   * 
+   * Since: 0.3
+   */
   param_spec = g_param_spec_object("machine\0",
 				   "assigned machine\0",
 				   "The machine which this machine editor is assigned with\0",
@@ -129,8 +148,17 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 				  PROP_MACHINE,
 				  param_spec);
 
+  /* AgsMachineEditorClass */
   machine_editor->set_machine = ags_machine_editor_real_set_machine;
 
+  /* signals */
+  /**
+   * AgsMachine::add-default-recalls:
+   * @machine_editor: the #AgsMachineEditor
+   * @machine: the #AgsMachine to set
+   *
+   * The ::set-machine notify about modified machine.
+   */
   machine_editor_signals[SET_MACHINE] =
     g_signal_new("set_machine\0",
 		 G_TYPE_FROM_CLASS (machine_editor),
@@ -387,6 +415,13 @@ ags_machine_editor_show(GtkWidget *widget)
   /* empty */
 }
 
+/**
+ * ags_machine_editor_add_children:
+ *
+ * Add all child editors.
+ *
+ * Since: 0.3
+ */
 void
 ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 {
@@ -457,6 +492,15 @@ ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine
     ags_machine_editor_add_children(machine_editor);
 }
 
+/**
+ * ags_machine_editor_set_machine:
+ * @machine_editor: an #AgsMachineEditor
+ * @machine: the new #AgsMachine
+ *
+ * Is emitted as machine gets modified.
+ *
+ * Since: 0.3
+ */
 void
 ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *machine)
 {
@@ -469,6 +513,16 @@ ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *mac
   g_object_unref((GObject *) machine_editor);
 }
 
+/**
+ * ags_machine_editor_new:
+ * @machine: the assigned machine.
+ *
+ * Creates an #AgsMachineEditor
+ *
+ * Returns: a new #AgsMachineEditor
+ *
+ * Since: 0.3
+ */
 AgsMachineEditor*
 ags_machine_editor_new(AgsMachine *machine)
 {
