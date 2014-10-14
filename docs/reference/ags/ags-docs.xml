@@ -268,10 +268,6 @@
     <xi:include href="xml/ags_machine_callbacks.xml"/>
     <xi:include href="xml/ags_machine_editor.xml"/>
     <xi:include href="xml/ags_machine_editor_callbacks.xml"/>
-    <xi:include href="xml/ags_machine_radio_button.xml"/>
-    <xi:include href="xml/ags_machine_selection.xml"/>
-    <xi:include href="xml/ags_machine_selector.xml"/>
-    <xi:include href="xml/ags_machine_selector_callbacks.xml"/>
     <xi:include href="xml/ags_menu_bar.xml"/>
     <xi:include href="xml/ags_menu_bar_callbacks.xml"/>
     <xi:include href="xml/ags_navigation.xml"/>
@@ -295,12 +291,14 @@
     <xi:include href="xml/ags_server_preferences.xml"/>
     <xi:include href="xml/ags_window.xml"/>
     <xi:include href="xml/ags_window_callbacks.xml"/>
-    <xi:include href="xml/ags_sf2_chooser.xml"/>
-    <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>
 
     <chapter id="editor">
       <title>Editor - Piano roll and its controls</title>
       
+      <xi:include href="xml/ags_machine_radio_button.xml"/>
+      <xi:include href="xml/ags_machine_selection.xml"/>
+      <xi:include href="xml/ags_machine_selector.xml"/>
+      <xi:include href="xml/ags_machine_selector_callbacks.xml"/>
       <xi:include href="xml/ags_meter.xml"/>
       <xi:include href="xml/ags_meter_callbacks.xml"/>
       <xi:include href="xml/ags_note_edit.xml"/>
@@ -310,6 +308,8 @@
       <xi:include href="xml/ags_toolbar.xml"/>
       <xi:include href="xml/ags_toolbar_callbacks.xml"/>
       <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
+      <xi:include href="xml/ags_sf2_chooser.xml"/>
+      <xi:include href="xml/ags_sf2_chooser_callbacks.xml"/>
     </chapter>
 
     <chapter id="engines">
