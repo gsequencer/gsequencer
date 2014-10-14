@@ -37,6 +37,16 @@ void ags_mixer_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_mixer_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
 
+/**
+ * SECTION:ags_mixer_input_pad
+ * @short_description: mixer input pad
+ * @title: AgsMixerInputPad
+ * @section_id:
+ * @include: ags/X/machine/ags_mixer_input_pad.h
+ *
+ * The #AgsMixerInputPad is a composite widget to act as mixer input pad.
+ */
+
 static gpointer ags_mixer_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_mixer_input_pad_parent_connectable_interface;
 
@@ -150,6 +160,16 @@ ags_mixer_input_pad_resize_lines(AgsPad *pad, GType line_type,
   /* empty */
 }
 
+/**
+ * ags_mixer_input_pad_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsMixerInputPad
+ *
+ * Returns: a new #AgsMixerInputPad
+ *
+ * Since: 0.4
+ */
 AgsMixerInputPad*
 ags_mixer_input_pad_new(AgsChannel *channel)
 {

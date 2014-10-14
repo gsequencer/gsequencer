@@ -94,6 +94,16 @@ void ags_matrix_set_pads(AgsAudio *audio, GType type,
 			 guint pads, guint pads_old,
 			 gpointer data);
 
+/**
+ * SECTION:ags_matrix
+ * @short_description: matrix sequencer
+ * @title: AgsMatrix
+ * @section_id:
+ * @include: ags/X/machine/ags_matrix.h
+ *
+ * The #AgsMatrix is a composite widget to act as matrix sequencer.
+ */
+
 static gpointer ags_matrix_parent_class = NULL;
 
 static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
@@ -1112,6 +1122,16 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);  
 }
 
+/**
+ * ags_matrix_new:
+ * @devout: the assigned devout.
+ *
+ * Creates an #AgsMatrix
+ *
+ * Returns: a new #AgsMatrix
+ *
+ * Since: 0.3
+ */
 AgsMatrix*
 ags_matrix_new(GObject *devout)
 {

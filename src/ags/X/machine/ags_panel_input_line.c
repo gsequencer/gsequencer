@@ -52,6 +52,16 @@ void ags_panel_input_line_show(GtkWidget *line);
 void ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_panel_input_line_group_changed(AgsLine *line);
 
+/**
+ * SECTION:ags_panel_input_line
+ * @short_description: panel input line
+ * @title: AgsPanelInputLine
+ * @section_id:
+ * @include: ags/X/machine/ags_panel_input_line.h
+ *
+ * The #AgsPanelInputLine is a composite widget to act as panel input line.
+ */
+
 static gpointer ags_panel_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_input_line_parent_connectable_interface;
 
@@ -264,6 +274,16 @@ ags_panel_input_line_map_recall(AgsPanelInputLine *panel_input_line,
   }
 }
 
+/**
+ * ags_panel_input_line_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsPanelInputLine
+ *
+ * Returns: a new #AgsPanelInputLine
+ *
+ * Since: 0.4
+ */
 AgsPanelInputLine*
 ags_panel_input_line_new(AgsChannel *channel)
 {

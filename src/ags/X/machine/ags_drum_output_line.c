@@ -44,6 +44,16 @@ void ags_drum_output_line_disconnect(AgsConnectable *connectable);
 
 void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
 
+/**
+ * SECTION:ags_drum_output_line
+ * @short_description: drum sequencer output line
+ * @title: AgsDrumOutputLine
+ * @section_id:
+ * @include: ags/X/machine/ags_drum_output_line.h
+ *
+ * The #AgsDrumOutputLine is a composite widget to act as drum sequencer output line.
+ */
+
 static gpointer ags_drum_output_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_output_line_parent_connectable_interface;
 
@@ -234,6 +244,16 @@ ags_drum_output_line_add_default_recall(AgsDrumOutputLine *drum_output_line)
 			    0);
 }
 
+/**
+ * ags_drum_output_line_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsDrumOutputLine
+ *
+ * Returns: a new #AgsDrumOutputLine
+ *
+ * Since: 0.4
+ */
 AgsDrumOutputLine*
 ags_drum_output_line_new(AgsChannel *channel)
 {

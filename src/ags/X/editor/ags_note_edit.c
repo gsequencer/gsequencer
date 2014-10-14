@@ -33,6 +33,16 @@ void ags_note_edit_disconnect(AgsConnectable *connectable);
 
 void ags_note_edit_paint(AgsNoteEdit *note_edit);
 
+/**
+ * SECTION:ags_note_edit
+ * @short_description: edit notes
+ * @title: AgsNoteEdit
+ * @section_id:
+ * @include: ags/X/editor/ags_note_edit.h
+ *
+ * The #AgsNoteEdit lets you edit notes.
+ */
+
 GtkStyle *note_edit_style;
 
 GType
@@ -777,6 +787,13 @@ ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
   cairo_fill(cr);
 }
 
+/**
+ * ags_note_edit_new:
+ *
+ * Create a new #AgsNoteEdit.
+ *
+ * Since: 0.4
+ */
 AgsNoteEdit*
 ags_note_edit_new()
 {

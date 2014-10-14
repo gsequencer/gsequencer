@@ -56,6 +56,16 @@ void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
 
+/**
+ * SECTION:ags_drum_input_pad
+ * @short_description: drum sequencer input pad
+ * @title: AgsDrumInputPad
+ * @section_id:
+ * @include: ags/X/machine/ags_drum_input_pad.h
+ *
+ * The #AgsDrumInputPad is a composite widget to act as drum sequencer input pad.
+ */
+
 static gpointer ags_drum_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_pad_parent_connectable_interface;
 
@@ -343,7 +353,17 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   return(node);
 }
-    
+
+/**
+ * ags_drum_input_pad_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsDrumInputPad
+ *
+ * Returns: a new #AgsDrumInputPad
+ *
+ * Since: 0.4
+ */
 AgsDrumInputPad*
 ags_drum_input_pad_new(AgsChannel *channel)
 {

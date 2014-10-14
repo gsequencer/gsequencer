@@ -61,6 +61,16 @@ void ags_panel_set_pads(AgsAudio *audio, GType type,
 			guint pads, guint pads_old,
 			gpointer data);
 
+/**
+ * SECTION:ags_panel
+ * @short_description: panel
+ * @title: AgsPanel
+ * @section_id:
+ * @include: ags/X/machine/ags_panel.h
+ *
+ * The #AgsPanel is a composite widget to act as panel.
+ */
+
 static gpointer ags_panel_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_parent_connectable_interface;
 
@@ -340,6 +350,16 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
   }
 }
 
+/**
+ * ags_panel_new:
+ * @devout: the assigned devout.
+ *
+ * Creates an #AgsPanel
+ *
+ * Returns: a new #AgsPanel
+ *
+ * Since: 0.3
+ */
 AgsPanel*
 ags_panel_new(GObject *devout)
 {

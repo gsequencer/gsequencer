@@ -93,6 +93,16 @@ void ags_drum_set_pads(AgsAudio *audio, GType type,
 		       guint pads, guint pads_old,
 		       gpointer data);
 
+/**
+ * SECTION:ags_drum
+ * @short_description: drum sequencer
+ * @title: AgsDrum
+ * @section_id:
+ * @include: ags/X/machine/ags_drum.h
+ *
+ * The #AgsDrum is a composite widget to act as drum sequencer.
+ */
+
 static gpointer ags_drum_parent_class = NULL;
 
 static AgsConnectableInterface *ags_drum_parent_connectable_interface;
@@ -1093,6 +1103,16 @@ ags_drum_set_pattern(AgsDrum *drum)
   drum->flags &= (~AGS_DRUM_BLOCK_PATTERN);
 }
 
+/**
+ * ags_drum_new:
+ * @devout: the assigned devout.
+ *
+ * Creates an #AgsDrum
+ *
+ * Returns: a new #AgsDrum
+ *
+ * Since: 0.3
+ */
 AgsDrum*
 ags_drum_new(GObject *devout)
 {

@@ -33,6 +33,16 @@ void ags_meter_disconnect(AgsConnectable *connectable);
 void ags_meter_destroy(GtkObject *object);
 void ags_meter_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_meter
+ * @short_description: piano widget
+ * @title: AgsMeter
+ * @section_id:
+ * @include: ags/X/editor/ags_meter.h
+ *
+ * The #AgsMeter draws you a piano.
+ */
+
 GtkStyle *meter_style;
 
 GType
@@ -268,6 +278,13 @@ ags_meter_paint(AgsMeter *meter)
   }
 }
 
+/**
+ * ags_meter_new:
+ *
+ * Create a new #AgsMeter.
+ *
+ * Since: 0.4
+ */
 AgsMeter*
 ags_meter_new()
 {

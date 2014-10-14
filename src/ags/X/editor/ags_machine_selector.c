@@ -28,6 +28,16 @@ void ags_machine_selector_connect(AgsConnectable *connectable);
 void ags_machine_selector_disconnect(AgsConnectable *connectable);
 void ags_machine_selector_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_machine_selector
+ * @short_description: machine radio buttons
+ * @title: AgsMachineSelector
+ * @section_id:
+ * @include: ags/X/editor/ags_machine_selector.h
+ *
+ * The #AgsMachineSelector enables you make choice of an #AgsMachine.
+ */
+
 enum{
   CHANGED,
   LAST_SIGNAL,
@@ -148,6 +158,13 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_machine_selector_changed:
+ *
+ * Emitted as #AgsMachineSelector modified.
+ *
+ * Since: 0.4
+ */
 void
 ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine)
 {
@@ -160,6 +177,13 @@ ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *m
   g_object_unref((GObject *) machine_selector);
 }
 
+/**
+ * ags_machine_selector_new:
+ *
+ * Create a new #AgsMachineSelector.
+ *
+ * Since: 0.4
+ */
 AgsMachineSelector*
 ags_machine_selector_new()
 {
@@ -171,6 +195,13 @@ ags_machine_selector_new()
   return(machine_selector);
 }
 
+/**
+ * ags_machine_selector_popup_new:
+ *
+ * Create a new #AgsMachineSelectorPopup.
+ *
+ * Since: 0.4
+ */
 GtkMenu*
 ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 {

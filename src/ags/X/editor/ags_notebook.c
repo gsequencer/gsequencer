@@ -33,6 +33,16 @@ void ags_notebook_paint(AgsNotebook *notebook);
 
 AgsNotebookTab* ags_notebook_tab_alloc();
 
+/**
+ * SECTION:ags_notebook
+ * @short_description: select channel
+ * @title: AgsNotebook
+ * @section_id:
+ * @include: ags/X/editor/ags_notebook.h
+ *
+ * The #AgsNotebook lets select/deselect channels to edit.
+ */
+
 GtkStyle *notebook_style;
 
 GType
@@ -266,6 +276,13 @@ ags_notebook_remove_child(AgsNotebook *notebook,
   gtk_widget_destroy(child);
 }
 
+/**
+ * ags_notebook_new:
+ *
+ * Create a new #AgsNotebook.
+ *
+ * Since: 0.4
+ */
 AgsNotebook*
 ags_notebook_new()
 {

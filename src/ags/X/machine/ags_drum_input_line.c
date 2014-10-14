@@ -71,6 +71,16 @@ void ags_drum_input_line_disconnect(AgsConnectable *connectable);
 void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_drum_input_line_group_changed(AgsLine *line);
 
+/**
+ * SECTION:ags_drum_input_line
+ * @short_description: drum sequencer input line
+ * @title: AgsDrumInputLine
+ * @section_id:
+ * @include: ags/X/machine/ags_drum_input_line.h
+ *
+ * The #AgsDrumInputLine is a composite widget to act as drum sequencer input line.
+ */
+
 static gpointer ags_drum_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_input_line_parent_connectable_interface;
 
@@ -502,6 +512,16 @@ ags_drum_input_line_map_recall(AgsDrumInputLine *drum_input_line,
 	       NULL);
 }
 
+/**
+ * ags_drum_input_line_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsDrumInputLine
+ *
+ * Returns: a new #AgsDrumInputLine
+ *
+ * Since: 0.4
+ */
 AgsDrumInputLine*
 ags_drum_input_line_new(AgsChannel *channel)
 {

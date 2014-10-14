@@ -58,6 +58,17 @@ void ags_audio_loop_play_recall(AgsAudioLoop *audio_loop);
 void ags_audio_loop_play_channel(AgsAudioLoop *audio_loop);
 void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
 
+/**
+ * SECTION:ags_audio_loop
+ * @short_description: audio loop
+ * @title: AgsAudioLoop
+ * @section_id:
+ * @include: ags/thread/ags_audio_loop.h
+ *
+ * The #AgsAudioLoop is suitable as #AgsMainLoop and does
+ * audio processing.
+ */
+
 enum{
   PROP_0,
   PROP_TASK_THREAD,
@@ -137,6 +148,13 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   gobject->finalize = ags_audio_loop_finalize;
 
   /* properties */
+  /**
+   * AgsAudioLoop:task-thread:
+   *
+   * The assigned #AgsTaskThread.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("task-thread\0",
 				   "task thread to run\0",
 				   "The task thread to run\0",
@@ -146,6 +164,13 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  PROP_TASK_THREAD,
 				  param_spec);
 
+  /**
+   * AgsAudioLoop:devout-thread:
+   *
+   * The assigned #AgsDevoutThread.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("devout-thread\0",
 				   "devout thread to run\0",
 				   "The devout thread to run\0",
@@ -155,6 +180,13 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  PROP_DEVOUT_THREAD,
 				  param_spec);
 
+  /**
+   * AgsAudioLoop:export-thread:
+   *
+   * The assigned #AgsExportThread.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("export-thread\0",
 				   "export thread to run\0",
 				   "The export thread to run\0",
@@ -164,6 +196,13 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  PROP_EXPORT_THREAD,
 				  param_spec);
 
+  /**
+   * AgsAudioLoop:gui-thread:
+   *
+   * The assigned #AgsGuiThread.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("gui-thread\0",
 				   "gui thread to run\0",
 				   "The gui thread to run\0",
@@ -173,6 +212,13 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  PROP_GUI_THREAD,
 				  param_spec);
 
+  /**
+   * AgsAudioLoop:play-recall:
+   *
+   * An #AgsRecall to add for playback.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("play_recall\0",
 				   "recall to run\0",
 				   "A recall to run\0",
@@ -182,6 +228,13 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  PROP_PLAY_RECALL,
 				  param_spec);
 
+  /**
+   * AgsAudioLoop:play-channel:
+   *
+   * An #AgsChannel to add for playback.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("play_channel\0",
 				   "channel to run\0",
 				   "A channel to run\0",
@@ -191,6 +244,13 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 				  PROP_PLAY_CHANNEL,
 				  param_spec);
 
+  /**
+   * AgsAudioLoop:play-audio:
+   *
+   * An #AgsAudio to add for playback.
+   * 
+   * Since: 0.4
+   */
   param_spec = g_param_spec_object("play_audio\0",
 				   "audio to run\0",
 				   "A audio to run\0",
@@ -664,10 +724,12 @@ ags_audio_loop_run(AgsThread *thread)
 
 /**
  * ags_audio_loop_play_recall:
- * @audio_loop an #AgsAudioLoop
+ * @audio_loop: an #AgsAudioLoop
  *
  * Runs all recalls assigned with @audio_loop. You may want to use
  * #AgsAppendRecall task to add an #AgsRecall.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
@@ -730,11 +792,13 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
 
 /**
  * ags_audio_loop_play_channel:
- * @audio_loop an #AgsAudioLoop
+ * @audio_loop: an #AgsAudioLoop
  *
  * Runs all recalls descending recursively and ascending till next 
  * #AgsRecycling around prior added #AgsChannel with #AgsAppendChannel
  * task.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
@@ -817,10 +881,12 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 
 /**
  * ags_audio_loop_play_audio:
- * @audio_loop an #AgsAudioLoop
+ * @audio_loop: an #AgsAudioLoop
  *
  * Like ags_audio_loop_play_channel() except that it runs all channels within
  * #AgsAudio.
+ *
+ * Since: 0.4
  */
 void
 ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
@@ -935,6 +1001,15 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
   }
 }
 
+/**
+ * ags_audio_loop_add_audio:
+ * @audio_loop: the #AgsAudioLoop
+ * @audio: an #AgsAudio
+ *
+ * Add audio for playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
@@ -945,6 +1020,15 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
   audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
 }
 
+/**
+ * ags_audio_loop_remove_audio:
+ * @audio_loop: the #AgsAudioLoop
+ * @audio: an #AgsAudio
+ *
+ * Remove audio of playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
@@ -955,6 +1039,15 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
   g_object_unref(audio);
 }
 
+/**
+ * ags_audio_loop_add_channel:
+ * @audio_loop: the #AgsAudioLoop
+ * @channel: an #AgsChannel
+ *
+ * Add audio for playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
@@ -965,6 +1058,15 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
   audio_loop->play_channel_ref = audio_loop->play_channel_ref + 1;
 }
 
+/**
+ * ags_audio_loop_remove_channel:
+ * @audio_loop: the #AgsAudioLoop
+ * @channel: an #AgsChannel
+ *
+ * Remove audio of playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
@@ -975,18 +1077,45 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
   g_object_unref(channel);
 }
 
+/**
+ * ags_audio_loop_add_recall:
+ * @audio_loop: the #AgsAudioLoop
+ * @recall: an #AgsRecall
+ *
+ * Add recall for playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *recall)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_audio_loop_remove_recall:
+ * @audio_loop: the #AgsAudioLoop
+ * @recall: an #AgsRecall
+ *
+ * Remove recall of playback.
+ *
+ * Since: 0.4
+ */
 void
 ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *recall)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_audio_loop_new:
+ * @devout: the #AgsDevout
+ * @ags_main: the #AgsMain
+ *
+ * Create a new #AgsAudioLoop.
+ *
+ * Since: 0.4
+ */
 AgsAudioLoop*
 ags_audio_loop_new(GObject *devout, GObject *ags_main)
 {

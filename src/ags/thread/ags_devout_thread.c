@@ -35,6 +35,16 @@ void ags_devout_thread_start(AgsThread *thread);
 void ags_devout_thread_run(AgsThread *thread);
 void ags_devout_thread_stop(AgsThread *thread);
 
+/**
+ * SECTION:ags_devout_thread
+ * @short_description: devout thread
+ * @title: AgsDevoutThread
+ * @section_id:
+ * @include: ags/thread/ags_devout_thread.h
+ *
+ * The #AgsDevoutThread acts as audio output thread to soundcard.
+ */
+
 static gpointer ags_devout_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_devout_thread_parent_connectable_interface;
 
@@ -275,6 +285,14 @@ ags_devout_thread_stop(AgsThread *thread)
   }
 }
 
+/**
+ * ags_devout_thread_new:
+ * @devout: the #AgsDevout
+ *
+ * Create a new #AgsDevoutThread.
+ *
+ * Since: 0.4
+ */
 AgsDevoutThread*
 ags_devout_thread_new(GObject *devout)
 {

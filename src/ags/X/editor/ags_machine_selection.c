@@ -26,6 +26,16 @@ void ags_machine_selection_init(AgsMachineSelection *machine_selection);
 void ags_machine_selection_connect(AgsConnectable *connectable);
 void ags_machine_selection_disconnect(AgsConnectable *connectable);
 
+/**
+ * SECTION:ags_machine_selection
+ * @short_description: machine radio buttons
+ * @title: AgsMachineSelection
+ * @section_id:
+ * @include: ags/X/editor/ags_machine_selection.h
+ *
+ * The #AgsMachineSelection enables you make choice of an #AgsMachine.
+ */
+
 static gpointer ags_machine_selection_parent_class = NULL;
 
 GType
@@ -109,6 +119,14 @@ ags_machine_selection_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+/**
+ * ags_machine_selection_run:
+ * @machine_selection: the #AgsMachineSelection
+ *
+ * Run the dialog.
+ *
+ * Returns: the #AgsMachine
+ */
 AgsMachine*
 ags_machine_selection_run(AgsMachineSelection *machine_selection)
 {
@@ -178,6 +196,13 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   return(machine);
 }
 
+/**
+ * ags_machine_selection_new:
+ *
+ * Create a new #AgsMachineSelection.
+ *
+ * Since: 0.4
+ */
 AgsMachineSelection*
 ags_machine_selection_new(AgsWindow *window)
 {

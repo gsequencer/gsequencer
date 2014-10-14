@@ -24,7 +24,7 @@ void ags_applicable_base_init(AgsApplicableInterface *interface);
 
 /**
  * SECTION:ags_applicable
- * @short_description: 
+ * @short_description: unique access to dialogs
  * @title: AgsApplicable
  * @section_id:
  * @include: ags/object/ags_applicable.h

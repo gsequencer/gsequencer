@@ -42,6 +42,16 @@ void ags_toolbar_connect(AgsConnectable *connectable);
 void ags_toolbar_disconnect(AgsConnectable *connectable);
 void ags_toolbar_show(GtkWidget *widget);
 
+/**
+ * SECTION:ags_toolbar
+ * @short_description: edit tool
+ * @title: AgsToolbar
+ * @section_id:
+ * @include: ags/X/editor/ags_note_edit.h
+ *
+ * The #AgsToolbar lets you choose edit tool.
+ */
+
 GType
 ags_toolbar_get_type(void)
 {
@@ -233,6 +243,13 @@ ags_toolbar_show(GtkWidget *widget)
   */
 }
 
+/**
+ * ags_toolbar_new:
+ *
+ * Create a new #AgsToolbar.
+ *
+ * Since: 0.3
+ */
 AgsToolbar*
 ags_toolbar_new()
 {

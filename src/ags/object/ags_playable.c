@@ -26,7 +26,7 @@ void ags_playable_base_init(AgsPlayableInterface *interface);
 
 /**
  * SECTION:ags_playable
- * @short_description: 
+ * @short_description: read/write audio
  * @title: AgsPlayable
  * @section_id:
  * @include: ags/object/ags_playable.h

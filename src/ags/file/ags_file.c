@@ -72,6 +72,17 @@ void ags_file_real_read(AgsFile *file);
 void ags_file_real_read_resolve(AgsFile *file);
 void ags_file_real_read_start(AgsFile *file);
 
+/**
+ * SECTION:ags_file
+ * @short_description: read/write XML file
+ * @title: AgsFile
+ * @section_id:
+ * @include: ags/file/ags_file.h
+ *
+ * The #AgsFile is an object to read or write files using XML. It
+ * is the persisting layer of Advanced Gtk+ Sequencer.
+ */
+
 enum{
   PROP_0,
   PROP_FILENAME,
@@ -1168,6 +1179,15 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 			AGS_MAIN(ags_main)->window);
 }
 
+/**
+ * ags_file_new:
+ *
+ * Creates an #AgsFile
+ *
+ * Returns: a new #AgsFile
+ *
+ * Since: 0.3
+ */
 AgsFile*
 ags_file_new()
 {

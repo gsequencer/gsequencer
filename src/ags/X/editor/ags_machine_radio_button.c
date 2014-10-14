@@ -37,6 +37,16 @@ void ags_machine_radio_button_connect(AgsConnectable *connectable);
 void ags_machine_radio_button_disconnect(AgsConnectable *connectable);
 void ags_machine_radio_button_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_machine_radio_button
+ * @short_description: machine radio buttons
+ * @title: AgsMachineRadioButton
+ * @section_id:
+ * @include: ags/X/editor/ags_machine_radio_button.h
+ *
+ * The #AgsMachineRadioButton enables you make choice of an #AgsMachine.
+ */
+
 enum{
   PROP_0,
   PROP_MACHINE,
@@ -214,6 +224,13 @@ ags_machine_radio_button_finalize(GObject *gobject)
   }
 }
 
+/**
+ * ags_machine_radio_button_new:
+ *
+ * Create a new #AgsMachineRadioButton.
+ *
+ * Since: 0.4
+ */
 AgsMachineRadioButton*
 ags_machine_radio_button_new()
 {

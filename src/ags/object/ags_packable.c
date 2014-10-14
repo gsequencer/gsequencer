@@ -22,7 +22,7 @@ void ags_packable_base_init(AgsPackableInterface *interface);
 
 /**
  * SECTION:ags_packable
- * @short_description: 
+ * @short_description: packing recalls
  * @title: AgsPackable
  * @section_id:
  * @include: ags/object/ags_packable.h

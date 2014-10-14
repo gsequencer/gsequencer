@@ -24,7 +24,7 @@ void ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface
 
 /**
  * SECTION:ags_dynamic_connectable
- * @short_description: 
+ * @short_description: unique access to recalls
  * @title: AgsDynamicConnectable
  * @section_id:
  * @include: ags/object/ags_dynamic_connectable.h

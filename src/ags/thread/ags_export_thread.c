@@ -41,6 +41,16 @@ void ags_export_thread_start(AgsThread *thread);
 void ags_export_thread_run(AgsThread *thread);
 void ags_export_thread_stop(AgsThread *thread);
 
+/**
+ * SECTION:ags_export_thread
+ * @short_description: export thread
+ * @title: AgsExportThread
+ * @section_id:
+ * @include: ags/thread/ags_export_thread.h
+ *
+ * The #AgsExportThread acts as audio output thread to file.
+ */
+
 enum{
   PROP_0,
   PROP_AUDIO_FILE,
@@ -285,6 +295,15 @@ ags_export_thread_stop(AgsThread *thread)
   ags_audio_file_close(export_thread->audio_file);
 }
 
+/**
+ * ags_export_thread_new:
+ * @export: the #AgsExport
+ * @audio_file: the output file
+ *
+ * Create a new #AgsExportThread.
+ *
+ * Since: 0.4
+ */
 AgsExportThread*
 ags_export_thread_new(GObject *devout, AgsAudioFile *audio_file)
 {

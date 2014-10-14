@@ -39,6 +39,16 @@ void ags_panel_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_panel_input_pad_resize_lines(AgsPad *pad, GType line_type,
 				     guint audio_channels, guint audio_channels_old);
 
+/**
+ * SECTION:ags_panel_input_pad
+ * @short_description: panel input pad
+ * @title: AgsPanelInputPad
+ * @section_id:
+ * @include: ags/X/machine/ags_panel_input_pad.h
+ *
+ * The #AgsPanelInputPad is a composite widget to act as panel input pad.
+ */
+
 static gpointer ags_panel_input_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_input_pad_parent_connectable_interface;
 
@@ -187,6 +197,16 @@ ags_panel_input_pad_resize_lines(AgsPad *pad, GType line_type,
   /* empty */
 }
 
+/**
+ * ags_panel_input_pad_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsPanelInputPad
+ *
+ * Returns: a new #AgsPanelInputPad
+ *
+ * Since: 0.4
+ */
 AgsPanelInputPad*
 ags_panel_input_pad_new(AgsChannel *channel)
 {

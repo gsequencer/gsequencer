@@ -91,6 +91,16 @@ void ags_synth_set_pads(AgsAudio *audio, GType type,
 
 void ags_synth_update(AgsSynth *synth);
 
+/**
+ * SECTION:ags_synth
+ * @short_description: synth
+ * @title: AgsSynth
+ * @section_id:
+ * @include: ags/X/machine/ags_synth.h
+ *
+ * The #AgsSynth is a composite widget to act as synth.
+ */
+
 static gpointer ags_synth_parent_class = NULL;
 
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;
@@ -596,6 +606,16 @@ ags_synth_update(AgsSynth *synth)
   g_list_free(input_pad_start);
 }
 
+/**
+ * ags_synth_new:
+ * @devout: the assigned devout.
+ *
+ * Creates an #AgsSynth
+ *
+ * Returns: a new #AgsSynth
+ *
+ * Since: 0.3
+ */
 AgsSynth*
 ags_synth_new(GObject *devout)
 {

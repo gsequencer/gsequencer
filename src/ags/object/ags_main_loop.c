@@ -24,7 +24,7 @@ void ags_main_loop_base_init(AgsMainLoopInterface *interface);
 
 /**
  * SECTION:ags_main_loop
- * @short_description: 
+ * @short_description: toplevel threads
  * @title: AgsMainLoop
  * @section_id:
  * @include: ags/object/ags_main_loop.h

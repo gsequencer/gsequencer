@@ -36,6 +36,16 @@ void ags_drum_output_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
 
+/**
+ * SECTION:ags_drum_output_pad
+ * @short_description: drum sequencer output pad
+ * @title: AgsDrumOutputPad
+ * @section_id:
+ * @include: ags/X/machine/ags_drum_output_pad.h
+ *
+ * The #AgsDrumOutputPad is a composite widget to act as drum sequencer output pad.
+ */
+
 static gpointer ags_drum_output_pad_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_output_pad_parent_connectable_interface;
 
@@ -153,6 +163,16 @@ ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
   /* empty */
 }
 
+/**
+ * ags_drum_output_pad_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsDrumOutputPad
+ *
+ * Returns: a new #AgsDrumOutputPad
+ *
+ * Since: 0.4
+ */
 AgsDrumOutputPad*
 ags_drum_output_pad_new(AgsChannel *channel)
 {

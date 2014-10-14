@@ -41,6 +41,16 @@ void ags_mixer_input_line_disconnect(AgsConnectable *connectable);
 
 void ags_mixer_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 
+/**
+ * SECTION:ags_mixer_input_line
+ * @short_description: mixer input line
+ * @title: AgsMixerInputLine
+ * @section_id:
+ * @include: ags/X/machine/ags_mixer_input_line.h
+ *
+ * The #AgsMixerInputLine is a composite widget to act as mixer input line.
+ */
+
 static gpointer ags_mixer_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_mixer_input_line_parent_connectable_interface;
 
@@ -211,6 +221,16 @@ ags_mixer_input_line_map_recall(AgsMixerInputLine *mixer_input_line)
 			    0);
 }
 
+/**
+ * ags_mixer_input_line_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsMixerInputLine
+ *
+ * Returns: a new #AgsMixerInputLine
+ *
+ * Since: 0.4
+ */
 AgsMixerInputLine*
 ags_mixer_input_line_new(AgsChannel *channel)
 {

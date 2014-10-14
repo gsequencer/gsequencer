@@ -62,6 +62,16 @@ xmlNode* ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *p
 
 void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 
+/**
+ * SECTION:ags_synth_input_line
+ * @short_description: synth input line
+ * @title: AgsSynthInputLine
+ * @section_id:
+ * @include: ags/X/machine/ags_synth_input_line.h
+ *
+ * The #AgsSynthInputLine is a composite widget to act as synth input line.
+ */
+
 static gpointer ags_synth_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_synth_input_line_parent_connectable_interface;
 
@@ -335,6 +345,16 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 }
 
+/**
+ * ags_synth_input_line_new:
+ * @channel: the assigned channel
+ *
+ * Creates an #AgsSynthInputLine
+ *
+ * Returns: a new #AgsSynthInputLine
+ *
+ * Since: 0.4
+ */
 AgsSynthInputLine*
 ags_synth_input_line_new(AgsChannel *channel)
 {

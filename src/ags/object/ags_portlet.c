@@ -22,6 +22,17 @@
 
 void ags_portlet_base_init(AgsPortletInterface *interface);
 
+/**
+ * SECTION:ags_portlet
+ * @short_description: interfacing portlets
+ * @title: AgsPortlet
+ * @section_id:
+ * @include: ags/object/ags_portlet.h
+ *
+ * The #AgsPortlet interface is intended to use with ports containing #GObject.
+ * Whereas its should implement this interface.
+ */
+
 GType
 ags_portlet_get_type()
 {

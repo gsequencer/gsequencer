@@ -40,6 +40,16 @@ void ags_gui_thread_stop(AgsThread *thread);
 
 void ags_gui_thread_suspend_handler(int sig);
 
+/**
+ * SECTION:ags_gui_thread
+ * @short_description: gui thread
+ * @title: AgsGuiThread
+ * @section_id:
+ * @include: ags/thread/ags_gui_thread.h
+ *
+ * The #AgsGuiThread acts as graphical user interface thread.
+ */
+
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
 
@@ -310,6 +320,13 @@ ags_gui_thread_stop(AgsThread *thread)
   gdk_flush();
 }
 
+/**
+ * ags_gui_thread_new:
+ *
+ * Create a new #AgsGuiThread.
+ *
+ * Since: 0.4
+ */
 AgsGuiThread*
 ags_gui_thread_new()
 {

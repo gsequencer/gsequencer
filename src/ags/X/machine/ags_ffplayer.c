@@ -90,6 +90,16 @@ void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_star
 void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start);
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 
+/**
+ * SECTION:ags_ffplayer
+ * @short_description: ffplayer notation
+ * @title: AgsFFPlayer
+ * @section_id:
+ * @include: ags/X/machine/ags_ffplayer.h
+ *
+ * The #AgsFfplayer is a composite widget to act as soundfont2 notation player.
+ */
+
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
@@ -1060,6 +1070,16 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
   }
 }
 
+/**
+ * ags_ffplayer_new:
+ * @devout: the assigned devout.
+ *
+ * Creates an #AgsFFPlayer
+ *
+ * Returns: a new #AgsFFPlayer
+ *
+ * Since: 0.3
+ */
 AgsFFPlayer*
 ags_ffplayer_new(GObject *devout)
 {

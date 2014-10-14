@@ -43,6 +43,17 @@ void* ags_thread_pool_creation_thread(void *ptr);
 
 void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
 
+/**
+ * SECTION:ags_thread
+ * @short_description: thread pool
+ * @title: AgsThreadPool
+ * @section_id:
+ * @include: ags/thread/ags_thread.h
+ *
+ * The #AgsThreadPool acts as preinstantiated threads store.
+ * This can achieve enormeous performance.
+ */
+
 #define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 16
 #define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 1024
 
@@ -354,7 +365,13 @@ ags_thread_pool_creation_thread(void *ptr)
 #endif
   }
 }
-    
+
+/**
+ * ags_thread_pool_pull:
+ * @thread_pool: the #AgsThreadPool
+ *
+ * Pull an #AgsReturnableThread.
+ */    
 AgsThread*
 ags_thread_pool_pull(AgsThreadPool *thread_pool)
 {
@@ -463,6 +480,14 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   }
 }
 
+/**
+ * ags_thread_pool_new:
+ * @thread_pool: the #AgsThreadPool
+ *
+ * Start the thread pool.
+ *
+ * Since: 0.4
+ */
 void
 ags_thread_pool_start(AgsThreadPool *thread_pool)
 {
@@ -474,6 +499,14 @@ ags_thread_pool_start(AgsThreadPool *thread_pool)
   g_object_unref(G_OBJECT(thread_pool));
 }
 
+/**
+ * ags_thread_pool_new:
+ * @parent: the parent #AgsThread of returnable threads
+ *
+ * Create a new #AgsThreadPool.
+ *
+ * Since: 0.4
+ */
 AgsThreadPool*
 ags_thread_pool_new(AgsThread *parent)
 {

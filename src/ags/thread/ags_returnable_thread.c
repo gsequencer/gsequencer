@@ -33,6 +33,17 @@ void ags_returnable_thread_start(AgsThread *thread);
 void ags_returnable_thread_run(AgsThread *thread);
 void ags_returnable_thread_resume(AgsThread *thread);
 
+/**
+ * SECTION:ags_returnable_thread
+ * @short_description: returnable thread
+ * @title: AgsReturnableThread
+ * @section_id:
+ * @include: ags/thread/ags_returnable_thread.h
+ *
+ * The #AgsReturnableThread acts as thread. It should return after a short
+ * while because of limited thread pool.
+ */
+
 enum{
   SAFE_RUN,
   LAST_SIGNAL,
@@ -253,6 +264,15 @@ ags_returnable_thread_resume(AgsThread *thread)
   /* empty */
 }
 
+/**
+ * ags_returnable_thread_connect_safe_run:
+ * @returnable_thread: the thread to connect
+ * @callback: the callback
+ *
+ * Connects @callback to @thread.
+ *
+ * Since: 0.4
+ */
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
 {
@@ -260,6 +280,14 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
 						G_CALLBACK(callback), returnable_thread);
 }
 
+/**
+ * ags_returnable_thread_disconnect_safe_run:
+ * @returnable_thread: the thread to disconnect
+ *
+ * Disconnects @callback to @thread.
+ *
+ * Since: 0.4
+ */
 void
 ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
 {
@@ -267,6 +295,14 @@ ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread
 			      returnable_thread->handler);
 }
 
+/**
+ * ags_returnable_thread_new:
+ * @thread_pool: the #AgsThreadPool
+ *
+ * Create a new #AgsReturnableThread.
+ *
+ * Since: 0.4
+ */
 AgsReturnableThread*
 ags_returnable_thread_new(GObject *thread_pool)
 {

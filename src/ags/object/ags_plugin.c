@@ -24,7 +24,7 @@ void ags_plugin_base_init(AgsPluginInterface *interface);
 
 /**
  * SECTION:ags_plugin
- * @short_description: 
+ * @short_description: interfacing plugins
  * @title: AgsPlugin
  * @section_id:
  * @include: ags/object/ags_plugin.h

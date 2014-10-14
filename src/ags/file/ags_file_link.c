@@ -30,6 +30,16 @@ void ags_file_link_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_file_link_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_file_link
+ * @short_description: link objects read of file.
+ * @title: AgsFileLink
+ * @section_id:
+ * @include: ags/file/ags_file_link.h
+ *
+ * The #AgsFileLink links read objects of file.
+ */
+
 enum{
   PROP_0,
   PROP_FILENAME,
@@ -227,6 +237,15 @@ ags_file_link_finalize(GObject *gobject)
   }
 }
 
+/**
+ * ags_file_link_new:
+ *
+ * Creates an #AgsFileLink
+ *
+ * Returns: a new #AgsFileLink
+ *
+ * Since: 0.4
+ */
 AgsFileLink*
 ags_file_link_new()
 {

@@ -30,6 +30,17 @@ void ags_file_id_ref_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_file_id_ref_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_file_id_ref
+ * @short_description: file id reference
+ * @title: AgsFileIdRef
+ * @section_id:
+ * @include: ags/file/ags_file_id_ref.h
+ *
+ * The #AgsFileIdRef referes a XML node by its ID. It's used
+ * to perform XPath lookup.
+ */
+
 enum{
   RESOLVED,
   LAST_SIGNAL,
@@ -315,6 +326,15 @@ ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
   g_object_unref((GObject *) file_id_ref);
 }
 
+/**
+ * ags_file_id_ref_new:
+ *
+ * Creates an #AgsFileIdRef
+ *
+ * Returns: a new #AgsFileIdRef
+ *
+ * Since: 0.4
+ */
 AgsFileIdRef*
 ags_file_id_ref_new()
 {

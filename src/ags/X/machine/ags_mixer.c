@@ -67,6 +67,16 @@ void ags_mixer_set_pads(AgsAudio *audio, GType type,
 			guint pads, guint pads_old,
 			gpointer data);
 
+/**
+ * SECTION:ags_mixer
+ * @short_description: mixer
+ * @title: AgsMixer
+ * @section_id:
+ * @include: ags/X/machine/ags_mixer.h
+ *
+ * The #AgsMixer is a composite widget to act as mixer.
+ */
+
 static gpointer ags_mixer_parent_class = NULL;
 
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
@@ -434,6 +444,16 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
   }
 }
 
+/**
+ * ags_mixer_new:
+ * @devout: the assigned devout.
+ *
+ * Creates an #AgsMixer
+ *
+ * Returns: a new #AgsMixer
+ *
+ * Since: 0.3
+ */
 AgsMixer*
 ags_mixer_new(GObject *devout)
 {

@@ -29,6 +29,16 @@ void ags_file_launch_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec);
 
+/**
+ * SECTION:ags_file_launch
+ * @short_description: launch objects read of file.
+ * @title: AgsFileLaunch
+ * @section_id:
+ * @include: ags/file/ags_file_launch.h
+ *
+ * The #AgsFileLaunch launches read objects of file.
+ */
+
 enum{
   START,
   LAST_SIGNAL,
@@ -170,6 +180,15 @@ ags_file_launch_start(AgsFileLaunch *file_launch)
   g_object_unref((GObject *) file_launch);
 }
 
+/**
+ * ags_file_launch_new:
+ *
+ * Creates an #AgsFileLaunch
+ *
+ * Returns: a new #AgsFileLaunch
+ *
+ * Since: 0.4
+ */
 AgsFileLaunch*
 ags_file_launch_new()
 {
