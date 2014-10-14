@@ -56,6 +56,16 @@ sf_vio_read ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
 sf_vio_write ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
 sf_vio_tell ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data);
 
+/**
+ * SECTION:ags_sndfile
+ * @short_description: Libsndfile wrapper
+ * @title: AgsSndfile
+ * @section_id:
+ * @include: ags/audio/file/ags_sndfile.h
+ *
+ * #AgsSndfile is the base object to ineract with libsndfile.
+ */
+
 static gpointer ags_sndfile_parent_class = NULL;
 static AgsConnectableInterface *ags_sndfile_parent_connectable_interface;
 static AgsPlayableInterface *ags_sndfile_parent_playable_interface;
@@ -457,6 +467,15 @@ ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
   return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);
 }
 
+/**
+ * ags_sndfile_new:
+ *
+ * Creates an #AgsSndfile.
+ *
+ * Returns: an empty #AgsSndfile.
+ *
+ * Since: 0.3
+ */
 AgsSndfile*
 ags_sndfile_new()
 {

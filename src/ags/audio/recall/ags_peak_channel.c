@@ -42,6 +42,16 @@ void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_peak_channel
+ * @short_description: peaks channel
+ * @title: AgsPeakChannel
+ * @section_id:
+ * @include: ags/audio/recall/ags_peak_channel.h
+ *
+ * The #AgsPeakChannel class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_PEAK,
@@ -358,6 +368,16 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 		      &value);
 }
 
+/**
+ * ags_peak_channel_new:
+ * @source: the #AgsChannel as source
+ *
+ * Creates an #AgsPeakChannel
+ *
+ * Returns: a new #AgsPeakChannel
+ *
+ * Since: 0.4
+ */
 AgsPeakChannel*
 ags_peak_channel_new(AgsChannel *source)
 {

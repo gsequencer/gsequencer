@@ -22,6 +22,17 @@
 
 void ags_main_loop_base_init(AgsMainLoopInterface *interface);
 
+/**
+ * SECTION:ags_main_loop
+ * @short_description: 
+ * @title: AgsMainLoop
+ * @section_id:
+ * @include: ags/object/ags_main_loop.h
+ *
+ * The #AgsMainLoop interface gives you a unique access to toplevel
+ * threads.
+ */
+
 GType
 ags_main_loop_get_type()
 {
@@ -70,6 +81,13 @@ ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
   main_loop_interface->get_async_queue(main_loop);
 }
 
+/**
+ * ags_main_loop_set_tic:
+ * @main_loop: the #AgsMainLoop
+ * @tic: tic
+ *
+ * Sets tic to @tic. 
+ */
 void
 ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
 {
@@ -81,6 +99,14 @@ ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
   main_loop_interface->set_tic(main_loop, tic);
 }
 
+/**
+ * ags_main_loop_get_tic:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Retrieve tic.
+ *
+ * Returns: tic
+ */
 guint
 ags_main_loop_get_tic(AgsMainLoop *main_loop)
 {
@@ -92,6 +118,13 @@ ags_main_loop_get_tic(AgsMainLoop *main_loop)
   main_loop_interface->get_tic(main_loop);
 }
 
+/**
+ * ags_main_loop_set_last_sync:
+ * @main_loop: the #AgsMainLoop
+ * @last_sync: last sync
+ *
+ * Sets last sync to @last_sync. 
+ */
 void
 ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
 {
@@ -103,6 +136,14 @@ ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
   main_loop_interface->set_last_sync(main_loop, last_sync);
 }
 
+/**
+ * ags_main_loop_get_last_sync:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Retrieve last sync.
+ *
+ * Returns: last sync
+ */
 guint
 ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
 {

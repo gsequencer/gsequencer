@@ -22,6 +22,17 @@
 
 void ags_plugin_base_init(AgsPluginInterface *interface);
 
+/**
+ * SECTION:ags_plugin
+ * @short_description: 
+ * @title: AgsPlugin
+ * @section_id:
+ * @include: ags/object/ags_plugin.h
+ *
+ * The #AgsPlugin interface gives you a unique access to recalls,
+ * line members, lines, pads or machines ...
+ */
+
 GType
 ags_plugin_get_type()
 {
@@ -48,6 +59,14 @@ ags_plugin_base_init(AgsPluginInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_plugin_get_name:
+ * @plugin: an @AgsPlugin
+ *
+ * Retrieve the name of the plugin.
+ *
+ * Returns: the plugins name
+ */
 gchar*
 ags_plugin_get_name(AgsPlugin *plugin)
 {
@@ -62,6 +81,13 @@ ags_plugin_get_name(AgsPlugin *plugin)
   return(ret_val);
 }
 
+/**
+ * ags_plugin_set_name:
+ * @plugin: an @AgsPlugin
+ * @name: the name of plugin
+ *
+ * Set the name of the plugin.
+ */
 void
 ags_plugin_set_name(AgsPlugin *plugin, gchar *name)
 {
@@ -73,6 +99,14 @@ ags_plugin_set_name(AgsPlugin *plugin, gchar *name)
   plugin_interface->set_name(plugin, name);
 }
 
+/**
+ * ags_plugin_get_version:
+ * @plugin: an @AgsPlugin
+ *
+ * Retrieve the version of the plugin.
+ *
+ * Returns: the plugins version
+ */
 gchar*
 ags_plugin_get_version(AgsPlugin *plugin)
 {
@@ -87,6 +121,13 @@ ags_plugin_get_version(AgsPlugin *plugin)
   return(ret_val);
 }
 
+/**
+ * ags_plugin_set_version:
+ * @plugin: an @AgsPlugin
+ * @version: the version of plugin
+ *
+ * Set the version of the plugin.
+ */
 void
 ags_plugin_set_version(AgsPlugin *plugin, gchar *version)
 {
@@ -98,6 +139,14 @@ ags_plugin_set_version(AgsPlugin *plugin, gchar *version)
   plugin_interface->set_version(plugin, version);
 }
 
+/**
+ * ags_plugin_get_build_id:
+ * @plugin: an @AgsPlugin
+ *
+ * Retrieve the build id of the plugin.
+ *
+ * Returns: the plugins build id
+ */
 gchar*
 ags_plugin_get_build_id(AgsPlugin *plugin)
 {
@@ -112,6 +161,13 @@ ags_plugin_get_build_id(AgsPlugin *plugin)
   return(ret_val);
 }
 
+/**
+ * ags_plugin_set_build_id:
+ * @plugin: an @AgsPlugin
+ * @build_id: the build id of plugin
+ *
+ * Set the build id of the plugin.
+ */
 void
 ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id)
 {
@@ -123,6 +179,14 @@ ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id)
   plugin_interface->set_build_id(plugin, build_id);
 }
 
+/**
+ * ags_plugin_get_xml_type:
+ * @plugin: an @AgsPlugin
+ *
+ * Retrieve the xml type of the plugin.
+ *
+ * Returns: the plugins xml type
+ */
 gchar*
 ags_plugin_get_xml_type(AgsPlugin *plugin)
 {
@@ -137,6 +201,13 @@ ags_plugin_get_xml_type(AgsPlugin *plugin)
   return(ret_val);
 }
 
+/**
+ * ags_plugin_set_xml_type:
+ * @plugin: an @AgsPlugin
+ * @xml_type: the build id of plugin
+ *
+ * Set the build id of the plugin.
+ */
 void
 ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 {
@@ -148,6 +219,14 @@ ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
   plugin_interface->set_xml_type(plugin, xml_type);
 }
 
+/**
+ * ags_plugin_get_ports:
+ * @plugin: an @AgsPlugin
+ *
+ * Retrieve the ports of the plugin.
+ *
+ * Returns: the plugins ports
+ */
 GList*
 ags_plugin_get_ports(AgsPlugin *plugin)
 {
@@ -162,6 +241,13 @@ ags_plugin_get_ports(AgsPlugin *plugin)
   return(ret_val);
 }
 
+/**
+ * ags_plugin_set_ports:
+ * @plugin: an @AgsPlugin
+ * @ports: the build id of plugin
+ *
+ * Set the build id of the plugin.
+ */
 void
 ags_plugin_set_ports(AgsPlugin *plugin, GList *ports)
 {
@@ -173,6 +259,14 @@ ags_plugin_set_ports(AgsPlugin *plugin, GList *ports)
   plugin_interface->set_ports(plugin, ports);
 }
 
+/**
+ * ags_plugin_read:
+ * @file: the #AgsFile
+ * @node: the node
+ * @plugin: the #AgsPlugin
+ *
+ * Read of file.
+ */
 void
 ags_plugin_read(AgsFile *file,
 		xmlNode *node,
@@ -186,6 +280,17 @@ ags_plugin_read(AgsFile *file,
   plugin_interface->read(file, node, plugin);
 }
 
+
+/**
+ * ags_plugin_write:
+ * @file: the #AgsFile
+ * @parent: the parent node
+ * @plugin: the #AgsPlugin
+ *
+ * Write to file.
+ *
+ * Returns: the new node you created
+ */
 xmlNode*
 ags_plugin_write(AgsFile *file,
 		 xmlNode *parent,

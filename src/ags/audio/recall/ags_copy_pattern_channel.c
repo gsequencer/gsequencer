@@ -39,6 +39,16 @@ void ags_copy_pattern_channel_get_property(GObject *gobject,
 void ags_copy_pattern_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_copy_pattern_channel_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_copy_pattern_channel
+ * @short_description: copy patterns channel
+ * @title: AgsCopyPatternChannel
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_pattern_channel.h
+ *
+ * The #AgsCopyPatternChannel class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_PATTERN,
@@ -263,6 +273,18 @@ ags_copy_pattern_channel_template_find_source_and_destination(GList *recall,
   return(recall);
 }
 
+/**
+ * ags_copy_pattern_channel_new:
+ * @destination: the destination #AgsChannel
+ * @source: the source #AgsChannel
+ * @pattern: the pattern port 
+ *
+ * Creates an #AgsCopyPatternChannel
+ *
+ * Returns: a new #AgsCopyPatternChannel
+ *
+ * Since: 0.4
+ */
 AgsCopyPatternChannel*
 ags_copy_pattern_channel_new(AgsChannel *destination,
 			     AgsChannel *source,

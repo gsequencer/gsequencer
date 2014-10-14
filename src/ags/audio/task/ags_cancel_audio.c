@@ -31,6 +31,16 @@ void ags_cancel_audio_finalize(GObject *gobject);
 
 void ags_cancel_audio_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_cancel_audio
+ * @short_description: cancel audio object in audio loop
+ * @title: AgsCancelAudio
+ * @section_id:
+ * @include: ags/audio/task/ags_cancel_audio.h
+ *
+ * The #AgsCancelAudio task cancels #AgsAudio playback.
+ */
+
 static gpointer ags_cancel_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_cancel_audio_parent_connectable_interface;
 
@@ -208,6 +218,19 @@ ags_cancel_audio_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_cancel_audio_new:
+ * @audio: the #AgsAudio to cancel
+ * @playback: if %TRUE playback is canceld
+ * @sequencer: if %TRUE sequencer is canceld
+ * @notation: if %TRUE notation is canceld
+ *
+ * Creates an #AgsCancelAudio.
+ *
+ * Returns: an new #AgsCancelAudio.
+ *
+ * Since: 0.4
+ */
 AgsCancelAudio*
 ags_cancel_audio_new(AgsAudio *audio,
 		     gboolean playback, gboolean sequencer, gboolean notation)

@@ -32,6 +32,16 @@ void ags_add_recall_finalize(GObject *gobject);
 
 void ags_add_recall_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_add_recall
+ * @short_description: add recall object to context
+ * @title: AgsAddRecall
+ * @section_id:
+ * @include: ags/audio/task/ags_add_recall.h
+ *
+ * The #AgsAddRecall task adds #AgsRecall to context.
+ */
+
 static gpointer ags_add_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_add_recall_parent_connectable_interface;
 
@@ -167,6 +177,18 @@ ags_add_recall_launch(AgsTask *task)
   ags_connectable_connect(AGS_CONNECTABLE(add_recall->recall));
 }
 
+/**
+ * ags_add_recall_new:
+ * @context: may be #AgsAudio, #AgsChannel or #AgsRecall
+ * @recall: the #AgsRecall to add
+ * @is_play: if %TRUE non-complex recall
+ *
+ * Creates an #AgsAddRecall.
+ *
+ * Returns: an new #AgsAddRecall.
+ *
+ * Since: 0.4
+ */
 AgsAddRecall*
 ags_add_recall_new(GObject *context,
 		   AgsRecall *recall,

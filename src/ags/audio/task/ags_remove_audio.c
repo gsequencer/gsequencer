@@ -29,6 +29,16 @@ void ags_remove_audio_finalize(GObject *gobject);
 
 void ags_remove_audio_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_remove_audio
+ * @short_description: remove audio object of devout
+ * @title: AgsRemoveAudio
+ * @section_id:
+ * @include: ags/audio/task/ags_remove_audio.h
+ *
+ * The #AgsRemoveAudio task removes #AgsAudio of #AgsDevout.
+ */
+
 static gpointer ags_remove_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_audio_parent_connectable_interface;
 
@@ -140,6 +150,17 @@ ags_remove_audio_launch(AgsTask *task)
 			  G_OBJECT(remove_audio->audio));
 }
 
+/**
+ * ags_remove_audio_new:
+ * @devout: the #AgsDevout
+ * @audio: the #AgsAudio to remove
+ *
+ * Creates an #AgsRemoveAudio.
+ *
+ * Returns: an new #AgsRemoveAudio.
+ *
+ * Since: 0.4
+ */
 AgsRemoveAudio*
 ags_remove_audio_new(AgsDevout *devout,
 		  AgsAudio *audio)

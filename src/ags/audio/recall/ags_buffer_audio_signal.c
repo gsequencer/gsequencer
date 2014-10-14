@@ -50,6 +50,16 @@ AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_buffer_audio_signal
+ * @short_description: buffers audio signal
+ * @title: AgsBufferAudioSignal
+ * @section_id:
+ * @include: ags/audio/recall/ags_buffer_audio_signal.h
+ *
+ * The #AgsBufferAudioSignal class buffers the audio signal.
+ */
+
 static gpointer ags_buffer_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_buffer_audio_signal_parent_dynamic_connectable_interface;
@@ -322,6 +332,16 @@ ags_buffer_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) buffer);
 }
 
+/**
+ * ags_buffer_audio_signal_new:
+ * @audio_signal: an #AgsAudioSignal
+ *
+ * Creates an #AgsBufferAudioSignal
+ *
+ * Returns: a new #AgsBufferAudioSignal
+ *
+ * Since: 0.4
+ */
 AgsBufferAudioSignal*
 ags_buffer_audio_signal_new(AgsAudioSignal *audio_signal)
 {

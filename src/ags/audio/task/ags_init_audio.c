@@ -31,6 +31,16 @@ void ags_init_audio_finalize(GObject *gobject);
 
 void ags_init_audio_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_init_audio
+ * @short_description: init audio object
+ * @title: AgsInitAudio
+ * @section_id:
+ * @include: ags/audio/task/ags_init_audio.h
+ *
+ * The #AgsInitAudio task inits #AgsAudio.
+ */
+
 static gpointer ags_init_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_init_audio_parent_connectable_interface;
 
@@ -190,6 +200,19 @@ ags_init_audio_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_init_audio_new:
+ * @audio: the #AgsAudio
+ * @playback: init playback
+ * @sequencer: init sequencer
+ * @notation: init notation
+ *
+ * Creates an #AgsInitAudio.
+ *
+ * Returns: an new #AgsInitAudio.
+ *
+ * Since: 0.4
+ */
 AgsInitAudio*
 ags_init_audio_new(AgsAudio *audio,
 		   gboolean playback, gboolean sequencer, gboolean notation)

@@ -53,6 +53,16 @@ void ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *dela
 							  guint run_order,
 							  AgsCopyNotationAudioRun *copy_notation_audio_run);
 
+/**
+ * SECTION:ags_copy_notation_audio_run
+ * @short_description: copy notations
+ * @title: AgsCopy_NotationAudioRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_notation_audio_run.h
+ *
+ * The #AgsCopyNotationAudioRun class copy notations.
+ */
+
 enum{
   PROP_0,
   PROP_COUNT_BEATS_AUDIO_RUN,
@@ -449,6 +459,15 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
   }
 }
 
+/**
+ * ags_copy_notation_audio_run_new:
+ *
+ * Creates an #AgsCopyNotationAudioRun
+ *
+ * Returns: a new #AgsCopyNotationAudioRun
+ *
+ * Since: 0.4
+ */
 AgsCopyNotationAudioRun*
 ags_copy_notation_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
 {

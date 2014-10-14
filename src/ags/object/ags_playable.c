@@ -24,6 +24,17 @@
 
 void ags_playable_base_init(AgsPlayableInterface *interface);
 
+/**
+ * SECTION:ags_playable
+ * @short_description: 
+ * @title: AgsPlayable
+ * @section_id:
+ * @include: ags/object/ags_playable.h
+ *
+ * The #AgsPlayable interface gives you a unique access to file related
+ * IO operations.
+ */
+
 GType
 ags_playable_get_type()
 {
@@ -57,6 +68,20 @@ ags_playable_base_init(AgsPlayableInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_playable_rw_open:
+ * @playable: the #AgsPlayable
+ * @name: the filename 
+ * @create: if %TRUE file is created
+ * @samplerate: the samplerate of the file
+ * @channels: the count of audio channels
+ * @frames: the count of frames
+ * @format: the audio file's format
+ * 
+ * Opens a file in read/write mode.
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean
 ags_playable_rw_open(AgsPlayable *playable, gchar *name,
 		     gboolean create,
@@ -79,6 +104,15 @@ ags_playable_rw_open(AgsPlayable *playable, gchar *name,
   return(ret_val);
 }
 
+/**
+ * ags_playable_open:
+ * @playable: the #AgsPlayable
+ * @name: the filename 
+ * 
+ * Opens a file in read-only mode.
+ *
+ * Returns: %TRUE on success
+ */
 gboolean
 ags_playable_open(AgsPlayable *playable, gchar *name)
 {
@@ -93,6 +127,14 @@ ags_playable_open(AgsPlayable *playable, gchar *name)
   return(ret_val);
 }
 
+/**
+ * ags_playable_level_count:
+ * @playable: the #AgsPlayable
+ * 
+ * Retrieve the count of levels.
+ *
+ * Returns: level count
+ */
 guint
 ags_playable_level_count(AgsPlayable *playable)
 {
@@ -107,6 +149,14 @@ ags_playable_level_count(AgsPlayable *playable)
   return(ret_val);
 }
 
+/**
+ * ags_playable_level_count:
+ * @playable: the #AgsPlayable
+ * 
+ * Retrieve the selected level.
+ *
+ * Returns: nth level
+ */
 guint
 ags_playable_nth_level(AgsPlayable *playable)
 {
@@ -121,6 +171,14 @@ ags_playable_nth_level(AgsPlayable *playable)
   return(ret_val);
 }
 
+/**
+ * ags_playable_selected_level:
+ * @playable: the #AgsPlayable
+ * 
+ * Retrieve the selected level's name.
+ *
+ * Returns: nth level name
+ */
 gchar*
 ags_playable_selected_level(AgsPlayable *playable)
 {
@@ -136,6 +194,14 @@ ags_playable_selected_level(AgsPlayable *playable)
 
 }
 
+/**
+ * ags_playable_sublevel_names:
+ * @playable: the #AgsPlayable
+ * 
+ * Retrieve the all sub-level's name.
+ *
+ * Returns: sub-level names
+ */
 gchar**
 ags_playable_sublevel_names(AgsPlayable *playable)
 {
@@ -151,11 +217,11 @@ ags_playable_sublevel_names(AgsPlayable *playable)
 }
 
 /**
- * ags_ipatch_sf2_reader_level_select:
- * @playable an #AgsPlayable
- * @nth_level of type guint
- * @sublevel_name a gchar pointer
- * @error an error that may occure
+ * ags_playable_level_select:
+ * @playable: an #AgsPlayable
+ * @nth_level: of type guint
+ * @sublevel_name: a gchar pointer
+ * @error: an error that may occure
  *
  * Select a level in an monolythic file where @nth_level and @sublevel_name are equivalent.
  * If @sublevel_name is NULL @nth_level will be chosen.
@@ -173,6 +239,14 @@ ags_playable_level_select(AgsPlayable *playable,
   playable_interface->level_select(playable, nth_level, sublevel_name, error);
 }
 
+/**
+ * ags_playable_level_up:
+ * @playable: an #AgsPlayable
+ * @levels: n-levels up
+ * @error: returned error
+ *
+ * Move up in hierarchy.
+ */
 void
 ags_playable_level_up(AgsPlayable *playable,
 		      guint levels,
@@ -186,6 +260,12 @@ ags_playable_level_up(AgsPlayable *playable,
   playable_interface->level_up(playable, levels, error);
 }
 
+/**
+ * ags_playable_iter_start:
+ * @playable: an #AgsPlayable
+ *
+ * Start iterating current level.
+ */
 void
 ags_playable_iter_start(AgsPlayable *playable)
 {
@@ -197,6 +277,12 @@ ags_playable_iter_start(AgsPlayable *playable)
   playable_interface->iter_start(playable);
 }
 
+/**
+ * ags_playable_iter_next:
+ * @playable: an #AgsPlayable
+ *
+ * Iterating next on current level.
+ */
 gboolean
 ags_playable_iter_next(AgsPlayable *playable)
 {
@@ -211,6 +297,17 @@ ags_playable_iter_next(AgsPlayable *playable)
   return(ret_val);
 }
 
+/**
+ * ags_playable_info:
+ * @playable: an #AgsPlayable
+ * @channels: channels
+ * @frames: frames
+ * @loop_start: loop start
+ * @loop_end: loop end
+ * @error: returned error
+ *
+ * Retrieve information about selected audio data.
+ */
 void
 ags_playable_info(AgsPlayable *playable,
 		  guint *channels, guint *frames,
@@ -225,6 +322,16 @@ ags_playable_info(AgsPlayable *playable,
   playable_interface->info(playable, channels, frames, loop_start, loop_end, error);
 }
 
+/**
+ * ags_playable_read:
+ * @playable: an #AgsPlayable
+ * @channel: nth channel
+ * @error: returned error
+ *
+ * Read audio buffer of playable audio data.
+ * 
+ * Returns: audio buffer
+ */
 short*
 ags_playable_read(AgsPlayable *playable,
 		  guint channel,
@@ -238,6 +345,14 @@ ags_playable_read(AgsPlayable *playable,
   playable_interface->read(playable, channel, error);
 }
 
+/**
+ * ags_playable_write:
+ * @playable: an #AgsPlayable
+ * @buffer: audio data
+ * @buffer_length: frame count
+ *
+ * Write @buffer_length of @buffer audio data.
+ */
 void
 ags_playable_write(AgsPlayable *playable,
 		   signed short *buffer, guint buffer_length)
@@ -250,6 +365,12 @@ ags_playable_write(AgsPlayable *playable,
   playable_interface->write(playable, buffer, buffer_length);
 }
 
+/**
+ * ags_playable_flush:
+ * @playable: an #AgsPlayable
+ *
+ * Flush internal audio buffer.
+ */
 void
 ags_playable_flush(AgsPlayable *playable)
 {
@@ -261,6 +382,14 @@ ags_playable_flush(AgsPlayable *playable)
   playable_interface->flush(playable);
 }
 
+/**
+ * ags_playable_seek:
+ * @playable: an #AgsPlayable
+ * @frames: n-frames to seek
+ * @whence: SEEK_SET, SEEK_CUR, or SEEK_END
+ *
+ * Seek @playable to address.
+ */
 void
 ags_playable_seek(AgsPlayable *playable,
 		  guint frames, gint whence)
@@ -273,6 +402,12 @@ ags_playable_seek(AgsPlayable *playable,
   playable_interface->seek(playable, frames, whence);
 }
 
+/**
+ * ags_playable_flush:
+ * @playable: an #AgsPlayable
+ *
+ * Close audio file.
+ */
 void
 ags_playable_close(AgsPlayable *playable)
 {
@@ -284,6 +419,17 @@ ags_playable_close(AgsPlayable *playable)
   playable_interface->close(playable);
 }
 
+/**
+ * ags_playable_read_audio_signal:
+ * @playable: an #AgsPlayable
+ * @devout: the #AgsDevout defaulting to
+ * @start_channel: read from channel
+ * @channels_to_read: n-times
+ *
+ * Read the audio signal of @AgsPlayable.
+ *
+ * Returns: a #GList of #AgsAudioSignal
+ */
 GList*
 ags_playable_read_audio_signal(AgsPlayable *playable,
 			       AgsDevout *devout,

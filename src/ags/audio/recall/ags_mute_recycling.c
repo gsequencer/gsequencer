@@ -46,6 +46,16 @@ AgsRecall* ags_mute_recycling_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
 					guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_mute_recycling
+ * @short_description: mutes recycling
+ * @title: AgsMuteRecycling
+ * @section_id:
+ * @include: ags/audio/recall/ags_mute_recycling.h
+ *
+ * The #AgsMuteRecycling class mutes the recycling.
+ */
+
 static gpointer ags_mute_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_mute_recycling_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_mute_recycling_parent_dynamic_connectable_interface;
@@ -246,6 +256,16 @@ ags_mute_recycling_duplicate(AgsRecall *recall,
   return((AgsRecall *) mute);
 }
 
+/**
+ * ags_mute_recycling_new:
+ * @source: the source #AgsRecycling
+ *
+ * Creates an #AgsMuteRecycling
+ *
+ * Returns: a new #AgsMuteRecycling
+ *
+ * Since: 0.4
+ */
 AgsMuteRecycling*
 ags_mute_recycling_new(AgsRecycling *source)
 {

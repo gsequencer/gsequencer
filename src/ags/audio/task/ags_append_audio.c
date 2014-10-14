@@ -31,6 +31,16 @@ void ags_append_audio_finalize(GObject *gobject);
 
 void ags_append_audio_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_append_audio
+ * @short_description: append audio object to audio loop
+ * @title: AgsAppendAudio
+ * @section_id:
+ * @include: ags/audio/task/ags_append_audio.h
+ *
+ * The #AgsAppendAudio task appends #AgsAudio to #AgsAudioLoop.
+ */
+
 static gpointer ags_append_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_append_audio_parent_connectable_interface;
 
@@ -153,6 +163,17 @@ ags_append_audio_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_append_audio_new:
+ * @audio_loop: the #AgsAudioLoop
+ * @audio: the #AgsAudio to append
+ *
+ * Creates an #AgsAppendAudio.
+ *
+ * Returns: an new #AgsAppendAudio.
+ *
+ * Since: 0.4
+ */
 AgsAppendAudio*
 ags_append_audio_new(GObject *audio_loop,
 		     GObject *audio)

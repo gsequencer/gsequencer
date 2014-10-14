@@ -41,6 +41,16 @@ void ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *ch
 void ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio);
 void ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout);
 
+/**
+ * SECTION:ags_set_samplerate
+ * @short_description: modifies samplerate
+ * @title: AgsSetSamplerate
+ * @section_id:
+ * @include: ags/audio/task/ags_set_samplerate.h
+ *
+ * The #AgsSetSamplerate task modifies samplerate of #AgsDevout.
+ */
+
 static gpointer ags_set_samplerate_parent_class = NULL;
 static AgsConnectableInterface *ags_set_samplerate_parent_connectable_interface;
 
@@ -241,6 +251,17 @@ ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout)
   }
 }
 
+/**
+ * ags_set_samplerate_new:
+ * @devout: the #AgsDevout to reset
+ * @samplerate: the new samplerate
+ *
+ * Creates an #AgsSetSamplerate.
+ *
+ * Returns: an new #AgsSetSamplerate.
+ *
+ * Since: 0.4
+ */
 AgsSetSamplerate*
 ags_set_samplerate_new(GObject *gobject,
 		       guint samplerate)

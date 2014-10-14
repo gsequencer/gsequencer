@@ -34,6 +34,16 @@ void ags_remove_recall_finalize(GObject *gobject);
 
 void ags_remove_recall_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_remove_recall
+ * @short_description: remove recall object to context
+ * @title: AgsRemoveRecall
+ * @section_id:
+ * @include: ags/audio/task/ags_remove_recall.h
+ *
+ * The #AgsRemoveRecall task removes #AgsRecall to context.
+ */
+
 static gpointer ags_remove_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_recall_parent_connectable_interface;
 
@@ -157,6 +167,18 @@ ags_remove_recall_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_remove_recall_new:
+ * @context: may be #AgsAudio, #AgsChannel or #AgsRecall
+ * @recall: the #AgsRecall to remove
+ * @is_play: if %TRUE non-complex recall
+ *
+ * Creates an #AgsRemoveRecall.
+ *
+ * Returns: an new #AgsRemoveRecall.
+ *
+ * Since: 0.4
+ */
 AgsRemoveRecall*
 ags_remove_recall_new(GObject *context,
 		      AgsRecall *recall,

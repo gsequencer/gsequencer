@@ -48,6 +48,16 @@ AgsRecall* ags_copy_channel_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_copy_channel_run
+ * @short_description: copys channel
+ * @title: AgsCopyChannelRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_channel_run.h
+ *
+ * The #AgsCopyChannelRun class copys the channel.
+ */
+
 static gpointer ags_copy_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_channel_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_copy_channel_run_parent_dynamic_connectable_interface;
@@ -236,6 +246,18 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_copy_channel_run_new:
+ * @destination: the destination #AgsChannel
+ * @source: the source #AgsChannel
+ * @devout: the #AgsDevout defaulting to
+ *
+ * Creates an #AgsCopyChannelRun
+ *
+ * Returns: a new #AgsCopyChannelRun
+ *
+ * Since: 0.4
+ */
 AgsCopyChannelRun*
 ags_copy_channel_run_new(AgsChannel *destination,
 			 AgsChannel *source,

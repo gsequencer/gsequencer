@@ -45,6 +45,16 @@ void ags_copy_channel_finalize(GObject *gobject);
 
 void ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
+/**
+ * SECTION:ags_copy_channel
+ * @short_description: copys channel
+ * @title: AgsCopyChannel
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_channel.h
+ *
+ * The #AgsCopyChannel class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_MUTED,
@@ -319,6 +329,17 @@ ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted)
   ags_port_safe_write(AGS_COPY_CHANNEL(mutable)->muted, &value);
 }
 
+/**
+ * ags_copy_channel_new:
+ * @destination: the destination #AgsChannel
+ * @source: the source #AgsChannel
+ *
+ * Creates an #AgsCopyChannel
+ *
+ * Returns: a new #AgsCopyChannel
+ *
+ * Since: 0.4
+ */
 AgsCopyChannel*
 ags_copy_channel_new(AgsChannel *destination,
 		     AgsChannel *source)

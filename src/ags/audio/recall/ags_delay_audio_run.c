@@ -55,6 +55,16 @@ AgsRecall* ags_delay_audio_run_duplicate(AgsRecall *recall,
 					 guint *n_params, GParameter *parameter);
 void ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint count);
 
+/**
+ * SECTION:ags_delay_audio_run
+ * @short_description: delay
+ * @title: AgsDelayAudioRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_delay_audio_run.h
+ *
+ * The #AgsDelayNotationAudioRun class delays.
+ */
+
 enum{
   NOTATION_ALLOC_OUTPUT,
   NOTATION_ALLOC_INPUT,
@@ -605,6 +615,15 @@ ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint run
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
+/**
+ * ags_delay_audio_run_new:
+ *
+ * Creates an #AgsDelayAudioRun
+ *
+ * Returns: a new #AgsDelayAudioRun
+ *
+ * Since: 0.4
+ */
 AgsDelayAudioRun*
 ags_delay_audio_run_new()
 {

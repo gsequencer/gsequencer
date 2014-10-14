@@ -43,6 +43,16 @@ AgsRecall* ags_stream_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_stream_audio_signal
+ * @short_description: streams audio signal
+ * @title: AgsStreamAudioSignal
+ * @section_id:
+ * @include: ags/audio/recall/ags_stream_audio_signal.h
+ *
+ * The #AgsStreamAudioSignal class streams the audio signal.
+ */
+
 static gpointer ags_stream_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_stream_audio_signal_parent_dynamic_connectable_interface;
@@ -231,6 +241,16 @@ ags_stream_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_stream_audio_signal_new:
+ * @audio_signal: an #AgsAudioSignal
+ *
+ * Creates an #AgsStreamAudioSignal
+ *
+ * Returns: a new #AgsStreamAudioSignal
+ *
+ * Since: 0.4
+ */
 AgsStreamAudioSignal*
 ags_stream_audio_signal_new(AgsAudioSignal *audio_signal)
 {

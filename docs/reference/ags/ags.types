@@ -6,6 +6,7 @@ ags_add_point_to_selection_get_type
 ags_add_recall_get_type
 ags_add_region_to_selection_get_type
 ags_append_audio_get_type
+ags_append_audio_threaded_get_type
 ags_append_channel_get_type
 ags_append_recall_get_type
 ags_applicable_get_type
@@ -30,10 +31,13 @@ ags_buffer_recycling_get_type
 ags_cancel_audio_get_type
 ags_cancel_channel_get_type
 ags_cancel_recall_get_type
+ags_cartesian_get_type
 ags_change_indicator_get_type
 ags_change_tact_get_type
 ags_channel_get_type
 ags_channel_set_recycling_get_type
+ags_clone_channel_get_type
+ags_clone_channel_run_get_type
 ags_config_get_type
 ags_copy_audio_signal_get_type
 ags_copy_channel_get_type
@@ -61,6 +65,7 @@ ags_drum_output_line_get_type
 ags_drum_output_pad_get_type
 ags_dynamic_connectable_get_type
 ags_editor_get_type
+ags_effect_get_type
 ags_expander_get_type
 ags_expander_set_get_type
 ags_export_output_get_type
@@ -72,11 +77,17 @@ ags_file_id_ref_get_type
 ags_file_launch_get_type
 ags_file_link_get_type
 ags_file_lookup_get_type
+ags_file_read_get_type
 ags_file_selection_get_type
+ags_file_value_factory_get_type
+ags_file_write_get_type
 ags_free_selection_get_type
 ags_garbage_collector_get_type
+ags_generic_preferences_get_type
 ags_gui_task_thread_get_type
 ags_gui_thread_get_type
+ags_hindicator_get_type
+ags_history_get_type
 ags_indicator_get_type
 ags_init_audio_get_type
 ags_init_channel_get_type
@@ -88,6 +99,7 @@ ags_iterator_thread_get_type
 ags_ladspa_browser_get_type
 ags_ladspa_manager_get_type
 ags_led_get_type
+ags_libao_get_type
 ags_line_editor_get_type
 ags_line_get_type
 ags_line_member_editor_get_type
@@ -156,6 +168,7 @@ ags_plugin_factory_get_type
 ags_plugin_get_type
 ags_plugin_preferences_get_type
 ags_port_get_type
+ags_portable_thread_get_type
 ags_portlet_get_type
 ags_preferences_get_type
 ags_property_collection_editor_get_type
@@ -176,6 +189,7 @@ ags_recall_ladspa_get_type
 ags_recall_ladspa_run_get_type
 ags_recall_recycling_dummy_get_type
 ags_recall_recycling_get_type
+ags_record_thread_get_type
 ags_recycling_container_get_type
 ags_recycling_get_type
 ags_recycling_thread_get_type
@@ -193,6 +207,7 @@ ags_runnable_get_type
 ags_save_file_get_type
 ags_scroll_on_play_get_type
 ags_seekable_get_type
+ags_segment_get_type
 ags_server_get_type
 ags_server_preferences_get_type
 ags_set_audio_channels_get_type
@@ -204,6 +219,7 @@ ags_set_samplerate_get_type
 ags_sf2_chooser_get_type
 ags_single_thread_get_type
 ags_sndfile_get_type
+ags_soundcard_get_type
 ags_stackable_get_type
 ags_start_devout_get_type
 ags_stream_audio_signal_get_type
@@ -234,4 +250,5 @@ ags_volume_audio_signal_get_type
 ags_volume_channel_get_type
 ags_volume_channel_run_get_type
 ags_volume_recycling_get_type
+ags_waveform_get_type
 ags_window_get_type

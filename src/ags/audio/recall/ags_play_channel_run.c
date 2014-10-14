@@ -77,6 +77,16 @@ void ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 							    AgsPlayChannelRun *play_channel_run);
 void ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run);
 
+/**
+ * SECTION:ags_play_channel_run
+ * @short_description: plays channel
+ * @title: AgsPlayChannel
+ * @section_id:
+ * @include: ags/audio/recall/ags_play_channel.h
+ *
+ * The #AgsPlayChannel class plays the channel.
+ */
+
 enum{
   PROP_0,
   PROP_STREAM_CHANNEL_RUN,
@@ -566,6 +576,16 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 				source);
 }
 
+/**
+ * ags_play_channel_run_new:
+ * @stream_channel_run: the #AgsStreamChannelRun as dependency
+ *
+ * Creates an #AgsPlayChannelRun
+ *
+ * Returns: a new #AgsPlayChannelRun
+ *
+ * Since: 0.4
+ */
 AgsPlayChannelRun*
 ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)
 {

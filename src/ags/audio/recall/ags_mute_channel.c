@@ -45,6 +45,16 @@ void ags_mute_channel_finalize(GObject *gobject);
 
 void ags_mute_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
+/**
+ * SECTION:ags_mute_channel
+ * @short_description: mutes channel
+ * @title: AgsMuteChannel
+ * @section_id:
+ * @include: ags/audio/recall/ags_mute_channel.h
+ *
+ * The #AgsMuteChannel class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_MUTED,
@@ -307,6 +317,15 @@ ags_mute_channel_set_muted(AgsMutable *mutable, gboolean muted)
   ags_port_safe_write(AGS_MUTE_CHANNEL(mutable)->muted, &value);
 }
 
+/**
+ * ags_mute_channel_new:
+ *
+ * Creates an #AgsMuteChannel
+ *
+ * Returns: a new #AgsMuteChannel
+ *
+ * Since: 0.4
+ */
 AgsMuteChannel*
 ags_mute_channel_new()
 {

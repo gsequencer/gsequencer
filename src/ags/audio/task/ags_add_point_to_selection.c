@@ -29,6 +29,16 @@ void ags_add_point_to_selection_finalize(GObject *gobject);
 
 void ags_add_point_to_selection_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_add_point_to_selection
+ * @short_description: add point to notation selection
+ * @title: AgsAddPointToSelection
+ * @section_id:
+ * @include: ags/audio/task/ags_add_point_to_selection.h
+ *
+ * The #AgsAddPointToSelection task adds the specified #AgsNote to selection of #AgsNotation.
+ */
+
 static gpointer ags_add_point_to_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_add_point_to_selection_parent_connectable_interface;
 
@@ -143,6 +153,19 @@ ags_add_point_to_selection_launch(AgsTask *task)
 				      add_point_to_selection->replace_current_selection);
 }
 
+/**
+ * ags_add_point_to_selection_new:
+ * @notation: the #AgsNotation providing the selection
+ * @x: x coordinate
+ * @y: y coordinate
+ * @replace_current_selection: if %TRUE new selection is created, otherwise added to current
+ *
+ * Creates an #AgsAddPointToSelection.
+ *
+ * Returns: an new #AgsAddPointToSelection.
+ *
+ * Since: 0.4
+ */
 AgsAddPointToSelection*
 ags_add_point_to_selection_new(AgsNotation *notation,
 			       guint x, guint y,

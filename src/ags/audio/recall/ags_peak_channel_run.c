@@ -48,6 +48,16 @@ AgsRecall* ags_peak_channel_run_duplicate(AgsRecall *recall,
 					    guint *n_params, GParameter *parameter);
 void ags_peak_channel_run_run_post(AgsRecall *recall);
 
+/**
+ * SECTION:ags_peak_channel_run
+ * @short_description: peak
+ * @title: AgsPeakChannelRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_peak_channel_run.h
+ *
+ * The #AgsPeakChannelRun class peaks the channel.
+ */
+
 static gpointer ags_peak_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_peak_channel_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_peak_channel_run_parent_dynamic_connectable_interface;
@@ -241,6 +251,16 @@ ags_peak_channel_run_run_post(AgsRecall *recall)
   }
 }
 
+/**
+ * ags_peak_channel_run_new:
+ * @channel: the #AgsChannel as source
+ *
+ * Creates an #AgsPeakChannelRun
+ *
+ * Returns: a new #AgsPeakChannelRun
+ *
+ * Since: 0.4
+ */
 AgsPeakChannelRun*
 ags_peak_channel_run_new(AgsChannel *channel)
 {

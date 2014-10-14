@@ -51,6 +51,16 @@ AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
 					   guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_play_audio_signal
+ * @short_description: plays audio signal
+ * @title: AgsPlayAudioSignal
+ * @section_id:
+ * @include: ags/audio/recall/ags_play_audio_signal.h
+ *
+ * The #AgsPlayAudioSignal class plays the audio signal.
+ */
+
 static gpointer ags_play_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_play_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_play_audio_signal_parent_dynamic_connectable_interface;
@@ -297,6 +307,18 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_play_audio_signal_new:
+ * @source: the source #AgsAudioSignal
+ * @devout: the #AgsDevout outputting to
+ * @attack: the attack
+ *
+ * Creates an #AgsPlayAudioSignal
+ *
+ * Returns: a new #AgsPlayAudioSignal
+ *
+ * Since: 0.4
+ */
 AgsPlayAudioSignal*
 ags_play_audio_signal_new(AgsAudioSignal *source,
 			  AgsDevout *devout,

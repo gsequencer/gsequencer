@@ -57,6 +57,16 @@ enum{
   PROP_MUTED,
 };
 
+/**
+ * SECTION:ags_play_channel
+ * @short_description: plays channel
+ * @title: AgsPlayChannel
+ * @section_id:
+ * @include: ags/audio/recall/ags_play_channel.h
+ *
+ * The #AgsPlayChannel class provides ports to the effect processor.
+ */
+
 static gpointer ags_play_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_play_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_play_channel_parent_mutable_interface;
@@ -389,6 +399,17 @@ ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted)
   ags_port_safe_write(AGS_PLAY_CHANNEL(mutable)->muted, &value);
 }
 
+/**
+ * ags_play_channel_new:
+ * @devout: the #AgsDevout outputting to
+ * @audio_channel: the audio channel to use
+ *
+ * Creates an #AgsPlayChannel
+ *
+ * Returns: a new #AgsPlayChannel
+ *
+ * Since: 0.4
+ */
 AgsPlayChannel*
 ags_play_channel_new(AgsDevout *devout,
 		     guint audio_channel)

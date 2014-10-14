@@ -45,6 +45,16 @@ AgsRecall* ags_volume_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_volume_recycling
+ * @short_description: volumes recycling
+ * @title: AgsVolumeRecycling
+ * @section_id:
+ * @include: ags/audio/recall/ags_volume_recycling.h
+ *
+ * The #AgsVolumeRecycling class volumes the recycling.
+ */
+
 static gpointer ags_volume_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_volume_recycling_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_volume_recycling_parent_dynamic_connectable_interface;
@@ -205,6 +215,16 @@ ags_volume_recycling_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_volume_recycling_new:
+ * @recycling: the source #AgsRecycling
+ *
+ * Creates an #AgsVolumeRecycling
+ *
+ * Returns: a new #AgsVolumeRecycling
+ *
+ * Since: 0.4
+ */
 AgsVolumeRecycling*
 ags_volume_recycling_new(AgsRecycling *recycling)
 {

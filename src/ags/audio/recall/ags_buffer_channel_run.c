@@ -48,6 +48,16 @@ AgsRecall* ags_buffer_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
 					    guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_buffer_channel_run
+ * @short_description: buffers channel
+ * @title: AgsBufferChannelRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_buffer_channel_run.h
+ *
+ * The #AgsBufferChannelRun class buffers the channel.
+ */
+
 static gpointer ags_buffer_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_channel_run_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_buffer_channel_run_parent_dynamic_connectable_interface;
@@ -228,6 +238,15 @@ ags_buffer_channel_run_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_buffer_channel_run_new:
+ *
+ * Creates an #AgsBufferChannelRun
+ *
+ * Returns: a new #AgsBufferChannelRun
+ *
+ * Since: 0.4
+ */
 AgsBufferChannelRun*
 ags_buffer_channel_run_new()
 {

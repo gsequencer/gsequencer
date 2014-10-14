@@ -29,6 +29,16 @@ void ags_remove_point_from_selection_finalize(GObject *gobject);
 
 void ags_remove_point_from_selection_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_remove_point_to_selection
+ * @short_description: remove point to notation selection
+ * @title: AgsRemovePointToSelection
+ * @section_id:
+ * @include: ags/audio/task/ags_remove_point_to_selection.h
+ *
+ * The #AgsRemovePointToSelection task removes the specified #AgsNote to selection of #AgsNotation.
+ */
+
 static gpointer ags_remove_point_from_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_point_from_selection_parent_connectable_interface;
 
@@ -141,6 +151,18 @@ ags_remove_point_from_selection_launch(AgsTask *task)
 					   remove_point_from_selection->x, remove_point_from_selection->y);
 }
 
+/**
+ * ags_remove_point_to_selection_new:
+ * @notation: the #AgsNotation providing the selection
+ * @x: x coordinate
+ * @y: y coordinate
+ *
+ * Creates an #AgsRemovePointToSelection.
+ *
+ * Returns: an new #AgsRemovePointToSelection.
+ *
+ * Since: 0.4
+ */
 AgsRemovePointFromSelection*
 ags_remove_point_from_selection_new(AgsNotation *notation,
 				  guint x, guint y)

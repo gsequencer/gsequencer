@@ -32,6 +32,16 @@ void ags_add_line_member_finalize(GObject *gobject);
 
 void ags_add_line_member_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_add_line_member
+ * @short_description: add line_member object to line
+ * @title: AgsAddLineMember
+ * @section_id:
+ * @include: ags/audio/task/ags_add_line_member.h
+ *
+ * The #AgsAddLineMember task addspacks #AgsLineMember to #AgsLine.
+ */
+
 static gpointer ags_add_line_member_parent_class = NULL;
 static AgsConnectableInterface *ags_add_line_member_parent_connectable_interface;
 
@@ -153,6 +163,21 @@ ags_add_line_member_launch(AgsTask *task)
   //			       TRUE);
 }
 
+/**
+ * ags_add_line_member_new:
+ * @line: the #AgsLine
+ * @line_member: the #AgsLineMember to add
+ * @x: pack start x
+ * @y: pack start y
+ * @width: pack width
+ * @height: pack height
+ *
+ * Creates an #AgsAddLineMember.
+ *
+ * Returns: an new #AgsAddLineMember.
+ *
+ * Since: 0.4
+ */
 AgsAddLineMember*
 ags_add_line_member_new(AgsLine *line,
 			AgsLineMember *line_member,

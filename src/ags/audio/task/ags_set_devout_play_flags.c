@@ -29,6 +29,16 @@ void ags_set_devout_play_flags_finalize(GObject *gobject);
 
 void ags_set_devout_play_flags_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_set_devout_play_flags
+ * @short_description: modifies devout play flags
+ * @title: AgsSetAudioChannels
+ * @section_id:
+ * @include: ags/audio/task/ags_set_devout_play_flags.h
+ *
+ * The #AgsSetAudioChannels task modifies devout play flags of #AgsDevout.
+ */
+
 static gpointer ags_set_devout_play_flags_parent_class = NULL;
 static AgsConnectableInterface *ags_set_devout_play_flags_parent_connectable_interface;
 
@@ -139,6 +149,17 @@ ags_set_devout_play_flags_launch(AgsTask *task)
   set_devout_play_flags->devout_play->flags |= (set_devout_play_flags->devout_play_flags);
 }
 
+/**
+ * ags_set_devout_play_flags_new:
+ * @devout_play: the #AgsDevoutPlay-struct
+ * @flags: the new devout play flags
+ *
+ * Creates an #AgsSetAudioChannels.
+ *
+ * Returns: an new #AgsSetAudioChannels.
+ *
+ * Since: 0.4
+ */
 AgsSetDevoutPlayFlags*
 ags_set_devout_play_flags_new(AgsDevoutPlay *devout_play,
 			      guint flags)

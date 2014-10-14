@@ -88,6 +88,16 @@ void ags_loop_channel_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 void ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						  GObject *recall);
 
+/**
+ * SECTION:ags_loop_channel_run
+ * @short_description: loop
+ * @title: AgsLoopChannelRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_loop_channel_run.h
+ *
+ * The #AgsLoopChannelRun class loops the channel.
+ */
+
 enum{
   PROP_0,
   PROP_COUNT_BEATS_AUDIO_RUN,
@@ -699,6 +709,18 @@ ags_loop_channel_run_read_resolve_dependency(AgsFileLookup *file_lookup,
   }
 }
 
+/**
+ * ags_loop_channel_run_new:
+ * @channel: the #AgsChannel as source
+ * @count_beats_audio_run: an #AgsCountBeatsAudioRun
+ * @is_template: if %TRUE recall is templated
+ *
+ * Creates an #AgsLoopChannelRun
+ *
+ * Returns: a new #AgsLoopChannelRun
+ *
+ * Since: 0.4
+ */
 AgsLoopChannelRun*
 ags_loop_channel_run_new(AgsChannel *channel,
 			 AgsCountBeatsAudioRun *count_beats_audio_run,

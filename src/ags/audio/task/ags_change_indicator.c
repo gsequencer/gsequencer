@@ -28,6 +28,16 @@ void ags_change_indicator_disconnect(AgsConnectable *connectable);
 void ags_change_indicator_finalize(GObject *gobject);
 void ags_change_indicator_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_change_indicator
+ * @short_description: change indicator object
+ * @title: AgsChangeIndicator
+ * @section_id:
+ * @include: ags/audio/task/ags_change_indicator.h
+ *
+ * The #AgsChangeIndicator task changes #AgsIndicator and the GUI is updated.
+ */
+
 static gpointer ags_change_indicator_parent_class = NULL;
 static AgsConnectableInterface *ags_change_indicator_parent_connectable_interface;
 
@@ -145,6 +155,17 @@ ags_change_indicator_launch(AgsTask *task)
   gtk_widget_queue_draw(change_indicator->indicator);
 }
 
+/**
+ * ags_change_indicator_new:
+ * @indicator: the #AgsIndicator to change
+ * @value: the value to apply
+ *
+ * Creates an #AgsChangeIndicator.
+ *
+ * Returns: an new #AgsChangeIndicator.
+ *
+ * Since: 0.4
+ */
 AgsChangeIndicator*
 ags_change_indicator_new(AgsIndicator *indicator,
 			 gdouble value)

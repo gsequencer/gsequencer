@@ -29,6 +29,16 @@ void ags_add_audio_finalize(GObject *gobject);
 
 void ags_add_audio_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_add_audio
+ * @short_description: add audio object to devout
+ * @title: AgsAddAudio
+ * @section_id:
+ * @include: ags/audio/task/ags_add_audio.h
+ *
+ * The #AgsAddAudio task adds #AgsAudio to #AgsDevout.
+ */
+
 static gpointer ags_add_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_add_audio_parent_connectable_interface;
 
@@ -143,6 +153,17 @@ ags_add_audio_launch(AgsTask *task)
   ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
 }
 
+/**
+ * ags_add_audio_new:
+ * @devout: the #AgsDevout
+ * @audio: the #AgsAudio to add
+ *
+ * Creates an #AgsAddAudio.
+ *
+ * Returns: an new #AgsAddAudio.
+ *
+ * Since: 0.4
+ */
 AgsAddAudio*
 ags_add_audio_new(AgsDevout *devout,
 		  AgsAudio *audio)

@@ -39,6 +39,16 @@ void ags_copy_pattern_audio_get_property(GObject *gobject,
 void ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_copy_pattern_audio_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_copy_pattern_audio
+ * @short_description: copy audio pattern
+ * @title: AgsCopyPatternAudio
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_pattern_audio.h
+ *
+ * The #AgsCopyPatternAudio class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_BANK_INDEX_0,
@@ -296,6 +306,19 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_copy_pattern_audio_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_copy_pattern_audio_new:
+ * @devout: the #AgsDevout defaulting to
+ * @tact: the offset
+ * @i: bank index 0
+ * @j: bank index 1
+ *
+ * Creates an #AgsCopyPatternAudio
+ *
+ * Returns: a new #AgsCopyPatternAudio
+ *
+ * Since: 0.4
+ */
 AgsCopyPatternAudio*
 ags_copy_pattern_audio_new(AgsDevout *devout,
 			   gdouble tact,

@@ -37,6 +37,16 @@ void ags_export_output_finalize(GObject *gobject);
 
 void ags_export_output_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_export_output
+ * @short_description: export output object
+ * @title: AgsExportOutput
+ * @section_id:
+ * @include: ags/audio/task/ags_export_output.h
+ *
+ * The #AgsExportOutput task exports #AgsDevout to file.
+ */
+
 static gpointer ags_export_output_parent_class = NULL;
 static AgsConnectableInterface *ags_export_output_parent_connectable_interface;
 
@@ -198,6 +208,20 @@ ags_export_output_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_export_output_new:
+ * @export_thread: the #AgsExportThread to start
+ * @devout: the #AgsDevout to export
+ * @filename: the filename to save
+ * @tic: stream duration in tact
+ * @live_performance: if %TRUE export is done during real-time
+ *
+ * Creates an #AgsExportOutput.
+ *
+ * Returns: an new #AgsExportOutput.
+ *
+ * Since: 0.4
+ */
 AgsExportOutput*
 ags_export_output_new(AgsExportThread *export_thread,
 		      AgsDevout *devout,

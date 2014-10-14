@@ -53,6 +53,16 @@ AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_volume_audio_signal
+ * @short_description: volumes audio signal
+ * @title: AgsVolumeAudioSignal
+ * @section_id:
+ * @include: ags/audio/recall/ags_volume_audio_signal.h
+ *
+ * The #AgsVolumeAudioSignal class volumes the audio signal.
+ */
+
 enum{
   PROP_0,
   PROP_VOLUME,
@@ -257,6 +267,16 @@ ags_volume_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_volume_audio_signal_new:
+ * @audio_signal: an #AgsAudioSignal
+ *
+ * Creates an #AgsVolumeAudioSignal
+ *
+ * Returns: a new #AgsVolumeAudioSignal
+ *
+ * Since: 0.4
+ */
 AgsVolumeAudioSignal*
 ags_volume_audio_signal_new(AgsAudioSignal *audio_signal)
 {

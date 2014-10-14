@@ -31,6 +31,16 @@ void ags_append_channel_finalize(GObject *gobject);
 
 void ags_append_channel_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_append_channel
+ * @short_description: append channel object to audio loop
+ * @title: AgsAppendChannel
+ * @section_id:
+ * @include: ags/channel/task/ags_append_channel.h
+ *
+ * The #AgsAppendChannel task appends #AgsChannel to #AgsAudioLoop.
+ */
+
 static gpointer ags_append_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_append_channel_parent_connectable_interface;
 
@@ -153,6 +163,17 @@ ags_append_channel_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_append_channel_new:
+ * @audio_loop: the #AgsAudioLoop
+ * @channel: the #AgsChannel to append
+ *
+ * Creates an #AgsAppendChannel.
+ *
+ * Returns: an new #AgsAppendChannel.
+ *
+ * Since: 0.4
+ */
 AgsAppendChannel*
 ags_append_channel_new(GObject *audio_loop,
 		       GObject *channel)

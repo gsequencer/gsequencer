@@ -48,6 +48,13 @@ ags_portlet_base_init(AgsPortletInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_portlet_set_port:
+ * @portlet: an #AgsPortlet
+ * @port: the #AgsPort
+ *
+ * Set port.
+ */
 void
 ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port)
 {
@@ -59,6 +66,14 @@ ags_portlet_set_port(AgsPortlet *portlet, AgsPort *port)
   portlet_interface->set_port(portlet, port);
 }
 
+/**
+ * ags_portlet_get_port:
+ * @portlet: an #AgsPortlet
+ *
+ * Get port.
+ *
+ * Returns: the #AgsPort
+ */
 AgsPort*
 ags_portlet_get_port(AgsPortlet *portlet)
 {
@@ -70,6 +85,14 @@ ags_portlet_get_port(AgsPortlet *portlet)
   portlet_interface->get_port(portlet);
 }
 
+/**
+ * ags_portlet_get_safe_property:
+ * @portlet: an #AgsPortlet
+ *
+ * Retrieve thread-safe properties.
+ *
+ * Returns: a #GList containing properties
+ */
 GList*
 ags_portlet_list_safe_properties(AgsPortlet *portlet)
 {
@@ -81,6 +104,16 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
   portlet_interface->list_safe_properties(portlet);
 }
 
+/**
+ * ags_portlet_get_safe_property:
+ * @portlet: an #AgsPortlet
+ * @property_name: propertie's name
+ * @value: the #GValue
+ *
+ * Get property thread safe.
+ *
+ * Returns: the #AgsPort
+ */
 void
 ags_portlet_get_safe_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {
@@ -92,6 +125,14 @@ ags_portlet_get_safe_property(AgsPortlet *portlet, gchar *property_name, GValue 
   portlet_interface->safe_get_property(portlet, property_name, value);
 }
 
+/**
+ * ags_portlet_set_safe_property:
+ * @portlet: an #AgsPortlet
+ * @property_name: propertie's name
+ * @value: the #GValue
+ *
+ * Set property thread safe.
+ */
 void
 ags_portlet_set_safe_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
 {

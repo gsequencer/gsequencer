@@ -29,6 +29,16 @@ void ags_remove_note_finalize(GObject *gobject);
 
 void ags_remove_note_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_remove_note
+ * @short_description: remove note object to notation
+ * @title: AgsRemoveNote
+ * @section_id:
+ * @include: ags/audio/task/ags_remove_note.h
+ *
+ * The #AgsRemoveNote task removes #AgsNote to #AgsNotation.
+ */
+
 static gpointer ags_remove_note_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_note_parent_connectable_interface;
 
@@ -141,6 +151,18 @@ ags_remove_note_launch(AgsTask *task)
 				       remove_note->x, remove_note->y);
 }
 
+/**
+ * ags_remove_note_new:
+ * @notation: the #AgsNotation
+ * @x: the x coordinate of #AgsNote
+ * @y: the y coordinate of #AgsNote
+ *
+ * Creates an #AgsRemoveNote.
+ *
+ * Returns: an new #AgsRemoveNote.
+ *
+ * Since: 0.4
+ */
 AgsRemoveNote*
 ags_remove_note_new(AgsNotation *notation,
 		    guint x, guint y)

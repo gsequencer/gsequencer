@@ -24,6 +24,16 @@ void ags_play_audio_class_init(AgsPlayAudioClass *play_audio);
 void ags_play_audio_init(AgsPlayAudio *play_audio);
 void ags_play_audio_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_play_audio
+ * @short_description: play audio 
+ * @title: AgsPlayAudio
+ * @section_id:
+ * @include: ags/audio/recall/ags_play_audio.h
+ *
+ * The #AgsPlayAudio class provides ports to the effect processor.
+ */
+
 static gpointer ags_play_audio_parent_class = NULL;
 
 GType
@@ -85,6 +95,15 @@ ags_play_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_play_audio_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_play_audio_new:
+ *
+ * Creates an #AgsPlayAudio
+ *
+ * Returns: a new #AgsPlayAudio
+ *
+ * Since: 0.4
+ */
 AgsPlayAudio*
 ags_play_audio_new()
 {

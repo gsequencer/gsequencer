@@ -29,6 +29,16 @@ void ags_cancel_channel_finalize(GObject *gobject);
 
 void ags_cancel_channel_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_cancel_channel
+ * @short_description: cancel channel object
+ * @title: AgsCancelChannel
+ * @section_id:
+ * @include: ags/audio/task/ags_cancel_channel.h
+ *
+ * The #AgsCancelChannel task cancels #AgsChannel playback.
+ */
+
 static gpointer ags_cancel_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_cancel_channel_parent_connectable_interface;
 
@@ -146,6 +156,18 @@ ags_cancel_channel_launch(AgsTask *task)
     cancel_channel->play->flags |= AGS_DEVOUT_PLAY_REMOVE;
 }
 
+/**
+ * ags_cancel_channel_new:
+ * @channel: the #AgsChannel to cancel
+ * @recall_id: the #AgsRecallID to cancel
+ * @play: the #AgsDevoutPlay-struct
+ *
+ * Creates an #AgsCancelChannel.
+ *
+ * Returns: an new #AgsCancelChannel.
+ *
+ * Since: 0.4
+ */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
 		       AgsDevoutPlay *play)

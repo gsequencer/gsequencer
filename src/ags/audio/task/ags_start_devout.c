@@ -34,6 +34,16 @@ void ags_start_devout_finalize(GObject *gobject);
 
 void ags_start_devout_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_start_devout
+ * @short_description: start devout object
+ * @title: AgsStartDevout
+ * @section_id:
+ * @include: ags/audio/task/ags_start_devout.h
+ *
+ * The #AgsStartDevout task starts devout.
+ */
+
 static gpointer ags_start_devout_parent_class = NULL;
 static AgsConnectableInterface *ags_start_devout_parent_connectable_interface;
 
@@ -188,6 +198,16 @@ ags_start_devout_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_start_devout_new:
+ * @devout: the #AgsDevout
+ *
+ * Creates an #AgsStartDevout.
+ *
+ * Returns: an new #AgsStartDevout.
+ *
+ * Since: 0.4
+ */
 AgsStartDevout*
 ags_start_devout_new(AgsDevout *devout)
 {

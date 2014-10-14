@@ -29,6 +29,16 @@ void ags_remove_region_from_selection_finalize(GObject *gobject);
 
 void ags_remove_region_from_selection_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_remove_region_to_selection
+ * @short_description: remove region to notation selection
+ * @title: AgsRemoveRegionToSelection
+ * @section_id:
+ * @include: ags/audio/task/ags_remove_region_to_selection.h
+ *
+ * The #AgsRemoveRegionToSelection task removes the specified #AgsNote to selection of #AgsNotation.
+ */
+
 static gpointer ags_remove_region_from_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_region_from_selection_parent_connectable_interface;
 
@@ -144,6 +154,20 @@ ags_remove_region_from_selection_launch(AgsTask *task)
 					    remove_region_from_selection->x1, remove_region_from_selection->y1);
 }
 
+/**
+ * ags_remove_region_to_selection_new:
+ * @notation: the #AgsNotation providing the selection
+ * @x0: start x coordinate
+ * @y0: start y coordinate
+ * @x1: end x coordinate
+ * @y1: end y coordinate
+ *
+ * Creates an #AgsRemoveRegionToSelection.
+ *
+ * Returns: an new #AgsRemoveRegionToSelection.
+ *
+ * Since: 0.4
+ */
 AgsRemoveRegionFromSelection*
 ags_remove_region_from_selection_new(AgsNotation *notation,
 				     guint x0, guint y0,

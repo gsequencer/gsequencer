@@ -31,6 +31,16 @@ void ags_append_recall_finalize(GObject *gobject);
 
 void ags_append_recall_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_append_recall
+ * @short_description: append recall object to audio loop
+ * @title: AgsAppendRecall
+ * @section_id:
+ * @include: ags/recall/task/ags_append_recall.h
+ *
+ * The #AgsAppendRecall task appends #AgsRecall to #AgsAudioLoop.
+ */
+
 static gpointer ags_append_recall_parent_class = NULL;
 static AgsConnectableInterface *ags_append_recall_parent_connectable_interface;
 
@@ -147,6 +157,17 @@ ags_append_recall_launch(AgsTask *task)
   audio_loop->play_recall_ref += 1;
 }
 
+/**
+ * ags_append_recall_new:
+ * @audio_loop: the #AgsAudioLoop
+ * @recall: the #AgsRecall to append
+ *
+ * Creates an #AgsAppendRecall.
+ *
+ * Returns: an new #AgsAppendRecall.
+ *
+ * Since: 0.4
+ */
 AgsAppendRecall*
 ags_append_recall_new(GObject *audio_loop,
 		      AgsDevoutPlay *devout_play)

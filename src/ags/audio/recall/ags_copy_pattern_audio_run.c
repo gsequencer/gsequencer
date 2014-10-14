@@ -66,6 +66,16 @@ void ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_loo
 void ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						       GObject *recall);
 
+/**
+ * SECTION:ags_copy_pattern_audio_run
+ * @short_description: copy pattern
+ * @title: AgsCopyPatternAudioRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_pattern_audio_run.h
+ *
+ * The #AgsCopyPatternAudioRun class copy pattern.
+ */
+
 enum{
   PROP_0,
   PROP_COUNT_BEATS_AUDIO_RUN,
@@ -558,6 +568,16 @@ ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
   }
 }
 
+/**
+ * ags_copy_pattern_audio_run_new:
+ * @count_beats_audio_run: an #AgsCountBeatsAudioRun as dependency
+ *
+ * Creates an #AgsCopyPatternAudioRun
+ *
+ * Returns: a new #AgsCopyPatternAudioRun
+ *
+ * Since: 0.4
+ */
 AgsCopyPatternAudioRun*
 ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
 {

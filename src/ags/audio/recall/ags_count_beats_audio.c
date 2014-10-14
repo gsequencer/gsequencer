@@ -37,6 +37,16 @@ void ags_count_beats_audio_get_property(GObject *gobject,
 void ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_count_beats_audio_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_count_beats_audio
+ * @short_description: count audio beats
+ * @title: AgsCountBeatsAudio
+ * @section_id:
+ * @include: ags/audio/recall/ags_count_beats_audio.h
+ *
+ * The #AgsCountBeatsAudio class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_LOOP,
@@ -495,6 +505,16 @@ ags_count_beats_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_count_beats_audio_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_count_beats_audio_new:
+ * @loop: if %TRUE after exceeding counter, effect loops
+ *
+ * Creates an #AgsCountBeatsAudio
+ *
+ * Returns: a new #AgsCountBeatsAudio
+ *
+ * Since: 0.4
+ */
 AgsCountBeatsAudio*
 ags_count_beats_audio_new(gboolean loop)
 {

@@ -29,6 +29,16 @@ void ags_link_channel_finalize(GObject *gobject);
 
 void ags_link_channel_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_link_channel
+ * @short_description: link channel object
+ * @title: AgsLinkChannel
+ * @section_id:
+ * @include: ags/audio/task/ags_link_channel.h
+ *
+ * The #AgsLinkChannel task links #AgsChannel.
+ */
+
 static gpointer ags_link_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_link_channel_parent_connectable_interface;
 
@@ -146,6 +156,17 @@ ags_link_channel_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_link_channel_new:
+ * @channel: the #AgsChannel
+ * @play_pad: the #AgsChannel to be linked, may be %NULL
+ *
+ * Creates an #AgsLinkChannel.
+ *
+ * Returns: an new #AgsLinkChannel.
+ *
+ * Since: 0.4
+ */
 AgsLinkChannel*
 ags_link_channel_new(AgsChannel *channel, AgsChannel *link)
 {

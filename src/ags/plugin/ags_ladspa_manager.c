@@ -35,6 +35,15 @@ void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
 void ags_ladspa_manager_init (AgsLadspaManager *ladspa_manager);
 void ags_ladspa_manager_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_ladspa_manager
+ * @short_description: Singleton pattern to organize LADSPA
+ * @title: AgsLadspaManager
+ * @section_id:
+ * @include: ags/object/ags_ladspa_manager.h
+ *
+ * The #AgsLadspaManager loads/unloads LADSPA plugins.
+ */
 enum{
   ADD,
   CREATE,
@@ -107,6 +116,13 @@ ags_ladspa_manager_finalize(GObject *gobject)
 		   ags_ladspa_plugin_free);
 }
 
+/**
+ * ags_ladspa_plugin_alloc:
+ * 
+ * Alloc the #AgsLadspaPlugin-struct
+ *
+ * Since: 0.4
+ */
 AgsLadspaPlugin*
 ags_ladspa_plugin_alloc()
 {
@@ -132,6 +148,15 @@ ags_ladspa_plugin_free(AgsLadspaPlugin *ladspa_plugin)
   free(ladspa_plugin);
 }
 
+/**
+ * ags_ladspa_manager_get_filenames:
+ * 
+ * Retrieve all filenames
+ *
+ * Returns: an %NULL-terminated array of filenames
+ *
+ * Since: 0.4
+ */
 gchar**
 ags_ladspa_manager_get_filenames()
 {
@@ -157,6 +182,16 @@ ags_ladspa_manager_get_filenames()
   return(filenames);
 }
 
+/**
+ * ags_ladspa_manager_find_ladspa_plugin:
+ * @filename: the filename of the plugin
+ *
+ * Lookup filename in loaded plugins.
+ *
+ * Returns: the #AgsLadspaPlugin-struct
+ *
+ * Since: 0.4
+ */
 AgsLadspaPlugin*
 ags_ladspa_manager_find_ladspa_plugin(gchar *filename)
 {
@@ -181,6 +216,14 @@ ags_ladspa_manager_find_ladspa_plugin(gchar *filename)
   return(NULL);
 }
 
+/**
+ * ags_ladspa_manager_find_ladspa_plugin:
+ * @filename: the filename of the plugin
+ *
+ * Load @filename specified plugin.
+ *
+ * Since: 0.4
+ */
 void
 ags_ladspa_manager_load_file(gchar *filename)
 {
@@ -220,6 +263,13 @@ ags_ladspa_manager_load_file(gchar *filename)
   g_free(path);
 }
 
+/**
+ * ags_ladspa_manager_load_default_directory:
+ * 
+ * Loads all available plugins.
+ *
+ * Since: 0.4
+ */
 void
 ags_ladspa_manager_load_default_directory()
 {
@@ -248,6 +298,15 @@ ags_ladspa_manager_load_default_directory()
   }
 }
 
+/**
+ * ags_ladspa_manager_get_instance:
+ *
+ * Get instance.
+ *
+ * Returns: the #AgsLadspaManager
+ *
+ * Since: 0.4
+ */
 AgsLadspaManager*
 ags_ladspa_manager_get_instance()
 {
@@ -268,6 +327,16 @@ ags_ladspa_manager_get_instance()
   return(ags_ladspa_manager);
 }
 
+/**
+ * ags_ladspa_manager_new:
+ * @devout: an #AgsDevout
+ *
+ * Creates an #AgsLadspaManager
+ *
+ * Returns: a new #AgsLadspaManager
+ *
+ * Since: 0.4
+ */
 AgsLadspaManager*
 ags_ladspa_manager_new()
 {

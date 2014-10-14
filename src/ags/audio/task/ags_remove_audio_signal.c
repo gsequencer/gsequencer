@@ -31,6 +31,16 @@ void ags_remove_audio_signal_finalize(GObject *gobject);
 
 void ags_remove_audio_signal_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_remove_audio_signal
+ * @short_description: remove audio_signal object to recycling
+ * @title: AgsRemoveAudioSignal
+ * @section_id:
+ * @include: ags/audio/task/ags_remove_audio_signal.h
+ *
+ * The #AgsRemoveAudioSignal task removes #AgsAudioSignal to #AgsRecycling.
+ */
+
 static gpointer ags_remove_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_remove_audio_signal_parent_connectable_interface;
 
@@ -141,6 +151,17 @@ ags_remove_audio_signal_launch(AgsTask *task)
 				    remove_audio_signal->audio_signal);
 }
 
+/**
+ * ags_remove_audio_signal_new:
+ * @recycling: the #AgsRecycling
+ * @audio_signal: the #AgsAudioSignal to remove
+ *
+ * Creates an #AgsRemoveAudioSignal.
+ *
+ * Returns: an new #AgsRemoveAudioSignal.
+ *
+ * Since: 0.4
+ */
 AgsRemoveAudioSignal*
 ags_remove_audio_signal_new(AgsRecycling *recycling,
 			    AgsAudioSignal *audio_signal)

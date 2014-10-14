@@ -49,6 +49,16 @@ AgsRecall* ags_play_recycling_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
 					guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_play_recycling
+ * @short_description: plays recycling
+ * @title: AgsPlayRecycling
+ * @section_id:
+ * @include: ags/audio/recall/ags_play_recycling.h
+ *
+ * The #AgsPlayRecycling class plays the recycling.
+ */
+
 static gpointer ags_play_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_play_recycling_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_play_recycling_parent_dynamic_connectable_interface;
@@ -223,6 +233,18 @@ ags_play_recycling_duplicate(AgsRecall *recall,
  return((AgsRecall *) copy);
 }
 
+/**
+ * ags_play_recycling_new:
+ * @source: the source #AgsRecycling
+ * @devout: the #AgsDevout outputting to
+ * @audio_channel: the audio channel to use
+ *
+ * Creates an #AgsPlayRecycling
+ *
+ * Returns: a new #AgsPlayRecycling
+ *
+ * Since: 0.4
+ */
 AgsPlayRecycling*
 ags_play_recycling_new(AgsRecycling *source,
 		       AgsDevout *devout,

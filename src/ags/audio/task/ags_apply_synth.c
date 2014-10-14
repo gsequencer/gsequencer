@@ -35,6 +35,16 @@ void ags_apply_synth_finalize(GObject *gobject);
 
 void ags_apply_synth_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_apply_synth
+ * @short_description: apply synth to channel
+ * @title: AgsApplySynth
+ * @section_id:
+ * @include: ags/synth/task/ags_apply_synth.h
+ *
+ * The #AgsApplySynth task apply the specified synth to channel.
+ */
+
 static gpointer ags_apply_synth_parent_class = NULL;
 static AgsConnectableInterface *ags_apply_synth_parent_connectable_interface;
 
@@ -282,6 +292,26 @@ ags_apply_synth_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_apply_synth_new:
+ * @start_channel:
+ * @count:
+ * @wave:
+ * @attack:
+ * @frame_count:
+ * @frequency:
+ * @phase:
+ * @start:
+ * @volume:
+ * @loop_start:
+ * @loop_end:
+ *
+ * Creates an #AgsApplySynth.
+ *
+ * Returns: an new #AgsApplySynth.
+ *
+ * Since: 0.4
+ */
 AgsApplySynth*
 ags_apply_synth_new(AgsChannel *start_channel, guint count,
 		    guint wave,

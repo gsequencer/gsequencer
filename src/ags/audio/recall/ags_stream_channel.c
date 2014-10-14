@@ -32,6 +32,16 @@ void ags_stream_channel_connect(AgsConnectable *connectable);
 void ags_stream_channel_disconnect(AgsConnectable *connectable);
 void ags_stream_channel_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_stream_channel
+ * @short_description: streams channel
+ * @title: AgsStreamChannel
+ * @section_id:
+ * @include: ags/audio/recall/ags_stream_channel.h
+ *
+ * The #AgsStreamChannel class provides ports to the effect processor.
+ */
+
 static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_stream_channel_parent_plugin_interface;
@@ -147,6 +157,15 @@ ags_stream_channel_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
+/**
+ * ags_stream_channel_new:
+ *
+ * Creates an #AgsStreamChannel
+ *
+ * Returns: a new #AgsStreamChannel
+ *
+ * Since: 0.4
+ */
 AgsStreamChannel*
 ags_stream_channel_new()
 {

@@ -45,6 +45,16 @@ void ags_mute_audio_finalize(GObject *gobject);
 
 void ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted);
 
+/**
+ * SECTION:ags_mute_audio
+ * @short_description: mute audio 
+ * @title: AgsMuteAudio
+ * @section_id:
+ * @include: ags/audio/recall/ags_mute_audio.h
+ *
+ * The #AgsMuteAudio class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_MUTED,
@@ -309,6 +319,15 @@ ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted)
   ags_port_safe_write(AGS_MUTE_AUDIO(mutable)->muted, &value);
 }
 
+/**
+ * ags_mute_audio_new:
+ *
+ * Creates an #AgsMuteAudio
+ *
+ * Returns: a new #AgsMuteAudio
+ *
+ * Since: 0.4
+ */
 AgsMuteAudio*
 ags_mute_audio_new()
 {

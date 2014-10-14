@@ -38,6 +38,16 @@ void ags_ipatch_sf2_reader_finalize(GObject *gobject);
 void ags_ipatch_sf2_reader_connect(AgsConnectable *connectable);
 void ags_ipatch_sf2_reader_disconnect(AgsConnectable *connectable);
 
+/**
+ * SECTION:ags_ipatch_sf2_reader
+ * @short_description: interfacing Soundfont2 related API of libinstpatch
+ * @title: AgsIpatchSF2Reader
+ * @section_id:
+ * @include: ags/audio/file/ags_ipatch_sf2_reader.h
+ *
+ * #AgsIpatchSF2Reader is the base object to ineract with Soundfont2 related API.
+ */
+
 static gpointer ags_ipatch_sf2_reader_parent_class = NULL;
 static AgsConnectableInterface *ags_ipatch_sf2_reader_parent_connectable_interface;
 
@@ -201,6 +211,16 @@ ags_ipatch_sf2_reader_finalize(GObject *gobject)
   /* empty */
 }
 
+
+/**
+ * ags_ipatch_sf2_reader_new:
+ *
+ * Creates an #AgsIpatchSF2Reader.
+ *
+ * Returns: an empty #AgsIpatchSF2Reader.
+ *
+ * Since: 0.4
+ */
 AgsIpatchSF2Reader*
 ags_ipatch_sf2_reader_new()
 {

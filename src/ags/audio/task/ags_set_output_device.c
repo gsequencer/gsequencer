@@ -31,6 +31,16 @@ void ags_set_output_device_finalize(GObject *gobject);
 
 void ags_set_output_device_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_set_output_device
+ * @short_description: resets soundcard
+ * @title: AgsSetOutputDevice
+ * @section_id:
+ * @include: ags/audio/task/ags_set_output_device.h
+ *
+ * The #AgsSetOutputDevice task resets soundcard of #AgsDevout.
+ */
+
 static gpointer ags_set_output_device_parent_class = NULL;
 static AgsConnectableInterface *ags_set_output_device_parent_connectable_interface;
 
@@ -148,6 +158,17 @@ ags_set_output_device_launch(AgsTask *task)
 	       NULL);
 }
 
+/**
+ * ags_set_output_device_new:
+ * @devout: the #AgsDevout to reset
+ * @card_id: the new soundcard
+ *
+ * Creates an #AgsSetOutputDevice.
+ *
+ * Returns: an new #AgsSetOutputDevice.
+ *
+ * Since: 0.4
+ */
 AgsSetOutputDevice*
 ags_set_output_device_new(GObject *devout,
 			  char *card_id)

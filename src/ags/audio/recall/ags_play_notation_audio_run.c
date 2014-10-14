@@ -76,6 +76,16 @@ void ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lo
 void ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						       GObject *recall);
 
+/**
+ * SECTION:ags_play_notation_audio_run
+ * @short_description: play notation
+ * @title: AgsPlayNotationAudioRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_play_notation_audio_run.h
+ *
+ * The #AgsPlayNotationAudioRun class play notation.
+ */
+
 enum{
   PROP_0,
   PROP_DELAY_AUDIO_RUN,
@@ -741,6 +751,16 @@ ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
   }
 }
 
+/**
+ * ags_play_notation_audio_run_new:
+ * @count_beats_audio_run: an #AgsCountBeatsAudioRun as dependency
+ *
+ * Creates an #AgsPlayNotationAudioRun
+ *
+ * Returns: a new #AgsPlayNotationAudioRun
+ *
+ * Since: 0.4
+ */
 AgsPlayNotationAudioRun*
 ags_play_notation_audio_run_new()
 {

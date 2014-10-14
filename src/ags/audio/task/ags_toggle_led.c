@@ -30,6 +30,16 @@ void ags_toggle_led_disconnect(AgsConnectable *connectable);
 void ags_toggle_led_finalize(GObject *gobject);
 void ags_toggle_led_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_toggle_led
+ * @short_description: toggle led object
+ * @title: AgsToggleLed
+ * @section_id:
+ * @include: ags/audio/task/ags_toggle_led.h
+ *
+ * The #AgsToggleLed task toggles #AgsLed and the GUI is updated.
+ */
+
 static gpointer ags_toggle_led_parent_class = NULL;
 static AgsConnectableInterface *ags_toggle_led_parent_connectable_interface;
 
@@ -144,6 +154,18 @@ ags_toggle_led_launch(AgsTask *task)
 					toggle_led->set_active)->data));
 }
 
+/**
+ * ags_toggle_led_new:
+ * @led: the #AgsLed to toggle
+ * @set_active: the nth led to activate
+ * @unset_active: the nth led to deactivate
+ *
+ * Creates an #AgsToggleLed.
+ *
+ * Returns: an new #AgsToggleLed.
+ *
+ * Since: 0.4
+ */
 AgsToggleLed*
 ags_toggle_led_new(GList *led,
 		   guint set_active,

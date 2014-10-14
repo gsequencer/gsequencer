@@ -102,6 +102,16 @@ void ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *reca
 void ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 				    gboolean notation);
 
+/**
+ * SECTION:ags_count_beats_audio_run
+ * @short_description: count beats
+ * @title: AgsCount_BeatsAudioRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_count_beats_audio_run.h
+ *
+ * The #AgsCountBeatsAudioRun class count beats.
+ */
+
 enum{
   NOTATION_START,
   NOTATION_LOOP,
@@ -1321,6 +1331,15 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   }
 } 
 
+/**
+ * ags_count_beats_audio_run_new:
+ *
+ * Creates an #AgsCountBeatsAudioRun
+ *
+ * Returns: a new #AgsCountBeatsAudioRun
+ *
+ * Since: 0.4
+ */
 AgsCountBeatsAudioRun*
 ags_count_beats_audio_run_new(AgsDelayAudioRun *delay_audio_run)
 {

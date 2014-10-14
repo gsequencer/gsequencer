@@ -29,6 +29,16 @@ void ags_set_audio_channels_finalize(GObject *gobject);
 
 void ags_set_audio_channels_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_set_audio_channels
+ * @short_description: resizes audio channels
+ * @title: AgsSetAudioChannels
+ * @section_id:
+ * @include: ags/audio/task/ags_set_audio_channels.h
+ *
+ * The #AgsSetAudioChannels task resizes audio channels of #AgsDevout.
+ */
+
 static gpointer ags_set_audio_channels_parent_class = NULL;
 static AgsConnectableInterface *ags_set_audio_channels_parent_connectable_interface;
 
@@ -140,6 +150,17 @@ ags_set_audio_channels_launch(AgsTask *task)
 	       NULL);
 }
 
+/**
+ * ags_set_audio_channels_new:
+ * @devout: the #AgsDevout to reset
+ * @audio_channels: the new count of audio channels
+ *
+ * Creates an #AgsSetAudioChannels.
+ *
+ * Returns: an new #AgsSetAudioChannels.
+ *
+ * Since: 0.4
+ */
 AgsSetAudioChannels*
 ags_set_audio_channels_new(AgsDevout *devout, guint audio_channels)
 {

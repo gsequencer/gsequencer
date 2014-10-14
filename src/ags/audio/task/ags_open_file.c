@@ -37,6 +37,16 @@ void ags_open_file_disconnect(AgsConnectable *connectable);
 void ags_open_file_finalize(GObject *gobject);
 void ags_open_file_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_open_file
+ * @short_description: open file object
+ * @title: AgsOpenFile
+ * @section_id:
+ * @include: ags/audio/task/ags_open_file.h
+ *
+ * The #AgsOpenFile task opens files.
+ */
+
 static gpointer ags_open_file_parent_class = NULL;
 static AgsConnectableInterface *ags_open_file_parent_connectable_interface;
 
@@ -235,6 +245,20 @@ ags_open_file_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_open_file_new:
+ * @file: the #AgsFile
+ * @filenames: the filenames to be opened
+ * @overwrite_channels: reset existing #AgsInput
+ * @create_channels: inistantiate new #AgsInput, if @overwrite_channell as needed
+ * else for sure
+ *
+ * Creates an #AgsOpenFile.
+ *
+ * Returns: an new #AgsOpenFile.
+ *
+ * Since: 0.4
+ */
 AgsOpenFile*
 ags_open_file_new(AgsAudio *audio,
 		  GSList *filenames,

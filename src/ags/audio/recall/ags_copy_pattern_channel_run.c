@@ -62,6 +62,15 @@ void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *del
 							   guint delay, guint attack,
 							   AgsCopyPatternChannelRun *copy_pattern_channel_run);
 
+/**
+ * SECTION:ags_copy_pattern_channel_run
+ * @short_description: copys pattern
+ * @title: AgsCopy_PatternChannelRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_pattern_channel_run.h
+ *
+ * The #AgsCopy_PatternChannelRun class copys pattern.
+ */
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
@@ -455,6 +464,15 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   //  }
 }
 
+/**
+ * ags_copy_pattern_channel_run_new:
+ *
+ * Creates an #AgsCopyPatternChannelRun
+ *
+ * Returns: a new #AgsCopyPatternChannelRun
+ *
+ * Since: 0.4
+ */
 AgsCopyPatternChannelRun*
 ags_copy_pattern_channel_run_new()
 {

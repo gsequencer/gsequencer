@@ -29,6 +29,16 @@ void ags_add_region_to_selection_finalize(GObject *gobject);
 
 void ags_add_region_to_selection_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_add_region_to_selection
+ * @short_description: add region to notation selection
+ * @title: AgsAddRegionToSelection
+ * @section_id:
+ * @include: ags/audio/task/ags_add_region_to_selection.h
+ *
+ * The #AgsAddRegionToSelection task adds the specified #AgsNote to selection of #AgsNotation.
+ */
+
 static gpointer ags_add_region_to_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_add_region_to_selection_parent_connectable_interface;
 
@@ -146,6 +156,21 @@ ags_add_region_to_selection_launch(AgsTask *task)
 				       add_region_to_selection->replace_current_selection);
 }
 
+/**
+ * ags_add_region_to_selection_new:
+ * @notation: the #AgsNotation providing the selection
+ * @x0: start x coordinate
+ * @y0: start y coordinate
+ * @x1: end x coordinate
+ * @y1: end y coordinate
+ * @replace_current_selection: if %TRUE new selection is created, otherwise added to current
+ *
+ * Creates an #AgsAddRegionToSelection.
+ *
+ * Returns: an new #AgsAddRegionToSelection.
+ *
+ * Since: 0.4
+ */
 AgsAddRegionToSelection*
 ags_add_region_to_selection_new(AgsNotation *notation,
 				guint x0, guint y0,

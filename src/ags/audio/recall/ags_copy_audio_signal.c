@@ -51,6 +51,16 @@ AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
 					   guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_copy_audio_signal
+ * @short_description: copys audio signal
+ * @title: AgsCopyAudioSignal
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_audio_signal.h
+ *
+ * The #AgsCopyAudioSignal class copys the audio signal.
+ */
+
 static gpointer ags_copy_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_copy_audio_signal_parent_dynamic_connectable_interface;
@@ -280,6 +290,19 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_copy_audio_signal_new:
+ * @destination: the destination #AgsAudioSignal
+ * @source: the source #AgsAudioSignal
+ * @devout: the #AgsDevout defaulting to
+ * @attack: the attack
+ *
+ * Creates an #AgsCopyAudioSignal
+ *
+ * Returns: a new #AgsCopyAudioSignal
+ *
+ * Since: 0.4
+ */
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,
 			  AgsAudioSignal *source,

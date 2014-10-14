@@ -31,6 +31,16 @@ void ags_init_channel_finalize(GObject *gobject);
 
 void ags_init_channel_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_init_channel
+ * @short_description: init channel object
+ * @title: AgsInitChannel
+ * @section_id:
+ * @include: ags/audio/task/ags_init_channel.h
+ *
+ * The #AgsInitChannel task inits #AgsChannel.
+ */
+
 static gpointer ags_init_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_init_channel_parent_connectable_interface;
 
@@ -279,6 +289,20 @@ ags_init_channel_launch(AgsTask *task)
   }
 }
 
+/**
+ * ags_init_channel_new:
+ * @channel: the #AgsChannel
+ * @play_pad: %TRUE all channels of accordig pad are initialized
+ * @playback: init playback
+ * @sequencer: init sequencer
+ * @notation: init notation
+ *
+ * Creates an #AgsInitChannel.
+ *
+ * Returns: an new #AgsInitChannel.
+ *
+ * Since: 0.4
+ */
 AgsInitChannel*
 ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
 		     gboolean playback, gboolean sequencer, gboolean notation)

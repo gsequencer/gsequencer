@@ -22,6 +22,16 @@
 
 void ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface);
 
+/**
+ * SECTION:ags_dynamic_connectable
+ * @short_description: 
+ * @title: AgsDynamicConnectable
+ * @section_id:
+ * @include: ags/object/ags_dynamic_connectable.h
+ *
+ * The #AgsDynamicConnectable interface gives you a unique access to recalls.
+ */
+
 GType
 ags_dynamic_connectable_get_type()
 {
@@ -48,6 +58,12 @@ ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_applicable_connect_dynamic:
+ * @applicable: an #AgsApplicable
+ *
+ * Connect dynamic.
+ */
 void
 ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
 {
@@ -59,6 +75,12 @@ ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
   connectable_interface->connect_dynamic(connectable);
 }
 
+/**
+ * ags_applicable_disconnect_dynamic:
+ * @applicable: an #AgsApplicable
+ *
+ * Disconnect dynamic.
+ */
 void
 ags_dynamic_connectable_disconnect_dynamic(AgsDynamicConnectable *connectable)
 {

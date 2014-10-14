@@ -41,6 +41,16 @@ void ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *
 void ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio);
 void ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout);
 
+/**
+ * SECTION:ags_set_buffer_size
+ * @short_description: resizes buffer size
+ * @title: AgsSetAudioChannels
+ * @section_id:
+ * @include: ags/audio/task/ags_set_buffer_size.h
+ *
+ * The #AgsSetAudioChannels task resizes buffer size of #AgsDevout.
+ */
+
 static gpointer ags_set_buffer_size_parent_class = NULL;
 static AgsConnectableInterface *ags_set_buffer_size_parent_connectable_interface;
 
@@ -242,6 +252,17 @@ ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout)
   }
 }
 
+/**
+ * ags_set_buffer_size_new:
+ * @devout: the #AgsDevout reset
+ * @buffer_size: the new count of buffer size
+ *
+ * Creates an #AgsSetAudioChannels.
+ *
+ * Returns: an new #AgsSetAudioChannels.
+ *
+ * Since: 0.4
+ */
 AgsSetBufferSize*
 ags_set_buffer_size_new(GObject *gobject,
 			guint buffer_size)

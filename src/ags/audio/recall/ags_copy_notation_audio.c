@@ -30,6 +30,16 @@ void ags_copy_notation_audio_get_property(GObject *gobject,
 					  GParamSpec *param_spec);
 void ags_copy_notation_audio_finalize(GObject *gobject);
 
+/**
+ * SECTION:ags_copy_notation_audio
+ * @short_description: copy notations audio
+ * @title: AgsCopyNotationAudio
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_notation_audio.h
+ *
+ * The #AgsCopyNotationAudio class provides ports to the effect processor.
+ */
+
 enum{
   PROP_0,
   PROP_DEVOUT,
@@ -213,6 +223,18 @@ ags_copy_notation_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_copy_notation_audio_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_copy_notation_audio_new:
+ * @audio: the #AgsAudio
+ * @notation: the notation
+ * @audio_channel: the audio channel to use
+ *
+ * Creates an #AgsCopyNotationAudio
+ *
+ * Returns: a new #AgsCopyNotationAudio
+ *
+ * Since: 0.4
+ */
 AgsCopyNotationAudio*
 ags_copy_notation_audio_new(AgsDevout *devout,
 			    AgsNotation *notation,

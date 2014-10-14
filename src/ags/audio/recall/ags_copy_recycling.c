@@ -46,6 +46,16 @@ AgsRecall* ags_copy_recycling_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
 					guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_copy_recycling
+ * @short_description: copys recycling
+ * @title: AgsCopyRecycling
+ * @section_id:
+ * @include: ags/audio/recall/ags_copy_recycling.h
+ *
+ * The #AgsCopyRecycling class copys the recycling.
+ */
+
 static gpointer ags_copy_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_copy_recycling_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_copy_recycling_parent_dynamic_connectable_interface;
@@ -247,6 +257,18 @@ ags_copy_recycling_duplicate(AgsRecall *recall,
   return((AgsRecall *) copy);
 }
 
+/**
+ * ags_copy_recycling_new:
+ * @destination: the destination #AgsRecycling
+ * @source: the source #AgsRecycling
+ * @devout: the #AgsDevout defaulting to
+ *
+ * Creates an #AgsCopyRecycling
+ *
+ * Returns: a new #AgsCopyRecycling
+ *
+ * Since: 0.4
+ */
 AgsCopyRecycling*
 ags_copy_recycling_new(AgsRecycling *destination,
 		       AgsRecycling *source,

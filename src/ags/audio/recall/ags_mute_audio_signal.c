@@ -53,6 +53,16 @@ AgsRecall* ags_mute_audio_signal_duplicate(AgsRecall *recall,
 					   AgsRecallID *recall_id,
 					   guint *n_params, GParameter *parameter);
 
+/**
+ * SECTION:ags_mute_audio_signal
+ * @short_description: mutes audio signal
+ * @title: AgsMuteAudioSignal
+ * @section_id:
+ * @include: ags/audio/recall/ags_mute_audio_signal.h
+ *
+ * The #AgsMuteAudioSignal class mutes the audio signal.
+ */
+
 static gpointer ags_mute_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_mute_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_mute_audio_signal_parent_dynamic_connectable_interface;
@@ -269,6 +279,16 @@ ags_mute_audio_signal_duplicate(AgsRecall *recall,
   return((AgsRecall *) mute);
 }
 
+/**
+ * ags_mute_audio_signal_new:
+ * @source: the source #AgsAudioSignal
+ *
+ * Creates an #AgsMuteAudioSignal
+ *
+ * Returns: a new #AgsMuteAudioSignal
+ *
+ * Since: 0.4
+ */
 AgsMuteAudioSignal*
 ags_mute_audio_signal_new(AgsAudioSignal *source)
 {

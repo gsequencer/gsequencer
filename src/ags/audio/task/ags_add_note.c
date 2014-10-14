@@ -29,6 +29,16 @@ void ags_add_note_finalize(GObject *gobject);
 
 void ags_add_note_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_add_note
+ * @short_description: add note object to notation
+ * @title: AgsAddNote
+ * @section_id:
+ * @include: ags/audio/task/ags_add_note.h
+ *
+ * The #AgsAddNote task adds #AgsNote to #AgsNotation.
+ */
+
 static gpointer ags_add_note_parent_class = NULL;
 static AgsConnectableInterface *ags_add_note_parent_connectable_interface;
 
@@ -142,6 +152,18 @@ ags_add_note_launch(AgsTask *task)
 			add_note->use_selection_list);
 }
 
+/**
+ * ags_add_note_new:
+ * @notation: the #AgsNotation
+ * @note: the #AgsNote to add
+ * @use_selection_list: if %TRUE added to selection, otherwise to notation
+ *
+ * Creates an #AgsAddNote.
+ *
+ * Returns: an new #AgsAddNote.
+ *
+ * Since: 0.4
+ */
 AgsAddNote*
 ags_add_note_new(AgsNotation *notation,
 		 AgsNote *note,

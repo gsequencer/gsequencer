@@ -22,6 +22,16 @@
 
 void ags_applicable_base_init(AgsApplicableInterface *interface);
 
+/**
+ * SECTION:ags_applicable
+ * @short_description: 
+ * @title: AgsApplicable
+ * @section_id:
+ * @include: ags/object/ags_applicable.h
+ *
+ * The #AgsApplicable interface gives you a unique access to dialogs.
+ */
+
 GType
 ags_applicable_get_type()
 {
@@ -48,6 +58,13 @@ ags_applicable_base_init(AgsApplicableInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_applicable_set_update:
+ * @applicable: an #AgsApplicable
+ * @update: if %TRUE do ::reset after ::update
+ *
+ * Update behaviour.
+ */
 void
 ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
 {
@@ -59,6 +76,12 @@ ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
   applicable_interface->set_update(applicable, update);
 }
 
+/**
+ * ags_applicable_apply:
+ * @applicable: an #AgsApplicable
+ *
+ * Apply.
+ */
 void
 ags_applicable_apply(AgsApplicable *applicable)
 {
@@ -70,6 +93,12 @@ ags_applicable_apply(AgsApplicable *applicable)
   applicable_interface->apply(applicable);
 }
 
+/**
+ * ags_applicable_reset:
+ * @applicable: an #AgsApplicable
+ *
+ * Reset.
+ */
 void
 ags_applicable_reset(AgsApplicable *applicable)
 {

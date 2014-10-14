@@ -646,7 +646,7 @@ ags_machine_add_default_recalls(AgsMachine *machine)
 
 /**
  * ags_machine_get_possible_links:
- * @list: a #GList of #AgsMachine
+ * @machine: the #AgsMachine
  *
  * Find links suitable for @machine.
  *
@@ -715,7 +715,7 @@ ags_machine_find_by_name(GList *list, char *name)
 
 /**
  * ags_machine_find_port:
- * @machine
+ * @machine: the #AgsMachine
  *
  * Lookup ports of associated recalls.
  *
@@ -809,7 +809,7 @@ ags_machine_set_run(AgsMachine *machine,
 
 /**
  * ags_machine_file_chooser_dialog_new:
- * @machine the #AgsMachine
+ * @machine: the #AgsMachine
  *
  * Creates a new machine file chooser dialog in order to
  * open audio files.
@@ -845,7 +845,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
 
 /**
  * ags_machine_open_files:
- * @machine the #AgsMachine
+ * @machine: the #AgsMachine
  * @filenames: the filenames
  * @overwrite_channels: reset channels
  * @create_channels: instantiate new channels
@@ -904,7 +904,7 @@ ags_machine_new(GObject *devout)
  * ags_machine_popup_new:
  * @machine: the assigned machine.
  *
- * Creates GtkMenu to use as @machine's popup context menu.
+ * Creates #GtkMenu to use as @machine's popup context menu.
  *
  * Returns: a new #GtkMenu containing basic actions.
  *

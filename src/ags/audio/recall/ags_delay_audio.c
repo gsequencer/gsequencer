@@ -46,6 +46,16 @@ void ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact);
 void ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
 void ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
 
+/**
+ * SECTION:ags_delay_audio
+ * @short_description: delay audio 
+ * @title: AgsDelayAudio
+ * @section_id:
+ * @include: ags/audio/recall/ags_delay_audio.h
+ *
+ * The #AgsDelayAudio class provides ports to the effect processor.
+ */
+
 enum{
   NOTATION_DURATION_CHANGED,
   SEQUENCER_DURATION_CHANGED,
@@ -818,6 +828,15 @@ ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
   g_object_unref((GObject *) delay_audio);
 }
 
+/**
+ * ags_delay_audio_new:
+ *
+ * Creates an #AgsDelayAudio
+ *
+ * Returns: a new #AgsDelayAudio
+ *
+ * Since: 0.4
+ */
 AgsDelayAudio*
 ags_delay_audio_new()
 {

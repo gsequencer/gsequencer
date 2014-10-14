@@ -29,6 +29,16 @@ void ags_free_selection_finalize(GObject *gobject);
 
 void ags_free_selection_launch(AgsTask *task);
 
+/**
+ * SECTION:ags_free_selection
+ * @short_description: free selection object
+ * @title: AgsFreeSelection
+ * @section_id:
+ * @include: ags/audio/task/ags_free_selection.h
+ *
+ * The #AgsFreeSelection task frees selection of #AgsNotation.
+ */
+
 static gpointer ags_free_selection_parent_class = NULL;
 static AgsConnectableInterface *ags_free_selection_parent_connectable_interface;
 
@@ -138,6 +148,16 @@ ags_free_selection_launch(AgsTask *task)
   ags_notation_free_selection(free_selection->notation);
 }
 
+/**
+ * ags_free_selection_new:
+ * @navigation: the #AgsNavigation
+ *
+ * Creates an #AgsFreeSelection.
+ *
+ * Returns: an new #AgsFreeSelection.
+ *
+ * Since: 0.4
+ */
 AgsFreeSelection*
 ags_free_selection_new(AgsNotation *notation)
 {
