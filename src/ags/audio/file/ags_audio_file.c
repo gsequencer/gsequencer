@@ -225,6 +225,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 /**
  * ags_audio_file_rw_open:
  * @audio_file: the #AgsAudioFile
+ * @create: create the file
  *
  * Open the #AgsAudioFile in read/write mode.
  *

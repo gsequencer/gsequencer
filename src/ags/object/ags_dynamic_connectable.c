@@ -60,7 +60,7 @@ ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface)
 
 /**
  * ags_dynamic_connectable_connect_dynamic:
- * @dynamic_connectable: an #AgsDynamicConnectable
+ * @connectable: an #AgsDynamicConnectable
  *
  * Connect dynamic.
  */
@@ -77,7 +77,7 @@ ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
 
 /**
  * ags_dynamic_connectable_disconnect_dynamic:
- * @dynamic_connectable: an #AgsDynamicConnectable
+ * @connectable: an #AgsDynamicConnectable
  *
  * Disconnect dynamic.
  */

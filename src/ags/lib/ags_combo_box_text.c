@@ -21,7 +21,7 @@
 /**
  * SECTION:ags_combo_box_text
  * @short_description: Complete GtkComboBox
- * @title: AgsIdGenerator
+ * @title: AgsComboBoxText
  * @section_id:
  * @include: ags/lib/ags_combo_box_text.h
  *

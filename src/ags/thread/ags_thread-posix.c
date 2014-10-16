@@ -736,6 +736,16 @@ ags_thread_lock(AgsThread *thread)
   }
 }
 
+/**
+ * ags_thread_trylock:
+ * @thread: an #AgsThread
+ * 
+ * Locks the threads own mutex if available and sets the
+ * appropriate flag and returning %TRUE. Otherwise return %FALSE
+ * without lock.
+ *
+ * Since: 0.4
+ */
 gboolean
 ags_thread_trylock(AgsThread *thread)
 {
@@ -866,6 +876,15 @@ ags_thread_last(AgsThread *thread)
   return(thread);
 }
 
+/**
+ * ags_thread_remove_child:
+ * @thread: an #AgsThread
+ * @child: the child to remove
+ * 
+ * Remove child of thread.
+ *
+ * Since: 0.4
+ */
 void
 ags_thread_remove_child(AgsThread *thread, AgsThread *child)
 {
@@ -898,6 +917,15 @@ ags_thread_remove_child(AgsThread *thread, AgsThread *child)
   ags_thread_unlock(main_loop);
 }
 
+/**
+ * ags_thread_add_child:
+ * @thread: an #AgsThread
+ * @child: the child to remove
+ * 
+ * Add child to thread.
+ *
+ * Since: 0.4
+ */
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
 {

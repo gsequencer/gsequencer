@@ -1,7 +1,7 @@
 38% symbol docs coverage.
-1153 symbols documented.
-523 symbols incomplete.
-1866 not documented.
+1156 symbols documented.
+526 symbols incomplete.
+1863 not documented.
 
 
 AGS_ACCOUNTING_TABLE
@@ -1629,7 +1629,7 @@ ags_tactable_change_tact
 ags_task_thread_append_task (task_thread, task)
 ags_task_thread_append_tasks (task_thread, list)
 ags_task_thread_new
-ags_thread_add_child
+ags_thread_add_child (thread, child)
 ags_thread_children_is_locked (thread, Returns, thread, Returns)
 ags_thread_first (thread, Returns, thread, Returns)
 ags_thread_get_toplevel (thread, Returns)
@@ -1648,7 +1648,7 @@ ags_thread_next_parent_locked (thread, parent, Returns, thread, parent, Returns)
 ags_thread_next_sibling_locked (thread, Returns, thread, Returns)
 ags_thread_parental_is_locked (thread, parent, Returns, thread, parent, Returns)
 ags_thread_pool_new (Returns)
-ags_thread_remove_child
+ags_thread_remove_child (thread, child)
 ags_thread_resume
 ags_thread_run (thread, thread)
 ags_thread_set_sync (thread, tic, thread, tic)
@@ -1661,7 +1661,7 @@ ags_thread_start (thread, thread)
 ags_thread_stop (thread, thread)
 ags_thread_suspend
 ags_thread_timelock
-ags_thread_trylock
+ags_thread_trylock (Returns, thread, Returns)
 ags_thread_unlock (thread, thread)
 ags_thread_unlock_all
 ags_thread_unlock_children (thread, thread)

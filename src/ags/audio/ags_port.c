@@ -609,7 +609,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
 }
 
 /**
- * ags_port_safe_read:
+ * ags_port_safe_write:
  * @port: an #AgsPort
  * @value: the #GValue containing data
  *

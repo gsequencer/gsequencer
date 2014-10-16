@@ -25,7 +25,7 @@
 /**
  * SECTION:ags_parameter
  * @short_description: Complete GParameter
- * @title: AgsIdGenerator
+ * @title: AgsParameter
  * @section_id:
  * @include: ags/lib/ags_parameter.h
  *

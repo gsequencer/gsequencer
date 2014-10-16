@@ -1044,7 +1044,7 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
  * @audio_loop: the #AgsAudioLoop
  * @channel: an #AgsChannel
  *
- * Add audio for playback.
+ * Add remove for playback.
  *
  * Since: 0.4
  */
@@ -1063,7 +1063,7 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
  * @audio_loop: the #AgsAudioLoop
  * @channel: an #AgsChannel
  *
- * Remove audio of playback.
+ * Remove remove of playback.
  *
  * Since: 0.4
  */

@@ -219,15 +219,14 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   recall_ladspa = AGS_RECALL_LADSPA(recall->parent);
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
 
-  recall_ladspa->plugin_descriptor->run(recall_ladspa->plugin_descriptor,
-					AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
+  recall_ladspa->ladspa_handle->run_adding(recall_ladspa->ladspa_descriptor,
+					   AGS_DEVOUT_DEFAULT_BUFFER_SIZE);
 
   /* copy data */
   memset(audio_signal->stream_current->data, 0, AGS_DEVOUT_DEFAULT_BUFFER_SIZE * sizeof(LADSPA_Data));
   ags_recall_ladspa_float_to_short(recall_ladspa_run->output,
 				   audio_signal->stream_current->data);
 }
-
 
 /**
  * ags_recall_ladspa_run_new:

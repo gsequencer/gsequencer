@@ -105,7 +105,7 @@ void ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run
 /**
  * SECTION:ags_count_beats_audio_run
  * @short_description: count beats
- * @title: AgsCount_BeatsAudioRun
+ * @title: AgsCountBeatsAudioRun
  * @section_id:
  * @include: ags/audio/recall/ags_count_beats_audio_run.h
  *
@@ -1333,6 +1333,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 
 /**
  * ags_count_beats_audio_run_new:
+ * @delay_audio_run: the #AgsDelayAudioRun dependency
  *
  * Creates an #AgsCountBeatsAudioRun
  *

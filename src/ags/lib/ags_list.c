@@ -21,7 +21,7 @@
 /**
  * SECTION:ags_list
  * @short_description: Complete GList
- * @title: AgsIdGenerator
+ * @title: AgsList
  * @section_id:
  * @include: ags/lib/ags_list.h
  *

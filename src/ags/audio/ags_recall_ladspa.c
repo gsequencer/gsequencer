@@ -245,15 +245,22 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
+      AgsDevout *devout;
       gchar *filename;
-      
+
       filename = g_value_get_string(value);
 
       if(filename == recall_ladspa->filename){
 	return;
       }
 
+      if(recall_ladspa->filename != NULL){
+	recall_ladspa->ladspa_handle->deactivate(recall_ladspa->ladspa_handle);
+	g_free(recall_ladspa->filename);
+      }
+
       recall_ladspa->filename = g_strdup(filename);
+      ags_recall_ladspa_load(recall_ladspa);
     }
     break;
   case PROP_EFFECT:
@@ -275,7 +282,12 @@ ags_recall_ladspa_set_property(GObject *gobject,
       
       index = g_value_get_uint(value);
 
+      if(recall_ladspa->filename != NULL){
+	recall_ladspa->ladspa_handle->deactivate(recall_ladspa->ladspa_handle);
+      }
+
       recall_ladspa->index = index;
+      ags_recall_ladspa_load(recall_ladspa);
     }
     break;
   default:
@@ -424,7 +436,13 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 void
 ags_recall_ladspa_finalize(GObject *gobject)
 {
-  //TODO:JK: implement me
+  AgsRecallLadspa *recall_ladspa;
+  
+  recall_ladspa = AGS_RECALL_LADSPA(gobject);
+
+  /* deactivate */
+  recall_ladspa->ladspa_handle->deactivate(recall_ladspa->ladspa_handle);
+  recall_ladspa->ladspa_handle->cleanup(recall_ladspa->ladspa_handle);
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_ladspa_parent_class)->finalize(gobject);
@@ -509,6 +527,44 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 /**
+ * ags_recall_ladspa_load:
+ * @recall_ladspa: an #AgsRecallLadspa
+ *
+ * Set up LADSPA handle.
+ * 
+ * Since: 0.4
+ */
+void
+ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
+{
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+
+  /*  */
+  ags_ladspa_manager_load_file(recall_ladspa->filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
+  
+  plugin_so = ladspa_plugin->plugin_so;
+
+  if(plugin_so){
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+
+    if(dlerror() == NULL && ladspa_descriptor){
+      devout = AGS_RECALL(gobject)->devout;
+
+      recall_ladspa->plugin_descriptor = 
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+
+      /* instantiate ladspa */
+      recall_ladspa->ladspa_handle = recall_ladspa->plugin_descriptor->instantiate(recall_ladspa->plugin_descriptor,
+										   devout->frequency);
+    }
+  }
+}
+
+/**
  * ags_recall_ladspa_load_ports:
  * @recall_ladspa: an #AgsRecallLadspa
  *
@@ -577,9 +633,9 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
 
 	    g_message("connecting port: %d/%d\0", i, port_count);
-	    plugin_descriptor->connect_port(plugin_descriptor,
-					    i,
-					    &(current->port_value.ags_port_float));
+	    recall_ladspa->ladspa_handle->connect_port(recall_ladspa->ladspa_handle,
+						       i,
+						       &(current->port_value.ags_port_float));
 
 	    port = g_list_prepend(port,
 				  current);
@@ -596,6 +652,9 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
       AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
     }
   }
+
+  /* activate */
+  recall_ladspa->ladspa_handle->activate(recall_ladspa->ladspa_handle);
 
   return(AGS_RECALL(recall_ladspa)->port);
 }
